@@ -1,0 +1,117 @@
+@import "variables.less";
+
+.navbar-wrapper {
+    background-color: @background-dark;
+    color: @color-dark;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 1200;
+
+    .navbar {
+        display: flex;
+        height: @navbar-height;
+
+        .nav-left {
+            flex: 1;
+            text-transform: uppercase;
+
+            .nav-item {
+
+                .nav-list {
+                    left: 0;
+                }
+
+                .nav-item {
+                    text-transform: none;
+                }
+            }
+        }
+
+        .nav-right {
+            .nav-item {
+                .nav-list {
+                    right: 0;
+                }
+            }
+        }
+
+        .nav-list {
+            margin: 0;
+            padding: 0;
+            list-style: none;
+            display: flex;
+
+            .nav-item {
+                line-height: 1.5em;
+                position: relative;
+
+                >.nav-element {
+                    text-decoration: none;
+                    display: block;
+                    width: 100%;
+                    padding: @spacing-small @spacing-regular;
+                    cursor: pointer;
+                    border: 0;
+                    background-color: transparent;
+                    color: @color-dark;
+                    text-align: left;
+
+                    &:focus,
+                    &:hover,
+                    &[data-active=true] {
+                        background-color: @primary;
+                    }
+
+                    .icon {
+                        margin-right: 0.75em;
+                    }
+                }
+
+                .nav-list {
+                    position: absolute;
+                    top: 100%;
+                    display: none;
+                    min-width: @grid-column;
+                    width: 100%;
+                    max-width: 2 * @grid-column + @grid-gutter;
+                    padding: @spacing-small 0;
+                    background-color: @background-dark;
+                    max-height: 80vh;
+                    overflow: auto;
+
+                    .nav-item {
+                        width: 100%;
+
+                        .nav-element {
+                            padding: @spacing-small @spacing-large;
+
+                            &:focus,
+                            &:hover {
+                                background-color: transparent;
+                                color: @grey-semi-bright;
+                            }
+                        }
+                    }
+
+                    .nav-item-add-new {
+                        .nav-element {
+                            background-color: @grey-semi-bright;
+                            color: @color-bright;
+
+                            &:hover {
+                                background-color: @grey-semi-bright;
+                                color: @primary;
+                            }
+                        }
+                    }
+                }
+
+                &:hover .nav-list {
+                    display: block;
+                }
+            }
+        }
+    }
+}
