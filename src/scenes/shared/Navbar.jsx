@@ -7,7 +7,6 @@ import {connect} from 'react-redux';
 const styles = {
     navBar: {
         borderRadius: 0,
-        padding: '0 101.5px 0 101.5px',
         position: 'fixed',
         top: 0,
         left: 0,
@@ -19,13 +18,13 @@ const styles = {
 class NavBar extends React.Component {
 
     historyPushTo = route => {
-        this.props.router.push(route);
+        this.props.history.push(route);
     };
 
     renderLinks(links, recursionDepth = 0) {
         return links.filter(l => l).map((l, index) => {
             let active = false;
-            const currentPath = this.props.routing.locationBeforeTransitions.pathname;
+            const currentPath = this.props.location.pathname;
 
             if (currentPath && l.path) {
                 active = true;
@@ -135,7 +134,7 @@ class NavBar extends React.Component {
         const userIsLoggedIn = this.props.session.apiKey;
 
         return (
-            <Menu inverted style={styles.navBar} color='grey'>
+            <Menu inverted style={{...this.props.styles, ...styles.navBar}} color='grey'>
                 {this.renderLinks(standardLinks)}
                 {userIsLoggedIn && this.renderLinks(standardLinksAuthenticationRequired.concat(this.props.links))}
                 {!userIsLoggedIn && this.props.info && this.renderInfo(this.props.info)}
@@ -157,8 +156,7 @@ const mapStateToProps = (state, ownProps) => {
 };
 
 NavBar.propTypes = {
-    router: PropTypes.object.isRequired,
-    routing: PropTypes.object.isRequired,
+    history: PropTypes.object.isRequired,
     session: PropTypes.object.isRequired,
     user: PropTypes.object.isRequired,
     info: PropTypes.string,

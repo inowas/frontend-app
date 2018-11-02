@@ -1,4 +1,3 @@
-import config from '../../../config';
 import {WebData} from '../../';
 
 export const AT_RESET_WEB_DATA = 'AT_RESET_WEB_DATA';
@@ -59,7 +58,7 @@ export function buildRequest(url, method, body) {
         options.headers['Content-Type'] = 'application/json';
     }
 
-    return {url: config.baseURL + '/v2/' + url, options};
+    return {url: process.env.REACT_APP_API_URL + '/v2/' + url, options};
 }
 
 

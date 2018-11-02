@@ -1,8 +1,8 @@
 import {call, put, select} from 'redux-saga/effects';
 import {Action} from '../actions';
 import {fetchStatusWrapper} from '../helpers';
-import {Action as UserActions} from '../../../user/actions';
-import {getApiKey} from '../../../user/reducers';
+import {Action as UserActions} from '../../../scenes/user/actions';
+import {getApiKey} from '../../../scenes/user/reducers';
 
 export default function* sendHttpRequestFlow(action) {
     yield put(Action.responseAction(action.responseAction, {type: 'loading'}, action.tool));

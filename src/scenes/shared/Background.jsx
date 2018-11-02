@@ -2,10 +2,10 @@ import React from 'react';
 import {pure} from 'recompose';
 import {Container, Header, Image} from "semantic-ui-react";
 
-export default pure(({image}) => {
+export default pure(({title, image}) => {
     return (
         <div>
-            <Header as='h2' textAlign='center'>Background</Header>
+            <Header as='h3' textAlign='center'>{title}</Header>
             <Container textAlign='center'>
                 <Image src={image}/>
             </Container>

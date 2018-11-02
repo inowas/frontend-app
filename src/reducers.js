@@ -1,9 +1,7 @@
 import {combineReducers} from 'redux';
-import {user, session} from '../user/reducers';
-import {routerReducer as routing} from 'react-router-redux';
+import {user, session} from './scenes/user/reducers';
 
 const rootReducer = combineReducers({
-    routing,
     session,
     user
 });

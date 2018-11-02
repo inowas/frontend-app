@@ -1,8 +1,8 @@
 import { put, select, call } from 'redux-saga/effects';
-import { getApiKey } from '../../../user/reducers';
+import { getApiKey } from '../../../scenes/user/reducers';
 import { Action } from '../actions';
-import { Action as UserActions } from '../../../user/actions';
-import ConfiguredAxios from 'ConfiguredAxios';
+import { Action as UserActions } from '../../../scenes/user/actions';
+import axios from 'axios';
 
 export default function* singleAjaxRequestFlow({
     url,
@@ -25,7 +25,7 @@ export default function* singleAjaxRequestFlow({
     yield put(Action.setAjaxStatus(provokingActionType, {type: 'loading'}));
 
     try {
-        const response = yield call(ConfiguredAxios, {method, url, data, headers: headers});
+        const response = yield call(axios, {method, url, data, headers: headers});
         yield put(Action.setAjaxStatus(provokingActionType, {type: 'success'}));
         return response.data;
     } catch (e) {

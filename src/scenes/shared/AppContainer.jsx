@@ -1,49 +1,49 @@
 import React, {Component} from 'react';
+import PropTypes from 'prop-types';
 
-import {Link} from 'react-router-dom';
+import {Container} from "semantic-ui-react";
+import NavBar from "./Navbar";
+import Footer from "./Footer";
 
-import logoInowas from '../../images/logo-inowas.svg';
-import logoTUD from '../../images/logo-tud.svg';
-import logoBmbf from '../../images/logo-bmbf.svg';
-import {Container, Segment} from "semantic-ui-react";
+const styles = {
+    wrapper: {
+        minWidth: '1280px',
+        maxWidth: '1280px',
+        paddingTop: '50px',
+        minHeight: 'calc(100vh - 190px)'
+    },
+    content: {
+        width: '100%'
+    },
+    navbar: {
+        padding: '0 calc((100% - 1280px) / 2) 0 calc((100% - 1280px) / 2)'
+    },
+    footer: {
+        borderRadius: 0,
+        marginTop: '20px',
+        textAlign: 'center',
+        width: '100%',
+    }
+};
 
-export default class Slider extends Component {
-
+class AppContainer extends Component {
     render() {
         return (
-            <Container>
-                <Segment>
-                    <nav className="col col-abs-1">
-                        <ul className="nav">
-                            <li>
-                                <Link to={'/impressum'}>Impressum</Link>
-                            </li>
-                            <li>
-                                <Link to={"https://tu-dresden.de/bu/umwelt/hydro/inowas/project/kontakt"}>Contact</Link>
-                            </li>
-                        </ul>
-                    </nav>
-                    <div className="col col-abs-1">
-                        <h3>Developed by</h3>
-                        <a href="https://tu-dresden.de/bu/umwelt/hydro/inowas" target="_blank">
-                            <img src={logoInowas} alt="INOWAS logo"/>
-                        </a>
-                    </div>
-                    <div className="col col-abs-1">
-                        <h3>Supported by</h3>
-                        <a href="https://tu-dresden.de/" target="_blank">
-                            <img src={logoTUD} alt="TUD logo"/>
-                        </a>
-                    </div>
-                    <div className="col col-abs-1">
-                        <h3>Funded by</h3>
-                        <a href="https://www.bmbf.de/en/index.html" target="_blank">
-                            <img src={logoBmbf} alt="Federal Ministry of Education and Research logo"/>
-                        </a>
-                    </div>
-                </Segment>
-            </Container>
+            <div>
+                <Container style={styles.wrapper}>
+                    <NavBar links={this.props.navbarItems || []} styles={styles.navbar}/>
+                    <Container style={styles.content}>
+                        {this.props.children}
+                    </Container>
+                </Container>
+                <Footer style={styles.footer} width={1280}/>
+            </div>
         );
     }
-
 }
+
+AppContainer.proptypes = {
+    navbarItems: PropTypes.array
+};
+
+export default AppContainer;
