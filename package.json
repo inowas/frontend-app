@@ -5,6 +5,7 @@
     "dependencies": {
         "axios": "^0.18.0",
         "connected-react-router": "^4.5.0",
+        "fsevents": "^1.2.4",
         "gulp": "^3.9.1",
         "history": "^4.7.2",
         "lodash": "^4.17.11",
