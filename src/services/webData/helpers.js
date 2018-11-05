@@ -1,5 +1,5 @@
-import { has } from 'lodash';
-import { Action } from './actions';
+import {has} from 'lodash';
+import {Action} from './actions';
 
 export const fetchStatusWrapper = (request, apiKey) => {
     request.options.headers['X-AUTH-TOKEN'] = apiKey;

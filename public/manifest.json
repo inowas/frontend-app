@@ -1,6 +1,6 @@
 {
-  "short_name": "React App",
-  "name": "Create React App Sample",
+  "short_name": "INOWAS DSS",
+  "name": "Free web-based modeling platform for planning, management and optimisation of Managed Aquifer Recharge (MAR)",
   "icons": [
     {
       "src": "favicon.ico",

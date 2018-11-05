@@ -7,7 +7,6 @@ import {hasSessionKey} from '../reducers/index';
 import {withRouter, Link} from 'react-router-dom';
 import {Button, Container, Form, Grid, Header, Image, Message} from 'semantic-ui-react';
 import logo from '../images/favicon.png';
-import Navbar from '../../shared/Navbar';
 
 const styles = {
     login: {
@@ -29,6 +28,7 @@ class Login extends React.Component {
 
     checkAuthentication() {
         if (this.props.userIsLoggedIn) {
+            this.props.fetchUser();
             this.props.history.push('/tools');
         }
     }
@@ -104,11 +104,13 @@ const mapStateToProps = state => {
 };
 
 const mapDispatchToProps = {
-    authenticate: Action.authentication
+    authenticate: Action.authentication,
+    fetchUser: Action.fetchUser
 };
 
 Login.propTypes = {
     authenticate: PropTypes.func.isRequired,
+    fetchUser: PropTypes.func.isRequired,
     history: PropTypes.object.isRequired,
     userIsLoggedIn: PropTypes.bool.isRequired
 };

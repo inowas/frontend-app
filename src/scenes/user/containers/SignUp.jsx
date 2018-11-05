@@ -7,7 +7,6 @@ import {hasSessionKey} from '../reducers/index';
 import {Link, withRouter} from 'react-router-dom';
 import {Button, Container, Form, Grid, Header, Image, Message} from 'semantic-ui-react';
 import logo from '../images/favicon.png';
-import NavBar from '../../shared/Navbar';
 
 const styles = {
     signup: {

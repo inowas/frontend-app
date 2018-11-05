@@ -1,6 +1,7 @@
 import {call, cancel, fork, take, takeEvery} from 'redux-saga/effects';
+import {Saga as Dashboard} from './scenes/dashboard';
 import {Saga as User} from './scenes/user';
-import {WebData} from './services';
+import {WebData} from 'services';
 
 function* rootSaga() {
     yield [
@@ -8,6 +9,11 @@ function* rootSaga() {
             WebData.Modifier.Query.AT_SEND_HTTP_REQUEST,
             WebData.Saga.sendHttpRequestFlow
         ),
+        call(Dashboard.cloneToolInstanceFlow),
+        call(Dashboard.createToolInstanceFlow),
+        call(Dashboard.loadInstancesFlow),
+        call(Dashboard.updateToolInstanceFlow),
+        call(Dashboard.deleteToolInstanceFlow),
         call(User.authenticateUser),
         call(User.changePassword),
         call(User.fetchUser),

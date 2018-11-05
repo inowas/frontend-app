@@ -53,7 +53,7 @@ class NavBar extends React.Component {
 
             if (l.path) {
                 navElement = (
-                    <Link className="item" to={l.path} data-active={active} key={index}>
+                    <Link className="item" to={l.path} data-active={active} key={index} onClick={() => this.historyPushTo(l.path)}>
                         {l.icon}{l.name}
                     </Link>
                 );

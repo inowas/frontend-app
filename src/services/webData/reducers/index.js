@@ -1,5 +1,3 @@
 import webData from './webData';
 
-export {
-    webData,
-};
+export default webData;

@@ -1,4 +1,4 @@
-import {user, isAdmin, getEmail, getFetched, getName, getRoles, getUserName, } from './user';
+import {user, isAdmin, getEmail, getFetched, getName, getRoles, getUserName} from './user';
 import {session, getApiKey, hasSessionKey} from './session';
 
 export {
