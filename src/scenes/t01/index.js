@@ -1,4 +1,4 @@
-import * as Container from './containers/index';
+import * as Container from './containers/T01';
 import * as Component from './components/index';
 import * as Modifier from './actions/index';
 import * as Reducer from './reducers/index';
