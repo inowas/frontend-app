@@ -5,6 +5,7 @@ import Login from './user/containers/Login';
 import Logout from './user/containers/Logout';
 import SignUp from './user/containers/SignUp';
 import T01 from './t01/containers';
+import T04 from './t04/containers';
 
 export {
     Dashboard,
@@ -13,5 +14,6 @@ export {
     Login,
     Logout,
     SignUp,
-    T01
+    T01,
+    T04
 }

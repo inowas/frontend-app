@@ -9,7 +9,7 @@ const routes = (
         <PrivateRoute exact path="/" component={Scenes.LandingPage} forRoles={['ROLE_USER']}/>
         <PrivateRoute exact path="/tools" component={Scenes.Dashboard} forRoles={['ROLE_USER']}/>
         <PrivateRoute exact path="/tools/T01" component={Scenes.T01} forRoles={['ROLE_USER']}/>
-        <PrivateRoute exact path="/tools/T01/:id" component={Scenes.T01} forRoles={['ROLE_USER']}/>
+        <PrivateRoute exact path="/tools/T04" component={Scenes.T04} forRoles={['ROLE_USER']}/>
 
         <Route path="/impressum" component={Scenes.Impressum}/>
         <Route path="/login" component={Scenes.Login}/>
