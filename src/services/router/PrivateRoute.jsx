@@ -29,7 +29,6 @@ class PrivateRoute extends React.Component {
             return null;
         }
 
-        console.log(this.userHasAccessToRoute());
         if (!this.userHasAccessToRoute()) {
             return (<Redirect to={'/tools'}/>);
         }
