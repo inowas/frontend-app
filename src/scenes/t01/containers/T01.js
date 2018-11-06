@@ -8,10 +8,6 @@ import csvFile from '../data/2018-10-25-mar-in-scales.csv';
 import AppContainer from "../../shared/AppContainer";
 
 const styles = {
-    container: {
-        padding: '25px 40px 0 40px',
-        width: '1280px'
-    },
     columnContainer: {
         background: '#fff',
         boxShadow: '0 0 2px 0 rgba(76, 76, 76, 0.3)',
