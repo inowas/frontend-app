@@ -7,6 +7,7 @@ import SignUp from './user/containers/SignUp';
 import {T01} from './t01/containers';
 import {T04} from './t04/containers';
 import {T06} from './t06/containers';
+import {T11} from './t11/containers';
 
 export {
     Dashboard,
@@ -17,5 +18,6 @@ export {
     SignUp,
     T01,
     T04,
-    T06
+    T06,
+    T11
 }
