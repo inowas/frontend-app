@@ -6,6 +6,7 @@ import Logout from './user/containers/Logout';
 import SignUp from './user/containers/SignUp';
 import {T01} from './t01/containers';
 import {T04} from './t04/containers';
+import {T06} from './t06/containers';
 
 export {
     Dashboard,
@@ -15,5 +16,6 @@ export {
     Logout,
     SignUp,
     T01,
-    T04
+    T04,
+    T06
 }
