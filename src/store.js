@@ -3,16 +3,12 @@ import rootReducer from './reducers';
 import {composeWithDevTools} from 'redux-devtools-extension';
 import createSagaMiddleware from 'redux-saga';
 import thunk from 'redux-thunk';
-import {createBrowserHistory} from 'history'
-import {routerMiddleware, connectRouter} from 'connected-react-router'
 import {SagaManager} from './sagas';
 
-const history = createBrowserHistory();
 const sagaMiddleware = createSagaMiddleware();
 
 // middleware always needed
 const middlewares = [
-    routerMiddleware(history),
     sagaMiddleware,
     thunk,
     unauthorizedMiddleware()
@@ -27,7 +23,7 @@ if (process.env.NODE_ENV === 'development') {
 
 export default function configureStore(initialState = {}) {
     const store = createStore(
-        connectRouter(history)(rootReducer),
+        rootReducer,
         initialState,
         appliedCompose(
             applyMiddleware(...middlewares)

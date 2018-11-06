@@ -4,14 +4,13 @@ import App from './App';
 import * as serviceWorker from './serviceWorker';
 import {Provider} from 'react-redux'
 import configureStore from './store';
-import {createBrowserHistory} from 'history'
 import './semantic/dist/semantic.min.css';
 
 const store = configureStore();
 
 ReactDOM.render(
     <Provider store={store}>
-        <App history={createBrowserHistory()}/>
+        <App/>
     </Provider>,
     document.getElementById('root')
 );

@@ -1,13 +1,11 @@
 import React from 'react';
-import {ConnectedRouter} from 'connected-react-router'
+import {BrowserRouter} from "react-router-dom";
 import routes from './routes'
 
-const App = ({history}) => (
-    <ConnectedRouter history={history}>
-        <div>
-            {routes}
-        </div>
-    </ConnectedRouter>
+const App = () => (
+    <BrowserRouter>
+        {routes}
+    </BrowserRouter>
 );
 
 export default App;
