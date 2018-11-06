@@ -1,4 +1,4 @@
-FROM node:8
+FROM node:11
 
 # The base node image sets a very verbose log level.
 ENV NPM_CONFIG_LOGLEVEL warn
