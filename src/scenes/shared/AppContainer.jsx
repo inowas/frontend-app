@@ -1,9 +1,10 @@
 import React, {Component} from 'react';
 import PropTypes from 'prop-types';
 
-import {Container} from "semantic-ui-react";
+import {Container, Dimmer, Image, Loader, Segment} from "semantic-ui-react";
 import NavBar from "./Navbar";
 import Footer from "./Footer";
+import Paragraph from 'images/paragraph.png'
 
 const styles = {
     wrapper: {
@@ -23,11 +24,32 @@ const styles = {
         marginTop: '20px',
         textAlign: 'center',
         width: '100%',
+    },
+    content_loading: {
+        width: '100%',
+        height: '100%'
     }
 };
 
 class AppContainer extends Component {
     render() {
+        if (this.props.loading) {
+            return (
+                <div>
+                    <Container style={styles.wrapper}>
+                        <NavBar links={this.props.navbarItems || []} styles={styles.navbar}/>
+                        <Segment>
+                            <Dimmer active inverted>
+                                <Loader size='large'>Loading</Loader>
+                            </Dimmer>
+                            <Image src={Paragraph}/>
+                        </Segment>
+                    </Container>
+                    <Footer style={styles.footer} width={1280}/>
+                </div>
+            )
+        }
+
         return (
             <div>
                 <Container style={styles.wrapper}>
@@ -43,7 +65,8 @@ class AppContainer extends Component {
 }
 
 AppContainer.proptypes = {
-    navbarItems: PropTypes.array
+    loading: PropTypes.bool,
+    navbarItems: PropTypes.array.isRequired
 };
 
 export default AppContainer;

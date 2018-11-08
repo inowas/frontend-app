@@ -21,17 +21,15 @@ if (process.env.NODE_ENV === 'development') {
     middlewares.push(logger);
 }
 
-export default function configureStore(initialState = {}) {
+export default function configureStore() {
     const store = createStore(
         rootReducer,
-        initialState,
         appliedCompose(
             applyMiddleware(...middlewares)
         )
     );
 
     SagaManager.startSagas(sagaMiddleware);
-
     return store;
 }
 

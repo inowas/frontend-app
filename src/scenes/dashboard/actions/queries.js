@@ -1,4 +1,4 @@
-import {WebData} from '../../../services';
+import {WebData} from 'services';
 
 /**
  * Queries send a get/load request to server and triggers an action to set data in store.

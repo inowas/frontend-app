@@ -73,11 +73,12 @@ class T01 extends React.Component {
         }
         return (
             <AppContainer navbarItems={navigation}>
-                <Grid columns={2}>
+                <Grid>
                     <Grid.Row>
                         <Grid.Column width={6}>
                             <Container style={styles.columnContainer}>
-                                <Background title={'T01. SAT basin infiltration capacity reduction database'} image={image}/>
+                                <Background title={'T01. SAT basin infiltration capacity reduction database'}
+                                            image={image}/>
                             </Container>
                         </Grid.Column>
                         <Grid.Column width={10}>
