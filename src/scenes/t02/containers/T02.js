@@ -1,13 +1,12 @@
 import PropTypes from 'prop-types';
 import React from 'react';
-import {connect} from 'react-redux';
 
 import image from '../images/T02.png';
 import {Background, Chart, Parameters, Settings} from '../components/index';
 
 import {each, includes} from 'lodash';
 import {defaults} from '../selectors';
-import {Icon, Grid, Segment,} from 'semantic-ui-react';
+import {Icon} from 'semantic-ui-react';
 import SliderParameter from 'scenes/shared/simpleTools/parameterSlider/SliderParameter';
 import applyParameterUpdate from 'scenes/shared/simpleTools/parameterSlider/parameterUpdate';
 
@@ -15,12 +14,7 @@ import {fetchTool, sendCommand} from 'services/api';
 import {createToolInstanceCommand, updateToolInstanceCommand} from 'services/commandFactory';
 import AppContainer from '../../shared/AppContainer';
 import ToolMetaData from '../../shared/simpleTools/ToolMetaData';
-
-const styles = {
-    segment: {
-        height: '100%',
-    }
-};
+import ToolGrid from "../../shared/simpleTools/ToolGrid";
 
 const navigation = [{
     name: 'Documentation',
@@ -155,7 +149,6 @@ class T02 extends React.Component {
 
         const {data, permissions} = tool;
         const {settings, parameters} = data;
-        console.log(data);
         const readOnly = !includes(permissions, 'w');
 
         const chartParams = {settings};
@@ -166,40 +159,16 @@ class T02 extends React.Component {
         return (
             <AppContainer navbarItems={navigation}>
                 <ToolMetaData tool={tool} readOnly={readOnly} onChange={this.update} onSave={this.save}/>
-                <Grid padded>
-                    <Grid.Row>
-                        <Grid.Column width={6}>
-                            <Segment color={'grey'} style={styles.segment}>
-                                <Background image={image} title={'T02. GROUNDWATER MOUNDING (HANTUSH)'}/>
-                            </Segment>
-                        </Grid.Column>
-                        <Grid.Column width={10}>
-                            <Segment color={'blue'} style={styles.segment}>
-                                <Chart {...chartParams}/>
-                            </Segment>
-                        </Grid.Column>
-                    </Grid.Row>
-                    <Grid.Row>
-                        <Grid.Column width={6}>
-                            <Segment style={styles.segment} color={'grey'}>
-                                <Settings
-                                    settings={settings}
-                                    onChange={this.handleChangeSettings}
-                                    {...chartParams}
-                                />
-                            </Segment>
-                        </Grid.Column>
-                        <Grid.Column width={10}>
-                            <Segment style={styles.segment} color={'blue'}>
-                                <Parameters
-                                    parameters={parameters.map(p => SliderParameter.fromObject(p))}
-                                    handleChange={this.handleChange}
-                                    handleReset={this.handleReset}
-                                />
-                            </Segment>
-                        </Grid.Column>
-                    </Grid.Row>
-                </Grid>
+                <ToolGrid rows={2}>
+                    <Background image={image} title={'T02. GROUNDWATER MOUNDING (HANTUSH)'}/>
+                    <Chart {...chartParams}/>
+                    <Settings settings={settings} onChange={this.handleChangeSettings} {...chartParams}/>
+                    <Parameters
+                        parameters={parameters.map(p => SliderParameter.fromObject(p))}
+                        handleChange={this.handleChange}
+                        handleReset={this.handleReset}
+                    />
+                </ToolGrid>
             </AppContainer>
         );
     }
@@ -211,4 +180,4 @@ T02.propTypes = {
     match: PropTypes.object.isRequired,
 };
 
-export default connect()(T02);
+export default T02;
