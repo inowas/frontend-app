@@ -11,7 +11,7 @@ import image9E from '../images/T09E.png';
 import image9F from '../images/T09F.png';
 import AppContainer from "../../shared/AppContainer";
 
-const navigation = [{
+export const navigation = [{
     name: 'Documentation',
     path: 'https://inowas.hydro.tu-dresden.de/tools/t09-simple-saltwater-intrusion-equations/',
     icon: <Icon name="file"/>
