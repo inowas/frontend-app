@@ -2,10 +2,11 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import {withRouter} from 'react-router-dom';
 
-import image from '../images/T09A.png';
-import {Background, ChartT09A as Chart, Parameters} from '../components/index';
+import image from '../images/T09B.png';
+import {Background, ChartT09B as Chart, InfoT09B as Info, Parameters} from '../components/index';
 
-import {defaults} from '../defaults/T09A';
+import {defaults} from '../defaults/T09B';
+
 import SliderParameter from 'scenes/shared/simpleTools/parameterSlider/SliderParameter';
 
 import {fetchTool, sendCommand} from 'services/api';
@@ -17,7 +18,7 @@ import ToolGrid from "../../shared/simpleTools/ToolGrid";
 import {navigation} from './T09';
 import {includes} from 'lodash';
 
-class T09A extends React.Component {
+class T09B extends React.Component {
     constructor() {
         super();
         this.state = {
@@ -135,10 +136,10 @@ class T09A extends React.Component {
                 <ToolGrid rows={2}>
                     <Background
                         image={image}
-                        title={'T09A. SALTWATER INTRUSION // DEPTH OF FRESHWATER - SALTWATER INTERFACE (GHYBEN-HERZBERG RELATION)'}
+                        title={'T09B. Saltwater intrusion // Shape of freshwater-saltwater interface (Glover equation)'}
                     />
                     <Chart parameters={parameters}/>
-                    <div/>
+                    <Info parameters={parameters}/>
                     <Parameters
                         parameters={parameters.map(p => SliderParameter.fromObject(p))}
                         handleChange={this.handleChangeParameters}
@@ -146,14 +147,15 @@ class T09A extends React.Component {
                     />
                 </ToolGrid>
             </AppContainer>
-        );
+        )
     }
 }
 
-T09A.propTypes = {
+T09B.propTypes = {
     history: PropTypes.object.isRequired,
     location: PropTypes.object.isRequired,
     match: PropTypes.object.isRequired,
 };
 
-export default withRouter(T09A);
+export default withRouter(T09B);
+

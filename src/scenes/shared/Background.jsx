@@ -7,7 +7,7 @@ export default pure(({title, image}) => {
         <div>
             <Header as='h3' textAlign='center'>{title}</Header>
             <Container textAlign='center'>
-                <Image src={image}/>
+                <Image src={image} fluid />
             </Container>
         </div>
     );

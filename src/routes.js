@@ -15,6 +15,7 @@ const routes = (
         <PrivateRoute exact path="/tools/T08/:id?" component={Scenes.T08} forRoles={['ROLE_USER']}/>
         <PrivateRoute exact path="/tools/T09" component={Scenes.T09} forRoles={['ROLE_USER']}/>
         <PrivateRoute exact path="/tools/T09A/:id?" component={Scenes.T09A} forRoles={['ROLE_USER']}/>
+        <PrivateRoute exact path="/tools/T09B/:id?" component={Scenes.T09B} forRoles={['ROLE_USER']}/>
         <PrivateRoute exact path="/tools/T11" component={Scenes.T11} forRoles={['ROLE_USER']}/>
 
         <Route path="/impressum" component={Scenes.Impressum}/>
