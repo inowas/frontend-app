@@ -5,7 +5,7 @@ import image from '../images/T02.png';
 import {Background, Chart, Parameters, Settings} from '../components/index';
 
 import {includes} from 'lodash';
-import {defaults} from '../selectors';
+import {defaultsT02} from '../defaults';
 import {Icon} from 'semantic-ui-react';
 import SliderParameter from 'scenes/shared/simpleTools/parameterSlider/SliderParameter';
 
@@ -25,7 +25,7 @@ class T02 extends React.Component {
     constructor() {
         super();
         this.state = {
-            tool: defaults(),
+            tool: defaultsT02(),
             isLoading: false,
             isDirty: false,
             error: false
@@ -125,7 +125,7 @@ class T02 extends React.Component {
 
     handleReset = () => {
         this.setState({
-            tool: defaults(),
+            tool: defaultsT02(),
             isLoading: false,
             isDirty: false
         });
