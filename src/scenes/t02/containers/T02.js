@@ -14,6 +14,7 @@ import {createToolInstanceCommand, updateToolInstanceCommand} from 'services/com
 import AppContainer from '../../shared/AppContainer';
 import ToolMetaData from '../../shared/simpleTools/ToolMetaData';
 import ToolGrid from "../../shared/simpleTools/ToolGrid";
+import {Info} from "../components";
 
 const navigation = [{
     name: 'Documentation',
@@ -151,7 +152,10 @@ class T02 extends React.Component {
                 <ToolGrid rows={2}>
                     <Background image={image} title={'T02. GROUNDWATER MOUNDING (HANTUSH)'}/>
                     <Chart settings={settings} parameters={parameters}/>
-                    <Settings settings={settings} parameters={parameters} onChange={this.handleChangeSettings} />
+                    <div>
+                        <Settings settings={settings} onChange={this.handleChangeSettings}/>
+                        <Info parameters={parameters}/>
+                    </div>
                     <Parameters
                         parameters={parameters.map(p => SliderParameter.fromObject(p))}
                         handleChange={this.handleChangeParameters}
