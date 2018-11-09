@@ -1,6 +1,6 @@
-import axios from '../../../services/axios';
 import PropTypes from 'prop-types';
 import React from 'react';
+import {signUpUser} from 'services/api';
 
 import {connect} from 'react-redux';
 import {hasSessionKey} from '../reducers/index';
@@ -192,14 +192,11 @@ class SignUp extends React.Component {
     };
 
     signUpRequest = (name, username, email, password, redirectTo) => {
-        axios.post('/users/signup.json', {
-            name,
-            username,
-            email,
-            password,
-            redirectTo
-        }).then(() => this.setState({success: true, loading: false})
-        ).catch(() => this.setState({error: true, loading: false}));
+        signUpUser(
+            {name, username, email, password, redirectTo},
+            () => this.setState({success: true, loading: false}),
+            () => this.setState({error: true, loading: false})
+        );
     };
 
     onSignUpClick = () => {
