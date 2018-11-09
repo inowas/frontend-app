@@ -3,18 +3,10 @@ import image from '../images/T01.png';
 import {Background, Chart, Parameters, Info} from '../components/index';
 
 import PapaParse from 'papaparse';
-import {Container, Grid, Icon} from "semantic-ui-react";
+import {Icon} from "semantic-ui-react";
 import csvFile from '../data/2018-10-25-mar-in-scales.csv';
 import AppContainer from "../../shared/AppContainer";
-
-const styles = {
-    columnContainer: {
-        background: '#fff',
-        boxShadow: '0 0 2px 0 rgba(76, 76, 76, 0.3)',
-        height: '100%',
-        padding: '12px'
-    }
-};
+import ToolGrid from "../../shared/simpleTools/ToolGrid";
 
 const navigation = [{
     name: 'Documentation',
@@ -73,37 +65,12 @@ class T01 extends React.Component {
         }
         return (
             <AppContainer navbarItems={navigation}>
-                <Grid>
-                    <Grid.Row>
-                        <Grid.Column width={6}>
-                            <Container style={styles.columnContainer}>
-                                <Background title={'T01. SAT basin infiltration capacity reduction database'}
-                                            image={image}/>
-                            </Container>
-                        </Grid.Column>
-                        <Grid.Column width={10}>
-                            <Container style={styles.columnContainer}>
-                                <Chart data={data}/>
-                            </Container>
-                        </Grid.Column>
-                    </Grid.Row>
-                    <Grid.Row>
-                        <Grid.Column width={6}>
-                            <Container style={styles.columnContainer}>
-                                <Info data={data}/>
-                            </Container>
-                        </Grid.Column>
-                        <Grid.Column width={10}>
-                            <Container style={styles.columnContainer}>
-                                <Parameters
-                                    data={data}
-                                    toggleSelect={this.toggleSelect}
-                                    handleReset={this.handleReset}
-                                />
-                            </Container>
-                        </Grid.Column>
-                    </Grid.Row>
-                </Grid>
+                <ToolGrid rows={2}>
+                    <Background title={'T01. SAT basin infiltration capacity reduction database'} image={image}/>
+                    <Chart data={data}/>
+                    <Info data={data}/>
+                    <Parameters data={data} toggleSelect={this.toggleSelect} handleReset={this.handleReset} />
+                </ToolGrid>
             </AppContainer>
         );
     }
