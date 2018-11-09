@@ -54,7 +54,7 @@ class ParameterSlider extends React.Component {
         return (
             <Grid.Row columns={3}>
                 <Grid.Column width={4}>
-                    {param.name}
+                    <div dangerouslySetInnerHTML={{__html: param.name}}/>
                 </Grid.Column>
                 <Grid.Column width={8}>
                     <Grid columns={2} padded>

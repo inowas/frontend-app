@@ -4,7 +4,7 @@ import {mounding} from 'gwflowjs';
 import {pure} from 'recompose';
 
 import {
-    CartesianGrid,
+    CartesianGrid, Label,
     Line,
     LineChart,
     ReferenceLine,
@@ -12,36 +12,27 @@ import {
     XAxis,
     YAxis,
 } from 'recharts';
-import {Grid, Header} from "semantic-ui-react";
+import {Grid, Header, Segment} from "semantic-ui-react";
 
 const styles = {
     diagram: {
         position: 'relative'
     },
-    diagramLabelsRight: {
-        position: 'absolute',
-        top: '20px',
-        right: '50px'
-    },
-    diagramXLabels: {
-        display: 'flex',
-        justifyContent: 'center',
-        alignItems: 'center'
-    },
-    diagramYLabels: {
-        position: 'absolute',
-        bottom: '170px',
-        left: '5px',
-        transform: 'rotate(-90deg)'
+    chart: {
+        top: 20,
+        right: 40,
+        left: 20,
+        bottom: 20
     },
     diagramLabel: {
-        textAlign: 'center',
+        position: 'absolute',
+        top: '30px',
+        right: '70px',
         background: '#EFF3F6',
-        opacity: 0.9,
-        padding: '5px',
-        margin: '5px'
+        opacity: 0.9
     }
 };
+
 
 const calculateDiagramData = (variable, w, L, W, hi, Sy, K, t, min, max, stepSize) => {
     const data = [];
@@ -113,13 +104,27 @@ const Chart = ({settings, parameters}) => {
     const data = calculateDiagramData(variable, w, L, W, hi, Sy, K, t, 0, chartXMax, Math.ceil(chartXMax / 10));
     const hMax = data[0].hhi + hi;
 
-    let xAxis = <XAxis type="number" dataKey="y"/>;
-    let xLabel = 'y (m)';
+    let xAxis = (
+        <XAxis type="number" dataKey="y">
+            <Label
+                value='y [m]'
+                offset={0}
+                position="bottom"
+            />
+        </XAxis>
+    );
     let rLabel = 'L/2';
 
     if (variable === 'x') {
-        xAxis = <XAxis type="number" dataKey="x"/>;
-        xLabel = 'x (m)';
+        xAxis = (
+            <XAxis type="number" dataKey="x">
+                <Label
+                    value='x [m]'
+                    offset={0}
+                    position="bottom"
+                />
+            </XAxis>
+        );
         rLabel = 'W/2';
     }
 
@@ -128,39 +133,38 @@ const Chart = ({settings, parameters}) => {
             <Header textAlign='center'>Calculation</Header>
             <Grid>
                 <Grid.Column>
-                    <div style={styles.diagram}>
-                        <ResponsiveContainer width={'100%'} aspect={2.0}>
-                            <LineChart data={data} margin={{
-                                top: 20,
-                                right: 40,
-                                left: 40,
-                                bottom: 0
-                            }}
-                            >
-                                {xAxis}
-                                <YAxis type="number"/>
-                                <CartesianGrid strokeDasharray="3 3"/>
-                                <Line
-                                    isAnimationActive={false}
-                                    type="basis"
-                                    dataKey={'hhi'}
-                                    stroke="#1EB1ED"
-                                    strokeWidth="5" dot={false}
+                    <ResponsiveContainer width={'100%'} aspect={1.5}>
+                        <LineChart data={data} margin={styles.chart}>
+                            {xAxis}
+                            <YAxis type="number">
+                                <Label
+                                    angle={270}
+                                    position='left'
+                                    style={{textAnchor: 'center'}}
+                                    value={'h-hi [m]'}
                                 />
-                                <ReferenceLine x={chartXMaxFromBasin / 4} stroke="black" strokeWidth="3" label={rLabel}
-                                               dot={false}/>
-                            </LineChart>
-                        </ResponsiveContainer>
-                        <div style={styles.diagramYLabels}>
-                            <p>h - hi (m)</p>
-                        </div>
-                        <div style={styles.diagramLabel}>
-                            <div style={styles.diagramLabel}>
-                                h<sub>max</sub>=<strong>{hMax.toFixed(2)}</strong>m
-                            </div>
-                        </div>
-                        <p style={styles.diagramXLabels}>{xLabel}</p>
-                    </div>
+                            </YAxis>
+                            <CartesianGrid strokeDasharray="3 3"/>
+                            <Line
+                                isAnimationActive={false}
+                                type="basis"
+                                dataKey={'hhi'}
+                                stroke="#1EB1ED"
+                                strokeWidth="5" dot={false}
+                            />
+                            <ReferenceLine
+                                x={chartXMaxFromBasin / 4}
+                                stroke="black"
+                                strokeWidth="3"
+                                label={rLabel}
+                                dot={false}
+                            />
+                        </LineChart>
+                    </ResponsiveContainer>
+
+                    <Segment raised style={styles.diagramLabel}>
+                        <p>h<sub>max</sub>=<strong>{hMax.toFixed(2)}</strong>m</p>
+                    </Segment>
                 </Grid.Column>
             </Grid>
         </div>
