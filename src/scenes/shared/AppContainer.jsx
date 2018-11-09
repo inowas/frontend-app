@@ -1,10 +1,9 @@
 import React, {Component} from 'react';
 import PropTypes from 'prop-types';
 
-import {Container, Dimmer, Image, Loader, Segment} from "semantic-ui-react";
+import {Container, Dimmer, Loader, Segment} from "semantic-ui-react";
 import NavBar from "./Navbar";
 import Footer from "./Footer";
-import Paragraph from 'images/paragraph.png'
 
 const styles = {
     wrapper: {
@@ -42,7 +41,6 @@ class AppContainer extends Component {
                             <Dimmer active inverted>
                                 <Loader size='large'>Loading</Loader>
                             </Dimmer>
-                            <Image src={Paragraph}/>
                         </Segment>
                     </Container>
                     <Footer style={styles.footer} width={1280}/>
