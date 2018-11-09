@@ -1,72 +1,49 @@
 import React from 'react';
 import {pure} from 'recompose';
 import PropTypes from 'prop-types';
-import {inputType} from 'scenes/shared/simpleTools/parameterSlider/inputType';
 import ParameterSlider from 'scenes/shared/simpleTools/parameterSlider';
-import {Button, Grid, Input} from 'semantic-ui-react';
+import {Button, Grid} from 'semantic-ui-react';
+import SliderParameter from "./simpleTools/parameterSlider/SliderParameter";
 
 class Parameters extends React.Component {
 
-    renderParam = param => {
-        switch (param.inputType) {
-            case inputType.NUMBER:
-                return this.renderNumber(param);
-            case inputType.RADIO_SELECT:
-                return this.renderRadioSelect(param);
-            case inputType.SLIDER:
-                return (<ParameterSlider key={param.id} handleChange={this.props.handleChange} param={param}/>);
-            default:
-                return (<ParameterSlider key={param.id} handleChange={this.props.handleChange} param={param}/>);
-        }
-    };
+    constructor(props) {
+        super(props);
+        this.state = {
+            parameters: props.parameters.map(p => p.toObject)
+        };
+    }
 
-    renderNumber = param => {
-        return (
-            <Grid.Row key={param.id}>
-                <Grid.Column>{param.label}</Grid.Column>
-                <Grid.Column>
-                    <Input name={'parameter_' + param.id + '_value'} type="number" min={param.min} max={param.max}
-                           step={param.stepSize} value={Number(param.value).toFixed(param.decimals)}
-                           onChange={this.props.handleChange}/>
-                </Grid.Column>
-            </Grid.Row>
-        );
-    };
+    componentWillReceiveProps(nextProps) {
+        this.setState({
+            parameters: nextProps.parameters.map(p => p.toObject)
+        });
+    }
 
-
-    renderRadioOption = (param, option) => {
-        return (
-            <Input name={'parameter_' + param.id + '_value'} value={option.value} type="radio"
-                   checked={param.value === option.value} onChange={this.props.handleChange} label={option.label}/>
-        );
-    };
-
-    renderRadioSelect = (param) => {
-        const options = param
-            .options
-            .map(option => {
-                return this.renderRadioOption(param, option);
-            });
-
-        return (
-            <Grid.Row key={param.id}>
-                <Grid.Column>{param.label}</Grid.Column>
-                <Grid.Column>{options}</Grid.Column>
-            </Grid.Row>
-        );
-    };
+    handleChange = (parameter) => this.props.handleChange(
+        this.props.parameters.map(p => {
+            if (p.id === parameter.id) {
+                return SliderParameter.fromObject(parameter);
+            }
+            return SliderParameter.fromObject(p);
+        })
+    );
 
     render() {
-        const sortedParameters = this.props.parameters.sort((a, b) => {
+        const sortedParameters = this.state.parameters.sort((a, b) => {
             if (a.order > b.order) {
                 return 1;
             }
             return -1;
         });
 
-        const params = sortedParameters.map(param => {
-            return this.renderParam(param, this.props.handleChange);
-        });
+        const params = sortedParameters.map(parameter => (
+            <ParameterSlider
+                key={parameter.id}
+                handleChange={this.handleChange}
+                param={SliderParameter.fromObject(parameter)}
+            />
+        ));
 
         return (
             <Grid verticalAlign='middle'>
@@ -77,7 +54,6 @@ class Parameters extends React.Component {
                 </Grid.Row>
                 {params}
             </Grid>
-
         );
     };
 }
