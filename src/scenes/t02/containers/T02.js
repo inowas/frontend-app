@@ -4,11 +4,10 @@ import React from 'react';
 import image from '../images/T02.png';
 import {Background, Chart, Parameters, Settings} from '../components/index';
 
-import {each, includes} from 'lodash';
+import {includes} from 'lodash';
 import {defaults} from '../selectors';
 import {Icon} from 'semantic-ui-react';
 import SliderParameter from 'scenes/shared/simpleTools/parameterSlider/SliderParameter';
-import applyParameterUpdate from 'scenes/shared/simpleTools/parameterSlider/parameterUpdate';
 
 import {fetchTool, sendCommand} from 'services/api';
 import {createToolInstanceCommand, updateToolInstanceCommand} from 'services/commandFactory';
@@ -43,7 +42,8 @@ class T02 extends React.Component {
                     tool: this.merge(this.state.tool, tool),
                     isLoading: false
                 }),
-                error => this.setState({error, isLoading: false}));
+                error => this.setState({error, isLoading: false})
+            );
         }
     }
 
@@ -96,25 +96,19 @@ class T02 extends React.Component {
         );
     };
 
-    updateParameter(updatedParam) {
-        const parameters = this.state.parameters.map(p => {
-            if (p.id === updatedParam.id) {
-                return applyParameterUpdate(p, updatedParam);
-            }
-
-            return p;
-        });
-
+    handleChangeParameters = (parameters) => {
         this.setState(prevState => {
             return {
                 ...prevState,
-                data: {...prevState.data, parameters}
+                tool: {
+                    ...prevState.tool,
+                    data: {
+                        ...prevState.tool.data,
+                        parameters: parameters.map(p => p.toObject)
+                    }
+                }
             };
         });
-    }
-
-    handleChange = parameter => {
-        this.updateParameter(parameter.toObject);
     };
 
     handleChangeSettings = (settings) => {
@@ -152,7 +146,7 @@ class T02 extends React.Component {
         const readOnly = !includes(permissions, 'w');
 
         const chartParams = {settings};
-        each(parameters, v => {
+        parameters.forEach(v => {
             chartParams[v.id] = v.value;
         });
 
@@ -165,7 +159,7 @@ class T02 extends React.Component {
                     <Settings settings={settings} onChange={this.handleChangeSettings} {...chartParams}/>
                     <Parameters
                         parameters={parameters.map(p => SliderParameter.fromObject(p))}
-                        handleChange={this.handleChange}
+                        handleChange={this.handleChangeParameters}
                         handleReset={this.handleReset}
                     />
                 </ToolGrid>

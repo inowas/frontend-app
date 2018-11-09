@@ -1,8 +1,10 @@
 import uuidv4 from 'uuid/v4';
+import {inputType} from "./inputType";
 
 class SliderParameter {
     _decimals = 0;
     _id = uuidv4();
+    _inputType = inputType.SLIDER;
     _label = '';
     _max = 10;
     _min = 10;
@@ -18,6 +20,7 @@ class SliderParameter {
         const parameter = new SliderParameter();
         parameter.decimals = obj.decimals;
         parameter.id = obj.id;
+        parameter.inputType = obj.inputType;
         parameter.label = obj.label;
         parameter.max = obj.max;
         parameter.min = obj.min;
@@ -46,6 +49,14 @@ class SliderParameter {
 
     set id(value) {
         this._id = value ? value : uuidv4();
+    }
+
+    get inputType() {
+        return this._inputType;
+    }
+
+    set inputType(value) {
+        this._inputType = value;
     }
 
     get label() {
@@ -132,6 +143,7 @@ class SliderParameter {
         return ({
             decimals: this.decimals,
             id: this.id,
+            inputType: this.inputType,
             label: this.label,
             max: this.max,
             min: this.min,
