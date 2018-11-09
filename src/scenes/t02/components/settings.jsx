@@ -4,7 +4,18 @@ import PropTypes from 'prop-types';
 import {mounding} from 'gwflowjs';
 import {Form, Grid, Header, Radio} from "semantic-ui-react";
 
-const Settings = ({settings, onChange, w, L, W, hi, Sy, K, t}) => {
+const fetchParameters = (array) => {
+    const parameters = {};
+
+    array.forEach(item => {
+        parameters[item.id] = item.value
+    });
+
+    return parameters;
+};
+
+const Settings = ({settings, onChange, parameters}) => {
+    const {L, W, w, hi, Sy, K, t} = fetchParameters(parameters);
     const hhi = mounding.calculateHi(0, 0, w, L, W, hi, Sy, K, t);
     const hMax = (hhi + hi);
 
@@ -44,13 +55,7 @@ const Settings = ({settings, onChange, w, L, W, hi, Sy, K, t}) => {
 Settings.propTypes = {
     onChange: PropTypes.func,
     settings: PropTypes.object,
-    w: PropTypes.number.isRequired,
-    L: PropTypes.number.isRequired,
-    W: PropTypes.number.isRequired,
-    hi: PropTypes.number.isRequired,
-    Sy: PropTypes.number.isRequired,
-    K: PropTypes.number.isRequired,
-    t: PropTypes.number.isRequired,
+    parameters: PropTypes.array.isRequired
 };
 
 export default pure(Settings);

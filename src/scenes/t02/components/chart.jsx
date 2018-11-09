@@ -83,8 +83,19 @@ const calculateChartXMax = (variable, w, L, W, hi, Sy, K, t) => {
     return 0;
 };
 
-const Chart = ({settings, w, L, W, hi, Sy, K, t}) => {
+const fetchParameters = (array) => {
+    const parameters = {};
+
+    array.forEach(item => {
+        parameters[item.id] = item.value
+    });
+
+    return parameters;
+};
+
+const Chart = ({settings, parameters}) => {
     const variable = settings.variable;
+    const {L, W, w, hi, Sy, K, t} = fetchParameters(parameters);
 
     let chartXMaxFromBasin = 2 * L;
     if (variable === 'x') {
@@ -158,13 +169,7 @@ const Chart = ({settings, w, L, W, hi, Sy, K, t}) => {
 
 Chart.propTypes = {
     settings: PropTypes.object.isRequired,
-    w: PropTypes.number.isRequired,
-    L: PropTypes.number.isRequired,
-    W: PropTypes.number.isRequired,
-    hi: PropTypes.number.isRequired,
-    Sy: PropTypes.number.isRequired,
-    K: PropTypes.number.isRequired,
-    t: PropTypes.number.isRequired,
+    parameters: PropTypes.array.isRequired
 };
 
 export default pure(Chart);

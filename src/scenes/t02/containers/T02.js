@@ -145,18 +145,13 @@ class T02 extends React.Component {
         const {settings, parameters} = data;
         const readOnly = !includes(permissions, 'w');
 
-        const chartParams = {settings};
-        parameters.forEach(v => {
-            chartParams[v.id] = v.value;
-        });
-
         return (
             <AppContainer navbarItems={navigation}>
                 <ToolMetaData tool={tool} readOnly={readOnly} onChange={this.update} onSave={this.save}/>
                 <ToolGrid rows={2}>
                     <Background image={image} title={'T02. GROUNDWATER MOUNDING (HANTUSH)'}/>
-                    <Chart {...chartParams}/>
-                    <Settings settings={settings} onChange={this.handleChangeSettings} {...chartParams}/>
+                    <Chart settings={settings} parameters={parameters}/>
+                    <Settings settings={settings} parameters={parameters} onChange={this.handleChangeSettings} />
                     <Parameters
                         parameters={parameters.map(p => SliderParameter.fromObject(p))}
                         handleChange={this.handleChangeParameters}
