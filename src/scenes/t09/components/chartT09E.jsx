@@ -2,8 +2,6 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import {pure} from 'recompose';
 
-import '../../less/toolDiagram.less';
-
 import {
     ResponsiveContainer,
     LineChart,
@@ -11,9 +9,12 @@ import {
     XAxis,
     YAxis,
     CartesianGrid,
-    ReferenceLine
+    ReferenceLine, Label
 } from 'recharts';
+
 import {calcXtQ0Flux, calcXtQ0Head, dRho, calculateDiagramData} from '../calculations/calculationT09E';
+import {getParameterValues} from "../../shared/simpleTools/helpers";
+import {Grid, Header, Segment} from "semantic-ui-react";
 
 const calculationErrorOverlay = (maxIter, valid, dxt) => {
     if (!valid) {
@@ -38,16 +39,31 @@ const calculationErrorOverlay = (maxIter, valid, dxt) => {
         );
     }
 
-    return (
-        <div className="diagram-labels-left">
-            <div className="diagram-label">
-                <p>Change in x <sub>t</sub>&nbsp;=&nbsp;<strong>{dxt.toFixed(1)}</strong>&nbsp;m</p>
-            </div>
-        </div>
-    );
+    return null;
 };
 
-const Chart = ({k, z0, l, w, dz, hi, i, df, ds, method}) => {
+const styles = {
+    chart: {
+        top: 20,
+        right: 20,
+        left: 30,
+        bottom: 20
+    },
+    diagramLabel: {
+        position: 'absolute',
+        top: '40px',
+        left: '120px',
+        background: '#EFF3F6',
+        opacity: 0.9
+    }
+};
+
+const Chart = ({parameters, settings}) => {
+
+    const {k, z0, l, w, dz, hi, i, df, ds} = getParameterValues(parameters);
+    const {method} = settings;
+
+
     let data;
     let dxt;
     let maxIter = false;
@@ -81,55 +97,87 @@ const Chart = ({k, z0, l, w, dz, hi, i, df, ds, method}) => {
 
     return (
         <div>
-            <h2>Calculation</h2>
-            <div className="grid-container">
-                <div className="col stretch">
-                    <div className="diagram">
-                        <ResponsiveContainer width={'100%'} aspect={2}>
-                            <LineChart data={data} margin={{
-                                top: 20,
-                                right: 55,
-                                left: 50,
-                                bottom: 0
-                            }}>
+            <Header as={'h3'} textAlign='center'>Calculation</Header>
+            <Grid>
+                <Grid.Column>
+                    <ResponsiveContainer width={'100%'} aspect={2}>
+                        <LineChart data={data} margin={styles.chart}>
+                            <XAxis type="number" dataKey="xt">
+                                <Label value={'z0 [m]'} offset={0} position="bottom"/>
+                            </XAxis>
+                            <YAxis
+                                type="number"
+                                allowDecimals={false}
+                                tickLine={false}
+                                tickFormatter={(x) => x.toFixed(1)}
+                                orientation="right"
+                            >
+                                <Label
+                                    angle={90}
+                                    position='right'
+                                    style={{textAnchor: 'center'}}
+                                    value={'xw [m]'}
+                                />
+                            </YAxis>
+                            <CartesianGrid strokeDasharray="3 3"/>
+                            <Line
+                                isAnimationActive={false}
+                                type="basis"
+                                dataKey={'z0'}
+                                stroke="#ED8D05"
+                                strokeWidth="5"
+                                dot={false}
+                            />
+                            <Line
+                                isAnimationActive={false}
+                                type="basis"
+                                dataKey={'z0_new'}
+                                stroke="#ED8D05"
+                                strokeWidth="5"
+                                dot={false}
+                                strokeDasharray="15 15"
+                            />
+                            <ReferenceLine
+                                y={data[1].z0}
+                                stroke="black"
+                                strokeWidth="1"
+                                strokeDasharray="3 3"
+                                label={{position: 'left', value: 'z₀'}}
+                                dot={false}
+                            />
+                            <ReferenceLine
+                                x={data[1].xt}
+                                stroke="black"
+                                strokeWidth="1"
+                                strokeDasharray="3 3"
+                                label={{position: 'top', value: 'xt'}}
+                                dot={false}
+                            />
+                            <ReferenceLine
+                                x={data[2].xt}
+                                stroke="black"
+                                strokeWidth="1"
+                                strokeDasharray="3 3"
+                                label={{position: 'top', value: 'xt\''}}
+                                dot={false}
+                            />
+                        </LineChart>
+                    </ResponsiveContainer>
 
-                                <XAxis type="number" dataKey="xt"/>
-                                <YAxis type="number" allowDecimals={false} tickLine={false} tickFormatter={(x) => {
-                                    return x.toFixed(1);
-                                }} orientation="right"/>
-                                <CartesianGrid strokeDasharray="3 3"/>
-                                <Line isAnimationActive={false} type="basis" dataKey={'z0'} stroke="#ED8D05"
-                                      strokeWidth="5" dot={false}/>
-                                <Line isAnimationActive={false} type="basis" dataKey={'z0_new'} stroke="#ED8D05"
-                                      strokeWidth="5" dot={false} strokeDasharray="15 15"/>
-                                <ReferenceLine y={data[1].z0} stroke="black" strokeWidth="1" strokeDasharray="3 3" label="z₀" dot={false}/>
-                                <ReferenceLine x={data[1].xt} stroke="black" strokeWidth="1" strokeDasharray="3 3" label="xt" dot={false}/>
-                                <ReferenceLine x={data[2].xt} stroke="black" strokeWidth="1" strokeDasharray="3 3" label="xt'" dot={false}/>
-                            </LineChart>
-                        </ResponsiveContainer>
-                        <div className="diagram-ylabels-right">
-                            <p>z<sub>0</sub> (m)</p>
-                        </div>
-                        {calculationErrorOverlay(maxIter, isValid, dxt)}
-                        <p className="center-vertical center-horizontal">x<sub>w</sub> (m)</p>
-                    </div>
-                </div>
-            </div>
+                    <Segment raised style={styles.diagramLabel}>
+                        <p>Change in x<sub>t</sub>&nbsp;=&nbsp;<strong>{dxt.toFixed(1)}</strong>&nbsp;m</p>
+                    </Segment>
+
+                    {calculationErrorOverlay(maxIter, isValid, dxt)}
+                </Grid.Column>
+            </Grid>
         </div>
     );
 };
 
 Chart.propTypes = {
-    k: PropTypes.number.isRequired,
-    l: PropTypes.number.isRequired,
-    w: PropTypes.number.isRequired,
-    z0: PropTypes.number.isRequired,
-    ds: PropTypes.number.isRequired,
-    df: PropTypes.number.isRequired,
-    dz: PropTypes.number.isRequired,
-    hi: PropTypes.number.isRequired,
-    i: PropTypes.number.isRequired,
-    method: PropTypes.string.isRequired
+    settings: PropTypes.object.isRequired,
+    parameters: PropTypes.array.isRequired,
 };
 
 export default pure(Chart);

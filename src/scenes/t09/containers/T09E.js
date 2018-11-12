@@ -3,9 +3,9 @@ import React from 'react';
 import {withRouter} from 'react-router-dom';
 
 import image from '../images/T09D.png';
-import {Background, ChartT09D as Chart, InfoT09D as Info, Parameters, SettingsT09D as Settings} from '../components';
+import {Background, ChartT09E as Chart, InfoT09E as Info, Parameters, SettingsT09E as Settings} from '../components';
 
-import {defaults} from '../defaults/T09D';
+import {defaults} from '../defaults/T09E';
 import SliderParameter from 'scenes/shared/simpleTools/parameterSlider/SliderParameter';
 
 import {fetchTool, sendCommand} from 'services/api';
@@ -18,8 +18,7 @@ import {navigation} from './T09';
 import {includes} from 'lodash';
 import {buildPayload, deepMerge} from "../../shared/simpleTools/helpers";
 
-
-class T09D extends React.Component {
+class T09E extends React.Component {
     constructor() {
         super();
         this.state = {
@@ -120,9 +119,9 @@ class T09D extends React.Component {
                 <ToolGrid rows={2}>
                     <Background
                         image={image}
-                        title={'T09D. Saltwater intrusion // Critical well discharge'}
+                        title={'T09E. Saltwater intrusion // Sea level rise (vertical cliff)'}
                     />
-                    <Chart parameters={parameters}/>
+                    <Chart parameters={parameters} settings={settings}/>
                     <div>
                         <Settings settings={settings} onChange={this.handleChangeSettings}/>
                         <Info parameters={parameters} settings={settings}/>
@@ -138,10 +137,10 @@ class T09D extends React.Component {
     }
 }
 
-T09D.propTypes = {
+T09E.propTypes = {
     history: PropTypes.object.isRequired,
     location: PropTypes.object.isRequired,
     match: PropTypes.object.isRequired,
 };
 
-export default withRouter(T09D);
+export default withRouter(T09E);

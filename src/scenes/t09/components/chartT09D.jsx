@@ -94,11 +94,17 @@ const Chart = ({parameters}) => {
                                 stroke="black"
                                 strokeWidth="1"
                                 strokeDasharray="3 3"
-                                label="xw"
+                                label={{position: 'top', value: 'xw'}}
                                 dot={false}
                             />
-                            <Line isAnimationActive={false} type="basis" dataKey={'Qcrit'} stroke="black"
-                                  strokeWidth="3" dot={false}/>
+                            <Line
+                                isAnimationActive={false}
+                                type="basis"
+                                dataKey={'Qcrit'}
+                                stroke="black"
+                                strokeWidth="3"
+                                dot={false}
+                            />
                         </LineChart>
                     </ResponsiveContainer>
 
