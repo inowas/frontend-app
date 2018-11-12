@@ -12,40 +12,14 @@ import {
     ReferenceLine, Label
 } from 'recharts';
 
-import {calcXtQ0Flux, calcXtQ0Head, dRho, calculateDiagramData} from '../calculations/calculationT09E';
-import {getParameterValues} from "../../shared/simpleTools/helpers";
-import {Grid, Header, Segment} from "semantic-ui-react";
-
-const calculationErrorOverlay = (maxIter, valid, dxt) => {
-    if (!valid) {
-        return (
-            <div className="diagram-labels-left">
-                <div className="diagram-label">
-                    <p>Invalid values: square root gets minus.</p>
-                    <p>Offshore discharge rate is less than minimum discharge rate</p>
-                </div>
-            </div>
-        );
-    }
-
-    if (maxIter) {
-        return (
-            <div className="diagram-labels-left">
-                <div className="diagram-label">
-                    <p>Maximum number of iterations are conducted.</p>
-                    <p>Change in x <sub>t</sub>&nbsp;=&nbsp;<strong>{dxt.toFixed(1)}</strong>&nbsp;m</p>
-                </div>
-            </div>
-        );
-    }
-
-    return null;
-};
+import * as calc from '../calculations/calculationT09F';
+import {getParameterValues} from '../../shared/simpleTools/helpers';
+import {Grid, Header, Segment} from 'semantic-ui-react';
 
 const styles = {
     chart: {
         top: 20,
-        right: 20,
+        right: 30,
         left: 30,
         bottom: 20
     },
@@ -58,42 +32,25 @@ const styles = {
     }
 };
 
-const Chart = ({parameters, settings}) => {
+const Chart = ({parameters}) => {
+    const {dz, k, z0, l, w, theta, x, df, ds} = getParameterValues(parameters);
 
-    const {k, z0, l, w, dz, hi, i, df, ds} = getParameterValues(parameters);
-    const {method} = settings;
+    const newXt = calc.calcNewXt({dz, k, z0, l, w, theta, x, df, ds});
+    const xt = calc.calcXt({dz, k, z0, l, w, theta, x, df, ds});
+    const dxt = calc.calcDeltaXt({dz, k, z0, l, w, theta, x, df, ds});
 
-
-    let data;
-    let dxt;
-    let maxIter = false;
-    let isValid = true;
-    const alpha = dRho(df, ds);
-    if (method === 'constHead') {
-        const xtQ0Head1 = calcXtQ0Head(k, z0, 0, l, w, hi, alpha);
-        const xt = xtQ0Head1[0];
-        maxIter = xtQ0Head1[2];
-        isValid = xtQ0Head1[3];
-
-        const xtQ0Head2 = calcXtQ0Head(k, z0, dz, l, w, hi - dz, alpha);
-        const xtSlr = xtQ0Head2[0]; // slr: after sea level rise
-        if (maxIter === false) {
-            maxIter = xtQ0Head2[2];
-        }
-
-        if (isValid) {
-            isValid = xtQ0Head2[3];
-        }
-
-        dxt = xtSlr - xt;
-        data = calculateDiagramData(xt, z0, xtSlr, dz, isValid);
-    }
-
-    if (method === 'constFlux') {
-        const [xt, xtSlr] = calcXtQ0Flux(k, z0, dz, l, w, i, alpha);
-        dxt = xtSlr - xt;
-        data = calculateDiagramData(xt, z0, xtSlr, dz, isValid);
-    }
+    const data = [{
+        xt: newXt,
+        z0_new: -z0
+    }, {
+        xt: xt,
+        z0: -z0,
+        z0_new: (dz + z0) / (l - newXt) * xt - z0 - (dz + z0) / (l - newXt) * newXt
+    }, {
+        xt: l,
+        z0: 0,
+        z0_new: dz
+    }];
 
     return (
         <div>
@@ -102,21 +59,25 @@ const Chart = ({parameters, settings}) => {
                 <Grid.Column>
                     <ResponsiveContainer width={'100%'} aspect={2}>
                         <LineChart data={data} margin={styles.chart}>
-                            <XAxis type="number" dataKey="xt">
-                                <Label value={'xw [m]'} offset={0} position="bottom"/>
+                            <XAxis
+                                type="number"
+                                dataKey="xt"
+                                domain={[Math.floor(newXt / 100) * 100, l]}
+                            >
+                                <Label value={'z0 [m]'} offset={0} position="bottom"/>
                             </XAxis>
                             <YAxis
                                 type="number"
                                 allowDecimals={false}
                                 tickLine={false}
-                                tickFormatter={(x) => x.toFixed(1)}
+                                tickFormatter={(tick) => tick.toFixed(1)}
                                 orientation="right"
                             >
                                 <Label
                                     angle={90}
                                     position='right'
                                     style={{textAnchor: 'center'}}
-                                    value={'z0 [m]'}
+                                    value={'x [m]'}
                                 />
                             </YAxis>
                             <CartesianGrid strokeDasharray="3 3"/>
@@ -138,7 +99,7 @@ const Chart = ({parameters, settings}) => {
                                 strokeDasharray="15 15"
                             />
                             <ReferenceLine
-                                y={data[1].z0}
+                                y={-z0}
                                 stroke="black"
                                 strokeWidth="1"
                                 strokeDasharray="3 3"
@@ -146,7 +107,7 @@ const Chart = ({parameters, settings}) => {
                                 dot={false}
                             />
                             <ReferenceLine
-                                x={data[1].xt}
+                                x={xt}
                                 stroke="black"
                                 strokeWidth="1"
                                 strokeDasharray="3 3"
@@ -154,7 +115,7 @@ const Chart = ({parameters, settings}) => {
                                 dot={false}
                             />
                             <ReferenceLine
-                                x={data[2].xt}
+                                x={newXt}
                                 stroke="black"
                                 strokeWidth="1"
                                 strokeDasharray="3 3"
@@ -165,10 +126,10 @@ const Chart = ({parameters, settings}) => {
                     </ResponsiveContainer>
 
                     <Segment raised style={styles.diagramLabel}>
-                        <p>Change in x<sub>t</sub>&nbsp;=&nbsp;<strong>{dxt.toFixed(1)}</strong>&nbsp;m</p>
+                        <p>x<sub>t</sub>&nbsp;=&nbsp;<strong>{xt.toFixed(1)}</strong>&nbsp;m</p>
+                        <p>x<sub>t</sub>'&nbsp;=&nbsp;<strong>{newXt.toFixed(1)}</strong>&nbsp;m</p>
+                        <p>dx<sub>t</sub>&nbsp;=&nbsp;<strong>{dxt.toFixed(1)}</strong>&nbsp;m</p>
                     </Segment>
-
-                    {calculationErrorOverlay(maxIter, isValid, dxt)}
                 </Grid.Column>
             </Grid>
         </div>
@@ -176,8 +137,7 @@ const Chart = ({parameters, settings}) => {
 };
 
 Chart.propTypes = {
-    settings: PropTypes.object.isRequired,
-    parameters: PropTypes.array.isRequired,
+    parameters: PropTypes.array.isRequired
 };
 
 export default pure(Chart);

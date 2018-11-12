@@ -1,8 +1,9 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import {getParameterValues} from "../../shared/simpleTools/helpers";
 import {Grid, Header} from "semantic-ui-react";
 import {calcXtQ0Flux, calcXtQ0Head, dRho, calculateDiagramData} from '../calculations/calculationT09E';
-import {pure} from "recompose/index";
+import {pure} from 'recompose';
 
 const style = {
     text: {
@@ -75,6 +76,10 @@ const Info = ({parameters, settings}) => {
     }
 
     return null;
+};
+
+Info.propTypes = {
+    parameters: PropTypes.array.isRequired
 };
 
 export default pure(Info);

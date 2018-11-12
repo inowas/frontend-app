@@ -4,6 +4,7 @@ import T09B from './T09B';
 import T09C from './T09C';
 import T09D from './T09D';
 import T09E from './T09E';
+import T09F from './T09F';
 
 export {
     T09,
@@ -11,5 +12,6 @@ export {
     T09B,
     T09C,
     T09D,
-    T09E
+    T09E,
+    T09F
 };

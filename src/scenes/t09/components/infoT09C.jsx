@@ -1,6 +1,8 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import {getParameterValues} from "../../shared/simpleTools/helpers";
 import {Grid, Header} from "semantic-ui-react";
+import {pure} from 'recompose';
 
 export function calculateQ(k, d, df, ds) {
     return (0.6 * Math.PI * d * d * k * dRo(df, ds));
@@ -65,4 +67,8 @@ const Info = ({parameters}) => {
     );
 };
 
-export default Info;
+Info.propTypes = {
+    parameters: PropTypes.array.isRequired
+};
+
+export default pure(Info);
