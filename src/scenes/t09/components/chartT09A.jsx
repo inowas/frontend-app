@@ -8,7 +8,9 @@ import {
     Legend,
     ResponsiveContainer,
 } from 'recharts';
+
 import {Grid, Header, Segment} from "semantic-ui-react";
+import {getParameterValues} from "../../shared/simpleTools/helpers";
 
 
 const calculateZ = (h, df, ds) => {
@@ -36,18 +38,8 @@ const styles = {
     }
 };
 
-const fetchParameters = (array) => {
-    const parameters = {};
-
-    array.forEach(item => {
-        parameters[item.id] = item.value
-    });
-
-    return parameters;
-};
-
 const Chart = ({parameters}) => {
-    const {h, df, ds} = fetchParameters(parameters);
+    const {h, df, ds} = getParameterValues(parameters);
     const data = calculateDiagramData(h, df, ds);
     const z = calculateZ(h, df, ds);
 

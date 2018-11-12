@@ -16,6 +16,7 @@ import AppContainer from '../../shared/AppContainer';
 import ToolMetaData from '../../shared/simpleTools/ToolMetaData';
 import ToolGrid from "../../shared/simpleTools/ToolGrid";
 import {Info} from "../components";
+import {deepMerge} from "../../shared/simpleTools/helpers";
 
 const navigation = [{
     name: 'Documentation',
@@ -41,7 +42,7 @@ class T02 extends React.Component {
                 this.state.tool.type,
                 this.props.match.params.id,
                 tool => this.setState({
-                    tool: this.merge(this.state.tool, tool),
+                    tool: deepMerge(this.state.tool, tool),
                     isLoading: false
                 }),
                 error => this.setState({error, isLoading: false})
@@ -65,18 +66,6 @@ class T02 extends React.Component {
             }))
         }
     });
-
-    // Thanks to https://gist.github.com/ahtcx/0cd94e62691f539160b32ecda18af3d6
-    merge = (target, source) => {
-        // Iterate through `source` properties and if an `Object` set property to merge of `target` and `source` properties
-        for (let key of Object.keys(source)) {
-            if (source[key] instanceof Object) Object.assign(source[key], this.merge(target[key], source[key]))
-        }
-
-        // Join `target` and modified `source`
-        Object.assign(target || {}, source);
-        return target
-    };
 
     save = () => {
         const {id} = this.props.match.params;

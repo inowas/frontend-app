@@ -79,9 +79,6 @@ export const defaults = () => {
                 stepSize: 0.001,
                 decimals: 3
             }],
-            settings: {
-                variable: 'confined'
-            }
         }
     };
 };

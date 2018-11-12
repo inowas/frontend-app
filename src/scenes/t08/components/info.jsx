@@ -4,16 +4,7 @@ import PropTypes from 'prop-types';
 import {Grid, Header} from "semantic-ui-react";
 import {calcC, calcCTau, calculateDL, calculateR, calculateVx} from '../calculations/calculationT08';
 import {SETTINGS_CASE_FIXED_TIME, SETTINGS_INFILTRATION_ONE_TIME} from '../defaults';
-
-const fetchParameters = (array) => {
-    const parameters = {};
-
-    array.forEach(item => {
-        parameters[item.id] = item.value
-    });
-
-    return parameters;
-};
+import {getParameterValues} from "../../shared/simpleTools/helpers";
 
 const renderContent = (settings, t, c, x) => {
     if (settings.case === SETTINGS_CASE_FIXED_TIME) {
@@ -37,7 +28,7 @@ const renderContent = (settings, t, c, x) => {
 };
 
 const Info = ({parameters, settings}) => {
-    const {x, t, C0, tau, K, ne, I, alphaL, Kd} = fetchParameters(parameters);
+    const {x, t, C0, tau, K, ne, I, alphaL, Kd} = getParameterValues(parameters);
     const vx = calculateVx(K, ne, I);
     const DL = calculateDL(alphaL, vx);
     const R = calculateR(ne, Kd);

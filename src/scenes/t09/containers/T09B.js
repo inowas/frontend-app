@@ -17,6 +17,7 @@ import ToolGrid from "../../shared/simpleTools/ToolGrid";
 
 import {navigation} from './T09';
 import {includes} from 'lodash';
+import {buildPayload, deepMerge} from "../../shared/simpleTools/helpers";
 
 class T09B extends React.Component {
     constructor() {
@@ -36,7 +37,7 @@ class T09B extends React.Component {
                 this.state.tool.type,
                 this.props.match.params.id,
                 tool => this.setState({
-                    tool: this.merge(this.state.tool, tool),
+                    tool: deepMerge(this.state.tool, tool),
                     isLoading: false
                 }),
                 error => this.setState({error, isLoading: false})
@@ -44,42 +45,13 @@ class T09B extends React.Component {
         }
     }
 
-    buildPayload = (tool) => ({
-        id: tool.id,
-        name: tool.name,
-        description: tool.description,
-        public: tool.public,
-        type: tool.type,
-        data: {
-            ...tool.data,
-            parameters: tool.data.parameters.map(p => ({
-                id: p.id,
-                max: p.max,
-                min: p.min,
-                value: p.value
-            }))
-        }
-    });
-
-    // Thanks to https://gist.github.com/ahtcx/0cd94e62691f539160b32ecda18af3d6
-    merge = (target, source) => {
-        // Iterate through `source` properties and if an `Object` set property to merge of `target` and `source` properties
-        for (let key of Object.keys(source)) {
-            if (source[key] instanceof Object) Object.assign(source[key], this.merge(target[key], source[key]))
-        }
-
-        // Join `target` and modified `source`
-        Object.assign(target || {}, source);
-        return target
-    };
-
     save = () => {
         const {id} = this.props.match.params;
         const {tool} = this.state;
 
         if (id) {
             sendCommand(
-                updateToolInstanceCommand(this.buildPayload(tool)),
+                updateToolInstanceCommand(buildPayload(tool)),
                 () => this.setState({dirty: false}),
                 () => this.setState({error: true})
             );
@@ -87,7 +59,7 @@ class T09B extends React.Component {
         }
 
         sendCommand(
-            createToolInstanceCommand(this.buildPayload(tool)),
+            createToolInstanceCommand(buildPayload(tool)),
             () => this.props.history.push(`${this.props.location.pathname}/${tool.id}`),
             () => this.setState({error: true})
         );

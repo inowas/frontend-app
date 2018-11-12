@@ -12,6 +12,7 @@ import {
 } from 'recharts'
 
 import {Grid, Header, Segment} from "semantic-ui-react";
+import {getParameterValues} from "../../shared/simpleTools/helpers";
 
 function range(start, stop, step) {
     let a = [start], b = start;
@@ -78,18 +79,8 @@ const styles = {
     }
 };
 
-const fetchParameters = (array) => {
-    const parameters = {};
-
-    array.forEach(item => {
-        parameters[item.id] = item.value
-    });
-
-    return parameters;
-};
-
 const Chart = ({parameters}) => {
-    const {b, i, df, ds} = fetchParameters(parameters);
+    const {b, i, df, ds} = getParameterValues(parameters);
 
     const yDomain = [-b, 0];
     const z = calculateZ(i, b, df, ds);
@@ -97,6 +88,7 @@ const Chart = ({parameters}) => {
     const xT = calculateXT(i, b, df, ds);
     const xDomain = [(Math.round(xT / 50) + 1) * 50, 0];
     const data = calculateDiagramData(i, b, df, ds, 0, (Math.round(xT / 50) + 1) * 50, 1);
+
     return (
         <div>
             <Header textAlign='center'>Calculation</Header>
@@ -111,11 +103,7 @@ const Chart = ({parameters}) => {
                                 allowDecimals={false}
                                 tickLine={false}
                             >
-                                <Label
-                                    value={'x [m]'}
-                                    offset={0}
-                                    position="bottom"
-                                />
+                                <Label value={'x [m]'} offset={0} position="bottom"/>
                             </XAxis>
                             <YAxis
                                 type="number"
@@ -166,7 +154,7 @@ const Chart = ({parameters}) => {
 };
 
 Chart.propTypes = {
-    parameters: PropTypes.array.isRequired,
+    parameters: PropTypes.array.isRequired
 };
 
 export default pure(Chart);

@@ -3,19 +3,10 @@ import {pure} from 'recompose';
 import PropTypes from 'prop-types';
 import {mounding} from 'gwflowjs';
 import {Grid, Header} from "semantic-ui-react";
-
-const fetchParameters = (array) => {
-    const parameters = {};
-
-    array.forEach(item => {
-        parameters[item.id] = item.value
-    });
-
-    return parameters;
-};
+import {getParameterValues} from "../../shared/simpleTools/helpers";
 
 const Info = ({parameters}) => {
-    const {L, W, w, hi, Sy, K, t} = fetchParameters(parameters);
+    const {L, W, w, hi, Sy, K, t} = getParameterValues(parameters);
     const hhi = mounding.calculateHi(0, 0, w, L, W, hi, Sy, K, t);
     const hMax = (hhi + hi);
 

@@ -9,7 +9,7 @@ import {T02} from './t02/containers';
 import {T04} from './t04/containers';
 import {T06} from './t06/containers';
 import {T08} from './t08/containers';
-import {T09, T09A, T09B} from './t09/containers';
+import {T09, T09A, T09B, T09C} from './t09/containers';
 import {T11} from './t11/containers';
 
 export {
@@ -27,5 +27,6 @@ export {
     T09,
     T09A,
     T09B,
+    T09C,
     T11
 }

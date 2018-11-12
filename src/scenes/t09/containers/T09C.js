@@ -2,10 +2,11 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import {withRouter} from 'react-router-dom';
 
-import image from '../images/T09A.png';
-import {Background, ChartT09A as Chart, Parameters} from '../components/index';
+import image from '../images/T09B.png';
+import {Background, ChartT09C as Chart, InfoT09C as Info, Parameters} from '../components/index';
 
-import {defaults} from '../defaults/T09A';
+import {defaults} from '../defaults/T09C';
+
 import SliderParameter from 'scenes/shared/simpleTools/parameterSlider/SliderParameter';
 
 import {fetchTool, sendCommand} from 'services/api';
@@ -18,7 +19,7 @@ import {navigation} from './T09';
 import {includes} from 'lodash';
 import {buildPayload, deepMerge} from "../../shared/simpleTools/helpers";
 
-class T09A extends React.Component {
+class T09C extends React.Component {
     constructor() {
         super();
         this.state = {
@@ -35,12 +36,14 @@ class T09A extends React.Component {
             fetchTool(
                 this.state.tool.type,
                 this.props.match.params.id,
-                tool => this.setState({
-                    tool: deepMerge(this.state.tool, tool),
-                    isLoading: false
-                }),
+                tool => {
+                    return this.setState({
+                        tool: deepMerge(this.state.tool, tool),
+                        isLoading: false
+                    })
+                },
                 error => this.setState({error, isLoading: false})
-            );
+            )
         }
     }
 
@@ -89,6 +92,7 @@ class T09A extends React.Component {
 
     update = (tool) => this.setState({tool});
 
+
     render() {
         const {tool, isLoading} = this.state;
         if (isLoading) {
@@ -107,10 +111,10 @@ class T09A extends React.Component {
                 <ToolGrid rows={2}>
                     <Background
                         image={image}
-                        title={'T09A. SALTWATER INTRUSION // DEPTH OF FRESHWATER - SALTWATER INTERFACE (GHYBEN-HERZBERG RELATION)'}
+                        title={'T09C. Saltwater intrusion // Upconing'}
                     />
                     <Chart parameters={parameters}/>
-                    <div/>
+                    <Info parameters={parameters}/>
                     <Parameters
                         parameters={parameters.map(p => SliderParameter.fromObject(p))}
                         handleChange={this.handleChangeParameters}
@@ -122,10 +126,10 @@ class T09A extends React.Component {
     }
 }
 
-T09A.propTypes = {
+T09C.propTypes = {
     history: PropTypes.object.isRequired,
     location: PropTypes.object.isRequired,
     match: PropTypes.object.isRequired,
 };
 
-export default withRouter(T09A);
+export default withRouter(T09C);

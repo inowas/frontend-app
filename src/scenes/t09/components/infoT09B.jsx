@@ -2,24 +2,15 @@ import React from 'react';
 import {pure} from 'recompose';
 import PropTypes from 'prop-types';
 import {Grid, Header} from "semantic-ui-react";
+import {getParameterValues} from "../../shared/simpleTools/helpers";
 
 export function calculateXT(i, b, rho_f, rho_s) {
     const frac1 = (i * b * rho_f) / (rho_s - rho_f);
     return ((b * b - frac1 * frac1) * (rho_s - rho_f)) / (2 * i * b);
 }
 
-const fetchParameters = (array) => {
-    const parameters = {};
-
-    array.forEach(item => {
-        parameters[item.id] = item.value
-    });
-
-    return parameters;
-};
-
 const Info = ({parameters}) => {
-    const {b, i, df, ds} = fetchParameters(parameters);
+    const {b, i, df, ds} = getParameterValues(parameters);
     const xT = calculateXT(i, b, df, ds);
     return (
         <Grid>

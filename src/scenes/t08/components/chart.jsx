@@ -23,6 +23,7 @@ import {
 } from '../calculations/calculationT08';
 
 import {SETTINGS_CASE_FIXED_TIME, SETTINGS_CASE_VARIABLE_TIME, SETTINGS_INFILTRATION_ONE_TIME} from '../defaults';
+import {getParameterValues} from "../../shared/simpleTools/helpers";
 
 const styles = {
     chart: {
@@ -40,18 +41,8 @@ const styles = {
     }
 };
 
-const fetchParameters = (array) => {
-    const parameters = {};
-
-    array.forEach(item => {
-        parameters[item.id] = item.value
-    });
-
-    return parameters;
-};
-
 const Chart = ({settings, parameters}) => {
-    const {C0, K, Kd, I, ne, x, t, alphaL, tau} = fetchParameters(parameters);
+    const {C0, K, Kd, I, ne, x, t, alphaL, tau} = getParameterValues(parameters);
 
     let label = '';
     let dataKey = '';
