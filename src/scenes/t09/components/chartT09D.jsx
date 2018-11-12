@@ -45,9 +45,9 @@ export function resultDiv(rhof, rhos, lambda, qCrit) {
 const styles = {
     chart: {
         top: 20,
-        right: 55,
-        left: 50,
-        bottom: 0
+        right: 30,
+        left: 30,
+        bottom: 20
     },
     diagramLabel: {
         position: 'absolute',
@@ -58,7 +58,7 @@ const styles = {
     }
 };
 
-const Chart = (parameters) => {
+const Chart = ({parameters}) => {
     const {k, b, q, xw, rhof, rhos, AqType} = getParameterValues(parameters);
     const lambda = calcLambda(k, b, q, xw, rhof, rhos, AqType);
     const mu = calcMu(lambda);
@@ -67,7 +67,7 @@ const Chart = (parameters) => {
 
     return (
         <div>
-            <Header textAlign='center'>Calculation</Header>
+            <Header as={'h3'} textAlign='center'>Calculation</Header>
             <Grid>
                 <Grid.Column>
                     <ResponsiveContainer width={'100%'} aspect={2}>
