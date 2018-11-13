@@ -13,8 +13,8 @@ import {
 } from 'recharts';
 
 import * as calc from '../calculations/calculationT09F';
-import {getParameterValues} from '../../shared/simpleTools/helpers';
-import {Grid, Header, Segment} from 'semantic-ui-react';
+import {exportChartData, exportChartImage, getParameterValues} from '../../shared/simpleTools/helpers';
+import {Button, Grid, Header, Segment} from 'semantic-ui-react';
 
 const styles = {
     chart: {
@@ -25,10 +25,15 @@ const styles = {
     },
     diagramLabel: {
         position: 'absolute',
-        top: '40px',
-        left: '120px',
+        top: '30px',
+        left: '55px',
         background: '#EFF3F6',
         opacity: 0.9
+    },
+    downloadButtons: {
+        position: 'absolute',
+        top: '45px',
+        right: '110px'
     }
 };
 
@@ -52,13 +57,19 @@ const Chart = ({parameters}) => {
         z0_new: dz
     }];
 
+    let currentChart;
+
     return (
         <div>
             <Header as={'h3'} textAlign='center'>Calculation</Header>
             <Grid>
                 <Grid.Column>
                     <ResponsiveContainer width={'100%'} aspect={2}>
-                        <LineChart data={data} margin={styles.chart}>
+                        <LineChart
+                            data={data}
+                            margin={styles.chart}
+                            ref={(chart) => currentChart = chart}
+                        >
                             <XAxis
                                 type="number"
                                 dataKey="xt"
@@ -130,6 +141,21 @@ const Chart = ({parameters}) => {
                         <p>x<sub>t</sub>'&nbsp;=&nbsp;<strong>{newXt.toFixed(1)}</strong>&nbsp;m</p>
                         <p>dx<sub>t</sub>&nbsp;=&nbsp;<strong>{dxt.toFixed(1)}</strong>&nbsp;m</p>
                     </Segment>
+
+                    <div style={styles.downloadButtons}>
+                        <Button
+                            size={'tiny'}
+                            color={'orange'}
+                            content='JPG'
+                            onClick={() => exportChartImage(currentChart)}
+                        />
+                        <Button
+                            size={'tiny'}
+                            color={'orange'}
+                            content='CSV'
+                            onClick={() => exportChartData(currentChart)}
+                        />
+                    </div>
                 </Grid.Column>
             </Grid>
         </div>

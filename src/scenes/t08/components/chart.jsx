@@ -11,7 +11,7 @@ import {
     CartesianGrid, Label
 } from 'recharts';
 
-import {Grid, Header, Segment} from "semantic-ui-react";
+import {Button, Grid, Header, Segment} from "semantic-ui-react";
 
 import {
     calcC,
@@ -23,7 +23,7 @@ import {
 } from '../calculations/calculationT08';
 
 import {SETTINGS_CASE_FIXED_TIME, SETTINGS_CASE_VARIABLE_TIME, SETTINGS_INFILTRATION_ONE_TIME} from '../defaults';
-import {getParameterValues} from "../../shared/simpleTools/helpers";
+import {exportChartData, exportChartImage, getParameterValues} from "../../shared/simpleTools/helpers";
 
 const styles = {
     chart: {
@@ -35,9 +35,14 @@ const styles = {
     diagramLabel: {
         position: 'absolute',
         bottom: '90px',
-        right: '70px',
+        right: '65px',
         background: '#EFF3F6',
         opacity: 0.9
+    },
+    downloadButtons: {
+        position: 'absolute',
+        top: '45px',
+        right: '60px'
     }
 };
 
@@ -106,13 +111,19 @@ const Chart = ({settings, parameters}) => {
         }
     }
 
+    let currentChart;
+
     return (
         <div>
             <Header textAlign='center'>Calculation</Header>
             <Grid>
                 <Grid.Column>
                     <ResponsiveContainer width={'100%'} aspect={2}>
-                        <LineChart data={data} margin={styles.chart}>
+                        <LineChart
+                            data={data}
+                            margin={styles.chart}
+                            ref={(chart) => currentChart = chart}
+                        >
                             <XAxis type="number" dataKey={dataKey}>
                                 <Label
                                     value={label}
@@ -146,6 +157,21 @@ const Chart = ({settings, parameters}) => {
                         <p>{variable}<sub>50</sub>&nbsp;=&nbsp;<strong>{val50}</strong>&nbsp;{unit}</p>
                         <p>{variable}<sub>max</sub>&nbsp;=&nbsp;<strong>{valmax}</strong>&nbsp;{unit}</p>
                     </Segment>
+
+                    <div style={styles.downloadButtons}>
+                        <Button
+                            size={'tiny'}
+                            color={'orange'}
+                            content='JPG'
+                            onClick={() => exportChartImage(currentChart)}
+                        />
+                        <Button
+                            size={'tiny'}
+                            color={'orange'}
+                            content='CSV'
+                            onClick={() => exportChartData(currentChart)}
+                        />
+                    </div>
                 </Grid.Column>
             </Grid>
         </div>

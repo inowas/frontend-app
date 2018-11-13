@@ -27,10 +27,15 @@ const styles = {
     },
     diagramLabel: {
         position: 'absolute',
-        top: '30px',
-        right: '70px',
+        top: '40px',
+        left: '110px',
         background: '#EFF3F6',
         opacity: 0.9
+    },
+    downloadButtons: {
+        position: 'absolute',
+        top: '45px',
+        right: '60px'
     }
 };
 
@@ -123,18 +128,7 @@ const Chart = ({settings, parameters}) => {
 
     return (
         <div>
-            <Header textAlign='center'>Calculation
-                <Button.Group floated='right'>
-                    <Button
-                        icon='image'
-                        onClick={() => exportChartImage(currentChart)}
-                    />
-                    <Button
-                        icon='table'
-                        onClick={() => exportChartData(currentChart)}
-                    />
-                </Button.Group>
-            </Header>
+            <Header textAlign='center'>Calculation</Header>
             <Grid padded>
                 <Grid.Column>
                     <ResponsiveContainer width={'100%'} aspect={1.5}>
@@ -164,7 +158,7 @@ const Chart = ({settings, parameters}) => {
                                 x={chartXMaxFromBasin / 4}
                                 stroke="black"
                                 strokeWidth="3"
-                                label={rLabel}
+                                label={{position: 'top', value: rLabel}}
                                 dot={false}
                             />
                         </LineChart>
@@ -172,6 +166,20 @@ const Chart = ({settings, parameters}) => {
                     <Segment raised style={styles.diagramLabel}>
                         <p>h<sub>max</sub>=<strong>{hMax.toFixed(2)}</strong>m</p>
                     </Segment>
+                    <div style={styles.downloadButtons}>
+                        <Button
+                            size={'tiny'}
+                            color={'orange'}
+                            content='JPG'
+                            onClick={() => exportChartImage(currentChart)}
+                        />
+                        <Button
+                            size={'tiny'}
+                            color={'orange'}
+                            content='CSV'
+                            onClick={() => exportChartData(currentChart)}
+                        />
+                    </div>
                 </Grid.Column>
             </Grid>
         </div>

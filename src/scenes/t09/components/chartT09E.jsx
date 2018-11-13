@@ -13,8 +13,8 @@ import {
 } from 'recharts';
 
 import {calcXtQ0Flux, calcXtQ0Head, dRho, calculateDiagramData} from '../calculations/calculationT09E';
-import {getParameterValues} from "../../shared/simpleTools/helpers";
-import {Grid, Header, Segment} from "semantic-ui-react";
+import {exportChartData, exportChartImage, getParameterValues} from "../../shared/simpleTools/helpers";
+import {Button, Grid, Header, Segment} from "semantic-ui-react";
 
 const calculationErrorOverlay = (maxIter, valid, dxt) => {
     if (!valid) {
@@ -51,10 +51,15 @@ const styles = {
     },
     diagramLabel: {
         position: 'absolute',
-        top: '40px',
+        top: '30px',
         left: '120px',
         background: '#EFF3F6',
         opacity: 0.9
+    },
+    downloadButtons: {
+        position: 'absolute',
+        top: '45px',
+        right: '100px'
     }
 };
 
@@ -95,13 +100,19 @@ const Chart = ({parameters, settings}) => {
         data = calculateDiagramData(xt, z0, xtSlr, dz, isValid);
     }
 
+    let currentChart;
+
     return (
         <div>
             <Header as={'h3'} textAlign='center'>Calculation</Header>
             <Grid>
                 <Grid.Column>
                     <ResponsiveContainer width={'100%'} aspect={2}>
-                        <LineChart data={data} margin={styles.chart}>
+                        <LineChart
+                            data={data}
+                            margin={styles.chart}
+                            ref={(chart) => currentChart = chart}
+                        >
                             <XAxis type="number" dataKey="xt">
                                 <Label value={'xw [m]'} offset={0} position="bottom"/>
                             </XAxis>
@@ -167,6 +178,21 @@ const Chart = ({parameters, settings}) => {
                     <Segment raised style={styles.diagramLabel}>
                         <p>Change in x<sub>t</sub>&nbsp;=&nbsp;<strong>{dxt.toFixed(1)}</strong>&nbsp;m</p>
                     </Segment>
+
+                    <div style={styles.downloadButtons}>
+                        <Button
+                            size={'tiny'}
+                            color={'orange'}
+                            content='JPG'
+                            onClick={() => exportChartImage(currentChart)}
+                        />
+                        <Button
+                            size={'tiny'}
+                            color={'orange'}
+                            content='CSV'
+                            onClick={() => exportChartData(currentChart)}
+                        />
+                    </div>
 
                     {calculationErrorOverlay(maxIter, isValid, dxt)}
                 </Grid.Column>
