@@ -12,8 +12,8 @@ import {
     XAxis,
     YAxis,
 } from 'recharts';
-import {Grid, Header, Segment} from "semantic-ui-react";
-import {getParameterValues} from "../../shared/simpleTools/helpers";
+import {Button, Grid, Header, Segment} from "semantic-ui-react";
+import {exportChartData, exportChartImage, getParameterValues} from "../../shared/simpleTools/helpers";
 
 const styles = {
     diagram: {
@@ -119,13 +119,30 @@ const Chart = ({settings, parameters}) => {
         rLabel = 'W/2';
     }
 
+    let currentChart;
+
     return (
         <div>
-            <Header textAlign='center'>Calculation</Header>
+            <Header textAlign='center'>Calculation
+                <Button.Group floated='right' size='tiny'>
+                    <Button
+                        icon='image'
+                        onClick={() => exportChartImage(currentChart)}
+                    />
+                    <Button
+                        icon='table'
+                        onClick={() => exportChartData(currentChart)}
+                    />
+                </Button.Group>
+            </Header>
             <Grid>
                 <Grid.Column>
                     <ResponsiveContainer width={'100%'} aspect={1.5}>
-                        <LineChart data={data} margin={styles.chart}>
+                        <LineChart
+                            data={data}
+                            margin={styles.chart}
+                            ref={(chart) => currentChart = chart}
+                        >
                             {xAxis}
                             <YAxis type="number">
                                 <Label
@@ -152,7 +169,6 @@ const Chart = ({settings, parameters}) => {
                             />
                         </LineChart>
                     </ResponsiveContainer>
-
                     <Segment raised style={styles.diagramLabel}>
                         <p>h<sub>max</sub>=<strong>{hMax.toFixed(2)}</strong>m</p>
                     </Segment>
