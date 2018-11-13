@@ -50,7 +50,7 @@ export const buildPayload = (tool) => ({
     }
 });
 
-export const downloadFile = (name, uri) => {
+const downloadFile = (name, uri) => {
     const downloadLink = document.createElement("a");
     downloadLink.href = uri;
     downloadLink.download = name;

@@ -124,7 +124,7 @@ const Chart = ({settings, parameters}) => {
     return (
         <div>
             <Header textAlign='center'>Calculation
-                <Button.Group floated='right' size='tiny'>
+                <Button.Group floated='right'>
                     <Button
                         icon='image'
                         onClick={() => exportChartImage(currentChart)}
@@ -135,7 +135,7 @@ const Chart = ({settings, parameters}) => {
                     />
                 </Button.Group>
             </Header>
-            <Grid>
+            <Grid padded>
                 <Grid.Column>
                     <ResponsiveContainer width={'100%'} aspect={1.5}>
                         <LineChart
