@@ -12,6 +12,7 @@ import {T08} from './t08/containers';
 import {T09, T09A, T09B, T09C, T09D, T09E, T09F} from './t09/containers';
 import {T11} from './t11/containers';
 import {T12} from './t12/containers';
+import {T13, T13A, T13B, T13C, T13D, T13E} from './t13/containers';
 
 export {
     Dashboard,
@@ -33,5 +34,11 @@ export {
     T09E,
     T09F,
     T11,
-    T12
+    T12,
+    T13,
+    T13A,
+    T13B,
+    T13C,
+    T13D,
+    T13E,
 }
