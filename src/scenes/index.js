@@ -7,6 +7,7 @@ import SignUp from './user/containers/SignUp';
 import {T01} from './t01/containers';
 import {T02} from './t02/containers';
 import {T04} from './t04/containers';
+import {T05} from './t05/containers';
 import {T06} from './t06/containers';
 import {T08} from './t08/containers';
 import {T09, T09A, T09B, T09C, T09D, T09E, T09F} from './t09/containers';
@@ -23,6 +24,7 @@ export {
     T01,
     T02,
     T04,
+    T05,
     T06,
     T08,
     T09,
