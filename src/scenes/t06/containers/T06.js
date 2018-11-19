@@ -1,20 +1,12 @@
 import React from 'react';
 
 import {groupBy, intersection, union} from 'lodash';
-import {Checkbox, Container, Form, Grid, Header, Icon, Image, Table} from "semantic-ui-react";
+import {Checkbox, Form, Grid, Header, Icon, Image, Table} from "semantic-ui-react";
 
 import {getData} from '../data';
 import AppContainer from "../../shared/AppContainer";
 import Background from "../../t01/components/background";
-
-const styles = {
-    columnContainer: {
-        background: '#fff',
-        boxShadow: '0 0 2px 0 rgba(76, 76, 76, 0.3)',
-        height: '100%',
-        padding: '12px'
-    }
-};
+import ToolGrid from "../../shared/simpleTools/ToolGrid";
 
 const navigation = [{
     name: 'Documentation',
@@ -137,43 +129,32 @@ class T06 extends React.Component {
     render() {
         return (
             <AppContainer navbarItems={navigation}>
-                <Grid columns={2}>
-                    <Grid.Row>
-                        <Grid.Column width={6}>
-                            <Container style={styles.columnContainer}>
-                                <Background title={'T06. MAR method selection'}/>
-                            </Container>
-                        </Grid.Column>
-                    </Grid.Row>
-                    <Grid.Row>
-                        <Grid.Column width={6}>
-                            <Container style={styles.columnContainer}>
-                                <Header as={'h3'} textAlign={'center'}>INPUT CONDITIONS</Header>
-                                <Form>
-                                    {this.conditions()}
-                                </Form>
-                            </Container>
-                        </Grid.Column>
-                        <Grid.Column width={10}>
-                            <Container style={styles.columnContainer}>
-                                <Header as={'h3'} textAlign={'center'}>METHODS SUGGESTED</Header>
-                                <Table celled padded>
-                                    <Table.Header>
-                                        <Table.Row>
-                                            <Table.HeaderCell singleLine>MAR methods</Table.HeaderCell>
-                                            <Table.HeaderCell>Unit costs</Table.HeaderCell>
-                                            <Table.HeaderCell>Area required</Table.HeaderCell>
-                                            <Table.HeaderCell>More information</Table.HeaderCell>
-                                        </Table.Row>
-                                    </Table.Header>
-                                    <Table.Body>
-                                        {this.methods()}
-                                    </Table.Body>
-                                </Table>
-                            </Container>
-                        </Grid.Column>
-                    </Grid.Row>
-                </Grid>
+                <ToolGrid rows={2}>
+                    <Background title={'T06. MAR method selection'}/>
+                    {null}
+                    <div>
+                        <Header as={'h3'} textAlign={'center'}>INPUT CONDITIONS</Header>
+                        <Form>
+                            {this.conditions()}
+                        </Form>
+                    </div>
+                    <div>
+                        <Header as={'h3'} textAlign={'center'}>METHODS SUGGESTED</Header>
+                        <Table celled padded>
+                            <Table.Header>
+                                <Table.Row>
+                                    <Table.HeaderCell singleLine>MAR methods</Table.HeaderCell>
+                                    <Table.HeaderCell>Unit costs</Table.HeaderCell>
+                                    <Table.HeaderCell>Area required</Table.HeaderCell>
+                                    <Table.HeaderCell>More information</Table.HeaderCell>
+                                </Table.Row>
+                            </Table.Header>
+                            <Table.Body>
+                                {this.methods()}
+                            </Table.Body>
+                        </Table>
+                    </div>
+                </ToolGrid>
             </AppContainer>
         );
     }

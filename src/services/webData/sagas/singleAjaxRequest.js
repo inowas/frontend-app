@@ -2,7 +2,7 @@ import { put, select, call } from 'redux-saga/effects';
 import { getApiKey } from '../../../scenes/user/reducers';
 import { Action } from '../actions';
 import { Action as UserActions } from '../../../scenes/user/actions';
-import axios from 'axios';
+import axios from 'services/axios';
 
 export default function* singleAjaxRequestFlow({
     url,

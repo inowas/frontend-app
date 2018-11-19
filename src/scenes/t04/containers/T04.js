@@ -6,7 +6,7 @@ import 'react-pivottable/pivottable.css';
 import PapaParse from 'papaparse';
 import csvFile from '../data/database-2018-01-05.csv';
 
-import AppContainer from "../../shared/AppContainer";
+import AppContainer from "scenes/shared/AppContainer";
 import {Icon} from "semantic-ui-react";
 
 const styles = {

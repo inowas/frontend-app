@@ -70,6 +70,13 @@ const initialState = [
         role: ROLE_USER,
         instances: []
     }, {
+        slug: 'T12',
+        name: 'Clogging estimation by MfiData-Index',
+        path: '/tools/',
+        subPath: '',
+        role: ROLE_USER,
+        instances: []
+    },{
         slug: 'T13',
         name: 'Travel time through unconfined aquifer',
         path: '/tools/',
