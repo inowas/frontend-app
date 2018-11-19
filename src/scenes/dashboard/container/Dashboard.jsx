@@ -8,11 +8,11 @@ import {getActiveToolSlug, getPublic} from '../selectors/ui';
 
 import {connect} from 'react-redux';
 import {withRouter} from 'react-router-dom';
-import {Button, Container, Grid, Header, Icon, Menu, Popup, Table, Search} from "semantic-ui-react";
-import * as Formatter from "../../../services/formatter";
+import {Button, Container, Grid, Header, Icon, Menu, Popup, Table, Search} from 'semantic-ui-react';
+import * as Formatter from '../../../services/formatter';
 
 import {includes} from 'lodash';
-import AppContainer from "../../shared/AppContainer";
+import AppContainer from '../../shared/AppContainer';
 
 const styles = {
     actionWrapper: {
@@ -29,8 +29,6 @@ const styles = {
     columnContainer: {
         background: '#FFFFFF',
         boxShadow: '0 0 3px 0px rgba(0, 0, 0, 0.3)',
-        // border: '1px solid rgba(34, 36, 38, 0.15)',
-        // borderRadius: '.28571429rem',
         height: '100%',
     },
     menu: {
@@ -183,8 +181,6 @@ class Dashboard
                                 style={styles.iconFix}
                                 onClick={() => push(activeTool.path + activeTool.slug)}
                         >
-                            {/*<Icon name='add' style={styles.iconFix}/>
-                            Add new*/}
                         </Button>
                     </Grid.Column>
                     <Grid.Column width={6}>

@@ -6,7 +6,7 @@ import {Link} from 'react-router-dom';
 import logoInowas from '../../images/logo-inowas.svg';
 import logoTUD from '../../images/logo-tud.svg';
 import logoBmbf from '../../images/logo-bmbf.svg';
-import {Container, Grid, List, Segment, Header} from "semantic-ui-react";
+import {Container, Grid, List, Segment, Header} from 'semantic-ui-react';
 
 class Footer extends React.Component {
     render() {

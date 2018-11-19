@@ -1,20 +1,8 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import {Dropdown, Icon, Menu, Container} from "semantic-ui-react";
+import {Dropdown, Icon, Menu, Container} from 'semantic-ui-react';
 import {Link, withRouter} from 'react-router-dom';
 import {connect} from 'react-redux';
-
-// const styles = {
-   // navBar: {
-        // borderRadius: 0,
-        // position: 'fixed',
-        // top: 0,
-        // left: 0,
-        // right: 0,
-        // zIndex: 1200
- //   }
-
-// };
 
 class NavBar extends React.Component {
 
