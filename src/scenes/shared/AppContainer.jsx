@@ -19,9 +19,7 @@ const styles = {
         padding: '0 calc((100% - 1280px) / 2) 0 calc((100% - 1280px) / 2)'
     },
     footer: {
-        borderRadius: 0,
         marginTop: '20px',
-        textAlign: 'center',
         width: '100%',
     },
     content_loading: {

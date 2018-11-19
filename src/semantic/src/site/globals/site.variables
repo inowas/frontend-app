@@ -1,3 +1,75 @@
 /*******************************
      User Global Variables
-*******************************/
+*******************************
+
+/*-------------------
+       Fonts
+--------------------*/
+
+@fontName           : 'Oxygen';
+
+@googleFontName    : @fontName;
+@importGoogleFonts : true;
+@googleFontSizes   : '400,700,400italic,700italic';
+@googleSubset      : 'latin';
+
+
+/*-------------------
+    Brand Colors
+--------------------*/
+
+@primaryColor        : @blue;
+@secondaryColor      : @grey;
+
+@lightPrimaryColor   : @lightBlue;
+@lightSecondaryColor : @lightGrey;
+
+
+/*-------------------
+       Colors
+--------------------*/
+
+@blue: #1EB1ED;
+@grey: #4C4C4C;
+@orange: #ED8D05;
+
+@lightGrey: #E1E1E1;
+
+
+/*-------------------
+        Page
+--------------------*/
+
+@pageBackground   : #EFF3F6;
+
+
+/*--------------
+  Page Heading
+---------------*/
+
+@headerLineHeight : 1.33em;
+@headerFontWeight : 400;
+
+@h1               : 2rem;
+@h2               : 1.5rem;
+@h3               : 1.25rem;
+@h4               : 1.1rem;
+@h5               : 1rem;
+
+
+/*-------------------
+       Links
+--------------------*/
+
+@linkColor           : @blue;
+@linkUnderline       : none;
+@linkHoverColor      : lighten(@linkColor, 5);
+@linkHoverUnderline  : @linkUnderline;
+
+
+.ui.link.inverted.menu .item:hover,
+.ui.inverted.menu .link.item:hover,
+.ui.inverted.menu a.item:hover,
+.ui.inverted.menu .dropdown.item:hover {
+  background-color: @blue;
+}
