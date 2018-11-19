@@ -33,6 +33,7 @@ const routes = (
         <PrivateRoute exact path="/tools/T14B/:id?" component={Scenes.T14B} forRoles={['ROLE_USER']}/>
         <PrivateRoute exact path="/tools/T14C/:id?" component={Scenes.T14C} forRoles={['ROLE_USER']}/>
         <PrivateRoute exact path="/tools/T14D/:id?" component={Scenes.T14D} forRoles={['ROLE_USER']}/>
+        <PrivateRoute exact path="/tools/T18/:id?" component={Scenes.T18} forRoles={['ROLE_USER']}/>
 
         <Route path="/impressum" component={Scenes.Impressum}/>
         <Route path="/login" component={Scenes.Login}/>

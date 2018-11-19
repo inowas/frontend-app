@@ -117,7 +117,7 @@ const Chart = ({settings, parameters}) => {
         <div>
             <Header textAlign='center'>Calculation</Header>
             <Grid>
-                <Grid.Column>
+                <Grid.Row>
                     <ResponsiveContainer width={'100%'} aspect={2}>
                         <LineChart
                             data={data}
@@ -172,7 +172,7 @@ const Chart = ({settings, parameters}) => {
                             onClick={() => exportChartData(currentChart)}
                         />
                     </div>
-                </Grid.Column>
+                </Grid.Row>
             </Grid>
         </div>
     );
