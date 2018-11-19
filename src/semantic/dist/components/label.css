@@ -551,16 +551,16 @@ a.ui.basic.red.label:hover {
 
 .ui.orange.labels .label,
 .ui.orange.label {
-  background-color: #F2711C !important;
-  border-color: #F2711C !important;
+  background-color: #ED8D05 !important;
+  border-color: #ED8D05 !important;
   color: #FFFFFF !important;
 }
 
 /* Link */
 .ui.orange.labels .label:hover,
 a.ui.orange.label:hover {
-  background-color: #f26202 !important;
-  border-color: #f26202 !important;
+  background-color: #d97f00 !important;
+  border-color: #d97f00 !important;
   color: #FFFFFF !important;
 }
 
@@ -572,20 +572,20 @@ a.ui.orange.label:hover {
 
 /* Ribbon */
 .ui.orange.ribbon.label {
-  border-color: #cf590c !important;
+  border-color: #bb6f04 !important;
 }
 
 /* Basic */
 .ui.basic.orange.label {
   background: none #FFFFFF !important;
-  color: #F2711C !important;
-  border-color: #F2711C !important;
+  color: #ED8D05 !important;
+  border-color: #ED8D05 !important;
 }
 .ui.basic.orange.labels a.label:hover,
 a.ui.basic.orange.label:hover {
   background-color: #FFFFFF !important;
-  color: #f26202 !important;
-  border-color: #f26202 !important;
+  color: #d97f00 !important;
+  border-color: #d97f00 !important;
 }
 
 /*--- Yellow ---*/
@@ -756,16 +756,16 @@ a.ui.basic.teal.label:hover {
 
 .ui.blue.labels .label,
 .ui.blue.label {
-  background-color: #2185D0 !important;
-  border-color: #2185D0 !important;
+  background-color: #1EB1ED !important;
+  border-color: #1EB1ED !important;
   color: #FFFFFF !important;
 }
 
 /* Link */
 .ui.blue.labels .label:hover,
 a.ui.blue.label:hover {
-  background-color: #1678c2 !important;
-  border-color: #1678c2 !important;
+  background-color: #08a8ea !important;
+  border-color: #08a8ea !important;
   color: #FFFFFF !important;
 }
 
@@ -777,20 +777,20 @@ a.ui.blue.label:hover {
 
 /* Ribbon */
 .ui.blue.ribbon.label {
-  border-color: #1a69a4 !important;
+  border-color: #1093c8 !important;
 }
 
 /* Basic */
 .ui.basic.blue.label {
   background: none #FFFFFF !important;
-  color: #2185D0 !important;
-  border-color: #2185D0 !important;
+  color: #1EB1ED !important;
+  border-color: #1EB1ED !important;
 }
 .ui.basic.blue.labels a.label:hover,
 a.ui.basic.blue.label:hover {
   background-color: #FFFFFF !important;
-  color: #1678c2 !important;
-  border-color: #1678c2 !important;
+  color: #08a8ea !important;
+  border-color: #08a8ea !important;
 }
 
 /*--- Violet ---*/
@@ -961,16 +961,16 @@ a.ui.basic.brown.label:hover {
 
 .ui.grey.labels .label,
 .ui.grey.label {
-  background-color: #767676 !important;
-  border-color: #767676 !important;
+  background-color: #4C4C4C !important;
+  border-color: #4C4C4C !important;
   color: #FFFFFF !important;
 }
 
 /* Link */
 .ui.grey.labels .label:hover,
 a.ui.grey.label:hover {
-  background-color: #838383 !important;
-  border-color: #838383 !important;
+  background-color: #595959 !important;
+  border-color: #595959 !important;
   color: #FFFFFF !important;
 }
 
@@ -988,14 +988,14 @@ a.ui.grey.label:hover {
 /* Basic */
 .ui.basic.grey.label {
   background: none #FFFFFF !important;
-  color: #767676 !important;
-  border-color: #767676 !important;
+  color: #4C4C4C !important;
+  border-color: #4C4C4C !important;
 }
 .ui.basic.grey.labels a.label:hover,
 a.ui.basic.grey.label:hover {
   background-color: #FFFFFF !important;
-  color: #838383 !important;
-  border-color: #838383 !important;
+  color: #595959 !important;
+  border-color: #595959 !important;
 }
 
 /*--- Black ---*/
@@ -1055,7 +1055,7 @@ a.ui.basic.black.label:hover {
 a.ui.basic.label:hover {
   text-decoration: none;
   background: none #FFFFFF;
-  color: #1e70bf;
+  color: #36b9ef;
   -webkit-box-shadow: 1px solid rgba(34, 36, 38, 0.15);
           box-shadow: 1px solid rgba(34, 36, 38, 0.15);
   -webkit-box-shadow: none;

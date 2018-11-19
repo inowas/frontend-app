@@ -1,19 +1,20 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import {Dropdown, Icon, Menu} from "semantic-ui-react";
+import {Dropdown, Icon, Menu, Container} from "semantic-ui-react";
 import {Link, withRouter} from 'react-router-dom';
 import {connect} from 'react-redux';
 
-const styles = {
-    navBar: {
-        borderRadius: 0,
-        position: 'fixed',
-        top: 0,
-        left: 0,
-        right: 0,
-        zIndex: 1200
-    }
-};
+// const styles = {
+   // navBar: {
+        // borderRadius: 0,
+        // position: 'fixed',
+        // top: 0,
+        // left: 0,
+        // right: 0,
+        // zIndex: 1200
+ //   }
+
+// };
 
 class NavBar extends React.Component {
 
@@ -54,7 +55,7 @@ class NavBar extends React.Component {
             if (l.path) {
                 navElement = (
                     <Link className="item" to={l.path} data-active={active} key={index} onClick={() => this.historyPushTo(l.path)}>
-                        {l.icon}{l.name}
+                        {l.icon}{l.name.toUpperCase()}
                     </Link>
                 );
 
@@ -62,7 +63,7 @@ class NavBar extends React.Component {
                     navElement = (
                         <a className="item" href={l.path} target="_blank" rel="noopener noreferrer" data-active={active}
                            key={index}>
-                            {l.icon}{l.name}
+                            {l.icon}{l.name.toUpperCase()}
                         </a>
                     );
                 }
@@ -134,14 +135,18 @@ class NavBar extends React.Component {
         const userIsLoggedIn = this.props.session.apiKey;
 
         return (
-            <Menu inverted style={{...this.props.styles, ...styles.navBar}} color='grey'>
-                {this.renderLinks(standardLinks)}
-                {userIsLoggedIn && this.renderLinks(standardLinksAuthenticationRequired.concat(this.props.links))}
-                {!userIsLoggedIn && this.props.info && this.renderInfo(this.props.info)}
-                <Menu.Menu position='right'>
-                    {this.renderUserNavigation(userIsLoggedIn)}
-                </Menu.Menu>
+
+            <Menu fixed='top' inverted color='grey'>
+                <Container style={{minWidth: '1280px',padding: '0 1em'}}>
+                    {this.renderLinks(standardLinks)}
+                    {userIsLoggedIn && this.renderLinks(standardLinksAuthenticationRequired.concat(this.props.links))}
+                    {!userIsLoggedIn && this.props.info && this.renderInfo(this.props.info)}
+                    <Menu.Menu position='right'>
+                        {this.renderUserNavigation(userIsLoggedIn)}
+                    </Menu.Menu>
+                </Container>
             </Menu>
+
         );
     }
 }
