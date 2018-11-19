@@ -1,7 +1,6 @@
 import React from 'react';
-import {pure} from 'recompose';
 import PropTypes from 'prop-types';
-import {calculateTravelTimeT13A} from '../calculations/calculationT13A';
+import {calcDQ} from '../calculations/calculationT14B';
 import {getParameterValues} from '../../shared/simpleTools/helpers';
 import {Grid, Header} from 'semantic-ui-react';
 
@@ -12,8 +11,9 @@ const style = {
 };
 
 const Info = ({parameters}) => {
-    const {W, K, ne, L, hL, xi, xe} = getParameterValues(parameters);
-    const t = calculateTravelTimeT13A(xe, W, K, ne, L, hL, xi);
+    const {d, S, T, t, K, Kdash, bdash, Qw} = getParameterValues(parameters);
+    const L = K * bdash / Kdash;
+    const dQ = calcDQ(d, S, T, t, L, Qw);
     return (
         <Grid>
             <Grid.Row centered>
@@ -21,8 +21,7 @@ const Info = ({parameters}) => {
             </Grid.Row>
             <Grid.Row centered>
                 <p style={style.text}>
-                    The travel time between initial position and arrival location
-                    is <strong>{t.toFixed(1)} days</strong>.
+                    The calculated river drawdown is <strong>{dQ.toFixed(1)} m³/d</strong>.
                 </p>
             </Grid.Row>
         </Grid>
@@ -33,4 +32,4 @@ Info.propTypes = {
     parameters: PropTypes.array.isRequired
 };
 
-export default pure(Info);
+export default Info;

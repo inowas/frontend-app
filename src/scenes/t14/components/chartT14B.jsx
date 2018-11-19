@@ -1,93 +1,48 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import {pure} from 'recompose';
+import {calculateDiagramData, calcDQ} from '../calculations/calculationT14B';
 
 import {
-    CartesianGrid, Label,
-    Line, LineChart,
-    ResponsiveContainer, XAxis, YAxis,
+    ResponsiveContainer,
+    LineChart,
+    Line,
+    XAxis,
+    YAxis,
+    CartesianGrid, Label
 } from 'recharts';
 
+import {exportChartData, exportChartImage, getParameterValues} from '../../shared/simpleTools/helpers/index';
 import {Button, Grid, Header, Segment} from 'semantic-ui-react';
-import {exportChartData, exportChartImage, getParameterValues} from '../../shared/simpleTools/helpers';
-import {calculateTravelTimeT13A} from '../calculations';
-
-const calculateDiagramData = (w, K, ne, L, hL, xMin, xMax, dX) => {
-    const data = [];
-
-    if (xMax < xMin) {
-        // eslint-disable-next-line no-param-reassign
-        xMax = xMin;
-    }
-
-    for (let x = xMin; x <= xMax; x += dX) {
-        data.push({
-            x,
-            t: calculateTravelTimeT13A(x, w, K, ne, L, hL, xMin)
-        });
-    }
-    return data;
-};
 
 const styles = {
     chart: {
         top: 20,
-        right: 30,
+        right: 20,
         left: 20,
         bottom: 20
     },
     diagramLabel: {
         position: 'absolute',
-        top: '85px',
-        right: '60px',
-        background: '#EFF3F6',
-        opacity: 0.9
-    },
-    diagramErrorLabel: {
-        position: 'absolute',
-        top: '60px',
-        left: '200px',
+        top: '120px',
+        right: '35px',
         background: '#EFF3F6',
         opacity: 0.9
     },
     downloadButtons: {
         position: 'absolute',
-        top: '45px',
-        right: '55px'
+        top: '75px',
+        right: '35px'
     }
 };
 
 let currentChart;
 
-const renderLabels = (xe, xi, L, data) => {
-    if (xe < xi) {
-        return (
-            <Segment raised style={styles.diagramErrorLabel}>
-                <p>Arrival location, x<sub>e</sub>, can not be smaller than initial position, x<sub>i</sub>.</p>
-            </Segment>
-        );
-    }
-
-    if (xe > L) {
-        return (
-            <Segment raised style={styles.diagramErrorLabel}>
-                <p>Arrival location, x<sub>e</sub>, can not be bigger than the Aquifer length, L<sup>'</sup>.</p>
-            </Segment>
-        );
-    }
-
-    if (xi > L) {
-        return (
-            <Segment raised style={styles.diagramErrorLabel}>
-                <p>Initial location, x<sub>i</sub>, can not be bigger than the Aquifer length, L<sup>'</sup>.</p>
-            </Segment>
-        );
-    }
-
+const renderLabels = (dQ) => {
     return (
         <div>
             <Segment raised style={styles.diagramLabel}>
-                <p>t&nbsp;=&nbsp;<strong>{data[data.length - 1].t.toFixed(1)}</strong>&nbsp;d</p>
+                <p>&#916;Q&nbsp;=&nbsp;<strong>{dQ.toFixed(1)}</strong>&nbsp;m³/d</p>
             </Segment>
 
             <div style={styles.downloadButtons}>
@@ -109,15 +64,17 @@ const renderLabels = (xe, xi, L, data) => {
 };
 
 const Chart = ({parameters}) => {
-    const {W, K, ne, L, hL, xi, xe} = getParameterValues(parameters);
-    const data = calculateDiagramData(W, K, ne, L, hL, xi, xe, 10);
+    const {Qw, t, S, T, d, K, Kdash, bdash} = getParameterValues(parameters);
+    const L = K * bdash / Kdash;
+    const data = calculateDiagramData(Qw, S, T, d, 0, t, L, 1);
+    const dQ = calcDQ(d, S, T, t, L, Qw);
 
     return (
         <div>
             <Header textAlign='center'>Calculation</Header>
             <Grid>
-                <Grid.Column>
-                    <ResponsiveContainer width="100%" aspect={2}>
+                <Grid.Row>
+                    <ResponsiveContainer width={'100%'} aspect={2}>
                         <LineChart
                             data={data}
                             margin={styles.chart}
@@ -125,11 +82,11 @@ const Chart = ({parameters}) => {
                         >
                             <XAxis
                                 type="number"
-                                dataKey="x"
+                                dataKey="t"
                                 allowDecimals={false}
                                 tickLine={false}
                             >
-                                <Label value={'x [m]'} offset={0} position="bottom"/>
+                                <Label value={'T [d]'} offset={0} position="bottom"/>
                             </XAxis>
                             <YAxis
                                 type="number"
@@ -142,30 +99,29 @@ const Chart = ({parameters}) => {
                                     angle={270}
                                     position='left'
                                     style={{textAnchor: 'center'}}
-                                    value={'t [d]'}
+                                    value={'dQ [m³/d]'}
                                 />
                             </YAxis>
                             <CartesianGrid strokeDasharray="3 3"/>
                             <Line
                                 isAnimationActive={false}
                                 type="basis"
-                                dataKey={'t'}
+                                dataKey={'dQ'}
                                 stroke="#4C4C4C"
                                 strokeWidth="5"
                                 dot={false}
-                                fillOpacity={1}
                             />
                         </LineChart>
                     </ResponsiveContainer>
-                    {renderLabels(xe, xi, L, data)}
-                </Grid.Column>
+                    {renderLabels(dQ)}
+                </Grid.Row>
             </Grid>
         </div>
     );
 };
 
 Chart.propTypes = {
-    parameters: PropTypes.array.isRequired,
+    parameters: PropTypes.array.isRequired
 };
 
 export default pure(Chart);
