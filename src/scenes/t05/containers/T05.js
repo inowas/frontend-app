@@ -3,11 +3,12 @@ import React from 'react';
 import {withRouter} from 'react-router-dom';
 
 import AppContainer from "../../shared/AppContainer";
-import {Grid, Header, Icon, Menu, Segment} from "semantic-ui-react";
+import {Grid, Icon, Menu} from "semantic-ui-react";
 import uuidv4 from "uuid";
 import {includes} from "lodash";
 
 import MCDA from "../components/MCDA";
+import CriteriaEditor from "../components/criteriaEditor";
 
 const navigation = [{
     name: 'Documentation',
@@ -67,8 +68,13 @@ class T05 extends React.Component {
         console.log(name);
     };
 
-    save = () => {
-
+    save = ({name, value}) => {
+        this.setState({
+            mcda: {
+                ...this.state.mcda,
+                [name]: value
+            }
+        })
     };
 
     update = () => {
@@ -86,16 +92,14 @@ class T05 extends React.Component {
         const {data, permissions} = tool;
         const readOnly = !includes(permissions, 'w');
 
-        console.log(this.props);
-
         return (
             <AppContainer navbarItems={navigation}>
                 <Grid>
                     <Grid.Column width={3}>
-                        /* Menu with router */
                         <Menu vertical style={styles.menu}>
                             <Menu.Item header>Navigation</Menu.Item>
-                            <Menu.Item name='criteria' onClick={this.handleClickNavigation}><Icon name='check circle' color='green' /> Criteria</Menu.Item>
+                            <Menu.Item name='criteria' onClick={this.handleClickNavigation}><Icon name='check circle'
+                                                                                                  color='green'/> Criteria</Menu.Item>
                             <Menu.Item name='wa' onClick={this.handleClickNavigation}>Weight Assignment</Menu.Item>
                             <Menu.Item active>
                                 Raster Editor
@@ -110,9 +114,7 @@ class T05 extends React.Component {
                         </Menu>
                     </Grid.Column>
                     <Grid.Column width={13}>
-                        <Segment>
-                            <Header as='h2'>{this.state.mcda.name}</Header>
-                        </Segment>
+                        <CriteriaEditor mcda={MCDA.fromObject(this.state.mcda)} handleChange={this.save}/>
                     </Grid.Column>
                 </Grid>
             </AppContainer>

@@ -85,7 +85,7 @@ class MCDA {
 
         let criteriaExists = false;
 
-        this.weights = this.weights.map(c => {
+        this.criteria = this.criteria.map(c => {
             if (c.id === criteria.id) {
                 criteriaExists = true;
                 return criteria;
