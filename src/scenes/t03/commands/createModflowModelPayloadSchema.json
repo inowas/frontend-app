@@ -15,13 +15,27 @@
     "description": {
       "type": "string"
     },
-    "geometry": {"$ref": "#/definitions/polygon"},
-    "bounding_box": {"$ref": "#/definitions/bounding_box"},
-    "active_cells": {"$ref": "#/definitions/active_cells"},
-    "grid_size": {"$ref": "#/definitions/grid_size"},
-    "length_unit": {"$ref": "#/definitions/length_unit"},
-    "time_unit": {"$ref": "#/definitions/time_unit"},
-    "public": {"type": "boolean"}
+    "geometry": {
+      "$ref": "#/definitions/polygon"
+    },
+    "bounding_box": {
+      "$ref": "#/definitions/bounding_box"
+    },
+    "active_cells": {
+      "$ref": "#/definitions/active_cells"
+    },
+    "grid_size": {
+      "$ref": "#/definitions/grid_size"
+    },
+    "length_unit": {
+      "$ref": "#/definitions/length_unit"
+    },
+    "time_unit": {
+      "$ref": "#/definitions/time_unit"
+    },
+    "public": {
+      "type": "boolean"
+    }
   },
   "additionalProperties": true,
   "required": [
@@ -53,57 +67,7 @@
           ]
         },
         "coordinates": {
-          "$ref": "#/definitions/polygon"
-        }
-      },
-      "position": {
-        "description": "A single position",
-        "type": "array",
-        "minItems": 2,
-        "items": [
-          {
-            "type": "number"
-          },
-          {
-            "type": "number"
-          }
-        ],
-        "additionalItems": false
-      },
-      "positionArray": {
-        "description": "An array of positions",
-        "type": "array",
-        "items": {
-          "$ref": "#/definitions/position"
-        }
-      },
-      "lineString": {
-        "description": "An array of two or more positions",
-        "allOf": [
-          {
-            "$ref": "#/definitions/positionArray"
-          },
-          {
-            "minItems": 2
-          }
-        ]
-      },
-      "linearRing": {
-        "description": "An array of four positions where the first equals the last",
-        "allOf": [
-          {
-            "$ref": "#/definitions/positionArray"
-          },
-          {
-            "minItems": 4
-          }
-        ]
-      },
-      "polygon": {
-        "description": "An array of linear rings",
-        "type": "array",
-        "items": {
-          "$ref": "#/definitions/linearRing"
+          "type": "array"
         }
       }
     },
@@ -164,13 +128,14 @@
       ]
     },
     "time_unit": {
-      "id": "#time_unit",
-      "description": "0: undefined, 1: feet, 2: meters, 3: centimeters",
+      "description": "0: undefined, 1: seconds, 2: minutes, 3: hours, 4: days, 5: years",
       "enum": [
         0,
         1,
         2,
-        3
+        3,
+        4,
+        5
       ]
     }
   }

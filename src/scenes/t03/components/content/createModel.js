@@ -1,34 +1,27 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import {sendCommand} from 'services/api';
-import CreateModflowModel from '../commands/createModflowModel';
-import {Button, Checkbox, Form, Grid, Popup, Segment} from 'semantic-ui-react';
-import Ajv from 'ajv';
-import ajv0 from 'ajv/lib/refs/json-schema-draft-04';
-import createModflowModelPayloadSchema from '../commands/createModflowModelPayload';
-import {Map, Marker, TileLayer, FeatureGroup, Circle} from 'react-leaflet';
-import {EditControl} from 'react-leaflet-draw';
+import CreateModflowModelCommand from '../../commands/createModflowModelCommand';
+import {Button, Checkbox, Form, Grid, Segment} from 'semantic-ui-react';
 
-import 'leaflet/dist/leaflet.css';
-import 'leaflet-draw/dist/leaflet.draw.css';
+import createModflowModelPayloadSchema from '../../commands/createModflowModelPayloadSchema';
+import {CreateModelMap} from '../maps';
+import {getValidator} from 'services/jsonSchemaValidator';
 
-const style = {
-    map: {
-        height: '400px',
-        width: '100%'
-    }
-};
 
 class CreateModel extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            data: props.data
+            data: props.data,
+            error: false,
+            loading: false
         }
     }
 
     handleSave = () => {
-        const command = new CreateModflowModel(this.state.data);
-        return sendCommand(command)
+        const command = new CreateModflowModelCommand(this.state.data);
+        return sendCommand(command, () => this.props.history.push('T03/' + this.state.data.id));
     };
 
     handleInputChange = (e, {value, name, checked}) => {
@@ -37,11 +30,32 @@ class CreateModel extends React.Component {
         });
     };
 
+    handleGridSizeChange = (e, {value, name}) => {
+        this.setState({
+            data: {
+                ...this.state.data,
+                grid_size: {
+                    ...this.state.data.grid_size,
+                    [name]: value
+                }
+            }
+        });
+    };
+
+    handleMapInputChange = ({activeCells, boundingBox, geometry}) => {
+        this.setState({
+            data: {
+                ...this.state.data,
+                active_cells: activeCells,
+                bounding_box: boundingBox,
+                geometry
+            }
+        })
+    };
+
     validate() {
-        const ajv = new Ajv({schemaId: 'id'});
-        ajv.addMetaSchema(ajv0);
-        const val = ajv.compile(createModflowModelPayloadSchema);
-        return [val(this.state.data), val.errors];
+        const validator = getValidator().compile(createModflowModelPayloadSchema);
+        return [validator(this.state.data), validator.errors];
     }
 
     render() {
@@ -87,17 +101,17 @@ class CreateModel extends React.Component {
                                 <Form.Group>
                                     <Form.Input
                                         label='Rows'
-                                        name={'grid_size_n_y'}
+                                        name={'n_y'}
                                         value={this.state.data.grid_size.n_y}
                                         width={8}
-                                        onChange={this.handleInputChange}
+                                        onChange={this.handleGridSizeChange}
                                     />
                                     <Form.Input
                                         label='Columns'
-                                        name={'grid_size_n_x'}
+                                        name={'n_x'}
                                         value={this.state.data.grid_size.n_x}
                                         width={8}
-                                        onChange={this.handleInputChange}
+                                        onChange={this.handleGridSizeChange}
                                     />
                                 </Form.Group>
                                 <Form.Group>
@@ -119,24 +133,14 @@ class CreateModel extends React.Component {
                     </Grid.Row>
                     <Grid.Row>
                         <Grid.Column width={16}>
-                            <Map center={[51.505, -0.09]} zoom={13} style={style.map}>
-                                <TileLayer
-                                    url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-                                    attribution="&copy; <a href=&quot;http://osm.org/copyright&quot;>OpenStreetMap</a> contributors"
-                                />
-                                <Marker position={[51.505, -0.09]}>
-                                    <Popup>A pretty CSS3 popup.<br/>Easily customizable.</Popup>
-                                </Marker>
-                                <FeatureGroup>
-                                    <EditControl
-                                        position='topright'
-                                        draw={{
-                                            rectangle: false
-                                        }}
-                                    />
-                                    <Circle center={[51.51, -0.06]} radius={200} />
-                                </FeatureGroup>
-                            </Map>
+                            <CreateModelMap
+                                activeCells={this.state.data.active_cells}
+                                boundingBox={this.state.data.bounding_box}
+                                geometry={this.state.data.geometry}
+                                gridSize={this.state.data.grid_size}
+                                styles={this.state.data.styles}
+                                onChange={this.handleMapInputChange}
+                            />
                         </Grid.Column>
                     </Grid.Row>
                     <Grid.Row>
@@ -155,5 +159,10 @@ class CreateModel extends React.Component {
         )
     }
 }
+
+CreateModel.proptypes = {
+    data: PropTypes.object.isRequired,
+    history: PropTypes.object.isRequired
+};
 
 export default CreateModel;

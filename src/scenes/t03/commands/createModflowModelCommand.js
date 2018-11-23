@@ -1,7 +1,7 @@
 import Command from "./command";
-import createModflowModelPayload from "./createModflowModelPayload";
+import createModflowModelPayload from "./createModflowModelPayloadSchema";
 
-export default class CreateModflowModel extends Command {
+export default class CreateModflowModelCommand extends Command {
     constructor(payload) {
         super("createModflowModel", payload, createModflowModelPayload);
     }

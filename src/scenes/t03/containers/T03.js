@@ -3,9 +3,9 @@ import PropTypes from 'prop-types';
 import {withRouter} from 'react-router-dom';
 import AppContainer from '../../shared/AppContainer';
 import {Grid, Icon} from 'semantic-ui-react';
-import ToolNavigation from "../../shared/complexTools/toolNavigation";
+import ToolNavigation from '../../shared/complexTools/toolNavigation';
 import menuItems from '../defaults/menuItems';
-import * as Content from '../components';
+import * as Content from '../components/content/index';
 import {connect} from 'react-redux';
 import {includes} from 'lodash';
 import createModelDefaults from '../defaults/createModel';
@@ -25,7 +25,7 @@ class T03 extends React.Component {
         const {id, property} = this.props.match.params;
         if (!id) {
             return (
-                <Content.CreateModel data={createModelDefaults}/>
+                <Content.CreateModel data={createModelDefaults} history={this.props.history}/>
             )
         }
 
