@@ -26,7 +26,6 @@ class General extends React.Component {
 
     render() {
         const {readOnly} = this.props;
-        console.log(this.state);
         return (
             <Grid>
                 <Grid.Row>

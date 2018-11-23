@@ -123,7 +123,6 @@ class CreateModelMap extends React.Component {
             return null;
         }
 
-        console.log('RenderMessage');
         return (
             <Message key={Math.random()} icon style={{
                 zIndex: 1000000,
@@ -153,21 +152,19 @@ class CreateModelMap extends React.Component {
 
     render() {
         return (
-            <div>
-                <Map
-                    center={[51.505, -0.09]}
-                    zoom={2}
-                    style={style.map}
-                    bounds={this.getBoundsLatLong()}
-                >
-                    <BasicTileLayer/>
-                    {!this.state.geometry && this.editControl()}
-                    {this.state.geometry && this.areaLayer()}
-                    {this.state.boundingBox && this.boundingBoxLayer()}
-                    {this.state.activeCells && this.activeCellsLayer()}
-                    {this.renderCalculationMessage()}
-                </Map>
-            </div>
+            <Map
+                center={[51.505, -0.09]}
+                zoom={2}
+                style={style.map}
+                bounds={this.getBoundsLatLong()}
+            >
+                <BasicTileLayer/>
+                {!this.state.geometry && this.editControl()}
+                {this.state.geometry && this.areaLayer()}
+                {this.state.boundingBox && this.boundingBoxLayer()}
+                {this.state.activeCells && this.activeCellsLayer()}
+                {this.renderCalculationMessage()}
+            </Map>
         )
     }
 }
