@@ -1,61 +1,70 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import {sendCommand} from 'services/api';
-import CreateModflowModelCommand from '../../commands/createModflowModelCommand';
 import {Button, Checkbox, Form, Grid, Segment} from 'semantic-ui-react';
-
-import createModflowModelPayloadSchema from '../../commands/createModflowModelPayloadSchema';
 import {CreateModelMap} from '../maps';
-import {getValidator} from 'services/jsonSchemaValidator';
-
+import GridSize from 'core/model/modflow/GridSize';
+import Command from "../../commands/command";
 
 class CreateModel extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            data: props.data,
+            id: this.props.id,
+            name: this.props.name,
+            description: this.props.description,
+            geometry: null,
+            boundingBox: null,
+            gridSize: this.props.gridSize.toObject(),
+            lengthUnit: this.props.lengthUnit,
+            timeUnit: this.props.timeUnit,
+            isPublic: this.props.isPublic,
             error: false,
             loading: false
         }
     }
 
+    buildPayload = () => ({
+        id: this.state.id,
+        name: this.state.name,
+        description: this.state.description,
+        geometry: this.state.geometry && this.state.geometry,
+        bounding_box: this.state.boundingBox && this.state.boundingBox,
+        grid_size: this.state.gridSize,
+        active_cells: this.state.activeCells && this.state.activeCells,
+        length_unit: this.state.lengthUnit,
+        time_unit: this.state.timeUnit,
+        public: this.state.isPublic
+    });
+
     handleSave = () => {
-        const command = new CreateModflowModelCommand(this.state.data);
-        return sendCommand(command, () => this.props.history.push('T03/' + this.state.data.id));
+        return sendCommand(
+            Command.createModflowModel(this.buildPayload()), () => this.props.history.push('T03/' + this.state.id)
+        );
     };
 
     handleInputChange = (e, {value, name, checked}) => {
         this.setState({
-            data: {...this.state.data, [name]: value || checked}
+            [name]: value || checked
         });
     };
 
     handleGridSizeChange = (e, {value, name}) => {
-        this.setState({
-            data: {
-                ...this.state.data,
-                grid_size: {
-                    ...this.state.data.grid_size,
-                    [name]: value
-                }
-            }
-        });
+        const gridSize = GridSize.fromObject(this.state.gridSize);
+        gridSize[name] = value;
+        this.setState({gridSize: gridSize.toObject()});
     };
 
     handleMapInputChange = ({activeCells, boundingBox, geometry}) => {
         this.setState({
-            data: {
-                ...this.state.data,
-                active_cells: activeCells,
-                bounding_box: boundingBox,
-                geometry
-            }
+            activeCells: activeCells.toArray(),
+            boundingBox: boundingBox.toArray(),
+            geometry: geometry.toObject()
         })
     };
 
     validate() {
-        const validator = getValidator().compile(createModflowModelPayloadSchema);
-        return [validator(this.state.data), validator.errors];
+        return Command.createModflowModel(this.buildPayload()).validate();
     }
 
     render() {
@@ -69,7 +78,7 @@ class CreateModel extends React.Component {
                                     <Form.Input
                                         label='Name'
                                         name={'name'}
-                                        value={this.state.data.name}
+                                        value={this.state.name}
                                         width={14}
                                         onChange={this.handleInputChange}
                                     />
@@ -77,9 +86,9 @@ class CreateModel extends React.Component {
                                         <label>Public</label>
                                         <Checkbox
                                             toggle
-                                            checked={this.state.data.public}
+                                            checked={this.state.isPublic}
                                             onChange={this.handleInputChange}
-                                            name={'public'}
+                                            name={'isPublic'}
                                             width={2}
                                         />
                                     </Form.Field>
@@ -90,7 +99,7 @@ class CreateModel extends React.Component {
                                         name="description"
                                         onChange={this.handleInputChange}
                                         placeholder="Description"
-                                        value={this.state.data.description}
+                                        value={this.state.description}
                                         width={16}
                                     />
                                 </Form.Group>
@@ -101,15 +110,15 @@ class CreateModel extends React.Component {
                                 <Form.Group>
                                     <Form.Input
                                         label='Rows'
-                                        name={'n_y'}
-                                        value={this.state.data.grid_size.n_y}
+                                        name={'nY'}
+                                        value={(GridSize.fromObject(this.state.gridSize)).nY}
                                         width={8}
                                         onChange={this.handleGridSizeChange}
                                     />
                                     <Form.Input
                                         label='Columns'
-                                        name={'n_x'}
-                                        value={this.state.data.grid_size.n_x}
+                                        name={'nX'}
+                                        value={GridSize.fromObject(this.state.gridSize).nX}
                                         width={8}
                                         onChange={this.handleGridSizeChange}
                                     />
@@ -117,13 +126,13 @@ class CreateModel extends React.Component {
                                 <Form.Group>
                                     <Form.Input
                                         label='Length unit'
-                                        value={this.state.data.length_unit}
+                                        value={this.state.lengthUnit}
                                         width={8}
                                         disabled={true}
                                     />
                                     <Form.Input
                                         label='Time unit'
-                                        value={this.state.data.time_unit}
+                                        value={this.state.timeUnit}
                                         width={8}
                                         disabled={true}
                                     />
@@ -134,11 +143,8 @@ class CreateModel extends React.Component {
                     <Grid.Row>
                         <Grid.Column width={16}>
                             <CreateModelMap
-                                activeCells={this.state.data.active_cells}
-                                boundingBox={this.state.data.bounding_box}
-                                geometry={this.state.data.geometry}
-                                gridSize={this.state.data.grid_size}
-                                styles={this.state.data.styles}
+                                gridSize={GridSize.fromObject(this.state.gridSize)}
+                                styles={this.state.styles}
                                 onChange={this.handleMapInputChange}
                             />
                         </Grid.Column>
@@ -150,7 +156,7 @@ class CreateModel extends React.Component {
                                 onClick={this.handleSave}
                                 disabled={!this.validate()[0]}
                             >
-                                Save
+                                Create
                             </Button>
                         </Grid.Column>
                     </Grid.Row>
@@ -161,7 +167,13 @@ class CreateModel extends React.Component {
 }
 
 CreateModel.proptypes = {
-    data: PropTypes.object.isRequired,
+    id: PropTypes.string.isRequired,
+    name: PropTypes.string.isRequired,
+    description: PropTypes.string.isRequired,
+    gridSize: PropTypes.instanceOf(GridSize).isRequired,
+    lengthUnit: PropTypes.number.isRequired,
+    timeUnit: PropTypes.number.isRequired,
+    isPublic: PropTypes.bool.isRequired,
     history: PropTypes.object.isRequired
 };
 

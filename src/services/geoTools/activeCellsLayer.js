@@ -1,7 +1,10 @@
-import {Polyline, FeatureGroup} from 'react-leaflet';
 import React from 'react';
+import PropTypes from 'prop-types';
+import {Polyline, FeatureGroup} from 'react-leaflet';
 import {pure} from 'recompose';
-import {getMinMaxFromBoundingBox} from "./index";
+import BoundingBox from 'core/model/modflow/BoundingBox';
+import GridSize from 'core/model/modflow/GridSize';
+import ActiveCells from 'core/model/modflow/ActiveCells';
 
 const styles = {
     line: {
@@ -20,22 +23,20 @@ const renderGridCell = (key, xMin, xMax, yMin, yMax) => {
     ]} {...styles.line}/>);
 };
 
-const calculateActiveCells = (boundingBox, gridSize, activeCells) => {
-    const {xMin, xMax, yMin, yMax} = getMinMaxFromBoundingBox(boundingBox);
+const calculateGridCells = (boundingBox, gridSize, activeCells) => {
 
-    const dX = (xMax - xMin) / gridSize.n_x;
-    const dY = (yMax - yMin) / gridSize.n_y;
-
+    const dX = boundingBox.dX / gridSize.nX;
+    const dY = boundingBox.dY / gridSize.nY;
     const gridCells = [];
 
-    activeCells.forEach(a => {
+    activeCells.cells.forEach(a => {
         const x = a[0];
         const y = a[1];
 
-        const cXmin = xMin + x * dX;
-        const cXmax = xMin + (x + 1) * dX;
-        const cYmin = yMax - y * dY;
-        const cYmax = yMax - (y + 1) * dY;
+        const cXmin = boundingBox.xMin + x * dX;
+        const cXmax = boundingBox.xMin + (x + 1) * dX;
+        const cYmin = boundingBox.yMax - y * dY;
+        const cYmax = boundingBox.yMax - (y + 1) * dY;
 
         gridCells.push([cXmin, cXmax, cYmin, cYmax]);
     });
@@ -48,13 +49,19 @@ const ActiveCellsLayer = ({boundingBox, gridSize, activeCells}) => {
         return null;
     }
 
-    const gridCells = calculateActiveCells(boundingBox, gridSize, activeCells);
+    const gridCells = calculateGridCells(boundingBox, gridSize, activeCells);
 
     return (
         <FeatureGroup>
             {gridCells.map((c, k) => renderGridCell(k, c[0], c[1], c[2], c[3]))};
         </FeatureGroup>
     );
+};
+
+ActiveCellsLayer.propTypes = {
+    boundingBox: PropTypes.instanceOf(BoundingBox),
+    gridSize: PropTypes.instanceOf(GridSize),
+    activeCells: PropTypes.instanceOf(ActiveCells)
 };
 
 export default pure(ActiveCellsLayer);

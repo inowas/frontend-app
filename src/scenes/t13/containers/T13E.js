@@ -72,7 +72,7 @@ class T13E extends React.Component {
                     ...prevState.tool,
                     data: {
                         ...prevState.tool.data,
-                        parameters: parameters.map(p => p.toObject)
+                        parameters: parameters.map(p => p.toArray)
                     }
                 }
             };

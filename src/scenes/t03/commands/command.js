@@ -2,11 +2,16 @@ import Ajv from 'ajv';
 import uuid from 'uuid';
 
 import ajv0 from "ajv/lib/refs/json-schema-draft-04.json";
+import createModflowModelPayloadSchema from './createModflowModelPayloadSchema';
 
 class Command {
 
     metadata = [];
     uuid = uuid();
+
+    static createModflowModel(payload) {
+        return new Command("createModflowModel", payload, createModflowModelPayloadSchema);
+    }
 
     constructor(name, payload, schema) {
         this.message_name = name;
@@ -23,7 +28,7 @@ class Command {
     }
 
     validate() {
-        const ajv = new Ajv({schemaId: 'id'});
+        const ajv = new Ajv({schemaId: 'auto'});
         ajv.addMetaSchema(ajv0);
         const val = ajv.compile(this.schema);
         return [val(this.payload), val.errors];

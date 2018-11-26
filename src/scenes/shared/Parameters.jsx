@@ -10,13 +10,13 @@ class Parameters extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            parameters: props.parameters.map(p => p.toObject)
+            parameters: props.parameters.map(p => p.toArray)
         };
     }
 
     componentWillReceiveProps(nextProps) {
         this.setState({
-            parameters: nextProps.parameters.map(p => p.toObject)
+            parameters: nextProps.parameters.map(p => p.toArray)
         });
     }
 

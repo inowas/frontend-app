@@ -25,7 +25,7 @@ class T03 extends React.Component {
         const {id, property} = this.props.match.params;
         if (!id) {
             return (
-                <Content.CreateModel data={createModelDefaults} history={this.props.history}/>
+                <Content.CreateModel {...createModelDefaults} history={this.props.history}/>
             )
         }
 
