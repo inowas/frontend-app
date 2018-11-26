@@ -3,8 +3,8 @@ import PropTypes from 'prop-types';
 import {sendCommand} from 'services/api';
 import {Button, Checkbox, Form, Grid, Segment} from 'semantic-ui-react';
 import {CreateModelMap} from '../maps';
-import GridSize from 'core/model/modflow/GridSize';
-import Command from "../../commands/command";
+import {GridSize} from 'core/model/modflow';
+import Command from '../../commands/command';
 
 class CreateModel extends React.Component {
     constructor(props) {
