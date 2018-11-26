@@ -6,7 +6,6 @@ import {Grid, Icon} from 'semantic-ui-react';
 import ToolNavigation from '../../shared/complexTools/toolNavigation';
 import menuItems from '../defaults/menuItems';
 import * as Content from '../components/content/index';
-import {connect} from 'react-redux';
 import {includes} from 'lodash';
 
 const navigation = [{
@@ -64,10 +63,6 @@ class T03 extends React.Component {
     }
 }
 
-const mapStateToProps = state => ({
-    general: state.T03.general
-});
-
 T03.proptypes = {
     general: PropTypes.object.isRequired,
     history: PropTypes.object.isRequired,
@@ -75,5 +70,4 @@ T03.proptypes = {
     match: PropTypes.object.isRequired,
 };
 
-export default connect(mapStateToProps)(withRouter(T03));
-
+export default withRouter(T03);
