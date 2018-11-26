@@ -5,20 +5,21 @@ import {Button, Checkbox, Form, Grid, Segment} from 'semantic-ui-react';
 import {CreateModelMap} from '../maps';
 import {GridSize} from 'core/model/modflow';
 import Command from '../../commands/command';
+import defaults from '../../defaults/createModel';
 
 class CreateModel extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            id: this.props.id,
-            name: this.props.name,
-            description: this.props.description,
+            id: defaults.id,
+            name: defaults.name,
+            description: defaults.description,
             geometry: null,
             boundingBox: null,
-            gridSize: this.props.gridSize.toObject(),
-            lengthUnit: this.props.lengthUnit,
-            timeUnit: this.props.timeUnit,
-            isPublic: this.props.isPublic,
+            gridSize: defaults.gridSize.toObject(),
+            lengthUnit: defaults.lengthUnit,
+            timeUnit: defaults.timeUnit,
+            isPublic: defaults.isPublic,
             error: false,
             loading: false
         }
@@ -167,13 +168,6 @@ class CreateModel extends React.Component {
 }
 
 CreateModel.proptypes = {
-    id: PropTypes.string.isRequired,
-    name: PropTypes.string.isRequired,
-    description: PropTypes.string.isRequired,
-    gridSize: PropTypes.instanceOf(GridSize).isRequired,
-    lengthUnit: PropTypes.number.isRequired,
-    timeUnit: PropTypes.number.isRequired,
-    isPublic: PropTypes.bool.isRequired,
     history: PropTypes.object.isRequired
 };
 

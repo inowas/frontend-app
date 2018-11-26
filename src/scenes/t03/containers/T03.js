@@ -8,7 +8,6 @@ import menuItems from '../defaults/menuItems';
 import * as Content from '../components/content/index';
 import {connect} from 'react-redux';
 import {includes} from 'lodash';
-import createModelDefaults from '../defaults/createModel';
 
 const navigation = [{
     name: 'Documentation',
@@ -25,7 +24,7 @@ class T03 extends React.Component {
         const {id, property} = this.props.match.params;
         if (!id) {
             return (
-                <Content.CreateModel {...createModelDefaults} history={this.props.history}/>
+                <Content.CreateModel history={this.props.history}/>
             )
         }
 
