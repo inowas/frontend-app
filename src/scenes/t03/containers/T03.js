@@ -6,7 +6,6 @@ import {Grid, Icon} from 'semantic-ui-react';
 import ToolNavigation from '../../shared/complexTools/toolNavigation';
 import menuItems from '../defaults/menuItems';
 import * as Content from '../components/content/index';
-import {includes} from 'lodash';
 
 const navigation = [{
     name: 'Documentation',
@@ -17,9 +16,6 @@ const navigation = [{
 class T03 extends React.Component {
 
     renderContent() {
-        const {general} = this.props;
-        const readOnly = !includes(general.permissions, 'w');
-
         const {id, property} = this.props.match.params;
         if (!id) {
             return (
@@ -43,7 +39,7 @@ class T03 extends React.Component {
             case 'optimization':
                 return (<Content.Optimization params={this.props.match.params}/>);
             default:
-                return (<Content.General data={general} readOnly={readOnly}/>);
+                return (<Content.General />);
         }
     }
 
@@ -64,7 +60,6 @@ class T03 extends React.Component {
 }
 
 T03.proptypes = {
-    general: PropTypes.object.isRequired,
     history: PropTypes.object.isRequired,
     location: PropTypes.object.isRequired,
     match: PropTypes.object.isRequired,

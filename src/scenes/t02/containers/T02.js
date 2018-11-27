@@ -25,8 +25,8 @@ const navigation = [{
 }];
 
 class T02 extends React.Component {
-    constructor() {
-        super();
+    constructor(props) {
+        super(props);
         this.state = {
             tool: defaultsT02(),
             isLoading: false,

@@ -3,6 +3,7 @@ import uuid from 'uuid';
 
 import ajv0 from "ajv/lib/refs/json-schema-draft-04.json";
 import createModflowModelPayloadSchema from './createModflowModelPayloadSchema';
+import updateModflowModelPayloadSchema from './updateModflowModelPayloadSchema';
 
 class Command {
 
@@ -11,6 +12,10 @@ class Command {
 
     static createModflowModel(payload) {
         return new Command("createModflowModel", payload, createModflowModelPayloadSchema);
+    }
+
+    static updateModflowModel(payload) {
+        return new Command("updateModflowModel", payload, updateModflowModelPayloadSchema);
     }
 
     constructor(name, payload, schema) {
