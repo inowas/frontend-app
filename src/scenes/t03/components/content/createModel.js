@@ -21,7 +21,8 @@ class CreateModel extends React.Component {
             timeUnit: defaults.timeUnit,
             isPublic: defaults.isPublic,
             error: false,
-            loading: false
+            loading: false,
+            gridSizeLocal: defaults.gridSize.toObject(),
         }
     }
 
@@ -29,10 +30,10 @@ class CreateModel extends React.Component {
         id: this.state.id,
         name: this.state.name,
         description: this.state.description,
-        geometry: this.state.geometry && this.state.geometry,
-        bounding_box: this.state.boundingBox && this.state.boundingBox,
+        geometry: this.state.geometry,
+        bounding_box: this.state.boundingBox,
         grid_size: this.state.gridSize,
-        active_cells: this.state.activeCells && this.state.activeCells,
+        active_cells: this.state.activeCells,
         length_unit: this.state.lengthUnit,
         time_unit: this.state.timeUnit,
         public: this.state.isPublic
@@ -50,10 +51,19 @@ class CreateModel extends React.Component {
         });
     };
 
-    handleGridSizeChange = (e, {value, name}) => {
-        const gridSize = GridSize.fromObject(this.state.gridSize);
-        gridSize[name] = value;
-        this.setState({gridSize: gridSize.toObject()});
+    handleGridSizeChange = (e) => {
+        const {type, target} = e;
+        const {name, value} = target;
+
+        if (type === 'change') {
+            const gridSize = GridSize.fromObject(this.state.gridSizeLocal);
+            gridSize[name] = value;
+            this.setState({gridSizeLocal: gridSize.toObject()});
+        }
+
+        if (type === 'blur') {
+            this.setState({gridSize: this.state.gridSizeLocal});
+        }
     };
 
     handleMapInputChange = ({activeCells, boundingBox, geometry}) => {
@@ -110,32 +120,38 @@ class CreateModel extends React.Component {
                             <Form color={'grey'}>
                                 <Form.Group>
                                     <Form.Input
+                                        type='number'
                                         label='Rows'
                                         name={'nY'}
-                                        value={(GridSize.fromObject(this.state.gridSize)).nY}
+                                        value={(GridSize.fromObject(this.state.gridSizeLocal)).nY}
                                         width={8}
                                         onChange={this.handleGridSizeChange}
+                                        onBlur={this.handleGridSizeChange}
                                     />
                                     <Form.Input
+                                        type='number'
                                         label='Columns'
                                         name={'nX'}
-                                        value={GridSize.fromObject(this.state.gridSize).nX}
+                                        value={GridSize.fromObject(this.state.gridSizeLocal).nX}
                                         width={8}
                                         onChange={this.handleGridSizeChange}
+                                        onBlur={this.handleGridSizeChange}
                                     />
                                 </Form.Group>
                                 <Form.Group>
-                                    <Form.Input
+                                    <Form.Select
                                         label='Length unit'
+                                        style={{zIndex: 10000}}
                                         value={this.state.lengthUnit}
+                                        options={[{key: 2, text: 'meters', value: 2}]}
                                         width={8}
-                                        disabled={true}
                                     />
-                                    <Form.Input
+                                    <Form.Select
                                         label='Time unit'
+                                        style={{zIndex: 10000}}
                                         value={this.state.timeUnit}
+                                        options={[{key: 4, text: 'days', value: 4}]}
                                         width={8}
-                                        disabled={true}
                                     />
                                 </Form.Group>
                             </Form>

@@ -35,7 +35,6 @@ class ActiveCells {
             floor(gridSize.nY - (y - boundingBox.yMin) / dy)
         ];
 
-        console.log(x, y, boundingBox, gridSize, clickedCell);
         const cells = [];
         let removed = false;
         this._cells.forEach(ac => {

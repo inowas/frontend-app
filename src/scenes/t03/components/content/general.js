@@ -12,7 +12,7 @@ class General extends React.Component {
             name: '',
             description: '',
             isPublic: '',
-            loading: true,
+            isLoading: true,
             dirty: false,
             error: false
         }

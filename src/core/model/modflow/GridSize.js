@@ -27,11 +27,11 @@ class GridSize {
     }
 
     set nX(value) {
-        this._nX = value;
+        this._nX = parseInt(value) || 0;
     }
 
     set nY(value) {
-        this._nY = value;
+        this._nY = parseInt(value) || 0;
     }
 
     toObject = () => ({

@@ -35,46 +35,39 @@ class CreateModelMap extends React.Component {
         }
     }
 
+    componentWillReceiveProps(nextProps) {
+        const {gridSize} = nextProps;
+        if (!nextProps.gridSize.sameAs(GridSize.fromObject(this.state.gridSize))) {
+            this.setState(() => ({gridSize: gridSize.toObject()}), () => this.recalculate());
+        }
+    }
+
     calculate = (geometry, boundingBox, gridSize) => {
         return new Promise(resolve => {
             const activeCells = calculateActiveCells(geometry, boundingBox, gridSize);
             resolve(activeCells);
+            this.forceUpdate();
         })
     };
 
     recalculate = () => {
-        const {boundingBox, geometry, gridSize} = this.state;
-        if (!geometry) {
+        if (!this.state.geometry) {
             return null;
         }
 
-        this.setState({calculating: true});
-        this.calculate(
-            Geometry.fromObject(this.state.geometry),
-            BoundingBox.fromObject(this.state.boundingBox),
-            gridSize.fromObject(this.state.gridSize),
-        ).then(activeCells => this.setState(
-            {
-                activeCells: activeCells.toArray(),
-                gridSize: gridSize.toObject(),
-                calculating: false
-            },
-            this.handleChange({
-                activeCells,
-                boundingBox,
-                geometry
-            })
-        ));
-    };
+        const boundingBox = BoundingBox.fromArray(this.state.boundingBox);
+        const geometry = Geometry.fromObject(this.state.geometry);
+        const gridSize = GridSize.fromObject(this.state.gridSize);
 
-    componentWillReceiveProps(nextProps) {
-        const {gridSize} = nextProps;
-        if (!nextProps.gridSize.sameAs(GridSize.fromObject(this.state.gridSize))) {
-            return this.setState({
-                gridSize: gridSize.toObject()
-            }, this.recalculate());
-        }
-    }
+        this.setState({calculating: true});
+        this.calculate(geometry, boundingBox, gridSize)
+            .then(activeCells => this.setState({
+                    activeCells: activeCells.toArray(),
+                    gridSize: gridSize.toObject(),
+                    calculating: false
+                }, this.handleChange({activeCells, boundingBox, geometry})
+            ));
+    };
 
     handleChange = ({activeCells, boundingBox, geometry}) => {
         return this.props.onChange({activeCells, boundingBox, geometry});
