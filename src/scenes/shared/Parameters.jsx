@@ -10,22 +10,22 @@ class Parameters extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            parameters: props.parameters.map(p => p.toArray)
+            parameters: props.parameters.map(p => p.toObject)
         };
     }
 
     componentWillReceiveProps(nextProps) {
         this.setState({
-            parameters: nextProps.parameters.map(p => p.toArray)
+            parameters: nextProps.parameters.map(p => p.toObject)
         });
     }
 
     handleChange = (parameter) => this.props.handleChange(
         this.props.parameters.map(p => {
             if (p.id === parameter.id) {
-                return SliderParameter.fromObject(parameter);
+                return parameter;
             }
-            return SliderParameter.fromObject(p);
+            return p;
         })
     );
 

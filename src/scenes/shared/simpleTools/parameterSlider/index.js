@@ -38,14 +38,14 @@ class ParameterSlider extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            param: props.param.toArray
+            param: props.param.toObject
         };
     }
 
     componentWillReceiveProps(nextProps) {
         this.setState({
             ...this.state,
-            param: nextProps.param.toArray
+            param: nextProps.param.toObject
         });
     }
 
@@ -54,7 +54,7 @@ class ParameterSlider extends React.Component {
         const param = SliderParameter.fromObject(this.state.param);
         param[name] = value;
         this.setState({
-            param: param.toArray
+            param: param.toObject
         });
     };
 
@@ -63,7 +63,7 @@ class ParameterSlider extends React.Component {
         param.value = value;
 
         return this.setState({
-            param: param
+            param: param.toObject
         });
     };
 

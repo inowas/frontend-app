@@ -72,7 +72,7 @@ class T13A extends React.Component {
                     ...prevState.tool,
                     data: {
                         ...prevState.tool.data,
-                        parameters: parameters.map(p => p.toArray)
+                        parameters: parameters.map(p => p.toObject)
                     }
                 }
             };
