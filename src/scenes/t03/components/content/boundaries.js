@@ -2,8 +2,16 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import {withRouter} from 'react-router-dom';
 import {fetchUrl} from 'services/api';
-import {Grid, List, Segment} from 'semantic-ui-react';
+import {Accordion, Grid, List, Menu, Segment} from 'semantic-ui-react';
 
+const baseUrl = '/tools/T03';
+const boundaryTypes = [
+    {name: 'Constant Head', type: 'chd'},
+    {name: 'General Head', type: 'ghb'},
+    {name: 'River Boundaries', type: 'riv'},
+    {name: 'Recharge Boundaries', type: 'rch'},
+    {name: 'Wells', type: 'wel'},
+];
 
 class Boundaries extends React.Component {
     constructor(props) {
@@ -52,26 +60,72 @@ class Boundaries extends React.Component {
         );
     }
 
-    render() {
-        if (this.state.isLoading) {
-            return (
-                <Segment color={'grey'} loading/>
-            )
+    handleClickType = (e, titleProps) => {
+        const {index} = titleProps;
+        const {id, property} = this.props.match.params;
+        this.props.history.push(`${baseUrl}/${id}/${property}/${index}`);
+    };
+
+    handleClickBoundary = (bid) => {
+        const {id, property, type} = this.props.match.params;
+        this.props.history.push(`${baseUrl}/${id}/${property}/${type || '!'}/${bid}`);
+    };
+
+    boundaryList = (type) => {
+        const {pid} = this.props.match.params;
+        let selectedBoundaries = [];
+
+        if (!type) {
+            selectedBoundaries = this.state.boundaries;
         }
 
-        const boundaryList = this.state.boundaries.map(b => (
-            <List.Item key={b.id}>{b.name}</List.Item>
+        if (['chd', 'ghb', 'rch', 'riv', 'wel'].indexOf(type) > -1) {
+            selectedBoundaries = this.state.boundaries.filter(b => b.type === type)
+        }
+
+        return selectedBoundaries.map(b => (
+            <List.Item
+                key={b.id}
+                onClick={() => this.handleClickBoundary(b.id)}
+                active={pid === b.id}
+            >
+                {b.name}
+            </List.Item>
         ));
+    };
+
+    menu = (type) => {
+        return (
+            <Accordion as={Menu} vertical style={{width: '100%'}}>
+                {boundaryTypes.map(b => (
+                    <Menu.Item key={b.type}>
+                        <Accordion.Title
+                            active={type === b.type}
+                            content={b.name}
+                            index={b.type}
+                            onClick={this.handleClickType}
+                        />
+                        <Accordion.Content active={type === b.type} content={this.boundaryList(b.type)}/>
+                    </Menu.Item>
+                ))}
+            </Accordion>
+        )
+    };
+
+    render() {
+        if (this.state.isLoading) {
+            return (<Segment color={'grey'} loading/>)
+        }
 
         return (
             <Segment color={'grey'} loading={this.state.isLoading}>
-                <Grid padded>
+                <Grid>
                     <Grid.Row>
-                        <Grid.Column width={6}>
-                            <List link>{boundaryList}</List>
+                        <Grid.Column width={4}>
+                            {this.menu(this.props.match.params.type)}
                         </Grid.Column>
-                        <Grid.Column width={10}>
-                            DETAILS
+                        <Grid.Column width={12}>
+                            BoundaryList or BoundaryDetails
                         </Grid.Column>
                     </Grid.Row>
                 </Grid>
