@@ -9,9 +9,15 @@ class General extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            name: '',
-            description: '',
-            isPublic: '',
+            id: null,
+            name: null,
+            activeCells: null,
+            boundingBox: null,
+            description: null,
+            geometry: null,
+            gridSize: null,
+            isPublic: null,
+            permissions: null,
             isLoading: true,
             dirty: false,
             error: false

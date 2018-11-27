@@ -25,21 +25,21 @@ class T03 extends React.Component {
 
         switch (property) {
             case 'discretization':
-                return (<Content.Discretization params={this.props.match.params}/>);
+                return (<Content.Discretization/>);
             case 'soilmodel':
-                return (<Content.Soilmodel params={this.props.match.params}/>);
+                return (<Content.Soilmodel/>);
             case 'boundaries':
-                return (<Content.Boundaries params={this.props.match.params}/>);
+                return (<Content.Boundaries/>);
             case 'observations':
-                return (<Content.Observations params={this.props.match.params}/>);
+                return (<Content.Observations/>);
             case 'run':
-                return (<Content.Run params={this.props.match.params}/>);
+                return (<Content.Run/>);
             case 'results':
-                return (<Content.Results params={this.props.match.params}/>);
+                return (<Content.Results/>);
             case 'optimization':
-                return (<Content.Optimization params={this.props.match.params}/>);
+                return (<Content.Optimization/>);
             default:
-                return (<Content.General />);
+                return (<Content.General/>);
         }
     }
 
