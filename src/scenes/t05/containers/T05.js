@@ -3,12 +3,13 @@ import React from 'react';
 import {withRouter} from 'react-router-dom';
 
 import AppContainer from "../../shared/AppContainer";
-import {Grid, Icon, Menu} from "semantic-ui-react";
+import {Grid, Icon, Menu, Popup} from "semantic-ui-react";
 import uuidv4 from "uuid";
 import {includes} from "lodash";
 
 import MCDA from "../components/MCDA";
 import CriteriaEditor from "../components/criteriaEditor";
+import Ranking from "../components/weightAssignment/ranking";
 
 const navigation = [{
     name: 'Documentation',
@@ -60,13 +61,14 @@ class T05 extends React.Component {
                 }
             },
             mcda: (new MCDA()).toObject,
-            isLoading: false
+            isLoading: false,
+            selectedTool: 'criteria'
         };
     }
 
-    handleClickNavigation = (e, {name}) => {
-        console.log(name);
-    };
+    handleClickNavigation = (e, {name}) => this.setState({
+        selectedTool: name
+    });
 
     save = ({name, value}) => {
         this.setState({
@@ -82,7 +84,7 @@ class T05 extends React.Component {
     };
 
     render() {
-        const {tool, isLoading} = this.state;
+        const {mcda, tool, isLoading, selectedTool} = this.state;
         if (isLoading) {
             return (
                 <AppContainer navBarItems={navigation} loader/>
@@ -92,29 +94,77 @@ class T05 extends React.Component {
         const {data, permissions} = tool;
         const readOnly = !includes(permissions, 'w');
 
+        let component;
+
+        switch (selectedTool) {
+            case 'criteria':
+                component = <CriteriaEditor readOnly={readOnly} mcda={MCDA.fromObject(this.state.mcda)}
+                                            handleChange={this.save}/>;
+                break;
+            case 'wa':
+                component = <Ranking readOnly={readOnly} mcda={MCDA.fromObject(this.state.mcda)}/>;
+                break;
+            default:
+                component = <div/>;
+                break;
+        }
+
         return (
             <AppContainer navbarItems={navigation}>
                 <Grid>
                     <Grid.Column width={3}>
                         <Menu vertical style={styles.menu}>
                             <Menu.Item header>Navigation</Menu.Item>
-                            <Menu.Item name='criteria' onClick={this.handleClickNavigation}><Icon name='check circle'
-                                                                                                  color='green'/> Criteria</Menu.Item>
-                            <Menu.Item name='wa' onClick={this.handleClickNavigation}>Weight Assignment</Menu.Item>
-                            <Menu.Item active>
-                                Raster Editor
+                            <Menu.Item
+                                active={selectedTool === 'criteria'}
+                                name='criteria'
+                                onClick={this.handleClickNavigation}>
+                                {mcda.criteria.length > 0 &&
+                                <Icon name='check circle' color='green'/>
+                                }
+                                Criteria
+                            </Menu.Item>
+                            <Menu.Item
+                                active={selectedTool === 'wa'}
+                                disabled={mcda.criteria.length < 2}
+                                name='wa'
+                                onClick={this.handleClickNavigation}>
+                                {mcda.criteria.length < 2 &&
+                                <Popup
+                                    trigger={<Icon name='exclamation circle'/>}
+                                    content='At least two criteria are needed for weight assignment.'
+                                />
+                                }
+                                Weight Assignment
+                                {selectedTool === 'wa' &&
                                 <Menu.Menu>
-                                    <Menu.Item active>Files</Menu.Item>
-                                    <Menu.Item>GIS</Menu.Item>
-                                    <Menu.Item>Zones</Menu.Item>
+                                    <Menu.Item>
+                                        Method 1: Ranking
+                                    </Menu.Item>
+                                    <Menu.Item>
+                                        Method 2: Multi-influence
+                                    </Menu.Item>
+                                    <Menu.Item>
+                                        Method 3: Pairwise
+                                    </Menu.Item>
+                                    <Menu.Item>
+                                        Method 4: Analytical hierarchy
+                                    </Menu.Item>
+                                    <Menu.Item>
+                                        Results
+                                    </Menu.Item>
                                 </Menu.Menu>
+                                }
+                            </Menu.Item>
+                            <Menu.Item>
+                                Raster Editor
                             </Menu.Item>
                             <Menu.Item disabled><Icon name='exclamation circle'/> Suitability</Menu.Item>
                             <Menu.Item disabled><Icon name='exclamation circle'/> Results</Menu.Item>
                         </Menu>
                     </Grid.Column>
                     <Grid.Column width={13}>
-                        <CriteriaEditor mcda={MCDA.fromObject(this.state.mcda)} handleChange={this.save}/>
+                        {component}
                     </Grid.Column>
                 </Grid>
             </AppContainer>

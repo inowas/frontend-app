@@ -7,6 +7,7 @@ class Weight {
     _id = uuidv4();
     _type = 'ranking';
     _relations = [];
+    _rank = 0;
     _value = 0;
 
     static fromObject(obj) {
@@ -14,6 +15,7 @@ class Weight {
         weight.id = obj.id;
         weight.type = obj.type;
         weight.relations = obj.relations.map(r => CriteriaRelation.fromObject(r));
+        weight.rank = obj.rank;
         weight.value = obj.value;
         return weight;
     }
@@ -45,6 +47,14 @@ class Weight {
         this._relations = value ? value : [];
     }
 
+    get rank() {
+        return this._rank;
+    }
+
+    set rank(value) {
+        this._rank = value ? value : 0;
+    }
+
     get value() {
         return this._value;
     }
@@ -58,6 +68,7 @@ class Weight {
             id: this.id,
             type: this.type,
             relations: this.relations.map(r => r.toObject),
+            rank: this.rank,
             value: this.value
         });
     }

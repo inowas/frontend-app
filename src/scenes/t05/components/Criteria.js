@@ -8,7 +8,6 @@ class Criteria {
     _name = 'New Criteria';
     _type = 'discrete';
     _data = null;
-    _rank = 0;
     _weights = [];
 
     static fromObject(obj) {
@@ -17,7 +16,6 @@ class Criteria {
         criteria.name = obj.name;
         criteria.type = obj.type;
         criteria.data = obj.data;
-        criteria.rank = obj.rank;
         criteria.weights = obj.weights.map(w => Weight.fromObject(w));
         return criteria;
     }
@@ -57,14 +55,6 @@ class Criteria {
         this._data = value ? value : null;
     }
 
-    get rank() {
-        return this._rank;
-    }
-
-    set rank(value) {
-        this._rank = value ? parseInt(value, 10) : 0;
-    }
-
     get weights() {
         return this._weights;
     }
@@ -79,7 +69,6 @@ class Criteria {
             name: this.name,
             type: this.type,
             data: this.data,
-            rank: this.rank,
             weights: this.weights.map(w => w.toObject)
         });
     }

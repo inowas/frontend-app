@@ -49,6 +49,8 @@ class CriteriaEditor extends React.Component {
     onClickRemoveCriteria = id => this.handleChange(this.state.criteria.filter(c => c.id !== id));
 
     render() {
+        const {readOnly} = this.props;
+
         return (
             <Segment>
                 <Header as='h3'>Criteria Editor</Header>
@@ -76,6 +78,7 @@ class CriteriaEditor extends React.Component {
                                 <Table.Cell>
                                     <Input
                                         name='name'
+                                        disabled={readOnly}
                                         value={c.name}
                                         onBlur={this.onBlur}
                                         onChange={this.handleLocalChange(c.id)}
@@ -84,6 +87,7 @@ class CriteriaEditor extends React.Component {
                                 <Table.Cell>
                                     <Select
                                         name='type'
+                                        disabled={readOnly}
                                         value={c.type}
                                         onChange={this.handleSelectChange(c.id)}
                                         options={[
@@ -93,23 +97,27 @@ class CriteriaEditor extends React.Component {
                                     />
                                 </Table.Cell>
                                 <Table.Cell>
-                                    <Button
-                                        negative
-                                        icon='trash'
-                                        onClick={() => this.onClickRemoveCriteria(c.id)}
-                                    />
+                                    {!readOnly &&
+                                        <Button
+                                            negative
+                                            icon='trash'
+                                            onClick={() => this.onClickRemoveCriteria(c.id)}
+                                        />
+                                    }
                                 </Table.Cell>
                             </Table.Row>
                         )}
                     </Table.Body>
                 </Table>
                 }
-                <Button
-                    fluid
-                    onClick={this.onClickAddCriteria}
-                >
-                    Add new criteria
-                </Button>
+                {!readOnly &&
+                    <Button
+                        fluid
+                        onClick={this.onClickAddCriteria}
+                    >
+                        Add new criteria
+                    </Button>
+                }
             </Segment>
         );
     }
@@ -119,6 +127,7 @@ class CriteriaEditor extends React.Component {
 CriteriaEditor.propTypes = {
     mcda: PropTypes.object.isRequired,
     handleChange: PropTypes.func.isRequired,
+    readOnly: PropTypes.bool,
     routeTo: PropTypes.func
 };
 

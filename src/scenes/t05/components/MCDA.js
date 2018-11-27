@@ -57,6 +57,10 @@ class MCDA {
         });
     }
 
+    addWeightAssignment() {
+
+    }
+
     calculateRanking() {
         const ranking = this.criteria.map(c => {
             const weight = c.weights.filter(w => w.type === this.waMethod)[0];
