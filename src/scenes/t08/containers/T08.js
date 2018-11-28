@@ -79,7 +79,8 @@ class T08 extends React.Component {
                         ...prevState.tool.data,
                         parameters: parameters.map(p => p.toObject)
                     }
-                }
+                },
+                isDirty: true
             };
         });
     };
@@ -91,7 +92,8 @@ class T08 extends React.Component {
                 tool: {
                     ...prevState.tool,
                     data: {...prevState.tool.data, settings}
-                }
+                },
+                isDirty: true
             };
         });
     };
@@ -99,15 +101,13 @@ class T08 extends React.Component {
     handleReset = () => {
         this.setState(prevState => {
             return {
-                tool: {
-                    ...prevState.tool,
-                    data: defaults().data
-                },
+                tool: {...prevState.tool, data: defaults().data},
                 isLoading: false,
                 isDirty: true
             }
         });
     };
+
 
     update = (tool) => this.setState({tool});
 

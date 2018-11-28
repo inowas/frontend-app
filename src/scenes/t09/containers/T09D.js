@@ -12,20 +12,19 @@ import {fetchTool, sendCommand} from 'services/api';
 import {createToolInstanceCommand, updateToolInstanceCommand} from 'services/commandFactory';
 import AppContainer from '../../shared/AppContainer';
 import ToolMetaData from '../../shared/simpleTools/ToolMetaData';
-import ToolGrid from "../../shared/simpleTools/ToolGrid";
+import ToolGrid from '../../shared/simpleTools/ToolGrid';
 
 import {navigation} from './T09';
 import {includes} from 'lodash';
-import {buildPayload, deepMerge} from "../../shared/simpleTools/helpers";
-
+import {buildPayload, deepMerge} from '../../shared/simpleTools/helpers';
 
 class T09D extends React.Component {
-    constructor() {
-        super();
+    constructor(props) {
+        super(props);
         this.state = {
             tool: defaults(),
+            isDirty: true,
             isLoading: false,
-            isDirty: false,
             error: false
         };
     }
@@ -38,6 +37,7 @@ class T09D extends React.Component {
                 this.props.match.params.id,
                 tool => this.setState({
                     tool: deepMerge(this.state.tool, tool),
+                    isDirty: false,
                     isLoading: false
                 }),
                 error => this.setState({error, isLoading: false})
@@ -75,7 +75,8 @@ class T09D extends React.Component {
                         ...prevState.tool.data,
                         parameters: parameters.map(p => p.toObject)
                     }
-                }
+                },
+                isDirty: true
             };
         });
     };
@@ -87,36 +88,40 @@ class T09D extends React.Component {
                 tool: {
                     ...prevState.tool,
                     data: {...prevState.tool.data, settings}
-                }
+                },
+                isDirty: true
             };
         });
     };
 
     handleReset = () => {
-        this.setState({
-            tool: defaults(),
-            isLoading: false,
-            isDirty: false
+        this.setState(prevState => {
+            return {
+                tool: {...prevState.tool, data: defaults().data},
+                isLoading: false,
+                isDirty: true
+            }
         });
     };
 
     update = (tool) => this.setState({tool});
 
     render() {
-        const {tool, isLoading} = this.state;
-        if (isLoading) {
+        if (this.state.isLoading) {
             return (
                 <AppContainer navBarItems={navigation} loader/>
             );
         }
 
+        const {isDirty, tool} = this.state;
         const {data, permissions} = tool;
-        const {settings, parameters} = data;
+        const {parameters, settings} = data;
         const readOnly = !includes(permissions, 'w');
 
         return (
             <AppContainer navbarItems={navigation}>
-                <ToolMetaData tool={tool} readOnly={readOnly} onChange={this.update} onSave={this.save}/>
+                <ToolMetaData tool={tool} readOnly={readOnly} onChange={this.update} onSave={this.save}
+                              isDirty={isDirty}/>
                 <ToolGrid rows={2}>
                     <Background
                         image={image}

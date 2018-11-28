@@ -120,15 +120,13 @@ class T02 extends React.Component {
     handleReset = () => {
         this.setState(prevState => {
             return {
-                tool: {
-                    ...prevState.tool,
-                    data: defaults().data
-                },
+                tool: {...prevState.tool, data: defaults().data},
                 isLoading: false,
                 isDirty: true
             }
         });
     };
+
 
     update = (tool) => this.setState({tool});
 
