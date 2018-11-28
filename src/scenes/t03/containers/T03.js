@@ -15,12 +15,9 @@ const navigation = [{
 
 class T03 extends React.Component {
 
-    renderContent() {
-        const {id, property} = this.props.match.params;
+    static renderContent(id, property) {
         if (!id) {
-            return (
-                <Content.CreateModel history={this.props.history}/>
-            )
+            return (<Content.CreateModel/>)
         }
 
         switch (property) {
@@ -44,14 +41,16 @@ class T03 extends React.Component {
     }
 
     render() {
+        const {id, property} = this.props.match.params;
+
         return (
             <AppContainer navbarItems={navigation}>
                 <Grid padded>
                     <Grid.Column width={3}>
-                        <ToolNavigation navigationItems={menuItems}/>
+                        <ToolNavigation navigationItems={menuItems} style={id && {marginTop: 50}}/>
                     </Grid.Column>
                     <Grid.Column width={13}>
-                        {this.renderContent()}
+                        {T03.renderContent(id, property)}
                     </Grid.Column>
                 </Grid>
             </AppContainer>

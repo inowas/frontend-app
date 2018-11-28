@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import {withRouter} from 'react-router-dom';
-import {Menu} from 'semantic-ui-react';
+import {Menu, Segment} from 'semantic-ui-react';
 
 class ToolNavigation extends React.Component {
 
@@ -27,9 +27,11 @@ class ToolNavigation extends React.Component {
             />
         ));
         return (
-            <Menu vertical>
-                {menuItems}
-            </Menu>
+            <Segment color={'blue'} style={this.props.style}>
+                <Menu secondary vertical style={{width: '100%'}}>
+                    {menuItems}
+                </Menu>
+            </Segment>
         )
     }
 }

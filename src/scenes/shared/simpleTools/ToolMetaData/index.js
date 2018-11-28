@@ -41,25 +41,21 @@ class ToolMetaData extends React.Component {
             <Breadcrumb.Divider icon='right angle'/>
             <Breadcrumb.Section active>
                 {this.state.tool.name}
-                <Button basic size={'small'} icon='pencil' onClick={this.handleButtonClick} />
+                {!this.props.readOnly && <Button basic size={'small'} icon='pencil' onClick={this.handleButtonClick}/>}
             </Breadcrumb.Section>
         </Breadcrumb>
     );
 
     render() {
         const {readOnly} = this.props;
-        let {isDirty} = this.props;
-
-        if (isDirty !== false) {
-            isDirty = true;
-        }
-
+        const isDirty = this.props.isDirty === true;
         const {edit} = this.state;
         return (
             <div>
                 <Grid padded>
                     <Grid.Column style={{paddingTop: 0, paddingBottom: 0}}>
                         {this.renderBreadcrumbs()}
+                        {!this.props.readOnly &&
                         <Button
                             floated={'right'}
                             positive
@@ -68,6 +64,7 @@ class ToolMetaData extends React.Component {
                         >
                             Save
                         </Button>
+                        }
                     </Grid.Column>
                 </Grid>
 

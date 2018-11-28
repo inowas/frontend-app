@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import {withRouter} from 'react-router-dom';
 import {fetchUrl} from 'services/api';
 import {Accordion, Grid, List, Menu, Segment} from 'semantic-ui-react';
+import Stressperiods from "../../../../core/model/modflow/Stressperiods";
 
 const baseUrl = '/tools/T03';
 const boundaryTypes = [
@@ -48,6 +49,7 @@ class Boundaries extends React.Component {
                 timeUnit: model.time_unit,
                 isPublic: model.public,
                 permissions: model.permissions,
+                stressPeriods: model.stress_periods,
                 isLoading: false
             }),
             error => this.setState({error, isLoading: false})
@@ -117,9 +119,11 @@ class Boundaries extends React.Component {
             return (<Segment color={'grey'} loading/>)
         }
 
+        console.log(Stressperiods.fromObject(this.state.stressPeriods));
+
         return (
             <Segment color={'grey'} loading={this.state.isLoading}>
-                <Grid>
+                <Grid padded>
                     <Grid.Row>
                         <Grid.Column width={4}>
                             {this.menu(this.props.match.params.type)}

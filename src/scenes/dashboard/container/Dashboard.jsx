@@ -184,9 +184,7 @@ class Dashboard
                         </Button>
                     </Grid.Column>
                     <Grid.Column width={6}>
-                        <Search
-                            {...this.props}
-                        />
+                        <Search />
                     </Grid.Column>
                     <Grid.Column width={4} floated='right' textAlign='right'>
                         <Button.Group fluid size='tiny'>

@@ -4,6 +4,7 @@ import {withRouter} from 'react-router-dom';
 import {Button, Checkbox, Form, Grid, Segment} from 'semantic-ui-react';
 import {fetchUrl, sendCommand} from 'services/api';
 import Command from "../../commands/command";
+import ToolMetaData from "../../../shared/simpleTools/ToolMetaData";
 
 class General extends React.Component {
     constructor(props) {
@@ -74,50 +75,53 @@ class General extends React.Component {
 
     render() {
         return (
-            <Grid>
-                <Grid.Row>
-                    <Grid.Column width={16}>
-                        <Segment color={'grey'} loading={this.state.isLoading}>
-                            <Form color={'grey'}>
-                                <Form.Group>
-                                    <Form.Input
-                                        label='Name'
-                                        name={'name'}
-                                        value={this.state.name}
-                                        width={7}
-                                        onChange={this.handleInputChange}
-                                    />
-                                    <Form.TextArea
-                                        label="Description"
-                                        disabled={this.state.readOnly}
-                                        name="description"
-                                        onChange={this.handleInputChange}
-                                        placeholder="Description"
-                                        value={this.state.description}
-                                        width={8}
-                                    />
-                                    <Form.Field width={1}>
-                                        <label>Public</label>
-                                        <Checkbox
-                                            toggle
-                                            checked={this.state.isPublic}
+            <div>
+                <ToolMetaData onChange={() => 1 + 1} onSave={() => 1 + 1} readOnly={false} tool={{type: 'T03'}}/>
+                <Segment color={'grey'} loading={this.state.isLoading}>
+                    <Grid padded>
+                        <Grid.Row>
+                            <Grid.Column width={16}>
+                                <Form color={'grey'}>
+                                    <Form.Group>
+                                        <Form.Input
+                                            label={'Name'}
+                                            name={'name'}
+                                            value={this.state.name}
+                                            width={7}
                                             onChange={this.handleInputChange}
-                                            name={'isPublic'}
                                         />
-                                    </Form.Field>
-                                </Form.Group>
-                            </Form>
-                            <Button
-                                type='submit'
-                                onClick={this.handleSave}
-                                disabled={!this.state.dirty}
-                            >
-                                Save
-                            </Button>
-                        </Segment>
-                    </Grid.Column>
-                </Grid.Row>
-            </Grid>
+                                        <Form.TextArea
+                                            label={'Description'}
+                                            disabled={this.state.readOnly}
+                                            name={"description"}
+                                            onChange={this.handleInputChange}
+                                            placeholder={'Description'}
+                                            value={this.state.description}
+                                            width={8}
+                                        />
+                                        <Form.Field width={1}>
+                                            <label>Public</label>
+                                            <Checkbox
+                                                toggle
+                                                checked={this.state.isPublic}
+                                                onChange={this.handleInputChange}
+                                                name={'isPublic'}
+                                            />
+                                        </Form.Field>
+                                    </Form.Group>
+                                </Form>
+                                <Button
+                                    type='submit'
+                                    onClick={this.handleSave}
+                                    disabled={!this.state.dirty}
+                                >
+                                    Save
+                                </Button>
+                            </Grid.Column>
+                        </Grid.Row>
+                    </Grid>
+                </Segment>
+            </div>
         )
     }
 }
