@@ -3,7 +3,7 @@ import CreateModel from './createModel';
 import Discretization from './discretization';
 import General from './general';
 import Observations from './observations';
-import Optimization from './optimization';
+import OptimizationContainer from './optimization.js';
 import Results from './results';
 import Run from './run';
 import Soilmodel from './soilmodel';
@@ -14,7 +14,7 @@ export {
     Discretization,
     General,
     Observations,
-    Optimization,
+    OptimizationContainer,
     Results,
     Run,
     Soilmodel

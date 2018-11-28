@@ -37,9 +37,9 @@ class T03 extends React.Component {
             case 'results':
                 return (<Content.Results params={this.props.match.params}/>);
             case 'optimization':
-                return (<Content.Optimization params={this.props.match.params}/>);
+                return (<Content.OptimizationContainer/>);
             default:
-                return (<Content.General />);
+                return (<Content.General/>);
         }
     }
 
