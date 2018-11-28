@@ -375,6 +375,8 @@ class OptimizationContainer extends React.Component {
             return null;
         }
 
+        console.log(this.state.model);
+
         return (
             <Segment color={'grey'} loading={this.state.isLoading}>
                 <Grid>

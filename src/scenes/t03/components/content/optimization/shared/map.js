@@ -9,6 +9,7 @@ import {Button, Form, Grid, Header, Message, Modal, Segment} from 'semantic-ui-r
 import InputRange from "./inputRange";
 import InputObjectList from "./inputObjectList";
 import {EditControl} from "react-leaflet-draw";
+import {getActiveCellFromCoordinate} from "services/geoTools";
 
 class OptimizationMap extends React.Component {
 
@@ -154,8 +155,8 @@ class OptimizationMap extends React.Component {
                 }
             });
 
-            const cmin = geoTools.getActiveCellFromCoordinate([xmin, ymax], this.props.bbox, this.props.gridSize);
-            const cmax = geoTools.getActiveCellFromCoordinate([xmax, ymin], this.props.bbox, this.props.gridSize);
+            const cmin = getActiveCellFromCoordinate([xmin, ymax], this.props.bbox, this.props.gridSize);
+            const cmax = getActiveCellFromCoordinate([xmax, ymin], this.props.bbox, this.props.gridSize);
 
             const p = {
                 row: {

@@ -2,7 +2,7 @@ import React from 'react';
 import {Button, Message, Form, Grid, Icon, Table, Accordion} from 'semantic-ui-react';
 import PropTypes from 'prop-types';
 import OptimizationObject from "core/model/modflow/optimization/Object";
-import {FluxDataTable, OptimizationMap, OptimizationToolbar, SubstanceEditor} from "shared";
+import {FluxDataTable, OptimizationMap, OptimizationToolbar, SubstanceEditor} from "./shared";
 import {
     OPTIMIZATION_EDIT_NOCHANGES,
     OPTIMIZATION_EDIT_SAVED,

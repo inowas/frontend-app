@@ -41,7 +41,7 @@ const getGridCells = (boundingBox, gridSize) => {
     return cells;
 };
 
-const getActiveCellFromCoordinate = (coordinate, boundingBox, gridSize) => {
+export const getActiveCellFromCoordinate = (coordinate, boundingBox, gridSize) => {
 
     if (!boundingBox instanceof BoundingBox) {
         throw new Error('Geometry needs to be instance of BoundingBox');
