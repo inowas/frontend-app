@@ -52,7 +52,7 @@ class T09D extends React.Component {
         if (id) {
             sendCommand(
                 updateToolInstanceCommand(buildPayload(tool)),
-                () => this.setState({dirty: false}),
+                () => this.setState({isDirty: false}),
                 () => this.setState({error: true})
             );
             return;
