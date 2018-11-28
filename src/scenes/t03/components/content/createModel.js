@@ -1,5 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import {withRouter} from 'react-router-dom';
 import {sendCommand} from 'services/api';
 import {Button, Checkbox, Form, Grid, Segment} from 'semantic-ui-react';
 import {CreateModelMap} from '../maps';
@@ -184,7 +185,9 @@ class CreateModel extends React.Component {
 }
 
 CreateModel.proptypes = {
-    history: PropTypes.object.isRequired
+    history: PropTypes.object.isRequired,
+    location: PropTypes.object.isRequired,
+    match: PropTypes.object.isRequired,
 };
 
-export default CreateModel;
+export default withRouter(CreateModel);

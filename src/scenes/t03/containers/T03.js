@@ -15,27 +15,24 @@ const navigation = [{
 
 class T03 extends React.Component {
 
-    renderContent() {
-        const {id, property} = this.props.match.params;
+    static renderContent(id, property) {
         if (!id) {
-            return (
-                <Content.CreateModel history={this.props.history}/>
-            )
+            return (<Content.CreateModel/>)
         }
 
         switch (property) {
             case 'discretization':
-                return (<Content.Discretization params={this.props.match.params}/>);
+                return (<Content.Discretization/>);
             case 'soilmodel':
-                return (<Content.Soilmodel params={this.props.match.params}/>);
+                return (<Content.Soilmodel/>);
             case 'boundaries':
-                return (<Content.Boundaries params={this.props.match.params}/>);
+                return (<Content.Boundaries/>);
             case 'observations':
-                return (<Content.Observations params={this.props.match.params}/>);
+                return (<Content.Observations/>);
             case 'run':
-                return (<Content.Run params={this.props.match.params}/>);
+                return (<Content.Run/>);
             case 'results':
-                return (<Content.Results params={this.props.match.params}/>);
+                return (<Content.Results/>);
             case 'optimization':
                 return (<Content.OptimizationContainer/>);
             default:
@@ -44,14 +41,16 @@ class T03 extends React.Component {
     }
 
     render() {
+        const {id, property} = this.props.match.params;
+
         return (
             <AppContainer navbarItems={navigation}>
                 <Grid padded>
                     <Grid.Column width={3}>
-                        <ToolNavigation navigationItems={menuItems}/>
+                        <ToolNavigation navigationItems={menuItems} style={id && {marginTop: 50}}/>
                     </Grid.Column>
                     <Grid.Column width={13}>
-                        {this.renderContent()}
+                        {T03.renderContent(id, property)}
                     </Grid.Column>
                 </Grid>
             </AppContainer>
