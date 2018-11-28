@@ -74,7 +74,7 @@ class T02 extends React.Component {
         if (id) {
             sendCommand(
                 updateToolInstanceCommand(this.buildPayload(tool)),
-                () => this.setState({dirty: false}),
+                () => this.setState({isDirty: false}),
                 () => this.setState({error: true})
             );
             return;
@@ -97,7 +97,8 @@ class T02 extends React.Component {
                         ...prevState.tool.data,
                         parameters: parameters.map(p => p.toObject)
                     }
-                }
+                },
+                isDirty: true
             };
         });
     };
@@ -109,7 +110,8 @@ class T02 extends React.Component {
                 tool: {
                     ...prevState.tool,
                     data: {...prevState.tool.data, settings}
-                }
+                },
+                isDirty: true
             };
         });
     };
@@ -125,7 +127,7 @@ class T02 extends React.Component {
     update = (tool) => this.setState({tool});
 
     render() {
-        const {tool, isLoading} = this.state;
+        const {tool, isLoading, isDirty} = this.state;
         if (isLoading) {
             return (
                 <AppContainer navBarItems={navigation} loader/>
@@ -138,7 +140,7 @@ class T02 extends React.Component {
 
         return (
             <AppContainer navbarItems={navigation}>
-                <ToolMetaData tool={tool} readOnly={readOnly} onChange={this.update} onSave={this.save}/>
+                <ToolMetaData tool={tool} readOnly={readOnly} onChange={this.update} onSave={this.save} isDirty={isDirty}/>
                 <ToolGrid rows={2}>
                     <Background image={image} title={'T02. GROUNDWATER MOUNDING (HANTUSH)'}/>
                     <Chart settings={settings} parameters={parameters}/>
