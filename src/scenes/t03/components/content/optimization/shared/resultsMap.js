@@ -2,14 +2,14 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import {GeoJSON, Map, TileLayer, CircleMarker, Tooltip} from 'react-leaflet';
 import {geoJSON as leafletGeoJSON} from 'leaflet';
-import md5 from 'js-md5';
+//TODO: import md5 from 'js-md5';
 import {uniqueId} from 'lodash';
 
 class OptimizationResultsMap extends React.Component {
 
     getBounds = geometry => leafletGeoJSON(geometry).getBounds();
 
-    generateKeyFunction = geometry => md5(JSON.stringify(geometry));
+    generateKeyFunction = geometry => JSON.stringify(geometry); //TODO: md5(JSON.stringify(geometry));
 
     drawObject = (boundingBox, gridSize, location, label = null, color = 'red') => {
         const bbXmin = boundingBox[0][0];

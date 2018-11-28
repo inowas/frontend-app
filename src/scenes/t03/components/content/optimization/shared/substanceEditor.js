@@ -2,6 +2,7 @@ import React from 'react';
 import {Button, Dropdown, Form, Icon, List, Modal} from 'semantic-ui-react';
 import PropTypes from 'prop-types';
 import FluxDataTable from "./fluxDataTable";
+import {Stressperiods} from "core/model/modflow";
 
 class SubstanceEditor extends React.Component {
 

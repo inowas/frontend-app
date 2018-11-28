@@ -8,6 +8,7 @@ import {
     OPTIMIZATION_EDIT_SAVED,
     OPTIMIZATION_EDIT_UNSAVED
 } from "../../../defaults/optimization";
+import {Stressperiods} from "core/model/modflow";
 
 const styles = {
     dropDownWithButtons: {

@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import {GeoJSON, Map, Rectangle, TileLayer, FeatureGroup, CircleMarker} from 'react-leaflet';
 import FullscreenControl from 'react-leaflet-fullscreen';
 import {geoJSON as leafletGeoJSON} from 'leaflet';
-import md5 from 'js-md5';
+//TODO: import md5 from 'js-md5';
 import {uniqueId} from 'lodash';
 import {Button, Form, Grid, Header, Message, Modal, Segment} from 'semantic-ui-react';
 import InputRange from "./inputRange";
@@ -44,7 +44,7 @@ class OptimizationMap extends React.Component {
 
     getBounds = geometry => leafletGeoJSON(geometry).getBounds();
 
-    generateKeyFunction = geometry => md5(JSON.stringify(geometry));
+    generateKeyFunction = geometry => JSON.stringify(geometry); //TODO: md5(JSON.stringify(geometry));
 
     validateLocation = p => p.col.min <= p.col.max && p.row.min <= p.row.max && p.col.min >= 0 && p.row.min >= 0 && p.col.max <= this.props.gridSize.n_x && p.row.max <= this.props.gridSize.n_y;
 
@@ -140,7 +140,7 @@ class OptimizationMap extends React.Component {
             let xmin = 180;
             let xmax = -180;
 
-            geometry.coordinates[0].map(c => {
+            geometry.coordinates[0].forEach(c => {
                 if (c[0] <= xmin) {
                     xmin = c[0];
                 }
@@ -270,6 +270,7 @@ class OptimizationMap extends React.Component {
                             if (object) {
                                 return this.drawObject(this.props.bbox, this.props.gridSize, object.position, 'red');
                             }
+                            return null;
                         })
                     }
                 </div>

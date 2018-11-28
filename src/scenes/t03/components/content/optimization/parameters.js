@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import {Segment, Form} from 'semantic-ui-react';
-import {OptimizationToolbar} from "shared";
+import {OptimizationToolbar} from "./shared";
 import {OptimizationParameters} from "core/model/modflow/optimization";
 import {
     OPTIMIZATION_EDIT_NOCHANGES,

@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import {Button, Form, Grid, Icon, Message, Segment, Table} from 'semantic-ui-react';
 import Slider, {createSliderWithTooltip} from 'rc-slider';
 import OptimizationConstraint from "core/model/modflow/optimization/Constraint";
-import {OptimizationMap, OptimizationToolbar} from "shared";
+import {OptimizationMap, OptimizationToolbar} from "./shared";
 import {
     OPTIMIZATION_EDIT_NOCHANGES,
     OPTIMIZATION_EDIT_SAVED,
@@ -125,7 +125,7 @@ class OptimizationConstraintsComponent extends React.Component {
         });
     };
 
-    formatTimestamp = (key) => Formatter.toDate(this.props.stressPeriods.dateTimes[key]);
+    formatTimestamp = (key) => this.props.stressPeriods.dateTimes[key]; //TODO: Formatter.toDate(this.props.stressPeriods.dateTimes[key]);
 
     sliderMarks = () => {
         let marks = {};

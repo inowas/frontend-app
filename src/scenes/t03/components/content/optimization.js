@@ -16,6 +16,8 @@ import {
     OptimizationResultsComponent
 } from "./optimization/";
 import PropTypes from "prop-types";
+import ToolMetaData from "../../../shared/simpleTools/ToolMetaData";
+import {Stressperiods} from "core/model/modflow";
 
 class OptimizationContainer extends React.Component {
     constructor(props) {
@@ -208,10 +210,8 @@ class OptimizationContainer extends React.Component {
 
         const {type} = this.props.match.params;
         const optimization = Optimization.fromObject(this.state.optimization);
-        // TODO:
-        const stressPeriods = [];// Stressperiods.fromObject(model.stress_periods);
+        const stressPeriods = Stressperiods.fromObject(this.state.model.stress_periods);
 
-        // TODO:
         switch (type) {
             case 'objects':
                 return (
@@ -378,47 +378,50 @@ class OptimizationContainer extends React.Component {
         console.log(this.state.model);
 
         return (
-            <Segment color={'grey'} loading={this.state.isLoading}>
-                <Grid>
-                    <Grid.Column width={4}>
-                        <Menu fluid vertical tabular>
-                            <Menu.Item
-                                name="parameters"
-                                active={this.state.activeItem === 'parameters'}
-                                onClick={this.onMenuClick}/>
-                            <Menu.Item
-                                name="objects"
-                                active={this.state.activeItem === 'objects'}
-                                onClick={this.onMenuClick}
-                                content="Decision Variables"/>
-                            <Menu.Item
-                                name="objectives"
-                                active={this.state.activeItem === 'objectives'}
-                                onClick={this.onMenuClick}
-                            />
-                            <Menu.Item
-                                name="constraints"
-                                active={this.state.activeItem === 'constraints'}
-                                onClick={this.onMenuClick}
-                            />
-                            {
-                                this.renderButton()
-                            }
-                            {
-                                this.renderProgress()
-                            }
-                            <Menu.Item
-                                name="results"
-                                active={this.state.activeItem === 'results'}
-                                onClick={this.onMenuClick}
-                            />
-                        </Menu>
-                    </Grid.Column>
-                    <Grid.Column width={12}>
-                        {this.renderProperties()}
-                    </Grid.Column>
-                </Grid>
-            </Segment>
+            <div>
+                <ToolMetaData onChange={() => 1 + 1} onSave={() => 1 + 1} readOnly={false} tool={{type: 'T03'}}/>
+                <Segment color={'grey'} loading={this.state.isLoading}>
+                    <Grid>
+                        <Grid.Column width={4}>
+                            <Menu fluid vertical tabular>
+                                <Menu.Item
+                                    name="parameters"
+                                    active={this.state.activeItem === 'parameters'}
+                                    onClick={this.onMenuClick}/>
+                                <Menu.Item
+                                    name="objects"
+                                    active={this.state.activeItem === 'objects'}
+                                    onClick={this.onMenuClick}
+                                    content="Decision Variables"/>
+                                <Menu.Item
+                                    name="objectives"
+                                    active={this.state.activeItem === 'objectives'}
+                                    onClick={this.onMenuClick}
+                                />
+                                <Menu.Item
+                                    name="constraints"
+                                    active={this.state.activeItem === 'constraints'}
+                                    onClick={this.onMenuClick}
+                                />
+                                {
+                                    this.renderButton()
+                                }
+                                {
+                                    this.renderProgress()
+                                }
+                                <Menu.Item
+                                    name="results"
+                                    active={this.state.activeItem === 'results'}
+                                    onClick={this.onMenuClick}
+                                />
+                            </Menu>
+                        </Grid.Column>
+                        <Grid.Column width={12}>
+                            {this.renderProperties()}
+                        </Grid.Column>
+                    </Grid>
+                </Segment>
+            </div>
         );
     }
 }

@@ -4,12 +4,13 @@ import {Button, Form, Grid, Icon, Message, Segment, Table} from 'semantic-ui-rea
 import Slider from 'rc-slider';
 import {createSliderWithTooltip} from 'rc-slider';
 import OptimizationObjective from "core/model/modflow/optimization/Objective";
-import {OptimizationMap, OptimizationToolbar} from "shared";
+import {OptimizationMap, OptimizationToolbar} from "./shared";
 import {
     OPTIMIZATION_EDIT_NOCHANGES,
     OPTIMIZATION_EDIT_SAVED,
     OPTIMIZATION_EDIT_UNSAVED
 } from "../../../defaults/optimization";
+import {Stressperiods} from "core/model/modflow";
 
 const Range = createSliderWithTooltip(Slider.Range);
 
@@ -128,7 +129,7 @@ class OptimizationObjectivesComponent extends React.Component {
         });
     };
 
-    formatTimestamp = (key) => Formatter.toDate(this.props.stressPeriods.dateTimes[key]);
+    formatTimestamp = (key) => this.props.stressPeriods.dateTimes[key]; //Formatter.toDate(this.props.stressPeriods.dateTimes[key]);
 
     sliderMarks = () => {
         let marks = {};
