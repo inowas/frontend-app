@@ -53,7 +53,7 @@ class ToolMetaData extends React.Component {
         return (
             <div>
                 <Grid padded>
-                    <Grid.Column style={{paddingTop: 0, paddingBottom: 0}}>
+                    <Grid.Column style={{paddingTop: 0, paddingBottom: 0, height: 25, marginTop: 10}}>
                         {this.renderBreadcrumbs()}
                         {!this.props.readOnly &&
                         <Button
