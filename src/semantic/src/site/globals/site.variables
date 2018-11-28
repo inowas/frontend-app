@@ -2,6 +2,8 @@
      User Global Variables
 *******************************
 
+@pageMinWidth  : 1280px;
+
 /*-------------------
        Fonts
 --------------------*/
@@ -29,18 +31,33 @@
        Colors
 --------------------*/
 
-@blue: #1EB1ED;
-@grey: #4C4C4C;
-@orange: #ED8D05;
+@blue       : #1EB1ED;
+@grey       : #4C4C4C;
+@orange     : #ED8D05;
+@red        : #FF5B4D; /*#BA3005*/
 
-@lightGrey: #E1E1E1;
+@lightGrey  : #E1E1E1;
+@lightBlue  : #3AC6FF;
+
+
+/*---   Neutrals  ---*/
+@fullBlack      : #000000;
+@offWhite       : #EFF3F6;
+@darkWhite      : #F3F4F5;
+@midWhite       : #DCDDDE;
+@white          : #FFFFFF;
+
+@orangeHover    : #CC6C00;
+@blueHover      : #0A75A0;
+
 
 
 /*-------------------
         Page
 --------------------*/
 
-@pageBackground   : #EFF3F6;
+@pageBackground   : @offWhite;
+@textColor        : @grey;
 
 
 /*--------------
@@ -73,3 +90,9 @@
 .ui.inverted.menu .dropdown.item:hover {
   background-color: @blue;
 }
+
+
+/*-------------------
+       Recharts
+--------------------*/
+

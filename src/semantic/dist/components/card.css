@@ -317,7 +317,7 @@
 }
 .ui.cards > .card .meta > a:not(.ui):hover,
 .ui.card .meta > a:not(.ui):hover {
-  color: rgba(0, 0, 0, 0.87);
+  color: #4C4C4C;
 }
 
 /*--------------
@@ -508,14 +508,14 @@ a.ui.card:hover,
 .ui.red.cards > .card,
 .ui.cards > .red.card,
 .ui.red.card {
-  -webkit-box-shadow: 0px 0px 0px 1px #D4D4D5, 0px 2px 0px 0px #DB2828, 0px 1px 3px 0px #D4D4D5;
-          box-shadow: 0px 0px 0px 1px #D4D4D5, 0px 2px 0px 0px #DB2828, 0px 1px 3px 0px #D4D4D5;
+  -webkit-box-shadow: 0px 0px 0px 1px #D4D4D5, 0px 2px 0px 0px #FF5B4D, 0px 1px 3px 0px #D4D4D5;
+          box-shadow: 0px 0px 0px 1px #D4D4D5, 0px 2px 0px 0px #FF5B4D, 0px 1px 3px 0px #D4D4D5;
 }
 .ui.red.cards > .card:hover,
 .ui.cards > .red.card:hover,
 .ui.red.card:hover {
-  -webkit-box-shadow: 0px 0px 0px 1px #D4D4D5, 0px 2px 0px 0px #d01919, 0px 1px 3px 0px #BCBDBD;
-          box-shadow: 0px 0px 0px 1px #D4D4D5, 0px 2px 0px 0px #d01919, 0px 1px 3px 0px #BCBDBD;
+  -webkit-box-shadow: 0px 0px 0px 1px #D4D4D5, 0px 2px 0px 0px #ff4433, 0px 1px 3px 0px #BCBDBD;
+          box-shadow: 0px 0px 0px 1px #D4D4D5, 0px 2px 0px 0px #ff4433, 0px 1px 3px 0px #BCBDBD;
 }
 
 /* Orange */
@@ -528,8 +528,8 @@ a.ui.card:hover,
 .ui.orange.cards > .card:hover,
 .ui.cards > .orange.card:hover,
 .ui.orange.card:hover {
-  -webkit-box-shadow: 0px 0px 0px 1px #D4D4D5, 0px 2px 0px 0px #d97f00, 0px 1px 3px 0px #BCBDBD;
-          box-shadow: 0px 0px 0px 1px #D4D4D5, 0px 2px 0px 0px #d97f00, 0px 1px 3px 0px #BCBDBD;
+  -webkit-box-shadow: 0px 0px 0px 1px #D4D4D5, 0px 2px 0px 0px #CC6C00, 0px 1px 3px 0px #BCBDBD;
+          box-shadow: 0px 0px 0px 1px #D4D4D5, 0px 2px 0px 0px #CC6C00, 0px 1px 3px 0px #BCBDBD;
 }
 
 /* Yellow */
@@ -598,8 +598,8 @@ a.ui.card:hover,
 .ui.blue.cards > .card:hover,
 .ui.cards > .blue.card:hover,
 .ui.blue.card:hover {
-  -webkit-box-shadow: 0px 0px 0px 1px #D4D4D5, 0px 2px 0px 0px #08a8ea, 0px 1px 3px 0px #BCBDBD;
-          box-shadow: 0px 0px 0px 1px #D4D4D5, 0px 2px 0px 0px #08a8ea, 0px 1px 3px 0px #BCBDBD;
+  -webkit-box-shadow: 0px 0px 0px 1px #D4D4D5, 0px 2px 0px 0px #0A75A0, 0px 1px 3px 0px #BCBDBD;
+          box-shadow: 0px 0px 0px 1px #D4D4D5, 0px 2px 0px 0px #0A75A0, 0px 1px 3px 0px #BCBDBD;
 }
 
 /* Violet */
