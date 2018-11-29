@@ -8,7 +8,7 @@ import {includes} from 'lodash';
 import BoundaryList from './boundaryList';
 import BoundaryFactory from 'core/model/modflow/boundaries/BoundaryFactory';
 import BoundaryDetails from './boundaryDetails';
-import {Geometry} from '../../../../../core/model/modflow';
+import {Geometry} from 'core/model/modflow';
 
 const baseUrl = '/tools/T03';
 

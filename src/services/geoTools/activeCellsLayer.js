@@ -6,14 +6,7 @@ import BoundingBox from 'core/model/modflow/BoundingBox';
 import GridSize from 'core/model/modflow/GridSize';
 import ActiveCells from 'core/model/modflow/ActiveCells';
 
-const styles = {
-    line: {
-        color: 'grey',
-        weight: 0.3
-    }
-};
-
-const renderGridCell = (key, xMin, xMax, yMin, yMax) => {
+const renderGridCell = (key, xMin, xMax, yMin, yMax, styles) => {
     return (<Polyline key={key} positions={[
         {lng: xMin, lat: yMin},
         {lng: xMin, lat: yMax},
@@ -44,7 +37,7 @@ const calculateGridCells = (boundingBox, gridSize, activeCells) => {
     return gridCells;
 };
 
-const ActiveCellsLayer = ({boundingBox, gridSize, activeCells}) => {
+const ActiveCellsLayer = ({boundingBox, gridSize, activeCells, styles}) => {
     if (!activeCells) {
         return null;
     }
@@ -53,7 +46,7 @@ const ActiveCellsLayer = ({boundingBox, gridSize, activeCells}) => {
 
     return (
         <FeatureGroup>
-            {gridCells.map((c, k) => renderGridCell(k, c[0], c[1], c[2], c[3]))};
+            {gridCells.map((c, k) => renderGridCell(k, c[0], c[1], c[2], c[3], styles))};
         </FeatureGroup>
     );
 };
@@ -61,7 +54,8 @@ const ActiveCellsLayer = ({boundingBox, gridSize, activeCells}) => {
 ActiveCellsLayer.propTypes = {
     boundingBox: PropTypes.instanceOf(BoundingBox),
     gridSize: PropTypes.instanceOf(GridSize),
-    activeCells: PropTypes.instanceOf(ActiveCells)
+    activeCells: PropTypes.instanceOf(ActiveCells),
+    styles: PropTypes.object
 };
 
 export default pure(ActiveCellsLayer);

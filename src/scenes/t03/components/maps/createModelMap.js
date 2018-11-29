@@ -5,9 +5,6 @@ import {EditControl} from 'react-leaflet-draw';
 import {calculateActiveCells} from 'services/geoTools';
 import md5 from 'md5';
 
-import 'leaflet/dist/leaflet.css';
-import 'leaflet-draw/dist/leaflet.draw.css';
-import mapStyles from './styles'
 import ActiveCellsLayer from 'services/geoTools/activeCellsLayer';
 import {BasicTileLayer} from 'services/geoTools/tileLayers';
 import {Icon, Message} from 'semantic-ui-react';
@@ -15,6 +12,7 @@ import ActiveCells from 'core/model/modflow/ActiveCells';
 import BoundingBox from 'core/model/modflow/BoundingBox';
 import Geometry from 'core/model/modflow/Geometry';
 import GridSize from 'core/model/modflow/GridSize';
+import {getStyle} from './index';
 
 const style = {
     map: {
@@ -120,7 +118,7 @@ class CreateModelMap extends React.Component {
             <GeoJSON
                 key={md5(JSON.stringify(this.state.geometry))}
                 data={this.state.geometry}
-                style={mapStyles.area}
+                style={getStyle('area')}
             />
         )
     };
@@ -131,7 +129,7 @@ class CreateModelMap extends React.Component {
             <GeoJSON
                 key={md5(JSON.stringify(boundingBox.toArray()))}
                 data={boundingBox.geoJson}
-                style={mapStyles.bounding_box}
+                style={getStyle('bounding_box')}
             />
         )
     };
@@ -198,8 +196,6 @@ class CreateModelMap extends React.Component {
     render() {
         return (
             <Map
-                center={[51.505, -0.09]}
-                zoom={2}
                 style={style.map}
                 bounds={this.getBoundsLatLong()}
                 onClick={this.handleClickOnMap}
