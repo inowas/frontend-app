@@ -1,4 +1,4 @@
-import Boundaries from './boundaries';
+import Boundaries from './boundaries/boundaries';
 import CreateModel from './createModel';
 import Discretization from './discretization';
 import General from './general';

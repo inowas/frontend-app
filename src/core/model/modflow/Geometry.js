@@ -31,6 +31,8 @@ class Geometry {
     }
 
     toObject = () => (this._geometry);
+
+    toGeoJSON = () => (this._geometry);
 }
 
 export default Geometry;

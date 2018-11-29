@@ -2,9 +2,13 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import {withRouter} from 'react-router-dom';
 import {fetchUrl} from 'services/api';
-import {Dropdown, Grid, Menu, Segment} from 'semantic-ui-react';
-import ToolMetaData from '../../../shared/simpleTools/ToolMetaData';
+import {Grid, Segment} from 'semantic-ui-react';
+import ToolMetaData from 'scenes/shared/simpleTools/ToolMetaData';
 import {includes} from 'lodash';
+import BoundaryList from './boundaryList';
+import BoundaryFactory from 'core/model/modflow/boundaries/BoundaryFactory';
+import BoundaryDetails from './boundaryDetails';
+import {Geometry} from '../../../../../core/model/modflow';
 
 const baseUrl = '/tools/T03';
 
@@ -52,7 +56,9 @@ class Boundaries extends React.Component {
 
         fetchUrl(
             `modflowmodels/${this.props.match.params.id}/boundaries`,
-            boundaries => this.setState({boundaries}),
+            boundaries => this.setState({
+                boundaries: boundaries.map(b => BoundaryFactory.fromObjectData(b))
+            }),
             error => this.setState({error, isLoading: false})
         );
     }
@@ -81,33 +87,13 @@ class Boundaries extends React.Component {
         this.props.history.push(`${baseUrl}/${id}/${property}/${type || '!'}/${bid}`);
     };
 
-    list = (type) => {
-        let selectedBoundaries = this.state.boundaries;
-        if (type) {
-            selectedBoundaries = this.state.boundaries.filter(b => b.type === type);
-        }
-
-        return (
-            <Menu fluid vertical tabular>
-                {selectedBoundaries.map(b => (
-                    <Menu.Item
-                        name={b.name}
-                        key={b.id}
-                        active={b.id === this.props.match.params.pid}
-                        onClick={() => this.handleClickBoundary(b.id)}
-                    />
-                ))}
-            </Menu>
-        )
-    };
-
     render() {
-        if (this.state.isLoading) {
-            return (<Segment color={'grey'} loading/>)
-        }
-
-        const {isDirty, selectedType} = this.state;
+        const {isDirty} = this.state;
+        const {pid} = this.props.match.params;
         const readOnly = !includes(this.state.permissions, 'w');
+
+        const boundary = this.state.boundaries.filter(b=>b.id === pid)[0];
+        const geometry = Geometry.fromObject(this.state.geometry);
 
         return (
             <div>
@@ -119,15 +105,17 @@ class Boundaries extends React.Component {
                     tool={this.metaData()}
                 />
                 <Segment color={'grey'} loading={this.state.isLoading}>
-                    <Grid padded>
+                    <Grid>
                         <Grid.Row>
                             <Grid.Column width={4}>
-                                <Dropdown selection options={[{ key: 'AL', value: 'AL', text: 'Alabama' }]}/>
-                                <Dropdown selection search options={[{ key: 'AL', value: 'AL', text: 'Alabama' }]}/>
-                                {this.list(selectedType)}
+                                <BoundaryList
+                                    boundaries={this.state.boundaries}
+                                    onChange={this.handleClickBoundary}
+                                    selected={pid}
+                                />
                             </Grid.Column>
                             <Grid.Column width={12}>
-                                BoundaryList or BoundaryDetails
+                                {!this.state.isLoading && <BoundaryDetails boundary={boundary} geometry={geometry}/>}
                             </Grid.Column>
                         </Grid.Row>
                     </Grid>

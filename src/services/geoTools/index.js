@@ -1,5 +1,5 @@
-import {booleanCrosses, booleanContains, booleanOverlap, envelope, lineString} from '@turf/turf';
-import {floor} from 'lodash';
+import {booleanCrosses, booleanContains, booleanOverlap, getCoords, envelope, lineString} from '@turf/turf';
+import {floor, min, max} from 'lodash';
 import {ActiveCells, BoundingBox, Geometry, GridSize} from 'core/model/modflow';
 
 /* Calculate GridCells
@@ -102,4 +102,15 @@ export const calculateActiveCells = (geometry, boundingBox, gridSize) => {
     }
 
     return activeCells;
+};
+
+export const getBoundsLatLonFromGeoJSON = geoJSON => {
+    const coords = getCoords(envelope(geoJSON))[0];
+    const xCoords = coords.map(c => c[0]);
+    const yCoords = coords.map(c => c[1]);
+
+    return [
+        [min(yCoords), min(xCoords)],
+        [max(yCoords), max(xCoords)]
+    ];
 };
