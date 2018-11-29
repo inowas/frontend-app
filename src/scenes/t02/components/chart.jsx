@@ -12,7 +12,7 @@ import {
     XAxis,
     YAxis,
 } from 'recharts';
-import {Button, Grid, Header, Segment} from "semantic-ui-react";
+import {Button, Grid, Segment} from "semantic-ui-react";
 import {exportChartData, exportChartImage, getParameterValues} from "../../shared/simpleTools/helpers";
 
 const styles = {
@@ -113,11 +113,12 @@ const Chart = ({settings, parameters}) => {
 
     if (variable === 'x') {
         xAxis = (
-            <XAxis type="number" dataKey="x">
+            <XAxis type="number" dataKey="x"  tick={{fill: '#B5B5B5', fontSize: 'small', transform: 'translate(0, 5)'}}>
                 <Label
                     value='x [m]'
                     offset={0}
                     position="bottom"
+                    style={{fontSize: '13px'}}
                 />
             </XAxis>
         );
@@ -128,7 +129,6 @@ const Chart = ({settings, parameters}) => {
 
     return (
         <div>
-            <Header textAlign='center'>Calculation</Header>
             <Grid padded>
                 <Grid.Column>
                     <ResponsiveContainer width={'100%'} aspect={1.5}>
@@ -138,15 +138,15 @@ const Chart = ({settings, parameters}) => {
                             ref={(chart) => currentChart = chart}
                         >
                             {xAxis}
-                            <YAxis type="number">
+                            <YAxis type="number" tickLine={false} tick={{fill: '#B5B5B5', fontSize: 'small', transform: 'translate(-3, 0)'}}>
                                 <Label
                                     angle={270}
                                     position='left'
-                                    style={{textAnchor: 'center'}}
+                                    style={{textAnchor: 'center', fontSize: '13px'}}
                                     value={'h-hi [m]'}
                                 />
                             </YAxis>
-                            <CartesianGrid strokeDasharray="3 3"/>
+                            <CartesianGrid strokeDasharray="3 3"  />
                             <Line
                                 isAnimationActive={false}
                                 type="basis"
