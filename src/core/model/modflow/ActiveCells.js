@@ -60,7 +60,9 @@ class ActiveCells {
         return this._cells;
     }
 
-    toArray = () => (this._cells);
+    toArray() {
+        return this._cells;
+    }
 
     sameAs = (obj) => {
         return isEqual(obj.cells, this.cells);

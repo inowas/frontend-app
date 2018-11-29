@@ -47,7 +47,7 @@ class ToolMetaData extends React.Component {
     );
 
     render() {
-        const {readOnly} = this.props;
+        const {readOnly, onSave} = this.props;
         const isDirty = this.props.isDirty === true;
         const {edit} = this.state;
         return (
@@ -55,8 +55,7 @@ class ToolMetaData extends React.Component {
                 <Grid padded>
                     <Grid.Column style={{paddingTop: 0, paddingBottom: 0, height: 25, marginTop: 10}}>
                         {this.renderBreadcrumbs()}
-                        {!this.props.readOnly &&
-                        <Button
+                        {!readOnly && onSave && <Button
                             floated={'right'}
                             positive
                             onClick={this.handleSave}
@@ -116,7 +115,7 @@ class ToolMetaData extends React.Component {
 ToolMetaData.propTypes = {
     isDirty: PropTypes.bool,
     onChange: PropTypes.func.isRequired,
-    onSave: PropTypes.func.isRequired,
+    onSave: PropTypes.func,
     readOnly: PropTypes.bool.isRequired,
     tool: PropTypes.object.isRequired
 };

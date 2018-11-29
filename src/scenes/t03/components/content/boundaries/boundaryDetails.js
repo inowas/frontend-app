@@ -23,8 +23,8 @@ class BoundaryDetails extends React.Component {
                 <Grid.Row>
                     <Grid.Column width={6}>
                         <Form>
-                            <Form.Input label={'Name'}/>
-                            <Form.Input label={'Select layer'}/>
+                            <Form.Input label={'Name'} name={'name'} value={this.props.boundary.name}/>
+                            <Form.Input label={'Select layers'}/>
                             <Form.Input label={'Well type'}/>
                         </Form>
                         <BoundaryMap geometry={geometry} boundary={boundary}/>
@@ -39,7 +39,8 @@ class BoundaryDetails extends React.Component {
 
 BoundaryDetails.proptypes = {
     boundary: PropTypes.instanceOf(Boundary).isRequired,
-    geometry: PropTypes.instanceOf(Geometry).isRequired
+    geometry: PropTypes.instanceOf(Geometry).isRequired,
+    onChange: PropTypes.func.isRequired
 };
 
 export default BoundaryDetails;

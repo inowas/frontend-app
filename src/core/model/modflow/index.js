@@ -4,6 +4,8 @@ import Boundary from './boundaries/Boundary';
 import Geometry from './Geometry';
 import GridSize from './GridSize';
 import LengthUnit from './LengthUnit';
+import ModflowModel from './ModflowModel';
+import Stressperiods from './Stressperiods';
 import TimeUnit from './TimeUnit';
 
 export {
@@ -13,5 +15,7 @@ export {
     Geometry,
     GridSize,
     LengthUnit,
+    ModflowModel,
+    Stressperiods,
     TimeUnit
 }

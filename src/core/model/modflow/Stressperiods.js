@@ -71,7 +71,7 @@ class Stressperiods {
         this._timeUnit = value;
     }
 
-    get toObject() {
+    toObject() {
         return {
             start_date_time: dateToString(this.startDateTime),
             end_date_time: dateToString(this.endDateTime),
