@@ -660,7 +660,7 @@ Floated Menu / Item
   margin-bottom: -1px;
   -webkit-box-shadow: none;
           box-shadow: none;
-  border-radius: 0.28571429rem 0.28571429rem 0px 0px !important;
+  border-radius: 0.14285714rem 0.14285714rem 0px 0px !important;
 }
 
 /* Coupling with segment for attachment */
@@ -699,7 +699,7 @@ Floated Menu / Item
   color: rgba(0, 0, 0, 0.95);
   border-color: #D4D4D5;
   margin: -1px 0px 0px 0px;
-  border-radius: 0px 0px 0.28571429rem 0.28571429rem !important;
+  border-radius: 0px 0px 0.14285714rem 0.14285714rem !important;
 }
 
 /* Vertical Tabular (Left) */
@@ -723,7 +723,7 @@ Floated Menu / Item
   color: rgba(0, 0, 0, 0.95);
   border-color: #D4D4D5;
   margin: 0px -1px 0px 0px;
-  border-radius: 0.28571429rem 0px 0px 0.28571429rem !important;
+  border-radius: 0.14285714rem 0px 0px 0.14285714rem !important;
 }
 
 /* Vertical Right Tabular */
@@ -748,7 +748,7 @@ Floated Menu / Item
   color: rgba(0, 0, 0, 0.95);
   border-color: #D4D4D5;
   margin: 0px 0px 0px -1px;
-  border-radius: 0px 0.28571429rem 0.28571429rem 0px !important;
+  border-radius: 0px 0.14285714rem 0.14285714rem 0px !important;
 }
 
 /* Dropdown */
@@ -824,7 +824,7 @@ Floated Menu / Item
   background: none;
   -webkit-transition: color 0.1s ease;
   transition: color 0.1s ease;
-  border-radius: 0.28571429rem;
+  border-radius: 0.14285714rem;
 }
 
 /* No Divider */
@@ -858,7 +858,7 @@ Floated Menu / Item
           box-shadow: none;
   background: rgba(0, 0, 0, 0.05);
   color: rgba(0, 0, 0, 0.95);
-  border-radius: 0.28571429rem;
+  border-radius: 0.14285714rem;
 }
 
 /* Active Hover */
@@ -914,7 +914,7 @@ Floated Menu / Item
 .ui.secondary.vertical.menu > .item {
   border: none;
   margin: 0em 0em 0.35714286em;
-  border-radius: 0.28571429rem !important;
+  border-radius: 0.14285714rem !important;
 }
 .ui.secondary.vertical.menu > .header.item {
   border-radius: 0em;

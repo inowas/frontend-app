@@ -34,7 +34,7 @@ class ToolMetaData extends React.Component {
     };
 
     renderBreadcrumbs = () => (
-        <Breadcrumb size='large'>
+        <Breadcrumb size='medium'>
             <Breadcrumb.Section link>Tools</Breadcrumb.Section>
             <Breadcrumb.Divider/>
             <Breadcrumb.Section link>{this.props.tool.type}</Breadcrumb.Section>
@@ -60,9 +60,8 @@ class ToolMetaData extends React.Component {
                 <Grid padded>
                     <Grid.Column style={{paddingTop: 0, paddingBottom: 0}}>
                         {this.renderBreadcrumbs()}
-                        <Button
+                        <Button positive
                             floated={'right'}
-                            positive
                             onClick={this.handleSave}
                             disabled={!isDirty}
                         >

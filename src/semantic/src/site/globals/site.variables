@@ -17,6 +17,16 @@
 
 
 /*-------------------
+    Border Radius
+--------------------*/
+
+@relativeBorderRadius: @relative2px;
+@absoluteBorderRadius: @2px;
+
+@defaultBorderRadius: @absoluteBorderRadius;
+
+
+/*-------------------
     Brand Colors
 --------------------*/
 
@@ -50,6 +60,20 @@
 @orangeHover    : #CC6C00;
 @blueHover      : #0A75A0;
 
+
+/* Positive */
+@positiveColor           : @blue;
+@positiveBackgroundColor : #FCFFF5;
+@positiveBorderColor     : #A3C293;
+@positiveHeaderColor     : #1A531B;
+@positiveTextColor       : #2C662D;
+
+/* Negative */
+@negativeColor           : @orange;
+@negativeBackgroundColor : #FFF6F6;
+@negativeBorderColor     : #E0B4B4;
+@negativeHeaderColor     : #912D2B;
+@negativeTextColor       : #9F3A38;
 
 
 /*-------------------
@@ -91,6 +115,12 @@
   background-color: @blue;
 }
 
+
+/*-------------------
+      Borders
+--------------------*/
+
+@borderColor               : rgba(34, 36, 38, 0.15); /* #CACBCD */
 
 /*-------------------
        Recharts

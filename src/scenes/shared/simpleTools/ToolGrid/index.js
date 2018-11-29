@@ -14,7 +14,7 @@ class ToolGrid extends React.Component {
         <Grid.Row key={numberOfRow}>
             <Grid.Column width={6}>
                 {this.props.children[numberOfRow * 2] &&
-                <Segment style={styles.segment} color={'grey'}>
+                <Segment style={styles.segment} color={'grey'} padded>
                     {this.props.children[numberOfRow * 2]}
                 </Segment>
                 }
