@@ -37,6 +37,10 @@ export default class BoundaryFactory {
     }
 
     static fromObjectData = (objectData) => {
+        if (!objectData) {
+            return null;
+        }
+
         const {id, name, geometry, type, affected_layers, metadata, date_time_values, observation_points, active_cells} = objectData;
         const boundary = BoundaryFactory.fromType(type);
 

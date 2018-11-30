@@ -21,16 +21,45 @@ class Boundaries extends React.Component {
         }
     }
 
+    componentWillReceiveProps(nextProps, nextContext) {
+        const {id, pid} = nextProps.match.params;
+        if ((this.props.match.params.id !== id) || (this.props.match.params.pid !== pid)) {
+            this.fetchBoundary(id, pid);
+        }
+    }
+
     componentDidMount() {
+        const {id, pid} = this.props.match.params;
+
         fetchUrl(
-            `modflowmodels/${this.props.match.params.id}/boundaries`,
+            `modflowmodels/${id}/boundaries`,
             boundaries => this.setState({
-                boundaries: boundaries.map(b => BoundaryFactory.fromObjectData(b)),
+                boundaries: boundaries,
                 isLoading: false
             }),
             error => this.setState({error, isLoading: false})
         );
+
+        if (pid) {
+            this.fetchBoundary(id, pid);
+        }
     }
+
+    fetchBoundary = (modelId, boundaryId) => {
+        return (
+            fetchUrl(`modflowmodels/${modelId}/boundaries/${boundaryId}`,
+                boundary => this.setState({
+                    boundaries: this.state.boundaries.map(b => {
+                        if (b.id === boundary.id) {
+                            return boundary;
+                        }
+
+                        return b;
+                    })
+                })
+            )
+        )
+    };
 
     save = () => {
     };
@@ -43,7 +72,7 @@ class Boundaries extends React.Component {
     render() {
         const {model} = this.props;
         const {pid} = this.props.match.params;
-        const boundary = this.state.boundaries.filter(b=>b.id === pid)[0];
+        const boundary = BoundaryFactory.fromObjectData(this.state.boundaries.filter(b => b.id === pid)[0]);
 
         return (
             <div>
@@ -58,7 +87,8 @@ class Boundaries extends React.Component {
                                 />
                             </Grid.Column>
                             <Grid.Column width={12}>
-                                {!this.state.isLoading && <BoundaryDetails boundary={boundary} geometry={model.geometry}/>}
+                                {!this.state.isLoading &&
+                                <BoundaryDetails boundary={boundary} geometry={model.geometry}/>}
                             </Grid.Column>
                         </Grid.Row>
                     </Grid>
