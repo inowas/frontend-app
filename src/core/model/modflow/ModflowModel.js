@@ -23,7 +23,7 @@ export default class ModflowModel {
         const model = new ModflowModel();
         model.id = uuid();
         model.name = 'New numerical groundwater model';
-        model.description ='Here you can say a bit more about the project';
+        model.description = 'Here you can say a bit more about the project';
         model.gridSize = GridSize.fromNxNy(100, 100);
         model.lengthUnit = 2;
         model.timeUnit = 4;
@@ -165,15 +165,15 @@ export default class ModflowModel {
             id: this.id,
             name: this.name,
             description: this.description,
-            active_cells: this.activeCells && this.activeCells.toArray(),
+            active_cells: this.activeCells ? this.activeCells.toArray() : null,
             boundaries: this.boundaries,
-            bounding_box: this.boundingBox && this.boundingBox.toArray(),
-            geometry: this.geometry && this.geometry.toObject(),
-            grid_size: this.gridSize && this.gridSize.toObject(),
+            bounding_box: this.boundingBox ? this.boundingBox.toArray() : null,
+            geometry: this.geometry ? this.geometry.toObject() : null,
+            grid_size: this.gridSize ? this.gridSize.toObject() : null,
             length_unit: this.lengthUnit,
             permissions: this.permissions,
             public: this.public,
-            stress_periods: this.stressPeriods && this.stressPeriods.toObject(),
+            stress_periods: this.stressPeriods ? this.stressPeriods.toObject() : null,
             time_unit: this.timeUnit,
         }
     }

@@ -94,7 +94,13 @@ class T03 extends React.Component {
             case 'optimization':
                 return (<Content.Optimization model={model}/>);
             default:
-                return null;
+                const path = this.props.match.path;
+                const basePath = path.split(':')[0];
+                return (
+                    this.props.history.push(
+                        basePath + id + '/discretization'
+                    )
+                );
         }
     }
 
