@@ -42,9 +42,21 @@ class T03 extends React.Component {
                 model: ModflowModel.fromQuery(query).toObject(),
                 isLoading: false
             }),
-            error => this.setState({error, isLoading: false})
+            error => this.setState(
+                {error, isLoading: false},
+                () => this.handleError(error)
+            )
         )
     }
+
+    handleError = error => {
+        const {response} = error;
+        const {status} = response;
+
+        if (status === 422) {
+            this.props.history.push('/tools');
+        }
+    };
 
     renderToolMetaData = () => {
         if (!this.state.model) {
