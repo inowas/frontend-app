@@ -1,4 +1,10 @@
 const styles = {
+    active_cells: {
+        line: {
+            color: 'grey',
+            weight: 0.3
+        }
+    },
     area: {
         weight: 2,
         opacity: 0.7,

@@ -1,9 +1,5 @@
 const menuItems = [
     {
-        name: 'General',
-        property: ''
-    },
-    {
         name: 'Discretization',
         property: 'discretization',
     },

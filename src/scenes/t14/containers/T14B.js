@@ -1,5 +1,5 @@
-import PropTypes from 'prop-types';
 import React from 'react';
+import PropTypes from 'prop-types';
 import {withRouter} from 'react-router-dom';
 
 import image from '../images/T14B.png';
@@ -23,8 +23,8 @@ class T14B extends React.Component {
         super(props);
         this.state = {
             tool: defaults(),
+            isDirty: true,
             isLoading: false,
-            isDirty: false,
             error: false
         };
     }
@@ -37,6 +37,7 @@ class T14B extends React.Component {
                 this.props.match.params.id,
                 tool => this.setState({
                     tool: deepMerge(this.state.tool, tool),
+                    isDirty: false,
                     isLoading: false
                 }),
                 error => this.setState({error, isLoading: false})
@@ -51,7 +52,7 @@ class T14B extends React.Component {
         if (id) {
             sendCommand(
                 updateToolInstanceCommand(buildPayload(tool)),
-                () => this.setState({dirty: false}),
+                () => this.setState({isDirty: false}),
                 () => this.setState({error: true})
             );
             return;
@@ -74,16 +75,19 @@ class T14B extends React.Component {
                         ...prevState.tool.data,
                         parameters: parameters.map(p => p.toObject)
                     }
-                }
+                },
+                isDirty: true
             };
         });
     };
 
     handleReset = () => {
-        this.setState({
-            tool: defaults(),
-            isLoading: false,
-            isDirty: false
+        this.setState(prevState => {
+            return {
+                tool: {...prevState.tool, data: defaults().data},
+                isLoading: false,
+                isDirty: true
+            }
         });
     };
 

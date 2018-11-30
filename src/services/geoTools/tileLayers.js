@@ -1,5 +1,5 @@
 import React from 'react';
-import {TileLayer} from "react-leaflet";
+import {TileLayer} from 'react-leaflet';
 
 export const BasicTileLayer = () => (
     <TileLayer

@@ -6,7 +6,7 @@ import image from '../images/T02.png';
 import {Background, Chart, Parameters, Settings} from '../components/index';
 
 import {includes} from 'lodash';
-import {defaultsT02} from '../defaults';
+import {defaults} from '../defaults';
 import {Icon} from 'semantic-ui-react';
 import SliderParameter from 'scenes/shared/simpleTools/parameterSlider/SliderParameter';
 
@@ -28,9 +28,9 @@ class T02 extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            tool: defaultsT02(),
-            isLoading: false,
+            tool: defaults(),
             isDirty: true,
+            isLoading: false,
             error: false
         };
     }
@@ -120,15 +120,13 @@ class T02 extends React.Component {
     handleReset = () => {
         this.setState(prevState => {
             return {
-                tool: {
-                    ...prevState.tool,
-                    data: defaultsT02().data
-                },
+                tool: {...prevState.tool, data: defaults().data},
                 isLoading: false,
                 isDirty: true
             }
         });
     };
+
 
     update = (tool) => this.setState({tool});
 
@@ -139,9 +137,9 @@ class T02 extends React.Component {
             );
         }
 
-        const {tool, isDirty} = this.state;
+        const {isDirty, tool} = this.state;
         const {data, permissions} = tool;
-        const {settings, parameters} = data;
+        const {parameters, settings} = data;
         const readOnly = !includes(permissions, 'w');
 
         return (

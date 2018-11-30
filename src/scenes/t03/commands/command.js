@@ -23,11 +23,11 @@ class Command {
     }
 
     static createModflowModel(payload) {
-        return new Command("createModflowModel", payload, createModflowModelPayloadSchema);
+        return new Command('createModflowModel', payload, createModflowModelPayloadSchema);
     }
 
     static updateModflowModel(payload) {
-        return new Command("updateModflowModel", payload, updateModflowModelPayloadSchema);
+        return new Command('updateModflowModel', payload, updateModflowModelPayloadSchema);
     }
 
     static updateOptimizationInput(payload) {
