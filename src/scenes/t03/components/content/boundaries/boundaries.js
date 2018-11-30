@@ -47,19 +47,19 @@ class Boundaries extends React.Component {
 
     fetchBoundary = (modelId, boundaryId) => {
         return (
-            fetchUrl(`modflowmodels/${modelId}/boundaries/${boundaryId}`,
-                boundary => this.setState({
-                    boundaries: this.state.boundaries.map(b => {
-                        if (b.id === boundary.id) {
-                            return boundary;
-                        }
-
-                        return b;
-                    })
-                })
-            )
+            fetchUrl(`modflowmodels/${modelId}/boundaries/${boundaryId}`, this.handleChangeBoundary)
         )
     };
+
+    handleChangeBoundary = boundary => this.setState({
+        boundaries: this.state.boundaries.map(b => {
+            if (b.id === boundary.id) {
+                return boundary;
+            }
+
+            return b;
+        })
+    });
 
     save = () => {
     };
@@ -88,7 +88,8 @@ class Boundaries extends React.Component {
                             </Grid.Column>
                             <Grid.Column width={12}>
                                 {!this.state.isLoading &&
-                                <BoundaryDetails boundary={boundary} geometry={model.geometry}/>}
+                                <BoundaryDetails boundary={boundary} geometry={model.geometry}
+                                                 onChange={this.handleChangeBoundary}/>}
                             </Grid.Column>
                         </Grid.Row>
                     </Grid>

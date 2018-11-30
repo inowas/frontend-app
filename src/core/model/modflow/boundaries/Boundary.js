@@ -68,6 +68,10 @@ export default class Boundary {
         return this._type;
     }
 
+    get subTypes() {
+        return null;
+    }
+
     get affectedCells() {
         return AffectedCells.fromLayersAndCells(this.affectedLayers, this.activeCells);
     }

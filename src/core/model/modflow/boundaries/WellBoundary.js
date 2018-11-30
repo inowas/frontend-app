@@ -29,6 +29,42 @@ export default class WellBoundary extends SingleOPBoundary {
         this._metadata.well_type = type;
     }
 
+    get subType() {
+        return (this._metadata && this._metadata.well_type) || 'puw';
+    }
+
+    set subType(type) {
+        this._metadata.well_type = type;
+    }
+
+    get subTypes() {
+        return {
+            name: 'Well type',
+            types: [
+                {
+                    name: 'Public Well',
+                    value: 'puw'
+                },
+                {
+                    name: 'Infiltration Well',
+                    value: 'inw'
+                },
+                {
+                    name: 'Industrial Well',
+                    value: 'iw'
+                },
+                {
+                    name: 'Irrigation Well',
+                    value: 'irw'
+                },
+                {
+                    name: 'Optimized Well',
+                    value: 'opw'
+                }
+            ]
+        }
+    }
+
     isValid() {
         super.isValid();
 

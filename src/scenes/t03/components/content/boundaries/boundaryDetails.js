@@ -1,12 +1,20 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import {Form, Grid} from 'semantic-ui-react';
+import {Dropdown, Form, Grid} from 'semantic-ui-react';
 import {Boundary} from 'core/model/modflow/boundaries';
 import ContentToolBar from '../../shared/contentToolbar';
 import BoundaryMap from '../../maps/boundaryMap';
 import {Geometry} from 'core/model/modflow';
+import BoundaryFactory from 'core/model/modflow/boundaries/BoundaryFactory';
 
 class BoundaryDetails extends React.Component {
+
+    handleChange = (e, {name, value}) => {
+        const boundary = BoundaryFactory.fromObjectData(this.props.boundary.toObject);
+        boundary[name] = value;
+        this.props.onChange(boundary);
+    };
+
     render() {
         const {boundary, geometry} = this.props;
         if (!boundary || !geometry) {
@@ -23,9 +31,24 @@ class BoundaryDetails extends React.Component {
                 <Grid.Row>
                     <Grid.Column width={6}>
                         <Form>
-                            <Form.Input label={'Name'} name={'name'} value={this.props.boundary.name}/>
-                            <Form.Input label={'Select layers'}/>
-                            <Form.Input label={'Well type'}/>
+                            <Form.Input label={'Name'} name={'name'} value={boundary.name}
+                                        onChange={this.handleChange}/>
+                            <Form.Input label={'Selected layers'}/>
+
+                            {boundary.subTypes &&
+                            <Dropdown
+                                label={boundary.subTypes.name}
+                                style={{zIndex: 1000}}
+                                selection
+                                options={boundary.subTypes.types.map(t => (
+                                    {key: t.value, value: t.value, text: t.name}
+                                ))}
+                                value={boundary.subType}
+                                name={'subType'}
+                                onChange={this.handleChange}
+                            />
+                            }
+
                         </Form>
                         <BoundaryMap geometry={geometry} boundary={boundary}/>
                     </Grid.Column>
