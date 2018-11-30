@@ -104,7 +104,7 @@ class T03 extends React.Component {
             case 'results':
                 return (<Content.Results model={model}/>);
             case 'optimization':
-                return (<Content.OptimizationContainer/>);
+                return (<Content.OptimizationContainer model={model}/>);
             default:
                 const path = this.props.match.path;
                 const basePath = path.split(':')[0];

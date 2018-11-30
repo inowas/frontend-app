@@ -1,25 +1,26 @@
 import React from 'react';
-import {fetchUrl} from "services/api";
-import {withRouter} from "react-router-dom";
-import {Button, Grid, Icon, List, Menu, Popup, Progress, Segment} from "semantic-ui-react";
+import {fetchUrl} from 'services/api';
+import {withRouter} from 'react-router-dom';
+import {Button, Grid, Icon, List, Menu, Popup, Progress, Segment} from 'semantic-ui-react';
 import {
     getMessage, optimizationHasError, optimizationInProgress,
     OPTIMIZATION_STATE_CANCELLED, OPTIMIZATION_STATE_CANCELLING,
     OPTIMIZATION_STATE_FINISHED, OPTIMIZATION_STATE_STARTED
-} from "../../defaults/optimization";
-import {Optimization, OptimizationInput} from "core/model/modflow/optimization";
+} from '../../defaults/optimization';
+import {Optimization, OptimizationInput} from 'core/model/modflow/optimization';
 import {
     OptimizationParametersComponent,
     OptimizationObjectsComponent,
     OptimizationObjectivesComponent,
     OptimizationConstraintsComponent,
     OptimizationResultsComponent
-} from "./optimization/";
-import PropTypes from "prop-types";
-import ToolMetaData from "../../../shared/simpleTools/ToolMetaData";
-import {Stressperiods} from "core/model/modflow";
-import {sendCommand} from "services/api";
-import Command from "../../commands/command";
+} from './optimization/';
+import PropTypes from 'prop-types';
+import ToolMetaData from '../../../shared/simpleTools/ToolMetaData';
+import {Stressperiods} from 'core/model/modflow';
+import {sendCommand} from 'services/api';
+import Command from '../../commands/command';
+import {ModflowModel} from 'core/model/modflow';
 
 class OptimizationContainer extends React.Component {
     constructor(props) {
@@ -30,7 +31,6 @@ class OptimizationContainer extends React.Component {
             isDirty: false,
             boundaries: null,
             optimization: Optimization.fromDefaults().toObject,
-            model: null,
             error: false,
             errors: [],
             isLoading: true,
@@ -39,15 +39,6 @@ class OptimizationContainer extends React.Component {
     }
 
     componentDidMount() {
-        fetchUrl(
-            `modflowmodels/${this.props.match.params.id}`,
-            model => this.setState({
-                model: model,
-                isLoading: false
-            }),
-            error => this.setState({error, isLoading: false})
-        );
-
         fetchUrl(
             `modflowmodels/${this.props.match.params.id}/optimization`,
             optimization => this.setState({
@@ -197,7 +188,9 @@ class OptimizationContainer extends React.Component {
     };
 
     renderProperties() {
-        if (!this.state.model) {
+        const {model} = this.props;
+
+        if (!model) {
             return null;
         }
 
@@ -208,18 +201,18 @@ class OptimizationContainer extends React.Component {
 
         const {type} = this.props.match.params;
         const optimization = Optimization.fromObject(this.state.optimization);
-        const stressPeriods = Stressperiods.fromObject(this.state.model.stress_periods);
+        const stressPeriods = Stressperiods.fromObject(model.stress_periods);
 
         switch (type) {
             case 'objects':
                 return (
-                    <OptimizationObjectsComponent objects={optimization.input.objects} model={this.state.model}
+                    <OptimizationObjectsComponent objects={optimization.input.objects} model={model}
                                                   stressPeriods={stressPeriods} onChange={this.handleChange}/>
                 );
             case 'objectives':
                 return (
                     <OptimizationObjectivesComponent objectives={optimization.input.objectives}
-                                                     model={this.state.model}
+                                                     model={model}
                                                      objects={optimization.input.objects}
                                                      stressPeriods={stressPeriods}
                                                      onChange={this.handleChange}/>
@@ -227,7 +220,7 @@ class OptimizationContainer extends React.Component {
             case 'constraints':
                 return (
                     <OptimizationConstraintsComponent constraints={optimization.input.constraints}
-                                                      model={this.state.model}
+                                                      model={model}
                                                       objects={optimization.input.objects}
                                                       stressPeriods={stressPeriods}
                                                       onChange={this.handleChange}/>
@@ -235,7 +228,7 @@ class OptimizationContainer extends React.Component {
             case 'results':
                 return (
                     <OptimizationResultsComponent optimization={optimization} errors={this.state.errors}
-                                                  model={this.state.model}
+                                                  model={model}
                                                   stressPeriods={stressPeriods}
                                                   onChangeInput={this.onChange}
                                                   onCalculationClick={() => this.onCalculationClick(false)}
@@ -425,7 +418,8 @@ class OptimizationContainer extends React.Component {
 
 OptimizationContainer.proptypes = {
     history: PropTypes.object.isRequired,
-    match: PropTypes.object.isRequired
+    match: PropTypes.object.isRequired,
+    model: PropTypes.instanceOf(ModflowModel).isRequired,
 };
 
 export default withRouter(OptimizationContainer);

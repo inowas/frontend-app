@@ -1,7 +1,7 @@
-import React from "react";
-import PropTypes from "prop-types";
-import {Button, Dropdown, Grid, Icon, Message, Transition} from "semantic-ui-react";
-import {OPTIMIZATION_EDIT_SAVED, OPTIMIZATION_EDIT_UNSAVED} from "../../../../defaults/optimization";
+import React from 'react';
+import PropTypes from 'prop-types';
+import {Button, Dropdown, Grid, Icon, Message, Transition} from 'semantic-ui-react';
+import {OPTIMIZATION_EDIT_SAVED, OPTIMIZATION_EDIT_UNSAVED} from '../../../../defaults/optimization';
 
 const styles = {
     thinMessage: {
