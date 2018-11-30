@@ -31,7 +31,7 @@ class T03 extends React.Component {
         const {id} = this.props.match.params;
         if (!id) {
             return this.setState({
-                model: ModflowModel.fromDefaults().toObject(),
+                model: null,
                 isLoading: false
             })
         }
@@ -46,32 +46,53 @@ class T03 extends React.Component {
         )
     }
 
-
-    static renderContent(id, property, model) {
-
-        if (!id) {
-            return (<Content.CreateModel/>)
-        }
-
-        if (!model instanceof ModflowModel) {
+    renderToolMetaData = () => {
+        if (!this.state.model) {
             return null;
         }
 
+        const model = ModflowModel.fromObject(this.state.model);
+        return (<ToolMetaData
+            isDirty={false}
+            onChange={this.onChangeMetaData}
+            readOnly={false}
+            tool={{
+                type: 'T03',
+                name: model.name,
+                description: model.description,
+                public: model.public
+            }}
+            save={false}
+            onSave={this.saveMetaData}
+        />)
+
+    };
+
+    renderContent(id, property) {
+        if (!id) {
+            return (<Content.CreateModel defaultModel={ModflowModel.fromDefaults()}/>)
+        }
+
+        if (!this.state.model) {
+            return null;
+        }
+
+        const model = ModflowModel.fromObject(this.state.model);
         switch (property) {
             case 'discretization':
-                return (<Content.Discretization/>);
+                return (<Content.Discretization model={model}/>);
             case 'soilmodel':
-                return (<Content.Soilmodel/>);
+                return (<Content.Soilmodel model={model}/>);
             case 'boundaries':
                 return (<Content.Boundaries model={model}/>);
             case 'observations':
-                return (<Content.Observations/>);
+                return (<Content.Observations model={model}/>);
             case 'run':
-                return (<Content.Run/>);
+                return (<Content.Run model={model}/>);
             case 'results':
-                return (<Content.Results/>);
+                return (<Content.Results model={model}/>);
             case 'optimization':
-                return (<Content.Optimization/>);
+                return (<Content.Optimization model={model}/>);
             default:
                 return null;
         }
@@ -89,6 +110,10 @@ class T03 extends React.Component {
         })
     };
 
+    saveMetaData = () => {
+    };
+
+
     render() {
         if (this.state.isLoading) {
             return (
@@ -96,26 +121,14 @@ class T03 extends React.Component {
             )
         }
 
-        const model = ModflowModel.fromObject(this.state.model);
         const {id, property} = this.props.match.params;
-
         return (
             <AppContainer navbarItems={navigation}>
                 <Grid padded>
                     <Grid.Row>
                         <Grid.Column width={3}/>
                         <Grid.Column width={13}>
-                            <ToolMetaData
-                                isDirty={false}
-                                onChange={this.onChangeMetaData}
-                                readOnly={false}
-                                tool={{
-                                    tool: 'T03',
-                                    name: model.name,
-                                    description: model.description,
-                                    public: model.public
-                                }}
-                            />
+                            {this.renderToolMetaData()}
                         </Grid.Column>
                     </Grid.Row>
                     <Grid.Row>
@@ -123,7 +136,7 @@ class T03 extends React.Component {
                             <ToolNavigation navigationItems={menuItems}/>
                         </Grid.Column>
                         <Grid.Column width={13}>
-                            {T03.renderContent(id, property, model)}
+                            {this.renderContent(id, property)}
                         </Grid.Column>
                     </Grid.Row>
                 </Grid>
