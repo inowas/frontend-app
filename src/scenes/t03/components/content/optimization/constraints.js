@@ -2,13 +2,13 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import {Button, Form, Grid, Icon, Message, Segment, Table} from 'semantic-ui-react';
 import Slider, {createSliderWithTooltip} from 'rc-slider';
-import OptimizationConstraint from "core/model/modflow/optimization/Constraint";
-import {OptimizationMap, OptimizationToolbar} from "./shared";
+import OptimizationConstraint from 'core/model/modflow/optimization/Constraint';
+import {OptimizationMap, OptimizationToolbar} from './shared';
 import {
     OPTIMIZATION_EDIT_NOCHANGES,
     OPTIMIZATION_EDIT_SAVED,
     OPTIMIZATION_EDIT_UNSAVED
-} from "../../../defaults/optimization";
+} from '../../../defaults/optimization';
 
 const Range = createSliderWithTooltip(Slider.Range);
 
@@ -74,7 +74,7 @@ class OptimizationConstraintsComponent extends React.Component {
     onClickNew = (e, {name, value}) => {
         const newConstraint = new OptimizationConstraint();
         newConstraint.type = value;
-        newConstraint.location.ts.max = this.props.stressPeriods.dateTimes.length - 1;
+        newConstraint.location.ts.max = this.props.model.stressPeriods.dateTimes.length - 1;
         return this.setState({
             selectedConstraint: newConstraint.toObject,
             editState: OPTIMIZATION_EDIT_UNSAVED
@@ -125,17 +125,20 @@ class OptimizationConstraintsComponent extends React.Component {
         });
     };
 
-    formatTimestamp = (key) => this.props.stressPeriods.dateTimes[key]; //TODO: Formatter.toDate(this.props.stressPeriods.dateTimes[key]);
+    formatTimestamp = (key) => this.props.model.stressPeriods.dateTimes[key]; //TODO: Formatter.toDate(this.props.stressPeriods.dateTimes[key]);
 
     sliderMarks = () => {
         let marks = {};
-        this.props.stressPeriods.dateTimes.forEach((dt, key) => {
+        this.props.model.stressPeriods.dateTimes.forEach((dt, key) => {
             marks[key] = key;
         });
         return marks;
     };
 
     render() {
+        const {model, objects} = this.props;
+        const {constraints, editState, selectedConstraint} = this.state;
+
         const typeOptions = [
             {key: 'type1', text: 'Concentration', value: 'concentration'},
             {key: 'type2', text: 'Head', value: 'head'},
@@ -147,25 +150,25 @@ class OptimizationConstraintsComponent extends React.Component {
         return (
             <div>
                 <OptimizationToolbar
-                    save={this.state.selectedConstraint ? {onClick: this.onClickSave} : null}
-                    back={this.state.selectedConstraint ? {onClick: this.onClickBack} : null}
-                    dropdown={!this.state.selectedConstraint ? {
+                    save={selectedConstraint ? {onClick: this.onClickSave} : null}
+                    back={selectedConstraint ? {onClick: this.onClickBack} : null}
+                    dropdown={!selectedConstraint ? {
                         text: 'Add New',
                         icon: 'plus',
                         options: typeOptions,
                         onChange: this.onClickNew
                     } : null}
-                    editState={this.state.editState}
+                    editState={editState}
                 />
-                <Grid style={styles.tableWidth}>
+                <Grid>
                     <Grid.Row columns={1}>
                         <Grid.Column>
-                            {(!this.state.selectedConstraint && (!this.state.constraints || this.state.constraints.length < 1)) &&
+                            {(!selectedConstraint && (!constraints || constraints.length < 1)) &&
                             <Message>
                                 <p>No optimization constraints</p>
                             </Message>
                             }
-                            {(!this.state.selectedConstraint && this.state.constraints && this.state.constraints.length >= 1) &&
+                            {(!selectedConstraint && constraints && constraints.length >= 1) &&
                             <Table celled striped>
                                 <Table.Header>
                                     <Table.Row>
@@ -176,18 +179,18 @@ class OptimizationConstraintsComponent extends React.Component {
                                 </Table.Header>
                                 <Table.Body>
                                     {
-                                        this.state.constraints.map((constraint) =>
+                                        constraints.map((constraint) =>
                                             <Table.Row key={constraint.id}>
                                                 <Table.Cell>
-                                                    <a style={styles.link}
-                                                       onClick={() => this.onClickConstraint(constraint)}>
+                                                    <Button
+                                                        size="small"
+                                                        onClick={() => this.onClickConstraint(constraint)}>
                                                         {constraint.name}
-                                                    </a>
+                                                    </Button>
                                                 </Table.Cell>
                                                 <Table.Cell>{constraint.type}</Table.Cell>
                                                 <Table.Cell textAlign="center">
                                                     <Button icon color="red"
-                                                            style={styles.iconFix}
                                                             size="small"
                                                             onClick={() => this.onClickDelete(constraint)}>
                                                         <Icon name="trash"/>
@@ -199,14 +202,14 @@ class OptimizationConstraintsComponent extends React.Component {
                                 </Table.Body>
                             </Table>
                             }
-                            {this.state.selectedConstraint &&
+                            {selectedConstraint &&
                             <Form>
                                 <Form.Field>
                                     <label>Name</label>
                                     <Form.Input
                                         type="text"
                                         name="name"
-                                        value={this.state.selectedConstraint.name}
+                                        value={selectedConstraint.name}
                                         placeholder="name ="
                                         style={styles.inputFix}
                                         onChange={this.handleLocalChange}
@@ -218,7 +221,7 @@ class OptimizationConstraintsComponent extends React.Component {
                                         <label>Constraint type</label>
                                         <Form.Select
                                             name="type"
-                                            value={this.state.selectedConstraint.type}
+                                            value={selectedConstraint.type}
                                             placeholder="type ="
                                             options={typeOptions}
                                             onChange={this.handleLocalChange}
@@ -228,7 +231,7 @@ class OptimizationConstraintsComponent extends React.Component {
                                         <label>Method how each constraint scalar will be calculated.</label>
                                         <Form.Select
                                             name="summary_method"
-                                            value={this.state.selectedConstraint.summary_method}
+                                            value={selectedConstraint.summary_method}
                                             placeholder="summary_method ="
                                             options={[
                                                 {key: 'min', text: 'Min', value: 'min'},
@@ -244,7 +247,7 @@ class OptimizationConstraintsComponent extends React.Component {
                                     <Form.Input
                                         type="number"
                                         name="value"
-                                        value={this.state.selectedConstraint.value}
+                                        value={selectedConstraint.value}
                                         placeholder="value ="
                                         style={styles.inputFix}
                                         onChange={this.handleLocalChange}
@@ -257,7 +260,7 @@ class OptimizationConstraintsComponent extends React.Component {
                                         value.</label>
                                     <Form.Select
                                         name="operator"
-                                        value={this.state.selectedConstraint.operator}
+                                        value={selectedConstraint.operator}
                                         placeholder="operator ="
                                         options={[
                                             {key: 'more', text: 'More', value: 'more'},
@@ -266,18 +269,18 @@ class OptimizationConstraintsComponent extends React.Component {
                                         onChange={this.handleLocalChange}
                                     />
                                 </Form.Field>
-                                {this.state.selectedConstraint.type !== 'distance' &&
+                                {selectedConstraint.type !== 'distance' &&
                                 <div>
                                     <Form.Field>
                                         <label>Stress Periods</label>
                                         <Segment style={styles.sliderDiv}>
                                             <Range
                                                 min={0}
-                                                max={this.props.stressPeriods.dateTimes.length - 1}
+                                                max={model.stressPeriods.dateTimes.length - 1}
                                                 step={1}
                                                 marks={this.sliderMarks()}
                                                 onChange={this.handleChangeStressPeriods}
-                                                defaultValue={[this.state.selectedConstraint.location.ts.min, this.state.selectedConstraint.location.ts.max]}
+                                                defaultValue={[selectedConstraint.location.ts.min, selectedConstraint.location.ts.max]}
                                                 tipFormatter={value => `${this.formatTimestamp(value)}`}
                                             />
                                         </Segment>
@@ -287,12 +290,12 @@ class OptimizationConstraintsComponent extends React.Component {
                                         <Segment>
                                             <OptimizationMap
                                                 name="location"
-                                                area={this.props.model.geometry}
-                                                bbox={this.props.model.bounding_box}
-                                                location={this.state.selectedConstraint.location}
+                                                area={model.geometry}
+                                                bbox={model.boundingBox}
+                                                location={selectedConstraint.location}
                                                 objects={this.props.objects}
-                                                onlyObjects={this.state.selectedConstraint.type === 'flux' || this.state.selectedConstraint.type === 'inputConc'}
-                                                gridSize={this.props.model.grid_size}
+                                                onlyObjects={selectedConstraint.type === 'flux' || selectedConstraint.type === 'inputConc'}
+                                                gridSize={model.gridSize}
                                                 onChange={this.handleLocalChange}
                                                 readOnly
                                             />
@@ -300,7 +303,7 @@ class OptimizationConstraintsComponent extends React.Component {
                                     </Form.Field>
                                 </div>
                                 }
-                                {this.state.selectedConstraint.type === 'distance' &&
+                                {selectedConstraint.type === 'distance' &&
                                 <Form.Field>
                                     <label>Distance</label>
                                     <Segment>
@@ -310,11 +313,11 @@ class OptimizationConstraintsComponent extends React.Component {
                                                     <OptimizationMap
                                                         name="location1"
                                                         label="Edit Location 1"
-                                                        area={this.props.model.geometry}
-                                                        bbox={this.props.model.bounding_box}
-                                                        location={this.state.selectedConstraint.location_1}
-                                                        objects={this.props.objects}
-                                                        gridSize={this.props.model.grid_size}
+                                                        area={model.geometry}
+                                                        bbox={model.boundingBox}
+                                                        location={selectedConstraint.location_1}
+                                                        objects={objects}
+                                                        gridSize={model.gridSize}
                                                         onChange={this.handleLocalChange}
                                                         readOnly
                                                     />
@@ -323,11 +326,11 @@ class OptimizationConstraintsComponent extends React.Component {
                                                     <OptimizationMap
                                                         name="location2"
                                                         label="Edit Location 2"
-                                                        area={this.props.model.geometry}
-                                                        bbox={this.props.model.bounding_box}
-                                                        location={this.state.selectedConstraint.location_2}
-                                                        objects={this.props.objects}
-                                                        gridSize={this.props.model.grid_size}
+                                                        area={model.geometry}
+                                                        bbox={model.boundingBox}
+                                                        location={selectedConstraint.location_2}
+                                                        objects={objects}
+                                                        gridSize={model.gridSize}
                                                         onChange={this.handleLocalChange}
                                                         readOnly
                                                     />

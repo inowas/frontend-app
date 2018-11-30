@@ -1,7 +1,8 @@
 import WellPosition from './WellPosition';
 import uuidv4 from 'uuid/v4';
-import moment from "moment/moment";
-import {calculateActiveCells} from "services/geoTools";
+import moment from 'moment/moment';
+import BoundaryFactory from '../boundaries/BoundaryFactory';
+import {calculateActiveCells} from 'services/geoTools';
 
 class OptimizationObject {
     _id = uuidv4();
@@ -179,14 +180,14 @@ class OptimizationObject {
             },
             utcIsoStartDateTime: stressPeriods.dateTimes[0]
         };
-// Todo:
-        /*const boundary = BoundaryFactory.createByTypeAndStartDate(args);
+
+        const boundary = BoundaryFactory.createByTypeAndStartDate(args);
         boundary.wellType = 'opw';
         boundary.setDateTimeValues(flux);
         boundary.activeCells = calculateActiveCells(args.geometry, bbox, gridSize);
         boundary.affectedLayers = [this.position.lay.result];
 
-        return boundary;*/
+        return boundary;
     }
 
     get toObject() {

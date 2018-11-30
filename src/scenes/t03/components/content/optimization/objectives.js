@@ -3,14 +3,13 @@ import PropTypes from 'prop-types';
 import {Button, Form, Grid, Icon, Message, Segment, Table} from 'semantic-ui-react';
 import Slider from 'rc-slider';
 import {createSliderWithTooltip} from 'rc-slider';
-import OptimizationObjective from "core/model/modflow/optimization/Objective";
-import {OptimizationMap, OptimizationToolbar} from "./shared";
+import OptimizationObjective from 'core/model/modflow/optimization/Objective';
+import {OptimizationMap, OptimizationToolbar} from './shared';
 import {
     OPTIMIZATION_EDIT_NOCHANGES,
     OPTIMIZATION_EDIT_SAVED,
     OPTIMIZATION_EDIT_UNSAVED
-} from "../../../defaults/optimization";
-import {Stressperiods} from "core/model/modflow";
+} from '../../../defaults/optimization';
 
 const Range = createSliderWithTooltip(Slider.Range);
 
@@ -78,7 +77,7 @@ class OptimizationObjectivesComponent extends React.Component {
     onClickNew = (e, {name, value}) => {
         const newObjective = new OptimizationObjective();
         newObjective.type = value;
-        newObjective.location.ts.max = this.props.stressPeriods.dateTimes.length - 1;
+        newObjective.location.ts.max = this.props.model.stressPeriods.dateTimes.length - 1;
         return this.setState({
             selectedObjective: newObjective.toObject,
             editState: OPTIMIZATION_EDIT_UNSAVED
@@ -129,17 +128,20 @@ class OptimizationObjectivesComponent extends React.Component {
         });
     };
 
-    formatTimestamp = (key) => this.props.stressPeriods.dateTimes[key]; //Formatter.toDate(this.props.stressPeriods.dateTimes[key]);
+    formatTimestamp = (key) => this.props.model.stressPeriods.dateTimes[key]; //Formatter.toDate(this.props.stressPeriods.dateTimes[key]);
 
     sliderMarks = () => {
         let marks = {};
-        this.props.stressPeriods.dateTimes.forEach((dt, key) => {
+        this.props.model.stressPeriods.dateTimes.forEach((dt, key) => {
             marks[key] = key;
         });
         return marks;
     };
 
     render() {
+        const {model, objects} = this.props;
+        const {editState, objectives, selectedObjective} = this.state;
+
         const typeOptions = [
             {key: 'type1', text: 'Concentration', value: 'concentration'},
             {key: 'type2', text: 'Head', value: 'head'},
@@ -151,25 +153,25 @@ class OptimizationObjectivesComponent extends React.Component {
         return (
             <div>
                 <OptimizationToolbar
-                    save={this.state.selectedObjective ? {onClick: this.onClickSave} : null}
-                    back={this.state.selectedObjective ? {onClick: this.onClickBack} : null}
-                    dropdown={ !this.state.selectedObjective ? {
+                    save={selectedObjective ? {onClick: this.onClickSave} : null}
+                    back={selectedObjective ? {onClick: this.onClickBack} : null}
+                    dropdown={!selectedObjective ? {
                         text: 'Add New',
                         icon: 'plus',
                         options: typeOptions,
                         onChange: this.onClickNew
                     } : null}
-                    editState={this.state.editState}
+                    editState={editState}
                 />
                 <Grid>
                     <Grid.Row columns={1}>
                         <Grid.Column>
-                            {(!this.state.selectedObjective && (!this.state.objectives || this.state.objectives.length < 1)) &&
+                            {(!selectedObjective && (!objectives || objectives.length < 1)) &&
                             <Message>
                                 <p>No optimization objectives</p>
                             </Message>
                             }
-                            {(!this.state.selectedObjective && this.state.objectives && this.state.objectives.length >= 1) &&
+                            {(!selectedObjective && objectives && objectives.length >= 1) &&
                             <Table celled striped>
                                 <Table.Header>
                                     <Table.Row>
@@ -180,18 +182,18 @@ class OptimizationObjectivesComponent extends React.Component {
                                 </Table.Header>
                                 <Table.Body>
                                     {
-                                        this.state.objectives.map((objective) =>
+                                        objectives.map((objective) =>
                                             <Table.Row key={objective.id}>
                                                 <Table.Cell>
-                                                    <a style={styles.link}
-                                                       onClick={() => this.onClickObjective(objective)}>
+                                                    <Button
+                                                        size="small"
+                                                        onClick={() => this.onClickObjective(objective)}>
                                                         {objective.name}
-                                                    </a>
+                                                    </Button>
                                                 </Table.Cell>
                                                 <Table.Cell>{objective.type}</Table.Cell>
                                                 <Table.Cell textAlign="center">
                                                     <Button icon color="red"
-                                                            style={styles.iconFix}
                                                             size="small"
                                                             onClick={() => this.onClickDelete(objective)}>
                                                         <Icon name="trash"/>
@@ -203,14 +205,14 @@ class OptimizationObjectivesComponent extends React.Component {
                                 </Table.Body>
                             </Table>
                             }
-                            {this.state.selectedObjective &&
+                            {selectedObjective &&
                             <Form>
                                 <Form.Field>
                                     <label>Name</label>
                                     <Form.Input
                                         type="text"
                                         name="name"
-                                        value={this.state.selectedObjective.name}
+                                        value={selectedObjective.name}
                                         placeholder="name ="
                                         style={styles.inputFix}
                                         onChange={this.handleLocalChange}
@@ -222,7 +224,7 @@ class OptimizationObjectivesComponent extends React.Component {
                                         <label>Objective type</label>
                                         <Form.Select
                                             name="type"
-                                            value={this.state.selectedObjective.type}
+                                            value={selectedObjective.type}
                                             placeholder="type ="
                                             options={typeOptions}
                                             onChange={this.handleLocalChange}
@@ -232,7 +234,7 @@ class OptimizationObjectivesComponent extends React.Component {
                                         <label>Method how each objective scalar will be calculated.</label>
                                         <Form.Select
                                             name="summary_method"
-                                            value={this.state.selectedObjective.summary_method}
+                                            value={selectedObjective.summary_method}
                                             placeholder="summary_method ="
                                             options={[
                                                 {key: 'min', text: 'Min', value: 'min'},
@@ -249,7 +251,7 @@ class OptimizationObjectivesComponent extends React.Component {
                                         <Form.Input
                                             type="number"
                                             name="weight"
-                                            value={this.state.selectedObjective.weight}
+                                            value={selectedObjective.weight}
                                             placeholder="weight ="
                                             onChange={this.handleLocalChange}
                                             onBlur={this.handleChange}
@@ -261,25 +263,25 @@ class OptimizationObjectivesComponent extends React.Component {
                                         <Form.Input
                                             type="number"
                                             name="penalty_value"
-                                            value={this.state.selectedObjective.penalty_value}
+                                            value={selectedObjective.penalty_value}
                                             placeholder="penalty_value ="
                                             onChange={this.handleLocalChange}
                                             onBlur={this.handleChange}
                                         />
                                     </Form.Field>
                                 </Form.Group>
-                                {this.state.selectedObjective.type !== 'distance' &&
+                                {selectedObjective.type !== 'distance' &&
                                 <div>
                                     <Form.Field>
                                         <label>Stress Periods</label>
                                         <Segment style={styles.sliderDiv}>
                                             <Range
                                                 min={0}
-                                                max={this.props.stressPeriods.dateTimes.length - 1}
+                                                max={model.stressPeriods.dateTimes.length - 1}
                                                 step={1}
                                                 marks={this.sliderMarks()}
                                                 onChange={this.handleChangeStressPeriods}
-                                                defaultValue={[this.state.selectedObjective.location.ts.min, this.state.selectedObjective.location.ts.max]}
+                                                defaultValue={[selectedObjective.location.ts.min, selectedObjective.location.ts.max]}
                                                 tipFormatter={value => `${this.formatTimestamp(value)}`}
                                             />
                                         </Segment>
@@ -289,12 +291,12 @@ class OptimizationObjectivesComponent extends React.Component {
                                         <Segment>
                                             <OptimizationMap
                                                 name="location"
-                                                area={this.props.model.geometry}
-                                                bbox={this.props.model.bounding_box}
-                                                location={this.state.selectedObjective.location}
-                                                objects={this.props.objects}
-                                                onlyObjects={this.state.selectedObjective.type === 'flux' || this.state.selectedObjective.type === 'inputConc'}
-                                                gridSize={this.props.model.grid_size}
+                                                area={model.geometry}
+                                                bbox={model.boundingBox}
+                                                location={selectedObjective.location}
+                                                objects={objects}
+                                                onlyObjects={selectedObjective.type === 'flux' || selectedObjective.type === 'inputConc'}
+                                                gridSize={model.gridSize}
                                                 onChange={this.handleLocalChange}
                                                 readOnly
                                             />
@@ -302,7 +304,7 @@ class OptimizationObjectivesComponent extends React.Component {
                                     </Form.Field>
                                 </div>
                                 }
-                                {this.state.selectedObjective.type === 'distance' &&
+                                {selectedObjective.type === 'distance' &&
                                 <Form.Field>
                                     <h4>Distance</h4>
                                     <Segment>
@@ -312,11 +314,11 @@ class OptimizationObjectivesComponent extends React.Component {
                                                     <OptimizationMap
                                                         name="location1"
                                                         label="Edit Location 1"
-                                                        area={this.props.model.geometry}
-                                                        bbox={this.props.model.bounding_box}
-                                                        location={this.state.selectedObjective.location_1}
-                                                        objects={this.props.objects}
-                                                        gridSize={this.props.model.grid_size}
+                                                        area={model.geometry}
+                                                        bbox={model.boundingBox}
+                                                        location={selectedObjective.location_1}
+                                                        objects={objects}
+                                                        gridSize={model.gridSize}
                                                         onChange={this.handleLocalChange}
                                                         readOnly
                                                     />
@@ -325,11 +327,11 @@ class OptimizationObjectivesComponent extends React.Component {
                                                     <OptimizationMap
                                                         name="location2"
                                                         label="Edit Location 2"
-                                                        area={this.props.model.geometry}
-                                                        bbox={this.props.model.bounding_box}
-                                                        location={this.state.selectedObjective.location_2}
-                                                        objects={this.props.objects}
-                                                        gridSize={this.props.model.grid_size}
+                                                        area={model.geometry}
+                                                        bbox={model.boundingBox}
+                                                        location={selectedObjective.location_2}
+                                                        objects={objects}
+                                                        gridSize={model.gridSize}
                                                         onChange={this.handleLocalChange}
                                                         readOnly
                                                     />
@@ -353,7 +355,6 @@ OptimizationObjectivesComponent.propTypes = {
     objectives: PropTypes.array.isRequired,
     objects: PropTypes.array.isRequired,
     model: PropTypes.object,
-    stressPeriods: PropTypes.instanceOf(Stressperiods),
     onChange: PropTypes.func.isRequired,
 };
 

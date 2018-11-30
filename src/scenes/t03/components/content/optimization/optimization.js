@@ -6,7 +6,7 @@ import {
     getMessage, optimizationHasError, optimizationInProgress,
     OPTIMIZATION_STATE_CANCELLED, OPTIMIZATION_STATE_CANCELLING,
     OPTIMIZATION_STATE_FINISHED, OPTIMIZATION_STATE_STARTED
-} from '../../defaults/optimization';
+} from '../../../defaults/optimization';
 import {Optimization, OptimizationInput} from 'core/model/modflow/optimization';
 import {
     OptimizationParametersComponent,
@@ -14,12 +14,10 @@ import {
     OptimizationObjectivesComponent,
     OptimizationConstraintsComponent,
     OptimizationResultsComponent
-} from './optimization/';
+} from './index';
 import PropTypes from 'prop-types';
-import ToolMetaData from '../../../shared/simpleTools/ToolMetaData';
-import {Stressperiods} from 'core/model/modflow';
 import {sendCommand} from 'services/api';
-import Command from '../../commands/command';
+import Command from '../../../commands/command';
 import {ModflowModel} from 'core/model/modflow';
 
 class OptimizationContainer extends React.Component {
@@ -28,11 +26,11 @@ class OptimizationContainer extends React.Component {
 
         this.state = {
             activeItem: 'parameters',
-            isDirty: false,
             boundaries: null,
             optimization: Optimization.fromDefaults().toObject,
             error: false,
             errors: [],
+            isDirty: false,
             isLoading: true,
             isPolling: false
         }
@@ -42,7 +40,8 @@ class OptimizationContainer extends React.Component {
         fetchUrl(
             `modflowmodels/${this.props.match.params.id}/optimization`,
             optimization => this.setState({
-                optimization: Optimization.fromObject(optimization).toObject
+                optimization: Optimization.fromObject(optimization).toObject,
+                isLoading: false
             }),
             error => this.setState({error, isLoading: false})
         );
@@ -50,7 +49,8 @@ class OptimizationContainer extends React.Component {
         fetchUrl(
             `modflowmodels/${this.props.match.params.id}/boundaries`,
             boundaries => this.setState({
-                boundaries
+                boundaries,
+                isLoading: false
             }),
             error => this.setState({error, isLoading: false})
         );
@@ -75,7 +75,7 @@ class OptimizationContainer extends React.Component {
         this.setState({loading: true});
         return sendCommand(
             Command.updateOptimizationInput({
-                id: this.state.model.id,
+                id: this.props.model.id,
                 input: this.state.optimization.input
             }), () => this.setState({
                 isDirty: false,
@@ -97,7 +97,7 @@ class OptimizationContainer extends React.Component {
         const path = this.props.match.path;
         const basePath = path.split(':')[0];
 
-        this.props.history.push(basePath + this.state.model.id + '/optimization/' + name);
+        this.props.history.push(basePath + this.props.model.id + '/optimization/' + name);
     };
 
     onCancelCalculationClick = () => {
@@ -113,7 +113,7 @@ class OptimizationContainer extends React.Component {
 
         return sendCommand(
             Command.cancelOptimizationCalculation({
-                id: this.state.model.id,
+                id: this.props.model.id,
                 optimization_id: this.state.optimization.input.id
             }), () => this.setState({
                 isLoading: false
@@ -140,7 +140,7 @@ class OptimizationContainer extends React.Component {
 
         return sendCommand(
             Command.calculateOptimization({
-                id: this.state.model.id,
+                id: this.props.model.id,
                 optimization_id: this.state.optimization.input.id,
                 is_initial: isInitial
             }), () => this.setState({
@@ -161,7 +161,7 @@ class OptimizationContainer extends React.Component {
         const path = this.props.match.path;
         const basePath = path.split(':')[0];
 
-        this.props.history.push(basePath + this.state.model.id + '/boundaries/wel');
+        this.props.history.push(basePath + this.props.model.id + '/boundaries/wel');
     };
 
     getValidationMessage = (errors) => {
@@ -201,20 +201,17 @@ class OptimizationContainer extends React.Component {
 
         const {type} = this.props.match.params;
         const optimization = Optimization.fromObject(this.state.optimization);
-        const stressPeriods = Stressperiods.fromObject(model.stress_periods);
 
         switch (type) {
             case 'objects':
                 return (
-                    <OptimizationObjectsComponent objects={optimization.input.objects} model={model}
-                                                  stressPeriods={stressPeriods} onChange={this.handleChange}/>
+                    <OptimizationObjectsComponent objects={optimization.input.objects} model={model} onChange={this.handleChange}/>
                 );
             case 'objectives':
                 return (
                     <OptimizationObjectivesComponent objectives={optimization.input.objectives}
                                                      model={model}
                                                      objects={optimization.input.objects}
-                                                     stressPeriods={stressPeriods}
                                                      onChange={this.handleChange}/>
                 );
             case 'constraints':
@@ -222,14 +219,12 @@ class OptimizationContainer extends React.Component {
                     <OptimizationConstraintsComponent constraints={optimization.input.constraints}
                                                       model={model}
                                                       objects={optimization.input.objects}
-                                                      stressPeriods={stressPeriods}
                                                       onChange={this.handleChange}/>
                 );
             case 'results':
                 return (
                     <OptimizationResultsComponent optimization={optimization} errors={this.state.errors}
                                                   model={model}
-                                                  stressPeriods={stressPeriods}
                                                   onChangeInput={this.onChange}
                                                   onCalculationClick={() => this.onCalculationClick(false)}
                                                   onChange={this.onChangeResult}
@@ -246,7 +241,7 @@ class OptimizationContainer extends React.Component {
     }
 
     renderButton() {
-        const optimization = Optimization.fromObject(this.state.optimization);
+        //const optimization = Optimization.fromObject(this.state.optimization);
         // TODO:
         /*const [result, errors] = optimization.validate();
 
@@ -362,35 +357,35 @@ class OptimizationContainer extends React.Component {
     }
 
     render() {
-        if (!this.state.optimization) {
+        const {activeItem, isLoading, optimization} = this.state;
+
+        if (!optimization) {
             return null;
         }
 
         return (
             <div>
-                <ToolMetaData onChange={() => 1 + 1} onSave={this.handleSave} isDirty={this.state.isDirty}
-                              readOnly={false} tool={{type: 'T03'}}/>
-                <Segment color={'grey'} loading={this.state.isLoading}>
+                <Segment color={'grey'} loading={isLoading}>
                     <Grid>
                         <Grid.Column width={4}>
                             <Menu fluid vertical tabular>
                                 <Menu.Item
                                     name="parameters"
-                                    active={this.state.activeItem === 'parameters'}
+                                    active={activeItem === 'parameters'}
                                     onClick={this.onMenuClick}/>
                                 <Menu.Item
                                     name="objects"
-                                    active={this.state.activeItem === 'objects'}
+                                    active={activeItem === 'objects'}
                                     onClick={this.onMenuClick}
                                     content="Decision Variables"/>
                                 <Menu.Item
                                     name="objectives"
-                                    active={this.state.activeItem === 'objectives'}
+                                    active={activeItem === 'objectives'}
                                     onClick={this.onMenuClick}
                                 />
                                 <Menu.Item
                                     name="constraints"
-                                    active={this.state.activeItem === 'constraints'}
+                                    active={activeItem === 'constraints'}
                                     onClick={this.onMenuClick}
                                 />
                                 {
@@ -401,7 +396,7 @@ class OptimizationContainer extends React.Component {
                                 }
                                 <Menu.Item
                                     name="results"
-                                    active={this.state.activeItem === 'results'}
+                                    active={activeItem === 'results'}
                                     onClick={this.onMenuClick}
                                 />
                             </Menu>

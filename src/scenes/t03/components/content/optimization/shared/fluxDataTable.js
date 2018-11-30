@@ -3,10 +3,6 @@ import React from 'react';
 import PropTypes from 'prop-types';
 
 class FluxDataTable extends React.Component {
-    constructor(props) {
-        super(props);
-    }
-
     // TODO
     render() {
         return (<div/>);

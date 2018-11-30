@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import {Segment, Form} from 'semantic-ui-react';
-import {OptimizationParameters} from "core/model/modflow/optimization";
+import {OptimizationParameters} from 'core/model/modflow/optimization';
 
 class OptimizationParametersComponent extends React.Component {
 

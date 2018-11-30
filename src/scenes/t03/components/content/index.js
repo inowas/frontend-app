@@ -3,7 +3,7 @@ import CreateModel from './createModel';
 import Discretization from './discretization';
 import General from './general';
 import Observations from './observations';
-import OptimizationContainer from './optimization.js';
+import OptimizationContainer from './optimization/optimization.js';
 import Results from './results';
 import Run from './run';
 import Soilmodel from './soilmodel';

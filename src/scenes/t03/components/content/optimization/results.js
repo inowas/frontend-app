@@ -5,10 +5,9 @@ import {
     OPTIMIZATION_STATE_CANCELLED,
     optimizationHasError,
     optimizationInProgress
-} from "../../../defaults/optimization";
-import {Optimization, OptimizationInput, OptimizationObject, OptimizationSolution} from "core/model/modflow/optimization";
-import {FitnessChart, LocalOptimizationModal, OptimizationSolutionModal} from "./shared";
-import {Stressperiods} from "core/model/modflow";
+} from '../../../defaults/optimization';
+import {Optimization, OptimizationInput, OptimizationObject, OptimizationSolution} from 'core/model/modflow/optimization';
+import {FitnessChart, LocalOptimizationModal, OptimizationSolutionModal} from './shared';
 
 class OptimizationResultsComponent extends React.Component {
 
@@ -41,7 +40,7 @@ class OptimizationResultsComponent extends React.Component {
         const solution = Optimization.fromObject(this.state.optimization).getSolutionById(id).toObject;
 
         const boundaries = solution.objects.map(o => {
-            return OptimizationObject.fromObject(o).toBoundary(this.props.model.bounding_box, this.props.model.grid_size, this.props.stressPeriods);
+            return OptimizationObject.fromObject(o).toBoundary(this.props.model.bounding_box, this.props.model.grid_size, this.props.model.stressPeriods);
         });
 
         this.setState({
@@ -181,7 +180,8 @@ class OptimizationResultsComponent extends React.Component {
     };
 
     render() {
-        const {activeIndex, optimization} = this.state;
+        const {activeIndex, createdBoundaries, localOptimization, optimization, selectedSolution} = this.state;
+        const {model} = this.props;
         const state = this.props.optimization.state;
 
         const panes = this.props.optimization.methods.map((method, mKey) => {
@@ -207,29 +207,29 @@ class OptimizationResultsComponent extends React.Component {
                         <Loader inverted content='Starting Calculation' />
                     </Dimmer> : <div />
                 }
-                {this.state.selectedSolution &&
+                {selectedSolution &&
                 <OptimizationSolutionModal
-                    model={this.props.model}
+                    model={model}
                     onCancel={this.onCancelModal}
-                    stressPeriods={this.props.stressPeriods}
-                    solution={OptimizationSolution.fromObject(this.state.selectedSolution)}
+                    stressPeriods={model.stressPeriods}
+                    solution={OptimizationSolution.fromObject(selectedSolution)}
                 />
                 }
-                {this.state.localOptimization &&
+                {localOptimization &&
                 <LocalOptimizationModal
                     onCancel={this.onCancelModal}
                     onCalculationStart={this.onCalculationStart}
-                    optimizationInput={OptimizationInput.fromObject(this.state.optimization.input)}
-                    solution={OptimizationSolution.fromObject(this.state.localOptimization)}
+                    optimizationInput={OptimizationInput.fromObject(optimization.input)}
+                    solution={OptimizationSolution.fromObject(localOptimization)}
                 />
                 }
-                {this.state.createdBoundaries &&
+                {createdBoundaries &&
                 <Modal size={'tiny'} open onClose={this.onCancelModal} dimmer={'inverted'}>
                     <Modal.Header>Solution Applied</Modal.Header>
                     <Modal.Content>
                         <p>The solution has been applied successfully. Following boundaries have been created:</p>
                         <List>
-                            {this.state.createdBoundaries.map((boundary, key) =>
+                            {createdBoundaries.map((boundary, key) =>
                                 <List.Item key={key}>{boundary.name} of type {boundary.type}</List.Item>
                             )}
                         </List>
@@ -253,7 +253,6 @@ OptimizationResultsComponent.propTypes = {
     onCalculationClick: PropTypes.func.isRequired,
     onGoToBoundaryClick: PropTypes.func.isRequired,
     model: PropTypes.object.isRequired,
-    stressPeriods: PropTypes.instanceOf(Stressperiods),
     errors: PropTypes.array
 };
 
