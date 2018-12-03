@@ -1,6 +1,9 @@
 import React from 'react';
-import PropTypes from 'prop-types';
+import {connect} from 'react-redux';
 import {withRouter} from 'react-router-dom';
+
+import PropTypes from 'prop-types';
+
 import AppContainer from '../../shared/AppContainer';
 import {Grid, Icon, Message} from 'semantic-ui-react';
 import ToolNavigation from '../../shared/complexTools/toolNavigation';
@@ -9,6 +12,9 @@ import * as Content from '../components/content/index';
 import ToolMetaData from '../../shared/simpleTools/ToolMetaData';
 import {fetchUrl} from 'services/api';
 import ModflowModel from 'core/model/modflow/ModflowModel';
+import {updateBoundaries, updateModel, updateSoilmodel} from '../actions/actions';
+import {BoundaryCollection} from 'core/model/modflow/boundaries';
+import {Soilmodel} from '../../../core/model/modflow/soilmodel';
 
 const navigation = [{
     name: 'Documentation',
@@ -21,7 +27,7 @@ class T03 extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            model: null,
+            model: props.model,
             isLoading: true,
             error: false
         }
@@ -30,26 +36,50 @@ class T03 extends React.Component {
     componentDidMount() {
         const {id} = this.props.match.params;
         if (!id) {
-            return this.setState({
-                model: null,
-                isLoading: false
-            })
+            return this.setState({isLoading: false})
         }
 
+        this.fetchModel(id);
+    };
+
+    fetchModel(id) {
         fetchUrl(
             `modflowmodels/${id}`,
-            query => this.setState({
-                model: ModflowModel.fromQuery(query).toObject(),
-                isLoading: false
-            }),
+            data => {
+                this.props.updateModel(ModflowModel.fromQuery(data));
+                this.setState({isLoading: false});
+            },
             error => this.setState(
                 {error, isLoading: false},
                 () => this.handleError(error)
             )
-        )
+        );
+
+        fetchUrl(`modflowmodels/${id}/boundaries`,
+            data => this.props.updateBoundaries(BoundaryCollection.fromQuery(data)),
+            error => this.setState(
+                {error, isLoading: false},
+                () => this.handleError(error)
+            )
+        );
+
+        fetchUrl(`modflowmodels/${id}/soilmodel`,
+            data => this.props.updateSoilmodel(Soilmodel.fromObject(data)),
+            error => this.setState(
+                {error, isLoading: false},
+                () => this.handleError(error)
+            )
+        );
+    };
+
+    componentWillReceiveProps(nextProps, nextContext) {
+        this.setState({
+            model: nextProps.model
+        })
     }
 
     handleError = error => {
+        console.log(error);
         const {response} = error;
         const {status} = response;
 
@@ -59,7 +89,7 @@ class T03 extends React.Component {
     };
 
     renderToolMetaData = () => {
-        if (!this.state.model) {
+        if (!this.props.model) {
             return null;
         }
 
@@ -81,30 +111,25 @@ class T03 extends React.Component {
     };
 
     renderContent(id, property) {
-        if (!id) {
-            return (<Content.CreateModel defaultModel={ModflowModel.fromDefaults()}/>)
-        }
-
-        if (!this.state.model) {
+        if (!this.props.model) {
             return null;
         }
 
-        const model = ModflowModel.fromObject(this.state.model);
         switch (property) {
             case 'discretization':
-                return (<Content.Discretization model={model}/>);
+                return (<Content.Discretization/>);
             case 'soilmodel':
-                return (<Content.Soilmodel model={model}/>);
+                return (<Content.Soilmodel/>);
             case 'boundaries':
-                return (<Content.Boundaries model={model}/>);
+                return (<Content.Boundaries/>);
             case 'observations':
-                return (<Content.Observations model={model}/>);
+                return (<Content.Observations/>);
             case 'run':
-                return (<Content.Run model={model}/>);
+                return (<Content.Run/>);
             case 'results':
-                return (<Content.Results model={model}/>);
+                return (<Content.Results/>);
             case 'optimization':
-                return (<Content.Optimization model={model}/>);
+                return (<Content.Optimization/>);
             default:
                 const path = this.props.match.path;
                 const basePath = path.split(':')[0];
@@ -131,8 +156,15 @@ class T03 extends React.Component {
     saveMetaData = () => {
     };
 
-
     render() {
+        if (!this.props.match.params.id) {
+            return (
+                <AppContainer navbarItems={navigation}>
+                    <Content.CreateModel/>
+                </AppContainer>
+            );
+        }
+
         if (this.state.isLoading) {
             return (
                 <Message>LOADING</Message>
@@ -163,10 +195,25 @@ class T03 extends React.Component {
     }
 }
 
+const mapStateToProps = state => ({
+    model: state.T03.model,
+    boundaries: state.T03.boundaries
+});
+
+const mapDispatchToProps = {
+    updateBoundaries, updateModel, updateSoilmodel
+};
+
+
 T03.proptypes = {
     history: PropTypes.object.isRequired,
     location: PropTypes.object.isRequired,
     match: PropTypes.object.isRequired,
+    boundaries: PropTypes.array.isRequired,
+    model: PropTypes.object.isRequired,
+    updateModel: PropTypes.func.isRequired,
+    updateBoundaries: PropTypes.func.isRequired,
+    updateSoilmodel: PropTypes.func.isRequired,
 };
 
-export default withRouter(T03);
+export default withRouter(connect(mapStateToProps, mapDispatchToProps)(T03));

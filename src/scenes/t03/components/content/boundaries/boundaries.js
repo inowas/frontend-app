@@ -7,6 +7,8 @@ import BoundaryList from './boundaryList';
 import BoundaryFactory from 'core/model/modflow/boundaries/BoundaryFactory';
 import BoundaryDetails from './boundaryDetails';
 import {ModflowModel} from 'core/model/modflow';
+import {connect} from 'react-redux';
+import {updateBoundaries, updateModel} from '../../../actions/actions';
 
 const baseUrl = '/tools/T03';
 
@@ -14,10 +16,18 @@ class Boundaries extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            boundaries: [],
+            boundaries: props.boundaries,
+            isLoading: false,
             isDirty: false,
-            isLoading: true,
             error: false
+        }
+    }
+
+    componentDidMount() {
+        const {id, pid} = this.props.match.params;
+
+        if (pid) {
+            this.fetchBoundary(id, pid);
         }
     }
 
@@ -26,23 +36,10 @@ class Boundaries extends React.Component {
         if ((this.props.match.params.id !== id) || (this.props.match.params.pid !== pid)) {
             this.fetchBoundary(id, pid);
         }
-    }
 
-    componentDidMount() {
-        const {id, pid} = this.props.match.params;
-
-        fetchUrl(
-            `modflowmodels/${id}/boundaries`,
-            boundaries => this.setState({
-                boundaries: boundaries,
-                isLoading: false
-            }),
-            error => this.setState({error, isLoading: false})
-        );
-
-        if (pid) {
-            this.fetchBoundary(id, pid);
-        }
+        this.setState({
+            boundaries: nextProps.boundaries
+        })
     }
 
     fetchBoundary = (modelId, boundaryId) => {
@@ -70,7 +67,7 @@ class Boundaries extends React.Component {
     };
 
     render() {
-        const {model} = this.props;
+        const model = ModflowModel.fromObject(this.props.model);
         const {pid} = this.props.match.params;
         const boundary = BoundaryFactory.fromObjectData(this.state.boundaries.filter(b => b.id === pid)[0]);
 
@@ -88,8 +85,11 @@ class Boundaries extends React.Component {
                             </Grid.Column>
                             <Grid.Column width={12}>
                                 {!this.state.isLoading &&
-                                <BoundaryDetails boundary={boundary} geometry={model.geometry}
-                                                 onChange={this.handleChangeBoundary}/>}
+                                <BoundaryDetails
+                                    boundary={boundary}
+                                    geometry={model.geometry}
+                                    onChange={this.handleChangeBoundary}
+                                />}
                             </Grid.Column>
                         </Grid.Row>
                     </Grid>
@@ -99,11 +99,24 @@ class Boundaries extends React.Component {
     }
 }
 
+const mapStateToProps = state => {
+    return {
+        model: state.T03.model,
+        boundaries: state.T03.boundaries
+    };
+};
+
+const mapDispatchToProps = {
+    updateBoundaries, updateModel
+};
+
+
 Boundaries.proptypes = {
     history: PropTypes.object.isRequired,
     location: PropTypes.object.isRequired,
     match: PropTypes.object.isRequired,
-    model: PropTypes.instanceOf(ModflowModel).isRequired,
+    model: PropTypes.object.isRequired,
+    boundaries: PropTypes.array.isRequired,
 };
 
-export default withRouter(Boundaries);
+export default withRouter(connect(mapStateToProps, mapDispatchToProps)(Boundaries));

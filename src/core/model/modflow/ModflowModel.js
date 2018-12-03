@@ -7,9 +7,7 @@ export default class ModflowModel {
     _id;
     _name;
     _description;
-
     _activeCells;
-    _boundaries = [];
     _boundingBox;
     _geometry;
     _gridSize;
@@ -29,6 +27,7 @@ export default class ModflowModel {
         model.timeUnit = 4;
         model.public = true;
         model.permissions = 'rwx';
+        return model;
     }
 
     static fromObject(obj) {
@@ -36,15 +35,15 @@ export default class ModflowModel {
         model.id = obj.id;
         model.name = obj.name;
         model.description = obj.description;
-        model.activeCells = ActiveCells.fromArray(obj.active_cells);
-        model.boundingBox = BoundingBox.fromArray(obj.bounding_box);
-        model.geometry = Geometry.fromObject(obj.geometry);
-        model.gridSize = GridSize.fromObject(obj.grid_size);
+        model.activeCells = obj.active_cells ? ActiveCells.fromArray(obj.active_cells) : null;
+        model.boundingBox = obj.bounding_box ? BoundingBox.fromArray(obj.bounding_box) : null;
+        model.geometry = obj.geometry ? Geometry.fromObject(obj.geometry) : null;
+        model.gridSize = obj.grid_size ? GridSize.fromObject(obj.grid_size) : null;
         model.lengthUnit = obj.length_unit;
         model.timeUnit = obj.time_unit;
         model.public = obj.public;
         model.permissions = obj.permissions;
-        model.stressPeriods = Stressperiods.fromObject(obj.stress_periods);
+        model.stressPeriods = obj.stress_periods ? Stressperiods.fromObject(obj.stress_periods) : null;
         return model;
     }
 

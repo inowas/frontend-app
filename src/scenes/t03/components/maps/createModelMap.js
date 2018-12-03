@@ -174,7 +174,7 @@ class CreateModelMap extends React.Component {
             ];
         }
 
-        return null;
+        return [[60, 10], [45, 30]];
     };
 
     handleClickOnMap = ({latlng}) => {

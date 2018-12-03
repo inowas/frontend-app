@@ -1,8 +1,12 @@
 import {combineReducers} from 'redux';
-import general from './general'
+import boundaries from './boundaries';
+import model from './model';
+import soilmodel from './soilmodel';
 
 const T03 = combineReducers({
-    general
+    boundaries,
+    model,
+    soilmodel
 });
 
 export default T03;
