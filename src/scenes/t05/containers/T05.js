@@ -3,13 +3,17 @@ import React from 'react';
 import {withRouter} from 'react-router-dom';
 
 import AppContainer from "../../shared/AppContainer";
-import {Grid, Icon, Menu, Popup} from "semantic-ui-react";
-import uuidv4 from "uuid";
+import {Button, Grid, Icon, Menu, Popup} from "semantic-ui-react";
 import {includes} from "lodash";
+
+import {defaultsT05} from '../defaults';
 
 import MCDA from "../components/MCDA";
 import CriteriaEditor from "../components/criteriaEditor";
 import Ranking from "../components/weightAssignment/ranking";
+import {deepMerge} from "../../shared/simpleTools/helpers";
+import {fetchTool, sendCommand} from "../../../services/api";
+import {createToolInstanceCommand, updateToolInstanceCommand} from "../../../services/commandFactory";
 
 const navigation = [{
     name: 'Documentation',
@@ -49,34 +53,75 @@ class T05 extends React.Component {
         super();
 
         this.state = {
-            tool: {
-                id: uuidv4(),
-                name: 'New MCDA',
-                description: 'MCDA Description',
-                permissions: 'rwx',
-                public: false,
-                type: 'T05',
-                data: {
-                    criteria: []
-                }
-            },
-            mcda: (new MCDA()).toObject,
+            tool: defaultsT05(),
             isLoading: false,
             selectedTool: 'criteria'
         };
     }
 
+    componentDidMount() {
+        if (this.props.match.params.id) {
+            this.setState({isLoading: true});
+            fetchTool(
+                this.state.tool.type,
+                this.props.match.params.id,
+                tool => this.setState({
+                    tool: deepMerge(this.state.tool, tool),
+                    isLoading: false
+                }),
+                error => this.setState({error, isLoading: false})
+            );
+        }
+    }
+
+    buildPayload = (tool) => ({
+        id: tool.id,
+        name: tool.name,
+        description: tool.description,
+        public: tool.public,
+        type: tool.type,
+        data: {
+            mcda: MCDA.fromObject(this.state.tool.data.mcda).toObject
+        }
+    });
+
     handleClickNavigation = (e, {name}) => this.setState({
         selectedTool: name
     });
 
-    save = ({name, value}) => {
+    save = () => {
+        const {id} = this.props.match.params;
+        const {tool} = this.state;
+
+        if (id) {
+            sendCommand(
+                updateToolInstanceCommand(this.buildPayload(tool)),
+                () => this.setState({dirty: false}),
+                () => this.setState({error: true})
+            );
+            return;
+        }
+
+        sendCommand(
+            createToolInstanceCommand(this.buildPayload(tool)),
+            () => this.props.history.push(`${this.props.location.pathname}/${tool.id}`),
+            () => this.setState({error: true})
+        );
+    };
+
+    onChange = ({name, value}) => {
         this.setState({
-            mcda: {
-                ...this.state.mcda,
-                [name]: value
+            tool: {
+                ...this.state.tool,
+                data: {
+                    ...this.state.tool.data,
+                    mcda: {
+                        ...this.state.tool.data.mcda,
+                        [name]: value
+                    }
+                }
             }
-        })
+        }, console.log('onChange', this.state))
     };
 
     update = () => {
@@ -84,25 +129,27 @@ class T05 extends React.Component {
     };
 
     render() {
-        const {mcda, tool, isLoading, selectedTool} = this.state;
+        const {mcda} = this.state.tool.data;
+        const {tool, isLoading, selectedTool} = this.state;
+
         if (isLoading) {
             return (
                 <AppContainer navBarItems={navigation} loader/>
             );
         }
 
-        const {data, permissions} = tool;
+        const {permissions} = tool;
         const readOnly = !includes(permissions, 'w');
 
         let component;
 
         switch (selectedTool) {
             case 'criteria':
-                component = <CriteriaEditor readOnly={readOnly} mcda={MCDA.fromObject(this.state.mcda)}
-                                            handleChange={this.save}/>;
+                component = <CriteriaEditor readOnly={readOnly} mcda={MCDA.fromObject(mcda)}
+                                            handleChange={this.onChange}/>;
                 break;
             case 'wa':
-                component = <Ranking readOnly={readOnly} mcda={MCDA.fromObject(this.state.mcda)}/>;
+                component = <Ranking readOnly={readOnly} mcda={MCDA.fromObject(mcda)}/>;
                 break;
             default:
                 component = <div/>;
@@ -164,6 +211,7 @@ class T05 extends React.Component {
                         </Menu>
                     </Grid.Column>
                     <Grid.Column width={13}>
+                        <Button positive fluid onClick={this.save}>Save</Button>
                         {component}
                     </Grid.Column>
                 </Grid>

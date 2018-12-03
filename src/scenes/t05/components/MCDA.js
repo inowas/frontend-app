@@ -1,35 +1,14 @@
-import uuidv4 from 'uuid/v4';
 import Criteria from "./Criteria";
 
 class MCDA {
-    _id = uuidv4();
-    _name = 'New Multi-criteria decision analysis';
     _criteria = [];
     _waMethod = 'ranking';
 
     static fromObject(obj) {
         const mcda = new MCDA();
-        mcda.id = obj.id;
-        mcda.name = obj.name;
         mcda.criteria = obj.criteria.map(c => Criteria.fromObject(c));
         mcda.waMethod = obj.waMethod;
         return mcda;
-    }
-
-    get id() {
-        return this._id;
-    }
-
-    set id(value) {
-        this._id = value ? value : uuidv4();
-    }
-
-    get name() {
-        return this._name;
-    }
-
-    set name(value) {
-        this._name = value ? value : 'New Multi-criteria decision analysis';
     }
 
     get criteria() {
@@ -50,8 +29,6 @@ class MCDA {
 
     get toObject() {
         return ({
-            id: this.id,
-            name: this.name,
             criteria: this.criteria.map(c => c.toObject),
             waMethod: this.waMethod
         });

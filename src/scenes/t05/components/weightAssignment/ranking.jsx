@@ -6,8 +6,8 @@ import {DragDropContext, Draggable, Droppable} from "react-beautiful-dnd";
 class Ranking extends React.Component {
     constructor(props) {
         super();
-
-        this.props.mcda.addWeightAssignment();
+        
+        props.mcda.addWeightAssignment();
 
         this.state = {
             criteria: props.mcda.criteria.map(c => c.toObject)
