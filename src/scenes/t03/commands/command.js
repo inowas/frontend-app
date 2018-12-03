@@ -1,7 +1,7 @@
 import Ajv from 'ajv';
 import uuid from 'uuid';
 
-import ajv0 from "ajv/lib/refs/json-schema-draft-04.json";
+import ajv0 from 'ajv/lib/refs/json-schema-draft-04.json';
 
 import calculateOptimizationPayloadSchema from './calculateOptimizationPayloadSchema';
 import cancelOptimizationCalculationPayloadSchema from './cancelOptimizationCalculationPayloadSchema';

@@ -1,5 +1,9 @@
-import OptimizationInput from "./Input";
-import OptimizationMethod from "./Method";
+import Ajv from 'ajv';
+import ajv0 from 'ajv/lib/refs/json-schema-draft-04.json';
+import optimizationSchema from './optimization.schema';
+
+import OptimizationInput from './Input';
+import OptimizationMethod from './Method';
 
 class Optimization {
     _input;
@@ -83,6 +87,13 @@ class Optimization {
         }
         this._methods.push(method);
         return this;
+    }
+
+    validate() {
+        const ajv = new Ajv({schemaId: 'auto'});
+        ajv.addMetaSchema(ajv0);
+        const val = ajv.compile(optimizationSchema);
+        return [val(this.toObject), val.errors];
     }
 }
 

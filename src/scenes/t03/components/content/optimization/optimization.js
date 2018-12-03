@@ -241,15 +241,16 @@ class OptimizationContainer extends React.Component {
     }
 
     renderButton() {
-        //const optimization = Optimization.fromObject(this.state.optimization);
-        // TODO:
-        /*const [result, errors] = optimization.validate();
+        const optimization = Optimization.fromObject(this.state.optimization);
+
+        const [result, errors] = optimization.validate();
 
         const errorMsg = this.getValidationMessage(errors);
 
         let customErrors = false;
 
-        if (this.props.dirty){// || this.props.model.calculation.state === 0) {
+        // TODO: Has model been recalculated?
+        if (this.state.isDirty) {
             customErrors = true;
             errorMsg.list.push('The model needs to be calculated before running optimization.');
         }
@@ -264,7 +265,7 @@ class OptimizationContainer extends React.Component {
                         <Popup
                             wide='very'
                             trigger={
-                                <Button primary style={styles.iconFix} icon>
+                                <Button primary icon>
                                     <Icon name="exclamation"/>
                                 </Button>
                             }
@@ -315,7 +316,7 @@ class OptimizationContainer extends React.Component {
                     </Button>
                 </Menu.Item>
             );
-        }*/
+        }
 
         return (
             <Menu.Item>
