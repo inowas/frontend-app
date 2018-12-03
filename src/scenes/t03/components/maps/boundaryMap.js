@@ -4,9 +4,9 @@ import {uniqueId} from 'lodash';
 import {GeoJSON, Map, CircleMarker} from 'react-leaflet';
 import {Boundary, Geometry} from 'core/model/modflow';
 import {BasicTileLayer} from 'services/geoTools/tileLayers';
-import {getBoundsLatLonFromGeoJSON} from 'services/geoTools';
 
 import {disableMap, generateKey, getStyle} from './index';
+import {getBoundsLatLonFromGeoJSON} from 'services/geoTools/index';
 
 
 const style = {

@@ -1,0 +1,465 @@
+{
+  "type": "object",
+  "id": "https://inowas.com/schema/command/updateOptimizationInputPayload",
+  "additionalProperties": true,
+  "required": ["input"],
+  "properties": {
+    "id": {"$ref": "#/definitions/uuidv4"},
+    "input": {
+      "type": "object",
+      "required": ["id"],
+      "oneOf": [
+        {
+          "properties": {
+            "id": {"$ref": "#/definitions/uuidv4"},
+            "parameters": {
+              "type": "object",
+              "required": ["method", "maxf", "xtol", "ftol", "report_frequency"],
+              "properties": {
+                "method": {
+                  "title": "Optimization Method",
+                  "description": "Method of optimization",
+                  "const": "Simplex"
+                },
+                "maxf": {
+                  "title": "Maximum Function Evaluations Number",
+                  "description": "Maximum number of function evaluations during the local optimization",
+                  "type": "integer",
+                  "minimum": 1,
+                  "maximum": 200
+                },
+                "xtol": {
+                  "title": "TODO",
+                  "description": "Absolute error in x between iterations that is acceptable for convergence",
+                  "type": "number",
+                  "minimum": 0,
+                  "maximum": 1
+                },
+                "ftol": {
+                  "title": "TODO",
+                  "description": "Absolute error in f(x) between iterations that is acceptable for convergence",
+                  "type": "number",
+                  "minimum": 0,
+                  "maximum": 1
+                },
+                "ngen": {
+                  "title": "Number of Generations",
+                  "description": "Number of generations of Genetic algorithm",
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 500
+                },
+                "ncls": {
+                  "title": "Number of Classes",
+                  "description": "Number of classes to be used in the clustering module",
+                  "type": "integer",
+                  "minimum": 1,
+                  "maximum": 100
+                },
+                "pop_size": {
+                  "title": "Population Size",
+                  "description": "Population size of Genetic algorithm",
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 500
+                },
+                "mutpb": {
+                  "title": "Mutation Probability",
+                  "description": "Probability of individual to be produced by mutation",
+                  "type": "number",
+                  "minimum": 0,
+                  "maximum": 1
+                },
+                "cxpb": {
+                  "title": "Cross-over Probability",
+                  "description": "Probability of individual to be produced by cross-over",
+                  "type": "number",
+                  "minimum": 0,
+                  "maximum": 1
+                },
+                "eta": {
+                  "title": "ETA crowding factor",
+                  "description": "TODO",
+                  "type": "number",
+                  "minimum": 0
+                },
+                "indpb": {
+                  "title": "Individual Probability",
+                  "description": "Probability of mutation of a single value of an individual.",
+                  "type": "number",
+                  "minimum": 0,
+                  "maximum": 1
+                },
+                "qbound": {
+                  "title": "TODO",
+                  "description": "Boundary value of the Q diversity index",
+                  "type": "number",
+                  "minimum": 0,
+                  "maximum": 1
+                },
+                "diversity_flg": {
+                  "title": "Mutation Probability",
+                  "description": "Probability of individual to be produced by mutation",
+                  "type": "boolean"
+                },
+                "report_frequency": {
+                  "title": "Report Frequency",
+                  "description": "Amount of reports per iteration",
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 100
+                }
+              }
+            },
+            "objects": {
+              "type": "array",
+              "minItems": 1,
+              "items": {
+                "allOf": [{"$ref": "#/definitions/objectSimplex"}]
+              }
+            },
+            "objectives": {
+              "type": "array",
+              "minItems": 1,
+              "items": {
+                "allOf": [{"$ref": "#/definitions/objective"}]
+              }
+            },
+            "constraints": {
+              "type": "array",
+              "items": {
+                "allOf": [{"$ref": "#/definitions/constraint"}]
+              }
+            }
+          }
+        },
+        {
+          "properties": {
+            "id": {"$ref": "#/definitions/uuidv4"},
+            "parameters": {
+              "type": "object",
+              "required": ["method", "ngen", "pop_size", "mutpb", "cxpb", "eta", "qbound", "diversity_flg"],
+              "properties": {
+                "method": {
+                  "title": "Optimization Method",
+                  "description": "Method of optimization",
+                  "const": "GA"
+                },
+                "ngen": {
+                  "title": "Number of Generations",
+                  "description": "Number of generations of Genetic algorithm",
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 500
+                },
+                "ncls": {
+                  "title": "Number of Classes",
+                  "description": "Number of classes to be used in the clustering module",
+                  "type": "integer",
+                  "minimum": 1,
+                  "maximum": 100
+                },
+                "pop_size": {
+                  "title": "Population Size",
+                  "description": "Population size of Genetic algorithm",
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 500
+                },
+                "mutpb": {
+                  "title": "Mutation Probability",
+                  "description": "Probability of individual to be produced by mutation",
+                  "type": "number",
+                  "minimum": 0,
+                  "maximum": 1
+                },
+                "cxpb": {
+                  "title": "Cross-over Probability",
+                  "description": "Probability of individual to be produced by cross-over",
+                  "type": "number",
+                  "minimum": 0,
+                  "maximum": 1
+                },
+                "eta": {
+                  "title": "ETA crowding factor",
+                  "description": "TODO",
+                  "type": "number",
+                  "minimum": 0
+                },
+                "indpb": {
+                  "title": "Individual Probability",
+                  "description": "Probability of mutation of a single value of an individual.",
+                  "type": "number",
+                  "minimum": 0,
+                  "maximum": 1
+                },
+                "qbound": {
+                  "title": "TODO",
+                  "description": "Boundary value of the Q diversity index",
+                  "type": "number",
+                  "minimum": 0,
+                  "maximum": 1
+                },
+                "diversity_flg": {
+                  "title": "Mutation Probability",
+                  "description": "Probability of individual to be produced by mutation",
+                  "type": "boolean"
+                },
+                "report_frequency": {
+                  "title": "Report Frequency",
+                  "description": "Amount of reports per iteration",
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 100
+                }
+              }
+            },
+            "objects": {
+              "type": "array",
+              "items": {
+                "allOf": [{"$ref": "#/definitions/objectGA"}]
+              }
+            },
+            "objectives": {
+              "type": "array",
+              "items": {
+                "allOf": [{"$ref": "#/definitions/objective"}]
+              }
+            },
+            "constraints": {
+              "type": "array",
+              "items": {
+                "allOf": [{"$ref": "#/definitions/constraint"}]
+              }
+            }
+          }
+        }
+      ]
+    }
+  },
+  "definitions": {
+    "objectGA": {
+      "type": "object",
+      "required": ["id", "type", "position", "flux"],
+      "properties": {
+        "type": {
+          "enum": ["wel"]
+        },
+        "id": {"$ref": "#/definitions/uuidv4"},
+        "position": {
+          "type": "object",
+          "required": ["lay", "row", "col"],
+          "properties": {
+            "lay": {"$ref": "#/definitions/minMaxResultObjGA"},
+            "row": {"$ref": "#/definitions/minMaxResultObjGA"},
+            "col": {"$ref": "#/definitions/minMaxResultObjGA"}
+          }
+        },
+        "flux": {
+          "type": "object",
+          "patternProperties": {
+            "^.*$": {
+              "$ref": "#/definitions/minMaxResultObjGA"
+            }
+          }
+        },
+        "concentration": {
+          "type": "object",
+          "patternProperties": {
+            "^.*$": {
+              "type": "object",
+              "patternProperties": {
+                "^.*$": {
+                  "$ref": "#/definitions/minMaxResultObjGA"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "objectSimplex": {
+      "type": "object",
+      "required": ["id", "type", "position", "flux"],
+      "properties": {
+        "type": {
+          "enum": ["wel"]
+        },
+        "id": {"$ref": "#/definitions/uuidv4"},
+        "position": {
+          "type": "object",
+          "required": ["lay", "row", "col"],
+          "properties": {
+            "lay": {"$ref": "#/definitions/minMaxResultObjSimplex"},
+            "row": {"$ref": "#/definitions/minMaxResultObjSimplex"},
+            "col": {"$ref": "#/definitions/minMaxResultObjSimplex"}
+          }
+        },
+        "flux": {
+          "type": "object",
+          "patternProperties": {
+            "^.*$": {
+              "$ref": "#/definitions/minMaxResultObjSimplex"
+            }
+          }
+        },
+        "concentration": {
+          "type": "object",
+          "patternProperties": {
+            "^.*$": {
+              "type": "object",
+              "patternProperties": {
+                "^.*$": {
+                  "$ref": "#/definitions/minMaxResultObjSimplex"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "objective": {
+      "type": "object",
+      "if": {
+        "properties": {
+          "type": {
+            "const": "distance"
+          }
+        }
+      },
+      "then": {
+        "required": ["type", "summary_method", "weight", "penalty_value", "location_1", "location_2"]
+      },
+      "else": {
+        "required": ["type", "summary_method", "weight", "penalty_value", "location"]
+      },
+      "properties": {
+        "type": {
+          "enum": ["concentration", "head", "distance", "flux", "input_concentration"]
+        },
+        "conc_file_name": {
+          "type": "string"
+        },
+        "summary_method": {
+          "enum:": ["min", "max", "mean"]
+        },
+        "weight": {
+          "type": "number"
+        },
+        "penalty_value": {
+          "type": "number"
+        },
+        "location": {"$ref": "#/definitions/location"},
+        "location_1": {"$ref": "#/definitions/location"},
+        "location_2": {"$ref": "#/definitions/location"}
+      }
+    },
+    "constraint": {
+      "type": "object",
+      "if": {
+        "properties": {
+          "type": {
+            "const": "distance"
+          }
+        }
+      },
+      "then": {
+        "required": ["type", "summary_method", "value", "operator", "location_1", "location_2"]
+      },
+      "else": {
+        "required": ["type", "summary_method", "value", "operator", "location"]
+      },
+      "properties": {
+        "type": {
+          "enum": ["concentration", "head", "distance", "flux", "input_concentration"]
+        },
+        "conc_file_name": {
+          "type": "string"
+        },
+        "summary_method": {
+          "enum": ["min", "max", "mean"]
+        },
+        "value": {
+          "type": "number"
+        },
+        "operator": {
+          "enum": ["more", "less"]
+        },
+        "location": {"$ref": "#/definitions/location"},
+        "location_1": {"$ref": "#/definitions/location"},
+        "location_2": {"$ref": "#/definitions/location"}
+      }
+    },
+    "location": {
+      "type": "object",
+      "required": ["lay", "row", "col"],
+      "properties": {
+        "type": {
+          "enum": ["bbox", "object"]
+        },
+        "ts": {"$ref": "#/definitions/minMaxObj"},
+        "lay": {"$ref": "#/definitions/minMaxObj"},
+        "row": {"$ref": "#/definitions/minMaxObj"},
+        "col": {"$ref": "#/definitions/minMaxObj"},
+        "objects": {
+          "type": "array",
+          "items": {
+            "allOf": [{"$ref": "#/definitions/uuidv4"}]
+          }
+        }
+      }
+    },
+    "uuidv4": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$"
+    },
+    "minMaxObj": {
+      "type": "object",
+      "required": ["min", "max"],
+      "properties": {
+        "min": {
+          "type": "number"
+        },
+        "max": {
+          "type": "number"
+        }
+      }
+    },
+    "minMaxResultObjGA": {
+      "type": "object",
+      "required": ["min", "max"],
+      "properties": {
+        "min": {
+          "type": "number"
+        },
+        "max": {
+          "type": "number"
+        },
+        "result": {
+          "anyOf": [
+            {"type": "number"},
+            {"type": "null"}
+          ]
+        }
+      }
+    },
+    "minMaxResultObjSimplex": {
+      "type": "object",
+      "required": ["min", "max"],
+      "properties": {
+        "min": {
+          "type": "number"
+        },
+        "max": {
+          "type": "number"
+        },
+        "result": {
+          "anyOf": [
+            {"type": "number"},
+            {"type": "null"}
+          ]
+        }
+      }
+    }
+  }
+}

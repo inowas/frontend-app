@@ -14,12 +14,31 @@ class BoundaryCollection {
         return bc;
     }
 
+    static fromObject(query) {
+        if (!Array.isArray(query)) {
+            throw new Error('Boundary-Query expected to be an Array.');
+        }
+
+        const bc = new BoundaryCollection();
+        query.forEach(b => bc.addBoundary(BoundaryFactory.fromObjectData(b)));
+        return bc;
+    }
+
     addBoundary(boundary){
         if (!boundary instanceof Boundary) {
             throw new Error('Boundary expected to be from Type Boundary.');
         }
 
         this._boundaries.push(boundary);
+    }
+
+    findById(id){
+        const boundary = this.boundaries.filter(b => b.id === id)[0];
+        if (!boundary instanceof Boundary) {
+            return null;
+        }
+
+        return boundary;
     }
 
     get boundaries() {

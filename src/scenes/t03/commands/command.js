@@ -2,13 +2,25 @@ import Ajv from 'ajv';
 import uuid from 'uuid';
 
 import ajv0 from 'ajv/lib/refs/json-schema-draft-04.json';
+
+import calculateOptimizationPayloadSchema from './calculateOptimizationPayloadSchema';
+import cancelOptimizationCalculationPayloadSchema from './cancelOptimizationCalculationPayloadSchema';
 import createModflowModelPayloadSchema from './createModflowModelPayloadSchema';
 import updateModflowModelPayloadSchema from './updateModflowModelPayloadSchema';
+import updateOptimizationInputPayloadSchema from './updateOptimizationInputPayloadSchema';
 
 class Command {
 
     metadata = [];
     uuid = uuid();
+
+    static calculateOptimization(payload) {
+        return new Command('calculateOptimization', payload, calculateOptimizationPayloadSchema);
+    }
+
+    static cancelOptimizationCalculation(payload) {
+        return new Command('cancelOptimizationCalculation', payload, cancelOptimizationCalculationPayloadSchema);
+    }
 
     static createModflowModel(payload) {
         return new Command('createModflowModel', payload, createModflowModelPayloadSchema);
@@ -16,6 +28,10 @@ class Command {
 
     static updateModflowModel(payload) {
         return new Command('updateModflowModel', payload, updateModflowModelPayloadSchema);
+    }
+
+    static updateOptimizationInput(payload) {
+        return new Command('updateOptimizationInput', payload, updateOptimizationInputPayloadSchema)
     }
 
     constructor(name, payload, schema) {

@@ -1,14 +1,14 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import {withRouter} from 'react-router-dom';
+import {Redirect, withRouter} from 'react-router-dom';
 import {fetchUrl} from 'services/api';
 import {Grid, Segment} from 'semantic-ui-react';
 import BoundaryList from './boundaryList';
-import BoundaryFactory from 'core/model/modflow/boundaries/BoundaryFactory';
 import BoundaryDetails from './boundaryDetails';
 import {ModflowModel} from 'core/model/modflow';
 import {connect} from 'react-redux';
 import {updateBoundaries, updateModel} from '../../../actions/actions';
+import {BoundaryCollection, Soilmodel} from 'core/model/modflow';
 
 const baseUrl = '/tools/T03';
 
@@ -16,7 +16,7 @@ class Boundaries extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            boundaries: props.boundaries,
+            boundaries: props.boundaries.toObject(),
             isLoading: false,
             isDirty: false,
             error: false
@@ -38,39 +38,45 @@ class Boundaries extends React.Component {
         }
 
         this.setState({
-            boundaries: nextProps.boundaries
+            boundaries: nextProps.boundaries.toObject()
         })
     }
 
     fetchBoundary = (modelId, boundaryId) => {
         return (
-            fetchUrl(`modflowmodels/${modelId}/boundaries/${boundaryId}`, this.handleChangeBoundary)
+            fetchUrl(`modflowmodels/${modelId}/boundaries/${boundaryId}`, this.onChangeBoundary)
         )
     };
 
-    handleChangeBoundary = boundary => this.setState({
+    onChangeBoundary = boundary => this.setState({
         boundaries: this.state.boundaries.map(b => {
             if (b.id === boundary.id) {
                 return boundary;
             }
-
             return b;
-        })
+        }, this.save)
     });
 
-    save = () => {
-    };
-
-    handleClickBoundary = (bid) => {
+    handleBoundaryListClick = (bid) => {
         const {id, property, type} = this.props.match.params;
         this.props.history.push(`${baseUrl}/${id}/${property}/${type || '!'}/${bid}`);
+    };
+
+    save = () => {
     };
 
     render() {
         const model = ModflowModel.fromObject(this.props.model);
         const {pid} = this.props.match.params;
-        const boundary = BoundaryFactory.fromObjectData(this.state.boundaries.filter(b => b.id === pid)[0]);
 
+        // If no boundary is selected, redirect to the first.
+        if (!pid && this.state.boundaries.length > 0) {
+            const {id, property, type} = this.props.match.params;
+            const bid = this.state.boundaries[0].id;
+            return <Redirect to={`${baseUrl}/${id}/${property}/${type || '!'}/${bid}`}/>
+        }
+
+        const boundary = BoundaryCollection.fromObject(this.state.boundaries).findById(pid);
         return (
             <div>
                 <Segment color={'grey'} loading={this.state.isLoading}>
@@ -79,7 +85,7 @@ class Boundaries extends React.Component {
                             <Grid.Column width={4}>
                                 <BoundaryList
                                     boundaries={this.state.boundaries}
-                                    onChange={this.handleClickBoundary}
+                                    onChange={this.handleBoundaryListClick}
                                     selected={pid}
                                 />
                             </Grid.Column>
@@ -88,7 +94,7 @@ class Boundaries extends React.Component {
                                 <BoundaryDetails
                                     boundary={boundary}
                                     geometry={model.geometry}
-                                    onChange={this.handleChangeBoundary}
+                                    onChange={this.onChangeBoundary}
                                 />}
                             </Grid.Column>
                         </Grid.Row>
@@ -101,8 +107,8 @@ class Boundaries extends React.Component {
 
 const mapStateToProps = state => {
     return {
-        model: state.T03.model,
-        boundaries: state.T03.boundaries
+        model: ModflowModel.fromObject(state.T03.model),
+        boundaries: BoundaryCollection.fromObject(state.T03.boundaries)
     };
 };
 
@@ -116,7 +122,8 @@ Boundaries.proptypes = {
     location: PropTypes.object.isRequired,
     match: PropTypes.object.isRequired,
     model: PropTypes.object.isRequired,
-    boundaries: PropTypes.array.isRequired,
+    boundaries: PropTypes.instanceOf(BoundaryCollection).isRequired,
+    soilmodel: PropTypes.instanceOf(Soilmodel).isRequired
 };
 
 export default withRouter(connect(mapStateToProps, mapDispatchToProps)(Boundaries));
