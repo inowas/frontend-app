@@ -28,7 +28,7 @@ export default class ModflowModel {
         model.lengthUnit = obj.length_unit;
         model.permissions = obj.permissions;
         model.public = obj.public;
-        model.stressPeriods = Stressperiods.fromObject(obj.stress_periods);
+        model.stressperiods = Stressperiods.fromObject(obj.stress_periods);
         model.timeUnit = obj.time_unit;
         return model;
     }
@@ -133,11 +133,11 @@ export default class ModflowModel {
         this._public = value;
     }
 
-    get stressPeriods() {
+    get stressperiods() {
         return this._stressPeriods;
     }
 
-    set stressPeriods(value) {
+    set stressperiods(value) {
         this._stressPeriods = value;
     }
 
@@ -164,7 +164,7 @@ export default class ModflowModel {
         length_unit: this.lengthUnit,
         permissions: this.permissions,
         public: this.public,
-        stress_periods: this.stressPeriods.toObject(),
+        stress_periods: this.stressperiods.toObject(),
         time_unit: this.timeUnit,
     });
 
