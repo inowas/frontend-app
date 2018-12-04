@@ -1,19 +1,21 @@
 import PropTypes from 'prop-types';
 import React from 'react';
 import {withRouter} from 'react-router-dom';
+import {includes} from 'lodash';
 
-import AppContainer from "../../shared/AppContainer";
-import {Button, Grid, Icon, Menu, Popup} from "semantic-ui-react";
-import {includes} from "lodash";
+import {fetchTool, sendCommand} from 'services/api';
+import {createToolInstanceCommand, updateToolInstanceCommand} from 'services/commandFactory';
+import {deepMerge} from '../../shared/simpleTools/helpers';
+
+import {Button, Grid, Icon, Menu, Popup} from 'semantic-ui-react';
+import AppContainer from '../../shared/AppContainer';
+import ToolMetaData from '../../shared/simpleTools/ToolMetaData';
+import CriteriaEditor from '../components/criteriaEditor';
+import Ranking from '../components/weightAssignment/ranking';
 
 import {defaultsT05} from '../defaults';
 
-import MCDA from "../components/MCDA";
-import CriteriaEditor from "../components/criteriaEditor";
-import Ranking from "../components/weightAssignment/ranking";
-import {deepMerge} from "../../shared/simpleTools/helpers";
-import {fetchTool, sendCommand} from "../../../services/api";
-import {createToolInstanceCommand, updateToolInstanceCommand} from "../../../services/commandFactory";
+import {MCDA} from 'core/mcda';
 
 const navigation = [{
     name: 'Documentation',
@@ -54,6 +56,7 @@ class T05 extends React.Component {
 
         this.state = {
             tool: defaultsT05(),
+            isDirty: true,
             isLoading: false,
             selectedTool: 'criteria'
         };
@@ -67,6 +70,7 @@ class T05 extends React.Component {
                 this.props.match.params.id,
                 tool => this.setState({
                     tool: deepMerge(this.state.tool, tool),
+                    isDirty: false,
                     isLoading: false
                 }),
                 error => this.setState({error, isLoading: false})
@@ -96,7 +100,7 @@ class T05 extends React.Component {
         if (id) {
             sendCommand(
                 updateToolInstanceCommand(this.buildPayload(tool)),
-                () => this.setState({dirty: false}),
+                () => this.setState({isDirty: false}),
                 () => this.setState({error: true})
             );
             return;
@@ -120,17 +124,16 @@ class T05 extends React.Component {
                         [name]: value
                     }
                 }
-            }
-        }, console.log('onChange', this.state))
+            },
+            isDirty: true
+        })
     };
 
-    update = () => {
-
-    };
+    update = (tool) => this.setState({tool});
 
     render() {
         const {mcda} = this.state.tool.data;
-        const {tool, isLoading, selectedTool} = this.state;
+        const {tool, isDirty, isLoading, selectedTool} = this.state;
 
         if (isLoading) {
             return (
@@ -158,6 +161,8 @@ class T05 extends React.Component {
 
         return (
             <AppContainer navbarItems={navigation}>
+                <ToolMetaData tool={tool} readOnly={readOnly} onChange={this.update} onSave={this.save}
+                              isDirty={isDirty}/>
                 <Grid>
                     <Grid.Column width={3}>
                         <Menu vertical style={styles.menu}>
@@ -211,7 +216,6 @@ class T05 extends React.Component {
                         </Menu>
                     </Grid.Column>
                     <Grid.Column width={13}>
-                        <Button positive fluid onClick={this.save}>Save</Button>
                         {component}
                     </Grid.Column>
                 </Grid>

@@ -1,28 +1,30 @@
-import React from "react";
-import PropTypes from "prop-types";
-import {Button, Header, Input, Message, Segment, Select, Table} from "semantic-ui-react";
+import React from 'react';
+import PropTypes from 'prop-types';
+import {Button, Header, Input, Message, Segment, Select, Table} from 'semantic-ui-react';
 
-import Criteria from "./Criteria";
+import {Criteria, CriteriaCollection} from 'core/mcda/criteria';
 
 class CriteriaEditor extends React.Component {
     constructor(props) {
         super();
 
         this.state = {
-            criteria: props.mcda.criteria.map(c => c.toObject)
+            criteriaCollection: props.mcda.criteria
         };
     }
 
     componentWillReceiveProps(nextProps) {
         this.setState({
-            criteria: nextProps.mcda.criteria.map(c => c.toObject)
+            criteriaCollection: nextProps.mcda.criteria
         });
     }
 
-    handleChange = criteria => this.props.handleChange({
-        name: 'criteria',
-        value: criteria.map(c => Criteria.fromObject(c))
-    });
+    handleChange = criteriaCollection => {
+        return this.props.handleChange({
+            name: 'criteria',
+            value: criteriaCollection
+        });
+    };
 
     handleLocalChange = id => (e, {name, value}) => this.setState({
         criteria: this.state.criteria.map(c => {
@@ -44,12 +46,18 @@ class CriteriaEditor extends React.Component {
 
     onBlur = () => this.handleChange(this.state.criteria);
 
-    onClickAddCriteria = () => this.handleChange(this.state.criteria.concat((new Criteria()).toObject));
+    onClickAddCriteria = () => {
+        const criteriaCollection = CriteriaCollection.fromObject(this.state.criteriaCollection);
+        criteriaCollection.add(new Criteria());
+
+        this.handleChange(criteriaCollection);
+    };
 
     onClickRemoveCriteria = id => this.handleChange(this.state.criteria.filter(c => c.id !== id));
 
     render() {
         const {readOnly} = this.props;
+        const {criteriaCollection} = this.state;
 
         return (
             <Segment>
@@ -61,7 +69,7 @@ class CriteriaEditor extends React.Component {
                         literature: <a href='#'>T04</a></p>
                 </Message>
 
-                {this.state.criteria.length > 0 &&
+                {criteriaCollection.all.length > 0 &&
                 <Table>
                     <Table.Header>
                         <Table.Row>
@@ -72,7 +80,7 @@ class CriteriaEditor extends React.Component {
                         </Table.Row>
                     </Table.Header>
                     <Table.Body>
-                        {this.state.criteria.map((c, key) =>
+                        {criteriaCollection.all.map((c, key) =>
                             <Table.Row key={key}>
                                 <Table.Cell>{key + 1}</Table.Cell>
                                 <Table.Cell>

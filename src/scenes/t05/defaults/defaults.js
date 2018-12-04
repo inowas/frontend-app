@@ -1,5 +1,5 @@
 import uuidv4 from 'uuid';
-import MCDA from "../components/MCDA";
+import {MCDA} from 'core/mcda';
 
 export const defaults = () => {
     return {

@@ -2,8 +2,8 @@ import React from "react";
 import PropTypes from "prop-types";
 import {Grid, Header, Message, Segment} from "semantic-ui-react";
 import DragAndDropList from "../shared/DragAndDropList";
-import MCDA from "../MCDA";
-import Criteria from "../Criteria";
+import MCDA from "../../../../core/mcda/MCDA";
+import Criteria from "../../../../core/mcda/criteria/Criteria";
 
 const WAMETHOD = 'ranking';
 

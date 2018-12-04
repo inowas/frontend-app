@@ -1,5 +1,4 @@
 import uuidv4 from 'uuid/v4';
-import Weight from "./Weight";
 
 const validTypes = ['discrete', 'continuous'];
 
@@ -8,7 +7,6 @@ class Criteria {
     _name = 'New Criteria';
     _type = 'discrete';
     _data = null;
-    _weights = [];
 
     static fromObject(obj) {
         const criteria = new Criteria();
@@ -16,7 +14,6 @@ class Criteria {
         criteria.name = obj.name;
         criteria.type = obj.type;
         criteria.data = obj.data;
-        criteria.weights = obj.weights.map(w => Weight.fromObject(w));
         return criteria;
     }
 
@@ -55,51 +52,13 @@ class Criteria {
         this._data = value ? value : null;
     }
 
-    get weights() {
-        return this._weights;
-    }
-
-    set weights(value) {
-        this._weights = value ? value : [];
-    }
-
     get toObject() {
         return ({
             id: this.id,
             name: this.name,
             type: this.type,
-            data: this.data,
-            weights: this.weights.map(w => w.toObject)
+            data: this.data
         });
-    }
-
-    getWeightByMethod(method) {
-        const wa = this._weights.filter(w => w.method === method);
-        if(wa.length > 0) {
-            return wa[0];
-        }
-        return false;
-    }
-
-    updateWeight(weight) {
-        if (!(weight instanceof Weight)) {
-            throw new Error(`Input parameter of Criteria@updateWeight must be instance of Weight.`);
-        }
-
-        let weightExists = false;
-
-        this.weights = this.weights.map(w => {
-            if(w.id === weight.id) {
-                weightExists = true;
-                return weight;
-            }
-            return w;
-        });
-
-        if(!weightExists) {
-            this._weights.push(weight);
-        }
-        return this;
     }
 }
 
