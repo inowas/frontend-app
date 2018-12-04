@@ -163,7 +163,14 @@
             "$ref": "#/definitions/stress_period"
           }
         }
-      }
+      },
+      "additionalProperties": false,
+      "required": [
+        "start_date_time",
+        "end_date_time",
+        "time_unit",
+        "stress_periods"
+      ]
     },
     "stress_period": {
       "type": "object",
@@ -183,7 +190,15 @@
         "steady": {
           "type": "boolean"
         }
-      }
+      },
+      "additionalProperties": false,
+      "required": [
+        "totim_start",
+        "perlen",
+        "nstp",
+        "tsmult",
+        "steady"
+      ]
     }
   }
 }

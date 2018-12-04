@@ -27,6 +27,7 @@ class CreateModel extends React.Component {
             loading: false,
             gridSizeLocal: defaults.gridSize.toObject(),
             stressperiodsLocal: defaults.stressperiods.toObject(),
+            validation: [false, []]
         }
     }
 
@@ -67,7 +68,7 @@ class CreateModel extends React.Component {
         }
 
         if (type === 'blur') {
-            this.setState({gridSize: this.state.gridSizeLocal});
+            this.setState({gridSize: this.state.gridSizeLocal}, () => this.validate());
         }
     };
 
@@ -84,7 +85,7 @@ class CreateModel extends React.Component {
         }
 
         if (type === 'blur') {
-            this.setState({stressperiods: this.state.stressperiodsLocal});
+            this.setState({stressperiods: this.state.stressperiodsLocal}, () => this.validate());
         }
     };
 
@@ -93,15 +94,14 @@ class CreateModel extends React.Component {
             activeCells: activeCells.toArray(),
             boundingBox: boundingBox.toArray(),
             geometry: geometry.toObject()
-        })
+        }, () => this.validate())
     };
 
-    validate() {
-        return Command.createModflowModel(this.getPayload()).validate();
-    }
+    validate = () => (
+        this.setState({validation: Command.createModflowModel(this.getPayload()).validate()})
+    );
 
     render() {
-        console.log('RENDER');
         return (
             <Segment color={'grey'}>
                 <Grid padded>
@@ -214,7 +214,7 @@ class CreateModel extends React.Component {
                             <Button
                                 type='submit'
                                 onClick={this.handleSave}
-                                disabled={!this.validate()[0]}
+                                disabled={!this.state.validation[0]}
                             >
                                 Create
                             </Button>
