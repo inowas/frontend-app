@@ -45,6 +45,11 @@ export default class Boundary {
     }
 
     set affectedLayers(affectedLayers) {
+        if(!Array.isArray(affectedLayers)) {
+            this._affectedLayers = [affectedLayers];
+            return;
+        }
+
         this._affectedLayers = affectedLayers;
     }
 

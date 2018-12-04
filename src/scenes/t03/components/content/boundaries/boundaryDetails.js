@@ -1,11 +1,11 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import {Dropdown, Form, Grid} from 'semantic-ui-react';
+import {Form, Grid} from 'semantic-ui-react';
 import {Boundary} from 'core/model/modflow/boundaries';
-import ContentToolBar from '../../shared/contentToolbar';
 import BoundaryMap from '../../maps/boundaryMap';
 import {Geometry} from 'core/model/modflow';
 import BoundaryFactory from 'core/model/modflow/boundaries/BoundaryFactory';
+import Soilmodel from '../../../../../core/model/modflow/soilmodel/Soilmodel';
 
 class BoundaryDetails extends React.Component {
 
@@ -24,21 +24,28 @@ class BoundaryDetails extends React.Component {
         return (
             <Grid>
                 <Grid.Row>
-                    <Grid.Column>
-                        <ContentToolBar state={'saved'} save={{onclick: () => (1 + 2)}}/>
-                    </Grid.Column>
-                </Grid.Row>
-                <Grid.Row>
                     <Grid.Column width={6}>
                         <Form>
                             <Form.Input label={'Name'} name={'name'} value={boundary.name}
                                         onChange={this.handleChange}/>
-                            <Form.Input label={'Selected layers'}/>
+
+                            <Form.Dropdown
+                                label={'Selected layers'}
+                                style={{zIndex: 1000}}
+                                selection
+                                fluid
+                                options={this.props.soilmodel.layers.map(l => (
+                                    {key: l.id, value: l.number, text: l.name}
+                                ))}
+                                value={boundary.affectedLayers[0]}
+                                name={'affectedLayers'}
+                                onChange={this.handleChange}
+                            />
 
                             {boundary.subTypes &&
-                            <Dropdown
+                            <Form.Dropdown
                                 label={boundary.subTypes.name}
-                                style={{zIndex: 1000}}
+                                style={{zIndex: 1000, width: '100%'}}
                                 selection
                                 options={boundary.subTypes.types.map(t => (
                                     {key: t.value, value: t.value, text: t.name}
@@ -63,6 +70,7 @@ class BoundaryDetails extends React.Component {
 BoundaryDetails.proptypes = {
     boundary: PropTypes.instanceOf(Boundary).isRequired,
     geometry: PropTypes.instanceOf(Geometry).isRequired,
+    soilmodel: PropTypes.instanceOf(Soilmodel).isRequired,
     onChange: PropTypes.func.isRequired
 };
 

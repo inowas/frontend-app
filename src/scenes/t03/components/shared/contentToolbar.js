@@ -1,7 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import {Button, Dropdown, Grid, Icon, Message} from 'semantic-ui-react';
-import {pure} from 'recompose';
+import {Button, Dropdown, Grid, Icon, Message, Transition} from 'semantic-ui-react';
 
 const styles = {
     thinMessage: {
@@ -12,81 +11,116 @@ const styles = {
     }
 };
 
-const getMessageFromState = (state) => {
-    switch (state) {
-        case 'notSaved':
-            return {
-                content: 'Changes not saved!',
-                warning: true
-            };
-        case 'saved':
-            return {
-                content: 'Changes saved!',
-                positive: true
-            };
-        default:
-            return null
-    }
-};
+class ContentToolBar extends React.Component {
 
-const ContentToolBar = ({back, dropdown, message, save, state}) => {
+    constructor(props) {
+        super(props);
+        this.state = {
+            hide: 2500,
+            visible: false,
+            message: null
+        }
+    };
 
-    if (state) {
-        message = getMessageFromState(state);
+    componentDidMount() {
+        if (this.state.visible) {
+            this.toggleVisibility();
+        }
     }
 
-    return (
-        <Grid>
-            <Grid.Row columns={3}>
-                <Grid.Column>
-                    {back &&
-                    <Button icon onClick={back.onClick} labelPosition="left">
-                        <Icon name="left arrow"/>
-                        Back
-                    </Button>
-                    }
-                </Grid.Column>
-                <Grid.Column>
-                    {message && <Message
-                        positive={message.positive || false}
-                        warning={message.warning || false}
-                        style={styles.thinMessage}
-                    >
-                        {message.content}
-                    </Message>
-                    }
-                </Grid.Column>
-                <Grid.Column textAlign="right">
-                    {dropdown &&
-                    <Dropdown
-                        button floating labeled
-                        direction="left"
-                        name="type"
-                        className="icon"
-                        text={dropdown.text}
-                        icon={dropdown.icon}
-                        options={dropdown.options}
-                        onChange={dropdown.onChange}
-                    />
-                    }
-                    {save &&
-                    <Button icon positive onClick={save.onClick} labelPosition="left">
-                        <Icon name="save"/>
-                        Save
-                    </Button>
-                    }
-                </Grid.Column>
-            </Grid.Row>
-        </Grid>
-    )
-};
+    componentWillReceiveProps(nextProps, nextContext) {
+        if (nextProps.state) {
+            this.setState({
+                message: this.getMessageFromState(nextProps.state),
+                visible: true
+            }, () => setTimeout(function () {
+                if (this.state.message && this.state.message.positive) {
+                    this.setState({visible: false})
+                }
+            }.bind(this), 1000))
+        }
+    }
+
+    getMessageFromState = (state) => {
+        switch (state) {
+            case 'notSaved':
+                return {
+                    content: 'Changes not saved!',
+                    warning: true
+                };
+            case 'saved':
+                return {
+                    content: 'Changes saved!',
+                    positive: true
+                };
+            default:
+                return null
+        }
+    };
+
+    toggleVisibility = () => (
+        this.setState({visible: !this.state.visible})
+    );
+
+    render() {
+        const {message} = this.state;
+        return (
+            <Grid>
+                <Grid.Row columns={3}>
+                    <Grid.Column>
+                        {this.props.back &&
+                        <Button icon onClick={this.props.back.onClick} labelPosition="left">
+                            <Icon name="left arrow"/>
+                            Back
+                        </Button>
+                        }
+                    </Grid.Column>
+                    <Grid.Column>
+                        {message &&
+                        <Transition duration={{hide: this.state.hide}} visible={this.state.visible}>
+                            <Message
+                                positive={message.positive || false}
+                                warning={message.warning || false}
+                                style={styles.thinMessage}
+                            >
+                                {message.content}
+                            </Message>
+                        </Transition>
+                        }
+                    </Grid.Column>
+                    <Grid.Column textAlign="right">
+                        {this.props.dropdown &&
+                        <Dropdown
+                            button floating labeled
+                            direction="left"
+                            name="type"
+                            className="icon"
+                            text={this.props.dropdown.text}
+                            icon={this.props.dropdown.icon}
+                            options={this.props.dropdown.options}
+                            onChange={this.props.dropdown.onChange}
+                        />
+                        }
+                        {this.props.save &&
+                        <Button icon positive onClick={this.props.onSave} labelPosition="left">
+                            <Icon name="save"/>
+                            Save
+                        </Button>
+                        }
+                    </Grid.Column>
+                </Grid.Row>
+            </Grid>
+        )
+    }
+}
 
 ContentToolBar.propTypes = {
-    message: PropTypes.object,
     back: PropTypes.object,
     dropdown: PropTypes.object,
-    save: PropTypes.object,
+    message: PropTypes.object,
+    onSave: PropTypes.func,
+    save: PropTypes.bool,
     state: PropTypes.string
 };
 
-export default pure(ContentToolBar);
+export default ContentToolBar;
