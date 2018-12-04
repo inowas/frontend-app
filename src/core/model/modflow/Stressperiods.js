@@ -12,8 +12,8 @@ class Stressperiods {
 
     static fromObject(obj) {
         const stressPeriods = new Stressperiods();
-        stressPeriods.startDateTime = new Date(obj.start_date_time);
-        stressPeriods.endDateTime = new Date(obj.end_date_time);
+        stressPeriods.startDateTime = moment(new Date(obj.start_date_time));
+        stressPeriods.endDateTime = moment(new Date(obj.end_date_time));
         stressPeriods.timeUnit = obj.time_unit;
 
         obj.stress_periods.forEach(sp => {
@@ -75,7 +75,7 @@ class Stressperiods {
         return {
             start_date_time: dateToString(this.startDateTime),
             end_date_time: dateToString(this.endDateTime),
-            stress_periods: this.stressperiods.map(sp => sp.toObject),
+            stress_periods: this.stressperiods.map(sp => sp.toObject()),
             time_unit: this.timeUnit
         };
     }

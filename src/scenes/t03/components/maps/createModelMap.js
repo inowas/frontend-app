@@ -140,6 +140,7 @@ class CreateModelMap extends React.Component {
                 boundingBox={BoundingBox.fromArray(this.state.boundingBox)}
                 gridSize={GridSize.fromObject(this.state.gridSize)}
                 activeCells={ActiveCells.fromArray(this.state.activeCells)}
+                styles={getStyle('active_cells')}
             />
         )
     };

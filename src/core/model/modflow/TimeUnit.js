@@ -15,7 +15,7 @@ class TimeUnit {
     }
 
     static fromInt(value) {
-        return TimeUnit(value);
+        return new TimeUnit(value);
     }
 
     constructor(value) {

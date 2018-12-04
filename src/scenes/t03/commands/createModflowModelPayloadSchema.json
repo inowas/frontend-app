@@ -32,6 +32,9 @@
     "time_unit": {
       "$ref": "#/definitions/time_unit"
     },
+    "stress_periods": {
+      "$ref": "#/definitions/stress_periods"
+    },
     "public": {
       "type": "boolean"
     }
@@ -47,7 +50,8 @@
     "grid_size",
     "length_unit",
     "time_unit",
-    "public"
+    "public",
+    "stress_periods"
   ],
   "definitions": {
     "polygon": {
@@ -136,6 +140,50 @@
         4,
         5
       ]
+    },
+    "stress_periods": {
+      "id": "#stress_periods",
+      "description": "The stressPeriods object",
+      "type": "object",
+      "properties": {
+        "start_date_time": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "end_date_time": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "time_unit": {
+          "$ref": "#/definitions/time_unit"
+        },
+        "stress_periods": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/stress_period"
+          }
+        }
+      }
+    },
+    "stress_period": {
+      "type": "object",
+      "properties": {
+        "totim_start": {
+          "type": "integer"
+        },
+        "perlen": {
+          "type": "integer"
+        },
+        "nstp": {
+          "type": "integer"
+        },
+        "tsmult": {
+          "type": "number"
+        },
+        "steady": {
+          "type": "boolean"
+        }
+      }
     }
   }
 }

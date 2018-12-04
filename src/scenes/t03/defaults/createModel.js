@@ -1,5 +1,5 @@
 import uuid from 'uuid';
-import {GridSize} from 'core/model/modflow';
+import {GridSize, Stressperiods, TimeUnit} from 'core/model/modflow';
 
 const createModelDefaults = {
     id: uuid(),
@@ -8,7 +8,20 @@ const createModelDefaults = {
     gridSize: GridSize.fromNxNy(100, 100),
     lengthUnit: 2,
     timeUnit: 4,
-    isPublic: true
+    isPublic: true,
+    stressperiods: Stressperiods.fromObject({
+        start_date_time: '2000-01-01',
+        end_date_time: '2019-12-31',
+        time_unit: TimeUnit.days().toInt(),
+        stress_periods: [{
+            totim_start: 0,
+            perlen: 3650,
+            ntsp: 1,
+            tsmult: 1,
+            steady: true
+        }]
+
+    })
 };
 
 export default createModelDefaults;

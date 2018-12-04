@@ -56,7 +56,7 @@ class Stressperiod {
         this._steady = value;
     }
 
-    get toObject() {
+    toObject = () => {
         return {
             totim_start: this.totimStart,
             perlen: this.perlen,

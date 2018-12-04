@@ -1,4 +1,3 @@
-import uuid from 'uuid';
 import {includes} from 'lodash';
 import {ActiveCells, BoundingBox, Geometry, GridSize, Stressperiods} from './index';
 
@@ -17,33 +16,36 @@ export default class ModflowModel {
     _stressPeriods;
     _timeUnit;
 
-    static fromDefaults() {
-        const model = new ModflowModel();
-        model.id = uuid();
-        model.name = 'New numerical groundwater model';
-        model.description = 'Here you can say a bit more about the project';
-        model.gridSize = GridSize.fromNxNy(100, 100);
-        model.lengthUnit = 2;
-        model.timeUnit = 4;
-        model.public = true;
-        model.permissions = 'rwx';
-        return model;
-    }
-
     static fromObject(obj) {
         const model = new ModflowModel();
         model.id = obj.id;
         model.name = obj.name;
         model.description = obj.description;
-        model.activeCells = obj.active_cells ? ActiveCells.fromArray(obj.active_cells) : null;
-        model.boundingBox = obj.bounding_box ? BoundingBox.fromArray(obj.bounding_box) : null;
-        model.geometry = obj.geometry ? Geometry.fromObject(obj.geometry) : null;
-        model.gridSize = obj.grid_size ? GridSize.fromObject(obj.grid_size) : null;
+        model.geometry = Geometry.fromObject(obj.geometry);
+        model.gridSize = GridSize.fromObject(obj.grid_size);
+        model.boundingBox = BoundingBox.fromArray(obj.bounding_box);
+        model.activeCells = ActiveCells.fromArray(obj.active_cells);
         model.lengthUnit = obj.length_unit;
-        model.timeUnit = obj.time_unit;
-        model.public = obj.public;
         model.permissions = obj.permissions;
-        model.stressPeriods = obj.stress_periods ? Stressperiods.fromObject(obj.stress_periods) : null;
+        model.public = obj.public;
+        model.stressPeriods = Stressperiods.fromObject(obj.stress_periods);
+        model.timeUnit = obj.time_unit;
+        return model;
+    }
+
+    static fromParameters(id, name, description, geometry, boundingBox, gridSize, activeCells, lengthUnit, timeUnit, stressPeriods, isPublic) {
+        const model = new ModflowModel();
+        model._id = id;
+        model._name = name;
+        model._description = description;
+        model._activeCells = (activeCells instanceof ActiveCells) ? activeCells.toArray() : activeCells;
+        model._boundingBox = (boundingBox instanceof BoundingBox) ? boundingBox.toArray() : boundingBox;
+        model._geometry = (geometry instanceof Geometry) ? geometry.toObject() : geometry;
+        model._gridSize = (gridSize instanceof GridSize) ? gridSize.toObject() : gridSize;
+        model._lengthUnit = lengthUnit;
+        model._timeUnit = timeUnit;
+        model._public = isPublic;
+        model._stressPeriods = stressPeriods;
         return model;
     }
 
@@ -81,14 +83,6 @@ export default class ModflowModel {
 
     set activeCells(value) {
         this._activeCells = value;
-    }
-
-    get boundaries() {
-        return this._boundaries;
-    }
-
-    set boundaries(value) {
-        this._boundaries = value;
     }
 
     get boundingBox() {
@@ -159,21 +153,33 @@ export default class ModflowModel {
         return !includes(this.permissions, 'w');
     }
 
-    toObject() {
-        return {
-            id: this.id,
-            name: this.name,
-            description: this.description,
-            active_cells: this.activeCells ? this.activeCells.toArray() : null,
-            boundaries: this.boundaries,
-            bounding_box: this.boundingBox ? this.boundingBox.toArray() : null,
-            geometry: this.geometry ? this.geometry.toObject() : null,
-            grid_size: this.gridSize ? this.gridSize.toObject() : null,
-            length_unit: this.lengthUnit,
-            permissions: this.permissions,
-            public: this.public,
-            stress_periods: this.stressPeriods ? this.stressPeriods.toObject() : null,
-            time_unit: this.timeUnit,
-        }
-    }
+    toObject = () => ({
+        id: this.id,
+        name: this.name,
+        description: this.description,
+        active_cells: this.activeCells.toArray(),
+        bounding_box: this.boundingBox.toArray(),
+        geometry: this.geometry.toObject(),
+        grid_size: this.gridSize.toObject(),
+        length_unit: this.lengthUnit,
+        permissions: this.permissions,
+        public: this.public,
+        stress_periods: this.stressPeriods.toObject(),
+        time_unit: this.timeUnit,
+    });
+
+    toPayload = () => ({
+        id: this._id,
+        name: this._name,
+        description: this._description,
+        active_cells: this._activeCells,
+        bounding_box: this._boundingBox,
+        geometry: this._geometry,
+        grid_size: this._gridSize,
+        length_unit: this._lengthUnit,
+        permissions: this._permissions,
+        public: this._public,
+        stress_periods: this._stressPeriods,
+        time_unit: this._timeUnit,
+    });
 }
