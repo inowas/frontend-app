@@ -45,8 +45,9 @@ class BoundaryDetails extends React.Component {
                             {boundary.subTypes &&
                             <Form.Dropdown
                                 label={boundary.subTypes.name}
-                                style={{zIndex: 1000, width: '100%'}}
+                                style={{zIndex: 1000}}
                                 selection
+                                fluid
                                 options={boundary.subTypes.types.map(t => (
                                     {key: t.value, value: t.value, text: t.name}
                                 ))}

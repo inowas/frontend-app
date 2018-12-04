@@ -49,11 +49,11 @@ class BoundaryCollection {
         return this.boundaries.map(b => b.toObject)
     };
 
-    length = () => {
+    get length() {
         return this._boundaries.length;
     };
 
-    first = () => {
+    get first() {
         return this._boundaries[0];
     }
 }
