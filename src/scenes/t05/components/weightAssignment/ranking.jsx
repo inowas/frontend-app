@@ -1,9 +1,8 @@
-import React from "react";
-import PropTypes from "prop-types";
-import {Grid, Header, Message, Segment} from "semantic-ui-react";
-import DragAndDropList from "../shared/DragAndDropList";
-import MCDA from "../../../../core/mcda/MCDA";
-import Criteria from "../../../../core/mcda/criteria/Criteria";
+import React from 'react';
+import PropTypes from 'prop-types';
+import {Grid, Header, Message, Segment} from 'semantic-ui-react';
+import DragAndDropList from '../shared/dragAndDropList';
+import {MCDA} from 'core/mcda';
 
 const WAMETHOD = 'ranking';
 
@@ -11,50 +10,55 @@ class Ranking extends React.Component {
     constructor(props) {
         super();
 
+        props.mcda.addWeightAssignmentMethod(WAMETHOD);
+
         this.state = {
-            criteria: props.mcda.updateWeightAssignment(WAMETHOD).criteria.map(c => c.toObject)
+            weights: props.mcda.weights.all
         };
     }
 
     componentWillReceiveProps(nextProps) {
-        console.log('NEXT PROPS');
         this.setState({
-            criteria: nextProps.mcda.updateWeightAssignment(WAMETHOD).criteria.map(c => c.toObject)
+            weights: nextProps.mcda.weights.all
         });
     }
 
+    handleChange = weights => {
+        const weightsCollection = this.props.mcda.weights;
+        weightsCollection.weights = weights;
+
+        return this.props.handleChange({
+            name: 'weights',
+            value: weightsCollection
+        });
+    };
+
     onDragEnd = (items) => {
-        const criteria = this.state.criteria.map(c => {
-            const criteriaInstance = Criteria.fromObject(c);
-            const weight = criteriaInstance.getWeightByMethod(WAMETHOD);
-            const updated = items.filter(item => item.id === c.id)[0];
+        const newWeights = [];
 
-            if (!updated || !weight) {
-                return null;
+        items.forEach(item => {
+            const weight = this.state.weights.filter(w => w.id === item.id)[0];
+
+            if (weight) {
+                  weight.rank = item.rank;
+                  newWeights.push(weight);
             }
-
-            weight.rank = updated.rank;
-
-            return criteriaInstance.updateWeight(weight).toObject;
         });
 
-        return this.setState({
-            criteria: criteria
-        });
+        this.handleChange(newWeights);
     };
 
     render() {
         const {readOnly} = this.props;
+        const {weights} = this.state;
 
-        const items = this.state.criteria.map(criteria => {
+        const items = weights.map(weight => {
             return {
-                id: criteria.id,
-                data: criteria.name,
-                rank: Criteria.fromObject(criteria).getWeightByMethod(WAMETHOD).rank
+                id: weight.id,
+                data: weight.criteria.name,
+                rank: weight.rank + 1
             };
         });
-
-        console.log('ORDERED ITEMS', items);
 
         return (
             <Segment>
@@ -67,19 +71,20 @@ class Ranking extends React.Component {
                         on the right.</p>
                 </Message>
 
-                {this.state.criteria.length > 0 &&
+                {weights.length > 0 &&
                 <Grid columns={2}>
                     <Grid.Column>
-                    <Segment textAlign='center' inverted color='grey' secondary>
-                        Most Important
-                    </Segment>
-                    <DragAndDropList
-                        items={items}
-                        onDragEnd={this.onDragEnd}
-                    />
-                    <Segment textAlign='center' inverted color='grey' secondary>
-                        Least Important
-                    </Segment>
+                        <Segment textAlign='center' inverted color='grey' secondary>
+                            Most Important
+                        </Segment>
+                        <DragAndDropList
+                            items={items}
+                            onDragEnd={this.onDragEnd}
+                            readOnly={readOnly}
+                        />
+                        <Segment textAlign='center' inverted color='grey' secondary>
+                            Least Important
+                        </Segment>
                     </Grid.Column>
                     <Grid.Column>
                         <Segment textAlign='center' inverted color='grey' secondary>
@@ -96,7 +101,7 @@ class Ranking extends React.Component {
 
 Ranking.propTypes = {
     mcda: PropTypes.instanceOf(MCDA).isRequired,
-    handleChange: PropTypes.func,
+    handleChange: PropTypes.func.isRequired,
     readOnly: PropTypes.bool,
     routeTo: PropTypes.func
 };

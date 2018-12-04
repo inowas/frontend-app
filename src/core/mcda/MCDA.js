@@ -1,6 +1,4 @@
-import CriteriaCollection from './criteria/CriteriaCollection';
-import WeightsCollection from './criteria/WeightsCollection';
-import Criteria from './criteria/Criteria';
+import {Criteria, CriteriaCollection, Weight, WeightsCollection} from './criteria';
 
 class MCDA {
     _criteria = new CriteriaCollection();
@@ -33,6 +31,18 @@ class MCDA {
         return ({
             criteria: this.criteria.toObject,
             weights: this.weights.toObject
+        });
+    }
+
+    addWeightAssignmentMethod(method) {
+        this.criteria.all.forEach((c, cix) => {
+            const weight = new Weight();
+            weight.method = method;
+            weight.criteria = c;
+            weight.rank = cix;
+            if (!this.weights.findByCriteriaAndMethod(c, method)) {
+                this.weights.add(weight);
+            }
         });
     }
 

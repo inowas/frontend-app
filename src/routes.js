@@ -1,5 +1,5 @@
 import React from 'react';
-import {Route, Switch} from "react-router-dom";
+import {Route, Switch} from 'react-router-dom';
 
 import * as Scenes from 'scenes';
 import PrivateRoute from 'services/router/PrivateRoute';
@@ -13,7 +13,7 @@ const routes = (
         <PrivateRoute exact path="/tools/T03/:id?/:property?/:type?/:pid?" component={Scenes.T03} forRoles={['ROLE_USER']}/>
         <PrivateRoute exact path="/tools/T04" component={Scenes.T04} forRoles={['ROLE_USER']}/>
 
-        <PrivateRoute exact path="/tools/T05/:id?/:step?" component={Scenes.T05} forRoles={['ROLE_USER']}/>
+        <PrivateRoute exact path="/tools/T05/:id?/:property?/:type?" component={Scenes.T05} forRoles={['ROLE_USER']}/>
 
         <PrivateRoute exact path="/tools/T06" component={Scenes.T06} forRoles={['ROLE_USER']}/>
         <PrivateRoute exact path="/tools/T08/:id?" component={Scenes.T08} forRoles={['ROLE_USER']}/>

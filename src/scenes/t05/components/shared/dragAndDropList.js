@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import {DragDropContext, Draggable, Droppable} from "react-beautiful-dnd";
-import {Button, Segment} from "semantic-ui-react";
+import {DragDropContext, Draggable, Droppable} from 'react-beautiful-dnd';
+import {Button, Segment} from 'semantic-ui-react';
 
 const styles = {
     draggable: {
@@ -38,9 +38,6 @@ class DragAndDropList extends React.Component {
     }
 
     componentWillReceiveProps(nextProps) {
-
-        console.log('NEXTPROPS', nextProps);
-
         this.setState({
             items: nextProps.items
         });
@@ -80,7 +77,9 @@ class DragAndDropList extends React.Component {
     render() {
         const items = this.state.items.sort((a, b) => a.rank > b.rank);
 
-        console.log('RENDER ITEMS', items);
+        if (!items || items.length < 1) {
+            return null;
+        }
 
         return (
             <DragDropContext
@@ -132,6 +131,7 @@ class DragAndDropList extends React.Component {
 DragAndDropList.propTypes = {
     items: PropTypes.array.isRequired,
     onDragEnd: PropTypes.func.isRequired,
+    readOnly: PropTypes.bool
 };
 
 export default DragAndDropList;

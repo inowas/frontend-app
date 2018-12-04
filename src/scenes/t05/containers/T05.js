@@ -4,18 +4,20 @@ import {withRouter} from 'react-router-dom';
 import {includes} from 'lodash';
 
 import {fetchTool, sendCommand} from 'services/api';
-import {createToolInstanceCommand, updateToolInstanceCommand} from 'services/commandFactory';
+import Command from '../../shared/simpleTools/commands/command';
 import {deepMerge} from '../../shared/simpleTools/helpers';
 
-import {Button, Grid, Icon, Menu, Popup} from 'semantic-ui-react';
+import {Grid, Icon, Segment} from 'semantic-ui-react';
 import AppContainer from '../../shared/AppContainer';
 import ToolMetaData from '../../shared/simpleTools/ToolMetaData';
-import CriteriaEditor from '../components/criteriaEditor';
+import {CriteriaEditor, ToolNavigation} from '../components';
+import ContentToolBar from '../components/shared/contentToolbar';
 import Ranking from '../components/weightAssignment/ranking';
 
 import {defaultsT05} from '../defaults';
 
 import {MCDA} from 'core/mcda';
+import getMenuItems from '../defaults/menuItems';
 
 const navigation = [{
     name: 'Documentation',
@@ -23,42 +25,16 @@ const navigation = [{
     icon: <Icon name="file"/>
 }];
 
-const styles = {
-    actionWrapper: {
-        position: 'absolute',
-        right: 10,
-    },
-    wrapper: {
-        padding: '0 40px 0 40px',
-        width: '1280px'
-    },
-    columnPadding: {
-        padding: '12px'
-    },
-    columnContainer: {
-        background: '#fff',
-        boxShadow: '0 1px 2px 0 rgba(34, 36, 38, 0.15)',
-        border: '1px solid rgba(34, 36, 38, 0.15)',
-        borderRadius: '.28571429rem',
-        height: '100%',
-    },
-    menu: {
-        width: '100%'
-    },
-    grid: {
-        marginTop: '25px'
-    }
-};
-
 class T05 extends React.Component {
     constructor() {
         super();
 
         this.state = {
-            tool: defaultsT05(),
+            editState: '',
             isDirty: true,
             isLoading: false,
-            selectedTool: 'criteria'
+            selectedTool: 'criteria',
+            tool: defaultsT05()
         };
     }
 
@@ -75,6 +51,8 @@ class T05 extends React.Component {
                 }),
                 error => this.setState({error, isLoading: false})
             );
+        } else {
+            this.save()
         }
     }
 
@@ -89,25 +67,24 @@ class T05 extends React.Component {
         }
     });
 
-    handleClickNavigation = (e, {name}) => this.setState({
-        selectedTool: name
-    });
-
     save = () => {
         const {id} = this.props.match.params;
         const {tool} = this.state;
 
         if (id) {
             sendCommand(
-                updateToolInstanceCommand(this.buildPayload(tool)),
-                () => this.setState({isDirty: false}),
+                Command.updateToolInstance(this.buildPayload(tool)),
+                () => this.setState({
+                    editState: 'saved',
+                    isDirty: false
+                }),
                 () => this.setState({error: true})
             );
             return;
         }
 
         sendCommand(
-            createToolInstanceCommand(this.buildPayload(tool)),
+            Command.createToolInstance(this.buildPayload(tool)),
             () => this.props.history.push(`${this.props.location.pathname}/${tool.id}`),
             () => this.setState({error: true})
         );
@@ -115,6 +92,7 @@ class T05 extends React.Component {
 
     onChange = ({name, value}) => {
         this.setState({
+            editState: 'notSaved',
             tool: {
                 ...this.state.tool,
                 data: {
@@ -129,11 +107,15 @@ class T05 extends React.Component {
         })
     };
 
-    update = (tool) => this.setState({tool});
+    update = (tool) => this.setState({
+        tool: {
+            ...tool
+        }
+    });
 
     render() {
-        const {mcda} = this.state.tool.data;
-        const {tool, isDirty, isLoading, selectedTool} = this.state;
+        const mcda = MCDA.fromObject(this.state.tool.data.mcda);
+        const {editState, tool, isDirty, isLoading} = this.state;
 
         if (isLoading) {
             return (
@@ -144,80 +126,47 @@ class T05 extends React.Component {
         const {permissions} = tool;
         const readOnly = !includes(permissions, 'w');
 
+        const menuItems = getMenuItems(mcda);
+
         let component;
 
-        switch (selectedTool) {
-            case 'criteria':
-                component = <CriteriaEditor readOnly={readOnly} mcda={MCDA.fromObject(mcda)}
-                                            handleChange={this.onChange}/>;
-                break;
+        console.log('PARAMS', this.props.match.params);
+
+        switch (this.props.match.params.property) {
             case 'wa':
-                component = <Ranking readOnly={readOnly} mcda={MCDA.fromObject(mcda)}/>;
+                switch (this.props.match.params.property.type) {
+                    default:
+                        component = <Ranking readOnly={readOnly} mcda={mcda} handleChange={this.onChange}/>;
+                        break;
+                }
                 break;
             default:
-                component = <div/>;
+                component = <CriteriaEditor readOnly={readOnly} mcda={mcda}
+                                            handleChange={this.onChange}/>;
                 break;
         }
 
         return (
             <AppContainer navbarItems={navigation}>
-                <ToolMetaData tool={tool} readOnly={readOnly} onChange={this.update} onSave={this.save}
-                              isDirty={isDirty}/>
-                <Grid>
-                    <Grid.Column width={3}>
-                        <Menu vertical style={styles.menu}>
-                            <Menu.Item header>Navigation</Menu.Item>
-                            <Menu.Item
-                                active={selectedTool === 'criteria'}
-                                name='criteria'
-                                onClick={this.handleClickNavigation}>
-                                {mcda.criteria.length > 0 &&
-                                <Icon name='check circle' color='green'/>
-                                }
-                                Criteria
-                            </Menu.Item>
-                            <Menu.Item
-                                active={selectedTool === 'wa'}
-                                disabled={mcda.criteria.length < 2}
-                                name='wa'
-                                onClick={this.handleClickNavigation}>
-                                {mcda.criteria.length < 2 &&
-                                <Popup
-                                    trigger={<Icon name='exclamation circle'/>}
-                                    content='At least two criteria are needed for weight assignment.'
-                                />
-                                }
-                                Weight Assignment
-                                {selectedTool === 'wa' &&
-                                <Menu.Menu>
-                                    <Menu.Item>
-                                        Method 1: Ranking
-                                    </Menu.Item>
-                                    <Menu.Item>
-                                        Method 2: Multi-influence
-                                    </Menu.Item>
-                                    <Menu.Item>
-                                        Method 3: Pairwise
-                                    </Menu.Item>
-                                    <Menu.Item>
-                                        Method 4: Analytical hierarchy
-                                    </Menu.Item>
-                                    <Menu.Item>
-                                        Results
-                                    </Menu.Item>
-                                </Menu.Menu>
-                                }
-                            </Menu.Item>
-                            <Menu.Item>
-                                Raster Editor
-                            </Menu.Item>
-                            <Menu.Item disabled><Icon name='exclamation circle'/> Suitability</Menu.Item>
-                            <Menu.Item disabled><Icon name='exclamation circle'/> Results</Menu.Item>
-                        </Menu>
-                    </Grid.Column>
-                    <Grid.Column width={13}>
-                        {component}
-                    </Grid.Column>
+                <Grid padded>
+                    <Grid.Row>
+                        <Grid.Column width={4}/>
+                        <Grid.Column width={12}>
+                            <ToolMetaData tool={tool} readOnly={readOnly} onChange={this.update} onSave={this.save}
+                                          isDirty={isDirty}/>
+                        </Grid.Column>
+                    </Grid.Row>
+                    <Grid.Row>
+                        <Grid.Column width={4}>
+                            <ToolNavigation navigationItems={menuItems}/>
+                        </Grid.Column>
+                        <Grid.Column width={12}>
+                            <Segment color='grey'>
+                                <ContentToolBar state={editState} save onSave={this.save}/>
+                                {component}
+                            </Segment>
+                        </Grid.Column>
+                    </Grid.Row>
                 </Grid>
             </AppContainer>
         );

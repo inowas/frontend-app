@@ -1,5 +1,5 @@
 import Weight from './Weight';
-import Criteria from "./Criteria";
+import Criteria from './Criteria';
 
 class WeightsCollection{
     _weights = [];
@@ -29,9 +29,18 @@ class WeightsCollection{
     }
 
     findById(id) {
-        const weigths = this._weights.filter(w => w.id === id);
-        if (weigths.length > 0) {
-            return weigths[0];
+        const weights = this._weights.filter(w => w.id === id);
+        if (weights.length > 0) {
+            return weights[0];
+        }
+        return false;
+    }
+
+    findByCriteriaAndMethod(criteria, method) {
+        const id = criteria instanceof Criteria ? criteria.id : criteria;
+        const weights = this._weights.filter(w => w.method === method && w.criteria.id === id);
+        if (weights.length > 0) {
+            return weights[0];
         }
         return false;
     }

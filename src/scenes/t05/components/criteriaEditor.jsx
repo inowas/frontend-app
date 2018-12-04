@@ -1,6 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import {Button, Header, Input, Message, Segment, Select, Table} from 'semantic-ui-react';
+import {Button, Input, Message, Select, Table} from 'semantic-ui-react';
 
 import {Criteria, CriteriaCollection} from 'core/mcda/criteria';
 
@@ -26,47 +26,55 @@ class CriteriaEditor extends React.Component {
         });
     };
 
-    handleLocalChange = id => (e, {name, value}) => this.setState({
-        criteria: this.state.criteria.map(c => {
-            if (c.id === id) {
-                c[name] = value;
-            }
-            return c;
-        })
-    });
+    handleLocalChange = id => (e, {name, value}) => {
+        const criteriaCollection = CriteriaCollection.fromObject(this.state.criteriaCollection);
+        const criteria = criteriaCollection.findById(id);
 
-    handleSelectChange = id => (e, {name, value}) => this.handleChange(
-        this.state.criteria.map(c => {
-            if (c.id === id) {
-                c[name] = value;
-            }
-            return c;
-        })
-    );
+        if(!criteria) {
+            return;
+        }
 
-    onBlur = () => this.handleChange(this.state.criteria);
+        criteria[name] = value;
+
+        return this.setState({
+            criteriaCollection: criteriaCollection.update(criteria).toObject
+        });
+    };
+
+    handleSelectChange = id => (e, {name, value}) => {
+        const criteriaCollection = CriteriaCollection.fromObject(this.state.criteriaCollection);
+        const criteria = criteriaCollection.findById(id);
+
+        if(!criteria) {
+            return;
+        }
+
+        criteria[name] = value;
+
+        return this.handleChange(criteriaCollection.update(criteria));
+    };
+
+    onBlur = () => this.handleChange(this.state.criteriaCollection);
 
     onClickAddCriteria = () => {
         const criteriaCollection = CriteriaCollection.fromObject(this.state.criteriaCollection);
         criteriaCollection.add(new Criteria());
 
-        this.handleChange(criteriaCollection);
+        return this.handleChange(criteriaCollection);
     };
 
-    onClickRemoveCriteria = id => this.handleChange(this.state.criteria.filter(c => c.id !== id));
+    onClickRemoveCriteria = id => this.handleChange(this.state.criteriaCollection.remove(id));
 
     render() {
         const {readOnly} = this.props;
-        const {criteriaCollection} = this.state;
+        const criteriaCollection = CriteriaCollection.fromObject(this.state.criteriaCollection);
 
         return (
-            <Segment>
-                <Header as='h3'>Criteria Editor</Header>
-
+            <div>
                 <Message>
                     <Message.Header>Choose your criteria</Message.Header>
                     <p>If you are unsure which criteria to use, please refer to the review on criteria used in
-                        literature: <a href='#'>T04</a></p>
+                        literature: T04</p>
                 </Message>
 
                 {criteriaCollection.all.length > 0 &&
@@ -126,7 +134,7 @@ class CriteriaEditor extends React.Component {
                         Add new criteria
                     </Button>
                 }
-            </Segment>
+            </div>
         );
     }
 
