@@ -1,4 +1,5 @@
 import Criteria from "./Criteria";
+import Weight from "./Weight";
 
 class MCDA {
     _criteria = [];
@@ -34,14 +35,37 @@ class MCDA {
         });
     }
 
-    addWeightAssignment() {
+    updateWeightAssignment(method) {
+        let notOrdered = false;
 
+        // Check if criteria already have wa-method 'ranking' and if not create it
+        this.criteria = this.criteria.map(c => {
+
+            let weight = c.getWeightByMethod(method);
+
+            if (!weight) {
+                notOrdered = true;
+
+                const waMethod = Weight.fromMethod(method);
+                c = c.updateWeight(waMethod);
+            }
+
+            return c;
+        });
+
+        // Reorder if necessary
+        if (notOrdered) {
+            this.calculateRanking('ranking');
+            console.log('after Ranking', this);
+        }
+
+        return this;
     }
 
-    calculateRanking() {
+    calculateRanking(method) {
         const ranking = this.criteria.map(c => {
-            const weight = c.weights.filter(w => w.type === this.waMethod)[0];
-            if (weight !== null) {
+            const weight = c.getWeightByMethod(method);
+            if (weight) {
                 return {
                     criteria: c,
                     weight: weight.value
@@ -53,10 +77,13 @@ class MCDA {
             }
         });
 
-        this.criteria = ranking.sort((a, b) => a.weight > b.weight).map((r, key) => ({
-            ...r.criteria,
-            rank: key + 1
-        }));
+        this.criteria = ranking.sort((a, b) => a.weight > b.weight).map((r, key) => {
+            const criteria = r.criteria;
+            const weight = criteria.getWeightByMethod(method);
+            weight.rank = key + 1;
+            criteria.updateWeight(weight);
+            return criteria;
+        });
     }
 
     updateCriteria(criteria) {

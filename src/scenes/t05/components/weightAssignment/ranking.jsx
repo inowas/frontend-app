@@ -1,31 +1,60 @@
 import React from "react";
 import PropTypes from "prop-types";
-import {Header, Message, Segment, Table, Button} from "semantic-ui-react";
-import {DragDropContext, Draggable, Droppable} from "react-beautiful-dnd";
+import {Grid, Header, Message, Segment} from "semantic-ui-react";
+import DragAndDropList from "../shared/DragAndDropList";
+import MCDA from "../MCDA";
+import Criteria from "../Criteria";
+
+const WAMETHOD = 'ranking';
 
 class Ranking extends React.Component {
     constructor(props) {
         super();
-        
-        props.mcda.addWeightAssignment();
 
         this.state = {
-            criteria: props.mcda.criteria.map(c => c.toObject)
+            criteria: props.mcda.updateWeightAssignment(WAMETHOD).criteria.map(c => c.toObject)
         };
     }
 
     componentWillReceiveProps(nextProps) {
+        console.log('NEXT PROPS');
         this.setState({
-            criteria: nextProps.mcda.criteria.map(c => c.toObject)
+            criteria: nextProps.mcda.updateWeightAssignment(WAMETHOD).criteria.map(c => c.toObject)
         });
     }
 
-    onDragEnd = (e) => {
-        console.log('DRAG ENDED', e);
+    onDragEnd = (items) => {
+        const criteria = this.state.criteria.map(c => {
+            const criteriaInstance = Criteria.fromObject(c);
+            const weight = criteriaInstance.getWeightByMethod(WAMETHOD);
+            const updated = items.filter(item => item.id === c.id)[0];
+
+            if (!updated || !weight) {
+                return null;
+            }
+
+            weight.rank = updated.rank;
+
+            return criteriaInstance.updateWeight(weight).toObject;
+        });
+
+        return this.setState({
+            criteria: criteria
+        });
     };
 
     render() {
         const {readOnly} = this.props;
+
+        const items = this.state.criteria.map(criteria => {
+            return {
+                id: criteria.id,
+                data: criteria.name,
+                rank: Criteria.fromObject(criteria).getWeightByMethod(WAMETHOD).rank
+            };
+        });
+
+        console.log('ORDERED ITEMS', items);
 
         return (
             <Segment>
@@ -39,53 +68,25 @@ class Ranking extends React.Component {
                 </Message>
 
                 {this.state.criteria.length > 0 &&
-                <div>
-                    <Segment textAlign='center'>
+                <Grid columns={2}>
+                    <Grid.Column>
+                    <Segment textAlign='center' inverted color='grey' secondary>
                         Most Important
                     </Segment>
-                    <Table>
-                        <Table.Body>
-                            <DragDropContext
-                                onDragEnd={this.onDragEnd}
-                            >
-                                <Droppable droppableId='droppable-1'>
-                                    {(provided, snapshot) => (
-                                        <div
-                                            ref={provided.innerRef}
-                                            style={{backgroundColor: snapshot.isDraggingOver ? 'white' : 'white'}}
-                                            {...provided.droppableProps}
-                                        >
-                                            {this.state.criteria.map((c, key) =>
-                                                <Draggable draggableId={c.id} index={key} key={key}>
-                                                    {(provided, snapshot) => (
-                                                        <div
-                                                            ref={provided.innerRef}
-                                                            {...provided.draggableProps}
-                                                            {...provided.dragHandleProps}
-                                                        >
-                                                            <Table.Row>
-                                                                <Table.Cell width={2}>{key + 1}</Table.Cell>
-                                                                <Table.Cell width={8}>{c.name}</Table.Cell>
-                                                                <Table.Cell width={2}>0</Table.Cell>
-                                                                <Table.Cell width={4}><Button.Group>
-                                                                    <Button icon='arrow up'/>
-                                                                    <Button icon='arrow down'/>
-                                                                </Button.Group></Table.Cell>
-                                                            </Table.Row>
-                                                        </div>
-                                                    )}
-                                                </Draggable>
-                                            )}
-                                        </div>
-                                    )}
-                                </Droppable>
-                            </DragDropContext>
-                        </Table.Body>
-                    </Table>
-                    <Segment textAlign='center'>
+                    <DragAndDropList
+                        items={items}
+                        onDragEnd={this.onDragEnd}
+                    />
+                    <Segment textAlign='center' inverted color='grey' secondary>
                         Least Important
                     </Segment>
-                </div>
+                    </Grid.Column>
+                    <Grid.Column>
+                        <Segment textAlign='center' inverted color='grey' secondary>
+                            Weight Assignment
+                        </Segment>
+                    </Grid.Column>
+                </Grid>
                 }
             </Segment>
         );
@@ -94,7 +95,7 @@ class Ranking extends React.Component {
 }
 
 Ranking.propTypes = {
-    mcda: PropTypes.object,
+    mcda: PropTypes.instanceOf(MCDA).isRequired,
     handleChange: PropTypes.func,
     readOnly: PropTypes.bool,
     routeTo: PropTypes.func

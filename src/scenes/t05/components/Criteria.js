@@ -73,6 +73,14 @@ class Criteria {
         });
     }
 
+    getWeightByMethod(method) {
+        const wa = this._weights.filter(w => w.method === method);
+        if(wa.length > 0) {
+            return wa[0];
+        }
+        return false;
+    }
+
     updateWeight(weight) {
         if (!(weight instanceof Weight)) {
             throw new Error(`Input parameter of Criteria@updateWeight must be instance of Weight.`);

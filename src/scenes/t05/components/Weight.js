@@ -1,19 +1,23 @@
 import uuidv4 from 'uuid/v4';
 import CriteriaRelation from "./CriteriaRelation";
 
-const validTypes = ['ranking', 'multiInfluence', 'pairwise', 'analyticalHierarchy'];
-
 class Weight {
     _id = uuidv4();
-    _type = 'ranking';
+    _method = 'ranking';
     _relations = [];
     _rank = 0;
     _value = 0;
 
+    static fromMethod(method) {
+        const weight = new Weight();
+        weight.method = method;
+        return weight;
+    }
+
     static fromObject(obj) {
         const weight = new Weight();
         weight.id = obj.id;
-        weight.type = obj.type;
+        weight.method = obj.method;
         weight.relations = obj.relations.map(r => CriteriaRelation.fromObject(r));
         weight.rank = obj.rank;
         weight.value = obj.value;
@@ -28,15 +32,12 @@ class Weight {
         this._id = value ? value : uuidv4();
     }
 
-    get type() {
-        return this._type;
+    get method() {
+        return this._method;
     }
 
-    set type(value) {
-        if (!validTypes.includes(value)) {
-            throw new Error(`Invalid type ${value} of Weight`);
-        }
-        this._type = value;
+    set method(value) {
+        this._method = value;
     }
 
     get relations() {
@@ -66,7 +67,7 @@ class Weight {
     get toObject() {
         return ({
             id: this.id,
-            type: this.type,
+            method: this.method,
             relations: this.relations.map(r => r.toObject),
             rank: this.rank,
             value: this.value
