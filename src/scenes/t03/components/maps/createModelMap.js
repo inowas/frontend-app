@@ -13,6 +13,7 @@ import BoundingBox from 'core/model/modflow/BoundingBox';
 import Geometry from 'core/model/modflow/Geometry';
 import GridSize from 'core/model/modflow/GridSize';
 import {getStyle} from './index';
+import {pure} from 'recompose';
 
 const style = {
     map: {
@@ -218,4 +219,4 @@ CreateModelMap.proptypes = {
     onChange: PropTypes.func.isRequired
 };
 
-export default CreateModelMap;
+export default pure(CreateModelMap);

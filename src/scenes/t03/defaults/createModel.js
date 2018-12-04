@@ -16,11 +16,10 @@ const createModelDefaults = {
         stress_periods: [{
             totim_start: 0,
             perlen: 3650,
-            ntsp: 1,
+            nstp: 1,
             tsmult: 1,
             steady: true
         }]
-
     })
 };
 

@@ -24,7 +24,7 @@ class BoundaryCollection {
         return bc;
     }
 
-    addBoundary(boundary){
+    addBoundary(boundary) {
         if (!boundary instanceof Boundary) {
             throw new Error('Boundary expected to be from Type Boundary.');
         }
@@ -32,7 +32,7 @@ class BoundaryCollection {
         this._boundaries.push(boundary);
     }
 
-    findById(id){
+    findById(id) {
         const boundary = this.boundaries.filter(b => b.id === id)[0];
         if (!boundary instanceof Boundary) {
             return null;
@@ -47,6 +47,14 @@ class BoundaryCollection {
 
     toObject = () => {
         return this.boundaries.map(b => b.toObject)
+    };
+
+    length = () => {
+        return this._boundaries.length;
+    };
+
+    first = () => {
+        return this._boundaries[0];
     }
 }
 

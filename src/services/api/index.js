@@ -18,7 +18,7 @@ const createApi = () => axios.create({
 
 export const sendCommand = (command, onSuccess, onError) => {
     const api = createApi();
-    api.post('messagebox', command)
+    api.post('messagebox', command.toObject())
         .then(response => response.data)
         .then(onSuccess)
         .catch(onError);

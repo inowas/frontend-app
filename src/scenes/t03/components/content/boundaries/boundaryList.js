@@ -1,13 +1,13 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import {Dropdown, Menu} from 'semantic-ui-react';
+import BoundaryCollection from 'core/model/modflow/boundaries/BoundaryCollection';
 
 class BoundaryList extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            selectedType: null,
-            selectedBoundaries: props.boundaries
+            selectedType: null
         }
     }
 
@@ -22,7 +22,7 @@ class BoundaryList extends React.Component {
 
     list = () => {
         const {selectedType} = this.state;
-        let selectedBoundaries = this.props.boundaries;
+        let selectedBoundaries = this.props.boundaries.toObject();
         if (selectedType) {
             selectedBoundaries = selectedBoundaries.filter(b => b.type === selectedType);
         }
@@ -57,7 +57,7 @@ class BoundaryList extends React.Component {
 }
 
 BoundaryList.propTypes = {
-    boundaries: PropTypes.array.isRequired,
+    boundaries: PropTypes.instanceOf(BoundaryCollection).isRequired,
     onChange: PropTypes.func.isRequired,
     selected: PropTypes.string
 };
