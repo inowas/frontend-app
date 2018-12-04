@@ -1,3 +1,7 @@
 /*******************************
     User Variable Overrides
 *******************************/
+
+/* Box Shadow */
+@basicBoxShadow: 0px 0px 0px @basicBorderSize @borderBoxShadowColor inset;
+@basicHoverBoxShadow: @borderBoxShadowColor;

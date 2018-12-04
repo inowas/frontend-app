@@ -135,7 +135,7 @@
 
 /* Title */
 .ui.steps .step .title {
-  font-family: 'Lato', 'Helvetica Neue', Arial, Helvetica, sans-serif;
+  font-family: 'Oxygen', 'Helvetica Neue', Arial, Helvetica, sans-serif;
   font-size: 1.14285714em;
   font-weight: bold;
 }
@@ -361,7 +361,7 @@
   background: #F3F4F5;
 }
 .ui.steps .step.active .title {
-  color: #4183C4;
+  color: #1EB1ED;
 }
 .ui.ordered.steps .step.active:before,
 .ui.steps .active.step .icon {
@@ -388,7 +388,7 @@
 .ui.steps a.active.step:hover::after,
 .ui.steps a.active.step:hover {
   cursor: pointer;
-  background: #DCDDDE;
+  background: #E1E1E1;
   color: rgba(0, 0, 0, 0.87);
 }
 

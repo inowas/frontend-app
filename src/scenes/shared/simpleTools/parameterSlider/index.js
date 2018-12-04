@@ -63,7 +63,7 @@ class ParameterSlider extends React.Component {
         param.value = value;
 
         return this.setState({
-            param: param
+            param: param.toObject
         });
     };
 

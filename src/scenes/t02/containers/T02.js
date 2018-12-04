@@ -6,7 +6,7 @@ import image from '../images/T02.png';
 import {Background, Chart, Parameters, Settings} from '../components/index';
 
 import {includes} from 'lodash';
-import {defaultsT02} from '../defaults';
+import {defaults} from '../defaults';
 import {Icon} from 'semantic-ui-react';
 import SliderParameter from 'scenes/shared/simpleTools/parameterSlider/SliderParameter';
 
@@ -25,12 +25,12 @@ const navigation = [{
 }];
 
 class T02 extends React.Component {
-    constructor() {
-        super();
+    constructor(props) {
+        super(props);
         this.state = {
-            tool: defaultsT02(),
+            tool: defaults(),
+            isDirty: true,
             isLoading: false,
-            isDirty: false,
             error: false
         };
     }
@@ -43,7 +43,8 @@ class T02 extends React.Component {
                 this.props.match.params.id,
                 tool => this.setState({
                     tool: deepMerge(this.state.tool, tool),
-                    isLoading: false
+                    isDirty: false,
+                    isLoading: false,
                 }),
                 error => this.setState({error, isLoading: false})
             );
@@ -74,7 +75,7 @@ class T02 extends React.Component {
         if (id) {
             sendCommand(
                 updateToolInstanceCommand(this.buildPayload(tool)),
-                () => this.setState({dirty: false}),
+                () => this.setState({isDirty: false}),
                 () => this.setState({error: true})
             );
             return;
@@ -97,7 +98,8 @@ class T02 extends React.Component {
                         ...prevState.tool.data,
                         parameters: parameters.map(p => p.toObject)
                     }
-                }
+                },
+                isDirty: true
             };
         });
     };
@@ -109,36 +111,41 @@ class T02 extends React.Component {
                 tool: {
                     ...prevState.tool,
                     data: {...prevState.tool.data, settings}
-                }
+                },
+                isDirty: true
             };
         });
     };
 
     handleReset = () => {
-        this.setState({
-            tool: defaultsT02(),
-            isLoading: false,
-            isDirty: false
+        this.setState(prevState => {
+            return {
+                tool: {...prevState.tool, data: defaults().data},
+                isLoading: false,
+                isDirty: true
+            }
         });
     };
+
 
     update = (tool) => this.setState({tool});
 
     render() {
-        const {tool, isLoading} = this.state;
-        if (isLoading) {
+        if (this.state.isLoading) {
             return (
                 <AppContainer navBarItems={navigation} loader/>
             );
         }
 
+        const {isDirty, tool} = this.state;
         const {data, permissions} = tool;
-        const {settings, parameters} = data;
+        const {parameters, settings} = data;
         const readOnly = !includes(permissions, 'w');
 
         return (
             <AppContainer navbarItems={navigation}>
-                <ToolMetaData tool={tool} readOnly={readOnly} onChange={this.update} onSave={this.save}/>
+                <ToolMetaData tool={tool} readOnly={readOnly} onChange={this.update} onSave={this.save}
+                              isDirty={isDirty}/>
                 <ToolGrid rows={2}>
                     <Background image={image} title={'T02. GROUNDWATER MOUNDING (HANTUSH)'}/>
                     <Chart settings={settings} parameters={parameters}/>

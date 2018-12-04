@@ -1,3 +1,5 @@
+import uuidv4 from 'uuid';
+
 export const createToolInstanceCommand = (payload) => {
     return {
         message_name: 'createToolInstance',
@@ -20,4 +22,13 @@ export const deleteToolInstanceCommand = (id) => {
         metadata: [],
         payload: {id}
     }
+};
+
+export const createCommand = (commandName, payload) => {
+    return {
+        uuid: uuidv4(),
+        message_name: commandName,
+        metadata: [],
+        payload
+    };
 };

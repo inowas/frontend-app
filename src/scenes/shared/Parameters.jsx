@@ -23,9 +23,9 @@ class Parameters extends React.Component {
     handleChange = (parameter) => this.props.handleChange(
         this.props.parameters.map(p => {
             if (p.id === parameter.id) {
-                return SliderParameter.fromObject(parameter);
+                return parameter;
             }
-            return SliderParameter.fromObject(p);
+            return p;
         })
     );
 

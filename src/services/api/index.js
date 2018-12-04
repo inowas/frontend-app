@@ -32,6 +32,14 @@ export const fetchTool = (tool, id, onSuccess, onError) => {
         .catch(onError);
 };
 
+export const fetchUrl = (url, onSuccess, onError) => {
+    const api = createApi();
+    api.get(url)
+        .then(response => response.data)
+        .then(onSuccess)
+        .catch(onError);
+};
+
 export const signUpUser = ({name, username, email, password, redirectTo}, onSuccess, onError) => {
     const api = createApi();
     const payload = {name, username, email, password, redirectTo};

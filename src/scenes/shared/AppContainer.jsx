@@ -10,7 +10,7 @@ const styles = {
         minWidth: '1280px',
         maxWidth: '1280px',
         paddingTop: '50px',
-        minHeight: 'calc(100vh - 190px)'
+        minHeight: 'calc(100vh - 170px)'
     },
     content: {
         width: '100%'
@@ -19,10 +19,9 @@ const styles = {
         padding: '0 calc((100% - 1280px) / 2) 0 calc((100% - 1280px) / 2)'
     },
     footer: {
-        borderRadius: 0,
         marginTop: '20px',
-        textAlign: 'center',
         width: '100%',
+        minHeight: '150px'
     },
     content_loading: {
         width: '100%',

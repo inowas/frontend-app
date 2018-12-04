@@ -8,11 +8,11 @@ import {getActiveToolSlug, getPublic} from '../selectors/ui';
 
 import {connect} from 'react-redux';
 import {withRouter} from 'react-router-dom';
-import {Button, Container, Grid, Header, Icon, Menu, Popup, Table} from "semantic-ui-react";
-import * as Formatter from "../../../services/formatter";
+import {Button, Container, Grid, Header, Icon, Menu, Popup, Table, Search} from 'semantic-ui-react';
+import * as Formatter from '../../../services/formatter';
 
 import {includes} from 'lodash';
-import AppContainer from "../../shared/AppContainer";
+import AppContainer from '../../shared/AppContainer';
 
 const styles = {
     actionWrapper: {
@@ -27,10 +27,8 @@ const styles = {
         padding: '12px'
     },
     columnContainer: {
-        background: '#fff',
-        boxShadow: '0 1px 2px 0 rgba(34, 36, 38, 0.15)',
-        border: '1px solid rgba(34, 36, 38, 0.15)',
-        borderRadius: '.28571429rem',
+        background: '#FFFFFF',
+        boxShadow: '0 0 3px 0px rgba(0, 0, 0, 0.3)',
         height: '100%',
     },
     menu: {
@@ -45,7 +43,7 @@ const navigation = [
     {
         name: 'Documentation',
         path: 'https://inowas.hydro.tu-dresden.de/',
-        icon: <Icon name="file"/>
+        icon: <Icon name="file alternate"/>
     },
     {
         name: 'Datasets',
@@ -101,7 +99,7 @@ class Dashboard
                     onMouseEnter={() => this.setState({hoveredInstance: index})}
                     onMouseLeave={() => this.setState({hoveredInstance: null})}
                 >
-                    <Table.Cell>
+                    <Table.Cell textAlign='right'>
                         {index + 1}
                     </Table.Cell>
                     <Table.Cell>
@@ -177,18 +175,19 @@ class Dashboard
                         <Header as='h2'>Instances of {activeTool.slug}</Header>
                     </Grid.Column>
                 </Grid.Row>
-                <Grid.Row columns={2}>
-                    <Grid.Column width={5} floated='left' textAlign='center'>
-                        <Button positive icon fluid
+                <Grid.Row columns={3}>
+                    <Grid.Column width={4} floated='left' textAlign='center'>
+                        <Button content='Add new' positive icon='plus' labelPosition='left' fluid
                                 style={styles.iconFix}
                                 onClick={() => push(activeTool.path + activeTool.slug)}
                         >
-                            <Icon name='add' style={styles.iconFix}/>
-                            Add new
                         </Button>
                     </Grid.Column>
-                    <Grid.Column width={5} floated='right' textAlign='right'>
-                        <Button.Group fluid>
+                    <Grid.Column width={6}>
+                        <Search />
+                    </Grid.Column>
+                    <Grid.Column width={4} floated='right' textAlign='right'>
+                        <Button.Group fluid size='tiny'>
                             <Button
                                 onClick={() => setPublic(false)}
                                 primary={!publicInstances}
@@ -238,7 +237,7 @@ class Dashboard
         const menuItems = [
             {
                 name: 'Tools',
-                icon: <Icon name="book"/>,
+                icon: <Icon name="horizontal sliders"/>,
                 items: tools.filter(t => includes(roles, t.role))
                     .map(t => {
                         return {
@@ -254,10 +253,10 @@ class Dashboard
             <AppContainer navbarItems={navigation}>
                 <Grid padded style={styles.grid}>
                     <Grid.Column width={6}>
-                        <Menu vertical style={styles.menu}>
+                        <Menu vertical style={styles.menu} size='small'>
                             {menuItems.map((category, key) =>
                                 <div key={key}>
-                                    <Menu.Item header>{category.name}</Menu.Item>
+                                    <Menu.Item header icon >{category.icon}{category.name}</Menu.Item>
                                     {category.items.map((item, key) =>
                                         <Menu.Item
                                             key={key}

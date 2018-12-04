@@ -1,7 +1,7 @@
 import React from 'react';
 import {pure} from 'recompose';
 import PropTypes from 'prop-types';
-import {Form, Grid, Header, Radio} from "semantic-ui-react";
+import {Form, Grid, Header, Radio} from 'semantic-ui-react';
 
 import {
     SETTINGS_CASE_FIXED_TIME,
