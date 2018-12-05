@@ -6,12 +6,12 @@ import {Form, Grid, Message} from 'semantic-ui-react';
 
 import {ModflowModel, Stressperiods} from 'core/model/modflow';
 import {updateStressperiods} from '../../../actions/actions';
-import Command from '../../../commands/command';
 
 import {sendCommand} from 'services/api';
 import StressPeriodsDataTable from './stressperiodsDatatable';
 import moment from 'moment';
 import ContentToolBar from '../../shared/contentToolbar';
+import Command from '../../../commands/command';
 
 class StressperiodsEditor extends React.Component {
     constructor(props) {
