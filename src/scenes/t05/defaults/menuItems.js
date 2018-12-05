@@ -18,23 +18,23 @@ const getMenuItems = (mcda) => {
             subItems: [
                 {
                     name: 'Method 1: Ranking',
-                    property: 'ranking'
+                    type: 'ranking'
                 },
                 {
                     name: 'Method 2: Multi-influence',
-                    property: 'multi-influence'
+                    type: 'multi-influence'
                 },
                 {
                     name: 'Method 3: Pairwise',
-                    property: 'pairwise'
+                    type: 'pairwise'
                 },
                 {
                     name: 'Method 4: Analytical Hierarchy',
-                    property: 'analytical-hierarchy'
+                    type: 'analytical-hierarchy'
                 },
                 {
                     name: 'Results',
-                    property: 'results'
+                    type: 'results'
                 }
             ],
             status: mcda.criteria.all.length < 2 ? 'warning' : '',

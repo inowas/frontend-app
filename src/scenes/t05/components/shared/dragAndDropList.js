@@ -43,14 +43,31 @@ class DragAndDropList extends React.Component {
         });
     }
 
+    onArrowClick = (source, destination) => {
+        const items = this.state.items;
+        const movedItem = items[source];
+
+        items.splice(source, 1);
+        items.splice(destination, 0, movedItem);
+
+        const newItems = items.map((item, key) => {
+            return {
+                ...item,
+                rank: key + 1
+            }
+        });
+
+        return this.props.onDragEnd(newItems);
+    };
+
     onDragEnd = (e) => {
         const {destination, source, draggableId} = e;
 
-        if(!destination) {
+        if (!destination) {
             return;
         }
 
-        if(destination.droppableId === source.droppableId && destination.index === source.index) {
+        if (destination.droppableId === source.droppableId && destination.index === source.index) {
             return;
         }
 
@@ -67,7 +84,7 @@ class DragAndDropList extends React.Component {
         const newItems = items.map((item, key) => {
             return {
                 ...item,
-                rank: key
+                rank: key + 1
             }
         });
 
@@ -102,7 +119,7 @@ class DragAndDropList extends React.Component {
                                         >
                                             <Segment style={styles.segment}>
                                                 <div style={styles.columnLeft}>
-                                                    {key+1}
+                                                    {key + 1}
                                                 </div>
                                                 <div style={styles.column}>
                                                     {item.data}
@@ -111,8 +128,14 @@ class DragAndDropList extends React.Component {
                                                     style={styles.columnRight}
                                                 >
                                                     <Button.Group size='mini'>
-                                                        <Button icon='arrow up' disabled={key === 0}/>
-                                                        <Button icon='arrow down' disabled={key === this.props.items.length-1}/>
+                                                        {key !== 0 &&
+                                                        <Button icon='arrow up'
+                                                                onClick={() => this.onArrowClick(key, key-1)}/>
+                                                        }
+                                                        {key !== this.props.items.length - 1 &&
+                                                        <Button icon='arrow down'
+                                                                onClick={() => this.onArrowClick(key, key+1)}/>
+                                                        }
                                                     </Button.Group>
                                                 </div>
                                             </Segment>

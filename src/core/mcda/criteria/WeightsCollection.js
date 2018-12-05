@@ -1,7 +1,8 @@
 import Weight from './Weight';
 import Criteria from './Criteria';
+import CriteriaCollection from './CriteriaCollection';
 
-class WeightsCollection{
+class WeightsCollection {
     _weights = [];
 
     static fromObject(obj) {
@@ -36,6 +37,14 @@ class WeightsCollection{
         return false;
     }
 
+    findByMethod(method) {
+        const weights = this._weights.filter(w => w.method === method);
+        if (weights.length > 0) {
+            return weights;
+        }
+        return false;
+    }
+
     findByCriteriaAndMethod(criteria, method) {
         const id = criteria instanceof Criteria ? criteria.id : criteria;
         const weights = this._weights.filter(w => w.method === method && w.criteria.id === id);
@@ -43,6 +52,36 @@ class WeightsCollection{
             return weights[0];
         }
         return false;
+    }
+
+    calculateWeights(method) {
+        const weights = this.findByMethod(method);
+
+        if (!weights) {
+            return null;
+        }
+
+        const variables = weights.map(w => {
+            return {
+                rank: w.rank,
+                n: weights.length - w.rank + 1,
+                r: 1 / w.rank
+            }
+        });
+
+        const nSum = variables.reduce((prev, cur) => {
+            return prev + cur.n;
+        }, 0);
+        /*const rSum = variables.reduce((prev, cur) => {
+            return prev + cur.r;
+        }, 0);*/
+
+        weights.forEach((weight, key) => {
+            weight.value = variables[key].n / nSum;
+            this.update(weight);
+        });
+
+        return this;
     }
 
     add(weight) {
@@ -57,6 +96,13 @@ class WeightsCollection{
     remove(weight) {
         const id = weight instanceof Weight ? weight.id : weight;
         this._weights = this._weights.filter(w => w.id !== id);
+
+        return this;
+    }
+
+    removeByCriteria(criteria) {
+        const id = criteria instanceof Criteria ? criteria.id : criteria;
+        this._weights = this._weights.filter(w => w.criteria.id !== id);
 
         return this;
     }
@@ -82,19 +128,15 @@ class WeightsCollection{
         return this;
     }
 
-    updateCriteria(criteria) {
-        if (!(criteria instanceof Criteria)) {
-            throw new Error('Criteria expected to be of type Criteria.');
+    updateCriteria(criteriaCollection) {
+        if (!(criteriaCollection instanceof CriteriaCollection)) {
+            throw new Error('CriteriaCollection expected to be of type CriteriaCollection.');
         }
 
-        const weight = this._weights.filter(w => w.criteria.id === criteria.id)[0];
-
-        if (!weight) {
-            return;
-        }
-
-        weight.criteria = criteria;
-        this.update(weight);
+        this._weights = this._weights.filter(w => criteriaCollection.findById(w.criteria.id) !== false).map(weight => {
+            weight.criteria = criteriaCollection.findById(weight.criteria.id);
+            return weight;
+        });
 
         return this;
     }

@@ -15,9 +15,10 @@ import ContentToolBar from '../components/shared/contentToolbar';
 import Ranking from '../components/weightAssignment/ranking';
 
 import {defaultsT05} from '../defaults';
+import getMenuItems from '../defaults/menuItems';
 
 import {MCDA} from 'core/mcda';
-import getMenuItems from '../defaults/menuItems';
+import {WeightsCollection} from 'core/mcda/criteria';
 
 const navigation = [{
     name: 'Documentation',
@@ -91,20 +92,27 @@ class T05 extends React.Component {
     };
 
     onChange = ({name, value}) => {
-        this.setState({
+        const mcda = MCDA.fromObject(this.state.tool.data.mcda);
+
+        if (name === 'criteria') {
+            mcda.updateCriteria(value);
+        }
+
+        if (name === 'weights') {
+            mcda.weights = WeightsCollection.fromObject(value);
+        }
+
+        return this.setState({
             editState: 'notSaved',
             tool: {
                 ...this.state.tool,
                 data: {
                     ...this.state.tool.data,
-                    mcda: {
-                        ...this.state.tool.data.mcda,
-                        [name]: value
-                    }
+                    mcda: mcda.toObject
                 }
             },
             isDirty: true
-        })
+        });
     };
 
     update = (tool) => this.setState({
@@ -129,8 +137,6 @@ class T05 extends React.Component {
         const menuItems = getMenuItems(mcda);
 
         let component;
-
-        console.log('PARAMS', this.props.match.params);
 
         switch (this.props.match.params.property) {
             case 'wa':

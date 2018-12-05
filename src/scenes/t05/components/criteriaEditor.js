@@ -22,7 +22,7 @@ class CriteriaEditor extends React.Component {
     handleChange = criteriaCollection => {
         return this.props.handleChange({
             name: 'criteria',
-            value: criteriaCollection
+            value: CriteriaCollection.fromObject(criteriaCollection)
         });
     };
 

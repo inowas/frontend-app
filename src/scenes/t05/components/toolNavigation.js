@@ -6,13 +6,12 @@ import {Icon, Menu, Popup, Segment} from 'semantic-ui-react';
 class ToolNavigation extends React.Component {
 
     handleItemClick = (e, {route}) => {
-        console.log('ROUTE', route);
         this.props.history.push(route)
     };
 
     render() {
         const {id} = this.props.match.params;
-        const property = this.props.match.params.property || '';
+        const {property, type} = this.props.match.params || '';
         const path = this.props.match.path;
         const basePath = path.split(':')[0];
         const {navigationItems} = this.props;
@@ -23,7 +22,7 @@ class ToolNavigation extends React.Component {
                 key={idx}
                 active={property === i.property}
                 route={basePath + id + '/' + i.property}
-                onClick={this.handleItemClick}
+                onClick={property !== i.property ? this.handleItemClick : null}
             >
                 {i.status === 'success' &&
                 <Icon name='check circle' color='green'/>
@@ -42,8 +41,8 @@ class ToolNavigation extends React.Component {
                             disabled={!id}
                             key={sdx}
                             name={s.name}
-                            active={property === s.property || (!property && sdx === 0)}
-                            route={basePath + id + '/' + i.property + '/' + s.property}
+                            active={type === s.type || (!type && sdx === 0)}
+                            route={basePath + id + '/' + i.property + '/' + s.type}
                             onClick={this.handleItemClick}
                         />
                     )}

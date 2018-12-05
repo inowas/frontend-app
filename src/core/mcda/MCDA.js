@@ -1,4 +1,4 @@
-import {Criteria, CriteriaCollection, Weight, WeightsCollection} from './criteria';
+import {CriteriaCollection, Weight, WeightsCollection} from './criteria';
 
 class MCDA {
     _criteria = new CriteriaCollection();
@@ -39,18 +39,19 @@ class MCDA {
             const weight = new Weight();
             weight.method = method;
             weight.criteria = c;
-            weight.rank = cix;
+            weight.rank = cix + 1;
             if (!this.weights.findByCriteriaAndMethod(c, method)) {
                 this.weights.add(weight);
             }
         });
     }
 
-    update(criteria) {
-        if (!(criteria instanceof Criteria)) {
-            throw new Error('Criteria expected to be of type Criteria.');
+    updateCriteria(criteria) {
+        if (!(criteria instanceof CriteriaCollection)) {
+            throw new Error('Criteria expected to be of type CriteriaCollection.');
         }
-        this.criteria.update(criteria);
+
+        this.criteria = criteria;
         this.weights.updateCriteria(criteria);
     }
 }

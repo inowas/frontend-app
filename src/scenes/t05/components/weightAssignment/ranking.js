@@ -1,6 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import {Grid, Header, Message, Segment} from 'semantic-ui-react';
+import {Grid, Message, Segment, Table} from 'semantic-ui-react';
 import DragAndDropList from '../shared/dragAndDropList';
 import {MCDA} from 'core/mcda';
 
@@ -26,6 +26,7 @@ class Ranking extends React.Component {
     handleChange = weights => {
         const weightsCollection = this.props.mcda.weights;
         weightsCollection.weights = weights;
+        weightsCollection.calculateWeights(WAMETHOD);
 
         return this.props.handleChange({
             name: 'weights',
@@ -40,8 +41,8 @@ class Ranking extends React.Component {
             const weight = this.state.weights.filter(w => w.id === item.id)[0];
 
             if (weight) {
-                  weight.rank = item.rank;
-                  newWeights.push(weight);
+                weight.rank = item.rank;
+                newWeights.push(weight);
             }
         });
 
@@ -61,11 +62,9 @@ class Ranking extends React.Component {
         });
 
         return (
-            <Segment>
-                <Header as='h3'>Weight Assignment</Header>
-
+            <div>
                 <Message>
-                    <Message.Header>Method 1: Ranking</Message.Header>
+                    <Message.Header>Weight Assignment Method 1: Ranking</Message.Header>
                     <p>You can perform more of the weight assignment methods and compare the results in the end.</p>
                     <p>Ranking: place the criteria in your preferred order by drag and drop or using the arrow buttons
                         on the right.</p>
@@ -90,10 +89,29 @@ class Ranking extends React.Component {
                         <Segment textAlign='center' inverted color='grey' secondary>
                             Weight Assignment
                         </Segment>
+                        <Table>
+                            <Table.Header>
+                                <Table.Row>
+                                    <Table.HeaderCell>Criteria</Table.HeaderCell>
+                                    <Table.HeaderCell textAlign='center'>Sum Weight [%]</Table.HeaderCell>
+                                </Table.Row>
+                            </Table.Header>
+                            <Table.Body>
+                                {weights.map((w, key) =>
+                                    <Table.Row key={key}>
+                                        <Table.Cell>{w.criteria.name}</Table.Cell>
+                                        <Table.Cell
+                                            textAlign='center'>
+                                            {(w.value * 100).toFixed(2)}
+                                        </Table.Cell>
+                                    </Table.Row>
+                                )}
+                            </Table.Body>
+                        </Table>
                     </Grid.Column>
                 </Grid>
                 }
-            </Segment>
+            </div>
         );
     }
 

@@ -21,7 +21,8 @@ class ContentToolBar extends React.Component {
         this.state = {
             hide: 2500,
             visible: false,
-            message: null
+            message: null,
+            state: null
         }
     };
 
@@ -35,7 +36,8 @@ class ContentToolBar extends React.Component {
         if (nextProps.state) {
             this.setState({
                 message: this.getMessageFromState(nextProps.state),
-                visible: true
+                state: nextProps.state,
+                visible: nextProps.state !== this.state.state
             }, () => setTimeout(function () {
                 if (this.state.message && this.state.message.positive) {
                     this.setState({visible: false})
