@@ -8,6 +8,7 @@ import cancelOptimizationCalculationPayloadSchema from './cancelOptimizationCalc
 import createModflowModelPayloadSchema from './createModflowModelPayloadSchema';
 import updateModflowModelPayloadSchema from './updateModflowModelPayloadSchema';
 import updateOptimizationInputPayloadSchema from './updateOptimizationInputPayloadSchema';
+import updateStressperiodsPayloadSchema from './updateStressperiodsPayloadSchema';
 
 class Command {
 
@@ -25,6 +26,11 @@ class Command {
     static createModflowModel(payload) {
         return new Command('createModflowModel', payload, createModflowModelPayloadSchema);
     }
+
+    static updateStressperiods(payload) {
+        return new Command('updateStressPeriods', payload, updateStressperiodsPayloadSchema);
+    }
+
 
     static updateModflowModel(payload) {
         return new Command('updateModflowModel', payload, updateModflowModelPayloadSchema);

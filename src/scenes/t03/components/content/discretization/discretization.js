@@ -3,8 +3,9 @@ import {connect} from 'react-redux';
 import PropTypes from 'prop-types';
 import {Grid, Menu, Segment} from 'semantic-ui-react';
 import StressperiodsEditor from './stressperiodsEditor';
-import {ModflowModel} from 'core/model/modflow';
+import {ModflowModel, Soilmodel} from 'core/model/modflow';
 import GridEditor from './gridEditor';
+import {updateModel, updateSoilmodel} from '../../../actions/actions';
 
 const menuItems = [
     {id: 'stressperiods', name: 'Time discretization'},
@@ -16,6 +17,7 @@ class Discretization extends React.Component {
         super(props);
         this.state = {
             model: null,
+            soilmodel: null,
             selected: menuItems[0].id,
             isLoading: false,
             isDirty: false,
@@ -25,6 +27,16 @@ class Discretization extends React.Component {
 
     handleMenuClick = (selected) => {
         this.setState({selected});
+    };
+
+    onSave = (element) => {
+        if (element instanceof Soilmodel) {
+            this.props.onChangeSoilmodel(element);
+        }
+
+        if (element instanceof ModflowModel) {
+            this.props.onChangeModel(element);
+        }
     };
 
     render() {
@@ -37,7 +49,7 @@ class Discretization extends React.Component {
             <Segment color={'grey'} loading={this.state.isLoading}>
                 <Grid padded>
                     <Grid.Row>
-                        <Grid.Column width={4}>
+                        <Grid.Column width={3}>
                             <Menu fluid vertical tabular>
                                 {menuItems.map(i => (
                                     <Menu.Item
@@ -49,13 +61,11 @@ class Discretization extends React.Component {
                                 ))}
                             </Menu>
                         </Grid.Column>
-                        <Grid.Column width={12}>
-                            {this.state.selected === 'stressperiods' &&
-                            <StressperiodsEditor stressperiods={model.stressperiods} onChange={() => (1 + 1)}/>
-                            }
+                        <Grid.Column width={13}>
                             {this.state.selected === 'grid' &&
                             <GridEditor stressperiods={model.stressperiods} onChange={() => (1 + 1)}/>
                             }
+                            {this.state.selected === 'stressperiods' && <StressperiodsEditor/>}
                         </Grid.Column>
                     </Grid.Row>
                 </Grid>
@@ -68,11 +78,20 @@ class Discretization extends React.Component {
 const mapStateToProps = state => {
     return {
         model: ModflowModel.fromObject(state.T03.model),
+        soilmodel: Soilmodel.fromObject(state.T03.soilmodel)
     };
+};
+
+const mapDispatchToProps = {
+    onChangeModel: updateModel,
+    onChangeSoilmodel: updateSoilmodel
 };
 
 Discretization.proptypes = {
     model: PropTypes.instanceOf(ModflowModel).isRequired,
+    soilmodel: PropTypes.instanceOf(Soilmodel).isRequired,
+    onChangeModel: PropTypes.func.isRequired,
+    onChangeSoilmodel: PropTypes.func.isRequired,
 };
 
-export default connect(mapStateToProps)(Discretization);
+export default connect(mapStateToProps, mapDispatchToProps)(Discretization);

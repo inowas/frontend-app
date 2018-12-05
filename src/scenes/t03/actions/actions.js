@@ -1,8 +1,8 @@
 import {UPDATE_BOUNDARIES} from '../reducers/boundaries';
-import {UPDATE_MODEL} from '../reducers/model';
+import {UPDATE_MODEL, UPDATE_STRESSPERIODS} from '../reducers/model';
 import {UPDATE_SOILMODEL} from '../reducers/soilmodel';
 
-import {ModflowModel} from 'core/model/modflow';
+import {ModflowModel, Stressperiods} from 'core/model/modflow';
 import {BoundaryCollection} from 'core/model/modflow/boundaries';
 import {Soilmodel} from 'core/model/modflow/soilmodel';
 
@@ -14,6 +14,17 @@ export function updateModel(modflowModel) {
     return {
         type: UPDATE_MODEL,
         model: modflowModel.toObject()
+    };
+}
+
+export function updateStressperiods(stressperiods) {
+    if (!stressperiods instanceof Stressperiods) {
+        throw new Error('Stressperiods is expected to be instance of Stressperiods');
+    }
+
+    return {
+        type: UPDATE_STRESSPERIODS,
+        payload: stressperiods.toObject()
     };
 }
 
