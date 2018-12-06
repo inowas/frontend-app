@@ -22,7 +22,7 @@ const getMenuItems = (mcda) => {
                 },
                 {
                     name: 'Method 2: Multi-influence',
-                    type: 'multi-influence'
+                    type: 'mif'
                 },
                 {
                     name: 'Method 3: Pairwise',

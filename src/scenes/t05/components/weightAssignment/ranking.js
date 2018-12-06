@@ -64,7 +64,7 @@ class Ranking extends React.Component {
         return (
             <div>
                 <Message>
-                    <Message.Header>Weight Assignment Method 1: Ranking</Message.Header>
+                    <Message.Header>Weight Assignment: Ranking Method</Message.Header>
                     <p>You can perform more of the weight assignment methods and compare the results in the end.</p>
                     <p>Ranking: place the criteria in your preferred order by drag and drop or using the arrow buttons
                         on the right.</p>

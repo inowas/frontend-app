@@ -29,6 +29,27 @@ class WeightsCollection {
         return this._weights;
     }
 
+    allRelations(method) {
+        let relations = [];
+
+        this.all.filter(weight => weight.method === method).forEach(weight => {
+            if (weight.relations.length > 0) {
+                relations = relations.concat(
+                    weight.relations.map(relation => {
+                        return {
+                            id: relation.id,
+                            from: weight.criteria.id,
+                            to: relation.to,
+                            value: relation.value
+                        }
+                    })
+                )
+            }
+        });
+
+        return relations;
+    }
+
     findById(id) {
         const weights = this._weights.filter(w => w.id === id);
         if (weights.length > 0) {
@@ -61,25 +82,46 @@ class WeightsCollection {
             return null;
         }
 
-        const variables = weights.map(w => {
-            return {
-                rank: w.rank,
-                n: weights.length - w.rank + 1,
-                r: 1 / w.rank
-            }
-        });
+        if (method === 'ranking') {
+            const variables = weights.map(w => {
+                return {
+                    rank: w.rank,
+                    n: weights.length - w.rank + 1,
+                    r: 1 / w.rank
+                }
+            });
 
-        const nSum = variables.reduce((prev, cur) => {
-            return prev + cur.n;
-        }, 0);
-        /*const rSum = variables.reduce((prev, cur) => {
-            return prev + cur.r;
-        }, 0);*/
+            const nSum = variables.reduce((prev, cur) => {
+                return prev + cur.n;
+            }, 0);
+            /*const rSum = variables.reduce((prev, cur) => {
+                return prev + cur.r;
+            }, 0);*/
 
-        weights.forEach((weight, key) => {
-            weight.value = variables[key].n / nSum;
-            this.update(weight);
-        });
+            weights.forEach((weight, key) => {
+                weight.value = variables[key].n / nSum;
+                this.update(weight);
+            });
+        }
+
+        if (method === 'mif') {
+            let nScore = 0;
+
+            const variables = weights.map(w => {
+                const score = w.relations.filter(r => r.value === 1).length + 0.5 * w.relations.filter(r => r.value === 0).length;
+                nScore += score;
+
+                return {
+                    id: w.id,
+                    score: score
+                }
+            });
+
+            weights.forEach((weight, key) => {
+                weight.value = variables[key].score / nScore;
+                this.update(weight);
+            });
+        }
 
         return this;
     }

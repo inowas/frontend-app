@@ -1,11 +1,13 @@
 import uuidv4 from 'uuid/v4';
 import Criteria from './Criteria';
+import CriteriaRelation from './CriteriaRelation';
 
 class Weight {
     _id = uuidv4();
     _criteria = null;
     _method = 'ranking';
     _rank = 0;
+    _relations = [];
     _value = 0;
 
     static fromObject(obj) {
@@ -14,6 +16,7 @@ class Weight {
         weight.criteria = Criteria.fromObject(obj.criteria);
         weight.method = obj.method;
         weight.rank = obj.rank;
+        weight.relations = obj.relations.map(r => CriteriaRelation.fromObject(r));
         weight.value = obj.value;
         return weight;
     }
@@ -42,6 +45,14 @@ class Weight {
         this._method = value;
     }
 
+    get relations() {
+        return this._relations;
+    }
+
+    set relations(value) {
+        this._relations = value || [];
+    }
+
     get rank() {
         return this._rank;
     }
@@ -64,6 +75,7 @@ class Weight {
             criteria: this.criteria.toObject,
             method: this.method,
             rank: this.rank,
+            relations: this.relations.map(r => r.toObject),
             value: this.value
         });
     }
