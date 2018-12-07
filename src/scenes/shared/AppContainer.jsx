@@ -1,9 +1,9 @@
 import React, {Component} from 'react';
 import PropTypes from 'prop-types';
 
-import {Container, Dimmer, Loader, Segment} from "semantic-ui-react";
-import NavBar from "./Navbar";
-import Footer from "./Footer";
+import {Container, Dimmer, Loader, Segment} from 'semantic-ui-react';
+import NavBar from './Navbar';
+import Footer from './Footer';
 
 const styles = {
     wrapper: {

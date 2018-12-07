@@ -10,7 +10,7 @@ import {updateStressperiods} from '../../../actions/actions';
 import {sendCommand} from 'services/api';
 import StressPeriodsDataTable from './stressperiodsDatatable';
 import moment from 'moment';
-import ContentToolBar from '../../shared/contentToolbar';
+import ContentToolBar from 'scenes/shared/ContentToolbar';
 import Command from '../../../commands/command';
 
 class StressperiodsEditor extends React.Component {
@@ -65,8 +65,12 @@ class StressperiodsEditor extends React.Component {
             <Grid>
                 <Grid.Row>
                     <Grid.Column width={16}>
-                        <ContentToolBar isDirty={this.state.isDirty} isError={this.state.isError} saveButton
-                                        onSave={this.onSave}/>
+                        <ContentToolBar
+                            isDirty={this.state.isDirty}
+                            isError={this.state.isError}
+                            saveButton
+                            onSave={this.onSave}
+                        />
                     </Grid.Column>
                 </Grid.Row>
                 <Grid.Row>

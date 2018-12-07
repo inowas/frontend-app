@@ -79,6 +79,7 @@ class ContentToolBar extends React.Component {
     render() {
         const saveButton = this.props.saveButton || true;
         const message = this.state.message;
+        const {isDirty} = this.props;
 
         return (
             <Grid>
@@ -118,7 +119,7 @@ class ContentToolBar extends React.Component {
                         />
                         }
                         {saveButton &&
-                        <Button icon positive onClick={this.props.onSave} labelPosition="left">
+                        <Button icon positive onClick={this.props.onSave} labelPosition="left" disabled={!isDirty}>
                             <Icon name="save"/>Save
                         </Button>
                         }

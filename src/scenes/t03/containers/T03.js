@@ -14,7 +14,7 @@ import {fetchUrl} from 'services/api';
 import ModflowModel from 'core/model/modflow/ModflowModel';
 import {updateBoundaries, updateModel, updateSoilmodel} from '../actions/actions';
 import {BoundaryCollection} from 'core/model/modflow/boundaries';
-import {Soilmodel} from '../../../core/model/modflow/soilmodel';
+import {Soilmodel} from 'core/model/modflow/soilmodel';
 
 const navigation = [{
     name: 'Documentation',
@@ -27,7 +27,7 @@ class T03 extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            model: props.model,
+            model: null,
             isLoading: true,
             error: false
         }
@@ -41,6 +41,17 @@ class T03 extends React.Component {
 
         this.fetchModel(id);
     };
+
+    componentWillReceiveProps(nextProps, nextContext) {
+        const {id} = nextProps.match.params;
+        if (!this.props.model || id !== this.props.model.id) {
+            return this.fetchModel(id);
+        }
+
+        this.setState({
+            model: nextProps.model
+        })
+    }
 
     fetchModel(id) {
         fetchUrl(
@@ -72,12 +83,6 @@ class T03 extends React.Component {
         );
     };
 
-    componentWillReceiveProps(nextProps, nextContext) {
-        this.setState({
-            model: nextProps.model
-        })
-    }
-
     handleError = error => {
         console.log(error);
         const {response} = error;
@@ -93,16 +98,15 @@ class T03 extends React.Component {
             return null;
         }
 
-        const model = ModflowModel.fromObject(this.state.model);
         return (<ToolMetaData
             isDirty={false}
             onChange={this.onChangeMetaData}
             readOnly={false}
             tool={{
                 type: 'T03',
-                name: model.name,
-                description: model.description,
-                public: model.public
+                name: this.props.model.name,
+                description: this.props.model.description,
+                public: this.props.model.public
             }}
             save={false}
             onSave={this.saveMetaData}
@@ -196,7 +200,7 @@ class T03 extends React.Component {
 }
 
 const mapStateToProps = state => ({
-    model: state.T03.model,
+    model: state.T03.model && ModflowModel.fromObject(state.T03.model),
     boundaries: state.T03.boundaries
 });
 

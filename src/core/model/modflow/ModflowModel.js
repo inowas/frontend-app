@@ -13,7 +13,7 @@ export default class ModflowModel {
     _lengthUnit;
     _permissions;
     _public;
-    _stressPeriods;
+    _stressperiods;
     _timeUnit;
 
     static fromObject(obj) {
@@ -28,12 +28,12 @@ export default class ModflowModel {
         model.lengthUnit = obj.length_unit;
         model.permissions = obj.permissions;
         model.public = obj.public;
-        model.stressperiods = Stressperiods.fromObject(obj.stress_periods);
+        model.stressperiods = (obj.stress_periods) ? Stressperiods.fromObject(obj.stress_periods) : Stressperiods.fromDefaults();
         model.timeUnit = obj.time_unit;
         return model;
     }
 
-    static fromParameters(id, name, description, geometry, boundingBox, gridSize, activeCells, lengthUnit, timeUnit, stressPeriods, isPublic) {
+    static fromParameters(id, name, description, geometry, boundingBox, gridSize, activeCells, lengthUnit, timeUnit, stressperiods, isPublic) {
         const model = new ModflowModel();
         model._id = id;
         model._name = name;
@@ -45,7 +45,7 @@ export default class ModflowModel {
         model._lengthUnit = lengthUnit;
         model._timeUnit = timeUnit;
         model._public = isPublic;
-        model._stressPeriods = stressPeriods;
+        model._stressperiods = (stressperiods instanceof Stressperiods) ? stressperiods.toObject() : stressperiods;
         return model;
     }
 
@@ -134,11 +134,11 @@ export default class ModflowModel {
     }
 
     get stressperiods() {
-        return this._stressPeriods;
+        return this._stressperiods;
     }
 
     set stressperiods(value) {
-        this._stressPeriods = value;
+        this._stressperiods = value;
     }
 
     get timeUnit() {
@@ -179,7 +179,7 @@ export default class ModflowModel {
         length_unit: this._lengthUnit,
         permissions: this._permissions,
         public: this._public,
-        stress_periods: this._stressPeriods,
+        stress_periods: this._stressperiods,
         time_unit: this._timeUnit,
     });
 }

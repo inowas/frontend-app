@@ -10,7 +10,7 @@ import BoundaryDetails from './boundaryDetails';
 import {BoundaryCollection, ModflowModel, Soilmodel} from 'core/model/modflow';
 import {updateBoundaries, updateModel} from '../../../actions/actions';
 import {BoundaryFactory} from 'core/model/modflow/boundaries';
-import ContentToolBar from '../../shared/contentToolbar';
+import ContentToolBar from 'scenes/shared/ContentToolbar';
 
 const baseUrl = '/tools/T03';
 

@@ -47,7 +47,16 @@ class CreateModel extends React.Component {
 
     handleSave = () => {
         return sendCommand(
-            Command.createModflowModel(this.getPayload()), () => this.props.history.push('T03/' + this.state.id)
+            Command.createModflowModel(this.getPayload()),
+            () => sendCommand(Command.updateModflowModel(this.getPayload()),
+                () => sendCommand(Command.updateStressperiods({
+                        id: this.state.id,
+                        stress_periods: Stressperiods.fromObject(this.state.stressperiods).toObject()
+                    }),
+                    () => this.props.history.push('T03/' + this.state.id),
+                    (e) => this.setState({error: e})),
+                (e) => this.setState({error: e})),
+            (e) => this.setState({error: e})
         );
     };
 
