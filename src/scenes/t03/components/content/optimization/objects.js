@@ -1,13 +1,9 @@
 import React from 'react';
 import {Button, Message, Form, Grid, Icon, Table, Accordion} from 'semantic-ui-react';
 import PropTypes from 'prop-types';
-import OptimizationObject from 'core/model/modflow/optimization/Object';
-import {FluxDataTable, OptimizationMap, OptimizationToolbar, SubstanceEditor} from './shared';
-import {
-    OPTIMIZATION_EDIT_NOCHANGES,
-    OPTIMIZATION_EDIT_SAVED,
-    OPTIMIZATION_EDIT_UNSAVED
-} from '../../../defaults/optimization';
+import {FluxDataTable, OptimizationMap, SubstanceEditor} from './shared';
+import {OptimizationInput, OptimizationObject} from 'core/model/modflow/optimization';
+import ContentToolBar from '../../shared/contentToolbar';
 
 const styles = {
     dropDownWithButtons: {
@@ -21,41 +17,48 @@ class OptimizationObjectsComponent extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            objects: props.objects.map((object) => {
-                object.numberOfStressPeriods = this.props.model.stressPeriods.dateTimes.length;
-                return object.toObject;
-            }),
+            optimizationInput: props.optimizationInput,
             selectedObject: null,
             selectedSubstance: null,
             activeIndex: 0,
-            showOverlay: false,
-            editState: OPTIMIZATION_EDIT_NOCHANGES
+            showOverlay: false
         };
     }
 
     componentWillReceiveProps(nextProps) {
         this.setState({
-            objects: nextProps.objects.map((object) => {
-                object.numberOfStressPeriods = this.props.model.stressPeriods.dateTimes.length;
-                return object.toObject;
-            })
+            objects: nextProps.optimizationInput
         });
     }
 
-    handleChange = (e, {name, value}) => this.setState({
-        selectedObject: {
-            ...this.state.selectedObject,
-            [name]: value
-        },
-        editState: OPTIMIZATION_EDIT_UNSAVED
-    });
+    handleChange = () => this.props.onChange(OptimizationInput.fromObject(this.state.optimizationInput));
+
+    handleSaveSelectedObject = () => {
+        const input = OptimizationInput.fromObject(this.state.optimizationInput);
+        input.objects.update(this.state.selectedObject);
+
+        this.props.onChange(input);
+
+        return this.setState({
+            selectedObject: null,
+            selectedSubstance: null
+        });
+    };
+
+    handleChangeSelectedObject = (e, {name, value}) => {
+        const object = this.state.selectedObject;
+        object[name] = value;
+
+        return this.setState({
+            selectedObject: object
+        });
+    };
 
     handleChangeLocation = (e, {name, value}) => this.setState({
         selectedObject: {
             ...this.state.selectedObject,
             position: value
-        },
-        editState: OPTIMIZATION_EDIT_UNSAVED
+        }
     });
 
     onClickNew = (e, {name, value}) => {
@@ -63,8 +66,7 @@ class OptimizationObjectsComponent extends React.Component {
         newObject.type = value;
         newObject.numberOfStressPeriods = this.props.model.stressPeriods.dateTimes.length;
         return this.setState({
-            selectedObject: newObject.toObject,
-            editState: OPTIMIZATION_EDIT_UNSAVED
+            selectedObject: newObject.toObject
         });
     };
 
@@ -93,53 +95,23 @@ class OptimizationObjectsComponent extends React.Component {
     };
 
     handleChangeFlux = rows => this.setState((prevState) => ({
-        selectedObject: OptimizationObject.fromObject(prevState.selectedObject).updateFlux(rows).toObject,
-        editState: OPTIMIZATION_EDIT_UNSAVED
+        selectedObject: OptimizationObject.fromObject(prevState.selectedObject).updateFlux(rows).toObject
     }));
 
     handleChangeSubstances = (substances) => this.setState((prevState) => ({
-        selectedObject: OptimizationObject.fromObject(prevState.selectedObject).updateSubstances(substances).toObject,
-        editState: OPTIMIZATION_EDIT_UNSAVED
+        selectedObject: OptimizationObject.fromObject(prevState.selectedObject).updateSubstances(substances).toObject
     }));
 
     onClickBack = () => this.setState({
         selectedObject: null,
-        selectedSubstance: null,
-        editState: OPTIMIZATION_EDIT_NOCHANGES
+        selectedSubstance: null
     });
 
-    onClickSave = () => {
-        const {objects, selectedObject} = this.state;
-
-        if (objects.length < 1) {
-            objects.push(selectedObject);
-        }
-
-        if (objects.length >= 1 && objects.filter(item => item.id === selectedObject.id).length === 0) {
-            objects.push(selectedObject);
-        }
-
-        this.props.onChange({
-            key: 'objects',
-            value: objects.map((obj) => {
-                if (obj.id === selectedObject.id) {
-                    return OptimizationObject.fromObject(selectedObject);
-                }
-
-                return OptimizationObject.fromObject(obj);
-            })
-        });
-
-        return this.setState({
-            selectedObject: null,
-            selectedSubstance: null,
-            editState: OPTIMIZATION_EDIT_SAVED
-        });
-    };
-
     render() {
-        const {model, substances} = this.props;
-        const {activeIndex, editState, objects, selectedObject} = this.state;
+        const {model} = this.props;
+        const {activeIndex, optimizationInput, selectedObject} = this.state;
+        const objects = optimizationInput.objects.all;
+        const substances = [];
 
         const typeOptions = [
             {key: 'type1', text: 'Well', value: 'wel'},
@@ -165,9 +137,8 @@ class OptimizationObjectsComponent extends React.Component {
 
         return (
             <div>
-                <OptimizationToolbar
-                    save={selectedObject ? {onClick: this.onClickSave} : null}
-                    back={selectedObject ? {onClick: this.onClickBack} : null}
+                <ContentToolBar
+                    backButton={selectedObject}
                     dropdown={!selectedObject ? {
                         text: 'Add New',
                         icon: 'plus',
@@ -180,7 +151,10 @@ class OptimizationObjectsComponent extends React.Component {
                         ],
                         onChange: this.onClickNew
                     } : null}
-                    editState={editState}
+                    isError={this.props.isError}
+                    isDirty={this.props.isDirty}
+                    save
+                    onSave={this.props.onSave}
                 />
                 <Grid>
                     <Grid.Row columns={1}>
@@ -310,10 +284,12 @@ class OptimizationObjectsComponent extends React.Component {
 }
 
 OptimizationObjectsComponent.propTypes = {
-    objects: PropTypes.array.isRequired,
+    optimizationInput: PropTypes.instanceOf(OptimizationInput).isRequired,
     model: PropTypes.object,
-    substances: PropTypes.array,
+    isDirty: PropTypes.bool,
+    isError: PropTypes.bool,
     onChange: PropTypes.func.isRequired,
+    onSave: PropTypes.func.isRequired
 };
 
 export default OptimizationObjectsComponent;

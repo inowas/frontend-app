@@ -17,6 +17,9 @@ class Optimization {
     }
 
     static fromObject(obj) {
+
+        console.log('CONSTRUCTING OPTIMIZATION', obj);
+
         const optimization = new Optimization();
         optimization.input = obj.input ? OptimizationInput.fromObject(obj.input) : OptimizationInput.fromDefaults();
         optimization.state = obj.state;

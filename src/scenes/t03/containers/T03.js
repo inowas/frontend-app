@@ -1,21 +1,22 @@
 import React from 'react';
 import {connect} from 'react-redux';
 import {withRouter} from 'react-router-dom';
-
+import {fetchUrl} from 'services/api';
 import PropTypes from 'prop-types';
+import {Grid, Icon, Message} from 'semantic-ui-react';
 
 import AppContainer from '../../shared/AppContainer';
-import {Grid, Icon, Message} from 'semantic-ui-react';
 import ToolNavigation from '../../shared/complexTools/toolNavigation';
-import menuItems from '../defaults/menuItems';
-import * as Content from '../components/content/index';
 import ToolMetaData from '../../shared/simpleTools/ToolMetaData';
-import {fetchUrl} from 'services/api';
-import ModflowModel from 'core/model/modflow/ModflowModel';
+
+import menuItems from '../defaults/menuItems';
 import {updateBoundaries, updateModel, updateOptimization, updateSoilmodel} from '../actions/actions';
+import * as Content from '../components/content/index';
+
+import ModflowModel from 'core/model/modflow/ModflowModel';
 import {BoundaryCollection} from 'core/model/modflow/boundaries';
-import {Soilmodel} from '../../../core/model/modflow/soilmodel';
-import {Optimization} from "../../../core/model/modflow/optimization";
+import {Soilmodel} from 'core/model/modflow/soilmodel';
+import {Optimization} from 'core/model/modflow/optimization';
 
 const navigation = [{
     name: 'Documentation',

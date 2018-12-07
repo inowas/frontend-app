@@ -184,8 +184,14 @@ class OptimizationContainer extends React.Component {
         switch (type) {
             case 'objects':
                 return (
-                    <OptimizationObjectsComponent objects={optimization.input.objects} model={model}
-                                                  onChange={this.handleChange}/>
+                    <OptimizationObjectsComponent
+                        optimizationInput={optimization.input}
+                        model={model}
+                        isDirty={this.state.isDirty}
+                        isError={this.state.isError}
+                        onChange={this.handleChange}
+                        onSave={this.handleSave}
+                    />
                 );
             case 'objectives':
                 return (
@@ -213,11 +219,13 @@ class OptimizationContainer extends React.Component {
                 );
             default:
                 return (
-                    <OptimizationParametersComponent optimizationInput={optimization.input}
-                                                     isDirty={this.state.isDirty}
-                                                     isError={this.state.isError}
-                                                     onChange={this.handleChange}
-                                                     onSave={this.handleSave}/>
+                    <OptimizationParametersComponent
+                        optimizationInput={optimization.input}
+                        isDirty={this.state.isDirty}
+                        isError={this.state.isError}
+                        onChange={this.handleChange}
+                        onSave={this.handleSave}
+                    />
                 );
         }
     }
