@@ -12,8 +12,10 @@ import AppContainer from '../../shared/AppContainer';
 import ToolMetaData from '../../shared/simpleTools/ToolMetaData';
 import {CriteriaEditor, ToolNavigation} from '../components';
 import ContentToolBar from '../components/shared/contentToolbar';
+
 import Ranking from '../components/weightAssignment/ranking';
 import MultiInfluence from '../components/weightAssignment/multiInfluence';
+import PairwiseComparison from '../components/weightAssignment/pairwise';
 
 import {defaultsT05} from '../defaults';
 import getMenuItems from '../defaults/menuItems';
@@ -144,6 +146,9 @@ class T05 extends React.Component {
                 switch (this.props.match.params.type) {
                     case 'mif':
                         component = <MultiInfluence readOnly={readOnly} mcda={mcda} handleChange={this.onChange}/>;
+                        break;
+                    case 'pwc':
+                        component = <PairwiseComparison readOnly={readOnly} mcda={mcda} handleChange={this.onChange}/>;
                         break;
                     default:
                         component = <Ranking readOnly={readOnly} mcda={mcda} handleChange={this.onChange}/>;

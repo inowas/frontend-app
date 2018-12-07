@@ -79,6 +79,14 @@ class Weight {
             value: this.value
         });
     }
+
+    addRelation(relation) {
+        if (!(relation instanceof CriteriaRelation)) {
+            throw new Error('Relation expected to be of type CriteriaRelation.');
+        }
+
+        this._relations.push(relation);
+    }
 }
 
 export default Weight;

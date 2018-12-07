@@ -13,13 +13,13 @@ class Ranking extends React.Component {
         props.mcda.addWeightAssignmentMethod(WAMETHOD);
 
         this.state = {
-            weights: props.mcda.weights.all
+            weights: props.mcda.weights.findByMethod(WAMETHOD)
         };
     }
 
     componentWillReceiveProps(nextProps) {
         this.setState({
-            weights: nextProps.mcda.weights.all
+            weights: nextProps.mcda.weights.findByMethod(WAMETHOD)
         });
     }
 

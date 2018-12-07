@@ -1,4 +1,4 @@
-import {CriteriaCollection, Weight, WeightsCollection} from './criteria';
+import {CriteriaCollection, CriteriaRelation, Weight, WeightsCollection} from './criteria';
 
 class MCDA {
     _criteria = new CriteriaCollection();
@@ -40,6 +40,15 @@ class MCDA {
             weight.method = method;
             weight.criteria = c;
             weight.rank = cix + 1;
+
+            if (method === 'pwc') {
+                weight.relations = this.criteria.all.filter(c => c.id !== weight.criteria.id).map(c => {
+                    const relation = new CriteriaRelation();
+                    relation.to = c.id;
+                    return relation;
+                });
+            }
+
             if (!this.weights.findByCriteriaAndMethod(c, method)) {
                 this.weights.add(weight);
             }

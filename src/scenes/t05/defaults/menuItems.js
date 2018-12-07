@@ -26,7 +26,7 @@ const getMenuItems = (mcda) => {
                 },
                 {
                     name: 'Method 3: Pairwise',
-                    type: 'pairwise'
+                    type: 'pwc'
                 },
                 {
                     name: 'Method 4: Analytical Hierarchy',
