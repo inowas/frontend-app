@@ -18,7 +18,7 @@ class Optimization {
 
     static fromObject(obj) {
         const optimization = new Optimization();
-        optimization.input = OptimizationInput.fromObject(obj.input);
+        optimization.input = obj.input ? OptimizationInput.fromObject(obj.input) : OptimizationInput.fromDefaults();
         optimization.state = obj.state;
 
         obj.methods && obj.methods.forEach((method) => {

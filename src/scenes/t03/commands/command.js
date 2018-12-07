@@ -31,7 +31,6 @@ class Command {
         return new Command('updateStressPeriods', payload, updateStressperiodsPayloadSchema);
     }
 
-
     static updateModflowModel(payload) {
         return new Command('updateModflowModel', payload, updateModflowModelPayloadSchema);
     }

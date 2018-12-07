@@ -12,9 +12,10 @@ import * as Content from '../components/content/index';
 import ToolMetaData from '../../shared/simpleTools/ToolMetaData';
 import {fetchUrl} from 'services/api';
 import ModflowModel from 'core/model/modflow/ModflowModel';
-import {updateBoundaries, updateModel, updateSoilmodel} from '../actions/actions';
+import {updateBoundaries, updateModel, updateOptimization, updateSoilmodel} from '../actions/actions';
 import {BoundaryCollection} from 'core/model/modflow/boundaries';
 import {Soilmodel} from '../../../core/model/modflow/soilmodel';
+import {Optimization} from "../../../core/model/modflow/optimization";
 
 const navigation = [{
     name: 'Documentation',
@@ -57,6 +58,14 @@ class T03 extends React.Component {
 
         fetchUrl(`modflowmodels/${id}/boundaries`,
             data => this.props.updateBoundaries(BoundaryCollection.fromQuery(data)),
+            error => this.setState(
+                {error, isLoading: false},
+                () => this.handleError(error)
+            )
+        );
+
+        fetchUrl(`modflowmodels/${id}/optimization`,
+            data => this.props.updateOptimization(Optimization.fromObject(data)),
             error => this.setState(
                 {error, isLoading: false},
                 () => this.handleError(error)
@@ -201,9 +210,8 @@ const mapStateToProps = state => ({
 });
 
 const mapDispatchToProps = {
-    updateBoundaries, updateModel, updateSoilmodel
+    updateBoundaries, updateModel, updateOptimization, updateSoilmodel
 };
-
 
 T03.proptypes = {
     history: PropTypes.object.isRequired,
@@ -213,6 +221,7 @@ T03.proptypes = {
     model: PropTypes.object.isRequired,
     updateModel: PropTypes.func.isRequired,
     updateBoundaries: PropTypes.func.isRequired,
+    updateOptimization: PropTypes.func.isRequired,
     updateSoilmodel: PropTypes.func.isRequired,
 };
 

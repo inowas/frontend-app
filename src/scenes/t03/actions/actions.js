@@ -1,10 +1,12 @@
 import {UPDATE_BOUNDARIES} from '../reducers/boundaries';
 import {UPDATE_MODEL, UPDATE_STRESSPERIODS} from '../reducers/model';
+import {UPDATE_OPTIMIZATION} from '../reducers/optimization';
 import {UPDATE_SOILMODEL} from '../reducers/soilmodel';
 
 import {ModflowModel, Stressperiods} from 'core/model/modflow';
 import {BoundaryCollection} from 'core/model/modflow/boundaries';
 import {Soilmodel} from 'core/model/modflow/soilmodel';
+import {Optimization} from 'core/model/modflow/optimization';
 
 export function updateModel(modflowModel) {
     if (!modflowModel instanceof ModflowModel) {
@@ -37,6 +39,17 @@ export function updateBoundaries(boundaryCollection) {
         type: UPDATE_BOUNDARIES,
         boundaries: boundaryCollection.toObject()
     };
+}
+
+export function updateOptimization(optimization) {
+    if (!optimization instanceof Optimization) {
+        throw new Error('optimization is expected to be instance of Optimization');
+    }
+
+    return {
+        type: UPDATE_OPTIMIZATION,
+        payload: optimization.toObject
+    }
 }
 
 export function updateSoilmodel(soilmodel) {

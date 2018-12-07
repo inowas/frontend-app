@@ -1,36 +1,40 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import {Segment, Form} from 'semantic-ui-react';
-import {OptimizationParameters} from 'core/model/modflow/optimization';
+import {OptimizationInput} from 'core/model/modflow/optimization';
+import ContentToolBar from '../../shared/contentToolbar';
 
 class OptimizationParametersComponent extends React.Component {
 
     constructor(props) {
         super(props);
         this.state = {
-            parameters: props.parameters.toObject
+            optimizationInput: props.optimizationInput.toObject
         };
     }
 
     componentWillReceiveProps(nextProps) {
         this.setState({
-            parameters: nextProps.parameters.toObject
+            optimizationInput: nextProps.optimizationInput.toObject,
         });
     }
 
-    handleSave = () => this.props.onChange({
-        key: 'parameters',
-        value: OptimizationParameters.fromObject(this.state.parameters)
-    });
+    handleChange = () => this.props.onChange(OptimizationInput.fromObject(this.state.optimizationInput));
 
-    handleChange = (e, {name, value}) => this.setState({
-        parameters: {...this.state.parameters, [name]: value}
-    });
+    handleLocalChange = (e, {name, value}) => {
+        const input = this.state.optimizationInput;
+        input.parameters[name] = value;
+
+        return this.setState({
+            optimizationInput: input
+        });
+    };
 
     handleSelect = (e, {name, value}) => {
-        this.setState({
-            parameters: {...this.state.parameters, [name]: value}
-        }, this.handleSave);
+        const input = this.state.optimizationInput;
+        input.parameters[name] = value;
+
+        return this.props.onChange(OptimizationInput.fromObject(input));
     };
 
     render() {
@@ -46,10 +50,11 @@ class OptimizationParametersComponent extends React.Component {
                 text: 'False'
             }
         ];
-        const {parameters} = this.state;
+        const {parameters} = this.state.optimizationInput;
 
         return (
             <Form>
+                <ContentToolBar isError={this.props.isError} isDirty={this.props.isDirty} save onSave={this.props.onSave}/>
                 <Form.Field>
                     <label>Method of optimization</label>
                     <Form.Select
@@ -81,8 +86,8 @@ class OptimizationParametersComponent extends React.Component {
                                     name="ngen"
                                     value={parameters.ngen}
                                     placeholder="ngen ="
-                                    onBlur={this.handleSave}
-                                    onChange={this.handleChange}
+                                    onBlur={this.handleChange}
+                                    onChange={this.handleLocalChange}
                                     disabled={(parameters.method !== 'GA')}
                                 />
                             </Form.Field>
@@ -93,8 +98,8 @@ class OptimizationParametersComponent extends React.Component {
                                     name="pop_size"
                                     value={parameters.pop_size}
                                     placeholder="pop_size ="
-                                    onBlur={this.handleSave}
-                                    onChange={this.handleChange}
+                                    onBlur={this.handleChange}
+                                    onChange={this.handleLocalChange}
                                 />
                             </Form.Field>
                         </Form.Group>
@@ -106,8 +111,8 @@ class OptimizationParametersComponent extends React.Component {
                                     name="mutpb"
                                     value={parameters.mutpb}
                                     placeholder="mutpb ="
-                                    onBlur={this.handleSave}
-                                    onChange={this.handleChange}
+                                    onBlur={this.handleChange}
+                                    onChange={this.handleLocalChange}
                                 />
                             </Form.Field>
                             <Form.Field>
@@ -117,8 +122,8 @@ class OptimizationParametersComponent extends React.Component {
                                     name="cxpb"
                                     value={parameters.cxpb}
                                     placeholder="cxpb ="
-                                    onBlur={this.handleSave}
-                                    onChange={this.handleChange}
+                                    onBlur={this.handleChange}
+                                    onChange={this.handleLocalChange}
                                 />
                             </Form.Field>
                         </Form.Group>
@@ -129,8 +134,8 @@ class OptimizationParametersComponent extends React.Component {
                                 name="eta"
                                 value={parameters.eta}
                                 placeholder="eta ="
-                                onBlur={this.handleSave}
-                                onChange={this.handleChange}
+                                onBlur={this.handleChange}
+                                onChange={this.handleLocalChange}
                             />
                         </Form.Field>
                         <Form.Field>
@@ -140,8 +145,8 @@ class OptimizationParametersComponent extends React.Component {
                                 type="number"
                                 value={parameters.indpb}
                                 placeholder="indpb ="
-                                onBlur={this.handleSave}
-                                onChange={this.handleChange}
+                                onBlur={this.handleChange}
+                                onChange={this.handleLocalChange}
                             />
                         </Form.Field>
                         <Segment>
@@ -164,8 +169,8 @@ class OptimizationParametersComponent extends React.Component {
                                         name="qbound"
                                         value={parameters.qbound}
                                         placeholder="qbound ="
-                                        onBlur={this.handleSave}
-                                        onChange={this.handleChange}
+                                        onBlur={this.handleChange}
+                                        onChange={this.handleLocalChange}
                                         disabled={(parameters.diversity_flg === false)}
                                     />
                                 </Form.Field>
@@ -176,8 +181,8 @@ class OptimizationParametersComponent extends React.Component {
                                         name="ncls"
                                         value={parameters.ncls}
                                         placeholder="ncls ="
-                                        onBlur={this.handleSave}
-                                        onChange={this.handleChange}
+                                        onBlur={this.handleChange}
+                                        onChange={this.handleLocalChange}
                                         disabled={(parameters.diversity_flg === false)}
                                     />
                                 </Form.Field>
@@ -195,8 +200,8 @@ class OptimizationParametersComponent extends React.Component {
                                 name="maxf"
                                 value={parameters.maxf}
                                 placeholder="maxf ="
-                                onBlur={this.handleSave}
-                                onChange={this.handleChange}
+                                onBlur={this.handleChange}
+                                onChange={this.handleLocalChange}
                                 disabled={(parameters.method !== 'Simplex')}
                             />
                         </Form.Field>
@@ -208,8 +213,8 @@ class OptimizationParametersComponent extends React.Component {
                                     name="xtol"
                                     value={parameters.xtol}
                                     placeholder="xtol ="
-                                    onBlur={this.handleSave}
-                                    onChange={this.handleChange}
+                                    onBlur={this.handleChange}
+                                    onChange={this.handleLocalChange}
                                     disabled={(parameters.method !== 'Simplex')}
                                 />
                             </Form.Field>
@@ -220,8 +225,8 @@ class OptimizationParametersComponent extends React.Component {
                                     name="ftol"
                                     value={parameters.ftol}
                                     placeholder="ftol ="
-                                    onBlur={this.handleSave}
-                                    onChange={this.handleChange}
+                                    onBlur={this.handleChange}
+                                    onChange={this.handleLocalChange}
                                     disabled={(parameters.method !== 'Simplex')}
                                 />
                             </Form.Field>
@@ -235,8 +240,8 @@ class OptimizationParametersComponent extends React.Component {
                         name="report_frequency"
                         value={parameters.report_frequency}
                         placeholder="report frequency ="
-                        onBlur={this.handleSave}
-                        onChange={this.handleChange}
+                        onBlur={this.handleChange}
+                        onChange={this.handleLocalChange}
                     />
                 </Form.Field>
             </Form>
@@ -245,8 +250,11 @@ class OptimizationParametersComponent extends React.Component {
 }
 
 OptimizationParametersComponent.propTypes = {
-    parameters: PropTypes.instanceOf(OptimizationParameters),
-    onChange: PropTypes.func.isRequired
+    isDirty: PropTypes.bool,
+    isError: PropTypes.bool,
+    optimizationInput: PropTypes.instanceOf(OptimizationInput).isRequired,
+    onChange: PropTypes.func.isRequired,
+    onSave: PropTypes.func.isRequired
 };
 
 export default OptimizationParametersComponent;
