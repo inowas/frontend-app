@@ -4,7 +4,7 @@ import {Button, Grid, Message, Segment, Table} from 'semantic-ui-react';
 import {MCDA} from 'core/mcda';
 
 import Graph from 'vis-react';
-import Weight from '../../../../core/mcda/criteria/Weight';
+import {Weight} from 'core/mcda/criteria';
 
 const WAMETHOD = 'mif';
 
@@ -89,10 +89,7 @@ class MultiInfluence extends React.Component {
         edges.push({
             id: data.id,
             from: data.from,
-            to: data.to,
-            color: {
-                color: 'red'
-            }
+            to: data.to
         });
         this.setState({
             edges: edges
