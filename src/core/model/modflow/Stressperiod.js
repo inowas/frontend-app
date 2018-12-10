@@ -16,6 +16,14 @@ class Stressperiod {
         return stressPeriod;
     }
 
+    constructor(totimStart, perlen, nstp, tsmult, steady) {
+        this.totimStart = totimStart;
+        this.perlen = perlen;
+        this.nstp = nstp;
+        this.tsmult = tsmult;
+        this.steady = steady;
+    }
+
     get totimStart() {
         return this._totimStart;
     }
@@ -64,7 +72,11 @@ class Stressperiod {
             tsmult: this.tsmult,
             steady: this.steady
         };
-    }
+    };
+
+    clone = () => (
+        new Stressperiod(this.totimStart, this.perlen, this.nstp, this.tsmult, this.steady)
+    )
 }
 
 export default Stressperiod;

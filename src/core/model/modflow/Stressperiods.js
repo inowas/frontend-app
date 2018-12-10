@@ -79,6 +79,10 @@ class Stressperiods {
         return this._stressperiods[idx];
     }
 
+    last() {
+        return this.stressperiods[this.count-1];
+    }
+
     updateStressperiodByIdx(idx, stressperiod) {
         this._stressperiods[idx] = stressperiod;
         this.stressperiods = this.recalculate(this.stressperiods);

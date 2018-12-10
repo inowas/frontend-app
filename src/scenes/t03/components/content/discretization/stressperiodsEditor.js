@@ -93,7 +93,6 @@ class StressperiodsEditor extends React.Component {
                             <Form.Select
                                 label='Time unit'
                                 options={[{key: 4, text: 'days', value: 4}]}
-                                style={{zIndex: 10000}}
                                 value={4}
                                 width={16}
                             />
