@@ -58,9 +58,10 @@ class T03 extends React.Component {
             `modflowmodels/${id}`,
             data => {
                 this.props.updateModel(ModflowModel.fromQuery(data));
-                this.setState({isLoading: false});
-                this.fetchBoundaries(id);
-                this.fetchSoilmodel(id);
+                this.setState({isLoading: false}, () => {
+                    this.fetchBoundaries(id);
+                    this.fetchSoilmodel(id);
+                });
             },
             error => this.setState(
                 {error, isLoading: false},

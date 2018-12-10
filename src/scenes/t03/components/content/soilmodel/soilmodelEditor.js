@@ -89,7 +89,7 @@ class SoilmodelEditor extends React.Component {
         const lid = '';
         const {id, pid, property, type} = this.props.match.params;
 
-        // If no boundary is selected, redirect to the first.
+        // If no layer is selected, redirect to the first.
         if (!pid && this.props.soilmodel.layers.length > 0) {
             const lid = this.props.soilmodel.layers.first.id;
             return <Redirect to={`${baseUrl}/${id}/${property}/${type || '!'}/${lid}`}/>
@@ -116,7 +116,6 @@ class SoilmodelEditor extends React.Component {
 }
 
 const mapStateToProps = state => {
-    console.log('MAP STATE TO PROPS', state);
     return {
         model: ModflowModel.fromObject(state.T03.model),
         soilmodel: Soilmodel.fromObject(state.T03.soilmodel)

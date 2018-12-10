@@ -5,7 +5,7 @@ class LayersCollection extends AbstractCollection {
 
     static fromObject(layers) {
         const lc = new LayersCollection();
-        layers.forEach(layer => lc.add(Layer.fromObject(layer)));
+        layers.map(layer => lc.add(Layer.fromObject(layer)));
         return lc;
     }
 
