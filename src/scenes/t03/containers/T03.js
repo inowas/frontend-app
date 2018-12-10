@@ -123,7 +123,7 @@ class T03 extends React.Component {
             case 'discretization':
                 return (<Content.Discretization/>);
             case 'soilmodel':
-                return (<Content.Soilmodel/>);
+                return (<Content.SoilmodelEditor/>);
             case 'boundaries':
                 return (<Content.Boundaries/>);
             case 'observations':

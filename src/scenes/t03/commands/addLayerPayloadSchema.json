@@ -1,0 +1,72 @@
+{
+  "type": "object",
+  "id": "https://inowas.com/schema/command/addLayerPayload",
+  "additionalProperties": false,
+  "required": ["id", "layer"],
+  "properties": {
+    "id": {
+      "$ref": "#/definitions/uuidv4"
+    },
+    "layer": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "$ref": "#/definitions/uuidv4"
+        },
+        "name": {
+          "type": "string"
+        },
+        "_meta": {
+          "type": "object",
+          "properties": {
+            "zones": {
+              "type": "array"
+            }
+          }
+        },
+        "description": {
+          "type": "string"
+        },
+        "number": {
+          "type": "number"
+        },
+        "laytyp": {
+          "type": "number"
+        },
+        "top": {
+          "type": "number"
+        },
+        "botm": {
+          "type": "number"
+        },
+        "hk": {
+          "type": "number"
+        },
+        "hani": {
+          "type": "number"
+        },
+        "vka": {
+          "type": "number"
+        },
+        "layavg": {
+          "type": "number"
+        },
+        "laywet": {
+          "type": "number"
+        },
+        "ss": {
+          "type": "number"
+        },
+        "sy": {
+          "type": "number"
+        }
+      }
+    }
+  },
+  "definitions": {
+    "uuidv4": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$"
+    }
+  }
+}

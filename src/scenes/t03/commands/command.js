@@ -3,6 +3,7 @@ import uuid from 'uuid';
 
 import ajv0 from 'ajv/lib/refs/json-schema-draft-04.json';
 
+import addLayerPayloadSchema from './addLayerPayloadSchema';
 import calculateOptimizationPayloadSchema from './calculateOptimizationPayloadSchema';
 import cancelOptimizationCalculationPayloadSchema from './cancelOptimizationCalculationPayloadSchema';
 import createModflowModelPayloadSchema from './createModflowModelPayloadSchema';
@@ -14,6 +15,10 @@ class Command {
 
     metadata = [];
     uuid = uuid();
+
+    static addSoilmodelLayer(payload) {
+        return new Command('addLayer', payload, addLayerPayloadSchema);
+    }
 
     static calculateOptimization(payload) {
         return new Command('calculateOptimization', payload, calculateOptimizationPayloadSchema);
@@ -30,7 +35,6 @@ class Command {
     static updateStressperiods(payload) {
         return new Command('updateStressPeriods', payload, updateStressperiodsPayloadSchema);
     }
-
 
     static updateModflowModel(payload) {
         return new Command('updateModflowModel', payload, updateModflowModelPayloadSchema);

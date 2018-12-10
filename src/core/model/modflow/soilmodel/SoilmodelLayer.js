@@ -1,10 +1,10 @@
 import uuidv4 from 'uuid/v4';
-import SoilmodelZone from './SoilmodelZone';
+import ZonesCollection from './ZonesCollection';
 
 class SoilmodelLayer {
     _id = uuidv4();
     _meta = {
-        _zones: []
+        _zones: new ZonesCollection()
     };
     _name = 'New Layer';
     _description = '';
@@ -38,12 +38,7 @@ class SoilmodelLayer {
             layer.laywet = obj.laywet;
             layer.ss = obj.ss;
             layer.sy = obj.sy;
-
-            if (obj._meta && obj._meta.zones) {
-                obj._meta.zones.forEach((zone) => {
-                    layer.addZone(SoilmodelZone.fromObject(zone));
-                });
-            }
+            layer.zones = obj.zones ? ZonesCollection.fromObject(obj.zones) : new ZonesCollection();
         }
 
         return layer;
@@ -179,12 +174,12 @@ class SoilmodelLayer {
         this._sy = value ? value : 0;
     }
 
-    get toObject() {
+    toObject() {
         return {
             'id': this.id,
             'name': this.name,
             '_meta': {
-                'zones': this.zones.map(z => z.toObject)
+                'zones': this.zones.all.map(z => z.toObject)
             },
             'description': this.description,
             'number': this.number,
@@ -257,37 +252,6 @@ class SoilmodelLayer {
             });
         });
 
-        return this;
-    }
-
-    addZone(zone) {
-        if (!(zone instanceof SoilmodelZone)) {
-            throw new Error('The zone object is not of type SoilmodelZone.');
-        }
-        const zones = this.zones;
-        zones.push(zone);
-        this.zones = zones;
-        return this;
-    }
-
-    removeZone(zone) {
-        this.zones = this.zones.filter(z => z.id !== zone.id);
-        return this;
-    }
-
-    updateZone(zone) {
-        let zoneExists = false;
-        this.zones = this.zones.map(z => {
-            if (z.id === zone.id) {
-                zoneExists = true;
-                return zone;
-            }
-            return z;
-        });
-
-        if (!zoneExists) {
-            this.addZone(zone);
-        }
         return this;
     }
 

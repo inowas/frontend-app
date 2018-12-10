@@ -142,7 +142,7 @@ class SoilmodelZone {
         this._sy = value && value !== '' ? parseFloat(value) : null;
     }
 
-    get toObject() {
+    toObject() {
         return {
             'id': this.id,
             'name': this.name,

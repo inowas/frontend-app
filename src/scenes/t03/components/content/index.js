@@ -6,7 +6,7 @@ import Observations from './observations';
 import Optimization from './optimization/optimization.js';
 import Results from './results';
 import Run from './run';
-import Soilmodel from './soilmodel';
+import SoilmodelEditor from './soilmodel/soilmodelEditor';
 
 export {
     Boundaries,
@@ -17,5 +17,5 @@ export {
     Optimization,
     Results,
     Run,
-    Soilmodel
+    SoilmodelEditor
 }

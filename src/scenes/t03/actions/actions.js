@@ -1,10 +1,10 @@
 import {UPDATE_BOUNDARIES} from '../reducers/boundaries';
 import {UPDATE_MODEL, UPDATE_STRESSPERIODS} from '../reducers/model';
-import {UPDATE_SOILMODEL} from '../reducers/soilmodel';
+import {ADD_SOILMODEL_LAYER, UPDATE_SOILMODEL} from '../reducers/soilmodel';
 
 import {ModflowModel, Stressperiods} from 'core/model/modflow';
 import {BoundaryCollection} from 'core/model/modflow/boundaries';
-import {Soilmodel} from 'core/model/modflow/soilmodel';
+import {Soilmodel, SoilmodelLayer} from 'core/model/modflow/soilmodel';
 
 export function updateModel(modflowModel) {
     if (!modflowModel instanceof ModflowModel) {
@@ -39,6 +39,17 @@ export function updateBoundaries(boundaryCollection) {
     };
 }
 
+export function addSoilmodelLayer(layer) {
+    if (!layer instanceof SoilmodelLayer) {
+        throw new Error('Layer is expected to be instance of SoilmodelLayer');
+    }
+
+    return {
+        type: ADD_SOILMODEL_LAYER,
+        layer: layer.toObject()
+    };
+}
+
 export function updateSoilmodel(soilmodel) {
     if (!soilmodel instanceof Soilmodel) {
         throw new Error('soilmodel is expected to be instance of Soilmodel');
@@ -46,6 +57,6 @@ export function updateSoilmodel(soilmodel) {
 
     return {
         type: UPDATE_SOILMODEL,
-        soilmodel: soilmodel.toObject
+        soilmodel: soilmodel.toObject()
     };
 }
