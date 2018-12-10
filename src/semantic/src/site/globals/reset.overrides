@@ -1,3 +1,30 @@
 /*******************************
          Site Overrides
 *******************************/
+
+
+/*-------------------
+      Recharts
+--------------------*/
+
+.recharts-wrapper .recharts-cartesian-grid-horizontal line:first-child,
+.recharts-wrapper .recharts-cartesian-grid-vertical line:first-child {
+      stroke-opacity: 0;
+}
+
+/*-------------------
+      RC Sliders
+--------------------*/
+
+.rc-slider-handle {
+    border-color: @blue;
+    border-size: 3px;
+}
+
+.rc-slider-rail {
+    background-color: @lightGrey;
+}
+
+.rc-slider-track {
+    background-color: @blue;
+    }

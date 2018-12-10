@@ -11,7 +11,7 @@ class Parameters extends React.Component {
             <div>
                 <Header textAlign='left'>
                     Selected
-                    <Button floated={'right'} color={'orange'} size={'small'} onClick={this.props.handleReset}>
+                    <Button compact floated={'right'} color={'default'} size={'small'} onClick={this.props.handleReset}>
                         Default
                     </Button>
                 </Header>
