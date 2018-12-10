@@ -1,5 +1,5 @@
 import uuidv4 from 'uuid/v4';
-import {inputType} from "./inputType";
+import {inputType} from './inputType';
 
 class SliderParameter {
     _decimals = 0;

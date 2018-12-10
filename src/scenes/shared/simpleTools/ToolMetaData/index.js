@@ -34,39 +34,43 @@ class ToolMetaData extends React.Component {
     };
 
     renderBreadcrumbs = () => (
-        <Breadcrumb size='medium'>
-            <Breadcrumb.Section link>Tools</Breadcrumb.Section>
+        <Breadcrumb size='large'>
+            <Breadcrumb.Section>Tools</Breadcrumb.Section>
             <Breadcrumb.Divider/>
-            <Breadcrumb.Section link>{this.props.tool.type}</Breadcrumb.Section>
+            <Breadcrumb.Section>{this.props.tool.type}</Breadcrumb.Section>
             <Breadcrumb.Divider icon='right angle'/>
-            <Breadcrumb.Section active>
+            <Breadcrumb.Section>
                 {this.state.tool.name}
-                <Button basic size={'small'} icon='pencil' onClick={this.handleButtonClick} />
+                {!this.props.readOnly && <Button basic size={'small'} icon='pencil' onClick={this.handleButtonClick}/>}
             </Breadcrumb.Section>
         </Breadcrumb>
     );
 
+    renderSaveButton = () => {
+        if (!this.props.readOnly && this.props.save) {
+            return (
+                <Button
+                    floated={'right'}
+                    positive
+                    onClick={this.handleSave}
+                    disabled={!this.props.isDirty || false}
+                >
+                    Save
+                </Button>
+            )
+        }
+    };
+
     render() {
         const {readOnly} = this.props;
-        let {isDirty} = this.props;
-
-        if (isDirty !== false) {
-            isDirty = true;
-        }
-
         const {edit} = this.state;
+
         return (
             <div>
                 <Grid padded>
-                    <Grid.Column style={{paddingTop: 0, paddingBottom: 0}}>
+                    <Grid.Column style={{paddingTop: 0, paddingBottom: 0, height: 25, marginTop: 10}}>
                         {this.renderBreadcrumbs()}
-                        <Button positive
-                            floated={'right'}
-                            onClick={this.handleSave}
-                            disabled={!isDirty}
-                        >
-                            Save
-                        </Button>
+                        {this.renderSaveButton()}
                     </Grid.Column>
                 </Grid>
 
@@ -120,6 +124,7 @@ ToolMetaData.propTypes = {
     onChange: PropTypes.func.isRequired,
     onSave: PropTypes.func.isRequired,
     readOnly: PropTypes.bool.isRequired,
+    save: PropTypes.bool,
     tool: PropTypes.object.isRequired
 };
 

@@ -22,10 +22,10 @@ class Footer extends React.Component {
                         <Grid.Row columns={4}>
                             <Grid.Column textAlign='left' style={{padding: '0em 2em' }}>
                                 <List link inverted>
-                                    <List.Item as='a'>
+                                    <List.Item>
                                         <Link to={'/impressum'}>Impressum</Link>
                                     </List.Item>
-                                    <List.Item as='a'>
+                                    <List.Item>
                                         <Link to={"https://tu-dresden.de/bu/umwelt/hydro/inowas/project/kontakt"}>
                                             Contact
                                         </Link>
