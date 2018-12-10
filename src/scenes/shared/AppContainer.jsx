@@ -16,7 +16,7 @@ const styles = {
         width: '100%'
     },
     navbar: {
-        padding: '0 calc((100% - 1280px) / 2) 0 calc((100% - 1280px) / 2)'
+        margin: '0 auto'
     },
     footer: {
         marginTop: '20px',

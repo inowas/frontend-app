@@ -172,7 +172,8 @@ class Dashboard
             <Grid padded>
                 <Grid.Row columns={1}>
                     <Grid.Column>
-                        <Header as='h2'>Instances of {activeTool.slug}</Header>
+                        <Header as='h1' align={'center'} size={'medium'}>Instances
+                            of {activeTool.slug}: {activeTool.name}</Header>
                     </Grid.Column>
                 </Grid.Row>
                 <Grid.Row columns={3}>
@@ -184,7 +185,7 @@ class Dashboard
                         </Button>
                     </Grid.Column>
                     <Grid.Column width={6}>
-                        <Search />
+                        <Search/>
                     </Grid.Column>
                     <Grid.Column width={4} floated='right' textAlign='right'>
                         <Button.Group fluid size='tiny'>
@@ -253,10 +254,10 @@ class Dashboard
             <AppContainer navbarItems={navigation}>
                 <Grid padded style={styles.grid}>
                     <Grid.Column width={6}>
-                        <Menu vertical style={styles.menu} size='small'>
+                        <Menu vertical style={styles.menu}>
                             {menuItems.map((category, key) =>
                                 <div key={key}>
-                                    <Menu.Item header icon >{category.icon}{category.name}</Menu.Item>
+                                    <Menu.Item header icon size='small'>{category.icon}{category.name}</Menu.Item>
                                     {category.items.map((item, key) =>
                                         <Menu.Item
                                             key={key}

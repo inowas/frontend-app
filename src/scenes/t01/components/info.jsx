@@ -44,13 +44,13 @@ const Info = ({data}) => {
                     <BarChart data={barChartData1} margin={{top: 5, right: 30, left: 0, bottom: 5}}>
                         <CartesianGrid strokeDasharray="3 3"/>
                         <Legend/>
-                        <XAxis dataKey="name"/>
-                        <YAxis/>
+                        <XAxis dataKey="name" tick={{fill: '#B5B5B5', fontSize: 'small', transform: 'translate(0, 5)'}}/>
+                        <YAxis tick={{fill: '#B5B5B5', fontSize: 'small', transform: 'translate(-3, 0)'}}/>
                         <Tooltip/>
-                        <Bar dataKey="micr" fill="#0072B2" name="Maximum infiltration capacity reduction"
+                        <Bar dataKey="micr" fill="#1EB1ED" name="Maximum infiltration capacity reduction"
                              unit={'% or %/m'}
                         />
-                        <Bar dataKey="reduction" fill="#E69F00"
+                        <Bar dataKey="reduction" fill="#ED8D05"
                              name="Infiltration capacity reduction/specific volume" unit={'%*m²/m³'}/>
                     </BarChart>
                 </ResponsiveContainer>
@@ -60,12 +60,12 @@ const Info = ({data}) => {
             <ResponsiveContainer width={'100%'} aspect={1.5}>
                 <BarChart data={barChartData2} margin={{top: 5, right: 30, left: 0, bottom: 5}}>
                     <CartesianGrid strokeDasharray="3 3"/>
-                    <XAxis dataKey="name"/>
+                    <XAxis dataKey="name" tick={{fill: '#B5B5B5', fontSize: 'small', transform: 'translate(0, 5)'}}/>
                     <Legend/>
-                    <YAxis/>
+                    <YAxis tick={{fill: '#B5B5B5', fontSize: 'small', transform: 'translate(-3, 0)'}}/>
                     <Tooltip/>
-                    <Bar dataKey="lpsv" fill="#0072B2" name="Lag phase" unit={'m³/m²'}/>
-                    <Bar dataKey="dpsv" fill="#E69F00" name="Deep phase" unit={'m³/m²'}/>
+                    <Bar dataKey="lpsv" fill="#1EB1ED" name="Lag phase" unit={'m³/m²'}/>
+                    <Bar dataKey="dpsv" fill="#ED8D05" name="Deep phase" unit={'m³/m²'}/>
                 </BarChart>
             </ResponsiveContainer>
         </div>
