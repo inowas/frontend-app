@@ -28,24 +28,24 @@ class T03 extends React.Component {
         super(props);
         this.state = {
             model: null,
-            isLoading: true,
-            error: false
+            error: false,
+            isLoading: false
         }
     }
 
     componentDidMount() {
         const {id} = this.props.match.params;
-        if (!id) {
-            return this.setState({isLoading: false})
-        }
-
-        this.fetchModel(id);
+        return this.setState({isLoading: true},
+            () => this.fetchModel(id)
+        )
     };
 
     componentWillReceiveProps(nextProps, nextContext) {
         const {id} = nextProps.match.params;
-        if (!this.props.model || id !== this.props.model.id) {
-            return this.fetchModel(id);
+        if (!this.props.model || this.props.model.id !== id) {
+            return this.setState({isLoading: true},
+                () => this.fetchModel(id)
+            )
         }
 
         this.setState({
@@ -59,13 +59,17 @@ class T03 extends React.Component {
             data => {
                 this.props.updateModel(ModflowModel.fromQuery(data));
                 this.setState({isLoading: false});
+                this.fetchBoundaries(id);
+                this.fetchSoilmodel(id);
             },
             error => this.setState(
                 {error, isLoading: false},
                 () => this.handleError(error)
             )
         );
+    };
 
+    fetchBoundaries(id) {
         fetchUrl(`modflowmodels/${id}/boundaries`,
             data => this.props.updateBoundaries(BoundaryCollection.fromQuery(data)),
             error => this.setState(
@@ -73,7 +77,9 @@ class T03 extends React.Component {
                 () => this.handleError(error)
             )
         );
+    };
 
+    fetchSoilmodel(id) {
         fetchUrl(`modflowmodels/${id}/soilmodel`,
             data => this.props.updateSoilmodel(Soilmodel.fromObject(data)),
             error => this.setState(
@@ -115,10 +121,6 @@ class T03 extends React.Component {
     };
 
     renderContent(id, property) {
-        if (!this.props.model) {
-            return null;
-        }
-
         switch (property) {
             case 'discretization':
                 return (<Content.Discretization/>);
@@ -161,17 +163,11 @@ class T03 extends React.Component {
     };
 
     render() {
-        if (!this.props.match.params.id) {
+        if (!this.props.model) {
             return (
                 <AppContainer navbarItems={navigation}>
-                    <Content.CreateModel/>
+                    <Message>LOADING</Message>
                 </AppContainer>
-            );
-        }
-
-        if (this.state.isLoading) {
-            return (
-                <Message>LOADING</Message>
             )
         }
 

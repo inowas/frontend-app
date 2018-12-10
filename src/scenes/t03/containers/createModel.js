@@ -3,12 +3,12 @@ import PropTypes from 'prop-types';
 import {withRouter} from 'react-router-dom';
 import {sendCommand} from 'services/api';
 import {Button, Checkbox, Form, Grid, Icon, Segment} from 'semantic-ui-react';
-import {CreateModelMap} from '../maps';
+import {CreateModelMap} from '../components/maps';
 import {GridSize, ModflowModel, Stressperiods} from 'core/model/modflow';
-import Command from '../../commands/command';
-import defaults from '../../defaults/createModel';
+import Command from '../commands/command';
+import defaults from '../defaults/createModel';
 import moment from 'moment/moment';
-import AppContainer from '../../../shared/AppContainer';
+import AppContainer from '../../shared/AppContainer';
 
 const navigation = [{
     name: 'Documentation',
