@@ -1,24 +1,13 @@
 import React from 'react';
 
 import PivotTableUI from 'react-pivottable/PivotTableUI';
-import 'react-pivottable/pivottable.css';
+import '../styles/pivottable.css';
 
 import PapaParse from 'papaparse';
 import csvFile from '../data/database-2018-01-05.csv';
 
-import AppContainer from "scenes/shared/AppContainer";
-import {Icon} from "semantic-ui-react";
-
-const styles = {
-    heading: {
-        fontWeight: 300,
-        fontSize: 16,
-        textAlign: 'left',
-        paddingBottom: 10
-    },
-    table: {
-        paddingTop: 20}
-};
+import AppContainer from 'scenes/shared/AppContainer';
+import {Grid, Icon, Container} from 'semantic-ui-react';
 
 const navigation = [{
     name: 'Documentation',
@@ -58,12 +47,18 @@ class T04 extends React.Component {
 
         return (
             <AppContainer navbarItems={navigation}>
-                <h3 style={styles.heading}>
-                    T04. Database for GIS Based Site Suitability Mapping
-                </h3>
-                <div style={styles.table}>
-                    <PivotTableUI data={data} onChange={s => this.setState(s)} {...this.state} />
-                </div>
+                <Grid padded>
+                    <Grid.Row>
+                        <h3>
+                            T04. Database for GIS Based Site Suitability Mapping
+                        </h3>
+                    </Grid.Row>
+                    <Grid.Row>
+                        <Container fluid className='tablewrap'>
+                           <PivotTableUI data={data} onChange={s => this.setState(s)} {...this.state} />
+                        </Container>
+                    </Grid.Row>
+                </Grid>
             </AppContainer>
         );
     }
