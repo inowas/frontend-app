@@ -1,24 +1,13 @@
 import React from 'react';
 
 import PivotTableUI from 'react-pivottable/PivotTableUI';
-import 'react-pivottable/pivottable.css';
+import '../styles/pivottable.css';
 
 import PapaParse from 'papaparse';
 import csvFile from '../data/database-2018-01-05.csv';
 
-import AppContainer from "scenes/shared/AppContainer";
-import {Icon} from "semantic-ui-react";
-
-const styles = {
-    heading: {
-        fontWeight: 300,
-        fontSize: 16,
-        textAlign: 'left',
-        paddingBottom: 10
-    },
-    table: {
-        paddingTop: 20}
-};
+import AppContainer from 'scenes/shared/AppContainer';
+import {Grid, Icon, Container, Header, Breadcrumb} from 'semantic-ui-react';
 
 const navigation = [{
     name: 'Documentation',
@@ -50,6 +39,14 @@ class T04 extends React.Component {
         });
     };
 
+    renderBreadcrumbs = () => (
+        <Breadcrumb size='medium'>
+            <Breadcrumb.Section link>Tools</Breadcrumb.Section>
+            <Breadcrumb.Divider icon='right angle'/>
+            <Breadcrumb.Section>T06. Database for GIS Based Site Suitability Mapping</Breadcrumb.Section>
+        </Breadcrumb>
+    );
+
     render() {
         const {data} = this.state;
         if (!data) {
@@ -58,12 +55,17 @@ class T04 extends React.Component {
 
         return (
             <AppContainer navbarItems={navigation}>
-                <h3 style={styles.heading}>
+                <Header as={'h2'}>
                     T04. Database for GIS Based Site Suitability Mapping
-                </h3>
-                <div style={styles.table}>
-                    <PivotTableUI data={data} onChange={s => this.setState(s)} {...this.state} />
-                </div>
+                </Header>
+                {this.renderBreadcrumbs()}
+                <Grid padded>
+                    <Grid.Row>
+                        <Container fluid className='tablewrap'>
+                            <PivotTableUI data={data} onChange={s => this.setState(s)} {...this.state} />
+                        </Container>
+                    </Grid.Row>
+                </Grid>
             </AppContainer>
         );
     }

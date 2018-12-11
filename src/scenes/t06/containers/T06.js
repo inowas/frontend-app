@@ -1,11 +1,11 @@
 import React from 'react';
 
 import {groupBy, intersection, union} from 'lodash';
-import {Checkbox, Form, Grid, Header, Icon, Image, Table, Breadcrumb} from "semantic-ui-react";
+import {Checkbox, Form, Grid, Header, Icon, Image, Table, Breadcrumb} from 'semantic-ui-react';
 
 import {getData} from '../data';
-import AppContainer from "../../shared/AppContainer";
-import ToolGrid from "../../shared/simpleTools/ToolGrid";
+import AppContainer from '../../shared/AppContainer';
+import ToolGrid from '../../shared/simpleTools/ToolGrid';
 
 const navigation = [{
     name: 'Documentation',
@@ -48,20 +48,9 @@ class T06 extends React.Component {
     };
 
     conditions() {
-        console.log(this.state.conditions);
         const conditions = this.state.conditions;
         const groupedConditions = groupBy(conditions, 'category');
-        console.log(groupedConditions);
         const groupedConditionsList = [];
-
-        for (const category in groupedConditions) {
-            if (groupedConditions.hasOwnProperty(category)) {
-                const options = groupedConditions[category].map((c) => {
-                    console.log(c);
-                    return c;
-                })
-            }
-        }
 
         for (const category in groupedConditions) {
             if (groupedConditions.hasOwnProperty(category)) {
