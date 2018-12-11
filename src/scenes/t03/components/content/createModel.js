@@ -5,7 +5,7 @@ import {sendCommand} from 'services/api';
 import {Button, Checkbox, Form, Grid, Icon, Segment} from 'semantic-ui-react';
 import {CreateModelMap} from '../maps';
 import {GridSize, ModflowModel, Stressperiods} from 'core/model/modflow';
-import Command from '../../commands/command';
+import ModflowModelCommand from '../../commands/modflowModelCommand';
 import defaults from '../../defaults/createModel';
 import moment from 'moment/moment';
 import AppContainer from '../../../shared/AppContainer';
@@ -54,9 +54,9 @@ class CreateModel extends React.Component {
 
     handleSave = () => {
         return sendCommand(
-            Command.createModflowModel(this.getPayload()),
-            () => sendCommand(Command.updateModflowModel(this.getPayload()),
-                () => sendCommand(Command.updateStressperiods({
+            ModflowModelCommand.createModflowModel(this.getPayload()),
+            () => sendCommand(ModflowModelCommand.updateModflowModel(this.getPayload()),
+                () => sendCommand(ModflowModelCommand.updateStressperiods({
                         id: this.state.id,
                         stress_periods: Stressperiods.fromObject(this.state.stressperiods).toObject()
                     }),
@@ -114,7 +114,7 @@ class CreateModel extends React.Component {
     };
 
     validate = () => (
-        this.setState({validation: Command.createModflowModel(this.getPayload()).validate()})
+        this.setState({validation: ModflowModelCommand.createModflowModel(this.getPayload()).validate()})
     );
 
     render() {

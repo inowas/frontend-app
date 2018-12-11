@@ -1,10 +1,7 @@
-import {Modifier as Dashboard} from '../index';
-import {Action} from '../actions/index';
+export const ROLE_USER = 'ROLE_USER';
+export const ROLE_NM_MF = 'ROLE_NM_MF';
 
-const ROLE_USER = 'ROLE_USER';
-const ROLE_NM_MF = 'ROLE_NM_MF';
-
-const initialState = [
+const availableTools = [
     {
         slug: 'T01',
         name: 'SAT basin infiltration capacity reduction database',
@@ -76,7 +73,7 @@ const initialState = [
         subPath: '',
         role: ROLE_USER,
         instances: []
-    },{
+    }, {
         slug: 'T13',
         name: 'Travel time through unconfined aquifer',
         path: '/tools/',
@@ -90,15 +87,7 @@ const initialState = [
         subPath: '',
         role: ROLE_USER,
         instances: []
-    }, /* {
-        slug: 'T16',
-        name: 'Calculation of hydraulic conductivity',
-        path: '/tools/',
-        subPath: '',
-        role: ROLE_USER,
-        instances: []
-    }, */
-    {
+    }, {
         slug: 'T17',
         name: 'Global MAR portal',
         path: '/tools/',
@@ -112,40 +101,7 @@ const initialState = [
         subPath: '',
         role: ROLE_USER,
         instances: []
-    }];
-
-const tools = (state = initialState, action) => {
-    switch (action.type) {
-        case Action.SET_INSTANCES:
-            return state.map(t => {
-                if (t.slug === action.tool) {
-                    return {
-                        ...t,
-                        instances: action.payload
-                    };
-                }
-
-                return t;
-            });
-
-        case Dashboard.Event.TOOL_INSTANCE_DELETED:
-            return state.map(t => {
-                if (t.slug === action.tool) {
-                    return {
-                        ...t,
-                        instances: [
-                            ...t.instances.slice(0, t.instances.findIndex(b => (b.id === action.payload))),
-                            ...t.instances.slice(t.instances.findIndex(b => (b.id === action.payload)) + 1, t.instances.length)
-                        ]
-                    };
-                }
-
-                return t;
-            });
-
-        default:
-            return state;
     }
-};
+];
 
-export default tools;
+export default availableTools;
