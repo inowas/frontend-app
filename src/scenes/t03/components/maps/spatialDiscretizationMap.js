@@ -1,6 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import {FeatureGroup, GeoJSON, Map} from 'react-leaflet';
+import {FeatureGroup, GeoJSON, Map, Polygon} from 'react-leaflet';
 import {EditControl} from 'react-leaflet-draw';
 import {calculateActiveCells} from 'services/geoTools';
 import md5 from 'md5';
@@ -14,6 +14,7 @@ import Geometry from 'core/model/modflow/Geometry';
 import GridSize from 'core/model/modflow/GridSize';
 import {getStyle} from './index';
 import {pure} from 'recompose';
+import {uniqueId} from 'recharts/es6/util/DataUtils';
 
 const style = {
     map: {
@@ -26,9 +27,9 @@ class SpatialDiscretizationMap extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            activeCells: null,
-            boundingBox: null,
-            geometry: null,
+            activeCells: props.activeCells ? props.activeCells.toArray() : null,
+            boundingBox: props.boundingBox ? props.boundingBox.toArray() : null,
+            geometry: props.geometry ? props.geometry.toObject() : null,
             gridSize: props.gridSize.toObject(),
             calculating: false
         }
@@ -39,6 +40,8 @@ class SpatialDiscretizationMap extends React.Component {
         if (!nextProps.gridSize.sameAs(GridSize.fromObject(this.state.gridSize))) {
             this.setState(() => ({gridSize: gridSize.toObject()}), () => this.recalculate());
         }
+
+
     }
 
     calculate = (geometry, boundingBox, gridSize) => {
@@ -93,6 +96,15 @@ class SpatialDiscretizationMap extends React.Component {
         )
     };
 
+    onEdited = e => {
+        e.layers.eachLayer(layer => {
+            const geometry = layer.toGeoJSON().geometry;
+            this.setState({
+                geometry
+            }, () => this.recalculate())
+        });
+    };
+
     editControl = () => (
         <FeatureGroup>
             <EditControl
@@ -107,22 +119,19 @@ class SpatialDiscretizationMap extends React.Component {
                 }}
                 edit={{
                     edit: this.state.geometry != null,
-                    remove: this.state.geometry != null
+                    remove: false
                 }}
                 onCreated={this.onCreated}
+                onEdited={this.onEdited}
             />
+            {this.state.geometry &&
+            <Polygon
+                key={uniqueId()}
+                positions={Geometry.fromObject(this.state.geometry).coordinatesLatLng}
+            />
+            }
         </FeatureGroup>
     );
-
-    areaLayer = () => {
-        return (
-            <GeoJSON
-                key={md5(JSON.stringify(this.state.geometry))}
-                data={this.state.geometry}
-                style={getStyle('area')}
-            />
-        )
-    };
 
     boundingBoxLayer = () => {
         const boundingBox = BoundingBox.fromArray(this.state.boundingBox);
@@ -186,13 +195,14 @@ class SpatialDiscretizationMap extends React.Component {
 
         const activeCells = ActiveCells.fromArray(this.state.activeCells);
         const boundingBox = BoundingBox.fromArray(this.state.boundingBox);
+        const geometry = Geometry.fromObject(this.state.geometry);
         const gridSize = GridSize.fromObject(this.state.gridSize);
         const x = latlng.lng;
         const y = latlng.lat;
 
         this.setState({
             activeCells: activeCells.toggle([x, y], boundingBox, gridSize).toArray()
-        })
+        }, () => this.handleChange({activeCells, boundingBox, geometry}))
     };
 
     render() {
@@ -203,8 +213,7 @@ class SpatialDiscretizationMap extends React.Component {
                 onClick={this.handleClickOnMap}
             >
                 <BasicTileLayer/>
-                {!this.state.geometry && this.editControl()}
-                {this.state.geometry && this.areaLayer()}
+                {this.editControl()}
                 {this.state.boundingBox && this.boundingBoxLayer()}
                 {this.state.activeCells && this.activeCellsLayer()}
                 {this.renderCalculationMessage()}
@@ -214,9 +223,9 @@ class SpatialDiscretizationMap extends React.Component {
 }
 
 SpatialDiscretizationMap.proptypes = {
-    activeCells: PropTypes.instanceOf(ActiveCells).isRequired,
-    boundingBox: PropTypes.instanceOf(BoundingBox).isRequired,
-    geometry: PropTypes.instanceOf(Geometry).isRequired,
+    activeCells: PropTypes.instanceOf(ActiveCells),
+    boundingBox: PropTypes.instanceOf(BoundingBox),
+    geometry: PropTypes.instanceOf(Geometry),
     gridSize: PropTypes.instanceOf(GridSize).isRequired,
     styles: PropTypes.object.isRequired,
     onChange: PropTypes.func.isRequired

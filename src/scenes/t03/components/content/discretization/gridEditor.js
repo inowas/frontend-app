@@ -6,6 +6,7 @@ import ContentToolBar from '../../../../shared/ContentToolbar';
 import {ActiveCells, BoundingBox, Geometry, GridSize, ModflowModel} from 'core/model/modflow';
 import {updateModel} from '../../../actions/actions';
 import Command from '../../../commands/command';
+import {dxCell, dyCell} from 'services/geoTools/distance';
 
 import {sendCommand} from 'services/api';
 import SpatialDiscretizationMap from '../../maps/spatialDiscretizationMap';
@@ -27,11 +28,11 @@ class GridEditor extends React.Component {
 
     onSave = () => {
         const model = this.props.model;
-
-        const command = Command.updateModflowModel({
-            id: model.id,
-            model: model.toObject()
-        });
+        model.activeCells = ActiveCells.fromArray(this.state.activeCells);
+        model.boundingBox = BoundingBox.fromArray(this.state.boundingBox);
+        model.geometry = Geometry.fromObject(this.state.geometry);
+        model.gridSize = GridSize.fromObject(this.state.gridSize);
+        const command = Command.updateModflowModel(model.toObject());
 
         return sendCommand(command,
             () => {
@@ -54,20 +55,29 @@ class GridEditor extends React.Component {
         }
 
         if (type === 'blur') {
-            this.setState({gridSize: this.state.gridSizeLocal}, () => this.validate());
+            this.setState({
+                gridSize: this.state.gridSizeLocal,
+                isDirty: true
+            }, () => this.validate());
         }
+    };
+
+    validate = () => {
     };
 
     handleMapChange = ({activeCells, boundingBox, geometry}) => {
         this.setState({
             activeCells: activeCells.toArray(),
             boundingBox: boundingBox.toArray(),
-            geometry: geometry.toObject()
+            geometry: geometry.toObject(),
+            isDirty: true
         })
     };
 
-
     render() {
+        const gridSize = GridSize.fromObject(this.state.gridSize);
+        const gridSizeLocal = GridSize.fromObject(this.state.gridSizeLocal);
+        const boundingBox = BoundingBox.fromArray(this.state.boundingBox);
         return (
             <Grid>
                 <Grid.Row>
@@ -83,22 +93,40 @@ class GridEditor extends React.Component {
                 <Grid.Row>
                     <Grid.Column width={5}>
                         <Form color={'grey'}>
-                            <Form.Input
-                                type='number'
-                                label='Rows'
-                                name={'nY'}
-                                value={GridSize.fromObject(this.state.gridSizeLocal).nY}
-                                onChange={this.handleGridSizeChange}
-                                onBlur={this.handleGridSizeChange}
-                            />
-                            <Form.Input
-                                type='number'
-                                label='Columns'
-                                name={'nX'}
-                                value={GridSize.fromObject(this.state.gridSizeLocal).nX}
-                                onChange={this.handleGridSizeChange}
-                                onBlur={this.handleGridSizeChange}
-                            />
+                            <Form.Group>
+                                <Form.Input
+                                    type='number'
+                                    label='Rows'
+                                    name={'nY'}
+                                    value={gridSizeLocal.nY}
+                                    onChange={this.handleGridSizeChange}
+                                    onBlur={this.handleGridSizeChange}
+                                    width={8}
+                                />
+                                <Form.Input
+                                    type='number'
+                                    label='Cell height'
+                                    value={Math.round(dyCell(boundingBox, gridSize) * 10000) / 10}
+                                    width={8}
+                                />
+                            </Form.Group>
+                            <Form.Group>
+                                <Form.Input
+                                    type='number'
+                                    label='Columns'
+                                    name={'nX'}
+                                    value={gridSizeLocal.nX}
+                                    onChange={this.handleGridSizeChange}
+                                    onBlur={this.handleGridSizeChange}
+                                    width={8}
+                                />
+                                <Form.Input
+                                    type='number'
+                                    label='Cell width'
+                                    value={Math.round(dxCell(boundingBox, gridSize) * 10000) / 10}
+                                    width={8}
+                                />
+                            </Form.Group>
                             <Form.Select
                                 label='Length unit'
                                 options={[{key: 2, text: 'meters', value: 2}]}
@@ -117,7 +145,7 @@ class GridEditor extends React.Component {
                             activeCells={ActiveCells.fromArray(this.state.activeCells)}
                             boundingBox={BoundingBox.fromArray(this.state.boundingBox)}
                             geometry={Geometry.fromObject(this.state.geometry)}
-                            gridSize={GridSize.fromObject(this.state.geometry)}
+                            gridSize={GridSize.fromObject(this.state.gridSize)}
                             onChange={this.handleMapChange}
                         />
                     </Grid.Column>
