@@ -1,11 +1,10 @@
 import React from 'react';
 
 import {groupBy, intersection, union} from 'lodash';
-import {Checkbox, Form, Grid, Header, Icon, Image, Table} from "semantic-ui-react";
+import {Checkbox, Form, Grid, Header, Icon, Image, Table, Breadcrumb} from "semantic-ui-react";
 
 import {getData} from '../data';
 import AppContainer from "../../shared/AppContainer";
-import Background from "../../t01/components/background";
 import ToolGrid from "../../shared/simpleTools/ToolGrid";
 
 const navigation = [{
@@ -13,6 +12,13 @@ const navigation = [{
     path: 'https://inowas.hydro.tu-dresden.de/tools/t06-mar-method-selection/',
     icon: <Icon name="file"/>
 }];
+
+const styles = {
+    h3: {
+        textAlign: 'center',
+        textTransform: 'uppercase'
+    }
+};
 
 class T06 extends React.Component {
 
@@ -42,9 +48,20 @@ class T06 extends React.Component {
     };
 
     conditions() {
+        console.log(this.state.conditions);
         const conditions = this.state.conditions;
         const groupedConditions = groupBy(conditions, 'category');
+        console.log(groupedConditions);
         const groupedConditionsList = [];
+
+        for (const category in groupedConditions) {
+            if (groupedConditions.hasOwnProperty(category)) {
+                const options = groupedConditions[category].map((c) => {
+                    console.log(c);
+                    return c;
+                })
+            }
+        }
 
         for (const category in groupedConditions) {
             if (groupedConditions.hasOwnProperty(category)) {
@@ -65,10 +82,8 @@ class T06 extends React.Component {
                 groupedConditionsList.push(
                     <Grid key={this.replaceAll(category, ' ', '_')}>
                         <Grid.Row>
-                            <Grid.Column width={6}>
-                                <Header as={'h4'}>{category}</Header>
-                            </Grid.Column>
-                            <Grid.Column width={10}>
+                            <Grid.Column>
+                                <Header as={'h4'} dividing>{category}</Header>
                                 {conditionsList}
                             </Grid.Column>
                         </Grid.Row>
@@ -79,6 +94,14 @@ class T06 extends React.Component {
 
         return groupedConditionsList;
     }
+
+    renderBreadcrumbs = () => (
+        <Breadcrumb size='medium'>
+            <Breadcrumb.Section link>Tools</Breadcrumb.Section>
+            <Breadcrumb.Divider icon='right angle'/>
+            <Breadcrumb.Section>T06. MAR method selection</Breadcrumb.Section>
+        </Breadcrumb>
+    );
 
     methods() {
         const selectedConditions = this.state.conditions.filter((c) => {
@@ -118,7 +141,7 @@ class T06 extends React.Component {
                     <Table.Cell>{method.highLandNeed ? 'high' : 'low'}</Table.Cell>
                     <Table.Cell>
                         <a href={method.href} target={'_blank'}>
-                            <Image src={method.image} size='small'/>
+                            <Image src={method.image} size='medium'/>
                         </a>
                     </Table.Cell>
                 </Table.Row>
@@ -129,21 +152,23 @@ class T06 extends React.Component {
     render() {
         return (
             <AppContainer navbarItems={navigation}>
-                <ToolGrid rows={2}>
-                    <Background title={'T06. MAR method selection'}/>
-                    {null}
+                <div style={{margin: '0 0 0 1em' }}>
+                <Header as={'h2'}>T06. MAR method selection</Header>
+                {this.renderBreadcrumbs()}
+                </div>
+                <ToolGrid rows={1}>
                     <div>
-                        <Header as={'h3'} textAlign={'center'}>INPUT CONDITIONS</Header>
+                        <Header as={'h3'} style={styles.h3}>Input Conditions</Header>
                         <Form>
                             {this.conditions()}
                         </Form>
                     </div>
                     <div>
-                        <Header as={'h3'} textAlign={'center'}>METHODS SUGGESTED</Header>
+                        <Header as={'h3'} style={styles.h3}>Methods Suggested</Header>
                         <Table celled padded>
                             <Table.Header>
                                 <Table.Row>
-                                    <Table.HeaderCell singleLine>MAR methods</Table.HeaderCell>
+                                    <Table.HeaderCell width={4} singleLine>MAR methods</Table.HeaderCell>
                                     <Table.HeaderCell>Unit costs</Table.HeaderCell>
                                     <Table.HeaderCell>Area required</Table.HeaderCell>
                                     <Table.HeaderCell>More information</Table.HeaderCell>
