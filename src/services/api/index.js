@@ -18,7 +18,7 @@ const createApi = () => axios.create({
 
 export const sendCommand = (command, onSuccess, onError) => {
     const api = createApi();
-    api.post('messagebox', command)
+    api.post('messagebox', command.toObject())
         .then(response => response.data)
         .then(onSuccess)
         .catch(onError);
@@ -27,6 +27,14 @@ export const sendCommand = (command, onSuccess, onError) => {
 export const fetchTool = (tool, id, onSuccess, onError) => {
     const api = createApi();
     api.get(`tools/${tool}/${id}`)
+        .then(response => response.data)
+        .then(onSuccess)
+        .catch(onError);
+};
+
+export const fetchUrl = (url, onSuccess, onError) => {
+    const api = createApi();
+    api.get(url)
         .then(response => response.data)
         .then(onSuccess)
         .catch(onError);

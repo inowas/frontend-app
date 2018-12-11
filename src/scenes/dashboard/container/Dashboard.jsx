@@ -172,7 +172,8 @@ class Dashboard
             <Grid padded>
                 <Grid.Row columns={1}>
                     <Grid.Column>
-                        <Header as='h1' align={'center'} size={'medium'}>Instances of {activeTool.slug}: {activeTool.name}</Header>
+                        <Header as='h1' align={'center'} size={'medium'}>Instances
+                            of {activeTool.slug}: {activeTool.name}</Header>
                     </Grid.Column>
                 </Grid.Row>
                 <Grid.Row columns={3}>
