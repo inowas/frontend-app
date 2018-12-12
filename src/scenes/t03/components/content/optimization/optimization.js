@@ -17,7 +17,7 @@ import {
 } from './index';
 import PropTypes from 'prop-types';
 import {sendCommand} from 'services/api';
-import Command from '../../../commands/command';
+import ModflowModelCommand from '../../../commands/modflowModelCommand';
 import {ModflowModel} from 'core/model/modflow';
 import {connect} from 'react-redux';
 
@@ -75,7 +75,7 @@ class OptimizationContainer extends React.Component {
     handleSave = () => {
         this.setState({loading: true});
         return sendCommand(
-            Command.updateOptimizationInput({
+            ModflowModelCommand.updateOptimizationInput({
                 id: this.props.model.id,
                 input: this.state.optimization.input
             }), () => this.setState({
@@ -113,7 +113,7 @@ class OptimizationContainer extends React.Component {
         });
 
         return sendCommand(
-            Command.cancelOptimizationCalculation({
+            ModflowModelCommand.cancelOptimizationCalculation({
                 id: this.props.model.id,
                 optimization_id: this.state.optimization.input.id
             }), () => this.setState({
@@ -140,7 +140,7 @@ class OptimizationContainer extends React.Component {
         });
 
         return sendCommand(
-            Command.calculateOptimization({
+            ModflowModelCommand.calculateOptimization({
                 id: this.props.model.id,
                 optimization_id: this.state.optimization.input.id,
                 is_initial: isInitial
