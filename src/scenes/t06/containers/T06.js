@@ -1,12 +1,11 @@
 import React from 'react';
 
 import {groupBy, intersection, union} from 'lodash';
-import {Checkbox, Form, Grid, Header, Icon, Image, Table} from "semantic-ui-react";
+import {Checkbox, Form, Grid, Header, Icon, Image, Table} from 'semantic-ui-react';
 
 import {getData} from '../data';
-import AppContainer from "../../shared/AppContainer";
-import Background from "../../t01/components/background";
-import ToolGrid from "../../shared/simpleTools/ToolGrid";
+import {AppContainer, Background} from '../../shared';
+import {ToolGrid} from '../../shared/simpleTools';
 
 const navigation = [{
     name: 'Documentation',

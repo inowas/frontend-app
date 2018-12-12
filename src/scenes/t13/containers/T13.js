@@ -3,20 +3,19 @@ import PropTypes from 'prop-types';
 import {withRouter} from 'react-router-dom';
 import {Grid, Header, Icon, Image, Segment} from 'semantic-ui-react';
 
+import {AppContainer} from '../../shared';
+
 import image13A from '../images/T13A.png';
 import image13B from '../images/T13B.png';
 import image13C from '../images/T13C.png';
 import image13D from '../images/T13D.png';
 import image13E from '../images/T13E.png';
 
-import AppContainer from "../../shared/AppContainer";
-
 export const navigation = [{
     name: 'Documentation',
     path: 'https://inowas.hydro.tu-dresden.de/tools/t13-travel-time-through-unconfined-aquifer/',
     icon: <Icon name="file"/>
 }];
-
 
 const items = [
     {
