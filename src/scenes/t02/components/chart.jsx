@@ -129,7 +129,7 @@ const Chart = ({settings, parameters}) => {
 
     return (
         <div>
-            <Grid padded>
+            <Grid>
                 <Grid.Column>
                     <ResponsiveContainer width={'100%'} aspect={1.5}>
                         <LineChart
