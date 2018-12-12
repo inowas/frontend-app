@@ -35,12 +35,7 @@ class LayerDetails extends React.Component {
         });
     };
 
-    handleZonesChange = (layer) => {
-        console.log('HANDLE ZONES CHANGE', layer);
-        this.setState({
-            layer: layer.toObject()
-        });
-    };
+    handleZonesChange = (layer) => this.props.onChange(layer);
 
     handleSelect = (e, {name, value}) => {
         const layer = this.state.layer;

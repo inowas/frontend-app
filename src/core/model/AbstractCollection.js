@@ -63,9 +63,7 @@ class AbstractCollection {
     }
 
     findBy(property, value, first = false) {
-        console.log('FIND BY', property, value, first);
         const items = this.all.filter(item => item[property] === value);
-        console.log('FOUND', items);
         if (first) {
             return items[0] || null;
         }

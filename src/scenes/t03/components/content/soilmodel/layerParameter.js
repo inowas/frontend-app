@@ -31,12 +31,21 @@ class LayerParameter extends React.Component {
         }));
     }
 
-    handleClickAccordion = (e, titleProps) => {
-        const {index} = titleProps;
-        const {activeIndex} = this.state;
-        const newIndex = activeIndex === index ? -1 : index;
+    recalculateMap = () => {
+        const layer = SoilmodelLayer.fromObject(this.state.layer);
+        layer.zonesToParameters(this.props.model.gridSize, this.state.parameter.name);
+        this.onChange(layer);
 
-        this.setState({activeIndex: newIndex});
+        return this.setState({
+            layer: layer.toObject()
+        });
+    };
+
+    smoothMap = () => {
+        const layer = SoilmodelLayer.fromObject(this.state.layer);
+        layer.smoothParameter(this.props.model.gridSize, this.state.parameter.name, this.state.smoothParams.cycles, this.state.smoothParams.distance);
+
+        return this.onChange(layer);
     };
 
     onAddZone = () => {
@@ -48,24 +57,9 @@ class LayerParameter extends React.Component {
         });
     };
 
-    onEditZone = (id) => {
-        const layer = SoilmodelLayer.fromObject(this.state.layer);
-        const zone = layer.zones.findById(id);
+    onCancelModal = () => this.setState({selectedZone: null});
 
-        this.setState({
-            selectedZone: zone
-        });
-    };
-
-    onSelectMode = (e, {name, value}) => {
-        this.setState({
-            mode: value
-        });
-    };
-
-    onChangeZoneParameter = (e, {name, value}) => {
-
-    };
+    onChange = layer => this.props.onChange(layer);
 
     onChangeSmoothParams = (e, {name, value}) => {
         return this.setState({
@@ -76,77 +70,36 @@ class LayerParameter extends React.Component {
         })
     };
 
+    onClickAccordion = (e, titleProps) => {
+        const {index} = titleProps;
+        const {activeIndex} = this.state;
+        const newIndex = activeIndex === index ? -1 : index;
+
+        this.setState({activeIndex: newIndex});
+    };
+
+    onEditZone = (id) => {
+        const layer = SoilmodelLayer.fromObject(this.state.layer);
+        const zone = layer.zones.findById(id);
+
+        this.setState({
+            selectedZone: zone
+        });
+    };
+
     onRemoveZone = (zone) => {
-        const layer = SoilmodelLayer.fromObject(this.state.layer).zones.remove(zone.id);
+        const layer = SoilmodelLayer.fromObject(this.state.layer);
+        layer.zones.remove(zone.id);
 
-        console.log('LAYEEEER', layer);
-
-        this.setState({
-            selectedZone: null,
-            showOverlay: false
+        this.props.onChange(layer);
+        return this.setState({
+            selectedZone: null
         });
-        this.props.onChange(layer);
-    };
-
-    onChange = e => {
-        const layer = SoilmodelLayer.fromObject(this.state.layer);
-
-        e.forEach(row => {
-            const zone = layer.zones.findById(row.id);
-            if (zone && zone[this.state.parameter.name] !== row.value) {
-                zone[this.state.parameter.name] = row.value;
-                layer.zones.update(zone);
-            }
-        });
-
-        this.props.onChange(layer);
-    };
-
-    onOrderZones = (id, order) => {
-        const layer = SoilmodelLayer.fromObject(this.state.layer);
-
-        console.log('ORDERZONES', layer, id);
-
-        const zone = layer.zones.findById(id);
-        layer.zones = layer.zones.changeOrder(zone, order);
-
-        if (zone) {
-            this.props.onChange(layer);
-        }
-    };
-
-    smoothMap = () => {
-        const layer = SoilmodelLayer.fromObject(this.state.layer);
-        layer.smoothParameter(this.props.model.gridSize, this.state.parameter.name, this.state.smoothParams.cycles, this.state.smoothParams.distance);
-
-        return this.props.onChange(layer);
-    };
-
-    recalculateMap = () => {
-        const layer = SoilmodelLayer.fromObject(this.state.layer);
-        layer.zonesToParameters(this.props.model.gridSize, this.state.parameter.name);
-        this.props.onChange(layer);
-
-        this.setState({
-            layer: layer.toObject()
-        });
-    };
-
-    onRemoveFromTable = id => {
-        const layer = SoilmodelLayer.fromObject(this.state.layer);
-        const zone = layer.zones.findById(id);
-        zone[this.state.parameter.name] = null;
-
-        layer.zones.update(zone);
-
-        this.props.onChange(layer);
     };
 
     onSaveModal = (zone) => {
         const layer = SoilmodelLayer.fromObject(this.state.layer);
         layer.zones = layer.zones.update(zone);
-
-        console.log('UPDATED LAYER', layer);
 
         this.props.onChange(layer);
 
@@ -155,10 +108,9 @@ class LayerParameter extends React.Component {
         });
     };
 
-    onCancelModal = () => {
-        return this.setState({
-            selectedZone: null,
-            showOverlay: false
+    onSelectMode = (e, {name, value}) => {
+        this.setState({
+            mode: value
         });
     };
 
@@ -210,7 +162,7 @@ class LayerParameter extends React.Component {
                         <Grid.Column width={8}>
                             <Accordion fluid>
                                 <Accordion.Title active={this.state.activeIndex === 0} index={0}
-                                                 onClick={this.handleClickAccordion}>
+                                                 onClick={this.onClickAccordion}>
                                     <Icon name="dropdown"/>
                                     Calculation
                                 </Accordion.Title>
@@ -224,7 +176,8 @@ class LayerParameter extends React.Component {
                                         <Icon name="map"/> Recalculate Map
                                     </Button>
                                 </Accordion.Content>
-                                <Accordion.Title active={this.state.activeIndex === 1} index={1} onClick={this.handleClickAccordion}>
+                                <Accordion.Title active={this.state.activeIndex === 1} index={1}
+                                                 onClick={this.onClickAccordion}>
                                     <Icon name="dropdown"/>
                                     Smoothing
                                 </Accordion.Title>
@@ -274,13 +227,11 @@ class LayerParameter extends React.Component {
                         </Button>
                     </Form.Group>
                     <ZonesTable
-                        onChange={this.onChangeZoneParameter}
+                        onChange={this.onChange}
                         onEdit={this.onEditZone}
-                        onReorder={this.onOrderZones}
-                        onRemove={this.onRemoveFromTable}
                         parameter={parameter.name}
                         readOnly={readOnly}
-                        zones={layer.zones}
+                        layer={layer}
                     />
                 </Segment>
                 }
@@ -290,7 +241,7 @@ class LayerParameter extends React.Component {
                     onRemove={this.onRemoveZone}
                     onSave={this.onSaveModal}
                     zone={SoilmodelZone.fromObject(selectedZone)}
-                    zones={layer.zones}
+                    layer={SoilmodelLayer.fromObject(layer)}
                     model={model}
                     readOnly={readOnly}
                 />

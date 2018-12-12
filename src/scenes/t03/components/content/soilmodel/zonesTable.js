@@ -1,7 +1,7 @@
 import React from 'react';
-import {Button, Icon, Input, Table} from 'semantic-ui-react';
+import {Button, Icon, Form, Table} from 'semantic-ui-react';
 import PropTypes from 'prop-types';
-import {ZonesCollection} from 'core/model/modflow/soilmodel';
+import {SoilmodelLayer} from 'core/model/modflow/soilmodel';
 import {pure} from 'recompose';
 
 class ZonesTable extends React.Component {
@@ -9,24 +9,55 @@ class ZonesTable extends React.Component {
     constructor(props) {
         super(props);
 
-        // TODO: ÜBERGIB LAYER!!!!
         this.state = {
-            zones: props.zones.toArray()
+            layer: props.layer.toObject(),
         };
     }
 
     componentWillReceiveProps(nextProps) {
         this.setState(() => ({
-            zones: nextProps.zones.toArray()
+            layer: nextProps.layer.toObject()
         }));
     }
 
-    render() {
-        console.log('STATE', this.state);
-        const {onEdit, onRemove, onReorder, parameter, readOnly} = this.props;
-        const zones = ZonesCollection.fromObject(this.state.zones).orderBy('priority', 'desc').toObject();
+    onChange = () => this.props.onChange(SoilmodelLayer.fromObject(this.state.layer));
 
-        console.log('RENDER ZONES TABLE', zones);
+    onLocalChange = id => (e, {value}) => {
+        const layer = SoilmodelLayer.fromObject(this.state.layer);
+        const zone = layer.zones.findById(id);
+        if (zone) {
+            zone[this.props.parameter] = value;
+            layer.zones.update(zone);
+            this.setState({
+                 layer: layer.toObject()
+            });
+        }
+    };
+
+    onSetToDefault = id => {
+        const layer = SoilmodelLayer.fromObject(this.state.layer);
+        const zone = layer.zones.findById(id);
+        zone[this.props.parameter] = null;
+        layer.zones.update(zone);
+
+        this.props.onChange(layer);
+    };
+
+    onReorder = (id, order) => {
+        const layer = SoilmodelLayer.fromObject(this.state.layer);
+
+        const zone = layer.zones.findById(id);
+        layer.zones = layer.zones.changeOrder(zone, order);
+
+        if (zone) {
+            this.props.onChange(layer);
+        }
+    };
+
+    render() {
+        const {onEdit, parameter, readOnly} = this.props;
+        const layer = SoilmodelLayer.fromObject(this.state.layer);
+        const zones = layer.zones.orderBy('priority', 'desc').all;
 
         return (
             <Table>
@@ -44,15 +75,21 @@ class ZonesTable extends React.Component {
                             <Table.Cell>{zone.name}</Table.Cell>
                             <Table.Cell>{zone.priority}</Table.Cell>
                             <Table.Cell>
-                                <Input value={zone[parameter] ? zone[parameter.name] : 'Default'}/>
+                                <Form.Input
+                                    onBlur={this.onChange}
+                                    onChange={this.onLocalChange(zone.id)}
+                                    size='small'
+                                    type='number'
+                                    value={zone[parameter] !== null ? zone[parameter] : ''}
+                                />
                             </Table.Cell>
                             <Table.Cell>
                                 {!readOnly && zone.priority > 0 &&
-                                <Button.Group>
+                                <Button.Group floated='right' size='small'>
                                     <Button
                                         disabled={readOnly}
                                         icon
-                                        onClick={() => onRemove(zone.id)}
+                                        onClick={() => this.onSetToDefault(zone.id)}
                                     >
                                         <Icon name={'ban'}/>
                                     </Button>
@@ -63,24 +100,20 @@ class ZonesTable extends React.Component {
                                     >
                                         <Icon name="pencil"/>
                                     </Button>
-                                    {zone.priority < zones.length - 1 &&
                                     <Button
-                                        disabled={readOnly}
+                                        disabled={readOnly || !(zone.priority < zones.length - 1)}
                                         icon
-                                        onClick={() => onReorder(zone.id, 'up')}
+                                        onClick={() => this.onReorder(zone.id, 'up')}
                                     >
                                         <Icon name="arrow up"/>
                                     </Button>
-                                    }
-                                    {zone.priority > 1 &&
                                     <Button
-                                        disabled={readOnly}
+                                        disabled={readOnly || !(zone.priority > 1)}
                                         icon
-                                        onClick={() => onReorder(zone.id, 'down')}
+                                        onClick={() => this.onReorder(zone.id, 'down')}
                                     >
                                         <Icon name="arrow down"/>
                                     </Button>
-                                    }
                                 </Button.Group>
                                 }
                             </Table.Cell>
@@ -93,12 +126,11 @@ class ZonesTable extends React.Component {
 }
 
 ZonesTable.propTypes = {
+    onChange: PropTypes.func.isRequired,
     onEdit: PropTypes.func.isRequired,
-    onReorder: PropTypes.func.isRequired,
-    onRemove: PropTypes.func.isRequired,
     parameter: PropTypes.string.isRequired,
     readOnly: PropTypes.bool,
-    zones: PropTypes.instanceOf(ZonesCollection)
+    layer: PropTypes.instanceOf(SoilmodelLayer).isRequired
 };
 
 export default pure(ZonesTable);

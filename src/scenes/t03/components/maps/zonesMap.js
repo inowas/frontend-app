@@ -7,7 +7,7 @@ import {BasicTileLayer} from 'services/geoTools/tileLayers';
 import {disableMap, generateKey, getStyle} from './index';
 import {getBoundsLatLonFromGeoJSON} from 'services/geoTools/index';
 import {EditControl} from 'react-leaflet-draw';
-import {SoilmodelZone, ZonesCollection} from 'core/model/modflow/soilmodel';
+import {SoilmodelLayer, SoilmodelZone} from 'core/model/modflow/soilmodel';
 
 const styles = {
     map: {
@@ -24,7 +24,8 @@ class ZonesMap extends Component {
     getLatLngFromXY = coordinates => coordinates.map(c => [c[1], c[0]]);
 
     render() {
-        const {model, readOnly, zone, zones} = this.props;
+        const {model, readOnly, zone, layer} = this.props;
+        const zones = layer.zones;
 
         let options = {
             edit: {
@@ -107,7 +108,7 @@ class ZonesMap extends Component {
 
 ZonesMap.propTypes = {
     zone: PropTypes.instanceOf(SoilmodelZone).isRequired,
-    zones: PropTypes.instanceOf(ZonesCollection),
+    layer: PropTypes.instanceOf(SoilmodelLayer).isRequired,
     model: PropTypes.instanceOf(ModflowModel).isRequired,
     onCreatePath: PropTypes.func.isRequired,
     onEditPath: PropTypes.func.isRequired,

@@ -53,10 +53,13 @@ class SoilmodelEditor extends React.Component {
         )
     };
 
-    onChangeLayer = layer => this.setState({
-        isDirty: true,
-        selectedLayer: layer.toObject()
-    });
+    onChangeLayer = layer => {
+        console.log('TOP: ON CHANGE', layer);
+        this.setState({
+            isDirty: true,
+            selectedLayer: layer.toObject()
+        });
+    };
 
     handleAddLayer = () => {
         const {id, property, type} = this.props.match.params;
@@ -128,7 +131,6 @@ class SoilmodelEditor extends React.Component {
         if (!(soilmodel instanceof Soilmodel)) {
             return null;
         }
-        console.log('SOILMODEL', soilmodel);
         const {id, pid, property, type} = this.props.match.params;
         const {isDirty, isError, isLoading, selectedLayer} = this.state;
         const lid = '';

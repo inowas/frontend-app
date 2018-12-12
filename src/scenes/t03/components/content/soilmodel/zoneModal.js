@@ -2,7 +2,7 @@ import React from 'react';
 import {Button, Form, Grid, Modal, Segment} from 'semantic-ui-react';
 import ZonesMap from '../../maps/zonesMap';
 import PropTypes from 'prop-types';
-import {SoilmodelZone, ZonesCollection} from 'core/model/modflow/soilmodel';
+import {SoilmodelLayer, SoilmodelZone} from 'core/model/modflow/soilmodel';
 import {Geometry, ModflowModel} from 'core/model/modflow';
 import {calculateActiveCells} from 'services/geoTools';
 
@@ -56,7 +56,7 @@ class ZoneModal extends React.Component {
     };
 
     render() {
-        const {model, readOnly, zones} = this.props;
+        const {model, readOnly, layer} = this.props;
         const {isError, zone} = this.state;
 
         console.log('STATE', this.state);
@@ -75,7 +75,7 @@ class ZoneModal extends React.Component {
                                         onEditPath={this.onEditPath}
                                         readOnly={readOnly}
                                         zone={SoilmodelZone.fromObject(zone)}
-                                        zones={zones}
+                                        layer={layer}
                                     />
                                 </Segment>
                             </Grid.Column>
@@ -190,7 +190,7 @@ ZoneModal.propTypes = {
     onRemove: PropTypes.func.isRequired,
     onSave: PropTypes.func.isRequired,
     zone: PropTypes.instanceOf(SoilmodelZone).isRequired,
-    zones: PropTypes.instanceOf(ZonesCollection),
+    layer: PropTypes.instanceOf(SoilmodelLayer).isRequired,
     model: PropTypes.instanceOf(ModflowModel).isRequired,
     readOnly: PropTypes.bool
 };
