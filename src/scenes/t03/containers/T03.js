@@ -119,7 +119,7 @@ class T03 extends React.Component {
                 description: this.props.model.description,
                 public: this.props.model.public
             }}
-            save={false}
+            saveButton={false}
             onSave={this.saveMetaData}
         />)
 

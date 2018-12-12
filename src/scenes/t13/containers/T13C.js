@@ -1,22 +1,20 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+
+import {includes} from 'lodash';
 import {withRouter} from 'react-router-dom';
 
-import image from '../images/T13C.png';
-import {Background, ChartT13C as Chart, InfoT13C as Info, Parameters} from '../components/index';
+import {AppContainer} from '../../shared';
+import {Background, ChartT13C as Chart, InfoT13C as Info, Parameters} from '../components';
+import {SliderParameter, ToolGrid, ToolMetaData} from '../../shared/simpleTools';
+import {navigation} from './T13';
 
+import SimpleToolsCommand from '../../shared/simpleTools/commands/SimpleToolsCommand';
+
+import image from '../images/T13C.png';
 import {defaults} from '../defaults/T13C';
 
-import SliderParameter from 'scenes/shared/simpleTools/parameterSlider/SliderParameter';
-
 import {fetchTool, sendCommand} from 'services/api';
-import {createToolInstanceCommand, updateToolInstanceCommand} from 'services/commandFactory';
-import AppContainer from '../../shared/AppContainer';
-import ToolMetaData from '../../shared/simpleTools/ToolMetaData';
-import ToolGrid from '../../shared/simpleTools/ToolGrid';
-
-import {navigation} from './T13';
-import {includes} from 'lodash';
 import {buildPayload, deepMerge} from '../../shared/simpleTools/helpers';
 
 class T13C extends React.Component {
@@ -52,7 +50,7 @@ class T13C extends React.Component {
 
         if (id) {
             sendCommand(
-                updateToolInstanceCommand(buildPayload(tool)),
+                SimpleToolsCommand.updateToolInstance(buildPayload(tool)),
                 () => this.setState({isDirty: false}),
                 () => this.setState({error: true})
             );
@@ -60,7 +58,7 @@ class T13C extends React.Component {
         }
 
         sendCommand(
-            createToolInstanceCommand(buildPayload(tool)),
+            SimpleToolsCommand.createToolInstance(buildPayload(tool)),
             () => this.props.history.push(`${this.props.location.pathname}/${tool.id}`),
             () => this.setState({error: true})
         );
@@ -109,8 +107,13 @@ class T13C extends React.Component {
 
         return (
             <AppContainer navbarItems={navigation}>
-                <ToolMetaData tool={tool} readOnly={readOnly} onChange={this.update} onSave={this.save}
-                              isDirty={isDirty}/>
+                <ToolMetaData
+                    tool={tool}
+                    readOnly={readOnly}
+                    onChange={this.update}
+                    onSave={this.save}
+                    isDirty={isDirty}
+                />
                 <ToolGrid rows={2}>
                     <Background
                         image={image}
