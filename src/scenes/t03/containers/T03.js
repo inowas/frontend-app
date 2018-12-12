@@ -43,14 +43,20 @@ class T03 extends React.Component {
     componentWillReceiveProps(nextProps, nextContext) {
         const {id} = nextProps.match.params;
         if (!this.props.model || this.props.model.id !== id) {
-            return this.setState({isLoading: true},
-                () => this.fetchModel(id)
-            )
+            if (!this.state.isLoading) {
+                return this.setState({isLoading: true},
+                    () => this.fetchModel(id)
+                )
+            }
         }
 
         this.setState({
             model: nextProps.model
         })
+    }
+
+    componentDidUpdate() {
+
     }
 
     fetchModel(id) {
@@ -91,7 +97,6 @@ class T03 extends React.Component {
     };
 
     handleError = error => {
-        console.log(error);
         const {response} = error;
         const {status} = response;
 

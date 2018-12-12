@@ -42,6 +42,15 @@ class StressPeriodsDataTable extends React.Component {
         this.props.onChange(stressperiods);
     };
 
+    addNewStressperiod = (numberOfDays) => {
+        const stressperiods = this.props.stressperiods;
+        const newStressperiod = stressperiods.last().clone();
+        newStressperiod.totimStart = newStressperiod.totimStart + numberOfDays;
+        stressperiods.addStressPeriod(newStressperiod);
+        stressperiods.recalculateStressperiods();
+        this.props.onChange(stressperiods);
+    };
+
     render() {
         const {readOnly} = this.props.readOnly || false;
         const stressperiods = this.props.stressperiods;
@@ -82,12 +91,19 @@ class StressPeriodsDataTable extends React.Component {
         ));
 
         return (
-            <Table color={'red'} size={'small'}>
-                <Table.Header>{this.header()}</Table.Header>
-                <Table.Body>
-                    {rows}
-                </Table.Body>
-            </Table>
+            <div>
+                <Table color={'red'} size={'small'}>
+                    <Table.Header>{this.header()}</Table.Header>
+                    <Table.Body>
+                        {rows}
+                    </Table.Body>
+                </Table>
+                <Button.Group>
+                    <Button onClick={() => this.addNewStressperiod(1)}>+1 Day</Button>
+                    <Button onClick={() => this.addNewStressperiod(30)}>+1 Month</Button>
+                    <Button onClick={() => this.addNewStressperiod(365)}>+1 Year</Button>
+                </Button.Group>
+            </div>
         )
     }
 }

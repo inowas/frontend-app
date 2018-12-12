@@ -30,9 +30,25 @@ class Geometry {
         return this._geometry.coordinates;
     }
 
+    get coordinatesLatLng() {
+        const coordinates = this._geometry.coordinates;
+        switch (this._geometry.type.toLowerCase()) {
+            case 'polygon':
+                return (this.getLatLngFromXY(coordinates[0]));
+            case 'linestring':
+                return (this.getLatLngFromXY(coordinates));
+            case 'point':
+                return ([coordinates[1], coordinates[0]]);
+            default:
+                return null;
+        }
+    }
+
     toObject = () => (this._geometry);
 
     toGeoJSON = () => (this._geometry);
+
+    getLatLngFromXY = coordinates => coordinates.map(c => [c[1], c[0]]);
 }
 
 export default Geometry;
