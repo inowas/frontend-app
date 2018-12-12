@@ -11,20 +11,19 @@ class Parameters extends React.Component {
             <div>
                 <Header textAlign='left'>
                     Selected
-                    <Button compact floated={'right'} color={'default'} size={'small'} onClick={this.props.handleReset}>
+                    <Button compact floated={'right'} size={'small'} onClick={this.props.handleReset}>
                         Default
                     </Button>
                 </Header>
                 <DataTable
                     toggleSelect={this.props.toggleSelect}
                     data={this.props.data.filter(r => r.selected === true)}
-                    color={'red'}
+                    color={'orange'}
                     icon={'trash'}
                     filter={false}
                 />
 
                 <Header textAlign='left'>
-                    Data
                 </Header>
                 <DataTable
                     toggleSelect={this.props.toggleSelect}

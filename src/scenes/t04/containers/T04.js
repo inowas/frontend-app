@@ -40,7 +40,7 @@ class T04 extends React.Component {
     };
 
     renderBreadcrumbs = () => (
-        <Breadcrumb size='medium'>
+        <Breadcrumb>
             <Breadcrumb.Section link>Tools</Breadcrumb.Section>
             <Breadcrumb.Divider icon='right angle'/>
             <Breadcrumb.Section>T06. Database for GIS Based Site Suitability Mapping</Breadcrumb.Section>
@@ -55,7 +55,8 @@ class T04 extends React.Component {
 
         return (
             <AppContainer navbarItems={navigation}>
-                <Header as={'h2'}>
+                <div style={{width: '1250px', margin: '0 auto'}}>
+                <Header as={'h1'} size={'large'}>
                     T04. Database for GIS Based Site Suitability Mapping
                 </Header>
                 {this.renderBreadcrumbs()}
@@ -66,6 +67,7 @@ class T04 extends React.Component {
                         </Container>
                     </Grid.Row>
                 </Grid>
+                </div>
             </AppContainer>
         );
     }

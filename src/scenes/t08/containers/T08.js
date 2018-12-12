@@ -13,8 +13,8 @@ import {fetchTool, sendCommand} from 'services/api';
 import {createToolInstanceCommand, updateToolInstanceCommand} from 'services/commandFactory';
 import AppContainer from '../../shared/AppContainer';
 import ToolMetaData from '../../shared/simpleTools/ToolMetaData';
-import ToolGrid from "../../shared/simpleTools/ToolGrid";
-import {buildPayload, deepMerge} from "../../shared/simpleTools/helpers";
+import ToolGrid from '../../shared/simpleTools/ToolGrid';
+import {buildPayload, deepMerge} from '../../shared/simpleTools/helpers';
 
 const navigation = [{
     name: 'Documentation',
@@ -128,7 +128,7 @@ class T08 extends React.Component {
                 <ToolMetaData tool={tool} readOnly={readOnly} onChange={this.update} onSave={this.save}
                               isDirty={isDirty}/>
                 <ToolGrid rows={2}>
-                    <Background image={image} title={'T08. GROUNDWATER MOUNDING (HANTUSH)'}/>
+                    <Background image={image} title={'T08. 1D transport model (Ogata-Banks)'}/>
                     <Chart settings={settings} parameters={parameters}/>
                     <div>
                         <Settings settings={settings} onChange={this.handleChangeSettings}/>
