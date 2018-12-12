@@ -11,7 +11,7 @@ import {sendCommand} from 'services/api';
 import StressPeriodsDataTable from './stressperiodsDatatable';
 import moment from 'moment';
 import ContentToolBar from 'scenes/shared/ContentToolbar';
-import Command from '../../../commands/command';
+import ModflowModelCommand from '../../../commands/modflowModelCommand';
 
 class StressperiodsEditor extends React.Component {
     constructor(props) {
@@ -25,7 +25,7 @@ class StressperiodsEditor extends React.Component {
 
     onSave = () => {
         const stressperiods = Stressperiods.fromObject(this.state.stressperiods);
-        const command = Command.updateStressperiods({
+        const command = ModflowModelCommand.updateStressperiods({
             id: this.props.id,
             stress_periods: stressperiods.toObject()
         });

@@ -5,7 +5,7 @@ import {Form, Grid} from 'semantic-ui-react';
 import ContentToolBar from '../../../../shared/ContentToolbar';
 import {ActiveCells, BoundingBox, Geometry, GridSize, ModflowModel} from 'core/model/modflow';
 import {updateModel} from '../../../actions/actions';
-import Command from '../../../commands/command';
+import ModflowModelCommand from '../../../commands/modflowModelCommand';
 import {dxCell, dyCell} from 'services/geoTools/distance';
 
 import {sendCommand} from 'services/api';
@@ -32,7 +32,7 @@ class GridEditor extends React.Component {
         model.boundingBox = BoundingBox.fromArray(this.state.boundingBox);
         model.geometry = Geometry.fromObject(this.state.geometry);
         model.gridSize = GridSize.fromObject(this.state.gridSize);
-        const command = Command.updateModflowModel(model.toObject());
+        const command = ModflowModelCommand.updateModflowModel(model.toObject());
 
         return sendCommand(command,
             () => {

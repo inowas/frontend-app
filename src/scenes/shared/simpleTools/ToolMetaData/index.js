@@ -47,7 +47,8 @@ class ToolMetaData extends React.Component {
     );
 
     renderSaveButton = () => {
-        if (!this.props.readOnly && this.props.save) {
+        const saveButton = this.props.saveButton || true;
+        if (!this.props.readOnly && saveButton) {
             return (
                 <Button
                     floated={'right'}
@@ -64,6 +65,7 @@ class ToolMetaData extends React.Component {
     render() {
         const {readOnly} = this.props;
         const {edit} = this.state;
+
 
         return (
             <div>
@@ -109,7 +111,7 @@ class ToolMetaData extends React.Component {
                                             width={16}
                                         />
                                     </Form.Group>
-                                    <Button positive type='submit' onClick={this.handleSave}>Save</Button>
+                                    <Button positive onClick={this.handleSave}>Save</Button>
                                 </Form>
                             </Grid.Column>
                         </Grid.Row>
@@ -125,7 +127,7 @@ ToolMetaData.propTypes = {
     onChange: PropTypes.func.isRequired,
     onSave: PropTypes.func.isRequired,
     readOnly: PropTypes.bool.isRequired,
-    save: PropTypes.bool,
+    saveButton: PropTypes.bool,
     tool: PropTypes.object.isRequired
 };
 

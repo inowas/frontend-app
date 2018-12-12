@@ -1,18 +1,19 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+
 import {withRouter} from 'react-router-dom';
 
+import {AppContainer} from '../../shared';
 import {BackgroundT13D as Background, Parameters} from '../components';
+import {SliderParameter, ToolGrid} from '../../shared/simpleTools';
+import {navigation} from './T13';
+
+import SimpleToolsCommand from '../../shared/simpleTools/commands/SimpleToolsCommand';
+
 
 import {defaults} from '../defaults/T13D';
-import SliderParameter from 'scenes/shared/simpleTools/parameterSlider/SliderParameter';
 
 import {fetchTool, sendCommand} from 'services/api';
-import {createToolInstanceCommand, updateToolInstanceCommand} from 'services/commandFactory';
-import AppContainer from '../../shared/AppContainer';
-import ToolGrid from '../../shared/simpleTools/ToolGrid';
-
-import {navigation} from './T13';
 import {buildPayload, deepMerge} from '../../shared/simpleTools/helpers';
 
 
@@ -49,7 +50,7 @@ class T13D extends React.Component {
 
         if (id) {
             sendCommand(
-                updateToolInstanceCommand(buildPayload(tool)),
+                SimpleToolsCommand.updateToolInstance(buildPayload(tool)),
                 () => this.setState({isDirty: false}),
                 () => this.setState({error: true})
             );
@@ -57,7 +58,7 @@ class T13D extends React.Component {
         }
 
         sendCommand(
-            createToolInstanceCommand(buildPayload(tool)),
+            SimpleToolsCommand.createToolInstance(buildPayload(tool)),
             () => this.props.history.push(`${this.props.location.pathname}/${tool.id}`),
             () => this.setState({error: true})
         );
