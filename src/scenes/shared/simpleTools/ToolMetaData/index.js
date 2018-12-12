@@ -47,7 +47,7 @@ class ToolMetaData extends React.Component {
     );
 
     renderSaveButton = () => {
-        const saveButton = this.props.saveButton || true;
+        const saveButton = typeof this.props.saveButton === 'boolean' ? this.props.saveButton : true;
         if (!this.props.readOnly && saveButton) {
             return (
                 <Button
@@ -65,7 +65,6 @@ class ToolMetaData extends React.Component {
     render() {
         const {readOnly} = this.props;
         const {edit} = this.state;
-
 
         return (
             <div>
