@@ -1,5 +1,6 @@
 import uuidv4 from 'uuid/v4';
 import ZonesCollection from './ZonesCollection';
+import GridSize from "../GridSize";
 
 class SoilmodelLayer {
     _id = uuidv4();
@@ -107,7 +108,7 @@ class SoilmodelLayer {
     }
 
     set top(value) {
-        this._top = parseFloat(value);
+        this._top = value;
     }
 
     get botm() {
@@ -115,7 +116,7 @@ class SoilmodelLayer {
     }
 
     set botm(value) {
-        this._botm = parseFloat(value);
+        this._botm = value;
     }
 
     get hk() {
@@ -123,7 +124,7 @@ class SoilmodelLayer {
     }
 
     set hk(value) {
-        this._hk = parseFloat(value);
+        this._hk = value;
     }
 
     get hani() {
@@ -131,7 +132,7 @@ class SoilmodelLayer {
     }
 
     set hani(value) {
-        this._hani = parseFloat(value);
+        this._hani = value;
     }
 
     get vka() {
@@ -139,7 +140,7 @@ class SoilmodelLayer {
     }
 
     set vka(value) {
-        this._vka = parseFloat(value);
+        this._vka = value;
     }
 
     get layavg() {
@@ -163,7 +164,7 @@ class SoilmodelLayer {
     }
 
     set ss(value) {
-        this._ss = parseFloat(value);
+        this._ss = value;
     }
 
     get sy() {
@@ -171,7 +172,7 @@ class SoilmodelLayer {
     }
 
     set sy(value) {
-        this._sy = parseFloat(value);
+        this._sy = value;
     }
 
     toObject() {
@@ -200,8 +201,8 @@ class SoilmodelLayer {
         //console.log(`Calculate with gridSize ${gridSize} for parameter ${parameter} in ${cycles} cycles and ${distance} distance.`);
 
         for (let cyc = 1; cyc <= cycles; cyc++) {
-            for (let row = 0; row < gridSize.n_y; row++) {
-                for (let col = 0; col < gridSize.n_x; col++) {
+            for (let row = 0; row < gridSize.nY; row++) {
+                for (let col = 0; col < gridSize.nX; col++) {
                     let avg = parseFloat(this[parameter][row][col]);
                     let div = 1;
 
@@ -222,17 +223,18 @@ class SoilmodelLayer {
     }
 
     zonesToParameters(gridSize, parameters = ['top', 'botm', 'hk', 'hani', 'vka', 'ss', 'sy']) {
+        if (!(gridSize instanceof GridSize)) {
+            throw new Error('GridSize needs to be instance of GridSize');
+        }
+
         if (!Array.isArray(parameters)) {
             parameters = [parameters];
         }
 
-        // sort zones by priority
-        const zones = this.zones.sort((a, b) => {
-            return a.priority - b.priority;
-        });
+        const zones = this.zones.orderBy('priority');
 
         // loop through all the zones
-        zones.forEach(zone => {
+        zones.all.forEach(zone => {
             // loop through all the parameters ...
             parameters.forEach(parameter => {
                 // ... and check if the current zone has values for the parameter
@@ -240,11 +242,11 @@ class SoilmodelLayer {
                     // apply array with default values to parameter, if zone with parameter exists
                     // x is number of columns, y number of rows (grid resolution of model)
                     if (!Array.isArray(this[parameter])) {
-                        this[parameter] = new Array(gridSize.n_y).fill(0).map(() => new Array(gridSize.n_x).fill(this[parameter]));
+                        this[parameter] = new Array(gridSize.nY).fill(0).map(() => new Array(gridSize.nX).fill(this[parameter]));
                     }
 
                     // update the values for the parameter in the cells given by the zone
-                    zone.activeCells.forEach(cell => {
+                    zone.activeCells.cells.forEach(cell => {
                         //console.log(`set ${parameter} at ${cell[1]} ${cell[0]} with value ${zone[parameter]}`);
                         this[parameter][cell[1]][cell[0]] = zone[parameter];
                     });

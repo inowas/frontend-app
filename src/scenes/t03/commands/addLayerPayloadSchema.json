@@ -34,19 +34,34 @@
           "type": "number"
         },
         "top": {
-          "type": "number"
+          "oneOf": [
+            {"type": "number"},
+            {"type": "array"}
+          ]
         },
         "botm": {
-          "type": "number"
+          "oneOf": [
+            {"type": "number"},
+            {"type": "array"}
+          ]
         },
         "hk": {
-          "type": "number"
+          "oneOf": [
+            {"type": "number"},
+            {"type": "array"}
+          ]
         },
         "hani": {
-          "type": "number"
+          "oneOf": [
+            {"type": "number"},
+            {"type": "array"}
+          ]
         },
         "vka": {
-          "type": "number"
+          "oneOf": [
+            {"type": "number"},
+            {"type": "array"}
+          ]
         },
         "layavg": {
           "type": "number"
@@ -55,10 +70,16 @@
           "type": "number"
         },
         "ss": {
-          "type": "number"
+          "oneOf": [
+            {"type": "number"},
+            {"type": "array"}
+          ]
         },
         "sy": {
-          "type": "number"
+          "oneOf": [
+            {"type": "number"},
+            {"type": "array"}
+          ]
         }
       }
     }

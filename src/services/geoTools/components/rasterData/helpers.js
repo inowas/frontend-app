@@ -1,4 +1,5 @@
 import Rainbow from 'rainbowvis.js';
+import md5 from 'md5';
 
 export function isValue(data) {
     return !isNaN(data);
@@ -14,6 +15,50 @@ export function isRaster(data) {
     }
 
     return !isNaN(data[0][0]);
+}
+
+export function isValid(data) {
+    return isValue(data) || isRaster(data);
+}
+
+export function min(a) {
+    if (isValue(a)) {
+        return a;
+    }
+    const values = a.map(arr => (Math.min.apply(null, arr)));
+    return Math.min.apply(null, values);
+}
+
+export function max(a) {
+    if (isValue(a)) {
+        return a;
+    }
+    const values = a.map(arr => (Math.max.apply(null, arr)));
+    return Math.max.apply(null, values);
+}
+
+export function mean(data) {
+    if (isValue(data)) {
+        return data;
+    }
+
+    if (isRaster(data)) {
+        let sum = 0.0;
+        let numberOfElements = 0;
+
+        data.forEach(
+            row => ( row.forEach(
+                col => {
+                    sum += col;
+                    numberOfElements += 1;
+                }
+            ))
+        );
+
+        return sum / numberOfElements;
+    }
+
+    return null;
 }
 
 export function getGridSize(data) {
@@ -70,20 +115,28 @@ export function createGridData(value, nx, ny) {
     return null;
 }
 
-export function min(a) {
-    if (isValue(a)) {
-        return a;
+export function convertToString(data) {
+    if (isValue(data)) {
+        return 'Value: ' + parseFloat(data).toFixed(2);
     }
-    const values = a.map(arr => (Math.min.apply(null, arr)));
-    return Math.min.apply(null, values);
+
+    if (isRaster(data)) {
+        return 'Values: ' + parseFloat(min(data)).toFixed(2) + ' ... ' + parseFloat(max(data)).toFixed(2);
+    }
+
+    return 'Wrong data.';
 }
 
-export function max(a) {
-    if (isValue(a)) {
-        return a;
+export function meanValue(data) {
+    if (isValue(data)) {
+        return parseFloat(data).toFixed(2);
     }
-    const values = a.map(arr => (Math.max.apply(null, arr)));
-    return Math.max.apply(null, values);
+
+    if (isRaster(data)) {
+        return 'Values: ' + parseFloat(min(data)).toFixed(2) + ' ... ' + parseFloat(max(data)).toFixed(2);
+    }
+
+    return 'Wrong data.';
 }
 
 export function rainbowFactory(numberRange = {min: -50, max: 50}) {
@@ -128,4 +181,8 @@ export const invalidateSize = (map) => {
     if (map) {
         map.leafletElement.invalidateSize();
     }
+};
+
+export const generateKey = geometry => {
+    return md5(JSON.stringify(geometry));
 };

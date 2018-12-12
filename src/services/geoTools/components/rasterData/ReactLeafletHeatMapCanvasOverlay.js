@@ -1,8 +1,9 @@
 import PropTypes from 'prop-types';
 import { latLngBounds } from 'leaflet';
-import { MapLayer } from 'react-leaflet';
+import { CanvasHeatMapOverlay as LeafletCanvasHeatMapOverlay } from './leafletCanvasHeatMapOverlay';
+import {MapLayer, withLeaflet} from 'react-leaflet';
 
-export default class CanvasHeatMapOverlay extends MapLayer {
+export default withLeaflet(class CanvasHeatMapOverlay extends MapLayer {
     getChildContext() {
         return {
             popupContainer: this.leafletElement
@@ -14,9 +15,7 @@ export default class CanvasHeatMapOverlay extends MapLayer {
     };
 
     createLeafletElement(props) {
-        console.log(props);
-
-        return new CanvasHeatMapOverlay(
+        return new LeafletCanvasHeatMapOverlay(
             props.nX,
             props.nY,
             props.dataArray,
@@ -51,4 +50,4 @@ export default class CanvasHeatMapOverlay extends MapLayer {
             this.leafletElement.setZIndex(toProps.zIndex);
         }
     };
-}
+})

@@ -21,8 +21,6 @@ class ZonesMap extends Component {
         disableMap(this.map);
     }
 
-    getLatLngFromXY = coordinates => coordinates.map(c => [c[1], c[0]]);
-
     render() {
         const {model, readOnly, zone, layer} = this.props;
         const zones = layer.zones;
@@ -71,9 +69,7 @@ class ZonesMap extends Component {
                                 <Polygon
                                     key={z.id}
                                     id={z.id}
-                                    positions={this.getLatLngFromXY(
-                                        z.geometry.coordinates[0]
-                                    )}
+                                    positions={z.geometry.coordinatesLatLng}
                                     color='grey'
                                     weight={0.1}
                                 />
@@ -95,9 +91,7 @@ class ZonesMap extends Component {
                     <Polygon
                         key={zone.id}
                         id={zone.id}
-                        positions={this.getLatLngFromXY(
-                            zone.geometry.coordinates[0]
-                        )}
+                        positions={zone.geometry.coordinatesLatLng}
                     />
                     }
                 </FeatureGroup>

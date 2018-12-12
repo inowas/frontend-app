@@ -87,7 +87,7 @@ class ZonesTable extends React.Component {
                                 {!readOnly && zone.priority > 0 &&
                                 <Button.Group floated='right' size='small'>
                                     <Button
-                                        disabled={readOnly}
+                                        disabled={readOnly || zone[parameter] === null}
                                         icon
                                         onClick={() => this.onSetToDefault(zone.id)}
                                     >

@@ -1,10 +1,18 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import {createGridData, disableMap, invalidateSize, min, max, rainbowFactory} from 'services/geoTools/rasterLayer';
 import {Map, GeoJSON, TileLayer} from 'react-leaflet';
-import CanvasHeatMapOverlay from 'services/geoTools/ReactLeafletHeatMapCanvasOverlay';
-import ColorLegend from 'services/geoTools/ColorLegend';
 import {ModflowModel} from 'core/model/modflow';
+import {generateKey} from './helpers';
+import {
+    min,
+    max,
+    createGridData,
+    disableMap,
+    invalidateSize,
+    rainbowFactory
+} from 'services/geoTools/components/rasterData/helpers';
+import ColorLegend from './ColorLegend';
+import CanvasHeatMapOverlay from './ReactLeafletHeatMapCanvasOverlay';
 
 const styles = {
     map: {
@@ -16,11 +24,6 @@ const styles = {
         color: 'grey',
         fill: false
     },
-};
-
-const generateKeyFunction = geometry => {
-    // TODO: md5 ???
-    return JSON.stringify(geometry);
 };
 
 const renderLegend = (rainbow, unit) => {
@@ -44,7 +47,7 @@ const renderLegend = (rainbow, unit) => {
 
 const RasterDataMap = ({data, model, unit}) => {
     const {gridSize} = model;
-    const area = model.geometry.toObject;
+    const geometry = model.geometry.toObject();
     const boundingBox = model.boundingBox.toArray();
 
     const bounds = [
@@ -69,8 +72,8 @@ const RasterDataMap = ({data, model, unit}) => {
                 attribution=""
             />
             <GeoJSON
-                key={generateKeyFunction(area)}
-                data={area}
+                key={generateKey(geometry)}
+                data={geometry}
                 style={styles.area}
             />
             <CanvasHeatMapOverlay
@@ -82,7 +85,6 @@ const RasterDataMap = ({data, model, unit}) => {
                 opacity={0.75}
             />
             {renderLegend(rainbowVis, '')}
-
         </Map>
     );
 };

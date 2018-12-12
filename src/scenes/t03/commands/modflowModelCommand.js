@@ -1,16 +1,21 @@
 import AbstractCommand from 'core/model/command/AbstractCommand';
 
+import addLayerPayloadSchema from './addLayerPayloadSchema';
 import calculateOptimizationPayloadSchema from './calculateOptimizationPayloadSchema';
 import cancelOptimizationCalculationPayloadSchema from './cancelOptimizationCalculationPayloadSchema';
 import cloneModflowModelPayloadSchema from './cloneModflowModelPayloadSchema';
 import createModflowModelPayloadSchema from './createModflowModelPayloadSchema';
 import deleteModflowModelPayloadSchema from './deleteModflowModelPayloadSchema';
+import removeLayerPayloadSchema from './removeLayerPayloadSchema';
 import updateModflowModelPayloadSchema from './updateModflowModelPayloadSchema';
 import updateOptimizationInputPayloadSchema from './updateOptimizationInputPayloadSchema';
 import updateStressperiodsPayloadSchema from './updateStressperiodsPayloadSchema';
 
 class ModflowModelCommand extends AbstractCommand {
 
+    static addSoilmodelLayer(payload) {
+        return new ModflowModelCommand('addLayer', payload, addLayerPayloadSchema);
+    }
 
     static calculateOptimization(payload) {
         return new ModflowModelCommand('calculateOptimization', payload, calculateOptimizationPayloadSchema);
@@ -38,13 +43,20 @@ class ModflowModelCommand extends AbstractCommand {
         return new ModflowModelCommand('deleteModflowModel', {id}, deleteModflowModelPayloadSchema);
     }
 
+    static removeSoilmodelLayer(payload) {
+        return new ModflowModelCommand('removeLayer', payload, removeLayerPayloadSchema);
+    }
+
     static updateModflowModel(payload) {
         return new ModflowModelCommand('updateModflowModel', payload, updateModflowModelPayloadSchema);
     }
 
-
     static updateOptimizationInput(payload) {
         return new ModflowModelCommand('updateOptimizationInput', payload, updateOptimizationInputPayloadSchema)
+    }
+
+    static updateSoilmodelLayer(payload) {
+        return new ModflowModelCommand('updateLayer', payload, addLayerPayloadSchema);
     }
 
     static updateStressperiods(payload) {

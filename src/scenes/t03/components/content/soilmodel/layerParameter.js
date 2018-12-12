@@ -3,9 +3,9 @@ import PropTypes from 'prop-types';
 import {SoilmodelLayer, SoilmodelZone} from 'core/model/modflow/soilmodel';
 import {Accordion, Button, Form, Grid, Header, Icon, Segment} from 'semantic-ui-react';
 import {ModflowModel} from 'core/model/modflow';
-import RasterDataMap from '../../maps/rasterDataMap';
 import ZoneModal from './zoneModal';
 import ZonesTable from './zonesTable';
+import {RasterData, RasterDataMap} from 'services/geoTools/components/rasterData';
 
 class LayerParameter extends React.Component {
     constructor(props) {
@@ -61,6 +61,10 @@ class LayerParameter extends React.Component {
 
     onChange = layer => this.props.onChange(layer);
 
+    onUploadRaster = (e, value) => {
+        console.log('ON UPLOAD RASTER', value);
+    };
+
     onChangeSmoothParams = (e, {name, value}) => {
         return this.setState({
             smoothParams: {
@@ -83,7 +87,7 @@ class LayerParameter extends React.Component {
         const zone = layer.zones.findById(id);
 
         this.setState({
-            selectedZone: zone
+            selectedZone: zone.toObject()
         });
     };
 
@@ -117,7 +121,7 @@ class LayerParameter extends React.Component {
     render() {
         const {model, readOnly} = this.props;
         const {parameter, mode, selectedZone} = this.state;
-        const layer = SoilmodelLayer.fromObject(this.state.layer);
+        const layer = this.state.layer;
 
         return (
             <div>
@@ -140,11 +144,19 @@ class LayerParameter extends React.Component {
                                 text: 'Import raster file'
                             }
                         ]}
+                        style={{zIndex: 1001}}
                     />
                 </Form.Field>
                 {this.state.mode === 'import' &&
                 <Segment>
-
+                    <RasterData
+                        model={model}
+                        name={parameter.name}
+                        unit={parameter.unit}
+                        data={layer[parameter.name]}
+                        readOnly={readOnly}
+                        onChange={this.onUploadRaster}
+                    />
                 </Segment>
                 }
                 {mode !== 'import' &&
@@ -152,12 +164,11 @@ class LayerParameter extends React.Component {
                     <Header as="h4">{parameter.description}, {parameter.name} [{parameter.unit}]</Header>
                     <Grid divided>
                         <Grid.Column width={8}>
-                            {false &&
                             <RasterDataMap
                                 data={layer[parameter.name]}
                                 model={model}
-                                unit={null}/>
-                            }
+                                unit={null}
+                            />
                         </Grid.Column>
                         <Grid.Column width={8}>
                             <Accordion fluid>
@@ -231,7 +242,7 @@ class LayerParameter extends React.Component {
                         onEdit={this.onEditZone}
                         parameter={parameter.name}
                         readOnly={readOnly}
-                        layer={layer}
+                        layer={SoilmodelLayer.fromObject(layer)}
                     />
                 </Segment>
                 }

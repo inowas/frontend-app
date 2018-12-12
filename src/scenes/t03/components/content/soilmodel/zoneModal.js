@@ -26,15 +26,15 @@ class ZoneModal extends React.Component {
     };
 
     onCreatePath = e => {
-        const geoJson = e.layer.toGeoJSON();
-        const zone = this.state.zone;
+        const polygon = e.layer;
+        const zone = SoilmodelZone.fromObject(this.state.zone);
 
-        zone.geometry = Geometry.fromGeoJson(geoJson.geometry);
+        zone.geometry = Geometry.fromGeoJson(polygon.toGeoJSON());
         zone.activeCells = calculateActiveCells(zone.geometry, this.props.model.boundingBox, this.props.model.gridSize);
 
         return this.setState({
             isError: !zone.geometry,
-            zone: zone
+            zone: zone.toObject()
         });
     };
 
@@ -42,15 +42,14 @@ class ZoneModal extends React.Component {
         const layers = e.layers;
 
         layers.eachLayer(layer => {
-            const geoJson = layer.toGeoJSON();
-            const zone = this.state.zone;
+            const zone = SoilmodelZone.fromObject(this.state.zone);
 
-            zone.geometry = Geometry.fromGeoJson(geoJson.geometry);
+            zone.geometry = Geometry.fromGeoJson(layer.toGeoJSON());
             zone.activeCells = calculateActiveCells(zone.geometry, this.props.model.boundingBox, this.props.model.gridSize);
 
             return this.setState({
                 isError: !zone.geometry,
-                zone: zone
+                zone: zone.toObject()
             });
         });
     };
@@ -58,8 +57,6 @@ class ZoneModal extends React.Component {
     render() {
         const {model, readOnly, layer} = this.props;
         const {isError, zone} = this.state;
-
-        console.log('STATE', this.state);
 
         return (
             <Modal size={'large'} open onClose={this.props.onCancel} dimmer={'inverted'}>

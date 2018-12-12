@@ -6,15 +6,14 @@ import {fetchUrl} from 'services/api';
 import {Grid, Segment} from 'semantic-ui-react';
 
 import {ModflowModel} from 'core/model/modflow';
-import {Soilmodel, SoilmodelLayer} from 'core/model/modflow/soilmodel';
+import {Soilmodel, SoilmodelLayer, SoilmodelZone} from 'core/model/modflow/soilmodel';
 
 import LayerDetails from './layerDetails';
 import LayersList from './layersList';
 import {addSoilmodelLayer, removeSoilmodelLayer, updateSoilmodel, updateSoilmodelLayer} from '../../../actions/actions';
-import Command from '../../../commands/command';
+import Command from '../../../commands/modflowModelCommand';
 import ContentToolBar from '../../../../shared/ContentToolbar';
 import {sendCommand} from '../../../../../services/api';
-import SoilmodelZone from "../../../../../core/model/modflow/soilmodel/SoilmodelZone";
 
 const baseUrl = '/tools/T03';
 
@@ -54,7 +53,6 @@ class SoilmodelEditor extends React.Component {
     };
 
     onChangeLayer = layer => {
-        console.log('TOP: ON CHANGE', layer);
         this.setState({
             isDirty: true,
             selectedLayer: layer.toObject()
