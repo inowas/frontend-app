@@ -2,8 +2,17 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import {pure} from 'recompose';
 
-import {CartesianGrid, Legend, ResponsiveContainer, Scatter, ScatterChart, Tooltip, XAxis, YAxis} from 'recharts';
-import {Grid, Header} from "semantic-ui-react";
+import {
+    CartesianGrid,
+    Legend,
+    ResponsiveContainer,
+    Scatter,
+    ScatterChart,
+    Tooltip,
+    XAxis,
+    YAxis
+} from 'recharts';
+import {Grid, Header} from 'semantic-ui-react';
 
 const cbPalette = ['#999999', '#ED8D05', '#1EB1ED', '#009E73', '#F0E442', '#0A75A0', '#CC6C00', '#FF5B4D'];
 
@@ -55,6 +64,7 @@ const Chart = ({data}) => {
                         <ResponsiveContainer width={'100%'} aspect={2}>
                             <ScatterChart data={data} margin={{top: 20, right: 30, left: 20, bottom: 0}}>
                                 <CartesianGrid strokeDasharray="3 3"/>
+
                                 <XAxis type={'number'} dataKey={'x'} name={'Specific volume'} tick={{fill: '#B5B5B5', fontSize: 'small', transform: 'translate(0, 5)'}} />
                                 <YAxis type={'number'} dataKey={'y'} name={'v50/v50o'} tick={{fill: '#B5B5B5', fontSize: 'small', transform: 'translate(-3, 0)'}}/>
                                 <Tooltip cursor={{strokeDasharray: '3 3'}}/>
