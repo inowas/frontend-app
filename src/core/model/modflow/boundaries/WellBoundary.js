@@ -2,6 +2,7 @@ import SingleOPBoundary from './SingleOPBoundary';
 import BoundaryFactory from './BoundaryFactory';
 
 const boundaryType = 'wel';
+const properties = [{name: 'Pumping Rate', unit: 'm3/day', decimals: 0}];
 
 export default class WellBoundary extends SingleOPBoundary {
 
@@ -63,6 +64,10 @@ export default class WellBoundary extends SingleOPBoundary {
                 }
             ]
         }
+    }
+
+    get valueProperties() {
+        return properties;
     }
 
     isValid() {

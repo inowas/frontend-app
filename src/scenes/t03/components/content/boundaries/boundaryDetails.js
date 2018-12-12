@@ -1,11 +1,10 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import {Form, Grid} from 'semantic-ui-react';
-import {Boundary} from 'core/model/modflow/boundaries';
+
 import BoundaryMap from '../../maps/boundaryMap';
-import {Geometry} from 'core/model/modflow';
-import BoundaryFactory from 'core/model/modflow/boundaries/BoundaryFactory';
-import Soilmodel from '../../../../../core/model/modflow/soilmodel/Soilmodel';
+import {Boundary, BoundaryFactory, Geometry, Soilmodel} from 'core/model/modflow';
+import BoundaryDataTable from './boundaryDataTable';
 
 class BoundaryDetails extends React.Component {
 
@@ -26,8 +25,12 @@ class BoundaryDetails extends React.Component {
                 <Grid.Row>
                     <Grid.Column width={6}>
                         <Form>
-                            <Form.Input label={'Name'} name={'name'} value={boundary.name}
-                                        onChange={this.handleChange}/>
+                            <Form.Input
+                                label={'Name'}
+                                name={'name'}
+                                value={boundary.name}
+                                onChange={this.handleChange}
+                            />
 
                             <Form.Dropdown
                                 label={'Selected layers'}
@@ -56,11 +59,14 @@ class BoundaryDetails extends React.Component {
                                 onChange={this.handleChange}
                             />
                             }
-
                         </Form>
                         <BoundaryMap geometry={geometry} boundary={boundary}/>
                     </Grid.Column>
                     <Grid.Column width={10}>
+                        {boundary.type === 'wel' &&
+                            <BoundaryDataTable boundary={boundary}/>
+                        }
+
                     </Grid.Column>
                 </Grid.Row>
             </Grid>
