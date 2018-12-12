@@ -14,7 +14,7 @@ const navigation = [{
 }];
 
 const styles = {
-    h3: {
+    h2: {
         textAlign: 'center',
         textTransform: 'uppercase'
     }
@@ -85,7 +85,7 @@ class T06 extends React.Component {
     }
 
     renderBreadcrumbs = () => (
-        <Breadcrumb size='medium'>
+        <Breadcrumb>
             <Breadcrumb.Section link>Tools</Breadcrumb.Section>
             <Breadcrumb.Divider icon='right angle'/>
             <Breadcrumb.Section>T06. MAR method selection</Breadcrumb.Section>
@@ -101,9 +101,12 @@ class T06 extends React.Component {
         const groupSelectedMethods = [];
         for (const category in groupSelectedConditions) {
             let selectedMethods = [];
+            // noinspection JSUnfilteredForInLoop
             for (let i = 0; i < groupSelectedConditions[category].length; i++) {
+                // noinspection JSUnfilteredForInLoop
                 selectedMethods = union(selectedMethods, groupSelectedConditions[category][i].applicable_methods);
             }
+            // noinspection JSUnfilteredForInLoop
             groupSelectedMethods.push({
                 category: category,
                 selectedMethod: selectedMethods
@@ -142,18 +145,18 @@ class T06 extends React.Component {
         return (
             <AppContainer navbarItems={navigation}>
                 <div style={{margin: '0 0 0 1em' }}>
-                <Header as={'h2'}>T06. MAR method selection</Header>
+                <Header as={'h1'} size={'large'}>T06. MAR method selection</Header>
                 {this.renderBreadcrumbs()}
                 </div>
                 <ToolGrid rows={1}>
                     <div>
-                        <Header as={'h3'} style={styles.h3}>Input Conditions</Header>
+                        <Header as={'h2'} style={styles.h2}>Input Conditions</Header>
                         <Form>
                             {this.conditions()}
                         </Form>
                     </div>
                     <div>
-                        <Header as={'h3'} style={styles.h3}>Methods Suggested</Header>
+                        <Header as={'h2'} style={styles.h2}>Methods Suggested</Header>
                         <Table celled padded>
                             <Table.Header>
                                 <Table.Row>

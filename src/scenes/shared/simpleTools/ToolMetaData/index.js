@@ -1,6 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import {Breadcrumb, Button, Checkbox, Form, Grid, Modal} from 'semantic-ui-react';
+import {Breadcrumb, Button, Checkbox, Form, Grid, Header, Modal} from 'semantic-ui-react';
 
 class ToolMetaData extends React.Component {
     constructor(props) {
@@ -35,9 +35,9 @@ class ToolMetaData extends React.Component {
 
     renderBreadcrumbs = () => (
         <Breadcrumb size='large'>
-            <Breadcrumb.Section>Tools</Breadcrumb.Section>
+            <Breadcrumb.Section link>Tools</Breadcrumb.Section>
             <Breadcrumb.Divider/>
-            <Breadcrumb.Section>{this.props.tool.type}</Breadcrumb.Section>
+            <Breadcrumb.Section link>{this.props.tool.type}</Breadcrumb.Section>
             <Breadcrumb.Divider icon='right angle'/>
             <Breadcrumb.Section>
                 {this.state.tool.name}
@@ -70,23 +70,24 @@ class ToolMetaData extends React.Component {
         return (
             <div>
                 <Grid padded>
-                    <Grid.Column style={{paddingTop: 0, paddingBottom: 0, height: 25, marginTop: 10}}>
+                    <Grid.Column style={{paddingTop: 0, paddingBottom: 0}}>
+                        <Header as={'h1'} size={'large'}>{this.state.tool.name}</Header>
                         {this.renderBreadcrumbs()}
                         {this.renderSaveButton()}
                     </Grid.Column>
                 </Grid>
 
-                <Modal size={'small'} open={edit} onClose={this.handleButtonClick}>
+                <Modal size={'mini'} open={edit} onClose={this.handleButtonClick}>
                     <Grid padded>
                         <Grid.Row>
                             <Grid.Column width={16}>
-                                <Form color={'grey'}>
+                                <Form>
                                     <Form.Group>
                                         <Form.Input
                                             label='Name'
                                             name={'name'}
                                             value={this.state.tool.name}
-                                            width={7}
+                                            width={12}
                                             onChange={this.handleInputChange}
                                         />
                                         <Form.Field width={1}>
@@ -107,7 +108,7 @@ class ToolMetaData extends React.Component {
                                             onChange={this.handleInputChange}
                                             placeholder="Description"
                                             value={this.state.tool.description}
-                                            width={8}
+                                            width={16}
                                         />
                                     </Form.Group>
                                     <Button positive onClick={this.handleSave}>Save</Button>

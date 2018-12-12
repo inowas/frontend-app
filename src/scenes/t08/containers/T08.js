@@ -17,7 +17,6 @@ import {T08 as defaults} from '../defaults';
 import {fetchTool, sendCommand} from 'services/api';
 import {buildPayload, deepMerge} from '../../shared/simpleTools/helpers';
 
-
 const navigation = [{
     name: 'Documentation',
     path: 'https://inowas.hydro.tu-dresden.de/tools/t02-groundwater-mounding-hantush/',
@@ -135,7 +134,7 @@ class T08 extends React.Component {
                     isDirty={isDirty}
                 />
                 <ToolGrid rows={2}>
-                    <Background image={image} title={'T08. GROUNDWATER MOUNDING (HANTUSH)'}/>
+                    <Background image={image} title={'T08. 1D transport model (Ogata-Banks)'}/>
                     <Chart settings={settings} parameters={parameters}/>
                     <div>
                         <Settings settings={settings} onChange={this.handleChangeSettings}/>

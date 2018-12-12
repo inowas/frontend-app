@@ -1,10 +1,10 @@
 import React from 'react';
 import {pure} from 'recompose';
 import PropTypes from 'prop-types';
-import {Grid, Header} from "semantic-ui-react";
+import {Message, Icon} from 'semantic-ui-react';
 import {calcC, calcCTau, calculateDL, calculateR, calculateVx} from '../calculations/calculationT08';
 import {SETTINGS_CASE_FIXED_TIME, SETTINGS_INFILTRATION_ONE_TIME} from '../defaults';
-import {getParameterValues} from "../../shared/simpleTools/helpers";
+import {getParameterValues} from '../../shared/simpleTools/helpers';
 
 const renderContent = (settings, t, c, x) => {
     if (settings.case === SETTINGS_CASE_FIXED_TIME) {
@@ -36,14 +36,13 @@ const Info = ({parameters, settings}) => {
     const c = C0 * C;
 
     return (
-        <Grid>
-            <Grid.Row centered>
-                <Header as='h2'>Info</Header>
-            </Grid.Row>
-            <Grid.Row centered>
-                {renderContent(settings, t, c, x)}
-            </Grid.Row>
-        </Grid>
+            <Message icon>
+                <Icon name='info circle' color='blue' />
+                    <Message.Content>
+                        {renderContent(settings, t, c, x)}
+                    </Message.Content>
+            </Message>
+
     );
 };
 
