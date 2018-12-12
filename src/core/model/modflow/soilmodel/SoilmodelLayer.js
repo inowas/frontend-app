@@ -38,7 +38,7 @@ class SoilmodelLayer {
             layer.laywet = obj.laywet;
             layer.ss = obj.ss;
             layer.sy = obj.sy;
-            layer.zones = obj.zones ? ZonesCollection.fromObject(obj.zones) : new ZonesCollection();
+            layer.zones = obj._meta && obj._meta.zones ? ZonesCollection.fromObject(obj._meta.zones) : new ZonesCollection();
         }
 
         return layer;
@@ -107,7 +107,7 @@ class SoilmodelLayer {
     }
 
     set top(value) {
-        this._top = value ? value : 0;
+        this._top = parseFloat(value);
     }
 
     get botm() {
@@ -115,7 +115,7 @@ class SoilmodelLayer {
     }
 
     set botm(value) {
-        this._botm = value ? value : 0;
+        this._botm = parseFloat(value);
     }
 
     get hk() {
@@ -123,7 +123,7 @@ class SoilmodelLayer {
     }
 
     set hk(value) {
-        this._hk = value ? value : 0;
+        this._hk = parseFloat(value);
     }
 
     get hani() {
@@ -131,7 +131,7 @@ class SoilmodelLayer {
     }
 
     set hani(value) {
-        this._hani = value ? value : 0;
+        this._hani = parseFloat(value);
     }
 
     get vka() {
@@ -139,7 +139,7 @@ class SoilmodelLayer {
     }
 
     set vka(value) {
-        this._vka = value ? value : 0;
+        this._vka = parseFloat(value);
     }
 
     get layavg() {
@@ -147,7 +147,7 @@ class SoilmodelLayer {
     }
 
     set layavg(value) {
-        this._layavg = value ? value : 0;
+        this._layavg = parseFloat(value);
     }
 
     get laywet() {
@@ -155,7 +155,7 @@ class SoilmodelLayer {
     }
 
     set laywet(value) {
-        this._laywet = value ? value : 0;
+        this._laywet = parseFloat(value);
     }
 
     get ss() {
@@ -163,7 +163,7 @@ class SoilmodelLayer {
     }
 
     set ss(value) {
-        this._ss = value ? value : 0;
+        this._ss = parseFloat(value);
     }
 
     get sy() {
@@ -171,7 +171,7 @@ class SoilmodelLayer {
     }
 
     set sy(value) {
-        this._sy = value ? value : 0;
+        this._sy = parseFloat(value);
     }
 
     toObject() {
@@ -179,7 +179,7 @@ class SoilmodelLayer {
             'id': this.id,
             'name': this.name,
             '_meta': {
-                'zones': this.zones.all.map(z => z.toObject)
+                'zones': this.zones.all.map(z => z.toObject())
             },
             'description': this.description,
             'number': this.number,
@@ -252,25 +252,6 @@ class SoilmodelLayer {
             });
         });
 
-        return this;
-    }
-
-    changeOrder(zone, order) {
-        let zoneToSwitch = null;
-        switch (order) {
-            case 'up':
-                zoneToSwitch = this.zones.filter(z => z.priority === zone.priority + 1)[0];
-                zoneToSwitch.priority = zoneToSwitch.priority - 1;
-                zone.priority = zone.priority + 1;
-                break;
-            case 'down':
-                zoneToSwitch = this.zones.filter(z => z.priority === zone.priority - 1)[0];
-                zoneToSwitch.priority = zoneToSwitch.priority + 1;
-                zone.priority = zone.priority - 1;
-                break;
-            default:
-                return this;
-        }
         return this;
     }
 }

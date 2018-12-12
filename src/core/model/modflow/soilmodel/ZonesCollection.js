@@ -17,9 +17,13 @@ class ZonesCollection extends AbstractCollection {
         this._items = value;
     }
 
+    toArray = () => {
+        return this.zones.map(zone => zone.toObject());
+    };
+
     toObject = () => {
         return {
-            layers: this.zones.map(zone => zone.toObject())
+            zones: this.zones.map(zone => zone.toObject())
         }
     };
 
@@ -27,6 +31,26 @@ class ZonesCollection extends AbstractCollection {
         if(!zone instanceof Zone) {
             throw new Error('Zone expected to be from Type Zone.');
         }
+    }
+
+    changeOrder(zone, order) {
+        this.validateInput(zone);
+        let zoneToSwitch = null;
+        switch (order) {
+            case 'up':
+                zoneToSwitch = this.findBy('priority', zone.priority + 1, true);
+                zoneToSwitch.priority = zoneToSwitch.priority - 1;
+                zone.priority = zone.priority + 1;
+                break;
+            case 'down':
+                zoneToSwitch = this.findBy('priority', zone.priority - 1, true);
+                zoneToSwitch.priority = zoneToSwitch.priority + 1;
+                zone.priority = zone.priority - 1;
+                break;
+            default:
+                return this;
+        }
+        return this;
     }
 }
 

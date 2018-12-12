@@ -1,10 +1,12 @@
 import uuidv4 from 'uuid/v4';
+import Geometry from '../Geometry';
+import ActiveCells from '../ActiveCells';
 
 class SoilmodelZone {
     _id = uuidv4();
     _name = 'New Zone';
-    _geometry = {};
-    _activeCells = [];
+    _geometry = null;
+    _activeCells = null;
     _priority = 0;
     _top = null;
     _botm = null;
@@ -19,8 +21,8 @@ class SoilmodelZone {
         if (obj) {
             zone.id = obj.id;
             zone.name = obj.name;
-            zone.geometry = obj.geometry;
-            zone.activeCells = obj.activeCells;
+            zone.geometry = obj.geometry ? Geometry.fromObject(obj.geometry) : null;
+            zone.activeCells = obj.activeCells ? ActiveCells.fromArray(obj.activeCells) : null;
             zone.priority = obj.priority;
             zone.top = obj.top;
             zone.botm = obj.botm;
@@ -36,6 +38,7 @@ class SoilmodelZone {
     static fromDefault() {
         const zone = new SoilmodelZone();
         zone.name = 'Default';
+        zone.priority = 0;
         zone.top = 1;
         zone.botm = 0;
         zone.hk = 10;
@@ -67,7 +70,7 @@ class SoilmodelZone {
     }
 
     set geometry(value) {
-        this._geometry = value ? value : {};
+        this._geometry = value ? value : null;
     }
 
     get activeCells() {
@@ -91,7 +94,7 @@ class SoilmodelZone {
     }
 
     set top(value) {
-        this._top = value && value !== '' ? parseFloat(value) : null;
+        this._top = value !== null && value !== '' ? parseFloat(value) : null;
     }
 
     get botm() {
@@ -99,7 +102,7 @@ class SoilmodelZone {
     }
 
     set botm(value) {
-        this._botm = value && value !== '' ? parseFloat(value) : null;
+        this._botm = value !== null  && value !== '' ? parseFloat(value) : null;
     }
 
     get hk() {
@@ -146,8 +149,8 @@ class SoilmodelZone {
         return {
             'id': this.id,
             'name': this.name,
-            'geometry': this.geometry,
-            'activeCells': this.activeCells,
+            'geometry': this.geometry ? this.geometry.toObject() : null,
+            'activeCells': this.activeCells ? this.activeCells.toArray() : [],
             'priority': this.priority,
             'top': this.top,
             'botm': this.botm,

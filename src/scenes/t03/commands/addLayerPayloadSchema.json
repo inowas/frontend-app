@@ -1,7 +1,7 @@
 {
   "type": "object",
   "id": "https://inowas.com/schema/command/addLayerPayload",
-  "additionalProperties": false,
+  "additionalProperties": true,
   "required": ["id", "layer"],
   "properties": {
     "id": {

@@ -10,6 +10,7 @@ import createModflowModelPayloadSchema from './createModflowModelPayloadSchema';
 import updateModflowModelPayloadSchema from './updateModflowModelPayloadSchema';
 import updateOptimizationInputPayloadSchema from './updateOptimizationInputPayloadSchema';
 import updateStressperiodsPayloadSchema from './updateStressperiodsPayloadSchema';
+import removeLayerPayloadSchema from './removeLayerPayloadSchema';
 
 class Command {
 
@@ -32,12 +33,20 @@ class Command {
         return new Command('createModflowModel', payload, createModflowModelPayloadSchema);
     }
 
+    static removeSoilmodelLayer(payload) {
+        return new Command('removeLayer', payload, removeLayerPayloadSchema);
+    }
+
     static updateStressperiods(payload) {
         return new Command('updateStressPeriods', payload, updateStressperiodsPayloadSchema);
     }
 
     static updateModflowModel(payload) {
         return new Command('updateModflowModel', payload, updateModflowModelPayloadSchema);
+    }
+
+    static updateSoilmodelLayer(payload) {
+        return new Command('updateLayer', payload, addLayerPayloadSchema);
     }
 
     static updateOptimizationInput(payload) {

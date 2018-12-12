@@ -1,3 +1,5 @@
+import {orderBy as _orderBy} from 'lodash';
+
 class AbstractCollection {
 
     _items = [];
@@ -21,14 +23,17 @@ class AbstractCollection {
     add(item) {
         this.validateInput(item);
         this._items.push(item);
+        return this;
     }
 
     removeBy(property, value) {
         this.items = this._items.filter(item => item[property] !== value);
+        return this;
     }
 
     remove(value) {
         this.removeBy('id', value);
+        return this;
     }
 
     update(updatedItem, createIfNotExisting = true) {
@@ -47,6 +52,8 @@ class AbstractCollection {
         if (isNew && createIfNotExisting) {
             this.add(updatedItem);
         }
+
+        return this;
     }
 
     validateInput(item) {
@@ -56,13 +63,23 @@ class AbstractCollection {
     }
 
     findBy(property, value, first = false) {
+        console.log('FIND BY', property, value, first);
         const items = this.all.filter(item => item[property] === value);
-
+        console.log('FOUND', items);
         if (first) {
             return items[0] || null;
         }
 
         return items || [];
+    }
+
+    findById(value) {
+        return this.findBy('id', value, true);
+    }
+
+    orderBy(property, order = 'asc') {
+        this._items = _orderBy(this._items, [property], [order]);
+        return this;
     }
 }
 

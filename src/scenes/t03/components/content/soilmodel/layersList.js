@@ -18,7 +18,9 @@ const LayersList = ({addLayer, layers, onChange, selected}) => {
                         key={layer.id}
                         active={layer.id === selected}
                         onClick={() => onChange(layer.id)}
-                    />
+                    >
+                        {layer.name}
+                    </Menu.Item>
                 ))}
             </Menu>
         </div>
