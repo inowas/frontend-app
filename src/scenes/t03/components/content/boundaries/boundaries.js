@@ -4,6 +4,7 @@ import PropTypes from 'prop-types';
 import {Redirect, withRouter} from 'react-router-dom';
 
 import {fetchUrl} from 'services/api';
+
 import {Grid, Segment} from 'semantic-ui-react';
 import BoundaryList from './boundaryList';
 import BoundaryDetails from './boundaryDetails';
@@ -50,7 +51,10 @@ class Boundaries extends React.Component {
     };
 
     onChangeBoundary = boundary =>
-        this.setState({selectedBoundary: boundary.toObject});
+        this.setState({
+            selectedBoundary: boundary.toObject,
+            isDirty: true
+        });
 
     handleBoundaryListClick = (bid) => {
         const {id, property, type} = this.props.match.params;
@@ -62,7 +66,10 @@ class Boundaries extends React.Component {
     };
 
     render() {
-        const model = this.props.model;
+        const {model} = this.props;
+        const readOnly = model.readOnly;
+        const {error, isDirty} = this.state;
+
         const {id, pid, property, type} = this.props.match.params;
 
         // If no boundary is selected, redirect to the first.
@@ -84,12 +91,18 @@ class Boundaries extends React.Component {
                             />
                         </Grid.Column>
                         <Grid.Column width={12}>
-                            <ContentToolBar state={this.state.state} save onSave={this.onSave}/>
+                            <ContentToolBar
+                                onSave={this.onSave}
+                                isDirty={isDirty}
+                                isError={error}
+                                saveButton={!readOnly}
+                            />
                             {!this.state.isLoading &&
                             <BoundaryDetails
                                 boundary={boundary}
                                 soilmodel={this.props.soilmodel}
                                 geometry={model.geometry}
+                                stressperiods={model.stressperiods}
                                 onChange={this.onChangeBoundary}
                             />}
                         </Grid.Column>

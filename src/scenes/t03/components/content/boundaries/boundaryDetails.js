@@ -3,8 +3,8 @@ import PropTypes from 'prop-types';
 import {Form, Grid} from 'semantic-ui-react';
 
 import BoundaryMap from '../../maps/boundaryMap';
-import {Boundary, BoundaryFactory, Geometry, Soilmodel} from 'core/model/modflow';
-import BoundaryDataTable from './boundaryDataTable';
+import {Boundary, BoundaryFactory, Geometry, Soilmodel, Stressperiods} from 'core/model/modflow';
+import BoundaryValuesDataTable from './boundaryValuesDataTable';
 
 class BoundaryDetails extends React.Component {
 
@@ -64,7 +64,11 @@ class BoundaryDetails extends React.Component {
                     </Grid.Column>
                     <Grid.Column width={10}>
                         {boundary.type === 'wel' &&
-                            <BoundaryDataTable boundary={boundary}/>
+                            <BoundaryValuesDataTable
+                                boundary={boundary}
+                                onChange={this.props.onChange}
+                                stressperiods={this.props.stressperiods}
+                            />
                         }
 
                     </Grid.Column>
@@ -78,6 +82,7 @@ BoundaryDetails.proptypes = {
     boundary: PropTypes.instanceOf(Boundary).isRequired,
     geometry: PropTypes.instanceOf(Geometry).isRequired,
     soilmodel: PropTypes.instanceOf(Soilmodel).isRequired,
+    stressperiods: PropTypes.instanceOf(Stressperiods).isRequired,
     onChange: PropTypes.func.isRequired
 };
 
