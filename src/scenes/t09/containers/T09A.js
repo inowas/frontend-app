@@ -113,7 +113,6 @@ class T09A extends React.Component {
                     onSave={this.save}
                     isDirty={isDirty}
                 />
-                />
                 <ToolGrid rows={2}>
                     <Background
                         image={image}
