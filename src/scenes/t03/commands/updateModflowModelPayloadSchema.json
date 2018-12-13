@@ -1,4 +1,4 @@
-{
+  {
   "type": "object",
   "id": "https://inowas.com/schema/command/updateModflowModelPayload",
   "properties": {

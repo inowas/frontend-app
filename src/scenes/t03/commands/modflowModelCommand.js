@@ -5,6 +5,7 @@ import cancelOptimizationCalculationPayloadSchema from './cancelOptimizationCalc
 import cloneModflowModelPayloadSchema from './cloneModflowModelPayloadSchema';
 import createModflowModelPayloadSchema from './createModflowModelPayloadSchema';
 import deleteModflowModelPayloadSchema from './deleteModflowModelPayloadSchema';
+import updateBoundaryPayloadSchema from './updateBoundaryPayloadSchema';
 import updateModflowModelPayloadSchema from './updateModflowModelPayloadSchema';
 import updateOptimizationInputPayloadSchema from './updateOptimizationInputPayloadSchema';
 import updateStressperiodsPayloadSchema from './updateStressperiodsPayloadSchema';
@@ -37,6 +38,11 @@ class ModflowModelCommand extends AbstractCommand {
     static deleteModflowModel({id}) {
         return new ModflowModelCommand('deleteModflowModel', {id}, deleteModflowModelPayloadSchema);
     }
+
+    static updateBoundary(payload) {
+        return new ModflowModelCommand('updateBoundary', payload, updateBoundaryPayloadSchema);
+    }
+
 
     static updateModflowModel(payload) {
         return new ModflowModelCommand('updateModflowModel', payload, updateModflowModelPayloadSchema);

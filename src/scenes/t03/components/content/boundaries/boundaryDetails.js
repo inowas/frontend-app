@@ -3,13 +3,13 @@ import PropTypes from 'prop-types';
 import {Form, Grid} from 'semantic-ui-react';
 
 import BoundaryMap from '../../maps/boundaryMap';
-import {Boundary, BoundaryFactory, Geometry, Soilmodel, Stressperiods} from 'core/model/modflow';
+import {Boundary, Geometry, Soilmodel, Stressperiods} from 'core/model/modflow';
 import BoundaryValuesDataTable from './boundaryValuesDataTable';
 
 class BoundaryDetails extends React.Component {
 
     handleChange = (e, {name, value}) => {
-        const boundary = BoundaryFactory.fromObjectData(this.props.boundary.toObject);
+        const boundary = this.props.boundary;
         boundary[name] = value;
         this.props.onChange(boundary);
     };

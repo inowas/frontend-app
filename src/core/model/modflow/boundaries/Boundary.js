@@ -123,4 +123,8 @@ export default class Boundary {
     get numberOfValues() {
         return this.defaultValues.length;
     }
+
+    getClone = () => {
+        return Object.assign( Object.create( Object.getPrototypeOf(this)), this);
+    }
 }

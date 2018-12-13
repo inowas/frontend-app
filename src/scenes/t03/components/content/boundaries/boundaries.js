@@ -3,7 +3,7 @@ import {connect} from 'react-redux';
 import PropTypes from 'prop-types';
 import {Redirect, withRouter} from 'react-router-dom';
 
-import {fetchUrl} from 'services/api';
+import {fetchUrl, sendCommand} from 'services/api';
 
 import {Grid, Segment} from 'semantic-ui-react';
 import BoundaryList from './boundaryList';
@@ -12,6 +12,7 @@ import {BoundaryCollection, ModflowModel, Soilmodel} from 'core/model/modflow';
 import {updateBoundaries, updateModel} from '../../../actions/actions';
 import {BoundaryFactory} from 'core/model/modflow/boundaries';
 import ContentToolBar from 'scenes/shared/ContentToolbar';
+import ModflowModelCommand from '../../../commands/modflowModelCommand';
 
 const baseUrl = '/tools/T03';
 
@@ -61,8 +62,27 @@ class Boundaries extends React.Component {
         this.props.history.push(`${baseUrl}/${id}/${property}/${type || '!'}/${bid}`);
     };
 
+    getPayload = () => {
+        const model = this.props.model;
+        const boundary = BoundaryFactory.fromObjectData(this.state.selectedBoundary);
+        return {
+            id: model.id,
+            boundary_id: boundary.id,
+            boundary: boundary.toObject
+        };
+    };
+
     onSave = () => {
-        this.setState({state: 'notSaved'})
+        const model = this.props.model;
+        const boundary = BoundaryFactory.fromObjectData(this.state.selectedBoundary);
+
+        return sendCommand(ModflowModelCommand.updateBoundary(this.getPayload()),
+            () => {
+                this.setState({isDirty: false});
+                this.fetchBoundary(model.id, boundary.id)
+            },
+            () => this.setState({error: true})
+        )
     };
 
     render() {

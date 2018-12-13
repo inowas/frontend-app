@@ -25,7 +25,7 @@ class BoundaryValuesDataTable extends React.Component {
         if (name === 'dateTimeValue') {
             dateTimeValues = dateTimeValues.map((dtv, dtvIdx) => {
                 if (id === dtvIdx) {
-                    dtv.values[id] = value;
+                    dtv.values[id] = parseFloat(value) || 0;
                     return dtv;
                 }
 
