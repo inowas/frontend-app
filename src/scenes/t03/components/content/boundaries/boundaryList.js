@@ -7,12 +7,12 @@ class BoundaryList extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            selectedType: null
+            selectedType: 'all'
         }
     }
 
     boundaryTypes = () => ([
-        {key: 'all', value: null, text: 'Show all boundaries'},
+        {key: 'all', value: 'all', text: 'Show all boundaries'},
         {key: 'chd', value: 'chd', text: 'Constant head boundary'},
         {key: 'ghb', value: 'ghb', text: 'General head  boundary'},
         {key: 'rch', value: 'rch', text: 'Recharge boundary'},
@@ -23,7 +23,7 @@ class BoundaryList extends React.Component {
     list = () => {
         const {selectedType} = this.state;
         let selectedBoundaries = this.props.boundaries.toObject();
-        if (selectedType) {
+        if (selectedType !== 'all') {
             selectedBoundaries = selectedBoundaries.filter(b => b.type === selectedType);
         }
 
@@ -49,6 +49,7 @@ class BoundaryList extends React.Component {
                     placeholder={'Filter type of boundary'}
                     options={this.boundaryTypes()}
                     onChange={(e, {value}) => this.setState({selectedType: value})}
+                    value={this.state.selectedType}
                 />
                 {this.list()}
             </div>

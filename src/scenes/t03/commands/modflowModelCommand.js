@@ -12,7 +12,6 @@ import updateStressperiodsPayloadSchema from './updateStressperiodsPayloadSchema
 
 class ModflowModelCommand extends AbstractCommand {
 
-
     static calculateOptimization(payload) {
         return new ModflowModelCommand('calculateOptimization', payload, calculateOptimizationPayloadSchema);
     }
@@ -39,15 +38,17 @@ class ModflowModelCommand extends AbstractCommand {
         return new ModflowModelCommand('deleteModflowModel', {id}, deleteModflowModelPayloadSchema);
     }
 
-    static updateBoundary(payload) {
-        return new ModflowModelCommand('updateBoundary', payload, updateBoundaryPayloadSchema);
+    static updateBoundary(modelId, boundary) {
+        return new ModflowModelCommand(
+            'updateBoundary',
+            {id: modelId, boundary_id: boundary.id, boundary: boundary.toObject},
+            updateBoundaryPayloadSchema
+        );
     }
-
 
     static updateModflowModel(payload) {
         return new ModflowModelCommand('updateModflowModel', payload, updateModflowModelPayloadSchema);
     }
-
 
     static updateOptimizationInput(payload) {
         return new ModflowModelCommand('updateOptimizationInput', payload, updateOptimizationInputPayloadSchema)
@@ -57,6 +58,5 @@ class ModflowModelCommand extends AbstractCommand {
         return new ModflowModelCommand('updateStressPeriods', payload, updateStressperiodsPayloadSchema);
     }
 }
-
 
 export default ModflowModelCommand;

@@ -63,14 +63,11 @@ class BoundaryDetails extends React.Component {
                         <BoundaryMap geometry={geometry} boundary={boundary}/>
                     </Grid.Column>
                     <Grid.Column width={10}>
-                        {boundary.type === 'wel' &&
-                            <BoundaryValuesDataTable
-                                boundary={boundary}
-                                onChange={this.props.onChange}
-                                stressperiods={this.props.stressperiods}
-                            />
-                        }
-
+                        <BoundaryValuesDataTable
+                            boundary={boundary}
+                            onChange={this.props.onChange}
+                            stressperiods={this.props.stressperiods}
+                        />
                     </Grid.Column>
                 </Grid.Row>
             </Grid>

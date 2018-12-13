@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import moment from 'moment';
 
-import {Button, Form, Table} from 'semantic-ui-react';
+import {Button, Table} from 'semantic-ui-react';
 import {Boundary, Stressperiods} from 'core/model/modflow';
 
 class BoundaryValuesDataTable extends React.Component {
@@ -48,11 +48,35 @@ class BoundaryValuesDataTable extends React.Component {
         this.props.onChange(boundary);
     };
 
+    getCellStyle = (numberOfCells) => {
+        switch (numberOfCells) {
+            case 2:
+                return {
+                    maxWidth: '90px',
+                    padding: 0,
+                    border: 0
+                };
+            case 3:
+                return {
+                    maxWidth: '50px',
+                    padding: 0,
+                    border: 0
+                };
+            default:
+                return {
+                    maxWidth: '150px',
+                    padding: 0,
+                    border: 0
+                };
+        }
+    };
+
     body = (dateTimeValues) => (
         dateTimeValues.map((dtv, dtvIdx) => (
             <Table.Row key={dtvIdx}>
                 <Table.Cell>
-                    <Form.Input
+                    <input
+                        style={this.getCellStyle()}
                         disabled={this.props.readOnly}
                         id={dtvIdx}
                         name={'dateTime'}
@@ -63,7 +87,8 @@ class BoundaryValuesDataTable extends React.Component {
                 </Table.Cell>
                 {dtv.values.map((v, vIdx) => (
                     <Table.Cell key={vIdx}>
-                        <Form.Input
+                        <input
+                            style={this.getCellStyle(dtv.values.length)}
                             disabled={this.props.readOnly}
                             id={vIdx}
                             name={'dateTimeValue'}
@@ -71,11 +96,12 @@ class BoundaryValuesDataTable extends React.Component {
                             type={'number'}
                             value={v}
                         >
-                        </Form.Input>
+                        </input>
                     </Table.Cell>
                 ))}
                 <Table.Cell>
                     {!this.props.readOnly && <Button
+                        basic
                         floated={'right'}
                         icon={'trash'}
                         onClick={() => this.handleRemoveDateTimeValues(dtvIdx)}

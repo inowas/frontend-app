@@ -34,4 +34,15 @@ export default class RechargeBoundary extends SingleOPBoundary {
 
         return true;
     }
+
+    get valueProperties() {
+        return [
+            {
+                name: 'Recharge rate',
+                description:'Recharge rate to the groundwater head',
+                unit: 'm/day',
+                decimals: 5
+            }
+        ]
+    }
 }

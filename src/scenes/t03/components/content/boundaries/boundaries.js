@@ -30,7 +30,6 @@ class Boundaries extends React.Component {
 
     componentDidMount() {
         const {id, pid} = this.props.match.params;
-
         if (pid) {
             this.fetchBoundary(id, pid);
         }
@@ -43,40 +42,28 @@ class Boundaries extends React.Component {
         }
     }
 
-    fetchBoundary = (modelId, boundaryId) => {
-        return (
-            fetchUrl(`modflowmodels/${modelId}/boundaries/${boundaryId}`,
-                (boundary) => this.setState({selectedBoundary: boundary})
-            )
+    fetchBoundary = (modelId, boundaryId) => (
+        fetchUrl(`modflowmodels/${modelId}/boundaries/${boundaryId}`,
+            (boundary) => this.setState({selectedBoundary: boundary})
         )
-    };
+    );
 
-    onChangeBoundary = boundary =>
+    onChangeBoundary = boundary => (
         this.setState({
             selectedBoundary: boundary.toObject,
             isDirty: true
-        });
+        })
+    );
 
     handleBoundaryListClick = (bid) => {
         const {id, property, type} = this.props.match.params;
         this.props.history.push(`${baseUrl}/${id}/${property}/${type || '!'}/${bid}`);
     };
 
-    getPayload = () => {
-        const model = this.props.model;
-        const boundary = BoundaryFactory.fromObjectData(this.state.selectedBoundary);
-        return {
-            id: model.id,
-            boundary_id: boundary.id,
-            boundary: boundary.toObject
-        };
-    };
-
     onSave = () => {
         const model = this.props.model;
         const boundary = BoundaryFactory.fromObjectData(this.state.selectedBoundary);
-
-        return sendCommand(ModflowModelCommand.updateBoundary(this.getPayload()),
+        return sendCommand(ModflowModelCommand.updateBoundary(model.id, boundary),
             () => {
                 this.setState({isDirty: false});
                 this.fetchBoundary(model.id, boundary.id)
