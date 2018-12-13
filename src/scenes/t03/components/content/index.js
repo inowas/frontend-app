@@ -7,6 +7,7 @@ import Optimization from './optimization/optimization.js';
 import Results from './results';
 import Run from './run';
 import Soilmodel from './soilmodel';
+import Transport from './transport/transport.js';
 
 export {
     Boundaries,
@@ -17,5 +18,6 @@ export {
     Optimization,
     Results,
     Run,
-    Soilmodel
+    Soilmodel,
+    Transport
 }

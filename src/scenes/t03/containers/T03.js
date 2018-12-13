@@ -135,6 +135,8 @@ class T03 extends React.Component {
                 return (<Content.Boundaries/>);
             case 'observations':
                 return (<Content.Observations/>);
+            case 'transport':
+                return (<Content.Transport/>);
             case 'run':
                 return (<Content.Run/>);
             case 'results':
