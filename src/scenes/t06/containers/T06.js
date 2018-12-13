@@ -4,7 +4,7 @@ import {groupBy, intersection, union} from 'lodash';
 import {Checkbox, Form, Grid, Header, Icon, Image, Table, Breadcrumb} from 'semantic-ui-react';
 
 import {getData} from '../data';
-import {AppContainer, Background} from '../../shared';
+import {AppContainer} from '../../shared';
 import {ToolGrid} from '../../shared/simpleTools';
 
 const navigation = [{

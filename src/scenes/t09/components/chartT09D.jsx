@@ -12,10 +12,10 @@ import {
     ReferenceLine, Label
 } from 'recharts';
 
-import {Button, Grid, Header, Segment} from "semantic-ui-react";
+import {Button, Grid, Segment} from 'semantic-ui-react';
 
 import {calcLambda, calcMu, calculateQCrit, calculateDiagramData} from '../calculations/calculationT09D';
-import {exportChartData, exportChartImage, getParameterValues} from "../../shared/simpleTools/helpers";
+import {exportChartData, exportChartImage, getParameterValues} from '../../shared/simpleTools/helpers';
 
 export function resultDiv(rhof, rhos, lambda, qCrit) {
     if (rhof >= rhos) {
@@ -74,7 +74,6 @@ const Chart = ({parameters}) => {
 
     return (
         <div>
-            <Header as={'h3'} textAlign='center'>Calculation</Header>
             <Grid>
                 <Grid.Column>
                     <ResponsiveContainer width={'100%'} aspect={2}>
@@ -84,7 +83,12 @@ const Chart = ({parameters}) => {
                             ref={(chart) => currentChart = chart}
                         >
                             <XAxis type="number" dataKey="xw">
-                                <Label value={'xw [m]'} offset={0} position="bottom"/>
+                                <Label
+                                    value={'xw [m]'}
+                                    offset={0}
+                                    position="bottom"
+                                    fill={'#4C4C4C'}
+                                />
                             </XAxis>
                             <YAxis
                                 type="number"
@@ -97,6 +101,7 @@ const Chart = ({parameters}) => {
                                     position='left'
                                     style={{textAnchor: 'center'}}
                                     value={'Qcrit [m3/d]'}
+                                    fill={'#4C4C4C'}
                                 />
                             </YAxis>
                             <CartesianGrid strokeDasharray="3 3"/>
