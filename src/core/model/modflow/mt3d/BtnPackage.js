@@ -508,7 +508,7 @@ class BtnPackage extends AbstractMt3dPackage {
     }
 
     toObject() {
-        const obj = super.toObject;
+        const obj = super.toObject();
         obj.MFStyleArr = this.MFStyleArr;
         obj.DRYCell = this.DRYCell;
         obj.Legacy99Stor = this.Legacy99Stor;

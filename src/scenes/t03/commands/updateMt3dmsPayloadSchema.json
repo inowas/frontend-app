@@ -2,7 +2,6 @@
   "type": "object",
   "id": "https://inowas.com/schema/command/updateMt3dmsPayloadSchema",
   "required": [
-    "enabled",
     "packages",
     "mt",
     "btn",

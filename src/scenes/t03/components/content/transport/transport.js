@@ -17,6 +17,7 @@ import {
     SsmPackageProperties
 } from './mt';
 import ContentToolBar from '../../../../shared/ContentToolbar';
+import {updateMt3dms} from '../../../actions/actions';
 
 const sideBar = [
     {
@@ -77,15 +78,19 @@ class Transport extends React.Component {
     }
 
     handleSave = () => {
+        const mt3dms = Mt3dms.fromObject(this.state.mt3dms);
+
         this.setState({loading: true});
         return sendCommand(
             ModflowModelCommand.updateMt3dms({
                 id: this.props.model.id,
-                mt3dms: this.state.mt3dms
-            }), () => this.setState({
-                isDirty: false,
-                loading: false
-            })
+                mt3dms: mt3dms.toObject()
+            }), () => {
+                this.setState({
+                    isDirty: false,
+                    loading: false
+                })
+            }
         );
     };
 
@@ -94,8 +99,9 @@ class Transport extends React.Component {
             const newMt3dms = Mt3dms.fromObject(this.state.mt3dms);
             newMt3dms.addPackage(p);
             return this.setState({
-                mt3dms: newMt3dms.toObject()
-            });
+                mt3dms: newMt3dms.toObject(),
+                isDirty: true
+            }, this.props.updateMt3dms(newMt3dms));
         }
 
         throw new Error('Package hat to be instance of AbstractMt3dPackage');
@@ -110,8 +116,9 @@ class Transport extends React.Component {
         const changedMt3dms = Mt3dms.fromObject(this.state.mt3dms);
         changedMt3dms.toggleEnabled();
         return this.setState({
+            isDirty: true,
             mt3dms: changedMt3dms.toObject()
-        });
+        }, this.props.updateMt3dms(changedMt3dms));
     };
 
     onMenuClick = (type) => {
@@ -144,7 +151,8 @@ class Transport extends React.Component {
             return null;
         }
 
-        const readOnly = true;
+        // TODO:
+        const readOnly = false;
         const {type} = this.props.match.params;
 
         switch (type) {
@@ -224,7 +232,7 @@ class Transport extends React.Component {
     };
 
     render() {
-        const {isDirty, isLoading, mt3dms} = this.state;
+        const {isDirty, isError, isLoading, mt3dms} = this.state;
 
         if (!mt3dms) {
             return null;
@@ -237,7 +245,7 @@ class Transport extends React.Component {
                         <Grid.Row>
                             <Grid.Column width={4}/>
                             <Grid.Column width={12}>
-                                <ContentToolBar isDirty={isDirty} save onSave={this.onSave}/>
+                                <ContentToolBar isDirty={isDirty} isError={isError} save onSave={this.handleSave}/>
                             </Grid.Column>
                         </Grid.Row>
                         <Grid.Row>
@@ -259,10 +267,14 @@ const mapStateToProps = (state) => ({
     model: ModflowModel.fromObject(state.T03.model)
 });
 
+const mapDispatchToProps = {
+    updateMt3dms
+};
+
 Transport.proptypes = {
     history: PropTypes.object.isRequired,
     match: PropTypes.object.isRequired,
     model: PropTypes.instanceOf(ModflowModel).isRequired,
 };
 
-export default withRouter(connect(mapStateToProps)(Transport));
+export default withRouter(connect(mapStateToProps, mapDispatchToProps)(Transport));

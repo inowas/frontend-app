@@ -43,7 +43,7 @@ class SsmSubstance {
     }
 
     set boundaryValuesList(values) {
-        this._boundaryValuesList = values.map(v => v.toObject);
+        this._boundaryValuesList = values.map(v => v.toObject());
     }
 
     getBoundaryValuesByBoundaryId(boundaryId) {

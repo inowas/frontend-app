@@ -120,7 +120,7 @@ class SsmPackage extends AbstractMt3dPackage {
 
     set substances(substances) {
         if (Array.isArray(substances)) {
-            this.setMetaDataItem('substances', substances.map(s => s.toObject));
+            this.setMetaDataItem('substances', substances.map(s => s.toObject()));
         }
     }
 
