@@ -42,7 +42,7 @@ class BoundaryMap extends Component {
     }
 
     // noinspection JSMethodCanBeStatic
-    renderBoundary(b) {
+    renderBoundaryGeometry(b) {
         if (b.type === 'wel' || b.type === 'hob') {
             return (
                 <CircleMarker
@@ -58,7 +58,7 @@ class BoundaryMap extends Component {
 
         return (
             <GeoJSON
-                key={generateKey(b.geometry)}
+                key={b.geometry.hash()}
                 data={b.geometry}
                 style={getStyle(b.type)}
             />
@@ -83,7 +83,7 @@ class BoundaryMap extends Component {
                     data={geometry.toGeoJSON()}
                     style={getStyle('area')}
                 />
-                {this.renderBoundary(boundary)}
+                {this.renderBoundaryGeometry(boundary)}
                 {this.renderObservationPoints(boundary)}
             </Map>
         );

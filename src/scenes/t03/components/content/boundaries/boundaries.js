@@ -56,28 +56,42 @@ class Boundaries extends React.Component {
     );
 
     handleBoundaryListClick = (bid) => {
-        const {id, property, type} = this.props.match.params;
-        this.props.history.push(`${baseUrl}/${id}/${property}/${type || '!'}/${bid}`);
+        const {id, property} = this.props.match.params;
+        this.props.history.push(`${baseUrl}/${id}/${property}/${'!'}/${bid}`);
     };
 
-    onClone = () => {
+    onAdd = type => {
+        const {id, property} = this.props.match.params;
+        if (type !== '!' && BoundaryFactory.availableTypes.indexOf(type >= 0)) {
+            const newBoundary = BoundaryFactory.fromType(type);
+            newBoundary.name = `New ${type}-Boundary`;
+            newBoundary.affectedLayers = [0];
+
+            this.props.history.push(`${baseUrl}/${id}/${property}/${type}`);
+        }
+    };
+
+    onClone = (boundaryId) => {
         const model = this.props.model;
-        const clonedBoundary = BoundaryFactory.fromObjectData(this.state.selectedBoundary).clone;
-        return sendCommand(ModflowModelCommand.addBoundary(model.id, clonedBoundary),
-            () => {
-                this.props.updateBoundaries(this.props.boundaries.addBoundary(clonedBoundary));
-                this.handleBoundaryListClick(clonedBoundary.id);
-            },
-            () => this.setState({error: true})
+        fetchUrl(`modflowmodels/${model.id}/boundaries/${boundaryId}`,
+            (boundary) => {
+                const clonedBoundary = BoundaryFactory.fromObjectData(boundary).clone;
+                sendCommand(ModflowModelCommand.addBoundary(model.id, clonedBoundary),
+                    () => {
+                        this.props.updateBoundaries(this.props.boundaries.addBoundary(clonedBoundary));
+                        this.handleBoundaryListClick(clonedBoundary.id);
+                    },
+                    () => this.setState({error: true})
+                )
+            }
         )
     };
 
-    onRemove = () => {
+    onRemove = (boundaryId) => {
         const model = this.props.model;
-        const boundary = BoundaryFactory.fromObjectData(this.state.selectedBoundary);
-        return sendCommand(ModflowModelCommand.removeBoundary(model.id, boundary.id),
+        return sendCommand(ModflowModelCommand.removeBoundary(model.id, boundaryId),
             () => {
-                this.props.updateBoundaries(this.props.boundaries.removeById(boundary.id));
+                this.props.updateBoundaries(this.props.boundaries.removeById(boundaryId));
                 this.handleBoundaryListClick(this.props.boundaries.first.id);
             },
             () => this.setState({error: true})
@@ -101,12 +115,12 @@ class Boundaries extends React.Component {
         const readOnly = model.readOnly;
         const {error, isDirty} = this.state;
 
-        const {id, pid, property, type} = this.props.match.params;
+        const {id, pid, property} = this.props.match.params;
 
         // If no boundary is selected, redirect to the first.
         if (!pid && this.props.boundaries.length > 0) {
             const bid = this.props.boundaries.first.id;
-            return <Redirect to={`${baseUrl}/${id}/${property}/${type || '!'}/${bid}`}/>
+            return <Redirect to={`${baseUrl}/${id}/${property}/${'!'}/${bid}`}/>
         }
 
         const boundary = BoundaryFactory.fromObjectData(this.state.selectedBoundary);
@@ -117,6 +131,7 @@ class Boundaries extends React.Component {
                         <Grid.Column width={4}>
                             <BoundaryList
                                 boundaries={this.props.boundaries}
+                                onAdd={this.onAdd}
                                 onClick={this.handleBoundaryListClick}
                                 onClone={this.onClone}
                                 onRemove={this.onRemove}

@@ -1,3 +1,5 @@
+import md5 from 'md5';
+
 class Geometry {
 
     _geometry;
@@ -22,12 +24,12 @@ class Geometry {
         return this._geometry.type;
     }
 
-    fromType(type) {
-        return (type.toLowerCase() === this.type.toLowerCase());
-    }
-
     get coordinates() {
         return this._geometry.coordinates;
+    }
+
+    fromType(type) {
+        return (type.toLowerCase() === this.type.toLowerCase());
     }
 
     get coordinatesLatLng() {
@@ -47,6 +49,8 @@ class Geometry {
     toObject = () => (this._geometry);
 
     toGeoJSON = () => (this._geometry);
+
+    hash = () => (md5(JSON.stringify(this._geometry)));
 
     getLatLngFromXY = coordinates => coordinates.map(c => [c[1], c[0]]);
 }

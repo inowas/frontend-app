@@ -43,6 +43,10 @@ export default class RiverBoundary extends MultipleOPBoundary {
         return true;
     }
 
+    get geometryType() {
+        return 'LineString';
+    }
+
     get valueProperties() {
         return [
             {
