@@ -1,5 +1,6 @@
 import {includes} from 'lodash';
 import {ActiveCells, BoundingBox, Geometry, GridSize, Stressperiods} from './index';
+import {Mt3dms} from './mt3d';
 
 export default class ModflowModel {
 
@@ -11,6 +12,7 @@ export default class ModflowModel {
     _geometry;
     _gridSize;
     _lengthUnit;
+    _mt3dms;
     _permissions;
     _public;
     _stressperiods;
@@ -26,6 +28,7 @@ export default class ModflowModel {
         model.boundingBox = BoundingBox.fromArray(obj.bounding_box);
         model.activeCells = ActiveCells.fromArray(obj.active_cells);
         model.lengthUnit = obj.length_unit;
+        model.mt3dms = obj.mt3dms ? Mt3dms.fromObject(obj.mt3dms) : Mt3dms.fromDefaults();
         model.permissions = obj.permissions;
         model.public = obj.public;
         model.stressperiods = (obj.stress_periods) ? Stressperiods.fromObject(obj.stress_periods) : Stressperiods.fromDefaults();
@@ -117,6 +120,14 @@ export default class ModflowModel {
         this._lengthUnit = value;
     }
 
+    get mt3dms() {
+        return this._mt3dms;
+    }
+
+    set mt3dms(value) {
+        this._mt3dms = value;
+    }
+
     get permissions() {
         return this._permissions;
     }
@@ -162,6 +173,7 @@ export default class ModflowModel {
         geometry: this.geometry.toObject(),
         grid_size: this.gridSize.toObject(),
         length_unit: this.lengthUnit,
+        mt3dms: this.mt3dms.toObject(),
         permissions: this.permissions,
         public: this.public,
         stress_periods: this.stressperiods.toObject(),
@@ -177,6 +189,7 @@ export default class ModflowModel {
         geometry: this._geometry,
         grid_size: this._gridSize,
         length_unit: this._lengthUnit,
+        mt3dms: this._mt3dms,
         permissions: this._permissions,
         public: this._public,
         stress_periods: this._stressperiods,

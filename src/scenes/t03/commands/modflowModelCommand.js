@@ -11,6 +11,7 @@ import removeLayerPayloadSchema from './removeLayerPayloadSchema';
 import removeBoundaryPayloadSchema from './removeBoundaryPayloadSchema';
 import updateBoundaryPayloadSchema from './updateBoundaryPayloadSchema';
 import updateModflowModelPayloadSchema from './updateModflowModelPayloadSchema';
+import updateMt3dmsPayloadSchema from './updateMt3dmsPayloadSchema';
 import updateOptimizationInputPayloadSchema from './updateOptimizationInputPayloadSchema';
 import updateStressperiodsPayloadSchema from './updateStressperiodsPayloadSchema';
 
@@ -74,6 +75,10 @@ class ModflowModelCommand extends AbstractCommand {
 
     static updateModflowModel(payload) {
         return new ModflowModelCommand('updateModflowModel', payload, updateModflowModelPayloadSchema);
+    }
+
+    static updateMt3dms(payload) {
+        return new ModflowModelCommand('updateMt3dms', payload, updateMt3dmsPayloadSchema);
     }
 
     static updateOptimizationInput(payload) {

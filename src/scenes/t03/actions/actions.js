@@ -1,4 +1,12 @@
 import {UPDATE_BOUNDARIES} from '../reducers/boundaries';
+import {UPDATE_MODEL, UPDATE_MT3DMS, UPDATE_STRESSPERIODS} from '../reducers/model';
+import {UPDATE_SOILMODEL} from '../reducers/soilmodel';
+
+import {ModflowModel, Stressperiods} from 'core/model/modflow';
+import {BoundaryCollection} from 'core/model/modflow/boundaries';
+import {Soilmodel} from 'core/model/modflow/soilmodel';
+import {Mt3dms} from 'core/model/modflow/mt3d';
+
 import {UPDATE_MODEL, UPDATE_STRESSPERIODS} from '../reducers/model';
 import {
     ADD_SOILMODEL_LAYER,
@@ -41,6 +49,17 @@ export function updateBoundaries(boundaryCollection) {
     return {
         type: UPDATE_BOUNDARIES,
         boundaries: boundaryCollection.toObject()
+    };
+}
+
+export function updateMt3dms(mt3dms) {
+    if (!mt3dms instanceof Mt3dms) {
+        throw new Error('Mt3dms is expected to be instance of Mt3dms');
+    }
+
+    return {
+        type: UPDATE_MT3DMS,
+        payload: mt3dms.toObject()
     };
 }
 
