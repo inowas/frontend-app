@@ -7,7 +7,11 @@ import {Boundary, Stressperiods} from 'core/model/modflow';
 
 class BoundaryValuesDataTable extends React.Component {
 
-    handleDateTimeValueChange = (e, {id, name, value}) => {
+    handleDateTimeValueChange = (e) => {
+        const id = parseInt(e.target.id);
+        const name = e.target.name;
+        const value = e.target.value;
+
         const {boundary, selectedOP} = this.props;
         let dateTimeValues = boundary.getDateTimeValues(selectedOP);
 
