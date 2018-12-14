@@ -5,12 +5,12 @@ import cancelOptimizationCalculationPayloadSchema from './cancelOptimizationCalc
 import cloneModflowModelPayloadSchema from './cloneModflowModelPayloadSchema';
 import createModflowModelPayloadSchema from './createModflowModelPayloadSchema';
 import deleteModflowModelPayloadSchema from './deleteModflowModelPayloadSchema';
+import updateBoundaryPayloadSchema from './updateBoundaryPayloadSchema';
 import updateModflowModelPayloadSchema from './updateModflowModelPayloadSchema';
 import updateOptimizationInputPayloadSchema from './updateOptimizationInputPayloadSchema';
 import updateStressperiodsPayloadSchema from './updateStressperiodsPayloadSchema';
 
 class ModflowModelCommand extends AbstractCommand {
-
 
     static calculateOptimization(payload) {
         return new ModflowModelCommand('calculateOptimization', payload, calculateOptimizationPayloadSchema);
@@ -38,10 +38,17 @@ class ModflowModelCommand extends AbstractCommand {
         return new ModflowModelCommand('deleteModflowModel', {id}, deleteModflowModelPayloadSchema);
     }
 
+    static updateBoundary(modelId, boundary) {
+        return new ModflowModelCommand(
+            'updateBoundary',
+            {id: modelId, boundary_id: boundary.id, boundary: boundary.toObject},
+            updateBoundaryPayloadSchema
+        );
+    }
+
     static updateModflowModel(payload) {
         return new ModflowModelCommand('updateModflowModel', payload, updateModflowModelPayloadSchema);
     }
-
 
     static updateOptimizationInput(payload) {
         return new ModflowModelCommand('updateOptimizationInput', payload, updateOptimizationInputPayloadSchema)
@@ -51,6 +58,5 @@ class ModflowModelCommand extends AbstractCommand {
         return new ModflowModelCommand('updateStressPeriods', payload, updateStressperiodsPayloadSchema);
     }
 }
-
 
 export default ModflowModelCommand;

@@ -27,13 +27,13 @@ class Stressperiods {
     }
 
     static fromDefaults() {
-        return Stressperiods.create(moment('2000-01-01Z'), moment('2019-12-31Z'), TimeUnit.days());
+        return Stressperiods.create(moment.utc('2000-01-01'), moment.utc('2019-12-31'), TimeUnit.days());
     }
 
     static fromObject(obj) {
         const stressPeriods = new Stressperiods();
-        stressPeriods.startDateTime = moment(new Date(obj.start_date_time));
-        stressPeriods.endDateTime = moment(new Date(obj.end_date_time));
+        stressPeriods.startDateTime = moment.utc(new Date(obj.start_date_time));
+        stressPeriods.endDateTime = moment.utc(new Date(obj.end_date_time));
         stressPeriods.timeUnit = obj.time_unit;
 
         obj.stress_periods.forEach(sp => {

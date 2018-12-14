@@ -65,6 +65,17 @@ export default class WellBoundary extends SingleOPBoundary {
         }
     }
 
+    get valueProperties() {
+        return [
+            {
+                name: 'Pumping rate',
+                description:'Pumping rate of the well, positive values = infiltration',
+                unit: 'm3/day',
+                decimals: 1,
+            },
+        ]
+    }
+
     isValid() {
         super.isValid();
 

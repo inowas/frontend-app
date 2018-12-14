@@ -13,6 +13,11 @@ export default class MultipleOPBoundary extends Boundary {
         }];
     }
 
+    setDefaultValues(utcIsoStartDateTime, observationPointId = null) {
+        const dateTimeValues = [{date_time: new Date(utcIsoStartDateTime).toISOString(), values: this.defaultValues}];
+        this.setDateTimeValues(dateTimeValues, observationPointId);
+    }
+
     get observationPoints() {
         return this._observationPoints;
     }

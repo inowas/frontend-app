@@ -1,6 +1,6 @@
 import React from 'react';
 import {connect} from 'react-redux';
-import {withRouter} from 'react-router-dom';
+import {Redirect, withRouter} from 'react-router-dom';
 
 import PropTypes from 'prop-types';
 
@@ -53,10 +53,6 @@ class T03 extends React.Component {
         this.setState({
             model: nextProps.model
         })
-    }
-
-    componentDidUpdate() {
-
     }
 
     fetchModel(id) {
@@ -145,9 +141,7 @@ class T03 extends React.Component {
                 const path = this.props.match.path;
                 const basePath = path.split(':')[0];
                 return (
-                    this.props.history.push(
-                        basePath + id + '/discretization'
-                    )
+                    <Redirect to={basePath + id + '/discretization'}/>
                 );
         }
     }
