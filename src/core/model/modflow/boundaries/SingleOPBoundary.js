@@ -4,10 +4,16 @@ export default class SingleOPBoundary extends Boundary {
 
     _dateTimeValues = [];
 
-    setDefaultStartValues(utcIsoStartDateTime) {
-        this._dateTimeValues = [
-            {date_time: utcIsoStartDateTime, values: this.defaultValues}
-        ];
+    setDefaultStartValues(utcIsoStartDateTimes) {
+        if (!Array.isArray(utcIsoStartDateTimes)) {
+            utcIsoStartDateTimes = [utcIsoStartDateTimes];
+        }
+
+        utcIsoStartDateTimes.forEach(dt => {
+            this._dateTimeValues.push({
+                date_time: dt, values: this.defaultValues
+            })
+        });
     }
 
     setDefaultValues(utcIsoStartDateTime) {

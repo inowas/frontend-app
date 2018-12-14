@@ -107,11 +107,11 @@ export default class Boundary {
         return {
             id: this.id,
             name: this.name,
-            geometry: this.geometry,
+            geometry: this.geometry.toObject(),
             type: this.type,
+            active_cells: this.activeCells.toArray(),
             affected_layers: this.affectedLayers,
-            metadata: this.metadata,
-            active_cells: this.activeCells
+            metadata: this.metadata
         };
     }
 
@@ -121,6 +121,10 @@ export default class Boundary {
 
     get valueProperties() {
         return [];
+    }
+
+    get geometryType() {
+        return '';
     }
 
     get numberOfValues() {

@@ -13,7 +13,7 @@ import ToolMetaData from '../../shared/simpleTools/ToolMetaData';
 import {fetchUrl} from 'services/api';
 import ModflowModel from 'core/model/modflow/ModflowModel';
 import {updateBoundaries, updateModel, updateSoilmodel} from '../actions/actions';
-import {BoundaryCollection} from 'core/model/modflow/boundaries';
+import {BoundaryCollection, BoundaryFactory} from 'core/model/modflow/boundaries';
 import {Soilmodel} from 'core/model/modflow/soilmodel';
 
 const navigation = [{
@@ -121,13 +121,16 @@ class T03 extends React.Component {
 
     };
 
-    renderContent(id, property) {
+    renderContent(id, property, type) {
         switch (property) {
             case 'discretization':
                 return (<Content.Discretization/>);
             case 'soilmodel':
                 return (<Content.Soilmodel/>);
             case 'boundaries':
+                if (BoundaryFactory.availableTypes.indexOf(type) > -1) {
+                    return (<Content.CreateBoundary/>);
+                }
                 return (<Content.Boundaries/>);
             case 'observations':
                 return (<Content.Observations/>);
@@ -170,7 +173,7 @@ class T03 extends React.Component {
             )
         }
 
-        const {id, property} = this.props.match.params;
+        const {id, property, type} = this.props.match.params;
         return (
             <AppContainer navbarItems={navigation}>
                 <Grid padded>
@@ -185,7 +188,7 @@ class T03 extends React.Component {
                             <ToolNavigation navigationItems={menuItems}/>
                         </Grid.Column>
                         <Grid.Column width={13}>
-                            {this.renderContent(id, property)}
+                            {this.renderContent(id, property, type)}
                         </Grid.Column>
                     </Grid.Row>
                 </Grid>

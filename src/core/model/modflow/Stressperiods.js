@@ -14,8 +14,8 @@ class Stressperiods {
 
     static create(startDate, endDate, timeUnit) {
         const stressPeriods = new Stressperiods();
-        stressPeriods.startDateTime = moment(startDate);
-        stressPeriods.endDateTime = moment(endDate);
+        stressPeriods.startDateTime = moment.utc(startDate);
+        stressPeriods.endDateTime = moment.utc(endDate);
         stressPeriods.timeUnit = (timeUnit instanceof TimeUnit) ? timeUnit.toInt() : timeUnit;
         stressPeriods.addStressPeriod(Stressperiod.fromObject({
             totim_start: 0,
@@ -32,8 +32,8 @@ class Stressperiods {
 
     static fromObject(obj) {
         const stressPeriods = new Stressperiods();
-        stressPeriods.startDateTime = moment.utc(new Date(obj.start_date_time));
-        stressPeriods.endDateTime = moment.utc(new Date(obj.end_date_time));
+        stressPeriods.startDateTime = moment.utc(obj.start_date_time);
+        stressPeriods.endDateTime = moment.utc(obj.end_date_time);
         stressPeriods.timeUnit = obj.time_unit;
 
         obj.stress_periods.forEach(sp => {
