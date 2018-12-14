@@ -37,7 +37,7 @@ class BoundaryDetails extends React.Component {
                                 style={{zIndex: 1000}}
                                 selection
                                 fluid
-                                options={this.props.soilmodel.layers.map(l => (
+                                options={this.props.soilmodel.layers.layers.map(l => (
                                     {key: l.id, value: l.number, text: l.name}
                                 ))}
                                 value={boundary.affectedLayers[0]}

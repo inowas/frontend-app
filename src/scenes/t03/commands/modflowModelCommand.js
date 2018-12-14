@@ -19,6 +19,7 @@ class ModflowModelCommand extends AbstractCommand {
 
     static addSoilmodelLayer(payload) {
         return new ModflowModelCommand('addLayer', payload, addLayerPayloadSchema);
+    }
 
     static addBoundary(modelId, boundary) {
         return new ModflowModelCommand(
@@ -56,6 +57,7 @@ class ModflowModelCommand extends AbstractCommand {
 
     static removeSoilmodelLayer(payload) {
         return new ModflowModelCommand('removeLayer', payload, removeLayerPayloadSchema);
+    }
 
     static removeBoundary(modelId, boundaryId) {
         return new ModflowModelCommand(

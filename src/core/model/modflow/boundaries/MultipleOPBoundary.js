@@ -11,7 +11,6 @@ export default class MultipleOPBoundary extends Boundary {
 
         const dateTimeValues = [];
         utcIsoStartDateTimes.forEach(dt => {
-            console.log(dt);
             dateTimeValues.push({date_time: dt, values: this.defaultValues})
         });
 

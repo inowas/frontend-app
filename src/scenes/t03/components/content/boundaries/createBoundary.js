@@ -97,7 +97,7 @@ class Boundaries extends React.Component {
                                     label={'Selected layers'}
                                     selection
                                     fluid
-                                    options={this.props.soilmodel.layers.map(l => (
+                                    options={this.props.soilmodel.layers.layers.map(l => (
                                         {key: l.id, value: l.number, text: l.name}
                                     ))}
                                     value={affectedLayers[0]}
