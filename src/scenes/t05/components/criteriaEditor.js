@@ -1,83 +1,90 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import {Button, Input, Message, Select, Table} from 'semantic-ui-react';
+import {Button, Input, Message, Segment, Select, Table} from 'semantic-ui-react';
 
-import {Criteria, CriteriaCollection} from 'core/mcda/criteria';
+import {Criterion, CriteriaCollection} from 'core/mcda/criteria';
 
 class CriteriaEditor extends React.Component {
     constructor(props) {
         super();
 
         this.state = {
-            criteriaCollection: props.mcda.criteria
+            criteria: props.mcda.criteria.toArray()
         };
     }
 
     componentWillReceiveProps(nextProps) {
         this.setState({
-            criteriaCollection: nextProps.mcda.criteria
+            criteria: nextProps.mcda.criteria.toArray()
         });
     }
 
     handleChange = criteriaCollection => {
+        if (!(criteriaCollection instanceof CriteriaCollection)) {
+            throw new Error('CriteriaCollection expected to be of type CriteriaCollection.');
+        }
+
         return this.props.handleChange({
             name: 'criteria',
-            value: CriteriaCollection.fromObject(criteriaCollection)
+            value: criteriaCollection
         });
     };
 
     handleLocalChange = id => (e, {name, value}) => {
-        const criteriaCollection = CriteriaCollection.fromObject(this.state.criteriaCollection);
-        const criteria = criteriaCollection.findById(id);
+        const criteriaCollection = CriteriaCollection.fromArray(this.state.criteria);
+        const criterion = criteriaCollection.findById(id);
 
-        if(!criteria) {
+        if(!criterion) {
             return;
         }
 
-        criteria[name] = value;
+        criterion[name] = value;
 
         return this.setState({
-            criteriaCollection: criteriaCollection.update(criteria).toObject
+            criteria: criteriaCollection.update(criterion).toArray()
         });
     };
 
     handleSelectChange = id => (e, {name, value}) => {
-        const criteriaCollection = CriteriaCollection.fromObject(this.state.criteriaCollection);
-        const criteria = criteriaCollection.findById(id);
+        const criteriaCollection = CriteriaCollection.fromArray(this.state.criteria);
+        const criterion = criteriaCollection.findById(id);
 
-        if(!criteria) {
+        if(!criterion) {
             return;
         }
 
-        criteria[name] = value;
+        criterion[name] = value;
 
-        return this.handleChange(criteriaCollection.update(criteria));
+        return this.handleChange(criteriaCollection.update(criterion));
     };
 
-    onBlur = () => this.handleChange(this.state.criteriaCollection);
+    onBlur = () => this.handleChange(
+        CriteriaCollection.fromArray(this.state.criteria)
+    );
 
     onClickAddCriteria = () => {
-        const criteriaCollection = CriteriaCollection.fromObject(this.state.criteriaCollection);
-        criteriaCollection.add(new Criteria());
-
+        const criteriaCollection = CriteriaCollection.fromArray(this.state.criteria);
+        criteriaCollection.add(new Criterion());
         return this.handleChange(criteriaCollection);
     };
 
-    onClickRemoveCriteria = id => this.handleChange(this.state.criteriaCollection.remove(id));
+    onClickRemoveCriteria = id => this.handleChange(
+        CriteriaCollection.fromArray(this.state.criteria).remove(id)
+    );
 
     render() {
         const {readOnly} = this.props;
-        const criteriaCollection = CriteriaCollection.fromObject(this.state.criteriaCollection);
+        const {criteria} = this.state;
 
         return (
-            <div>
+            <Segment color={'grey'} loading={this.state.isLoading}>
                 <Message>
                     <Message.Header>Choose your criteria</Message.Header>
                     <p>If you are unsure which criteria to use, please refer to the review on criteria used in
                         literature: T04</p>
                 </Message>
 
-                {criteriaCollection.all.length > 0 &&
+                {criteria.length > 0 &&
                 <Table>
                     <Table.Header>
                         <Table.Row>
@@ -88,7 +95,7 @@ class CriteriaEditor extends React.Component {
                         </Table.Row>
                     </Table.Header>
                     <Table.Body>
-                        {criteriaCollection.all.map((c, key) =>
+                        {criteria.map((c, key) =>
                             <Table.Row key={key}>
                                 <Table.Cell>{key + 1}</Table.Cell>
                                 <Table.Cell>
@@ -134,7 +141,7 @@ class CriteriaEditor extends React.Component {
                         Add new criteria
                     </Button>
                 }
-            </div>
+            </Segment>
         );
     }
 

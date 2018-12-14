@@ -2,19 +2,19 @@ import uuidv4 from 'uuid/v4';
 
 const validTypes = ['discrete', 'continuous'];
 
-class Criteria {
+class Criterion {
     _id = uuidv4();
-    _name = 'New Criteria';
+    _name = 'New Criterion';
     _type = 'discrete';
     _data = null;
 
     static fromObject(obj) {
-        const criteria = new Criteria();
-        criteria.id = obj.id;
-        criteria.name = obj.name;
-        criteria.type = obj.type;
-        criteria.data = obj.data;
-        return criteria;
+        const criterion = new Criterion();
+        criterion.id = obj.id;
+        criterion.name = obj.name;
+        criterion.type = obj.type;
+        criterion.data = obj.data;
+        return criterion;
     }
 
     get id() {
@@ -52,7 +52,7 @@ class Criteria {
         this._data = value ? value : null;
     }
 
-    get toObject() {
+    toObject() {
         return ({
             id: this.id,
             name: this.name,
@@ -62,4 +62,4 @@ class Criteria {
     }
 }
 
-export default Criteria;
+export default Criterion;

@@ -15,28 +15,6 @@ const getMenuItems = (mcda) => {
         {
             name: 'Weight Assignment',
             property: 'wa',
-            subItems: [
-                {
-                    name: 'Method 1: Ranking',
-                    type: 'ranking'
-                },
-                {
-                    name: 'Method 2: Multi-influence',
-                    type: 'mif'
-                },
-                {
-                    name: 'Method 3: Pairwise',
-                    type: 'pwc'
-                },
-                {
-                    name: 'Method 4: Analytical Hierarchy',
-                    type: 'analytical-hierarchy'
-                },
-                {
-                    name: 'Results',
-                    type: 'results'
-                }
-            ],
             status: mcda.criteria.all.length < 2 ? 'warning' : '',
             msg: 'At least two criteria are needed for weight assignment.'
         },

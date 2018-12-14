@@ -1,13 +1,13 @@
-import {CriteriaCollection, CriteriaRelation, Weight, WeightsCollection} from './criteria';
+import {CriteriaCollection, CriteriaRelation, Weight, WeightAssignment, WeightAssignmentCollection} from './criteria';
 
 class MCDA {
     _criteria = new CriteriaCollection();
-    _weights = new WeightsCollection();
+    _weightAssignments = new WeightAssignmentCollection();
 
     static fromObject(obj) {
         const mcda = new MCDA();
-        mcda.criteria = CriteriaCollection.fromObject(obj.criteria);
-        mcda.weights = WeightsCollection.fromObject(obj.weights);
+        mcda.criteria = CriteriaCollection.fromArray(obj.criteria);
+        mcda.weightAssignments = WeightAssignmentCollection.fromArray(obj.weightAssignments);
         return mcda;
     }
 
@@ -19,22 +19,25 @@ class MCDA {
         this._criteria = value;
     }
 
-    get weights() {
-        return this._weights;
+    get weightAssignments() {
+        return this._weightAssignments;
     }
 
-    set weights(value) {
-        this._weights = value;
+    set weightAssignments(value) {
+        this._weightAssignments = value;
     }
 
-    get toObject() {
+    toObject() {
         return ({
-            criteria: this.criteria.toObject,
-            weights: this.weights.toObject
+            criteria: this.criteria.toArray(),
+            weightAssignments: this.weightAssignments.toArray()
         });
     }
 
-    addWeightAssignmentMethod(method) {
+    addWeightAssignment(method) {
+        const wa = new WeightAssignment();
+        wa.method = method;
+
         this.criteria.all.forEach((c, cix) => {
             const weight = new Weight();
             weight.method = method;
@@ -49,10 +52,10 @@ class MCDA {
                 });
             }
 
-            if (!this.weights.findByCriteriaAndMethod(c, method)) {
-                this.weights.add(weight);
-            }
+            wa.weights.add(weight);
         });
+
+        this.weightAssignments.add(wa);
     }
 
     updateCriteria(criteria) {
@@ -61,7 +64,7 @@ class MCDA {
         }
 
         this.criteria = criteria;
-        this.weights.updateCriteria(criteria);
+        this.weightAssignments.updateCriteria(criteria);
     }
 }
 

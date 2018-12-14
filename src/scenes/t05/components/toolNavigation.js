@@ -34,20 +34,6 @@ class ToolNavigation extends React.Component {
                 />
                 }
                 {i.name}
-                {i.subItems && i.subItems.length > 0 && property === i.property &&
-                <Menu.Menu>
-                    {i.subItems.map((s, sdx) =>
-                        <Menu.Item
-                            disabled={!id}
-                            key={sdx}
-                            name={s.name}
-                            active={type === s.type || (!type && sdx === 0)}
-                            route={basePath + id + '/' + i.property + '/' + s.type}
-                            onClick={this.handleItemClick}
-                        />
-                    )}
-                </Menu.Menu>
-                }
             </Menu.Item>
         ));
 

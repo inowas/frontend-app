@@ -1,32 +1,24 @@
 import Weight from './Weight';
-import Criteria from './Criteria';
-import CriteriaCollection from './CriteriaCollection';
+import Criteria from './Criterion';
+import AbstractCollection from '../../AbstractCollection';
 
-class WeightsCollection {
-    _weights = [];
-
-    static fromObject(obj) {
+class WeightsCollection extends AbstractCollection {
+    static fromArray(array) {
         const wc = new WeightsCollection();
-        wc.weights = obj.weights.map(w => Weight.fromObject(w));
+        wc.items = array.map(w => Weight.fromObject(w));
         return wc;
     }
 
     get weights() {
-        return this._weights;
+        return this._items;
     }
 
     set weights(value) {
-        this._weights = value || [];
+        this._items = value || [];
     }
 
-    get toObject() {
-        return ({
-            weights: this.weights.map(w => w.toObject)
-        });
-    }
-
-    get all() {
-        return this._weights;
+    toArray() {
+        return this._items.map(weight => weight.toObject());
     }
 
     allRelations(method) {
@@ -48,14 +40,6 @@ class WeightsCollection {
         });
 
         return relations;
-    }
-
-    findById(id) {
-        const weights = this._weights.filter(w => w.id === id);
-        if (weights.length > 0) {
-            return weights[0];
-        }
-        return false;
     }
 
     findByMethod(method) {
@@ -122,63 +106,6 @@ class WeightsCollection {
                 this.update(weight);
             });
         }
-
-        return this;
-    }
-
-    add(weight) {
-        if (!(weight instanceof Weight)) {
-            throw new Error('Weight expected to be of type Weight.');
-        }
-        this._weights.push(weight);
-
-        return this;
-    }
-
-    remove(weight) {
-        const id = weight instanceof Weight ? weight.id : weight;
-        this._weights = this._weights.filter(w => w.id !== id);
-
-        return this;
-    }
-
-    removeByCriteria(criteria) {
-        const id = criteria instanceof Criteria ? criteria.id : criteria;
-        this._weights = this._weights.filter(w => w.criteria.id !== id);
-
-        return this;
-    }
-
-    update(weight) {
-        if (!(weight instanceof Weight)) {
-            throw new Error('Weight expected to be of type Weight.');
-        }
-
-        let exists = false;
-        this._weights = this._weights.map(c => {
-            if (weight.id === c.id) {
-                exists = true;
-                return weight;
-            }
-            return c;
-        });
-
-        if (!exists) {
-            this.add(weight);
-        }
-
-        return this;
-    }
-
-    updateCriteria(criteriaCollection) {
-        if (!(criteriaCollection instanceof CriteriaCollection)) {
-            throw new Error('CriteriaCollection expected to be of type CriteriaCollection.');
-        }
-
-        this._weights = this._weights.filter(w => criteriaCollection.findById(w.criteria.id) !== false).map(weight => {
-            weight.criteria = criteriaCollection.findById(weight.criteria.id);
-            return weight;
-        });
 
         return this;
     }

@@ -10,7 +10,7 @@ export const defaults = () => {
         public: false,
         type: 'T05',
         data: {
-            mcda: (new MCDA()).toObject
+            mcda: (new MCDA()).toObject()
         }
     };
 };

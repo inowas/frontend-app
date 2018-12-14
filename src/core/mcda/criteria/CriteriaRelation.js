@@ -37,7 +37,7 @@ class CriteriaRelation {
         this._value = value ? parseFloat(value) : 0;
     }
 
-    get toObject() {
+    toObject() {
         return ({
             id: this.id,
             to: this.to,

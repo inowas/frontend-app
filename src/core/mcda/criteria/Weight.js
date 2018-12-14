@@ -1,5 +1,5 @@
 import uuidv4 from 'uuid/v4';
-import Criteria from './Criteria';
+import Criteria from './Criterion';
 import CriteriaRelation from './CriteriaRelation';
 
 class Weight {
@@ -69,7 +69,7 @@ class Weight {
         this._value = value ? parseFloat(value) : 0;
     }
 
-    get toObject() {
+    toObject() {
         return ({
             id: this.id,
             criteria: this.criteria.toObject,
