@@ -99,6 +99,13 @@ class BoundingBox {
         [this._xMax, this._yMax]
     ]);
 
+    getBoundsLatLong = () => {
+        return [
+            [this.yMin, this.xMin],
+            [this.yMax, this.xMax]
+        ];
+    };
+
     sameAs = (obj) => {
         return isEqual(obj.toArray(), this.toArray())
     }

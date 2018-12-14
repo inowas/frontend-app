@@ -65,6 +65,10 @@ export default class WellBoundary extends SingleOPBoundary {
         }
     }
 
+    get geometryType() {
+        return 'Point';
+    }
+
     get valueProperties() {
         return [
             {
@@ -75,6 +79,7 @@ export default class WellBoundary extends SingleOPBoundary {
             },
         ]
     }
+
 
     isValid() {
         super.isValid();

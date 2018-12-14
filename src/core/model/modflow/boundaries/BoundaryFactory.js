@@ -6,8 +6,13 @@ import RechargeBoundary from './RechargeBoundary';
 import RiverBoundary from './RiverBoundary';
 import WellBoundary from './WellBoundary';
 import HeadObservation from './HeadObservation';
+import Geometry from '../Geometry';
+import {ActiveCells} from '../index';
 
 export default class BoundaryFactory {
+
+    static availableTypes = ['chd', 'ghb', 'rch', 'riv', 'wel'];
+
     static fromType = (type) => {
         switch (type) {
             case 'chd':
@@ -27,12 +32,12 @@ export default class BoundaryFactory {
         }
     };
 
-    static createByTypeAndStartDate({id = null, name = null, type, geometry, utcIsoStartDateTime}) {
+    static createByTypeAndStartDate({id = null, name = null, type, geometry, utcIsoStartDateTimes}) {
         const boundary = BoundaryFactory.fromType(type);
         id ? boundary.id = id : boundary._id = Uuid.v4();
         name ? boundary.name = name : boundary._name = 'new ' + type + '-boundary';
         boundary.geometry = geometry;
-        boundary.setDefaultStartValues(utcIsoStartDateTime);
+        boundary.setDefaultStartValues(utcIsoStartDateTimes);
         return boundary;
     }
 
@@ -46,10 +51,10 @@ export default class BoundaryFactory {
 
         boundary.id = id;
         boundary.name = name;
-        boundary.geometry = geometry;
+        boundary.geometry = Geometry.fromObject(geometry);
         boundary.affectedLayers = affected_layers;
         boundary.metadata = metadata;
-        boundary.activeCells = active_cells;
+        boundary.activeCells = ActiveCells.fromArray(active_cells);
 
         if (date_time_values) {
             boundary.setDateTimeValues(date_time_values);

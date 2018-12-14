@@ -35,6 +35,11 @@ export default class RechargeBoundary extends SingleOPBoundary {
         return true;
     }
 
+    get geometryType() {
+        return 'Polygon';
+    }
+
+
     get valueProperties() {
         return [
             {
