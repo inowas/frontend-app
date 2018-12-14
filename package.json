@@ -19,6 +19,7 @@
         "moment": "^2.22.2",
         "papaparse": "^4.6.1",
         "prop-types": "^15.6.2",
+        "rainbowvis.js": "https://github.com/inowas/RainbowVis-JS.git#master",
         "rc-slider": "^8.6.3",
         "react": "^16.6.0",
         "react-dom": "^16.6.0",

@@ -1,0 +1,93 @@
+{
+  "type": "object",
+  "id": "https://inowas.com/schema/command/addLayerPayload",
+  "additionalProperties": true,
+  "required": ["id", "layer"],
+  "properties": {
+    "id": {
+      "$ref": "#/definitions/uuidv4"
+    },
+    "layer": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "$ref": "#/definitions/uuidv4"
+        },
+        "name": {
+          "type": "string"
+        },
+        "_meta": {
+          "type": "object",
+          "properties": {
+            "zones": {
+              "type": "array"
+            }
+          }
+        },
+        "description": {
+          "type": "string"
+        },
+        "number": {
+          "type": "number"
+        },
+        "laytyp": {
+          "type": "number"
+        },
+        "top": {
+          "oneOf": [
+            {"type": "number"},
+            {"type": "array"}
+          ]
+        },
+        "botm": {
+          "oneOf": [
+            {"type": "number"},
+            {"type": "array"}
+          ]
+        },
+        "hk": {
+          "oneOf": [
+            {"type": "number"},
+            {"type": "array"}
+          ]
+        },
+        "hani": {
+          "oneOf": [
+            {"type": "number"},
+            {"type": "array"}
+          ]
+        },
+        "vka": {
+          "oneOf": [
+            {"type": "number"},
+            {"type": "array"}
+          ]
+        },
+        "layavg": {
+          "type": "number"
+        },
+        "laywet": {
+          "type": "number"
+        },
+        "ss": {
+          "oneOf": [
+            {"type": "number"},
+            {"type": "array"}
+          ]
+        },
+        "sy": {
+          "oneOf": [
+            {"type": "number"},
+            {"type": "array"}
+          ]
+        }
+      }
+    }
+  },
+  "definitions": {
+    "uuidv4": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$"
+    }
+  }
+}

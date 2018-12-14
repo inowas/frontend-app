@@ -60,9 +60,10 @@ class T03 extends React.Component {
             `modflowmodels/${id}`,
             data => {
                 this.props.updateModel(ModflowModel.fromQuery(data));
-                this.setState({isLoading: false});
-                this.fetchBoundaries(id);
-                this.fetchSoilmodel(id);
+                this.setState({isLoading: false}, () => {
+                    this.fetchBoundaries(id);
+                    this.fetchSoilmodel(id);
+                });
             },
             error => this.setState(
                 {error, isLoading: false},
@@ -126,7 +127,7 @@ class T03 extends React.Component {
             case 'discretization':
                 return (<Content.Discretization/>);
             case 'soilmodel':
-                return (<Content.Soilmodel/>);
+                return (<Content.SoilmodelEditor/>);
             case 'boundaries':
                 if (BoundaryFactory.availableTypes.indexOf(type) > -1) {
                     return (<Content.CreateBoundary/>);
