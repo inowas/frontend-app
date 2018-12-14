@@ -65,7 +65,7 @@ class OptimizationProgress {
         this._simulationTotal = value ? value : 0;
     }
 
-    get toObject() {
+    toObject() {
         return {
             'progress_log': this.progressLog,
             'simulation': this.simulation,

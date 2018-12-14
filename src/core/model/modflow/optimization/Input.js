@@ -1,25 +1,19 @@
 import uuidv4 from 'uuid/v4';
 
 import OptimizationParameters from './Parameters';
-import OptimizationObjective from './Objective';
-import OptimizationConstraint from './Constraint';
 import OptimizationObjectsCollection from './ObjectsCollection';
+import OptimizationConstraintsCollection from './ObjectivesCollection';
+import OptimizationObjectivesCollection from './ConstraintsCollection';
 
 class OptimizationInput {
     _id = uuidv4();
-    _constraints = [];
-    _objectives = [];
+    _constraints = new OptimizationConstraintsCollection();
+    _objectives = new OptimizationObjectivesCollection();
     _objects = new OptimizationObjectsCollection();
-    _parameters;
+    _parameters = OptimizationParameters.fromDefaults();
 
     static fromDefaults() {
-        const input = new OptimizationInput();
-        input.id = uuidv4();
-        input.parameters = OptimizationParameters.fromDefaults();
-        input.constraints = [];
-        input.objectives = [];
-        input.objects = new OptimizationObjectsCollection();
-        return input;
+        return new OptimizationInput();
     }
 
     static fromObject(obj) {
@@ -29,17 +23,9 @@ class OptimizationInput {
         const input = new OptimizationInput();
         input.id = obj.id;
         input.parameters = OptimizationParameters.fromObject(obj.parameters);
-
-        obj.constraints.forEach((constraint) => {
-            input.addConstraint(OptimizationConstraint.fromObject(constraint));
-        });
-
-        obj.objectives.forEach((objective) => {
-            input.addObjective(OptimizationObjective.fromObject(objective));
-        });
-
-        obj.objects = OptimizationObjectsCollection.fromObject(obj.objects);
-
+        input.objectives = OptimizationObjectivesCollection.fromArray(obj.objectives);
+        input.constraints = OptimizationConstraintsCollection.fromArray(obj.constraints);
+        input.objects = OptimizationObjectsCollection.fromArray(obj.objects);
         return input;
     }
 
@@ -90,25 +76,11 @@ class OptimizationInput {
     get toObject() {
         return {
             'id': this.id,
-            'parameters': this.parameters.toObject,
-            'constraints': this.constraints.map(c => c.toObject),
-            'objectives': this.objectives.map(c => c.toObject),
-            'objects': this.objects.toObject
+            'parameters': this.parameters.toObject(),
+            'constraints': this.constraints.toArray(),
+            'objectives': this.objectives.toArray(),
+            'objects': this.objects.toArray()
         };
-    }
-
-    addConstraint(constraint) {
-        if (!(constraint instanceof OptimizationConstraint)) {
-            throw new Error('The parameter constraint is not of type OptimizationConstraint.');
-        }
-        this._constraints.push(constraint);
-    }
-
-    addObjective(objective) {
-        if (!(objective instanceof OptimizationObjective)) {
-            throw new Error('The parameter objective is not of type OptimizationObjective.');
-        }
-        this._objectives.push(objective);
     }
 }
 

@@ -116,7 +116,7 @@ class OptimizationConstraint {
         this._location2 = value ? Location.fromObject(value) : null;
     }
 
-    get toObject() {
+    toObject() {
         return ({
             'id': this.id,
             'name': this.name,
@@ -125,9 +125,9 @@ class OptimizationConstraint {
             'summary_method': this.summaryMethod,
             'value': this.value,
             'operator': this.operator,
-            'location': this.location.toObject,
-            'location_1': this.location1 ? this.location1.toObject : {},
-            'location_2': this.location2 ? this.location2.toObject : {}
+            'location': this.location.toObject(),
+            'location_1': this.location1 ? this.location1.toObject() : {},
+            'location_2': this.location2 ? this.location2.toObject() : {}
         });
     }
 }

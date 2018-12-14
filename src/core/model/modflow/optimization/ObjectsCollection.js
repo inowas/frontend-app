@@ -1,10 +1,10 @@
 import OptimizationObject from './Object';
-import Collection from './Collections';
+import AbstractCollection from '../../AbstractCollection';
 
-class OptimizationObjectsCollection extends Collection {
-    static fromObject(obj) {
+class OptimizationObjectsCollection extends AbstractCollection {
+    static fromArray(array) {
         const objectsCollection = new OptimizationObjectsCollection();
-        objectsCollection.items = obj.objects.map(object => OptimizationObject.fromObject(object));
+        objectsCollection.items = array.map(object => OptimizationObject.fromObject(object));
         return objectsCollection;
     }
 
@@ -16,10 +16,8 @@ class OptimizationObjectsCollection extends Collection {
         this._items = value || [];
     }
 
-    get toObject() {
-        return ({
-            'objects': this.objects.map(object => object.toObject)
-        });
+    toArray() {
+        return (this.all.map(object => object.toObject()));
     }
 
     checkInput (object) {

@@ -6,20 +6,15 @@ import OptimizationInput from './Input';
 import OptimizationMethod from './Method';
 
 class Optimization {
-    _input;
+    _input = OptimizationInput.fromDefaults();
     _state = 0;
     _methods = [];
 
     static fromDefaults() {
-        const optimization = new Optimization();
-        optimization.input = OptimizationInput.fromDefaults();
-        return optimization;
+        return new Optimization();
     }
 
     static fromObject(obj) {
-
-        console.log('CONSTRUCTING OPTIMIZATION', obj);
-
         const optimization = new Optimization();
         optimization.input = obj.input ? OptimizationInput.fromObject(obj.input) : OptimizationInput.fromDefaults();
         optimization.state = obj.state;
@@ -59,12 +54,12 @@ class Optimization {
         this._methods = value ? value : [];
     }
 
-    get toObject() {
+    toObject() {
         return {
             'id': this.id,
-            'input': this.input.toObject,
+            'input': this.input.toObject(),
             'state': this.state,
-            'methods': this.methods.map(m => m.toObject)
+            'methods': this.methods.map(m => m.toObject())
         };
     }
 
@@ -96,7 +91,7 @@ class Optimization {
         const ajv = new Ajv({schemaId: 'auto'});
         ajv.addMetaSchema(ajv0);
         const val = ajv.compile(optimizationSchema);
-        return [val(this.toObject), val.errors];
+        return [val(this.toObject()), val.errors];
     }
 }
 

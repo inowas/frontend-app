@@ -52,12 +52,12 @@ class OptimizationSolution {
         this._objects = value;
     }
 
-    get toObject() {
+    toObject() {
         return {
             'id': this.id,
             'variables': this.variables,
             'fitness': this.fitness,
-            'objects': this.objects.map(o => o.toObject)
+            'objects': this.objects.map(o => o.toObject())
         };
     }
 
