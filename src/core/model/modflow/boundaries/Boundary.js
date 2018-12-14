@@ -1,5 +1,4 @@
 /* eslint-disable camelcase */
-
 import Uuid from 'uuid';
 import AffectedCells from './AffectedCells';
 
@@ -128,7 +127,14 @@ export default class Boundary {
         return this.defaultValues.length;
     }
 
-    getClone = () => {
+    get clone() {
+        this.name = this.name + ' (clone)';
+        this.id = Uuid.v4();
+        return this;
+    }
+
+    cloneInstance = () => {
         return Object.assign( Object.create( Object.getPrototypeOf(this)), this);
     }
+
 }

@@ -60,7 +60,31 @@ class Boundaries extends React.Component {
         this.props.history.push(`${baseUrl}/${id}/${property}/${type || '!'}/${bid}`);
     };
 
-    onSave = () => {
+    onClone = () => {
+        const model = this.props.model;
+        const clonedBoundary = BoundaryFactory.fromObjectData(this.state.selectedBoundary).clone;
+        return sendCommand(ModflowModelCommand.addBoundary(model.id, clonedBoundary),
+            () => {
+                this.props.updateBoundaries(this.props.boundaries.addBoundary(clonedBoundary));
+                this.handleBoundaryListClick(clonedBoundary.id);
+            },
+            () => this.setState({error: true})
+        )
+    };
+
+    onRemove = () => {
+        const model = this.props.model;
+        const boundary = BoundaryFactory.fromObjectData(this.state.selectedBoundary);
+        return sendCommand(ModflowModelCommand.removeBoundary(model.id, boundary.id),
+            () => {
+                this.props.updateBoundaries(this.props.boundaries.removeById(boundary.id));
+                this.handleBoundaryListClick(this.props.boundaries.first.id);
+            },
+            () => this.setState({error: true})
+        )
+    };
+
+    onUpdate = () => {
         const model = this.props.model;
         const boundary = BoundaryFactory.fromObjectData(this.state.selectedBoundary);
         return sendCommand(ModflowModelCommand.updateBoundary(model.id, boundary),
@@ -93,13 +117,15 @@ class Boundaries extends React.Component {
                         <Grid.Column width={4}>
                             <BoundaryList
                                 boundaries={this.props.boundaries}
-                                onChange={this.handleBoundaryListClick}
+                                onClick={this.handleBoundaryListClick}
+                                onClone={this.onClone}
+                                onRemove={this.onRemove}
                                 selected={pid}
                             />
                         </Grid.Column>
                         <Grid.Column width={12}>
                             <ContentToolBar
-                                onSave={this.onSave}
+                                onSave={this.onUpdate}
                                 isDirty={isDirty}
                                 isError={error}
                                 saveButton={!readOnly}
