@@ -1,4 +1,5 @@
 import {Boundary, BoundaryFactory} from './index';
+import {sortBy} from 'lodash';
 
 class BoundaryCollection {
 
@@ -30,6 +31,12 @@ class BoundaryCollection {
         }
 
         this._boundaries.push(boundary);
+        return this;
+    }
+
+    removeById(boundaryId) {
+        this._boundaries = this._boundaries.filter(b => b.id !== boundaryId);
+        return this;
     }
 
     findById(id) {
@@ -42,7 +49,7 @@ class BoundaryCollection {
     }
 
     get boundaries() {
-        return this._boundaries;
+        return sortBy(this._boundaries, [(b) => b.name.toUpperCase()]);
     }
 
     toObject = () => {
