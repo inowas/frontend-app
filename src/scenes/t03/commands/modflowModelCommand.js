@@ -1,12 +1,15 @@
 import AbstractCommand from 'core/model/command/AbstractCommand';
 
 import addLayerPayloadSchema from './addLayerPayloadSchema';
+import addBoundaryPayloadSchema from './addBoundaryPayloadSchema';
 import calculateOptimizationPayloadSchema from './calculateOptimizationPayloadSchema';
 import cancelOptimizationCalculationPayloadSchema from './cancelOptimizationCalculationPayloadSchema';
 import cloneModflowModelPayloadSchema from './cloneModflowModelPayloadSchema';
 import createModflowModelPayloadSchema from './createModflowModelPayloadSchema';
 import deleteModflowModelPayloadSchema from './deleteModflowModelPayloadSchema';
 import removeLayerPayloadSchema from './removeLayerPayloadSchema';
+import removeBoundaryPayloadSchema from './removeBoundaryPayloadSchema';
+import updateBoundaryPayloadSchema from './updateBoundaryPayloadSchema';
 import updateModflowModelPayloadSchema from './updateModflowModelPayloadSchema';
 import updateOptimizationInputPayloadSchema from './updateOptimizationInputPayloadSchema';
 import updateStressperiodsPayloadSchema from './updateStressperiodsPayloadSchema';
@@ -15,6 +18,13 @@ class ModflowModelCommand extends AbstractCommand {
 
     static addSoilmodelLayer(payload) {
         return new ModflowModelCommand('addLayer', payload, addLayerPayloadSchema);
+
+    static addBoundary(modelId, boundary) {
+        return new ModflowModelCommand(
+            'addBoundary',
+            {id: modelId, boundary: boundary.toObject},
+            addBoundaryPayloadSchema
+        );
     }
 
     static calculateOptimization(payload) {
@@ -45,6 +55,21 @@ class ModflowModelCommand extends AbstractCommand {
 
     static removeSoilmodelLayer(payload) {
         return new ModflowModelCommand('removeLayer', payload, removeLayerPayloadSchema);
+
+    static removeBoundary(modelId, boundaryId) {
+        return new ModflowModelCommand(
+            'removeBoundary',
+            {id: modelId, boundary_id: boundaryId},
+            removeBoundaryPayloadSchema
+        );
+    }
+
+    static updateBoundary(modelId, boundary) {
+        return new ModflowModelCommand(
+            'updateBoundary',
+            {id: modelId, boundary_id: boundary.id, boundary: boundary.toObject},
+            updateBoundaryPayloadSchema
+        );
     }
 
     static updateModflowModel(payload) {
@@ -63,6 +88,5 @@ class ModflowModelCommand extends AbstractCommand {
         return new ModflowModelCommand('updateStressPeriods', payload, updateStressperiodsPayloadSchema);
     }
 }
-
 
 export default ModflowModelCommand;

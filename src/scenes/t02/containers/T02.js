@@ -1,22 +1,21 @@
 import PropTypes from 'prop-types';
 import React from 'react';
-import {withRouter} from 'react-router-dom';
-
-import image from '../images/T02.png';
-import {Background, Chart, Parameters, Settings} from '../components/index';
+import {Icon} from 'semantic-ui-react';
 
 import {includes} from 'lodash';
+import {withRouter} from 'react-router-dom';
+
+import {AppContainer} from '../../shared';
+import {Background, Chart, Info, Parameters, Settings} from '../components';
+import {SliderParameter, ToolGrid, ToolMetaData} from '../../shared/simpleTools';
+
+import SimpleToolsCommand from '../../shared/simpleTools/commands/SimpleToolsCommand';
+
+import image from '../images/T02.png';
 import {defaults} from '../defaults';
-import {Icon} from 'semantic-ui-react';
-import SliderParameter from 'scenes/shared/simpleTools/parameterSlider/SliderParameter';
 
 import {fetchTool, sendCommand} from 'services/api';
-import {createToolInstanceCommand, updateToolInstanceCommand} from 'services/commandFactory';
-import AppContainer from '../../shared/AppContainer';
-import ToolMetaData from '../../shared/simpleTools/ToolMetaData';
-import ToolGrid from "../../shared/simpleTools/ToolGrid";
-import {Info} from "../components";
-import {deepMerge} from "../../shared/simpleTools/helpers";
+import {buildPayload, deepMerge} from '../../shared/simpleTools/helpers';
 
 const navigation = [{
     name: 'Documentation',
@@ -51,30 +50,13 @@ class T02 extends React.Component {
         }
     }
 
-    buildPayload = (tool) => ({
-        id: tool.id,
-        name: tool.name,
-        description: tool.description,
-        public: tool.public,
-        type: tool.type,
-        data: {
-            ...tool.data,
-            parameters: tool.data.parameters.map(p => ({
-                id: p.id,
-                max: p.max,
-                min: p.min,
-                value: p.value
-            }))
-        }
-    });
-
     save = () => {
         const {id} = this.props.match.params;
         const {tool} = this.state;
 
         if (id) {
             sendCommand(
-                updateToolInstanceCommand(this.buildPayload(tool)),
+                SimpleToolsCommand.updateToolInstance(buildPayload(tool)),
                 () => this.setState({isDirty: false}),
                 () => this.setState({error: true})
             );
@@ -82,7 +64,7 @@ class T02 extends React.Component {
         }
 
         sendCommand(
-            createToolInstanceCommand(this.buildPayload(tool)),
+            SimpleToolsCommand.createToolInstance(buildPayload(tool)),
             () => this.props.history.push(`${this.props.location.pathname}/${tool.id}`),
             () => this.setState({error: true})
         );
@@ -144,8 +126,13 @@ class T02 extends React.Component {
 
         return (
             <AppContainer navbarItems={navigation}>
-                <ToolMetaData tool={tool} readOnly={readOnly} onChange={this.update} onSave={this.save}
-                              isDirty={isDirty}/>
+                <ToolMetaData
+                    tool={tool}
+                    readOnly={readOnly}
+                    onChange={this.update}
+                    onSave={this.save}
+                    isDirty={isDirty}
+                />
                 <ToolGrid rows={2}>
                     <Background image={image} title={'T02. GROUNDWATER MOUNDING (HANTUSH)'}/>
                     <Chart settings={settings} parameters={parameters}/>

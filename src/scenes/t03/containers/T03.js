@@ -1,6 +1,6 @@
 import React from 'react';
 import {connect} from 'react-redux';
-import {withRouter} from 'react-router-dom';
+import {Redirect, withRouter} from 'react-router-dom';
 
 import PropTypes from 'prop-types';
 
@@ -13,7 +13,7 @@ import ToolMetaData from '../../shared/simpleTools/ToolMetaData';
 import {fetchUrl} from 'services/api';
 import ModflowModel from 'core/model/modflow/ModflowModel';
 import {updateBoundaries, updateModel, updateSoilmodel} from '../actions/actions';
-import {BoundaryCollection} from 'core/model/modflow/boundaries';
+import {BoundaryCollection, BoundaryFactory} from 'core/model/modflow/boundaries';
 import {Soilmodel} from 'core/model/modflow/soilmodel';
 
 const navigation = [{
@@ -53,10 +53,6 @@ class T03 extends React.Component {
         this.setState({
             model: nextProps.model
         })
-    }
-
-    componentDidUpdate() {
-
     }
 
     fetchModel(id) {
@@ -120,19 +116,22 @@ class T03 extends React.Component {
                 description: this.props.model.description,
                 public: this.props.model.public
             }}
-            save={false}
+            saveButton={false}
             onSave={this.saveMetaData}
         />)
 
     };
 
-    renderContent(id, property) {
+    renderContent(id, property, type) {
         switch (property) {
             case 'discretization':
                 return (<Content.Discretization/>);
             case 'soilmodel':
                 return (<Content.SoilmodelEditor/>);
             case 'boundaries':
+                if (BoundaryFactory.availableTypes.indexOf(type) > -1) {
+                    return (<Content.CreateBoundary/>);
+                }
                 return (<Content.Boundaries/>);
             case 'observations':
                 return (<Content.Observations/>);
@@ -146,9 +145,7 @@ class T03 extends React.Component {
                 const path = this.props.match.path;
                 const basePath = path.split(':')[0];
                 return (
-                    this.props.history.push(
-                        basePath + id + '/discretization'
-                    )
+                    <Redirect to={basePath + id + '/discretization'}/>
                 );
         }
     }
@@ -177,7 +174,7 @@ class T03 extends React.Component {
             )
         }
 
-        const {id, property} = this.props.match.params;
+        const {id, property, type} = this.props.match.params;
         return (
             <AppContainer navbarItems={navigation}>
                 <Grid padded>
@@ -192,7 +189,7 @@ class T03 extends React.Component {
                             <ToolNavigation navigationItems={menuItems}/>
                         </Grid.Column>
                         <Grid.Column width={13}>
-                            {this.renderContent(id, property)}
+                            {this.renderContent(id, property, type)}
                         </Grid.Column>
                     </Grid.Row>
                 </Grid>

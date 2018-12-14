@@ -12,7 +12,7 @@ import {BoundaryCollection} from 'core/model/modflow/boundaries';
 import {Soilmodel, SoilmodelLayer} from 'core/model/modflow/soilmodel';
 
 export function updateModel(modflowModel) {
-    if (!modflowModel instanceof ModflowModel) {
+    if (!(modflowModel instanceof ModflowModel)) {
         throw new Error('ModflowModel is expected to be instance of ModflowModel');
     }
 
@@ -23,7 +23,7 @@ export function updateModel(modflowModel) {
 }
 
 export function updateStressperiods(stressperiods) {
-    if (!stressperiods instanceof Stressperiods) {
+    if (!(stressperiods instanceof Stressperiods)) {
         throw new Error('Stressperiods is expected to be instance of Stressperiods');
     }
 
@@ -34,7 +34,7 @@ export function updateStressperiods(stressperiods) {
 }
 
 export function updateBoundaries(boundaryCollection) {
-    if (!boundaryCollection instanceof BoundaryCollection) {
+    if (!(boundaryCollection instanceof BoundaryCollection)) {
         throw new Error('BoundaryCollection is expected to be instance of BoundaryCollection');
     }
 

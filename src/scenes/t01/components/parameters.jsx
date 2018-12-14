@@ -18,13 +18,12 @@ class Parameters extends React.Component {
                 <DataTable
                     toggleSelect={this.props.toggleSelect}
                     data={this.props.data.filter(r => r.selected === true)}
-                    color={'red'}
+                    color={'orange'}
                     icon={'trash'}
                     filter={false}
                 />
 
                 <Header textAlign='left'>
-                    Data
                 </Header>
                 <DataTable
                     toggleSelect={this.props.toggleSelect}

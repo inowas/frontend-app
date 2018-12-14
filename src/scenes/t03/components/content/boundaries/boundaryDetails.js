@@ -1,16 +1,15 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import {Form, Grid} from 'semantic-ui-react';
-import {Boundary} from 'core/model/modflow/boundaries';
+
 import BoundaryMap from '../../maps/boundaryMap';
-import {Geometry} from 'core/model/modflow';
-import BoundaryFactory from 'core/model/modflow/boundaries/BoundaryFactory';
-import Soilmodel from '../../../../../core/model/modflow/soilmodel/Soilmodel';
+import {Boundary, Geometry, Soilmodel, Stressperiods} from 'core/model/modflow';
+import BoundaryValuesDataTable from './boundaryValuesDataTable';
 
 class BoundaryDetails extends React.Component {
 
     handleChange = (e, {name, value}) => {
-        const boundary = BoundaryFactory.fromObjectData(this.props.boundary.toObject);
+        const boundary = this.props.boundary;
         boundary[name] = value;
         this.props.onChange(boundary);
     };
@@ -26,8 +25,12 @@ class BoundaryDetails extends React.Component {
                 <Grid.Row>
                     <Grid.Column width={6}>
                         <Form>
-                            <Form.Input label={'Name'} name={'name'} value={boundary.name}
-                                        onChange={this.handleChange}/>
+                            <Form.Input
+                                label={'Name'}
+                                name={'name'}
+                                value={boundary.name}
+                                onChange={this.handleChange}
+                            />
 
                             <Form.Dropdown
                                 label={'Selected layers'}
@@ -56,11 +59,15 @@ class BoundaryDetails extends React.Component {
                                 onChange={this.handleChange}
                             />
                             }
-
                         </Form>
                         <BoundaryMap geometry={geometry} boundary={boundary}/>
                     </Grid.Column>
                     <Grid.Column width={10}>
+                        <BoundaryValuesDataTable
+                            boundary={boundary}
+                            onChange={this.props.onChange}
+                            stressperiods={this.props.stressperiods}
+                        />
                     </Grid.Column>
                 </Grid.Row>
             </Grid>
@@ -72,6 +79,7 @@ BoundaryDetails.proptypes = {
     boundary: PropTypes.instanceOf(Boundary).isRequired,
     geometry: PropTypes.instanceOf(Geometry).isRequired,
     soilmodel: PropTypes.instanceOf(Soilmodel).isRequired,
+    stressperiods: PropTypes.instanceOf(Stressperiods).isRequired,
     onChange: PropTypes.func.isRequired
 };
 
