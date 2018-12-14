@@ -29,7 +29,7 @@ class StressPeriodsDataTable extends React.Component {
         const stressperiod = stressperiods.getStressperiodByIdx(idx);
 
         if (name === 'startDateTime') {
-            const date = moment(value);
+            const date = moment.utc(value);
             stressperiod.totimStart = stressperiods.totimFromDate(date);
         }
 

@@ -9,7 +9,7 @@ import {
     ResponsiveContainer,
 } from 'recharts';
 
-import {Button, Grid, Header, Segment} from 'semantic-ui-react';
+import {Button, Grid, Segment} from 'semantic-ui-react';
 import {exportChartData, exportChartImage, getParameterValues} from '../../shared/simpleTools/helpers';
 
 
@@ -38,7 +38,7 @@ const styles = {
     },
     downloadButtons: {
         position: 'absolute',
-        top: '30px',
+        top: '5px',
         right: '60px'
     }
 };
@@ -52,7 +52,6 @@ const Chart = ({parameters}) => {
 
     return (
         <div>
-            <Header textAlign='center'>Calculation</Header>
             <Grid>
                 <Grid.Column>
                     <ResponsiveContainer width="100%" aspect={2.5}>
@@ -76,13 +75,13 @@ const Chart = ({parameters}) => {
                     <div style={styles.downloadButtons}>
                         <Button
                             size={'tiny'}
-                            color={'orange'}
+                            color={'grey'}
                             content='JPG'
                             onClick={() => exportChartImage(currentChart)}
                         />
                         <Button
                             size={'tiny'}
-                            color={'orange'}
+                            color={'grey'}
                             content='CSV'
                             onClick={() => exportChartData(currentChart)}
                         />

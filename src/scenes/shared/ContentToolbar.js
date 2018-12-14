@@ -77,7 +77,7 @@ class ContentToolBar extends React.Component {
     };
 
     render() {
-        const saveButton = this.props.saveButton || true;
+        const saveButton = typeof this.props.saveButton === 'boolean' ? this.props.saveButton : true;
         const message = this.state.message;
         const {isDirty} = this.props;
 

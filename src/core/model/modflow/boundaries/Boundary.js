@@ -120,7 +120,15 @@ export default class Boundary {
         return this._defaultValues;
     }
 
+    get valueProperties() {
+        return [];
+    }
+
     get numberOfValues() {
         return this.defaultValues.length;
+    }
+
+    getClone = () => {
+        return Object.assign( Object.create( Object.getPrototypeOf(this)), this);
     }
 }
