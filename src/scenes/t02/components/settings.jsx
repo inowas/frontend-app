@@ -15,8 +15,8 @@ const Settings = ({settings, onChange}) => {
                 <Header as='h2'>Settings</Header>
             </Grid.Row>
             <Grid.Row centered>
-                <Header as='h3'>Please select the axis for the calculation of groundwater
-                    mounding:</Header>
+                <p>Please select the axis for the calculation of groundwater
+                    mounding:</p>
             </Grid.Row>
             <Grid.Row centered>
                 <Form>

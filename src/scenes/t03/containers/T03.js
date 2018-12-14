@@ -1,6 +1,7 @@
 import React from 'react';
 import {connect} from 'react-redux';
-import {withRouter} from 'react-router-dom';
+import {Redirect, withRouter} from 'react-router-dom';
+
 import {fetchUrl} from 'services/api';
 import PropTypes from 'prop-types';
 import {Grid, Icon, Message} from 'semantic-ui-react';
@@ -29,20 +30,33 @@ class T03 extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            model: props.model,
-            isLoading: true,
-            error: false
+            model: null,
+            error: false,
+            isLoading: false
         }
     }
 
     componentDidMount() {
         const {id} = this.props.match.params;
-        if (!id) {
-            return this.setState({isLoading: false})
+        return this.setState({isLoading: true},
+            () => this.fetchModel(id)
+        )
+    };
+
+    componentWillReceiveProps(nextProps, nextContext) {
+        const {id} = nextProps.match.params;
+        if (!this.props.model || this.props.model.id !== id) {
+            if (!this.state.isLoading) {
+                return this.setState({isLoading: true},
+                    () => this.fetchModel(id)
+                )
+            }
         }
 
-        this.fetchModel(id);
-    };
+        this.setState({
+            model: nextProps.model
+        })
+    }
 
     fetchModel(id) {
         fetchUrl(
@@ -50,13 +64,17 @@ class T03 extends React.Component {
             data => {
                 this.props.updateModel(ModflowModel.fromQuery(data));
                 this.setState({isLoading: false});
+                this.fetchBoundaries(id);
+                this.fetchSoilmodel(id);
             },
             error => this.setState(
                 {error, isLoading: false},
                 () => this.handleError(error)
             )
         );
+    };
 
+    fetchBoundaries(id) {
         fetchUrl(`modflowmodels/${id}/boundaries`,
             data => this.props.updateBoundaries(BoundaryCollection.fromQuery(data)),
             error => this.setState(
@@ -64,7 +82,9 @@ class T03 extends React.Component {
                 () => this.handleError(error)
             )
         );
+    };
 
+    fetchOptimization(id) {
         fetchUrl(`modflowmodels/${id}/optimization`,
             data => this.props.updateOptimization(Optimization.fromObject(data)),
             error => this.setState(
@@ -72,7 +92,9 @@ class T03 extends React.Component {
                 () => this.handleError(error)
             )
         );
+    };
 
+    fetchSoilmodel(id) {
         fetchUrl(`modflowmodels/${id}/soilmodel`,
             data => this.props.updateSoilmodel(Soilmodel.fromObject(data)),
             error => this.setState(
@@ -82,14 +104,7 @@ class T03 extends React.Component {
         );
     };
 
-    componentWillReceiveProps(nextProps, nextContext) {
-        this.setState({
-            model: nextProps.model
-        })
-    }
-
     handleError = error => {
-        console.log(error);
         const {response} = error;
         const {status} = response;
 
@@ -103,28 +118,23 @@ class T03 extends React.Component {
             return null;
         }
 
-        const model = ModflowModel.fromObject(this.state.model);
         return (<ToolMetaData
             isDirty={false}
             onChange={this.onChangeMetaData}
             readOnly={false}
             tool={{
                 type: 'T03',
-                name: model.name,
-                description: model.description,
-                public: model.public
+                name: this.props.model.name,
+                description: this.props.model.description,
+                public: this.props.model.public
             }}
-            save={false}
+            saveButton={false}
             onSave={this.saveMetaData}
         />)
 
     };
 
     renderContent(id, property) {
-        if (!this.props.model) {
-            return null;
-        }
-
         switch (property) {
             case 'discretization':
                 return (<Content.Discretization/>);
@@ -144,9 +154,7 @@ class T03 extends React.Component {
                 const path = this.props.match.path;
                 const basePath = path.split(':')[0];
                 return (
-                    this.props.history.push(
-                        basePath + id + '/discretization'
-                    )
+                    <Redirect to={basePath + id + '/discretization'}/>
                 );
         }
     }
@@ -167,17 +175,11 @@ class T03 extends React.Component {
     };
 
     render() {
-        if (!this.props.match.params.id) {
+        if (!this.props.model) {
             return (
                 <AppContainer navbarItems={navigation}>
-                    <Content.CreateModel/>
+                    <Message>LOADING</Message>
                 </AppContainer>
-            );
-        }
-
-        if (this.state.isLoading) {
-            return (
-                <Message>LOADING</Message>
             )
         }
 
@@ -206,7 +208,7 @@ class T03 extends React.Component {
 }
 
 const mapStateToProps = state => ({
-    model: state.T03.model,
+    model: state.T03.model && ModflowModel.fromObject(state.T03.model),
     boundaries: state.T03.boundaries
 });
 

@@ -26,10 +26,14 @@ class Stressperiods {
         }))
     }
 
+    static fromDefaults() {
+        return Stressperiods.create(moment.utc('2000-01-01'), moment.utc('2019-12-31'), TimeUnit.days());
+    }
+
     static fromObject(obj) {
         const stressPeriods = new Stressperiods();
-        stressPeriods.startDateTime = moment(new Date(obj.start_date_time));
-        stressPeriods.endDateTime = moment(new Date(obj.end_date_time));
+        stressPeriods.startDateTime = moment.utc(new Date(obj.start_date_time));
+        stressPeriods.endDateTime = moment.utc(new Date(obj.end_date_time));
         stressPeriods.timeUnit = obj.time_unit;
 
         obj.stress_periods.forEach(sp => {
@@ -64,11 +68,19 @@ class Stressperiods {
     }
 
     get stressperiods() {
-        return this.recalculate(orderBy(this._stressperiods, [sp => sp.totimStart], ['asc']));
+        return this._stressperiods;
+    }
+
+    orderStressperiods() {
+        this._stressperiods = orderBy(this._stressperiods, [sp => sp.totimStart], ['asc']);
     }
 
     getStressperiodByIdx(idx) {
         return this._stressperiods[idx];
+    }
+
+    last() {
+        return this.stressperiods[this.count-1];
     }
 
     updateStressperiodByIdx(idx, stressperiod) {

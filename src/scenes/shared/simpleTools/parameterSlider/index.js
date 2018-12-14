@@ -8,19 +8,17 @@ import SliderParameter from "./SliderParameter";
 
 const styles = {
     extraMini: {
-        border: '1px solid rgba(34,36,38,.15)',
-        borderRadius: '.28571429rem',
-        fontSize: '.78571429em',
+        backgroundColor: '#EEEEEE',
+        border: 'none',
         padding: '2px',
         width: '50px'
     },
     gridPadding: {
-        paddingTop: '15px'
+        /* paddingTop: '15px' */
     },
     valueInput: {
-        border: '1px solid rgba(34,36,38,.15)',
-        borderRadius: '.28571429rem',
-        fontSize: '.78571429em',
+        backgroundColor: '#EEEEEE',
+        border: 'none',
         padding: '5px',
         width: '100px'
     },
@@ -74,7 +72,7 @@ class ParameterSlider extends React.Component {
 
         return (
             <Grid.Row columns={3} style={styles.row}>
-                <Grid.Column width={5}>
+                <Grid.Column width={5} textAlign='right'>
                     <div dangerouslySetInnerHTML={{__html: param.name}}/>
                 </Grid.Column>
                 <Grid.Column width={8}>
@@ -108,7 +106,7 @@ class ParameterSlider extends React.Component {
                         </Grid.Row>
                     </Grid>
                 </Grid.Column>
-                <Grid.Column width={3}>
+                <Grid.Column width={3} style={{verticalAlign: "top", height: "50px"}}>
                     <input name='value'
                            type="number"
                            size='mini'

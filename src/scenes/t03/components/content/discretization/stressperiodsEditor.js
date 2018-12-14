@@ -10,8 +10,8 @@ import {updateStressperiods} from '../../../actions/actions';
 import {sendCommand} from 'services/api';
 import StressPeriodsDataTable from './stressperiodsDatatable';
 import moment from 'moment';
-import ContentToolBar from '../../shared/contentToolbar';
-import Command from '../../../commands/command';
+import ContentToolBar from 'scenes/shared/ContentToolbar';
+import ModflowModelCommand from '../../../commands/modflowModelCommand';
 
 class StressperiodsEditor extends React.Component {
     constructor(props) {
@@ -25,7 +25,7 @@ class StressperiodsEditor extends React.Component {
 
     onSave = () => {
         const stressperiods = Stressperiods.fromObject(this.state.stressperiods);
-        const command = Command.updateStressperiods({
+        const command = ModflowModelCommand.updateStressperiods({
             id: this.props.id,
             stress_periods: stressperiods.toObject()
         });
@@ -65,8 +65,12 @@ class StressperiodsEditor extends React.Component {
             <Grid>
                 <Grid.Row>
                     <Grid.Column width={16}>
-                        <ContentToolBar isDirty={this.state.isDirty} isError={this.state.isError} saveButton
-                                        onSave={this.onSave}/>
+                        <ContentToolBar
+                            isDirty={this.state.isDirty}
+                            isError={this.state.isError}
+                            saveButton
+                            onSave={this.onSave}
+                        />
                     </Grid.Column>
                 </Grid.Row>
                 <Grid.Row>
@@ -89,7 +93,6 @@ class StressperiodsEditor extends React.Component {
                             <Form.Select
                                 label='Time unit'
                                 options={[{key: 4, text: 'days', value: 4}]}
-                                style={{zIndex: 10000}}
                                 value={4}
                                 width={16}
                             />

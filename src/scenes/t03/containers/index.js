@@ -1,5 +1,7 @@
-import T03 from './T03'
+import CreateModel from './createModel'
+import EditModel from './T03'
 
 export {
-    T03
+    CreateModel,
+    EditModel
 }

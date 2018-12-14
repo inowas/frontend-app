@@ -221,14 +221,14 @@ i.inverted.icon {
 
 /* Red */
 i.red.icon {
-  color: #DB2828 !important;
+  color: #FF5B4D !important;
 }
 i.inverted.red.icon {
   color: #FF695E !important;
 }
 i.inverted.bordered.red.icon,
 i.inverted.circular.red.icon {
-  background-color: #DB2828 !important;
+  background-color: #FF5B4D !important;
   color: #FFFFFF !important;
 }
 
@@ -302,7 +302,7 @@ i.blue.icon {
   color: #1EB1ED !important;
 }
 i.inverted.blue.icon {
-  color: #54C8FF !important;
+  color: #3AC6FF !important;
 }
 i.inverted.bordered.blue.icon,
 i.inverted.circular.blue.icon {

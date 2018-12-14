@@ -1,21 +1,20 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+
+import {includes} from 'lodash';
 import {withRouter} from 'react-router-dom';
 
-import image from '../images/T14B.png';
+import {AppContainer} from '../../shared';
 import {Background, ChartT14B as Chart, InfoT14B as Info, Parameters} from '../components';
+import {SliderParameter, ToolGrid, ToolMetaData} from '../../shared/simpleTools';
+import {navigation} from './T14';
 
+import SimpleToolsCommand from '../../shared/simpleTools/commands/SimpleToolsCommand';
+
+import image from '../images/T14B.png';
 import {defaults} from '../defaults/T14B';
-import SliderParameter from 'scenes/shared/simpleTools/parameterSlider/SliderParameter';
 
 import {fetchTool, sendCommand} from 'services/api';
-import {createToolInstanceCommand, updateToolInstanceCommand} from 'services/commandFactory';
-import AppContainer from '../../shared/AppContainer';
-import ToolMetaData from '../../shared/simpleTools/ToolMetaData';
-import ToolGrid from '../../shared/simpleTools/ToolGrid';
-
-import {navigation} from './T14';
-import {includes} from 'lodash';
 import {buildPayload, deepMerge} from '../../shared/simpleTools/helpers';
 
 class T14B extends React.Component {
@@ -51,7 +50,7 @@ class T14B extends React.Component {
 
         if (id) {
             sendCommand(
-                updateToolInstanceCommand(buildPayload(tool)),
+                SimpleToolsCommand.updateToolInstance(buildPayload(tool)),
                 () => this.setState({isDirty: false}),
                 () => this.setState({error: true})
             );
@@ -59,7 +58,7 @@ class T14B extends React.Component {
         }
 
         sendCommand(
-            createToolInstanceCommand(buildPayload(tool)),
+            SimpleToolsCommand.createToolInstance(buildPayload(tool)),
             () => this.props.history.push(`${this.props.location.pathname}/${tool.id}`),
             () => this.setState({error: true})
         );
@@ -101,13 +100,19 @@ class T14B extends React.Component {
             );
         }
 
-        const {data, permissions} = tool;
+        const {data, isDirty, permissions} = tool;
         const {parameters} = data;
         const readOnly = !includes(permissions, 'w');
 
         return (
             <AppContainer navbarItems={navigation}>
-                <ToolMetaData tool={tool} readOnly={readOnly} onChange={this.update} onSave={this.save}/>
+                <ToolMetaData
+                    tool={tool}
+                    readOnly={readOnly}
+                    onChange={this.update}
+                    onSave={this.save}
+                    isDirty={isDirty}
+                />
                 <ToolGrid rows={2}>
                     <Background
                         image={image}

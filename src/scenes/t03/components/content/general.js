@@ -3,8 +3,8 @@ import PropTypes from 'prop-types';
 import {withRouter} from 'react-router-dom';
 import {Button, Checkbox, Form, Grid, Segment} from 'semantic-ui-react';
 import {fetchUrl, sendCommand} from 'services/api';
-import Command from "../../commands/command";
-import ToolMetaData from "../../../shared/simpleTools/ToolMetaData";
+import ModflowModelCommand from '../../commands/modflowModelCommand';
+import ToolMetaData from '../../../shared/simpleTools/ToolMetaData';
 
 class General extends React.Component {
     constructor(props) {
@@ -62,7 +62,7 @@ class General extends React.Component {
     handleSave = () => {
         this.setState({loading: true});
         return sendCommand(
-            Command.updateModflowModel(this.buildPayload()), () => this.setState({loading: false})
+            ModflowModelCommand.updateModflowModel(this.buildPayload()), () => this.setState({loading: false})
         );
     };
 
@@ -93,7 +93,7 @@ class General extends React.Component {
                                         <Form.TextArea
                                             label={'Description'}
                                             disabled={this.state.readOnly}
-                                            name={"description"}
+                                            name={'description'}
                                             onChange={this.handleInputChange}
                                             placeholder={'Description'}
                                             value={this.state.description}

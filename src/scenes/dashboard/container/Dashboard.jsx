@@ -1,38 +1,27 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-import {setActiveTool, setPublic, cloneToolInstance, deleteToolInstance} from '../actions/actions';
-import {loadInstances} from '../actions/queries';
-import {getTool, getTools} from '../selectors/tool';
-import {getActiveToolSlug, getPublic} from '../selectors/ui';
+import {setActiveTool, setPublic} from '../actions';
+import {cloneToolInstance, deleteToolInstance} from '../commands';
 
 import {connect} from 'react-redux';
 import {withRouter} from 'react-router-dom';
-import {Button, Container, Grid, Header, Icon, Menu, Popup, Table, Search} from 'semantic-ui-react';
-import * as Formatter from '../../../services/formatter';
+import {Button, Container, Grid, Header, Icon, Search} from 'semantic-ui-react';
 
-import {includes} from 'lodash';
 import AppContainer from '../../shared/AppContainer';
+import tools from '../defaults/tools';
+import ToolsMenu from '../components/ToolsMenu';
+import ToolsDataTable from '../components/ToolsDataTable';
+import {fetchUrl, sendCommand} from 'services/api';
+
+import uuid from 'uuid';
+
 
 const styles = {
-    actionWrapper: {
-        position: 'absolute',
-        right: 10,
-    },
-    wrapper: {
-        padding: '0 40px 0 40px',
-        width: '1280px'
-    },
-    columnPadding: {
-        padding: '12px'
-    },
     columnContainer: {
         background: '#FFFFFF',
         boxShadow: '0 0 3px 0px rgba(0, 0, 0, 0.3)',
         height: '100%',
-    },
-    menu: {
-        width: '100%'
     },
     grid: {
         marginTop: '25px'
@@ -52,227 +41,142 @@ const navigation = [
     }
 ];
 
-class Dashboard
-    extends React.Component {
+class Dashboard extends React.Component {
     state = {
-        hoveredInstance: null
+        hoveredInstance: null,
+        isLoading: true,
+        toolInstances: [],
+        error: false
     };
 
     componentDidMount() {
-        const {activeTool, fetchInstances, publicInstances} = this.props;
-        fetchInstances(activeTool.slug, publicInstances);
+        const {activeTool, showPublicInstances} = this.props;
+        this.fetchInstances(activeTool.slug, showPublicInstances);
     }
 
-    componentDidUpdate(prevProps) {
-        const {activeTool, publicInstances, fetchInstances} = this.props;
+    fetchInstances = (tool, showPublicInstances) => {
+        fetchUrl(`tools/${tool}` + (showPublicInstances ? '?public=true' : ''),
+            data => this.setState({toolInstances: data, isLoading: false}),
+            error => this.handleError(error)
+        );
+    };
 
-        if (
-            activeTool.slug !== prevProps.activeTool.slug ||
-            publicInstances !== prevProps.publicInstances
-        ) {
-            fetchInstances(activeTool.slug, publicInstances);
+    handleError = error => {
+        const {response} = error;
+        const {status} = response;
+        this.setState({error, isLoading: false});
+
+        if (status === 422) {
+            this.props.history.push('/tools');
         }
-    }
+    };
 
     onToolClick = slug => {
         if (slug === 'T01' || slug === 'T04' || slug === 'T06' || slug === 'T11') {
-            return () => this.props.history.push('/tools/' + slug);
+            return this.props.history.push('/tools/' + slug);
         }
 
         if (slug === 'T17') {
-            return () => window.open('http://marportal.un-igrac.org', '_blank');
+            return window.open('http://marportal.un-igrac.org', '_blank');
         }
 
-        return () => {
-            this.props.setActiveTool(slug);
-        };
+        this.setState({
+            isLoading: true,
+            toolInstances: []
+        }, () => this.fetchInstances(slug, this.props.showPublicInstances));
+
+        return this.props.setActiveTool(slug);
     };
 
-    renderTableRows(basePath, subPath, instances) {
-        const {publicInstances, cloneToolInstance, deleteToolInstance} = this.props;
-        const {push} = this.props.history;
+    setPublic = showPublicInstances => {
+        this.props.setPublic(showPublicInstances);
+        return this.setState({
+            isLoading: true,
+            toolInstances: []
+        }, () => this.fetchInstances(this.props.activeTool.slug, showPublicInstances))
+    };
 
-        return instances.map((i, index) => {
-            return (
-                <Table.Row
-                    key={index}
-                    onMouseEnter={() => this.setState({hoveredInstance: index})}
-                    onMouseLeave={() => this.setState({hoveredInstance: null})}
-                >
-                    <Table.Cell textAlign='right'>
-                        {index + 1}
-                    </Table.Cell>
-                    <Table.Cell>
-                        <Button
-                            basic
-                            onClick={() => push(basePath + i.tool + '/' + i.id + subPath)}
-                            size='small'
-                        >
-                            {i.name}
-                        </Button>
-                    </Table.Cell>
-                    <Table.Cell>
-                        {i.tool}
-                    </Table.Cell>
-                    <Table.Cell>
-                        {Formatter.dateToDatetime(new Date(i.created_at))}
-                    </Table.Cell>
-                    <Table.Cell>
-                        {i.user_name}
-                    </Table.Cell>
-                    <Table.Cell style={styles.actionWrapper}>
-                        {(() => {
-                            if (this.state.hoveredInstance === index) {
-                                return (
-                                    <Button.Group size='small'>
-                                        {!i.fake &&
-                                        <Popup
-                                            trigger={
-                                                <Button
-                                                    onClick={() => cloneToolInstance(i.id)}
-                                                    icon
-                                                >
-                                                    <Icon name='clone'/>
-                                                </Button>
-                                            }
-                                            content='Clone'
-                                        />
-                                        }
-                                        {!i.fake &&
-                                        !publicInstances &&
-                                        <Popup
-                                            trigger={
-                                                <Button
-                                                    onClick={() => deleteToolInstance(i.id)}
-                                                    icon
-                                                >
-                                                    <Icon name='trash'/>
-                                                </Button>
-                                            }
-                                            content='Delete'
-                                        />
-                                        }
-                                    </Button.Group>
-                                );
-                            }
-                            return null;
-                        })()}
-                    </Table.Cell>
-                </Table.Row>
-            );
-        });
-    }
+    handleCloneInstance = (tool, id) => {
+        const newId = uuid.v4();
+        sendCommand(cloneToolInstance(tool, id, newId),
+            () => this.setPublic(false)
+        )
+    };
 
-    renderDataTable() {
-        // eslint-disable-next-line no-shadow
-        const {activeTool, setPublic, publicInstances} = this.props;
-        const {push} = this.props.history;
 
-        return (
-            <Grid padded>
-                <Grid.Row columns={1}>
-                    <Grid.Column>
-                        <Header as='h2'>Instances of {activeTool.slug}</Header>
-                    </Grid.Column>
-                </Grid.Row>
-                <Grid.Row columns={3}>
-                    <Grid.Column width={4} floated='left' textAlign='center'>
-                        <Button content='Add new' positive icon='plus' labelPosition='left' fluid
-                                style={styles.iconFix}
-                                onClick={() => push(activeTool.path + activeTool.slug)}
-                        >
-                        </Button>
-                    </Grid.Column>
-                    <Grid.Column width={6}>
-                        <Search />
-                    </Grid.Column>
-                    <Grid.Column width={4} floated='right' textAlign='right'>
-                        <Button.Group fluid size='tiny'>
-                            <Button
-                                onClick={() => setPublic(false)}
-                                primary={!publicInstances}
-                            >
-                                Private
-                            </Button>
-                            <Button.Or/>
-                            <Button
-                                onClick={() => setPublic(true)}
-                                primary={publicInstances}
-                            >
-                                Public
-                            </Button>
-                        </Button.Group>
-                    </Grid.Column>
-                </Grid.Row>
-                <Grid.Row columns={1}>
-                    <Grid.Column>
-                        <Table>
-                            <Table.Header>
-                                <Table.Row>
-                                    <Table.HeaderCell>No.</Table.HeaderCell>
-                                    <Table.HeaderCell>Name</Table.HeaderCell>
-                                    <Table.HeaderCell>Tool</Table.HeaderCell>
-                                    <Table.HeaderCell>Date created</Table.HeaderCell>
-                                    <Table.HeaderCell>Created by</Table.HeaderCell>
-                                    <Table.HeaderCell/>
-                                </Table.Row>
-                            </Table.Header>
-                            <Table.Body>
-                                {this.renderTableRows(
-                                    activeTool.path,
-                                    activeTool.subPath,
-                                    activeTool.instances
-                                )}
-                            </Table.Body>
-                        </Table>
-                    </Grid.Column>
-                </Grid.Row>
-            </Grid>
-        );
-    }
+    handleDeleteInstance = (tool, id) => {
+        sendCommand(deleteToolInstance(tool, id),
+            () => this.setPublic(false)
+        )
+    };
+
 
     render() {
-        const {tools, roles, activeTool} = this.props;
-
-        const menuItems = [
-            {
-                name: 'Tools',
-                icon: <Icon name="horizontal sliders"/>,
-                items: tools.filter(t => includes(roles, t.role))
-                    .map(t => {
-                        return {
-                            name: t.slug + ': ' + t.name,
-                            onClick: this.onToolClick(t.slug),
-                            active: (activeTool.slug === t.slug)
-                        };
-                    })
-            }
-        ];
+        const {activeTool, roles, history, showPublicInstances} = this.props;
+        const {push} = history;
 
         return (
             <AppContainer navbarItems={navigation}>
                 <Grid padded style={styles.grid}>
                     <Grid.Column width={6}>
-                        <Menu vertical style={styles.menu} size='small'>
-                            {menuItems.map((category, key) =>
-                                <div key={key}>
-                                    <Menu.Item header icon >{category.icon}{category.name}</Menu.Item>
-                                    {category.items.map((item, key) =>
-                                        <Menu.Item
-                                            key={key}
-                                            onClick={item.onClick}
-                                            active={item.active}
-                                        >
-                                            {item.name}
-                                        </Menu.Item>
-                                    )}
-                                </div>
-                            )}
-                        </Menu>
+                        <ToolsMenu
+                            activeTool={activeTool.slug}
+                            onClick={this.onToolClick}
+                            roles={roles}
+                            tools={tools}
+                        />
                     </Grid.Column>
                     <Grid.Column width={10}>
                         <Container style={styles.columnContainer}>
-                            {this.renderDataTable()}
+                            <Grid padded>
+                                <Grid.Row columns={1}>
+                                    <Grid.Column>
+                                        <Header as='h1' align={'center'} size={'medium'}>Instances
+                                            of {activeTool.slug}: {activeTool.name}</Header>
+                                    </Grid.Column>
+                                </Grid.Row>
+                                <Grid.Row columns={3}>
+                                    <Grid.Column width={4} floated='left' textAlign='center'>
+                                        <Button content='Add new' positive icon='plus' labelPosition='left' fluid
+                                                style={styles.iconFix}
+                                                onClick={() => push(activeTool.path + activeTool.slug)}
+                                        >
+                                        </Button>
+                                    </Grid.Column>
+                                    <Grid.Column width={6}>
+                                        <Search/>
+                                    </Grid.Column>
+                                    <Grid.Column width={4} floated='right' textAlign='right'>
+                                        <Button.Group fluid size='tiny'>
+                                            <Button
+                                                onClick={() => this.setPublic(false)}
+                                                primary={!showPublicInstances}
+                                            >
+                                                Private
+                                            </Button>
+                                            <Button.Or/>
+                                            <Button
+                                                onClick={() => this.setPublic(true)}
+                                                primary={showPublicInstances}
+                                            >
+                                                Public
+                                            </Button>
+                                        </Button.Group>
+                                    </Grid.Column>
+                                </Grid.Row>
+                                <Grid.Row columns={1}>
+                                    <Grid.Column>
+                                        <ToolsDataTable
+                                            activeTool={activeTool}
+                                            cloneToolInstance={this.handleCloneInstance}
+                                            deleteToolInstance={this.handleDeleteInstance}
+                                            loading={this.state.isLoading}
+                                            showPublicInstances={showPublicInstances}
+                                            toolInstances={this.state.toolInstances}
+                                        />
+                                    </Grid.Column>
+                                </Grid.Row>
+                            </Grid>
                         </Container>
                     </Grid.Column>
                 </Grid>
@@ -284,33 +188,20 @@ class Dashboard
 const mapStateToProps = state => {
     return {
         roles: state.user.roles,
-        tools: getTools(state.dashboard.tools),
-        activeTool: getTool(
-            state.dashboard.tools,
-            getActiveToolSlug(state.dashboard.ui)
-        ),
-        publicInstances: getPublic(state.dashboard.ui)
+        activeTool: tools.filter(t => t.slug === state.dashboard.activeTool)[0],
+        showPublicInstances: state.dashboard.showPublicInstances
     };
 };
 
 const mapDispatchToProps = {
-    setActiveTool: setActiveTool,
-    fetchInstances: loadInstances,
-    setPublic: setPublic,
-    cloneToolInstance: cloneToolInstance,
-    deleteToolInstance: deleteToolInstance
+    setActiveTool, setPublic
 };
 
 Dashboard.propTypes = {
-    roles: PropTypes.array,
-    tools: PropTypes.array,
-    activeTool: PropTypes.object,
-    publicInstances: PropTypes.bool,
+    activeTool: PropTypes.object.isRequired,
+    roles: PropTypes.array.isRequired,
     setActiveTool: PropTypes.func.isRequired,
-    fetchInstances: PropTypes.func.isRequired,
-    setPublic: PropTypes.func.isRequired,
-    cloneToolInstance: PropTypes.func.isRequired,
-    deleteToolInstance: PropTypes.func.isRequired,
+    showPublicInstances: PropTypes.bool.isRequired,
     history: PropTypes.object.isRequired
 };
 

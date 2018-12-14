@@ -2,6 +2,11 @@
     User Variable Overrides
 *******************************/
 
+@borderRadius: @defaultBorderRadius;
+
 /* Box Shadow */
 @basicBoxShadow: 0px 0px 0px @basicBorderSize @borderBoxShadowColor inset;
 @basicHoverBoxShadow: @borderBoxShadowColor;
+
+/* Basic Hover */
+@basicHoverBackground: transparent;
