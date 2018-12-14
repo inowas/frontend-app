@@ -214,7 +214,7 @@ class SsmPackage extends AbstractMt3dPackage {
         this._stressPeriodData = spData;
     }
 
-    get toObject() {
+    toObject() {
         const obj = {
             crch: this.crch,
             cevt: this.cevt,
@@ -227,7 +227,7 @@ class SsmPackage extends AbstractMt3dPackage {
         };
 
         return {
-            ...super.toObject,
+            ...super.toObject(),
             ...obj
         };
     }

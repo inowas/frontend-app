@@ -87,8 +87,8 @@ class MtPackage extends AbstractMt3dPackage {
         this._verbose = value;
     }
 
-    get toObject() {
-        const obj = super.toObject;
+    toObject() {
+        const obj = super.toObject();
         obj.modelname = this._modelname;
         obj.namefile_ext = this._namefileExt;
         obj.exe_name = this._exeName;

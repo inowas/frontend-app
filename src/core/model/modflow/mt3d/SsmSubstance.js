@@ -79,22 +79,22 @@ class SsmSubstance {
         this.boundaryValuesList = this.boundaryValuesList.filter(bv => bv._boundaryId !== boundaryId);
     }
 
-    get toSsmPackageValues() {
+    toSsmPackageValues() {
         let ssmPackageValues = [];
         this.boundaryValuesList.forEach((bv, idx) => {
             if (idx === 0) {
-                ssmPackageValues = bv.toSsmPackageValues;
+                ssmPackageValues = bv.toSsmPackageValues();
             }
 
             if (idx > 0) {
-                ssmPackageValues.push(...bv.toSsmPackageValues);
+                ssmPackageValues.push(...bv.toSsmPackageValues());
             }
         });
 
         return ssmPackageValues;
     }
 
-    get toObject() {
+    toObject() {
         return {
             id: this.id,
             name: this._name,

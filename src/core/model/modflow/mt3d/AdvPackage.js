@@ -197,8 +197,8 @@ class AdvPackage extends AbstractMt3dPackage {
         this._filenames = value;
     }
 
-    get toObject() {
-        const obj = super.toObject;
+    toObject() {
+        const obj = super.toObject();
         obj.mixelm = this.mixelm;
         obj.percel = this.percel;
         obj.mxpart = this.mxpart;

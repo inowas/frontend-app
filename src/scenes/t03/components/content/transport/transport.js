@@ -2,7 +2,7 @@ import React from 'react';
 import {connect} from 'react-redux';
 import {withRouter} from 'react-router-dom';
 import PropTypes from 'prop-types';
-import {sendCommand} from 'services/api';
+import {fetchUrl, sendCommand} from 'services/api';
 import ModflowModelCommand from '../../../commands/modflowModelCommand';
 
 import {Grid, Menu, Segment} from 'semantic-ui-react';
@@ -16,7 +16,7 @@ import {
     MtPackageProperties,
     SsmPackageProperties
 } from './mt';
-import {fetchUrl} from "../../../../../services/api";
+import ContentToolBar from '../../../../shared/ContentToolbar';
 
 const sideBar = [
     {
@@ -50,7 +50,7 @@ class Transport extends React.Component {
         super(props);
 
         this.state = {
-            mt3dms: this.props.model.mt3dms || Mt3dms.fromDefaults().toObject,
+            mt3dms: this.props.model.mt3dms.toObject(),
             isError: false,
             isDirty: false,
             isLoading: true,
@@ -60,7 +60,7 @@ class Transport extends React.Component {
     componentWillReceiveProps(nextProps) {
         if (nextProps.model.mt3dms) {
             this.setState({
-                mt3dms: nextProps.model.mt3dms
+                mt3dms: nextProps.model.mt3dms.toObject()
             });
         }
     }
@@ -81,7 +81,7 @@ class Transport extends React.Component {
         return sendCommand(
             ModflowModelCommand.updateMt3dms({
                 id: this.props.model.id,
-                input: this.state.mt3dms
+                mt3dms: this.state.mt3dms
             }), () => this.setState({
                 isDirty: false,
                 loading: false
@@ -94,7 +94,7 @@ class Transport extends React.Component {
             const newMt3dms = Mt3dms.fromObject(this.state.mt3dms);
             newMt3dms.addPackage(p);
             return this.setState({
-                mt3dms: newMt3dms.toObject
+                mt3dms: newMt3dms.toObject()
             });
         }
 
@@ -110,7 +110,7 @@ class Transport extends React.Component {
         const changedMt3dms = Mt3dms.fromObject(this.state.mt3dms);
         changedMt3dms.toggleEnabled();
         return this.setState({
-            mt3dms: changedMt3dms.toObject
+            mt3dms: changedMt3dms.toObject()
         });
     };
 
@@ -118,7 +118,11 @@ class Transport extends React.Component {
         const path = this.props.match.path;
         const basePath = path.split(':')[0];
 
-        this.props.history.push(basePath + this.props.model.id + '/transport/' + type);
+        if (!type) {
+            return this.props.history.push(basePath + this.props.model.id + '/transport');
+        }
+
+        return this.props.history.push(basePath + this.props.model.id + '/transport/' + type);
     };
 
     renderProperties() {
@@ -127,21 +131,21 @@ class Transport extends React.Component {
         }
 
         const mt3d = Mt3dms.fromObject(this.state.mt3dms);
+        const {boundaries} = this.state;
 
-        const {model} = this.props;
+        const model = this.props.model.toObject();
         if (!model.stress_periods) {
             return null;
         }
 
         const stressPeriods = Stressperiods.fromObject(model.stress_periods);
 
-        if (!model.boundaries) {
+        if (!boundaries) {
             return null;
         }
 
-        const boundaries = model.boundaries;
         const readOnly = true;
-        const {type} = this.props.params;
+        const {type} = this.props.match.params;
 
         switch (type) {
             case 'adv':
@@ -220,7 +224,7 @@ class Transport extends React.Component {
     };
 
     render() {
-        const {isLoading, mt3dms} = this.state;
+        const {isDirty, isLoading, mt3dms} = this.state;
 
         if (!mt3dms) {
             return null;
@@ -230,12 +234,20 @@ class Transport extends React.Component {
             <div>
                 <Segment color={'grey'} loading={isLoading}>
                     <Grid>
+                        <Grid.Row>
+                            <Grid.Column width={4}/>
+                            <Grid.Column width={12}>
+                                <ContentToolBar isDirty={isDirty} save onSave={this.onSave}/>
+                            </Grid.Column>
+                        </Grid.Row>
+                        <Grid.Row>
                         <Grid.Column width={4}>
                             {this.renderSidebar()}
                         </Grid.Column>
                         <Grid.Column width={12}>
                             {this.renderProperties()}
                         </Grid.Column>
+                        </Grid.Row>
                     </Grid>
                 </Segment>
             </div>

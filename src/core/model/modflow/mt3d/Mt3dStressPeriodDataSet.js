@@ -83,7 +83,7 @@ class Mt3dStressPeriodDataSet {
         this._itype = value;
     }
 
-    get toArray() {
+    toArray() {
         const arr = [this.layer, this.row, this.column, this.concentrations[0], this.itype];
         if (this.concentrations.length > 1) {
             this.concentrations.forEach(c => arr.push(c));

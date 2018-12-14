@@ -40,7 +40,7 @@ class SsmPackageProperties extends AbstractPackageProperties {
         ssmPackage.addSubstance(substance);
         this.props.onChange(ssmPackage);
         this.setState({
-            mtPackage: ssmPackage.toObject,
+            mtPackage: ssmPackage.toObject(),
             selectedSubstance: substance.id
         });
     };
@@ -49,7 +49,7 @@ class SsmPackageProperties extends AbstractPackageProperties {
         const ssmPackage = SsmPackage.fromObject(this.state.mtPackage);
         ssmPackage.updateSubstance(substance);
         this.props.onChange(ssmPackage);
-        return this.setState({mtPackage: ssmPackage.toObject});
+        return this.setState({mtPackage: ssmPackage.toObject()});
     };
 
     removeSubstance = () => {
@@ -58,7 +58,7 @@ class SsmPackageProperties extends AbstractPackageProperties {
         //TODO: Remove substances from optimization?!
         this.props.onChange(ssmPackage);
         return this.setState({
-            mtPackage: ssmPackage.toObject,
+            mtPackage: ssmPackage.toObject(),
             selectedSubstance: 0
         });
     };

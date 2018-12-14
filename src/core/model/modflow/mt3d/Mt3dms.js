@@ -1,4 +1,7 @@
 import Ajv from 'ajv';
+import ajv0 from 'ajv/lib/refs/json-schema-draft-04';
+import mt3dmsSchema from './mt3dms.schema.json';
+
 import AbstractMt3dPackage from './AbstractMt3dPackage';
 import AdvPackage from './AdvPackage';
 import BtnPackage from './BtnPackage';
@@ -9,7 +12,7 @@ import MtPackage from './MtPackage';
 import SsmPackage from './SsmPackage';
 import {includes} from 'lodash';
 
-class mt3dms {
+class Mt3dms {
 
     _enabled = false;
 
@@ -25,11 +28,11 @@ class mt3dms {
     };
 
     static fromDefaults() {
-        return new mt3dms();
+        return new Mt3dms();
     }
 
     static fromObject(obj) {
-        const mt = new mt3dms();
+        const mt = new Mt3dms();
         mt.enabled = obj.enabled;
         obj.packages.forEach(packageName => {
             const mt3dPackage = Mt3dPackageFactory.fromData(obj[packageName]);
@@ -81,7 +84,7 @@ class mt3dms {
         throw new Error('Package with packageName: ' + packageName + ' not found.');
     };
 
-    get toObject() {
+    toObject() {
         const obj = {
             enabled: this.enabled,
             packages: Object.keys(this.packages)
@@ -90,7 +93,7 @@ class mt3dms {
         for (const key in this.packages) {
             if (this.packages.hasOwnProperty(key)) {
                 const p = this.packages[key];
-                obj[p.packageName] = p.toObject;
+                obj[p.packageName] = p.toObject();
             }
         }
 
@@ -98,12 +101,12 @@ class mt3dms {
     }
 
     validate() {
-        const schema = require('./mt3dms.schema.json');
+        const schema = mt3dmsSchema;
         const ajv = new Ajv({schemaId: 'id'});
-        ajv.addMetaSchema(require('ajv/lib/refs/json-schema-draft-04.json'));
+        ajv.addMetaSchema(ajv0);
         const validate = ajv.compile(schema);
-        return [validate(this.toObject), validate.errors];
+        return [validate(this.toObject()), validate.errors];
     }
 }
 
-export default mt3dms;
+export default Mt3dms;

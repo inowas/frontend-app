@@ -31,7 +31,7 @@ class AbstractMt3dPackage {
         return this._meta[name];
     }
 
-    get toObject() {
+    toObject() {
         return {
             _meta: this._meta
         };

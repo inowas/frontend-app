@@ -117,8 +117,8 @@ class GcgPackage extends AbstractMt3dPackage {
         this._filenames = value;
     }
 
-    get toObject() {
-        const obj = super.toObject;
+    toObject() {
+        const obj = super.toObject();
         obj.mxiter = this.mxiter;
         obj.iter1 = this.iter1;
         obj.isolve = this.isolve;

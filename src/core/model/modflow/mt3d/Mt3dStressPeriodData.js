@@ -38,18 +38,18 @@ class Mt3dStressPeriodData {
         this._data[sp].push(data);
     };
 
-    get toObject() {
+    toObject() {
         const response = {};
         Object.keys(this.data).forEach((key) => {
             response[key] = this.data[key].map(
-                spItem => spItem.toArray
+                spItem => spItem.toArray()
             );
         });
         return response;
     }
 
     get toPackageData() {
-        return this.toObject;
+        return this.toObject();
     }
 }
 

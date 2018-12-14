@@ -60,7 +60,7 @@ class SsmBoundaryValues {
         this.stressPeriodValues = value;
     }
 
-    get toSsmPackageValues() {
+    toSsmPackageValues() {
         return (
             this.stressPeriodValues.map(sp => {
                 const spData = [];
@@ -72,7 +72,7 @@ class SsmBoundaryValues {
         );
     }
 
-    get toObject() {
+    toObject() {
         return {
             affectedCells: this._affectedCells,
             boundaryId: this.boundaryId,

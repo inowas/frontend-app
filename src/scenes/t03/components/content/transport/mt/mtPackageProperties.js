@@ -13,7 +13,7 @@ class MtPackageProperties extends AbstractPackageProperties {
         mtPackage.exeName = value;
         this.props.onChange(mtPackage);
         this.setState({
-            mtPackage: mtPackage.toObject
+            mtPackage: mtPackage.toObject()
         });
     };
 

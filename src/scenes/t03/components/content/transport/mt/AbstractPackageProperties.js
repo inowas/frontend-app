@@ -28,14 +28,14 @@ class AbstractPackageProperties extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            mtPackage: props.mtPackage.toObject,
+            mtPackage: props.mtPackage.toObject(),
             activeIndex: 0
         };
     }
 
     componentWillReceiveProps(nextProps) {
         this.setState({
-            mtPackage: nextProps.mtPackage.toObject
+            mtPackage: nextProps.mtPackage.toObject()
         });
     }
 

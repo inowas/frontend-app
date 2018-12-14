@@ -19,13 +19,13 @@ class SsmSubstanceEditor extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            substance: props.substance.toObject
+            substance: props.substance.toObject()
         };
     }
 
     componentWillReceiveProps(nextProps) {
         this.setState({
-            substance: nextProps.substance.toObject
+            substance: nextProps.substance.toObject()
         });
     }
 
@@ -40,7 +40,7 @@ class SsmSubstanceEditor extends React.Component {
         const substance = SsmSubstance.fromObject(this.state.substance);
         substance.name = e.target.value;
         return this.setState({
-            substance: substance.toObject
+            substance: substance.toObject()
         });
     };
 
@@ -52,7 +52,7 @@ class SsmSubstanceEditor extends React.Component {
         substance.updateBoundaryValues(ssmBoundaryValues);
         this.props.onChange(substance);
         this.setState({
-            substance: substance.toObject
+            substance: substance.toObject()
         });
     };
 

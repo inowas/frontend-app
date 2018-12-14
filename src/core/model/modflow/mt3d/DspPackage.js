@@ -97,8 +97,8 @@ class DspPackage extends AbstractMt3dPackage {
         this._filenames = value;
     }
 
-    get toObject() {
-        const obj = super.toObject;
+    toObject() {
+        const obj = super.toObject();
         obj.al = this.al;
         obj.trpt = this.trpt;
         obj.trpv = this.trpv;

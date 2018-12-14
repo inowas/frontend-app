@@ -6,6 +6,7 @@ import cloneModflowModelPayloadSchema from './cloneModflowModelPayloadSchema';
 import createModflowModelPayloadSchema from './createModflowModelPayloadSchema';
 import deleteModflowModelPayloadSchema from './deleteModflowModelPayloadSchema';
 import updateModflowModelPayloadSchema from './updateModflowModelPayloadSchema';
+import updateMt3dmsPayloadSchema from './updateMt3dmsPayloadSchema';
 import updateOptimizationInputPayloadSchema from './updateOptimizationInputPayloadSchema';
 import updateStressperiodsPayloadSchema from './updateStressperiodsPayloadSchema';
 
@@ -42,6 +43,9 @@ class ModflowModelCommand extends AbstractCommand {
         return new ModflowModelCommand('updateModflowModel', payload, updateModflowModelPayloadSchema);
     }
 
+    static updateMt3dms(payload) {
+        return new ModflowModelCommand('updateMt3dms', payload, updateMt3dmsPayloadSchema);
+    }
 
     static updateOptimizationInput(payload) {
         return new ModflowModelCommand('updateOptimizationInput', payload, updateOptimizationInputPayloadSchema)
