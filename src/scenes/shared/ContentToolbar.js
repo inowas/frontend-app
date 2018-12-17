@@ -26,14 +26,17 @@ class ContentToolBar extends React.Component {
 
     componentWillReceiveProps(nextProps, nextContext) {
 
+        const isValid = typeof this.props.isValid === 'boolean' ? this.props.isValid : true;
         const hasBeenSaved = this.props.isDirty === true && nextProps.isDirty === false;
         const error = nextProps.isError;
         const notSaved = nextProps.isDirty;
 
         let state = 'default';
         if (hasBeenSaved) {state = 'hasBeenSaved'}
+        if (hasBeenSaved) {state = 'hasBeenSaved'}
         if (error) {state = 'error'}
         if (notSaved) {state = 'notSaved'}
+        if (!isValid) {state = 'notValid'}
 
         const message = this.getMessage(state);
 
@@ -51,6 +54,9 @@ class ContentToolBar extends React.Component {
 
     getMessage = (state) => {
         switch (state) {
+            case 'notValid': {
+                return null;
+            }
             case 'notSaved': {
                 return {
                     content: 'Changes not saved!',
@@ -78,8 +84,11 @@ class ContentToolBar extends React.Component {
 
     render() {
         const saveButton = typeof this.props.saveButton === 'boolean' ? this.props.saveButton : true;
+        const isValid = typeof this.props.isValid === 'boolean' ? this.props.isValid : true;
         const message = this.state.message;
         const {isDirty} = this.props;
+
+        const canBeSaved = isDirty && isValid;
 
         return (
             <Grid>
@@ -119,7 +128,7 @@ class ContentToolBar extends React.Component {
                         />
                         }
                         {saveButton &&
-                        <Button icon positive onClick={this.props.onSave} labelPosition="left" disabled={!isDirty}>
+                        <Button icon positive onClick={this.props.onSave} labelPosition="left" disabled={!canBeSaved}>
                             <Icon name="save"/>Save
                         </Button>
                         }
@@ -137,7 +146,8 @@ ContentToolBar.propTypes = {
     onSave: PropTypes.func,
     saveButton: PropTypes.bool,
     isDirty: PropTypes.bool,
-    isError: PropTypes.bool
+    isError: PropTypes.bool,
+    isValid: PropTypes.bool
 };
 
 export default ContentToolBar;

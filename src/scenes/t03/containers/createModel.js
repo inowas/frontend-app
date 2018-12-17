@@ -27,7 +27,6 @@ class CreateModel extends React.Component {
             boundingBox: null,
             gridSize: defaults.gridSize.toObject(),
             lengthUnit: defaults.lengthUnit,
-            mt3dms: defaults.mt3dms.toObject(),
             timeUnit: defaults.timeUnit,
             isPublic: defaults.isPublic,
             stressperiods: defaults.stressperiods.toObject(),
@@ -48,7 +47,6 @@ class CreateModel extends React.Component {
         this.state.gridSize,
         this.state.activeCells,
         this.state.lengthUnit,
-        this.state.mt3dms,
         this.state.timeUnit,
         this.state.stressperiods,
         this.state.isPublic

@@ -50,7 +50,7 @@ class Boundaries extends React.Component {
 
     handleChange = (e, {name, value}) => {
 
-        if (name==='affectedLayers') {
+        if (name === 'affectedLayers') {
             value = [value];
         }
 
@@ -97,8 +97,8 @@ class Boundaries extends React.Component {
                                     label={'Selected layers'}
                                     selection
                                     fluid
-                                    options={this.props.soilmodel.layersCollection.all.map(l => (
-                                        {key: l.id, value: l.number, text: l.name}
+                                    options={this.props.soilmodel.layersCollection.all.map((l, key) => (
+                                        {key: l.id, value: key, text: l.name}
                                     ))}
                                     value={affectedLayers[0]}
                                     name={'affectedLayers'}
@@ -123,6 +123,7 @@ class Boundaries extends React.Component {
                         <Grid.Column width={12}>
                             <ContentToolBar
                                 onSave={this.onSave}
+                                isValid={(this.state.boundary !== null)}
                                 isDirty={isDirty}
                                 isError={error}
                                 saveButton={!readOnly}

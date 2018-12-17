@@ -1,6 +1,5 @@
 import CreateBoundary from './boundaries/createBoundary';
 import Boundaries from './boundaries/boundaries';
-import CreateModel from './createModel';
 import Discretization from './discretization/discretization';
 import Observations from './observations';
 import Optimization from './optimization/optimization.js';
@@ -11,7 +10,6 @@ import SoilmodelEditor from './soilmodel/soilmodelEditor';
 
 export {
     CreateBoundary,
-    CreateModel,
     Boundaries,
     Discretization,
     Observations,

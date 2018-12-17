@@ -1,6 +1,5 @@
 import uuid from 'uuid';
 import {GridSize, Stressperiods, TimeUnit} from 'core/model/modflow';
-import {Mt3dms} from 'core/model/modflow/mt3d';
 
 const createModelDefaults = {
     id: uuid(),
@@ -8,7 +7,6 @@ const createModelDefaults = {
     description: 'Here you can say a bit more about the project',
     gridSize: GridSize.fromNxNy(100, 100),
     lengthUnit: 2,
-    mt3dms: Mt3dms.fromDefaults(),
     timeUnit: 4,
     isPublic: true,
     stressperiods: Stressperiods.fromObject({

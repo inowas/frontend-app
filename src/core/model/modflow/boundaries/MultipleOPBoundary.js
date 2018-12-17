@@ -64,4 +64,16 @@ export default class MultipleOPBoundary extends Boundary {
             observation_points: this.observationPoints,
         };
     }
+
+    hasObservationPoint(oId) {
+        return this.observationPoints.filter(op => op.id === oId).length > 0
+    }
+
+    getObservationPointById(oId) {
+        if (this.hasObservationPoint(oId)) {
+            return this.observationPoints.filter(op => op.id === oId)[0];
+        }
+
+        return null;
+    }
 }

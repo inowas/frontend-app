@@ -41,14 +41,14 @@ export default class ModflowModel {
         model._id = id;
         model._name = name;
         model._description = description;
-        model._activeCells = (activeCells instanceof ActiveCells) ? activeCells.toArray() : activeCells;
-        model._boundingBox = (boundingBox instanceof BoundingBox) ? boundingBox.toArray() : boundingBox;
         model._geometry = (geometry instanceof Geometry) ? geometry.toObject() : geometry;
+        model._boundingBox = (boundingBox instanceof BoundingBox) ? boundingBox.toArray() : boundingBox;
         model._gridSize = (gridSize instanceof GridSize) ? gridSize.toObject() : gridSize;
+        model._activeCells = (activeCells instanceof ActiveCells) ? activeCells.toArray() : activeCells;
         model._lengthUnit = lengthUnit;
         model._timeUnit = timeUnit;
-        model._public = isPublic;
         model._stressperiods = (stressperiods instanceof Stressperiods) ? stressperiods.toObject() : stressperiods;
+        model._public = isPublic;
         return model;
     }
 
