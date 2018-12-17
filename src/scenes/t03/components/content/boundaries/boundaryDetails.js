@@ -24,7 +24,7 @@ class BoundaryDetails extends React.Component {
             return [];
         }
 
-        return this.props.soilmodel.layers.layers.map(l => (
+        return this.props.soilmodel.layersCollection.all.map(l => (
             {key: l.id, value: l.number, text: l.name}
         ))
     };
@@ -112,7 +112,12 @@ class BoundaryDetails extends React.Component {
 BoundaryDetails.proptypes = {
     boundary: PropTypes.instanceOf(Boundary).isRequired,
     model: PropTypes.instanceOf(ModflowModel).isRequired,
-    soilmodel: PropTypes.instanceOf(Soilmodel).isRequired,
+    
+  
+  
+  
+  
+  : PropTypes.instanceOf(Soilmodel).isRequired,
     onChange: PropTypes.func.isRequired,
     readOnly: PropTypes.bool.isRequired
 };

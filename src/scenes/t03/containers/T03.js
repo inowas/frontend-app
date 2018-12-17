@@ -93,6 +93,7 @@ class T03 extends React.Component {
     };
 
     handleError = error => {
+        console.log('ERROR', error);
         const {response} = error;
         const {status} = response;
 

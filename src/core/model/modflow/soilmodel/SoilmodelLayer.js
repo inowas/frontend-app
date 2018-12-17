@@ -1,6 +1,6 @@
 import uuidv4 from 'uuid/v4';
 import ZonesCollection from './ZonesCollection';
-import GridSize from "../GridSize";
+import GridSize from '../GridSize';
 
 class SoilmodelLayer {
     _id = uuidv4();
@@ -39,7 +39,7 @@ class SoilmodelLayer {
             layer.laywet = obj.laywet;
             layer.ss = obj.ss;
             layer.sy = obj.sy;
-            layer.zones = obj._meta && obj._meta.zones ? ZonesCollection.fromObject(obj._meta.zones) : new ZonesCollection();
+            layer.zonesCollection = obj._meta && obj._meta.zones ? ZonesCollection.fromArray(obj._meta.zones) : new ZonesCollection();
         }
 
         return layer;
@@ -61,14 +61,6 @@ class SoilmodelLayer {
         this._meta = value ? value : {
             _zones: []
         };
-    }
-
-    get zones() {
-        return this._meta._zones;
-    }
-
-    set zones(value) {
-        this._meta._zones = value ? value : [];
     }
 
     get name() {
@@ -175,12 +167,23 @@ class SoilmodelLayer {
         this._sy = value;
     }
 
+    get zonesCollection() {
+        return this._meta._zones;
+    }
+
+    set zonesCollection(value) {
+        if (!(value instanceof ZonesCollection)) {
+            throw new Error('Zones expected to be instance of ZonesCollection');
+        }
+        this._meta._zones = value;
+    }
+
     toObject() {
         return {
             'id': this.id,
             'name': this.name,
             '_meta': {
-                'zones': this.zones.all.map(z => z.toObject())
+                'zones': this.zonesCollection.toArray()
             },
             'description': this.description,
             'number': this.number,
@@ -231,7 +234,7 @@ class SoilmodelLayer {
             parameters = [parameters];
         }
 
-        const zones = this.zones.orderBy('priority');
+        const zones = this.zonesCollection.orderBy('priority');
 
         // loop through all the zones
         zones.all.forEach(zone => {

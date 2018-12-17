@@ -20,7 +20,7 @@ class Soilmodel {
         const soilmodel = new Soilmodel();
         soilmodel.general = obj.general;
         soilmodel.meta = obj.meta;
-        soilmodel.layers = LayersCollection.fromObject(obj.layers);
+        soilmodel.layersCollection = LayersCollection.fromArray(obj.layers);
         return soilmodel;
     }
 
@@ -44,19 +44,22 @@ class Soilmodel {
         };
     }
 
-    get layers() {
+    get layersCollection() {
         return this._layers;
     }
 
-    set layers(value) {
-        this._layers = value ? value : [];
+    set layersCollection(value) {
+        if (!(value instanceof LayersCollection)) {
+            throw new Error('Layers expected to be instance of LayersCollection');
+        }
+        this._layers = value;
     }
 
     toObject() {
         return {
             'meta': this.meta,
             'general': this.general,
-            'layers': this.layers.all.map(l => l.toObject())
+            'layers': this.layersCollection.toArray()
         };
     }
 }
