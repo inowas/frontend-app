@@ -24,7 +24,7 @@ class OptimizationConstraintsComponent extends React.Component {
         super(props);
         this.state = {
             constraints: props.constraints.map((constraint) => {
-                return constraint.toObject;
+                return constraint.toObject();
             }),
             selectedConstraint: null,
             editState: OPTIMIZATION_EDIT_NOCHANGES
@@ -34,7 +34,7 @@ class OptimizationConstraintsComponent extends React.Component {
     componentWillReceiveProps(nextProps) {
         this.setState({
             constraints: nextProps.constraints.map((constraint) => {
-                return constraint.toObject;
+                return constraint.toObject();
             })
         });
     }
@@ -48,7 +48,7 @@ class OptimizationConstraintsComponent extends React.Component {
     });
 
     handleChange = () => this.setState({
-        selectedConstraint: OptimizationConstraint.fromObject(this.state.selectedConstraint).toObject,
+        selectedConstraint: OptimizationConstraint.fromObject(this.state.selectedConstraint).toObject(),
         editState: OPTIMIZATION_EDIT_UNSAVED
     });
 
@@ -76,7 +76,7 @@ class OptimizationConstraintsComponent extends React.Component {
         newConstraint.type = value;
         newConstraint.location.ts.max = this.props.model.stressPeriods.dateTimes.length - 1;
         return this.setState({
-            selectedConstraint: newConstraint.toObject,
+            selectedConstraint: newConstraint.toObject(),
             editState: OPTIMIZATION_EDIT_UNSAVED
         });
     };

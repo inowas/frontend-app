@@ -25,7 +25,7 @@ class OptimizationObjectivesComponent extends React.Component {
         super(props);
         this.state = {
             objectives: props.objectives.map((objective) => {
-                return objective.toObject;
+                return objective.toObject();
             }),
             selectedObjective: null,
             editState: OPTIMIZATION_EDIT_NOCHANGES
@@ -35,7 +35,7 @@ class OptimizationObjectivesComponent extends React.Component {
     componentWillReceiveProps(nextProps) {
         this.setState({
             objectives: nextProps.objectives.map((objective) => {
-                return objective.toObject;
+                return objective.toObject();
             })
         });
     }
@@ -49,7 +49,7 @@ class OptimizationObjectivesComponent extends React.Component {
     });
 
     handleChange = () => this.setState({
-        selectedObjective: OptimizationObjective.fromObject(this.state.selectedObjective).toObject,
+        selectedObjective: OptimizationObjective.fromObject(this.state.selectedObjective).toObject(),
         editState: OPTIMIZATION_EDIT_UNSAVED
     });
 
@@ -79,7 +79,7 @@ class OptimizationObjectivesComponent extends React.Component {
         newObjective.type = value;
         newObjective.location.ts.max = this.props.model.stressPeriods.dateTimes.length - 1;
         return this.setState({
-            selectedObjective: newObjective.toObject,
+            selectedObjective: newObjective.toObject(),
             editState: OPTIMIZATION_EDIT_UNSAVED
         });
     };

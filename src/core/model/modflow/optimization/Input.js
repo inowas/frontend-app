@@ -2,8 +2,8 @@ import uuidv4 from 'uuid/v4';
 
 import OptimizationParameters from './Parameters';
 import OptimizationObjectsCollection from './ObjectsCollection';
-import OptimizationConstraintsCollection from './ObjectivesCollection';
-import OptimizationObjectivesCollection from './ConstraintsCollection';
+import OptimizationConstraintsCollection from './ConstraintsCollection';
+import OptimizationObjectivesCollection from './ObjectivesCollection';
 
 class OptimizationInput {
     _id = uuidv4();
@@ -20,6 +20,7 @@ class OptimizationInput {
         if (!obj) {
             return OptimizationInput.fromDefaults();
         }
+
         const input = new OptimizationInput();
         input.id = obj.id;
         input.parameters = OptimizationParameters.fromObject(obj.parameters);
@@ -73,7 +74,7 @@ class OptimizationInput {
         this._objects = value;
     }
 
-    get toObject() {
+    toObject() {
         return {
             'id': this.id,
             'parameters': this.parameters.toObject(),

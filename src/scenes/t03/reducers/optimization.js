@@ -1,8 +1,6 @@
-import Optimization from 'core/model/modflow/optimization/Optimization';
-
 export const UPDATE_OPTIMIZATION = 'T03_UPDATE_OPTIMIZATION';
 
-const optimization = (state = Optimization.fromDefaults(), action) => {
+const optimization = (state = null, action) => {
     switch (action.type) {
         case UPDATE_OPTIMIZATION:
             return {

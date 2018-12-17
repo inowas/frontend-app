@@ -1,5 +1,5 @@
-import CreateModel from './createModel'
-import EditModel from './T03'
+import CreateModel from './createModel';
+import EditModel from './T03';
 
 export {
     CreateModel,

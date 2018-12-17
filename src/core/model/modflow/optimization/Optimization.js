@@ -26,6 +26,14 @@ class Optimization {
         return optimization;
     }
 
+    static fromQuery(query) {
+        if (!query) {
+            return Optimization.fromDefaults();
+        }
+
+        return this.fromObject(query);
+    }
+
     get id() {
         return this.input.id;
     }

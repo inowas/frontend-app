@@ -4,7 +4,6 @@ import PropTypes from 'prop-types';
 import {sendCommand} from 'services/api';
 import {ModflowModel} from 'core/model/modflow';
 import {connect} from 'react-redux';
-import Command from '../../../commands/command';
 import {updateOptimization} from '../../../actions/actions';
 
 import {Button, Grid, Icon, List, Menu, Popup, Progress, Segment} from 'semantic-ui-react';
@@ -23,21 +22,46 @@ import {
     OptimizationConstraintsComponent,
     OptimizationResultsComponent
 } from './index';
+import Command from '../../../commands/modflowModelCommand';
+import {fetchUrl} from 'services/api';
+import ContentToolBar from '../../../../shared/ContentToolbar';
 
 class OptimizationContainer extends React.Component {
     constructor(props) {
         super(props);
 
         this.state = {
-            activeItem: 'parameters',
+            activeItem: props.match.params.type || 'parameters',
             boundaries: null,
-            optimization: Optimization.fromDefaults().toObject,
-            isError: false,
+            optimization: null,
             errors: [],
             isDirty: false,
-            isLoading: false,
+            isError: false,
+            isLoading: true,
             isPolling: false
         }
+    }
+
+    componentWillReceiveProps(nextProps, nextContext) {
+        this.setState({
+            model: nextProps.model.toObject(),
+            optimization: nextProps.optimization ? nextProps.optimization.toObject() : null
+        });
+    }
+
+    componentDidMount() {
+        fetchUrl(`modflowmodels/${this.props.model.id}/optimization`,
+            data => {
+                this.setState({
+                    isError: false,
+                    isLoading: false
+                }, this.props.updateOptimization(Optimization.fromQuery(data)));
+            },
+            error => this.setState(
+                {error, isError: true},
+                () => this.handleError(error)
+            )
+        );
     }
 
     handleChange = (optimizationInput) => {
@@ -46,8 +70,8 @@ class OptimizationContainer extends React.Component {
 
         return this.setState({
             isDirty: true,
-            optimization: optimization.toObject
-        });
+            optimization: optimization.toObject()
+        }, this.props.updateOptimization(optimization));
     };
 
     handleSave = () => {
@@ -65,7 +89,7 @@ class OptimizationContainer extends React.Component {
 
     onApplySolution = (boundaries) => {
         // TODO:
-        //this.props.addBoundary(this.props.model.id, boundaries.map(b => b.toObject));
+        //this.props.addBoundary(this.props.model.id, boundaries.map(b => b.toObject()));
     };
 
     onMenuClick = (e, {name}) => {
@@ -77,6 +101,13 @@ class OptimizationContainer extends React.Component {
         const basePath = path.split(':')[0];
 
         this.props.history.push(basePath + this.props.model.id + '/optimization/' + name);
+    };
+
+    onClickBack = () => {
+        const {path, type} = this.props.match.path;
+        const basePath = path.split(':')[0];
+
+        this.props.history.push(basePath + this.props.model.id + '/optimization/' + type);
     };
 
     onCancelCalculationClick = () => {
@@ -132,7 +163,7 @@ class OptimizationContainer extends React.Component {
         const opt = Optimization.fromObject(this.state.optimization);
         opt[obj.key] = obj.value;
         this.setState({
-            optimization: opt.toObject
+            optimization: opt.toObject()
         });
     };
 
@@ -187,10 +218,7 @@ class OptimizationContainer extends React.Component {
                     <OptimizationObjectsComponent
                         optimizationInput={optimization.input}
                         model={model}
-                        isDirty={this.state.isDirty}
-                        isError={this.state.isError}
                         onChange={this.handleChange}
-                        onSave={this.handleSave}
                     />
                 );
             case 'objectives':
@@ -221,10 +249,7 @@ class OptimizationContainer extends React.Component {
                 return (
                     <OptimizationParametersComponent
                         optimizationInput={optimization.input}
-                        isDirty={this.state.isDirty}
-                        isError={this.state.isError}
                         onChange={this.handleChange}
-                        onSave={this.handleSave}
                     />
                 );
         }
@@ -348,16 +373,31 @@ class OptimizationContainer extends React.Component {
     }
 
     render() {
-        const {activeItem, isLoading, optimization} = this.state;
+        const {activeItem, isError, isDirty, isLoading, optimization} = this.state;
 
         if (!optimization) {
-            return null;
+            return (
+                <Segment color={'grey'} loading={true}>
+                    LOADING
+                </Segment>
+            );
         }
 
         return (
             <div>
                 <Segment color={'grey'} loading={isLoading}>
                     <Grid>
+                        <Grid.Row>
+                            <Grid.Column width={4}/>
+                            <Grid.Column width={12}>
+                                <ContentToolBar
+                                    isError={isError}
+                                    isDirty={isDirty}
+                                    onSave={this.handleSave}
+                                />
+                            </Grid.Column>
+                        </Grid.Row>
+                        <Grid.Row>
                         <Grid.Column width={4}>
                             <Menu fluid vertical tabular>
                                 <Menu.Item
@@ -395,6 +435,7 @@ class OptimizationContainer extends React.Component {
                         <Grid.Column width={12}>
                             {this.renderProperties()}
                         </Grid.Column>
+                        </Grid.Row>
                     </Grid>
                 </Segment>
             </div>
@@ -402,11 +443,13 @@ class OptimizationContainer extends React.Component {
     }
 }
 
-const mapStateToProps = (state) => ({
-    boundaries: BoundaryCollection.fromObject(state.T03.boundaries),
-    model: ModflowModel.fromObject(state.T03.model),
-    optimization: Optimization.fromObject(state.T03.optimization)
-});
+const mapStateToProps = (state) => {
+    return {
+        boundaries: BoundaryCollection.fromObject(state.T03.boundaries),
+        model: ModflowModel.fromObject(state.T03.model),
+        optimization: state.T03.optimization ? Optimization.fromObject(state.T03.optimization) : null
+    };
+};
 
 const mapDispatchToProps = {
     updateOptimization

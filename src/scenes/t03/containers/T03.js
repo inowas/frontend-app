@@ -17,7 +17,6 @@ import * as Content from '../components/content/index';
 import ModflowModel from 'core/model/modflow/ModflowModel';
 import {BoundaryCollection} from 'core/model/modflow/boundaries';
 import {Soilmodel} from 'core/model/modflow/soilmodel';
-import {Optimization} from 'core/model/modflow/optimization';
 
 const navigation = [{
     name: 'Documentation',
@@ -65,7 +64,7 @@ class T03 extends React.Component {
                 this.props.updateModel(ModflowModel.fromQuery(data));
                 this.setState({isLoading: false});
                 this.fetchBoundaries(id);
-                this.fetchSoilmodel(id);
+                //this.fetchSoilmodel(id);
             },
             error => this.setState(
                 {error, isLoading: false},
@@ -77,16 +76,6 @@ class T03 extends React.Component {
     fetchBoundaries(id) {
         fetchUrl(`modflowmodels/${id}/boundaries`,
             data => this.props.updateBoundaries(BoundaryCollection.fromQuery(data)),
-            error => this.setState(
-                {error, isLoading: false},
-                () => this.handleError(error)
-            )
-        );
-    };
-
-    fetchOptimization(id) {
-        fetchUrl(`modflowmodels/${id}/optimization`,
-            data => this.props.updateOptimization(Optimization.fromObject(data)),
             error => this.setState(
                 {error, isLoading: false},
                 () => this.handleError(error)
@@ -106,6 +95,7 @@ class T03 extends React.Component {
 
     handleError = error => {
         const {response} = error;
+        console.log(error);
         const {status} = response;
 
         if (status === 422) {

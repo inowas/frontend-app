@@ -1,9 +1,8 @@
 import React from 'react';
-import {Button, Message, Form, Grid, Icon, Table, Accordion} from 'semantic-ui-react';
+import {Button, Form, Grid, Icon, Table, Accordion, Dropdown} from 'semantic-ui-react';
 import PropTypes from 'prop-types';
 import {FluxDataTable, OptimizationMap, SubstanceEditor} from './shared';
 import {OptimizationInput, OptimizationObject} from 'core/model/modflow/optimization';
-import ContentToolBar from '../../shared/contentToolbar';
 
 const styles = {
     dropDownWithButtons: {
@@ -17,21 +16,28 @@ class OptimizationObjectsComponent extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            optimizationInput: props.optimizationInput,
+            optimizationInput: props.optimizationInput.toObject(),
             selectedObject: null,
             selectedSubstance: null,
-            activeIndex: 0,
-            showOverlay: false
+            activeIndex: 0
         };
     }
 
     componentWillReceiveProps(nextProps) {
         this.setState({
-            objects: nextProps.optimizationInput
+            optimizationInput: nextProps.optimizationInput.toObject()
         });
     }
 
     handleChange = () => this.props.onChange(OptimizationInput.fromObject(this.state.optimizationInput));
+
+    handleLocalChange = (e, {name, value}) => {
+        const object = this.state.selectedObject;
+        object[name] = value;
+        this.setState({
+            selectedObject: object
+        })
+    } ;
 
     handleSaveSelectedObject = () => {
         const input = OptimizationInput.fromObject(this.state.optimizationInput);
@@ -64,22 +70,21 @@ class OptimizationObjectsComponent extends React.Component {
     onClickNew = (e, {name, value}) => {
         const newObject = new OptimizationObject();
         newObject.type = value;
-        newObject.numberOfStressPeriods = this.props.model.stressPeriods.dateTimes.length;
+        newObject.numberOfStressPeriods = this.props.model.stressperiods.count;
+
+        const input = OptimizationInput.fromObject(this.state.optimizationInput);
+        input.objects.add(newObject);
+
         return this.setState({
-            selectedObject: newObject.toObject
+            optimizationInput: input.toObject(),
+            selectedObject: newObject.toObject()
         });
     };
 
-    onClickDelete = (object) => {
-        const objects = this.state.objects;
-        this.props.onChange({
-            key: 'objects',
-            value: objects
-                .filter(obj => obj.id !== object.id)
-                .map(obj => {
-                    return OptimizationObject.fromObject(obj);
-                })
-        });
+    onClickDelete = (id) => {
+        const input = OptimizationInput.fromObject(this.state.optimizationInput);
+        input.objects.remove(id);
+        this.props.onChange(input);
     };
 
     onClickObject = (object) => this.setState({
@@ -95,11 +100,11 @@ class OptimizationObjectsComponent extends React.Component {
     };
 
     handleChangeFlux = rows => this.setState((prevState) => ({
-        selectedObject: OptimizationObject.fromObject(prevState.selectedObject).updateFlux(rows).toObject
+        selectedObject: OptimizationObject.fromObject(prevState.selectedObject).updateFlux(rows).toObject()
     }));
 
     handleChangeSubstances = (substances) => this.setState((prevState) => ({
-        selectedObject: OptimizationObject.fromObject(prevState.selectedObject).updateSubstances(substances).toObject
+        selectedObject: OptimizationObject.fromObject(prevState.selectedObject).updateSubstances(substances).toObject()
     }));
 
     onClickBack = () => this.setState({
@@ -109,8 +114,9 @@ class OptimizationObjectsComponent extends React.Component {
 
     render() {
         const {model} = this.props;
-        const {activeIndex, optimizationInput, selectedObject} = this.state;
-        const objects = optimizationInput.objects.all;
+        const {activeIndex, selectedObject} = this.state;
+        const optimizationInput = OptimizationInput.fromObject(this.state.optimizationInput);
+        const objects = optimizationInput.objects;
         const substances = [];
 
         const typeOptions = [
@@ -125,7 +131,7 @@ class OptimizationObjectsComponent extends React.Component {
         let fluxRows = null;
 
         if (selectedObject) {
-            fluxRows = model.stressPeriods.dateTimes.map((dt, key) => {
+            fluxRows = model.stressperiods.dateTimes.map((dt, key) => {
                 return {
                     id: key,
                     date_time: dt,
@@ -137,33 +143,16 @@ class OptimizationObjectsComponent extends React.Component {
 
         return (
             <div>
-                <ContentToolBar
-                    backButton={selectedObject}
-                    dropdown={!selectedObject ? {
-                        text: 'Add New',
-                        icon: 'plus',
-                        options: [
-                            {
-                                key: 'wel',
-                                value: 'wel',
-                                text: 'Well'
-                            },
-                        ],
-                        onChange: this.onClickNew
-                    } : null}
-                    isError={this.props.isError}
-                    isDirty={this.props.isDirty}
-                    save
-                    onSave={this.props.onSave}
-                />
                 <Grid>
                     <Grid.Row columns={1}>
                         <Grid.Column>
-                            {(!selectedObject && (!objects || objects.length < 1)) ?
-                                <Message>
-                                    <p>No optimization objects</p>
-                                </Message>
-                                : ''
+                            {!selectedObject &&
+                            <Dropdown text='Add Decision Variable' icon='add' fluid floating labeled button
+                                      className='icon'>
+                                <Dropdown.Menu>
+                                    <Dropdown.Item value='wel' onClick={this.onClickNew} text='wel'/>
+                                </Dropdown.Menu>
+                            </Dropdown>
                             }
                             {(!selectedObject && objects && objects.length > 0) ?
                                 <Table celled striped>
@@ -176,12 +165,12 @@ class OptimizationObjectsComponent extends React.Component {
                                     </Table.Header>
                                     <Table.Body>
                                         {
-                                            objects.map((object) =>
+                                            objects.all.map((object) =>
                                                 <Table.Row key={object.id}>
                                                     <Table.Cell>
                                                         <Button
                                                             size="small"
-                                                            onClick={() => this.onClickObject(object)}
+                                                            onClick={() => this.onClickObject(object.toObject())}
                                                         >
                                                             {object.name}
                                                         </Button>
@@ -190,7 +179,7 @@ class OptimizationObjectsComponent extends React.Component {
                                                     <Table.Cell textAlign="center">
                                                         <Button icon color="red"
                                                                 size="small"
-                                                                onClick={() => this.onClickDelete(object)}
+                                                                onClick={() => this.onClickDelete(object.id)}
                                                         >
                                                             <Icon name="trash"/>
                                                         </Button>
@@ -212,7 +201,7 @@ class OptimizationObjectsComponent extends React.Component {
                                                 value={selectedObject.type}
                                                 placeholder="type ="
                                                 options={typeOptions}
-                                                onChange={this.handleChange}
+                                                onChange={this.handleLocalChange}
                                             />
                                         </Form.Field>
                                         <Form.Field>
@@ -223,7 +212,8 @@ class OptimizationObjectsComponent extends React.Component {
                                                 value={selectedObject.name}
                                                 placeholder="name ="
                                                 style={styles.inputFix}
-                                                onChange={this.handleChange}
+                                                onBlur={this.handleChange}
+                                                onChange={this.handleLocalChange}
                                             />
                                         </Form.Field>
                                     </Form.Group>
@@ -286,10 +276,7 @@ class OptimizationObjectsComponent extends React.Component {
 OptimizationObjectsComponent.propTypes = {
     optimizationInput: PropTypes.instanceOf(OptimizationInput).isRequired,
     model: PropTypes.object,
-    isDirty: PropTypes.bool,
-    isError: PropTypes.bool,
-    onChange: PropTypes.func.isRequired,
-    onSave: PropTypes.func.isRequired
+    onChange: PropTypes.func.isRequired
 };
 
 export default OptimizationObjectsComponent;

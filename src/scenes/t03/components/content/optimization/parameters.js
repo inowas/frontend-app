@@ -2,20 +2,19 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import {Segment, Form} from 'semantic-ui-react';
 import {OptimizationInput} from 'core/model/modflow/optimization';
-import ContentToolBar from '../../shared/contentToolbar';
 
 class OptimizationParametersComponent extends React.Component {
 
     constructor(props) {
         super(props);
         this.state = {
-            optimizationInput: props.optimizationInput.toObject
+            optimizationInput: props.optimizationInput.toObject()
         };
     }
 
     componentWillReceiveProps(nextProps) {
         this.setState({
-            optimizationInput: nextProps.optimizationInput.toObject,
+            optimizationInput: nextProps.optimizationInput.toObject(),
         });
     }
 
@@ -54,7 +53,6 @@ class OptimizationParametersComponent extends React.Component {
 
         return (
             <Form>
-                <ContentToolBar isError={this.props.isError} isDirty={this.props.isDirty} save onSave={this.props.onSave}/>
                 <Form.Field>
                     <label>Method of optimization</label>
                     <Form.Select
@@ -250,11 +248,8 @@ class OptimizationParametersComponent extends React.Component {
 }
 
 OptimizationParametersComponent.propTypes = {
-    isDirty: PropTypes.bool,
-    isError: PropTypes.bool,
     optimizationInput: PropTypes.instanceOf(OptimizationInput).isRequired,
-    onChange: PropTypes.func.isRequired,
-    onSave: PropTypes.func.isRequired
+    onChange: PropTypes.func.isRequired
 };
 
 export default OptimizationParametersComponent;

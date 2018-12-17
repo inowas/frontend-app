@@ -48,7 +48,7 @@ export function updateOptimization(optimization) {
 
     return {
         type: UPDATE_OPTIMIZATION,
-        payload: optimization.toObject
+        payload: optimization.toObject()
     }
 }
 
@@ -59,6 +59,6 @@ export function updateSoilmodel(soilmodel) {
 
     return {
         type: UPDATE_SOILMODEL,
-        soilmodel: soilmodel.toObject
+        soilmodel: soilmodel.toObject()
     };
 }

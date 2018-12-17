@@ -1,30 +1,30 @@
 import AbstractCollection from '../../AbstractCollection';
-import OptimizationConstraint from './Constraint';
+import OptimizationObjective from './Objective';
 
-class OptimizationConstraintsCollection extends AbstractCollection {
+class OptimizationObjectivesCollection extends AbstractCollection {
     static fromArray(array) {
-        const constraintsCollection = new OptimizationConstraintsCollection();
-        constraintsCollection.items = array.map(object => OptimizationConstraint.fromObject(object));
-        return constraintsCollection;
+        const objectivesCollection = new OptimizationObjectivesCollection();
+        objectivesCollection.items = array.map(objective => OptimizationObjective.fromObject(objective));
+        return objectivesCollection;
     }
 
-    get constraints() {
+    get objectives() {
         return this._items;
     }
 
-    set constraints(value) {
+    set objectives(value) {
         this._items = value || [];
     }
 
     toArray() {
-        return (this.all.map(constraint => constraint.toObject()));
+        return (this.all.map(objective => objective.toObject()));
     }
 
-    checkInput (object) {
-        if (!(object instanceof OptimizationConstraint)) {
-            throw new Error('Constraint expected to be of type OptimizationConstraint');
+    checkInput (objective) {
+        if (!(objective instanceof OptimizationObjective)) {
+            throw new Error('Objective expected to be of type OptimizationObjective');
         }
     }
 }
 
-export default OptimizationConstraintsCollection;
+export default OptimizationObjectivesCollection;
