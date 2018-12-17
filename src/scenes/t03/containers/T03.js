@@ -12,7 +12,7 @@ import * as Content from '../components/content/index';
 import ToolMetaData from '../../shared/simpleTools/ToolMetaData';
 import {fetchUrl} from 'services/api';
 import ModflowModel from 'core/model/modflow/ModflowModel';
-import {updateBoundaries, updateModel, updateSoilmodel} from '../actions/actions';
+import {clear, updateBoundaries, updateModel, updateSoilmodel} from '../actions/actions';
 import {BoundaryCollection, BoundaryFactory} from 'core/model/modflow/boundaries';
 import {Soilmodel} from 'core/model/modflow/soilmodel';
 
@@ -35,6 +35,7 @@ class T03 extends React.Component {
 
     componentDidMount() {
         const {id} = this.props.match.params;
+
         return this.setState({isLoading: true},
             () => this.fetchModel(id)
         )
@@ -56,6 +57,9 @@ class T03 extends React.Component {
     }
 
     fetchModel(id) {
+        if (this.props.model && this.props.model.id !== id) {
+            this.props.clear();
+        }
         fetchUrl(
             `modflowmodels/${id}`,
             data => {
@@ -207,7 +211,7 @@ const mapStateToProps = state => ({
 });
 
 const mapDispatchToProps = {
-    updateBoundaries, updateModel, updateSoilmodel
+    clear, updateBoundaries, updateModel, updateSoilmodel
 };
 
 
@@ -217,6 +221,7 @@ T03.proptypes = {
     match: PropTypes.object.isRequired,
     boundaries: PropTypes.array.isRequired,
     model: PropTypes.object.isRequired,
+    clear: PropTypes.func.isRequired,
     updateModel: PropTypes.func.isRequired,
     updateBoundaries: PropTypes.func.isRequired,
     updateSoilmodel: PropTypes.func.isRequired,

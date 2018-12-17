@@ -6,7 +6,7 @@ import {sendCommand} from 'services/api';
 import {Form, Grid, Header, Segment} from 'semantic-ui-react';
 import {ModflowModel, Soilmodel} from 'core/model/modflow';
 import {updateBoundaries} from '../../../actions/actions';
-import {BoundaryCollection, BoundaryFactory} from 'core/model/modflow/boundaries';
+import {Boundary, BoundaryCollection, BoundaryFactory} from 'core/model/modflow/boundaries';
 import ContentToolBar from 'scenes/shared/ContentToolbar';
 import ModflowModelCommand from '../../../commands/modflowModelCommand';
 import {CreateBoundaryMap} from '../../maps';
@@ -48,14 +48,21 @@ class Boundaries extends React.Component {
         })
     };
 
+    // TODO:
     handleChange = (e, {name, value}) => {
 
         if (name === 'affectedLayers') {
             value = [value];
         }
 
+        const boundary = this.state.boundary ? BoundaryFactory.fromObjectData(this.state.boundary) : null;
+        if (boundary instanceof Boundary) {
+            boundary[name] = value;
+        }
+
         this.setState({
             [name]: value,
+            boundary: boundary ? boundary.toObject : this.state.boundary,
             isDirty: true
         })
     };

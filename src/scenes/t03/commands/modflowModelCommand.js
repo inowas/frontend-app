@@ -17,8 +17,11 @@ import updateStressperiodsPayloadSchema from './updateStressperiodsPayloadSchema
 
 class ModflowModelCommand extends AbstractCommand {
 
-    static addSoilmodelLayer(payload) {
-        return new ModflowModelCommand('addLayer', payload, addLayerPayloadSchema);
+    static addSoilmodelLayer(modelId, layer) {
+        return new ModflowModelCommand(
+            'addLayer',
+            {id: modelId, layer: layer.toObject()},
+            addLayerPayloadSchema);
     }
 
     static addBoundary(modelId, boundary) {

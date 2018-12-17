@@ -1,11 +1,12 @@
 import PropTypes from 'prop-types';
 import React from 'react';
 import AbstractPackageProperties from './AbstractPackageProperties';
-import {Button, Divider, Dropdown, Form, Grid, Icon} from 'semantic-ui-react';
+import {Button, Divider, Dropdown, Form, Grid, Icon, Message} from 'semantic-ui-react';
 import SsmSubstanceEditor from './SsmSubstanceEditor';
 import {Stressperiods} from 'core/model/modflow';
 import {SsmPackage, SsmSubstance} from 'core/model/modflow/mt3d';
-import Boundary from 'core/model/modflow/boundaries/Boundary';
+import {Boundary, BoundaryCollection, BoundaryFactory} from 'core/model/modflow/boundaries';
+import BoundarySelector from './BoundarySelector';
 
 class SsmPackageProperties extends AbstractPackageProperties {
 
@@ -16,9 +17,8 @@ class SsmPackageProperties extends AbstractPackageProperties {
     }
 
     handleSelectBoundary = boundaryId => {
-        this.props.onSelectBoundary(boundaryId);
         return this.setState({
-            selectedBoundary: boundaryId
+            selectedBoundary: this.props.boundaries.findById(boundaryId).toObject
         });
     };
 
@@ -67,7 +67,9 @@ class SsmPackageProperties extends AbstractPackageProperties {
         const {boundaries, readonly, stressPeriods} = this.props;
 
         if (boundaries.length === 0) {
-            return <div>Please add some boundaries first.</div>;
+            return <Message warning>
+                <p>You need to add boundaries before adding substances.</p>
+            </Message>;
         }
 
         const ssmPackage = SsmPackage.fromObject(this.state.mtPackage);
@@ -76,20 +78,18 @@ class SsmPackageProperties extends AbstractPackageProperties {
 
         let selectedBoundary;
         if (this.state.selectedBoundary) {
-            //TODO: selectedBoundary = BoundaryFactory.fromObjectData(boundaries.filter(b => b.id === this.state.selectedBoundary)[0]);
+            selectedBoundary = BoundaryFactory.fromObjectData(boundaries.all.filter(b => b.id === this.state.selectedBoundary.id)[0]);
         }
-
-        // TODO: <BoundarySelector
-        //                             boundaries={boundaries}
-        //                             onChange={this.handleSelectBoundary}
-        //                             selected={this.state.selectedBoundary}
-        //                         />
 
         return (
             <Grid>
-                <Grid.Row>
+                <Grid.Row columns={2}>
                     <Grid.Column>
-                        INSERT BoundarySelector HERE
+                        <BoundarySelector
+                            boundaries={boundaries}
+                            onChange={this.handleSelectBoundary}
+                            selected={selectedBoundary}
+                        />
                     </Grid.Column>
                     <Grid.Column>
                         <Form>
@@ -125,7 +125,7 @@ class SsmPackageProperties extends AbstractPackageProperties {
                     </Grid.Column>
                 </Grid.Row>
                 {(selectedSubstance instanceof SsmSubstance) && (selectedBoundary instanceof Boundary) &&
-                <div>
+                <Grid.Row>
                     <Divider horizontal>{selectedSubstance.name} at {selectedBoundary.name}</Divider>
                     <SsmSubstanceEditor
                         boundary={selectedBoundary}
@@ -134,7 +134,7 @@ class SsmPackageProperties extends AbstractPackageProperties {
                         stressPeriods={stressPeriods}
                         substance={selectedSubstance}
                     />
-                </div>
+                </Grid.Row>
                 }
             </Grid>
         );
@@ -142,11 +142,10 @@ class SsmPackageProperties extends AbstractPackageProperties {
 }
 
 SsmPackageProperties.propTypes = {
-    boundaries: PropTypes.array.isRequired,
-    stressPeriods: PropTypes.instanceOf(Stressperiods),
+    boundaries: PropTypes.instanceOf(BoundaryCollection).isRequired,
+    stressPeriods: PropTypes.instanceOf(Stressperiods).isRequired,
     mtPackage: PropTypes.instanceOf(SsmPackage),
     onChange: PropTypes.func.isRequired,
-    onSelectBoundary: PropTypes.func.isRequired,
     readonly: PropTypes.bool.isRequired,
 };
 

@@ -78,10 +78,7 @@ class SoilmodelEditor extends React.Component {
         this.setState({isLoading: true});
 
         return sendCommand(
-            Command.addSoilmodelLayer({
-                id: this.props.model.id,
-                layer: layer.toObject()
-            }), () => {
+            Command.addSoilmodelLayer(this.props.model.id, layer), () => {
                 this.props.addSoilmodelLayer(layer);
                 this.setState({
                     isLoading: false

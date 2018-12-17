@@ -7,6 +7,7 @@ import ModflowModelCommand from '../../../commands/modflowModelCommand';
 
 import {Grid, Menu, Segment} from 'semantic-ui-react';
 import {ModflowModel, Stressperiods} from 'core/model/modflow';
+import {BoundaryCollection} from 'core/model/modflow/boundaries';
 import {AbstractMt3dPackage, Mt3dms} from 'core/model/modflow/mt3d';
 import {
     AdvPackageProperties,
@@ -107,11 +108,6 @@ class Transport extends React.Component {
         throw new Error('Package hat to be instance of AbstractMt3dPackage');
     };
 
-    loadBoundaryDetails = (boundaryId) => {
-        const {model, getBoundary} = this.props;
-        return getBoundary(model.id, boundaryId);
-    };
-
     handleToggleEnabled = () => {
         const changedMt3dms = Mt3dms.fromObject(this.state.mt3dms);
         changedMt3dms.toggleEnabled();
@@ -138,7 +134,7 @@ class Transport extends React.Component {
         }
 
         const mt3d = Mt3dms.fromObject(this.state.mt3dms);
-        const {boundaries} = this.state;
+        const {boundaries} = this.props;
 
         const model = this.props.model.toObject();
         if (!model.stress_periods) {
@@ -152,7 +148,7 @@ class Transport extends React.Component {
         }
 
         // TODO:
-        const readOnly = false;
+        const readOnly = this.props.model.readOnly;
         const {type} = this.props.match.params;
 
         switch (type) {
@@ -195,7 +191,6 @@ class Transport extends React.Component {
                         boundaries={boundaries}
                         stressPeriods={stressPeriods}
                         onChange={this.handleChangePackage}
-                        onSelectBoundary={this.loadBoundaryDetails}
                         readonly={readOnly}
                     />
                 );
@@ -264,7 +259,8 @@ class Transport extends React.Component {
 }
 
 const mapStateToProps = (state) => ({
-    model: ModflowModel.fromObject(state.T03.model)
+    model: ModflowModel.fromObject(state.T03.model),
+    boundaries: BoundaryCollection.fromObject(state.T03.boundaries)
 });
 
 const mapDispatchToProps = {
@@ -275,6 +271,7 @@ Transport.proptypes = {
     history: PropTypes.object.isRequired,
     match: PropTypes.object.isRequired,
     model: PropTypes.instanceOf(ModflowModel).isRequired,
+    boundaries: PropTypes.instanceOf(BoundaryCollection).isRequired
 };
 
 export default withRouter(connect(mapStateToProps, mapDispatchToProps)(Transport));
