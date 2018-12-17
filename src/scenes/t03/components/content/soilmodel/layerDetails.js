@@ -53,7 +53,7 @@ class LayerDetails extends React.Component {
 
         const panes = [{
             menuItem: 'Name and Type', render: () =>
-                <Tab.Pane attached={false}>
+                <Tab.Pane>
                     <Form.Group widths={2}>
                         <Form.Input
                             disabled={readOnly}
@@ -142,7 +142,7 @@ class LayerDetails extends React.Component {
         layerParameters.forEach(p => {
             panes.push({
                 menuItem: p.name, render: () =>
-                    <Tab.Pane attached={false}>
+                    <Tab.Pane>
                         <LayerParameter
                             model={model}
                             onChange={this.handleZonesChange}
@@ -156,7 +156,7 @@ class LayerDetails extends React.Component {
 
         return (
             <Form>
-                <Tab panes={panes}/>
+                <Tab menu={{secondary: true, pointing: true}} panes={panes}/>
             </Form>
         )
     }

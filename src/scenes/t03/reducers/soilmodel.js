@@ -10,13 +10,13 @@ const soilmodel = (state = null, action) => {
         case ADD_SOILMODEL_LAYER:
             return {
                 ...state,
-                layers: LayersCollection.fromObject(state.layers).add(SoilmodelLayer.fromObject(action.layer)).toObject().layers
+                layers: LayersCollection.fromArray(state.layers).add(SoilmodelLayer.fromObject(action.layer)).toArray()
             };
 
         case REMOVE_SOILMODEL_LAYER:
             return {
                 ...state,
-                layers: LayersCollection.fromObject(state.layers).remove(action.layer_id).toObject().layers
+                layers: LayersCollection.fromArray(state.layers).remove(action.layer_id).toArray()
             };
 
         case UPDATE_SOILMODEL:
@@ -25,7 +25,7 @@ const soilmodel = (state = null, action) => {
         case UPDATE_SOILMODEL_LAYER:
             return {
                 ...state,
-                layers: LayersCollection.fromObject(state.layers).update(SoilmodelLayer.fromObject(action.layer)).toObject().layers
+                layers: LayersCollection.fromArray(state.layers).update(SoilmodelLayer.fromObject(action.layer)).toArray()
             };
 
         default:

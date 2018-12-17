@@ -45,9 +45,13 @@ class SoilmodelEditor extends React.Component {
     }
 
     fetchLayer = (modelId, layerId) => {
+        this.setState({isLoading: true});
         return (
             fetchUrl(`modflowmodels/${modelId}/soilmodel/${layerId}`,
-                (layer) => this.setState({selectedLayer: layer})
+                (layer) => this.setState({
+                    isLoading: false,
+                    selectedLayer: layer
+                })
             )
         )
     };
@@ -61,11 +65,15 @@ class SoilmodelEditor extends React.Component {
 
     handleAddLayer = () => {
         const {id, property, type} = this.props.match.params;
+        const lc = this.props.soilmodel.layersCollection;
+
         const layer = new SoilmodelLayer();
+        layer.number = lc.length > 0 ? lc.orderBy('number', 'desc').first.number + 1 : 1;
+
         const defaultZone = SoilmodelZone.fromDefault();
         defaultZone.geometry = this.props.model.geometry;
         defaultZone.activeCells = this.props.model.activeCells;
-        layer.zones.add(defaultZone);
+        layer.zonesCollection.add(defaultZone);
 
         this.setState({isLoading: true});
 
@@ -102,7 +110,7 @@ class SoilmodelEditor extends React.Component {
     onSave = () => {
         const layer = SoilmodelLayer.fromObject(this.state.selectedLayer);
 
-        this.setState({loading: true});
+        this.setState({isLoading: true});
 
         return sendCommand(
             Command.updateSoilmodelLayer({
@@ -113,7 +121,7 @@ class SoilmodelEditor extends React.Component {
                 this.props.updateSoilmodelLayer(layer);
                 this.setState({
                     isDirty: false,
-                    loading: false
+                    isLoading: false
                 })
             }
         );
@@ -131,15 +139,15 @@ class SoilmodelEditor extends React.Component {
         }
         const {id, pid, property, type} = this.props.match.params;
         const {isDirty, isError, isLoading, selectedLayer} = this.state;
-        const lid = '';
+        let lid = selectedLayer ? selectedLayer.id : '';
 
         // If no layer is selected, redirect to the first.
-        if (!pid && this.props.soilmodel.layers.length > 0) {
-            const lid = this.props.soilmodel.layers.first.id;
+        if (!pid && this.props.soilmodel.layersCollection.length > 0) {
+            lid = this.props.soilmodel.layersCollection.first.id;
             return <Redirect to={`${baseUrl}/${id}/${property}/${type || '!'}/${lid}`}/>;
         }
 
-        if (pid && !this.props.soilmodel.layers.findBy('id', pid, true)) {
+        if (pid && !this.props.soilmodel.layersCollection.findBy('id', pid, true)) {
             return <Redirect to={`${baseUrl}/${id}/${property}`}/>;
         }
 
@@ -149,7 +157,7 @@ class SoilmodelEditor extends React.Component {
                     <Grid.Row>
                         <Grid.Column width={4}>
                             <LayersList addLayer={this.handleAddLayer} onChange={this.handleLayerListClick}
-                                        layers={this.props.soilmodel.layers} selected={lid}/>
+                                        soilmodel={this.props.soilmodel} selected={lid}/>
                         </Grid.Column>
                         <Grid.Column width={12}>
                             {!isLoading && selectedLayer &&

@@ -34,24 +34,19 @@ class LayerParameter extends React.Component {
     recalculateMap = () => {
         const layer = SoilmodelLayer.fromObject(this.state.layer);
         layer.zonesToParameters(this.props.model.gridSize, this.state.parameter.name);
-        this.onChange(layer);
-
-        return this.setState({
-            layer: layer.toObject()
-        });
+        return this.props.onChange(layer);
     };
 
     smoothMap = () => {
         const layer = SoilmodelLayer.fromObject(this.state.layer);
         layer.smoothParameter(this.props.model.gridSize, this.state.parameter.name, this.state.smoothParams.cycles, this.state.smoothParams.distance);
-
-        return this.onChange(layer);
+        return this.props.onChange(layer);
     };
 
     onAddZone = () => {
         const layer = SoilmodelLayer.fromObject(this.state.layer);
         const zone = new SoilmodelZone();
-        zone.priority = layer.zones.length;
+        zone.priority = layer.zonesCollection.length;
         this.setState({
             selectedZone: zone.toObject()
         });
@@ -59,7 +54,10 @@ class LayerParameter extends React.Component {
 
     onCancelModal = () => this.setState({selectedZone: null});
 
-    onChange = layer => this.props.onChange(layer);
+    onChange = layer => {
+        layer.zonesToParameters(this.props.model.gridSize, this.state.parameter.name);
+        return this.props.onChange(layer);
+    };
 
     onUploadRaster = (e, value) => {
         console.log('ON UPLOAD RASTER', value);
@@ -84,7 +82,7 @@ class LayerParameter extends React.Component {
 
     onEditZone = (id) => {
         const layer = SoilmodelLayer.fromObject(this.state.layer);
-        const zone = layer.zones.findById(id);
+        const zone = layer.zonesCollection.findById(id);
 
         this.setState({
             selectedZone: zone.toObject()
@@ -93,7 +91,7 @@ class LayerParameter extends React.Component {
 
     onRemoveZone = (zone) => {
         const layer = SoilmodelLayer.fromObject(this.state.layer);
-        layer.zones.remove(zone.id);
+        layer.zonesCollection.remove(zone.id);
 
         this.props.onChange(layer);
         return this.setState({
@@ -103,8 +101,8 @@ class LayerParameter extends React.Component {
 
     onSaveModal = (zone) => {
         const layer = SoilmodelLayer.fromObject(this.state.layer);
-        layer.zones = layer.zones.update(zone);
-
+        layer.zonesCollection = layer.zonesCollection.update(zone);
+        layer.zonesToParameters(this.props.model.gridSize);
         this.props.onChange(layer);
 
         return this.setState({

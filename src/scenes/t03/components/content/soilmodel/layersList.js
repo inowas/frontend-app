@@ -1,10 +1,10 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import {Button, Icon, Menu} from 'semantic-ui-react';
-import LayersCollection from 'core/model/modflow/soilmodel/LayersCollection';
 import {pure} from 'recompose';
+import {Soilmodel} from 'core/model/modflow/soilmodel';
 
-const LayersList = ({addLayer, layers, onChange, selected}) => {
+const LayersList = ({addLayer, soilmodel, onChange, selected}) => {
     return (
         <div>
             <Button onClick={addLayer} fluid>
@@ -12,14 +12,14 @@ const LayersList = ({addLayer, layers, onChange, selected}) => {
                 New Layer
             </Button>
             <Menu fluid vertical tabular>
-                {layers.all.map(layer => (
+                {soilmodel.layersCollection.all.map(layer => (
                     <Menu.Item
                         name={layer.name}
                         key={layer.id}
                         active={layer.id === selected}
                         onClick={() => onChange(layer.id)}
                     >
-                        {layer.name}
+                        {layer.number}: {layer.name}
                     </Menu.Item>
                 ))}
             </Menu>
@@ -29,7 +29,7 @@ const LayersList = ({addLayer, layers, onChange, selected}) => {
 
 LayersList.propTypes = {
     addLayer: PropTypes.func.isRequired,
-    layers: PropTypes.instanceOf(LayersCollection).isRequired,
+    soilmodel: PropTypes.instanceOf(Soilmodel).isRequired,
     onChange: PropTypes.func.isRequired,
     selected: PropTypes.string
 };
