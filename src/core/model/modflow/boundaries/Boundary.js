@@ -139,6 +139,9 @@ export default class Boundary {
 
     cloneInstance = () => {
         return Object.assign( Object.create( Object.getPrototypeOf(this)), this);
-    }
+    };
 
+    hasObservationPoint(oId) {
+        return false;
+    }
 }
