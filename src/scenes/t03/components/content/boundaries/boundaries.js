@@ -111,26 +111,26 @@ class Boundaries extends React.Component {
     };
 
     render() {
-        const {model} = this.props;
+        const {boundaries, model, soilmodel} = this.props;
         const readOnly = model.readOnly;
-        const {error, isDirty} = this.state;
+        const {error, isDirty, isLoading, selectedBoundary} = this.state;
 
         const {id, pid, property} = this.props.match.params;
 
         // If no boundary is selected, redirect to the first.
-        if (!pid && this.props.boundaries.length > 0) {
-            const bid = this.props.boundaries.first.id;
+        if (!pid && boundaries.length > 0) {
+            const bid = boundaries.first.id;
             return <Redirect to={`${baseUrl}/${id}/${property}/${'!'}/${bid}`}/>
         }
 
-        const boundary = BoundaryFactory.fromObjectData(this.state.selectedBoundary);
+        const boundary = BoundaryFactory.fromObjectData(selectedBoundary);
         return (
-            <Segment color={'grey'} loading={this.state.isLoading}>
+            <Segment color={'grey'} loading={isLoading}>
                 <Grid>
                     <Grid.Row>
                         <Grid.Column width={4}>
                             <BoundaryList
-                                boundaries={this.props.boundaries}
+                                boundaries={boundaries}
                                 onAdd={this.onAdd}
                                 onClick={this.handleBoundaryListClick}
                                 onClone={this.onClone}
@@ -145,13 +145,13 @@ class Boundaries extends React.Component {
                                 isError={error}
                                 saveButton={!readOnly}
                             />
-                            {!this.state.isLoading &&
+                            {!isLoading &&
                             <BoundaryDetails
                                 boundary={boundary}
-                                soilmodel={this.props.soilmodel}
-                                geometry={model.geometry}
-                                stressperiods={model.stressperiods}
+                                model={model}
+                                soilmodel={soilmodel}
                                 onChange={this.onChangeBoundary}
+                                readOnly={readOnly}
                             />}
                         </Grid.Column>
                     </Grid.Row>
@@ -165,7 +165,7 @@ const mapStateToProps = state => {
     return {
         model: ModflowModel.fromObject(state.T03.model),
         boundaries: BoundaryCollection.fromObject(state.T03.boundaries),
-        soilmodel: Soilmodel.fromObject(state.T03.soilmodel)
+        soilmodel: state.T03.soilmodel ? Soilmodel.fromObject(state.T03.soilmodel) : null
     };
 };
 

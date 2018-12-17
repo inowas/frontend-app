@@ -12,7 +12,6 @@ import {getBoundsLatLonFromGeoJSON} from 'services/geoTools/index';
 const style = {
     map: {
         height: '200px',
-        marginTop: '20px'
     }
 };
 
