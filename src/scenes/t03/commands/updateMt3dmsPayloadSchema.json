@@ -1,52 +1,65 @@
 {
-  "type": "object",
   "id": "https://inowas.com/schema/command/updateMt3dmsPayloadSchema",
+  "type": "object",
   "required": [
-    "packages",
-    "mt",
-    "btn",
-    "adv",
-    "dsp",
-    "gcg",
-    "ssm"
+    "id",
+    "mt3dms"
   ],
+  "additionalProperties": false,
   "properties": {
-    "enabled": {
-      "description": "Defines if a transport calculation should be initiated",
-      "type": "boolean"
+    "id": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$"
     },
-    "packages": {
-      "description": "An array of all packages used",
-      "type": "array",
-      "items": {
-        "type": "string",
-        "enum": [
-          "mt",
-          "btn",
-          "adv",
-          "dsp",
-          "gcg",
-          "ssm"
-        ]
-      }
-    },
-    "mt": {
-      "$ref": "#/definitions/mtPackage"
-    },
-    "btn": {
-      "$ref": "#/definitions/btnPackage"
-    },
-    "adv": {
-      "$ref": "#/definitions/advPackage"
-    },
-    "dsp": {
-      "$ref": "#/definitions/dspPackage"
-    },
-    "gcg": {
-      "$ref": "#/definitions/gcgPackage"
-    },
-    "ssm": {
-      "$ref": "#/definitions/ssmPackage"
+    "mt3dms": {
+      "properties": {
+        "enabled": {
+          "description": "Defines if a transport calculation should be initiated",
+          "type": "boolean"
+        },
+        "packages": {
+          "description": "An array of all packages used",
+          "type": "array",
+          "items": {
+            "type": "string",
+            "enum": [
+              "mt",
+              "btn",
+              "adv",
+              "dsp",
+              "gcg",
+              "ssm"
+            ]
+          }
+        },
+        "mt": {
+          "$ref": "#/definitions/mtPackage"
+        },
+        "btn": {
+          "$ref": "#/definitions/btnPackage"
+        },
+        "adv": {
+          "$ref": "#/definitions/advPackage"
+        },
+        "dsp": {
+          "$ref": "#/definitions/dspPackage"
+        },
+        "gcg": {
+          "$ref": "#/definitions/gcgPackage"
+        },
+        "ssm": {
+          "$ref": "#/definitions/ssmPackage"
+        }
+      },
+      "required": [
+        "packages",
+        "mt",
+        "btn",
+        "adv",
+        "dsp",
+        "gcg",
+        "ssm"
+      ]
     }
   },
   "definitions": {
