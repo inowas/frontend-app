@@ -23,7 +23,7 @@ class ZonesMap extends Component {
 
     render() {
         const {model, readOnly, zone, layer} = this.props;
-        const zones = layer.zones;
+        const zones = layer.zonesCollection;
 
         let options = {
             edit: {

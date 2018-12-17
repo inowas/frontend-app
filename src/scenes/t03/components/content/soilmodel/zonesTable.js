@@ -1,8 +1,15 @@
 import React from 'react';
-import {Button, Icon, Form, Table} from 'semantic-ui-react';
+import {Button, Icon, Table} from 'semantic-ui-react';
 import PropTypes from 'prop-types';
 import {SoilmodelLayer} from 'core/model/modflow/soilmodel';
 import {pure} from 'recompose';
+
+const styles = {
+    input: {
+        border: 0,
+        maxWidth: '200px'
+    }
+};
 
 class ZonesTable extends React.Component {
 
@@ -22,12 +29,13 @@ class ZonesTable extends React.Component {
 
     onChange = () => this.props.onChange(SoilmodelLayer.fromObject(this.state.layer));
 
-    onLocalChange = id => (e, {value}) => {
+    onLocalChange = id => (e) => {
+        const value = e.target.value;
         const layer = SoilmodelLayer.fromObject(this.state.layer);
-        const zone = layer.zones.findById(id);
+        const zone = layer.zonesCollection.findById(id);
         if (zone) {
             zone[this.props.parameter] = value;
-            layer.zones.update(zone);
+            layer.zonesCollection.update(zone);
             this.setState({
                  layer: layer.toObject()
             });
@@ -36,9 +44,9 @@ class ZonesTable extends React.Component {
 
     onSetToDefault = id => {
         const layer = SoilmodelLayer.fromObject(this.state.layer);
-        const zone = layer.zones.findById(id);
+        const zone = layer.zonesCollection.findById(id);
         zone[this.props.parameter] = null;
-        layer.zones.update(zone);
+        layer.zonesCollection.update(zone);
 
         this.props.onChange(layer);
     };
@@ -46,8 +54,8 @@ class ZonesTable extends React.Component {
     onReorder = (id, order) => {
         const layer = SoilmodelLayer.fromObject(this.state.layer);
 
-        const zone = layer.zones.findById(id);
-        layer.zones = layer.zones.changeOrder(zone, order);
+        const zone = layer.zonesCollection.findById(id);
+        layer.zonesCollection = layer.zonesCollection.changeOrder(zone, order);
 
         if (zone) {
             this.props.onChange(layer);
@@ -57,7 +65,7 @@ class ZonesTable extends React.Component {
     render() {
         const {onEdit, parameter, readOnly} = this.props;
         const layer = SoilmodelLayer.fromObject(this.state.layer);
-        const zones = layer.zones.orderBy('priority', 'desc').all;
+        const zones = layer.zonesCollection.orderBy('priority', 'desc').all;
 
         return (
             <Table>
@@ -75,10 +83,10 @@ class ZonesTable extends React.Component {
                             <Table.Cell>{zone.name}</Table.Cell>
                             <Table.Cell>{zone.priority}</Table.Cell>
                             <Table.Cell>
-                                <Form.Input
+                                <input
                                     onBlur={this.onChange}
                                     onChange={this.onLocalChange(zone.id)}
-                                    size='small'
+                                    style={styles.input}
                                     type='number'
                                     value={zone[parameter] !== null ? zone[parameter] : ''}
                                 />

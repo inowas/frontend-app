@@ -1,32 +1,25 @@
 import AbstractCollection from '../../AbstractCollection';
-import Layer from './SoilmodelLayer';
+import SoilmodelLayer from './SoilmodelLayer';
 
 class LayersCollection extends AbstractCollection {
-
-    static fromObject(layers) {
+    static fromArray(array) {
         const lc = new LayersCollection();
-        layers.forEach(layer => lc.add(Layer.fromObject(layer)));
+        lc.items = array.map(layer => SoilmodelLayer.fromObject(layer));
         return lc;
     }
 
-    get layers() {
-        return this._items;
-    }
-
-    set layers(value) {
-        this._items = value;
-    }
-
-    toObject = () => {
-        return {
-            layers: this.layers.map(layer => layer.toObject())
-        }
-    };
-
     validateInput(layer) {
-        if(!layer instanceof Layer) {
+        if (!layer instanceof SoilmodelLayer) {
             throw new Error('Layer expected to be from Type Layer.');
         }
+        return layer;
+    }
+
+    reorder() {
+        this.items = this.orderBy('number').all.map((layer, key) => {
+             layer.number = key + 1;
+             return layer;
+        });
     }
 }
 

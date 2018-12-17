@@ -2,35 +2,17 @@ import AbstractCollection from '../../AbstractCollection';
 import Zone from './SoilmodelZone';
 
 class ZonesCollection extends AbstractCollection {
-
-    static fromObject(zones) {
+    static fromArray(array) {
         const zc = new ZonesCollection();
-        zones.forEach(zone => zc.add(Zone.fromObject(zone)));
+        zc.items = array.map(zone => Zone.fromObject(zone));
         return zc;
     }
 
-    get zones() {
-        return this._items;
-    }
-
-    set zones(value) {
-        this._items = value;
-    }
-
-    toArray = () => {
-        return this.zones.map(zone => zone.toObject());
-    };
-
-    toObject = () => {
-        return {
-            zones: this.zones.map(zone => zone.toObject())
-        }
-    };
-
     validateInput(zone) {
-        if(!zone instanceof Zone) {
+        if (!zone instanceof Zone) {
             throw new Error('Zone expected to be from Type Zone.');
         }
+        return zone;
     }
 
     changeOrder(zone, order) {
