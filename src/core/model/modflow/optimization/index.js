@@ -1,3 +1,4 @@
+import AbstractPosition from './AbstractPosition';
 import Location from './Location';
 import Optimization from './Optimization';
 import OptimizationConstraint from './Constraint';
@@ -11,6 +12,7 @@ import OptimizationSolution from './Solution';
 import WellPosition from './WellPosition';
 
 export {
+    AbstractPosition,
     Location,
     Optimization,
     OptimizationConstraint,

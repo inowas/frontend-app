@@ -12,7 +12,7 @@ import * as Content from '../components/content/index';
 import ToolMetaData from '../../shared/simpleTools/ToolMetaData';
 import {fetchUrl} from 'services/api';
 import ModflowModel from 'core/model/modflow/ModflowModel';
-import {clear, updateBoundaries, updateModel, updateSoilmodel} from '../actions/actions';
+import {clear, updateBoundaries, updateModel, updateOptimization, updateSoilmodel} from '../actions/actions';
 import {BoundaryCollection, BoundaryFactory} from 'core/model/modflow/boundaries';
 import {Soilmodel} from 'core/model/modflow/soilmodel';
 

@@ -1,15 +1,24 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import {GeoJSON, Map, Rectangle, TileLayer, FeatureGroup, CircleMarker} from 'react-leaflet';
-import FullscreenControl from 'react-leaflet-fullscreen';
-import {geoJSON as leafletGeoJSON} from 'leaflet';
-//TODO: import md5 from 'js-md5';
+import {GeoJSON, Map, Rectangle, FeatureGroup, CircleMarker} from 'react-leaflet';
 import {uniqueId} from 'lodash';
 import {Button, Form, Grid, Header, Message, Modal, Segment} from 'semantic-ui-react';
 import InputRange from './inputRange';
 import InputObjectList from './inputObjectList';
 import {EditControl} from 'react-leaflet-draw';
 import {getActiveCellFromCoordinate} from 'services/geoTools';
+import {ModflowModel} from 'core/model/modflow';
+import {getBoundsLatLonFromGeoJSON} from 'services/geoTools';
+import {generateKey, getStyle} from '../../../maps';
+import {BasicTileLayer} from 'services/geoTools/tileLayers';
+import {AbstractPosition} from 'core/model/modflow/optimization';
+
+const styles = {
+    map: {
+        height: '400px',
+        width: '100%'
+    }
+};
 
 class OptimizationMap extends React.Component {
 
@@ -17,7 +26,7 @@ class OptimizationMap extends React.Component {
         super(props);
         this.state = {
             location: {
-                ...this.props.location,
+                ...this.props.location.toObject(),
                 type: this.props.location.type ? this.props.location.type : 'bbox',
                 objects: this.props.location.objects ? this.props.location.objects : []
             },
@@ -31,7 +40,7 @@ class OptimizationMap extends React.Component {
     componentWillReceiveProps(nextProps) {
         this.setState({
             location: {
-                ...nextProps.location,
+                ...nextProps.location.toObject(),
                 type: nextProps.location.type ? nextProps.location.type : 'bbox',
                 objects: nextProps.location.objects ? nextProps.location.objects : []
             }
@@ -42,11 +51,7 @@ class OptimizationMap extends React.Component {
         isEditing: !this.state.isEditing
     });
 
-    getBounds = geometry => leafletGeoJSON(geometry).getBounds();
-
-    generateKeyFunction = geometry => JSON.stringify(geometry); //TODO: md5(JSON.stringify(geometry));
-
-    validateLocation = p => p.col.min <= p.col.max && p.row.min <= p.row.max && p.col.min >= 0 && p.row.min >= 0 && p.col.max <= this.props.gridSize.n_x && p.row.max <= this.props.gridSize.n_y;
+    validateLocation = p => p.col.min <= p.col.max && p.row.min <= p.row.max && p.col.min >= 0 && p.row.min >= 0 && p.col.max <= this.props.model.gridSize.nX && p.row.max <= this.props.model.gridSize.nY;
 
     handleChangeLocation = ({name, from, to}) => {
         const location = {
@@ -79,13 +84,16 @@ class OptimizationMap extends React.Component {
         }
     });
 
-    drawObject = (bbox, gridSize, location, color = 'red') => {
+    drawObject = (location, color = 'red') => {
         const styles = {
             line: {
                 color: color,
                 weight: 0.3
             }
         };
+
+        const bbox = this.props.model.boundingBox;
+        const gridSize = this.props.model.gridSize;
 
         const dX = (bbox.xMax - bbox.xMin) / gridSize.nX;
         const dY = (bbox.yMax - bbox.yMin) / gridSize.nY;
@@ -150,8 +158,8 @@ class OptimizationMap extends React.Component {
                 }
             });
 
-            const cmin = getActiveCellFromCoordinate([xmin, ymax], this.props.bbox, this.props.gridSize);
-            const cmax = getActiveCellFromCoordinate([xmax, ymin], this.props.bbox, this.props.gridSize);
+            const cmin = getActiveCellFromCoordinate([xmin, ymax], this.props.model.boundingBox, this.props.model.gridSize);
+            const cmax = getActiveCellFromCoordinate([xmax, ymin], this.props.model.boundingBox, this.props.model.gridSize);
 
             const p = {
                 row: {
@@ -202,11 +210,7 @@ class OptimizationMap extends React.Component {
     });
 
     printMap(readOnly = false) {
-        const {area, bbox, gridSize, objects} = this.props;
-
-        if (!bbox || !area) {
-            return null;
-        }
+        const {model, objects} = this.props;
 
         const options = {
             edit: {
@@ -231,16 +235,20 @@ class OptimizationMap extends React.Component {
                 touchZoom={this.state.showOverlay}
                 doubleClickZoom={this.state.showOverlay}
                 scrollWheelZoom={this.state.showOverlay}
-                bounds={this.getBounds(area)}
+                bounds={getBoundsLatLonFromGeoJSON(model.geometry.toGeoJSON())}
+                ref={map => {
+                    this.map = map
+                }}
+                style={styles.map}
             >
-                <TileLayer url="http://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png"/>
+                <BasicTileLayer/>
                 <GeoJSON
-                    key={this.generateKeyFunction(area)}
-                    data={area}
+                    key={generateKey(model.geometry.toGeoJSON())}
+                    data={model.geometry.toGeoJSON()}
+                    style={getStyle('area')}
                 />
                 {this.state.location.type === 'bbox' && !readOnly &&
                 <div>
-                    <FullscreenControl position="topright"/>
                     <FeatureGroup>
                         <EditControl
                             position="bottomright"
@@ -249,13 +257,13 @@ class OptimizationMap extends React.Component {
                             onEditStop={this.toggleEditingState}
                             {...options}
                         />
-                        {this.drawObject(bbox, gridSize, this.state.location)}
+                        {this.drawObject(this.state.location)}
                     </FeatureGroup>
                 </div>
                 }
                 {this.state.location.type === 'bbox' && readOnly &&
                 <FeatureGroup>
-                    {this.drawObject(bbox, gridSize, this.state.location)}
+                    {this.drawObject(this.state.location)}
                 </FeatureGroup>
                 }
                 {this.state.location.type === 'object' &&
@@ -264,7 +272,7 @@ class OptimizationMap extends React.Component {
                         this.state.location.objects.map(id => {
                             const object = objects.filter(obj => obj.id === id)[0];
                             if (object) {
-                                return this.drawObject(bbox, gridSize, object.position, 'red');
+                                return this.drawObject(object.position, 'red');
                             }
                             return null;
                         })
@@ -276,7 +284,6 @@ class OptimizationMap extends React.Component {
     }
 
     render() {
-
         if (this.props.onlyBbox && this.props.onlyObjects) {
             throw new Error('The optimizationMap component can receive prop onlyBbox or onlyObjects but not both.');
         }
@@ -295,7 +302,7 @@ class OptimizationMap extends React.Component {
                     <Modal.Content>
                         <Grid divided={'vertically'}>
                             <Grid.Row columns={2}>
-                                <Grid.Column width={6}>
+                                <Grid.Column width={7}>
                                     <div>
                                         {!this.props.onlyBbox && !this.props.onlyObjects &&
                                         <Grid celled="internally">
@@ -393,7 +400,7 @@ class OptimizationMap extends React.Component {
                                         }
                                     </div>
                                 </Grid.Column>
-                                <Grid.Column width={10}>
+                                <Grid.Column width={9}>
                                     <Segment attached="bottom">
                                         {this.printMap(this.state.location.type === 'object')}
                                     </Segment>
@@ -418,17 +425,15 @@ class OptimizationMap extends React.Component {
 }
 
 OptimizationMap.propTypes = {
+    model: PropTypes.instanceOf(ModflowModel).isRequired,
     name: PropTypes.string.isRequired,
+    location: PropTypes.instanceOf(AbstractPosition).isRequired,
     label: PropTypes.string,
-    area: PropTypes.object.isRequired,
-    bbox: PropTypes.object.isRequired,
-    location: PropTypes.object.isRequired,
     objects: PropTypes.array,
     onlyObjects: PropTypes.bool,
     onlyBbox: PropTypes.bool,
-    onChange: PropTypes.func,
+    onChange: PropTypes.func.isRequired,
     readOnly: PropTypes.bool,
-    gridSize: PropTypes.object.isRequired,
 };
 
 export default OptimizationMap;

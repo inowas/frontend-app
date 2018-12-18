@@ -59,27 +59,29 @@ class BoundaryList extends React.Component {
             <Grid padded>
                 <Grid.Row>
                     <Form.Group>
-                        <Dropdown text='Add' icon='add' floated={'right'} labeled button className='icon'>
-                            <Dropdown.Menu>
-                                <Dropdown.Header/>
-                                {this.boundaryTypes()
-                                    .filter(b => b.value !== 'all')
-                                    .map(o => <Dropdown.Item
-                                            key={o.value}
-                                            {...o}
-                                            onClick={() => this.props.onAdd(o.value)}
-                                        />
-                                    )
-                                }
-                            </Dropdown.Menu>
-                        </Dropdown>
-                        <Dropdown
-                            selection
-                            placeholder={'Filter type of boundary'}
-                            options={this.boundaryTypes()}
-                            onChange={(e, {value}) => this.setState({selectedType: value})}
-                            value={this.state.selectedType}
-                        />
+                        <Button as='div' labelPosition='left'>
+                            <Dropdown
+                                selection
+                                options={this.boundaryTypes()}
+                                onChange={(e, {value}) => this.setState({selectedType: value})}
+                                value={this.state.selectedType}
+                                style={{minWidth: '120px', width: '120px'}}
+                            />
+                            <Dropdown text='Add' icon='add' labeled button className='icon'>
+                                <Dropdown.Menu>
+                                    <Dropdown.Header/>
+                                    {this.boundaryTypes()
+                                        .filter(b => b.value !== 'all')
+                                        .map(o => <Dropdown.Item
+                                                key={o.value}
+                                                {...o}
+                                                onClick={() => this.props.onAdd(o.value)}
+                                            />
+                                        )
+                                    }
+                                </Dropdown.Menu>
+                            </Dropdown>
+                        </Button>
                     </Form.Group>
                 </Grid.Row>
                 <Grid.Row>

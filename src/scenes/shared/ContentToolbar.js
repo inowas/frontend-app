@@ -95,7 +95,7 @@ class ContentToolBar extends React.Component {
                 <Grid.Row columns={3}>
                     <Grid.Column>
                         {this.props.backButton &&
-                        <Button icon onClick={this.props.back.onClick} labelPosition="left">
+                        <Button icon onClick={() => this.props.onBack()} labelPosition="left">
                             <Icon name="left arrow"/>
                             Back
                         </Button>
@@ -140,11 +140,12 @@ class ContentToolBar extends React.Component {
 }
 
 ContentToolBar.propTypes = {
-    backButton: PropTypes.object,
+    backButton: PropTypes.bool,
+    onBack: PropTypes.func,
+    saveButton: PropTypes.bool,
+    onSave: PropTypes.func,
     dropdown: PropTypes.object,
     message: PropTypes.object,
-    onSave: PropTypes.func,
-    saveButton: PropTypes.bool,
     isDirty: PropTypes.bool,
     isError: PropTypes.bool,
     isValid: PropTypes.bool

@@ -1,14 +1,20 @@
 import React from 'react';
-import {Button, Form, Grid, Icon, Table, Accordion, Dropdown} from 'semantic-ui-react';
+import {Button, Form, Grid, Icon, Table, Accordion} from 'semantic-ui-react';
 import PropTypes from 'prop-types';
-import {FluxDataTable, OptimizationMap, SubstanceEditor} from './shared';
+import {FluxDataTable, SubstanceEditor} from './shared';
 import {OptimizationInput, OptimizationObject} from 'core/model/modflow/optimization';
+import OptimizationMap from './shared/map';
+import {ModflowModel} from 'core/model/modflow';
+import ContentToolBar from '../../../../shared/ContentToolbar';
 
 const styles = {
     dropDownWithButtons: {
         marginRight: 0,
         marginLeft: 0,
     },
+    linkedCell: {
+        cursor: 'pointer'
+    }
 };
 
 class OptimizationObjectsComponent extends React.Component {
@@ -29,35 +35,23 @@ class OptimizationObjectsComponent extends React.Component {
         });
     }
 
-    handleChange = () => this.props.onChange(OptimizationInput.fromObject(this.state.optimizationInput));
-
-    handleLocalChange = (e, {name, value}) => {
-        const object = this.state.selectedObject;
-        object[name] = value;
-        this.setState({
-            selectedObject: object
-        })
-    } ;
-
-    handleSaveSelectedObject = () => {
+    handleChange = () => {
         const input = OptimizationInput.fromObject(this.state.optimizationInput);
-        input.objects.update(this.state.selectedObject);
+
+        if (this.state.selectedObject) {
+            const object = OptimizationObject.fromObject(this.state.selectedObject);
+            input.objectsCollection.update(object);
+        }
 
         this.props.onChange(input);
-
-        return this.setState({
-            selectedObject: null,
-            selectedSubstance: null
-        });
     };
 
-    handleChangeSelectedObject = (e, {name, value}) => {
-        const object = this.state.selectedObject;
-        object[name] = value;
+    handleChangeFlux = rows => {
+        const object = OptimizationObject.fromObject(this.state.selectedObject).updateFlux(rows);
 
-        return this.setState({
-            selectedObject: object
-        });
+        this.setState({
+            selectedObject: object.toObject()
+        }, this.handleChange);
     };
 
     handleChangeLocation = (e, {name, value}) => this.setState({
@@ -65,31 +59,11 @@ class OptimizationObjectsComponent extends React.Component {
             ...this.state.selectedObject,
             position: value
         }
-    });
+    }, this.handleChange);
 
-    onClickNew = (e, {name, value}) => {
-        const newObject = new OptimizationObject();
-        newObject.type = value;
-        newObject.numberOfStressPeriods = this.props.model.stressperiods.count;
-
-        const input = OptimizationInput.fromObject(this.state.optimizationInput);
-        input.objects.add(newObject);
-
-        return this.setState({
-            optimizationInput: input.toObject(),
-            selectedObject: newObject.toObject()
-        });
-    };
-
-    onClickDelete = (id) => {
-        const input = OptimizationInput.fromObject(this.state.optimizationInput);
-        input.objects.remove(id);
-        this.props.onChange(input);
-    };
-
-    onClickObject = (object) => this.setState({
-        selectedObject: object
-    });
+    handleChangeSubstances = (substances) => this.setState((prevState) => ({
+        selectedObject: OptimizationObject.fromObject(prevState.selectedObject).updateSubstances(substances).toObject()
+    }));
 
     handleClickAccordion = (e, titleProps) => {
         const {index} = titleProps;
@@ -99,33 +73,62 @@ class OptimizationObjectsComponent extends React.Component {
         this.setState({activeIndex: newIndex});
     };
 
-    handleChangeFlux = rows => this.setState((prevState) => ({
-        selectedObject: OptimizationObject.fromObject(prevState.selectedObject).updateFlux(rows).toObject()
-    }));
-
-    handleChangeSubstances = (substances) => this.setState((prevState) => ({
-        selectedObject: OptimizationObject.fromObject(prevState.selectedObject).updateSubstances(substances).toObject()
-    }));
-
-    onClickBack = () => this.setState({
+    handleClickBack = () => this.setState({
         selectedObject: null,
         selectedSubstance: null
     });
+
+    handleClickDelete = (id) => {
+        const input = OptimizationInput.fromObject(this.state.optimizationInput);
+        input.objectsCollection.remove(id);
+        this.props.onChange(input, true);
+    };
+
+    handleClickNew = (e, {name, value}) => {
+        const newObject = new OptimizationObject();
+        newObject.type = value;
+        newObject.numberOfStressPeriods = this.props.model.stressperiods.count;
+
+        const input = OptimizationInput.fromObject(this.state.optimizationInput);
+        input.objectsCollection.add(newObject);
+        this.props.onChange(input);
+
+        return this.setState({
+            selectedObject: newObject.toObject()
+        });
+    };
+
+    handleClickObject = (object) => this.setState({
+        selectedObject: object
+    });
+
+    handleClickSave = () => {
+        if (this.state.selectedObject) {
+            const object = OptimizationObject.fromObject(this.state.selectedObject);
+            const input = OptimizationInput.fromObject(this.state.optimizationInput);
+            input.objectsCollection.update(object);
+            this.props.onChange(input);
+        }
+
+        this.props.onSave();
+    };
+
+    handleLocalChange = (e, {name, value}) => {
+        const object = this.state.selectedObject;
+        object[name] = value;
+        return this.setState({
+            selectedObject: object
+        });
+    };
 
     render() {
         const {model} = this.props;
         const {activeIndex, selectedObject} = this.state;
         const optimizationInput = OptimizationInput.fromObject(this.state.optimizationInput);
-        const objects = optimizationInput.objects;
-        const substances = [];
+        const objects = optimizationInput.objectsCollection;
 
         const typeOptions = [
             {key: 'type1', text: 'Well', value: 'wel'},
-        ];
-
-        const fluxConfig = [
-            {property: 'min', label: 'Min'},
-            {property: 'max', label: 'Max'}
         ];
 
         let fluxRows = null;
@@ -141,19 +144,27 @@ class OptimizationObjectsComponent extends React.Component {
             });
         }
 
+        const addObjectDropdown = !selectedObject ? {
+            text: 'Create New',
+            icon: 'add',
+            options: typeOptions,
+            onChange: this.handleClickNew
+        } : null;
+
         return (
             <div>
+                <ContentToolBar
+                    isError={false}
+                    isDirty={this.props.isDirty}
+                    onBack={this.handleClickBack}
+                    onSave={this.handleClickSave}
+                    backButton={!!selectedObject}
+                    dropdown={addObjectDropdown}
+                    saveButton={!!selectedObject}
+                />
                 <Grid>
                     <Grid.Row columns={1}>
                         <Grid.Column>
-                            {!selectedObject &&
-                            <Dropdown text='Add Decision Variable' icon='add' fluid floating labeled button
-                                      className='icon'>
-                                <Dropdown.Menu>
-                                    <Dropdown.Item value='wel' onClick={this.onClickNew} text='wel'/>
-                                </Dropdown.Menu>
-                            </Dropdown>
-                            }
                             {(!selectedObject && objects && objects.length > 0) ?
                                 <Table celled striped>
                                     <Table.Header>
@@ -167,19 +178,19 @@ class OptimizationObjectsComponent extends React.Component {
                                         {
                                             objects.all.map((object) =>
                                                 <Table.Row key={object.id}>
-                                                    <Table.Cell>
-                                                        <Button
-                                                            size="small"
-                                                            onClick={() => this.onClickObject(object.toObject())}
-                                                        >
-                                                            {object.name}
-                                                        </Button>
+                                                    <Table.Cell
+                                                        style={styles.linkedCell}
+                                                        onClick={() => this.handleClickObject(object.toObject())}
+                                                    >
+                                                        {object.name}
                                                     </Table.Cell>
                                                     <Table.Cell>{object.type}</Table.Cell>
-                                                    <Table.Cell textAlign="center">
-                                                        <Button icon color="red"
-                                                                size="small"
-                                                                onClick={() => this.onClickDelete(object.id)}
+                                                    <Table.Cell textAlign="right">
+                                                        <Button
+                                                            icon
+                                                            negative
+                                                            onClick={() => this.handleClickDelete(object.id)}
+                                                            size='small'
                                                         >
                                                             <Icon name="trash"/>
                                                         </Button>
@@ -225,25 +236,21 @@ class OptimizationObjectsComponent extends React.Component {
                                         </Accordion.Title>
                                         <Accordion.Content active={activeIndex === 0}>
                                             <OptimizationMap
-                                                name="position"
-                                                area={model.geometry}
-                                                bbox={model.boundingBox}
-                                                location={selectedObject.position}
-                                                gridSize={model.gridSize}
+                                                location={OptimizationObject.fromObject(selectedObject).position}
+                                                name='position'
+                                                model={model}
                                                 onChange={this.handleChangeLocation}
-                                                onlyBbox={true}
-                                                readOnly
+                                                onlyBbox
                                             />
                                         </Accordion.Content>
                                         <Accordion.Title active={activeIndex === 1} index={1}
                                                          onClick={this.handleClickAccordion}>
                                             <Icon name="dropdown"/>
-                                            Pumping Rates‚
+                                            Pumping Rates
                                         </Accordion.Title>
                                         <Accordion.Content active={activeIndex === 1}>
                                             <FluxDataTable
-                                                config={fluxConfig}
-                                                readOnly={false}
+                                                readOnly={model.readOnly}
                                                 rows={fluxRows}
                                                 onChange={this.handleChangeFlux}
                                             />
@@ -255,9 +262,8 @@ class OptimizationObjectsComponent extends React.Component {
                                         </Accordion.Title>
                                         <Accordion.Content active={activeIndex === 2}>
                                             <SubstanceEditor
-                                                object={selectedObject}
-                                                stressPeriods={model.stressPeriods}
-                                                substances={substances || []}
+                                                object={OptimizationObject.fromObject(selectedObject)}
+                                                model={model}
                                                 onChange={this.handleChangeSubstances}
                                             />
                                         </Accordion.Content>
@@ -274,9 +280,11 @@ class OptimizationObjectsComponent extends React.Component {
 }
 
 OptimizationObjectsComponent.propTypes = {
+    isDirty: PropTypes.bool,
     optimizationInput: PropTypes.instanceOf(OptimizationInput).isRequired,
-    model: PropTypes.object,
-    onChange: PropTypes.func.isRequired
+    model: PropTypes.instanceOf(ModflowModel).isRequired,
+    onChange: PropTypes.func.isRequired,
+    onSave: PropTypes.func.isRequired
 };
 
 export default OptimizationObjectsComponent;

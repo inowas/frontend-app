@@ -24,7 +24,6 @@ import {
 } from './index';
 import Command from '../../../commands/modflowModelCommand';
 import {fetchUrl} from 'services/api';
-import ContentToolBar from '../../../../shared/ContentToolbar';
 
 class OptimizationContainer extends React.Component {
     constructor(props) {
@@ -42,7 +41,7 @@ class OptimizationContainer extends React.Component {
         }
     }
 
-    componentWillReceiveProps(nextProps, nextContext) {
+    componentWillReceiveProps(nextProps) {
         this.setState({
             model: nextProps.model.toObject(),
             optimization: nextProps.optimization ? nextProps.optimization.toObject() : null
@@ -64,25 +63,44 @@ class OptimizationContainer extends React.Component {
         );
     }
 
-    handleChange = (optimizationInput) => {
+    handleChange = (optimizationInput, save = false) => {
         const optimization = Optimization.fromObject(this.state.optimization);
         optimization.input = optimizationInput;
+
+        this.props.updateOptimization(optimization);
+
+        if (save) {
+            this.setState({
+                isLoading: true
+            });
+            return sendCommand(
+                Command.updateOptimizationInput({
+                    id: this.props.model.id,
+                    input: optimizationInput.toObject()
+                }), () => this.setState({
+                    isDirty: false,
+                    isLoading: false
+                })
+            );
+        }
 
         return this.setState({
             isDirty: true,
             optimization: optimization.toObject()
-        }, this.props.updateOptimization(optimization));
+        });
     };
 
     handleSave = () => {
-        this.setState({loading: true});
+        this.setState({
+            isLoading: true
+        });
         return sendCommand(
             Command.updateOptimizationInput({
                 id: this.props.model.id,
                 input: this.state.optimization.input
             }), () => this.setState({
                 isDirty: false,
-                loading: false
+                isLoading: false
             })
         );
     };
@@ -204,11 +222,6 @@ class OptimizationContainer extends React.Component {
             return null;
         }
 
-        /*const {stress_periods} = this.props;
-        if (!stress_periods) {
-            return null;
-        }*/
-
         const {type} = this.props.match.params;
         const optimization = Optimization.fromObject(this.state.optimization);
 
@@ -216,9 +229,11 @@ class OptimizationContainer extends React.Component {
             case 'objects':
                 return (
                     <OptimizationObjectsComponent
+                        isDirty={this.state.isDirty}
                         optimizationInput={optimization.input}
                         model={model}
                         onChange={this.handleChange}
+                        onSave={this.handleSave}
                     />
                 );
             case 'objectives':
@@ -248,8 +263,10 @@ class OptimizationContainer extends React.Component {
             default:
                 return (
                     <OptimizationParametersComponent
+                        isDirty={this.state.isDirty}
                         optimizationInput={optimization.input}
                         onChange={this.handleChange}
+                        onSave={this.handleSave}
                     />
                 );
         }
@@ -373,7 +390,7 @@ class OptimizationContainer extends React.Component {
     }
 
     render() {
-        const {activeItem, isError, isDirty, isLoading, optimization} = this.state;
+        const {activeItem, isLoading, optimization} = this.state;
 
         if (!optimization) {
             return (
@@ -387,16 +404,6 @@ class OptimizationContainer extends React.Component {
             <div>
                 <Segment color={'grey'} loading={isLoading}>
                     <Grid>
-                        <Grid.Row>
-                            <Grid.Column width={4}/>
-                            <Grid.Column width={12}>
-                                <ContentToolBar
-                                    isError={isError}
-                                    isDirty={isDirty}
-                                    onSave={this.handleSave}
-                                />
-                            </Grid.Column>
-                        </Grid.Row>
                         <Grid.Row>
                         <Grid.Column width={4}>
                             <Menu fluid vertical tabular>

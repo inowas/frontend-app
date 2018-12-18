@@ -26,7 +26,7 @@ class OptimizationInput {
         input.parameters = OptimizationParameters.fromObject(obj.parameters);
         input.objectives = OptimizationObjectivesCollection.fromArray(obj.objectives);
         input.constraints = OptimizationConstraintsCollection.fromArray(obj.constraints);
-        input.objects = OptimizationObjectsCollection.fromArray(obj.objects);
+        input.objectsCollection = OptimizationObjectsCollection.fromArray(obj.objects);
         return input;
     }
 
@@ -66,11 +66,14 @@ class OptimizationInput {
         this._objectives = value;
     }
 
-    get objects() {
+    get objectsCollection() {
         return this._objects;
     }
 
-    set objects(value) {
+    set objectsCollection(value) {
+        if (!(value instanceof OptimizationObjectsCollection)) {
+            throw new Error('Objects expected to be instance of OptimizationObjectsCollection');
+        }
         this._objects = value;
     }
 
@@ -80,7 +83,7 @@ class OptimizationInput {
             'parameters': this.parameters.toObject(),
             'constraints': this.constraints.toArray(),
             'objectives': this.objectives.toArray(),
-            'objects': this.objects.toArray()
+            'objects': this.objectsCollection.toArray()
         };
     }
 }

@@ -1,8 +1,9 @@
 import React from 'react';
-import {Button, Dropdown, Form, Icon, List, Modal} from 'semantic-ui-react';
+import {Button, Divider, Dropdown, Form, Icon, List, Modal} from 'semantic-ui-react';
 import PropTypes from 'prop-types';
 import FluxDataTable from './fluxDataTable';
-import {Stressperiods} from 'core/model/modflow';
+import {ModflowModel} from 'core/model/modflow';
+import {OptimizationObject} from 'core/model/modflow/optimization';
 
 class SubstanceEditor extends React.Component {
 
@@ -58,10 +59,11 @@ class SubstanceEditor extends React.Component {
     };
 
     addSubstance = (e, {name, value}) => {
-        const substance = this.props.substances.filter(s => s.id === value)[0];
+        const substances = this.props.model.mt3dms.packages.ssm._meta.substances;
+        const substance = substances.filter(s => s.id === value)[0];
 
         if (substance) {
-            substance.data = (new Array(this.props.stressPeriods.dateTimes.length)).fill(0).map(() => {
+            substance.data = (new Array(this.props.model.stressperiods.count)).fill(0).map(() => {
                 return {
                     min: 0,
                     max: 0,
@@ -114,6 +116,11 @@ class SubstanceEditor extends React.Component {
     };
 
     render() {
+        const {model} = this.props;
+        const substances = model.mt3dms.packages.ssm._meta.substances;
+
+        console.log('Substances', substances);
+
         const styles = {
             dropDownWithButtons: {
                 marginRight: 0,
@@ -134,7 +141,7 @@ class SubstanceEditor extends React.Component {
 
         // Only show substances in dropdown, which hasn't already been added.
         let addableSubstances = [];
-        this.props.substances.forEach((value) => {
+        substances.forEach((value) => {
             const added = this.state.addedSubstances.filter(s => s.id === value.id).length > 0;
 
             if (!added) {
@@ -148,7 +155,7 @@ class SubstanceEditor extends React.Component {
 
         let substanceRows = [];
         if (this.state.selectedSubstance) {
-            substanceRows = this.props.stressPeriods.dateTimes.map((dt, key) => {
+            substanceRows = this.props.model.stressperiods.dateTimes.map((dt, key) => {
                 return {
                     id: key,
                     date_time: dt,
@@ -204,19 +211,21 @@ class SubstanceEditor extends React.Component {
                 </div>
                 }
                 {this.state.selectedSubstance && this.props.readOnly &&
-                <FluxDataTable
-                    config={tableConfig}
-                    readOnly={true}
-                    rows={substanceRows}
-                />
+                <div>
+                    <Divider horizontal>{this.state.selectedSubstance.name}</Divider>
+                    <FluxDataTable
+                        onChange={this.handleChangeSubstanceData}
+                        readOnly={model.readOnly}
+                        rows={substanceRows}
+                    />
+                </div>
                 }
                 {this.state.selectedSubstance && !this.props.readOnly &&
                 <Modal size={'large'} open onClose={this.onCancelModal} dimmer={'inverted'}>
                     <Modal.Header>{this.state.selectedSubstance.name}</Modal.Header>
                     <Modal.Content>
                         <FluxDataTable
-                            config={tableConfig}
-                            readOnly={false}
+                            readOnly={model.readOnly}
                             rows={substanceRows}
                             onChange={this.handleChangeSubstanceData}
                         />
@@ -238,9 +247,8 @@ class SubstanceEditor extends React.Component {
 }
 
 SubstanceEditor.propTypes = {
-    object: PropTypes.object.isRequired,
-    substances: PropTypes.array.isRequired,
-    stressPeriods: PropTypes.instanceOf(Stressperiods),
+    object: PropTypes.instanceOf(OptimizationObject).isRequired,
+    model: PropTypes.instanceOf(ModflowModel).isRequired,
     onChange: PropTypes.func,
     readOnly: PropTypes.bool,
     showResults: PropTypes.bool

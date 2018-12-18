@@ -6,22 +6,19 @@ import {
     UPDATE_SOILMODEL,
     UPDATE_SOILMODEL_LAYER
 } from '../reducers/soilmodel';
-import {UPDATE_MODEL, UPDATE_STRESSPERIODS} from '../reducers/model';
 import {UPDATE_OPTIMIZATION} from '../reducers/optimization';
-import {UPDATE_SOILMODEL} from '../reducers/soilmodel';
 
 import {ModflowModel, Stressperiods} from 'core/model/modflow';
 import {BoundaryCollection} from 'core/model/modflow/boundaries';
 import {Soilmodel, SoilmodelLayer} from 'core/model/modflow/soilmodel';
 import {Mt3dms} from 'core/model/modflow/mt3d';
+import {Optimization} from 'core/model/modflow/optimization';
 
 export function clear() {
     return {
         type: CLEAR
     }
 }
-import {Soilmodel} from 'core/model/modflow/soilmodel';
-import {Optimization} from 'core/model/modflow/optimization';
 
 export function updateModel(modflowModel) {
     if (!(modflowModel instanceof ModflowModel)) {
