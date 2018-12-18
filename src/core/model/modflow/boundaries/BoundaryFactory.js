@@ -34,8 +34,8 @@ export default class BoundaryFactory {
 
     static createByTypeAndStartDate({id = null, name = null, type, geometry, utcIsoStartDateTimes}) {
         const boundary = BoundaryFactory.fromType(type);
-        id ? boundary.id = id : boundary._id = Uuid.v4();
-        name ? boundary.name = name : boundary._name = 'new ' + type + '-boundary';
+        boundary.id = id ? id : Uuid.v4();
+        boundary.name = name ? name : 'new ' + type + '-boundary';
         boundary.geometry = geometry;
         boundary.setDefaultStartValues(utcIsoStartDateTimes);
         return boundary;

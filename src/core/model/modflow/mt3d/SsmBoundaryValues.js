@@ -16,7 +16,7 @@ class SsmBoundaryValues {
             throw new Error('Boundary must be from instance Boundary');
         }
 
-        value._affectedCells = boundary.affectedCells.toObject();
+        value._affectedCells = boundary.affectedCells.toObject;
         value._boundaryId = boundary.id;
         value._boundaryType = boundary.type;
         value._stressPeriodValues = new Array(numberOfStressPeriods).fill(0);

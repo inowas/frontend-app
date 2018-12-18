@@ -1,6 +1,6 @@
 import uuidv4 from 'uuid/v4';
-import ZonesCollection from './ZonesCollection';
-import GridSize from '../GridSize';
+import {SoilmodelZone, ZonesCollection} from './index';
+import {GridSize} from '../index';
 
 class SoilmodelLayer {
     _id = uuidv4();
@@ -20,6 +20,14 @@ class SoilmodelLayer {
     _laywet = 0;
     _ss = 0.00002;
     _sy = 0.15;
+
+    static fromDefault() {
+        const layer = new SoilmodelLayer();
+        layer.name = 'Default Layer';
+        layer.number = 1;
+        layer.zonesCollection.add(SoilmodelZone.fromDefault());
+        return layer;
+    }
 
     static fromObject(obj) {
         const layer = new SoilmodelLayer();

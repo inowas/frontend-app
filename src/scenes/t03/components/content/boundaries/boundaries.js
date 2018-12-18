@@ -104,7 +104,8 @@ class Boundaries extends React.Component {
         return sendCommand(ModflowModelCommand.updateBoundary(model.id, boundary),
             () => {
                 this.setState({isDirty: false});
-                this.fetchBoundary(model.id, boundary.id)
+                this.fetchBoundary(model.id, boundary.id);
+                this.props.updateBoundaries(this.props.boundaries.update(boundary))
             },
             () => this.setState({error: true})
         )

@@ -1,5 +1,5 @@
 import {UPDATE_BOUNDARIES} from '../reducers/boundaries';
-import {UPDATE_MODEL, UPDATE_MT3DMS, UPDATE_STRESSPERIODS} from '../reducers/model';
+import {CLEAR, UPDATE_MODEL, UPDATE_MT3DMS, UPDATE_STRESSPERIODS} from '../reducers/model';
 import {
     ADD_SOILMODEL_LAYER,
     REMOVE_SOILMODEL_LAYER,
@@ -12,6 +12,11 @@ import {BoundaryCollection} from 'core/model/modflow/boundaries';
 import {Soilmodel, SoilmodelLayer} from 'core/model/modflow/soilmodel';
 import {Mt3dms} from 'core/model/modflow/mt3d';
 
+export function clear() {
+    return {
+        type: CLEAR
+    }
+}
 
 export function updateModel(modflowModel) {
     if (!(modflowModel instanceof ModflowModel)) {

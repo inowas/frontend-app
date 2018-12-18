@@ -166,7 +166,7 @@ class SsmPackage extends AbstractMt3dPackage {
         let spData = [];
         substances.forEach((s, substanceIdx) => {
             if (substanceIdx === 0) {
-                spData = s.toSsmPackageValues;
+                spData = s.toSsmPackageValues();
             }
 
             if (substanceIdx === 1) {
@@ -178,7 +178,7 @@ class SsmPackage extends AbstractMt3dPackage {
             }
 
             if (substanceIdx > 0) {
-                s.toSsmPackageValues.forEach((sp, idx) => {
+                s.toSsmPackageValues().forEach((sp, idx) => {
                     sp.forEach(value => {
                         let push = true;
                         spData[idx] = spData[idx].map((data) => {
