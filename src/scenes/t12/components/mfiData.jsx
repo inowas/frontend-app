@@ -1,6 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import {Button, Form, Header, Input, Table} from "semantic-ui-react";
+import {Button, Form, Header, Input, Table} from 'semantic-ui-react';
 import uuidv4 from 'uuid';
 import {cloneDeep} from 'lodash';
 
@@ -113,7 +113,7 @@ class MfiData extends React.Component {
 
         return (
             <Form>
-                <Header as={'h3'} textAlign={'center'}>MFI</Header>
+                <Header as={'h3'} textAlign={'center'}>Filtration</Header>
                 <Table singleLine striped size='small' color={'red'}>
                     <Table.Header>
                         <Table.Row>

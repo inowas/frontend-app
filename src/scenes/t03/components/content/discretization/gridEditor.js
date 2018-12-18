@@ -2,14 +2,16 @@ import React from 'react';
 import {connect} from 'react-redux';
 import PropTypes from 'prop-types';
 import {Form, Grid} from 'semantic-ui-react';
-import ContentToolBar from '../../../../shared/ContentToolbar';
 import {ActiveCells, BoundingBox, Geometry, GridSize, ModflowModel} from 'core/model/modflow';
-import {updateModel} from '../../../actions/actions';
-import ModflowModelCommand from '../../../commands/modflowModelCommand';
-import {dxCell, dyCell} from 'services/geoTools/distance';
 
+import {dxCell, dyCell} from 'services/geoTools/distance';
 import {sendCommand} from 'services/api';
-import SpatialDiscretizationMap from '../../maps/spatialDiscretizationMap';
+
+import ContentToolBar from '../../../../shared/ContentToolbar';
+import ModflowModelCommand from '../../../commands/modflowModelCommand';
+import {ModelDiscretizationMap} from '../../maps';
+
+import {updateModel} from '../../../actions/actions';
 
 class GridEditor extends React.Component {
     constructor(props) {
@@ -141,7 +143,7 @@ class GridEditor extends React.Component {
                 </Grid.Row>
                 <Grid.Row>
                     <Grid.Column width={16}>
-                        <SpatialDiscretizationMap
+                        <ModelDiscretizationMap
                             activeCells={ActiveCells.fromArray(this.state.activeCells)}
                             boundingBox={BoundingBox.fromArray(this.state.boundingBox)}
                             geometry={Geometry.fromObject(this.state.geometry)}

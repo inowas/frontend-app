@@ -4,17 +4,26 @@ export default class MultipleOPBoundary extends Boundary {
 
     _observationPoints = [];
 
-    setDefaultStartValues(utcIsoStartDateTime) {
+    setDefaultStartValues(utcIsoStartDateTimes) {
+        if (!Array.isArray(utcIsoStartDateTimes)) {
+            utcIsoStartDateTimes = [utcIsoStartDateTimes];
+        }
+
+        const dateTimeValues = [];
+        utcIsoStartDateTimes.forEach(dt => {
+            dateTimeValues.push({date_time: dt, values: this.defaultValues})
+        });
+
         this.observationPoints = [{
             id: 'op1',
             name: 'OP1',
             geometry: {type: 'Point', coordinates: this.geometry.coordinates[0]},
-            date_time_values: [{date_time: new Date(utcIsoStartDateTime).toISOString(), values: this.defaultValues}],
+            date_time_values: dateTimeValues
         }];
     }
 
     setDefaultValues(utcIsoStartDateTime, observationPointId = null) {
-        const dateTimeValues = [{date_time: new Date(utcIsoStartDateTime).toISOString(), values: this.defaultValues}];
+        const dateTimeValues = [{date_time: utcIsoStartDateTime, values: this.defaultValues}];
         this.setDateTimeValues(dateTimeValues, observationPointId);
     }
 
@@ -49,17 +58,22 @@ export default class MultipleOPBoundary extends Boundary {
         });
     }
 
-    getIndexedDateTimeValues(observationPointId = null) {
-        const dateTimeValues = this.getDateTimeValues(observationPointId);
-        return dateTimeValues.map((value, index) => {
-            return {...value, id: index};
-        });
-    }
-
     get toObject() {
         return {
             ...super.toObject,
             observation_points: this.observationPoints,
         };
+    }
+
+    hasObservationPoint(oId) {
+        return this.observationPoints.filter(op => op.id === oId).length > 0
+    }
+
+    getObservationPointById(oId) {
+        if (this.hasObservationPoint(oId)) {
+            return this.observationPoints.filter(op => op.id === oId)[0];
+        }
+
+        return null;
     }
 }

@@ -23,7 +23,7 @@ const style = {
     }
 };
 
-class SpatialDiscretizationMap extends React.Component {
+class ModelDiscretizationMap extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
@@ -222,7 +222,7 @@ class SpatialDiscretizationMap extends React.Component {
     }
 }
 
-SpatialDiscretizationMap.proptypes = {
+ModelDiscretizationMap.proptypes = {
     activeCells: PropTypes.instanceOf(ActiveCells),
     boundingBox: PropTypes.instanceOf(BoundingBox),
     geometry: PropTypes.instanceOf(Geometry),
@@ -231,4 +231,4 @@ SpatialDiscretizationMap.proptypes = {
     onChange: PropTypes.func.isRequired
 };
 
-export default pure(SpatialDiscretizationMap);
+export default pure(ModelDiscretizationMap);

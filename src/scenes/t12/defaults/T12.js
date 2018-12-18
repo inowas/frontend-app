@@ -13,7 +13,7 @@ export const defaults = () => {
                 t: 10,
                 V: 0.25,
             }, {
-                t: 23,
+                t: 21,
                 V: 0.5,
             }, {
                 t: 35,

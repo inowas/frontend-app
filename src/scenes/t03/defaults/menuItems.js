@@ -16,6 +16,10 @@ const menuItems = [
         property: 'observations'
     },
     {
+        name: 'Transport',
+        property: 'transport'
+    },
+    {
         name: 'Run',
         property: 'run'
     },

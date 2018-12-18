@@ -1,18 +1,28 @@
 import AbstractCommand from 'core/model/command/AbstractCommand';
 
+import addLayerPayloadSchema from './addLayerPayloadSchema';
 import addBoundaryPayloadSchema from './addBoundaryPayloadSchema';
 import calculateOptimizationPayloadSchema from './calculateOptimizationPayloadSchema';
 import cancelOptimizationCalculationPayloadSchema from './cancelOptimizationCalculationPayloadSchema';
 import cloneModflowModelPayloadSchema from './cloneModflowModelPayloadSchema';
 import createModflowModelPayloadSchema from './createModflowModelPayloadSchema';
 import deleteModflowModelPayloadSchema from './deleteModflowModelPayloadSchema';
+import removeLayerPayloadSchema from './removeLayerPayloadSchema';
 import removeBoundaryPayloadSchema from './removeBoundaryPayloadSchema';
 import updateBoundaryPayloadSchema from './updateBoundaryPayloadSchema';
 import updateModflowModelPayloadSchema from './updateModflowModelPayloadSchema';
+import updateMt3dmsPayloadSchema from './updateMt3dmsPayloadSchema';
 import updateOptimizationInputPayloadSchema from './updateOptimizationInputPayloadSchema';
 import updateStressperiodsPayloadSchema from './updateStressperiodsPayloadSchema';
 
 class ModflowModelCommand extends AbstractCommand {
+
+    static addSoilmodelLayer(modelId, layer) {
+        return new ModflowModelCommand(
+            'addLayer',
+            {id: modelId, layer: layer.toObject()},
+            addLayerPayloadSchema);
+    }
 
     static addBoundary(modelId, boundary) {
         return new ModflowModelCommand(
@@ -48,6 +58,10 @@ class ModflowModelCommand extends AbstractCommand {
         return new ModflowModelCommand('deleteModflowModel', {id}, deleteModflowModelPayloadSchema);
     }
 
+    static removeSoilmodelLayer(payload) {
+        return new ModflowModelCommand('removeLayer', payload, removeLayerPayloadSchema);
+    }
+
     static removeBoundary(modelId, boundaryId) {
         return new ModflowModelCommand(
             'removeBoundary',
@@ -68,8 +82,16 @@ class ModflowModelCommand extends AbstractCommand {
         return new ModflowModelCommand('updateModflowModel', payload, updateModflowModelPayloadSchema);
     }
 
+    static updateMt3dms(payload) {
+        return new ModflowModelCommand('updateMt3dms', payload, updateMt3dmsPayloadSchema);
+    }
+
     static updateOptimizationInput(payload) {
         return new ModflowModelCommand('updateOptimizationInput', payload, updateOptimizationInputPayloadSchema)
+    }
+
+    static updateSoilmodelLayer(payload) {
+        return new ModflowModelCommand('updateLayer', payload, addLayerPayloadSchema);
     }
 
     static updateStressperiods(payload) {

@@ -9,19 +9,24 @@ import {
     calculateDiagramData
 } from '../calculations/calculationT12';
 
-import {getParameterValues} from "../../shared/simpleTools/helpers";
-import {Grid, Header} from "semantic-ui-react";
+import {getParameterValues} from '../../shared/simpleTools/helpers';
+import {Grid, Header} from 'semantic-ui-react';
 
 const renderText = (rSquared, MFIcor2, MFI) => {
     if (rSquared > 0.90) {
         return (
-            <p style={style.text}>
-                MFI (Based on the slope of linear trendline): {MFI.toFixed(2)} s/l<sup>2</sup>.
-                Information: The first x points were used for calculating MFI, because a linear trend line
-                with a coefficient of determination R<sup>2</sup> &gt; 0.90 can describe the determined points.
-                The other points were excluded from the calculation, because the resulting trend line including these
-                points has a coefficient of determination R<sup>2</sup>&nbsp;(0.90).
-            </p>
+            <div>
+                <p style={style.text}>
+                    MFI (Based on the slope of linear trendline): {MFI.toFixed(2)} s/l<sup>2</sup>.
+                </p>
+                <p style={style.text}>
+                    Information: The first x points were used for calculating MFI, because a linear trend line
+                    with a coefficient of determination R<sup>2</sup> &gt; 0.90 can describe the determined points.
+                    The other points were excluded from the calculation, because the resulting trend line including
+                    these
+                    points has a coefficient of determination R<sup>2</sup>&nbsp;(0.90).
+                </p>
+            </div>
         );
     }
     return (

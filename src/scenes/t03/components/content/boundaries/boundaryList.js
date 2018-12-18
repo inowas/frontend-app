@@ -1,6 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import {Button, Dropdown, Icon, Menu, Popup} from 'semantic-ui-react';
+import {Button, Dropdown, Form, Grid, Icon, Menu, Popup} from 'semantic-ui-react';
 import BoundaryCollection from 'core/model/modflow/boundaries/BoundaryCollection';
 
 class BoundaryList extends React.Component {
@@ -12,12 +12,12 @@ class BoundaryList extends React.Component {
     }
 
     boundaryTypes = () => ([
-        {key: 'all', value: 'all', text: 'Show all boundaries'},
-        {key: 'chd', value: 'chd', text: 'Constant head boundary'},
-        {key: 'ghb', value: 'ghb', text: 'General head  boundary'},
-        {key: 'rch', value: 'rch', text: 'Recharge boundary'},
-        {key: 'riv', value: 'riv', text: 'River boundary'},
-        {key: 'wel', value: 'wel', text: 'Well boundary'},
+        {key: 'all', value: 'all', text: 'All'},
+        {key: 'chd', value: 'chd', text: 'CHD'},
+        {key: 'ghb', value: 'ghb', text: 'GHB'},
+        {key: 'rch', value: 'rch', text: 'RCH'},
+        {key: 'riv', value: 'riv', text: 'RIV'},
+        {key: 'wel', value: 'wel', text: 'WEL'},
     ]);
 
     list = () => {
@@ -56,22 +56,43 @@ class BoundaryList extends React.Component {
 
     render() {
         return (
-            <div>
-                <Dropdown
-                    selection
-                    placeholder={'Filter type of boundary'}
-                    options={this.boundaryTypes()}
-                    onChange={(e, {value}) => this.setState({selectedType: value})}
-                    value={this.state.selectedType}
-                />
-                {this.list()}
-            </div>
+            <Grid padded>
+                <Grid.Row>
+                    <Form.Group>
+                        <Dropdown text='Add' icon='add' floated={'right'} labeled button className='icon'>
+                            <Dropdown.Menu>
+                                <Dropdown.Header/>
+                                {this.boundaryTypes()
+                                    .filter(b => b.value !== 'all')
+                                    .map(o => <Dropdown.Item
+                                            key={o.value}
+                                            {...o}
+                                            onClick={() => this.props.onAdd(o.value)}
+                                        />
+                                    )
+                                }
+                            </Dropdown.Menu>
+                        </Dropdown>
+                        <Dropdown
+                            selection
+                            placeholder={'Filter type of boundary'}
+                            options={this.boundaryTypes()}
+                            onChange={(e, {value}) => this.setState({selectedType: value})}
+                            value={this.state.selectedType}
+                        />
+                    </Form.Group>
+                </Grid.Row>
+                <Grid.Row>
+                    {this.list()}
+                </Grid.Row>
+            </Grid>
         )
     }
 }
 
 BoundaryList.propTypes = {
     boundaries: PropTypes.instanceOf(BoundaryCollection).isRequired,
+    onAdd: PropTypes.func.isRequired,
     onClick: PropTypes.func.isRequired,
     onClone: PropTypes.func.isRequired,
     onRemove: PropTypes.func.isRequired,

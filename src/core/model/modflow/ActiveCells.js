@@ -19,11 +19,11 @@ class ActiveCells {
 
     toggle = ([x, y], boundingBox, gridSize) => {
 
-        if (!boundingBox instanceof BoundingBox) {
+        if (!(boundingBox instanceof BoundingBox)) {
             throw new Error('Geometry needs to be instance of BoundingBox');
         }
 
-        if (!gridSize instanceof GridSize) {
+        if (!(gridSize instanceof GridSize)) {
             throw new Error('GridSize needs to be instance of GridSize');
         }
 

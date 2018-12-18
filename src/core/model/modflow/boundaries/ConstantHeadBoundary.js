@@ -41,6 +41,10 @@ export default class ConstantHeadBoundary extends MultipleOPBoundary {
         return true;
     }
 
+    get geometryType() {
+        return 'LineString';
+    }
+
     get valueProperties() {
         return [
             {
