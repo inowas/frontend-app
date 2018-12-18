@@ -82,50 +82,52 @@ class SsmPackageProperties extends AbstractPackageProperties {
         }
 
         return (
-            <Grid>
-                <Grid.Row columns={2}>
-                    <Grid.Column>
-                        <BoundarySelector
-                            boundaries={boundaries}
-                            onChange={this.handleSelectBoundary}
-                            selected={selectedBoundary}
-                        />
-                    </Grid.Column>
-                    <Grid.Column>
-                        <Form>
-                            <Form.Group>
-                                <Dropdown
-                                    placeholder="Select Substance"
-                                    fluid
-                                    search
-                                    selection
-                                    options={SsmPackageProperties.substanceOptions(substances)}
-                                    onChange={this.handleSelectSubstance}
-                                    value={this.state.selectedSubstance}
-                                />
-                                <Button.Group>
-                                    <Button
-                                        icon
-                                        onClick={() => this.addSubstance('new substance')}
-                                        disabled={readonly}
-                                    >
-                                        <Icon name="add circle"/>
-                                    </Button>
+            <div>
+                <Grid>
+                    <Grid.Row columns={2}>
+                        <Grid.Column>
+                            <BoundarySelector
+                                boundaries={boundaries}
+                                onChange={this.handleSelectBoundary}
+                                selected={selectedBoundary}
+                            />
+                        </Grid.Column>
+                        <Grid.Column>
+                            <Form>
+                                <Form.Group>
+                                    <Dropdown
+                                        placeholder="Select Substance"
+                                        fluid
+                                        search
+                                        selection
+                                        options={SsmPackageProperties.substanceOptions(substances)}
+                                        onChange={this.handleSelectSubstance}
+                                        value={this.state.selectedSubstance}
+                                    />
+                                    <Button.Group>
+                                        <Button
+                                            icon
+                                            onClick={() => this.addSubstance('new substance')}
+                                            disabled={readonly}
+                                        >
+                                            <Icon name="add circle"/>
+                                        </Button>
 
-                                    <Button
-                                        icon
-                                        onClick={() => this.removeSubstance(this.state.selectedSubstance)}
-                                        disabled={readonly}
-                                    >
-                                        <Icon name="trash"/>
-                                    </Button>
-                                </Button.Group>
-                            </Form.Group>
-                        </Form>
-                    </Grid.Column>
-                </Grid.Row>
+                                        <Button
+                                            icon
+                                            onClick={() => this.removeSubstance(this.state.selectedSubstance)}
+                                            disabled={readonly}
+                                        >
+                                            <Icon name="trash"/>
+                                        </Button>
+                                    </Button.Group>
+                                </Form.Group>
+                            </Form>
+                        </Grid.Column>
+                    </Grid.Row>
+                </Grid>
                 {(selectedSubstance instanceof SsmSubstance) && (selectedBoundary instanceof Boundary) &&
-                <Grid.Row>
+                <div>
                     <Divider horizontal>{selectedSubstance.name} at {selectedBoundary.name}</Divider>
                     <SsmSubstanceEditor
                         boundary={selectedBoundary}
@@ -134,9 +136,9 @@ class SsmPackageProperties extends AbstractPackageProperties {
                         stressPeriods={stressPeriods}
                         substance={selectedSubstance}
                     />
-                </Grid.Row>
+                </div>
                 }
-            </Grid>
+            </div>
         );
     }
 }

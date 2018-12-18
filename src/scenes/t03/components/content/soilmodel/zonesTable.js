@@ -29,7 +29,7 @@ class ZonesTable extends React.Component {
 
     onChange = () => this.props.onChange(SoilmodelLayer.fromObject(this.state.layer));
 
-    onLocalChange = id => (e) => {
+    onLocalChange = id => e => {
         const value = e.target.value;
         const layer = SoilmodelLayer.fromObject(this.state.layer);
         const zone = layer.zonesCollection.findById(id);
