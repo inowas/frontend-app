@@ -1,12 +1,21 @@
-import md5 from 'md5';
 import PropTypes from 'prop-types';
 import React from 'react';
 
-import {GeoJSON, Map, CircleMarker, TileLayer} from 'react-leaflet';
-import {polygon as leafletPolygon, geoJSON as leafletGeoJSON} from 'leaflet';
-//import {disableMap, closestPointOnGeometry} from '../../core/geospatial';
-import {uniqueId} from 'lodash';
+import {GeoJSON, Map, CircleMarker} from 'react-leaflet';
 
+import {disableMap, getStyle} from './helpers';
+import {uniqueId} from 'lodash';
+import {BasicTileLayer} from 'services/geoTools/tileLayers';
+import {nearestPointOnLine} from '@turf/turf';
+import {lineString, point} from '@turf/helpers';
+import Geometry from 'core/model/modflow/Geometry';
+
+const styles = {
+    map: {
+        height: '400px',
+        width: '100%'
+    }
+};
 
 class ObservationPointEditorMap extends React.Component {
 
@@ -20,78 +29,32 @@ class ObservationPointEditorMap extends React.Component {
     }
 
     componentWillMount() {
-        const {geometry} = this.props.observationPoint;
-
-        if (geometry && geometry.coordinates) {
-            this.setState({
-                showTemporaryPoint: true,
-                selectedPoint: {
-                    lat: geometry.coordinates[1],
-                    lng: geometry.coordinates[0]
-                },
-                temporaryPoint: null,
-            });
-
-            return;
-        }
-
         this.setState({
             showTemporaryPoint: true,
+            selectedPoint: this.props.observationPoint.geometry,
             temporaryPoint: null,
-            selectedPoint: null
         });
     }
 
     componentDidMount() {
-        //disableMap(this.map);
+        disableMap(this.map);
     }
 
-    generateKeyFunction = geometry => {
-        return md5(JSON.stringify(geometry));
-    };
-
-    getBounds = geometry => {
-        return leafletGeoJSON(geometry).getBounds();
-    };
-
     handleMouseMove = e => {
-        const {geometry} = this.props.boundary;
-
-        const layers = leafletGeoJSON(geometry)._layers;
-        const key = Object.keys(layers)[0];
-        const latLngs = layers[key].getLatLngs();
-        const polygon = leafletPolygon(latLngs);
-
+        const geometry = Geometry.fromObject(this.props.boundary.geometry);
+        const line = lineString(geometry.coordinates);
+        const pt = point([e.latlng.lng, e.latlng.lat]);
+        const snapped = nearestPointOnLine(line, pt);
         this.setState({
-            //temporaryPoint: closestPointOnGeometry(e.target, polygon, e.latlng)
+            temporaryPoint: snapped.geometry
         });
     };
 
     handleMouseClick = () => {
-        const newPoint = this.state.temporaryPoint;
-        this.setState({
-            selectedPoint: newPoint
-        });
-
-        this.props.onChange(newPoint);
-    };
-
-    getStyle = (type, subtype) => {
-        const styles = this.props.mapStyles;
-
-        if (!(type in styles)) {
-            return styles.default;
-        }
-
-        if (subtype === undefined) {
-            return styles[type];
-        }
-
-        if (!(subtype in styles[type])) {
-            return styles.default;
-        }
-
-        return styles[type][subtype];
+        this.setState({selectedPoint: this.state.temporaryPoint});
+        this.props.onChange(
+            {...this.props.observationPoint, geometry: this.state.temporaryPoint}
+        )
     };
 
     renderClosestPoint = (point, temporary) => {
@@ -99,12 +62,13 @@ class ObservationPointEditorMap extends React.Component {
             return null;
         }
 
+        point = Geometry.fromObject(point);
         if (temporary) {
             return (
                 <CircleMarker
                     key={uniqueId()}
-                    center={point}
-                    {...this.getStyle('op_temp')}
+                    center={point.coordinatesLatLng}
+                    {...getStyle('op_temp')}
                 />
             );
         }
@@ -112,8 +76,8 @@ class ObservationPointEditorMap extends React.Component {
         return (
             <CircleMarker
                 key={uniqueId()}
-                center={point}
-                {...this.getStyle('op_selected')}
+                center={point.coordinatesLatLng}
+                {...getStyle('op_selected')}
             />
         );
     };
@@ -132,7 +96,7 @@ class ObservationPointEditorMap extends React.Component {
                             op.geometry.coordinates[1],
                             op.geometry.coordinates[0]
                         ]}
-                        {...this.getStyle('op')}
+                        {...getStyle('op')}
                     />
                 );
             });
@@ -141,12 +105,13 @@ class ObservationPointEditorMap extends React.Component {
         return null;
     }
 
+    // noinspection JSMethodCanBeStatic
     renderBoundary(boundary) {
         return (
             <GeoJSON
-                key={this.generateKeyFunction(boundary.geometry)}
+                key={boundary.geometry.hash()}
                 data={boundary.geometry}
-                style={this.getStyle(boundary.type)}
+                style={getStyle(boundary.type)}
             />
         );
     }
@@ -157,20 +122,20 @@ class ObservationPointEditorMap extends React.Component {
 
         return (
             <Map
-                className="observationPointMap"
+                style={styles.map}
                 ref={map => {
                     this.map = map;
                 }}
                 zoomControl={false}
-                bounds={this.getBounds(area)}
+                bounds={area.getBoundsLatLng()}
                 onClick={this.handleMouseClick}
                 onMouseMove={this.handleMouseMove}
             >
-                <TileLayer url="http://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png"/>
+                <BasicTileLayer/>
                 <GeoJSON
-                    key={this.generateKeyFunction(area)}
-                    data={area}
-                    style={this.getStyle('area')}
+                    key={area.hash()}
+                    data={area.toObject()}
+                    style={getStyle('area')}
                 />
                 {this.renderBoundary(boundary)}
                 {this.renderObservationPoints(boundary)}

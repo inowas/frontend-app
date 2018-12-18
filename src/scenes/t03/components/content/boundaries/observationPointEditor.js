@@ -1,9 +1,12 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import uuid from 'uuid';
-import {Button, Grid, Form, Header, Modal, Segment} from 'semantic-ui-react';
-import ObservationPointMap from '../../maps/observationPointEditorMap';
 import {cloneDeep, first} from 'lodash';
+
+import {Button, Grid, Form, Header, Modal, Segment} from 'semantic-ui-react';
+
+import ObservationPointMap from '../../maps/observationPointEditorMap';
+import {ModflowModel, MultipleOPBoundary} from 'core/model/modflow';
 
 class ObservationPointEditor extends React.Component {
     constructor(props) {
@@ -16,54 +19,45 @@ class ObservationPointEditor extends React.Component {
 
     componentWillMount() {
         const {boundary, observationPointId} = this.props;
-        if (boundary.hasObservationPoint(observationPointId)) {
-            const observationPoint = boundary.observation_points.filter(op => (op.id === observationPointId))[0];
-            return this.setState({observationPoint: observationPoint});
+        if (!(boundary instanceof MultipleOPBoundary)) {
+            return null;
         }
 
-        const newObservationPoint = cloneDeep(boundary.observation_points[0]);
-        newObservationPoint.id = uuid.v4();
-        newObservationPoint.name = 'New observation point';
-        newObservationPoint.geometry.coordinates = null;
-        newObservationPoint.date_time_values = [first(newObservationPoint.date_time_values)];
+        let observationPoint = boundary.getObservationPointById(observationPointId);
+        if (observationPoint) {
+            return this.setState({observationPoint});
+        }
 
-        return this.setState({observationPoint: newObservationPoint});
+        observationPoint = cloneDeep(boundary.observation_points[0]);
+        observationPoint.id = uuid.v4();
+        observationPoint.name = 'New observation point';
+        observationPoint.geometry = null;
+        observationPoint.date_time_values = [first(observationPoint.date_time_values)];
+
+        return this.setState({observationPoint});
     }
 
-    boundaryContainsObservationPoint = (boundary, opId) => {
-        return boundary.observation_points.filter(op => op.id === opId).length > 0;
+    handleChange = e => {
+        const observationPoint = {...this.state.observationPoint, [e.target.name]: e.target.value};
+        this.handleChangeObservationPoint(observationPoint);
     };
 
-    handleChangeName = e => {
-        this.setState({
-            observationPoint: {...this.state.observationPoint, name: e.target.value}
-        });
+    handleChangeObservationPoint = observationPoint => {
+        this.setState({observationPoint});
     };
 
-    handleChangeCoordinates = latLng => {
-        const coordinates = [
-            latLng.lng,
-            latLng.lat
-        ];
-
-        this.setState({
-            observationPoint: {
-                ...this.state.observationPoint,
-                geometry: {...this.state.observationPoint.geometry, coordinates}
-            }
-        });
+    handleApply = observationPoint => {
+        const {boundary} = this.props;
+        boundary.updateObservationPoint(observationPoint);
+        this.props.onChange(boundary);
     };
 
-    isValid = observationPoint => {
-        const { geometry } = observationPoint;
-        return (geometry.coordinates && !isNaN(geometry.coordinates[0]) && !isNaN(geometry.coordinates[1]));
-    };
+    isValid = observationPoint => (!!observationPoint.geometry);
 
     render() {
-        const {area, boundary, onCancel, onSave, mapStyles} = this.props;
+        const {boundary, model, onCancel} = this.props;
         const {observationPoint} = this.state;
         const {geometry} = observationPoint;
-
         const latitude = geometry.coordinates ? geometry.coordinates[1] : '';
         const longitude = geometry.coordinates ? geometry.coordinates[0] : '';
 
@@ -79,8 +73,12 @@ class ObservationPointEditor extends React.Component {
                                     <Form>
                                         <Form.Field>
                                             <label>Name</label>
-                                            <input placeholder="Observation point name" value={observationPoint.name}
-                                                   onChange={this.handleChangeName}/>
+                                            <input
+                                                placeholder="Observation point name"
+                                                value={observationPoint.name}
+                                                onChange={this.handleChange}
+                                                name={'name'}
+                                            />
                                         </Form.Field>
                                         <Form.Group widths="equal">
                                             <Form.Field>
@@ -98,11 +96,10 @@ class ObservationPointEditor extends React.Component {
                             <Grid.Column width={10}>
                                 <Segment color="blue">
                                     <ObservationPointMap
-                                        area={area}
+                                        area={model.geometry}
                                         boundary={boundary}
-                                        mapStyles={mapStyles}
                                         observationPoint={observationPoint}
-                                        onChange={this.handleChangeCoordinates}
+                                        onChange={this.handleChangeObservationPoint}
                                     />
                                 </Segment>
                             </Grid.Column>
@@ -110,8 +107,22 @@ class ObservationPointEditor extends React.Component {
                     </Grid>
                 </Modal.Content>
                 <Modal.Actions>
-                    <Button negative onClick={onCancel}>Cancel</Button>
-                    <Button positive onClick={() => onSave(observationPoint)} disabled={!this.isValid(observationPoint)}>Save</Button>
+                    <Button
+                        negative
+                        onClick={onCancel}
+                    >
+                        Cancel
+                    </Button>
+                    <Button
+                        positive
+                        onClick={() => {
+                            this.handleApply(observationPoint);
+                            onCancel()
+                        }}
+                        disabled={!this.isValid(observationPoint)}
+                    >
+                        Apply
+                    </Button>
                 </Modal.Actions>
             </Modal>
         );
@@ -119,12 +130,11 @@ class ObservationPointEditor extends React.Component {
 }
 
 ObservationPointEditor.propTypes = {
-    area: PropTypes.object.isRequired,
-    boundary: PropTypes.object.isRequired,
+    model: PropTypes.instanceOf(ModflowModel).isRequired,
+    boundary: PropTypes.instanceOf(MultipleOPBoundary).isRequired,
     observationPointId: PropTypes.string,
-    mapStyles: PropTypes.object.isRequired,
     onCancel: PropTypes.func.isRequired,
-    onSave: PropTypes.func.isRequired,
+    onChange: PropTypes.func.isRequired,
 };
 
 export default ObservationPointEditor;

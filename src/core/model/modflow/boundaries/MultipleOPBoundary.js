@@ -76,4 +76,15 @@ export default class MultipleOPBoundary extends Boundary {
 
         return null;
     }
+
+    updateObservationPoint(observationPoint) {
+        this.observationPoints = this.observationPoints.map(op => {
+            if (op.id === observationPoint.id) {
+                return observationPoint;
+            }
+            return op;
+        });
+
+        return this;
+    }
 }

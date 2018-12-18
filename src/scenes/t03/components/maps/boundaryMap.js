@@ -21,23 +21,20 @@ class BoundaryMap extends Component {
     }
 
     renderObservationPoints(b) {
-        if (b.observation_points && b.observation_points.length > 1) {
-            return b.observation_points.map(op => {
-                const selected = (op.id === this.props.selectedObservationPointId) ? '_selected' : '';
-                return (
-                    <CircleMarker
-                        key={uniqueId(op.id)}
-                        center={[
-                            op.geometry.coordinates[1],
-                            op.geometry.coordinates[0]
-                        ]}
-                        {...getStyle('op' + selected)}
-                    />
-                );
-            });
-        }
-
-        return null;
+        const observationPoints = b.observationPoints;
+        return observationPoints.map(op => {
+            const selected = (op.id === this.props.selectedObservationPointId) ? '_selected' : '';
+            return (
+                <CircleMarker
+                    key={uniqueId(op.id)}
+                    center={[
+                        op.geometry.coordinates[1],
+                        op.geometry.coordinates[0]
+                    ]}
+                    {...getStyle('op' + selected)}
+                />
+            );
+        });
     }
 
     // noinspection JSMethodCanBeStatic
