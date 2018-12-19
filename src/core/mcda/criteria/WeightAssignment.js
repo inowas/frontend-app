@@ -12,7 +12,7 @@ class WeightAssignment {
         wa.id = obj.id;
         wa.method = obj.method;
         wa.name = obj.name;
-        wa.weights = WeightsCollection.fromArray(obj.weights);
+        wa.weightsCollection = WeightsCollection.fromArray(obj.weights);
         return wa;
     }
 
@@ -40,11 +40,11 @@ class WeightAssignment {
         this._name = value;
     }
 
-    get weights() {
+    get weightsCollection() {
         return this._weights;
     }
 
-    set weights(value) {
+    set weightsCollection(value) {
         this._weights = value;
     }
 
@@ -53,7 +53,7 @@ class WeightAssignment {
             id: this.id,
             method: this.method,
             name: this.name,
-            weights: this.weights.toArray()
+            weights: this.weightsCollection.toArray()
         });
     }
 }

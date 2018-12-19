@@ -9,18 +9,6 @@ class WeightsCollection extends AbstractCollection {
         return wc;
     }
 
-    get weights() {
-        return this._items;
-    }
-
-    set weights(value) {
-        this._items = value || [];
-    }
-
-    toArray() {
-        return this._items.map(weight => weight.toObject());
-    }
-
     allRelations(method) {
         let relations = [];
 
@@ -40,6 +28,13 @@ class WeightsCollection extends AbstractCollection {
         });
 
         return relations;
+    }
+
+    validateInput (weight) {
+        if (!(weight instanceof Weight)) {
+            throw new Error('Weight expected to be instance of Weight');
+        }
+        return weight;
     }
 
     findByMethod(method) {

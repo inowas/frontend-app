@@ -1,7 +1,8 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import {Button, Input, Message, Segment, Select, Table} from 'semantic-ui-react';
+import {Button, Input, Message, Select, Table} from 'semantic-ui-react';
 
+import {MCDA} from 'core/mcda';
 import {Criterion, CriteriaCollection} from 'core/mcda/criteria';
 
 class CriteriaEditor extends React.Component {
@@ -9,15 +10,21 @@ class CriteriaEditor extends React.Component {
         super();
 
         this.state = {
-            criteria: props.mcda.criteria.toArray()
+            criteria: props.mcda.criteriaCollection.toArray()
         };
     }
 
     componentWillReceiveProps(nextProps) {
         this.setState({
-            criteria: nextProps.mcda.criteria.toArray()
+            criteria: nextProps.mcda.criteriaCollection.toArray()
         });
     }
+
+    handleAddCriteria = () => {
+        const criteriaCollection = CriteriaCollection.fromArray(this.state.criteria);
+        criteriaCollection.add(new Criterion());
+        return this.handleChange(criteriaCollection);
+    };
 
     handleChange = criteriaCollection => {
         if (!(criteriaCollection instanceof CriteriaCollection)) {
@@ -45,6 +52,10 @@ class CriteriaEditor extends React.Component {
         });
     };
 
+    handleRemoveCriteria = id => this.handleChange(
+        CriteriaCollection.fromArray(this.state.criteria).remove(id)
+    );
+
     handleSelectChange = id => (e, {name, value}) => {
         const criteriaCollection = CriteriaCollection.fromArray(this.state.criteria);
         const criterion = criteriaCollection.findById(id);
@@ -62,22 +73,12 @@ class CriteriaEditor extends React.Component {
         CriteriaCollection.fromArray(this.state.criteria)
     );
 
-    onClickAddCriteria = () => {
-        const criteriaCollection = CriteriaCollection.fromArray(this.state.criteria);
-        criteriaCollection.add(new Criterion());
-        return this.handleChange(criteriaCollection);
-    };
-
-    onClickRemoveCriteria = id => this.handleChange(
-        CriteriaCollection.fromArray(this.state.criteria).remove(id)
-    );
-
     render() {
         const {readOnly} = this.props;
         const {criteria} = this.state;
 
         return (
-            <Segment color={'grey'} loading={this.state.isLoading}>
+            <div>
                 <Message>
                     <Message.Header>Choose your criteria</Message.Header>
                     <p>If you are unsure which criteria to use, please refer to the review on criteria used in
@@ -124,7 +125,7 @@ class CriteriaEditor extends React.Component {
                                         <Button
                                             negative
                                             icon='trash'
-                                            onClick={() => this.onClickRemoveCriteria(c.id)}
+                                            onClick={() => this.handleRemoveCriteria(c.id)}
                                         />
                                     }
                                 </Table.Cell>
@@ -136,19 +137,19 @@ class CriteriaEditor extends React.Component {
                 {!readOnly &&
                     <Button
                         fluid
-                        onClick={this.onClickAddCriteria}
+                        onClick={this.handleAddCriteria}
                     >
                         Add new criteria
                     </Button>
                 }
-            </Segment>
+            </div>
         );
     }
 
 }
 
 CriteriaEditor.propTypes = {
-    mcda: PropTypes.object.isRequired,
+    mcda: PropTypes.instanceOf(MCDA).isRequired,
     handleChange: PropTypes.func.isRequired,
     readOnly: PropTypes.bool,
     routeTo: PropTypes.func

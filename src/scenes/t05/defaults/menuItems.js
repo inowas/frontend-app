@@ -10,12 +10,12 @@ const getMenuItems = (mcda) => {
         {
             name: 'Criteria',
             property: 'criteria',
-            status: mcda.criteria.all.length > 0 ? 'success' : ''
+            status: mcda.criteriaCollection.all.length > 0 ? 'success' : ''
         },
         {
             name: 'Weight Assignment',
             property: 'wa',
-            status: mcda.criteria.all.length < 2 ? 'warning' : '',
+            status: mcda.criteriaCollection.all.length < 2 ? 'warning' : '',
             msg: 'At least two criteria are needed for weight assignment.'
         },
         {

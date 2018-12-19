@@ -30,7 +30,7 @@ class Criterion {
     }
 
     set name(value) {
-        this._name = value ? value : 'New Criteria';
+        this._name = value;
     }
 
     get type() {

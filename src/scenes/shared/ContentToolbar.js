@@ -3,9 +3,6 @@ import PropTypes from 'prop-types';
 import {Button, Dropdown, Grid, Icon, Message, Transition} from 'semantic-ui-react';
 
 const styles = {
-    gridWrapper: {
-        margin: '0px 0px 5px 0px'
-    },
     thinMessage: {
         paddingTop: '6.929px',
         paddingBottom: '6.929px',
@@ -21,23 +18,32 @@ class ContentToolBar extends React.Component {
         this.state = {
             hide: 2500,
             visible: false,
-            message: null,
-            state: null
+            isDirty: false,
+            isError: false,
+            message: null
         }
     };
 
-    componentDidMount() {
-        if (this.state.visible) {
-            this.toggleVisibility();
-        }
-    }
-
     componentWillReceiveProps(nextProps, nextContext) {
-        if (nextProps.state) {
+
+        const isValid = typeof this.props.isValid === 'boolean' ? this.props.isValid : true;
+        const hasBeenSaved = this.props.isDirty === true && nextProps.isDirty === false;
+        const error = nextProps.isError;
+        const notSaved = nextProps.isDirty;
+
+        let state = 'default';
+        if (hasBeenSaved) {state = 'hasBeenSaved'}
+        if (hasBeenSaved) {state = 'hasBeenSaved'}
+        if (error) {state = 'error'}
+        if (notSaved) {state = 'notSaved'}
+        if (!isValid) {state = 'notValid'}
+
+        const message = this.getMessage(state);
+
+        if (hasBeenSaved || error || notSaved) {
             this.setState({
-                message: this.getMessageFromState(nextProps.state),
-                state: nextProps.state,
-                visible: nextProps.state !== this.state.state
+                visible: true,
+                message: message
             }, () => setTimeout(function () {
                 if (this.state.message && this.state.message.positive) {
                     this.setState({visible: false})
@@ -46,35 +52,50 @@ class ContentToolBar extends React.Component {
         }
     }
 
-    getMessageFromState = (state) => {
+    getMessage = (state) => {
         switch (state) {
-            case 'notSaved':
+            case 'notValid': {
+                return null;
+            }
+            case 'notSaved': {
                 return {
                     content: 'Changes not saved!',
                     warning: true
                 };
-            case 'saved':
+            }
+            case 'error': {
+                return {
+                    content: 'Error saving changes!',
+                    warning: true
+                };
+            }
+
+            case 'hasBeenSaved': {
                 return {
                     content: 'Changes saved!',
                     positive: true
                 };
+            }
             default:
-                return null
+                return null;
+
         }
     };
 
-    toggleVisibility = () => (
-        this.setState({visible: !this.state.visible})
-    );
-
     render() {
-        const {message} = this.state;
+        const saveButton = typeof this.props.saveButton === 'boolean' ? this.props.saveButton : true;
+        const isValid = typeof this.props.isValid === 'boolean' ? this.props.isValid : true;
+        const message = this.state.message;
+        const {isDirty} = this.props;
+
+        const canBeSaved = isDirty && isValid;
+
         return (
-            <Grid style={styles.gridWrapper}>
+            <Grid>
                 <Grid.Row columns={3}>
                     <Grid.Column>
-                        {this.props.back &&
-                        <Button icon onClick={this.props.back.onClick} labelPosition="left">
+                        {this.props.backButton &&
+                        <Button icon onClick={() => this.props.onBack()} labelPosition="left">
                             <Icon name="left arrow"/>
                             Back
                         </Button>
@@ -84,9 +105,9 @@ class ContentToolBar extends React.Component {
                         {message &&
                         <Transition duration={{hide: this.state.hide}} visible={this.state.visible}>
                             <Message
-                                style={styles.thinMessage}
                                 positive={message.positive || false}
                                 warning={message.warning || false}
+                                style={styles.thinMessage}
                             >
                                 {message.content}
                             </Message>
@@ -106,10 +127,9 @@ class ContentToolBar extends React.Component {
                             onChange={this.props.dropdown.onChange}
                         />
                         }
-                        {this.props.save &&
-                        <Button icon positive onClick={this.props.onSave} size="small" labelPosition="left">
-                            <Icon name="save"/>
-                            Save
+                        {saveButton &&
+                        <Button icon positive onClick={this.props.onSave} labelPosition="left" disabled={!canBeSaved}>
+                            <Icon name="save"/>Save
                         </Button>
                         }
                     </Grid.Column>
@@ -120,12 +140,15 @@ class ContentToolBar extends React.Component {
 }
 
 ContentToolBar.propTypes = {
-    back: PropTypes.object,
+    backButton: PropTypes.bool,
+    onBack: PropTypes.func,
+    saveButton: PropTypes.bool,
+    onSave: PropTypes.func,
     dropdown: PropTypes.object,
     message: PropTypes.object,
-    onSave: PropTypes.func,
-    save: PropTypes.bool,
-    state: PropTypes.string
+    isDirty: PropTypes.bool,
+    isError: PropTypes.bool,
+    isValid: PropTypes.bool
 };
 
 export default ContentToolBar;

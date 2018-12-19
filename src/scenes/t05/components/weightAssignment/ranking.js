@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import {Grid, Message, Segment, Table} from 'semantic-ui-react';
 import DragAndDropList from '../shared/dragAndDropList';
-import {MCDA} from 'core/mcda';
+import {WeightAssignment} from 'core/mcda/criteria';
 
 const WAMETHOD = 'ranking';
 
@@ -10,16 +10,14 @@ class Ranking extends React.Component {
     constructor(props) {
         super();
 
-        props.mcda.addWeightAssignmentMethod(WAMETHOD);
-
         this.state = {
-            weights: props.mcda.weights.findByMethod(WAMETHOD)
+            wa: props.weightAssignment.toObject()
         };
     }
 
     componentWillReceiveProps(nextProps) {
         this.setState({
-            weights: nextProps.mcda.weights.findByMethod(WAMETHOD)
+            wa: nextProps.weightAssignment.toObject()
         });
     }
 
@@ -51,12 +49,12 @@ class Ranking extends React.Component {
 
     render() {
         const {readOnly} = this.props;
-        const {weights} = this.state;
+        const {weights} = this.state.wa;
 
         const items = weights.map(weight => {
             return {
                 id: weight.id,
-                data: weight.criteria.name,
+                data: weight.criterion.name,
                 rank: weight.rank + 1
             };
         });
@@ -99,7 +97,7 @@ class Ranking extends React.Component {
                             <Table.Body>
                                 {weights.map((w, key) =>
                                     <Table.Row key={key}>
-                                        <Table.Cell>{w.criteria.name}</Table.Cell>
+                                        <Table.Cell>{w.criterion.name}</Table.Cell>
                                         <Table.Cell
                                             textAlign='center'>
                                             {(w.value * 100).toFixed(2)}
@@ -118,7 +116,7 @@ class Ranking extends React.Component {
 }
 
 Ranking.propTypes = {
-    mcda: PropTypes.instanceOf(MCDA).isRequired,
+    weightAssignment: PropTypes.instanceOf(WeightAssignment).isRequired,
     handleChange: PropTypes.func.isRequired,
     readOnly: PropTypes.bool,
     routeTo: PropTypes.func

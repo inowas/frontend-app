@@ -12,17 +12,39 @@ class AbstractCollection {
         return this._items;
     }
 
-    get length() {
-        return this._items.length;
-    };
-
     get first() {
         return this._items[0];
     }
 
+    get length() {
+        return this._items.length;
+    };
+
     add(item) {
-        this.validateInput(item);
-        this._items.push(item);
+        this._items.push(this.validateInput(item));
+        return this;
+    }
+
+    findBy(property, value, first = false) {
+        const items = this.all.filter(item => item[property] === value);
+        if (first) {
+            return items[0] || null;
+        }
+
+        return items || [];
+    }
+
+    findById(value) {
+        return this.findBy('id', value, true);
+    }
+
+    orderBy(property, order = 'asc') {
+        this._items = _orderBy(this._items, [property], [order]);
+        return this;
+    }
+
+    remove(value) {
+        this.removeBy('id', value);
         return this;
     }
 
@@ -31,9 +53,8 @@ class AbstractCollection {
         return this;
     }
 
-    remove(value) {
-        this.removeBy('id', value);
-        return this;
+    toArray() {
+        return this.all.map(item => item.toObject());
     }
 
     update(updatedItem, createIfNotExisting = true) {
@@ -60,24 +81,7 @@ class AbstractCollection {
         if (!item) {
             throw new Error('No item provided to collection.');
         }
-    }
-
-    findBy(property, value, first = false) {
-        const items = this.all.filter(item => item[property] === value);
-        if (first) {
-            return items[0] || null;
-        }
-
-        return items || [];
-    }
-
-    findById(value) {
-        return this.findBy('id', value, true);
-    }
-
-    orderBy(property, order = 'asc') {
-        this._items = _orderBy(this._items, [property], [order]);
-        return this;
+        return item;
     }
 }
 

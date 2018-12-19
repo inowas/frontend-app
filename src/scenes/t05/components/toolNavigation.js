@@ -11,7 +11,7 @@ class ToolNavigation extends React.Component {
 
     render() {
         const {id} = this.props.match.params;
-        const {property, type} = this.props.match.params || '';
+        const {property} = this.props.match.params || '';
         const path = this.props.match.path;
         const basePath = path.split(':')[0];
         const {navigationItems} = this.props;

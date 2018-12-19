@@ -7,17 +7,16 @@ import {fetchTool, sendCommand} from 'services/api';
 import Command from '../../shared/simpleTools/commands/command';
 import {deepMerge} from '../../shared/simpleTools/helpers';
 
-import {Grid, Icon} from 'semantic-ui-react';
+import {Divider, Grid, Icon, Segment} from 'semantic-ui-react';
 import AppContainer from '../../shared/AppContainer';
 import ToolMetaData from '../../shared/simpleTools/ToolMetaData';
-import {CriteriaEditor, ToolNavigation, WeightAssignment} from '../components';
+import {CriteriaEditor, ToolNavigation, WeightAssignmentEditor} from '../components';
 
 import {defaultsT05} from '../defaults';
 import getMenuItems from '../defaults/menuItems';
 
 import {MCDA} from 'core/mcda';
-import {WeightsCollection} from 'core/mcda/criteria';
-import ContentToolBar from '../components/shared/contentToolbar';
+import ContentToolBar from '../../shared/ContentToolbar';
 
 const navigation = [{
     name: 'Documentation',
@@ -30,9 +29,9 @@ class T05 extends React.Component {
         super();
 
         this.state = {
-            editState: '',
-            isDirty: true,
-            isLoading: false,
+            isDirty: false,
+            isError: false,
+            isLoading: true,
             tool: defaultsT05()
         };
     }
@@ -51,7 +50,7 @@ class T05 extends React.Component {
                 error => this.setState({error, isLoading: false})
             );
         } else {
-            this.onSave()
+            this.handleSave()
         }
     }
 
@@ -66,30 +65,7 @@ class T05 extends React.Component {
         }
     });
 
-    onSave = () => {
-        const {id} = this.props.match.params;
-        const {tool} = this.state;
-
-        if (id) {
-            sendCommand(
-                Command.updateToolInstance(this.buildPayload(tool)),
-                () => this.setState({
-                    editState: 'saved',
-                    isDirty: false
-                }),
-                () => this.setState({error: true})
-            );
-            return;
-        }
-
-        sendCommand(
-            Command.createToolInstance(this.buildPayload(tool)),
-            () => this.props.history.push(`${this.props.location.pathname}/${tool.id}`),
-            () => this.setState({error: true})
-        );
-    };
-
-    onChange = ({name, value}) => {
+    handleChange = ({name, value}) => {
         const mcda = MCDA.fromObject(this.state.tool.data.mcda);
 
         if (name === 'criteria') {
@@ -97,11 +73,10 @@ class T05 extends React.Component {
         }
 
         if (name === 'weights') {
-            mcda.weights = WeightsCollection.fromObject(value);
+            mcda.weightAssignmentsCollection = value;
         }
 
         return this.setState({
-            editState: 'notSaved',
             tool: {
                 ...this.state.tool,
                 data: {
@@ -113,21 +88,49 @@ class T05 extends React.Component {
         });
     };
 
-    update = (tool) => this.setState({
+    handleSave = () => {
+        const {id} = this.props.match.params;
+        const {tool} = this.state;
+
+        if (id) {
+            this.setState({isLoading: true});
+            sendCommand(
+                Command.updateToolInstance(this.buildPayload(tool)),
+                () => this.setState({
+                    isDirty: false,
+                    isLoading: false
+                }),
+                () => this.setState({
+                    isError: true,
+                    isLoading: false
+                })
+            );
+            return;
+        }
+
+        sendCommand(
+            Command.createToolInstance(this.buildPayload(tool)),
+            () => this.props.history.push(`${this.props.location.pathname}/${tool.id}`),
+            () => this.setState({error: true})
+        );
+    };
+
+    handleUpdateMetaData = (tool) => this.setState({
         tool: {
             ...tool
         }
     });
 
-    routeTo(type) {
+    routeTo = (type) => {
         const {id, property} = this.props.match.params;
         const path = this.props.match.path;
         const basePath = path.split(':')[0];
         this.props.history.push(basePath + id + '/' + property + '/' + type);
-    }
+    };
 
     renderContent() {
         const {id, property} = this.props.match.params;
+        const type = this.props.match.params.type ? this.props.match.params.type : null;
         const mcda = MCDA.fromObject(this.state.tool.data.mcda);
 
         const {permissions} = this.state.tool;
@@ -135,9 +138,25 @@ class T05 extends React.Component {
 
         switch (property) {
             case 'criteria':
-                return <CriteriaEditor readOnly={readOnly} mcda={mcda} handleChange={this.onChange}/>;
+                return (
+                    <CriteriaEditor
+                        readOnly={readOnly}
+                        mcda={mcda}
+                        handleChange={this.handleChange}
+                    />)
+                    ;
             case 'wa':
-                return (<WeightAssignment readOnly={readOnly} mcda={mcda} handleChange={this.onChange} routeTo={this.routeTo}/>);
+                const weightAssignment = type ? mcda.weightAssignmentsCollection.findById(type) : null;
+
+                return (
+                    <WeightAssignmentEditor
+                        readOnly={readOnly}
+                        mcda={mcda}
+                        selectedWeightAssignment={weightAssignment}
+                        handleChange={this.handleChange}
+                        routeTo={this.routeTo}
+                    />
+                );
             default:
                 const path = this.props.match.path;
                 const basePath = path.split(':')[0];
@@ -153,15 +172,6 @@ class T05 extends React.Component {
         const mcda = MCDA.fromObject(this.state.tool.data.mcda);
         const {tool, isDirty, isLoading} = this.state;
 
-        console.log('TOOL', tool);
-        console.log('MCDA', mcda);
-
-        if (isLoading) {
-            return (
-                <AppContainer navBarItems={navigation} loader/>
-            );
-        }
-
         const {permissions} = tool;
         const readOnly = !includes(permissions, 'w');
 
@@ -173,7 +183,8 @@ class T05 extends React.Component {
                     <Grid.Row>
                         <Grid.Column width={4}/>
                         <Grid.Column width={12}>
-                            <ToolMetaData tool={tool} readOnly={readOnly} onChange={this.update} onSave={this.onSave}
+                            <ToolMetaData tool={tool} readOnly={readOnly} onChange={this.handleUpdateMetaData}
+                                          onSave={this.handleSave}
                                           isDirty={isDirty}/>
                         </Grid.Column>
                     </Grid.Row>
@@ -182,8 +193,11 @@ class T05 extends React.Component {
                             <ToolNavigation navigationItems={menuItems}/>
                         </Grid.Column>
                         <Grid.Column width={12}>
-                            <ContentToolBar isDirty={isDirty} save onSave={this.onSave}/>
-                            {this.renderContent()}
+                            <Segment color={'grey'} loading={isLoading}>
+                                <ContentToolBar isDirty={isDirty} save onSave={this.handleSave}/>
+                                <Divider/>
+                                {this.renderContent()}
+                            </Segment>
                         </Grid.Column>
                     </Grid.Row>
                 </Grid>
