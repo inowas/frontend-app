@@ -119,8 +119,6 @@ class SubstanceEditor extends React.Component {
         const {model} = this.props;
         const substances = model.mt3dms.packages.ssm._meta.substances;
 
-        console.log('Substances', substances);
-
         const styles = {
             dropDownWithButtons: {
                 marginRight: 0,

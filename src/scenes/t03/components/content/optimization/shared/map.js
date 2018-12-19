@@ -11,7 +11,7 @@ import {ModflowModel} from 'core/model/modflow';
 import {getBoundsLatLonFromGeoJSON} from 'services/geoTools';
 import {generateKey, getStyle} from '../../../maps';
 import {BasicTileLayer} from 'services/geoTools/tileLayers';
-import {AbstractPosition} from 'core/model/modflow/optimization';
+import {AbstractPosition, OptimizationLocation, OptimizationObjectsCollection} from 'core/model/modflow/optimization';
 
 const styles = {
     map: {
@@ -28,7 +28,7 @@ class OptimizationMap extends React.Component {
             location: {
                 ...this.props.location.toObject(),
                 type: this.props.location.type ? this.props.location.type : 'bbox',
-                objects: this.props.location.objects ? this.props.location.objects : []
+                objects: this.props.location.objectsCollection ? this.props.location.objectsCollection.toArray() : []
             },
             showOverlay: false,
             hasError: false,
@@ -42,7 +42,7 @@ class OptimizationMap extends React.Component {
             location: {
                 ...nextProps.location.toObject(),
                 type: nextProps.location.type ? nextProps.location.type : 'bbox',
-                objects: nextProps.location.objects ? nextProps.location.objects : []
+                objects: nextProps.location.objectsCollection ? nextProps.location.objectsCollection.toArray() : []
             }
         });
     }
@@ -77,12 +77,13 @@ class OptimizationMap extends React.Component {
         validationWarning: value === 'bbox' && !this.validateLocation(this.state.location)
     });
 
-    handleChangeLocationObjects = objectIds => this.setState({
-        location: {
-            ...this.state.location,
-            objects: objectIds
-        }
-    });
+    handleChangeLocationObjects = objectsCollection => {
+        const location = OptimizationLocation.fromObject(this.state.location);
+        location.objectsCollection = objectsCollection;
+        return this.setState({
+            location: location.toObject()
+        });
+    };
 
     drawObject = (location, color = 'red') => {
         const styles = {
@@ -210,7 +211,7 @@ class OptimizationMap extends React.Component {
     });
 
     printMap(readOnly = false) {
-        const {model, objects} = this.props;
+        const {model} = this.props;
 
         const options = {
             edit: {
@@ -269,13 +270,7 @@ class OptimizationMap extends React.Component {
                 {this.state.location.type === 'object' &&
                 <div>
                     {
-                        this.state.location.objects.map(id => {
-                            const object = objects.filter(obj => obj.id === id)[0];
-                            if (object) {
-                                return this.drawObject(object.position, 'red');
-                            }
-                            return null;
-                        })
+                        this.state.location.objects.map(object => this.drawObject(object.position, 'red'))
                     }
                 </div>
                 }
@@ -373,16 +368,16 @@ class OptimizationMap extends React.Component {
                                                 name="objects"
                                                 label="Optimization Objects"
                                                 placeholder="object ="
-                                                disabled={this.state.location.type !== 'object' || this.state.location.objects.length >= this.props.objects.length}
+                                                disabled={this.state.location.type !== 'object' || this.state.location.objects.length >= this.props.objectsCollection.length}
                                                 addableObjects={
-                                                    this.props.objects && this.props.objects.length > 0
-                                                        ? this.props.objects
-                                                        : []
+                                                    this.props.objectsCollection && this.props.objectsCollection.length > 0
+                                                        ? this.props.objectsCollection
+                                                        : new OptimizationObjectsCollection()
                                                 }
                                                 objectsInList={
                                                     this.state.location.objects && this.state.location.objects.length > 0
-                                                        ? this.state.location.objects
-                                                        : []
+                                                        ? OptimizationObjectsCollection.fromArray(this.state.location.objects)
+                                                        : new OptimizationObjectsCollection()
                                                 }
                                                 onChange={this.handleChangeLocationObjects}
                                             />
@@ -429,7 +424,7 @@ OptimizationMap.propTypes = {
     name: PropTypes.string.isRequired,
     location: PropTypes.instanceOf(AbstractPosition).isRequired,
     label: PropTypes.string,
-    objects: PropTypes.array,
+    objectsCollection: PropTypes.instanceOf(OptimizationObjectsCollection),
     onlyObjects: PropTypes.bool,
     onlyBbox: PropTypes.bool,
     onChange: PropTypes.func.isRequired,

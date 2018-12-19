@@ -14,16 +14,6 @@ class OptimizationObjectsCollection extends AbstractCollection {
         }
         return object;
     }
-
-    // TODO: maybe set stress periods in collection and not in single objects
-    setNumberOfStressPeriods = (number) => {
-        this._objects = this.all.map(object => {
-            return {
-                ...object,
-                numberOfStressPeriods: number
-            }
-        })
-    }
 }
 
 export default OptimizationObjectsCollection;

@@ -238,10 +238,13 @@ class OptimizationContainer extends React.Component {
                 );
             case 'objectives':
                 return (
-                    <OptimizationObjectivesComponent objectives={optimization.input.objectives}
-                                                     model={model}
-                                                     objects={optimization.input.objects}
-                                                     onChange={this.handleChange}/>
+                    <OptimizationObjectivesComponent
+                        isDirty={this.state.isDirty}
+                        optimizationInput={optimization.input}
+                        model={model}
+                        onChange={this.handleChange}
+                        onSave={this.handleSave}
+                    />
                 );
             case 'constraints':
                 return (

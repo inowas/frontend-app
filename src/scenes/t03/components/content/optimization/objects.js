@@ -1,5 +1,5 @@
 import React from 'react';
-import {Button, Form, Grid, Icon, Table, Accordion} from 'semantic-ui-react';
+import {Button, Form, Grid, Icon, Table, Accordion, Message} from 'semantic-ui-react';
 import PropTypes from 'prop-types';
 import {FluxDataTable, SubstanceEditor} from './shared';
 import {OptimizationInput, OptimizationObject} from 'core/model/modflow/optimization';
@@ -63,7 +63,7 @@ class OptimizationObjectsComponent extends React.Component {
 
     handleChangeSubstances = (substances) => this.setState((prevState) => ({
         selectedObject: OptimizationObject.fromObject(prevState.selectedObject).updateSubstances(substances).toObject()
-    }));
+    }), this.handleChange);
 
     handleClickAccordion = (e, titleProps) => {
         const {index} = titleProps;
@@ -145,7 +145,7 @@ class OptimizationObjectsComponent extends React.Component {
         }
 
         const addObjectDropdown = !selectedObject ? {
-            text: 'Create New',
+            text: 'Add New',
             icon: 'add',
             options: typeOptions,
             onChange: this.handleClickNew
@@ -165,7 +165,12 @@ class OptimizationObjectsComponent extends React.Component {
                 <Grid>
                     <Grid.Row columns={1}>
                         <Grid.Column>
-                            {(!selectedObject && objects && objects.length > 0) ?
+                            {(!selectedObject && objects.length < 1) &&
+                            <Message>
+                                <p>No optimization objectives</p>
+                            </Message>
+                            }
+                            {(!selectedObject && objects.length > 0) ?
                                 <Table celled striped>
                                     <Table.Header>
                                         <Table.Row>
@@ -179,13 +184,14 @@ class OptimizationObjectsComponent extends React.Component {
                                             objects.all.map((object) =>
                                                 <Table.Row key={object.id}>
                                                     <Table.Cell
+                                                        width={9}
                                                         style={styles.linkedCell}
                                                         onClick={() => this.handleClickObject(object.toObject())}
                                                     >
                                                         {object.name}
                                                     </Table.Cell>
-                                                    <Table.Cell>{object.type}</Table.Cell>
-                                                    <Table.Cell textAlign="right">
+                                                    <Table.Cell width={5}>{object.type}</Table.Cell>
+                                                    <Table.Cell width={2} textAlign="right">
                                                         <Button
                                                             icon
                                                             negative

@@ -3,19 +3,19 @@ import PropTypes from 'prop-types';
 import {Button, Form, Grid, Icon, Message, Segment, Table} from 'semantic-ui-react';
 import Slider from 'rc-slider';
 import {createSliderWithTooltip} from 'rc-slider';
-import OptimizationObjective from 'core/model/modflow/optimization/Objective';
-import {OptimizationMap, OptimizationToolbar} from './shared';
-import {
-    OPTIMIZATION_EDIT_NOCHANGES,
-    OPTIMIZATION_EDIT_SAVED,
-    OPTIMIZATION_EDIT_UNSAVED
-} from '../../../defaults/optimization';
+import {OptimizationLocation, OptimizationInput, OptimizationObjective} from 'core/model/modflow/optimization';
+import {OptimizationMap} from './shared';
+import {ModflowModel} from 'core/model/modflow';
+import ContentToolBar from '../../../../shared/ContentToolbar';
 
 const Range = createSliderWithTooltip(Slider.Range);
 
 const styles = {
     sliderDiv: {
         paddingBottom: 30
+    },
+    linkedCell: {
+        cursor: 'pointer'
     }
 };
 
@@ -24,123 +24,121 @@ class OptimizationObjectivesComponent extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            objectives: props.objectives.map((objective) => {
-                return objective.toObject();
-            }),
-            selectedObjective: null,
-            editState: OPTIMIZATION_EDIT_NOCHANGES
+            optimizationInput: props.optimizationInput.toObject(),
+            selectedObjective: null
         };
     }
 
     componentWillReceiveProps(nextProps) {
         this.setState({
-            objectives: nextProps.objectives.map((objective) => {
-                return objective.toObject();
-            })
+            optimizationInput: nextProps.optimizationInput.toObject()
         });
     }
 
-    handleLocalChange = (e, {name, value}) => this.setState({
-        selectedObjective: {
-            ...this.state.selectedObjective,
-            [name]: value
-        },
-        editState: OPTIMIZATION_EDIT_UNSAVED
+    handleClickBack = () => this.setState({
+        selectedObjective: null
     });
 
-    handleChange = () => this.setState({
-        selectedObjective: OptimizationObjective.fromObject(this.state.selectedObjective).toObject(),
-        editState: OPTIMIZATION_EDIT_UNSAVED
-    });
-
-    handleChangeStressPeriods = (e) => {
-        return this.setState({
-            selectedObjective: {
-                ...this.state.selectedObjective,
-                location: {
-                    ...this.state.selectedObjective.location,
-                    ts: {
-                        min: e[0],
-                        max: e[1]
-                    }
-                }
-            },
-            editState: OPTIMIZATION_EDIT_UNSAVED
-        });
+    handleClickDelete = (id) => {
+        const input = OptimizationInput.fromObject(this.state.optimizationInput);
+        input.objectivesCollection.remove(id);
+        this.props.onChange(input, true);
     };
 
-    onClickBack = () => this.setState({
-        selectedObjective: null,
-        editState: OPTIMIZATION_EDIT_NOCHANGES
-    });
-
-    onClickNew = (e, {name, value}) => {
+    handleClickNew = (e, {name, value}) => {
         const newObjective = new OptimizationObjective();
         newObjective.type = value;
-        newObjective.location.ts.max = this.props.model.stressPeriods.dateTimes.length - 1;
+        newObjective.location.ts.max = this.props.model.stressperiods.count - 1;
+
+        const input = OptimizationInput.fromObject(this.state.optimizationInput);
+        input.objectivesCollection.add(newObjective);
+        this.props.onChange(input);
+
         return this.setState({
-            selectedObjective: newObjective.toObject(),
-            editState: OPTIMIZATION_EDIT_UNSAVED
+            selectedObjective: newObjective.toObject()
         });
     };
 
-    onClickObjective = (objective) => this.setState({
+    handleClickObjective = (objective) => this.setState({
         selectedObjective: objective
     });
 
-    onClickDelete = (objective) => {
-        const objectives = this.state.objectives;
-        this.props.onChange({
-            key: 'objectives',
-            value: objectives
-                .filter(obj => obj.id !== objective.id)
-                .map(obj => {
-                    return OptimizationObjective.fromObject(obj);
-                })
-        });
+    handleClickSave = () => {
+        if (this.state.selectedObjective) {
+            const objective = OptimizationObjective.fromObject(this.state.selectedObjective);
+            const input = OptimizationInput.fromObject(this.state.optimizationInput);
+            input.objectivesCollection.update(objective);
+            this.props.onChange(input);
+        }
+
+        this.props.onSave();
     };
 
-    onClickSave = () => {
-        const {objectives, selectedObjective} = this.state;
+    handleChange = () => {
+        const input = OptimizationInput.fromObject(this.state.optimizationInput);
 
-        if (objectives.length < 1) {
-            objectives.push(selectedObjective);
+        if (this.state.selectedObjective) {
+            const objective = OptimizationObjective.fromObject(this.state.selectedObjective);
+            input.objectivesCollection.update(objective);
         }
 
-        if (objectives.length >= 1 && objectives.filter(item => item.id === selectedObjective.id).length === 0) {
-            objectives.push(selectedObjective);
-        }
+        this.props.onChange(input);
+    };
 
-        this.props.onChange({
-            key: 'objectives',
-            value: objectives.map((obj) => {
-                if (obj.id === selectedObjective.id) {
-                    return OptimizationObjective.fromObject(selectedObjective);
-                }
+    handleChangeSelect = (e, {name, value}) => {
+        const input = OptimizationInput.fromObject(this.state.optimizationInput);
+        const objective = this.state.selectedObjective;
+        objective[name] = value;
 
-                return OptimizationObjective.fromObject(obj);
-            })
+        input.objectivesCollection.update(OptimizationObjective.fromObject(objective));
+
+        this.setState({
+            selectedObjective: objective
         });
 
+        return this.props.onChange(input);
+    };
+
+    handleChangeStressPeriods = (e) => {
+        const input = OptimizationInput.fromObject(this.state.optimizationInput);
+        const objective = this.state.selectedObjective;
+        objective.location.ts = {
+            min: e[0],
+            max: e[1]
+        };
+        input.objectivesCollection.update(OptimizationObjective.fromObject(objective));
+
+        this.setState({
+            selectedObjective: objective
+        });
+
+        // TODO: difference between onChange and onSliderEnd?
+        return this.props.onChange(input);
+    };
+
+    handleLocalChange = (e, {name, value}) => {
+        const objective = this.state.selectedObjective;
+        objective[name] = value;
         return this.setState({
-            selectedObjective: null,
-            editState: OPTIMIZATION_EDIT_SAVED
+            selectedObjective: objective
         });
     };
 
-    formatTimestamp = (key) => this.props.model.stressPeriods.dateTimes[key]; //Formatter.toDate(this.props.stressPeriods.dateTimes[key]);
+    formatTimestamp = (key) => this.props.model.stressperiods.dateTimes[key];
 
     sliderMarks = () => {
         let marks = {};
-        this.props.model.stressPeriods.dateTimes.forEach((dt, key) => {
+        this.props.model.stressperiods.dateTimes.forEach((dt, key) => {
             marks[key] = key;
         });
         return marks;
     };
 
     render() {
-        const {model, objects} = this.props;
-        const {editState, objectives, selectedObjective} = this.state;
+        const {model} = this.props;
+        const {selectedObjective} = this.state;
+        const input = OptimizationInput.fromObject(this.state.optimizationInput);
+        const objectives = input.objectivesCollection;
 
         const typeOptions = [
             {key: 'type1', text: 'Concentration', value: 'concentration'},
@@ -152,26 +150,29 @@ class OptimizationObjectivesComponent extends React.Component {
 
         return (
             <div>
-                <OptimizationToolbar
-                    save={selectedObjective ? {onClick: this.onClickSave} : null}
-                    back={selectedObjective ? {onClick: this.onClickBack} : null}
+                <ContentToolBar
+                    saveButton={!!selectedObjective}
+                    backButton={!!selectedObjective}
+                    onBack={this.handleClickBack}
+                    onSave={this.handleClickSave}
                     dropdown={!selectedObjective ? {
                         text: 'Add New',
                         icon: 'plus',
                         options: typeOptions,
-                        onChange: this.onClickNew
+                        onChange: this.handleClickNew
                     } : null}
-                    editState={editState}
+                    isDirty={this.props.isDirty}
+                    isError={false}
                 />
                 <Grid>
                     <Grid.Row columns={1}>
                         <Grid.Column>
-                            {(!selectedObjective && (!objectives || objectives.length < 1)) &&
+                            {(!selectedObjective && objectives.length < 1) &&
                             <Message>
                                 <p>No optimization objectives</p>
                             </Message>
                             }
-                            {(!selectedObjective && objectives && objectives.length >= 1) &&
+                            {(!selectedObjective && objectives.length >= 1) &&
                             <Table celled striped>
                                 <Table.Header>
                                     <Table.Row>
@@ -182,20 +183,22 @@ class OptimizationObjectivesComponent extends React.Component {
                                 </Table.Header>
                                 <Table.Body>
                                     {
-                                        objectives.map((objective) =>
+                                        objectives.all.map((objective) =>
                                             <Table.Row key={objective.id}>
-                                                <Table.Cell>
-                                                    <Button
-                                                        size="small"
-                                                        onClick={() => this.onClickObjective(objective)}>
-                                                        {objective.name}
-                                                    </Button>
+                                                <Table.Cell
+                                                    width={9}
+                                                    style={styles.linkedCell}
+                                                    onClick={() => this.handleClickObjective(objective.toObject())}>
+                                                    {objective.name}
                                                 </Table.Cell>
-                                                <Table.Cell>{objective.type}</Table.Cell>
-                                                <Table.Cell textAlign="center">
-                                                    <Button icon color="red"
-                                                            size="small"
-                                                            onClick={() => this.onClickDelete(objective)}>
+                                                <Table.Cell width={5}>{objective.type}</Table.Cell>
+                                                <Table.Cell width={2} textAlign="right">
+                                                    <Button
+                                                        icon
+                                                        negative
+                                                        onClick={() => this.handleClickDelete(objective.id)}
+                                                        size='small'
+                                                    >
                                                         <Icon name="trash"/>
                                                     </Button>
                                                 </Table.Cell>
@@ -214,7 +217,6 @@ class OptimizationObjectivesComponent extends React.Component {
                                         name="name"
                                         value={selectedObjective.name}
                                         placeholder="name ="
-                                        style={styles.inputFix}
                                         onChange={this.handleLocalChange}
                                         onBlur={this.handleChange}
                                     />
@@ -227,7 +229,7 @@ class OptimizationObjectivesComponent extends React.Component {
                                             value={selectedObjective.type}
                                             placeholder="type ="
                                             options={typeOptions}
-                                            onChange={this.handleLocalChange}
+                                            onChange={this.handleChangeSelect}
                                         />
                                     </Form.Field>
                                     <Form.Field>
@@ -241,7 +243,7 @@ class OptimizationObjectivesComponent extends React.Component {
                                                 {key: 'max', text: 'Max', value: 'max'},
                                                 {key: 'mean', text: 'Mean', value: 'mean'},
                                             ]}
-                                            onChange={this.handleLocalChange}
+                                            onChange={this.handleChangeSelect}
                                         />
                                     </Form.Field>
                                 </Form.Group>
@@ -277,12 +279,12 @@ class OptimizationObjectivesComponent extends React.Component {
                                         <Segment style={styles.sliderDiv}>
                                             <Range
                                                 min={0}
-                                                max={model.stressPeriods.dateTimes.length - 1}
+                                                max={model.stressperiods.count - 1}
                                                 step={1}
                                                 marks={this.sliderMarks()}
                                                 onChange={this.handleChangeStressPeriods}
                                                 defaultValue={[selectedObjective.location.ts.min, selectedObjective.location.ts.max]}
-                                                tipFormatter={value => `${this.formatTimestamp(value)}`}
+                                                tipFormatter={value => this.formatTimestamp(value)}
                                             />
                                         </Segment>
                                     </Form.Field>
@@ -291,13 +293,11 @@ class OptimizationObjectivesComponent extends React.Component {
                                         <Segment>
                                             <OptimizationMap
                                                 name="location"
-                                                area={model.geometry}
-                                                bbox={model.boundingBox}
-                                                location={selectedObjective.location}
-                                                objects={objects}
+                                                model={this.props.model}
+                                                location={OptimizationLocation.fromObject(selectedObjective.location)}
                                                 onlyObjects={selectedObjective.type === 'flux' || selectedObjective.type === 'inputConc'}
-                                                gridSize={model.gridSize}
-                                                onChange={this.handleLocalChange}
+                                                objectsCollection={input.objectsCollection}
+                                                onChange={this.handleChangeSelect}
                                                 readOnly
                                             />
                                         </Segment>
@@ -314,12 +314,9 @@ class OptimizationObjectivesComponent extends React.Component {
                                                     <OptimizationMap
                                                         name="location1"
                                                         label="Edit Location 1"
-                                                        area={model.geometry}
-                                                        bbox={model.boundingBox}
-                                                        location={selectedObjective.location_1}
-                                                        objects={objects}
-                                                        gridSize={model.gridSize}
-                                                        onChange={this.handleLocalChange}
+                                                        model={this.props.model}
+                                                        location={OptimizationLocation.fromObject(selectedObjective.location_1)}
+                                                        onChange={this.handleChangeSelect}
                                                         readOnly
                                                     />
                                                 </Grid.Column>
@@ -327,12 +324,9 @@ class OptimizationObjectivesComponent extends React.Component {
                                                     <OptimizationMap
                                                         name="location2"
                                                         label="Edit Location 2"
-                                                        area={model.geometry}
-                                                        bbox={model.boundingBox}
-                                                        location={selectedObjective.location_2}
-                                                        objects={objects}
-                                                        gridSize={model.gridSize}
-                                                        onChange={this.handleLocalChange}
+                                                        model={this.props.model}
+                                                        location={OptimizationLocation.fromObject(selectedObjective.location_2)}
+                                                        onChange={this.handleChangeSelect}
                                                         readOnly
                                                     />
                                                 </Grid.Column>
@@ -352,10 +346,11 @@ class OptimizationObjectivesComponent extends React.Component {
 }
 
 OptimizationObjectivesComponent.propTypes = {
-    objectives: PropTypes.array.isRequired,
-    objects: PropTypes.array.isRequired,
-    model: PropTypes.object,
+    isDirty: PropTypes.bool,
+    optimizationInput: PropTypes.instanceOf(OptimizationInput).isRequired,
+    model: PropTypes.instanceOf(ModflowModel).isRequired,
     onChange: PropTypes.func.isRequired,
+    onSave: PropTypes.func.isRequired
 };
 
 export default OptimizationObjectivesComponent;

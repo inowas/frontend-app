@@ -1,21 +1,22 @@
 import AbstractPosition from './AbstractPosition';
+import OptimizationObjectsCollection from './ObjectsCollection';
 
-class Location extends AbstractPosition {
+class OptimizationLocation extends AbstractPosition {
     _type = 'bbox';
     _ts = {
         min: 0,
         max: 0
     };
-    _objects = [];
+    _objects = new OptimizationObjectsCollection();
 
     static fromObject(obj) {
-        const location = new Location();
+        const location = new OptimizationLocation();
         location.type = obj.type;
         location.ts = obj.ts;
         location.lay = obj.lay;
         location.row = obj.row;
         location.col = obj.col;
-        location.objects = obj.objects;
+        location.objectsCollection = obj.objects ? OptimizationObjectsCollection.fromArray(obj.objects) : new OptimizationObjectsCollection();
         return location;
     }
 
@@ -35,12 +36,15 @@ class Location extends AbstractPosition {
         this._ts = value ? value : {min: 0, max: 0, result: null};
     }
 
-    get objects() {
+    get objectsCollection() {
         return this._objects;
     }
 
-    set objects(value) {
-        this._objects = value ? value : [];
+    set objectsCollection(value) {
+        if(!(value instanceof OptimizationObjectsCollection)) {
+            throw new Error('Value expected to be instance of OptimizationObjectsCollection');
+        }
+        this._objects = value;
     }
 
     toObject() {
@@ -50,9 +54,9 @@ class Location extends AbstractPosition {
             'lay': this.lay,
             'row': this.row,
             'col': this.col,
-            'objects': this.objects
+            'objects': this.objectsCollection.toArray()
         });
     }
 }
 
-export default Location;
+export default OptimizationLocation;

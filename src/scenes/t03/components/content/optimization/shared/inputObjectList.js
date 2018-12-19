@@ -1,24 +1,28 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import {Button, Form, Icon, List} from 'semantic-ui-react';
-
-// @param: array of objects with parameters id and name
-// @return: array of object IDs
+import {OptimizationObjectsCollection} from 'core/model/modflow/optimization';
 
 class InputObjectList extends React.Component {
 
     handleAdd = (e, {name, value}) => {
-        const objects = this.props.objectsInList.map(i => i);
-        objects.push(value);
+        const objectsCollection = this.props.objectsInList;
+        const objectToAdd = this.props.addableObjects.findById(value);
+
+        if (objectToAdd) {
+            objectsCollection.add(objectToAdd);
+        }
+
         return this.props.onChange(
-            objects
+            objectsCollection
         );
     };
 
     handleRemove = id => {
-        const objects = this.props.objectsInList;
+        const objectsCollection = this.props.objectsInList;
+        objectsCollection.remove(id);
         return this.props.onChange(
-            objects.filter(obj => obj !== id)
+            objectsCollection
         );
     };
 
@@ -43,9 +47,9 @@ class InputObjectList extends React.Component {
                             name={this.props.name}
                             placeholder={this.props.placeholder ? this.props.placeholder : ''}
                             options={
-                                this.props.addableObjects
+                                this.props.addableObjects.all
                                     .filter(value =>
-                                        this.props.objectsInList.indexOf(value.id) === -1)
+                                        this.props.objectsInList.all.indexOf(value.id) === -1)
                                     .map((value, index) => {
                                         return {
                                             key: String(index),
@@ -62,21 +66,20 @@ class InputObjectList extends React.Component {
                 </Form.Field>
                 {this.props.objectsInList && this.props.objectsInList.length > 0 ?
                     <List divided>
-                        {this.props.objectsInList.map(id => {
-                            const object = this.props.addableObjects.filter(obj => obj.id === id)[0];
+                        {this.props.objectsInList.all.map(object => {
                             return (
-                                <List.Item key={id}>
+                                <List.Item key={object.id}>
                                     <List.Content floated="right">
                                         <Button icon color="red"
                                                 style={styles.iconFix}
                                                 size="small"
-                                                onClick={() => this.handleRemove(id)}>
+                                                onClick={() => this.handleRemove(object.id)}>
                                             <Icon name="trash"/>
                                         </Button>
                                     </List.Content>
                                     <List.Content
                                         verticalAlign="middle">
-                                        {object ? object.name : 'ERROR: OBJECT HAS BEEN DELETED'}
+                                        {object.name || 'ERROR: OBJECT HAS BEEN DELETED'}
                                     </List.Content>
                                 </List.Item>
                             );
@@ -93,8 +96,8 @@ class InputObjectList extends React.Component {
 
 InputObjectList.propTypes = {
     name: PropTypes.string.isRequired,
-    addableObjects: PropTypes.array,
-    objectsInList: PropTypes.array,
+    addableObjects: PropTypes.instanceOf(OptimizationObjectsCollection),
+    objectsInList: PropTypes.instanceOf(OptimizationObjectsCollection),
     label: PropTypes.string,
     placeholder: PropTypes.string,
     disabled: PropTypes.bool,
