@@ -164,6 +164,8 @@ class BoundaryDetails extends React.Component {
                                 </Button>
                             </div>
                             }
+                            <Header as={'h3'}>Time dependent boundary values</Header>
+                            <Divider/>
                             <BoundaryValuesDataTable
                                 boundary={boundary}
                                 onChange={this.props.onChange}

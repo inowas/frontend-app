@@ -4,6 +4,7 @@ import moment from 'moment';
 
 import {Button, Table} from 'semantic-ui-react';
 import {Boundary, Stressperiods} from 'core/model/modflow';
+import {cloneDeep} from 'lodash';
 
 class BoundaryValuesDataTable extends React.Component {
 
@@ -48,6 +49,17 @@ class BoundaryValuesDataTable extends React.Component {
         if (boundary.getDateTimeValues(selectedOP).length === 0) {
             boundary.setDefaultValues(this.props.stressperiods.startDateTime);
         }
+        this.props.onChange(boundary);
+    };
+
+    addNewDatetimeValue = (number, unit = 'days') => {
+        const {boundary, selectedOP} = this.props;
+        const dateTimeValues = boundary.getDateTimeValues(selectedOP);
+        const lastDateTimeValue = dateTimeValues[dateTimeValues.length - 1];
+        const newDateTimeValue = cloneDeep(lastDateTimeValue);
+        newDateTimeValue.date_time = moment.utc(lastDateTimeValue.date_time).add(number, unit);
+        dateTimeValues.push(newDateTimeValue);
+        boundary.setDateTimeValues(selectedOP, dateTimeValues);
         this.props.onChange(boundary);
     };
 
@@ -120,17 +132,25 @@ class BoundaryValuesDataTable extends React.Component {
         const dateTimeValues = boundary.getDateTimeValues(selectedOP);
 
         return (
-            <Table color={'red'} size={'small'} singleLine>
-                <Table.Header>
-                    <Table.Row>
-                        <Table.HeaderCell>Start Date</Table.HeaderCell>
-                        {boundary.valueProperties.map((p, idx) => (
-                            <Table.HeaderCell key={idx}>{p.name}</Table.HeaderCell>))}
-                        <Table.HeaderCell/>
-                    </Table.Row>
-                </Table.Header>
-                <Table.Body>{dateTimeValues && this.body(dateTimeValues)}</Table.Body>
-            </Table>
+            <div>
+                <Table color={'red'} size={'small'} singleLine>
+                    <Table.Header>
+                        <Table.Row>
+                            <Table.HeaderCell>Start Date</Table.HeaderCell>
+                            {boundary.valueProperties.map((p, idx) => (
+                                <Table.HeaderCell key={idx}>{p.name}</Table.HeaderCell>))}
+                            <Table.HeaderCell/>
+                        </Table.Row>
+                    </Table.Header>
+                    <Table.Body>{dateTimeValues && this.body(dateTimeValues)}</Table.Body>
+                </Table>
+                <Button.Group>
+                    <Button onClick={() => this.addNewDatetimeValue(1, 'days')}>+1 Day</Button>
+                    <Button onClick={() => this.addNewDatetimeValue(1, 'weeks')}>+1 Week</Button>
+                    <Button onClick={() => this.addNewDatetimeValue(1, 'months')}>+1 Month</Button>
+                    <Button onClick={() => this.addNewDatetimeValue(1, 'years')}>+1 Year</Button>
+                </Button.Group>
+            </div>
         )
     }
 }
