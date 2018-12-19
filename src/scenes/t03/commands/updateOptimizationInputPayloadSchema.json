@@ -402,7 +402,7 @@
         "objects": {
           "type": "array",
           "items": {
-            "allOf": [{"$ref": "#/definitions/uuidv4"}]
+            "allOf": [{"type": "object"}]
           }
         }
       }
