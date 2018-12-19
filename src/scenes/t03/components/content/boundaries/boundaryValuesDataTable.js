@@ -7,8 +7,7 @@ import {Boundary, Stressperiods} from 'core/model/modflow';
 
 class BoundaryValuesDataTable extends React.Component {
 
-    handleDateTimeValueChange = (e) => {
-        const id = parseInt(e.target.id);
+    handleDateTimeValueChange = (row, col) => (e) => {
         const name = e.target.name;
         const value = e.target.value;
 
@@ -17,7 +16,7 @@ class BoundaryValuesDataTable extends React.Component {
 
         if (name === 'dateTime') {
             dateTimeValues = dateTimeValues.map((dtv, dtvIdx) => {
-                if (id === dtvIdx) {
+                if (row === dtvIdx) {
                     dtv.date_time = moment.utc(value).toISOString();
                     return dtv;
                 }
@@ -28,8 +27,8 @@ class BoundaryValuesDataTable extends React.Component {
 
         if (name === 'dateTimeValue') {
             dateTimeValues = dateTimeValues.map((dtv, dtvIdx) => {
-                if (id === dtvIdx) {
-                    dtv.values[id] = parseFloat(value) || 0;
+                if (row === dtvIdx) {
+                    dtv.values[col] = parseFloat(value) || 0;
                     return dtv;
                 }
 
@@ -41,7 +40,7 @@ class BoundaryValuesDataTable extends React.Component {
         this.props.onChange(boundary)
     };
 
-    handleRemoveDateTimeValues = (dtvIdx) => {
+    handleRemoveDateTimeValues = (dtvIdx) => () => {
         const {boundary, selectedOP} = this.props;
         let dateTimeValues = boundary.getDateTimeValues(selectedOP);
         dateTimeValues = dateTimeValues.filter((dtv, idx) => (dtvIdx !== idx));
@@ -84,7 +83,7 @@ class BoundaryValuesDataTable extends React.Component {
                         disabled={this.props.readOnly}
                         id={dtvIdx}
                         name={'dateTime'}
-                        onChange={this.handleDateTimeValueChange}
+                        onChange={this.handleDateTimeValueChange(dtvIdx)}
                         type={'date'}
                         value={moment(dtv.date_time).format('YYYY-MM-DD')}
                     />
@@ -94,9 +93,10 @@ class BoundaryValuesDataTable extends React.Component {
                         <input
                             style={this.getCellStyle(dtv.values.length)}
                             disabled={this.props.readOnly}
-                            id={vIdx}
+                            id={dtvIdx}
+                            col={vIdx}
                             name={'dateTimeValue'}
-                            onChange={this.handleDateTimeValueChange}
+                            onChange={this.handleDateTimeValueChange(dtvIdx, vIdx)}
                             type={'number'}
                             value={v}
                         >
@@ -108,7 +108,7 @@ class BoundaryValuesDataTable extends React.Component {
                         basic
                         floated={'right'}
                         icon={'trash'}
-                        onClick={() => this.handleRemoveDateTimeValues(dtvIdx)}
+                        onClick={this.handleRemoveDateTimeValues(dtvIdx)}
                     />}
                 </Table.Cell>
             </Table.Row>
@@ -129,7 +129,7 @@ class BoundaryValuesDataTable extends React.Component {
                         <Table.HeaderCell/>
                     </Table.Row>
                 </Table.Header>
-                <Table.Body>{this.body(dateTimeValues)}</Table.Body>
+                <Table.Body>{dateTimeValues && this.body(dateTimeValues)}</Table.Body>
             </Table>
         )
     }

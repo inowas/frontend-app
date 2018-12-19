@@ -1,7 +1,5 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import uuid from 'uuid';
-import {cloneDeep, first} from 'lodash';
 
 import {Button, Grid, Form, Header, Modal, Segment} from 'semantic-ui-react';
 
@@ -27,14 +25,18 @@ class ObservationPointEditor extends React.Component {
         if (observationPoint) {
             return this.setState({observationPoint});
         }
+    }
 
-        observationPoint = cloneDeep(boundary.observation_points[0]);
-        observationPoint.id = uuid.v4();
-        observationPoint.name = 'New observation point';
-        observationPoint.geometry = null;
-        observationPoint.date_time_values = [first(observationPoint.date_time_values)];
+    componentWillReceiveProps(nextProps) {
+        const {boundary, observationPointId} = nextProps;
+        if (!(boundary instanceof MultipleOPBoundary)) {
+            return null;
+        }
 
-        return this.setState({observationPoint});
+        let observationPoint = boundary.getObservationPointById(observationPointId);
+        if (observationPoint) {
+            return this.setState({observationPoint});
+        }
     }
 
     handleChange = e => {
@@ -57,12 +59,17 @@ class ObservationPointEditor extends React.Component {
     render() {
         const {boundary, model, onCancel} = this.props;
         const {observationPoint} = this.state;
+
+        if (!observationPoint) {
+            return null;
+        }
+
         const {geometry} = observationPoint;
-        const latitude = geometry.coordinates ? geometry.coordinates[1] : '';
-        const longitude = geometry.coordinates ? geometry.coordinates[0] : '';
+        const latitude = geometry ? geometry.coordinates[1] : '';
+        const longitude = geometry ? geometry.coordinates[0] : '';
 
         return (
-            <Modal size={'large'} open onClose={onCancel}>
+            <Modal size={'large'} open>
                 <Modal.Header>Add observation point</Modal.Header>
                 <Modal.Content>
                     <Grid divided={'vertically'}>
@@ -107,12 +114,6 @@ class ObservationPointEditor extends React.Component {
                     </Grid>
                 </Modal.Content>
                 <Modal.Actions>
-                    <Button
-                        negative
-                        onClick={onCancel}
-                    >
-                        Cancel
-                    </Button>
                     <Button
                         positive
                         onClick={() => {
