@@ -25,7 +25,7 @@ class OptimizationInput {
         input.id = obj.id;
         input.parameters = OptimizationParameters.fromObject(obj.parameters);
         input.objectivesCollection = OptimizationObjectivesCollection.fromArray(obj.objectives);
-        input.constraints = OptimizationConstraintsCollection.fromArray(obj.constraints);
+        input.constraintsCollection = OptimizationConstraintsCollection.fromArray(obj.constraints);
         input.objectsCollection = OptimizationObjectsCollection.fromArray(obj.objects);
         return input;
     }
@@ -50,11 +50,11 @@ class OptimizationInput {
         this._parameters = value;
     }
 
-    get constraints() {
+    get constraintsCollection() {
         return this._constraints;
     }
 
-    set constraints(value) {
+    set constraintsCollection(value) {
         this._constraints = value;
     }
 
@@ -81,7 +81,7 @@ class OptimizationInput {
         return {
             'id': this.id,
             'parameters': this.parameters.toObject(),
-            'constraints': this.constraints.toArray(),
+            'constraints': this.constraintsCollection.toArray(),
             'objectives': this.objectivesCollection.toArray(),
             'objects': this.objectsCollection.toArray()
         };

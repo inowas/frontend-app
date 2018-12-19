@@ -1,5 +1,5 @@
 import uuidv4 from 'uuid/v4';
-import Location from './Location';
+import OptimizationLocation from './Location';
 
 class OptimizationConstraint {
 
@@ -10,9 +10,9 @@ class OptimizationConstraint {
     _summaryMethod = 'mean';
     _value = 0;
     _operator = 'more';
-    _location = new Location();
-    _location1 = new Location();
-    _location2 = new Location();
+    _location = new OptimizationLocation();
+    _location1 = new OptimizationLocation();
+    _location2 = new OptimizationLocation();
 
     static fromObject(obj) {
         const constraint = new OptimizationConstraint();
@@ -97,7 +97,7 @@ class OptimizationConstraint {
     }
 
     set location(value) {
-        this._location = value ? Location.fromObject(value) : new Location();
+        this._location = value ? OptimizationLocation.fromObject(value) : new OptimizationLocation();
     }
 
     get location1() {
@@ -105,7 +105,7 @@ class OptimizationConstraint {
     }
 
     set location1(value) {
-        this._location1 = value ? Location.fromObject(value) : null;
+        this._location1 = value ? OptimizationLocation.fromObject(value) : null;
     }
 
     get location2() {
@@ -113,7 +113,7 @@ class OptimizationConstraint {
     }
 
     set location2(value) {
-        this._location2 = value ? Location.fromObject(value) : null;
+        this._location2 = value ? OptimizationLocation.fromObject(value) : null;
     }
 
     toObject() {
