@@ -1,7 +1,11 @@
+import {Icon} from 'semantic-ui-react';
+import React from 'react';
+
 const menuItems = [
     {
         name: 'Discretization',
         property: 'discretization',
+        icon: <Icon name="calendar alternate outline"/>
     },
     {
         name: 'Soilmodel',
@@ -9,7 +13,8 @@ const menuItems = [
     },
     {
         name: 'Boundaries',
-        property: 'boundaries'
+        property: 'boundaries',
+        icon: <Icon name="map marker alternate"/>
     },
     {
         name: 'Observations',

@@ -3,3 +3,4 @@
 *******************************/
 
 @focusBorderColor: @linkColor;
+@border: none;

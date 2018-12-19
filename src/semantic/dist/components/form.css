@@ -107,12 +107,12 @@
   line-height: 1.21428571em;
   padding: 0.67857143em 1em;
   font-size: 1em;
-  background: #FFFFFF;
-  border: 1px solid rgba(34, 36, 38, 0.15);
+  background: #EEEEEE;
+  border: none;
   color: #4C4C4C;
   border-radius: 0.14285714rem;
-  -webkit-box-shadow: 0em 0em 0em 0em transparent inset;
-          box-shadow: 0em 0em 0em 0em transparent inset;
+  -webkit-box-shadow: 0em 1px 2px 0em rgba(0, 0, 0, 0.1) inset;
+          box-shadow: 0em 1px 2px 0em rgba(0, 0, 0, 0.1) inset;
   -webkit-transition: color 0.1s ease, border-color 0.1s ease;
   transition: color 0.1s ease, border-color 0.1s ease;
 }
@@ -123,13 +123,13 @@
   -webkit-appearance: none;
   tap-highlight-color: rgba(255, 255, 255, 0);
   padding: 0.78571429em 1em;
-  background: #FFFFFF;
-  border: 1px solid rgba(34, 36, 38, 0.15);
+  background: #EEEEEE;
+  border: none;
   outline: none;
   color: #4C4C4C;
   border-radius: 0.14285714rem;
-  -webkit-box-shadow: 0em 0em 0em 0em transparent inset;
-          box-shadow: 0em 0em 0em 0em transparent inset;
+  -webkit-box-shadow: 0em 1px 2px 0em rgba(0, 0, 0, 0.1) inset;
+          box-shadow: 0em 1px 2px 0em rgba(0, 0, 0, 0.1) inset;
   -webkit-transition: color 0.1s ease, border-color 0.1s ease;
   transition: color 0.1s ease, border-color 0.1s ease;
   font-size: 1em;
@@ -163,10 +163,10 @@
   height: auto;
   width: 100%;
   background: #FFFFFF;
-  border: 1px solid rgba(34, 36, 38, 0.15);
+  border: none;
   border-radius: 0.14285714rem;
-  -webkit-box-shadow: 0em 0em 0em 0em transparent inset;
-          box-shadow: 0em 0em 0em 0em transparent inset;
+  -webkit-box-shadow: 0em 1px 2px 0em rgba(0, 0, 0, 0.1) inset;
+          box-shadow: 0em 1px 2px 0em rgba(0, 0, 0, 0.1) inset;
   padding: 0.62em 1em;
   color: #4C4C4C;
   -webkit-transition: color 0.1s ease, border-color 0.1s ease;
@@ -371,7 +371,7 @@
   color: rgba(0, 0, 0, 0.95);
   border-color: #85B7D9;
   border-radius: 0.14285714rem;
-  background: #FFFFFF;
+  background: #EEEEEE;
   -webkit-box-shadow: 0px 0em 0em 0em rgba(34, 36, 38, 0.35) inset;
           box-shadow: 0px 0em 0em 0em rgba(34, 36, 38, 0.35) inset;
 }
@@ -379,7 +379,7 @@
   color: rgba(0, 0, 0, 0.95);
   border-color: #85B7D9;
   border-radius: 0.14285714rem;
-  background: #FFFFFF;
+  background: #EEEEEE;
   -webkit-box-shadow: 0px 0em 0em 0em rgba(34, 36, 38, 0.35) inset;
           box-shadow: 0px 0em 0em 0em rgba(34, 36, 38, 0.35) inset;
   -webkit-appearance: none;
@@ -733,7 +733,7 @@
 .ui.inverted.form input[type="text"],
 .ui.inverted.form input[type="file"],
 .ui.inverted.form input[type="url"] {
-  background: #FFFFFF;
+  background: #EEEEEE;
   border-color: rgba(255, 255, 255, 0.1);
   color: #4C4C4C;
   -webkit-box-shadow: none;
@@ -1078,3 +1078,6 @@
          Site Overrides
 *******************************/
 
+input[type='number'] {
+  text-align: right;
+}

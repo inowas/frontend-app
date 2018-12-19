@@ -28,8 +28,8 @@
   background: #FFFFFF;
   font-weight: normal;
   border: none;
-  -webkit-box-shadow: 0px 1px 2px 0 rgba(34, 36, 38, 0.15);
-          box-shadow: 0px 1px 2px 0 rgba(34, 36, 38, 0.15);
+  -webkit-box-shadow: 0px 1px 2px 0 #EEEEEE;
+          box-shadow: 0px 1px 2px 0 #EEEEEE;
   border-radius: none;
   min-height: 2.85714286em;
 }
@@ -421,7 +421,7 @@
 .ui.menu .link.item:hover,
 .ui.menu a.item:hover {
   cursor: pointer;
-  background: #E1E1E1;
+  background: #EEEEEE;
   color: rgba(0, 0, 0, 0.95);
 }
 
@@ -441,7 +441,7 @@
 ---------------*/
 
 .ui.menu .active.item {
-  background: rgba(0, 0, 0, 0.05);
+  background: #FFFFFF;
   color: rgba(0, 0, 0, 0.95);
   font-weight: normal;
   -webkit-box-shadow: none;
@@ -519,8 +519,8 @@ Floated Menu / Item
       -ms-flex-direction: column;
           flex-direction: column;
   background: #FFFFFF;
-  -webkit-box-shadow: 0px 1px 2px 0 rgba(34, 36, 38, 0.15);
-          box-shadow: 0px 1px 2px 0 rgba(34, 36, 38, 0.15);
+  -webkit-box-shadow: 0px 1px 2px 0 #EEEEEE;
+          box-shadow: 0px 1px 2px 0 #EEEEEE;
 }
 
 /*--- Item ---*/
@@ -593,7 +593,7 @@ Floated Menu / Item
 
 /* Vertical Active */
 .ui.vertical.menu .active.item {
-  background: rgba(0, 0, 0, 0.05);
+  background: #FFFFFF;
   border-radius: 0em;
   -webkit-box-shadow: none;
           box-shadow: none;
@@ -937,7 +937,7 @@ Floated Menu / Item
 .ui.secondary.pointing.menu {
   margin-left: 0em;
   margin-right: 0em;
-  border-bottom: 2px solid rgba(34, 36, 38, 0.15);
+  border-bottom: 2px solid #EEEEEE;
 }
 .ui.secondary.pointing.menu .item {
   border-bottom-color: transparent;
@@ -977,7 +977,7 @@ Floated Menu / Item
 .ui.secondary.pointing.menu .link.item:active,
 .ui.secondary.pointing.menu a.item:active {
   background-color: transparent;
-  border-color: rgba(34, 36, 38, 0.15);
+  border-color: #EEEEEE;
 }
 
 /* Active */
@@ -1006,7 +1006,7 @@ Floated Menu / Item
   border-bottom-width: 0px;
   border-right-width: 2px;
   border-right-style: solid;
-  border-right-color: rgba(34, 36, 38, 0.15);
+  border-right-color: #EEEEEE;
 }
 .ui.secondary.vertical.pointing.menu .item {
   border-bottom: none;
@@ -1028,7 +1028,7 @@ Floated Menu / Item
 }
 .ui.secondary.inverted.pointing.menu {
   border-width: 2px;
-  border-color: rgba(34, 36, 38, 0.15);
+  border-color: #EEEEEE;
 }
 .ui.secondary.inverted.pointing.menu .item {
   color: rgba(255, 255, 255, 0.9);
@@ -1941,8 +1941,8 @@ Floated Menu / Item
   margin-top: 0em;
   top: 0px;
   margin-bottom: 1rem;
-  -webkit-box-shadow: 0px 1px 2px 0 rgba(34, 36, 38, 0.15), none;
-          box-shadow: 0px 1px 2px 0 rgba(34, 36, 38, 0.15), none;
+  -webkit-box-shadow: 0px 1px 2px 0 #EEEEEE, none;
+          box-shadow: 0px 1px 2px 0 #EEEEEE, none;
   border-radius: 0em 0em none none;
 }
 .ui[class*="bottom attached"].menu:last-child {

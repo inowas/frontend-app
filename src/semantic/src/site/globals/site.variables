@@ -46,7 +46,7 @@
 @orange     : #ED8D05;
 @red        : #FF5B4D; /*#BA3005*/
 
-@lightGrey  : #E1E1E1;
+@lightGrey  : #EEEEEE;
 @lightBlue  : #3AC6FF;
 
 
@@ -98,6 +98,13 @@
 @h5               : 1rem;
 
 
+/*--------------
+   Form Input
+---------------*/
+
+@inputBackground: @lightGrey;
+
+
 /*-------------------
        Links
 --------------------*/
@@ -120,7 +127,7 @@
       Borders
 --------------------*/
 
-@borderColor               : rgba(34, 36, 38, 0.15); /* #CACBCD */
+@borderColor               : @lightGrey; /* rgba(34, 36, 38, 0.15); #CACBCD */
 
 /*-------------------
        Recharts
