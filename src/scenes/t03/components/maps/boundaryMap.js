@@ -2,7 +2,7 @@ import React, {Component} from 'react';
 import PropTypes from 'prop-types';
 import {uniqueId} from 'lodash';
 import {GeoJSON, Map, CircleMarker} from 'react-leaflet';
-import {Boundary, Geometry} from 'core/model/modflow';
+import {Boundary, Geometry, MultipleOPBoundary} from 'core/model/modflow';
 import {BasicTileLayer} from 'services/geoTools/tileLayers';
 
 import {disableMap, generateKey, getStyle} from './index';
@@ -21,23 +21,28 @@ class BoundaryMap extends Component {
     }
 
     renderObservationPoints(b) {
-        if (b.observation_points && b.observation_points.length > 1) {
-            return b.observation_points.map(op => {
-                const selected = (op.id === this.props.selectedObservationPointId) ? '_selected' : '';
-                return (
-                    <CircleMarker
-                        key={uniqueId(op.id)}
-                        center={[
-                            op.geometry.coordinates[1],
-                            op.geometry.coordinates[0]
-                        ]}
-                        {...getStyle('op' + selected)}
-                    />
-                );
-            });
+        if (!(b instanceof MultipleOPBoundary)) {
+            return null;
         }
 
-        return null;
+        if (b.observationPoints.length <= 1) {
+            return null;
+        }
+
+        const observationPoints = b.observationPoints;
+        return observationPoints.map(op => {
+            const selected = (op.id === this.props.selectedObservationPointId) ? '_selected' : '';
+            return (
+                <CircleMarker
+                    key={uniqueId(op.id)}
+                    center={[
+                        op.geometry.coordinates[1],
+                        op.geometry.coordinates[0]
+                    ]}
+                    {...getStyle('op' + selected)}
+                />
+            );
+        });
     }
 
     // noinspection JSMethodCanBeStatic

@@ -1,21 +1,65 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import {Form, Grid, List} from 'semantic-ui-react';
+import uuid from 'uuid';
+
+import {Button, Divider, Dropdown, Form, Grid, Header, Icon, List} from 'semantic-ui-react';
 
 import BoundaryMap from '../../maps/boundaryMap';
-import {Boundary, ModflowModel, Soilmodel} from 'core/model/modflow';
+import {Boundary, ModflowModel, MultipleOPBoundary, SingleOPBoundary, Soilmodel} from 'core/model/modflow';
 import BoundaryValuesDataTable from './boundaryValuesDataTable';
 import BoundaryGeometryEditor from './boundaryGeometryEditor';
+import ObservationPointEditor from './observationPointEditor';
 
 class BoundaryDetails extends React.Component {
 
-    state = {
-        showBoundaryEditor: false
-    };
+    constructor(props) {
+        super(props);
+        this.state = {
+            showBoundaryEditor: false,
+            showObservationPointEditor: false,
+            observationPointId: null
+        };
+    }
+
+    componentWillReceiveProps(nextProps) {
+        if (!nextProps.boundary) {
+            return;
+        }
+
+        if ((nextProps.boundary instanceof SingleOPBoundary)) {
+            return this.setState({observationPointId: null})
+        }
+
+        if ((nextProps.boundary instanceof MultipleOPBoundary) && !this.state.observationPointId) {
+            return this.setState({
+                observationPointId: nextProps.boundary.observationPoints[0].id
+            })
+        }
+    }
 
     handleChange = (e, {name, value}) => {
         const boundary = this.props.boundary;
         boundary[name] = value;
+        this.props.onChange(boundary);
+    };
+
+    handleCloneClick = () => {
+        const boundary = this.props.boundary;
+        const newOpId = uuid.v4();
+        boundary.cloneObservationPoint(this.state.observationPointId, newOpId);
+        this.setState({
+            observationPointId: newOpId,
+            showObservationPointEditor: true
+        });
+        this.props.onChange(boundary);
+    };
+
+    handleRemoveClick = () => {
+        const boundary = this.props.boundary;
+        boundary.removeObservationPoint(this.state.observationPointId);
+        this.setState({
+            observationPointId: boundary.observationPoints[0].id
+        });
         this.props.onChange(boundary);
     };
 
@@ -32,6 +76,7 @@ class BoundaryDetails extends React.Component {
     render() {
         const {boundary, model} = this.props;
         const {geometry, stressperiods} = model;
+        const {observationPointId} = this.state;
 
         if (!boundary || !geometry) {
             return null;
@@ -42,6 +87,8 @@ class BoundaryDetails extends React.Component {
                 <Grid>
                     <Grid.Row>
                         <Grid.Column width={6}>
+                            <Header as={'h3'}>Properties</Header>
+                            <Divider/>
                             <Form>
                                 <Form.Input
                                     label={'Name'}
@@ -77,19 +124,53 @@ class BoundaryDetails extends React.Component {
                                 />
                                 }
                             </Form>
-
                             <List horizontal style={{marginTop: '20px'}}>
                                 <List.Item
                                     as='a'
                                     onClick={() => this.setState({showBoundaryEditor: true})}
                                 >Edit on map</List.Item>
                             </List>
-                            <BoundaryMap geometry={geometry} boundary={boundary} style={{clear: 'both'}}/>
+                            <BoundaryMap
+                                geometry={geometry}
+                                boundary={boundary}
+                                selectedObservationPointId={observationPointId}
+                            />
                         </Grid.Column>
                         <Grid.Column width={10}>
+                            {(boundary instanceof MultipleOPBoundary) &&
+                            <div>
+                                <Header as={'h3'}>Observation Points</Header>
+                                <Divider/>
+                                <Button as={'div'} labelPosition={'left'} fluid>
+                                    <Dropdown
+                                        fluid
+                                        selection
+                                        value={this.state.observationPointId}
+                                        options={boundary.observationPoints.map(op => (
+                                            {key: op.id, value: op.id, text: op.name})
+                                        )}
+                                        onChange={(e, {value}) => this.setState({observationPointId: value})}
+                                    />
+                                    <Button icon
+                                            onClick={() => this.setState({showObservationPointEditor: true})}>
+                                        <Icon name='edit'/>
+                                    </Button>
+                                    <Button icon onClick={this.handleCloneClick}><Icon name='clone'/></Button>
+                                    <Button
+                                        icon
+                                        onClick={this.handleRemoveClick}
+                                        disabled={this.props.boundary.observationPoints.length === 1}
+                                    ><Icon name='trash'/></Button>
+                                </Button>
+                            </div>
+                            }
+                            <Header as={'h3'}>Time dependent boundary values</Header>
+                            <Divider/>
                             <BoundaryValuesDataTable
                                 boundary={boundary}
                                 onChange={this.props.onChange}
+                                readOnly={this.props.readOnly}
+                                selectedOP={observationPointId}
                                 stressperiods={stressperiods}
                             />
                         </Grid.Column>
@@ -100,6 +181,16 @@ class BoundaryDetails extends React.Component {
                     boundary={boundary}
                     model={model}
                     onCancel={() => this.setState({showBoundaryEditor: false})}
+                    onChange={this.props.onChange}
+                    readOnly={this.props.readOnly}
+                />
+                }
+                {this.state.showObservationPointEditor &&
+                <ObservationPointEditor
+                    boundary={boundary}
+                    model={model}
+                    observationPointId={this.state.observationPointId}
+                    onCancel={() => this.setState({showObservationPointEditor: false})}
                     onChange={this.props.onChange}
                     readOnly={this.props.readOnly}
                 />

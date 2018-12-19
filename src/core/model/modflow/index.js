@@ -1,6 +1,8 @@
 import ActiveCells from './ActiveCells';
 import BoundingBox from './BoundingBox';
 import Boundary from './boundaries/Boundary';
+import MultipleOPBoundary from './boundaries/MultipleOPBoundary';
+import SingleOPBoundary from './boundaries/SingleOPBoundary';
 import BoundaryCollection from './boundaries/BoundaryCollection';
 import BoundaryFactory from './boundaries/BoundaryFactory';
 import Geometry from './Geometry';
@@ -22,7 +24,9 @@ export {
     GridSize,
     LengthUnit,
     ModflowModel,
+    MultipleOPBoundary,
     Optimization,
+    SingleOPBoundary,
     Soilmodel,
     Stressperiods,
     TimeUnit
