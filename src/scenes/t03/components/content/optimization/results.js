@@ -16,7 +16,7 @@ class OptimizationResultsComponent extends React.Component {
 
         this.state = {
             activeIndex: 0,
-            optimization: this.props.optimization.toObject,
+            optimization: this.props.optimization.toObject(),
             selectedSolution: null,
             createdBoundaries: null,
             localOptimization: null
@@ -32,12 +32,12 @@ class OptimizationResultsComponent extends React.Component {
 
         this.setState({
             activeIndex: newActiveIndex,
-            optimization: nextProps.optimization.toObject
+            optimization: nextProps.optimization.toObject()
         });
     }
 
     onClickApply = (id) => {
-        const solution = Optimization.fromObject(this.state.optimization).getSolutionById(id).toObject;
+        const solution = Optimization.fromObject(this.state.optimization).getSolutionById(id).toObject();
 
         const boundaries = solution.objects.map(o => {
             return OptimizationObject.fromObject(o).toBoundary(this.props.model.bounding_box, this.props.model.grid_size, this.props.model.stressPeriods);
@@ -51,14 +51,14 @@ class OptimizationResultsComponent extends React.Component {
     };
 
     onClickLocalOptimization = (id) => {
-        const solution = Optimization.fromObject(this.state.optimization).getSolutionById(id).toObject;
+        const solution = Optimization.fromObject(this.state.optimization).getSolutionById(id).toObject();
         return this.setState({
             localOptimization: solution
         });
     };
 
     onClickDetails = (id) => {
-        const solution = Optimization.fromObject(this.state.optimization).getSolutionById(id).toObject;
+        const solution = Optimization.fromObject(this.state.optimization).getSolutionById(id).toObject();
         return this.setState({
             selectedSolution: solution
         });

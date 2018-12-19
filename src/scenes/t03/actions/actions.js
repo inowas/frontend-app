@@ -6,11 +6,13 @@ import {
     UPDATE_SOILMODEL,
     UPDATE_SOILMODEL_LAYER
 } from '../reducers/soilmodel';
+import {UPDATE_OPTIMIZATION} from '../reducers/optimization';
 
 import {ModflowModel, Stressperiods} from 'core/model/modflow';
 import {BoundaryCollection} from 'core/model/modflow/boundaries';
 import {Soilmodel, SoilmodelLayer} from 'core/model/modflow/soilmodel';
 import {Mt3dms} from 'core/model/modflow/mt3d';
+import {Optimization} from 'core/model/modflow/optimization';
 
 export function clear() {
     return {
@@ -77,6 +79,17 @@ export function removeSoilmodelLayer(layer_id) {
     return {
         type: REMOVE_SOILMODEL_LAYER,
         layer_id: layer_id
+    }
+}
+
+export function updateOptimization(optimization) {
+    if (!optimization instanceof Optimization) {
+        throw new Error('optimization is expected to be instance of Optimization');
+    }
+
+    return {
+        type: UPDATE_OPTIMIZATION,
+        payload: optimization.toObject()
     }
 }
 

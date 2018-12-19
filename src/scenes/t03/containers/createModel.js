@@ -9,7 +9,7 @@ import ModflowModelCommand from '../commands/modflowModelCommand';
 import defaults from '../defaults/createModel';
 import moment from 'moment/moment';
 import AppContainer from '../../shared/AppContainer';
-import SoilmodelLayer from "../../../core/model/modflow/soilmodel/SoilmodelLayer";
+import {SoilmodelLayer} from 'core/model/modflow/soilmodel';
 
 const navigation = [{
     name: 'Documentation',

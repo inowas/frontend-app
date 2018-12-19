@@ -180,7 +180,7 @@ class OptimizationParameters {
         return value;
     };
 
-    get toObject() {
+    toObject() {
         return ({
             'method': this.method,
             'ngen': this.ngen,

@@ -8,14 +8,14 @@ class LocalOptimizationModal extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            optimization: this.props.optimizationInput.toObject,
+            optimization: this.props.optimizationInput.toObject(),
             editedObjective: null
         }
     }
 
     componentWillReceiveProps(nextProps) {
         this.setState({
-            optimization: nextProps.optimizationInput.toObject
+            optimization: nextProps.optimizationInput.toObject()
         });
     }
 
@@ -45,9 +45,9 @@ class LocalOptimizationModal extends React.Component {
             ...this.state.optimization,
             objectives: this.state.optimization.objectives.map(o => {
                 if (this.state.editedObjective && o.id === this.state.editedObjective.id) {
-                    return OptimizationObjective.fromObject(this.state.editedObjective).toObject;
+                    return OptimizationObjective.fromObject(this.state.editedObjective).toObject();
                 }
-                return OptimizationObjective.fromObject(o).toObject;
+                return OptimizationObjective.fromObject(o).toObject();
             })
         },
         editedObjective: null
@@ -64,7 +64,7 @@ class LocalOptimizationModal extends React.Component {
     });
 
     handleChange = () => this.setState({
-        optimization: OptimizationInput.fromObject(this.state.optimization).toObject
+        optimization: OptimizationInput.fromObject(this.state.optimization).toObject()
     });
 
     render() {

@@ -12,7 +12,7 @@ import * as Content from '../components/content/index';
 import ToolMetaData from '../../shared/simpleTools/ToolMetaData';
 import {fetchUrl} from 'services/api';
 import ModflowModel from 'core/model/modflow/ModflowModel';
-import {clear, updateBoundaries, updateModel, updateSoilmodel} from '../actions/actions';
+import {clear, updateBoundaries, updateModel, updateOptimization, updateSoilmodel} from '../actions/actions';
 import {BoundaryCollection, BoundaryFactory} from 'core/model/modflow/boundaries';
 import {Soilmodel} from 'core/model/modflow/soilmodel';
 
@@ -97,7 +97,6 @@ class T03 extends React.Component {
     };
 
     handleError = error => {
-        console.log('ERROR', error);
         const {response} = error;
         const {status} = response;
 
@@ -211,7 +210,7 @@ const mapStateToProps = state => ({
 });
 
 const mapDispatchToProps = {
-    clear, updateBoundaries, updateModel, updateSoilmodel
+    clear, updateBoundaries, updateModel, updateOptimization, updateSoilmodel
 };
 
 
@@ -224,6 +223,7 @@ T03.proptypes = {
     clear: PropTypes.func.isRequired,
     updateModel: PropTypes.func.isRequired,
     updateBoundaries: PropTypes.func.isRequired,
+    updateOptimization: PropTypes.func.isRequired,
     updateSoilmodel: PropTypes.func.isRequired,
 };
 
