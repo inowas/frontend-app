@@ -4,6 +4,12 @@ class AbstractCollection {
 
     _items = [];
 
+    static fromArray(array) {
+        const ac = new AbstractCollection();
+        ac.items = array.map(item => ac.validateInput(item));
+        return ac;
+    }
+
     set items(value) {
         this._items = value;
     }

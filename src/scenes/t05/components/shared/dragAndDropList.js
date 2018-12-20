@@ -2,6 +2,8 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import {DragDropContext, Draggable, Droppable} from 'react-beautiful-dnd';
 import {Button, Segment} from 'semantic-ui-react';
+import AbstractCollection from 'core/AbstractCollection';
+import {pure} from 'recompose';
 
 const styles = {
     draggable: {
@@ -28,23 +30,8 @@ const styles = {
 };
 
 class DragAndDropList extends React.Component {
-
-    constructor(props) {
-        super();
-
-        this.state = {
-            items: props.items
-        };
-    }
-
-    componentWillReceiveProps(nextProps) {
-        this.setState({
-            items: nextProps.items
-        });
-    }
-
     onArrowClick = (source, destination) => {
-        const items = this.state.items;
+        const items = this.props.items.all;
         const movedItem = items[source];
 
         items.splice(source, 1);
@@ -57,7 +44,7 @@ class DragAndDropList extends React.Component {
             }
         });
 
-        return this.props.onDragEnd(newItems);
+        return this.props.onChange(AbstractCollection.fromArray(newItems));
     };
 
     onDragEnd = (e) => {
@@ -71,7 +58,7 @@ class DragAndDropList extends React.Component {
             return;
         }
 
-        const items = this.state.items;
+        const items = this.props.items.all;
         const movedItem = items.filter(i => i.rank === draggableId)[0];
 
         if (!movedItem) {
@@ -88,11 +75,11 @@ class DragAndDropList extends React.Component {
             }
         });
 
-        return this.props.onDragEnd(newItems);
+        return this.props.onChange(AbstractCollection.fromArray(newItems));
     };
 
     render() {
-        const items = this.state.items.sort((a, b) => a.rank > b.rank);
+        const items = this.props.items;
 
         if (!items || items.length < 1) {
             return null;
@@ -109,7 +96,7 @@ class DragAndDropList extends React.Component {
                             style={{backgroundColor: snapshot.isDraggingOver ? 'white' : 'white'}}
                             {...provided.droppableProps}
                         >
-                            {items.map((item, key) =>
+                            {items.all.map((item, key) =>
                                 <Draggable draggableId={item.rank} index={key} key={key}>
                                     {(provided, snapshot) => (
                                         <div
@@ -119,7 +106,7 @@ class DragAndDropList extends React.Component {
                                         >
                                             <Segment style={styles.segment}>
                                                 <div style={styles.columnLeft}>
-                                                    {key + 1}
+                                                    {item.rank}
                                                 </div>
                                                 <div style={styles.column}>
                                                     {item.data}
@@ -152,9 +139,9 @@ class DragAndDropList extends React.Component {
 }
 
 DragAndDropList.propTypes = {
-    items: PropTypes.array.isRequired,
-    onDragEnd: PropTypes.func.isRequired,
+    items: PropTypes.instanceOf(AbstractCollection).isRequired,
+    onChange: PropTypes.func.isRequired,
     readOnly: PropTypes.bool
 };
 
-export default DragAndDropList;
+export default pure(DragAndDropList);

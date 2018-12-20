@@ -1,13 +1,13 @@
-import {CriteriaCollection, WeightAssignmentCollection} from './criteria';
+import {CriteriaCollection, WeightAssignmentsCollection} from './criteria';
 
 class MCDA {
     _criteria = new CriteriaCollection();
-    _weightAssignments = new WeightAssignmentCollection();
+    _weightAssignments = new WeightAssignmentsCollection();
 
     static fromObject(obj) {
         const mcda = new MCDA();
         mcda.criteriaCollection = CriteriaCollection.fromArray(obj.criteria);
-        mcda.weightAssignmentsCollection = WeightAssignmentCollection.fromArray(obj.weightAssignments);
+        mcda.weightAssignmentsCollection = WeightAssignmentsCollection.fromArray(obj.weightAssignments);
         return mcda;
     }
 

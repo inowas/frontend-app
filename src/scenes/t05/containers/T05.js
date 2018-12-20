@@ -17,6 +17,7 @@ import getMenuItems from '../defaults/menuItems';
 
 import {MCDA} from 'core/mcda';
 import ContentToolBar from '../../shared/ContentToolbar';
+import {WeightAssignment, WeightAssignmentsCollection} from 'core/mcda/criteria';
 
 const navigation = [{
     name: 'Documentation',
@@ -73,7 +74,12 @@ class T05 extends React.Component {
         }
 
         if (name === 'weights') {
-            mcda.weightAssignmentsCollection = value;
+            if (value instanceof WeightAssignmentsCollection) {
+                mcda.weightAssignmentsCollection = value;
+            }
+            if (value instanceof WeightAssignment) {
+                mcda.weightAssignmentsCollection.update(value);
+            }
         }
 
         return this.setState({
@@ -121,11 +127,14 @@ class T05 extends React.Component {
         }
     });
 
-    routeTo = (type) => {
+    routeTo = (type = null) => {
         const {id, property} = this.props.match.params;
         const path = this.props.match.path;
         const basePath = path.split(':')[0];
-        this.props.history.push(basePath + id + '/' + property + '/' + type);
+        if (!!type) {
+            return this.props.history.push(basePath + id + '/' + property + '/' + type);
+        }
+        return this.props.history.push(basePath + id + '/' + property);
     };
 
     renderContent() {
@@ -140,7 +149,7 @@ class T05 extends React.Component {
             case 'criteria':
                 return (
                     <CriteriaEditor
-                        readOnly={readOnly}
+                        readOnly={readOnly || mcda.weightAssignmentsCollection.length > 0}
                         mcda={mcda}
                         handleChange={this.handleChange}
                     />)
@@ -172,6 +181,8 @@ class T05 extends React.Component {
         const mcda = MCDA.fromObject(this.state.tool.data.mcda);
         const {tool, isDirty, isLoading} = this.state;
 
+        const {type} = this.props.match.params;
+
         const {permissions} = tool;
         const readOnly = !includes(permissions, 'w');
 
@@ -194,7 +205,7 @@ class T05 extends React.Component {
                         </Grid.Column>
                         <Grid.Column width={12}>
                             <Segment color={'grey'} loading={isLoading}>
-                                <ContentToolBar isDirty={isDirty} save onSave={this.handleSave}/>
+                                <ContentToolBar backButton={!!type} onBack={this.routeTo} isDirty={isDirty} save onSave={this.handleSave}/>
                                 <Divider/>
                                 {this.renderContent()}
                             </Segment>

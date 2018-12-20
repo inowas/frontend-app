@@ -3,40 +3,26 @@ import PropTypes from 'prop-types';
 import {Grid, Message, Segment, Table} from 'semantic-ui-react';
 import DragAndDropList from '../shared/dragAndDropList';
 import {WeightAssignment} from 'core/mcda/criteria';
-
-const WAMETHOD = 'ranking';
+import {pure} from 'recompose';
+import AbstractCollection from 'core/AbstractCollection';
 
 class Ranking extends React.Component {
-    constructor(props) {
-        super();
-
-        this.state = {
-            wa: props.weightAssignment.toObject()
-        };
-    }
-
-    componentWillReceiveProps(nextProps) {
-        this.setState({
-            wa: nextProps.weightAssignment.toObject()
-        });
-    }
-
     handleChange = weights => {
-        const weightsCollection = this.props.mcda.weights;
-        weightsCollection.weights = weights;
-        weightsCollection.calculateWeights(WAMETHOD);
+        const weightAssignment = this.props.weightAssignment;
+        weightAssignment.weights = weights;
+        weightAssignment.calculateWeights();
 
         return this.props.handleChange({
             name: 'weights',
-            value: weightsCollection
+            value: weightAssignment
         });
     };
 
-    onDragEnd = (items) => {
+    handleChangeOrder = (items) => {
         const newWeights = [];
 
-        items.forEach(item => {
-            const weight = this.state.weights.filter(w => w.id === item.id)[0];
+        items.all.forEach(item => {
+            const weight = this.props.weightAssignment.weightsCollection.findById(item.id);
 
             if (weight) {
                 weight.rank = item.rank;
@@ -49,13 +35,13 @@ class Ranking extends React.Component {
 
     render() {
         const {readOnly} = this.props;
-        const {weights} = this.state.wa;
+        const weights = this.props.weightAssignment.weightsCollection.orderBy('rank');
 
-        const items = weights.map(weight => {
+        const items = weights.all.map(weight => {
             return {
                 id: weight.id,
                 data: weight.criterion.name,
-                rank: weight.rank + 1
+                rank: weight.rank
             };
         });
 
@@ -75,8 +61,8 @@ class Ranking extends React.Component {
                             Most Important
                         </Segment>
                         <DragAndDropList
-                            items={items}
-                            onDragEnd={this.onDragEnd}
+                            items={AbstractCollection.fromArray(items)}
+                            onChange={this.handleChangeOrder}
                             readOnly={readOnly}
                         />
                         <Segment textAlign='center' inverted color='grey' secondary>
@@ -95,7 +81,7 @@ class Ranking extends React.Component {
                                 </Table.Row>
                             </Table.Header>
                             <Table.Body>
-                                {weights.map((w, key) =>
+                                {weights.all.map((w, key) =>
                                     <Table.Row key={key}>
                                         <Table.Cell>{w.criterion.name}</Table.Cell>
                                         <Table.Cell
@@ -122,4 +108,4 @@ Ranking.propTypes = {
     routeTo: PropTypes.func
 };
 
-export default Ranking;
+export default pure(Ranking);
