@@ -1,4 +1,4 @@
-import Rainbow from 'rainbowvis.js';
+import Rainbow from '../../../../node_modules/rainbowvis.js/rainbowvis';
 import md5 from 'md5';
 
 export function isValue(data) {

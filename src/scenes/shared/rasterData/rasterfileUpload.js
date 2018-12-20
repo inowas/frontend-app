@@ -2,7 +2,8 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import {Button, Form, Grid, Input, Radio, Header, List, Segment} from 'semantic-ui-react';
 import RasterDataImage from './rasterDataImage';
-import {getGridSize} from './helpers';
+import GridSize from 'core/model/modflow/GridSize';
+import {fetchRasterfile, uploadRasterfile} from 'services/api';
 
 const styles = {
     input: {
@@ -13,15 +14,12 @@ const styles = {
 
 class RasterfileUpload extends React.Component {
     state = {
-        'selectedBand': 0,
-    };
-
-    handleRadioChange = (e, {value}) => {
-        this.setState(prevState => {
-            return {
-                ...prevState, selectedBand: value
-            };
-        });
+        hash: null,
+        metadata: null,
+        data: null,
+        selectedBand: 0,
+        errorFetching: false,
+        errorUploading: false,
     };
 
     handleSave = () => {
@@ -36,12 +34,11 @@ class RasterfileUpload extends React.Component {
     };
 
 
-    renderMetaData = (file) => {
-        if (!file) {
+    renderMetaData = () => {
+        const {hash, metadata} = this.state;
+        if (!hash || !metadata) {
             return null;
         }
-
-        const {hash, metadata} = file;
 
         return (
             <Segment color="blue">
@@ -84,21 +81,16 @@ class RasterfileUpload extends React.Component {
         );
     };
 
-    renderBands = (file) => {
-        if (!file) {
-            return null;
-        }
-
-        const {data} = file;
-
+    renderBands = () => {
+        const {data, selectedBand} = this.state;
         const bands = data.map((e, key) => (
             <Form.Field key={key}>
                 <Radio
                     label={'Band ' + key}
                     name="radioGroup"
                     value={key}
-                    checked={this.state.selectedBand === key}
-                    onChange={this.handleRadioChange}
+                    checked={selectedBand === key}
+                    onChange={(e, {value}) => this.setState({selectedBand: value})}
                 />
             </Form.Field>
         ));
@@ -111,24 +103,24 @@ class RasterfileUpload extends React.Component {
         );
     };
 
-    renderImage = (file) => {
-        if (!file) {
-            return null;
-        }
+    handleUploadFile = e => {
+        const files = e.target.files;
+        const file = files[0];
 
-        const {data} = file;
-
-        return (
-            <Segment color={'green'}>
-                <RasterDataImage data={data[this.state.selectedBand]} unit={this.props.unit}
-                                 gridSize={getGridSize(data[this.state.selectedBand])}/>
-            </Segment>
+        uploadRasterfile(file,
+            ({hash}) => {
+                this.setState({fetching: true, hash});
+                fetchRasterfile(
+                    {hash, width: this.props.gridSize.nX, height: this.props.gridSize.nY},
+                    ({data, metadata}) => this.setState({data, metadata}),
+                    (errorFetching) => this.setState({errorFetching}))
+            },
+            (errorUploading) => this.setState({errorUploading})
         );
     };
 
     render() {
-        const {uploadedFile} = this.props;
-
+        const {data, selectedBand} = this.state;
         return (
             <Grid divided={'vertically'}>
                 <Grid.Row columns={2}>
@@ -139,25 +131,31 @@ class RasterfileUpload extends React.Component {
                                 <List.Item>The rasterfile should have the same bounds as the model area.</List.Item>
                                 <List.Item>The gridsize will interpolated automatically.</List.Item>
                             </List>
-                            <Input style={styles.input} type="file" onChange={this.props.handleFileUpload}/>
+                            <Input style={styles.input} type="file" onChange={this.handleUploadFile}/>
                         </Segment>
                     </Grid.Column>
                     <Grid.Column>
-                        {this.renderMetaData(uploadedFile)}
+                        {this.renderMetaData()}
                     </Grid.Column>
                 </Grid.Row>
                 <Grid.Row columns={2}>
                     <Grid.Column>
-                        {this.renderBands(uploadedFile)}
+                        {data && this.renderBands()}
                     </Grid.Column>
                     <Grid.Column>
-                        {this.renderImage(uploadedFile)}
+                        {data && <Segment color={'green'}>
+                            <RasterDataImage
+                                data={data[selectedBand]}
+                                unit={this.props.parameter.unit}
+                                gridSize={this.props.gridSize}
+                            />
+                        </Segment>}
                     </Grid.Column>
                 </Grid.Row>
                 <Grid.Row columns={1}>
                     <Grid.Column>
                         <Button.Group>
-                            <Button onClick={this.handleSave} positive>Save</Button>
+                            <Button onClick={() => this.props.onChange(data[selectedBand])} positive>Save</Button>
                             <Button.Or/>
                             <Button onClick={this.props.onCancel}>Cancel</Button>
                         </Button.Group>
@@ -169,11 +167,10 @@ class RasterfileUpload extends React.Component {
 }
 
 RasterfileUpload.propTypes = {
-    handleFileUpload: PropTypes.func.isRequired,
+    gridSize: PropTypes.instanceOf(GridSize).isRequired,
     onCancel: PropTypes.func.isRequired,
-    onSave: PropTypes.func.isRequired,
-    unit: PropTypes.string.isRequired,
-    uploadedFile: PropTypes.object,
+    onChange: PropTypes.func.isRequired,
+    parameter: PropTypes.object.isRequired,
 };
 
 export default RasterfileUpload;

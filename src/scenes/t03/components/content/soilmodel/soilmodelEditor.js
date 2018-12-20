@@ -13,7 +13,7 @@ import LayersList from './layersList';
 import {addSoilmodelLayer, removeSoilmodelLayer, updateSoilmodel, updateSoilmodelLayer} from '../../../actions/actions';
 import Command from '../../../commands/modflowModelCommand';
 import ContentToolBar from '../../../../shared/ContentToolbar';
-import {sendCommand} from '../../../../../services/api';
+import {sendCommand} from 'services/api';
 
 const baseUrl = '/tools/T03';
 

@@ -99,7 +99,7 @@ class BoundingBox {
         [this._xMax, this._yMax]
     ]);
 
-    getBoundsLatLong = () => {
+    getBoundsLatLng = () => {
         return [
             [this.yMin, this.xMin],
             [this.yMax, this.xMax]

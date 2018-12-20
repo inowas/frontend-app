@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import {createGridData, min, max, rainbowFactory} from './helpers';
 import ColorLegend from './ColorLegend';
+import GridSize from 'core/model/modflow/GridSize';
 
 const styles = {
     canvas: {
@@ -16,8 +17,8 @@ class RasterDataImage extends React.Component {
         if (this.canvas) {
             const {data, gridSize} = this.props;
             const rainbowVis = rainbowFactory({min: min(data), max: max(data)});
-            const width = gridSize.n_x;
-            const height = gridSize.n_y;
+            const width = gridSize.nX;
+            const height = gridSize.nY;
             this.drawCanvas(data, width, height, rainbowVis);
         }
     }
@@ -60,8 +61,8 @@ class RasterDataImage extends React.Component {
         const {data, gridSize, unit} = this.props;
 
         const rainbowVis = rainbowFactory({min: min(data), max: max(data)});
-        const width = gridSize.n_x;
-        const height = gridSize.n_y;
+        const width = gridSize.nX;
+        const height = gridSize.nY;
 
         if (this.canvas) {
             this.drawCanvas(data, width, height, rainbowVis);
@@ -88,7 +89,7 @@ class RasterDataImage extends React.Component {
 
 RasterDataImage.propTypes = {
     data: PropTypes.oneOfType([PropTypes.array, PropTypes.number]).isRequired,
-    gridSize: PropTypes.object.isRequired,
+    gridSize: PropTypes.instanceOf(GridSize).isRequired,
     unit: PropTypes.string.isRequired
 };
 
