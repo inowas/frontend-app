@@ -4,8 +4,7 @@ import {GeoJSON, Map, FeatureGroup, Polygon} from 'react-leaflet';
 import {ModflowModel} from 'core/model/modflow';
 import {BasicTileLayer} from 'services/geoTools/tileLayers';
 
-import {disableMap, generateKey, getStyle} from './index';
-import {getBoundsLatLonFromGeoJSON} from 'services/geoTools/index';
+import {disableMap, getStyle} from './index';
 import {EditControl} from 'react-leaflet-draw';
 import {SoilmodelLayer, SoilmodelZone} from 'core/model/modflow/soilmodel';
 
@@ -50,7 +49,7 @@ class ZonesMap extends Component {
                 touchZoom={!readOnly}
                 doubleClickZoom={!readOnly}
                 scrollWheelZoom={!readOnly}
-                bounds={getBoundsLatLonFromGeoJSON(model.geometry.toGeoJSON())}
+                bounds={model.geometry.getBoundsLatLng()}
                 ref={map => {
                     this.map = map
                 }}
@@ -58,7 +57,7 @@ class ZonesMap extends Component {
             >
                 <BasicTileLayer/>
                 <GeoJSON
-                    key={generateKey(model.geometry.toGeoJSON())}
+                    key={model.geometry.hash()}
                     data={model.geometry.toGeoJSON()}
                     style={getStyle('area')}
                 />

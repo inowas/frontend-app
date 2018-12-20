@@ -1,17 +1,4 @@
-import md5 from 'md5';
 import {mapStyles} from './index';
-
-export const disableMap = (map) => {
-    if (map) {
-        map.leafletElement._handlers.forEach(function (handler) {
-            handler.disable();
-        });
-    }
-};
-
-export const generateKey = geometry => {
-    return md5(JSON.stringify(geometry));
-};
 
 export const getStyle = (type, subtype) => {
     if (!(type in mapStyles)) {
@@ -27,4 +14,19 @@ export const getStyle = (type, subtype) => {
     }
 
     return mapStyles[type][subtype];
+};
+
+
+export const disableMap = (map) => {
+    if (map) {
+        map.leafletElement._handlers.forEach(function (handler) {
+            handler.disable();
+        });
+    }
+};
+
+export const invalidateSize = (map) => {
+    if (map) {
+        map.leafletElement.invalidateSize();
+    }
 };

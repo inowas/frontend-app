@@ -4,8 +4,7 @@ import {GeoJSON, Map, FeatureGroup, CircleMarker, Rectangle} from 'react-leaflet
 import {ModflowModel} from 'core/model/modflow';
 import {BasicTileLayer} from 'services/geoTools/tileLayers';
 
-import {disableMap, generateKey, getStyle} from './index';
-import {getBoundsLatLonFromGeoJSON} from 'services/geoTools/index';
+import {disableMap, getStyle} from './index';
 import {EditControl} from 'react-leaflet-draw';
 import {AbstractPosition} from 'core/model/modflow/optimization';
 
@@ -24,10 +23,6 @@ class OptimizationMap extends React.Component {
         this.state = {
             isEditing: false
         };
-    }
-
-    componentDidMount() {
-        disableMap(this.map);
     }
 
     toggleEditingState = () => this.setState({
@@ -106,27 +101,27 @@ class OptimizationMap extends React.Component {
                 touchZoom={true}
                 doubleClickZoom={true}
                 scrollWheelZoom={true}
-                bounds={getBoundsLatLonFromGeoJSON(model.geometry.toGeoJSON())}
+                bounds={model.geometry.getBoundsLatLng()}
                 ref={map => {
-                    this.map = map
+                    disableMap(map);
                 }}
                 style={styles.map}
             >
                 <BasicTileLayer/>
                 <GeoJSON
-                    key={generateKey(model.geometry.toGeoJSON())}
+                    key={model.geometry.hash()}
                     data={model.geometry.toGeoJSON()}
                     style={getStyle('area')}
                 />
                 <FeatureGroup>
                     {!model.readOnly ?
-                    <EditControl
-                        position="bottomright"
-                        onEdited={this.props.onEditPath}
-                        {...options}
-                        onEditStart={this.toggleEditingState}
-                        onEditStop={this.toggleEditingState}
-                    /> : <div/>
+                        <EditControl
+                            position="bottomright"
+                            onEdited={this.props.onEditPath}
+                            {...options}
+                            onEditStart={this.toggleEditingState}
+                            onEditStop={this.toggleEditingState}
+                        /> : <div/>
                     }
                     {this.drawObject(this.props.location)}
                 </FeatureGroup>

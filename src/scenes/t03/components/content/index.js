@@ -4,7 +4,7 @@ import Discretization from './discretization/discretization';
 import Observations from './observations';
 import Optimization from './optimization/optimization.js';
 import Results from './results';
-import Run from './run';
+import Run from './run/run';
 import Transport from './transport/transport.js';
 import SoilmodelEditor from './soilmodel/soilmodelEditor';
 

@@ -8,8 +8,7 @@ import InputObjectList from './inputObjectList';
 import {EditControl} from 'react-leaflet-draw';
 import {getActiveCellFromCoordinate} from 'services/geoTools';
 import {ModflowModel} from 'core/model/modflow';
-import {getBoundsLatLonFromGeoJSON} from 'services/geoTools';
-import {generateKey, getStyle} from '../../../maps';
+import {getStyle} from '../../../maps';
 import {BasicTileLayer} from 'services/geoTools/tileLayers';
 import {AbstractPosition, OptimizationLocation, OptimizationObjectsCollection} from 'core/model/modflow/optimization';
 
@@ -236,7 +235,7 @@ class OptimizationMap extends React.Component {
                 touchZoom={this.state.showOverlay}
                 doubleClickZoom={this.state.showOverlay}
                 scrollWheelZoom={this.state.showOverlay}
-                bounds={getBoundsLatLonFromGeoJSON(model.geometry.toGeoJSON())}
+                bounds={model.geometry.getBoundsLatLng()}
                 ref={map => {
                     this.map = map
                 }}
@@ -244,7 +243,7 @@ class OptimizationMap extends React.Component {
             >
                 <BasicTileLayer/>
                 <GeoJSON
-                    key={generateKey(model.geometry.toGeoJSON())}
+                    key={model.geometry.hash()}
                     data={model.geometry.toGeoJSON()}
                     style={getStyle('area')}
                 />

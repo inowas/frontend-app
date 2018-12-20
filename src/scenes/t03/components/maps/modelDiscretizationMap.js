@@ -7,7 +7,6 @@ import md5 from 'md5';
 
 import ActiveCellsLayer from 'services/geoTools/activeCellsLayer';
 import {BasicTileLayer} from 'services/geoTools/tileLayers';
-import {Icon, Message} from 'semantic-ui-react';
 import ActiveCells from 'core/model/modflow/ActiveCells';
 import BoundingBox from 'core/model/modflow/BoundingBox';
 import Geometry from 'core/model/modflow/Geometry';
@@ -155,27 +154,6 @@ class ModelDiscretizationMap extends React.Component {
         )
     };
 
-    renderCalculationMessage = () => {
-        if (!this.state.calculating) {
-            return null;
-        }
-
-        return (
-            <Message key={Math.random()} icon style={{
-                zIndex: 1000000,
-                width: '50%',
-                marginLeft: '25%',
-                marginTop: '150px',
-            }}>
-                <Icon name='circle notched' loading/>
-                <Message.Content>
-                    <Message.Header>Just one second</Message.Header>
-                    We are calculating the active cells for you.
-                </Message.Content>
-            </Message>
-        )
-    };
-
     getBoundsLatLng = () => {
         if (this.state.boundingBox) {
             return BoundingBox.fromArray(this.state.boundingBox).getBoundsLatLng();
@@ -212,7 +190,6 @@ class ModelDiscretizationMap extends React.Component {
                 {this.editControl()}
                 {this.state.boundingBox && this.boundingBoxLayer()}
                 {this.state.activeCells && this.activeCellsLayer()}
-                {this.renderCalculationMessage()}
             </Map>
         )
     }
