@@ -1,9 +1,9 @@
 import RasterDataImage from './rasterDataImage';
 import RasterDataMap from './rasterDataMap';
-import RasterfileUpload from './rasterfileUpload';
+import RasterfileUploadModal from './rasterfileUploadModal';
 
 export {
     RasterDataImage,
     RasterDataMap,
-    RasterfileUpload,
+    RasterfileUploadModal,
 }

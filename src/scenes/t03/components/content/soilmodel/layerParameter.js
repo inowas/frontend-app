@@ -1,11 +1,11 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import {SoilmodelLayer, SoilmodelZone} from 'core/model/modflow/soilmodel';
-import {Accordion, Button, Form, Grid, Header, Icon, Modal, Segment} from 'semantic-ui-react';
+import {Accordion, Button, Form, Grid, Header, Icon, Segment} from 'semantic-ui-react';
 import {ModflowModel} from 'core/model/modflow';
 import ZoneModal from './zoneModal';
 import ZonesTable from './zonesTable';
-import {RasterDataMap, RasterfileUpload} from 'scenes/shared/rasterData';
+import {RasterDataMap, RasterfileUploadModal} from 'scenes/shared/rasterData';
 
 class LayerParameter extends React.Component {
     constructor(props) {
@@ -114,36 +114,11 @@ class LayerParameter extends React.Component {
 
     render() {
         const {model, readOnly} = this.props;
-        const {parameter, mode, selectedZone, showRasterUploadModal} = this.state;
+        const {parameter, selectedZone, showRasterUploadModal} = this.state;
         const layer = this.state.layer;
 
         return (
             <div>
-                <Form.Field>
-                    <label>Method of parameter definition</label>
-                    <Form.Select
-                        name="mode"
-                        value={mode}
-                        placeholder="mode ="
-                        options={[
-                            {
-                                key: 'zones',
-                                value: 'zones',
-                                text: 'Set default value and define zones'
-                            },
-                            {
-                                key: 'import',
-                                value: 'import',
-                                text: 'Import raster file'
-                            }
-                        ]}
-                    />
-                </Form.Field>
-                {mode === 'import' &&
-                <Segment>
-                    <div>Here was the RasterData-Element</div>
-                </Segment>}
-                {mode !== 'import' &&
                 <Segment>
                     <Header as="h4">{parameter.description}, {parameter.name} [{parameter.unit}]</Header>
                     <Grid divided>
@@ -212,7 +187,6 @@ class LayerParameter extends React.Component {
                         </Grid.Column>
                     </Grid>
                 </Segment>
-                }
                 <Segment>
                     <Form.Group>
                         <Button
@@ -242,17 +216,12 @@ class LayerParameter extends React.Component {
                     readOnly={readOnly}
                 />}
                 {showRasterUploadModal &&
-                <Modal size={'large'} open onClose={this.props.onCancel} dimmer={'inverted'}>
-                    <Modal.Header>Upload Rasterfile</Modal.Header>
-                    <Modal.Content>
-                        <RasterfileUpload
-                            gridSize={model.gridSize}
-                            parameter={parameter}
-                            onCancel={() => this.setState({showRasterUploadModal: false})}
-                            onChange={this.onUploadRaster}
-                        />
-                    </Modal.Content>
-                </Modal>
+                <RasterfileUploadModal
+                    gridSize={model.gridSize}
+                    parameter={parameter}
+                    onCancel={() => this.setState({showRasterUploadModal: false})}
+                    onChange={this.onUploadRaster}
+                />
                 }
 
             </div>

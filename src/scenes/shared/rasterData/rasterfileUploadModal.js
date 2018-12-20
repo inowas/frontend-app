@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types';
 import React from 'react';
-import {Button, Form, Grid, Input, Radio, Header, List, Segment} from 'semantic-ui-react';
+import {Button, Form, Grid, Input, Radio, Header, List, Segment, Modal} from 'semantic-ui-react';
 import RasterDataImage from './rasterDataImage';
 import GridSize from 'core/model/modflow/GridSize';
 import {fetchRasterfile, uploadRasterfile} from 'services/api';
@@ -12,7 +12,7 @@ const styles = {
     }
 };
 
-class RasterfileUpload extends React.Component {
+class RasterfileUploadModal extends React.Component {
     state = {
         hash: null,
         metadata: null,
@@ -122,55 +122,66 @@ class RasterfileUpload extends React.Component {
     render() {
         const {data, selectedBand} = this.state;
         return (
-            <Grid divided={'vertically'}>
-                <Grid.Row columns={2}>
-                    <Grid.Column>
-                        <Segment color={'green'}>
-                            <Header as="h3" style={{'textAlign': 'left'}}>Important</Header>
-                            <List bulleted>
-                                <List.Item>The rasterfile should have the same bounds as the model area.</List.Item>
-                                <List.Item>The gridsize will interpolated automatically.</List.Item>
-                            </List>
-                            <Input style={styles.input} type="file" onChange={this.handleUploadFile}/>
-                        </Segment>
-                    </Grid.Column>
-                    <Grid.Column>
-                        {this.renderMetaData()}
-                    </Grid.Column>
-                </Grid.Row>
-                <Grid.Row columns={2}>
-                    <Grid.Column>
-                        {data && this.renderBands()}
-                    </Grid.Column>
-                    <Grid.Column>
-                        {data && <Segment color={'green'}>
-                            <RasterDataImage
-                                data={data[selectedBand]}
-                                unit={this.props.parameter.unit}
-                                gridSize={this.props.gridSize}
-                            />
-                        </Segment>}
-                    </Grid.Column>
-                </Grid.Row>
-                <Grid.Row columns={1}>
-                    <Grid.Column>
-                        <Button.Group>
-                            <Button onClick={() => this.props.onChange(data[selectedBand])} positive>Save</Button>
-                            <Button.Or/>
-                            <Button onClick={this.props.onCancel}>Cancel</Button>
-                        </Button.Group>
-                    </Grid.Column>
-                </Grid.Row>
-            </Grid>
+            <Modal size={'large'} open onClose={this.props.onCancel} dimmer={'blurring'}>
+                <Modal.Header>Upload Rasterfile</Modal.Header>
+                <Modal.Content>
+                    <Grid divided={'vertically'}>
+                        <Grid.Row columns={2}>
+                            <Grid.Column>
+                                <Segment color={'green'}>
+                                    <Header as="h3" style={{'textAlign': 'left'}}>Important</Header>
+                                    <List bulleted>
+                                        <List.Item>The rasterfile should have the same bounds as the model
+                                            area.</List.Item>
+                                        <List.Item>The gridsize will interpolated automatically.</List.Item>
+                                    </List>
+                                    <Input style={styles.input} type="file" onChange={this.handleUploadFile}/>
+                                </Segment>
+                            </Grid.Column>
+                            <Grid.Column>
+                                {this.renderMetaData()}
+                            </Grid.Column>
+                        </Grid.Row>
+                        <Grid.Row columns={2}>
+                            <Grid.Column>
+                                {data && this.renderBands()}
+                            </Grid.Column>
+                            <Grid.Column>
+                                {data && <Segment color={'green'}>
+                                    <RasterDataImage
+                                        data={data[selectedBand]}
+                                        unit={this.props.parameter.unit}
+                                        gridSize={this.props.gridSize}
+                                    />
+                                </Segment>}
+                            </Grid.Column>
+                        </Grid.Row>
+                    </Grid>
+                </Modal.Content>
+                <Modal.Actions>
+                    <Button
+                        negative
+                        onClick={this.props.onCancel}
+                    >
+                        Cancel
+                    </Button>
+                    <Button
+                        positive
+                        onClick={() => this.props.onChange(data[selectedBand])}
+                    >
+                        Apply
+                    </Button>
+                </Modal.Actions>
+            </Modal>
         );
     }
 }
 
-RasterfileUpload.propTypes = {
+RasterfileUploadModal.propTypes = {
     gridSize: PropTypes.instanceOf(GridSize).isRequired,
     onCancel: PropTypes.func.isRequired,
     onChange: PropTypes.func.isRequired,
     parameter: PropTypes.object.isRequired,
 };
 
-export default RasterfileUpload;
+export default RasterfileUploadModal;
