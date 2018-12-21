@@ -14,12 +14,15 @@ class Files extends React.Component {
         isLoading: false,
         isError: false,
         selectedFile: 'mf.list',
+        fileList: [],
         file: ''
+
     };
 
     componentDidMount() {
-        this.fetchFile();
+        this.fetchFileList();
     }
+
 
     fetchFile = () => {
         const {model} = this.props;
@@ -43,6 +46,30 @@ class Files extends React.Component {
             fetchUrl(`calculations/${calculationId}/file/${extension}`,
                 (file) => this.setState({file, isLoading: false})
             ))
+    };
+
+    fetchFileList = () => {
+        const {model} = this.props;
+        if (!(model instanceof ModflowModel)) {
+            return;
+        }
+
+        const {calculation} = model;
+        if (!calculation) {
+            return;
+        }
+
+        const calculationId = calculation.id;
+        if (!calculationId || calculationId === '') {
+            return;
+        }
+
+        this.setState({isLoading: true}, () =>
+            fetchUrl(`calculations/${calculationId}/filelist`,
+                (fileList) => this.setState({fileList, isLoading: false}, () => this.fetchFile()),
+                (e) => this.setState({isError: e})
+            )
+        );
     };
 
     onClickFile = (file) => {
@@ -79,7 +106,7 @@ class Files extends React.Component {
                         </Segment>
                     </Grid.Column>
                     <Grid.Column width={12}>
-                        <Header as={'h3'}>Calculation logs</Header>
+                        <Header as={'h3'}>Content file: {this.state.selectedFile}</Header>
                         <Segment color={'grey'} loading={this.state.isLoading}>
                             <Terminal content={this.state.file}/>
                         </Segment>
