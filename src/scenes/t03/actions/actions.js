@@ -1,5 +1,5 @@
 import {UPDATE_BOUNDARIES} from '../reducers/boundaries';
-import {CLEAR, UPDATE_MODEL, UPDATE_MT3DMS, UPDATE_STRESSPERIODS} from '../reducers/model';
+import {CLEAR, UPDATE_CALCULATION, UPDATE_MODEL, UPDATE_MT3DMS, UPDATE_STRESSPERIODS} from '../reducers/model';
 import {
     ADD_SOILMODEL_LAYER,
     REMOVE_SOILMODEL_LAYER,
@@ -8,7 +8,7 @@ import {
 } from '../reducers/soilmodel';
 import {UPDATE_OPTIMIZATION} from '../reducers/optimization';
 
-import {ModflowModel, Stressperiods} from 'core/model/modflow';
+import {Calculation, ModflowModel, Stressperiods} from 'core/model/modflow';
 import {BoundaryCollection} from 'core/model/modflow/boundaries';
 import {Soilmodel, SoilmodelLayer} from 'core/model/modflow/soilmodel';
 import {Mt3dms} from 'core/model/modflow/mt3d';
@@ -50,6 +50,17 @@ export function updateBoundaries(boundaryCollection) {
     return {
         type: UPDATE_BOUNDARIES,
         boundaries: boundaryCollection.toObject()
+    };
+}
+
+export function updateCalculation(calculation) {
+    if (!(calculation instanceof Calculation)) {
+        throw new Error('Calculation is expected to be instance of Calculation');
+    }
+
+    return {
+        type: UPDATE_CALCULATION,
+        payload: calculation.toObject()
     };
 }
 

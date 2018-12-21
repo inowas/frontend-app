@@ -1,7 +1,8 @@
-import {ModflowModel, Stressperiods} from 'core/model/modflow';
+import {Calculation, ModflowModel, Stressperiods} from 'core/model/modflow';
 import {Mt3dms} from 'core/model/modflow/mt3d';
 
 export const CLEAR = 'T03_CLEAR';
+export const UPDATE_CALCULATION = 'T03_UPDATE_CALCULATION';
 export const UPDATE_MODEL = 'T03_UPDATE_MODEL';
 export const UPDATE_MT3DMS = 'T03_UPDATE_MT3DMS';
 export const UPDATE_STRESSPERIODS = 'T03_UPDATE_STRESSPERIODS';
@@ -30,6 +31,14 @@ const model = (state = null, action) => {
             model2.stressperiods = stressperiods;
             return {
                 ...state, ...model2.toObject()
+            };
+
+        case UPDATE_CALCULATION:
+            const model3 = ModflowModel.fromObject(state);
+            const calculation = Calculation.fromObject(action.payload);
+            model3.calculation = calculation;
+            return {
+                ...state, ...model3.toObject()
             };
 
 

@@ -10,7 +10,7 @@ export const CALCULATION_STATE_QUEUED = 4;
 export const CALCULATION_STATE_CALCULATING = 5;
 export const CALCULATION_STATE_FINISHED = 6;
 
-const CalculationStatus = ({calculation = {state: 0}}) => (
+const CalculationStatus = ({calculation}) => (
     <Progress value={calculation.state} total={6} success={calculation.state === 6}>
         {calculation.state === CALCULATION_STATE_NEW && ''}
         {calculation.state === CALCULATION_STATE_STARTED && 'Started...'}

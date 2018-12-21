@@ -14,7 +14,6 @@ class OptimizationParametersComponent extends React.Component {
     }
 
     componentWillReceiveProps(nextProps) {
-        console.log('NEXT PROPS');
         this.setState({
             optimizationInput: nextProps.optimizationInput.toObject(),
         });

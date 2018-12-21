@@ -11,10 +11,17 @@ import menuItems from '../defaults/menuItems';
 import * as Content from '../components/content/index';
 import ToolMetaData from '../../shared/simpleTools/ToolMetaData';
 import {fetchUrl} from 'services/api';
-import ModflowModel from 'core/model/modflow/ModflowModel';
-import {clear, updateBoundaries, updateModel, updateOptimization, updateSoilmodel} from '../actions/actions';
-import {BoundaryCollection, BoundaryFactory} from 'core/model/modflow/boundaries';
-import {Soilmodel} from 'core/model/modflow/soilmodel';
+
+import {
+    clear,
+    updateCalculation,
+    updateBoundaries,
+    updateModel,
+    updateOptimization,
+    updateSoilmodel
+} from '../actions/actions';
+
+import {BoundaryCollection, BoundaryFactory, Calculation, ModflowModel, Soilmodel} from 'core/model/modflow';
 
 const navigation = [{
     name: 'Documentation',
@@ -66,6 +73,7 @@ class T03 extends React.Component {
                 this.props.updateModel(ModflowModel.fromQuery(data));
                 this.setState({isLoading: false}, () => {
                     this.fetchBoundaries(id);
+                    this.fetchCalculation(id);
                     this.fetchSoilmodel(id);
                 });
             },
@@ -86,6 +94,16 @@ class T03 extends React.Component {
         );
     };
 
+    fetchCalculation(id) {
+        fetchUrl(`modflowmodels/${id}/calculation`,
+            data => this.props.updateCalculation(Calculation.fromQuery(data)),
+            error => this.setState(
+                {error, isLoading: false},
+                () => this.handleError(error)
+            )
+        );
+    };
+
     fetchSoilmodel(id) {
         fetchUrl(`modflowmodels/${id}/soilmodel`,
             data => this.props.updateSoilmodel(Soilmodel.fromObject(data)),
@@ -97,9 +115,9 @@ class T03 extends React.Component {
     };
 
     handleError = error => {
+        console.log(error);
         const {response} = error;
         const {status} = response;
-
         if (status === 422) {
             this.props.history.push('/tools');
         }
@@ -210,7 +228,7 @@ const mapStateToProps = state => ({
 });
 
 const mapDispatchToProps = {
-    clear, updateBoundaries, updateModel, updateOptimization, updateSoilmodel
+    clear, updateBoundaries, updateCalculation, updateModel, updateOptimization, updateSoilmodel
 };
 
 
@@ -222,6 +240,7 @@ T03.proptypes = {
     model: PropTypes.object.isRequired,
     clear: PropTypes.func.isRequired,
     updateModel: PropTypes.func.isRequired,
+    updateCalculation: PropTypes.func.isRequired,
     updateBoundaries: PropTypes.func.isRequired,
     updateOptimization: PropTypes.func.isRequired,
     updateSoilmodel: PropTypes.func.isRequired,

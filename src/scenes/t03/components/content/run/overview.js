@@ -45,7 +45,7 @@ class Overview extends React.Component {
                             </Button>}
 
                             <Header as={'h3'}>Progress</Header>
-                            <CalculationStatus calculation={model.calculation}/>
+                            {model.calculation && <CalculationStatus calculation={model.calculation}/>}
                         </Segment>
                     </Grid.Column>
                     <Grid.Column width={10}>
@@ -66,8 +66,7 @@ class Overview extends React.Component {
 
 const mapStateToProps = state => {
     return {
-        model: ModflowModel.fromObject(state.T03.model),
-        calculation: state.T03.calculation
+        model: ModflowModel.fromObject(state.T03.model)
     };
 };
 
