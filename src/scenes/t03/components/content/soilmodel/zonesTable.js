@@ -17,8 +17,8 @@ class ZonesTable extends React.Component {
         super(props);
 
         this.state = {
-            layer: props.layer.toObject(),
-        };
+            layer: props.layer.toObject()
+        }
     }
 
     componentWillReceiveProps(nextProps) {
@@ -37,7 +37,7 @@ class ZonesTable extends React.Component {
             zone[this.props.parameter] = value;
             layer.zonesCollection.update(zone);
             this.setState({
-                 layer: layer.toObject()
+                layer: layer.toObject()
             });
         }
     };
@@ -67,6 +67,8 @@ class ZonesTable extends React.Component {
         const layer = SoilmodelLayer.fromObject(this.state.layer);
         const zones = layer.zonesCollection.orderBy('priority', 'desc').all;
 
+        console.log('TABLE STATE', zones);
+
         return (
             <Table>
                 <Table.Header>
@@ -83,6 +85,21 @@ class ZonesTable extends React.Component {
                             <Table.Cell>{zone.name}</Table.Cell>
                             <Table.Cell>{zone.priority}</Table.Cell>
                             <Table.Cell>
+                                {zone.priority === 0 &&
+                                <div>
+                                    <input
+                                        onBlur={this.onChange}
+                                        onChange={this.onLocalChange(zone.id)}
+                                        style={styles.input}
+                                        type='number'
+                                        value={Array.isArray(zone[parameter]) ? '' : zone[parameter]}
+                                    />
+                                    {Array.isArray(zone[parameter]) &&
+                                    <span>RASTER</span>
+                                    }
+                                </div>
+                                }
+                                {zone.priority > 0 &&
                                 <input
                                     onBlur={this.onChange}
                                     onChange={this.onLocalChange(zone.id)}
@@ -90,8 +107,16 @@ class ZonesTable extends React.Component {
                                     type='number'
                                     value={zone[parameter] !== null ? zone[parameter] : ''}
                                 />
+                                }
                             </Table.Cell>
                             <Table.Cell>
+                                {zone.priority === 0 &&
+                                <Button.Group floated='right' size='small'>
+                                    <Button onClick={this.props.onClickUpload}>
+                                        Upload Raster
+                                    </Button>
+                                </Button.Group>
+                                }
                                 {!readOnly && zone.priority > 0 &&
                                 <Button.Group floated='right' size='small'>
                                     <Button
@@ -134,6 +159,7 @@ class ZonesTable extends React.Component {
 }
 
 ZonesTable.propTypes = {
+    onClickUpload: PropTypes.func.isRequired,
     onChange: PropTypes.func.isRequired,
     onEdit: PropTypes.func.isRequired,
     parameter: PropTypes.string.isRequired,

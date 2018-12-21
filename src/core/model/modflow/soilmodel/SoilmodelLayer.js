@@ -247,20 +247,32 @@ class SoilmodelLayer {
         // loop through all the zones
         zones.all.forEach(zone => {
             // loop through all the parameters ...
+
             parameters.forEach(parameter => {
                 // ... and check if the current zone has values for the parameter
-                if (zone[parameter]) {
+                const value = zone[parameter];
+
+                if (!!value) {
                     // apply array with default values to parameter, if zone with parameter exists
                     // x is number of columns, y number of rows (grid resolution of model)
                     if (!Array.isArray(this[parameter])) {
                         this[parameter] = new Array(gridSize.nY).fill(0).map(() => new Array(gridSize.nX).fill(this[parameter]));
                     }
 
-                    // update the values for the parameter in the cells given by the zone
-                    zone.activeCells.cells.forEach(cell => {
-                        //console.log(`set ${parameter} at ${cell[1]} ${cell[0]} with value ${zone[parameter]}`);
-                        this[parameter][cell[1]][cell[0]] = zone[parameter];
-                    });
+                    // check if zone is default zone and has a raster uploaded
+                    if (zone.priority === 0 && Array.isArray(value)) {
+                        console.log('VALUE', value);
+                        this[parameter] = value;
+                    }
+
+                    // ... if not:
+                    if (zone.priority > 0 || (zone.priority === 0 && !Array.isArray(value))) {
+                        // update the values for the parameter in the cells given by the zone
+                        zone.activeCells.cells.forEach(cell => {
+                            //console.log(`set ${parameter} at ${cell[1]} ${cell[0]} with value ${zone[parameter]}`);
+                            this[parameter][cell[1]][cell[0]] = value;
+                        });
+                    }
                 }
             });
         });
