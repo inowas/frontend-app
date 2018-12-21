@@ -1,10 +1,12 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import {MCDA} from 'core/mcda';
+import {pure} from 'recompose';
 import {Button, Grid, Icon, Menu, Message, Table} from 'semantic-ui-react';
 import {WeightAssignment} from 'core/mcda/criteria';
 import Ranking from './ranking';
-import {pure} from 'recompose';
+import MultiInfluence from './multiInfluence';
+import PairwiseComparison from './pairwise';
 
 class WeightAssignmentEditor extends React.Component {
     handleClickDelete = (id) => {
@@ -31,13 +33,32 @@ class WeightAssignmentEditor extends React.Component {
 
         if (selectedWeightAssignment) {
             switch (selectedWeightAssignment.method) {
+                case 'mif':
+                    return (
+                        <MultiInfluence
+                            criteriaCollection={this.props.mcda.criteriaCollection}
+                            weightAssignment={this.props.selectedWeightAssignment}
+                            handleChange={this.props.handleChange}
+                            readOnly={this.props.readOnly}
+                        />
+                    );
+
+                case 'pwc':
+                    return (
+                        <PairwiseComparison
+                            criteriaCollection={this.props.mcda.criteriaCollection}
+                            weightAssignment={this.props.selectedWeightAssignment}
+                            handleChange={this.props.handleChange}
+                            readOnly={this.props.readOnly}
+                        />
+                    );
+
                 default:
                     return (
                         <Ranking
                             weightAssignment={this.props.selectedWeightAssignment}
                             handleChange={this.props.handleChange}
                             readOnly={this.props.readOnly}
-                            routeTo={this.props.routeTo}
                         />
                     );
             }

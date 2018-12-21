@@ -194,9 +194,10 @@ class T05 extends React.Component {
                     <Grid.Row>
                         <Grid.Column width={4}/>
                         <Grid.Column width={12}>
-                            <ToolMetaData tool={tool} readOnly={readOnly} onChange={this.handleUpdateMetaData}
-                                          onSave={this.handleSave}
-                                          isDirty={isDirty}/>
+                            <ToolMetaData
+                                tool={tool} readOnly={readOnly} onChange={this.handleUpdateMetaData}
+                                onSave={this.handleSave}
+                                isDirty={isDirty}/>
                         </Grid.Column>
                     </Grid.Row>
                     <Grid.Row>
@@ -205,7 +206,8 @@ class T05 extends React.Component {
                         </Grid.Column>
                         <Grid.Column width={12}>
                             <Segment color={'grey'} loading={isLoading}>
-                                <ContentToolBar backButton={!!type} onBack={this.routeTo} isDirty={isDirty} save onSave={this.handleSave}/>
+                                <ContentToolBar backButton={!!type} onBack={this.routeTo} isDirty={isDirty} save
+                                                onSave={this.handleSave}/>
                                 <Divider/>
                                 {this.renderContent()}
                             </Segment>

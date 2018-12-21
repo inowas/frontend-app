@@ -1,12 +1,8 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import {Button, Grid, Message, Segment, Table} from 'semantic-ui-react';
-import {MCDA} from 'core/mcda';
-
 import Graph from 'vis-react';
-import {Weight} from 'core/mcda/criteria';
-
-const WAMETHOD = 'mif';
+import {CriteriaCollection, Weight, WeightAssignment} from 'core/mcda/criteria';
 
 const styles = {
     graph: {
@@ -29,10 +25,8 @@ class MultiInfluence extends React.Component {
     constructor(props) {
         super();
 
-        props.mcda.addWeightAssignmentMethod(WAMETHOD);
-
         this.state = {
-            edges: props.mcda.weights.allRelations(WAMETHOD).map(relation => {
+            edges: props.weightAssignment.weightsCollection.allRelations.map(relation => {
                 return {
                     id: relation.id,
                     from: relation.from,
@@ -40,7 +34,7 @@ class MultiInfluence extends React.Component {
                     dashes: relation.value === 0
                 }
             }),
-            nodes: props.mcda.criteria.all.map(criterion => {
+            nodes: props.criteriaCollection.all.map(criterion => {
                 return {
                     id: criterion.id,
                     label: criterion.name
@@ -48,14 +42,13 @@ class MultiInfluence extends React.Component {
             }),
             editEdgeMode: false,
             selectedEdges: null,
-            network: null,
-            weights: props.mcda.weights.findByMethod(WAMETHOD)
+            network: null
         };
     }
 
     componentWillReceiveProps(nextProps) {
         this.setState({
-            edges: nextProps.mcda.weights.allRelations(WAMETHOD).map(relation => {
+            edges: nextProps.weightAssignment.weightsCollection.allRelations.map(relation => {
                 return {
                     id: relation.id,
                     from: relation.from,
@@ -63,26 +56,14 @@ class MultiInfluence extends React.Component {
                     dashes: relation.value === 0
                 }
             }),
-            nodes: nextProps.mcda.criteria.all.map(criterion => {
+            nodes: nextProps.criteriaCollection.all.map(criterion => {
                 return {
                     id: criterion.id,
                     label: criterion.name
                 }
-            }),
-            weights: nextProps.mcda.weights.findByMethod(WAMETHOD)
+            })
         });
     }
-
-    handleChange = weights => {
-        const weightsCollection = this.props.mcda.weights;
-        weightsCollection.weights = weights;
-        weightsCollection.calculateWeights(WAMETHOD);
-
-        return this.props.handleChange({
-            name: 'weights',
-            value: weightsCollection
-        });
-    };
 
     addEdge = (data) => {
         const edges = this.state.edges;
@@ -131,11 +112,10 @@ class MultiInfluence extends React.Component {
     });
 
     onSaveEdges = () => {
-        const weights = this.props.mcda.weights.findByMethod(WAMETHOD).map(w => {
-            const weight = w.toObject;
+        const weights = this.props.weightAssignment.weightsCollection.toArray().map(weight => {
             return {
                 ...weight,
-                relations: this.state.edges.filter(edge => edge.from === weight.criteria.id).map(edge => {
+                relations: this.state.edges.filter(edge => edge.from === weight.criterion.id).map(edge => {
                     return {
                         id: edge.id,
                         to: edge.to,
@@ -144,16 +124,16 @@ class MultiInfluence extends React.Component {
                 })
             }
         });
-        const weightsCollection = this.props.mcda.weights;
+        const weightAssignment = this.props.weightAssignment;
 
         weights.forEach(w => {
-            weightsCollection.update(Weight.fromObject(w));
+            weightAssignment.weightsCollection.update(Weight.fromObject(w));
         });
-        weightsCollection.calculateWeights(WAMETHOD);
+        weightAssignment.calculateWeights();
 
         return this.props.handleChange({
             name: 'weights',
-            value: weightsCollection
+            value: weightAssignment
         });
     };
 
@@ -163,7 +143,7 @@ class MultiInfluence extends React.Component {
 
     render() {
         const {readOnly} = this.props;
-        const {weights} = this.state;
+        const weights = this.props.weightAssignment.weightsCollection;
 
         const graph = {
             nodes: this.state.nodes,
@@ -253,9 +233,9 @@ class MultiInfluence extends React.Component {
                                 </Table.Row>
                             </Table.Header>
                             <Table.Body>
-                                {weights.map((w, key) =>
+                                {weights.all.map((w, key) =>
                                     <Table.Row key={key}>
-                                        <Table.Cell>{w.criteria.name}</Table.Cell>
+                                        <Table.Cell>{w.criterion.name}</Table.Cell>
                                         <Table.Cell
                                             textAlign='center'>
                                             {(w.value * 100).toFixed(2)}
@@ -274,10 +254,10 @@ class MultiInfluence extends React.Component {
 }
 
 MultiInfluence.propTypes = {
-    mcda: PropTypes.instanceOf(MCDA).isRequired,
+    criteriaCollection: PropTypes.instanceOf(CriteriaCollection).isRequired,
+    weightAssignment: PropTypes.instanceOf(WeightAssignment).isRequired,
     handleChange: PropTypes.func.isRequired,
-    readOnly: PropTypes.bool,
-    routeTo: PropTypes.func
+    readOnly: PropTypes.bool
 };
 
 export default MultiInfluence;

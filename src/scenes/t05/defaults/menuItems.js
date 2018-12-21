@@ -6,11 +6,21 @@ const getMenuItems = (mcda) => {
         throw new Error('T05 ToolNavigation expects parameter of type MCDA.');
     }
 
+    const criteriaStatus = () => {
+        if (mcda.weightAssignmentsCollection.length > 0) {
+            return 'locked';
+        }
+        if (mcda.criteriaCollection.length > 0) {
+            return 'success';
+        }
+        return '';
+    };
+
     return [
         {
             name: 'Criteria',
             property: 'criteria',
-            status: mcda.criteriaCollection.all.length > 0 ? 'success' : ''
+            status: criteriaStatus()
         },
         {
             name: 'Weight Assignment',

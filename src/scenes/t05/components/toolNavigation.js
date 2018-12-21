@@ -24,6 +24,9 @@ class ToolNavigation extends React.Component {
                 route={basePath + id + '/' + i.property}
                 onClick={property !== i.property ? this.handleItemClick : null}
             >
+                {i.status === 'locked' &&
+                <Icon name='lock' color='green'/>
+                }
                 {i.status === 'success' &&
                 <Icon name='check circle' color='green'/>
                 }

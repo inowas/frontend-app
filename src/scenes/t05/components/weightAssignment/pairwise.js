@@ -1,65 +1,75 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import uuidv4 from 'uuid/v4';
 import {Grid, Message, Segment, Table} from 'semantic-ui-react';
-import {MCDA} from 'core/mcda';
 import Slider from 'rc-slider';
+import {CriteriaCollection, WeightAssignment, WeightsCollection} from 'core/mcda/criteria';
 
-const WAMETHOD = 'pwc';
+const styles = {
+    dot: {
+        border: '1px solid #e9e9e9',
+        borderRadius: 0,
+        marginLeft: 0,
+        width: '1px'
+    },
+    track: {
+        backgroundColor: '#e9e9e9'
+    }
+};
+
+const SliderWithTooltip = Slider.createSliderWithTooltip(Slider);
 
 class PairwiseComparison extends React.Component {
     constructor(props) {
         super();
-
-        props.mcda.addWeightAssignmentMethod(WAMETHOD);
-
-        console.log(props);
 
         this.state = {
             relations: this.prepareState(props)
         };
     }
 
-    componentWillReceiveProps(nextProps) {
-        this.setState = {
-            relations: this.prepareState(nextProps)
-        };
-    }
-
     prepareState = (props) => {
         let relations = [];
 
-        props.mcda.weights.findByMethod(WAMETHOD).forEach(weight =>
+        props.weightAssignment.weightsCollection.all.forEach(weight => {
             relations = relations.concat(
-                weight.relations.map((relation, key) => {
+                weight.relations.map((relation) => {
                     return {
-                        id: uuidv4(),
-                        from: weight.criteria,
-                        to: props.mcda.criteria.findById(relation.to),
+                        id: relation.id,
+                        from: weight.criterion,
+                        to: props.criteriaCollection.findById(relation.to),
                         value: relation.value
                     }
                 })
             )
-        );
+        });
 
         return relations;
     };
 
-    handleChange = weights => {
-        const weightsCollection = this.props.mcda.weights;
-        weightsCollection.weights = weights;
-        weightsCollection.calculateWeights(WAMETHOD);
+    handleAfterChange = id => value => {
+        const weights = this.props.weightAssignment.weightsCollection;
+        const newWeights = weights.all.map(weight => {
+            weight.relations = weight.relations.map(relation => {
+                if (relation.id === id) {
+                    relation.value = value;
+                }
+                return relation;
+            });
+            return weight;
+        });
 
-        return this.props.handleChange({
+        const weightAssignment = this.props.weightAssignment;
+        weightAssignment.weightsCollection = WeightsCollection.fromArray(newWeights);
+        weightAssignment.calculateWeights();
+
+        this.props.handleChange({
             name: 'weights',
-            value: weightsCollection
+            value: weightAssignment
         });
     };
 
     handleChangeSlider = id => value => {
-        console.log('CHANGE SLIDE', id, value);
-
-        return this.setState({
+        this.setState({
             relations: this.state.relations.map(r => {
                 if (r.id === id) {
                     r.value = value;
@@ -72,8 +82,6 @@ class PairwiseComparison extends React.Component {
     render() {
         const {readOnly} = this.props;
         const {relations} = this.state;
-
-        console.log('PAIRWISE STATE', this.state);
 
         return (
             <div>
@@ -97,11 +105,15 @@ class PairwiseComparison extends React.Component {
                                             {relation.from.name}
                                         </Grid.Column>
                                         <Grid.Column width={6}>
-                                            <Slider
+                                            <SliderWithTooltip
+                                                dots
+                                                dotStyle={styles.dot}
+                                                trackStyle={styles.track}
                                                 defaultValue={0}
                                                 disabled={readOnly}
                                                 min={-9}
                                                 max={9}
+                                                onAfterChange={this.handleAfterChange(relation.id)}
                                                 onChange={this.handleChangeSlider(relation.id)}
                                                 value={relation.value}
                                             />
@@ -126,9 +138,9 @@ class PairwiseComparison extends React.Component {
                                 </Table.Row>
                             </Table.Header>
                             <Table.Body>
-                                {this.props.mcda.weights.findByMethod(WAMETHOD).map((w, key) =>
+                                {this.props.weightAssignment.weightsCollection.all.map((w, key) =>
                                     <Table.Row key={key}>
-                                        <Table.Cell>{w.criteria.name}</Table.Cell>
+                                        <Table.Cell>{w.criterion.name}</Table.Cell>
                                         <Table.Cell
                                             textAlign='center'>
                                             {(w.value * 100).toFixed(2)}
@@ -147,10 +159,10 @@ class PairwiseComparison extends React.Component {
 }
 
 PairwiseComparison.propTypes = {
-    mcda: PropTypes.instanceOf(MCDA).isRequired,
+    criteriaCollection: PropTypes.instanceOf(CriteriaCollection).isRequired,
+    weightAssignment: PropTypes.instanceOf(WeightAssignment).isRequired,
     handleChange: PropTypes.func.isRequired,
-    readOnly: PropTypes.bool,
-    routeTo: PropTypes.func
+    readOnly: PropTypes.bool
 };
 
 export default PairwiseComparison;

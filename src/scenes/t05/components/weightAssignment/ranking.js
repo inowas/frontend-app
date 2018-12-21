@@ -104,8 +104,7 @@ class Ranking extends React.Component {
 Ranking.propTypes = {
     weightAssignment: PropTypes.instanceOf(WeightAssignment).isRequired,
     handleChange: PropTypes.func.isRequired,
-    readOnly: PropTypes.bool,
-    routeTo: PropTypes.func
+    readOnly: PropTypes.bool
 };
 
 export default pure(Ranking);
