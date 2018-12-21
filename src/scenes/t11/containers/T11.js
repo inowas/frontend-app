@@ -1,7 +1,8 @@
 import React from 'react';
 import Iframe from 'react-iframe';
-import AppContainer from "../../shared/AppContainer";
-import {Icon} from "semantic-ui-react";
+import {Icon} from 'semantic-ui-react';
+
+import {AppContainer} from '../../shared';
 
 const styles = {
     iframe: {

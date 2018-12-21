@@ -41,4 +41,25 @@ export default class GeneralHeadBoundary extends MultipleOPBoundary {
 
         return true;
     }
+
+    get geometryType() {
+        return 'LineString';
+    }
+
+    get valueProperties() {
+        return [
+            {
+                name: 'Head',
+                description:'Groundwater Head',
+                unit: 'm',
+                decimals: 2
+            },
+            {
+                name: 'Conductance',
+                description: 'Hydraulic conductance',
+                unit: 'm/day',
+                decimals: 2
+            }
+        ]
+    }
 }

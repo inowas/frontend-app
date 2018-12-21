@@ -1,0 +1,20 @@
+{
+  "type": "object",
+  "id": "https://inowas.com/schema/command/removeLayerPayloadSchema",
+  "additionalProperties": true,
+  "required": ["id", "layer"],
+  "properties": {
+    "id": {
+      "$ref": "#/definitions/uuidv4"
+    },
+    "layer_id": {
+      "$ref": "#/definitions/uuidv4"
+    }
+  },
+  "definitions": {
+    "uuidv4": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$"
+    }
+  }
+}

@@ -113,14 +113,12 @@
             },
             "objects": {
               "type": "array",
-              "minItems": 1,
               "items": {
                 "allOf": [{"$ref": "#/definitions/objectSimplex"}]
               }
             },
             "objectives": {
               "type": "array",
-              "minItems": 1,
               "items": {
                 "allOf": [{"$ref": "#/definitions/objective"}]
               }
@@ -404,7 +402,7 @@
         "objects": {
           "type": "array",
           "items": {
-            "allOf": [{"$ref": "#/definitions/uuidv4"}]
+            "allOf": [{"type": "object"}]
           }
         }
       }

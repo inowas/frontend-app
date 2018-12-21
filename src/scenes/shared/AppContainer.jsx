@@ -1,9 +1,9 @@
 import React, {Component} from 'react';
 import PropTypes from 'prop-types';
 
-import {Container, Dimmer, Loader, Segment} from "semantic-ui-react";
-import NavBar from "./Navbar";
-import Footer from "./Footer";
+import {Container, Dimmer, Loader, Segment} from 'semantic-ui-react';
+import NavBar from './Navbar';
+import Footer from './Footer';
 
 const styles = {
     wrapper: {
@@ -16,7 +16,7 @@ const styles = {
         width: '100%'
     },
     navbar: {
-        padding: '0 calc((100% - 1280px) / 2) 0 calc((100% - 1280px) / 2)'
+        margin: '0 auto'
     },
     footer: {
         marginTop: '20px',

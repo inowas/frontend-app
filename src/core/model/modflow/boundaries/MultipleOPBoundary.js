@@ -1,16 +1,32 @@
 import Boundary from './Boundary';
+import {cloneDeep} from 'lodash';
+import uuid from 'uuid';
 
 export default class MultipleOPBoundary extends Boundary {
 
     _observationPoints = [];
 
-    setDefaultStartValues(utcIsoStartDateTime) {
+    setDefaultStartValues(utcIsoStartDateTimes) {
+        if (!Array.isArray(utcIsoStartDateTimes)) {
+            utcIsoStartDateTimes = [utcIsoStartDateTimes];
+        }
+
+        const dateTimeValues = [];
+        utcIsoStartDateTimes.forEach(dt => {
+            dateTimeValues.push({date_time: dt, values: this.defaultValues})
+        });
+
         this.observationPoints = [{
             id: 'op1',
             name: 'OP1',
             geometry: {type: 'Point', coordinates: this.geometry.coordinates[0]},
-            date_time_values: [{date_time: new Date(utcIsoStartDateTime).toISOString(), values: this.defaultValues}],
+            date_time_values: dateTimeValues
         }];
+    }
+
+    setDefaultValues(utcIsoStartDateTime, observationPointId = null) {
+        const dateTimeValues = [{date_time: utcIsoStartDateTime, values: this.defaultValues}];
+        this.setDateTimeValues(dateTimeValues, observationPointId);
     }
 
     get observationPoints() {
@@ -21,13 +37,37 @@ export default class MultipleOPBoundary extends Boundary {
         this._observationPoints = observationPoints;
     }
 
+    cloneObservationPoint(opId, newOpId) {
+        if (!this.hasObservationPoint(opId)) {
+            throw new Error('ObservationPoint with id:' + opId + ' not found')
+        }
+
+        if (!newOpId) {
+            newOpId = uuid.v4();
+        }
+
+        if (this.hasObservationPoint(newOpId)) {
+            throw new Error('ObservationPoint with id:' + opId + ' already exists')
+        }
+
+        const observationPoint = this.getObservationPointById(opId);
+        const newObservationPoint = cloneDeep(observationPoint);
+        newObservationPoint.id = newOpId;
+        newObservationPoint.name = observationPoint.name + ' (Clone)';
+        this._observationPoints.push(newObservationPoint);
+    }
+
     getDateTimeValues(observationPointId = null) {
         if (observationPointId === null) {
             return this.observationPoints[0].date_time_values;
         }
 
-        const observationPoint = this.observationPoints.filter(op => op.id === observationPointId)[0];
-        return observationPoint.date_time_values;
+        const filteredOps = this.observationPoints.filter(op => op.id === observationPointId);
+        if (filteredOps.length > 0) {
+            return filteredOps[0].date_time_values;
+        }
+
+        return null;
     }
 
     setDateTimeValues(dateTimeValues, observationPointId = null) {
@@ -44,17 +84,39 @@ export default class MultipleOPBoundary extends Boundary {
         });
     }
 
-    getIndexedDateTimeValues(observationPointId = null) {
-        const dateTimeValues = this.getDateTimeValues(observationPointId);
-        return dateTimeValues.map((value, index) => {
-            return {...value, id: index};
-        });
-    }
-
     get toObject() {
         return {
             ...super.toObject,
             observation_points: this.observationPoints,
         };
+    }
+
+    hasObservationPoint(oId) {
+        return this.observationPoints.filter(op => op.id === oId).length > 0
+    }
+
+    getObservationPointById(oId) {
+        if (this.hasObservationPoint(oId)) {
+            return this.observationPoints.filter(op => op.id === oId)[0];
+        }
+
+        return null;
+    }
+
+    updateObservationPoint(observationPoint) {
+        this.observationPoints = this.observationPoints.map(op => {
+            if (op.id === observationPoint.id) {
+                return observationPoint;
+            }
+            return op;
+        });
+
+        return this;
+    }
+
+    removeObservationPoint(observationPointId) {
+        if (this.observationPoints.length > 1) {
+            this.observationPoints = this.observationPoints.filter(op => op.id !== observationPointId);
+        }
     }
 }

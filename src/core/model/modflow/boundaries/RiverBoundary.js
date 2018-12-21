@@ -42,4 +42,31 @@ export default class RiverBoundary extends MultipleOPBoundary {
 
         return true;
     }
+
+    get geometryType() {
+        return 'LineString';
+    }
+
+    get valueProperties() {
+        return [
+            {
+                name: 'Stage',
+                description:'River stage in m above sea level',
+                unit: 'm',
+                decimals: 1
+            },
+            {
+                name: 'Cond',
+                description: 'Riverbed conductance',
+                unit: 'm/day',
+                decimals: 1
+            },
+            {
+                name: 'Bottom',
+                description:'River bottom in m above sea level',
+                unit: 'm',
+                decimals: 1
+            }
+        ]
+    }
 }

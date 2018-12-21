@@ -12,8 +12,8 @@ import {
     XAxis,
     YAxis,
 } from 'recharts';
-import {Button, Grid, Header, Segment} from "semantic-ui-react";
-import {exportChartData, exportChartImage, getParameterValues} from "../../shared/simpleTools/helpers";
+import {Button, Grid, Segment} from 'semantic-ui-react';
+import {exportChartData, exportChartImage, getParameterValues} from '../../shared/simpleTools/helpers';
 
 const styles = {
     diagram: {
@@ -73,6 +73,7 @@ const calculateChartXMax = (variable, w, L, W, hi, Sy, K, t) => {
     for (let y = 0; y < 10000; y += 10) {
         const result = mounding.calculateHi(0, y, w, L, W, hi, Sy, K, t);
         if (result <= 0.01) {
+            // noinspection JSSuspiciousNameCombination
             return y;
         }
     }
@@ -103,6 +104,7 @@ const Chart = ({settings, parameters}) => {
     let xAxis = (
         <XAxis type="number" dataKey="y">
             <Label
+                fill={'#4C4C4C'}
                 value='y [m]'
                 offset={0}
                 position="bottom"
@@ -113,11 +115,13 @@ const Chart = ({settings, parameters}) => {
 
     if (variable === 'x') {
         xAxis = (
-            <XAxis type="number" dataKey="x">
+            <XAxis type="number" dataKey="x"  tick={{fill: '#B5B5B5', fontSize: 'small', transform: 'translate(0, 5)'}}>
                 <Label
+                    fill={'#4C4C4C'}
                     value='x [m]'
                     offset={0}
                     position="bottom"
+                    style={{fontSize: '13px'}}
                 />
             </XAxis>
         );
@@ -128,8 +132,7 @@ const Chart = ({settings, parameters}) => {
 
     return (
         <div>
-            <Header textAlign='center'>Calculation</Header>
-            <Grid padded>
+            <Grid>
                 <Grid.Column>
                     <ResponsiveContainer width={'100%'} aspect={1.5}>
                         <LineChart
@@ -138,15 +141,16 @@ const Chart = ({settings, parameters}) => {
                             ref={(chart) => currentChart = chart}
                         >
                             {xAxis}
-                            <YAxis type="number">
+                            <YAxis type="number" tickLine={false} tick={{fill: '#B5B5B5', fontSize: 'small', transform: 'translate(-3, 0)'}}>
                                 <Label
                                     angle={270}
+                                    fill={'#4C4C4C'}
                                     position='left'
-                                    style={{textAnchor: 'center'}}
+                                    style={{textAnchor: 'center', fontSize: '13px'}}
                                     value={'h-hi [m]'}
                                 />
                             </YAxis>
-                            <CartesianGrid strokeDasharray="3 3"/>
+                            <CartesianGrid strokeDasharray="3 3"  />
                             <Line
                                 isAnimationActive={false}
                                 type="basis"

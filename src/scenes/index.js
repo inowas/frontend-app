@@ -6,7 +6,7 @@ import Logout from './user/containers/Logout';
 import SignUp from './user/containers/SignUp';
 import {T01} from './t01/containers';
 import {T02} from './t02/containers';
-import {T03} from './t03/containers';
+import * as T03 from './t03/containers';
 import {T04} from './t04/containers';
 import {T05} from './t05/containers';
 import {T06} from './t06/containers';

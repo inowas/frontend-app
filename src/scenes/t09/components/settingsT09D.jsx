@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types';
 import React from 'react';
-import {pure} from "recompose";
-import {Form, Grid, Header, Radio} from "semantic-ui-react";
+import {pure} from 'recompose';
+import {Form, Grid, Header, Radio} from 'semantic-ui-react';
 
 const Settings = ({settings, onChange}) => {
 
@@ -15,7 +15,7 @@ const Settings = ({settings, onChange}) => {
                 <Header as='h2'>Settings</Header>
             </Grid.Row>
             <Grid.Row centered>
-                <Header as='h3'>Please choose the aquifer type:</Header>
+                <p>Please choose the aquifer type:</p>
             </Grid.Row>
             <Grid.Row centered>
                 <Form>

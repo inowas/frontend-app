@@ -1,46 +1,32 @@
-import OptimizationParameters from './Parameters';
-import OptimizationObject from './Object';
-import OptimizationObjective from './Objective';
-import OptimizationConstraint from './Constraint';
 import uuidv4 from 'uuid/v4';
+
+import OptimizationParameters from './Parameters';
+import OptimizationObjectsCollection from './ObjectsCollection';
+import OptimizationConstraintsCollection from './ConstraintsCollection';
+import OptimizationObjectivesCollection from './ObjectivesCollection';
 
 class OptimizationInput {
     _id = uuidv4();
-    _constraints = [];
-    _objectives = [];
-    _objects = [];
-    _parameters;
+    _constraints = new OptimizationConstraintsCollection();
+    _objectives = new OptimizationObjectivesCollection();
+    _objects = new OptimizationObjectsCollection();
+    _parameters = OptimizationParameters.fromDefaults();
 
     static fromDefaults() {
-        const input = new OptimizationInput();
-        input.id = uuidv4();
-        input.parameters = OptimizationParameters.fromDefaults();
-        input.constraints = [];
-        input.objectives = [];
-        input.objects = [];
-        return input;
+        return new OptimizationInput();
     }
 
     static fromObject(obj) {
         if (!obj) {
             return OptimizationInput.fromDefaults();
         }
+
         const input = new OptimizationInput();
         input.id = obj.id;
         input.parameters = OptimizationParameters.fromObject(obj.parameters);
-
-        obj.constraints.forEach((constraint) => {
-            input.addConstraint(OptimizationConstraint.fromObject(constraint));
-        });
-
-        obj.objectives.forEach((objective) => {
-            input.addObjective(OptimizationObjective.fromObject(objective));
-        });
-
-        obj.objects.forEach((object) => {
-            input.addObject(OptimizationObject.fromObject(object));
-        });
-
+        input.objectivesCollection = OptimizationObjectivesCollection.fromArray(obj.objectives);
+        input.constraintsCollection = OptimizationConstraintsCollection.fromArray(obj.constraints);
+        input.objectsCollection = OptimizationObjectsCollection.fromArray(obj.objects);
         return input;
     }
 
@@ -64,59 +50,41 @@ class OptimizationInput {
         this._parameters = value;
     }
 
-    get constraints() {
+    get constraintsCollection() {
         return this._constraints;
     }
 
-    set constraints(value) {
+    set constraintsCollection(value) {
         this._constraints = value;
     }
 
-    get objectives() {
+    get objectivesCollection() {
         return this._objectives;
     }
 
-    set objectives(value) {
+    set objectivesCollection(value) {
         this._objectives = value;
     }
 
-    get objects() {
+    get objectsCollection() {
         return this._objects;
     }
 
-    set objects(value) {
+    set objectsCollection(value) {
+        if (!(value instanceof OptimizationObjectsCollection)) {
+            throw new Error('Objects expected to be instance of OptimizationObjectsCollection');
+        }
         this._objects = value;
     }
 
-    get toObject() {
+    toObject() {
         return {
             'id': this.id,
-            'parameters': this.parameters.toObject,
-            'constraints': this.constraints.map(c => c.toObject),
-            'objectives': this.objectives.map(c => c.toObject),
-            'objects': this.objects.map(c => c.toObject)
+            'parameters': this.parameters.toObject(),
+            'constraints': this.constraintsCollection.toArray(),
+            'objectives': this.objectivesCollection.toArray(),
+            'objects': this.objectsCollection.toArray()
         };
-    }
-
-    addConstraint(constraint) {
-        if (!(constraint instanceof OptimizationConstraint)) {
-            throw new Error('The parameter constraint is not of type OptimizationConstraint.');
-        }
-        this._constraints.push(constraint);
-    }
-
-    addObjective(objective) {
-        if (!(objective instanceof OptimizationObjective)) {
-            throw new Error('The parameter objective is not of type OptimizationObjective.');
-        }
-        this._objectives.push(objective);
-    }
-
-    addObject(object) {
-        if (!(object instanceof OptimizationObject)) {
-            throw new Error('The parameter object is not of type OptimizationObject.');
-        }
-        this._objects.push(object);
     }
 }
 
