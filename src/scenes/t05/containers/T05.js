@@ -48,7 +48,10 @@ class T05 extends React.Component {
                     isDirty: false,
                     isLoading: false
                 }),
-                error => this.setState({error, isLoading: false})
+                error => {
+                    console.log('ERROR', error);
+                    this.setState({isError: true, isLoading: false})
+                }
             );
         } else {
             this.handleSave()
@@ -116,8 +119,13 @@ class T05 extends React.Component {
 
         sendCommand(
             Command.createToolInstance(this.buildPayload(tool)),
-            () => this.props.history.push(`${this.props.location.pathname}/${tool.id}`),
-            () => this.setState({error: true})
+            () => {
+                const path = this.props.match.path;
+                const basePath = path.split(':')[0];
+                this.setState({isLoading: false});
+                this.props.history.push(basePath + tool.id + '/criteria');
+            },
+            () => this.setState({isError: true})
         );
     };
 
@@ -178,6 +186,8 @@ class T05 extends React.Component {
     }
 
     render() {
+        console.log('PROPS', this.props);
+
         const mcda = MCDA.fromObject(this.state.tool.data.mcda);
         const {tool, isDirty, isLoading} = this.state;
 
@@ -197,6 +207,7 @@ class T05 extends React.Component {
                             <ToolMetaData
                                 tool={tool} readOnly={readOnly} onChange={this.handleUpdateMetaData}
                                 onSave={this.handleSave}
+                                saveButton={false}
                                 isDirty={isDirty}/>
                         </Grid.Column>
                     </Grid.Row>

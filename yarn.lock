@@ -9134,6 +9134,10 @@ raf@3.4.0, raf@^3.4.0:
   dependencies:
     performance-now "^2.1.0"
 
+"rainbowvis.js@https://github.com/inowas/RainbowVis-JS.git#master":
+  version "1.0.1"
+  resolved "https://github.com/inowas/RainbowVis-JS.git#714d8b3554202506e5680f5cff40dc7ef5952b6b"
+
 randomatic@^3.0.0:
   version "3.1.1"
   resolved "https://registry.yarnpkg.com/randomatic/-/randomatic-3.1.1.tgz#b776efc59375984e36c537b2f51a1f0aff0da1ed"
