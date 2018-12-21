@@ -8,11 +8,6 @@ import Terminal from '../../../../shared/complexTools/Terminal';
 
 class Log extends React.Component {
 
-    state = {
-        canBeCalculated: true,
-        canBeCanceled: false,
-    };
-
     render() {
         const {model} = this.props;
         const {calculation} = model;
