@@ -32,6 +32,13 @@ const availableTools = [
         role: ROLE_USER,
         instances: []
     }, {
+        slug: 'T05',
+        name: 'GIS multi-criteria decision analysis',
+        path: '/tools/',
+        subPath: '',
+        role: ROLE_USER,
+        instances: []
+    }, {
         slug: 'T06',
         name: 'MAR method selection',
         path: '/tools/',
