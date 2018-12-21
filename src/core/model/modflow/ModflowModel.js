@@ -1,6 +1,7 @@
 import {includes} from 'lodash';
 import {ActiveCells, BoundingBox, Geometry, GridSize, Stressperiods} from './index';
 import {Mt3dms} from './mt3d';
+import Calculation from './Calculation';
 
 export default class ModflowModel {
 
@@ -9,6 +10,7 @@ export default class ModflowModel {
     _description;
     _activeCells;
     _boundingBox;
+    _calculation;
     _geometry;
     _gridSize;
     _lengthUnit;
@@ -33,6 +35,7 @@ export default class ModflowModel {
         model.public = obj.public;
         model.stressperiods = (obj.stress_periods) ? Stressperiods.fromObject(obj.stress_periods) : Stressperiods.fromDefaults();
         model.timeUnit = obj.time_unit;
+        model.calculation = obj.calculation ? Calculation.fromObject(obj.calculation) : null;
         return model;
     }
 
@@ -94,6 +97,14 @@ export default class ModflowModel {
 
     set boundingBox(value) {
         this._boundingBox = value;
+    }
+
+    get calculation() {
+        return this._calculation;
+    }
+
+    set calculation(value) {
+        this._calculation = value;
     }
 
     get geometry() {
@@ -178,6 +189,7 @@ export default class ModflowModel {
         public: this.public,
         stress_periods: this.stressperiods.toObject(),
         time_unit: this.timeUnit,
+        calculation: (this.calculation instanceof Calculation) ? this.calculation.toObject() : null
     });
 
     toPayload = () => ({

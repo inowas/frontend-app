@@ -7,7 +7,6 @@ import md5 from 'md5';
 
 import ActiveCellsLayer from 'services/geoTools/activeCellsLayer';
 import {BasicTileLayer} from 'services/geoTools/tileLayers';
-import {Icon, Message} from 'semantic-ui-react';
 import ActiveCells from 'core/model/modflow/ActiveCells';
 import BoundingBox from 'core/model/modflow/BoundingBox';
 import Geometry from 'core/model/modflow/Geometry';
@@ -155,34 +154,9 @@ class ModelDiscretizationMap extends React.Component {
         )
     };
 
-    renderCalculationMessage = () => {
-        if (!this.state.calculating) {
-            return null;
-        }
-
-        return (
-            <Message key={Math.random()} icon style={{
-                zIndex: 1000000,
-                width: '50%',
-                marginLeft: '25%',
-                marginTop: '150px',
-            }}>
-                <Icon name='circle notched' loading/>
-                <Message.Content>
-                    <Message.Header>Just one second</Message.Header>
-                    We are calculating the active cells for you.
-                </Message.Content>
-            </Message>
-        )
-    };
-
-    getBoundsLatLong = () => {
+    getBoundsLatLng = () => {
         if (this.state.boundingBox) {
-            const boundingBox = BoundingBox.fromArray(this.state.boundingBox);
-            return [
-                [boundingBox.yMin, boundingBox.xMin],
-                [boundingBox.yMax, boundingBox.xMax]
-            ];
+            return BoundingBox.fromArray(this.state.boundingBox).getBoundsLatLng();
         }
 
         return [[60, 10], [45, 30]];
@@ -209,14 +183,13 @@ class ModelDiscretizationMap extends React.Component {
         return (
             <Map
                 style={style.map}
-                bounds={this.getBoundsLatLong()}
+                bounds={this.getBoundsLatLng()}
                 onClick={this.handleClickOnMap}
             >
                 <BasicTileLayer/>
                 {this.editControl()}
                 {this.state.boundingBox && this.boundingBoxLayer()}
                 {this.state.activeCells && this.activeCellsLayer()}
-                {this.renderCalculationMessage()}
             </Map>
         )
     }

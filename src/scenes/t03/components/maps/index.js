@@ -6,8 +6,7 @@ import BoundaryMap from './boundaryMap';
 import CreateBoundaryMap from './createBoundaryMap';
 import CreateModelMap from './createModelMap';
 import ModelDiscretizationMap from './modelDiscretizationMap';
-import {disableMap, generateKey, getStyle} from './helpers';
-import {getBoundsLatLonFromGeoJSON} from 'services/geoTools'
+import {disableMap, getStyle, invalidateSize} from './helpers';
 import mapStyles from './styles';
 
 export {
@@ -17,8 +16,7 @@ export {
     ModelDiscretizationMap,
     mapStyles,
     disableMap,
-    generateKey,
-    getBoundsLatLonFromGeoJSON,
+    invalidateSize,
     getStyle,
     md5
 }

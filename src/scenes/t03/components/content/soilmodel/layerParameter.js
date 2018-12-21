@@ -5,7 +5,7 @@ import {Accordion, Button, Form, Grid, Header, Icon, Segment} from 'semantic-ui-
 import {ModflowModel} from 'core/model/modflow';
 import ZoneModal from './zoneModal';
 import ZonesTable from './zonesTable';
-import {RasterData, RasterDataMap} from 'services/geoTools/components/rasterData';
+import {RasterDataMap, RasterfileUploadModal} from 'scenes/shared/rasterData';
 
 class LayerParameter extends React.Component {
     constructor(props) {
@@ -19,8 +19,8 @@ class LayerParameter extends React.Component {
                 cycles: 1,
                 distance: 1
             },
-            mode: 'zones',
-            parameter: props.parameter
+            parameter: props.parameter,
+            showRasterUploadModal: false
         };
     }
 
@@ -52,15 +52,9 @@ class LayerParameter extends React.Component {
         });
     };
 
-    onCancelModal = () => this.setState({selectedZone: null});
-
     onChange = layer => {
         layer.zonesToParameters(this.props.model.gridSize, this.state.parameter.name);
         return this.props.onChange(layer);
-    };
-
-    onUploadRaster = (e, value) => {
-        console.log('ON UPLOAD RASTER', value);
     };
 
     onChangeSmoothParams = (e, {name, value}) => {
@@ -110,54 +104,21 @@ class LayerParameter extends React.Component {
         });
     };
 
-    onSelectMode = (e, {name, value}) => {
-        this.setState({
-            mode: value
-        });
+    onUploadRaster = (data) => {
+        const {parameter} = this.state;
+        const layer = SoilmodelLayer.fromObject(this.state.layer);
+        layer[parameter.name] = data;
+        this.setState({showRasterUploadModal: false});
+        return this.props.onChange(layer);
     };
 
     render() {
         const {model, readOnly} = this.props;
-        const {parameter, mode, selectedZone} = this.state;
+        const {parameter, selectedZone, showRasterUploadModal} = this.state;
         const layer = this.state.layer;
 
         return (
             <div>
-                <Form.Field>
-                    <label>Method of parameter definition</label>
-                    <Form.Select
-                        name="mode"
-                        value={mode}
-                        placeholder="mode ="
-                        onChange={this.onSelectMode}
-                        options={[
-                            {
-                                key: 'zones',
-                                value: 'zones',
-                                text: 'Set default value and define zones'
-                            },
-                            {
-                                key: 'import',
-                                value: 'import',
-                                text: 'Import raster file'
-                            }
-                        ]}
-                        style={{zIndex: 1001}}
-                    />
-                </Form.Field>
-                {this.state.mode === 'import' &&
-                <Segment>
-                    <RasterData
-                        model={model}
-                        name={parameter.name}
-                        unit={parameter.unit}
-                        data={layer[parameter.name]}
-                        readOnly={readOnly}
-                        onChange={this.onUploadRaster}
-                    />
-                </Segment>
-                }
-                {mode !== 'import' &&
                 <Segment>
                     <Header as="h4">{parameter.description}, {parameter.name} [{parameter.unit}]</Header>
                     <Grid divided>
@@ -165,7 +126,7 @@ class LayerParameter extends React.Component {
                             <RasterDataMap
                                 data={layer[parameter.name]}
                                 model={model}
-                                unit={null}
+                                unit={parameter.unit}
                             />
                         </Grid.Column>
                         <Grid.Column width={8}>
@@ -220,11 +181,12 @@ class LayerParameter extends React.Component {
                                     </Button>
                                 </Accordion.Content>
                             </Accordion>
+                            <Button onClick={() => this.setState({showRasterUploadModal: true})}>
+                                Upload Raster
+                            </Button>
                         </Grid.Column>
                     </Grid>
                 </Segment>
-                }
-                {mode === 'zones' &&
                 <Segment>
                     <Form.Group>
                         <Button
@@ -243,18 +205,25 @@ class LayerParameter extends React.Component {
                         layer={SoilmodelLayer.fromObject(layer)}
                     />
                 </Segment>
-                }
                 {selectedZone &&
                 <ZoneModal
-                    onCancel={this.onCancelModal}
+                    onCancel={() => this.setState({selectedZone: null})}
                     onRemove={this.onRemoveZone}
                     onSave={this.onSaveModal}
                     zone={SoilmodelZone.fromObject(selectedZone)}
                     layer={SoilmodelLayer.fromObject(layer)}
                     model={model}
                     readOnly={readOnly}
+                />}
+                {showRasterUploadModal &&
+                <RasterfileUploadModal
+                    gridSize={model.gridSize}
+                    parameter={parameter}
+                    onCancel={() => this.setState({showRasterUploadModal: false})}
+                    onChange={this.onUploadRaster}
                 />
                 }
+
             </div>
         );
     }

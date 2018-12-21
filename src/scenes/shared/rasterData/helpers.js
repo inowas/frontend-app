@@ -1,5 +1,4 @@
-import Rainbow from 'rainbowvis.js';
-import md5 from 'md5';
+import Rainbow from '../../../../node_modules/rainbowvis.js/rainbowvis';
 
 export function isValue(data) {
     return !isNaN(data);
@@ -181,8 +180,4 @@ export const invalidateSize = (map) => {
     if (map) {
         map.leafletElement.invalidateSize();
     }
-};
-
-export const generateKey = geometry => {
-    return md5(JSON.stringify(geometry));
 };

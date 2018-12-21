@@ -42,6 +42,10 @@ class ModflowModelCommand extends AbstractCommand {
         );
     }
 
+    static calculateModflowModel(id) {
+        return new ModflowModelCommand('calculateModflowModel', {id});
+    }
+
     static cloneModflowModel({id, newId, isTool}) {
         return new ModflowModelCommand(
             'cloneModflowModel',

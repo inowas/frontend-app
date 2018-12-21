@@ -168,7 +168,7 @@ class BoundaryDiscretizationMap extends React.Component {
         return (
             <Map
                 style={style.map}
-                bounds={this.props.model.boundingBox.getBoundsLatLong()}
+                bounds={this.props.model.boundingBox.getBoundsLatLng()}
                 onClick={!this.props.readOnly && this.handleClickOnMap}
             >
                 <BasicTileLayer/>

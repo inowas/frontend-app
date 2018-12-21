@@ -5,8 +5,7 @@ import {EditControl} from 'react-leaflet-draw';
 
 import {BoundaryFactory, Geometry} from 'core/model/modflow';
 import {BasicTileLayer} from 'services/geoTools/tileLayers';
-
-import {getBoundsLatLonFromGeoJSON, getStyle} from './index';
+import {getStyle} from './index';
 
 const style = {
     map: {
@@ -80,7 +79,7 @@ class CreateBoundaryMap extends Component {
         return (
             <Map
                 style={style.map}
-                bounds={getBoundsLatLonFromGeoJSON(geometry.toGeoJSON())}
+                bounds={geometry.getBoundsLatLng()}
             >
                 <BasicTileLayer/>
                 {this.editControl()}

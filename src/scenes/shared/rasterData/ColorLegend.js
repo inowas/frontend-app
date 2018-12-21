@@ -125,7 +125,7 @@ class ColorLegend extends React.Component {
     };
 
     render() {
-        const {orientation, unit = 'm'} = this.props;
+        const {orientation, unit = ''} = this.props;
 
         if (!orientation || orientation === 'vertical') {
             return this.renderVerticalColorLegend(unit);

@@ -5,8 +5,8 @@ import {GeoJSON, Map, CircleMarker} from 'react-leaflet';
 import {Boundary, Geometry, MultipleOPBoundary} from 'core/model/modflow';
 import {BasicTileLayer} from 'services/geoTools/tileLayers';
 
-import {disableMap, generateKey, getStyle} from './index';
-import {getBoundsLatLonFromGeoJSON} from 'services/geoTools/index';
+import {disableMap, getStyle} from './index';
+
 
 
 const style = {
@@ -16,9 +16,6 @@ const style = {
 };
 
 class BoundaryMap extends Component {
-    componentDidMount() {
-        disableMap(this.map);
-    }
 
     renderObservationPoints(b) {
         if (!(b instanceof MultipleOPBoundary)) {
@@ -76,14 +73,14 @@ class BoundaryMap extends Component {
             <Map
                 style={style.map}
                 ref={map => {
-                    this.map = map
+                    disableMap(map)
                 }}
                 zoomControl={false}
-                bounds={getBoundsLatLonFromGeoJSON(geometry.toGeoJSON())}
+                bounds={geometry.getBoundsLatLng()}
             >
                 <BasicTileLayer/>
                 <GeoJSON
-                    key={generateKey(geometry.toGeoJSON())}
+                    key={geometry.hash()}
                     data={geometry.toGeoJSON()}
                     style={getStyle('area')}
                 />
