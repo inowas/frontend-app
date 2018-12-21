@@ -6,6 +6,8 @@ import {Button, Grid, Header, List, Segment} from 'semantic-ui-react';
 import RunModelOverviewMap from '../../maps/runModelOverviewMap';
 import {connect} from 'react-redux';
 import CalculationStatus from './CalculationStatus';
+import {sendCommand} from 'services/api';
+import ModflowModelCommand from '../../../commands/modflowModelCommand';
 
 class Overview extends React.Component {
 
@@ -13,6 +15,12 @@ class Overview extends React.Component {
         canBeCalculated: true,
         canBeCanceled: false,
     };
+
+    onStartCalculationClick = () => {
+        const {model} = this.props;
+        sendCommand(ModflowModelCommand.calculateModflowModel(model.id))
+    };
+
 
     render() {
         const {model} = this.props;
@@ -35,15 +43,10 @@ class Overview extends React.Component {
                         </Segment>
                         <Header as={'h3'}>Calculation</Header>
                         <Segment>
-                            {this.state.canBeCalculated && <Button positive fluid onClick={() => {}}>
+                            {this.state.canBeCalculated &&
+                            <Button positive fluid onClick={this.onStartCalculationClick}>
                                 Calculate
                             </Button>}
-
-                            {this.state.canBeCanceled && <Button negative fluid onClick={() => {
-                            }}>
-                                Cancel calculation
-                            </Button>}
-
                             <Header as={'h3'}>Progress</Header>
                             {model.calculation && <CalculationStatus calculation={model.calculation}/>}
                         </Segment>
