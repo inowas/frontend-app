@@ -250,27 +250,27 @@ class SoilmodelLayer {
 
             parameters.forEach(parameter => {
                 // ... and check if the current zone has values for the parameter
-                const value = zone[parameter];
 
-                if (!!value) {
+                if (!!zone[parameter]) {
                     // apply array with default values to parameter, if zone with parameter exists
                     // x is number of columns, y number of rows (grid resolution of model)
                     if (!Array.isArray(this[parameter])) {
-                        this[parameter] = new Array(gridSize.nY).fill(0).map(() => new Array(gridSize.nX).fill(this[parameter]));
+                        const paramValue = this[parameter];
+                        this[parameter] = new Array(gridSize.nY).fill(0).map(() => new Array(gridSize.nX).fill(paramValue)).slice(0);
                     }
 
                     // check if zone is default zone and has a raster uploaded
-                    if (zone.priority === 0 && Array.isArray(value)) {
-                        console.log('VALUE', value);
-                        this[parameter] = value;
+                    if (zone.priority === 0 && Array.isArray(zone[parameter])) {
+                        console.log('VALUE', zone[parameter]);
+                        this[parameter] = Array.from(zone[parameter]);
                     }
 
                     // ... if not:
-                    if (zone.priority > 0 || (zone.priority === 0 && !Array.isArray(value))) {
+                    if (zone.priority > 0 || (zone.priority === 0 && !Array.isArray(zone[parameter]))) {
                         // update the values for the parameter in the cells given by the zone
                         zone.activeCells.cells.forEach(cell => {
                             //console.log(`set ${parameter} at ${cell[1]} ${cell[0]} with value ${zone[parameter]}`);
-                            this[parameter][cell[1]][cell[0]] = value;
+                            this[parameter][cell[1]][cell[0]] = zone[parameter];
                         });
                     }
                 }

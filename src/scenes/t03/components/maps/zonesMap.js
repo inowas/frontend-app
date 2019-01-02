@@ -41,6 +41,8 @@ class ZonesMap extends Component {
             }
         };
 
+        const bgZones = zones.all.filter(z => z.id !== zone.id && z.priority !== 0);
+
         return (
             <Map
                 zoomControl={false}
@@ -61,9 +63,9 @@ class ZonesMap extends Component {
                     data={model.geometry.toGeoJSON()}
                     style={getStyle('area')}
                 />
-                {zones.all.filter(z => z.id !== zone.id).length > 0 ?
+                {bgZones.length > 0 ?
                     <FeatureGroup>
-                        {zones.all.filter(z => z.id !== zone.id).map(z => {
+                        {bgZones.map(z => {
                             return (
                                 <Polygon
                                     key={z.id}
@@ -73,7 +75,6 @@ class ZonesMap extends Component {
                                     weight={0.1}
                                 />
                             );
-                        })
                         })}
                     </FeatureGroup>
                     :
