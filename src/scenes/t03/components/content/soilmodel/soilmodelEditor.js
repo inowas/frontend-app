@@ -70,10 +70,10 @@ class SoilmodelEditor extends React.Component {
         const layer = new SoilmodelLayer();
         layer.number = lc.length > 0 ? lc.orderBy('number', 'desc').first.number + 1 : 1;
 
-        const defaultZone = SoilmodelZone.fromDefault();
-        defaultZone.geometry = this.props.model.geometry;
-        defaultZone.activeCells = this.props.model.activeCells;
-        layer.zonesCollection.add(defaultZone);
+        const base = SoilmodelZone.fromDefault();
+        base.geometry = this.props.model.geometry;
+        base.activeCells = this.props.model.activeCells;
+        layer.zonesCollection.add(base);
 
         this.setState({isLoading: true});
 

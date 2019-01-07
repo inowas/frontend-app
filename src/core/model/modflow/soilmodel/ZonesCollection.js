@@ -4,12 +4,14 @@ import Zone from './SoilmodelZone';
 class ZonesCollection extends AbstractCollection {
     static fromArray(array) {
         const zc = new ZonesCollection();
-        zc.items = array.map(zone => Zone.fromObject(zone));
+        zc.items = array.map(zone => {
+            return SoilmodelZone.fromObject(zone);
+        });
         return zc;
     }
 
     validateInput(zone) {
-        if (!zone instanceof Zone) {
+        if (!zone instanceof SoilmodelZone) {
             throw new Error('Zone expected to be from Type Zone.');
         }
         return zone;

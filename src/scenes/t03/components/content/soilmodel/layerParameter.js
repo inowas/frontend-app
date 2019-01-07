@@ -107,10 +107,15 @@ class LayerParameter extends React.Component {
     onUploadRaster = (data) => {
         const {parameter} = this.state;
         const layer = SoilmodelLayer.fromObject(this.state.layer);
-        layer[parameter.name] = data;
+        const base = layer.zonesCollection.findBy('priority', 0, true);
+        base[parameter.name] = Array.from(data);
+        layer.zonesCollection.update(base);
+        layer.zonesToParameters(this.props.model.gridSize, parameter.name);
         this.setState({showRasterUploadModal: false});
         return this.props.onChange(layer);
     };
+
+    onClickUpload = () => this.setState({showRasterUploadModal: true});
 
     render() {
         const {model, readOnly} = this.props;
@@ -181,9 +186,6 @@ class LayerParameter extends React.Component {
                                     </Button>
                                 </Accordion.Content>
                             </Accordion>
-                            <Button onClick={() => this.setState({showRasterUploadModal: true})}>
-                                Upload Raster
-                            </Button>
                         </Grid.Column>
                     </Grid>
                 </Segment>
@@ -198,6 +200,7 @@ class LayerParameter extends React.Component {
                         </Button>
                     </Form.Group>
                     <ZonesTable
+                        onClickUpload={this.onClickUpload}
                         onChange={this.onChange}
                         onEdit={this.onEditZone}
                         parameter={parameter.name}

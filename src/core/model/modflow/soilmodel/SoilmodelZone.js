@@ -16,6 +16,20 @@ class SoilmodelZone {
     _ss = null;
     _sy = null;
 
+    static fromDefault() {
+        const zone = new SoilmodelZone();
+        zone.name = 'Default';
+        zone.priority = 0;
+        zone.top = 1;
+        zone.botm = 0;
+        zone.hk = 10;
+        zone.hani = 1;
+        zone.vka = 1;
+        zone.ss = 0.00002;
+        zone.sy = 0.15;
+        return zone;
+    }
+
     static fromObject(obj) {
         const zone = new SoilmodelZone();
         if (obj) {
@@ -32,20 +46,6 @@ class SoilmodelZone {
             zone.ss = obj.ss;
             zone.sy = obj.sy;
         }
-        return zone;
-    }
-
-    static fromDefault() {
-        const zone = new SoilmodelZone();
-        zone.name = 'Default';
-        zone.priority = 0;
-        zone.top = 1;
-        zone.botm = 0;
-        zone.hk = 10;
-        zone.hani = 1;
-        zone.vka = 1;
-        zone.ss = 0.00002;
-        zone.sy = 0.15;
         return zone;
     }
 
@@ -94,7 +94,7 @@ class SoilmodelZone {
     }
 
     set top(value) {
-        this._top = value !== null && value !== '' ? parseFloat(value) : null;
+        this._top = this.parseValue(value);
     }
 
     get botm() {
@@ -102,7 +102,7 @@ class SoilmodelZone {
     }
 
     set botm(value) {
-        this._botm = value !== null  && value !== '' ? parseFloat(value) : null;
+        this._botm = this.parseValue(value);
     }
 
     get hk() {
@@ -110,7 +110,7 @@ class SoilmodelZone {
     }
 
     set hk(value) {
-        this._hk = value && value !== '' ? parseFloat(value) : null;
+        this._hk = this.parseValue(value);
     }
 
     get hani() {
@@ -118,7 +118,7 @@ class SoilmodelZone {
     }
 
     set hani(value) {
-        this._hani = value && value !== '' ? parseFloat(value) : null;
+        this._hani = this.parseValue(value);
     }
 
     get vka() {
@@ -126,7 +126,7 @@ class SoilmodelZone {
     }
 
     set vka(value) {
-        this._vka = value && value !== '' ? parseFloat(value) : null;
+        this._vka = this.parseValue(value);
     }
 
     get ss() {
@@ -134,7 +134,7 @@ class SoilmodelZone {
     }
 
     set ss(value) {
-        this._ss = value && value !== '' ? parseFloat(value) : null;
+        this._ss = this.parseValue(value);
     }
 
     get sy() {
@@ -142,7 +142,7 @@ class SoilmodelZone {
     }
 
     set sy(value) {
-        this._sy = value && value !== '' ? parseFloat(value) : null;
+        this._sy = this.parseValue(value);
     }
 
     toObject() {
@@ -160,6 +160,16 @@ class SoilmodelZone {
             'ss': this.ss,
             'sy': this.sy
         };
+    }
+
+    parseValue(value) {
+        if (this.priority === 0 && Array.isArray(value)) {
+            return value;
+        }
+        if (this.priority === 0) {
+            return value && value !== '' ? parseFloat(value) : 0;
+        }
+        return value && value !== '' ? parseFloat(value) : null;
     }
 }
 
