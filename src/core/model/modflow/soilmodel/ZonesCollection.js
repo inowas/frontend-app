@@ -1,5 +1,5 @@
 import AbstractCollection from '../../../AbstractCollection';
-import Zone from './SoilmodelZone';
+import SoilmodelZone from './SoilmodelZone';
 
 class ZonesCollection extends AbstractCollection {
     static fromArray(array) {
