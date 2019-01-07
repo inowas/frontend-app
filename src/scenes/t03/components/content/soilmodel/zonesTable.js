@@ -67,8 +67,6 @@ class ZonesTable extends React.Component {
         const layer = SoilmodelLayer.fromObject(this.state.layer);
         const zones = layer.zonesCollection.orderBy('priority', 'desc').all;
 
-        console.log('TABLE STATE', zones);
-
         return (
             <Table>
                 <Table.Header>

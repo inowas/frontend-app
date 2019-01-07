@@ -1,6 +1,7 @@
 import uuidv4 from 'uuid/v4';
 import {SoilmodelZone, ZonesCollection} from './index';
 import {GridSize} from '../index';
+import {cloneDeep} from 'lodash';
 
 class SoilmodelLayer {
     _id = uuidv4();
@@ -261,8 +262,7 @@ class SoilmodelLayer {
 
                     // check if zone is default zone and has a raster uploaded
                     if (zone.priority === 0 && Array.isArray(zone[parameter])) {
-                        console.log('VALUE', zone[parameter]);
-                        this[parameter] = Array.from(zone[parameter]);
+                        this[parameter] = cloneDeep(zone[parameter]);
                     }
 
                     // ... if not:
