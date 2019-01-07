@@ -1,4 +1,4 @@
-import {orderBy as _orderBy} from 'lodash';
+import {cloneDeep as _cloneDeep, orderBy as _orderBy} from 'lodash';
 
 class AbstractCollection {
 
@@ -59,8 +59,14 @@ class AbstractCollection {
         return this;
     }
 
+    sumBy(property) {
+        return this._items.reduce((sum, item) => {
+            return sum + item[property];
+        }, 0);
+    }
+
     toArray() {
-        return this.all.map(item => item.toObject());
+        return _cloneDeep(this.all.map(item => item.toObject()));
     }
 
     update(updatedItem, createIfNotExisting = true) {
