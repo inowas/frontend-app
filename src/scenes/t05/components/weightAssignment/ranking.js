@@ -2,14 +2,14 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import {Grid, Message, Segment, Table} from 'semantic-ui-react';
 import DragAndDropList from '../shared/dragAndDropList';
-import {WeightAssignment} from 'core/mcda/criteria';
+import {WeightAssignment, WeightsCollection} from 'core/mcda/criteria';
 import {pure} from 'recompose';
 import AbstractCollection from 'core/AbstractCollection';
 
 class Ranking extends React.Component {
     handleChange = weights => {
         const weightAssignment = this.props.weightAssignment;
-        weightAssignment.weights = weights;
+        weightAssignment.weightsCollection = WeightsCollection.fromArray(weights);
         weightAssignment.calculateWeights();
 
         return this.props.handleChange({
