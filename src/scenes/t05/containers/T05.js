@@ -186,8 +186,6 @@ class T05 extends React.Component {
     }
 
     render() {
-        console.log('PROPS', this.props);
-
         const mcda = MCDA.fromObject(this.state.tool.data.mcda);
         const {tool, isDirty, isLoading} = this.state;
 

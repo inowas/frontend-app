@@ -1,5 +1,5 @@
 import OptimizationObject from './Object';
-import AbstractCollection from '../../AbstractCollection';
+import AbstractCollection from '../../../AbstractCollection';
 
 class OptimizationObjectsCollection extends AbstractCollection {
     static fromArray(array) {

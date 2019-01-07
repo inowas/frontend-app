@@ -7,6 +7,7 @@ import {WeightAssignment} from 'core/mcda/criteria';
 import Ranking from './ranking';
 import MultiInfluence from './multiInfluence';
 import PairwiseComparison from './pairwise';
+import SimpleWeightAssignment from './spl';
 
 class WeightAssignmentEditor extends React.Component {
     handleClickDelete = (id) => {
@@ -33,6 +34,14 @@ class WeightAssignmentEditor extends React.Component {
 
         if (selectedWeightAssignment) {
             switch (selectedWeightAssignment.method) {
+                case 'spl':
+                    return (
+                        <SimpleWeightAssignment
+                            weightAssignment={this.props.selectedWeightAssignment}
+                            handleChange={this.props.handleChange}
+                            readOnly={this.props.readOnly}
+                        />
+                    );
                 case 'mif':
                     return (
                         <MultiInfluence
