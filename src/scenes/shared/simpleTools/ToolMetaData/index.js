@@ -76,7 +76,7 @@ class ToolMetaData extends React.Component {
                     </Grid.Column>
                 </Grid>
 
-                <Modal size={'mini'} open={edit} onClose={this.handleButtonClick}>
+                <Modal size={'mini'} open={edit} onClose={this.handleButtonClick} dimmer={'blurring'}>
                     <Grid padded>
                         <Grid.Row>
                             <Grid.Column width={16}>

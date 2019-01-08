@@ -1,6 +1,6 @@
 import React from 'react';
 import {connect} from 'react-redux';
-import {withRouter} from 'react-router-dom';
+import {Redirect, withRouter} from 'react-router-dom';
 
 import PropTypes from 'prop-types';
 
@@ -11,10 +11,17 @@ import menuItems from '../defaults/menuItems';
 import * as Content from '../components/content/index';
 import ToolMetaData from '../../shared/simpleTools/ToolMetaData';
 import {fetchUrl} from 'services/api';
-import ModflowModel from 'core/model/modflow/ModflowModel';
-import {updateBoundaries, updateModel, updateSoilmodel} from '../actions/actions';
-import {BoundaryCollection} from 'core/model/modflow/boundaries';
-import {Soilmodel} from 'core/model/modflow/soilmodel';
+
+import {
+    clear,
+    updateCalculation,
+    updateBoundaries,
+    updateModel,
+    updateOptimization,
+    updateSoilmodel
+} from '../actions/actions';
+
+import {BoundaryCollection, BoundaryFactory, Calculation, ModflowModel, Soilmodel} from 'core/model/modflow';
 
 const navigation = [{
     name: 'Documentation',
@@ -35,6 +42,7 @@ class T03 extends React.Component {
 
     componentDidMount() {
         const {id} = this.props.match.params;
+
         return this.setState({isLoading: true},
             () => this.fetchModel(id)
         )
@@ -55,18 +63,19 @@ class T03 extends React.Component {
         })
     }
 
-    componentDidUpdate() {
-
-    }
-
     fetchModel(id) {
+        if (this.props.model && this.props.model.id !== id) {
+            this.props.clear();
+        }
         fetchUrl(
             `modflowmodels/${id}`,
             data => {
                 this.props.updateModel(ModflowModel.fromQuery(data));
-                this.setState({isLoading: false});
-                this.fetchBoundaries(id);
-                this.fetchSoilmodel(id);
+                this.setState({isLoading: false}, () => {
+                    this.fetchBoundaries(id);
+                    this.fetchCalculation(id);
+                    this.fetchSoilmodel(id);
+                });
             },
             error => this.setState(
                 {error, isLoading: false},
@@ -85,6 +94,16 @@ class T03 extends React.Component {
         );
     };
 
+    fetchCalculation(id) {
+        fetchUrl(`modflowmodels/${id}/calculation`,
+            data => this.props.updateCalculation(Calculation.fromQuery(data)),
+            error => this.setState(
+                {error, isLoading: false},
+                () => this.handleError(error)
+            )
+        );
+    };
+
     fetchSoilmodel(id) {
         fetchUrl(`modflowmodels/${id}/soilmodel`,
             data => this.props.updateSoilmodel(Soilmodel.fromObject(data)),
@@ -96,9 +115,9 @@ class T03 extends React.Component {
     };
 
     handleError = error => {
+        console.log(error);
         const {response} = error;
         const {status} = response;
-
         if (status === 422) {
             this.props.history.push('/tools');
         }
@@ -125,16 +144,21 @@ class T03 extends React.Component {
 
     };
 
-    renderContent(id, property) {
+    renderContent(id, property, type) {
         switch (property) {
             case 'discretization':
                 return (<Content.Discretization/>);
             case 'soilmodel':
-                return (<Content.Soilmodel/>);
+                return (<Content.SoilmodelEditor/>);
             case 'boundaries':
+                if (BoundaryFactory.availableTypes.indexOf(type) > -1) {
+                    return (<Content.CreateBoundary/>);
+                }
                 return (<Content.Boundaries/>);
             case 'observations':
                 return (<Content.Observations/>);
+            case 'transport':
+                return (<Content.Transport/>);
             case 'run':
                 return (<Content.Run/>);
             case 'results':
@@ -145,9 +169,7 @@ class T03 extends React.Component {
                 const path = this.props.match.path;
                 const basePath = path.split(':')[0];
                 return (
-                    this.props.history.push(
-                        basePath + id + '/discretization'
-                    )
+                    <Redirect to={basePath + id + '/discretization'}/>
                 );
         }
     }
@@ -178,7 +200,7 @@ class T03 extends React.Component {
             )
         }
 
-        const {id, property} = this.props.match.params;
+        const {id, property, type} = this.props.match.params;
         return (
             <AppContainer navbarItems={navigation}>
                 <Grid padded>
@@ -193,7 +215,7 @@ class T03 extends React.Component {
                             <ToolNavigation navigationItems={menuItems}/>
                         </Grid.Column>
                         <Grid.Column width={13}>
-                            {this.renderContent(id, property)}
+                            {this.renderContent(id, property, type)}
                         </Grid.Column>
                     </Grid.Row>
                 </Grid>
@@ -208,7 +230,7 @@ const mapStateToProps = state => ({
 });
 
 const mapDispatchToProps = {
-    updateBoundaries, updateModel, updateSoilmodel
+    clear, updateBoundaries, updateCalculation, updateModel, updateOptimization, updateSoilmodel
 };
 
 
@@ -218,8 +240,11 @@ T03.proptypes = {
     match: PropTypes.object.isRequired,
     boundaries: PropTypes.array.isRequired,
     model: PropTypes.object.isRequired,
+    clear: PropTypes.func.isRequired,
     updateModel: PropTypes.func.isRequired,
+    updateCalculation: PropTypes.func.isRequired,
     updateBoundaries: PropTypes.func.isRequired,
+    updateOptimization: PropTypes.func.isRequired,
     updateSoilmodel: PropTypes.func.isRequired,
 };
 

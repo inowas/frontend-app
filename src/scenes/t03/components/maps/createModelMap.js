@@ -167,13 +167,9 @@ class CreateModelMap extends React.Component {
         )
     };
 
-    getBoundsLatLong = () => {
+    getBoundsLatLng = () => {
         if (this.state.boundingBox) {
-            const boundingBox = BoundingBox.fromArray(this.state.boundingBox);
-            return [
-                [boundingBox.yMin, boundingBox.xMin],
-                [boundingBox.yMax, boundingBox.xMax]
-            ];
+            return BoundingBox.fromArray(this.state.boundingBox).getBoundsLatLng();
         }
 
         return [[60, 10], [45, 30]];
@@ -199,7 +195,7 @@ class CreateModelMap extends React.Component {
         return (
             <Map
                 style={style.map}
-                bounds={this.getBoundsLatLong()}
+                bounds={this.getBoundsLatLng()}
                 onClick={this.handleClickOnMap}
             >
                 <BasicTileLayer/>

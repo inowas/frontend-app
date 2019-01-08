@@ -1,8 +1,8 @@
 import {Boundary, BoundaryFactory} from './index';
+import {sortBy} from 'lodash';
+import AbstractCollection from '../../../AbstractCollection';
 
-class BoundaryCollection {
-
-    _boundaries = [];
+class BoundaryCollection extends AbstractCollection {
 
     static fromQuery(query) {
         if (!Array.isArray(query)) {
@@ -25,37 +25,27 @@ class BoundaryCollection {
     }
 
     addBoundary(boundary) {
-        if (!boundary instanceof Boundary) {
-            throw new Error('Boundary expected to be from Type Boundary.');
-        }
-
-        this._boundaries.push(boundary);
+        return this.add(boundary);
     }
 
-    findById(id) {
-        const boundary = this.boundaries.filter(b => b.id === id)[0];
+    removeById(boundaryId) {
+        return this.remove(boundaryId);
+    }
+
+    validateInput(boundary) {
         if (!boundary instanceof Boundary) {
             return null;
         }
-
         return boundary;
     }
 
     get boundaries() {
-        return this._boundaries;
+        return sortBy(this._items, [(b) => b.name.toUpperCase()]);
     }
 
     toObject = () => {
         return this.boundaries.map(b => b.toObject)
     };
-
-    get length() {
-        return this._boundaries.length;
-    };
-
-    get first() {
-        return this._boundaries[0];
-    }
 }
 
 export default BoundaryCollection;

@@ -19,8 +19,10 @@
         "moment": "^2.22.2",
         "papaparse": "^4.6.1",
         "prop-types": "^15.6.2",
+        "rainbowvis.js": "https://github.com/inowas/RainbowVis-JS.git#master",
         "rc-slider": "^8.6.3",
         "react": "^16.6.0",
+        "react-beautiful-dnd": "^10.0.2",
         "react-dom": "^16.6.0",
         "react-iframe": "^1.3.3",
         "react-leaflet": "^2.1.1",
@@ -38,7 +40,8 @@
         "redux-thunk": "^2.3.0",
         "reproject": "^1.2.2",
         "semantic-ui-react": "^0.83.0",
-        "uuid": "^3.3.2"
+        "uuid": "^3.3.2",
+        "vis-react": "^0.4.3"
     },
     "devDependencies": {
         "babel-eslint": "9.0.0",

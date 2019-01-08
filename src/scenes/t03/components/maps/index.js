@@ -1,18 +1,22 @@
 import 'leaflet/dist/leaflet.css';
 import 'leaflet-draw/dist/leaflet.draw.css';
 
+import md5 from 'md5';
 import BoundaryMap from './boundaryMap';
+import CreateBoundaryMap from './createBoundaryMap';
 import CreateModelMap from './createModelMap';
-import SpatialDiscretizationMap from './spatialDiscretizationMap';
-import {disableMap, generateKey, getStyle} from './helpers';
+import ModelDiscretizationMap from './modelDiscretizationMap';
+import {disableMap, getStyle, invalidateSize} from './helpers';
 import mapStyles from './styles';
 
 export {
     BoundaryMap,
+    CreateBoundaryMap,
     CreateModelMap,
-    SpatialDiscretizationMap,
+    ModelDiscretizationMap,
     mapStyles,
     disableMap,
-    generateKey,
-    getStyle
+    invalidateSize,
+    getStyle,
+    md5
 }

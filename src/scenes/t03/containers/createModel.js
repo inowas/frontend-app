@@ -9,6 +9,7 @@ import ModflowModelCommand from '../commands/modflowModelCommand';
 import defaults from '../defaults/createModel';
 import moment from 'moment/moment';
 import AppContainer from '../../shared/AppContainer';
+import {SoilmodelLayer} from 'core/model/modflow/soilmodel';
 
 const navigation = [{
     name: 'Documentation',
@@ -60,7 +61,9 @@ class CreateModel extends React.Component {
                         id: this.state.id,
                         stress_periods: Stressperiods.fromObject(this.state.stressperiods).toObject()
                     }),
-                    () => this.props.history.push('T03/' + this.state.id),
+                    () => sendCommand(ModflowModelCommand.addSoilmodelLayer(this.state.id, SoilmodelLayer.fromDefault()),
+                        () => this.props.history.push('T03/' + this.state.id),
+                        (e) => this.setState({error: e})),
                     (e) => this.setState({error: e})),
                 (e) => this.setState({error: e})),
             (e) => this.setState({error: e})

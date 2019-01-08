@@ -1,10 +1,12 @@
 import uuidv4 from 'uuid/v4';
+import Geometry from '../Geometry';
+import ActiveCells from '../ActiveCells';
 
 class SoilmodelZone {
     _id = uuidv4();
     _name = 'New Zone';
-    _geometry = {};
-    _activeCells = [];
+    _geometry = null;
+    _activeCells = null;
     _priority = 0;
     _top = null;
     _botm = null;
@@ -14,13 +16,27 @@ class SoilmodelZone {
     _ss = null;
     _sy = null;
 
+    static fromDefault() {
+        const zone = new SoilmodelZone();
+        zone.name = 'Default';
+        zone.priority = 0;
+        zone.top = 1;
+        zone.botm = 0;
+        zone.hk = 10;
+        zone.hani = 1;
+        zone.vka = 1;
+        zone.ss = 0.00002;
+        zone.sy = 0.15;
+        return zone;
+    }
+
     static fromObject(obj) {
         const zone = new SoilmodelZone();
         if (obj) {
             zone.id = obj.id;
             zone.name = obj.name;
-            zone.geometry = obj.geometry;
-            zone.activeCells = obj.activeCells;
+            zone.geometry = obj.geometry ? Geometry.fromObject(obj.geometry) : null;
+            zone.activeCells = obj.activeCells ? ActiveCells.fromArray(obj.activeCells) : null;
             zone.priority = obj.priority;
             zone.top = obj.top;
             zone.botm = obj.botm;
@@ -30,19 +46,6 @@ class SoilmodelZone {
             zone.ss = obj.ss;
             zone.sy = obj.sy;
         }
-        return zone;
-    }
-
-    static fromDefault() {
-        const zone = new SoilmodelZone();
-        zone.name = 'Default';
-        zone.top = 1;
-        zone.botm = 0;
-        zone.hk = 10;
-        zone.hani = 1;
-        zone.vka = 1;
-        zone.ss = 0.00002;
-        zone.sy = 0.15;
         return zone;
     }
 
@@ -67,7 +70,7 @@ class SoilmodelZone {
     }
 
     set geometry(value) {
-        this._geometry = value ? value : {};
+        this._geometry = value ? value : null;
     }
 
     get activeCells() {
@@ -91,7 +94,7 @@ class SoilmodelZone {
     }
 
     set top(value) {
-        this._top = value && value !== '' ? parseFloat(value) : null;
+        this._top = this.parseValue(value);
     }
 
     get botm() {
@@ -99,7 +102,7 @@ class SoilmodelZone {
     }
 
     set botm(value) {
-        this._botm = value && value !== '' ? parseFloat(value) : null;
+        this._botm = this.parseValue(value);
     }
 
     get hk() {
@@ -107,7 +110,7 @@ class SoilmodelZone {
     }
 
     set hk(value) {
-        this._hk = value && value !== '' ? parseFloat(value) : null;
+        this._hk = this.parseValue(value);
     }
 
     get hani() {
@@ -115,7 +118,7 @@ class SoilmodelZone {
     }
 
     set hani(value) {
-        this._hani = value && value !== '' ? parseFloat(value) : null;
+        this._hani = this.parseValue(value);
     }
 
     get vka() {
@@ -123,7 +126,7 @@ class SoilmodelZone {
     }
 
     set vka(value) {
-        this._vka = value && value !== '' ? parseFloat(value) : null;
+        this._vka = this.parseValue(value);
     }
 
     get ss() {
@@ -131,7 +134,7 @@ class SoilmodelZone {
     }
 
     set ss(value) {
-        this._ss = value && value !== '' ? parseFloat(value) : null;
+        this._ss = this.parseValue(value);
     }
 
     get sy() {
@@ -139,15 +142,15 @@ class SoilmodelZone {
     }
 
     set sy(value) {
-        this._sy = value && value !== '' ? parseFloat(value) : null;
+        this._sy = this.parseValue(value);
     }
 
-    get toObject() {
+    toObject() {
         return {
             'id': this.id,
             'name': this.name,
-            'geometry': this.geometry,
-            'activeCells': this.activeCells,
+            'geometry': this.geometry ? this.geometry.toObject() : null,
+            'activeCells': this.activeCells ? this.activeCells.toArray() : [],
             'priority': this.priority,
             'top': this.top,
             'botm': this.botm,
@@ -157,6 +160,16 @@ class SoilmodelZone {
             'ss': this.ss,
             'sy': this.sy
         };
+    }
+
+    parseValue(value) {
+        if (this.priority === 0 && Array.isArray(value)) {
+            return value;
+        }
+        if (this.priority === 0) {
+            return value && value !== '' ? parseFloat(value) : 0;
+        }
+        return value && value !== '' ? parseFloat(value) : null;
     }
 }
 

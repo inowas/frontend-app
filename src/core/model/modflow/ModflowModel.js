@@ -1,5 +1,7 @@
 import {includes} from 'lodash';
 import {ActiveCells, BoundingBox, Geometry, GridSize, Stressperiods} from './index';
+import {Mt3dms} from './mt3d';
+import Calculation from './Calculation';
 
 export default class ModflowModel {
 
@@ -8,9 +10,11 @@ export default class ModflowModel {
     _description;
     _activeCells;
     _boundingBox;
+    _calculation;
     _geometry;
     _gridSize;
     _lengthUnit;
+    _mt3dms;
     _permissions;
     _public;
     _stressperiods;
@@ -26,10 +30,12 @@ export default class ModflowModel {
         model.boundingBox = BoundingBox.fromArray(obj.bounding_box);
         model.activeCells = ActiveCells.fromArray(obj.active_cells);
         model.lengthUnit = obj.length_unit;
+        model.mt3dms = obj.mt3dms ? Mt3dms.fromObject(obj.mt3dms) : Mt3dms.fromDefaults();
         model.permissions = obj.permissions;
         model.public = obj.public;
         model.stressperiods = (obj.stress_periods) ? Stressperiods.fromObject(obj.stress_periods) : Stressperiods.fromDefaults();
         model.timeUnit = obj.time_unit;
+        model.calculation = obj.calculation ? Calculation.fromObject(obj.calculation) : null;
         return model;
     }
 
@@ -38,14 +44,14 @@ export default class ModflowModel {
         model._id = id;
         model._name = name;
         model._description = description;
-        model._activeCells = (activeCells instanceof ActiveCells) ? activeCells.toArray() : activeCells;
-        model._boundingBox = (boundingBox instanceof BoundingBox) ? boundingBox.toArray() : boundingBox;
         model._geometry = (geometry instanceof Geometry) ? geometry.toObject() : geometry;
+        model._boundingBox = (boundingBox instanceof BoundingBox) ? boundingBox.toArray() : boundingBox;
         model._gridSize = (gridSize instanceof GridSize) ? gridSize.toObject() : gridSize;
+        model._activeCells = (activeCells instanceof ActiveCells) ? activeCells.toArray() : activeCells;
         model._lengthUnit = lengthUnit;
         model._timeUnit = timeUnit;
-        model._public = isPublic;
         model._stressperiods = (stressperiods instanceof Stressperiods) ? stressperiods.toObject() : stressperiods;
+        model._public = isPublic;
         return model;
     }
 
@@ -93,6 +99,14 @@ export default class ModflowModel {
         this._boundingBox = value;
     }
 
+    get calculation() {
+        return this._calculation;
+    }
+
+    set calculation(value) {
+        this._calculation = value;
+    }
+
     get geometry() {
         return this._geometry;
     }
@@ -115,6 +129,14 @@ export default class ModflowModel {
 
     set lengthUnit(value) {
         this._lengthUnit = value;
+    }
+
+    get mt3dms() {
+        return this._mt3dms;
+    }
+
+    set mt3dms(value) {
+        this._mt3dms = value;
     }
 
     get permissions() {
@@ -162,10 +184,12 @@ export default class ModflowModel {
         geometry: this.geometry.toObject(),
         grid_size: this.gridSize.toObject(),
         length_unit: this.lengthUnit,
+        mt3dms: this.mt3dms.toObject(),
         permissions: this.permissions,
         public: this.public,
         stress_periods: this.stressperiods.toObject(),
         time_unit: this.timeUnit,
+        calculation: (this.calculation instanceof Calculation) ? this.calculation.toObject() : null
     });
 
     toPayload = () => ({
@@ -177,6 +201,7 @@ export default class ModflowModel {
         geometry: this._geometry,
         grid_size: this._gridSize,
         length_unit: this._lengthUnit,
+        mt3dms: this._mt3dms,
         permissions: this._permissions,
         public: this._public,
         stress_periods: this._stressperiods,

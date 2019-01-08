@@ -1,4 +1,4 @@
-import Location from './Location';
+import OptimizationLocation from './Location';
 import uuidv4 from 'uuid/v4';
 
 class OptimizationObjective {
@@ -11,9 +11,9 @@ class OptimizationObjective {
     _weight = -1;
     _penaltyValue = 999;
     _target = null;
-    _location = new Location();
-    _location1 = new Location();
-    _location2 = new Location();
+    _location = new OptimizationLocation();
+    _location1 = new OptimizationLocation();
+    _location2 = new OptimizationLocation();
 
     static fromObject(obj) {
         const objective = new OptimizationObjective();
@@ -107,7 +107,7 @@ class OptimizationObjective {
     }
 
     set location(value) {
-        this._location = value ? Location.fromObject(value) : new Location();
+        this._location = value ? OptimizationLocation.fromObject(value) : new OptimizationLocation();
     }
 
     get location1() {
@@ -115,7 +115,7 @@ class OptimizationObjective {
     }
 
     set location1(value) {
-        this._location1 = value ? Location.fromObject(value) : null;
+        this._location1 = value ? OptimizationLocation.fromObject(value) : null;
     }
 
     get location2() {
@@ -123,10 +123,10 @@ class OptimizationObjective {
     }
 
     set location2(value) {
-        this._location2 = value ? Location.fromObject(value) : null;
+        this._location2 = value ? OptimizationLocation.fromObject(value) : null;
     }
 
-    get toObject() {
+    toObject() {
         return ({
             'id': this.id,
             'name': this.name,
@@ -136,9 +136,9 @@ class OptimizationObjective {
             'weight': this.weight,
             'penalty_value': this.penaltyValue,
             'target': this.target,
-            'location': this.location.toObject,
-            'location_1': this.location1 ? this.location1.toObject : {},
-            'location_2': this.location2 ? this.location2.toObject : {}
+            'location': this.location.toObject(),
+            'location_1': this.location1 ? this.location1.toObject() : {},
+            'location_2': this.location2 ? this.location2.toObject() : {}
         });
     }
 }

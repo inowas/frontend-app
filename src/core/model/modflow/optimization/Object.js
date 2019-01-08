@@ -190,12 +190,12 @@ class OptimizationObject {
         return boundary;
     }
 
-    get toObject() {
+    toObject() {
         return ({
             'id': this.id,
             'name': this.name,
             'type': this.type,
-            'position': this.position.toObject,
+            'position': this.position.toObject(),
             'flux': this.flux,
             'concentration': this.concentration,
             'substances': this.substances,

@@ -1,19 +1,16 @@
-import OptimizationSolution from './Solution';
 import OptimizationProgress from './Progress';
+import OptimizationSolutionsCollection from './SolutionsCollection';
 
 class OptimizationMethod {
     _name = '';
-    _solutions = [];
+    _solutions = new OptimizationSolutionsCollection();
     _progress = null;
 
     static fromObject(obj) {
         const method = new OptimizationMethod();
         method.name = obj.name;
         method.progress = obj.progress ? OptimizationProgress.fromObject(obj.progress) : null;
-
-        obj.solutions && obj.solutions.forEach((solution) => {
-            method.addSolution(OptimizationSolution.fromObject(solution));
-        });
+        method.solutions = obj.solutions ? OptimizationSolutionsCollection.fromArray(obj.solutions) : new OptimizationSolutionsCollection();
 
         return method;
     }
@@ -31,7 +28,7 @@ class OptimizationMethod {
     }
 
     set solutions(value) {
-        this._solutions = value ? value : [];
+        this._solutions = value;
     }
 
     get progress() {
@@ -42,20 +39,12 @@ class OptimizationMethod {
         this._progress = value ? value : null;
     }
 
-    get toObject() {
+    toObject() {
         return {
             'name': this.name,
-            'progress': this.progress ? this.progress.toObject : null,
-            'solutions': this.solutions.map(s => s.toObject)
+            'progress': this.progress ? this.progress.toObject() : null,
+            'solutions': this.solutions.toArray()
         };
-    }
-
-    addSolution(solution) {
-        if (!(solution instanceof OptimizationSolution)) {
-            throw new Error('The solution object is not of type OptimizationSolution.');
-        }
-        this._solutions.push(solution);
-        return this;
     }
 }
 

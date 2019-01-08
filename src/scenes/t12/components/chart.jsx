@@ -4,7 +4,7 @@ import {
     calcMFI,
     calculateDiagramData,
     calculateMFIcor1,
-    calculateMFIcor2,
+    calculateMFIcor2, calculateR2,
     calculateVC
 } from '../calculations/calculationT12';
 
@@ -48,6 +48,7 @@ const Chart = ({mfi, parameters, corrections}) => {
     const {P, Af, T, D} = getParameterValues(corrections);
     const {MFI, a} = calcMFI(mfi);
     const diagramData = calculateDiagramData(mfi, MFI, a);
+    const rSquared = calculateR2(diagramData);
 
     const MFIcor1 = calculateMFIcor1(T, MFI, P, Af);
     const MFIcor2 = calculateMFIcor2(MFIcor1, D, K);
@@ -87,9 +88,9 @@ const Chart = ({mfi, parameters, corrections}) => {
                                 isAnimationActive={false}
                                 type="basis"
                                 dataKey={'tV'}
-                                stroke="#4C4C4C"
+                                stroke="none"
+                                dot={{stroke: 'black'}}
                                 strokeWidth="5"
-                                dot={true}
                                 legendType="none"
                             />
                             <Line
@@ -102,10 +103,12 @@ const Chart = ({mfi, parameters, corrections}) => {
                         </LineChart>
                     </ResponsiveContainer>
 
+                    {rSquared >= 0.90 &&
                     <Segment raised style={styles.diagramLabel}>
                         <p>MFi&nbsp;=&nbsp;<strong>{MFI.toFixed(2)}</strong>&nbsp;s/l<sup>2</sup></p>
                         <p>V<sub>c</sub>&nbsp;=&nbsp;<strong>{vc.toFixed(2)}</strong>&nbsp;m/year</p>
                     </Segment>
+                    }
 
                     <div style={styles.downloadButtons}>
                         <Button

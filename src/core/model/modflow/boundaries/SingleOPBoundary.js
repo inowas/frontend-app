@@ -4,10 +4,20 @@ export default class SingleOPBoundary extends Boundary {
 
     _dateTimeValues = [];
 
-    setDefaultStartValues(utcIsoStartDateTime) {
-        this._dateTimeValues = [
-            {date_time: utcIsoStartDateTime, values: this.defaultValues}
-        ];
+    setDefaultStartValues(utcIsoStartDateTimes) {
+        if (!Array.isArray(utcIsoStartDateTimes)) {
+            utcIsoStartDateTimes = [utcIsoStartDateTimes];
+        }
+
+        utcIsoStartDateTimes.forEach(dt => {
+            this._dateTimeValues.push({
+                date_time: dt, values: this.defaultValues
+            })
+        });
+    }
+
+    setDefaultValues(utcIsoStartDateTime) {
+        this.setDefaultStartValues(utcIsoStartDateTime);
     }
 
     get dateTimeValues() {
@@ -20,12 +30,6 @@ export default class SingleOPBoundary extends Boundary {
 
     setDateTimeValues(dateTimeValues) {
         this._dateTimeValues = dateTimeValues;
-    }
-
-    getIndexedDateTimeValues() {
-        return this._dateTimeValues.map((value, index) => {
-            return {...value, id: index};
-        });
     }
 
     isValid() {
