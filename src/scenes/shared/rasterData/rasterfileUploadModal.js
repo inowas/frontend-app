@@ -2,7 +2,7 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import {Button, Form, Grid, Input, Radio, Header, List, Segment, Modal} from 'semantic-ui-react';
 import RasterDataImage from './rasterDataImage';
-import GridSize from 'core/model/modflow/GridSize';
+import {GridSize} from 'core/geometry';
 import {fetchRasterfile, uploadRasterfile} from 'services/api';
 
 const styles = {

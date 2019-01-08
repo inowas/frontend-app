@@ -7,10 +7,7 @@ import md5 from 'md5';
 
 import ActiveCellsLayer from 'services/geoTools/activeCellsLayer';
 import {BasicTileLayer} from 'services/geoTools/tileLayers';
-import ActiveCells from 'core/model/modflow/ActiveCells';
-import BoundingBox from 'core/model/modflow/BoundingBox';
-import Geometry from 'core/model/modflow/Geometry';
-import GridSize from 'core/model/modflow/GridSize';
+import {ActiveCells, BoundingBox, Geometry, GridSize} from 'core/geometry';
 import {getStyle} from './index';
 import {pure} from 'recompose';
 import {uniqueId} from 'recharts/es6/util/DataUtils';

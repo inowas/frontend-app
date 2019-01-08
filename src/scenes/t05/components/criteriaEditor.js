@@ -41,7 +41,7 @@ class CriteriaEditor extends React.Component {
         const criteriaCollection = CriteriaCollection.fromArray(this.state.criteria);
         const criterion = criteriaCollection.findById(id);
 
-        if(!criterion) {
+        if (!criterion) {
             return;
         }
 
@@ -60,7 +60,7 @@ class CriteriaEditor extends React.Component {
         const criteriaCollection = CriteriaCollection.fromArray(this.state.criteria);
         const criterion = criteriaCollection.findById(id);
 
-        if(!criterion) {
+        if (!criterion) {
             return;
         }
 
@@ -84,6 +84,15 @@ class CriteriaEditor extends React.Component {
                     <p>If you are unsure which criteria to use, please refer to the review on criteria used in
                         literature: T04</p>
                 </Message>
+
+                {this.props.mcda.weightAssignmentsCollection.length > 0 &&
+                <Message
+                    content='To change, delete or add criteria, you have to delete all weight assignments first or start
+                        a new project.'
+                    icon='lock'
+                    warning
+                />
+                }
 
                 {criteria.length > 0 &&
                 <Table>
@@ -122,11 +131,11 @@ class CriteriaEditor extends React.Component {
                                 </Table.Cell>
                                 <Table.Cell>
                                     {!readOnly &&
-                                        <Button
-                                            negative
-                                            icon='trash'
-                                            onClick={() => this.handleRemoveCriteria(c.id)}
-                                        />
+                                    <Button
+                                        negative
+                                        icon='trash'
+                                        onClick={() => this.handleRemoveCriteria(c.id)}
+                                    />
                                     }
                                 </Table.Cell>
                             </Table.Row>
@@ -135,12 +144,12 @@ class CriteriaEditor extends React.Component {
                 </Table>
                 }
                 {!readOnly &&
-                    <Button
-                        fluid
-                        onClick={this.handleAddCriteria}
-                    >
-                        Add new criteria
-                    </Button>
+                <Button
+                    fluid
+                    onClick={this.handleAddCriteria}
+                >
+                    Add new criteria
+                </Button>
                 }
             </div>
         );

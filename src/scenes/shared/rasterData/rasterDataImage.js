@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import {createGridData, min, max, rainbowFactory} from './helpers';
 import ColorLegend from './ColorLegend';
-import GridSize from 'core/model/modflow/GridSize';
+import {GridSize} from 'core/geometry';
 
 const styles = {
     canvas: {

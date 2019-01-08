@@ -10,7 +10,7 @@ import {deepMerge} from '../../shared/simpleTools/helpers';
 import {Divider, Grid, Icon, Segment} from 'semantic-ui-react';
 import AppContainer from '../../shared/AppContainer';
 import ToolMetaData from '../../shared/simpleTools/ToolMetaData';
-import {CriteriaEditor, ToolNavigation, WeightAssignmentEditor} from '../components';
+import {CriteriaEditor, ConstraintsEditor, ToolNavigation, WeightAssignmentEditor} from '../components';
 
 import {defaultsT05} from '../defaults';
 import getMenuItems from '../defaults/menuItems';
@@ -160,8 +160,15 @@ class T05 extends React.Component {
                         readOnly={readOnly || mcda.weightAssignmentsCollection.length > 0}
                         mcda={mcda}
                         handleChange={this.handleChange}
-                    />)
-                    ;
+                    />);
+            case 'cm':
+                return (
+                    <ConstraintsEditor
+                        readOnly={readOnly}
+                        mcda={mcda}
+                        handleChange={this.handleChange}
+                    />
+                );
             case 'wa':
                 const weightAssignment = type ? mcda.weightAssignmentsCollection.findById(type) : null;
 
