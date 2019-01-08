@@ -14,7 +14,7 @@ const styles = {
         padding: '3px'
     },
     L: {
-        width: '45px'
+        width: '53px'
     },
     R: {
         width: '65px'

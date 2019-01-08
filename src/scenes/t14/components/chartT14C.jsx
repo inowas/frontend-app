@@ -13,7 +13,7 @@ import {
 } from 'recharts';
 
 import {exportChartData, exportChartImage, getParameterValues} from '../../shared/simpleTools/helpers';
-import {Button, Header, Grid, Segment} from 'semantic-ui-react';
+import {Button, Grid, Segment} from 'semantic-ui-react';
 
 const styles = {
     chart: {
@@ -31,7 +31,7 @@ const styles = {
     },
     downloadButtons: {
         position: 'absolute',
-        top: '75px',
+        top: '0px',
         right: '35px'
     }
 };
@@ -48,13 +48,13 @@ const renderLabels = (dQ) => {
             <div style={styles.downloadButtons}>
                 <Button
                     size={'tiny'}
-                    color={'orange'}
+                    color={'grey'}
                     content='JPG'
                     onClick={() => exportChartImage(currentChart)}
                 />
                 <Button
                     size={'tiny'}
-                    color={'orange'}
+                    color={'grey'}
                     content='CSV'
                     onClick={() => exportChartData(currentChart)}
                 />
@@ -71,10 +71,9 @@ const Chart = ({parameters}) => {
 
     return (
         <div>
-            <Header textAlign='center'>Calculation</Header>
             <Grid>
                 <Grid.Row>
-                    <ResponsiveContainer width={'100%'} aspect={2}>
+                    <ResponsiveContainer width={'100%'} aspect={3}>
                         <LineChart
                             data={data}
                             margin={styles.chart}
@@ -86,7 +85,12 @@ const Chart = ({parameters}) => {
                                 allowDecimals={false}
                                 tickLine={false}
                             >
-                                <Label value={'T [d]'} offset={0} position="bottom"/>
+                                <Label
+                                    value={'T [d]'}
+                                    offset={0}
+                                    position="bottom"
+                                    fill={'#4C4C4C'}
+                                />
                             </XAxis>
                             <YAxis
                                 type="number"
@@ -100,6 +104,7 @@ const Chart = ({parameters}) => {
                                     position='left'
                                     style={{textAnchor: 'center'}}
                                     value={'dQ [m³/d]'}
+                                    fill={'#4C4C4C'}
                                 />
                             </YAxis>
                             <CartesianGrid strokeDasharray="3 3"/>

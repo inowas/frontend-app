@@ -14,7 +14,7 @@ import {
 import {SETTINGS_SELECTED_H0, SETTINGS_SELECTED_HL, SETTINGS_SELECTED_NOTHING} from '../defaults/T13B';
 import {calculateTravelTimeT13B, calculateXwd} from '../calculations';
 import {exportChartData, exportChartImage, getParameterValues} from '../../shared/simpleTools/helpers';
-import {Button, Grid, Header, Segment} from 'semantic-ui-react';
+import {Button, Grid, Segment} from 'semantic-ui-react';
 
 export function calculateDiagramData(w, K, ne, L1, h1, xMin, xMax, dX) {
     const data = [];
@@ -65,13 +65,13 @@ const renderLabels = (xe, xi, L, data) => {
             <div style={styles.downloadButtons}>
                 <Button
                     size={'tiny'}
-                    color={'orange'}
+                    color={'grey'}
                     content='JPG'
                     onClick={() => exportChartImage(currentChart)}
                 />
                 <Button
                     size={'tiny'}
-                    color={'orange'}
+                    color={'grey'}
                     content='CSV'
                     onClick={() => exportChartData(currentChart)}
                 />
@@ -103,7 +103,7 @@ const styles = {
     },
     downloadButtons: {
         position: 'absolute',
-        top: '45px',
+        top: '0px',
         right: '50px'
     }
 };
@@ -127,17 +127,21 @@ const Chart = ({parameters, settings}) => {
 
     return (
         <div>
-            <Header textAlign='center'>Calculation</Header>
             <Grid>
                 <Grid.Column>
-                    <ResponsiveContainer width="100%" aspect={2}>
+                    <ResponsiveContainer width="100%" aspect={3}>
                         <LineChart
                             data={data}
                             margin={styles.chart}
                             ref={(chart) => currentChart = chart}
                         >
                             <XAxis type="number" dataKey="x" allowDecimals={false} tickLine={false}>
-                                <Label value={'x [m]'} offset={0} position="bottom"/>
+                                <Label
+                                    value={'x [m]'}
+                                    offset={0}
+                                    position="bottom"
+                                    fill={'#4C4C4C'}
+                                />
                             </XAxis>
                             <YAxis
                                 type="number" domain={[0, 'auto']} allowDecimals={false} tickLine={false}
@@ -148,6 +152,7 @@ const Chart = ({parameters, settings}) => {
                                     position='left'
                                     style={{textAnchor: 'center'}}
                                     value={'t [d]'}
+                                    fill={'#4C4C4C'}
                                 />
                             </YAxis>
                             <CartesianGrid strokeDasharray="3 3"/>

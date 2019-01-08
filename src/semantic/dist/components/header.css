@@ -527,13 +527,13 @@ a.ui.inverted.pink.header:hover {
 /*--- Brown ---*/
 
 .ui.brown.header {
-  color: #A5673F !important;
+  color: #CC6C00 !important;
 }
 a.ui.brown.header:hover {
-  color: #975b33 !important;
+  color: #b35f00 !important;
 }
 .ui.brown.dividing.header {
-  border-bottom: 2px solid #A5673F;
+  border-bottom: 2px solid #CC6C00;
 }
 
 /* Inverted */

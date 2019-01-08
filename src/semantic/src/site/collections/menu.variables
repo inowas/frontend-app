@@ -17,9 +17,6 @@
 
 /* Active Item */
 
-@activeItemBackground: @white;
-
-
 
 /* Header
 ----------*/
