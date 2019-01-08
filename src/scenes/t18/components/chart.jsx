@@ -10,7 +10,7 @@ import {
 
 import {calculateDiagramData} from '../calculations/calculationT18';
 import {exportChartData, exportChartImage, getParameterValues} from '../../shared/simpleTools/helpers';
-import {Button, Grid, Header} from 'semantic-ui-react';
+import {Button, Grid} from 'semantic-ui-react';
 
 const styles = {
     chart: {
@@ -28,7 +28,7 @@ const styles = {
     },
     downloadButtons: {
         position: 'absolute',
-        top: '45px',
+        top: '0px',
         right: '60px'
     }
 };
@@ -42,7 +42,6 @@ const Chart = ({parameters, settings}) => {
 
     return (
         <div>
-            <Header textAlign='center'>Calculation</Header>
             <Grid>
                 <Grid.Row>
                     <ResponsiveContainer width="100%" aspect={2.0}>
@@ -57,6 +56,7 @@ const Chart = ({parameters, settings}) => {
                                     value={'Area [m²]'}
                                     offset={0}
                                     position="bottom"
+                                    fill={'#4C4C4C'}
                                 />
                             </XAxis>
                             <YAxis type="category" dataKey="name"/>
@@ -72,13 +72,13 @@ const Chart = ({parameters, settings}) => {
                     <div style={styles.downloadButtons}>
                         <Button
                             size={'tiny'}
-                            color={'orange'}
+                            color={'grey'}
                             content='JPG'
                             onClick={() => exportChartImage(currentChart)}
                         />
                         <Button
                             size={'tiny'}
-                            color={'orange'}
+                            color={'grey'}
                             content='CSV'
                             onClick={() => exportChartData(currentChart)}
                         />

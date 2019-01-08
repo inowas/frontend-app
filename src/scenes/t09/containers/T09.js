@@ -58,11 +58,12 @@ class T09 extends React.Component {
 
     render() {
         const columns = items.map(i => (
-            <Grid.Column key={i.tool}>
-                <Segment color='blue' style={{cursor:'pointer', marginBottom:'1em'}} onClick={() => this.redirectTo(i.tool)} padded>
-                    <Header as={'a'} color='blue'>{i.tool}</Header>
+            <Grid.Column key={i.tool} onClick={() => this.redirectTo(i.tool)}>
+                <Segment color={'blue'} style={{cursor:'pointer', marginBottom:'1em'}} padded>
+                    <Image src={i.image} size={'medium'} floated={'left'} />
+                    <Header as={'h2'} color={'blue'}>{i.tool}</Header>
                     <p>{i.description}</p>
-                    <Image size='medium' src={i.image} />
+
                 </Segment>
             </Grid.Column>
         ));
@@ -70,14 +71,7 @@ class T09 extends React.Component {
         return (
             <AppContainer navBarItems={navigation}>
                 <Grid columns={2} stretched>
-                    <Grid.Row>
-                        <Header as={'h3'}>
-                            Please select the set of boundary conditions that apply to your problem:
-                        </Header>
-                    </Grid.Row>
-                    <Grid.Row>
-                            {columns}
-                    </Grid.Row>
+                    {columns}
                 </Grid>
             </AppContainer>
         );
