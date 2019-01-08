@@ -8,7 +8,7 @@ import {
     ResponsiveContainer, XAxis, YAxis,
 } from 'recharts';
 
-import {Button, Grid, Header, Segment} from 'semantic-ui-react';
+import {Button, Grid, Segment} from 'semantic-ui-react';
 import {exportChartData, exportChartImage, getParameterValues} from '../../shared/simpleTools/helpers';
 import {calculateTravelTimeT13A} from '../calculations';
 
@@ -52,7 +52,7 @@ const styles = {
     },
     downloadButtons: {
         position: 'absolute',
-        top: '45px',
+        top: '0px',
         right: '55px'
     }
 };
@@ -93,13 +93,13 @@ const renderLabels = (xe, xi, L, data) => {
             <div style={styles.downloadButtons}>
                 <Button
                     size={'tiny'}
-                    color={'orange'}
+                    color={'grey'}
                     content='JPG'
                     onClick={() => exportChartImage(currentChart)}
                 />
                 <Button
                     size={'tiny'}
-                    color={'orange'}
+                    color={'grey'}
                     content='CSV'
                     onClick={() => exportChartData(currentChart)}
                 />
@@ -114,10 +114,9 @@ const Chart = ({parameters}) => {
 
     return (
         <div>
-            <Header textAlign='center'>Calculation</Header>
             <Grid>
                 <Grid.Column>
-                    <ResponsiveContainer width="100%" aspect={2}>
+                    <ResponsiveContainer width="100%" aspect={3}>
                         <LineChart
                             data={data}
                             margin={styles.chart}
@@ -129,7 +128,12 @@ const Chart = ({parameters}) => {
                                 allowDecimals={false}
                                 tickLine={false}
                             >
-                                <Label value={'x [m]'} offset={0} position="bottom"/>
+                                <Label
+                                    value={'x [m]'}
+                                    offset={0}
+                                    position="bottom"
+                                    fill={'#4C4C4C'}
+                                />
                             </XAxis>
                             <YAxis
                                 type="number"
@@ -143,6 +147,7 @@ const Chart = ({parameters}) => {
                                     position='left'
                                     style={{textAnchor: 'center'}}
                                     value={'t [d]'}
+                                    fill={'#4C4C4C'}
                                 />
                             </YAxis>
                             <CartesianGrid strokeDasharray="3 3"/>

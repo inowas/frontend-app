@@ -84,7 +84,7 @@
   -webkit-box-shadow: none;
           box-shadow: none;
   color: rgba(0, 0, 0, 0.85);
-  border-bottom: 1px solid rgba(34, 36, 38, 0.15);
+  border-bottom: 1px solid #EEEEEE;
 }
 .ui.modal > .header:not(.ui) {
   font-size: 1.42857143rem;
@@ -172,7 +172,7 @@
 .ui.modal > .actions {
   background: #EFF3F6;
   padding: 1rem 1rem;
-  border-top: 1px solid rgba(34, 36, 38, 0.15);
+  border-top: 1px solid #EEEEEE;
   text-align: right;
 }
 .ui.modal .actions > .button {

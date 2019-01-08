@@ -193,7 +193,9 @@ class T03 extends React.Component {
         if (!this.props.model) {
             return (
                 <AppContainer navbarItems={navigation}>
-                    <Message>LOADING</Message>
+                    <Message icon>
+                        <Icon name='circle notched' loading />
+                    </Message>
                 </AppContainer>
             )
         }

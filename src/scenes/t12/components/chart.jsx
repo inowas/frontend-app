@@ -20,7 +20,7 @@ import {
 import {exportChartData, exportChartImage, getParameterValues} from '../../shared/simpleTools/helpers';
 import {pure} from 'recompose';
 
-import {Button, Grid, Header, Segment} from 'semantic-ui-react';
+import {Button, Grid, Segment} from 'semantic-ui-react';
 
 const styles = {
     chart: {
@@ -33,12 +33,12 @@ const styles = {
         position: 'absolute',
         bottom: '90px',
         right: '70px',
-        background: '#EFF3F6',
+        background: '#EEEEEE',
         opacity: 0.9
     },
     downloadButtons: {
         position: 'absolute',
-        top: '40px',
+        top: '0px',
         right: '40px'
     }
 };
@@ -58,7 +58,6 @@ const Chart = ({mfi, parameters, corrections}) => {
 
     return (
         <div>
-            <Header textAlign='center'>Calculation</Header>
             <Grid>
                 <Grid.Row>
                     <ResponsiveContainer width={'100%'} aspect={2}>
@@ -72,6 +71,7 @@ const Chart = ({mfi, parameters, corrections}) => {
                                     value={'V [l]'}
                                     offset={0}
                                     position="bottom"
+                                    fill={'#4C4C4C'}
                                 />
                             </XAxis>
                             <YAxis type="number" domain={['auto', 'auto']}>
@@ -80,6 +80,7 @@ const Chart = ({mfi, parameters, corrections}) => {
                                     position='left'
                                     style={{textAnchor: 'center'}}
                                     value={'t/V [s/l]'}
+                                    fill={'#4C4C4C'}
                                 />
                             </YAxis>
                             <CartesianGrid strokeDasharray="3 3"/>
@@ -112,13 +113,13 @@ const Chart = ({mfi, parameters, corrections}) => {
                     <div style={styles.downloadButtons}>
                         <Button
                             size={'tiny'}
-                            color={'orange'}
+                            color={'grey'}
                             content='JPG'
                             onClick={() => exportChartImage(currentChart)}
                         />
                         <Button
                             size={'tiny'}
-                            color={'orange'}
+                            color={'grey'}
                             content='CSV'
                             onClick={() => exportChartData(currentChart)}
                         />

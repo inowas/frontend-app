@@ -11,7 +11,7 @@ import {navigation} from './T13';
 
 import SimpleToolsCommand from '../../shared/simpleTools/commands/SimpleToolsCommand';
 
-import image from '../images/T13B.png';
+import image from '../images/T13B_bg.png';
 import {defaults} from '../defaults/T13B';
 
 import {fetchTool, sendCommand} from 'services/api';
