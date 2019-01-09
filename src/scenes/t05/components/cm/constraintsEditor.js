@@ -4,7 +4,6 @@ import {Button, Form, Grid, Message} from 'semantic-ui-react';
 import {MCDA} from 'core/mcda';
 import ConstraintsMap from './constraintsMap';
 import {GisMap} from 'core/mcda/gis';
-import {calculateActiveCells} from 'services/geoTools';
 
 class ConstraintsEditor extends React.Component {
     constructor(props) {
@@ -59,7 +58,7 @@ class ConstraintsEditor extends React.Component {
             return null;
         }
 
-        constraints.activeCells = calculateActiveCells(area.geometry, area.boundingBox, constraints.gridSize);
+        constraints.calculateActiveCells();
         this.handleChange(constraints);
 
         this.setState({
@@ -126,7 +125,7 @@ class ConstraintsEditor extends React.Component {
                     </Grid.Column>
                     <Grid.Column width={12}>
                         <ConstraintsMap
-                            constraints={this.props.mcda.constraints}
+                            map={this.props.mcda.constraints}
                             onChange={this.handleChange}
                             mode={this.state.mode}
                             readOnly={readOnly}

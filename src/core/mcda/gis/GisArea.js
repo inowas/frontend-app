@@ -1,12 +1,11 @@
 import uuidv4 from 'uuid/v4';
-import {BoundingBox, Geometry} from '../../geometry';
+import {Geometry} from '../../geometry';
 
 class GisArea {
 
     _id = uuidv4();
     _color = 'blue';
     _type = 'area';
-    _boundingBox = null;
     _geometry = null;
 
     static fromObject(obj) {
@@ -14,7 +13,6 @@ class GisArea {
         area.id = obj.id;
         area.color = obj.color;
         area.type = obj.type;
-        area.boundingBox = obj.boundingBox ? BoundingBox.fromArray(obj.boundingBox) : null;
         area.geometry = obj.geometry ? Geometry.fromObject(obj.geometry) : null;
         return area;
     }
@@ -43,14 +41,6 @@ class GisArea {
         this._type = value;
     }
 
-    get boundingBox() {
-        return this._boundingBox;
-    }
-
-    set boundingBox(value) {
-        this._boundingBox = value;
-    }
-
     get geometry() {
         return this._geometry;
     }
@@ -64,7 +54,6 @@ class GisArea {
             id: this.id,
             color: this.color,
             type: this.type,
-            boundingBox: this.boundingBox ? this.boundingBox.toArray() : null,
             geometry: this.geometry ? this.geometry.toObject() : null
         }
     }
