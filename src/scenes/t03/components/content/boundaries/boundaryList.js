@@ -67,7 +67,14 @@ class BoundaryList extends React.Component {
                                 value={this.state.selectedType}
                                 style={{minWidth: '120px', width: '120px'}}
                             />
-                            <Dropdown text='Add' icon='add' labeled button className='icon'>
+                            <Dropdown
+                                text='Add'
+                                icon='add'
+                                labeled
+                                button
+                                className='icon'
+                                style={{zIndex: 10000}}
+                            >
                                 <Dropdown.Menu>
                                     <Dropdown.Header/>
                                     {this.boundaryTypes()
