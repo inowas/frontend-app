@@ -6,12 +6,13 @@ import md5 from 'md5';
 import uuidv4 from 'uuid/v4';
 
 import {BasicTileLayer} from 'services/geoTools/tileLayers';
-import {BoundingBox, Geometry, GridSize} from 'core/geometry';
+import {BoundingBox, Geometry} from 'core/geometry';
 import {pure} from 'recompose';
 import {Button, Popup} from 'semantic-ui-react';
+import {GisArea, GisAreasCollection, GisMap} from 'core/mcda/gis';
+import ActiveCellsLayer from 'services/geoTools/activeCellsLayer';
 
 const style = {
-
     map: {
         height: '400px',
         width: '100%'
@@ -23,49 +24,75 @@ let drawControl;
 class ConstraintsMap extends React.Component {
     constructor(props) {
         super(props);
+
         this.state = {
-            area: null,
-            gridSize: props.gridSize.toObject(),
+            shapes: props.constraints.areasCollection.toArray(),
             refreshKey: uuidv4()
         }
     }
 
-    handleChange = ({boundingBox, geometry}) => {
-        return this.props.onChange({boundingBox, geometry});
+    componentWillReceiveProps(nextProps) {
+        this.setState({
+            shapes: nextProps.constraints.areasCollection.toArray()
+        });
+    }
+
+    handleChange = () => {
+        const constraints = this.props.constraints;
+        constraints.areasCollection = GisAreasCollection.fromArray(this.state.shapes);
+        return this.props.onChange(constraints);
     };
 
     onCreateArea = e => {
-        const polygon = e.layer;
-        const geometry = Geometry.fromGeoJson(polygon.toGeoJSON());
-        const boundingBox = BoundingBox.fromGeoJson(polygon.toGeoJSON());
+        const polygon = e.layer.toGeoJSON();
 
-        const area = {
-            boundingBox: boundingBox.toArray(),
-            geometry: geometry.toObject()
-        };
+        const area = new GisArea();
+        area.boundingBox = BoundingBox.fromGeoJson(polygon);
+        area.geometry = Geometry.fromGeoJson(polygon);
 
-        return this.setState({
-            area: area,
+        return this.setState(prevState => ({
+            shapes: GisAreasCollection.fromArray(prevState.shapes).add(area).toArray(),
             refreshKey: uuidv4()
-        });
+        }), this.handleChange);
     };
 
     onCreateHole = e => {
         const polygon = e.layer.toGeoJSON();
 
-        const area = this.state.area;
-        area.geometry.coordinates = area.geometry.coordinates.concat(polygon.geometry.coordinates);
-        return this.setState({
-            area: area,
+        const hole = new GisArea();
+        hole.type = 'hole';
+        hole.color = 'red';
+        hole.geometry = Geometry.fromGeoJson(polygon);
+
+        this.setState(prevState => ({
+            shapes: GisAreasCollection.fromArray(prevState.shapes).add(hole).toArray(),
             refreshKey: uuidv4()
-        });
+        }), this.handleChange);
     };
 
-    onEdited = (e) => {
-        console.log('ON EDIT', e);
+    // TODO: Delete single shapes
+    onDeleted = () => this.setState({
+        shapes: []
+    }, this.handleChange);
+
+    onEdited = e => {
+        const shapes = GisAreasCollection.fromArray(this.state.shapes);
+
         e.layers.eachLayer(layer => {
-            console.log('LAYER', layer);
+            let shape = shapes.findById(layer.options.id);
+
+            if (!shape) {
+                return null;
+            }
+
+            shape.geometry = Geometry.fromGeoJson(layer.toGeoJSON().geometry);
+            shapes.update(shape);
         });
+
+        this.setState({
+            shapes: shapes.toArray(),
+            refreshKey: uuidv4()
+        }, this.handleChange);
     };
 
     onClickDrawArea = () => {
@@ -73,8 +100,7 @@ class ConstraintsMap extends React.Component {
     };
 
     areaLayer = () => {
-        console.log('STATE', this.state);
-        const geometry = this.state.area ? Geometry.fromObject(this.state.area.geometry) : null;
+        const {shapes} = this.state;
 
         return (
             <FeatureGroup ref='featureGroup'>
@@ -86,34 +112,66 @@ class ConstraintsMap extends React.Component {
                         marker: false,
                         polyline: false,
                         rectangle: false,
-                        polygon: true
+                        polygon: !this.props.readOnly
                     }}
                     edit={{
-                        edit: true, // this.state.area !== null,
-                        remove: this.state.area !== null
+                        edit: !this.props.readOnly,
+                        remove: !this.props.readOnly
                     }}
-                    onCreated={!this.state.area ? this.onCreateArea : this.onCreateHole}
-                    onEditStart={this.onEditStart}
+                    onClick={this.onDeleted}
+                    onCreated={shapes.length === 0 ? this.onCreateArea : this.onCreateHole}
+                    onDeleted={this.onDeleted}
                     onEdited={this.onEdited}
                     onMounted={e => drawControl = e}
                 />
-                {this.state.area !== null &&
-                <Polygon
-                    id={this.state.area.id}
-                    key={md5(JSON.stringify(this.state.area.geometry))}
-                    positions={geometry.coordinates.map(c => geometry.getLatLngFromXY(c))}
-                />
-                }
+                {shapes.map(shape => {
+                    const area = GisArea.fromObject(shape);
+                    return (
+                        <Polygon
+                            id={area.id}
+                            color={area.color}
+                            key={md5(JSON.stringify(area.geometry.toObject()))}
+                            positions={area.geometry.coordinatesLatLng}
+                        />
+                    );
+                })}
             </FeatureGroup>
-        )
+        );
+    };
+
+    activeCellsLayer = () => {
+        const area = this.props.constraints.areasCollection.findBy('type', 'area', true);
+
+        if (!area) {
+            return null;
+        }
+
+        return (
+            <ActiveCellsLayer
+                boundingBox={area.boundingBox}
+                gridSize={this.props.constraints.gridSize}
+                activeCells={this.props.constraints.activeCells}
+                styles={{
+                    line: {
+                        color: 'black',
+                        weight: 0.3
+                    }
+                }}
+            />
+        );
     };
 
     boundingBoxLayer = () => {
-        const boundingBox = BoundingBox.fromArray(this.state.area.boundingBox);
+        const area = GisAreasCollection.fromArray(this.state.shapes).findBy('type', 'area', true);
+
+        if (!area) {
+            return null;
+        }
+
         return (
             <GeoJSON
-                key={md5(JSON.stringify(boundingBox.toArray()))}
-                data={boundingBox.geoJson}
+                key={md5(JSON.stringify(area.boundingBox.toArray()))}
+                data={area.boundingBox.geoJson}
                 color='grey'
             />
         )
@@ -128,29 +186,32 @@ class ConstraintsMap extends React.Component {
     };
 
     render() {
+        const {mode, readOnly} = this.props;
+        const {shapes} = this.state;
+
         return (
             <div>
                 <Button.Group attached='top'>
                     <Popup
                         trigger={
                             <Button
-                                disabled={this.state.area !== null}
+                                disabled={readOnly || shapes.length > 0 || mode !== 'map'}
                                 icon='map outline'
                                 onClick={this.onClickDrawArea}
                             />
                         }
-                        content='Define suitable area'
+                        content='Define project area'
                         position='top center'
                     />
                     <Popup
                         trigger={
                             <Button
-                                disabled={this.state.area === null}
-                                icon='cut'
+                                disabled={readOnly || shapes.length === 0 || mode !== 'map'}
+                                icon='eraser'
                                 onClick={this.onClickDrawArea}
                             />
                         }
-                        content='Cut out unsuitable areas'
+                        content='Define clip features'
                         position='top center'
                     />
                 </Button.Group>
@@ -161,8 +222,9 @@ class ConstraintsMap extends React.Component {
                     onClick={this.handleClickOnMap}
                 >
                     <BasicTileLayer/>
-                    {this.areaLayer()}
-                    {this.state.area && this.boundingBoxLayer()}
+                    {mode === 'map' && this.areaLayer()}
+                    {mode === 'cells' && this.activeCellsLayer()}
+                    {shapes.length > 0 && this.boundingBoxLayer()}
                 </Map>
             </div>
         )
@@ -170,8 +232,10 @@ class ConstraintsMap extends React.Component {
 }
 
 ConstraintsMap.proptypes = {
-    gridSize: PropTypes.instanceOf(GridSize).isRequired,
-    onChange: PropTypes.func.isRequired
+    constraints: PropTypes.instanceOf(GisMap).isRequired,
+    onChange: PropTypes.func.isRequired,
+    mode: PropTypes.string.isRequired,
+    readOnly: PropTypes.bool
 };
 
 export default pure(ConstraintsMap);

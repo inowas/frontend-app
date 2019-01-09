@@ -1,31 +1,75 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import {Form, Grid, Message} from 'semantic-ui-react';
+import {Button, Form, Grid, Message} from 'semantic-ui-react';
 import {MCDA} from 'core/mcda';
 import ConstraintsMap from './constraintsMap';
-import {GridSize} from 'core/geometry';
+import {GisMap} from 'core/mcda/gis';
+import {calculateActiveCells} from 'services/geoTools';
 
 class ConstraintsEditor extends React.Component {
     constructor(props) {
         super();
 
         this.state = {
-            nX: 10,
-            nY: 10
+            constraints: props.mcda.constraints.toObject(),
+            mode: 'map'
         }
     }
 
-    onChangeState = (e, {name, value}) => this.setState({
-        [name]: value
+    componentWillReceiveProps(nextProps) {
+        this.setState({
+            constraints: nextProps.mcda.constraints.toObject()
+        });
+    }
+
+    handleChange = constraints => {
+        if (!(constraints instanceof GisMap)) {
+            throw new Error('Constraints expected to be of type GisMap.');
+        }
+
+        return this.props.handleChange({
+            name: 'constraints',
+            value: constraints
+        });
+    };
+
+    onClickBack = () => this.setState({
+        mode: 'map'
     });
 
-    onChangeMap = e => {
-        console.log('constraintsEditor@onChangeMap', e)
+    onBlur = () => {
+        this.handleChange(GisMap.fromObject(this.state.constraints));
+    };
+
+    onChangeGridSize = (e, {name, value}) => this.setState(prevState => ({
+        constraints: {
+            ...prevState.constraints,
+            gridSize: {
+                ...prevState.constraints.gridSize,
+                [name]: value
+            }
+        }
+    }));
+
+    onCalculateActiveCells = () => {
+        const constraints = GisMap.fromObject(this.state.constraints);
+        const area = constraints.areasCollection.findBy('type', 'area', true);
+
+        if (!area) {
+            return null;
+        }
+
+        constraints.activeCells = calculateActiveCells(area.geometry, area.boundingBox, constraints.gridSize);
+        this.handleChange(constraints);
+
+        this.setState({
+            mode: 'cells'
+        });
     };
 
     render() {
-        const {mcda, readOnly} = this.props;
-        const {nX, nY} = this.state;
+        const {readOnly} = this.props;
+        const {constraints, mode} = this.state;
 
         return (
             <div>
@@ -34,28 +78,58 @@ class ConstraintsEditor extends React.Component {
                     <p>Set the outline of your project area and define the grid size.</p>
                 </Message>
                 <Grid>
-                    <Grid.Column width={5}>
-                        <Form>
-                            <Form.Input
-                                type='number'
-                                label='Rows'
-                                name='nY'
-                                value={nY}
-                                onChange={this.onChangeState}
-                            />
-                            <Form.Input
-                                type='number'
-                                label='Columns'
-                                name='nX'
-                                value={nX}
-                                onChange={this.onChangeState}
-                            />
-                        </Form>
+                    <Grid.Column width={4}>
+                        {mode !== 'cells' &&
+                        <div>
+                            <Form>
+                                <Form.Input
+                                    type='number'
+                                    label='Rows'
+                                    name='n_y'
+                                    value={constraints.gridSize.n_y}
+                                    onBlur={this.onBlur}
+                                    onChange={this.onChangeGridSize}
+                                />
+                                <Form.Input
+                                    type='number'
+                                    label='Columns'
+                                    name='n_x'
+                                    value={constraints.gridSize.n_x}
+                                    onBlur={this.onBlur}
+                                    onChange={this.onChangeGridSize}
+                                />
+                            </Form>
+
+                            <Message>
+                                <p>Click the button below, to cut out the created clip features from the project area
+                                    and
+                                    calculate the suitability grid according to the given grid size.</p>
+                            </Message>
+
+                            <Button
+                                fluid positive
+                                disabled={readOnly || constraints.areas.length === 0}
+                                onClick={this.onCalculateActiveCells}
+                            >
+                                Cut and Process
+                            </Button>
+                        </div>
+                        }
+                        {mode === 'cells' &&
+                        <Button
+                            fluid
+                            onClick={this.onClickBack}
+                        >
+                            Back
+                        </Button>
+                        }
                     </Grid.Column>
-                    <Grid.Column width={11}>
+                    <Grid.Column width={12}>
                         <ConstraintsMap
-                            gridSize={GridSize.fromNxNy(nX, nY)}
-                            onChange={this.onChangeMap}
+                            constraints={this.props.mcda.constraints}
+                            onChange={this.handleChange}
+                            mode={this.state.mode}
+                            readOnly={readOnly}
                         />
                     </Grid.Column>
                 </Grid>

@@ -85,6 +85,10 @@ class T05 extends React.Component {
             }
         }
 
+        if (name === 'constraints') {
+            mcda.constraints = value;
+        }
+
         return this.setState({
             tool: {
                 ...this.state.tool,

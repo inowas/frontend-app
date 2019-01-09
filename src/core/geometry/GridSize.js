@@ -14,8 +14,8 @@ class GridSize {
     }
 
     constructor(nX, nY) {
-        this._nX = nX;
-        this._nY = nY;
+        this.nX = nX;
+        this.nY = nY;
     }
 
     get nX() {
