@@ -2,11 +2,12 @@ import React from 'react';
 import {connect} from 'react-redux';
 import PropTypes from 'prop-types';
 
-import {Grid, Menu, Segment} from 'semantic-ui-react';
+import {Grid, Header, Menu, Segment} from 'semantic-ui-react';
 import {BoundaryCollection, Calculation, ModflowModel} from 'core/model/modflow';
 import {fetchUrl} from 'services/api';
 import {last} from 'lodash';
 import ResultsMap from '../../maps/resultsMap';
+import ResultsChart from './resultsChart';
 
 const menuItems = [
     {id: 'head', name: 'Heads'},
@@ -23,7 +24,9 @@ class Results extends React.Component {
             metaData: null,
             isLoading: false,
 
-            selectedLayer: null,
+            selectedCol: 0,
+            selectedLay: 0,
+            selectedRow: 0,
             selectedTotim: null,
             selectedType: null,
             data: null,
@@ -69,7 +72,7 @@ class Results extends React.Component {
         this.setState({fetching: true},
             () => fetchUrl(`calculations/${calculationId}/results/types/${type}/layers/${layer}/totims/${totim}`,
                 data => this.setState({
-                    selectedLayer: layer,
+                    selectedLay: layer,
                     selectedTotim: totim,
                     selectedType: type,
                     data,
@@ -81,12 +84,12 @@ class Results extends React.Component {
     }
 
     onChangeTypeLayerOrTime = ({type = null, layer = null, totim = null}) => {
-        const {selectedLayer, selectedType, selectedTotim} = this.state;
+        const {selectedLay, selectedType, selectedTotim} = this.state;
         type = type || selectedType;
-        layer = layer || selectedLayer;
+        layer = layer || selectedLay;
         totim = totim || selectedTotim;
 
-        if (totim === selectedTotim && type === selectedType && layer === selectedLayer) {
+        if (totim === selectedTotim && type === selectedType && layer === selectedLay) {
             return;
         }
 
@@ -94,7 +97,7 @@ class Results extends React.Component {
     };
 
     render() {
-        const {selectedMenuItem, metaData, data} = this.state;
+        const {selectedMenuItem, metaData, data, selectedCol, selectedRow} = this.state;
         const {model, boundaries} = this.props;
 
         if (!metaData) {
@@ -124,9 +127,35 @@ class Results extends React.Component {
                         </Grid.Column>
                         <Grid.Column width={13}>
                             <Segment loading={this.state.fetching} color={'grey'}>
-                                {data && <ResultsMap boundaries={boundaries} data={data} model={model} onClick={() => {
-                                }}/>}
+                                {data &&
+                                <ResultsMap
+                                    boundaries={boundaries}
+                                    data={data}
+                                    model={model}
+                                    onClick={colRow => {this.setState({
+                                        selectedRow: colRow[1],
+                                        selectedCol: colRow[0]
+                                    })}}
+                                />
+                                }
                             </Segment>
+
+                            <Grid>
+                                <Grid.Row columns={2}>
+                                    <Grid.Column>
+                                        <Segment loading={this.state.fetching} color={'blue'}>
+                                            <Header textAlign={'center'} as={'h4'}>Horizontal cross section</Header>
+                                            {data && <ResultsChart data={data} row={selectedRow} col={selectedCol} show={'row'}/>}
+                                        </Segment>
+                                    </Grid.Column>
+                                    <Grid.Column>
+                                        <Segment loading={this.state.fetching} color={'blue'}>
+                                            <Header textAlign={'center'} as={'h4'}>Vertical cross section</Header>
+                                            {data && <ResultsChart data={data} col={selectedCol} row={selectedRow} show={'col'}/>}
+                                        </Segment>
+                                    </Grid.Column>
+                                </Grid.Row>
+                            </Grid>
                         </Grid.Column>
                     </Grid.Row>
                 </Grid>

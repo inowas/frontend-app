@@ -1,26 +1,61 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import {BoundaryCollection, ModflowModel} from 'core/model/modflow';
-import {CircleMarker, GeoJSON, LayersControl, Map} from 'react-leaflet';
+import {CircleMarker, GeoJSON, LayersControl, Map, Rectangle} from 'react-leaflet';
 import {BasicTileLayer} from 'services/geoTools/tileLayers';
 import {getStyle} from './helpers';
 import CanvasHeatMapOverlay from '../../../shared/rasterData/ReactLeafletHeatMapCanvasOverlay';
 import {createGridData, max, min, rainbowFactory} from '../../../shared/rasterData/helpers';
 import ColorLegend from '../../../shared/rasterData/ColorLegend';
+import {getActiveCellFromCoordinate} from 'services/geoTools';
+import FeatureGroup from 'react-leaflet/es/FeatureGroup';
 
 const style = {
     map: {
         height: '400px',
         width: '100%'
-    }
+    },
+    selectedRow: {
+        color: '#000',
+        weight: 0.5,
+        opacity: 0.5,
+        fillColor: '#000',
+        fillOpacity: 0.5
+    },
+    selectedCol: {
+        color: '#000',
+        weight: 0.5,
+        opacity: 0.5,
+        fillColor: '#000',
+        fillOpacity: 0.5
+    },
 };
 
 class ResultsMap extends React.Component {
 
+    constructor(props) {
+        super(props);
+        this.state = {
+            activeCell: [0, 0]
+        }
+    }
+
+    componentDidMount() {
+        const activeCell = [
+            Math.round(this.props.model.gridSize.nX / 2),
+            Math.round(this.props.model.gridSize.nY / 2),
+        ];
+
+        this.setState({activeCell});
+        this.props.onClick(activeCell);
+    }
+
     handleClickOnMap = ({latlng}) => {
         const x = latlng.lng;
         const y = latlng.lat;
-        console.log(x, y);
+        const activeCell = getActiveCellFromCoordinate([x, y], this.props.model.boundingBox, this.props.model.gridSize);
+        this.setState({activeCell});
+        this.props.onClick(activeCell);
     };
 
     renderLegend = (rainbow) => {
@@ -37,6 +72,45 @@ class ResultsMap extends React.Component {
         });
 
         return <ColorLegend legend={legend} unit={''}/>;
+    };
+
+    renderSelectedRowAndCol = () => {
+        const [selectedCol, selectedRow] = this.state.activeCell;
+        const {boundingBox, gridSize} = this.props.model;
+
+        const dX = boundingBox.dX / gridSize.nX;
+        const dY = boundingBox.dY / gridSize.nY;
+
+        const selectedRowBoundsLatLng = [
+            [boundingBox.yMax - selectedRow * dY, boundingBox.xMin],
+            [boundingBox.yMax - (selectedRow + 1) * dY, boundingBox.xMax]
+        ];
+
+        const selectedColBoundsLatLng = [
+            [boundingBox.yMin, boundingBox.xMin + selectedCol * dX],
+            [boundingBox.yMax, boundingBox.xMin + (selectedCol + 1) * dX]
+        ];
+
+        return (
+            <FeatureGroup>
+                <Rectangle
+                    bounds={selectedColBoundsLatLng}
+                    color={style.selectedCol.color}
+                    weight={style.selectedCol.weight}
+                    opacity={style.selectedCol.opacity}
+                    fillColor={style.selectedCol.fillColor}
+                    fillOpacity={style.selectedCol.fillOpacity}
+                />
+                <Rectangle
+                    bounds={selectedRowBoundsLatLng}
+                    color={style.selectedRow.color}
+                    weight={style.selectedRow.weight}
+                    opacity={style.selectedRow.opacity}
+                    fillColor={style.selectedRow.fillColor}
+                    fillOpacity={style.selectedRow.fillOpacity}
+                />
+            </FeatureGroup>
+        )
     };
 
     render() {
@@ -107,6 +181,7 @@ class ResultsMap extends React.Component {
                     />
                     {this.renderLegend(rainbowVis)}
                 </LayersControl>
+                {this.renderSelectedRowAndCol()}
             </Map>
         )
     }
