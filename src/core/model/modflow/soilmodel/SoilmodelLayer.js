@@ -2,6 +2,8 @@ import uuidv4 from 'uuid/v4';
 import {SoilmodelZone, ZonesCollection} from './index';
 import {GridSize} from '../index';
 import {cloneDeep} from 'lodash';
+import Geometry from '../Geometry';
+import ActiveCells from '../ActiveCells';
 
 class SoilmodelLayer {
     _id = uuidv4();
@@ -22,11 +24,23 @@ class SoilmodelLayer {
     _ss = 0.00002;
     _sy = 0.15;
 
-    static fromDefault() {
+    static fromDefault(geometry, activeCells) {
+        if (!(geometry instanceof Geometry)) {
+            throw new Error('GridSize needs to be instance of GridSize');
+        }
+        if (!(activeCells instanceof ActiveCells)) {
+            throw new Error('GridSize needs to be instance of GridSize');
+        }
+
         const layer = new SoilmodelLayer();
         layer.name = 'Default Layer';
         layer.number = 1;
-        layer.zonesCollection.add(SoilmodelZone.fromDefault());
+
+        const defaultZone = SoilmodelZone.fromDefault();
+        defaultZone.geometry = geometry;
+        defaultZone.activeCells = activeCells;
+        console.log('DEFAULT ZONE', defaultZone);
+        layer.zonesCollection.add(defaultZone);
         return layer;
     }
 

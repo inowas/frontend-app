@@ -47,6 +47,7 @@ class LayerDetails extends React.Component {
     render() {
         const {model, readOnly} = this.props;
         const {layer} = this.state;
+
         if (!layer || !layer) {
             return null;
         }
@@ -156,16 +157,18 @@ class LayerDetails extends React.Component {
 
         return (
             <Form>
-                <Tab menu={{secondary: true, pointing: true}} panes={panes}/>
+                <Tab menu={{secondary: true, pointing: true}} activeIndex={this.props.activeIndex || 0} onTabChange={this.props.onChangeTab} panes={panes}/>
             </Form>
         )
     }
 }
 
 LayerDetails.proptypes = {
+    activeIndex: PropTypes.number,
     layer: PropTypes.instanceOf(SoilmodelLayer).isRequired,
     model: PropTypes.instanceOf(ModflowModel).isRequired,
     onChange: PropTypes.func.isRequired,
+    onChangeTab: PropTypes.func.isRequired,
     onRemove: PropTypes.func.isRequired,
     readOnly: PropTypes.bool
 };
