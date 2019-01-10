@@ -190,7 +190,6 @@ class T03 extends React.Component {
         const {id, property, type} = this.props.match.params;
         return (
             <AppContainer navbarItems={navigation}>
-                {this.renderToolMetaData()}
                 <Grid padded>
                     <Grid.Row>
                         <Grid.Column width={3}/>
