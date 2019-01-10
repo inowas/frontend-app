@@ -9,7 +9,8 @@ const menuItems = [
     },
     {
         name: 'Soilmodel',
-        property: 'soilmodel'
+        property: 'soilmodel',
+        icon: <Icon name="expand"/>
     },
     {
         name: 'Boundaries',
@@ -18,23 +19,28 @@ const menuItems = [
     },
     {
         name: 'Observations',
-        property: 'observations'
+        property: 'observations',
+        icon: <Icon name="clipboard outline"/>
     },
     {
         name: 'Transport',
-        property: 'transport'
+        property: 'transport',
+        icon: <Icon name="exchange"/>
     },
     {
         name: 'Run',
-        property: 'run'
+        property: 'run',
+        icon: <Icon name="calculator"/>
     },
     {
         name: 'Results',
-        property: 'results'
+        property: 'results',
+        icon: <Icon name="chart bar outline"/>
     },
     {
         name: 'Optimization',
-        property: 'optimization'
+        property: 'optimization',
+        icon: <Icon name="sliders horizontal"/>
     }
 ];
 

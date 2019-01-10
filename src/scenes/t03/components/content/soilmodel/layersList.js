@@ -1,15 +1,16 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import {Button, Icon, Menu} from 'semantic-ui-react';
+import {Button, Menu} from 'semantic-ui-react';
 import {pure} from 'recompose';
 import {Soilmodel} from 'core/model/modflow/soilmodel';
 
 const LayersList = ({addLayer, soilmodel, onChange, selected}) => {
     return (
         <div>
-            <Button onClick={addLayer} fluid>
-                <Icon name='plus' />
-                New Layer
+            <Button positive icon='plus' labelPosition='left'
+                onClick={addLayer}
+                content={'Add New'}
+            >
             </Button>
             <Menu fluid vertical tabular>
                 {soilmodel.layersCollection.all.map(layer => (

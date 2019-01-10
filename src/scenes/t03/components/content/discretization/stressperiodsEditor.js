@@ -97,7 +97,7 @@ class StressperiodsEditor extends React.Component {
                                 width={16}
                             />
                         </Form>
-                        <Message warning>
+                        <Message color={'blue'}>
                             <strong>Total time: </strong>{Stressperiods.fromObject(this.state.stressperiods).totim} days
                         </Message>
                     </Grid.Column>
