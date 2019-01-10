@@ -2,12 +2,12 @@ const layerParameters = [
     {
         name: 'top',
         description: 'Top elevation',
-        unit: 'm'
+        unit: 'm a.s.l.'
     },
     {
         name: 'botm',
         description: 'Bottom elevation',
-        unit: 'm'
+        unit: 'm a.s.l.'
     },
     {
         name: 'hk',
