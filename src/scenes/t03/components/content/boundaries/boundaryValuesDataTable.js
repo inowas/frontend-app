@@ -57,9 +57,9 @@ class BoundaryValuesDataTable extends React.Component {
         const dateTimeValues = boundary.getDateTimeValues(selectedOP);
         const lastDateTimeValue = dateTimeValues[dateTimeValues.length - 1];
         const newDateTimeValue = cloneDeep(lastDateTimeValue);
-        newDateTimeValue.date_time = moment.utc(lastDateTimeValue.date_time).add(number, unit);
+        newDateTimeValue.date_time = moment.utc(lastDateTimeValue.date_time).add(number, unit).toISOString();
         dateTimeValues.push(newDateTimeValue);
-        boundary.setDateTimeValues(selectedOP, dateTimeValues);
+        boundary.setDateTimeValues(dateTimeValues, selectedOP);
         this.props.onChange(boundary);
     };
 
