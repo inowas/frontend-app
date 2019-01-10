@@ -9,6 +9,7 @@ import {Boundary, ModflowModel, MultipleOPBoundary, SingleOPBoundary, Soilmodel}
 import BoundaryValuesDataTable from './boundaryValuesDataTable';
 import BoundaryGeometryEditor from './boundaryGeometryEditor';
 import ObservationPointEditor from './observationPointEditor';
+import NoContent from '../../../../shared/complexTools/noContent';
 
 class BoundaryDetails extends React.Component {
 
@@ -79,7 +80,7 @@ class BoundaryDetails extends React.Component {
         const {observationPointId} = this.state;
 
         if (!boundary || !geometry) {
-            return null;
+            return <NoContent message={'No boundaries.'}/>;
         }
 
         return (
