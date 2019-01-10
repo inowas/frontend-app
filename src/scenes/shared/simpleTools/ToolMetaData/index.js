@@ -69,7 +69,6 @@ class ToolMetaData extends React.Component {
     };
 
     render() {
-        console.log(this.props);
         const {readOnly} = this.props;
         const {edit} = this.state;
 

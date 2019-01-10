@@ -4,10 +4,15 @@ import OptimizationObjectivesComponent from './objectives';
 import OptimizationConstraintsComponent from './constraints';
 import OptimizationResultsComponent from './results';
 
+import OptimizationProgressBar from './optimizationProgressBar';
+import OptimizationStatus from './optimizationStatus';
+
 export {
     OptimizationConstraintsComponent,
     OptimizationObjectsComponent,
     OptimizationObjectivesComponent,
     OptimizationParametersComponent,
-    OptimizationResultsComponent
+    OptimizationResultsComponent,
+    OptimizationProgressBar,
+    OptimizationStatus
 }
