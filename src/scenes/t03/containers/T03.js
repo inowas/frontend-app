@@ -29,6 +29,7 @@ import {
     Soilmodel,
 } from 'core/model/modflow';
 import ModflowModelCommand from '../commands/modflowModelCommand';
+import CalculationProgressBar from '../components/content/run/calculationProgressBar';
 
 const navigation = [{
     name: 'Documentation',
@@ -211,6 +212,7 @@ class T03 extends React.Component {
                     <Grid.Row>
                         <Grid.Column width={3}>
                             <ToolNavigation navigationItems={menuItems}/>
+                            <CalculationProgressBar/>
                         </Grid.Column>
                         <Grid.Column width={13}>
                             {this.renderContent(id, property, type)}
