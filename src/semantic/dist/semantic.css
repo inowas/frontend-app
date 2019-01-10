@@ -849,7 +849,7 @@ body .ui.inverted::-webkit-scrollbar-thumb:hover {
 }
 
 .ui.button:hover .icon {
-  opacity: 0.85;
+  opacity: 1;
 }
 
 /*--------------
@@ -865,7 +865,7 @@ body .ui.inverted::-webkit-scrollbar-thumb:hover {
 }
 
 .ui.button:focus .icon {
-  opacity: 0.85;
+  opacity: 1;
 }
 
 /*--------------
@@ -24733,7 +24733,7 @@ Floated Menu / Item
   background-color: transparent;
   -webkit-box-shadow: none;
   box-shadow: none;
-  border-color: #1B1C1D;
+  border-color: #4C4C4C;
   font-weight: bold;
   color: rgba(0, 0, 0, 0.95);
 }
@@ -24741,7 +24741,7 @@ Floated Menu / Item
 /* Active Hover */
 
 .ui.secondary.pointing.menu .active.item:hover {
-  border-color: #1B1C1D;
+  border-color: #4C4C4C;
   color: rgba(0, 0, 0, 0.95);
 }
 
@@ -24772,7 +24772,7 @@ Floated Menu / Item
 /* Vertical Active */
 
 .ui.secondary.vertical.pointing.menu .active.item {
-  border-color: #1B1C1D;
+  border-color: #4C4C4C;
 }
 
 /* Inverted */

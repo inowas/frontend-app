@@ -65,7 +65,7 @@
   color: rgba(0, 0, 0, 0.8);
 }
 .ui.button:hover .icon {
-  opacity: 0.85;
+  opacity: 1;
 }
 
 /*--------------
@@ -80,7 +80,7 @@
           box-shadow: '' !important;
 }
 .ui.button:focus .icon {
-  opacity: 0.85;
+  opacity: 1;
 }
 
 /*--------------

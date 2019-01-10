@@ -27,3 +27,8 @@
 ----------------*/
 @hoverItemBackground: @lightGrey;
 @invertedHoverBackground: @blue;
+
+
+/* Pointing */
+
+@secondaryPointingActiveBorderColor: @grey;

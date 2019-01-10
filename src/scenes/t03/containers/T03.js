@@ -32,7 +32,7 @@ import ModflowModelCommand from '../commands/modflowModelCommand';
 
 const navigation = [{
     name: 'Documentation',
-    path: 'https://inowas.hydro.tu-dresden.de/tools/t02-groundwater-mounding-hantush/',
+    path: 'https://inowas.hydro.tu-dresden.de/tools/t03-modflow-model-setup-and-editor/',
     icon: <Icon name="file"/>
 }];
 
@@ -189,6 +189,7 @@ class T03 extends React.Component {
         const {id, property, type} = this.props.match.params;
         return (
             <AppContainer navbarItems={navigation}>
+                {this.renderToolMetaData()}
                 <Grid padded>
                     <Grid.Row>
                         <Grid.Column width={3}/>
