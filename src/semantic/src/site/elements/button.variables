@@ -10,3 +10,13 @@
 
 /* Basic Hover */
 @basicHoverBackground: transparent;
+
+/*-------------------
+        Group
+--------------------*/
+
+/* Hovered */
+@iconHoverOpacity: 1;
+
+/* Focused */
+@iconFocusOpacity: 1;

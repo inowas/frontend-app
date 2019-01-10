@@ -12,7 +12,7 @@ class BoundaryList extends React.Component {
     }
 
     boundaryTypes = () => ([
-        {key: 'all', value: 'all', text: 'All'},
+        {key: 'all', value: 'all', text: 'Show All'},
         {key: 'chd', value: 'chd', text: 'CHD'},
         {key: 'ghb', value: 'ghb', text: 'GHB'},
         {key: 'rch', value: 'rch', text: 'RCH'},
@@ -40,8 +40,20 @@ class BoundaryList extends React.Component {
                             trigger={<Icon name='ellipsis horizontal'/>}
                             content={
                                 <div>
-                                    <Button icon={'clone'} onClick={() => this.props.onClone(b.id)}/>
-                                    <Button icon={'trash'} onClick={() => this.props.onRemove(b.id)}/>
+                                    <Popup
+                                        trigger={<Button icon={'clone'} onClick={() => this.props.onClone(b.id)}/>}
+                                        content='Clone'
+                                        position='top center'
+                                        size='mini'
+                                        inverted
+                                    />
+                                    <Popup
+                                        trigger={<Button icon={'trash'} onClick={() => this.props.onRemove(b.id)}/>}
+                                        content='Delete'
+                                        position='top center'
+                                        size='mini'
+                                        inverted
+                                    />
                                 </div>
                             }
                             on={'click'}
@@ -67,9 +79,9 @@ class BoundaryList extends React.Component {
                                 value={this.state.selectedType}
                                 style={{minWidth: '120px', width: '120px'}}
                             />
-                            <Dropdown text='Add' icon='add' labeled button className='icon'>
+                            <Dropdown text='Add' icon='add' labeled button className='icon blue'>
                                 <Dropdown.Menu>
-                                    <Dropdown.Header/>
+                                    <Dropdown.Header>Choose type</Dropdown.Header>
                                     {this.boundaryTypes()
                                         .filter(b => b.value !== 'all')
                                         .map(o => <Dropdown.Item

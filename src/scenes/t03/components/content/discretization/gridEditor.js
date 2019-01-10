@@ -93,63 +93,54 @@ class GridEditor extends React.Component {
                     </Grid.Column>
                 </Grid.Row>
                 <Grid.Row>
-                    <Grid.Column width={5}>
+                    <Grid.Column width={3}>
                         <Form color={'grey'}>
-                            <Form.Group>
-                                <Form.Input
-                                    type='number'
-                                    label='Rows'
-                                    name={'nY'}
-                                    value={gridSizeLocal.nY}
-                                    onChange={this.handleGridSizeChange}
-                                    onBlur={this.handleGridSizeChange}
-                                    width={8}
-                                />
-                                <Form.Input
-                                    type='number'
-                                    label='Cell height'
-                                    value={Math.round(dyCell(boundingBox, gridSize) * 10000) / 10}
-                                    width={8}
-                                />
-                            </Form.Group>
-                            <Form.Group>
-                                <Form.Input
-                                    type='number'
-                                    label='Columns'
-                                    name={'nX'}
-                                    value={gridSizeLocal.nX}
-                                    onChange={this.handleGridSizeChange}
-                                    onBlur={this.handleGridSizeChange}
-                                    width={8}
-                                />
-                                <Form.Input
-                                    type='number'
-                                    label='Cell width'
-                                    value={Math.round(dxCell(boundingBox, gridSize) * 10000) / 10}
-                                    width={8}
-                                />
-                            </Form.Group>
-                            <Form.Select
+                            <Form.Input
+                                type='number'
+                                label='Rows'
+                                name={'nY'}
+                                value={gridSizeLocal.nY}
+                                onChange={this.handleGridSizeChange}
+                                onBlur={this.handleGridSizeChange}
+                            />
+                            <Form.Input
+                                type='number'
+                                label='Columns'
+                                name={'nX'}
+                                value={gridSizeLocal.nX}
+                                onChange={this.handleGridSizeChange}
+                                onBlur={this.handleGridSizeChange}
+                            />
+                            <Form.Input
+                                type='number'
+                                label='Cell height'
+                                value={Math.round(dyCell(boundingBox, gridSize) * 10000) / 10}
+                            />
+                            <Form.Input
+                                type='number'
+                                label='Cell width'
+                                value={Math.round(dxCell(boundingBox, gridSize) * 10000) / 10}
+                            />
+                            <Form.Select compact
                                 label='Length unit'
                                 options={[{key: 2, text: 'meters', value: 2}]}
                                 style={{zIndex: 10000}}
                                 value={this.state.lengthUnit}
-                                width={16}
                             />
                         </Form>
                     </Grid.Column>
-                    <Grid.Column width={11}>
-                    </Grid.Column>
-                </Grid.Row>
-                <Grid.Row>
-                    <Grid.Column width={16}>
+                    <Grid.Column width={13}>
                         <ModelDiscretizationMap
                             activeCells={ActiveCells.fromArray(this.state.activeCells)}
                             boundingBox={BoundingBox.fromArray(this.state.boundingBox)}
                             geometry={Geometry.fromObject(this.state.geometry)}
                             gridSize={GridSize.fromObject(this.state.gridSize)}
                             onChange={this.handleMapChange}
-                        />
+                        /></Grid.Column>
+                </Grid.Row>
+                <Grid.Row>
+                    <Grid.Column width={16}>
+
                     </Grid.Column>
                 </Grid.Row>
             </Grid>
