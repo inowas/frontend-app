@@ -136,21 +136,6 @@ class LayerParameter extends React.Component {
                         </Grid.Column>
                         <Grid.Column width={8}>
                             <Accordion fluid>
-                                <Accordion.Title active={this.state.activeIndex === 0} index={0}
-                                                 onClick={this.onClickAccordion}>
-                                    <Icon name="dropdown"/>
-                                    Calculation
-                                </Accordion.Title>
-                                <Accordion.Content active={this.state.activeIndex === 0}>
-                                    <Button
-                                        icon
-                                        primary
-                                        fluid
-                                        onClick={this.recalculateMap}
-                                    >
-                                        <Icon name="map"/> Recalculate Map
-                                    </Button>
-                                </Accordion.Content>
                                 <Accordion.Title active={this.state.activeIndex === 1} index={1}
                                                  onClick={this.onClickAccordion}>
                                     <Icon name="dropdown"/>
@@ -177,13 +162,20 @@ class LayerParameter extends React.Component {
                                             onChange={this.onChangeSmoothParams}
                                         />
                                     </Form.Field>
-                                    <Button
-                                        icon
-                                        fluid
-                                        onClick={this.smoothMap}
-                                    >
-                                        <Icon name="tint"/> Start Smoothing
-                                    </Button>
+                                    <Button.Group fluid>
+                                        <Button
+                                            icon
+                                            onClick={this.smoothMap}
+                                        >
+                                            <Icon name="tint"/> Start Smoothing
+                                        </Button>
+                                        <Button
+                                            icon
+                                            onClick={this.recalculateMap}
+                                        >
+                                            <Icon name="trash"/> Remove Smoothing
+                                        </Button>
+                                    </Button.Group>
                                 </Accordion.Content>
                             </Accordion>
                         </Grid.Column>

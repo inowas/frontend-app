@@ -30,7 +30,7 @@ class SoilmodelLayer {
         return layer;
     }
 
-    static fromObject(obj) {
+    static fromObject(obj, parseParameters = true) {
         const layer = new SoilmodelLayer();
 
         if (obj) {
@@ -48,7 +48,7 @@ class SoilmodelLayer {
             layer.laywet = obj.laywet;
             layer.ss = obj.ss;
             layer.sy = obj.sy;
-            layer.zonesCollection = obj._meta && obj._meta.zones ? ZonesCollection.fromArray(obj._meta.zones) : new ZonesCollection();
+            layer.zonesCollection = obj._meta && obj._meta.zones ? ZonesCollection.fromArray(obj._meta.zones, parseParameters) : new ZonesCollection();
         }
 
         return layer;
@@ -252,7 +252,7 @@ class SoilmodelLayer {
             parameters.forEach(parameter => {
                 // ... and check if the current zone has values for the parameter
 
-                if (!!zone[parameter]) {
+                if (!isNaN(zone[parameter]) || Array.isArray(zone[parameter])) {
                     // apply array with default values to parameter, if zone with parameter exists
                     // x is number of columns, y number of rows (grid resolution of model)
                     if (!Array.isArray(this[parameter])) {
