@@ -31,6 +31,10 @@ class AbstractCollection {
         return this;
     }
 
+    filterBy(property, value) {
+        return this._items.filter(item => (item[property].toLowerCase()).indexOf(value.toLowerCase()) > -1)
+    }
+
     findBy(property, value, first = false) {
         const items = this.all.filter(item => item[property] === value);
         if (first) {

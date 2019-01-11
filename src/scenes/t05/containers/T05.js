@@ -10,7 +10,14 @@ import {deepMerge} from '../../shared/simpleTools/helpers';
 import {Divider, Grid, Icon, Segment} from 'semantic-ui-react';
 import AppContainer from '../../shared/AppContainer';
 import ToolMetaData from '../../shared/simpleTools/ToolMetaData';
-import {CriteriaEditor, ConstraintsEditor, ToolNavigation, WeightAssignmentEditor} from '../components';
+import {
+    CriteriaEditor,
+    CriteriaDataEditor,
+    CriteriaNavigation,
+    ConstraintsEditor,
+    ToolNavigation,
+    WeightAssignmentEditor
+} from '../components';
 
 import {defaultsT05} from '../defaults';
 import getMenuItems from '../defaults/menuItems';
@@ -139,6 +146,8 @@ class T05 extends React.Component {
         }
     });
 
+    handleClickCriteriaNavigation = (e, {name}) => this.routeTo(name);
+
     routeTo = (type = null) => {
         const {id, property} = this.props.match.params;
         const path = this.props.match.path;
@@ -185,6 +194,15 @@ class T05 extends React.Component {
                         routeTo={this.routeTo}
                     />
                 );
+            case 'cd':
+                const criterion = type ? mcda.criteriaCollection.findById(type) : null;
+
+                return (
+                    <CriteriaDataEditor
+                        criterion={criterion}
+                        mcda={mcda}
+                    />
+                );
             default:
                 const path = this.props.match.path;
                 const basePath = path.split(':')[0];
@@ -200,7 +218,7 @@ class T05 extends React.Component {
         const mcda = MCDA.fromObject(this.state.tool.data.mcda);
         const {tool, isDirty, isLoading} = this.state;
 
-        const {type} = this.props.match.params;
+        const {type, property} = this.props.match.params;
 
         const {permissions} = tool;
         const readOnly = !includes(permissions, 'w');
@@ -223,11 +241,22 @@ class T05 extends React.Component {
                     <Grid.Row>
                         <Grid.Column width={4}>
                             <ToolNavigation navigationItems={menuItems}/>
+                            {property === 'cd' &&
+                            <CriteriaNavigation
+                                activeCriterion={type}
+                                mcda={mcda}
+                                onClick={this.handleClickCriteriaNavigation}
+                            />
+                            }
                         </Grid.Column>
                         <Grid.Column width={12}>
                             <Segment color={'grey'} loading={isLoading}>
-                                <ContentToolBar backButton={!!type} onBack={this.routeTo} isDirty={isDirty} save
-                                                onSave={this.handleSave}/>
+                                <ContentToolBar
+                                    backButton={!!type && property !== 'cd'}
+                                    onBack={this.routeTo}
+                                    isDirty={isDirty} save
+                                    onSave={this.handleSave}
+                                />
                                 <Divider/>
                                 {this.renderContent()}
                             </Segment>
