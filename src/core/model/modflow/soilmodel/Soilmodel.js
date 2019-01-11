@@ -12,7 +12,6 @@ class Soilmodel {
     }
 
     static fromObject(obj) {
-
         if(!obj) {
             return Soilmodel.fromDefaults();
         }

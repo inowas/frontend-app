@@ -47,6 +47,7 @@ class LayerDetails extends React.Component {
     render() {
         const {model, readOnly} = this.props;
         const {layer} = this.state;
+
         if (!layer || !layer) {
             return null;
         }
@@ -146,8 +147,12 @@ class LayerDetails extends React.Component {
         }];
 
         layerParameters.forEach(p => {
+            if (p.name === 'top' && layer.number > 1) {
+                return;
+            }
             panes.push({
-                menuItem: p.name, render: () =>
+                menuItem: p.name,
+                render: () =>
                     <Tab.Pane>
                         <LayerParameter
                             model={model}
@@ -162,16 +167,18 @@ class LayerDetails extends React.Component {
 
         return (
             <Form>
-                <Tab menu={{secondary: true, pointing: true}} panes={panes}/>
+                <Tab menu={{secondary: true, pointing: true}} activeIndex={this.props.activeIndex || 0} onTabChange={this.props.onChangeTab} panes={panes}/>
             </Form>
         )
     }
 }
 
 LayerDetails.proptypes = {
+    activeIndex: PropTypes.number,
     layer: PropTypes.instanceOf(SoilmodelLayer).isRequired,
     model: PropTypes.instanceOf(ModflowModel).isRequired,
     onChange: PropTypes.func.isRequired,
+    onChangeTab: PropTypes.func.isRequired,
     onRemove: PropTypes.func.isRequired,
     readOnly: PropTypes.bool
 };

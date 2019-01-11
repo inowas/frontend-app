@@ -30,7 +30,7 @@ class SoilmodelZone {
         return zone;
     }
 
-    static fromObject(obj) {
+    static fromObject(obj, parseParameters = true) {
         const zone = new SoilmodelZone();
         if (obj) {
             zone.id = obj.id;
@@ -38,13 +38,13 @@ class SoilmodelZone {
             zone.geometry = obj.geometry ? Geometry.fromObject(obj.geometry) : null;
             zone.activeCells = obj.activeCells ? ActiveCells.fromArray(obj.activeCells) : null;
             zone.priority = obj.priority;
-            zone.top = obj.top;
-            zone.botm = obj.botm;
-            zone.hk = obj.hk;
-            zone.hani = obj.hani;
-            zone.vka = obj.vka;
-            zone.ss = obj.ss;
-            zone.sy = obj.sy;
+            zone.top = parseParameters ? zone.parseValue(obj.top) : obj.top;
+            zone.botm = parseParameters ? zone.parseValue(obj.botm) : obj.botm;
+            zone.hk = parseParameters ? zone.parseValue(obj.hk) : obj.hk;
+            zone.hani = parseParameters ? zone.parseValue(obj.hani) : obj.hani;
+            zone.vka = parseParameters ? zone.parseValue(obj.vka) : obj.vka;
+            zone.ss = parseParameters ? zone.parseValue(obj.ss) : obj.ss;
+            zone.sy = parseParameters ? zone.parseValue(obj.sy) : obj.sy;
         }
         return zone;
     }
@@ -94,7 +94,7 @@ class SoilmodelZone {
     }
 
     set top(value) {
-        this._top = this.parseValue(value);
+        this._top = value;
     }
 
     get botm() {
@@ -102,7 +102,7 @@ class SoilmodelZone {
     }
 
     set botm(value) {
-        this._botm = this.parseValue(value);
+        this._botm = value;
     }
 
     get hk() {
@@ -110,7 +110,7 @@ class SoilmodelZone {
     }
 
     set hk(value) {
-        this._hk = this.parseValue(value);
+        this._hk = value;
     }
 
     get hani() {
@@ -118,7 +118,7 @@ class SoilmodelZone {
     }
 
     set hani(value) {
-        this._hani = this.parseValue(value);
+        this._hani = value;
     }
 
     get vka() {
@@ -126,7 +126,7 @@ class SoilmodelZone {
     }
 
     set vka(value) {
-        this._vka = this.parseValue(value);
+        this._vka = value;
     }
 
     get ss() {
@@ -134,7 +134,7 @@ class SoilmodelZone {
     }
 
     set ss(value) {
-        this._ss = this.parseValue(value);
+        this._ss = value;
     }
 
     get sy() {
@@ -142,7 +142,7 @@ class SoilmodelZone {
     }
 
     set sy(value) {
-        this._sy = this.parseValue(value);
+        this._sy = value;
     }
 
     toObject() {
@@ -167,9 +167,9 @@ class SoilmodelZone {
             return value;
         }
         if (this.priority === 0) {
-            return value && value !== '' ? parseFloat(value) : 0;
+            return isNaN(value) ? 0 : parseFloat(value);
         }
-        return value && value !== '' ? parseFloat(value) : null;
+        return isNaN(value) ? null : parseFloat(value);
     }
 }
 

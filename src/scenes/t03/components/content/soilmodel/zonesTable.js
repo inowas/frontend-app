@@ -27,11 +27,11 @@ class ZonesTable extends React.Component {
         }));
     }
 
-    onChange = () => this.props.onChange(SoilmodelLayer.fromObject(this.state.layer));
+    onChange = () => this.props.onChange(SoilmodelLayer.fromObject(this.state.layer, true));
 
     onLocalChange = id => e => {
         const value = e.target.value;
-        const layer = SoilmodelLayer.fromObject(this.state.layer);
+        const layer = SoilmodelLayer.fromObject(this.state.layer, false);
         const zone = layer.zonesCollection.findById(id);
         if (zone) {
             zone[this.props.parameter] = value;
@@ -48,7 +48,7 @@ class ZonesTable extends React.Component {
         zone[this.props.parameter] = null;
         layer.zonesCollection.update(zone);
 
-        this.props.onChange(layer);
+        this.props.onChange(layer, true);
     };
 
     onReorder = (id, order) => {
@@ -58,13 +58,13 @@ class ZonesTable extends React.Component {
         layer.zonesCollection = layer.zonesCollection.changeOrder(zone, order);
 
         if (zone) {
-            this.props.onChange(layer);
+            this.props.onChange(layer, true);
         }
     };
 
     render() {
         const {onEdit, parameter, readOnly} = this.props;
-        const layer = SoilmodelLayer.fromObject(this.state.layer);
+        const layer = SoilmodelLayer.fromObject(this.state.layer, false);
         const zones = layer.zonesCollection.orderBy('priority', 'desc').all;
 
         return (
@@ -91,6 +91,12 @@ class ZonesTable extends React.Component {
                                         style={styles.input}
                                         type='number'
                                         value={Array.isArray(zone[parameter]) ? '' : zone[parameter]}
+                                        onKeyPress={e => {
+                                            if (e.key === 'Enter') {
+                                                e.preventDefault();
+                                                this.onChange();
+                                            }
+                                        }}
                                     />
                                     {Array.isArray(zone[parameter]) &&
                                     <span>RASTER</span>
@@ -104,6 +110,12 @@ class ZonesTable extends React.Component {
                                     style={styles.input}
                                     type='number'
                                     value={zone[parameter] !== null ? zone[parameter] : ''}
+                                    onKeyPress={e => {
+                                        if (e.key === 'Enter') {
+                                            e.preventDefault();
+                                            this.onChange();
+                                        }
+                                    }}
                                 />
                                 }
                             </Table.Cell>
