@@ -1,0 +1,130 @@
+  {
+  "type": "object",
+  "id": "https://inowas.com/schema/command/updateModflowModelPayload",
+  "properties": {
+    "id": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$"
+    },
+    "name": {
+      "type": "string",
+      "minLength": 3,
+      "maxLength": 255
+    },
+    "description": {
+      "type": "string"
+    },
+    "geometry": {
+      "$ref": "#/definitions/polygon"
+    },
+    "bounding_box": {
+      "$ref": "#/definitions/bounding_box"
+    },
+    "active_cells": {
+      "$ref": "#/definitions/active_cells"
+    },
+    "grid_size": {
+      "$ref": "#/definitions/grid_size"
+    },
+    "length_unit": {
+      "$ref": "#/definitions/length_unit"
+    },
+    "time_unit": {
+      "$ref": "#/definitions/time_unit"
+    },
+    "public": {
+      "type": "boolean"
+    }
+  },
+  "additionalProperties": true,
+  "required": ["id"],
+  "definitions": {
+    "polygon": {
+      "id": "#polygon",
+      "title": "polygon",
+      "description": "Polygon as defined by GeoJSON",
+      "type": "object",
+      "required": [
+        "type",
+        "coordinates"
+      ],
+      "properties": {
+        "type": {
+          "enum": [
+            "Polygon"
+          ]
+        },
+        "coordinates": {
+          "type": "array"
+        }
+      }
+    },
+    "bounding_box": {
+      "id": "#bounding_box",
+      "type": "array",
+      "items": {
+        "type": "array",
+        "items": {
+          "type": "number"
+        },
+        "minItems": 2,
+        "maxItems": 2
+      },
+      "minItems": 2,
+      "maxItems": 2
+    },
+    "active_cells": {
+      "id": "#active_cells",
+      "type": "array",
+      "items": {
+        "description": "Cell-values",
+        "type": "array",
+        "items": {
+          "description": "Cell-value",
+          "type": "integer"
+        },
+        "minItems": 2,
+        "maxItems": 2
+      }
+    },
+    "grid_size": {
+      "id": "grid_size",
+      "type": "object",
+      "properties": {
+        "n_x": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "n_y": {
+          "type": "integer",
+          "minimum": 1
+        }
+      },
+      "required": [
+        "n_x",
+        "n_y"
+      ]
+    },
+    "length_unit": {
+      "id": "#length_unit",
+      "description": "0: undefined, 1: feet, 2: meters, 3: centimeters",
+      "enum": [
+        0,
+        1,
+        2,
+        3
+      ]
+    },
+    "time_unit": {
+      "description": "0: undefined, 1: seconds, 2: minutes, 3: hours, 4: days, 5: years",
+      "enum": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5
+      ]
+    }
+  }
+}

@@ -15,7 +15,7 @@ const Settings = ({settings, onChange}) => {
                 <Header as='h2'>Settings</Header>
             </Grid.Row>
             <Grid.Row centered>
-                <Header as='h3'>Please choose the appropriate boundary condition:</Header>
+                <p>Please choose the appropriate boundary condition:</p>
             </Grid.Row>
             <Grid.Row centered>
                 <Form>

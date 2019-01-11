@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import {withRouter} from 'react-router-dom';
-import {Grid, Header, Icon, Image, Segment} from "semantic-ui-react";
+import {Grid, Header, Icon, Image, Segment} from 'semantic-ui-react';
 
 import image9A from '../images/T09A.png';
 import image9B from '../images/T09B.png';
@@ -9,7 +9,7 @@ import image9C from '../images/T09C.png';
 import image9D from '../images/T09D.png';
 import image9E from '../images/T09E.png';
 import image9F from '../images/T09F.png';
-import AppContainer from "../../shared/AppContainer";
+import AppContainer from '../../shared/AppContainer';
 
 export const navigation = [{
     name: 'Documentation',
@@ -59,22 +59,18 @@ class T09 extends React.Component {
     render() {
         const columns = items.map(i => (
             <Grid.Column key={i.tool} onClick={() => this.redirectTo(i.tool)}>
-                <Segment color={'grey'} style={{cursor: 'pointer'}}>
-                    <Header as={'h2'} textAlign={'center'}>{i.tool}</Header>
-                    <p align={'center'}>
-                        {i.description}
-                    </p>
-                    <Image src={i.image} bordered/>
+                <Segment color={'blue'} style={{cursor:'pointer', marginBottom:'1em'}} padded>
+                    <Image src={i.image} size={'medium'} floated={'left'} />
+                    <Header as={'h2'} color={'blue'}>{i.tool}</Header>
+                    <p>{i.description}</p>
+
                 </Segment>
             </Grid.Column>
         ));
 
         return (
             <AppContainer navBarItems={navigation}>
-                <Header as={'h2'}>
-                    Please select the set of boundary conditions that apply to your problem:
-                </Header>
-                <Grid columns={6} padded>
+                <Grid columns={2} stretched>
                     {columns}
                 </Grid>
             </AppContainer>

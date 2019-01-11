@@ -3,10 +3,10 @@ import image from '../images/T01.png';
 import {Background, Chart, Parameters, Info} from '../components/index';
 
 import PapaParse from 'papaparse';
-import {Icon} from "semantic-ui-react";
+import {Icon} from 'semantic-ui-react';
 import csvFile from '../data/2018-10-25-mar-in-scales.csv';
-import AppContainer from "../../shared/AppContainer";
-import ToolGrid from "../../shared/simpleTools/ToolGrid";
+import AppContainer from '../../shared/AppContainer';
+import ToolGrid from '../../shared/simpleTools/ToolGrid';
 
 const navigation = [{
     name: 'Documentation',

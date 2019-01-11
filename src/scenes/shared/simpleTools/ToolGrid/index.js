@@ -14,14 +14,14 @@ class ToolGrid extends React.Component {
         <Grid.Row key={numberOfRow}>
             <Grid.Column width={6}>
                 {this.props.children[numberOfRow * 2] &&
-                <Segment style={styles.segment} color={'grey'}>
+                <Segment style={styles.segment} color={'grey'} padded>
                     {this.props.children[numberOfRow * 2]}
                 </Segment>
                 }
             </Grid.Column>
             <Grid.Column width={10}>
                 {this.props.children[numberOfRow * 2 + 1] &&
-                <Segment style={styles.segment} color={'blue'}>
+                <Segment style={styles.segment} color={'blue'} padded>
                     {this.props.children[numberOfRow * 2 + 1]}
                 </Segment>
                 }

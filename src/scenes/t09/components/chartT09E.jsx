@@ -13,8 +13,8 @@ import {
 } from 'recharts';
 
 import {calcXtQ0Flux, calcXtQ0Head, dRho, calculateDiagramData} from '../calculations/calculationT09E';
-import {exportChartData, exportChartImage, getParameterValues} from "../../shared/simpleTools/helpers";
-import {Button, Grid, Header, Segment} from "semantic-ui-react";
+import {exportChartData, exportChartImage, getParameterValues} from '../../shared/simpleTools/helpers';
+import {Button, Grid, Segment} from 'semantic-ui-react';
 
 const calculationErrorOverlay = (maxIter, valid, dxt) => {
     if (!valid) {
@@ -51,14 +51,14 @@ const styles = {
     },
     diagramLabel: {
         position: 'absolute',
-        top: '30px',
+        top: '5px',
         left: '120px',
         background: '#EFF3F6',
         opacity: 0.9
     },
     downloadButtons: {
         position: 'absolute',
-        top: '45px',
+        top: '5px',
         right: '100px'
     }
 };
@@ -104,7 +104,6 @@ const Chart = ({parameters, settings}) => {
 
     return (
         <div>
-            <Header as={'h3'} textAlign='center'>Calculation</Header>
             <Grid>
                 <Grid.Column>
                     <ResponsiveContainer width={'100%'} aspect={2}>
@@ -114,7 +113,12 @@ const Chart = ({parameters, settings}) => {
                             ref={(chart) => currentChart = chart}
                         >
                             <XAxis type="number" dataKey="xt">
-                                <Label value={'xw [m]'} offset={0} position="bottom"/>
+                                <Label
+                                    value={'xw [m]'}
+                                    offset={0}
+                                    position="bottom"
+                                    fill={'#4C4C4C'}
+                                />
                             </XAxis>
                             <YAxis
                                 type="number"
@@ -128,6 +132,7 @@ const Chart = ({parameters, settings}) => {
                                     position='right'
                                     style={{textAnchor: 'center'}}
                                     value={'z0 [m]'}
+                                    fill={'#4C4C4C'}
                                 />
                             </YAxis>
                             <CartesianGrid strokeDasharray="3 3"/>
@@ -182,13 +187,13 @@ const Chart = ({parameters, settings}) => {
                     <div style={styles.downloadButtons}>
                         <Button
                             size={'tiny'}
-                            color={'orange'}
+                            color={'grey'}
                             content='JPG'
                             onClick={() => exportChartImage(currentChart)}
                         />
                         <Button
                             size={'tiny'}
-                            color={'orange'}
+                            color={'grey'}
                             content='CSV'
                             onClick={() => exportChartData(currentChart)}
                         />

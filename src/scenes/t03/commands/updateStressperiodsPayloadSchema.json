@@ -1,0 +1,93 @@
+{
+  "type": "object",
+  "id": "https://inowas.com/schema/command/updateStressperiodsPayload",
+  "properties": {
+    "id": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$"
+    },
+    "stress_periods": {
+      "$ref": "#/definitions/stress_periods"
+    },
+    "public": {
+      "type": "boolean"
+    }
+  },
+  "additionalProperties": false,
+  "required": [
+    "id",
+    "stress_periods"
+  ],
+  "definitions": {
+    "stress_periods": {
+      "id": "#stress_periods",
+      "description": "The stressPeriods object",
+      "type": "object",
+      "properties": {
+        "start_date_time": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "end_date_time": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "time_unit": {
+          "$ref": "#/definitions/time_unit"
+        },
+        "stress_periods": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/stress_period"
+          }
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "start_date_time",
+        "end_date_time",
+        "time_unit",
+        "stress_periods"
+      ]
+    },
+    "stress_period": {
+      "type": "object",
+      "properties": {
+        "totim_start": {
+          "type": "integer"
+        },
+        "perlen": {
+          "type": "integer"
+        },
+        "nstp": {
+          "type": "integer"
+        },
+        "tsmult": {
+          "type": "number"
+        },
+        "steady": {
+          "type": "boolean"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "totim_start",
+        "perlen",
+        "nstp",
+        "tsmult",
+        "steady"
+      ]
+    },
+    "time_unit": {
+      "description": "0: undefined, 1: seconds, 2: minutes, 3: hours, 4: days, 5: years",
+      "enum": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5
+      ]
+    }
+  }
+}

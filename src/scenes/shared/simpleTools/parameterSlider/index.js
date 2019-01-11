@@ -1,27 +1,25 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import {Grid} from "semantic-ui-react";
+import {Grid} from 'semantic-ui-react';
 
 import Slider from 'rc-slider';
 import 'rc-slider/assets/index.css';
-import SliderParameter from "./SliderParameter";
+import SliderParameter from './SliderParameter';
 
 const styles = {
     extraMini: {
-        border: '1px solid rgba(34,36,38,.15)',
-        borderRadius: '.28571429rem',
-        fontSize: '.78571429em',
-        padding: '2px',
-        width: '50px'
+        backgroundColor: '#EEEEEE',
+        boxShadow: '0px 1px 2px 0px rgba(0,0,0,0.1) inset',
+        border: 'none',
+        padding: '3px'
     },
-    gridPadding: {
-        paddingTop: '15px'
+    L: {
+        width: '53px'
+    },
+    R: {
+        width: '65px'
     },
     valueInput: {
-        border: '1px solid rgba(34,36,38,.15)',
-        borderRadius: '.28571429rem',
-        fontSize: '.78571429em',
-        padding: '5px',
         width: '100px'
     },
     row: {
@@ -63,7 +61,7 @@ class ParameterSlider extends React.Component {
         param.value = value;
 
         return this.setState({
-            param: param
+            param: param.toObject
         });
     };
 
@@ -74,22 +72,22 @@ class ParameterSlider extends React.Component {
 
         return (
             <Grid.Row columns={3} style={styles.row}>
-                <Grid.Column width={5}>
+                <Grid.Column width={5} textAlign='right'>
                     <div dangerouslySetInnerHTML={{__html: param.name}}/>
                 </Grid.Column>
                 <Grid.Column width={8}>
-                    <Grid columns={2} style={styles.gridPadding}>
-                        <Grid.Column width={5} floated='left'>
+                    <Grid columns={2}>
+                        <Grid.Column width={4} floated='left'>
                             <input name='min'
-                                   type="number"
-                                   style={styles.extraMini}
+                                   type='number'
+                                   style={{...styles.extraMini, ...styles.L}}
                                    value={param.min} onBlur={this.handleChange} onChange={this.handleLocalChange}
                             />
                         </Grid.Column>
-                        <Grid.Column width={5} floated='right' textAlign='right'>
+                        <Grid.Column width={4} floated='right'>
                             <input name='max'
-                                   type="number"
-                                   style={styles.extraMini}
+                                   type='number'
+                                   style={{...styles.extraMini, ...styles.R}}
                                    value={param.max} onBlur={this.handleChange} onChange={this.handleLocalChange}
                             />
                         </Grid.Column>
@@ -108,13 +106,13 @@ class ParameterSlider extends React.Component {
                         </Grid.Row>
                     </Grid>
                 </Grid.Column>
-                <Grid.Column width={3}>
+                <Grid.Column width={3} style={{verticalAlign: 'top', height: '50px'}}>
                     <input name='value'
-                           type="number"
+                           type='number'
                            size='mini'
+                           style={{...styles.extraMini, ...styles.valueInput}}
                            value={param.value} onChange={this.handleLocalChange}
                            onBlur={this.handleChange}
-                           style={styles.valueInput}
                     />
                 </Grid.Column>
             </Grid.Row>

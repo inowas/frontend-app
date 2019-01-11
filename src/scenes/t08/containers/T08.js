@@ -1,20 +1,21 @@
 import PropTypes from 'prop-types';
 import React from 'react';
-
-import image from '../images/T08.png';
-import {Background, Chart, Info, Parameters, Settings} from '../components/index';
+import {Icon} from 'semantic-ui-react';
 
 import {includes} from 'lodash';
+import {withRouter} from 'react-router-dom';
+
+import {AppContainer} from '../../shared';
+import {Background, Chart, Info, Parameters, Settings} from '../components/index';
+import {SliderParameter, ToolGrid, ToolMetaData} from '../../shared/simpleTools';
+
+import SimpleToolsCommand from '../../shared/simpleTools/commands/SimpleToolsCommand';
+
+import image from '../images/T08.png';
 import {T08 as defaults} from '../defaults';
-import {Icon} from 'semantic-ui-react';
-import SliderParameter from 'scenes/shared/simpleTools/parameterSlider/SliderParameter';
 
 import {fetchTool, sendCommand} from 'services/api';
-import {createToolInstanceCommand, updateToolInstanceCommand} from 'services/commandFactory';
-import AppContainer from '../../shared/AppContainer';
-import ToolMetaData from '../../shared/simpleTools/ToolMetaData';
-import ToolGrid from "../../shared/simpleTools/ToolGrid";
-import {buildPayload, deepMerge} from "../../shared/simpleTools/helpers";
+import {buildPayload, deepMerge} from '../../shared/simpleTools/helpers';
 
 const navigation = [{
     name: 'Documentation',
@@ -23,12 +24,12 @@ const navigation = [{
 }];
 
 class T08 extends React.Component {
-    constructor() {
-        super();
+    constructor(props) {
+        super(props);
         this.state = {
             tool: defaults(),
+            isDirty: true,
             isLoading: false,
-            isDirty: false,
             error: false
         };
     }
@@ -41,6 +42,7 @@ class T08 extends React.Component {
                 this.props.match.params.id,
                 tool => this.setState({
                     tool: deepMerge(this.state.tool, tool),
+                    isDirty: false,
                     isLoading: false
                 }),
                 error => this.setState({error, isLoading: false})
@@ -54,15 +56,15 @@ class T08 extends React.Component {
 
         if (id) {
             sendCommand(
-                updateToolInstanceCommand(buildPayload(tool)),
-                () => this.setState({dirty: false}),
+                SimpleToolsCommand.updateToolInstance(buildPayload(tool)),
+                () => this.setState({isDirty: false}),
                 () => this.setState({error: true})
             );
             return;
         }
 
         sendCommand(
-            createToolInstanceCommand(buildPayload(tool)),
+            SimpleToolsCommand.createToolInstance(buildPayload(tool)),
             () => this.props.history.push(`${this.props.location.pathname}/${tool.id}`),
             () => this.setState({error: true})
         );
@@ -78,7 +80,8 @@ class T08 extends React.Component {
                         ...prevState.tool.data,
                         parameters: parameters.map(p => p.toObject)
                     }
-                }
+                },
+                isDirty: true
             };
         });
     };
@@ -90,38 +93,48 @@ class T08 extends React.Component {
                 tool: {
                     ...prevState.tool,
                     data: {...prevState.tool.data, settings}
-                }
+                },
+                isDirty: true
             };
         });
     };
 
     handleReset = () => {
-        this.setState({
-            tool: defaults(),
-            isLoading: false,
-            isDirty: false
+        this.setState(prevState => {
+            return {
+                tool: {...prevState.tool, data: defaults().data},
+                isLoading: false,
+                isDirty: true
+            }
         });
     };
+
 
     update = (tool) => this.setState({tool});
 
     render() {
-        const {tool, isLoading} = this.state;
-        if (isLoading) {
+        if (this.state.isLoading) {
             return (
                 <AppContainer navBarItems={navigation} loader/>
             );
         }
 
+        const {isDirty, tool} = this.state;
         const {data, permissions} = tool;
-        const {settings, parameters} = data;
+        const {parameters, settings} = data;
         const readOnly = !includes(permissions, 'w');
 
         return (
             <AppContainer navbarItems={navigation}>
-                <ToolMetaData tool={tool} readOnly={readOnly} onChange={this.update} onSave={this.save}/>
+                <ToolMetaData
+                    tool={tool}
+                    readOnly={readOnly}
+                    onChange={this.update}
+                    onSave={this.save}
+                    isDirty={isDirty}
+                />
                 <ToolGrid rows={2}>
-                    <Background image={image} title={'T08. GROUNDWATER MOUNDING (HANTUSH)'}/>
+                    <Background image={image} title={'T08. 1D transport model (Ogata-Banks)'}/>
                     <Chart settings={settings} parameters={parameters}/>
                     <div>
                         <Settings settings={settings} onChange={this.handleChangeSettings}/>
@@ -144,4 +157,4 @@ T08.propTypes = {
     match: PropTypes.object.isRequired,
 };
 
-export default T08;
+export default withRouter(T08);
