@@ -141,8 +141,12 @@ class LayerDetails extends React.Component {
         }];
 
         layerParameters.forEach(p => {
+            if (p.name === 'top' && layer.number > 1) {
+                return;
+            }
             panes.push({
-                menuItem: p.name, render: () =>
+                menuItem: p.name,
+                render: () =>
                     <Tab.Pane>
                         <LayerParameter
                             model={model}
