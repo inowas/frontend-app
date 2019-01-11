@@ -30,8 +30,6 @@ const ResultsChart = ({data, row, col, show}) => {
         referenceTo = row;
     }
 
-    console.log(referenceTo, row, col, show);
-
     return (
         <ResponsiveContainer aspect={1.5}>
             <AreaChart data={processedData}>
