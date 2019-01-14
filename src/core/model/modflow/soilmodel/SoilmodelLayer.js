@@ -4,6 +4,7 @@ import {GridSize} from '../index';
 import {cloneDeep} from 'lodash';
 import Geometry from '../Geometry';
 import ActiveCells from '../ActiveCells';
+import ModflowModel from "../ModflowModel";
 
 class SoilmodelLayer {
     _id = uuidv4();
@@ -39,7 +40,6 @@ class SoilmodelLayer {
         const defaultZone = SoilmodelZone.fromDefault();
         defaultZone.geometry = geometry;
         defaultZone.activeCells = activeCells;
-        console.log('DEFAULT ZONE', defaultZone);
         layer.zonesCollection.add(defaultZone);
         return layer;
     }
@@ -221,6 +221,20 @@ class SoilmodelLayer {
             'ss': this.ss,
             'sy': this.sy
         };
+    }
+
+    updateGeometry(model) {
+        if (!(model instanceof ModflowModel)) {
+            throw new Error('Model needs to be instance of ModflowModel');
+        }
+
+        const defaultZone = this.zonesCollection.findBy('priority', 0, true);
+        if (defaultZone) {
+            defaultZone.geometry = model.geometry;
+            defaultZone.activeCells = model.activeCells;
+            this.zonesCollection.update(defaultZone);
+        }
+        return this;
     }
 
     smoothParameter(gridSize, parameter, cycles = 1, distance = 1) {
