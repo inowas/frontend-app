@@ -43,7 +43,6 @@ class OptimizationContainer extends React.Component {
 
     componentWillReceiveProps(nextProps) {
         this.setState({
-            model: nextProps.model.toObject(),
             optimization: nextProps.optimization ? nextProps.optimization.toObject() : null
         });
     }
@@ -143,9 +142,10 @@ class OptimizationContainer extends React.Component {
             Command.cancelOptimizationCalculation({
                 id: this.props.model.id,
                 optimization_id: this.state.optimization.input.id
-            }), () => this.setState({
-                isLoading: false
-            })
+            }), () => {
+                this.setState({isLoading: false});
+                this.props.updateOptimization(Optimization.fromObject(optimization));
+            }
         );
     };
 
@@ -171,9 +171,11 @@ class OptimizationContainer extends React.Component {
                 id: this.props.model.id,
                 optimization_id: this.state.optimization.input.id,
                 is_initial: isInitial
-            }), () => this.setState({
-                isLoading: false
-            })
+            }),
+            () => {
+                this.setState({isLoading: false});
+                this.props.updateOptimization(Optimization.fromObject(optimization));
+            }
         );
     };
 

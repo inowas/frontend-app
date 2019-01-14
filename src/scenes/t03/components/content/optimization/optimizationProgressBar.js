@@ -1,12 +1,16 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import {connect} from 'react-redux';
-import {ModflowModel, Calculation} from 'core/model/modflow';
-import {updateCalculation} from '../../../actions/actions';
+import {ModflowModel} from 'core/model/modflow';
+import {updateOptimization} from '../../../actions/actions';
 import {fetchUrl} from 'services/api';
 import {Message} from 'semantic-ui-react';
 import {Optimization} from 'core/model/modflow/optimization';
-import {OPTIMIZATION_STATE_FINISHED, OPTIMIZATION_STATE_STARTED} from '../../../defaults/optimization';
+import {
+    OPTIMIZATION_STATE_FINISHED,
+    OPTIMIZATION_STATE_STARTED,
+    optimizationHasError
+} from '../../../defaults/optimization';
 import OptimizationStatus from './optimizationStatus';
 
 class OptimizationProgressBar extends React.Component {
@@ -29,6 +33,10 @@ class OptimizationProgressBar extends React.Component {
             this.stopPolling();
         }
 
+        if (optimizationHasError(state)) {
+            return this.setState({visible: true});
+        }
+
         if (state < OPTIMIZATION_STATE_STARTED || state > OPTIMIZATION_STATE_FINISHED) {
             return this.setState({visible: false});
         }
@@ -40,6 +48,7 @@ class OptimizationProgressBar extends React.Component {
     }
 
     startPolling() {
+        console.log('POLLING');
         if (this.state.polling) {
             return;
         }
@@ -59,23 +68,18 @@ class OptimizationProgressBar extends React.Component {
     }
 
     fetchOptimization() {
-        const model = this.props.model;
-        if (!(model instanceof ModflowModel)) {
+        const optimization = this.props.optimization;
+        if (!(optimization instanceof Optimization)) {
             return;
         }
 
-        const {calculation} = model;
-        if (!(calculation instanceof Calculation)) {
-            return;
-        }
-
-        const {state} = calculation;
+        const {state} = optimization;
         if (state < OPTIMIZATION_STATE_STARTED || state >= OPTIMIZATION_STATE_FINISHED) {
             return;
         }
 
         this.setState({fetching: true});
-        fetchUrl(`modflowmodels/${model.id}/optimization`,
+        fetchUrl(`modflowmodels/${this.props.model.id}/optimization`,
             data => {
                 this.setState({
                     isError: false,
@@ -96,7 +100,7 @@ class OptimizationProgressBar extends React.Component {
                     color='blue'
                     onDismiss={() => this.setState({visible: false})}
                 >
-                    <Message.Header as={'h4'}>Calculation Progress</Message.Header>
+                    <Message.Header as={'h4'}>Optimization Progress</Message.Header>
                     <Message.Content>
                         <OptimizationStatus state={this.props.optimization.state}/>
                     </Message.Content>
@@ -114,7 +118,7 @@ const mapStateToProps = state => ({
 });
 
 const mapDispatchToProps = {
-    updateCalculation
+    updateOptimization
 };
 
 OptimizationProgressBar.proptypes = {
