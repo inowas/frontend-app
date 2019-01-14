@@ -42,8 +42,8 @@ class ResultsMap extends React.Component {
 
     componentDidMount() {
         const activeCell = [
-            Math.round(this.props.model.gridSize.nX / 2),
-            Math.round(this.props.model.gridSize.nY / 2),
+            Math.floor(this.props.model.gridSize.nX / 2),
+            Math.floor(this.props.model.gridSize.nY / 2),
         ];
 
         this.setState({activeCell});

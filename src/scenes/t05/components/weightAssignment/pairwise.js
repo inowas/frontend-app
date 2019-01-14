@@ -20,8 +20,7 @@ const SliderWithTooltip = Slider.createSliderWithTooltip(Slider);
 
 class PairwiseComparison extends React.Component {
     constructor(props) {
-        super();
-
+        super(props);
         this.state = {
             relations: this.prepareState(props)
         };
