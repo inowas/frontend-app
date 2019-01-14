@@ -1,6 +1,66 @@
 import uuidv4 from 'uuid/v4';
 import Geometry from '../Geometry';
 import ActiveCells from '../ActiveCells';
+import SoilmodelParameter from './SoilmodelParameter';
+
+const defaultParameters = {
+    botm: {
+        defaultValue: 0,
+        isActive: true,
+        label: 'botm',
+        name: 'Bottom elevation',
+        unit: 'm a.s.l.',
+        value: 0
+    },
+    hani: {
+        defaultValue: 1,
+        isActive: true,
+        label: 'hani',
+        name: 'Horizontal hydraulic anisotropy',
+        unit: '-',
+        value: 1
+    },
+    hk: {
+        defaultValue: 10,
+        isActive: true,
+        label: 'hk',
+        name: 'Horizontal conductivity along rows',
+        unit: 'm/day',
+        value: 10
+    },
+    vka: {
+        defaultValue: 1,
+        isActive: true,
+        label: 'vka',
+        name: 'Vertical hydraulic conductivity',
+        unit: 'm/day',
+        value: 1
+    },
+    ss: {
+        defaultValue: 0.00002,
+        isActive: true,
+        label: 'ss',
+        name: 'Specific storage',
+        unit: '-',
+        value: 0.00002
+    },
+    sy: {
+        defaultValue: 0.15,
+        isActive: true,
+        label: 'sy',
+        name: 'Specific yield',
+        unit: '1/m',
+        value: 0.15
+    },
+    top: {
+        defaultValue: 1,
+        isActive: true,
+        label: 'top',
+        name: 'Top elevation',
+        unit: 'm a.s.l.',
+        value: 1
+    }
+};
 
 class SoilmodelZone {
     _id = uuidv4();
@@ -8,25 +68,25 @@ class SoilmodelZone {
     _geometry = null;
     _activeCells = null;
     _priority = 0;
-    _top = null;
-    _botm = null;
-    _hk = null;
-    _hani = null;
-    _vka = null;
-    _ss = null;
-    _sy = null;
+    _top = new SoilmodelParameter();
+    _botm = new SoilmodelParameter();
+    _hk = new SoilmodelParameter();
+    _hani = new SoilmodelParameter();
+    _vka = new SoilmodelParameter();
+    _ss = new SoilmodelParameter();
+    _sy = new SoilmodelParameter();
 
     static fromDefault() {
         const zone = new SoilmodelZone();
         zone.name = 'Default';
         zone.priority = 0;
-        zone.top = 1;
-        zone.botm = 0;
-        zone.hk = 10;
-        zone.hani = 1;
-        zone.vka = 1;
-        zone.ss = 0.00002;
-        zone.sy = 0.15;
+        zone.top = SoilmodelParameter.fromObject(defaultParameters.top);
+        zone.botm = SoilmodelParameter.fromObject(defaultParameters.botm);
+        zone.hk = SoilmodelParameter.fromObject(defaultParameters.hk);
+        zone.hani = SoilmodelParameter.fromObject(defaultParameters.hani);
+        zone.vka = SoilmodelParameter.fromObject(defaultParameters.vka);
+        zone.ss = SoilmodelParameter.fromObject(defaultParameters.ss);
+        zone.sy = SoilmodelParameter.fromObject(defaultParameters.sy);
         return zone;
     }
 
@@ -38,13 +98,13 @@ class SoilmodelZone {
             zone.geometry = obj.geometry ? Geometry.fromObject(obj.geometry) : null;
             zone.activeCells = obj.activeCells ? ActiveCells.fromArray(obj.activeCells) : null;
             zone.priority = obj.priority;
-            zone.top = parseParameters ? zone.parseValue(obj.top) : obj.top;
-            zone.botm = parseParameters ? zone.parseValue(obj.botm) : obj.botm;
-            zone.hk = parseParameters ? zone.parseValue(obj.hk) : obj.hk;
-            zone.hani = parseParameters ? zone.parseValue(obj.hani) : obj.hani;
-            zone.vka = parseParameters ? zone.parseValue(obj.vka) : obj.vka;
-            zone.ss = parseParameters ? zone.parseValue(obj.ss) : obj.ss;
-            zone.sy = parseParameters ? zone.parseValue(obj.sy) : obj.sy;
+            zone.top = SoilmodelParameter.fromObject(obj.top, parseParameters);
+            zone.botm = SoilmodelParameter.fromObject(obj.botm, parseParameters);
+            zone.hk = SoilmodelParameter.fromObject(obj.hk, parseParameters);
+            zone.hani = SoilmodelParameter.fromObject(obj.hani, parseParameters);
+            zone.vka = SoilmodelParameter.fromObject(obj.vka, parseParameters);
+            zone.ss = SoilmodelParameter.fromObject(obj.ss, parseParameters);
+            zone.sy = SoilmodelParameter.fromObject(obj.sy, parseParameters);
         }
         return zone;
     }
@@ -152,24 +212,14 @@ class SoilmodelZone {
             'geometry': this.geometry ? this.geometry.toObject() : null,
             'activeCells': this.activeCells ? this.activeCells.toArray() : [],
             'priority': this.priority,
-            'top': this.top,
-            'botm': this.botm,
-            'hk': this.hk,
-            'hani': this.hani,
-            'vka': this.vka,
-            'ss': this.ss,
-            'sy': this.sy
+            'top': this.top.toObject(),
+            'botm': this.botm.toObject(),
+            'hk': this.hk.toObject(),
+            'hani': this.hani.toObject(),
+            'vka': this.vka.toObject(),
+            'ss': this.ss.toObject(),
+            'sy': this.sy.toObject()
         };
-    }
-
-    parseValue(value) {
-        if (this.priority === 0 && Array.isArray(value)) {
-            return value;
-        }
-        if (this.priority === 0) {
-            return isNaN(value) ? 0 : parseFloat(value);
-        }
-        return isNaN(value) ? null : parseFloat(value);
     }
 }
 
