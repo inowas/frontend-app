@@ -233,7 +233,20 @@ class SoilmodelLayer {
             defaultZone.geometry = model.geometry;
             defaultZone.activeCells = model.activeCells;
             this.zonesCollection.update(defaultZone);
+            this.resetParameters().zonesToParameters(model.gridSize);
         }
+        return this;
+    }
+
+    resetParameters() {
+        const defaultLayer = new SoilmodelLayer();
+        this.top = defaultLayer.top;
+        this.botm = defaultLayer.botm;
+        this.hk = defaultLayer.hk;
+        this.hani = defaultLayer.hani;
+        this.vka = defaultLayer.vka;
+        this.ss = defaultLayer.ss;
+        this.sy = defaultLayer.sy;
         return this;
     }
 
