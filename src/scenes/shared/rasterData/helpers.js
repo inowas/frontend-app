@@ -1,4 +1,5 @@
 import Rainbow from '../../../../node_modules/rainbowvis.js/rainbowvis';
+import {compact} from 'lodash';
 
 export function isValue(data) {
     return !isNaN(data);
@@ -24,7 +25,11 @@ export function min(a) {
     if (isValue(a)) {
         return a;
     }
-    const values = a.map(arr => (Math.min.apply(null, arr)));
+
+    const values = a
+        .map(row => compact(row))
+        .map(arr => (Math.min.apply(null, arr)));
+
     return Math.min.apply(null, values);
 }
 
@@ -32,7 +37,10 @@ export function max(a) {
     if (isValue(a)) {
         return a;
     }
-    const values = a.map(arr => (Math.max.apply(null, arr)));
+
+    const values = a
+        .map(row => compact(row))
+        .map(arr => (Math.max.apply(null, arr)));
     return Math.max.apply(null, values);
 }
 
@@ -46,7 +54,7 @@ export function mean(data) {
         let numberOfElements = 0;
 
         data.forEach(
-            row => ( row.forEach(
+            row => (row.forEach(
                 col => {
                     sum += col;
                     numberOfElements += 1;
@@ -174,7 +182,7 @@ export function rainbowFactory(numberRange = {min: -50, max: 50}, spectrum = nul
 
 export const disableMap = (map) => {
     if (map) {
-        map.leafletElement._handlers.forEach(function(handler) {
+        map.leafletElement._handlers.forEach(function (handler) {
             handler.disable();
         });
     }
