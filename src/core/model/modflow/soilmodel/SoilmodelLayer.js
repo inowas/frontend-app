@@ -4,7 +4,7 @@ import {GridSize} from '../index';
 import {cloneDeep} from 'lodash';
 import Geometry from '../Geometry';
 import ActiveCells from '../ActiveCells';
-import ModflowModel from "../ModflowModel";
+import ModflowModel from '../ModflowModel';
 
 class SoilmodelLayer {
     _id = uuidv4();
