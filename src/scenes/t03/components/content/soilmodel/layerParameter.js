@@ -163,25 +163,6 @@ class LayerParameter extends React.Component {
                                 unit={parameter.unit}
                             />
                         </Grid.Column>
-
-                            {/*<Accordion fluid>
-                                <Accordion.Title active={this.state.activeIndex === 0} index={0}
-                                                 onClick={this.onClickAccordion}>
-                                    <Icon name="dropdown"/>
-                                    Calculation
-                                </Accordion.Title>
-                                <Accordion.Content active={this.state.activeIndex === 0}>
-
-                                </Accordion.Content>
-                                <Accordion.Title active={this.state.activeIndex === 1} index={1}
-                                                 onClick={this.onClickAccordion}>
-                                    <Icon name="dropdown"/>
-                                    Smoothing
-                                </Accordion.Title>
-                                <Accordion.Content active={this.state.activeIndex === 1}>
-
-                                </Accordion.Content>
-                            </Accordion>*/}
                     </Grid>
                 </Segment>
                 <Segment>
