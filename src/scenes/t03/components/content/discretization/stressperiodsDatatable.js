@@ -125,14 +125,11 @@ class StressPeriodsDataTable extends React.Component {
                 </Table>
                 <Button.Group size={'small'}>
                     <Button icon onClick={() => this.addNewStressperiod(1)}>
-                        <Icon name='add circle' />
-                        1 Day</Button>
+                        <Icon name='add circle' /> 1 Day</Button>
                     <Button icon onClick={() => this.addNewStressperiod(30)}>
-                        <Icon name='add circle' />
-                        1 Month</Button>
+                        <Icon name='add circle' /> 1 Month</Button>
                     <Button icon onClick={() => this.addNewStressperiod(365)}>
-                        <Icon name='add circle' />
-                        1 Year</Button>
+                        <Icon name='add circle' /> 1 Year</Button>
                 </Button.Group>
             </div>
         )

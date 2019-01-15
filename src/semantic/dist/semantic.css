@@ -14199,8 +14199,8 @@ img.ui.bordered.image {
   transition: border-color 0.1s ease, -webkit-box-shadow 0.1s ease;
   transition: box-shadow 0.1s ease, border-color 0.1s ease;
   transition: box-shadow 0.1s ease, border-color 0.1s ease, -webkit-box-shadow 0.1s ease;
-  -webkit-box-shadow: none;
-  box-shadow: none;
+  -webkit-box-shadow: 0em 1px 2px 0em rgba(0, 0, 0, 0.1) inset;
+  box-shadow: 0em 1px 2px 0em rgba(0, 0, 0, 0.1) inset;
 }
 
 /*--------------------
@@ -14724,7 +14724,7 @@ img.ui.bordered.image {
          Site Overrides
 *******************************/
 
-input[type='number'] {
+.ui.input > input[type=number] {
   text-align: right;
 }
 

@@ -40,6 +40,7 @@ class BoundaryList extends React.Component {
                             trigger={<Icon name='ellipsis horizontal'/>}
                             content={
                                 <div>
+                                    <Button.Group size='small'>
                                     <Popup
                                         trigger={<Button icon={'clone'} onClick={() => this.props.onClone(b.id)}/>}
                                         content='Clone'
@@ -54,6 +55,7 @@ class BoundaryList extends React.Component {
                                         size='mini'
                                         inverted
                                     />
+                                    </Button.Group>
                                 </div>
                             }
                             on={'click'}

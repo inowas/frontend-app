@@ -53,7 +53,7 @@ class LayerDetails extends React.Component {
         }
 
         const panes = [{
-            menuItem: 'Name and Type', render: () =>
+            menuItem: 'Properties', render: () =>
                 <Tab.Pane>
                     <Grid>
                         <Grid.Row>

@@ -7,7 +7,7 @@ import {pure} from 'recompose';
 const styles = {
     input: {
         border: 0,
-        maxWidth: '200px'
+        width: 'auto'
     }
 };
 

@@ -87,9 +87,7 @@ class BoundaryDetails extends React.Component {
             <div>
                 <Grid>
                     <Grid.Row>
-                        <Grid.Column width={6}>
-                            <Header as={'h3'}>Properties</Header>
-                            <Divider/>
+                        <Grid.Column width={4}>
                             <Form>
                                 <Form.Input
                                     label={'Name'}
@@ -125,7 +123,9 @@ class BoundaryDetails extends React.Component {
                                 />
                                 }
                             </Form>
-                            <List horizontal style={{marginTop: '20px'}}>
+                        </Grid.Column>
+                        <Grid.Column width={12}>
+                            <List horizontal>
                                 <List.Item
                                     as='a'
                                     onClick={() => this.setState({showBoundaryEditor: true})}
@@ -136,12 +136,8 @@ class BoundaryDetails extends React.Component {
                                 boundary={boundary}
                                 selectedObservationPointId={observationPointId}
                             />
-                        </Grid.Column>
-                        <Grid.Column width={10}>
                             {(boundary instanceof MultipleOPBoundary) &&
                             <div>
-                                <Header as={'h3'}>Observation Points</Header>
-                                <Divider/>
                                 <Button as={'div'} labelPosition={'left'} fluid>
                                     <Dropdown
                                         fluid

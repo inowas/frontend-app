@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import moment from 'moment';
 
-import {Button, Table} from 'semantic-ui-react';
+import {Button, Icon, Input, Table} from 'semantic-ui-react';
 import {Boundary, Stressperiods} from 'core/model/modflow';
 import {cloneDeep} from 'lodash';
 import CsvUpload from '../../../../shared/simpleTools/upload/CsvUpload';
@@ -102,7 +102,7 @@ class BoundaryValuesDataTable extends React.Component {
         dateTimeValues.map((dtv, dtvIdx) => (
             <Table.Row key={dtvIdx}>
                 <Table.Cell>
-                    <input
+                    <Input
                         style={this.getCellStyle()}
                         disabled={this.props.readOnly}
                         id={dtvIdx}
@@ -113,8 +113,8 @@ class BoundaryValuesDataTable extends React.Component {
                     />
                 </Table.Cell>
                 {dtv.values.map((v, vIdx) => (
-                    <Table.Cell key={vIdx}>
-                        <input
+                    <Table.Cell key={vIdx} width={10}>
+                        <Input
                             style={this.getCellStyle(dtv.values.length)}
                             disabled={this.props.readOnly}
                             id={dtvIdx}
@@ -123,8 +123,7 @@ class BoundaryValuesDataTable extends React.Component {
                             onChange={this.handleDateTimeValueChange(dtvIdx, vIdx)}
                             type={'number'}
                             value={v}
-                        >
-                        </input>
+                        />
                     </Table.Cell>
                 ))}
                 <Table.Cell>
@@ -181,7 +180,7 @@ class BoundaryValuesDataTable extends React.Component {
 
         return (
             <div>
-                <Table color={'red'} size={'small'} singleLine>
+                <Table size={'small'} singleLine>
                     <Table.Header>
                         <Table.Row>
                             <Table.HeaderCell>Start Date</Table.HeaderCell>
@@ -192,11 +191,11 @@ class BoundaryValuesDataTable extends React.Component {
                     </Table.Header>
                     <Table.Body>{dateTimeValues && this.body(dateTimeValues)}</Table.Body>
                 </Table>
-                <Button.Group fluid>
-                    <Button onClick={() => this.addNewDatetimeValue(1, 'days')}>+1 Day</Button>
-                    <Button onClick={() => this.addNewDatetimeValue(1, 'weeks')}>+1 Week</Button>
-                    <Button onClick={() => this.addNewDatetimeValue(1, 'months')}>+1 Month</Button>
-                    <Button onClick={() => this.addNewDatetimeValue(1, 'years')}>+1 Year</Button>
+                <Button.Group size={'small'}>
+                    <Button icon onClick={() => this.addNewDatetimeValue(1, 'days')}><Icon name='add circle' /> 1 Day</Button>
+                    <Button icon onClick={() => this.addNewDatetimeValue(1, 'weeks')}><Icon name='add circle' /> 1 Week</Button>
+                    <Button icon onClick={() => this.addNewDatetimeValue(1, 'months')}><Icon name='add circle' /> 1 Month</Button>
+                    <Button icon onClick={() => this.addNewDatetimeValue(1, 'years')}><Icon name='add circle' /> 1 Year</Button>
                     <CsvUpload uploadState={this.state.uploadState} onUploaded={this.handleCSV} />
                 </Button.Group>
             </div>

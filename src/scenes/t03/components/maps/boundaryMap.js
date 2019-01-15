@@ -11,7 +11,7 @@ import {disableMap, getStyle} from './index';
 
 const style = {
     map: {
-        height: '200px',
+        height: '250px',
     }
 };
 
