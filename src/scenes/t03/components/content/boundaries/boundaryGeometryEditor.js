@@ -1,6 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import {Button, Grid, Form, Header, Modal, Segment, Menu, Icon} from 'semantic-ui-react';
+import {Button, Form, Modal, Segment, Menu, Icon} from 'semantic-ui-react';
 import {Boundary, BoundaryFactory, ModflowModel} from 'core/model/modflow';
 import BoundaryDiscretizationMap from '../../maps/boundaryDiscretizationMap';
 
@@ -34,70 +34,60 @@ class BoundaryGeometryEditor extends React.Component {
         const boundary = BoundaryFactory.fromObjectData(this.state.boundary);
 
         return (
-            <Modal size={'large'} open onClose={onCancel} dimmer={'inverted'}>
+            <Modal size={'medium'} open onClose={onCancel} dimmer={'inverted'}>
                 <Modal.Header>Edit boundary properties</Modal.Header>
                 <Modal.Content>
-                    <Grid divided={'vertically'}>
-                        <Grid.Row columns={2}>
-                            <Grid.Column width={6}>
-                                <Segment color="blue">
-                                    <Header as="h3" dividing>Boundary properties</Header>
-                                    <Form>
-                                        <Form.Field>
-                                            <label>Name</label>
-                                            <input
-                                                placeholder="Boundary name"
-                                                name={'name'}
-                                                value={boundary.name}
-                                                onChange={this.handleChange}
-                                            />
-                                        </Form.Field>
-                                    </Form>
-                                </Segment>
-                            </Grid.Column>
-                            <Grid.Column width={10}>
+                    <Form>
+                        <Form.Field>
+                            <label>Name</label>
+                            <input
+                                placeholder="Boundary name"
+                                name={'name'}
+                                value={boundary.name}
+                                onChange={this.handleChange}
+                            />
+                        </Form.Field>
+                    </Form>
 
-                                <Menu attached="top" tabular>
-                                    <Menu.Item
-                                        name="geometry"
-                                        active={activeItem === 'geometry'}
-                                        onClick={this.handleItemClick}
-                                    >
-                                        <Icon name="location arrow"/>
-                                        Geometry
-                                    </Menu.Item>
+                    <Menu attached="top" tabular>
+                        <Menu.Item
+                            name="geometry"
+                            active={activeItem === 'geometry'}
+                            onClick={this.handleItemClick}
+                        >
+                            <Icon name="location arrow"/>
+                            Geometry
+                        </Menu.Item>
 
-                                    <Menu.Item
-                                        name="affected cells"
-                                        active={activeItem === 'affected cells'}
-                                        onClick={this.handleItemClick}
-                                    >
-                                        <Icon name="table"/>
-                                        Affected cells
-                                    </Menu.Item>
-                                </Menu>
+                        <Menu.Item
+                            name="affected cells"
+                            active={activeItem === 'affected cells'}
+                            onClick={this.handleItemClick}
+                        >
+                            <Icon name="table"/>
+                            Affected cells
+                        </Menu.Item>
+                    </Menu>
 
-                                <Segment attached="bottom">
-                                    {activeItem === 'geometry' && <BoundaryDiscretizationMap
-                                        model={model}
-                                        boundary={boundary}
-                                        onChange={onChange}
-                                        readOnly={readOnly}
-                                        showBoundaryGeometry={true}
-                                        showActiveCells={false}
-                                    />}
-                                    {activeItem === 'affected cells' && <BoundaryDiscretizationMap
-                                        model={model}
-                                        boundary={boundary}
-                                        onChange={onChange}
-                                        readOnly={readOnly}
-                                        showBoundaryGeometry={true}
-                                        showActiveCells={true}
-                                    />}
-                                </Segment>
-                            </Grid.Column>
-                        </Grid.Row>
-                    </Grid>
+                    <Segment attached="bottom">
+                        {activeItem === 'geometry' && <BoundaryDiscretizationMap
+                            model={model}
+                            boundary={boundary}
+                            onChange={onChange}
+                            readOnly={readOnly}
+                            showBoundaryGeometry={true}
+                            showActiveCells={false}
+                        />}
+                        {activeItem === 'affected cells' && <BoundaryDiscretizationMap
+                            model={model}
+                            boundary={boundary}
+                            onChange={onChange}
+                            readOnly={readOnly}
+                            showBoundaryGeometry={true}
+                            showActiveCells={true}
+                        />}
+                    </Segment>
+
                 </Modal.Content>
                 <Modal.Actions>
                     <Button negative onClick={onCancel}>Cancel</Button>

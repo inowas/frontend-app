@@ -1,5 +1,5 @@
 import React from 'react';
-import {Button, Icon, Table} from 'semantic-ui-react';
+import {Button, Input, Table} from 'semantic-ui-react';
 import PropTypes from 'prop-types';
 import {SoilmodelLayer} from 'core/model/modflow/soilmodel';
 import {pure} from 'recompose';
@@ -7,7 +7,7 @@ import {pure} from 'recompose';
 const styles = {
     input: {
         border: 0,
-        maxWidth: '200px'
+        width: 'auto'
     }
 };
 
@@ -85,7 +85,7 @@ class ZonesTable extends React.Component {
                             <Table.Cell>
                                 {zone.priority === 0 &&
                                 <div>
-                                    <input
+                                    <Input
                                         onBlur={this.onChange}
                                         onChange={this.onLocalChange(zone.id)}
                                         style={styles.input}
@@ -98,7 +98,7 @@ class ZonesTable extends React.Component {
                                 </div>
                                 }
                                 {zone.priority > 0 &&
-                                <input
+                                <Input
                                     onBlur={this.onChange}
                                     onChange={this.onLocalChange(zone.id)}
                                     style={styles.input}
@@ -119,32 +119,24 @@ class ZonesTable extends React.Component {
                                 <Button.Group floated='right' size='small'>
                                     <Button
                                         disabled={readOnly || zone[parameter] === null}
-                                        icon
+                                        icon={'ban'}
                                         onClick={() => this.onSetToDefault(zone.id)}
-                                    >
-                                        <Icon name={'ban'}/>
-                                    </Button>
+                                    />
                                     <Button
                                         disabled={readOnly}
-                                        icon
+                                        icon="pencil"
                                         onClick={() => onEdit(zone.id)}
-                                    >
-                                        <Icon name="pencil"/>
-                                    </Button>
+                                    />
                                     <Button
                                         disabled={readOnly || !(zone.priority < zones.length - 1)}
-                                        icon
+                                        icon="arrow up"
                                         onClick={() => this.onReorder(zone.id, 'up')}
-                                    >
-                                        <Icon name="arrow up"/>
-                                    </Button>
+                                    />
                                     <Button
                                         disabled={readOnly || !(zone.priority > 1)}
-                                        icon
+                                        icon="arrow down"
                                         onClick={() => this.onReorder(zone.id, 'down')}
-                                    >
-                                        <Icon name="arrow down"/>
-                                    </Button>
+                                    />
                                 </Button.Group>
                                 }
                             </Table.Cell>

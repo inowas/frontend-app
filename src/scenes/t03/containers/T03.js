@@ -32,7 +32,7 @@ import ModflowModelCommand from '../commands/modflowModelCommand';
 
 const navigation = [{
     name: 'Documentation',
-    path: 'https://inowas.hydro.tu-dresden.de/tools/t03-modflow-model-setup-and-editor/',
+    path: 'https://inowas.com/tools/t03-modflow-model-setup-and-editor/',
     icon: <Icon name="file"/>
 }];
 

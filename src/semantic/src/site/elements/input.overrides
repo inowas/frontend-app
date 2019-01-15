@@ -2,7 +2,7 @@
          Site Overrides
 *******************************/
 
-input[type='number'] {
+.ui.input > input[type=number] {
     text-align: right;
 }
 

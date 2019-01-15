@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import {Button, Icon, Loader, Popup, Table} from 'semantic-ui-react';
 import * as Formatter from 'services/formatter';
 import {withRouter} from 'react-router-dom';
+import NoContent from '../../shared/complexTools/noContent';
 
 const styles = {
     actionWrapper: {
@@ -21,7 +22,11 @@ class ToolsDataTable extends React.Component {
         const {push} = history;
         const {path, subPath, slug} = activeTool;
 
-        const rows =  toolInstances.map((i, index) => {
+        if (toolInstances.length === 0) {
+            return <NoContent message={'Create an new entry'}/>
+        }
+
+        const rows = toolInstances.map((i, index) => {
             return (
                 <Table.Row
                     key={index}
