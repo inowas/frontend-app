@@ -19,12 +19,25 @@ class CriteriaDataEditor extends React.Component {
 
     handleClickStep = (e, {name}) => this.setState({activeStep: name});
 
+    onUploadRaster = data => {
+        const cc = this.props.mcda.criteriaCollection;
+        const criterion = this.props.criterion;
+        criterion.data = data;
+        cc.update(criterion);
+        return this.props.handleChange({
+            name: 'criteria',
+            value: cc
+        });
+    };
+
     renderTool() {
         switch (this.state.activeStep) {
             default:
                 return (
                     <CriteriaRasterUpload
+                        criterion={this.props.criterion}
                         mcda={this.props.mcda}
+                        onChange={this.onUploadRaster}
                     />
                 );
         }
@@ -87,7 +100,8 @@ class CriteriaDataEditor extends React.Component {
 
 CriteriaDataEditor.proptypes = {
     criterion: PropTypes.instanceOf(Criterion),
-    mcda: PropTypes.instanceOf(MCDA).isRequired
+    mcda: PropTypes.instanceOf(MCDA).isRequired,
+    handleChange: PropTypes.func.isRequired
 };
 
 export default withRouter(CriteriaDataEditor);

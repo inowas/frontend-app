@@ -2,9 +2,11 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import {withRouter} from 'react-router-dom';
 import {MCDA} from 'core/mcda';
+import {Criterion} from 'core/mcda/criteria';
 import {Form, Grid, List, Header, Input, Radio, Segment} from 'semantic-ui-react';
 import {fetchRasterfile, uploadRasterfile} from 'services/api';
 import CriteriaRasterMap from './criteriaRasterMap';
+
 const styles = {
     input: {
         backgroundColor: 'transparent',
@@ -16,7 +18,7 @@ class CriteriaRasterUpload extends React.Component {
     state = {
         hash: null,
         metadata: null,
-        data: null,
+        data: this.props.criterion.data || null,
         selectedBand: 0,
         errorFetching: false,
         errorUploading: false,
@@ -106,7 +108,7 @@ class CriteriaRasterUpload extends React.Component {
                         width: this.props.mcda.constraints.gridSize.nX,
                         height: this.props.mcda.constraints.gridSize.nY
                     },
-                    ({data, metadata}) => this.setState({data, metadata}),
+                    ({data, metadata}) => this.setState({data, metadata}, this.props.onChange(data)),
                     (errorFetching) => this.setState({errorFetching}))
             },
             (errorUploading) => this.setState({errorUploading})
@@ -130,8 +132,6 @@ class CriteriaRasterUpload extends React.Component {
     render() {
         const {data, selectedBand} = this.state;
         const {mcda} = this.props;
-
-        console.log('STATE', this.state);
 
         return (
             <Grid>
@@ -160,7 +160,9 @@ class CriteriaRasterUpload extends React.Component {
 }
 
 CriteriaRasterUpload.proptypes = {
-    mcda: PropTypes.instanceOf(MCDA).isRequired
+    criterion: PropTypes.instanceOf(Criterion).isRequired,
+    mcda: PropTypes.instanceOf(MCDA).isRequired,
+    onChange: PropTypes.func.isRequired
 };
 
 export default withRouter(CriteriaRasterUpload);

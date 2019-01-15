@@ -201,6 +201,7 @@ class T05 extends React.Component {
                     <CriteriaDataEditor
                         criterion={criterion}
                         mcda={mcda}
+                        handleChange={this.handleChange}
                     />
                 );
             default:
