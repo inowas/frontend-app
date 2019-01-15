@@ -1,5 +1,4 @@
 import Rainbow from '../../../../node_modules/rainbowvis.js/rainbowvis';
-import {compact} from 'lodash';
 
 export function isValue(data) {
     return !isNaN(data);
@@ -27,7 +26,7 @@ export function min(a) {
     }
 
     const values = a
-        .map(row => compact(row))
+        .map(row => row.filter(v => !isNaN(v)))
         .map(arr => (Math.min.apply(null, arr)));
 
     return Math.min.apply(null, values);
@@ -39,7 +38,7 @@ export function max(a) {
     }
 
     const values = a
-        .map(row => compact(row))
+        .map(row => row.filter(v => !isNaN(v)))
         .map(arr => (Math.max.apply(null, arr)));
     return Math.max.apply(null, values);
 }
@@ -109,7 +108,7 @@ export function createGridData(value, nx, ny) {
     if (isRaster(value) && getGridSize(value).x === nx && getGridSize(value).y === ny) {
         for (let y = 0; y < ny; y++) {
             for (let x = 0; x < nx; x++) {
-                if (value[y][x]) {
+                if (!isNaN(value[y][x])) {
                     data.push({
                         x: x,
                         y: y,
@@ -171,7 +170,8 @@ export function rainbowFactory(numberRange = {min: -50, max: 50}, spectrum = nul
                 return rainbow;
             }
 
-            rainbow.setNumberRange((rMin - rMin / 10), (rMax + rMax / 10));
+            rainbow.setNumberRange((rMin - Math.abs(rMin / 10)), (rMax + Math.abs(rMax / 10)));
+
             return rainbow;
         }
 
