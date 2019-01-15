@@ -66,14 +66,6 @@ class LayerParameter extends React.Component {
         })
     };
 
-    onClickAccordion = (e, titleProps) => {
-        const {index} = titleProps;
-        const {activeIndex} = this.state;
-        const newIndex = activeIndex === index ? -1 : index;
-
-        this.setState({activeIndex: newIndex});
-    };
-
     onEditZone = (id) => {
         const layer = SoilmodelLayer.fromObject(this.state.layer);
         const zone = layer.zonesCollection.findById(id);
@@ -108,7 +100,7 @@ class LayerParameter extends React.Component {
         const {parameter} = this.state;
         const layer = SoilmodelLayer.fromObject(this.state.layer);
         const base = layer.zonesCollection.findBy('priority', 0, true);
-        base[parameter.name] = Array.from(data);
+        base[parameter.name].value = Array.from(data);
         layer.zonesCollection.update(base);
         layer.zonesToParameters(this.props.model.gridSize, parameter.name);
         this.setState({showRasterUploadModal: false});
@@ -149,7 +141,7 @@ class LayerParameter extends React.Component {
                                     content={'Start Smoothing'}
                                 >
                                 </Button>
-                                <Button icon='map' labelPosition='left' style={{marginTop: '5px'}}
+                                <Button icon='trash' labelPosition='left' style={{marginTop: '5px'}}
                                         onClick={this.recalculateMap}
                                         content={'Remove Smoothing'}>
                                 </Button>

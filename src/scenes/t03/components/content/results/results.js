@@ -2,12 +2,17 @@ import React from 'react';
 import {connect} from 'react-redux';
 import PropTypes from 'prop-types';
 
-import {Grid, Header, Menu, Segment} from 'semantic-ui-react';
-import {BoundaryCollection, Calculation, ModflowModel} from 'core/model/modflow';
+import {Form, Grid, Header, Menu, Segment} from 'semantic-ui-react';
+import {BoundaryCollection, Calculation, ModflowModel, Soilmodel} from 'core/model/modflow';
 import {fetchUrl} from 'services/api';
 import {last} from 'lodash';
 import ResultsMap from '../../maps/resultsMap';
 import ResultsChart from './resultsChart';
+import Slider from 'rc-slider';
+
+import Moment from 'moment';
+
+const SliderWithTooltip = Slider.createSliderWithTooltip(Slider);
 
 const menuItems = [
     {id: 'head', name: 'Heads'},
@@ -15,19 +20,33 @@ const menuItems = [
     {id: 'budget', name: 'Budgets'}
 ];
 
+
+const styles = {
+    dot: {
+        border: '1px solid #e9e9e9',
+        borderRadius: 0,
+        marginLeft: 0,
+        width: '1px'
+    },
+    track: {
+        backgroundColor: '#e9e9e9'
+    }
+};
+
 class Results extends React.Component {
 
     constructor(props) {
         super(props);
         this.state = {
             selectedMenuItem: menuItems[0].id,
-            metaData: null,
             isLoading: false,
 
+            calculationId: null,
+            totalTimes: null,
             selectedCol: 0,
             selectedLay: 0,
             selectedRow: 0,
-            selectedTotim: null,
+            selectedTotim: 0,
             selectedType: null,
             data: null,
             fetching: false
@@ -35,16 +54,16 @@ class Results extends React.Component {
     }
 
     componentDidMount() {
-        this.fetchMetaData();
+        this.fetchResults();
     }
 
     componentWillReceiveProps(nextProps, nextContext) {
-        if (!this.state.metadata) {
-            this.fetchMetaData();
+        if (!this.state.calculationId) {
+            this.fetchResults();
         }
     }
 
-    fetchMetaData() {
+    fetchResults() {
         const {model} = this.props;
         const {calculation} = model;
 
@@ -55,11 +74,13 @@ class Results extends React.Component {
         this.setState({isLoading: true},
             () => fetchUrl(`modflowmodels/${model.id}/results`,
                 metaData => {
-                    this.setState({metaData, isLoading: false});
+                    const calculationId = metaData.calculation_id;
+                    const totalTimes = metaData.times.total_times;
+                    this.setState({calculationId, totalTimes, isLoading: false});
                     this.onChangeTypeLayerOrTime({
                         type: this.state.selectedMenuItem,
-                        totim: last(metaData.times.total_times),
-                        layer: 0
+                        totim: last(totalTimes),
+                        layer: this.state.selectedLay
                     });
                 },
                 (e) => this.setState({isError: e, isLoading: false}))
@@ -67,8 +88,7 @@ class Results extends React.Component {
     }
 
     fetchData({layer, totim, type}) {
-        const calculationId = this.state.metaData.calculation_id;
-
+        const {calculationId} = this.state;
         this.setState({fetching: true},
             () => fetchUrl(`calculations/${calculationId}/results/types/${type}/layers/${layer}/totims/${totim}`,
                 data => this.setState({
@@ -96,11 +116,55 @@ class Results extends React.Component {
         this.fetchData({layer, totim, type});
     };
 
+    sliderMarks = () => {
+        const {totalTimes} = this.state;
+        let marks = {};
+        totalTimes.forEach((value) => {
+            marks[value] = value;
+        });
+        return marks;
+    };
+
+    formatTimestamp = (key) => {
+        return Moment.utc(this.props.model.stressperiods.dateTimes[key]).format('L');
+    };
+
+    handleAfterChangeSlider = () => {
+        const layer = this.state.selectedLay;
+        const totim = this.state.selectedTotim;
+        const type = this.state.selectedType;
+        return this.fetchData({layer, totim, type});
+    };
+
+    handleChangeSlider = value => {
+        const {totalTimes} = this.state;
+        const differences = totalTimes.map((tt, idx) => ({id: idx, value: Math.abs(tt - value)}));
+        differences.sort((a, b) => a.value - b.value);
+        this.setState({selectedTotim: totalTimes[differences[0].id]})
+    };
+
+    handleChangeLayer = (e, {value}) => {
+        this.setState({selectedLay: value});
+        const totim = this.state.selectedTotim;
+        const type = this.state.selectedType;
+        return this.fetchData({layer: value, totim, type});
+    };
+
+    layerOptions = () => {
+        if (!(this.props.soilmodel instanceof Soilmodel)) {
+            return [];
+        }
+
+        return this.props.soilmodel.layersCollection.all.map(l => (
+            {key: l.id, value: l.number, text: l.name}
+        ))
+    };
+
     render() {
-        const {selectedMenuItem, metaData, data, selectedCol, selectedRow} = this.state;
+        const {selectedMenuItem, calculationId, data, selectedCol, selectedRow, selectedTotim, totalTimes} = this.state;
         const {model, boundaries} = this.props;
 
-        if (!metaData) {
+        if (!calculationId) {
             return null;
         }
 
@@ -126,16 +190,57 @@ class Results extends React.Component {
                             </Menu>
                         </Grid.Column>
                         <Grid.Column width={13}>
+                            <Grid>
+                                <Grid.Row>
+                                    <Grid.Column width={4}>
+                                        <Segment color={'grey'}>
+                                            <Header textAlign={'center'} as={'h4'}>Select layer</Header>
+                                            <Form.Dropdown
+                                                loading={!(this.props.soilmodel instanceof Soilmodel)}
+                                                style={{zIndex: 1000}}
+                                                selection
+                                                fluid
+                                                options={this.layerOptions()}
+                                                value={this.state.selectedLay}
+                                                name={'affectedLayers'}
+                                                onChange={this.handleChangeLayer}
+                                            />
+                                        </Segment>
+                                    </Grid.Column>
+                                    <Grid.Column width={12}>
+                                        <Segment color={'grey'} style={{paddingBottom: 40}}>
+                                            <Header textAlign={'center'} as={'h4'}>Select total time [days]</Header>
+                                            <SliderWithTooltip
+                                                dots
+                                                dotStyle={styles.dot}
+                                                trackStyle={styles.track}
+                                                defaultValue={selectedTotim}
+                                                min={totalTimes[0]}
+                                                max={totalTimes[totalTimes.length - 1]}
+                                                steps={null}
+                                                marks={this.sliderMarks()}
+                                                value={selectedTotim}
+                                                onAfterChange={this.handleAfterChangeSlider}
+                                                onChange={this.handleChangeSlider}
+                                                tipFormatter={() => this.formatTimestamp(totalTimes.indexOf(selectedTotim))}
+                                            />
+                                        </Segment>
+                                    </Grid.Column>
+                                </Grid.Row>
+                            </Grid>
+
                             <Segment loading={this.state.fetching} color={'grey'}>
                                 {data &&
                                 <ResultsMap
                                     boundaries={boundaries}
                                     data={data}
                                     model={model}
-                                    onClick={colRow => {this.setState({
-                                        selectedRow: colRow[1],
-                                        selectedCol: colRow[0]
-                                    })}}
+                                    onClick={colRow => {
+                                        this.setState({
+                                            selectedRow: colRow[1],
+                                            selectedCol: colRow[0]
+                                        })
+                                    }}
                                 />
                                 }
                             </Segment>
@@ -145,13 +250,15 @@ class Results extends React.Component {
                                     <Grid.Column>
                                         <Segment loading={this.state.fetching} color={'blue'}>
                                             <Header textAlign={'center'} as={'h4'}>Horizontal cross section</Header>
-                                            {data && <ResultsChart data={data} row={selectedRow} col={selectedCol} show={'row'}/>}
+                                            {data && <ResultsChart data={data} row={selectedRow} col={selectedCol}
+                                                                   show={'row'}/>}
                                         </Segment>
                                     </Grid.Column>
                                     <Grid.Column>
                                         <Segment loading={this.state.fetching} color={'blue'}>
                                             <Header textAlign={'center'} as={'h4'}>Vertical cross section</Header>
-                                            {data && <ResultsChart data={data} col={selectedCol} row={selectedRow} show={'col'}/>}
+                                            {data && <ResultsChart data={data} col={selectedCol} row={selectedRow}
+                                                                   show={'col'}/>}
                                         </Segment>
                                     </Grid.Column>
                                 </Grid.Row>
@@ -169,6 +276,7 @@ const mapStateToProps = state => {
     return {
         model: ModflowModel.fromObject(state.T03.model),
         boundaries: BoundaryCollection.fromObject(state.T03.boundaries),
+        soilmodel: state.T03.soilmodel ? Soilmodel.fromObject(state.T03.soilmodel) : null
     };
 };
 

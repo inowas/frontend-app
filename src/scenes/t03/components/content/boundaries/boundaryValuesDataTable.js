@@ -5,8 +5,20 @@ import moment from 'moment';
 import {Button, Icon, Input, Table} from 'semantic-ui-react';
 import {Boundary, Stressperiods} from 'core/model/modflow';
 import {cloneDeep} from 'lodash';
+import CsvUpload from '../../../../shared/simpleTools/upload/CsvUpload';
 
 class BoundaryValuesDataTable extends React.Component {
+
+    constructor(props) {
+        super(props);
+        this.state = {
+            uploadState: {
+                error: false,
+                errorMsg: '',
+                success: false
+            }
+        };
+    }
 
     handleDateTimeValueChange = (row, col) => (e) => {
         const name = e.target.name;
@@ -57,9 +69,9 @@ class BoundaryValuesDataTable extends React.Component {
         const dateTimeValues = boundary.getDateTimeValues(selectedOP);
         const lastDateTimeValue = dateTimeValues[dateTimeValues.length - 1];
         const newDateTimeValue = cloneDeep(lastDateTimeValue);
-        newDateTimeValue.date_time = moment.utc(lastDateTimeValue.date_time).add(number, unit);
+        newDateTimeValue.date_time = moment.utc(lastDateTimeValue.date_time).add(number, unit).toISOString();
         dateTimeValues.push(newDateTimeValue);
-        boundary.setDateTimeValues(selectedOP, dateTimeValues);
+        boundary.setDateTimeValues(dateTimeValues, selectedOP);
         this.props.onChange(boundary);
     };
 
@@ -126,6 +138,42 @@ class BoundaryValuesDataTable extends React.Component {
         ))
     );
 
+    handleCSV = (e) => {
+        const dateTimeValues = [];
+
+        if (!moment.utc(e.data[0]).isValid()) {
+            return this.setState({
+                uploadState: {
+                    error: true,
+                    errorMsg: 'Error: wrong file format',
+                    success: false
+                }
+            });
+        }
+
+        e.data.forEach(row => {
+            const values = this.props.boundary.defaultValues.map((v, key) => row[key + 1] || v);
+            const date_time = moment.utc(row[0]);
+
+            const dateTimeValue = {
+                date_time: date_time.toISOString(),
+                values: values
+            };
+            dateTimeValues.push(dateTimeValue);
+        });
+        const {boundary, selectedOP} = this.props;
+        boundary.setDateTimeValues(dateTimeValues, selectedOP);
+        this.props.onChange(boundary);
+
+        return this.setState({
+            uploadState: {
+                ...this.state.uploadState,
+                error: false,
+                success: true
+            }
+        });
+    };
+
     render() {
         const {boundary, selectedOP} = this.props;
         const dateTimeValues = boundary.getDateTimeValues(selectedOP);
@@ -148,6 +196,7 @@ class BoundaryValuesDataTable extends React.Component {
                     <Button icon onClick={() => this.addNewDatetimeValue(1, 'weeks')}><Icon name='add circle' /> 1 Week</Button>
                     <Button icon onClick={() => this.addNewDatetimeValue(1, 'months')}><Icon name='add circle' /> 1 Month</Button>
                     <Button icon onClick={() => this.addNewDatetimeValue(1, 'years')}><Icon name='add circle' /> 1 Year</Button>
+                    <CsvUpload uploadState={this.state.uploadState} onUploaded={this.handleCSV} />
                 </Button.Group>
             </div>
         )
