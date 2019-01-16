@@ -2,24 +2,18 @@ import React from 'react';
 import {connect} from 'react-redux';
 import PropTypes from 'prop-types';
 
-import {Form, Grid, Header, Menu, Segment} from 'semantic-ui-react';
+import {Form, Grid, Header, Segment} from 'semantic-ui-react';
 import {BoundaryCollection, Calculation, ModflowModel, Soilmodel} from 'core/model/modflow';
 import {fetchUrl} from 'services/api';
-import {last} from 'lodash';
+import {last, uniq, upperFirst} from 'lodash';
 import ResultsMap from '../../maps/resultsMap';
 import ResultsChart from './resultsChart';
 import Slider from 'rc-slider';
 
+import {flatten} from 'lodash';
 import Moment from 'moment';
 
 const SliderWithTooltip = Slider.createSliderWithTooltip(Slider);
-
-const menuItems = [
-    {id: 'head', name: 'Heads'},
-    {id: 'drawdown', name: 'Drawdowns'},
-    {id: 'budget', name: 'Budgets'}
-];
-
 
 const styles = {
     dot: {
@@ -38,16 +32,16 @@ class Results extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            selectedMenuItem: menuItems[0].id,
             isLoading: false,
 
             calculationId: null,
+            layerValues: null,
             totalTimes: null,
             selectedCol: 0,
             selectedLay: 0,
             selectedRow: 0,
             selectedTotim: 0,
-            selectedType: null,
+            selectedType: 'head',
             data: null,
             fetching: false
         }
@@ -76,9 +70,10 @@ class Results extends React.Component {
                 metaData => {
                     const calculationId = metaData.calculation_id;
                     const totalTimes = metaData.times.total_times;
-                    this.setState({calculationId, totalTimes, isLoading: false});
+                    const layerValues = metaData.layer_values;
+                    this.setState({calculationId, layerValues, totalTimes, isLoading: false});
                     this.onChangeTypeLayerOrTime({
-                        type: this.state.selectedMenuItem,
+                        type: this.state.selectedType,
                         totim: last(totalTimes),
                         layer: this.state.selectedLay
                     });
@@ -160,8 +155,27 @@ class Results extends React.Component {
         ))
     };
 
+    handleChangeType = (e, {value}) => {
+        this.setState({selectedType: value});
+        const totim = this.state.selectedTotim;
+        const layer = this.state.selectedLay;
+        return this.fetchData({layer, totim, type: value});
+    };
+
+    typeOptions = () => {
+        const {layerValues} = this.state;
+        if (!layerValues) {
+            return [];
+        }
+
+        const types = uniq(flatten(layerValues));
+        return types.map((v, id) => (
+            {key: id, value: v, text: upperFirst(v)}
+        ))
+    };
+
     render() {
-        const {selectedMenuItem, calculationId, data, selectedCol, selectedRow, selectedTotim, totalTimes} = this.state;
+        const {calculationId, data, selectedCol, selectedRow, selectedTotim, totalTimes} = this.state;
         const {model, boundaries} = this.props;
 
         if (!calculationId) {
@@ -172,27 +186,24 @@ class Results extends React.Component {
             <Segment color={'grey'} loading={this.state.isLoading}>
                 <Grid padded>
                     <Grid.Row>
-                        <Grid.Column width={3}>
-                            <Menu fluid vertical tabular>
-                                <Menu.Item>&nbsp;</Menu.Item>
-                                {menuItems.map(i =>
-                                    <Menu.Item
-                                        name={i.name}
-                                        key={i.id}
-                                        active={i.id === selectedMenuItem}
-                                        onClick={() => {
-                                            this.onChangeTypeLayerOrTime({type: i.id});
-                                            this.setState({selectedMenuItem: i.id})
-                                        }}
-                                    />
-                                )}
-                                <Menu.Item>&nbsp;</Menu.Item>
-                            </Menu>
-                        </Grid.Column>
-                        <Grid.Column width={13}>
+                        <Grid.Column>
                             <Grid>
                                 <Grid.Row>
-                                    <Grid.Column width={4}>
+                                    <Grid.Column width={3}>
+                                        <Segment color={'grey'}>
+                                            <Header textAlign={'center'} as={'h4'}>Select type</Header>
+                                            <Form.Dropdown
+                                                style={{zIndex: 1000}}
+                                                selection
+                                                fluid
+                                                options={this.typeOptions()}
+                                                value={this.state.selectedType}
+                                                name={'affectedLayers'}
+                                                onChange={this.handleChangeType}
+                                            />
+                                        </Segment>
+                                    </Grid.Column>
+                                    <Grid.Column width={3}>
                                         <Segment color={'grey'}>
                                             <Header textAlign={'center'} as={'h4'}>Select layer</Header>
                                             <Form.Dropdown
@@ -207,7 +218,7 @@ class Results extends React.Component {
                                             />
                                         </Segment>
                                     </Grid.Column>
-                                    <Grid.Column width={12}>
+                                    <Grid.Column width={10}>
                                         <Segment color={'grey'} style={{paddingBottom: 40}}>
                                             <Header textAlign={'center'} as={'h4'}>Select total time [days]</Header>
                                             <SliderWithTooltip
