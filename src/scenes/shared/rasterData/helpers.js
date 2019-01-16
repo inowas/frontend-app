@@ -26,7 +26,7 @@ export function min(a) {
     }
 
     const values = a
-        .map(row => row.filter(v => !isNaN(v)))
+        .map(row => row.filter(v => (!isNaN(v) && v !== null)))
         .map(arr => (Math.min.apply(null, arr)));
 
     return Math.min.apply(null, values);
@@ -38,7 +38,7 @@ export function max(a) {
     }
 
     const values = a
-        .map(row => row.filter(v => !isNaN(v)))
+        .map(row => row.filter(v => (!isNaN(v) && v !== null)))
         .map(arr => (Math.max.apply(null, arr)));
     return Math.max.apply(null, values);
 }
@@ -108,7 +108,7 @@ export function createGridData(value, nx, ny) {
     if (isRaster(value) && getGridSize(value).x === nx && getGridSize(value).y === ny) {
         for (let y = 0; y < ny; y++) {
             for (let x = 0; x < nx; x++) {
-                if (!isNaN(value[y][x])) {
+                if (!isNaN(value[y][x]) && value[y][x] !== null) {
                     data.push({
                         x: x,
                         y: y,
