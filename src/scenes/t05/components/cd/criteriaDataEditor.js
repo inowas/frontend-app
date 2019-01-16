@@ -1,7 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import {withRouter} from 'react-router-dom';
-import {MCDA} from 'core/mcda';
 import {Criterion} from 'core/mcda/criteria';
 import {Message, Step} from 'semantic-ui-react';
 
@@ -36,7 +35,6 @@ class CriteriaDataEditor extends React.Component {
                 return (
                     <CriteriaRasterUpload
                         criterion={this.props.criterion}
-                        mcda={this.props.mcda}
                         onChange={this.onUploadRaster}
                     />
                 );
@@ -100,7 +98,6 @@ class CriteriaDataEditor extends React.Component {
 
 CriteriaDataEditor.proptypes = {
     criterion: PropTypes.instanceOf(Criterion),
-    mcda: PropTypes.instanceOf(MCDA).isRequired,
     handleChange: PropTypes.func.isRequired
 };
 

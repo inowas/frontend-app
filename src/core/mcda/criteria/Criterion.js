@@ -1,4 +1,5 @@
 import uuidv4 from 'uuid/v4';
+import Raster from '../gis/Raster';
 
 const validTypes = ['discrete', 'continuous'];
 
@@ -6,14 +7,14 @@ class Criterion {
     _id = uuidv4();
     _name = 'New Criterion';
     _type = 'discrete';
-    _data = null;
+    _raster = new Raster();
 
     static fromObject(obj) {
         const criterion = new Criterion();
         criterion.id = obj.id;
         criterion.name = obj.name;
         criterion.type = obj.type;
-        criterion.data = obj.data;
+        criterion.raster = Raster.fromObject(obj.raster);
         return criterion;
     }
 
@@ -44,12 +45,12 @@ class Criterion {
         this._type = value;
     }
 
-    get data() {
-        return this._data;
+    get raster() {
+        return this._raster;
     }
 
-    set data(value) {
-        this._data = value ? value : null;
+    set raster(value) {
+        this._raster = value ? value : null;
     }
 
     toObject() {
@@ -57,7 +58,7 @@ class Criterion {
             id: this.id,
             name: this.name,
             type: this.type,
-            data: this.data
+            raster: this.raster.toObject()
         });
     }
 }

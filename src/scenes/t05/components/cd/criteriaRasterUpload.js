@@ -1,11 +1,8 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import {withRouter} from 'react-router-dom';
-import {MCDA} from 'core/mcda';
 import {Criterion} from 'core/mcda/criteria';
-import {Form, Grid, List, Header, Input, Radio, Segment} from 'semantic-ui-react';
+import {Form, Grid, List, Header, Input, Radio, Segment, Button, Icon, Message} from 'semantic-ui-react';
 import {fetchRasterfile, uploadRasterfile} from 'services/api';
-import CriteriaRasterMap from './criteriaRasterMap';
 
 const styles = {
     input: {
@@ -18,7 +15,6 @@ class CriteriaRasterUpload extends React.Component {
     state = {
         hash: null,
         metadata: null,
-        data: this.props.criterion.data || null,
         selectedBand: 0,
         errorFetching: false,
         errorUploading: false,
@@ -29,8 +25,6 @@ class CriteriaRasterUpload extends React.Component {
         if (!hash || !metadata) {
             return null;
         }
-
-        console.log(metadata);
 
         return (
             <Segment color="blue">
@@ -130,14 +124,18 @@ class CriteriaRasterUpload extends React.Component {
     }
 
     render() {
-        const {data, selectedBand} = this.state;
-        const {mcda} = this.props;
+        const {data} = this.state;
 
         return (
             <Grid>
                 <Grid.Row>
                     <Grid.Column width={16}>
-                        {this.renderUpload()}
+                        <Message>
+                            <Message.Header>Choose your criteria</Message.Header>
+                            <p>If you are unsure which criteria to use, please refer to the review on criteria used in
+                                literature: T04</p>
+                        </Message>
+                        <Button primary icon labelPosition='left'><Icon name='upload' />Upload Raster</Button>
                     </Grid.Column>
                 </Grid.Row>
                 <Grid.Row>
@@ -147,10 +145,7 @@ class CriteriaRasterUpload extends React.Component {
                     </Grid.Column>
                     <Grid.Column width={10}>
                         <Segment color={'green'}>
-                            <CriteriaRasterMap
-                                data={data ? data[selectedBand] : []}
-                                map={mcda.constraints}
-                            />
+
                         </Segment>
                     </Grid.Column>
                 </Grid.Row>
@@ -161,8 +156,7 @@ class CriteriaRasterUpload extends React.Component {
 
 CriteriaRasterUpload.proptypes = {
     criterion: PropTypes.instanceOf(Criterion).isRequired,
-    mcda: PropTypes.instanceOf(MCDA).isRequired,
     onChange: PropTypes.func.isRequired
 };
 
-export default withRouter(CriteriaRasterUpload);
+export default CriteriaRasterUpload;
