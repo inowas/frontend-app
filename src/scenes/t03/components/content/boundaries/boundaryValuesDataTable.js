@@ -14,7 +14,7 @@ class BoundaryValuesDataTable extends React.Component {
         this.state = {
             uploadState: {
                 error: false,
-                errorMsg: '',
+                errorMsg: [],
                 success: false
             }
         };
@@ -139,21 +139,36 @@ class BoundaryValuesDataTable extends React.Component {
     );
 
     handleCSV = (e) => {
+        let hasError = false;
+        const errorMessages = [];
         const dateTimeValues = [];
 
         if (!moment.utc(e.data[0]).isValid()) {
             return this.setState({
                 uploadState: {
                     error: true,
-                    errorMsg: 'Error: wrong file format',
+                    errorMsg: ['Invalid date_time at line 1.'],
                     success: false
                 }
             });
         }
 
-        e.data.forEach(row => {
-            const values = this.props.boundary.defaultValues.map((v, key) => row[key + 1] || v);
+        e.data.forEach((row, rKey) => {
+            const values = this.props.boundary.defaultValues.map((v, vKey) => {
+                if (row[vKey + 1] && isNaN(row[vKey + 1])) {
+                    hasError = true;
+                    errorMessages.push(`Invalid value at line ${rKey + 1}, column ${vKey + 1}: value is not a number.`);
+                }
+
+                return row[vKey + 1] || v;
+            });
             const date_time = moment.utc(row[0]);
+
+            if (!date_time.isValid()) {
+                hasError = true;
+                errorMessages.push(`Invalid date_time at line ${rKey + 1}.`);
+                return;
+            }
 
             const dateTimeValue = {
                 date_time: date_time.toISOString(),
@@ -161,15 +176,19 @@ class BoundaryValuesDataTable extends React.Component {
             };
             dateTimeValues.push(dateTimeValue);
         });
-        const {boundary, selectedOP} = this.props;
-        boundary.setDateTimeValues(dateTimeValues, selectedOP);
-        this.props.onChange(boundary);
+
+        if (!hasError) {
+            const {boundary, selectedOP} = this.props;
+            boundary.setDateTimeValues(dateTimeValues, selectedOP);
+            this.props.onChange(boundary);
+        }
 
         return this.setState({
             uploadState: {
                 ...this.state.uploadState,
-                error: false,
-                success: true
+                error: hasError,
+                errorMsg: errorMessages,
+                success: !hasError
             }
         });
     };

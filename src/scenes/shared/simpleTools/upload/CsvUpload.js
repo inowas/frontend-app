@@ -1,9 +1,23 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import {Icon, Popup} from 'semantic-ui-react';
+import {Button, Header, Icon, List, Modal} from 'semantic-ui-react';
 import * as Papa from 'papaparse';
 
 class CsvUpload extends React.Component {
+    state = {modalOpen: false};
+
+    constructor(props) {
+        super(props);
+        this.state = {
+            modalOpen: false
+        };
+    }
+
+    componentWillReceiveProps(nextProps) {
+        this.setState({
+            modalOpen: nextProps.uploadState.error
+        });
+    }
 
     handleUploadCSV = (e) => {
         const files = e.target.files;
@@ -15,6 +29,8 @@ class CsvUpload extends React.Component {
             });
         }
     };
+
+    handleClose = () => this.setState({modalOpen: false});
 
     render() {
         const {uploadState} = this.props;
@@ -30,14 +46,34 @@ class CsvUpload extends React.Component {
 
         return (
             <span>
-                <Popup
-                    trigger={
-                        <label htmlFor={'inputField'} className={classes}>
+                {uploadState.error &&
+                <Modal
+                    open={this.state.modalOpen}
+                    onClose={this.handleClose}
+                    size='small'
+                >
+                    <Header>
+                        Raster upload error
+                    </Header>
+                    <Modal.Content>
+                        <List>
+                            {
+                                uploadState.errorMsg.map((error, key) =>
+                                    <List.Item key={key}>{error}</List.Item>
+                                )
+                            }
+                        </List>
+                    </Modal.Content>
+                    <Modal.Actions>
+                        <Button onClick={this.handleClose}>
+                            Close
+                        </Button>
+                    </Modal.Actions>
+                </Modal>
+                }
+                <label htmlFor={'inputField'} className={classes}>
                             <Icon name='file excel'/>
-                        </label>}
-                    content={!uploadState.error ? 'Import CSV' : uploadState.errorMsg}
-                    position='top center'
-                />
+                        </label>
                 <input
                     type="file" id='inputField'
                     style={{display: 'none'}}
