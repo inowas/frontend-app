@@ -3,7 +3,7 @@ import {connect} from 'react-redux';
 import PropTypes from 'prop-types';
 
 import {Form, Grid, Header, Segment} from 'semantic-ui-react';
-import {BoundaryCollection, Calculation, ModflowModel, Soilmodel} from 'core/model/modflow';
+import {BoundaryCollection, Calculation, CalculationResults, ModflowModel, Soilmodel} from 'core/model/modflow';
 import {fetchUrl} from 'services/api';
 import {last, uniq, upperFirst} from 'lodash';
 import ResultsMap from '../../maps/resultsMap';
@@ -58,19 +58,19 @@ class Results extends React.Component {
     }
 
     fetchResults() {
-        const {model} = this.props;
-        const {calculation} = model;
-
+        const {calculation, model} = this.props;
         if (!calculation) {
             return null;
         }
 
         this.setState({isLoading: true},
             () => fetchUrl(`modflowmodels/${model.id}/results`,
-                metaData => {
-                    const calculationId = metaData.calculation_id;
-                    const totalTimes = metaData.times.total_times;
-                    const layerValues = metaData.layer_values;
+                data => {
+                    const results = CalculationResults.fromQuery(data);
+                    const calculationId = results.calculationId;
+                    const totalTimes = results.totalTimes;
+                    const layerValues = results.layerValues;
+
                     this.setState({calculationId, layerValues, totalTimes, isLoading: false});
                     this.onChangeTypeLayerOrTime({
                         type: this.state.selectedType,
@@ -286,6 +286,7 @@ class Results extends React.Component {
 const mapStateToProps = state => {
     return {
         model: ModflowModel.fromObject(state.T03.model),
+        calculation: state.T03.calculation ? Calculation.fromObject(state.T03.calculation) : null,
         boundaries: BoundaryCollection.fromObject(state.T03.boundaries),
         soilmodel: state.T03.soilmodel ? Soilmodel.fromObject(state.T03.soilmodel) : null
     };

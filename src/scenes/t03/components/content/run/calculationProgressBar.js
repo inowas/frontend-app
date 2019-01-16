@@ -16,12 +16,12 @@ class CalculationProgressBar extends React.Component {
     };
 
     componentWillReceiveProps(nextProps) {
-        const model = nextProps.model;
+        const {model} = nextProps;
         if (!(model instanceof ModflowModel)) {
             return this.setState({visible: false});
         }
 
-        const {calculation} = model;
+        const {calculation} = nextProps;
         if (!(calculation instanceof Calculation)) {
             return this.setState({visible: false});
         }
@@ -66,7 +66,7 @@ class CalculationProgressBar extends React.Component {
             return;
         }
 
-        const {calculation} = model;
+        const {calculation} = this.props;
         if (!(calculation instanceof Calculation)) {
             return;
         }
@@ -98,7 +98,7 @@ class CalculationProgressBar extends React.Component {
                 >
                     <Message.Header as={'h4'}>Calculation Progress</Message.Header>
                     <Message.Content>
-                        <CalculationStatus calculation={this.props.model.calculation}/>
+                        <CalculationStatus calculation={this.props.calculation}/>
                     </Message.Content>
                 </Message>
             )
@@ -109,6 +109,7 @@ class CalculationProgressBar extends React.Component {
 }
 
 const mapStateToProps = state => ({
+    calculation: state.T03.calculation && Calculation.fromObject(state.T03.calculation),
     model: state.T03.model && ModflowModel.fromObject(state.T03.model)
 });
 
