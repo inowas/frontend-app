@@ -1,6 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import moment from 'moment';
+import uuidv4 from 'uuid/v4';
 
 import {Button, Icon, Input, Table} from 'semantic-ui-react';
 import {Boundary, Stressperiods} from 'core/model/modflow';
@@ -15,6 +16,7 @@ class BoundaryValuesDataTable extends React.Component {
             uploadState: {
                 error: false,
                 errorMsg: [],
+                id: uuidv4(),
                 success: false
             }
         };
@@ -148,6 +150,7 @@ class BoundaryValuesDataTable extends React.Component {
                 uploadState: {
                     error: true,
                     errorMsg: ['Invalid date_time at line 1.'],
+                    id: uuidv4(),
                     success: false
                 }
             });
@@ -188,6 +191,7 @@ class BoundaryValuesDataTable extends React.Component {
                 ...this.state.uploadState,
                 error: hasError,
                 errorMsg: errorMessages,
+                id: uuidv4(),
                 success: !hasError
             }
         });
