@@ -31,21 +31,23 @@ class Results extends React.Component {
     }
 
     componentDidMount() {
-        this.fetchResults();
+        const {calculation} = this.props;
+        const {calculationId} = this.state;
+        if ((calculation instanceof Calculation) && !calculationId) {
+            this.fetchResults();
+        }
     }
 
-    componentWillReceiveProps(nextProps, nextContext) {
-        if (!this.state.calculationId) {
+    componentWillReceiveProps(nextProps) {
+        const {calculation} = nextProps;
+        const {calculationId} = this.state;
+        if ((calculation instanceof Calculation) && !calculationId) {
             this.fetchResults();
         }
     }
 
     fetchResults() {
-        const {calculation, model} = this.props;
-        if (!calculation) {
-            return null;
-        }
-
+        const {model} = this.props;
         this.setState({isLoading: true},
             () => fetchUrl(`modflowmodels/${model.id}/results`,
                 data => {
@@ -53,13 +55,13 @@ class Results extends React.Component {
                     const calculationId = results.calculationId;
                     const totalTimes = results.totalTimes;
                     const layerValues = results.layerValues;
-
-                    this.setState({calculationId, layerValues, totalTimes, isLoading: false});
-                    this.onChangeTypeLayerOrTime({
-                        type: this.state.selectedType,
-                        totim: last(totalTimes),
-                        layer: this.state.selectedLay
-                    });
+                    return this.setState({calculationId, layerValues, totalTimes, isLoading: false},
+                        () => this.onChangeTypeLayerOrTime({
+                            type: this.state.selectedType,
+                            totim: last(totalTimes),
+                            layer: this.state.selectedLay
+                        })
+                    );
                 },
                 (e) => this.setState({isError: e, isLoading: false}))
         );
@@ -171,16 +173,18 @@ class Results extends React.Component {
 
 const mapStateToProps = state => {
     return {
-        model: ModflowModel.fromObject(state.T03.model),
         calculation: state.T03.calculation ? Calculation.fromObject(state.T03.calculation) : null,
         boundaries: BoundaryCollection.fromObject(state.T03.boundaries),
+        model: ModflowModel.fromObject(state.T03.model),
         soilmodel: state.T03.soilmodel ? Soilmodel.fromObject(state.T03.soilmodel) : null
     };
 };
 
 Results.proptypes = {
+    boundaries: PropTypes.instanceOf(BoundaryCollection).isRequired,
     calculation: PropTypes.instanceOf(Calculation).isRequired,
     model: PropTypes.instanceOf(ModflowModel).isRequired,
+    soilmodel: PropTypes.instanceOf(Soilmodel).isRequired,
 };
 
 export default connect(mapStateToProps)(Results);
