@@ -99,6 +99,20 @@ class BoundingBox {
         [this._xMax, this._yMax]
     ]);
 
+    northEast = () => {
+        return {
+            lat: this._yMax,
+            lon: this._xMax
+        };
+    };
+
+    southWest = () => {
+        return {
+            lat: this._yMin,
+            lon: this._xMin
+        };
+    };
+
     getBoundsLatLng = () => {
         return [
             [this.yMin, this.xMin],

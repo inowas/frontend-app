@@ -9497,6 +9497,10 @@ react-transition-group@^2.5.0:
     prop-types "^15.6.2"
     react-lifecycles-compat "^3.0.4"
 
+react-xml-parser@^1.0.8:
+  version "1.0.8"
+  resolved "https://registry.yarnpkg.com/react-xml-parser/-/react-xml-parser-1.0.8.tgz#8321175b4f960b07c3a72d5dd6309c0d4a9ff085"
+
 react@^16.6.0:
   version "16.6.0"
   resolved "https://registry.yarnpkg.com/react/-/react-16.6.0.tgz#b34761cfaf3e30f5508bc732fb4736730b7da246"

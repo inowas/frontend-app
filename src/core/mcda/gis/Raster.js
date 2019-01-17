@@ -3,18 +3,20 @@ import {cloneDeep} from 'lodash';
 import {distanceBetweenCoordinates} from 'services/geoTools/distance';
 
 class Raster {
-    _boundingBox = null;
+    _boundingBox = new BoundingBox();
     _gridSize = new GridSize(10, 10);
     _data = [];
     _initial = {
-        boundingBox: null,
+        boundingBox: new BoundingBox(),
         gridSize: new GridSize(10, 10),
         data: []
     };
+    _min = 0;
+    _max = 0;
 
     static fromObject(obj) {
         const raster = new Raster();
-        raster.boundingBox = obj.boundingBox ? BoundingBox.fromArray(obj.boundingBox) : null;
+        raster.boundingBox = BoundingBox.fromArray(obj.boundingBox);
         raster.data = obj.data;
         raster.gridSize = GridSize.fromObject(obj.gridSize);
         raster.initial = obj.initial;
@@ -49,26 +51,44 @@ class Raster {
         return this._initial;
     }
 
+    get min() {
+        return this._min;
+    }
+
+    set min(value) {
+        this._min = value;
+    }
+
+    get max() {
+        return this._max;
+    }
+
+    set max(value) {
+        this._max = value;
+    }
+
     initialToObject() {
         return {
-            boundingBox: this._initial.boundingBox ? this._initial.boundingBox.toArray() : null,
+            boundingBox: this._initial.boundingBox.toArray(),
             data: this._initial.data,
             gridSize: this._initial.gridSize.toObject()
         }
     }
 
     set initial(value) {
-        this._initial.boundingBox = value.boundingBox ? BoundingBox.fromArray(value.boundingBox) : null;
+        this._initial.boundingBox = BoundingBox.fromArray(value.boundingBox);
         this._initial.gridSize = GridSize.fromObject(value.gridSize);
         this._initial.data = value.data;
     }
 
     toObject() {
         return {
-            boundingBox: this.boundingBox ? this.boundingBox.toArray() : null,
+            boundingBox: this.boundingBox.toArray(),
             data: this.data,
             gridSize: this.gridSize.toObject(),
-            initial: this.initialToObject()
+            initial: this.initialToObject(),
+            max: this.max,
+            min: this.min
         }
     }
 

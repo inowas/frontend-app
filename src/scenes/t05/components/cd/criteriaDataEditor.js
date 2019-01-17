@@ -4,7 +4,7 @@ import {withRouter} from 'react-router-dom';
 import {Criterion} from 'core/mcda/criteria';
 import {Message, Step} from 'semantic-ui-react';
 
-import {CriteriaRasterUpload} from './index';
+import {CriteriaDefinition, CriteriaRasterUpload} from './index';
 
 class CriteriaDataEditor extends React.Component {
 
@@ -17,6 +17,20 @@ class CriteriaDataEditor extends React.Component {
     }
 
     handleClickStep = (e, {name}) => this.setState({activeStep: name});
+
+    handleChange = criterion => {
+        if(!(criterion instanceof Criterion)) {
+            throw new Error('Criterion expected to be instance of Criterion.');
+        }
+
+        const cc = this.props.mcda.criteriaCollection;
+        cc.update(criterion);
+
+        return this.props.handleChange({
+            name: 'criteria',
+            value: cc
+        });
+    };
 
     onUploadRaster = data => {
         const cc = this.props.mcda.criteriaCollection;
@@ -31,11 +45,18 @@ class CriteriaDataEditor extends React.Component {
 
     renderTool() {
         switch (this.state.activeStep) {
-            default:
+            case 'upload':
                 return (
                     <CriteriaRasterUpload
                         criterion={this.props.criterion}
                         onChange={this.onUploadRaster}
+                    />
+                );
+            default:
+                return (
+                    <CriteriaDefinition
+                        criterion={this.props.criterion}
+                        onChange={this.handleChange}
                     />
                 );
         }
@@ -58,11 +79,18 @@ class CriteriaDataEditor extends React.Component {
                     <div>
                         <Step.Group fluid>
                             <Step
-                                active={activeStep === '' || activeStep === 'upload'}
+                                active={activeStep === '' || activeStep === 'definition'}
+                                name='definition'
+                                icon='info circle'
+                                title='Definition'
+                                link
+                                onClick={this.handleClickStep}
+                            />
+                            <Step
+                                active={activeStep === 'upload'}
                                 name='upload'
                                 icon='upload'
                                 title='Upload'
-                                description='Upload raster file'
                                 link
                                 onClick={this.handleClickStep}
                             />
@@ -72,7 +100,6 @@ class CriteriaDataEditor extends React.Component {
                                 name='reclassification'
                                 icon='chart bar'
                                 title='Reclassification'
-                                description='Reclassify raster values to standardized suitability values'
                                 link
                                 onClick={this.handleClickStep}
                             />

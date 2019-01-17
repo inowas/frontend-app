@@ -19,6 +19,7 @@ class RasterDataImage extends React.Component {
             const rainbowVis = rainbowFactory({min: min(data), max: max(data)});
             const width = gridSize.nX;
             const height = gridSize.nY;
+            console.log('START DRAWING');
             this.drawCanvas(data, width, height, rainbowVis);
         }
     }

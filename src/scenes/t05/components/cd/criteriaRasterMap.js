@@ -2,69 +2,88 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import {createGridData, max, min, rainbowFactory} from '../../../shared/rasterData/helpers';
 import {BasicTileLayer} from 'services/geoTools/tileLayers';
-import {Map} from 'react-leaflet';
-import {GisMap} from 'core/mcda/gis';
+import {Map, Rectangle, FeatureGroup} from 'react-leaflet';
+import {Raster} from 'core/mcda/gis';
 import CanvasHeatMapOverlay from '../../../shared/rasterData/ReactLeafletHeatMapCanvasOverlay';
-import uuidv4 from 'uuid/v4';
+import {EditControl} from 'react-leaflet-draw';
+import {getStyle} from '../../../t03/components/maps';
+import {BoundingBox} from 'core/geometry';
 
 const styles = {
-    canvas: {
-        width: '100%',
-        height: '400px'
-    },
     map: {
         width: '100%',
-        height: '400px'
+        height: '600px'
+    }
+};
+
+const options = {
+    edit: {
+        remove: false
+    },
+    draw: {
+        polyline: false,
+        polygon: false,
+        rectangle: false,
+        circle: false,
+        circlemarker: false,
+        marker: false,
+        poly: {
+            allowIntersection: false
+        }
     }
 };
 
 class CriteriaRasterMap extends React.Component {
 
-    constructor(props) {
-        super(props);
-        this.leafletMap = React.createRef();
-        this.state = {
-            data: this.props.data,
-            bounds: this.props.map.boundingBox.getBoundsLatLng(),
-            gridSize: this.props.map.gridSize.toObject(),
-            refreshKey: uuidv4(),
-            viewport: this.props.map.boundingBox.getBoundsLatLng()
-        }
-    }
+    onEditPath = e => {
+        const layers = e.layers;
+
+        layers.eachLayer(layer => {
+            const boundingBox = BoundingBox.fromGeoJson(layer.toGeoJSON());
+            const raster = this.props.raster;
+            raster.boundingBox = boundingBox;
+            this.props.onChange(raster);
+        });
+    };
 
     render() {
-        const {data, bounds, gridSize, refreshKey, viewport} = this.state;
+        const {data, boundingBox, gridSize} = this.props.raster;
 
         return (
-            <div>
-                <p>{refreshKey}</p>
-                <Map
-                    style={styles.map}
-                    bounds={viewport}
-                    ref={this.leafletMap}
-                    onMoveend={this.handleMoved}
-                    key={refreshKey}
-                >
-                    <BasicTileLayer/>
-                    {data.length > 0 &&
-                    <CanvasHeatMapOverlay
-                        nX={gridSize.n_x}
-                        nY={gridSize.n_y}
-                        rainbow={rainbowFactory({min: min(data), max: max(data)})}
-                        dataArray={createGridData(data, gridSize.n_x, gridSize.n_y)}
-                        bounds={bounds}
-                        opacity={0.75}
+            <Map
+                style={styles.map}
+                bounds={boundingBox.getBoundsLatLng()}
+            >
+                <BasicTileLayer/>
+                <FeatureGroup>
+                    <EditControl
+                        position="bottomright"
+                        onEdited={this.onEditPath}
+                        {...options}
                     />
-                    }
-                </Map>
-            </div>
+                    <Rectangle
+                        bounds={boundingBox.getBoundsLatLng()}
+                        {...getStyle('bounding_box')}
+                    />
+                </FeatureGroup>
+                {data.length > 0 &&
+                <CanvasHeatMapOverlay
+                    nX={gridSize.nX}
+                    nY={gridSize.nY}
+                    rainbow={rainbowFactory({min: min(data), max: max(data)})}
+                    dataArray={createGridData(data, gridSize.nX, gridSize.nY)}
+                    bounds={boundingBox.getBoundsLatLng()}
+                    opacity={0.75}
+                />
+                }
+            </Map>
         );
     }
 }
 
 CriteriaRasterMap.propTypes = {
-    data: PropTypes.oneOfType([PropTypes.array, PropTypes.number]).isRequired,
-    map: PropTypes.instanceOf(GisMap).isRequired
+    onChange: PropTypes.func.isRequired,
+    raster: PropTypes.instanceOf(Raster).isRequired
 };
 
 export default CriteriaRasterMap;
