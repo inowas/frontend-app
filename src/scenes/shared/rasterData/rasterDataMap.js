@@ -16,7 +16,7 @@ import {BasicTileLayer} from 'services/geoTools/tileLayers';
 
 const styles = {
     map: {
-        minHeight: 250
+        minHeight: 400
     },
     area: {
         weight: 1,

@@ -1,5 +1,5 @@
 import React from 'react';
-import {Button, Form, Grid, Modal, Segment} from 'semantic-ui-react';
+import {Button, Form, Modal, Segment} from 'semantic-ui-react';
 import ZonesMap from '../../maps/zonesMap';
 import PropTypes from 'prop-types';
 import {SoilmodelLayer, SoilmodelZone} from 'core/model/modflow/soilmodel';
@@ -60,36 +60,30 @@ class ZoneModal extends React.Component {
 
         return (
             <Modal size={'large'} open onClose={this.props.onCancel} dimmer={'inverted'}>
-                <Modal.Header>Edit Location</Modal.Header>
+                <Modal.Header>Edit Zone</Modal.Header>
                 <Modal.Content>
-                    <Grid divided={'vertically'}>
-                        <Grid.Row columns={2}>
-                            <Grid.Column width={12}>
-                                <Segment attached="bottom">
-                                    <ZonesMap
-                                        model={model}
-                                        onCreatePath={this.onCreatePath}
-                                        onEditPath={this.onEditPath}
-                                        readOnly={readOnly}
-                                        zone={SoilmodelZone.fromObject(zone)}
-                                        layer={layer}
-                                    />
-                                </Segment>
-                            </Grid.Column>
-                            <Grid.Column width={4}>
-                                <Form.Field>
-                                    <label>Name</label>
-                                    <Form.Input
-                                        type="text"
-                                        name="name"
-                                        value={zone.name}
-                                        placeholder="name ="
-                                        onChange={this.onChange}
-                                    />
-                                </Form.Field>
-                            </Grid.Column>
-                        </Grid.Row>
-                    </Grid>
+                    <Form>
+                        <Form.Field>
+                            <label>Name</label>
+                            <Form.Input
+                                type="text"
+                                name="name"
+                                value={zone.name}
+                                placeholder="name ="
+                                onChange={this.onChange}
+                            />
+                        </Form.Field>
+                    </Form>
+                    <Segment attached="bottom">
+                        <ZonesMap
+                            model={model}
+                            onCreatePath={this.onCreatePath}
+                            onEditPath={this.onEditPath}
+                            readOnly={readOnly}
+                            zone={SoilmodelZone.fromObject(zone)}
+                            layer={layer}
+                        />
+                    </Segment>
                 </Modal.Content>
                 <Modal.Actions>
                     <Button onClick={this.props.onCancel}>Cancel</Button>

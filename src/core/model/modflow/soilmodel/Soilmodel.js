@@ -1,5 +1,5 @@
 import LayersCollection from './LayersCollection';
-import ModflowModel from "../ModflowModel";
+import ModflowModel from '../ModflowModel';
 
 class Soilmodel {
     _meta = {};
