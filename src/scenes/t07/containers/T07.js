@@ -8,6 +8,8 @@ import {Grid, Header, Icon, Message, Segment} from 'semantic-ui-react';
 import ToolMetaData from '../../shared/simpleTools/ToolMetaData';
 import {fetchUrl, sendCommand} from 'services/api';
 
+import * as Content from '../components';
+
 import {
     clear,
     updateBaseModel,
@@ -160,7 +162,7 @@ class T07 extends React.Component {
     renderContent(id, property, type) {
         switch (property) {
             case 'crosssection':
-                return ('CROSSSECTION');
+                return (<Content.CrossSection/>);
             case 'difference':
                 return ('DIFFERENCE');
             case 'timeseries':
