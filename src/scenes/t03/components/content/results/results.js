@@ -8,8 +8,6 @@ import {fetchUrl} from 'services/api';
 import {last} from 'lodash';
 import ResultsMap from '../../maps/resultsMap';
 import ResultsChart from './resultsChart';
-
-import Moment from 'moment';
 import ResultsSelector from '../../../../shared/complexTools/ResultsSelector';
 
 class Results extends React.Component {
@@ -115,13 +113,13 @@ class Results extends React.Component {
                                     layer: selectedLayer,
                                     totim: selectedTotim,
                                 }}
-                                onChange={({type, layer, totim}) => (
-                                    this.setState({
+                                onChange={({type, layer, totim}) => {
+                                    return this.setState({
                                         selectedType: type,
                                         selectedLayer: layer,
                                         selectedTotim: totim
-                                    }, () => this.fetchData({layer, totim, type}))
-                                )}
+                                    }, () => this.fetchData({layer, totim, type}));
+                                }}
                                 layerValues={layerValues}
                                 soilmodel={soilmodel}
                                 stressperiods={model.stressperiods}

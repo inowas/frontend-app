@@ -69,7 +69,7 @@ class ResultsSelector extends React.Component {
     };
 
     handleChangeType = (e, {value}) => {
-        const {layer, totim} = this.props;
+        const {layer, totim} = this.props.data;
         return this.props.onChange({
             layer,
             totim,
@@ -78,7 +78,7 @@ class ResultsSelector extends React.Component {
     };
 
     handleChangeLayer = (e, {value}) => {
-        const {totim, type} = this.props;
+        const {totim, type} = this.props.data;
         return this.props.onChange({
             layer: value,
             totim,
@@ -94,7 +94,7 @@ class ResultsSelector extends React.Component {
     };
 
     handleAfterChangeSlider = () => {
-        const {layer, type} = this.props;
+        const {layer, type} = this.props.data;
         const totim = this.state.temporaryTotim;
         return this.props.onChange({layer, totim, type});
     };
