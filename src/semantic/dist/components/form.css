@@ -314,22 +314,22 @@
 
 /* browsers require these rules separate */
 .ui.form ::-webkit-input-placeholder {
-  color: #ffffff;
+  color: #8c8c8c;
 }
 .ui.form :-ms-input-placeholder {
-  color: #ffffff !important;
+  color: #8c8c8c !important;
 }
 .ui.form ::-moz-placeholder {
-  color: #ffffff;
+  color: #8c8c8c;
 }
 .ui.form :focus::-webkit-input-placeholder {
-  color: #bfbfbf;
+  color: #a5a5a5;
 }
 .ui.form :focus:-ms-input-placeholder {
-  color: #bfbfbf !important;
+  color: #a5a5a5 !important;
 }
 .ui.form :focus::-moz-placeholder {
-  color: #bfbfbf;
+  color: #a5a5a5;
 }
 
 /* Error Placeholder */

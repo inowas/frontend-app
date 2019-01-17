@@ -60,20 +60,23 @@ class ContentToolBar extends React.Component {
             case 'notSaved': {
                 return {
                     content: 'Changes not saved!',
-                    warning: true
+                    warning: true,
+                    icon: <Icon name="exclamation triangle" style={{display: 'inline-block', fontSize: '1em'}}/>
                 };
             }
             case 'error': {
                 return {
                     content: 'Error saving changes!',
-                    warning: true
+                    warning: true,
+                    icon: <Icon name="exclamation triangle" style={{display: 'inline-block', fontSize: '1em'}}/>
                 };
             }
 
             case 'hasBeenSaved': {
                 return {
                     content: 'Changes saved!',
-                    positive: true
+                    positive: true,
+                    icon: <Icon name="check circle" style={{display: 'inline-block', fontSize: '1em'}}/>
                 };
             }
             default:
@@ -104,11 +107,12 @@ class ContentToolBar extends React.Component {
                     <Grid.Column>
                         {message &&
                         <Transition duration={{hide: this.state.hide}} visible={this.state.visible}>
-                            <Message
+                            <Message icon
                                 positive={message.positive || false}
                                 warning={message.warning || false}
                                 style={styles.thinMessage}
                             >
+                                {message.icon}
                                 {message.content}
                             </Message>
                         </Transition>

@@ -130,8 +130,8 @@ class CreateModel extends React.Component {
                     <Grid padded>
                         <Grid.Row>
                             <Grid.Column width={8}>
-                                <Segment color={'grey'}>
-                                    <Form color={'grey'}>
+                                <Segment>
+                                    <Form>
                                         <Form.Group>
                                             <Form.Input
                                                 label='Name'
@@ -165,8 +165,8 @@ class CreateModel extends React.Component {
                                 </Segment>
                             </Grid.Column>
                             <Grid.Column width={4}>
-                                <Segment color={'grey'}>
-                                    <Form color={'grey'}>
+                                <Segment>
+                                    <Form>
                                         <Form.Input
                                             type='number'
                                             label='Rows'
@@ -194,8 +194,8 @@ class CreateModel extends React.Component {
                                 </Segment>
                             </Grid.Column>
                             <Grid.Column width={4}>
-                                <Segment color={'grey'}>
-                                    <Form color={'grey'}>
+                                <Segment>
+                                    <Form>
                                         <Form.Input
                                             type='date'
                                             label='Start Date'

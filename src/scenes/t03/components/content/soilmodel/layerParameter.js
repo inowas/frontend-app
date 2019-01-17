@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import {SoilmodelLayer, SoilmodelZone} from 'core/model/modflow/soilmodel';
-import {Button, Form, Grid, Header, Icon, Segment} from 'semantic-ui-react';
+import {Button, Form, Grid, Header, Icon} from 'semantic-ui-react';
 import {ModflowModel} from 'core/model/modflow';
 import ZoneModal from './zoneModal';
 import ZonesTable from './zonesTable';
@@ -116,62 +116,72 @@ class LayerParameter extends React.Component {
 
         return (
             <div>
-                <Segment>
                     <Grid>
-                        <Grid.Column width={4}>
-                            <Form>
-                                <Form.Input
-                                    label='Cycles'
-                                    type="number"
-                                    name="cycles"
-                                    value={this.state.smoothParams.cycles}
-                                    placeholder="cycles ="
-                                    onChange={this.onChangeSmoothParams}
+                        <Grid.Row>
+                            <Grid.Column>
+                                <Header as="h4">{parameter.description}, {parameter.name} [{parameter.unit}]</Header>
+                                <RasterDataMap
+                                    data={layer[parameter.name]}
+                                    model={model}
+                                    unit={parameter.unit}
                                 />
-                                <Form.Input
-                                    label='Distance'
-                                    type="number"
-                                    name="distance"
-                                    value={this.state.smoothParams.distance}
-                                    placeholder="distance ="
-                                    onChange={this.onChangeSmoothParams}
-                                />
-                                <Button icon='tint' labelPosition='left'
-                                    onClick={this.smoothMap}
-                                    content={'Start Smoothing'}
-                                >
-                                </Button>
-                                <Button icon='trash' labelPosition='left' style={{marginTop: '5px'}}
+                            </Grid.Column>
+                        </Grid.Row>
+                        <Grid.Row >
+                            <Grid.Column>
+                                <Form.Group>
+                                    <Form.Input
+                                        label='Cycles'
+                                        type="number"
+                                        name="cycles"
+                                        value={this.state.smoothParams.cycles}
+                                        placeholder="cycles="
+                                        onChange={this.onChangeSmoothParams}
+                                        width={4}
+                                    />
+                                    <Form.Input
+                                        label='Distance'
+                                        type="number"
+                                        name="distance"
+                                        value={this.state.smoothParams.distance}
+                                        placeholder="distance ="
+                                        onChange={this.onChangeSmoothParams}
+                                        width={5}
+                                    />
+                                    <Form.Button
+                                        icon='tint'
+                                        labelPosition='left'
+                                        onClick={this.smoothMap}
+                                        content={'Start Smoothing'}
+                                        width={8}
+                                        style={{marginTop: '23px'}}
+                                    />
+                                    <Form.Button
+                                        icon='trash'
+                                        labelPosition='left'
                                         onClick={this.recalculateMap}
-                                        content={'Remove Smoothing'}>
-                                </Button>
-                            </Form>
-                        </Grid.Column>
-                        <Grid.Column width={12}>
-                            <Header as="h4">{parameter.description}, {parameter.name} [{parameter.unit}]</Header>
-                            <RasterDataMap
-                                data={layer[parameter.name]}
-                                model={model}
-                                unit={parameter.unit}
-                            />
-                        </Grid.Column>
+                                        content={'Remove Smoothing'}
+                                        width={8}
+                                        style={{marginTop: '23px'}}
+                                     />
+                                </Form.Group>
+                            </Grid.Column>
+                        </Grid.Row>
                     </Grid>
-                </Segment>
-                <Segment>
                         <Button icon primary
                             onClick={this.onAddZone}
                         >
-                            <Icon name="add circle"/> Add new zone
+                            <Icon name="add"/> Add Zone
                         </Button>
                     <ZonesTable
                         onClickUpload={this.onClickUpload}
                         onChange={this.onChange}
                         onEdit={this.onEditZone}
-                        parameter={parameter.name}
+                        parameter={parameter}
                         readOnly={readOnly}
                         layer={SoilmodelLayer.fromObject(layer)}
                     />
-                </Segment>
+
                 {selectedZone &&
                 <ZoneModal
                     onCancel={() => this.setState({selectedZone: null})}

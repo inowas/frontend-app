@@ -122,6 +122,11 @@
 
 @inputBackground: @lightGrey;
 
+/* Input Text Color */
+@inputColor: @textColor;
+@inputPlaceholderColor: lighten(@inputColor, 25);
+@inputPlaceholderFocusColor: lighten(@inputColor, 35);
+
 
 /*-------------------
        Links

@@ -35,7 +35,7 @@ class CsvUpload extends React.Component {
     render() {
         const {uploadState} = this.props;
 
-        let classes = 'ui icon button';
+        let classes = 'ui icon button positive';
 
         if (uploadState.error) {
             classes = 'ui icon button negative';
@@ -72,7 +72,7 @@ class CsvUpload extends React.Component {
                 </Modal>
                 }
                 <label htmlFor={'inputField'} className={classes}>
-                            <Icon name='file excel'/>
+                            <Icon name='file excel'/> Import CSV
                         </label>
                 <input
                     type="file" id='inputField'

@@ -34,7 +34,7 @@ class BoundaryGeometryEditor extends React.Component {
         const boundary = BoundaryFactory.fromObjectData(this.state.boundary);
 
         return (
-            <Modal size={'medium'} open onClose={onCancel} dimmer={'inverted'}>
+            <Modal size={'large'} open onClose={onCancel} dimmer={'inverted'}>
                 <Modal.Header>Edit boundary properties</Modal.Header>
                 <Modal.Content>
                     <Form>

@@ -206,6 +206,7 @@ class BoundaryValuesDataTable extends React.Component {
 
         return (
             <div>
+                <CsvUpload uploadState={this.state.uploadState} onUploaded={this.handleCSV} />
                 <Table size={'small'} singleLine>
                     <Table.Header>
                         <Table.Row>
@@ -222,7 +223,7 @@ class BoundaryValuesDataTable extends React.Component {
                     <Button icon onClick={() => this.addNewDatetimeValue(1, 'weeks')}><Icon name='add circle' /> 1 Week</Button>
                     <Button icon onClick={() => this.addNewDatetimeValue(1, 'months')}><Icon name='add circle' /> 1 Month</Button>
                     <Button icon onClick={() => this.addNewDatetimeValue(1, 'years')}><Icon name='add circle' /> 1 Year</Button>
-                    <CsvUpload uploadState={this.state.uploadState} onUploaded={this.handleCSV} />
+
                 </Button.Group>
             </div>
         )
