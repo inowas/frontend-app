@@ -170,7 +170,7 @@ const styles = {
         fillOpacity: 0.5
     },
     op_selected: {
-        radius: 5,
+        radius: 7,
         color: '#D50E00',
         weight: 1,
         fillColor: '#D50E00',

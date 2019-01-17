@@ -9,7 +9,7 @@ const LayersList = ({addLayer, soilmodel, onChange, selected}) => {
         <div>
             <Button positive icon='plus' labelPosition='left'
                 onClick={addLayer}
-                content={'Add New'}
+                content={'Add Layer'}
             >
             </Button>
             <Menu fluid vertical tabular>

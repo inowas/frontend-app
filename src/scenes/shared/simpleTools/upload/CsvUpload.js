@@ -4,19 +4,19 @@ import {Button, Header, Icon, List, Modal} from 'semantic-ui-react';
 import * as Papa from 'papaparse';
 
 class CsvUpload extends React.Component {
-    state = {modalOpen: false};
-
     constructor(props) {
         super(props);
         this.state = {
-            modalOpen: false
+            modalOpen: true
         };
     }
 
-    componentWillReceiveProps(nextProps) {
-        this.setState({
-            modalOpen: nextProps.uploadState.error
-        });
+    componentDidUpdate(prevProps) {
+        if (prevProps.uploadState.id !== this.props.uploadState.id) {
+            this.setState({
+                modalOpen: this.props.uploadState.error
+            })
+        }
     }
 
     handleUploadCSV = (e) => {
@@ -35,7 +35,7 @@ class CsvUpload extends React.Component {
     render() {
         const {uploadState} = this.props;
 
-        let classes = 'ui icon button';
+        let classes = 'ui icon button positive';
 
         if (uploadState.error) {
             classes = 'ui icon button negative';
@@ -72,7 +72,7 @@ class CsvUpload extends React.Component {
                 </Modal>
                 }
                 <label htmlFor={'inputField'} className={classes}>
-                            <Icon name='file excel'/>
+                            <Icon name='file excel'/> Import CSV
                         </label>
                 <input
                     type="file" id='inputField'

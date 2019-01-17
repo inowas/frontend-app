@@ -1,6 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import moment from 'moment';
+import uuidv4 from 'uuid/v4';
 
 import {Button, Icon, Input, Table} from 'semantic-ui-react';
 import {Boundary, Stressperiods} from 'core/model/modflow';
@@ -15,6 +16,7 @@ class BoundaryValuesDataTable extends React.Component {
             uploadState: {
                 error: false,
                 errorMsg: [],
+                id: uuidv4(),
                 success: false
             }
         };
@@ -143,11 +145,15 @@ class BoundaryValuesDataTable extends React.Component {
         const errorMessages = [];
         const dateTimeValues = [];
 
-        if (!moment.utc(e.data[0]).isValid()) {
+        const dateCodes = ['years', 'months', 'days', 'hours', 'minutes', 'seconds', 'milliseconds'];
+        const firstLine = moment.utc(e.data[0][0]);
+
+        if (!firstLine.isValid()) {
             return this.setState({
                 uploadState: {
                     error: true,
-                    errorMsg: ['Invalid date_time at line 1.'],
+                    errorMsg: [`Invalid date_time at line 1 at ${dateCodes[firstLine.invalidAt()]}.`],
+                    id: uuidv4(),
                     success: false
                 }
             });
@@ -166,7 +172,7 @@ class BoundaryValuesDataTable extends React.Component {
 
             if (!date_time.isValid()) {
                 hasError = true;
-                errorMessages.push(`Invalid date_time at line ${rKey + 1}.`);
+                errorMessages.push(`Invalid date_time at line ${rKey + 1} at ${dateCodes[firstLine.invalidAt()]}.`);
                 return;
             }
 
@@ -188,6 +194,7 @@ class BoundaryValuesDataTable extends React.Component {
                 ...this.state.uploadState,
                 error: hasError,
                 errorMsg: errorMessages,
+                id: uuidv4(),
                 success: !hasError
             }
         });
@@ -199,6 +206,7 @@ class BoundaryValuesDataTable extends React.Component {
 
         return (
             <div>
+                <CsvUpload uploadState={this.state.uploadState} onUploaded={this.handleCSV} />
                 <Table size={'small'} singleLine>
                     <Table.Header>
                         <Table.Row>
@@ -215,7 +223,7 @@ class BoundaryValuesDataTable extends React.Component {
                     <Button icon onClick={() => this.addNewDatetimeValue(1, 'weeks')}><Icon name='add circle' /> 1 Week</Button>
                     <Button icon onClick={() => this.addNewDatetimeValue(1, 'months')}><Icon name='add circle' /> 1 Month</Button>
                     <Button icon onClick={() => this.addNewDatetimeValue(1, 'years')}><Icon name='add circle' /> 1 Year</Button>
-                    <CsvUpload uploadState={this.state.uploadState} onUploaded={this.handleCSV} />
+
                 </Button.Group>
             </div>
         )

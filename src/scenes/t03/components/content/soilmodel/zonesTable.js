@@ -34,7 +34,7 @@ class ZonesTable extends React.Component {
         const layer = SoilmodelLayer.fromObject(this.state.layer, false);
         const zone = layer.zonesCollection.findById(id);
         if (zone) {
-            zone[this.props.parameter].value = value;
+            zone[this.props.parameter.name].value = value;
             layer.zonesCollection.update(zone);
             this.setState({
                 layer: layer.toObject()
@@ -57,8 +57,8 @@ class ZonesTable extends React.Component {
         const {parameter} = this.props;
         const layer = SoilmodelLayer.fromObject(this.state.layer);
         const zone = layer.zonesCollection.findById(id);
-        if (zone && zone[parameter].isArray()) {
-            zone[parameter].value = zone[parameter].defaultValue || 0;
+        if (zone && zone[parameter.name].isArray()) {
+            zone[parameter.name].value = zone[parameter.name].defaultValue || 0;
             layer.zonesCollection.update(zone);
             this.props.onChange(layer);
         }
@@ -69,7 +69,7 @@ class ZonesTable extends React.Component {
         const layer = SoilmodelLayer.fromObject(this.state.layer);
         const zone = layer.zonesCollection.findById(id);
         if (zone) {
-            zone[parameter].isActive = !zone[parameter].isActive;
+            zone[parameter.name].isActive = !zone[parameter.name].isActive;
             layer.zonesCollection.update(zone);
             this.props.onChange(layer);
         }
@@ -77,7 +77,7 @@ class ZonesTable extends React.Component {
 
     renderRow(zone, key) {
         const {onEdit, parameter, readOnly} = this.props;
-        const zoneParameter = zone[parameter];
+        const zoneParameter = zone[parameter.name];
         const isArray = zoneParameter.isArray();
 
         return (
@@ -169,6 +169,7 @@ class ZonesTable extends React.Component {
 
 
     render() {
+        const {parameter} = this.props;
         const layer = SoilmodelLayer.fromObject(this.state.layer, false);
         const zones = layer.zonesCollection.orderBy('priority', 'desc').all;
 
@@ -178,7 +179,7 @@ class ZonesTable extends React.Component {
                     <Table.Row>
                         <Table.HeaderCell>Zone</Table.HeaderCell>
                         <Table.HeaderCell>Priority</Table.HeaderCell>
-                        <Table.HeaderCell>Value</Table.HeaderCell>
+                        <Table.HeaderCell>{parameter.description} [{parameter.unit}]</Table.HeaderCell>
                         <Table.HeaderCell/>
                     </Table.Row>
                 </Table.Header>
@@ -194,7 +195,7 @@ ZonesTable.propTypes = {
     onClickUpload: PropTypes.func.isRequired,
     onChange: PropTypes.func.isRequired,
     onEdit: PropTypes.func.isRequired,
-    parameter: PropTypes.string.isRequired,
+    parameter: PropTypes.object.isRequired,
     readOnly: PropTypes.bool,
     layer: PropTypes.instanceOf(SoilmodelLayer).isRequired
 };

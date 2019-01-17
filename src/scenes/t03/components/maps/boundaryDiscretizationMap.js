@@ -20,7 +20,7 @@ import {
 
 const style = {
     map: {
-        height: '400px',
+        height: '500px',
         width: '100%'
     }
 };
