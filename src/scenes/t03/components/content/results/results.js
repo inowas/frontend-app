@@ -97,7 +97,7 @@ class Results extends React.Component {
     };
 
     render() {
-        const {calculationId, data, selectedCol, selectedRow, selectedType, selectedLayer, selectedTotim, layerValues, totalTimes} = this.state;
+        const {calculationId, data, selectedCol, selectedRow, selectedType, selectedLay, selectedTotim, layerValues, totalTimes} = this.state;
         const {model, boundaries, soilmodel} = this.props;
 
         if (!calculationId) {
@@ -112,13 +112,13 @@ class Results extends React.Component {
                             <ResultsSelector
                                 data={{
                                     type: selectedType,
-                                    layer: selectedLayer,
+                                    layer: selectedLay,
                                     totim: selectedTotim,
                                 }}
                                 onChange={({type, layer, totim}) => {
                                     return this.setState({
                                         selectedType: type,
-                                        selectedLayer: layer,
+                                        selectedLay: layer,
                                         selectedTotim: totim
                                     }, () => this.fetchData({layer, totim, type}));
                                 }}
@@ -127,7 +127,6 @@ class Results extends React.Component {
                                 stressperiods={model.stressperiods}
                                 totalTimes={totalTimes}
                             />
-
                             <Segment loading={this.state.fetching} color={'grey'}>
                                 {data &&
                                 <ResultsMap
@@ -143,7 +142,6 @@ class Results extends React.Component {
                                 />
                                 }
                             </Segment>
-
                             <Grid>
                                 <Grid.Row columns={2}>
                                     <Grid.Column>
