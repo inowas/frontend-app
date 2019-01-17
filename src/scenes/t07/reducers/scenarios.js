@@ -1,3 +1,5 @@
+import {cloneDeep} from 'lodash';
+
 export const CLEAR = 'T07_CLEAR';
 export const UPDATE_SCENARIO = 'T07_UPDATE_SCENARIO';
 export const UPDATE_SCENARIO_BOUNDARIES = 'T07_UPDATE_SCENARIO_BOUNDARIES';
@@ -19,12 +21,14 @@ const scenarios = (state = [], action) => {
                 });
             }
 
-            state.push({
+            const newState = cloneDeep(state);
+
+            newState.push({
                 id: action.id,
                 model: action.payload
             });
 
-            return state;
+            return newState;
 
         case UPDATE_SCENARIO_BOUNDARIES:
             return state.map(sc => {

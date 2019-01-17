@@ -11,16 +11,12 @@ import {fetchUrl, sendCommand} from 'services/api';
 import * as Content from '../components';
 
 import {
-    clear,
-    updateBaseModel,
-    updateBaseModelBoundaries,
-    updateScenario,
-    updateScenarioBoundaries,
-    updateScenarioAnalysis, updateResults
+    clear, updateBaseModel, updateBaseModelBoundaries, updateScenario, updateScenarioBoundaries,
+    updateScenarioAnalysis, updateBaseModelResults, updateBaseModelSoilmodel, updateBaseModelCalculation
 } from '../actions/actions';
 
 import {ScenarioAnalysis} from 'core/model/scenarioAnalysis';
-import {BoundaryCollection, CalculationResults, ModflowModel} from 'core/model/modflow';
+import {BoundaryCollection, Calculation, CalculationResults, ModflowModel, Soilmodel} from 'core/model/modflow';
 import ToolNavigation from '../../shared/complexTools/toolNavigation';
 
 const navigation = [
@@ -95,6 +91,8 @@ class T07 extends React.Component {
                 this.setState({isLoading: false}, () => {
                     this.setState({selected: [scenarioAnalysis.baseModel.id]});
                     this.fetchModel(scenarioAnalysis.baseModel.id);
+                    this.fetchSoilmodel(scenarioAnalysis.baseModel.id);
+                    this.fetchCalculation(scenarioAnalysis.baseModel.id);
                     this.fetchResults(scenarioAnalysis.baseModel.id);
                     scenarioAnalysis.scenarios.forEach(sc => this.fetchModel(sc.id));
                 });
@@ -142,10 +140,42 @@ class T07 extends React.Component {
         );
     };
 
+    fetchSoilmodel(id) {
+        fetchUrl(`modflowmodels/${id}/soilmodel`,
+            data => {
+                if (id === this.props.scenarioAnalysis.baseModel.id) {
+                    return this.props.updateBaseModelSoilmodel(Soilmodel.fromObject(data))
+                }
+            },
+            error => this.setState(
+                {error, isLoading: false},
+                () => this.handleError(error)
+            )
+        );
+    };
+
+    fetchCalculation(id) {
+        fetchUrl(`modflowmodels/${id}/calculation`,
+            data => {
+                if (id === this.props.scenarioAnalysis.baseModel.id) {
+                    return this.props.updateBaseModelCalculation(Calculation.fromQuery(data))
+                }
+            },
+            error => this.setState(
+                {error, isLoading: false},
+                () => this.handleError(error)
+            )
+        );
+    };
+
     fetchResults(id) {
         this.setState({isLoading: true},
             () => fetchUrl(`modflowmodels/${id}/results`,
-                data => this.props.updateResults(CalculationResults.fromQuery(data)),
+                data => {
+                    if (id === this.props.scenarioAnalysis.baseModel.id) {
+                        return this.props.updateBaseModelResults(CalculationResults.fromQuery(data))
+                    }
+                },
                 (e) => this.setState({isError: e, isLoading: false}))
         );
     }
@@ -299,7 +329,9 @@ const mapDispatchToProps = {
     clear,
     updateBaseModel,
     updateBaseModelBoundaries,
-    updateResults,
+    updateBaseModelSoilmodel,
+    updateBaseModelCalculation,
+    updateBaseModelResults,
     updateScenarioAnalysis,
     updateScenario,
     updateScenarioBoundaries
@@ -315,7 +347,9 @@ T07.proptypes = {
     clear: PropTypes.func.isRequired,
     updateBaseModel: PropTypes.func.isRequired,
     updateBaseModelBoundaries: PropTypes.func.isRequired,
-    updateResults: PropTypes.func.isRequired,
+    updateBaseModelSoilmodel: PropTypes.func.isRequired,
+    updateBaseModelCalculation: PropTypes.func.isRequired,
+    updateBaseModelResults: PropTypes.func.isRequired,
     updateScenario: PropTypes.func.isRequired,
     updateScenarioAnalysis: PropTypes.func.isRequired,
     updateScenarioBoundaries: PropTypes.func.isRequired,

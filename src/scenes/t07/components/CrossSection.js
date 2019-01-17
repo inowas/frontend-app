@@ -2,11 +2,11 @@ import React from 'react';
 import {connect} from 'react-redux';
 import PropTypes from 'prop-types';
 
-import {Grid, Header, Segment} from 'semantic-ui-react';
+import {Grid, Segment} from 'semantic-ui-react';
 import {BoundaryCollection, Calculation, CalculationResults, ModflowModel, Soilmodel} from 'core/model/modflow';
 import {fetchUrl} from 'services/api';
 import {last} from 'lodash';
-import {ScenarioAnalysis} from '../../../core/model/scenarioAnalysis';
+import {ScenarioAnalysis} from 'core/model/scenarioAnalysis';
 import ResultsSelector from '../../shared/complexTools/ResultsSelector';
 
 class CrossSection extends React.Component {
@@ -96,12 +96,15 @@ class CrossSection extends React.Component {
     };
 
     render() {
-        const {calculationId, data, selectedCol, selectedRow, selectedType, selectedLay, selectedTotim, layerValues, totalTimes} = this.state;
-        const {baseModel, results, soilmodel} = this.props;
+        const {calculationId, data, selectedCol, selectedRow, selectedType, selectedLay, selectedTotim} = this.state;
+        const {baseModel, baseModelResults, baseModelSoilmodel} = this.props;
 
-        if (!baseModel || !results) {
+
+        if (!baseModel || !baseModelResults || ! baseModelSoilmodel) {
             return null;
         }
+
+        const {layerValues, totalTimes} = baseModelResults;
 
         return (
             <Segment color={'grey'} loading={this.state.isLoading}>
@@ -122,7 +125,7 @@ class CrossSection extends React.Component {
                                     }, () => this.fetchData({layer, totim, type}));
                                 }}
                                 layerValues={layerValues}
-                                soilmodel={soilmodel}
+                                soilmodel={baseModelSoilmodel}
                                 stressperiods={baseModel.stressperiods}
                                 totalTimes={totalTimes}
                             />
@@ -138,8 +141,9 @@ class CrossSection extends React.Component {
 const mapStateToProps = state => {
     return {
         baseModel: state.T07.baseModel.model ? ModflowModel.fromObject(state.T07.baseModel.model) : null,
+        baseModelResults: state.T07.baseModel.results ? CalculationResults.fromObject(state.T07.baseModel.results) : null,
+        baseModelSoilmodel: state.T07.baseModel.soilmodel ? Soilmodel.fromObject(state.T07.baseModel.soilmodel) : null,
         scenarios: state.T07.scenarios,
-        results: state.T07.results ? CalculationResults.fromObject(state.T07.results) : null,
         scenarioAnalysis: state.T07.scenarioAnalysis ? ScenarioAnalysis.fromObject(state.T07.scenarioAnalysis) : null
     };
 };

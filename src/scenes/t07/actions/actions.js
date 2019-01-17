@@ -1,9 +1,14 @@
-import {UPDATE_BASE_MODEL, UPDATE_BASE_MODEL_BOUNDARIES} from '../reducers/baseModel';
+import {
+    UPDATE_BASE_MODEL,
+    UPDATE_BASE_MODEL_BOUNDARIES,
+    UPDATE_BASE_MODEL_SOILMODEL,
+    UPDATE_BASE_MODEL_CALCULATION,
+    UPDATE_BASE_MODEL_RESULTS,
+} from '../reducers/baseModel';
 import {UPDATE_SCENARIO, UPDATE_SCENARIO_BOUNDARIES} from '../reducers/scenarios';
-import {UPDATE_RESULTS} from '../reducers/results';
 import {CLEAR, UPDATE_SCENARIOANALYSIS} from '../reducers/scenarioAnalysis';
 import {ScenarioAnalysis} from 'core/model/scenarioAnalysis';
-import {BoundaryCollection, CalculationResults, ModflowModel} from 'core/model/modflow';
+import {BoundaryCollection, Calculation, CalculationResults, ModflowModel, Soilmodel} from 'core/model/modflow';
 
 export function clear() {
     return {
@@ -44,13 +49,35 @@ export function updateBaseModelBoundaries(boundaries) {
     };
 }
 
-export function updateResults(results) {
+export function updateBaseModelSoilmodel(soilmodel) {
+    if (!(soilmodel instanceof Soilmodel)) {
+        throw new Error('Soilmodel is expected to be instance of Soilmodel');
+    }
+
+    return {
+        type: UPDATE_BASE_MODEL_SOILMODEL,
+        payload: soilmodel.toObject()
+    };
+}
+
+export function updateBaseModelCalculation(calculation) {
+    if (!(calculation instanceof Calculation)) {
+        throw new Error('Calculation is expected to be instance of Calculation');
+    }
+
+    return {
+        type: UPDATE_BASE_MODEL_CALCULATION,
+        payload: calculation.toObject()
+    };
+}
+
+export function updateBaseModelResults(results) {
     if (!(results instanceof CalculationResults)) {
         throw new Error('Results is to be expected to be instance of CalculationResults');
     }
 
     return {
-        type: UPDATE_RESULTS,
+        type: UPDATE_BASE_MODEL_RESULTS,
         payload: results.toObject()
     };
 }
