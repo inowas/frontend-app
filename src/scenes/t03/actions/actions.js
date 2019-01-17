@@ -59,6 +59,8 @@ export function updateCalculation(calculation) {
         throw new Error('Calculation is expected to be instance of Calculation');
     }
 
+    console.log(calculation);
+
     return {
         type: UPDATE_CALCULATION,
         payload: calculation.toObject()

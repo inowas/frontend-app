@@ -4,10 +4,14 @@ export default class CalculationResults {
     _times;
 
     static fromQuery(query) {
+        return CalculationResults.fromObject(query);
+    }
+
+    static fromObject(obj) {
         const results = new CalculationResults();
-        results._calculationId = query.calculation_id;
-        results._layerValues = query.layer_values;
-        results._times = query.times;
+        results._calculationId = obj.calculation_id;
+        results._layerValues = obj.layer_values;
+        results._times = obj.times;
         return results;
     }
 
@@ -25,5 +29,13 @@ export default class CalculationResults {
 
     get times() {
         return this._times;
+    }
+
+    toObject() {
+        return {
+            calculation_id: this._calculationId,
+            layer_values: this._layerValues,
+            times: this._times
+        }
     }
 }

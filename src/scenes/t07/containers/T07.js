@@ -1,11 +1,10 @@
 import React from 'react';
 import {connect} from 'react-redux';
 import {Redirect, withRouter} from 'react-router-dom';
-
 import PropTypes from 'prop-types';
 
 import AppContainer from '../../shared/AppContainer';
-import {Button, Form, Grid, Header, Icon, Message, Segment} from 'semantic-ui-react';
+import {Grid, Header, Icon, Message, Segment} from 'semantic-ui-react';
 import ToolMetaData from '../../shared/simpleTools/ToolMetaData';
 import {fetchUrl, sendCommand} from 'services/api';
 
@@ -15,24 +14,36 @@ import {
     updateBaseModelBoundaries,
     updateScenario,
     updateScenarioBoundaries,
-    updateScenarioAnalysis
+    updateScenarioAnalysis, updateResults
 } from '../actions/actions';
 
 import {ScenarioAnalysis} from 'core/model/scenarioAnalysis';
-import {BoundaryCollection, ModflowModel, Soilmodel} from '../../../core/model/modflow';
-
-import ResultsMap from '../../t03/components/content/results/results';
-
-import Slider from 'rc-slider';
-import {last} from 'lodash';
-
-const SliderWithTooltip = Slider.createSliderWithTooltip(Slider);
+import {BoundaryCollection, CalculationResults, ModflowModel} from 'core/model/modflow';
+import ToolNavigation from '../../shared/complexTools/toolNavigation';
 
 const navigation = [
     {
         name: 'Documentation',
         path: 'https://inowas.com/tools/t07-application-specific-scenarios-analyzer/',
         icon: <Icon name="file"/>
+    }
+];
+
+const menuItems = [
+    {
+        name: 'Cross Section',
+        property: 'crosssection',
+        icon: <Icon name="calendar alternate outline"/>
+    },
+    {
+        name: 'Head Difference',
+        property: 'difference',
+        icon: <Icon name="expand"/>
+    },
+    {
+        name: 'Time Series',
+        property: 'timeseries',
+        icon: <Icon name="map marker alternate"/>
     }
 ];
 
@@ -43,17 +54,7 @@ class T07 extends React.Component {
         this.state = {
             error: false,
             isLoading: false,
-            selectedModels: [],
-
-            layerValues: null,
-            totalTimes: null,
-            selectedCol: 0,
-            selectedLay: 0,
-            selectedRow: 0,
-            selectedTotim: 0,
-            selectedType: 'head',
-            data: null,
-            fetching: false
+            selected: []
         }
     }
 
@@ -90,8 +91,9 @@ class T07 extends React.Component {
                 const scenarioAnalysis = ScenarioAnalysis.fromQuery(data);
                 this.props.updateScenarioAnalysis(scenarioAnalysis);
                 this.setState({isLoading: false}, () => {
-                    this.setState({selectedModels: [scenarioAnalysis.baseModel.id]});
+                    this.setState({selected: [scenarioAnalysis.baseModel.id]});
                     this.fetchModel(scenarioAnalysis.baseModel.id);
+                    this.fetchResults(scenarioAnalysis.baseModel.id);
                     scenarioAnalysis.scenarios.forEach(sc => this.fetchModel(sc.id));
                 });
             },
@@ -139,19 +141,11 @@ class T07 extends React.Component {
     };
 
     fetchResults(id) {
-        fetchUrl(`modflowmodels/${id}/results`,
-            results => {
-                const calculationId = results.calculation_id;
-                const totalTimes = results.times.total_times;
-                const layerValues = results.layer_values;
-                this.setState({calculationId, layerValues, totalTimes, isLoading: false});
-                this.onChangeTypeLayerOrTime({
-                    type: this.state.selectedType,
-                    totim: last(totalTimes),
-                    layer: this.state.selectedLay
-                });
-            },
-            (e) => this.setState({isError: e, isLoading: false}))
+        this.setState({isLoading: true},
+            () => fetchUrl(`modflowmodels/${id}/results`,
+                data => this.props.updateResults(CalculationResults.fromQuery(data)),
+                (e) => this.setState({isError: e, isLoading: false}))
+        );
     }
 
     handleError = error => {
@@ -162,6 +156,22 @@ class T07 extends React.Component {
             this.props.history.push('/tools');
         }
     };
+
+    renderContent(id, property, type) {
+        switch (property) {
+            case 'crosssection':
+                return ('CROSSSECTION');
+            case 'difference':
+                return ('DIFFERENCE');
+            case 'timeseries':
+                return ('TIMESERIES');
+            default:
+                const basePath = this.props.match.path.split(':')[0];
+                return (
+                    <Redirect to={basePath + id + '/crosssection'}/>
+                );
+        }
+    }
 
     onChangeMetaData = (metaData) => {
         const scenarioAnalysis = this.props.scenarioAnalysis;
@@ -180,50 +190,36 @@ class T07 extends React.Component {
     };
 
     handleScenarioClick = (id) => {
-        const {selectedModels} = this.state;
-        if (selectedModels.indexOf(id) >= 0) {
-            return this.setState({selectedModels: selectedModels.filter(v => v !== id)})
+        const {selected} = this.state;
+        if (selected.indexOf(id) >= 0) {
+            return this.setState({selected: selected.filter(v => v !== id)})
         }
 
-        selectedModels.push(id);
+        selected.push(id);
         return this.setState({
-            selectedModels: selectedModels
+            selected: selected
         })
     };
 
-    renderScenarioListItem = ({id, name, description, canBeDeleted = true}) => (
+    renderModelListItem = ({id, name, description, canBeDeleted = true}) => (
         <Grid.Column key={id}>
             <Segment
                 style={{cursor: 'pointer'}}
                 color={'blue'}
-                inverted={this.state.selectedModels.indexOf(id) >= 0}
+                inverted={this.state.selected.indexOf(id) >= 0}
                 onClick={() => this.handleScenarioClick(id)}
             >
-                <Header as={'h2'}>{name}</Header>
-                <p>{description}</p>
-
-                <Button as={'div'} labelPosition={'left'} fluid>
-                    <Button icon
-                            onClick={() => this.setState({showObservationPointEditor: true})}>
-                        <Icon name='edit'/>
-                    </Button>
-                    <Button icon onClick={this.handleCloneClick}><Icon name='clone'/></Button>
-                    {canBeDeleted && <Button
-                        icon
-                        onClick={this.handleRemoveClick}
-                    ><Icon name='trash'/></Button>
-                    }
-                </Button>
+                <Header as={'a'}>{name}</Header>
             </Segment>
         </Grid.Column>
     );
 
-    renderScenarioList = () => {
+    renderModelList = () => {
         const {scenarioAnalysis} = this.props;
         const {baseModel, scenarios} = scenarioAnalysis;
 
         const elements = [];
-        elements.push(this.renderScenarioListItem({
+        elements.push(this.renderModelListItem({
             id: baseModel.id,
             name: baseModel.name,
             description: baseModel.description,
@@ -231,24 +227,19 @@ class T07 extends React.Component {
         }));
 
         scenarios.forEach(sc => {
-            elements.push(this.renderScenarioListItem({
+            elements.push(this.renderModelListItem({
                 id: sc.id,
                 name: sc.name,
                 description: sc.description
             }))
         });
 
-        return (
-            <Grid>
-                <Grid.Row columns={4}>
-                    {elements}
-                </Grid.Row>
-            </Grid>
-        )
+        return (elements);
     };
 
     render() {
-        if (!this.props.scenarioAnalysis) {
+        const {scenarioAnalysis} = this.props;
+        if (!scenarioAnalysis) {
             return (
                 <AppContainer navbarItems={navigation}>
                     <Message icon>
@@ -263,7 +254,8 @@ class T07 extends React.Component {
             <AppContainer navbarItems={navigation}>
                 <Grid padded>
                     <Grid.Row>
-                        <Grid.Column>
+                        <Grid.Column width={3}/>
+                        <Grid.Column width={13}>
                             <ToolMetaData
                                 isDirty={false}
                                 onChange={this.onChangeMetaData}
@@ -280,11 +272,12 @@ class T07 extends React.Component {
                         </Grid.Column>
                     </Grid.Row>
                     <Grid.Row>
-                        <Grid.Column>
-                            <Segment>
-                                <Header as={'h2'}>Select Scenarios to compare</Header>
-                                {this.renderScenarioList()}
-                            </Segment>
+                        <Grid.Column width={3}>
+                            <ToolNavigation navigationItems={menuItems}/>
+                            {this.renderModelList()}
+                        </Grid.Column>
+                        <Grid.Column width={13}>
+                            {this.renderContent(id, property, type)}
                         </Grid.Column>
                     </Grid.Row>
                 </Grid>
@@ -293,17 +286,21 @@ class T07 extends React.Component {
     }
 }
 
-const mapStateToProps = state => ({
-    scenarioAnalysis: state.T07.scenarioAnalysis && ScenarioAnalysis.fromObject(state.T07.scenarioAnalysis)
-});
+const mapStateToProps = state => {
+    return {
+        results: state.T07.results ? CalculationResults.fromObject(state.T07.results) : null,
+        scenarioAnalysis: state.T07.scenarioAnalysis ? ScenarioAnalysis.fromObject(state.T07.scenarioAnalysis) : null
+    }
+};
 
 const mapDispatchToProps = {
     clear,
+    updateBaseModel,
+    updateBaseModelBoundaries,
+    updateResults,
     updateScenarioAnalysis,
     updateScenario,
-    updateScenarioBoundaries,
-    updateBaseModel,
-    updateBaseModelBoundaries
+    updateScenarioBoundaries
 };
 
 
@@ -314,10 +311,11 @@ T07.proptypes = {
     scenarioAnalysis: PropTypes.instanceOf(ScenarioAnalysis).isRequired,
 
     clear: PropTypes.func.isRequired,
-    updateScenarioAnalysis: PropTypes.func.isRequired,
     updateBaseModel: PropTypes.func.isRequired,
     updateBaseModelBoundaries: PropTypes.func.isRequired,
+    updateResults: PropTypes.func.isRequired,
     updateScenario: PropTypes.func.isRequired,
+    updateScenarioAnalysis: PropTypes.func.isRequired,
     updateScenarioBoundaries: PropTypes.func.isRequired,
 };
 

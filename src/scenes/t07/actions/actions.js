@@ -1,8 +1,9 @@
 import {UPDATE_BASE_MODEL, UPDATE_BASE_MODEL_BOUNDARIES} from '../reducers/baseModel';
 import {UPDATE_SCENARIO, UPDATE_SCENARIO_BOUNDARIES} from '../reducers/scenarios';
+import {UPDATE_RESULTS} from '../reducers/results';
 import {CLEAR, UPDATE_SCENARIOANALYSIS} from '../reducers/scenarioAnalysis';
 import {ScenarioAnalysis} from 'core/model/scenarioAnalysis';
-import {BoundaryCollection, ModflowModel} from 'core/model/modflow';
+import {BoundaryCollection, CalculationResults, ModflowModel} from 'core/model/modflow';
 
 export function clear() {
     return {
@@ -43,9 +44,16 @@ export function updateBaseModelBoundaries(boundaries) {
     };
 }
 
-export function updateBaseModelResults(results) {
-}
+export function updateResults(results) {
+    if (!(results instanceof CalculationResults)) {
+        throw new Error('Results is to be expected to be instance of CalculationResults');
+    }
 
+    return {
+        type: UPDATE_RESULTS,
+        payload: results.toObject()
+    };
+}
 
 export function updateScenario(modflowModel) {
     if (!(modflowModel instanceof ModflowModel)) {

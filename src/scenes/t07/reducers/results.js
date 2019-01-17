@@ -1,15 +1,15 @@
 export const CLEAR = 'T07_CLEAR';
-export const UPDATE_SCENARIOANALYSIS = 'T07_UPDATE_SCENARIOANALYSIS';
+export const UPDATE_RESULTS = 'T07_UPDATE_RESULTS';
 
-const scenarioAnalysis = (state = null, action) => {
+const results = (state = null, action) => {
     switch (action.type) {
         case CLEAR:
             return null;
 
-        case UPDATE_SCENARIOANALYSIS:
+        case UPDATE_RESULTS:
             return {
                 ...state,
-                ...action.payload
+                results: {...action.payload}
             };
 
         default: {
@@ -18,4 +18,4 @@ const scenarioAnalysis = (state = null, action) => {
     }
 };
 
-export default scenarioAnalysis;
+export default results;
