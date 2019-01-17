@@ -145,11 +145,14 @@ class BoundaryValuesDataTable extends React.Component {
         const errorMessages = [];
         const dateTimeValues = [];
 
-        if (!moment.utc(e.data[0]).isValid()) {
+        const dateCodes = ['years', 'months', 'days', 'hours', 'minutes', 'seconds', 'milliseconds'];
+        const firstLine = moment.utc(e.data[0][0]);
+
+        if (!firstLine.isValid()) {
             return this.setState({
                 uploadState: {
                     error: true,
-                    errorMsg: ['Invalid date_time at line 1.'],
+                    errorMsg: [`Invalid date_time at line 1 at ${dateCodes[firstLine.invalidAt()]}.`],
                     id: uuidv4(),
                     success: false
                 }
@@ -169,7 +172,7 @@ class BoundaryValuesDataTable extends React.Component {
 
             if (!date_time.isValid()) {
                 hasError = true;
-                errorMessages.push(`Invalid date_time at line ${rKey + 1}.`);
+                errorMessages.push(`Invalid date_time at line ${rKey + 1} at ${dateCodes[firstLine.invalidAt()]}.`);
                 return;
             }
 
