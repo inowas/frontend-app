@@ -10,6 +10,7 @@ export default class Boundary {
     _metadata = {};
     _activeCells = null;
     _defaultValues = [];
+    _type = null;
 
     constructor() {
         this._id = Uuid.v4();

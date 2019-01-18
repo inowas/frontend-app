@@ -2,65 +2,7 @@ import uuidv4 from 'uuid/v4';
 import Geometry from '../Geometry';
 import ActiveCells from '../ActiveCells';
 import SoilmodelParameter from './SoilmodelParameter';
-
-const defaultParameters = {
-    botm: {
-        defaultValue: 0,
-        isActive: true,
-        label: 'botm',
-        name: 'Bottom elevation',
-        unit: 'm a.s.l.',
-        value: 0
-    },
-    hani: {
-        defaultValue: 1,
-        isActive: true,
-        label: 'hani',
-        name: 'Horizontal hydraulic anisotropy',
-        unit: '-',
-        value: 1
-    },
-    hk: {
-        defaultValue: 10,
-        isActive: true,
-        label: 'hk',
-        name: 'Horizontal conductivity along rows',
-        unit: 'm/day',
-        value: 10
-    },
-    vka: {
-        defaultValue: 1,
-        isActive: true,
-        label: 'vka',
-        name: 'Vertical hydraulic conductivity',
-        unit: 'm/day',
-        value: 1
-    },
-    ss: {
-        defaultValue: 0.00002,
-        isActive: true,
-        label: 'ss',
-        name: 'Specific storage',
-        unit: '-',
-        value: 0.00002
-    },
-    sy: {
-        defaultValue: 0.15,
-        isActive: true,
-        label: 'sy',
-        name: 'Specific yield',
-        unit: '1/m',
-        value: 0.15
-    },
-    top: {
-        defaultValue: 1,
-        isActive: true,
-        label: 'top',
-        name: 'Top elevation',
-        unit: 'm a.s.l.',
-        value: 1
-    }
-};
+import {defaultParameters} from 'scenes/t03/defaults/soilmodel';
 
 class SoilmodelZone {
     _id = uuidv4();
@@ -98,15 +40,24 @@ class SoilmodelZone {
             zone.geometry = obj.geometry ? Geometry.fromObject(obj.geometry) : null;
             zone.activeCells = obj.activeCells ? ActiveCells.fromArray(obj.activeCells) : null;
             zone.priority = obj.priority;
-            zone.top = SoilmodelParameter.fromObject(obj.top, parseParameters);
-            zone.botm = SoilmodelParameter.fromObject(obj.botm, parseParameters);
-            zone.hk = SoilmodelParameter.fromObject(obj.hk, parseParameters);
-            zone.hani = SoilmodelParameter.fromObject(obj.hani, parseParameters);
-            zone.vka = SoilmodelParameter.fromObject(obj.vka, parseParameters);
-            zone.ss = SoilmodelParameter.fromObject(obj.ss, parseParameters);
-            zone.sy = SoilmodelParameter.fromObject(obj.sy, parseParameters);
+            zone.top = this.refactorParameter(obj.top, parseParameters);
+            zone.botm = this.refactorParameter(obj.botm, parseParameters);
+            zone.hk = this.refactorParameter(obj.hk, parseParameters);
+            zone.hani = this.refactorParameter(obj.hani, parseParameters);
+            zone.vka = this.refactorParameter(obj.vka, parseParameters);
+            zone.ss = this.refactorParameter(obj.ss, parseParameters);
+            zone.sy = this.refactorParameter(obj.sy, parseParameters);
         }
         return zone;
+    }
+
+    static refactorParameter(value, parseParameters) {
+        if (value instanceof Object) {
+            return SoilmodelParameter.fromObject(value, parseParameters);
+        }
+        const param = SoilmodelParameter.fromObject(defaultParameters.top);
+        param.value = value;
+        return param;
     }
 
     get id() {
