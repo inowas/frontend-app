@@ -63,7 +63,6 @@ class CrossSection extends React.Component {
         if (nextProps.selected.length !== this.state.selectedModels.length) {
             const selectedModels = nextProps.scenarioAnalysis.models
                 .filter(m => nextProps.selected.indexOf(m.id) > -1)
-                .sort((a,b) => a.order - b.order)
             ;
             return this.setState({selectedModels}, () => this.fetchData());
         }
