@@ -6,6 +6,7 @@ import {Criterion} from 'core/mcda/criteria';
 import {Message, Step} from 'semantic-ui-react';
 
 import {CriteriaDefinition, CriteriaReclassification, CriteriaRasterUpload} from './index';
+import CriteriaDataResults from "./criteriaDataResults";
 
 class CriteriaDataEditor extends React.Component {
 
@@ -39,6 +40,13 @@ class CriteriaDataEditor extends React.Component {
             case 'reclassification':
                 return (
                     <CriteriaReclassification
+                        criterion={this.props.criterion}
+                        onChange={this.handleChange}
+                    />
+                );
+            case 'results':
+                return (
+                    <CriteriaDataResults
                         criterion={this.props.criterion}
                         onChange={this.handleChange}
                     />
@@ -95,7 +103,7 @@ class CriteriaDataEditor extends React.Component {
                             />
                             <Step
                                 active={activeTool === 'results'}
-                                disabled
+                                disabled={criterion.rulesCollection.length === 0}
                                 name='results'
                                 icon='map'
                                 title='Results'

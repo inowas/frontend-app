@@ -1,7 +1,8 @@
 import PropTypes from 'prop-types';
 import React from 'react';
 import {Criterion, Rule} from 'core/mcda/criteria';
-import {Button, Dropdown, Icon, Input, Message, Table} from 'semantic-ui-react';
+import {Button, Icon, Message, Table} from 'semantic-ui-react';
+import CriteriaReclassificationModal from './criteriaReclassificationModal';
 
 class CriteriaReclassification extends React.Component {
 
@@ -9,25 +10,54 @@ class CriteriaReclassification extends React.Component {
         super(props);
 
         this.state = {
-            criterion: props.criterion.toObject(),
+            selectedRule: null,
             showInfo: true
         }
     }
 
+    handleCloseModal = () => this.setState({selectedRule: null});
+
     handleDismiss = () => this.setState({showInfo: false});
 
     handleAddRule = () => {
-        const criterion = Criterion.fromObject(this.state.criterion);
         const rule = new Rule();
-        criterion.rulesCollection.add(rule);
-        this.props.onChange(criterion);
+        this.setState({
+            selectedRule: rule.toObject()
+        });
+    };
+
+    handleEditRule = id => {
+        const rule = this.props.criterion.rulesCollection.findById(id);
+        if (rule) {
+            this.setState({
+                selectedRule: rule.toObject()
+            });
+        }
+    };
+
+    handleRemoveRule = id => {
+        const criterion = this.props.criterion;
+        criterion.rulesCollection.items = criterion.rulesCollection.all.filter(rule => rule.id !== id);
+        return this.props.onChange(criterion);
+    };
+
+    handleChangeRule = rule => {
+        if (!(rule instanceof Rule)) {
+            throw new Error('Rule expected to be instance of Rule.');
+        }
+        rule.from = parseFloat(rule.from);
+        rule.to = parseFloat(rule.to);
+        const criterion = this.props.criterion;
+        criterion.rulesCollection.update(rule);
+        this.handleCloseModal();
+        return this.props.onChange(criterion);
     };
 
     renderEditorContinuous() {
         const {showInfo} = this.state;
-        const criterion = this.props.criterion.toObject();
+        const criterion = this.props.criterion;
 
-        if (!criterion.rules || criterion.rules.length === 0) {
+        if (!criterion.rulesCollection || criterion.rulesCollection.length === 0) {
             return (
                 <Message warning>
                     <Message.Header>No data found</Message.Header>
@@ -36,17 +66,20 @@ class CriteriaReclassification extends React.Component {
             )
         }
 
+        const rules = criterion.rulesCollection.orderBy('to', 'desc').toArray();
+
         return (
             <div>
                 {showInfo &&
                 <Message onDismiss={this.handleDismiss}>
                     <Message.Header>Reclassification for continuous values</Message.Header>
+                    <p>All suitabilities, whose raster values are not covered by the rules, will be set with 0.</p>
                     <p>Min: {criterion.raster.min}</p>
                     <p>Max: {criterion.raster.max}</p>
                 </Message>
                 }
                 <Button primary icon labelPosition='left' onClick={this.handleAddRule}>
-                    <Icon name='add' />
+                    <Icon name='add'/>
                     Add Rule
                 </Button>
                 <Table>
@@ -55,64 +88,27 @@ class CriteriaReclassification extends React.Component {
                             <Table.HeaderCell>From</Table.HeaderCell>
                             <Table.HeaderCell>To</Table.HeaderCell>
                             <Table.HeaderCell>Suitability Index</Table.HeaderCell>
+                            <Table.HeaderCell/>
                         </Table.Row>
-                        {criterion.rules.map((rule, key) =>
+                        {rules.map((rule, key) =>
                             <Table.Row key={key}>
                                 <Table.Cell>
-                                    <Input
-                                        disabled={rule.from === criterion.raster.min}
-                                        label={<Dropdown
-                                            text={rule.fromOperator}
-                                            value={rule.fromOperator} labeled>
-                                            <Dropdown.Menu>
-                                                <Dropdown.Item text='>' value='>'/>
-                                                <Dropdown.Item text='>=' value='>='/>
-                                            </Dropdown.Menu>
-                                        </Dropdown>
-                                        }
-                                        labelPosition='left'
-                                        placeholder='From'
-                                        type='number'
-                                        value={rule.from}
-                                    />
+                                    {rule.fromOperator} {rule.from}
                                 </Table.Cell>
                                 <Table.Cell>
-                                    <Input
-                                        disabled={rule.to === criterion.raster.max}
-                                        label={<Dropdown
-                                            text={rule.toOperator}
-                                            value={rule.toOperator} labeled>
-                                            <Dropdown.Menu>
-                                                <Dropdown.Item text='<' value='<'/>
-                                                <Dropdown.Item text='<=' value='<='/>
-                                            </Dropdown.Menu>
-                                        </Dropdown>
-                                        }
-                                        labelPosition='left'
-                                        placeholder='To'
-                                        type='number'
-                                        value={rule.to}
-                                    />
+                                    {rule.toOperator} {rule.to}
                                 </Table.Cell>
                                 <Table.Cell>
-                                    <Input
-                                        label={
-                                            <Dropdown
-                                                icon={rule.type === 'fixed' ? 'pencil' : 'calculator'}
-                                                value={rule.type} labeled className='icon'>
-                                                <Dropdown.Menu>
-                                                    <Dropdown.Item icon='pencil' text='Suitability index'
-                                                                   value='fixed'/>
-                                                    <Dropdown.Item icon='calculator' text='Calculation formula'
-                                                                   value='calculation'/>
-                                                </Dropdown.Menu>
-                                            </Dropdown>
+                                    {rule.value}
+                                </Table.Cell>
+                                <Table.Cell textAlign='right'>
+                                    <Button.Group>
+                                        {this.props.criterion.rulesCollection.isError(rule) &&
+                                            <Button negative icon='warning sign' />
                                         }
-                                        labelPosition='left'
-                                        placeholder='To'
-                                        type={rule.type === 'fixed' ? 'number' : 'text'}
-                                        value={rule.type === 'fixed' ? rule.value : rule.formula}
-                                    />
+                                        <Button onClick={() => this.handleEditRule(rule.id)} icon='edit'/>
+                                        <Button onClick={() => this.handleRemoveRule(rule.id)} icon='trash'/>
+                                    </Button.Group>
                                 </Table.Cell>
                             </Table.Row>
                         )}
@@ -128,16 +124,21 @@ class CriteriaReclassification extends React.Component {
 
     render() {
         const {criterion} = this.props;
+        const rule = this.state.selectedRule;
 
-        console.log('CRITERION', criterion);
-
-        if (criterion.type === 'continuous') {
-            return this.renderEditorContinuous();
-        }
-
-        if (criterion.type === 'discrete') {
-            return this.renderEditorDiscrete();
-        }
+        return (
+            <div>
+                {rule &&
+                <CriteriaReclassificationModal
+                    onSave={this.handleChangeRule}
+                    onClose={this.handleCloseModal}
+                    rule={Rule.fromObject(rule)}
+                />
+                }
+                {criterion.type === 'continuous' && this.renderEditorContinuous()}
+                {criterion.type === 'discrete' && this.renderEditorDiscrete()}
+            </div>
+        );
     }
 }
 

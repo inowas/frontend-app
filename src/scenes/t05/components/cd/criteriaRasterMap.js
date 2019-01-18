@@ -5,6 +5,7 @@ import {BasicTileLayer} from 'services/geoTools/tileLayers';
 import {Map, Rectangle, FeatureGroup} from 'react-leaflet';
 import {Raster} from 'core/mcda/gis';
 import CanvasHeatMapOverlay from '../../../shared/rasterData/ReactLeafletHeatMapCanvasOverlay';
+import ColorLegend from '../../../shared/rasterData/ColorLegend';
 import {EditControl} from 'react-leaflet-draw';
 import {getStyle} from '../../../t03/components/maps';
 import {BoundingBox} from 'core/geometry';
@@ -46,8 +47,29 @@ class CriteriaRasterMap extends React.Component {
         });
     };
 
+    renderLegend(rainbow) {
+        const gradients = rainbow.getGradients().slice().reverse();
+        const lastGradient = gradients[gradients.length - 1];
+        const legend = gradients.map(gradient => ({
+            color: '#' + gradient.getEndColour(),
+            value: Number(gradient.getMaxNum()).toExponential(2)
+        }));
+
+        legend.push({
+            color: '#' + lastGradient.getStartColour(),
+            value: Number(lastGradient.getMinNum()).toExponential(2)
+        });
+
+        return <ColorLegend legend={legend} unit={''}/>;
+    };
+
     render() {
+        let rainbowVis = null;
         const {data, boundingBox, gridSize} = this.props.raster;
+
+        if (data.length > 0) {
+            rainbowVis = rainbowFactory({min: min(data), max: max(data)});
+        }
 
         return (
             <Map
@@ -69,14 +91,17 @@ class CriteriaRasterMap extends React.Component {
                     />
                 </FeatureGroup>
                 {data.length > 0 &&
-                <CanvasHeatMapOverlay
-                    nX={gridSize.nX}
-                    nY={gridSize.nY}
-                    rainbow={rainbowFactory({min: min(data), max: max(data)})}
-                    dataArray={createGridData(data, gridSize.nX, gridSize.nY)}
-                    bounds={boundingBox.getBoundsLatLng()}
-                    opacity={0.75}
-                />
+                <div>
+                    <CanvasHeatMapOverlay
+                        nX={gridSize.nX}
+                        nY={gridSize.nY}
+                        rainbow={rainbowFactory({min: min(data), max: max(data)})}
+                        dataArray={createGridData(data, gridSize.nX, gridSize.nY)}
+                        bounds={boundingBox.getBoundsLatLng()}
+                        opacity={0.75}
+                    />
+                    {this.renderLegend(rainbowVis)}
+                </div>
                 }
             </Map>
         );
