@@ -61,7 +61,10 @@ class CrossSection extends React.Component {
 
     componentWillReceiveProps(nextProps, nextContext) {
         if (nextProps.selected.length !== this.state.selectedModels.length) {
-            const selectedModels = nextProps.scenarioAnalysis.models.filter(m => nextProps.selected.indexOf(m.id) > -1);
+            const selectedModels = nextProps.scenarioAnalysis.models
+                .filter(m => nextProps.selected.indexOf(m.id) > -1)
+                .sort((a,b) => a.order - b.order)
+            ;
             return this.setState({selectedModels}, () => this.fetchData());
         }
     }
@@ -179,8 +182,8 @@ class CrossSection extends React.Component {
                 <Segment color={'grey'} loading={this.state.isLoading}>
                     <Grid>
                         <Grid.Row columns={this.props.selected.length}>
-                            {this.props.selected.map(s => (
-                                <Grid.Column>{this.renderMap(s, this.props.selected.length)}</Grid.Column>
+                            {this.state.selectedModels.map(m => (
+                                <Grid.Column key={m.id}>{this.renderMap(m.id, this.props.selected.length)}</Grid.Column>
                             ))}
                         </Grid.Row>
                     </Grid>

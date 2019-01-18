@@ -101,7 +101,11 @@ export default class ScenarioAnalysis {
     }
 
     get models() {
-        return [this.baseModel].concat(this.scenarios);
+        return [this.baseModel].concat(this.scenarios)
+            .map((m, idx) => {
+                m.order = idx;
+                return m;
+            });
     }
 
     toObject = () => ({
