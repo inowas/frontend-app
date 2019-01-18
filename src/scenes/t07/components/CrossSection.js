@@ -25,7 +25,7 @@ class CrossSection extends React.Component {
             selectedLay: null,
             selectedRow: null,
             selectedTotim: null,
-            selectedType: 'head'
+            selectedType: 'head',
         }
     }
 
@@ -112,7 +112,7 @@ class CrossSection extends React.Component {
         }, () => this.fetchData({layer, totim, type}));
     };
 
-    renderMap = (id) => {
+    renderMap = (id, length) => {
         let filtered = this.props.models.filter(m => m.id === id);
         if (filtered.length !== 1) {
             return null;
@@ -134,7 +134,7 @@ class CrossSection extends React.Component {
         return (
             <Segment>
                 <ResultsMap
-                    key={Math.random()}
+                    key={id+'-'+length}
                     activeCell={[this.state.selectedCol, this.state.selectedRow]}
                     boundaries={boundaries}
                     data={data}
@@ -180,7 +180,7 @@ class CrossSection extends React.Component {
                     <Grid>
                         <Grid.Row columns={this.props.selected.length}>
                             {this.props.selected.map(s => (
-                                <Grid.Column>{this.renderMap(s)}</Grid.Column>
+                                <Grid.Column>{this.renderMap(s, this.props.selected.length)}</Grid.Column>
                             ))}
                         </Grid.Row>
                     </Grid>
