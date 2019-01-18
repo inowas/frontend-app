@@ -2,10 +2,9 @@ import React from 'react';
 import {connect} from 'react-redux';
 import PropTypes from 'prop-types';
 
-import {Segment} from 'semantic-ui-react';
-import {BoundaryCollection, Calculation, CalculationResults, ModflowModel, Soilmodel} from 'core/model/modflow';
+import {Grid, Segment} from 'semantic-ui-react';
+import {BoundaryCollection, CalculationResults, ModflowModel, Soilmodel} from 'core/model/modflow';
 import {fetchUrl} from 'services/api';
-import {last} from 'lodash';
 import {ScenarioAnalysis} from 'core/model/scenarioAnalysis';
 import ResultsSelector from '../../shared/complexTools/ResultsSelector';
 import ResultsMap from '../../shared/complexTools/ResultsMap';
@@ -19,26 +18,19 @@ class CrossSection extends React.Component {
             soilmodel: null,
             stressperiods: null,
 
-            models: [],
+            selectedModels: [],
 
             isLoading: false,
-            selectedCol: 0,
-            selectedLay: 0,
-            selectedRow: 0,
-            selectedTotim: 0,
+            selectedCol: null,
+            selectedLay: null,
+            selectedRow: null,
+            selectedTotim: null,
             selectedType: 'head'
         }
     }
 
     componentDidMount() {
-        this.getMetaData();
-    }
-
-    componentWillReceiveProps(nextProps, nextContext) {
-        this.getMetaData();
-    }
-
-    getMetaData = () => {
+        const selectedModels = this.props.scenarioAnalysis.models.filter(m => this.props.selected.indexOf(m.id) > -1);
         const baseModelId = this.props.scenarioAnalysis.baseModelId;
         const filtered = this.props.models.filter(m => m.id === baseModelId);
         if (filtered.length === 1) {
@@ -47,63 +39,81 @@ class CrossSection extends React.Component {
             const soilmodel = filtered[0].soilmodel ? Soilmodel.fromObject(filtered[0].soilmodel) : null;
             const results = filtered[0].results ? CalculationResults.fromObject(filtered[0].results) : null;
 
+
+            const selectedLay = 0;
             const selectedCol = baseModel ? Math.floor(baseModel.gridSize.nX / 2) : 0;
             const selectedRow = baseModel ? Math.floor(baseModel.gridSize.nY / 2) : 0;
-            const selectedTotim = results ? results.totalTimes[0] : 0;
+            const selectedTotim = results ? results.totalTimes[0] : null;
 
-            this.setState({results, soilmodel, stressperiods, selectedCol, selectedRow, selectedTotim});
+            return this.setState({
+                    results,
+                    soilmodel,
+                    stressperiods,
+                    selectedCol,
+                    selectedLay,
+                    selectedRow,
+                    selectedTotim,
+                    selectedModels
+                },
+                () => this.fetchData());
         }
-        const models = [this.props.scenarioAnalysis.baseModel]
-            .concat(this.props.scenarioAnalysis.scenarios)
-            .filter(m => this.props.selected.indexOf(m.id) > -1);
+    }
 
-        this.setState({models});
-    };
+    componentWillReceiveProps(nextProps, nextContext) {
+        if (nextProps.selected.length !== this.state.selectedModels.length) {
+            const selectedModels = nextProps.scenarioAnalysis.models.filter(m => nextProps.selected.indexOf(m.id) > -1);
+            return this.setState({selectedModels}, () => this.fetchData());
+        }
+    }
 
-    fetchData(calculationId) {
-        const {selectedType, selectedLay, selectedTotim} = this.state;
-        const models = this.state.models.map(m => {
-            m.data = null;
+    fetchData = () => {
+        const {selectedType, selectedLay, selectedTotim, selectedModels} = this.state;
+        if (selectedType === null || selectedLay === null || selectedTotim === null) {
+            return null;
+        }
+
+        const models = selectedModels.map(m => {
             m.loading = true;
             return m;
         });
 
-        return this.setState({models},
+        return this.setState({models, fetching: true},
             () => models.forEach(m => {
-                console.log(m);
                 if (this.props.selected.indexOf(m.id) >= 0) {
                     fetchUrl(`calculations/${m.calculation_id}/results/types/${selectedType}/layers/${selectedLay}/totims/${selectedTotim}`,
                         data => this.setState((prevState) => {
-                            const models = prevState.models.map(sm => {
+                            const models = prevState.selectedModels.map(sm => {
                                 if (m.id === sm.id) {
                                     sm.data = data;
+                                    sm.loading = false;
                                     return sm;
                                 }
                                 return sm;
                             });
-                            return {models};
+                            return {selectedModels: models};
                         }),
                         (e) => this.setState({isError: e}));
                 }
             })
         )
-    }
+    };
 
-    onChangeTypeLayerOrTime = ({type = null, layer = null, totim = null}) => {
-        const {selectedLay, selectedType, selectedTotim} = this.state;
-        type = type || selectedType;
-        layer = layer || selectedLay;
-        totim = totim || selectedTotim;
+    onChangeTypeLayerOrTotim = ({type, layer, totim}) => {
 
-        if (totim === selectedTotim && type === selectedType && layer === selectedLay) {
+        const {selectedType, selectedLay, selectedTotim} = this.state;
+        if (type === selectedType && layer === selectedLay && totim === selectedTotim) {
             return;
         }
 
-        this.fetchData({layer, totim, type});
+        return this.setState({
+            selectedType: type,
+            selectedLay: layer,
+            selectedTotim: totim
+        }, () => this.fetchData({layer, totim, type}));
     };
 
     renderMap = (id) => {
-        const filtered = this.props.models.filter(m => m.id);
+        let filtered = this.props.models.filter(m => m.id === id);
         if (filtered.length !== 1) {
             return null;
         }
@@ -111,33 +121,39 @@ class CrossSection extends React.Component {
         const model = filtered[0].model ? ModflowModel.fromObject(filtered[0].model) : null;
         const boundaries = filtered[0].boundaries ? BoundaryCollection.fromObject(filtered[0].boundaries) : null;
 
-
-        if (!model || !boundaries) {
+        filtered = this.state.selectedModels.filter(m => m.id === id);
+        if (filtered.length !== 1) {
             return null;
+        }
+        const data = filtered[0].data;
+
+        if (!model || !boundaries || !data) {
+            return <Segment loading/>;
         }
 
         return (
-            <ResultsMap
-                activeCell={[this.state.selectedCol, this.state.selectedRow]}
-                boundaries={boundaries}
-                data={this.state.data}
-                model={model}
-                onClick={colRow => {
-                    this.setState({
-                        selectedCol: colRow[0],
-                        selectedRow: colRow[1]
-                    })
-                }}
-            />
+            <Segment>
+                <ResultsMap
+                    key={Math.random()}
+                    activeCell={[this.state.selectedCol, this.state.selectedRow]}
+                    boundaries={boundaries}
+                    data={data}
+                    model={model}
+                    onClick={colRow => {
+                        this.setState({
+                            selectedCol: colRow[0],
+                            selectedRow: colRow[1]
+                        })
+                    }}
+                />
+            </Segment>
         )
     };
 
     render() {
-
-        console.log(this.state);
-
         const {results, soilmodel, stressperiods, selectedType, selectedLay, selectedTotim} = this.state;
-        if (!results || !soilmodel || !stressperiods) {
+        if (results === null || soilmodel === null ||
+            stressperiods === null || selectedLay === null || selectedTotim === null) {
             return null;
         }
 
@@ -152,13 +168,7 @@ class CrossSection extends React.Component {
                             layer: selectedLay,
                             totim: selectedTotim,
                         }}
-                        onChange={({type, layer, totim}) => {
-                            return this.setState({
-                                selectedType: type,
-                                selectedLay: layer,
-                                selectedTotim: totim
-                            }, () => this.fetchData({layer, totim, type}));
-                        }}
+                        onChange={this.onChangeTypeLayerOrTotim}
                         layerValues={layerValues}
                         soilmodel={soilmodel}
                         stressperiods={stressperiods}
@@ -167,7 +177,13 @@ class CrossSection extends React.Component {
                 </Segment>
 
                 <Segment color={'grey'} loading={this.state.isLoading}>
-                    {this.renderMap(this.props.selected[0])}
+                    <Grid>
+                        <Grid.Row columns={this.props.selected.length}>
+                            {this.props.selected.map(s => (
+                                <Grid.Column>{this.renderMap(s)}</Grid.Column>
+                            ))}
+                        </Grid.Row>
+                    </Grid>
                 </Segment>
             </div>
         )
@@ -183,11 +199,9 @@ const mapStateToProps = state => {
 };
 
 CrossSection.proptypes = {
-    boundaries: PropTypes.instanceOf(BoundaryCollection).isRequired,
-    calculation: PropTypes.instanceOf(Calculation).isRequired,
-    model: PropTypes.instanceOf(ModflowModel).isRequired,
+    models: PropTypes.array.isRequired,
+    scenarioAnalysis: PropTypes.instanceOf(ScenarioAnalysis).isRequired,
     selected: PropTypes.array.isRequired,
-    soilmodel: PropTypes.instanceOf(Soilmodel).isRequired,
 };
 
 export default connect(mapStateToProps)(CrossSection);

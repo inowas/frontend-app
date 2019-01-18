@@ -255,6 +255,19 @@ class T07 extends React.Component {
                 <AppContainer navbarItems={navigation}>
                     <Message icon>
                         <Icon name='circle notched' loading/>
+                        Loading ScenarioAnalysis
+                    </Message>
+                </AppContainer>
+            )
+        }
+
+        const filtered = this.props.models.filter(m => m.id === scenarioAnalysis.baseModelId);
+        if (filtered.length !== 1 || !filtered[0].model || !filtered[0].soilmodel || !filtered[0].results) {
+            return (
+                <AppContainer navbarItems={navigation}>
+                    <Message icon>
+                        <Icon name='circle notched' loading/>
+                        Loading BaseModel
                     </Message>
                 </AppContainer>
             )
@@ -299,6 +312,7 @@ class T07 extends React.Component {
 
 const mapStateToProps = state => {
     return {
+        models: state.T07.models,
         scenarioAnalysis: state.T07.scenarioAnalysis ? ScenarioAnalysis.fromObject(state.T07.scenarioAnalysis) : null
     }
 };

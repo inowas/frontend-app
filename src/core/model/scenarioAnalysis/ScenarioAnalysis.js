@@ -100,6 +100,10 @@ export default class ScenarioAnalysis {
         return !includes(this.permissions, 'w');
     }
 
+    get models() {
+        return [this.baseModel].concat(this.scenarios);
+    }
+
     toObject = () => ({
         id: this.id,
         name: this.name,
