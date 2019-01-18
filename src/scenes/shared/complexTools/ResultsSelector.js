@@ -29,6 +29,10 @@ class ResultsSelector extends React.Component {
         temporaryTotim: null
     };
 
+    componentDidMount() {
+        this.setState({temporaryTotim: this.props.data.totim});
+    }
+
     componentWillReceiveProps(nextProps, nextContext) {
         this.setState({temporaryTotim: nextProps.data.totim});
     }

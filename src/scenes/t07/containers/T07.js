@@ -11,13 +11,13 @@ import {fetchUrl, sendCommand} from 'services/api';
 import * as Content from '../components';
 
 import {
-    clear, updateBaseModel, updateBaseModelBoundaries, updateScenario, updateScenarioBoundaries,
-    updateScenarioAnalysis, updateBaseModelResults, updateBaseModelSoilmodel, updateBaseModelCalculation
+    clear, updateModel, updateBoundaries, updateSoilmodel, updateCalculation, updateResults, updateScenarioAnalysis
 } from '../actions/actions';
 
 import {ScenarioAnalysis} from 'core/model/scenarioAnalysis';
 import {BoundaryCollection, Calculation, CalculationResults, ModflowModel, Soilmodel} from 'core/model/modflow';
 import ToolNavigation from '../../shared/complexTools/toolNavigation';
+import {cloneDeep} from 'lodash';
 
 const navigation = [
     {
@@ -88,13 +88,13 @@ class T07 extends React.Component {
             data => {
                 const scenarioAnalysis = ScenarioAnalysis.fromQuery(data);
                 this.props.updateScenarioAnalysis(scenarioAnalysis);
-                this.setState({isLoading: false}, () => {
-                    this.setState({selected: [scenarioAnalysis.baseModel.id]});
-                    this.fetchModel(scenarioAnalysis.baseModel.id);
-                    this.fetchSoilmodel(scenarioAnalysis.baseModel.id);
-                    this.fetchCalculation(scenarioAnalysis.baseModel.id);
-                    this.fetchResults(scenarioAnalysis.baseModel.id);
-                    scenarioAnalysis.scenarios.forEach(sc => this.fetchModel(sc.id));
+                this.setState({
+                    isLoading: false,
+                    selected: [scenarioAnalysis.baseModel.id]
+                }, () => {
+                    const modelIds = [scenarioAnalysis.baseModel.id].concat(scenarioAnalysis.scenarios.map(sc => sc.id));
+                    modelIds.forEach(id => this.fetchModel(id));
+                    this.setState({isLoading: false})
                 });
             },
             error => this.setState(
@@ -108,13 +108,12 @@ class T07 extends React.Component {
         fetchUrl(
             `modflowmodels/${id}`,
             data => {
+                this.setState({isLoading: false});
+                this.props.updateModel(ModflowModel.fromQuery(data));
                 this.fetchBoundaries(id);
-                if (id === this.props.scenarioAnalysis.baseModel.id) {
-                    return this.props.updateBaseModel(ModflowModel.fromQuery(data));
-                }
-
-                return this.props.updateScenario(ModflowModel.fromQuery(data));
-
+                this.fetchSoilmodel(id);
+                this.fetchCalculation(id);
+                this.fetchResults(id);
             },
             error => this.setState(
                 {error, isLoading: false},
@@ -125,14 +124,7 @@ class T07 extends React.Component {
 
     fetchBoundaries(id) {
         fetchUrl(`modflowmodels/${id}/boundaries`,
-            data => {
-                const boundaries = BoundaryCollection.fromQuery(data);
-                if (id === this.props.scenarioAnalysis.baseModel.id) {
-                    return this.props.updateBaseModelBoundaries(boundaries);
-                }
-
-                return this.props.updateScenarioBoundaries(boundaries, id);
-            },
+            data => this.props.updateBoundaries(BoundaryCollection.fromQuery(data), id),
             error => this.setState(
                 {error, isLoading: false},
                 () => this.handleError(error)
@@ -142,11 +134,7 @@ class T07 extends React.Component {
 
     fetchSoilmodel(id) {
         fetchUrl(`modflowmodels/${id}/soilmodel`,
-            data => {
-                if (id === this.props.scenarioAnalysis.baseModel.id) {
-                    return this.props.updateBaseModelSoilmodel(Soilmodel.fromObject(data))
-                }
-            },
+            data => this.props.updateSoilmodel(Soilmodel.fromObject(data), id),
             error => this.setState(
                 {error, isLoading: false},
                 () => this.handleError(error)
@@ -156,11 +144,7 @@ class T07 extends React.Component {
 
     fetchCalculation(id) {
         fetchUrl(`modflowmodels/${id}/calculation`,
-            data => {
-                if (id === this.props.scenarioAnalysis.baseModel.id) {
-                    return this.props.updateBaseModelCalculation(Calculation.fromQuery(data))
-                }
-            },
+            data => this.props.updateCalculation(Calculation.fromQuery(data), id),
             error => this.setState(
                 {error, isLoading: false},
                 () => this.handleError(error)
@@ -169,14 +153,9 @@ class T07 extends React.Component {
     };
 
     fetchResults(id) {
-        this.setState({isLoading: true},
-            () => fetchUrl(`modflowmodels/${id}/results`,
-                data => {
-                    if (id === this.props.scenarioAnalysis.baseModel.id) {
-                        return this.props.updateBaseModelResults(CalculationResults.fromQuery(data))
-                    }
-                },
-                (e) => this.setState({isError: e, isLoading: false}))
+        fetchUrl(`modflowmodels/${id}/results`,
+            data => this.props.updateResults(CalculationResults.fromQuery(data), id),
+            (e) => this.setState({isError: e, isLoading: false})
         );
     }
 
@@ -189,10 +168,10 @@ class T07 extends React.Component {
         }
     };
 
-    renderContent(id, property, type) {
+    renderContent(id, property) {
         switch (property) {
             case 'crosssection':
-                return (<Content.CrossSection/>);
+                return (<Content.CrossSection selected={this.state.selected}/>);
             case 'difference':
                 return ('DIFFERENCE');
             case 'timeseries':
@@ -229,7 +208,7 @@ class T07 extends React.Component {
 
         selected.push(id);
         return this.setState({
-            selected: selected
+            selected: cloneDeep(selected)
         })
     };
 
@@ -281,7 +260,7 @@ class T07 extends React.Component {
             )
         }
 
-        const {id, property, type} = this.props.match.params;
+        const {id, property} = this.props.match.params;
         return (
             <AppContainer navbarItems={navigation}>
                 <Grid padded>
@@ -309,7 +288,7 @@ class T07 extends React.Component {
                             {this.renderModelList()}
                         </Grid.Column>
                         <Grid.Column width={13}>
-                            {this.renderContent(id, property, type)}
+                            {this.renderContent(id, property)}
                         </Grid.Column>
                     </Grid.Row>
                 </Grid>
@@ -320,23 +299,15 @@ class T07 extends React.Component {
 
 const mapStateToProps = state => {
     return {
-        results: state.T07.results ? CalculationResults.fromObject(state.T07.results) : null,
         scenarioAnalysis: state.T07.scenarioAnalysis ? ScenarioAnalysis.fromObject(state.T07.scenarioAnalysis) : null
     }
 };
 
 const mapDispatchToProps = {
-    clear,
-    updateBaseModel,
-    updateBaseModelBoundaries,
-    updateBaseModelSoilmodel,
-    updateBaseModelCalculation,
-    updateBaseModelResults,
-    updateScenarioAnalysis,
-    updateScenario,
-    updateScenarioBoundaries
+    clear, updateModel, updateBoundaries,
+    updateSoilmodel, updateCalculation,
+    updateResults, updateScenarioAnalysis
 };
-
 
 T07.proptypes = {
     history: PropTypes.object.isRequired,
@@ -345,14 +316,12 @@ T07.proptypes = {
     scenarioAnalysis: PropTypes.instanceOf(ScenarioAnalysis).isRequired,
 
     clear: PropTypes.func.isRequired,
-    updateBaseModel: PropTypes.func.isRequired,
-    updateBaseModelBoundaries: PropTypes.func.isRequired,
-    updateBaseModelSoilmodel: PropTypes.func.isRequired,
-    updateBaseModelCalculation: PropTypes.func.isRequired,
-    updateBaseModelResults: PropTypes.func.isRequired,
-    updateScenario: PropTypes.func.isRequired,
+    updateModel: PropTypes.func.isRequired,
+    updateBoundaries: PropTypes.func.isRequired,
+    updateSoilmodel: PropTypes.func.isRequired,
+    updateCalculation: PropTypes.func.isRequired,
+    updateResults: PropTypes.func.isRequired,
     updateScenarioAnalysis: PropTypes.func.isRequired,
-    updateScenarioBoundaries: PropTypes.func.isRequired,
 };
 
 export default withRouter(connect(mapStateToProps, mapDispatchToProps)(T07));

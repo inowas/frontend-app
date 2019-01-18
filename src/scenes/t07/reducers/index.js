@@ -1,11 +1,9 @@
 import {combineReducers} from 'redux';
-import baseModel from './baseModel';
-import scenarios from './scenarios';
+import models from './models';
 import scenarioAnalysis from './scenarioAnalysis';
 
 const T07 = combineReducers({
-    baseModel,
-    scenarios,
+    models,
     scenarioAnalysis
 });
 

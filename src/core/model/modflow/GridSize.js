@@ -41,6 +41,10 @@ class GridSize {
 
     sameAs = (obj) => {
         return isEqual(obj.toObject(), this.toObject());
+    };
+
+    isWithIn = (x, y) => {
+        return (x >= 0 && x <= this.nX && y >= 0 && y <= this.nY);
     }
 }
 

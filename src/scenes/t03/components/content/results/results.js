@@ -7,7 +7,7 @@ import {BoundaryCollection, Calculation, CalculationResults, ModflowModel, Soilm
 import {fetchUrl} from 'services/api';
 import {last} from 'lodash';
 import ResultsMap from '../../maps/resultsMap';
-import ResultsChart from './resultsChart';
+import ResultsChart from '../../../../shared/complexTools/ResultsChart';
 import ResultsSelector from '../../../../shared/complexTools/ResultsSelector';
 
 class Results extends React.Component {
@@ -36,6 +36,14 @@ class Results extends React.Component {
         if ((calculation instanceof Calculation) && !calculationId) {
             this.fetchResults();
         }
+
+        const {model} = this.props;
+        const {gridSize} = model;
+
+        return this.setState({
+            selectedCol: Math.floor(gridSize.nX / 2),
+            selectedRow: Math.floor(gridSize.nY / 2),
+        })
     }
 
     componentWillReceiveProps(nextProps) {
@@ -100,7 +108,7 @@ class Results extends React.Component {
         const {calculationId, data, selectedCol, selectedRow, selectedType, selectedLay, selectedTotim, layerValues, totalTimes} = this.state;
         const {model, boundaries, soilmodel} = this.props;
 
-        if (!calculationId) {
+        if (!calculationId || !data) {
             return null;
         }
 
@@ -130,13 +138,14 @@ class Results extends React.Component {
                             <Segment loading={this.state.fetching} color={'grey'}>
                                 {data &&
                                 <ResultsMap
+                                    activeCell={[selectedCol, selectedRow]}
                                     boundaries={boundaries}
                                     data={data}
                                     model={model}
                                     onClick={colRow => {
                                         this.setState({
-                                            selectedRow: colRow[1],
-                                            selectedCol: colRow[0]
+                                            selectedCol: colRow[0],
+                                            selectedRow: colRow[1]
                                         })
                                     }}
                                 />
@@ -147,15 +156,17 @@ class Results extends React.Component {
                                     <Grid.Column>
                                         <Segment loading={this.state.fetching} color={'blue'}>
                                             <Header textAlign={'center'} as={'h4'}>Horizontal cross section</Header>
-                                            {data && <ResultsChart data={data} row={selectedRow} col={selectedCol}
-                                                                   show={'row'}/>}
+                                            {data &&
+                                            <ResultsChart data={data} col={selectedCol} row={selectedRow} show={'row'}/>
+                                            }
                                         </Segment>
                                     </Grid.Column>
                                     <Grid.Column>
                                         <Segment loading={this.state.fetching} color={'blue'}>
                                             <Header textAlign={'center'} as={'h4'}>Vertical cross section</Header>
-                                            {data && <ResultsChart data={data} col={selectedCol} row={selectedRow}
-                                                                   show={'col'}/>}
+                                            {data &&
+                                            <ResultsChart data={data} col={selectedCol} row={selectedRow} show={'col'}/>
+                                            }
                                         </Segment>
                                     </Grid.Column>
                                 </Grid.Row>

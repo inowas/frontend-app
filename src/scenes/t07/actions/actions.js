@@ -1,11 +1,11 @@
 import {
-    UPDATE_BASE_MODEL,
-    UPDATE_BASE_MODEL_BOUNDARIES,
-    UPDATE_BASE_MODEL_SOILMODEL,
-    UPDATE_BASE_MODEL_CALCULATION,
-    UPDATE_BASE_MODEL_RESULTS,
-} from '../reducers/baseModel';
-import {UPDATE_SCENARIO, UPDATE_SCENARIO_BOUNDARIES} from '../reducers/scenarios';
+    UPDATE_MODEL,
+    UPDATE_MODEL_BOUNDARIES,
+    UPDATE_MODEL_SOILMODEL,
+    UPDATE_MODEL_CALCULATION,
+    UPDATE_MODEL_RESULTS
+} from '../reducers/models';
+
 import {CLEAR, UPDATE_SCENARIOANALYSIS} from '../reducers/scenarioAnalysis';
 import {ScenarioAnalysis} from 'core/model/scenarioAnalysis';
 import {BoundaryCollection, Calculation, CalculationResults, ModflowModel, Soilmodel} from 'core/model/modflow';
@@ -27,81 +27,61 @@ export function updateScenarioAnalysis(scenarioAnalysis) {
     };
 }
 
-export function updateBaseModel(modflowModel) {
+export function updateModel(modflowModel) {
     if (!(modflowModel instanceof ModflowModel)) {
         throw new Error('ModflowModel is expected to be instance of ModflowModel');
     }
 
     return {
-        type: UPDATE_BASE_MODEL,
+        type: UPDATE_MODEL,
         payload: modflowModel.toObject()
     };
 }
 
-export function updateBaseModelBoundaries(boundaries) {
+export function updateBoundaries(boundaries, id) {
     if (!(boundaries instanceof BoundaryCollection)) {
         throw new Error('BoundaryCollection is expected to be instance of BoundaryCollection');
     }
 
     return {
-        type: UPDATE_BASE_MODEL_BOUNDARIES,
+        type: UPDATE_MODEL_BOUNDARIES,
+        id,
         payload: boundaries.toObject()
     };
 }
 
-export function updateBaseModelSoilmodel(soilmodel) {
+export function updateSoilmodel(soilmodel, id) {
     if (!(soilmodel instanceof Soilmodel)) {
         throw new Error('Soilmodel is expected to be instance of Soilmodel');
     }
 
     return {
-        type: UPDATE_BASE_MODEL_SOILMODEL,
+        type: UPDATE_MODEL_SOILMODEL,
+        id,
         payload: soilmodel.toObject()
     };
 }
 
-export function updateBaseModelCalculation(calculation) {
+export function updateCalculation(calculation, id) {
     if (!(calculation instanceof Calculation)) {
         throw new Error('Calculation is expected to be instance of Calculation');
     }
 
     return {
-        type: UPDATE_BASE_MODEL_CALCULATION,
+        type: UPDATE_MODEL_CALCULATION,
+        id,
         payload: calculation.toObject()
     };
 }
 
-export function updateBaseModelResults(results) {
+export function updateResults(results, id) {
     if (!(results instanceof CalculationResults)) {
         throw new Error('Results is to be expected to be instance of CalculationResults');
     }
 
     return {
-        type: UPDATE_BASE_MODEL_RESULTS,
+        type: UPDATE_MODEL_RESULTS,
+        id,
         payload: results.toObject()
-    };
-}
-
-export function updateScenario(modflowModel) {
-    if (!(modflowModel instanceof ModflowModel)) {
-        throw new Error('ModflowModel is expected to be instance of ModflowModel');
-    }
-
-    return {
-        type: UPDATE_SCENARIO,
-        id: modflowModel.id,
-        payload: modflowModel.toObject()
-    };
-}
-
-export function updateScenarioBoundaries(boundaries, id) {
-    if (!(boundaries instanceof BoundaryCollection)) {
-        throw new Error('BoundaryCollection is expected to be instance of BoundaryCollection');
-    }
-
-    return {
-        type: UPDATE_SCENARIO_BOUNDARIES,
-        id: id,
-        payload: boundaries.toObject()
     };
 }

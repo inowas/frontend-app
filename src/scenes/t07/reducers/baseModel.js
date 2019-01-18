@@ -7,7 +7,10 @@ export const UPDATE_BASE_MODEL_RESULTS = 'T07_UPDATE_BASE_MODEL_RESULTS';
 
 const initialState = {
     model: null,
-    boundaries: null
+    boundaries: null,
+    soilmodel: null,
+    calculation: null,
+    results: null
 };
 
 const baseModel = (state = initialState, action) => {
