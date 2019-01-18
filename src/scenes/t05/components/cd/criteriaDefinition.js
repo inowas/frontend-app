@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import {Criterion} from 'core/mcda/criteria';
-import {Form, Grid, Message, Segment} from 'semantic-ui-react';
+import {Button, Form, Grid, Input, Message, Segment} from 'semantic-ui-react';
 import {GeoJSON, Map} from 'react-leaflet';
 import {BasicTileLayer} from 'services/geoTools/tileLayers';
 import {getStyle} from '../../../t03/components/maps';
@@ -54,6 +54,12 @@ class CriteriaDefinition extends React.Component {
         });
     };
 
+    handleRemoveData = () => {
+        const criterion = this.state.criterion;
+        criterion.raster.data = [];
+        this.props.onChange(Criterion.fromObject(criterion));
+    };
+
     handleDismiss = () => this.setState({showInfo: false});
 
     render() {
@@ -72,29 +78,51 @@ class CriteriaDefinition extends React.Component {
                 }
                 <Segment>
                     <Grid>
+                        <Grid.Row verticalAlign='middle' centered>
+                            <Grid.Column width={3}>
+                                <Input
+                                    onBlur={this.handleChange}
+                                    onChange={this.handleLocalChange('southWest')} name='lon'
+                                    value={raster.boundingBox[0][0] || 0} fluid
+                                    label='W'/>
+                            </Grid.Column>
+                            <Grid.Column width={3}>
+                                <Input
+                                    onBlur={this.handleChange}
+                                    onChange={this.handleLocalChange('northEast')} name='lat'
+                                    value={raster.boundingBox[1][1] || 0} fluid
+                                    label='N'/>
+                                <br /><br />
+                                <Input
+                                    onBlur={this.handleChange}
+                                    onChange={this.handleLocalChange('southWest')} name='lat'
+                                    value={raster.boundingBox[0][1] || 0} fluid
+                                    label='S'/>
+                            </Grid.Column>
+                            <Grid.Column width={3}>
+                                <Input
+                                    onBlur={this.handleChange}
+                                    onChange={this.handleLocalChange('northEast')} name='lon'
+                                    value={raster.boundingBox[1][0] || 0} fluid
+                                    label='E'/>
+                            </Grid.Column>
+                            <Grid.Column width={7}>
+                                <Map
+                                    style={styles.map}
+                                    bounds={boundingBox.getBoundsLatLng()}
+                                >
+                                    <BasicTileLayer/>
+                                    <GeoJSON
+                                        key={md5(JSON.stringify(boundingBox.toArray()))}
+                                        data={boundingBox.geoJson}
+                                        style={getStyle('bounding_box')}
+                                    />
+                                </Map>
+                            </Grid.Column>
+                        </Grid.Row>
                         <Grid.Row>
-                            <Grid.Column width={11}>
+                            <Grid.Column width={16}>
                                 <Form>
-                                    <Form.Group widths='equal'>
-                                        <Form.Input onBlur={this.handleChange}
-                                                    onChange={this.handleLocalChange('northEast')} name='lat'
-                                                    value={raster.boundingBox[1][1] || 0} fluid
-                                                    label='Latitude Northeast'/>
-                                        <Form.Input onBlur={this.handleChange}
-                                                    onChange={this.handleLocalChange('northEast')} name='lon'
-                                                    value={raster.boundingBox[1][0] || 0} fluid
-                                                    label='Longitude Northeast'/>
-                                    </Form.Group>
-                                    <Form.Group widths='equal'>
-                                        <Form.Input onBlur={this.handleChange}
-                                                    onChange={this.handleLocalChange('southWest')} name='lat'
-                                                    value={raster.boundingBox[0][1] || 0} fluid
-                                                    label='Latitude Southwest'/>
-                                        <Form.Input onBlur={this.handleChange}
-                                                    onChange={this.handleLocalChange('southWest')} name='lon'
-                                                    value={raster.boundingBox[0][0] || 0} fluid
-                                                    label='Longitude Southwest'/>
-                                    </Form.Group>
                                     <Form.Group widths='equal'>
                                         <Form.Input
                                             disabled={raster.data.length > 0}
@@ -104,8 +132,8 @@ class CriteriaDefinition extends React.Component {
                                         <Form.Input
                                             disabled={raster.data.length > 0}
                                             onBlur={this.handleChange}
-                                                    onChange={this.handleLocalChange('gridSize')} name='n_y'
-                                                    value={raster.gridSize.n_y} fluid label='GridSize Y'/>
+                                            onChange={this.handleLocalChange('gridSize')} name='n_y'
+                                            value={raster.gridSize.n_y} fluid label='GridSize Y'/>
                                     </Form.Group>
                                     <Form.Group widths='equal'>
                                         <Form.Input
@@ -118,19 +146,9 @@ class CriteriaDefinition extends React.Component {
                                             value={raster.max} fluid label='Maximum Value'/>
                                     </Form.Group>
                                 </Form>
-                            </Grid.Column>
-                            <Grid.Column width={5}>
-                                <Map
-                                    style={styles.map}
-                                    bounds={boundingBox.getBoundsLatLng()}
-                                >
-                                    <BasicTileLayer/>
-                                    <GeoJSON
-                                        key={md5(JSON.stringify(boundingBox.toArray()))}
-                                        data={boundingBox.geoJson}
-                                        style={getStyle('bounding_box')}
-                                    />
-                                </Map>
+                                <Button fluid onClick={this.handleRemoveData}>
+                                    Delete Raster Data
+                                </Button>
                             </Grid.Column>
                         </Grid.Row>
                     </Grid>

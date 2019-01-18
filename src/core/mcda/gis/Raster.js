@@ -1,6 +1,7 @@
 import {BoundingBox, GridSize} from '../../geometry';
 import {cloneDeep} from 'lodash';
 import {distanceBetweenCoordinates} from 'services/geoTools/distance';
+import {max, min} from 'scenes/shared/rasterData/helpers';
 
 class Raster {
     _boundingBox = new BoundingBox();
@@ -20,6 +21,8 @@ class Raster {
         raster.data = obj.data;
         raster.gridSize = GridSize.fromObject(obj.gridSize);
         raster.initial = obj.initial;
+        raster.min = obj.min;
+        raster.max = obj.max;
         return raster;
     }
 
@@ -90,6 +93,18 @@ class Raster {
             max: this.max,
             min: this.min
         }
+    }
+
+    assignMinMax() {
+        const offsetOld = min(this.data) < 0 ? Math.abs(min(this.data)) : 0;
+        const offsetNew = this.min < 0 ? Math.abs(this.min) : 0;
+
+        this.data = cloneDeep(this.data).map(row => {
+            return row.map(value => {
+                const factor = (value + offsetOld) / (max(this.data) + offsetOld);
+                return (factor * (this.max + offsetNew)) - offsetNew;
+            });
+        });
     }
 
     sliceByBoundingBox(boundingBox) {

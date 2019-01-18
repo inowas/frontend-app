@@ -148,19 +148,30 @@ class T05 extends React.Component {
 
     handleClickCriteriaNavigation = (e, {name}) => this.routeTo(name);
 
-    routeTo = (type = null) => {
+    handleClickCriteriaTool = name => this.routeTo(null, name);
+
+    routeTo = (nCid = null, nTool = null) => {
         const {id, property} = this.props.match.params;
+        const cid = nCid || this.props.match.params.cid || null;
+        const tool = nTool || this.props.match.params.tool || null;
         const path = this.props.match.path;
         const basePath = path.split(':')[0];
-        if (!!type) {
-            return this.props.history.push(basePath + id + '/' + property + '/' + type);
+        if (!!cid && !!tool) {
+            return this.props.history.push(basePath + id + '/' + property + '/' + cid + '/' + tool);
+        }
+        if (!!cid) {
+            if (property === 'cd') {
+                return this.props.history.push(basePath + id + '/' + property + '/' + cid + '/definition');
+            }
+            return this.props.history.push(basePath + id + '/' + property + '/' + cid);
         }
         return this.props.history.push(basePath + id + '/' + property);
     };
 
     renderContent() {
         const {id, property} = this.props.match.params;
-        const type = this.props.match.params.type ? this.props.match.params.type : null;
+        const cid = this.props.match.params.cid || null;
+        const tool = this.props.match.params.tool || null;
         const mcda = MCDA.fromObject(this.state.tool.data.mcda);
 
         const {permissions} = this.state.tool;
@@ -183,7 +194,7 @@ class T05 extends React.Component {
                     />
                 );
             case 'wa':
-                const weightAssignment = type ? mcda.weightAssignmentsCollection.findById(type) : null;
+                const weightAssignment = cid ? mcda.weightAssignmentsCollection.findById(cid) : null;
 
                 return (
                     <WeightAssignmentEditor
@@ -195,13 +206,15 @@ class T05 extends React.Component {
                     />
                 );
             case 'cd':
-                const criterion = type ? mcda.criteriaCollection.findById(type) : null;
+                const criterion = cid ? mcda.criteriaCollection.findById(cid) : null;
 
                 return (
                     <CriteriaDataEditor
+                        activeTool={tool}
                         criterion={criterion}
-                        mcda={mcda}
                         handleChange={this.handleChange}
+                        mcda={mcda}
+                        onClickTool={this.handleClickCriteriaTool}
                     />
                 );
             default:
@@ -219,7 +232,7 @@ class T05 extends React.Component {
         const mcda = MCDA.fromObject(this.state.tool.data.mcda);
         const {tool, isDirty, isLoading} = this.state;
 
-        const {type, property} = this.props.match.params;
+        const {cid, property} = this.props.match.params;
 
         const {permissions} = tool;
         const readOnly = !includes(permissions, 'w');
@@ -244,7 +257,7 @@ class T05 extends React.Component {
                             <ToolNavigation navigationItems={menuItems}/>
                             {property === 'cd' &&
                             <CriteriaNavigation
-                                activeCriterion={type}
+                                activeCriterion={cid}
                                 mcda={mcda}
                                 onClick={this.handleClickCriteriaNavigation}
                             />
@@ -253,7 +266,7 @@ class T05 extends React.Component {
                         <Grid.Column width={12}>
                             <Segment color={'grey'} loading={isLoading}>
                                 <ContentToolBar
-                                    backButton={!!type && property !== 'cd'}
+                                    backButton={!!cid && property !== 'cd'}
                                     onBack={this.routeTo}
                                     isDirty={isDirty} save
                                     onSave={this.handleSave}

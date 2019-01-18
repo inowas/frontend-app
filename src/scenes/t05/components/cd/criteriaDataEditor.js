@@ -1,42 +1,26 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import {withRouter} from 'react-router-dom';
+import {MCDA} from 'core/mcda';
 import {Criterion} from 'core/mcda/criteria';
 import {Message, Step} from 'semantic-ui-react';
 
-import {CriteriaDefinition, CriteriaRasterUpload} from './index';
+import {CriteriaDefinition, CriteriaReclassification, CriteriaRasterUpload} from './index';
 
 class CriteriaDataEditor extends React.Component {
 
-    constructor() {
-        super();
-
-        this.state = {
-            activeStep: ''
-        }
-    }
-
-    handleClickStep = (e, {name}) => this.setState({activeStep: name});
+    handleClickStep = (e, {name}) => this.props.onClickTool(name);
 
     handleChange = criterion => {
         if(!(criterion instanceof Criterion)) {
             throw new Error('Criterion expected to be instance of Criterion.');
         }
 
+        console.log('UPDATING', criterion);
+
         const cc = this.props.mcda.criteriaCollection;
         cc.update(criterion);
 
-        return this.props.handleChange({
-            name: 'criteria',
-            value: cc
-        });
-    };
-
-    onUploadRaster = data => {
-        const cc = this.props.mcda.criteriaCollection;
-        const criterion = this.props.criterion;
-        criterion.data = data;
-        cc.update(criterion);
         return this.props.handleChange({
             name: 'criteria',
             value: cc
@@ -44,12 +28,19 @@ class CriteriaDataEditor extends React.Component {
     };
 
     renderTool() {
-        switch (this.state.activeStep) {
+        switch (this.props.activeTool) {
             case 'upload':
                 return (
                     <CriteriaRasterUpload
                         criterion={this.props.criterion}
-                        onChange={this.onUploadRaster}
+                        onChange={this.handleChange}
+                    />
+                );
+            case 'reclassification':
+                return (
+                    <CriteriaReclassification
+                        criterion={this.props.criterion}
+                        onChange={this.handleChange}
                     />
                 );
             default:
@@ -63,8 +54,7 @@ class CriteriaDataEditor extends React.Component {
     }
 
     render() {
-        const {activeStep} = this.state;
-        const {criterion} = this.props;
+        const {activeTool, criterion} = this.props;
 
         return (
             <div>
@@ -79,7 +69,7 @@ class CriteriaDataEditor extends React.Component {
                     <div>
                         <Step.Group fluid>
                             <Step
-                                active={activeStep === '' || activeStep === 'definition'}
+                                active={activeTool === '' || activeTool === 'definition'}
                                 name='definition'
                                 icon='info circle'
                                 title='Definition'
@@ -87,7 +77,7 @@ class CriteriaDataEditor extends React.Component {
                                 onClick={this.handleClickStep}
                             />
                             <Step
-                                active={activeStep === 'upload'}
+                                active={activeTool === 'upload'}
                                 name='upload'
                                 icon='upload'
                                 title='Upload'
@@ -95,8 +85,8 @@ class CriteriaDataEditor extends React.Component {
                                 onClick={this.handleClickStep}
                             />
                             <Step
-                                active={activeStep === 'reclassification'}
-                                disabled
+                                active={activeTool === 'reclassification'}
+                                disabled={criterion.raster.data.length === 0}
                                 name='reclassification'
                                 icon='chart bar'
                                 title='Reclassification'
@@ -104,7 +94,7 @@ class CriteriaDataEditor extends React.Component {
                                 onClick={this.handleClickStep}
                             />
                             <Step
-                                active={activeStep === 'results'}
+                                active={activeTool === 'results'}
                                 disabled
                                 name='results'
                                 icon='map'
@@ -124,8 +114,11 @@ class CriteriaDataEditor extends React.Component {
 }
 
 CriteriaDataEditor.proptypes = {
+    activeTool: PropTypes.string,
     criterion: PropTypes.instanceOf(Criterion),
-    handleChange: PropTypes.func.isRequired
+    handleChange: PropTypes.func.isRequired,
+    mcda: PropTypes.instanceOf(MCDA).isRequired,
+    onClickTool: PropTypes.func.isRequired
 };
 
 export default withRouter(CriteriaDataEditor);

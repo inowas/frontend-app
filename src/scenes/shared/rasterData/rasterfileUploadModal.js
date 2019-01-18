@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types';
 import React from 'react';
-import {Button, Form, Grid, Input, Radio, Header, List, Segment, Modal} from 'semantic-ui-react';
+import {Button, Dimmer, Form, Grid, Input, Radio, Header, List, Segment, Modal, Loader} from 'semantic-ui-react';
 import RasterDataImage from './rasterDataImage';
 import {GridSize} from 'core/geometry';
 import {fetchRasterfile, uploadRasterfile} from 'services/api';
@@ -12,11 +12,14 @@ const styles = {
     }
 };
 
+let fileReader;
+
 class RasterfileUploadModal extends React.Component {
     state = {
         hash: null,
         metadata: null,
         data: null,
+        isLoading: false,
         selectedBand: 0,
         errorFetching: false,
         errorUploading: false,
@@ -39,6 +42,8 @@ class RasterfileUploadModal extends React.Component {
         if (!hash || !metadata) {
             return null;
         }
+
+        console.log('META', metadata);
 
         return (
             <Segment color="blue">
@@ -103,16 +108,32 @@ class RasterfileUploadModal extends React.Component {
         );
     };
 
+    handleFileRead = e => {
+        const content = fileReader.result;
+
+        const image = new Image();
+        image.src = content;
+
+        console.log(image.getImageData(0, 0, 100, 100));
+    };
+
     handleUploadFile = e => {
         const files = e.target.files;
         const file = files[0];
+
+        /*console.log(file);
+        fileReader = new FileReader();
+        fileReader.onloadend = this.handleFileRead;
+        fileReader.readAsDataURL(file);*/
+
+        this.setState({isLoading: true});
 
         uploadRasterfile(file,
             ({hash}) => {
                 this.setState({fetching: true, hash});
                 fetchRasterfile(
                     {hash, width: this.props.gridSize.nX, height: this.props.gridSize.nY},
-                    ({data, metadata}) => this.setState({data, metadata}),
+                    ({data, metadata}) => this.setState({isLoading: false, data, metadata}),
                     (errorFetching) => this.setState({errorFetching}))
             },
             (errorUploading) => this.setState({errorUploading})
@@ -121,6 +142,7 @@ class RasterfileUploadModal extends React.Component {
 
     render() {
         const {data, selectedBand} = this.state;
+
         return (
             <Modal size={'large'} open onClose={this.props.onCancel} dimmer={'blurring'}>
                 <Modal.Header>Upload Rasterfile</Modal.Header>
@@ -128,6 +150,12 @@ class RasterfileUploadModal extends React.Component {
                     <Grid divided={'vertically'}>
                         <Grid.Row columns={2}>
                             <Grid.Column>
+                                {this.state.isLoading &&
+                                <Dimmer active inverted>
+                                    <Loader>Uploading</Loader>
+                                </Dimmer>
+                                }
+                                {!this.state.isLoading &&
                                 <Segment color={'green'}>
                                     <Header as="h3" style={{'textAlign': 'left'}}>Important</Header>
                                     <List bulleted>
@@ -137,6 +165,7 @@ class RasterfileUploadModal extends React.Component {
                                     </List>
                                     <Input style={styles.input} type="file" onChange={this.handleUploadFile}/>
                                 </Segment>
+                                }
                             </Grid.Column>
                             <Grid.Column>
                                 {this.renderMetaData()}

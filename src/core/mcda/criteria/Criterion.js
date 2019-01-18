@@ -1,5 +1,6 @@
 import uuidv4 from 'uuid/v4';
 import Raster from '../gis/Raster';
+import RulesCollection from './RulesCollection';
 
 const validTypes = ['discrete', 'continuous'];
 
@@ -8,6 +9,7 @@ class Criterion {
     _name = 'New Criterion';
     _type = 'discrete';
     _raster = new Raster();
+    _rules = new RulesCollection();
 
     static fromObject(obj) {
         const criterion = new Criterion();
@@ -15,6 +17,7 @@ class Criterion {
         criterion.name = obj.name;
         criterion.type = obj.type;
         criterion.raster = Raster.fromObject(obj.raster);
+        criterion.rulesCollection = obj.rules ? RulesCollection.fromArray(obj.rules) : new RulesCollection();
         return criterion;
     }
 
@@ -53,12 +56,21 @@ class Criterion {
         this._raster = value ? value : null;
     }
 
+    get rulesCollection() {
+        return this._rules;
+    }
+
+    set rulesCollection(value) {
+        this._rules = value;
+    }
+
     toObject() {
         return ({
             id: this.id,
             name: this.name,
             type: this.type,
-            raster: this.raster.toObject()
+            raster: this.raster.toObject(),
+            rules: this.rulesCollection.toArray()
         });
     }
 }

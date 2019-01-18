@@ -54,7 +54,9 @@ class CriteriaRasterMap extends React.Component {
                 style={styles.map}
                 bounds={boundingBox.getBoundsLatLng()}
             >
+                {this.props.showBasicLayer &&
                 <BasicTileLayer/>
+                }
                 <FeatureGroup>
                     <EditControl
                         position="bottomright"
@@ -83,7 +85,8 @@ class CriteriaRasterMap extends React.Component {
 
 CriteriaRasterMap.propTypes = {
     onChange: PropTypes.func.isRequired,
-    raster: PropTypes.instanceOf(Raster).isRequired
+    raster: PropTypes.instanceOf(Raster).isRequired,
+    showBasicLayer: PropTypes.bool.isRequired
 };
 
 export default CriteriaRasterMap;
