@@ -94,6 +94,8 @@ class BoundingBox {
         }
     }
 
+    isValid = () => !(!this.xMin || !this.xMax || !this.yMin || !this.yMax);
+
     toArray = () => ([
         [this._xMin, this._yMin],
         [this._xMax, this._yMax]
@@ -122,7 +124,7 @@ class BoundingBox {
 
     sameAs = (obj) => {
         return isEqual(obj.toArray(), this.toArray())
-    }
+    };
 }
 
 export default BoundingBox;

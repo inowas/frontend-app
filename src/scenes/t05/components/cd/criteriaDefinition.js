@@ -107,17 +107,19 @@ class CriteriaDefinition extends React.Component {
                                     label='E'/>
                             </Grid.Column>
                             <Grid.Column width={7}>
-                                <Map
-                                    style={styles.map}
-                                    bounds={boundingBox.getBoundsLatLng()}
-                                >
-                                    <BasicTileLayer/>
-                                    <GeoJSON
-                                        key={md5(JSON.stringify(boundingBox.toArray()))}
-                                        data={boundingBox.geoJson}
-                                        style={getStyle('bounding_box')}
-                                    />
-                                </Map>
+                                {boundingBox.isValid() &&
+                                    <Map
+                                        style={styles.map}
+                                        bounds={boundingBox.getBoundsLatLng()}
+                                    >
+                                        <BasicTileLayer/>
+                                        <GeoJSON
+                                            key={md5(JSON.stringify(boundingBox.toArray()))}
+                                            data={boundingBox.geoJson}
+                                            style={getStyle('bounding_box')}
+                                        />
+                                    </Map>
+                                }
                             </Grid.Column>
                         </Grid.Row>
                         <Grid.Row>

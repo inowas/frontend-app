@@ -6,7 +6,7 @@ import {Criterion} from 'core/mcda/criteria';
 import {Message, Step} from 'semantic-ui-react';
 
 import {CriteriaDefinition, CriteriaReclassification, CriteriaRasterUpload} from './index';
-import CriteriaDataResults from "./criteriaDataResults";
+import CriteriaDataResults from './criteriaDataResults';
 
 class CriteriaDataEditor extends React.Component {
 
@@ -16,8 +16,6 @@ class CriteriaDataEditor extends React.Component {
         if(!(criterion instanceof Criterion)) {
             throw new Error('Criterion expected to be instance of Criterion.');
         }
-
-        console.log('UPDATING', criterion);
 
         const cc = this.props.mcda.criteriaCollection;
         cc.update(criterion);
@@ -29,10 +27,14 @@ class CriteriaDataEditor extends React.Component {
     };
 
     renderTool() {
+        if (!this.props.criterion) {
+            return;
+        }
+
         switch (this.props.activeTool) {
-            case 'upload':
+            case 'definition':
                 return (
-                    <CriteriaRasterUpload
+                    <CriteriaDefinition
                         criterion={this.props.criterion}
                         onChange={this.handleChange}
                     />
@@ -53,8 +55,9 @@ class CriteriaDataEditor extends React.Component {
                 );
             default:
                 return (
-                    <CriteriaDefinition
+                    <CriteriaRasterUpload
                         criterion={this.props.criterion}
+                        gridSize={this.props.mcda.constraints.gridSize}
                         onChange={this.handleChange}
                     />
                 );
@@ -77,14 +80,6 @@ class CriteriaDataEditor extends React.Component {
                     <div>
                         <Step.Group fluid>
                             <Step
-                                active={activeTool === '' || activeTool === 'definition'}
-                                name='definition'
-                                icon='info circle'
-                                title='Definition'
-                                link
-                                onClick={this.handleClickStep}
-                            />
-                            <Step
                                 active={activeTool === 'upload'}
                                 name='upload'
                                 icon='upload'
@@ -93,8 +88,16 @@ class CriteriaDataEditor extends React.Component {
                                 onClick={this.handleClickStep}
                             />
                             <Step
+                                active={activeTool === '' || activeTool === 'definition'}
+                                name='definition'
+                                icon='info circle'
+                                title='Definition'
+                                link
+                                onClick={this.handleClickStep}
+                            />
+                            <Step
                                 active={activeTool === 'reclassification'}
-                                disabled={criterion.raster.data.length === 0}
+                                disabled={criterion.tilesCollection.length === 0}
                                 name='reclassification'
                                 icon='chart bar'
                                 title='Reclassification'

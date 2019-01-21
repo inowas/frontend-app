@@ -2,11 +2,13 @@ import {BoundingBox, GridSize} from '../../geometry';
 import {cloneDeep} from 'lodash';
 import {distanceBetweenCoordinates} from 'services/geoTools/distance';
 import {max, min} from 'scenes/shared/rasterData/helpers';
+import uuidv4 from 'uuid/v4';
 
 class Raster {
     _boundingBox = new BoundingBox();
     _gridSize = new GridSize(10, 10);
     _data = [];
+    _id = uuidv4();
     _initial = {
         boundingBox: new BoundingBox(),
         gridSize: new GridSize(10, 10),
@@ -17,6 +19,7 @@ class Raster {
 
     static fromObject(obj) {
         const raster = new Raster();
+        raster.id = obj.id || uuidv4();
         raster.boundingBox = BoundingBox.fromArray(obj.boundingBox);
         raster.data = obj.data;
         raster.gridSize = GridSize.fromObject(obj.gridSize);
@@ -24,6 +27,14 @@ class Raster {
         raster.min = obj.min;
         raster.max = obj.max;
         return raster;
+    }
+
+    get id() {
+        return this._id;
+    }
+
+    set id(value) {
+        this._id = value;
     }
 
     get boundingBox() {
@@ -89,6 +100,7 @@ class Raster {
             boundingBox: this.boundingBox.toArray(),
             data: this.data,
             gridSize: this.gridSize.toObject(),
+            id: this.id,
             initial: this.initialToObject(),
             max: this.max,
             min: this.min

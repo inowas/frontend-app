@@ -2,6 +2,8 @@ import uuidv4 from 'uuid/v4';
 import Raster from '../gis/Raster';
 import RulesCollection from './RulesCollection';
 import {cloneDeep as _cloneDeep} from 'lodash';
+import TilesCollection from '../gis/TilesCollection';
+import {BoundingBox, GridSize} from '../../geometry';
 
 const validTypes = ['discrete', 'continuous'];
 
@@ -9,7 +11,7 @@ class Criterion {
     _id = uuidv4();
     _name = 'New Criterion';
     _type = 'discrete';
-    _raster = new Raster();
+    _tiles = new TilesCollection();
     _rules = new RulesCollection();
     _suitability = new Raster();
 
@@ -18,7 +20,7 @@ class Criterion {
         criterion.id = obj.id;
         criterion.name = obj.name;
         criterion.type = obj.type;
-        criterion.raster = Raster.fromObject(obj.raster);
+        criterion.tilesCollection = obj.tiles ? TilesCollection.fromArray(obj.tiles) : new TilesCollection();
         criterion.rulesCollection = obj.rules ? RulesCollection.fromArray(obj.rules) : new RulesCollection();
         criterion.suitability = obj.suitability ? Raster.fromObject(obj.suitability) : Raster.fromObject(obj.raster);
         return criterion;
@@ -51,12 +53,12 @@ class Criterion {
         this._type = value;
     }
 
-    get raster() {
-        return this._raster;
+    get tilesCollection() {
+        return this._tiles;
     }
 
-    set raster(value) {
-        this._raster = value ? value : null;
+    set tilesCollection(value) {
+        this._tiles = value;
     }
 
     get rulesCollection() {
@@ -80,20 +82,51 @@ class Criterion {
             id: this.id,
             name: this.name,
             type: this.type,
-            raster: this.raster.toObject(),
+            tiles: this.tilesCollection.toArray(),
             rules: this.rulesCollection.toArray(),
             suitability: this.suitability.toObject()
         });
     }
 
     calculateSuitability() {
-        if (!this.raster || !this.raster.data || this.raster.data.length === 0) {
+        if (!this.tilesCollection || this.tilesCollection.length === 0) {
             throw new Error(`There is now raster uploaded for criterion ${this.name}.`);
         }
         if (!this.rulesCollection || this.rulesCollection.length === 0) {
             throw new Error(`There are no rules defined for criterion ${this.name}.`);
         }
-        this.suitability = _cloneDeep(this.raster);
+
+        const boundingBox = this.tilesCollection.boundingBox;
+        const gridSize = this.suitability.gridSize || new GridSize(10, 10);
+        const raster = new Raster();
+        const array = new Array(gridSize.nY).fill(0).map(() => new Array(gridSize.nX).fill(0)).slice(0);
+
+        const dX = boundingBox.xMax - boundingBox.xMin;
+        const dY = boundingBox.yMax - boundingBox.yMin;
+        const dXCell = dX / gridSize.nX;
+        const dYCell = dY / gridSize.nY;
+
+        raster.data = array.map((row, y) => {
+            return row.map((cell, x) => {
+                const xmin = x * dXCell;
+                const xmax = (x + 1) * dXCell;
+                const ymin = y * dYCell;
+                const ymax = (y + 1) * dYCell;
+                const CellBoundingBox = BoundingBox.fromArray([[xmin, ymin],[xmax, ymax]]);
+                // Find all cells from tiles intersecting the grid cell and calculate the mean value
+                const tiles = this.tilesCollection.findByBoundingBox(CellBoundingBox);
+                if (tiles.length > 1) {
+                    // USE A REDUCER?!
+                    console.log('tiles', tiles);
+                }
+                return 0;
+            });
+        });
+
+        // AFTERWARDS USE RULES ON NEW RASTER
+        return;
+
+        this.suitability = new Array(gridSize.nY).fill(0).map(() => new Array(gridSize.nX).fill(0)).slice(0);
         this.suitability.data = _cloneDeep(this.raster.data).map(row => {
             return row.map(cell => {
                 const rules = this.rulesCollection.findByValue(cell);

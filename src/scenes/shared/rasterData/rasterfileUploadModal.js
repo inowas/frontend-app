@@ -43,8 +43,6 @@ class RasterfileUploadModal extends React.Component {
             return null;
         }
 
-        console.log('META', metadata);
-
         return (
             <Segment color="blue">
                 <Header as="h3" style={{'textAlign': 'left'}}>Metadata</Header>
@@ -141,7 +139,7 @@ class RasterfileUploadModal extends React.Component {
     };
 
     render() {
-        const {data, selectedBand} = this.state;
+        const {data, metadata, selectedBand} = this.state;
 
         return (
             <Modal size={'large'} open onClose={this.props.onCancel} dimmer={'blurring'}>
@@ -196,7 +194,10 @@ class RasterfileUploadModal extends React.Component {
                     </Button>
                     <Button
                         positive
-                        onClick={() => this.props.onChange(data[selectedBand])}
+                        onClick={() => this.props.onChange({
+                            data: data[selectedBand],
+                            metadata: metadata
+                        })}
                     >
                         Apply
                     </Button>
