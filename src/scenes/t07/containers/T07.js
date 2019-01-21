@@ -11,11 +11,11 @@ import {fetchUrl, sendCommand} from 'services/api';
 import * as Content from '../components';
 
 import {
-    clear, updateModel, updateBoundaries, updateSoilmodel, updateCalculation, updateResults, updateScenarioAnalysis
+    clear, updateModel, updateBoundaries, updateScenarioAnalysis
 } from '../actions/actions';
 
 import {ScenarioAnalysis} from 'core/model/scenarioAnalysis';
-import {BoundaryCollection, Calculation, CalculationResults, ModflowModel, Soilmodel} from 'core/model/modflow';
+import {BoundaryCollection, CalculationResults, ModflowModel, Soilmodel} from 'core/model/modflow';
 import ToolNavigation from '../../shared/complexTools/toolNavigation';
 import {cloneDeep} from 'lodash';
 
@@ -92,8 +92,18 @@ class T07 extends React.Component {
                     isLoading: false,
                     selected: [scenarioAnalysis.baseModel.id]
                 }, () => {
+
+                    // Fetch soilmodel, stressperiods and results from basemodel
+                    this.fetchResults(scenarioAnalysis.baseModel.id);
+                    this.fetchSoilmodel(scenarioAnalysis.baseModel.id);
+                    this.fetchStressPeriods(scenarioAnalysis.baseModel.id);
+
+                    // Fetch Boundaries from all models
                     const modelIds = [scenarioAnalysis.baseModel.id].concat(scenarioAnalysis.scenarios.map(sc => sc.id));
-                    modelIds.forEach(id => this.fetchModel(id));
+                    modelIds.forEach(id => {
+                        this.fetchModel(id);
+                        this.fetchBoundaries(id);
+                    });
                     this.setState({isLoading: false})
                 });
             },
@@ -104,16 +114,40 @@ class T07 extends React.Component {
         );
     };
 
-    fetchModel(id) {
+    fetchResults(id) {
+        fetchUrl(`modflowmodels/${id}/results`,
+            data => {
+                const {scenarioAnalysis} = this.props;
+                scenarioAnalysis.results = CalculationResults.fromQuery(data);
+                this.props.updateScenarioAnalysis(scenarioAnalysis);
+            },
+            (e) => this.setState({isError: e, isLoading: false})
+        );
+    }
+
+    fetchSoilmodel(id) {
+        fetchUrl(`modflowmodels/${id}/soilmodel`,
+            data => {
+                const {scenarioAnalysis} = this.props;
+                scenarioAnalysis.soilmodel = Soilmodel.fromObject(data);
+                this.props.updateScenarioAnalysis(scenarioAnalysis);
+            },
+            error => this.setState(
+                {error, isLoading: false},
+                () => this.handleError(error)
+            )
+        );
+    };
+
+    fetchStressPeriods(id) {
         fetchUrl(
             `modflowmodels/${id}`,
             data => {
                 this.setState({isLoading: false});
-                this.props.updateModel(ModflowModel.fromQuery(data));
-                this.fetchBoundaries(id);
-                this.fetchSoilmodel(id);
-                this.fetchCalculation(id);
-                this.fetchResults(id);
+                const model = ModflowModel.fromQuery(data);
+                const {scenarioAnalysis} = this.props;
+                scenarioAnalysis.stressperiods = model.stressperiods;
+                this.props.updateScenarioAnalysis(scenarioAnalysis);
             },
             error => this.setState(
                 {error, isLoading: false},
@@ -132,32 +166,15 @@ class T07 extends React.Component {
         );
     };
 
-    fetchSoilmodel(id) {
-        fetchUrl(`modflowmodels/${id}/soilmodel`,
-            data => this.props.updateSoilmodel(Soilmodel.fromObject(data), id),
+    fetchModel(id) {
+        fetchUrl(`modflowmodels/${id}`,
+            data => this.props.updateModel(ModflowModel.fromQuery(data)),
             error => this.setState(
                 {error, isLoading: false},
                 () => this.handleError(error)
             )
         );
     };
-
-    fetchCalculation(id) {
-        fetchUrl(`modflowmodels/${id}/calculation`,
-            data => this.props.updateCalculation(Calculation.fromQuery(data), id),
-            error => this.setState(
-                {error, isLoading: false},
-                () => this.handleError(error)
-            )
-        );
-    };
-
-    fetchResults(id) {
-        fetchUrl(`modflowmodels/${id}/results`,
-            data => this.props.updateResults(CalculationResults.fromQuery(data), id),
-            (e) => this.setState({isError: e, isLoading: false})
-        );
-    }
 
     handleError = error => {
         console.error(error);
@@ -261,8 +278,8 @@ class T07 extends React.Component {
             )
         }
 
-        const filtered = this.props.models.filter(m => m.id === scenarioAnalysis.baseModelId);
-        if (filtered.length !== 1 || !filtered[0].model || !filtered[0].soilmodel || !filtered[0].results) {
+        const {results, soilmodel, stressperiods} = scenarioAnalysis;
+        if (!results || !soilmodel || !stressperiods) {
             return (
                 <AppContainer navbarItems={navigation}>
                     <Message icon>
@@ -312,16 +329,11 @@ class T07 extends React.Component {
 
 const mapStateToProps = state => {
     return {
-        models: state.T07.models,
         scenarioAnalysis: state.T07.scenarioAnalysis ? ScenarioAnalysis.fromObject(state.T07.scenarioAnalysis) : null
     }
 };
 
-const mapDispatchToProps = {
-    clear, updateModel, updateBoundaries,
-    updateSoilmodel, updateCalculation,
-    updateResults, updateScenarioAnalysis
-};
+const mapDispatchToProps = {clear, updateModel, updateBoundaries, updateScenarioAnalysis};
 
 T07.proptypes = {
     history: PropTypes.object.isRequired,

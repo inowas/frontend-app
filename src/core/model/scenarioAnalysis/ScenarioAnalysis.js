@@ -1,4 +1,5 @@
 import {includes} from 'lodash';
+import {CalculationResults, GridSize, Soilmodel, Stressperiods} from '../modflow';
 
 export default class ScenarioAnalysis {
 
@@ -11,9 +12,12 @@ export default class ScenarioAnalysis {
     _geometry;
     _gridSize;
     _boundingBox;
-    _baseModel;
     _scenarios;
     _permissions;
+
+    _results;
+    _soilmodel;
+    _stressperiods;
 
     static fromObject(obj) {
         const sa = new ScenarioAnalysis();
@@ -29,6 +33,9 @@ export default class ScenarioAnalysis {
         sa._baseModel = obj.base_model;
         sa._scenarios = obj.scenarios;
         sa._permissions = obj.permissions;
+        sa._results = obj.results;
+        sa._soilmodel = obj.soilmodel;
+        sa._stressperiods = obj.stressperiods;
         return sa;
     }
 
@@ -77,7 +84,7 @@ export default class ScenarioAnalysis {
     }
 
     get gridSize() {
-        return this._gridSize;
+        return this._gridSize ? GridSize.fromObject(this._gridSize) : this._gridSize;
     }
 
     get boundingBox() {
@@ -104,18 +111,57 @@ export default class ScenarioAnalysis {
         return [this.baseModel].concat(this.scenarios);
     }
 
+    get results() {
+        return this._results ? CalculationResults.fromObject(this._results) : this._results;
+    }
+
+    set results(value) {
+        if (!(value instanceof CalculationResults)) {
+            throw new Error('Value expected to be instance of CalculationResults');
+        }
+
+        this._results = value.toObject();
+    }
+
+    get soilmodel() {
+        return this._soilmodel ? Soilmodel.fromObject(this._soilmodel) : this._soilmodel;
+    }
+
+    set soilmodel(value) {
+        if (!(value instanceof Soilmodel)) {
+            throw new Error('Value expected to be instance of Soilmodel');
+        }
+
+        this._soilmodel = value.toObject();
+    }
+
+    get stressperiods() {
+        return this._stressperiods ? Stressperiods.fromObject(this._stressperiods) : this._stressperiods;
+    }
+
+    set stressperiods(value) {
+        if (!(value instanceof Stressperiods)) {
+            throw new Error('Value expected to be instance of Stressperiods');
+        }
+
+        this._stressperiods = value.toObject();
+    }
+
     toObject = () => ({
-        id: this.id,
-        name: this.name,
-        description: this.description,
-        public: this.public,
-        base_model_id: this.baseModelId,
-        created_at: this.createdAt,
-        geometry: this.geometry,
-        grid_size: this.gridSize,
-        bounding_box: this.boundingBox,
-        base_model: this.baseModel,
-        scenarios: this.scenarios,
-        permissions: this.permissions
+        id: this._id,
+        name: this._name,
+        description: this._description,
+        public: this._public,
+        base_model_id: this._baseModelId,
+        created_at: this._createdAt,
+        geometry: this._geometry,
+        grid_size: this._gridSize,
+        bounding_box: this._boundingBox,
+        base_model: this._baseModel,
+        scenarios: this._scenarios,
+        permissions: this._permissions,
+        results: this._results,
+        soilmodel: this._soilmodel,
+        stressperiods: this._stressperiods,
     });
 }

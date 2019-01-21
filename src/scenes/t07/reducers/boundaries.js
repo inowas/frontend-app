@@ -1,9 +1,8 @@
 export const CLEAR = 'T07_CLEAR';
-export const UPDATE_MODEL = 'T07_UPDATE_MODEL';
+export const UPDATE_MODEL_BOUNDARIES = 'T07_UPDATE_MODEL_BOUNDARIES';
 
 // state: {
-// id: model,
-// ...: ...
+// id: boundaries
 // }
 
 const initialState = {};
@@ -13,11 +12,11 @@ const models = (state = initialState, action) => {
         case CLEAR:
             return initialState;
 
-        case UPDATE_MODEL:
-            const id = action.payload.id;
-            const model = action.payload;
+        case UPDATE_MODEL_BOUNDARIES:
+            const id = action.id;
+            const boundaries = action.payload;
 
-            return {...state, [id]: model};
+            return {...state, [id]: boundaries};
 
         default: {
             return state;
