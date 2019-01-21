@@ -5,7 +5,7 @@ stages:
 test:
   stage: test
   script: 
-    - yarn test
+    - yarn install
     - yarn test
 
 build:
