@@ -83,10 +83,19 @@ class BoundaryDetails extends React.Component {
             return <NoContent message={'No boundaries.'}/>;
         }
 
+        const multipleLayers = ['chd', 'ghb'].includes(boundary.type);
+
         return (
             <div>
                 <Form>
                     <Form.Group widths='equal'>
+                        <Form.Input
+                            value={boundary.type}
+                            label='Type'
+                            readOnly
+                            width={5}
+                        />
+
                         <Form.Input
                             label={'Name'}
                             name={'name'}
@@ -98,9 +107,10 @@ class BoundaryDetails extends React.Component {
                             loading={!(this.props.soilmodel instanceof Soilmodel)}
                             label={'Selected layers'}
                             style={{zIndex: 1000}}
+                            multiple={multipleLayers}
                             selection
                             options={this.layerOptions()}
-                            value={boundary.affectedLayers[0]}
+                            value={multipleLayers ? boundary.affectedLayers : boundary.affectedLayers[0]}
                             name={'affectedLayers'}
                             onChange={this.handleChange}
                         />
