@@ -4,9 +4,13 @@ stages:
 
 test:
   stage: test
-  script: yarn test
+  script: 
+    - yarn test
+    - yarn test
 
 build:
   stage: build
-  script: REACT_APP_SECRET_CODE=abcdef REACT_APP_SECRET_CODE=abcdef yarn build
+  script: 
+    - yarn install
+    - REACT_APP_API_URL=https://api.dev.inowas.hydro.tu-dresden.de REACT_APP_BASE_URL=https://dev.inowas.com yarn build
   
