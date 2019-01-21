@@ -5,5 +5,5 @@ build:
   stage: build
   script: 
     - yarn install
-    - REACT_APP_API_URL=https://api.dev.inowas.hydro.tu-dresden.de REACT_APP_BASE_URL=https://dev.inowas.com yarn build
+    - REACT_APP_API_URL=https://api.dev.inowas.hydro.tu-dresden.de REACT_APP_BASE_URL=https://dev.inowas.com NODE_PATH=src yarn build
   
