@@ -1,12 +1,5 @@
 stages:
-  - test
   - build
-
-test:
-  stage: test
-  script: 
-    - yarn install
-    - yarn test
 
 build:
   stage: build
