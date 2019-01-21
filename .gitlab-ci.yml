@@ -1,0 +1,14 @@
+stages:
+  - test
+  - build
+
+test:
+  stage: test
+  script: yarn test
+
+build:
+  stage: build
+  script: yarn build
+  environment:
+    REACT_APP_API_URL=https://api.dev.inowas.hydro.tu-dresden.de
+    REACT_APP_BASE_URL=http://dev.inowas.com
