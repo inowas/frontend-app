@@ -700,11 +700,6 @@ a:hover {
   color: #4C4C4C;
 }
 
-::-moz-selection {
-  background-color: #CCE2FF;
-  color: #4C4C4C;
-}
-
 ::selection {
   background-color: #CCE2FF;
   color: #4C4C4C;
@@ -714,12 +709,6 @@ a:hover {
 
 textarea::-webkit-selection,
 input::-webkit-selection {
-  background-color: rgba(100, 100, 100, 0.4);
-  color: #4C4C4C;
-}
-
-textarea::-moz-selection,
-input::-moz-selection {
   background-color: rgba(100, 100, 100, 0.4);
   color: #4C4C4C;
 }
