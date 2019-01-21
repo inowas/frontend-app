@@ -9,6 +9,7 @@ import {ScenarioAnalysis} from 'core/model/scenarioAnalysis';
 import ResultsSelector from '../../shared/complexTools/ResultsSelector';
 import ResultsMap from '../../shared/complexTools/ResultsMap';
 import ResultsChart from '../../shared/complexTools/ResultsChart';
+import {chunk} from 'lodash';
 
 class CrossSection extends React.Component {
 
@@ -140,6 +141,28 @@ class CrossSection extends React.Component {
         )
     };
 
+    renderMaps = () => {
+
+        let numberOfCols = 2;
+        if (this.state.selectedModels.length === 1) {
+            numberOfCols = 1;
+        }
+
+        const modelChunks = chunk(this.state.selectedModels, numberOfCols);
+
+        return (
+            <Grid>
+                {modelChunks.map((chunk, cIdx) => (
+                    <Grid.Row key={cIdx} columns={numberOfCols}>
+                        {chunk.map(m => (
+                            <Grid.Column key={m.id}>{this.renderMap(m.id, this.props.selected.length)}</Grid.Column>
+                        ))}
+                    </Grid.Row>
+                ))}
+            </Grid>
+        );
+    };
+
     render() {
         const {results, soilmodel, stressperiods, selectedType, selectedCol, selectedLay, selectedModels, selectedRow, selectedTotim} = this.state;
         if (results === null || soilmodel === null ||
@@ -171,13 +194,7 @@ class CrossSection extends React.Component {
                 </Segment>
 
                 <Segment color={'grey'} loading={this.state.isLoading}>
-                    <Grid>
-                        <Grid.Row columns={this.props.selected.length}>
-                            {this.state.selectedModels.map(m => (
-                                <Grid.Column key={m.id}>{this.renderMap(m.id, this.props.selected.length)}</Grid.Column>
-                            ))}
-                        </Grid.Row>
-                    </Grid>
+                    {this.renderMaps()}
                 </Segment>
 
                 <Segment color={'grey'} loading={this.state.isLoading}>
@@ -186,13 +203,15 @@ class CrossSection extends React.Component {
                             <Grid.Column>
                                 <Segment>
                                     <Header textAlign={'center'} as={'h4'}>Horizontal cross section</Header>
-                                    <ResultsChart selectedModels={selectedModels} col={selectedCol} row={selectedRow} show={'row'}/>
+                                    <ResultsChart selectedModels={selectedModels} col={selectedCol} row={selectedRow}
+                                                  show={'row'}/>
                                 </Segment>
                             </Grid.Column>
                             <Grid.Column>
                                 <Segment>
                                     <Header textAlign={'center'} as={'h4'}>Vertical cross section</Header>
-                                    <ResultsChart selectedModels={selectedModels} col={selectedCol} row={selectedRow} show={'col'}/>
+                                    <ResultsChart selectedModels={selectedModels} col={selectedCol} row={selectedRow}
+                                                  show={'col'}/>
                                 </Segment>
                             </Grid.Column>
                         </Grid.Row>
