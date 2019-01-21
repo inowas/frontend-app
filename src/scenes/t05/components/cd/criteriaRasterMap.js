@@ -52,12 +52,12 @@ class CriteriaRasterMap extends React.Component {
         const lastGradient = gradients[gradients.length - 1];
         const legend = gradients.map(gradient => ({
             color: '#' + gradient.getEndColour(),
-            value: Number(gradient.getMaxNum()).toExponential(2)
+            value: Number(gradient.getMaxNum()).toFixed(2)
         }));
 
         legend.push({
             color: '#' + lastGradient.getStartColour(),
-            value: Number(lastGradient.getMinNum()).toExponential(2)
+            value: Number(lastGradient.getMinNum()).toFixed(2)
         });
 
         return <ColorLegend legend={legend} unit={''}/>;
@@ -68,7 +68,7 @@ class CriteriaRasterMap extends React.Component {
         const {data, boundingBox, gridSize} = this.props.raster;
 
         if (data.length > 0) {
-            rainbowVis = rainbowFactory({min: min(data), max: max(data)});
+            rainbowVis = rainbowFactory({min: min(data), max: max(data)}, this.props.colors);
         }
 
         return (
@@ -79,23 +79,25 @@ class CriteriaRasterMap extends React.Component {
                 {this.props.showBasicLayer &&
                 <BasicTileLayer/>
                 }
-                <FeatureGroup>
-                    <EditControl
-                        position="bottomright"
-                        onEdited={this.onEditPath}
-                        {...options}
-                    />
-                    <Rectangle
-                        bounds={boundingBox.getBoundsLatLng()}
-                        {...getStyle('bounding_box')}
-                    />
-                </FeatureGroup>
+                {!!this.props.onChange &&
+                    <FeatureGroup>
+                        <EditControl
+                            position="bottomright"
+                            onEdited={this.onEditPath}
+                            {...options}
+                        />
+                        <Rectangle
+                            bounds={boundingBox.getBoundsLatLng()}
+                            {...getStyle('bounding_box')}
+                        />
+                    </FeatureGroup>
+                }
                 {data.length > 0 &&
                 <div>
                     <CanvasHeatMapOverlay
                         nX={gridSize.nX}
                         nY={gridSize.nY}
-                        rainbow={rainbowFactory({min: min(data), max: max(data)})}
+                        rainbow={rainbowFactory({min: min(data), max: max(data)}, this.props.colors)}
                         dataArray={createGridData(data, gridSize.nX, gridSize.nY)}
                         bounds={boundingBox.getBoundsLatLng()}
                         opacity={0.75}
@@ -109,7 +111,8 @@ class CriteriaRasterMap extends React.Component {
 }
 
 CriteriaRasterMap.propTypes = {
-    onChange: PropTypes.func.isRequired,
+    colors: PropTypes.array,
+    onChange: PropTypes.func,
     raster: PropTypes.instanceOf(Raster).isRequired,
     showBasicLayer: PropTypes.bool.isRequired
 };
