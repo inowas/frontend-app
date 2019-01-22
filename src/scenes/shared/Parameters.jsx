@@ -3,7 +3,7 @@ import {pure} from 'recompose';
 import PropTypes from 'prop-types';
 import ParameterSlider from 'scenes/shared/simpleTools/parameterSlider';
 import {Button, Grid} from 'semantic-ui-react';
-import SliderParameter from "./simpleTools/parameterSlider/SliderParameter";
+import SliderParameter from './simpleTools/parameterSlider/SliderParameter';
 
 class Parameters extends React.Component {
 
@@ -23,9 +23,9 @@ class Parameters extends React.Component {
     handleChange = (parameter) => this.props.handleChange(
         this.props.parameters.map(p => {
             if (p.id === parameter.id) {
-                return SliderParameter.fromObject(parameter);
+                return parameter;
             }
-            return SliderParameter.fromObject(p);
+            return p;
         })
     );
 

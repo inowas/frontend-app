@@ -1,3 +1,158 @@
 /*******************************
      User Global Variables
-*******************************/
+*******************************
+
+@pageMinWidth  : 1280px;
+
+/*-------------------
+       Fonts
+--------------------*/
+
+@fontName           : 'Oxygen';
+
+@googleFontName    : @fontName;
+@importGoogleFonts : true;
+@googleFontSizes   : '400,700,400italic,700italic';
+@googleSubset      : 'latin';
+
+
+/*-------------------
+    Border Radius
+--------------------*/
+
+@relativeBorderRadius: @relative2px;
+@absoluteBorderRadius: @2px;
+
+@defaultBorderRadius: @absoluteBorderRadius;
+
+
+/*-------------------
+    Brand Colors
+--------------------*/
+
+@primaryColor        : @blue;
+@secondaryColor      : @grey;
+
+@lightPrimaryColor   : @lightBlue;
+@lightSecondaryColor : @lightGrey;
+
+
+/*-------------------
+       Colors
+--------------------*/
+
+@blue       : #1EB1ED;
+@grey       : #4C4C4C;
+@orange     : #ED8D05;
+@red        : #FF5B4D; /*#BA3005*/
+
+@lightGrey  : #EEEEEE;
+@lightBlue  : #3AC6FF;
+
+@red              : #FF5B4D;
+@brown            : #CC6C00;
+
+
+/*---   Neutrals  ---*/
+@fullBlack      : #000000;
+@offWhite       : #EFF3F6;
+@darkWhite      : #F3F4F5;
+@midWhite       : #DCDDDE;
+@white          : #FFFFFF;
+
+/*--- Colored Backgrounds ---*/
+
+@blueBackground   : #DBF3FD;
+
+@orangeHover    : #CC6C00;
+@blueHover      : #0A75A0;
+
+/*-------------------
+    Emotive Colors
+--------------------*/
+
+/* Positive */
+@positiveColor           : @blue;
+@positiveBackgroundColor : #FCFFF5;
+@positiveBorderColor     : #A3C293;
+@positiveHeaderColor     : #1A531B;
+@positiveTextColor       : #2C662D;
+
+/* Negative */
+@negativeColor           : @orange;
+@negativeBackgroundColor : #FFF6F6;
+@negativeBorderColor     : #E0B4B4;
+@negativeHeaderColor     : #912D2B;
+@negativeTextColor       : #9F3A38;
+
+/* Info */
+@infoBackgroundColor    : #F0FDFF;
+@infoTextColor          : #0A75A0;
+
+/* Warning */
+@warningTextColor       : #CC6C00;
+
+
+
+/*-------------------
+        Page
+--------------------*/
+
+@pageBackground   : @offWhite;
+@textColor        : @grey;
+
+
+/*--------------
+  Page Heading
+---------------*/
+
+@headerLineHeight : 1.33em;
+@headerFontWeight : 400;
+
+@h1               : 2rem;
+@h2               : 1.5rem;
+@h3               : 1.25rem;
+@h4               : 1.1rem;
+@h5               : 1rem;
+
+
+/*--------------
+   Form Input
+---------------*/
+
+@inputBackground: @lightGrey;
+
+/* Input Text Color */
+@inputColor: @textColor;
+@inputPlaceholderColor: lighten(@inputColor, 25);
+@inputPlaceholderFocusColor: lighten(@inputColor, 35);
+
+
+/*-------------------
+       Links
+--------------------*/
+
+@linkColor           : @blue;
+@linkUnderline       : none;
+@linkHoverColor      : lighten(@linkColor, 5);
+@linkHoverUnderline  : @linkUnderline;
+
+
+.ui.link.inverted.menu .item:hover,
+.ui.inverted.menu .link.item:hover,
+.ui.inverted.menu a.item:hover,
+.ui.inverted.menu .dropdown.item:hover {
+  background-color: @blue;
+}
+
+
+/*-------------------
+      Borders
+--------------------*/
+
+@borderColor               : @lightGrey; /* rgba(34, 36, 38, 0.15); #CACBCD */
+
+/*-------------------
+       Recharts
+--------------------*/
+

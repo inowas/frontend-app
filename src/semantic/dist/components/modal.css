@@ -27,7 +27,7 @@
   -webkit-box-flex: 0;
       -ms-flex: 0 0 auto;
           flex: 0 0 auto;
-  border-radius: 0.28571429rem;
+  border-radius: 0.14285714rem;
   -webkit-user-select: text;
      -moz-user-select: text;
       -ms-user-select: text;
@@ -36,12 +36,12 @@
 }
 .ui.modal > :first-child:not(.icon),
 .ui.modal > .icon:first-child + * {
-  border-top-left-radius: 0.28571429rem;
-  border-top-right-radius: 0.28571429rem;
+  border-top-left-radius: 0.14285714rem;
+  border-top-right-radius: 0.14285714rem;
 }
 .ui.modal > :last-child {
-  border-bottom-left-radius: 0.28571429rem;
-  border-bottom-right-radius: 0.28571429rem;
+  border-bottom-left-radius: 0.14285714rem;
+  border-bottom-right-radius: 0.14285714rem;
 }
 
 
@@ -77,18 +77,18 @@
 
 .ui.modal > .header {
   display: block;
-  font-family: 'Lato', 'Helvetica Neue', Arial, Helvetica, sans-serif;
+  font-family: 'Oxygen', 'Helvetica Neue', Arial, Helvetica, sans-serif;
   background: #FFFFFF;
   margin: 0em;
   padding: 1.25rem 1.5rem;
   -webkit-box-shadow: none;
           box-shadow: none;
   color: rgba(0, 0, 0, 0.85);
-  border-bottom: 1px solid rgba(34, 36, 38, 0.15);
+  border-bottom: 1px solid #EEEEEE;
 }
 .ui.modal > .header:not(.ui) {
   font-size: 1.42857143rem;
-  line-height: 1.28571429em;
+  line-height: 1.33em;
   font-weight: bold;
 }
 
@@ -170,9 +170,9 @@
 ---------------*/
 
 .ui.modal > .actions {
-  background: #F9FAFB;
+  background: #EFF3F6;
   padding: 1rem 1rem;
-  border-top: 1px solid rgba(34, 36, 38, 0.15);
+  border-top: 1px solid #EEEEEE;
   text-align: right;
 }
 .ui.modal .actions > .button {
@@ -224,7 +224,7 @@
   .ui.modal > .close {
     top: 1.0535rem;
     right: 1rem;
-    color: rgba(0, 0, 0, 0.87);
+    color: #4C4C4C;
   }
 }
 
@@ -315,7 +315,7 @@
   right: 1.5rem;
 }
 .ui.inverted.dimmer > .basic.modal {
-  color: rgba(0, 0, 0, 0.87);
+  color: #4C4C4C;
 }
 .ui.inverted.dimmer > .ui.basic.modal > .header {
   color: rgba(0, 0, 0, 0.85);
@@ -445,7 +445,7 @@
 .ui.fullscreen.modal > .close {
   top: 1.0535rem;
   right: 1rem;
-  color: rgba(0, 0, 0, 0.87);
+  color: #4C4C4C;
 }
 
 /*--------------

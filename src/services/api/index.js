@@ -18,15 +18,40 @@ const createApi = () => axios.create({
 
 export const sendCommand = (command, onSuccess, onError) => {
     const api = createApi();
-    api.post('messagebox', command)
+    api.post('messagebox', command.toObject())
         .then(response => response.data)
         .then(onSuccess)
         .catch(onError);
 };
 
+export const uploadRasterfile = (file, onSuccess, onError) => {
+    const uploadData = new FormData();
+    uploadData.append('file', file);
+    const api = createApi();
+    api.post('rasterfile', uploadData).then(response => response.data).then(onSuccess).catch(onError);
+};
+
+export const fetchRasterfile = (
+    {hash, width = null, height = null}, onSuccess, onError) => {
+    let url = 'rasterfile/' + hash;
+    if (width && height) {
+        url += '?width=' + width + '&height=' + height
+    }
+    return fetchUrl(url, onSuccess, onError);
+};
+
+
 export const fetchTool = (tool, id, onSuccess, onError) => {
     const api = createApi();
     api.get(`tools/${tool}/${id}`)
+        .then(response => response.data)
+        .then(onSuccess)
+        .catch(onError);
+};
+
+export const fetchUrl = (url, onSuccess, onError) => {
+    const api = createApi();
+    api.get(url)
         .then(response => response.data)
         .then(onSuccess)
         .catch(onError);

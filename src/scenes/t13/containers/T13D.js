@@ -1,28 +1,29 @@
-import PropTypes from 'prop-types';
 import React from 'react';
+import PropTypes from 'prop-types';
+
 import {withRouter} from 'react-router-dom';
 
+import {AppContainer} from '../../shared';
 import {BackgroundT13D as Background, Parameters} from '../components';
+import {SliderParameter, ToolGrid} from '../../shared/simpleTools';
+import {navigation} from './T13';
+
+import SimpleToolsCommand from '../../shared/simpleTools/commands/SimpleToolsCommand';
+
 
 import {defaults} from '../defaults/T13D';
-import SliderParameter from 'scenes/shared/simpleTools/parameterSlider/SliderParameter';
 
 import {fetchTool, sendCommand} from 'services/api';
-import {createToolInstanceCommand, updateToolInstanceCommand} from 'services/commandFactory';
-import AppContainer from '../../shared/AppContainer';
-import ToolGrid from "../../shared/simpleTools/ToolGrid";
-
-import {navigation} from './T13';
-import {buildPayload, deepMerge} from "../../shared/simpleTools/helpers";
+import {buildPayload, deepMerge} from '../../shared/simpleTools/helpers';
 
 
 class T13D extends React.Component {
-    constructor() {
-        super();
+    constructor(props) {
+        super(props);
         this.state = {
             tool: defaults(),
+            isDirty: true,
             isLoading: false,
-            isDirty: false,
             error: false
         };
     }
@@ -35,6 +36,7 @@ class T13D extends React.Component {
                 this.props.match.params.id,
                 tool => this.setState({
                     tool: deepMerge(this.state.tool, tool),
+                    isDirty: false,
                     isLoading: false
                 }),
                 error => this.setState({error, isLoading: false})
@@ -48,15 +50,15 @@ class T13D extends React.Component {
 
         if (id) {
             sendCommand(
-                updateToolInstanceCommand(buildPayload(tool)),
-                () => this.setState({dirty: false}),
+                SimpleToolsCommand.updateToolInstance(buildPayload(tool)),
+                () => this.setState({isDirty: false}),
                 () => this.setState({error: true})
             );
             return;
         }
 
         sendCommand(
-            createToolInstanceCommand(buildPayload(tool)),
+            SimpleToolsCommand.createToolInstance(buildPayload(tool)),
             () => this.props.history.push(`${this.props.location.pathname}/${tool.id}`),
             () => this.setState({error: true})
         );
@@ -72,16 +74,19 @@ class T13D extends React.Component {
                         ...prevState.tool.data,
                         parameters: parameters.map(p => p.toObject)
                     }
-                }
+                },
+                isDirty: true
             };
         });
     };
 
     handleReset = () => {
-        this.setState({
-            tool: defaults(),
-            isLoading: false,
-            isDirty: false
+        this.setState(prevState => {
+            return {
+                tool: {...prevState.tool, data: defaults().data},
+                isLoading: false,
+                isDirty: true
+            }
         });
     };
 

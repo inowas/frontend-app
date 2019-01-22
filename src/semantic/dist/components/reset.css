@@ -483,3 +483,27 @@ template {
          Site Overrides
 *******************************/
 
+
+/*-------------------
+      Recharts
+--------------------*/
+
+.recharts-wrapper .recharts-cartesian-grid-horizontal line:first-child,
+.recharts-wrapper .recharts-cartesian-grid-vertical line:first-child {
+  stroke-opacity: 0;
+}
+
+/*-------------------
+      RC Sliders
+--------------------*/
+
+.rc-slider-handle {
+  border-color: #1EB1ED;
+  border-size: 3px;
+}
+.rc-slider-rail {
+  background-color: #EEEEEE;
+}
+.rc-slider-track {
+  background-color: #1EB1ED;
+}

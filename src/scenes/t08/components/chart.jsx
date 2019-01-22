@@ -11,7 +11,7 @@ import {
     CartesianGrid, Label
 } from 'recharts';
 
-import {Button, Grid, Header, Segment} from "semantic-ui-react";
+import {Button, Grid, Segment} from 'semantic-ui-react';
 
 import {
     calcC,
@@ -23,7 +23,7 @@ import {
 } from '../calculations/calculationT08';
 
 import {SETTINGS_CASE_FIXED_TIME, SETTINGS_CASE_VARIABLE_TIME, SETTINGS_INFILTRATION_ONE_TIME} from '../defaults';
-import {exportChartData, exportChartImage, getParameterValues} from "../../shared/simpleTools/helpers";
+import {exportChartData, exportChartImage, getParameterValues} from '../../shared/simpleTools/helpers';
 
 const styles = {
     chart: {
@@ -115,9 +115,8 @@ const Chart = ({settings, parameters}) => {
 
     return (
         <div>
-            <Header textAlign='center'>Calculation</Header>
             <Grid>
-                <Grid.Column>
+                <Grid.Row>
                     <ResponsiveContainer width={'100%'} aspect={2}>
                         <LineChart
                             data={data}
@@ -161,18 +160,18 @@ const Chart = ({settings, parameters}) => {
                     <div style={styles.downloadButtons}>
                         <Button
                             size={'tiny'}
-                            color={'orange'}
+                            color={'grey'}
                             content='JPG'
                             onClick={() => exportChartImage(currentChart)}
                         />
                         <Button
                             size={'tiny'}
-                            color={'orange'}
+                            color={'grey'}
                             content='CSV'
                             onClick={() => exportChartData(currentChart)}
                         />
                     </div>
-                </Grid.Column>
+                </Grid.Row>
             </Grid>
         </div>
     );

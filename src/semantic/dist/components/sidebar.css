@@ -135,7 +135,7 @@ body.pushable {
   z-index: 2;
 }
 body.pushable > .pusher {
-  background: #FFFFFF;
+  background: #EFF3F6;
 }
 
 /* Pusher should inherit background from context */
@@ -206,13 +206,13 @@ body.pushable > .pusher {
 /* Shadow Direction */
 .ui.left.visible.sidebar,
 .ui.right.visible.sidebar {
-  -webkit-box-shadow: 0px 0px 20px rgba(34, 36, 38, 0.15);
-          box-shadow: 0px 0px 20px rgba(34, 36, 38, 0.15);
+  -webkit-box-shadow: 0px 0px 20px #EEEEEE;
+          box-shadow: 0px 0px 20px #EEEEEE;
 }
 .ui.top.visible.sidebar,
 .ui.bottom.visible.sidebar {
-  -webkit-box-shadow: 0px 0px 20px rgba(34, 36, 38, 0.15);
-          box-shadow: 0px 0px 20px rgba(34, 36, 38, 0.15);
+  -webkit-box-shadow: 0px 0px 20px #EEEEEE;
+          box-shadow: 0px 0px 20px #EEEEEE;
 }
 
 /* Visible On Load */

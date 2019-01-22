@@ -6,7 +6,7 @@ import {Link} from 'react-router-dom';
 import logoInowas from '../../images/logo-inowas.svg';
 import logoTUD from '../../images/logo-tud.svg';
 import logoBmbf from '../../images/logo-bmbf.svg';
-import {Container, Grid, List, Segment} from "semantic-ui-react";
+import {Container, Grid, List, Segment, Header} from 'semantic-ui-react';
 
 class Footer extends React.Component {
     render() {
@@ -16,12 +16,12 @@ class Footer extends React.Component {
         };
 
         return (
-            <Container style={this.props.style}>
+            <Container style={this.props.style} textAlign='center'>
                 <Segment color={'grey'} inverted style={styleContent}>
-                    <Grid padded>
+                    <Grid padded stackable>
                         <Grid.Row columns={4}>
-                            <Grid.Column>
-                                <List link>
+                            <Grid.Column textAlign='left' style={{padding: '0em 2em' }}>
+                                <List link inverted>
                                     <List.Item>
                                         <Link to={'/impressum'}>Impressum</Link>
                                     </List.Item>
@@ -33,20 +33,20 @@ class Footer extends React.Component {
                                 </List>
                             </Grid.Column>
                             <Grid.Column>
-                                <h3>Developed by</h3>
+                                <Header inverted as='h3' content='Developed by' />
                                 <a href="https://tu-dresden.de/bu/umwelt/hydro/inowas" target="_blank"
                                    rel="noopener noreferrer">
                                     <img src={logoInowas} alt="INOWAS logo"/>
                                 </a>
                             </Grid.Column>
                             <Grid.Column>
-                                <h3>Supported by</h3>
+                                <Header inverted as='h3' content='Supported by' />
                                 <a href="https://tu-dresden.de/" target="_blank" rel="noopener noreferrer">
                                     <img src={logoTUD} alt="TUD logo"/>
                                 </a>
                             </Grid.Column>
                             <Grid.Column>
-                                <h3>Funded by</h3>
+                                <Header inverted as='h3' content='Funded by' />
                                 <a href="https://www.bmbf.de/en/index.html" target="_blank" rel="noopener noreferrer">
                                     <img src={logoBmbf} alt="Federal Ministry of Education and Research logo"/>
                                 </a>

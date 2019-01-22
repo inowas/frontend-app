@@ -10,13 +10,18 @@ export const getParameterValues = (arr) => {
 };
 
 export const deepMerge = (state, fetched) => {
-        const fetchedParams = fetched.data.parameters;
-        const mergedParams = state.data.parameters.map(
-            mergedParam => {
-                const fetchedParam = fetchedParams.find(fp => fp.id === mergedParam.id);
-                return {...mergedParam, ...fetchedParam}
-            }
-        );
+        let parameters = null;
+
+        if(state.data.parameters) {
+            const fetchedParams = fetched.data.parameters;
+
+            parameters = state.data.parameters.map(
+                mergedParam => {
+                    const fetchedParam = fetchedParams.find(fp => fp.id === mergedParam.id);
+                    return {...mergedParam, ...fetchedParam}
+                }
+            );
+        }
 
         return {
             ...state,
@@ -27,7 +32,7 @@ export const deepMerge = (state, fetched) => {
             public: fetched.public,
             data: {
                 ...fetched.data,
-                parameters: mergedParams
+                parameters
             }
         };
     }

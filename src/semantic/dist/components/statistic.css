@@ -99,7 +99,7 @@
 
 .ui.statistics .statistic > .value,
 .ui.statistic > .value {
-  font-family: 'Lato', 'Helvetica Neue', Arial, Helvetica, sans-serif;
+  font-family: 'Oxygen', 'Helvetica Neue', Arial, Helvetica, sans-serif;
   font-size: 4rem;
   font-weight: normal;
   line-height: 1em;
@@ -114,10 +114,10 @@
 
 .ui.statistics .statistic > .label,
 .ui.statistic > .label {
-  font-family: 'Lato', 'Helvetica Neue', Arial, Helvetica, sans-serif;
+  font-family: 'Oxygen', 'Helvetica Neue', Arial, Helvetica, sans-serif;
   font-size: 1em;
   font-weight: bold;
-  color: rgba(0, 0, 0, 0.87);
+  color: #4C4C4C;
   text-transform: uppercase;
   text-align: center;
 }
@@ -317,12 +317,12 @@
 .ui.red.statistics .statistic > .value,
 .ui.statistics .red.statistic > .value,
 .ui.red.statistic > .value {
-  color: #DB2828;
+  color: #FF5B4D;
 }
 .ui.orange.statistics .statistic > .value,
 .ui.statistics .orange.statistic > .value,
 .ui.orange.statistic > .value {
-  color: #F2711C;
+  color: #ED8D05;
 }
 .ui.yellow.statistics .statistic > .value,
 .ui.statistics .yellow.statistic > .value,
@@ -347,7 +347,7 @@
 .ui.blue.statistics .statistic > .value,
 .ui.statistics .blue.statistic > .value,
 .ui.blue.statistic > .value {
-  color: #2185D0;
+  color: #1EB1ED;
 }
 .ui.violet.statistics .statistic > .value,
 .ui.statistics .violet.statistic > .value,
@@ -367,12 +367,12 @@
 .ui.brown.statistics .statistic > .value,
 .ui.statistics .brown.statistic > .value,
 .ui.brown.statistic > .value {
-  color: #A5673F;
+  color: #CC6C00;
 }
 .ui.grey.statistics .statistic > .value,
 .ui.statistics .grey.statistic > .value,
 .ui.grey.statistic > .value {
-  color: #767676;
+  color: #4C4C4C;
 }
 
 /*--------------
@@ -420,7 +420,7 @@
 .ui.inverted.blue.statistics .statistic > .value,
 .ui.statistics .inverted.blue.statistic > .value,
 .ui.inverted.blue.statistic > .value {
-  color: #54C8FF;
+  color: #3AC6FF;
 }
 .ui.inverted.violet.statistics .statistic > .value,
 .ui.statistics .inverted.violet.statistic > .value,
@@ -445,7 +445,7 @@
 .ui.inverted.grey.statistics .statistic > .value,
 .ui.statistics .inverted.grey.statistic > .value,
 .ui.inverted.grey.statistic > .value {
-  color: #DCDDDE;
+  color: #EEEEEE;
 }
 
 /*--------------

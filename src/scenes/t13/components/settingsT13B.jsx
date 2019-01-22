@@ -1,16 +1,10 @@
 import React from 'react';
 import {pure} from 'recompose';
 import PropTypes from 'prop-types';
-import {Form, Grid, Header, Radio} from 'semantic-ui-react';
+import {Form, Grid, Icon, Message, Radio} from 'semantic-ui-react';
 import {SETTINGS_SELECTED_H0, SETTINGS_SELECTED_HL} from '../defaults/T13B';
 import {calculateXwd} from '../calculations';
-import {getParameterValues} from "../../shared/simpleTools/helpers";
-
-const style = {
-    text: {
-        padding: '0 20px'
-    }
-};
+import {getParameterValues} from '../../shared/simpleTools/helpers';
 
 const Settings = ({settings, onChange, parameters}) => {
 
@@ -25,17 +19,19 @@ const Settings = ({settings, onChange, parameters}) => {
 
     return (
         <Grid padded>
-            <Grid.Row centered>
-                <Header as='h2'>Settings</Header>
+            <Grid.Row>
+                <Message icon info>
+                    <Icon name='info circle' color='blue' />
+                    <Message.Content>
+                        <p>
+                            The regional system is divided into the two subdomains on either side of the water divide.
+                            The water divide is located at <strong>{xwd} m</strong>.
+                        </p>
+                    </Message.Content>
+                </Message>
             </Grid.Row>
             <Grid.Row centered>
-                <Header as='h3'>Select flow domain:</Header>
-            </Grid.Row>
-            <Grid.Row centered>
-                <p style={style.text}>
-                    The regional system is divided into the two subdomains on either side of the water divide.
-                    The water divide is located at <strong>{xwd} m</strong>.
-                </p>
+                <p>Select flow domain:</p>
             </Grid.Row>
             <Grid.Row centered>
                 <Form>

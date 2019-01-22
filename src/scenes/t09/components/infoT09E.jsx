@@ -1,15 +1,9 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import {getParameterValues} from "../../shared/simpleTools/helpers";
-import {Grid, Header} from "semantic-ui-react";
+import {getParameterValues} from '../../shared/simpleTools/helpers';
+import {Icon, Message} from 'semantic-ui-react';
 import {calcXtQ0Flux, calcXtQ0Head, dRho, calculateDiagramData} from '../calculations/calculationT09E';
 import {pure} from 'recompose';
-
-const style = {
-    text: {
-        padding: '0 20px'
-    }
-};
 
 const Info = ({parameters, settings}) => {
     const {k, z0, l, w, dz, hi, i, df, ds} = getParameterValues(parameters);
@@ -34,20 +28,18 @@ const Info = ({parameters, settings}) => {
         data = calculateDiagramData(xt, z0, xtSlr, z0 + dz, isValid);
 
         return (
-            <Grid padded>
-                <Grid.Row centered>
-                    <Header as='h2'>Info</Header>
-                </Grid.Row>
-                <Grid.Row>
-                    <p style={style.text}>
+            <Message icon>
+                <Icon name='info circle' color='blue' />
+                <Message.Content>
+                    <p>
                         With a hydraulic gradient i of {-i.toFixed(3)} m/m, the calculated distance of the toe of
                         interface prior sea level rise is {Math.abs(data[1].xt).toFixed(1)} m. The distance of the toe
                         of the interface after sea level rise is {Math.abs(data[2].xt).toFixed(1)} m.
                         Therefore, the toe of the freshwater-saltwater interface will move {(Math.abs(data[2].xt)
                         - Math.abs(data[1].xt)).toFixed(2)}&nbsp;m inland caused by sea level rise.
                     </p>
-                </Grid.Row>
-            </Grid>
+                </Message.Content>
+            </Message>
         );
     }
 
@@ -56,12 +48,10 @@ const Info = ({parameters, settings}) => {
         data = calculateDiagramData(xt, z0, xtSlr, z0 + dz, isValid);
 
         return (
-            <Grid padded>
-                <Grid.Row centered>
-                    <Header as='h2'>Info</Header>
-                </Grid.Row>
-                <Grid.Row>
-                    <p style={style.text}>
+            <Message icon>
+                <Icon name='info circle' color='blue' />
+                <Message.Content>
+                    <p>
                         With a hydraulic gradient i of {-i.toFixed(3)} m/m, the calculated distance of the toe of
                         interface prior sea level rise is {Math.abs(data[1].xt).toFixed(1)} m. The distance of the
                         toe of the interface after sea level rise is {Math.abs(data[2].xt).toFixed(1)} m.
@@ -70,8 +60,8 @@ const Info = ({parameters, settings}) => {
                         inland caused by sea level
                         rise.
                     </p>
-                </Grid.Row>
-            </Grid>
+                </Message.Content>
+            </Message>
         )
     }
 

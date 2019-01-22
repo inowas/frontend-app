@@ -1,6 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import {Form, Header, Input, Table} from "semantic-ui-react";
+import {Form, Header, Input, Table} from 'semantic-ui-react';
 
 class MfiCorrections extends React.Component {
     constructor(props) {
@@ -34,21 +34,20 @@ class MfiCorrections extends React.Component {
     render() {
         const rows = this.state.corrections.map(item => (
             <Table.Row key={item.id}>
-                <Table.Cell>
+                <Table.Cell style={{borderTop:0}}>
                     {item.name}
                 </Table.Cell>
-                <Table.Cell>
+                <Table.Cell style={{borderTop:0}} width={5}>
                     <Input
                         id={item.id}
                         onChange={this.handleChange}
                         onBlur={this.save}
-                        size={'small'}
                         step={item.stepSize}
                         type={'number'}
                         value={item.value}
                     />
                 </Table.Cell>
-                <Table.Cell>
+                <Table.Cell style={{borderTop:0}}>
                     {item.unit}
                 </Table.Cell>
             </Table.Row>
@@ -57,7 +56,7 @@ class MfiCorrections extends React.Component {
         return (
             <Form>
                 <Header as={'h3'} textAlign={'center'}>Experimental setup</Header>
-                <Table size='small' singleLine striped color={'red'}>
+                <Table size='small' singleLine>
                     <Table.Header>
                         <Table.Row>
                             <Table.HeaderCell>Parameter</Table.HeaderCell>

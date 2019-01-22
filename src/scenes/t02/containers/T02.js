@@ -1,22 +1,21 @@
 import PropTypes from 'prop-types';
 import React from 'react';
-import {withRouter} from 'react-router-dom';
-
-import image from '../images/T02.png';
-import {Background, Chart, Parameters, Settings} from '../components/index';
+import {Icon} from 'semantic-ui-react';
 
 import {includes} from 'lodash';
-import {defaultsT02} from '../defaults';
-import {Icon} from 'semantic-ui-react';
-import SliderParameter from 'scenes/shared/simpleTools/parameterSlider/SliderParameter';
+import {withRouter} from 'react-router-dom';
+
+import {AppContainer} from '../../shared';
+import {Background, Chart, Info, Parameters, Settings} from '../components';
+import {SliderParameter, ToolGrid, ToolMetaData} from '../../shared/simpleTools';
+
+import SimpleToolsCommand from '../../shared/simpleTools/commands/SimpleToolsCommand';
+
+import image from '../images/T02.png';
+import {defaults} from '../defaults';
 
 import {fetchTool, sendCommand} from 'services/api';
-import {createToolInstanceCommand, updateToolInstanceCommand} from 'services/commandFactory';
-import AppContainer from '../../shared/AppContainer';
-import ToolMetaData from '../../shared/simpleTools/ToolMetaData';
-import ToolGrid from "../../shared/simpleTools/ToolGrid";
-import {Info} from "../components";
-import {deepMerge} from "../../shared/simpleTools/helpers";
+import {buildPayload, deepMerge} from '../../shared/simpleTools/helpers';
 
 const navigation = [{
     name: 'Documentation',
@@ -25,12 +24,12 @@ const navigation = [{
 }];
 
 class T02 extends React.Component {
-    constructor() {
-        super();
+    constructor(props) {
+        super(props);
         this.state = {
-            tool: defaultsT02(),
+            tool: defaults(),
+            isDirty: true,
             isLoading: false,
-            isDirty: false,
             error: false
         };
     }
@@ -43,29 +42,13 @@ class T02 extends React.Component {
                 this.props.match.params.id,
                 tool => this.setState({
                     tool: deepMerge(this.state.tool, tool),
-                    isLoading: false
+                    isDirty: false,
+                    isLoading: false,
                 }),
                 error => this.setState({error, isLoading: false})
             );
         }
     }
-
-    buildPayload = (tool) => ({
-        id: tool.id,
-        name: tool.name,
-        description: tool.description,
-        public: tool.public,
-        type: tool.type,
-        data: {
-            ...tool.data,
-            parameters: tool.data.parameters.map(p => ({
-                id: p.id,
-                max: p.max,
-                min: p.min,
-                value: p.value
-            }))
-        }
-    });
 
     save = () => {
         const {id} = this.props.match.params;
@@ -73,15 +56,15 @@ class T02 extends React.Component {
 
         if (id) {
             sendCommand(
-                updateToolInstanceCommand(this.buildPayload(tool)),
-                () => this.setState({dirty: false}),
+                SimpleToolsCommand.updateToolInstance(buildPayload(tool)),
+                () => this.setState({isDirty: false}),
                 () => this.setState({error: true})
             );
             return;
         }
 
         sendCommand(
-            createToolInstanceCommand(this.buildPayload(tool)),
+            SimpleToolsCommand.createToolInstance(buildPayload(tool)),
             () => this.props.history.push(`${this.props.location.pathname}/${tool.id}`),
             () => this.setState({error: true})
         );
@@ -97,7 +80,8 @@ class T02 extends React.Component {
                         ...prevState.tool.data,
                         parameters: parameters.map(p => p.toObject)
                     }
-                }
+                },
+                isDirty: true
             };
         });
     };
@@ -109,36 +93,46 @@ class T02 extends React.Component {
                 tool: {
                     ...prevState.tool,
                     data: {...prevState.tool.data, settings}
-                }
+                },
+                isDirty: true
             };
         });
     };
 
     handleReset = () => {
-        this.setState({
-            tool: defaultsT02(),
-            isLoading: false,
-            isDirty: false
+        this.setState(prevState => {
+            return {
+                tool: {...prevState.tool, data: defaults().data},
+                isLoading: false,
+                isDirty: true
+            }
         });
     };
+
 
     update = (tool) => this.setState({tool});
 
     render() {
-        const {tool, isLoading} = this.state;
-        if (isLoading) {
+        if (this.state.isLoading) {
             return (
                 <AppContainer navBarItems={navigation} loader/>
             );
         }
 
+        const {isDirty, tool} = this.state;
         const {data, permissions} = tool;
-        const {settings, parameters} = data;
+        const {parameters, settings} = data;
         const readOnly = !includes(permissions, 'w');
 
         return (
             <AppContainer navbarItems={navigation}>
-                <ToolMetaData tool={tool} readOnly={readOnly} onChange={this.update} onSave={this.save}/>
+                <ToolMetaData
+                    tool={tool}
+                    readOnly={readOnly}
+                    onChange={this.update}
+                    onSave={this.save}
+                    isDirty={isDirty}
+                />
                 <ToolGrid rows={2}>
                     <Background image={image} title={'T02. GROUNDWATER MOUNDING (HANTUSH)'}/>
                     <Chart settings={settings} parameters={parameters}/>
