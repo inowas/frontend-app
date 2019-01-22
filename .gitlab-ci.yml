@@ -1,18 +1,36 @@
 stages:
   - build
+  - deploy
+  
+services:
+  - docker:dind  
 
-build:
+build_dev:
   image: docker:latest
   stage: build
-  
-  services:
-    - docker:dind
   
   before_script:
    - docker info
    - docker login -u rabbl -p ululate-feaze-shrill
   
   script: 
-    - docker build --build-arg REACT_APP_API_URL=https://api.dev.inowas.hydro.tu-dresden.de --build-arg REACT_APP_BASE_URL=https://dev.inowas.com --build-arg NODE_PATH=src -t inowas-dss-crs:dev .
-    - docker push
+    - docker build --build-arg REACT_APP_API_URL=https://api.dev.inowas.hydro.tu-dresden.de --build-arg REACT_APP_BASE_URL=https://dev.inowas.com --build-arg NODE_PATH=src -t inowas-dss:dev .
+    - docker push inowas-dss:dev
+
+  only:
+    - test-gitlab-ci
+    
+build_prod:
+  image: docker:latest
+  stage: build
   
+  before_script:
+   - docker info
+   - docker login -u rabbl -p ululate-feaze-shrill
+  
+  script: 
+    - docker build --build-arg REACT_APP_API_URL=https://api.inowas.hydro.tu-dresden.de --build-arg REACT_APP_BASE_URL=https://dss.inowas.com --build-arg NODE_PATH=src -t inowas-dss:prod .
+    - docker push inowas-dss:prod
+
+  only:
+    - master    
