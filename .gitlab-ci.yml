@@ -5,6 +5,9 @@ build:
   image: docker:latest
   stage: build
   
+  services:
+    - docker:dind
+  
   before_script:
    - docker info
   
