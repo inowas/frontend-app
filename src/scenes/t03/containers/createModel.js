@@ -234,7 +234,7 @@ class CreateModel extends React.Component {
                         </Grid.Row>
                         <Grid.Row>
                             <Grid.Column width={16}>
-                                <Button
+                                <Button primary
                                     type='submit'
                                     onClick={this.handleSave}
                                     disabled={!this.state.validation[0]}

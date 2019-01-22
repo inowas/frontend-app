@@ -31,7 +31,7 @@ class InfoPopup extends React.Component {
             <Popup
                 trigger={
                     <Icon
-                        name='question'
+                        name='info'
                         style={iconOutside ? styles.iconOutside : styles.iconFix}
                         circular link
                     />
