@@ -4,6 +4,10 @@ stages:
 build:
   image: docker:latest
   stage: build
+  
+  before_script:
+   - docker info
+  
   script: 
     - docker build --build-arg REACT_APP_API_URL=https://api.dev.inowas.hydro.tu-dresden.de --build-arg REACT_APP_BASE_URL=https://dev.inowas.com --build-arg NODE_PATH=src -t inowas-dss-crs:dev .
   
