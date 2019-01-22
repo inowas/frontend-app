@@ -28,6 +28,8 @@ class CrossSection extends React.Component {
             selectedRow: null,
             selectedTotim: null,
             selectedType: 'head',
+
+            commonViewPort: null
         }
     }
 
@@ -136,6 +138,8 @@ class CrossSection extends React.Component {
                             selectedRow: colRow[1]
                         })
                     }}
+                    viewport={this.state.commonViewPort}
+                    onViewPortChange={(viewPort) => this.setState({commonViewPort: viewPort})}
                 />
             </Segment>
         )
