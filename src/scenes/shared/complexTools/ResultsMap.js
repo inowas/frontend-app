@@ -33,6 +33,10 @@ const style = {
 
 class ResultsMap extends React.Component {
 
+    state = {
+        bounds: null
+    };
+
     handleClickOnMap = ({latlng}) => {
         const x = latlng.lng;
         const y = latlng.lat;
@@ -130,6 +134,17 @@ class ResultsMap extends React.Component {
         </LayersControl.Overlay>
     );
 
+    getBounds = () => {
+        const {boundingBox, geometry, gridSize} = this.props.model;
+        if (this.state.bounds) {
+            return this.state.bounds;
+        }
+
+        const bounds = geometry.getBoundsLatLng();
+        this.setState({bounds});
+        return bounds;
+    };
+
     render() {
         const {boundaries, data, model} = this.props;
         const {boundingBox, geometry, gridSize} = model;
@@ -141,7 +156,7 @@ class ResultsMap extends React.Component {
         return (
             <Map
                 style={style.map}
-                bounds={geometry.getBoundsLatLng()}
+                bounds={this.getBounds()}
                 onClick={this.handleClickOnMap}
                 boundsOptions={{padding: [20, 20]}}
 
