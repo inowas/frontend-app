@@ -1,4 +1,4 @@
-import {mapStyles} from './index';
+import mapStyles from './mapStyles';
 
 export const getStyle = (type, subtype) => {
     if (!(type in mapStyles)) {

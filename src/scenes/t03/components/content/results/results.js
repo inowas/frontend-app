@@ -2,86 +2,74 @@ import React from 'react';
 import {connect} from 'react-redux';
 import PropTypes from 'prop-types';
 
-import {Form, Grid, Header, Menu, Segment} from 'semantic-ui-react';
-import {BoundaryCollection, Calculation, ModflowModel, Soilmodel} from 'core/model/modflow';
+import {Grid, Header, Segment} from 'semantic-ui-react';
+import {BoundaryCollection, Calculation, CalculationResults, ModflowModel, Soilmodel} from 'core/model/modflow';
 import {fetchUrl} from 'services/api';
 import {last} from 'lodash';
 import ResultsMap from '../../maps/resultsMap';
-import ResultsChart from './resultsChart';
-import Slider from 'rc-slider';
-
-import Moment from 'moment';
-
-const SliderWithTooltip = Slider.createSliderWithTooltip(Slider);
-
-const menuItems = [
-    {id: 'head', name: 'Heads'},
-    {id: 'drawdown', name: 'Drawdowns'},
-    {id: 'budget', name: 'Budgets'}
-];
-
-
-const styles = {
-    dot: {
-        border: '1px solid #e9e9e9',
-        borderRadius: 0,
-        marginLeft: 0,
-        width: '1px'
-    },
-    track: {
-        backgroundColor: '#e9e9e9'
-    }
-};
+import ResultsChart from '../../../../shared/complexTools/ResultsChart';
+import ResultsSelector from '../../../../shared/complexTools/ResultsSelector';
 
 class Results extends React.Component {
 
     constructor(props) {
         super(props);
         this.state = {
-            selectedMenuItem: menuItems[0].id,
             isLoading: false,
 
             calculationId: null,
+            layerValues: null,
             totalTimes: null,
             selectedCol: 0,
             selectedLay: 0,
             selectedRow: 0,
             selectedTotim: 0,
-            selectedType: null,
+            selectedType: 'head',
             data: null,
             fetching: false
         }
     }
 
     componentDidMount() {
-        this.fetchResults();
+        const {calculation} = this.props;
+        const {calculationId} = this.state;
+        if ((calculation instanceof Calculation) && !calculationId) {
+            this.fetchResults();
+        }
+
+        const {model} = this.props;
+        const {gridSize} = model;
+
+        return this.setState({
+            selectedCol: Math.floor(gridSize.nX / 2),
+            selectedRow: Math.floor(gridSize.nY / 2),
+        })
     }
 
-    componentWillReceiveProps(nextProps, nextContext) {
-        if (!this.state.calculationId) {
+    componentWillReceiveProps(nextProps) {
+        const {calculation} = nextProps;
+        const {calculationId} = this.state;
+        if ((calculation instanceof Calculation) && !calculationId) {
             this.fetchResults();
         }
     }
 
     fetchResults() {
         const {model} = this.props;
-        const {calculation} = model;
-
-        if (!calculation) {
-            return null;
-        }
-
         this.setState({isLoading: true},
             () => fetchUrl(`modflowmodels/${model.id}/results`,
-                metaData => {
-                    const calculationId = metaData.calculation_id;
-                    const totalTimes = metaData.times.total_times;
-                    this.setState({calculationId, totalTimes, isLoading: false});
-                    this.onChangeTypeLayerOrTime({
-                        type: this.state.selectedMenuItem,
-                        totim: last(totalTimes),
-                        layer: this.state.selectedLay
-                    });
+                data => {
+                    const results = CalculationResults.fromQuery(data);
+                    const calculationId = results.calculationId;
+                    const totalTimes = results.totalTimes;
+                    const layerValues = results.layerValues;
+                    return this.setState({calculationId, layerValues, totalTimes, isLoading: false},
+                        () => this.onChangeTypeLayerOrTime({
+                            type: this.state.selectedType,
+                            totim: last(totalTimes),
+                            layer: this.state.selectedLay
+                        })
+                    );
                 },
                 (e) => this.setState({isError: e, isLoading: false}))
         );
@@ -116,55 +104,11 @@ class Results extends React.Component {
         this.fetchData({layer, totim, type});
     };
 
-    sliderMarks = () => {
-        const {totalTimes} = this.state;
-        let marks = {};
-        totalTimes.forEach((value) => {
-            marks[value] = value;
-        });
-        return marks;
-    };
-
-    formatTimestamp = (key) => {
-        return Moment.utc(this.props.model.stressperiods.dateTimes[key]).format('L');
-    };
-
-    handleAfterChangeSlider = () => {
-        const layer = this.state.selectedLay;
-        const totim = this.state.selectedTotim;
-        const type = this.state.selectedType;
-        return this.fetchData({layer, totim, type});
-    };
-
-    handleChangeSlider = value => {
-        const {totalTimes} = this.state;
-        const differences = totalTimes.map((tt, idx) => ({id: idx, value: Math.abs(tt - value)}));
-        differences.sort((a, b) => a.value - b.value);
-        this.setState({selectedTotim: totalTimes[differences[0].id]})
-    };
-
-    handleChangeLayer = (e, {value}) => {
-        this.setState({selectedLay: value});
-        const totim = this.state.selectedTotim;
-        const type = this.state.selectedType;
-        return this.fetchData({layer: value, totim, type});
-    };
-
-    layerOptions = () => {
-        if (!(this.props.soilmodel instanceof Soilmodel)) {
-            return [];
-        }
-
-        return this.props.soilmodel.layersCollection.all.map(l => (
-            {key: l.id, value: l.number, text: l.name}
-        ))
-    };
-
     render() {
-        const {selectedMenuItem, calculationId, data, selectedCol, selectedRow, selectedTotim, totalTimes} = this.state;
-        const {model, boundaries} = this.props;
+        const {calculationId, data, selectedCol, selectedRow, selectedType, selectedLay, selectedTotim, layerValues, totalTimes} = this.state;
+        const {model, boundaries, soilmodel} = this.props;
 
-        if (!calculationId) {
+        if (!calculationId || !data) {
             return null;
         }
 
@@ -172,93 +116,57 @@ class Results extends React.Component {
             <Segment color={'grey'} loading={this.state.isLoading}>
                 <Grid padded>
                     <Grid.Row>
-                        <Grid.Column width={3}>
-                            <Menu fluid vertical tabular>
-                                <Menu.Item>&nbsp;</Menu.Item>
-                                {menuItems.map(i =>
-                                    <Menu.Item
-                                        name={i.name}
-                                        key={i.id}
-                                        active={i.id === selectedMenuItem}
-                                        onClick={() => {
-                                            this.onChangeTypeLayerOrTime({type: i.id});
-                                            this.setState({selectedMenuItem: i.id})
-                                        }}
-                                    />
-                                )}
-                                <Menu.Item>&nbsp;</Menu.Item>
-                            </Menu>
-                        </Grid.Column>
-                        <Grid.Column width={13}>
-                            <Grid>
-                                <Grid.Row>
-                                    <Grid.Column width={4}>
-                                        <Segment color={'grey'}>
-                                            <Header textAlign={'center'} as={'h4'}>Select layer</Header>
-                                            <Form.Dropdown
-                                                loading={!(this.props.soilmodel instanceof Soilmodel)}
-                                                style={{zIndex: 1000}}
-                                                selection
-                                                fluid
-                                                options={this.layerOptions()}
-                                                value={this.state.selectedLay}
-                                                name={'affectedLayers'}
-                                                onChange={this.handleChangeLayer}
-                                            />
-                                        </Segment>
-                                    </Grid.Column>
-                                    <Grid.Column width={12}>
-                                        <Segment color={'grey'} style={{paddingBottom: 40}}>
-                                            <Header textAlign={'center'} as={'h4'}>Select total time [days]</Header>
-                                            <SliderWithTooltip
-                                                dots
-                                                dotStyle={styles.dot}
-                                                trackStyle={styles.track}
-                                                defaultValue={selectedTotim}
-                                                min={totalTimes[0]}
-                                                max={totalTimes[totalTimes.length - 1]}
-                                                steps={null}
-                                                marks={this.sliderMarks()}
-                                                value={selectedTotim}
-                                                onAfterChange={this.handleAfterChangeSlider}
-                                                onChange={this.handleChangeSlider}
-                                                tipFormatter={() => this.formatTimestamp(totalTimes.indexOf(selectedTotim))}
-                                            />
-                                        </Segment>
-                                    </Grid.Column>
-                                </Grid.Row>
-                            </Grid>
-
+                        <Grid.Column>
+                            <ResultsSelector
+                                data={{
+                                    type: selectedType,
+                                    layer: selectedLay,
+                                    totim: selectedTotim,
+                                }}
+                                onChange={({type, layer, totim}) => {
+                                    return this.setState({
+                                        selectedType: type,
+                                        selectedLay: layer,
+                                        selectedTotim: totim
+                                    }, () => this.fetchData({layer, totim, type}));
+                                }}
+                                layerValues={layerValues}
+                                soilmodel={soilmodel}
+                                stressperiods={model.stressperiods}
+                                totalTimes={totalTimes}
+                            />
                             <Segment loading={this.state.fetching} color={'grey'}>
                                 {data &&
                                 <ResultsMap
+                                    activeCell={[selectedCol, selectedRow]}
                                     boundaries={boundaries}
                                     data={data}
                                     model={model}
                                     onClick={colRow => {
                                         this.setState({
-                                            selectedRow: colRow[1],
-                                            selectedCol: colRow[0]
+                                            selectedCol: colRow[0],
+                                            selectedRow: colRow[1]
                                         })
                                     }}
                                 />
                                 }
                             </Segment>
-
                             <Grid>
                                 <Grid.Row columns={2}>
                                     <Grid.Column>
                                         <Segment loading={this.state.fetching} color={'blue'}>
                                             <Header textAlign={'center'} as={'h4'}>Horizontal cross section</Header>
-                                            {data && <ResultsChart data={data} row={selectedRow} col={selectedCol}
-                                                                   show={'row'}/>}
+                                            {data &&
+                                            <ResultsChart data={data} col={selectedCol} row={selectedRow} show={'row'}/>
+                                            }
                                         </Segment>
                                     </Grid.Column>
                                     <Grid.Column>
                                         <Segment loading={this.state.fetching} color={'blue'}>
                                             <Header textAlign={'center'} as={'h4'}>Vertical cross section</Header>
-                                            {data && <ResultsChart data={data} col={selectedCol} row={selectedRow}
-                                                                   show={'col'}/>}
+                                            {data &&
+                                            <ResultsChart data={data} col={selectedCol} row={selectedRow} show={'col'}/>
+                                            }
                                         </Segment>
                                     </Grid.Column>
                                 </Grid.Row>
@@ -274,15 +182,18 @@ class Results extends React.Component {
 
 const mapStateToProps = state => {
     return {
-        model: ModflowModel.fromObject(state.T03.model),
+        calculation: state.T03.calculation ? Calculation.fromObject(state.T03.calculation) : null,
         boundaries: BoundaryCollection.fromObject(state.T03.boundaries),
+        model: ModflowModel.fromObject(state.T03.model),
         soilmodel: state.T03.soilmodel ? Soilmodel.fromObject(state.T03.soilmodel) : null
     };
 };
 
 Results.proptypes = {
+    boundaries: PropTypes.instanceOf(BoundaryCollection).isRequired,
     calculation: PropTypes.instanceOf(Calculation).isRequired,
     model: PropTypes.instanceOf(ModflowModel).isRequired,
+    soilmodel: PropTypes.instanceOf(Soilmodel).isRequired,
 };
 
 export default connect(mapStateToProps)(Results);
