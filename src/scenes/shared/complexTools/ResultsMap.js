@@ -165,8 +165,16 @@ class ResultsMap extends React.Component {
     render() {
         const {boundaries, data, model} = this.props;
         const {boundingBox, geometry, gridSize} = model;
+
+        let minData = min(data);
+        let maxData = max(data);
+
+        if (this.props.globalMinMax) {
+            [minData, maxData] = this.props.globalMinMax;
+        }
+
         const rainbowVis = rainbowFactory(
-            {min: min(data), max: max(data)},
+            {min: minData, max: maxData},
             ['#800080', '#ff2200', '#fcff00', '#45ff8e', '#15d6ff', '#0000FF']
         );
 
@@ -228,9 +236,9 @@ ResultsMap.propTypes = {
     data: PropTypes.array.isRequired,
     globalMinMax: PropTypes.array,
     model: PropTypes.instanceOf(ModflowModel).isRequired,
-    viewport: PropTypes.object,
     onClick: PropTypes.func,
     onViewPortChange: PropTypes.func,
+    viewport: PropTypes.object,
 };
 
 export default ResultsMap;
