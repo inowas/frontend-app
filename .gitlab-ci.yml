@@ -14,8 +14,8 @@ build_dev:
    - docker login -u rabbl -p ululate-feaze-shrill
   
   script: 
-    - docker build --build-arg REACT_APP_API_URL=https://api.dev.inowas.hydro.tu-dresden.de --build-arg REACT_APP_BASE_URL=https://dev.inowas.com --build-arg NODE_PATH=src -t inowas-dss:dev .
-    - docker push inowas-dss:dev
+    - docker build --build-arg REACT_APP_API_URL=https://api.dev.inowas.hydro.tu-dresden.de --build-arg REACT_APP_BASE_URL=https://dev.inowas.com --build-arg NODE_PATH=src -t inowas-dss-cre:dev .
+    - docker push inowas-dss-cre:dev
 
   only:
     - test-gitlab-ci
@@ -29,8 +29,8 @@ build_prod:
    - docker login -u rabbl -p ululate-feaze-shrill
   
   script: 
-    - docker build --build-arg REACT_APP_API_URL=https://api.inowas.hydro.tu-dresden.de --build-arg REACT_APP_BASE_URL=https://dss.inowas.com --build-arg NODE_PATH=src -t inowas-dss:prod .
-    - docker push inowas-dss:prod
+    - docker build --build-arg REACT_APP_API_URL=https://api.inowas.hydro.tu-dresden.de --build-arg REACT_APP_BASE_URL=https://dss.inowas.com --build-arg NODE_PATH=src -t inowas-dss-cre:prod .
+    - docker push inowas-dss-cre:prod
 
   only:
     - master    
