@@ -9,7 +9,7 @@ import {ScenarioAnalysis} from 'core/model/scenarioAnalysis';
 import ResultsSelector from '../../shared/complexTools/ResultsSelector';
 import ResultsMap from '../../shared/complexTools/ResultsMap';
 import ResultsChart from '../../shared/complexTools/ResultsChart';
-import {chunk} from 'lodash';
+import {chunk, compact, flatten} from 'lodash';
 
 class CrossSection extends React.Component {
 
@@ -28,6 +28,8 @@ class CrossSection extends React.Component {
             selectedRow: null,
             selectedTotim: null,
             selectedType: 'head',
+
+            commonViewPort: null
         }
     }
 
@@ -107,7 +109,7 @@ class CrossSection extends React.Component {
         }, () => this.fetchData({layer, totim, type}));
     };
 
-    renderMap = (id, length) => {
+    renderMap = (id, length, globalMinMax) => {
 
         if (!this.props.models[id] || !this.props.boundaries[id]) {
             return null;
@@ -129,6 +131,7 @@ class CrossSection extends React.Component {
                     activeCell={[this.state.selectedCol, this.state.selectedRow]}
                     boundaries={boundaries}
                     data={data}
+                    globalMinMax={globalMinMax}
                     model={model}
                     onClick={colRow => {
                         this.setState({
@@ -136,12 +139,14 @@ class CrossSection extends React.Component {
                             selectedRow: colRow[1]
                         })
                     }}
+                    viewport={this.state.commonViewPort}
+                    onViewPortChange={(viewPort) => this.setState({commonViewPort: viewPort})}
                 />
             </Segment>
         )
     };
 
-    renderMaps = () => {
+    renderMaps = (globalMinMax) => {
 
         let numberOfCols = 2;
         if (this.state.selectedModels.length === 1) {
@@ -155,12 +160,19 @@ class CrossSection extends React.Component {
                 {modelChunks.map((chunk, cIdx) => (
                     <Grid.Row key={cIdx} columns={numberOfCols}>
                         {chunk.map(m => (
-                            <Grid.Column key={m.id}>{this.renderMap(m.id, this.props.selected.length)}</Grid.Column>
+                            <Grid.Column key={m.id}>{this.renderMap(m.id, this.props.selected.length, globalMinMax)}</Grid.Column>
                         ))}
                     </Grid.Row>
                 ))}
             </Grid>
         );
+    };
+
+    calculateGlobalMinMax = (selectedModels) => {
+        const sortedValues = compact(flatten(flatten(selectedModels.map(m => m.data)))).sort();
+        const min = Math.floor(sortedValues[0]);
+        const max = Math.ceil(sortedValues[sortedValues.length - 1]);
+        return [min, max];
     };
 
     render() {
@@ -175,6 +187,8 @@ class CrossSection extends React.Component {
         if (selectedModels.length === 0) {
             return null;
         }
+
+        const globalMinMax = this.calculateGlobalMinMax(selectedModels);
 
         return (
             <div>
@@ -194,7 +208,7 @@ class CrossSection extends React.Component {
                 </Segment>
 
                 <Segment color={'grey'} loading={this.state.isLoading}>
-                    {this.renderMaps()}
+                    {this.renderMaps(globalMinMax)}
                 </Segment>
 
                 <Segment color={'grey'} loading={this.state.isLoading}>
@@ -203,15 +217,25 @@ class CrossSection extends React.Component {
                             <Grid.Column>
                                 <Segment>
                                     <Header textAlign={'center'} as={'h4'}>Horizontal cross section</Header>
-                                    <ResultsChart selectedModels={selectedModels} col={selectedCol} row={selectedRow}
-                                                  show={'row'}/>
+                                    <ResultsChart
+                                        selectedModels={selectedModels}
+                                        col={selectedCol}
+                                        row={selectedRow}
+                                        show={'row'}
+                                        globalMinMax={globalMinMax}
+                                    />
                                 </Segment>
                             </Grid.Column>
                             <Grid.Column>
                                 <Segment>
                                     <Header textAlign={'center'} as={'h4'}>Vertical cross section</Header>
-                                    <ResultsChart selectedModels={selectedModels} col={selectedCol} row={selectedRow}
-                                                  show={'col'}/>
+                                    <ResultsChart
+                                        selectedModels={selectedModels}
+                                        col={selectedCol}
+                                        row={selectedRow}
+                                        show={'col'}
+                                        globalMinMax={globalMinMax}
+                                    />
                                 </Segment>
                             </Grid.Column>
                         </Grid.Row>

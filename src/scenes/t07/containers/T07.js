@@ -38,11 +38,11 @@ const menuItems = [
         property: 'difference',
         icon: <Icon name="expand"/>
     },
-    {
-        name: 'Time Series',
-        property: 'timeseries',
-        icon: <Icon name="map marker alternate"/>
-    }
+    // {
+    //     name: 'Time Series',
+    //     property: 'timeseries',
+    //     icon: <Icon name="map marker alternate"/>
+    // }
 ];
 
 class T07 extends React.Component {
@@ -190,7 +190,7 @@ class T07 extends React.Component {
             case 'crosssection':
                 return (<Content.CrossSection selected={this.state.selected}/>);
             case 'difference':
-                return ('DIFFERENCE');
+                return (<Content.Difference/>);
             case 'timeseries':
                 return ('TIMESERIES');
             default:
