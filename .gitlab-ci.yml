@@ -18,7 +18,7 @@ build_dev:
     - docker push inowas/inowas-dss-cra
 
   only:
-    - test-gitlab-ci
+    - dev
     
 build_prod:
   image: docker:latest
