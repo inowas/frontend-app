@@ -2,7 +2,7 @@ import uuidv4 from 'uuid/v4';
 
 class Rule {
     _id = uuidv4();
-    _formula = '';
+    _expression = '';
     _from = 0;
     _fromOperator = '>=';
     _to = 0;
@@ -13,7 +13,7 @@ class Rule {
     static fromObject(obj) {
         const rule = new Rule();
         rule.id = obj.id;
-        rule.formula = obj.formula;
+        rule.expression = obj.expression;
         rule.from = obj.from;
         rule.fromOperator = obj.fromOperator;
         rule.to = obj.to;
@@ -31,12 +31,12 @@ class Rule {
         this._id = value;
     }
 
-    get formula() {
-        return this._formula;
+    get expression() {
+        return this._expression;
     }
 
-    set formula(value) {
-        this._formula = value;
+    set expression(value) {
+        this._expression = value;
     }
 
     get from() {
@@ -90,7 +90,7 @@ class Rule {
     toObject() {
         return ({
             id: this.id,
-            formula: this.formula,
+            expression: this.expression,
             from: this.from,
             fromOperator: this.fromOperator,
             to: this.to,

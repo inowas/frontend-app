@@ -91,7 +91,7 @@ class CriteriaDataEditor extends React.Component {
                             />
                             <Step
                                 active={activeTool === 'results'}
-                                disabled={criterion.rulesCollection.length === 0}
+                                disabled={!criterion.suitability || (criterion.suitability && criterion.suitability.data.length === 0)}
                                 name='results'
                                 icon='map'
                                 title='Results'

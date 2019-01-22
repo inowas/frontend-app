@@ -12,7 +12,6 @@ class CriteriaDataResults extends React.Component {
         super(props);
 
         const criterion = this.props.criterion;
-        criterion.calculateSuitability();
 
         this.state = {
             colors: 'default',

@@ -3,6 +3,7 @@ import Raster from '../gis/Raster';
 import RulesCollection from './RulesCollection';
 import {cloneDeep as _cloneDeep} from 'lodash';
 import TilesCollection from '../gis/TilesCollection';
+import * as math from 'mathjs';
 
 const validTypes = ['discrete', 'continuous'];
 
@@ -138,7 +139,7 @@ class Criterion {
                         return parseFloat(rule.value);
                     }
                     if (rule.type === 'calc') {
-                        return -2;
+                        return math.eval(rule.expression, {min: this.tilesCollection.first.min, max: this.tilesCollection.first.max, x: cell});
                     }
                 }
                 return -1;

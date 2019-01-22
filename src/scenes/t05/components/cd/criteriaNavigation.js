@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import {withRouter} from 'react-router-dom';
-import {Input, Menu, Segment} from 'semantic-ui-react';
+import {Icon, Input, Menu, Segment} from 'semantic-ui-react';
 import {MCDA} from 'core/mcda';
 
 class CriteriaNavigation extends React.Component {
@@ -36,6 +36,9 @@ class CriteriaNavigation extends React.Component {
                 name={criterion.id}
                 onClick={this.props.onClick}
             >
+                {criterion.suitability && criterion.suitability.data.length > 0 &&
+                <Icon name='check circle' color='green'/>
+                }
                 {criterion.name}
             </Menu.Item>
         ));

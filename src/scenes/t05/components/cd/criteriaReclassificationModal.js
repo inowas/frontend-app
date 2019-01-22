@@ -89,16 +89,28 @@ class CriteriaReclassificationModal extends React.Component {
                                 onChange={this.handleLocalChange}
                                 value={rule.type}
                             />
-                            <Form.Input
-                                fluid
-                                label='Suitability'
-                                icon={rule.type === 'fixed' ? 'pencil' : 'calculator'}
-                                iconPosition='left'
-                                onChange={this.handleLocalChange}
-                                type={rule.type === 'fixed' ? 'number' : 'text'}
-                                name={rule.type === 'fixed' ? 'value' : 'formula'}
-                                value={rule.type === 'fixed' ? rule.value : rule.formula}
-                            />
+                            {rule.type === 'fixed' ?
+                                <Form.Input
+                                    fluid
+                                    label='Suitability'
+                                    icon='pencil'
+                                    iconPosition='left'
+                                    onChange={this.handleLocalChange}
+                                    type='number'
+                                    name='value'
+                                    value={rule.value}
+                                /> :
+                                <Form.Input
+                                    fluid
+                                    label='Suitability'
+                                    icon='calculator'
+                                    iconPosition='left'
+                                    onChange={this.handleLocalChange}
+                                    type='text'
+                                    name='expression'
+                                    value={rule.expression}
+                                />
+                            }
                         </Form.Group>
                     </Form>
                     {rule.type === 'calc' &&
