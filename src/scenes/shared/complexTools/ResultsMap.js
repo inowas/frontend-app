@@ -33,6 +33,10 @@ const style = {
 
 class ResultsMap extends React.Component {
 
+    state = {
+        bounds: null
+    };
+
     handleClickOnMap = ({latlng}) => {
         const x = latlng.lng;
         const y = latlng.lat;
@@ -101,6 +105,46 @@ class ResultsMap extends React.Component {
         )
     };
 
+    renderBoundaryOverlay = (boundaries, name, type, checked = false) => (
+        <LayersControl.Overlay name={name} checked={checked}>
+            <FeatureGroup>
+                {boundaries.all.filter(b => b.type === type).map(b => {
+                    if (b.type === 'wel' || b.type === 'hob') {
+                        return (
+                            <CircleMarker
+                                key={b.id}
+                                center={[
+                                    b.geometry.coordinates[1],
+                                    b.geometry.coordinates[0]
+                                ]}
+                                {...getStyle(b.type, b.metadata.well_type)}
+                            />
+                        );
+                    }
+
+                    return (
+                        <GeoJSON
+                            key={b.geometry.hash()}
+                            data={b.geometry}
+                            style={getStyle(b.type)}
+                        />
+                    );
+                })}
+            </FeatureGroup>
+        </LayersControl.Overlay>
+    );
+
+    getBounds = () => {
+        const {boundingBox, geometry, gridSize} = this.props.model;
+        if (this.state.bounds) {
+            return this.state.bounds;
+        }
+
+        const bounds = geometry.getBoundsLatLng();
+        this.setState({bounds});
+        return bounds;
+    };
+
     render() {
         const {boundaries, data, model} = this.props;
         const {boundingBox, geometry, gridSize} = model;
@@ -112,7 +156,7 @@ class ResultsMap extends React.Component {
         return (
             <Map
                 style={style.map}
-                bounds={geometry.getBoundsLatLng()}
+                bounds={this.getBounds()}
                 onClick={this.handleClickOnMap}
                 boundsOptions={{padding: [20, 20]}}
 
@@ -133,30 +177,13 @@ class ResultsMap extends React.Component {
                             style={getStyle('bounding_box')}
                         />
                     </LayersControl.Overlay>
-                    <LayersControl.Overlay name={'Boundaries'}>
-                        {boundaries.all.map(b => {
-                            if (b.type === 'wel' || b.type === 'hob') {
-                                return (
-                                    <CircleMarker
-                                        key={b.id}
-                                        center={[
-                                            b.geometry.coordinates[1],
-                                            b.geometry.coordinates[0]
-                                        ]}
-                                        {...getStyle(b.type, b.metadata.well_type)}
-                                    />
-                                );
-                            }
 
-                            return (
-                                <GeoJSON
-                                    key={b.geometry.hash()}
-                                    data={b.geometry}
-                                    style={getStyle(b.type)}
-                                />
-                            );
-                        })}
-                    </LayersControl.Overlay>
+                    {this.renderBoundaryOverlay(boundaries, 'Constant head boundaries', 'chd')}
+                    {this.renderBoundaryOverlay(boundaries, 'General head boundaries', 'ghb')}
+                    {this.renderBoundaryOverlay(boundaries, 'Rivers', 'riv', true)}
+                    {this.renderBoundaryOverlay(boundaries, 'Recharge', 'rch')}
+                    {this.renderBoundaryOverlay(boundaries, 'Wells', 'wel', true)}
+
 
                     <ReactLeafletHeatMapCanvasOverlay
                         nX={gridSize.nX}
