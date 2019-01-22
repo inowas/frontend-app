@@ -161,7 +161,7 @@ class T05 extends React.Component {
         }
         if (!!cid) {
             if (property === 'cd') {
-                return this.props.history.push(basePath + id + '/' + property + '/' + cid + '/definition');
+                return this.props.history.push(basePath + id + '/' + property + '/' + cid + '/upload');
             }
             return this.props.history.push(basePath + id + '/' + property + '/' + cid);
         }

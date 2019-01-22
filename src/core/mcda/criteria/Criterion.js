@@ -3,7 +3,6 @@ import Raster from '../gis/Raster';
 import RulesCollection from './RulesCollection';
 import {cloneDeep as _cloneDeep} from 'lodash';
 import TilesCollection from '../gis/TilesCollection';
-import {BoundingBox, GridSize} from '../../geometry';
 
 const validTypes = ['discrete', 'continuous'];
 
@@ -96,8 +95,8 @@ class Criterion {
             throw new Error(`There are no rules defined for criterion ${this.name}.`);
         }
 
-        const boundingBox = this.tilesCollection.boundingBox;
-        const gridSize = this.suitability.gridSize || new GridSize(10, 10);
+        /*const boundingBox = this.tilesCollection.boundingBox;
+        const gridSize = new GridSize(10, 20); //this.suitability.gridSize || new GridSize(10, 10);
         const raster = new Raster();
         const array = new Array(gridSize.nY).fill(0).map(() => new Array(gridSize.nX).fill(0)).slice(0);
 
@@ -108,12 +107,13 @@ class Criterion {
 
         raster.data = array.map((row, y) => {
             return row.map((cell, x) => {
-                const xmin = x * dXCell;
-                const xmax = (x + 1) * dXCell;
-                const ymin = y * dYCell;
-                const ymax = (y + 1) * dYCell;
+                const xmin = boundingBox.xMin + x * dXCell;
+                const xmax = boundingBox.xMin + (x + 1) * dXCell;
+                const ymin = boundingBox.yMin + y * dYCell;
+                const ymax = boundingBox.yMin + (y + 1) * dYCell;
                 const CellBoundingBox = BoundingBox.fromArray([[xmin, ymin],[xmax, ymax]]);
                 // Find all cells from tiles intersecting the grid cell and calculate the mean value
+                console.log(CellBoundingBox);
                 const tiles = this.tilesCollection.findByBoundingBox(CellBoundingBox);
                 if (tiles.length > 1) {
                     // USE A REDUCER?!
@@ -121,13 +121,12 @@ class Criterion {
                 }
                 return 0;
             });
-        });
+        });*/
 
-        // AFTERWARDS USE RULES ON NEW RASTER
-        return;
+        this.suitability = _cloneDeep(this.tilesCollection.first);
+        const data = this.tilesCollection.first.data;
 
-        this.suitability = new Array(gridSize.nY).fill(0).map(() => new Array(gridSize.nX).fill(0)).slice(0);
-        this.suitability.data = _cloneDeep(this.raster.data).map(row => {
+        this.suitability.data = _cloneDeep(data).map(row => {
             return row.map(cell => {
                 const rules = this.rulesCollection.findByValue(cell);
                 if (rules.length === 0) {

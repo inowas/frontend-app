@@ -1,7 +1,6 @@
 import AbstractCollection from '../../AbstractCollection';
 import Tile from './Tile';
 import BoundingBox from '../../geometry/BoundingBox';
-import {lineOverlap} from '@turf/turf';
 
 class TilesCollection extends AbstractCollection {
     static fromArray(array) {
@@ -36,7 +35,8 @@ class TilesCollection extends AbstractCollection {
         if (!(boundingBox instanceof BoundingBox)) {
             throw new Error('BoundingBox expected to be instance of BoundingBox');
         }
-        return this.all.filter(tile => lineOverlap(tile.boundingBox.geoJson, boundingBox.geoJson).length > 0);
+
+        return this.all.filter(tile => tile.boundingBox.intersects(boundingBox));
     }
 
     validateInput(tile) {

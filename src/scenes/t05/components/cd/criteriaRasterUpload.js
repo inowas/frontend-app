@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import {Criterion} from 'core/mcda/criteria';
-import {Grid, Button, Icon, Message, Form, Segment} from 'semantic-ui-react';
+import {Grid, Button, Icon, Message, Form, Segment, Checkbox} from 'semantic-ui-react';
 import RasterfileUploadModal from '../../../shared/rasterData/rasterfileUploadModal';
 import CriteriaRasterMap from './criteriaRasterMap';
 import {Rule, RulesCollection} from 'core/mcda/criteria';
@@ -33,6 +33,14 @@ class CriteriaRasterUpload extends React.Component {
 
     handleCancelModal = () => this.setState({showUploadModal: false});
 
+    handleClickDeleteTile = () => {
+        const criterion = this.props.criterion;
+        criterion.tilesCollection.remove(this.state.activeTile.id);
+        return this.setState({
+            activeTile: null
+        }, this.props.onChange(criterion));
+    };
+
     handleChangeRaster = raster => {
         if (!(raster instanceof Raster)) {
             throw new Error('Raster expected to be instance of Raster.');
@@ -55,8 +63,8 @@ class CriteriaRasterUpload extends React.Component {
         let boundingBox = null;
         if (metadata) {
             boundingBox = BoundingBox.fromPoints([
-                [metadata.origin[0], metadata.origin[1] + metadata.pixelSize[1] * metadata.rasterYSize],
-                [metadata.origin[0] + metadata.pixelSize[0] * metadata.rasterXSize, metadata.origin[1]]
+                [parseFloat(metadata.origin[0]), parseFloat(metadata.origin[1] + metadata.pixelSize[1] * metadata.rasterYSize)],
+                [parseFloat(metadata.origin[0] + metadata.pixelSize[0] * metadata.rasterXSize), parseFloat(metadata.origin[1])]
             ]);
         }
         tile.boundingBox = boundingBox;
@@ -101,16 +109,25 @@ class CriteriaRasterUpload extends React.Component {
                         <Segment>
                             <Form>
                                 <Form.Group>
-                                    <Button primary icon labelPosition='left' fluid onClick={this.handleUploadClick}>
+                                    <Button
+                                        primary
+                                        icon
+                                        labelPosition='left'
+                                        fluid
+                                        onClick={this.handleUploadClick}
+                                        disabled={tilesCollection.length > 0}
+                                    >
                                         <Icon name='upload'/>Upload Raster Tile
                                     </Button>
+                                </Form.Group>
+                                <Form.Group>
+                                    <Checkbox toggle label='Basic Tile Layer' onClick={this.onToggleBasicLayer}/>
                                 </Form.Group>
                             </Form>
                         </Segment>
                         <Segment textAlign='center' inverted color='grey' secondary>
                             Tiles
                         </Segment>
-
                         {tilesCollection.length > 0 ?
                             <TilesMap
                                 activeTile={!!activeTile ? Tile.fromObject(activeTile) : null}
@@ -120,6 +137,38 @@ class CriteriaRasterUpload extends React.Component {
                             <Segment>
                                 No tiles found ...
                             </Segment>
+                        }
+                        {!!activeTile &&
+                        <div>
+                            <Button
+                                negative
+                                icon
+                                labelPosition='left'
+                                fluid
+                                onClick={this.handleClickDeleteTile}
+                            >
+                                <Icon name='trash'/>Delete Tile
+                            </Button>
+                            <table width='90%' style={{textAlign: 'right'}}>
+                                <tbody>
+                                <tr>
+                                    <td/>
+                                    <td>{activeTile.boundingBox[1][1].toFixed(3)}</td>
+                                    <td/>
+                                </tr>
+                                <tr>
+                                    <td>{activeTile.boundingBox[0][0].toFixed(3)}</td>
+                                    <td/>
+                                    <td>{activeTile.boundingBox[1][0].toFixed(3)}</td>
+                                </tr>
+                                <tr>
+                                    <td/>
+                                    <td>{activeTile.boundingBox[0][1].toFixed(3)}</td>
+                                    <td/>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div>
                         }
                     </Grid.Column>
                     <Grid.Column width={11}>
@@ -152,9 +201,3 @@ CriteriaRasterUpload.proptypes = {
 };
 
 export default CriteriaRasterUpload;
-
-/*
-<Form.Group>
-                                    <Checkbox toggle label='Basic Tile Layer' onClick={this.onToggleBasicLayer}/>
-                                </Form.Group>
- */

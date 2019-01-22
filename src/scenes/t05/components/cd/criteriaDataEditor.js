@@ -5,7 +5,7 @@ import {MCDA} from 'core/mcda';
 import {Criterion} from 'core/mcda/criteria';
 import {Message, Step} from 'semantic-ui-react';
 
-import {CriteriaDefinition, CriteriaReclassification, CriteriaRasterUpload} from './index';
+import {CriteriaReclassification, CriteriaRasterUpload} from './index';
 import CriteriaDataResults from './criteriaDataResults';
 
 class CriteriaDataEditor extends React.Component {
@@ -32,13 +32,6 @@ class CriteriaDataEditor extends React.Component {
         }
 
         switch (this.props.activeTool) {
-            case 'definition':
-                return (
-                    <CriteriaDefinition
-                        criterion={this.props.criterion}
-                        onChange={this.handleChange}
-                    />
-                );
             case 'reclassification':
                 return (
                     <CriteriaReclassification
@@ -84,14 +77,6 @@ class CriteriaDataEditor extends React.Component {
                                 name='upload'
                                 icon='upload'
                                 title='Upload'
-                                link
-                                onClick={this.handleClickStep}
-                            />
-                            <Step
-                                active={activeTool === '' || activeTool === 'definition'}
-                                name='definition'
-                                icon='info circle'
-                                title='Definition'
                                 link
                                 onClick={this.handleClickStep}
                             />

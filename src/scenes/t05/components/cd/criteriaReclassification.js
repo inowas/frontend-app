@@ -56,6 +56,7 @@ class CriteriaReclassification extends React.Component {
     renderEditorContinuous() {
         const {showInfo} = this.state;
         const criterion = this.props.criterion;
+        const raster = criterion.tilesCollection.first;
 
         if (!criterion.rulesCollection || criterion.rulesCollection.length === 0) {
             return (
@@ -74,8 +75,8 @@ class CriteriaReclassification extends React.Component {
                 <Message onDismiss={this.handleDismiss}>
                     <Message.Header>Reclassification for continuous values</Message.Header>
                     <p>All suitabilities, whose raster values are not covered by the rules, will be set with 0.</p>
-                    <p>Min: {criterion.raster.min}</p>
-                    <p>Max: {criterion.raster.max}</p>
+                    <p>Min: {raster.min}</p>
+                    <p>Max: {raster.max}</p>
                 </Message>
                 }
                 <Button primary icon labelPosition='left' onClick={this.handleAddRule}>

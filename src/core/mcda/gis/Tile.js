@@ -8,7 +8,7 @@ class Tile extends Raster {
 
     static fromObject(obj) {
         const raster = new Tile();
-        raster.boundingBox = obj.boundingBox ? BoundingBox.fromPoints(obj.boundingBox) : new BoundingBox();
+        raster.boundingBox = obj.boundingBox ? BoundingBox.fromArray(obj.boundingBox) : new BoundingBox();
         raster.data = obj.data;
         raster.gridSize = obj.gridSize ? GridSize.fromObject(obj.gridSize) : new GridSize(10, 10);
         raster.id = obj.id || uuidv4();

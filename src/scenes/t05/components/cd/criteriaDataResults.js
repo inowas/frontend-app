@@ -28,6 +28,7 @@ class CriteriaDataResults extends React.Component {
 
     render() {
         const {colors, criterion, layer, showBasicLayer} = this.state;
+        const raster = this.props.criterion.tilesCollection.first;
 
         return (
             <Grid>
@@ -121,7 +122,7 @@ class CriteriaDataResults extends React.Component {
                 {criterion.suitability.data.length > 0 &&
                     <CriteriaRasterMap
                         colors={layer === 'suitability' ? heatMapColors[colors] : heatMapColors.terrain}
-                        raster={layer === 'suitability' ? Raster.fromObject(criterion.suitability) : Raster.fromObject(criterion.raster)}
+                        raster={layer === 'suitability' ? Raster.fromObject(criterion.suitability) : raster}
                         showBasicLayer={showBasicLayer}
                     />
                 }
