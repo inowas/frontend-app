@@ -2,6 +2,7 @@ stages:
   - build
 
 build:
+  image: docker:latest
   stage: build
   script: 
     - docker build \                                                                                                                                                              ✔  1199  10:37:52
