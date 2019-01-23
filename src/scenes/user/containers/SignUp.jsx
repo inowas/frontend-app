@@ -202,7 +202,13 @@ class SignUp extends React.Component {
     onSignUpClick = () => {
         const formValidation = this.validateForm();
         if (formValidation.isValid) {
-            const redirectTo = process.env.REACT_APP_BASE_URL + '/login';
+
+            let redirectTo = '';
+            if (typeof window !== 'undefined') {
+                // eslint-disable-next-line no-restricted-globals
+                redirectTo = location.protocol + '//' + location.host + '/login';
+            }
+
             this.signUpRequest(this.state.name, this.state.username, this.state.email, this.state.password, redirectTo);
             this.setState({loading: true});
         }
