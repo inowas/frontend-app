@@ -6,7 +6,7 @@ const boundaryType = 'hob';
 export default class HeadObservation extends SingleOPBoundary {
 
     static createWithStartDate({id = null, name = null, geometry, utcIsoStartDateTime}) {
-        return BoundaryFactory.createByTypeAndStartDate({id, name, type: boundaryType, geometry, utcIsoStartDateTime});
+        return BoundaryFactory.createByTypeAndStartDate({id, name, type: boundaryType, geometry, utcIsoStartDateTimes: utcIsoStartDateTime});
     }
 
     static createFromObject(objectData) {

@@ -4,7 +4,7 @@ import {Redirect, withRouter} from 'react-router-dom';
 import PropTypes from 'prop-types';
 
 import AppContainer from '../../shared/AppContainer';
-import {Grid, Header, Icon, Message, Segment} from 'semantic-ui-react';
+import {Button, Grid, Header, Icon, Message, Popup, Segment} from 'semantic-ui-react';
 import ToolMetaData from '../../shared/simpleTools/ToolMetaData';
 import {fetchUrl, sendCommand} from 'services/api';
 
@@ -229,18 +229,71 @@ class T07 extends React.Component {
         })
     };
 
-    renderModelListItem = ({id, name, description, canBeDeleted = true}) => (
-        <Grid.Column key={id}>
-            <Segment
-                style={{cursor: 'pointer'}}
-                color={'blue'}
-                inverted={this.state.selected.indexOf(id) >= 0}
-                onClick={() => this.handleScenarioClick(id)}
-            >
-                <Header as={'a'}>{name}</Header>
-            </Segment>
-        </Grid.Column>
-    );
+    renderModelListItem = ({id, name, description, canBeDeleted = true}) => {
+        return (
+            <Grid.Column key={id}>
+                <Segment
+                    style={{cursor: 'pointer'}}
+                    color={'blue'}
+                    inverted={this.state.selected.indexOf(id) >= 0}
+                >
+                    <Grid>
+                        <Grid.Row>
+                            <Grid.Column width={12} onClick={() => this.handleScenarioClick(id)}>
+                                <Header as={'a'}>{name}</Header>
+                            </Grid.Column>
+                            <Grid.Column width={4}>
+                                <Popup
+                                    trigger={<Icon name='ellipsis horizontal'/>}
+                                    content={
+                                        <Button.Group size='small'>
+                                            <Popup
+                                                trigger={<Button icon={'edit'} onClick={() => this.editScenario(id)}/>}
+                                                content='Edit'
+                                                position='top center'
+                                                size='mini'
+                                                inverted
+                                            />
+                                            <Popup
+                                                trigger={<Button icon={'clone'} onClick={() => this.cloneScenario(id)}/>}
+                                                content='Clone'
+                                                position='top center'
+                                                size='mini'
+                                                inverted
+                                            />
+                                            {canBeDeleted &&
+                                            <Popup
+                                                trigger={<Button icon={'trash'} onClick={() => this.deleteScenario(id)}/>}
+                                                content='Delete'
+                                                position='top center'
+                                                size='mini'
+                                                inverted
+                                            />
+                                            }
+                                        </Button.Group>
+                                    }
+                                    on={'click'}
+                                    position={'right center'}
+                                />
+                            </Grid.Column>
+                        </Grid.Row>
+                    </Grid>
+                </Segment>
+            </Grid.Column>
+        );
+    };
+
+    cloneScenario = (id) => {
+
+    };
+
+    deleteScenario = (id) => {
+
+    };
+
+    editScenario = (id) => {
+
+    };
 
     renderModelList = () => {
         const {scenarioAnalysis} = this.props;
