@@ -10,7 +10,7 @@ import {
     ReferenceLine,
     Area, AreaChart, Line, LineChart
 } from 'recharts';
-import {compact, flatten} from 'lodash';
+import {flatten, max, min} from 'lodash';
 import {GridSize} from '../../../core/model/modflow';
 
 const cbPalette = [
@@ -24,12 +24,12 @@ const cbPalette = [
     '#999999' /* grey */
 ];
 
-const ResultsChart = ({data = null, selectedModels = null, row, col, show}) => {
+const ResultsChart = ({data = null, selectedModels = null, globalMinMax = null, row, col, show}) => {
 
     if (data) {
-        const sortedValues = compact(flatten(data)).sort();
-        const min = Math.floor(sortedValues[0]);
-        const max = Math.ceil(sortedValues[sortedValues.length - 1]);
+        const flattenData = flatten(data);
+        const minData = Math.floor(min(flattenData));
+        const maxData = Math.ceil(max(flattenData));
 
         let processedData = [];
         let referenceTo;
@@ -48,7 +48,7 @@ const ResultsChart = ({data = null, selectedModels = null, row, col, show}) => {
             <ResponsiveContainer aspect={1.5}>
                 <AreaChart data={processedData}>
                     <XAxis dataKey="name" domain={['dataMin', 'dataMax']}/>
-                    <YAxis domain={[min, max]}/>
+                    <YAxis domain={[minData, maxData]}/>
                     <CartesianGrid strokeDasharray="3 3"/>
                     <Tooltip/>
                     <ReferenceLine x={referenceTo} stroke="#000" strokeDasharray="3 3"/>
@@ -60,6 +60,10 @@ const ResultsChart = ({data = null, selectedModels = null, row, col, show}) => {
 
     if (selectedModels) {
 
+        if (!globalMinMax) {
+            throw new Error('If more then one model in selectedModels, please provide a globalMinMax-Prop');
+        }
+
         let isValid = true;
         selectedModels.forEach(m => {
             isValid = isValid && m.data;
@@ -69,9 +73,7 @@ const ResultsChart = ({data = null, selectedModels = null, row, col, show}) => {
             return null;
         }
 
-        const sortedValues = compact(flatten(flatten(selectedModels.map(m => m.data)))).sort();
-        const min = Math.floor(sortedValues[0]);
-        const max = Math.ceil(sortedValues[sortedValues.length - 1]);
+        const [min, max] = globalMinMax;
         const gridSize = GridSize.fromData(selectedModels[0].data);
         const {nX, nY} = gridSize;
 
@@ -129,9 +131,11 @@ const ResultsChart = ({data = null, selectedModels = null, row, col, show}) => {
 };
 
 ResultsChart.propTypes = {
-    data: PropTypes.array,
-    row: PropTypes.number,
     col: PropTypes.number,
+    data: PropTypes.array,
+    globalMinMax: PropTypes.array,
+    selectedModels: PropTypes.array,
+    row: PropTypes.number,
     show: PropTypes.string
 };
 

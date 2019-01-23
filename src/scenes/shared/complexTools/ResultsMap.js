@@ -33,9 +33,22 @@ const style = {
 
 class ResultsMap extends React.Component {
 
-    state = {
-        bounds: null
-    };
+    state = {viewport: null};
+    map = null;
+
+    componentDidMount() {
+        const {viewport} = this.props;
+        if (viewport) {
+            this.setState({viewport})
+        }
+    }
+
+    componentWillReceiveProps(nextProps, nextContext) {
+        const {viewport} = nextProps;
+        if (viewport) {
+            this.setState({viewport})
+        }
+    }
 
     handleClickOnMap = ({latlng}) => {
         const x = latlng.lng;
@@ -134,32 +147,47 @@ class ResultsMap extends React.Component {
         </LayersControl.Overlay>
     );
 
-    getBounds = () => {
-        const {boundingBox, geometry, gridSize} = this.props.model;
-        if (this.state.bounds) {
-            return this.state.bounds;
+    onViewPortChange = () => {
+        if (!this.map) {
+            return;
         }
 
-        const bounds = geometry.getBoundsLatLng();
-        this.setState({bounds});
-        return bounds;
+        const {viewport} = this.map;
+        this.setState({viewport});
+
+        if (!this.props.onViewPortChange) {
+            return;
+        }
+
+        this.props.onViewPortChange(viewport);
     };
 
     render() {
         const {boundaries, data, model} = this.props;
         const {boundingBox, geometry, gridSize} = model;
+
+        let minData = min(data);
+        let maxData = max(data);
+
+        if (this.props.globalMinMax) {
+            [minData, maxData] = this.props.globalMinMax;
+        }
+
         const rainbowVis = rainbowFactory(
-            {min: min(data), max: max(data)},
+            {min: minData, max: maxData},
             ['#800080', '#ff2200', '#fcff00', '#45ff8e', '#15d6ff', '#0000FF']
         );
 
         return (
             <Map
+                ref={map => this.map = map}
                 style={style.map}
-                bounds={this.getBounds()}
+                bounds={this.state.viewport ? null : this.props.model.geometry.getBoundsLatLng()}
+                zoom={this.state.viewport ? this.state.viewport.zoom : null}
+                center={this.state.viewport ? this.state.viewport.center : null}
                 onClick={this.handleClickOnMap}
                 boundsOptions={{padding: [20, 20]}}
-
+                onMoveEnd={this.onViewPortChange}
             >
                 <BasicTileLayer/>
                 <LayersControl position="topright">
@@ -185,7 +213,7 @@ class ResultsMap extends React.Component {
                     {this.renderBoundaryOverlay(boundaries, 'Wells', 'wel', true)}
 
 
-                    <ReactLeafletHeatMapCanvasOverlay
+                    {data && <ReactLeafletHeatMapCanvasOverlay
                         nX={gridSize.nX}
                         nY={gridSize.nY}
                         rainbow={rainbowVis}
@@ -193,7 +221,7 @@ class ResultsMap extends React.Component {
                         bounds={boundingBox.getBoundsLatLng()}
                         opacity={0.5}
                         model={model}
-                    />
+                    />}
                     {this.renderLegend(rainbowVis)}
                 </LayersControl>
                 {this.renderSelectedRowAndCol()}
@@ -208,7 +236,9 @@ ResultsMap.propTypes = {
     data: PropTypes.array.isRequired,
     globalMinMax: PropTypes.array,
     model: PropTypes.instanceOf(ModflowModel).isRequired,
-    onClick: PropTypes.func.isRequired
+    onClick: PropTypes.func,
+    onViewPortChange: PropTypes.func,
+    viewport: PropTypes.object,
 };
 
 export default ResultsMap;

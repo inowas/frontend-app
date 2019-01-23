@@ -1,3 +1,5 @@
+import {LOGOUT, UNAUTHORIZED} from '../../user/actions/actions';
+
 export const CLEAR = 'T07_CLEAR';
 export const UPDATE_MODEL = 'T07_UPDATE_MODEL';
 
@@ -18,6 +20,12 @@ const models = (state = initialState, action) => {
             const model = action.payload;
 
             return {...state, [id]: model};
+
+
+        case UNAUTHORIZED:
+        case LOGOUT: {
+            return initialState;
+        }
 
         default: {
             return state;

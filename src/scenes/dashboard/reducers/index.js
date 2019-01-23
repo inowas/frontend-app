@@ -1,4 +1,5 @@
 import {SET_ACTIVE_TOOL, SET_PUBLIC} from '../actions';
+import {LOGOUT, UNAUTHORIZED} from '../../user/actions/actions';
 
 const initialState = {
     activeTool: 'T02',
@@ -18,6 +19,11 @@ const dashboard = (state = initialState, action) => {
                 ...state,
                 showPublicInstances: action.payload
             };
+
+        case UNAUTHORIZED:
+        case LOGOUT: {
+            return initialState;
+        }
 
         default: {
             return state;
