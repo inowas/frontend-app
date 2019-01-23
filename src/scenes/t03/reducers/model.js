@@ -1,12 +1,15 @@
 import {ModflowModel, Stressperiods} from 'core/model/modflow';
 import {Mt3dms} from 'core/model/modflow/mt3d';
+import {LOGOUT, UNAUTHORIZED} from '../../user/actions/actions';
 
 export const CLEAR = 'T03_CLEAR';
 export const UPDATE_MODEL = 'T03_UPDATE_MODEL';
 export const UPDATE_MT3DMS = 'T03_UPDATE_MT3DMS';
 export const UPDATE_STRESSPERIODS = 'T03_UPDATE_STRESSPERIODS';
 
-const model = (state = null, action) => {
+const initialState = null;
+
+const model = (state = initialState, action) => {
     switch (action.type) {
         case CLEAR:
             return null;
@@ -31,6 +34,11 @@ const model = (state = null, action) => {
             return {
                 ...state, ...model2.toObject()
             };
+
+        case UNAUTHORIZED:
+        case LOGOUT: {
+            return initialState;
+        }
 
         default:
             return state;

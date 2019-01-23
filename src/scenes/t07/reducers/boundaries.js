@@ -1,3 +1,5 @@
+import {LOGOUT, UNAUTHORIZED} from '../../user/actions/actions';
+
 export const CLEAR = 'T07_CLEAR';
 export const UPDATE_MODEL_BOUNDARIES = 'T07_UPDATE_MODEL_BOUNDARIES';
 
@@ -17,6 +19,12 @@ const models = (state = initialState, action) => {
             const boundaries = action.payload;
 
             return {...state, [id]: boundaries};
+
+
+        case UNAUTHORIZED:
+        case LOGOUT: {
+            return initialState;
+        }
 
         default: {
             return state;

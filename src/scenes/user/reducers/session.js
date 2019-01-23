@@ -1,11 +1,9 @@
 import {LOGIN, LOGIN_ERROR, LOGOUT, UNAUTHORIZED} from '../actions/actions';
 
-function initialState() {
-    return {
-        apiKey: localStorage.getItem('apiKey'),
-        error: false
-    };
-}
+const initialState = () => ({
+    apiKey: localStorage.getItem('apiKey'),
+    error: false
+});
 
 export const session = (state = initialState(), action) => {
     switch (action.type) {

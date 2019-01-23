@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types';
 import React from 'react';
-import {signUpUser} from 'services/api';
+import {submitSignUpCredentials} from 'services/api';
 
 import {connect} from 'react-redux';
 import {hasSessionKey} from '../reducers/index';
@@ -192,7 +192,7 @@ class SignUp extends React.Component {
     };
 
     signUpRequest = (name, username, email, password, redirectTo) => {
-        signUpUser(
+        submitSignUpCredentials(
             {name, username, email, password, redirectTo},
             () => this.setState({success: true, loading: false}),
             () => this.setState({error: true, loading: false})
