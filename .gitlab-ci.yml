@@ -6,31 +6,67 @@ services:
   - docker:dind  
 
 build_dev:
-  image: docker:latest
+  image: node:11
   stage: build
   
-  before_script:
-   - docker info
-   - docker login -u rabbl -p ululate-feaze-shrill
-  
   script: 
-    - docker build --build-arg REACT_APP_API_URL=https://api.dev.inowas.hydro.tu-dresden.de --build-arg REACT_APP_BASE_URL=https://dev.inowas.com --build-arg NODE_PATH=src -t inowas/inowas-dss-cra:dev .
-    - docker push inowas/inowas-dss-cra
+    - yarn install
+    - REACT_APP_API_URL=https://api.dev.inowas.hydro.tu-dresden.de REACT_APP_BASE_URL=https://dev.inowas.com NODE_PATH=src yarn build
+    - VERSION=$(git describe --tags --always --dirty=+) && DATE=$(date +%Y-%m-%dT%H:%M:%S) && sed -i "s/@@__VERSION__@@/${VERSION}/g;s/@@__BUILT__@@/${DATE}/g" ./build/index.html
 
+  artifacts:
+    paths:
+      - build/
+      
   only:
     - dev
     
-build_prod:
+deploy_dev:
   image: docker:latest
-  stage: build
-  
+  stage: deploy
+  dependencies: 
+    - build_dev
+    
   before_script:
    - docker info
    - docker login -u rabbl -p ululate-feaze-shrill
   
   script: 
-    - docker build --build-arg REACT_APP_API_URL=https://api.inowas.hydro.tu-dresden.de --build-arg REACT_APP_BASE_URL=https://dss.inowas.com --build-arg NODE_PATH=src -t inowas-dss-cra:prod .
-    - docker push inowas-dss-cra
+    - docker build  -t inowas/inowas-dss-cra:dev .
+    - docker push inowas/inowas-dss-cra
 
   only:
-    - master    
+    - test-gitlab-ci
+    
+build_dev:
+  image: node:11
+  stage: build
+  
+  script: 
+    - yarn install
+    - REACT_APP_API_URL=https://api.dss.inowas.hydro.tu-dresden.de REACT_APP_BASE_URL=https://dss.inowas.com NODE_PATH=src yarn build
+    - VERSION=$(git describe --tags --always --dirty=+) && DATE=$(date +%Y-%m-%dT%H:%M:%S) && sed -i "s/@@__VERSION__@@/${VERSION}/g;s/@@__BUILT__@@/${DATE}/g" ./build/index.html
+
+  artifacts:
+    paths:
+      - build/
+      
+  only:
+    - master
+    
+deploy_dev:
+  image: docker:latest
+  stage: deploy
+  dependencies: 
+    - build_dev
+    
+  before_script:
+   - docker info
+   - docker login -u rabbl -p ululate-feaze-shrill
+  
+  script: 
+    - docker build  -t inowas/inowas-dss-cra:prod .
+    - docker push inowas/inowas-dss-cra
+
+  only:
+    - master
