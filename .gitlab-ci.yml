@@ -1,9 +1,18 @@
 stages:
+  - test
   - build
   - deploy
   
 services:
   - docker:dind  
+
+test:
+  image: node:11
+  stage: test
+
+  script:
+    - yarn install
+    - CI=true yarn test --all --colors
 
 build:dev:
   image: node:11
