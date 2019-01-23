@@ -1,15 +1,10 @@
 import {applyMiddleware, compose, createStore} from 'redux';
 import rootReducer from './reducers';
 import {composeWithDevTools} from 'redux-devtools-extension';
-import createSagaMiddleware from 'redux-saga';
 import thunk from 'redux-thunk';
-import {SagaManager} from './sagas';
-
-const sagaMiddleware = createSagaMiddleware();
 
 // middleware always needed
 const middlewares = [
-    sagaMiddleware,
     thunk,
     unauthorizedMiddleware()
 ];
@@ -22,15 +17,12 @@ if (process.env.NODE_ENV === 'development') {
 }
 
 export default function configureStore() {
-    const store = createStore(
+    return createStore(
         rootReducer,
         appliedCompose(
             applyMiddleware(...middlewares)
         )
     );
-
-    SagaManager.startSagas(sagaMiddleware);
-    return store;
 }
 
 function unauthorizedMiddleware() {

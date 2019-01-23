@@ -4,9 +4,10 @@ import PropTypes from 'prop-types';
 import {Action} from '../actions/index';
 import {connect} from 'react-redux';
 import {hasSessionKey} from '../reducers/index';
-import {withRouter, Link} from 'react-router-dom';
+import {withRouter, Link, Redirect} from 'react-router-dom';
 import {Button, Container, Form, Grid, Header, Image, Message} from 'semantic-ui-react';
 import logo from '../images/favicon.png';
+import {submitLoginCredentials} from 'services/api';
 
 const styles = {
     login: {
@@ -22,15 +23,9 @@ class Login extends React.Component {
         this.state = {
             username: null,
             password: null,
-            loading: false
+            loading: false,
+            error: null
         };
-    }
-
-    checkAuthentication() {
-        if (this.props.userIsLoggedIn) {
-            this.props.fetchUser();
-            this.props.history.push('/tools');
-        }
     }
 
     onUsernameChange = e => {
@@ -46,14 +41,28 @@ class Login extends React.Component {
     };
 
     onLoginClick = () => {
-        this.props.authenticate(this.state.username, this.state.password);
-        this.setState({
-            loading: true
-        });
+        const {username, password} = this.state;
+        return this.setState({loading: true},
+            () => submitLoginCredentials({username, password},
+                response => {
+                    this.props.login(username, response.data.api_key);
+                    this.setState({loading: false})
+                },
+                (e) => {
+                    this.props.loginError();
+                    this.setState({loading: false, error: e});
+
+                }
+            )
+        );
     };
 
     render() {
-        this.checkAuthentication();
+
+        if (this.props.userIsLoggedIn) {
+            return <Redirect to={'/tools'}/>
+        }
+
         return (
             <Container textAlign={'center'} style={styles.login}>
                 <Grid textAlign="center">
@@ -97,21 +106,20 @@ class Login extends React.Component {
     }
 }
 
-const mapStateToProps = state => {
-    return {
-        userIsLoggedIn: hasSessionKey(state.session)
-    };
-};
+const mapStateToProps = state => ({
+    userIsLoggedIn: hasSessionKey(state.session)
+});
 
 const mapDispatchToProps = {
     authenticate: Action.authentication,
-    fetchUser: Action.fetchUser
+    login: Action.login,
+    loginError: Action.loginError,
 };
 
 Login.propTypes = {
-    authenticate: PropTypes.func.isRequired,
-    fetchUser: PropTypes.func.isRequired,
     history: PropTypes.object.isRequired,
+    login: PropTypes.func.isRequired,
+    loginError: PropTypes.func.isRequired,
     userIsLoggedIn: PropTypes.bool.isRequired
 };
 

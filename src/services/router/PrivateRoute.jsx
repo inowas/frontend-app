@@ -3,7 +3,8 @@ import {connect} from 'react-redux';
 import {Route, Redirect} from 'react-router-dom';
 import PropTypes from 'prop-types';
 import {getFetched, getRoles, hasSessionKey} from '../../scenes/user/reducers';
-import * as Action from "../../scenes/user/actions/actions";
+import * as Action from '../../scenes/user/actions/actions';
+import {fetchUrl} from '../api';
 
 class PrivateRoute extends React.Component {
 
@@ -19,13 +20,22 @@ class PrivateRoute extends React.Component {
         return hasAccess;
     };
 
+    fetchUser = () => {
+        fetchUrl('/users.json',
+            response => {
+                this.props.setUser(response);
+            },
+            e => this.setState({error: e})
+        )
+    };
+
     render() {
         if (!this.props.userHasSessionKey) {
             return (<Redirect to={'/login'}/>);
         }
 
         if (!this.props.userDataIsFetched) {
-            this.props.fetchUser();
+            this.fetchUser();
             return null;
         }
 
@@ -39,7 +49,7 @@ class PrivateRoute extends React.Component {
 }
 
 const mapDispatchToProps = {
-    fetchUser: Action.fetchUser,
+    setUser: Action.setUser,
 };
 
 const mapStateToProps = state => {
@@ -52,7 +62,6 @@ const mapStateToProps = state => {
 
 PrivateRoute.propTypes = {
     component: PropTypes.func.isRequired,
-    fetchUser: PropTypes.func.isRequired,
     forRoles: PropTypes.array.isRequired,
     userDataIsFetched: PropTypes.bool.isRequired,
     userHasSessionKey: PropTypes.bool.isRequired
