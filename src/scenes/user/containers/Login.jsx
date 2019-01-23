@@ -73,6 +73,9 @@ class Login extends React.Component {
                                 Log-in to your account
                             </Header.Content>
                         </Header>
+                        {this.state.error &&
+                        <Message negative><p>Wrong username or password. <br/>Please try again.</p></Message>
+                        }
                         <Form size={'small'} className="fluid segment">
                             <Form.Field>
                                 <input
