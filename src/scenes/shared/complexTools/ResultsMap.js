@@ -1,13 +1,12 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import {BoundaryCollection, ModflowModel} from 'core/model/modflow';
-import {CircleMarker, GeoJSON, LayersControl, Map, Rectangle} from 'react-leaflet';
+import {CircleMarker, FeatureGroup, GeoJSON, LayersControl, Map, Rectangle} from 'react-leaflet';
 import {BasicTileLayer} from 'services/geoTools/tileLayers';
 import {getStyle} from 'services/geoTools/mapHelpers';
 import {ColorLegend, ReactLeafletHeatMapCanvasOverlay} from '../rasterData';
 import {createGridData, max, min, rainbowFactory} from '../rasterData/helpers';
 import {getActiveCellFromCoordinate} from 'services/geoTools';
-import FeatureGroup from 'react-leaflet/es/FeatureGroup';
 
 const style = {
     map: {

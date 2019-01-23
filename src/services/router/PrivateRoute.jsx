@@ -52,13 +52,11 @@ const mapDispatchToProps = {
     setUser: Action.setUser,
 };
 
-const mapStateToProps = state => {
-    return {
-        userRoles: getRoles(state.user),
-        userHasSessionKey: hasSessionKey(state.session),
-        userDataIsFetched: getFetched(state.user)
-    };
-};
+const mapStateToProps = state => ({
+    userRoles: getRoles(state.user),
+    userHasSessionKey: hasSessionKey(state.session),
+    userDataIsFetched: getFetched(state.user)
+});
 
 PrivateRoute.propTypes = {
     component: PropTypes.func.isRequired,
