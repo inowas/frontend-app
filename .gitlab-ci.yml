@@ -36,7 +36,7 @@ deploy:dev:
     - docker push inowas/inowas-dss-cra
 
   only:
-    - test-gitlab-ci
+    - dev
     
 build:prod:
   image: node:11
