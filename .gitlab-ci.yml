@@ -5,7 +5,7 @@ stages:
 services:
   - docker:dind  
 
-build_dev:
+build:dev:
   image: node:11
   stage: build
   
@@ -21,11 +21,11 @@ build_dev:
   only:
     - dev
     
-deploy_dev:
+deploy:dev:
   image: docker:latest
   stage: deploy
   dependencies: 
-    - build_dev
+    - build:dev
     
   before_script:
    - docker info
@@ -38,7 +38,7 @@ deploy_dev:
   only:
     - test-gitlab-ci
     
-build_dev:
+build:prod:
   image: node:11
   stage: build
   
@@ -54,11 +54,11 @@ build_dev:
   only:
     - master
     
-deploy_dev:
+deploy:prod:
   image: docker:latest
   stage: deploy
   dependencies: 
-    - build_dev
+    - build:dev
     
   before_script:
    - docker info
