@@ -1,0 +1,24 @@
+{
+  "type": "object",
+  "id": "https://inowas.com/schema/command/updateScenarioAnalysisPayload",
+  "properties": {
+    "id": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$"
+    },
+    "name": {
+      "type": "string"
+    },
+    "description": {
+      "type": "string"
+    },
+    "public": {
+      "type": "boolean"
+    }
+  },
+  "required": [
+    "id",
+    "name",
+    "public"
+  ]
+}
