@@ -31,6 +31,22 @@ class TilesCollection extends AbstractCollection {
         return BoundingBox.fromArray([[xMin, yMin], [xMax, yMax]]);
     }
 
+    get uniqueValues() {
+        const distinct = [];
+
+        this.all.forEach(tile => {
+            tile.data.forEach(row => {
+                row.forEach(value => {
+                    if (!distinct.includes(value)) {
+                        distinct.push(value);
+                    }
+                })
+            });
+        });
+
+        return distinct;
+    }
+
     findByBoundingBox(boundingBox) {
         if (!(boundingBox instanceof BoundingBox)) {
             throw new Error('BoundingBox expected to be instance of BoundingBox');

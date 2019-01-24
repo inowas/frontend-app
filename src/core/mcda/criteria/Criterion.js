@@ -96,7 +96,34 @@ class Criterion {
             throw new Error(`There are no rules defined for criterion ${this.name}.`);
         }
 
-        /*const boundingBox = this.tilesCollection.boundingBox;
+        this.suitability = _cloneDeep(this.tilesCollection.first);
+        const data = this.tilesCollection.first.data;
+
+        this.suitability.data = _cloneDeep(data).map(row => {
+            return row.map(cell => {
+                const rules = this.rulesCollection.findByValue(cell);
+                if (rules.length === 0) {
+                    return 0;
+                }
+                if (rules.length === 1) {
+                    const rule = rules[0];
+                    if (rule.type === 'fixed') {
+                        return parseFloat(rule.value);
+                    }
+                    if (rule.type === 'calc') {
+                        return math.eval(rule.expression, {min: this.tilesCollection.first.min, max: this.tilesCollection.first.max, x: cell});
+                    }
+                }
+                return -1;
+            });
+        });
+    }
+}
+
+export default Criterion;
+
+
+/*const boundingBox = this.tilesCollection.boundingBox;
         const gridSize = new GridSize(10, 20); //this.suitability.gridSize || new GridSize(10, 10);
         const raster = new Raster();
         const array = new Array(gridSize.nY).fill(0).map(() => new Array(gridSize.nX).fill(0)).slice(0);
@@ -123,29 +150,3 @@ class Criterion {
                 return 0;
             });
         });*/
-
-        this.suitability = _cloneDeep(this.tilesCollection.first);
-        const data = this.tilesCollection.first.data;
-
-        this.suitability.data = _cloneDeep(data).map(row => {
-            return row.map(cell => {
-                const rules = this.rulesCollection.findByValue(cell);
-                if (rules.length === 0) {
-                    return 0;
-                }
-                if (rules.length === 1) {
-                    const rule = rules[0];
-                    if (rule.type === 'fixed') {
-                        return parseFloat(rule.value);
-                    }
-                    if (rule.type === 'calc') {
-                        return math.eval(rule.expression, {min: this.tilesCollection.first.min, max: this.tilesCollection.first.max, x: cell});
-                    }
-                }
-                return -1;
-            });
-        });
-    }
-}
-
-export default Criterion;

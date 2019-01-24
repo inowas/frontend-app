@@ -5,6 +5,7 @@ import {Button, Grid, Icon, Message, Segment, Table} from 'semantic-ui-react';
 import CriteriaReclassificationModal from './criteriaReclassificationModal';
 import {CartesianGrid, Scatter, ScatterChart, XAxis, YAxis} from 'recharts';
 import * as math from 'mathjs'
+import CriteriaReclassificationDiscrete from "./criteriaReclassificationDiscrete";
 
 class CriteriaReclassification extends React.Component {
 
@@ -189,11 +190,7 @@ class CriteriaReclassification extends React.Component {
                 </Grid.Row>
                 }
             </Grid>
-        )
-    }
-
-    renderEditorDiscrete() {
-        return <div>WIP</div>;
+        );
     }
 
     render() {
@@ -209,8 +206,15 @@ class CriteriaReclassification extends React.Component {
                     rule={Rule.fromObject(rule)}
                 />
                 }
-                {criterion.type === 'continuous' && this.renderEditorContinuous()}
-                {criterion.type === 'discrete' && this.renderEditorDiscrete()}
+                {criterion.type === 'continuous' &&
+                this.renderEditorContinuous()
+                }
+                {criterion.type === 'discrete' &&
+                <CriteriaReclassificationDiscrete
+                    criterion={this.props.criterion}
+                    onChange={() => null}
+                />
+                }
             </div>
         );
     }

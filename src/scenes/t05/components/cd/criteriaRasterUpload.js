@@ -71,10 +71,25 @@ class CriteriaRasterUpload extends React.Component {
         criterion.tilesCollection.add(tile);
 
         criterion.rulesCollection = new RulesCollection();
-        const rule = new Rule();
-        rule.from = tile.min;
-        rule.to = tile.max;
-        criterion.rulesCollection.add(rule);
+        if (criterion.type === 'continuous') {
+            const rule = new Rule();
+            rule.from = tile.min;
+            rule.to = tile.max;
+            criterion.rulesCollection.add(rule);
+        }
+        if (criterion.type === 'discrete') {
+            const uniqueValues = criterion.tilesCollection.uniqueValues;
+            uniqueValues.forEach(value => {
+                const rule = new Rule();
+                rule.from = value;
+                rule.to = value;
+                criterion.rulesCollection.add(rule);
+            });
+            console.log({
+                uniqueValues,
+                criterion
+            });
+        }
 
         this.setState({
             activeTile: tile.toObject(),
@@ -88,6 +103,8 @@ class CriteriaRasterUpload extends React.Component {
     render() {
         const {activeTile, showInfo, showBasicLayer, showUploadModal} = this.state;
         const {tilesCollection} = this.props.criterion;
+
+        console.log(this.props.criterion);
 
         return (
             <Grid>
