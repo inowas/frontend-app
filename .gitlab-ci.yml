@@ -2,9 +2,6 @@ stages:
   - test
   - build
   - deploy
-  
-services:
-  - docker:dind  
 
 test:
   image: node:11
@@ -30,11 +27,51 @@ build:dev:
   only:
     - dev
     - staging
-
-deploy:dev:staging:
+    
+deploy:dev:
   stage: deploy
   dependencies: 
     - build:dev
+
+  before_script:
+    - 'which ssh-agent || ( apt-get update -y && apt-get install openssh-client -y )'
+    - mkdir -p ~/.ssh
+    - eval $(ssh-agent -s)
+    - '[[ -f /.dockerenv ]] && echo -e "Host *\n\tStrictHostKeyChecking no\n\n" > ~/.ssh/config'
+    - ssh-add <(echo "$STAGING_PRIVATE_KEY")
+    - apt-get install rsync -y
+  script:
+    - ssh -p22 $SSH_CREDENTIALS_DEVELOPMENT_SERVER "mkdir -p $DEVELOPMENT_PATH.tmp/"
+    - rsync -rav -e ssh ./build/ $SSH_CREDENTIALS_DEVELOPMENT_SERVER:/$DEVELOPMENT_PATH.tmp/
+    - ssh -p22 $SSH_CREDENTIALS_DEVELOPMENT_SERVER "mv $DEVELOPMENT_PATH $DEVELOPMENT_PATH.old"
+    - ssh -p22 $SSH_CREDENTIALS_DEVELOPMENT_SERVER "mv $DEVELOPMENT_PATH.tmp $DEVELOPMENT_PATH"
+    - ssh -p22 $SSH_CREDENTIALS_DEVELOPMENT_SERVER "rm -rf $DEVELOPMENT_PATH.old"
+  environment:
+    name: development
+    url: https://dev.rabbl.de
+  only:
+    - dev    
+
+build:prod:
+  image: node:11
+  stage: build
+  
+  script: 
+    - yarn install
+    - REACT_APP_API_URL=https://api.dss.inowas.hydro.tu-dresden.de NODE_PATH=src yarn build
+    - VERSION=$(git describe --tags --always --dirty=+) && DATE=$(date +%Y-%m-%dT%H:%M:%S) && sed -i "s/@@__VERSION__@@/${VERSION}/g;s/@@__BUILT__@@/${DATE}/g" ./build/index.html
+
+  artifacts:
+    paths:
+      - build/
+      
+  only:
+    - master
+
+deploy:prod:staging:
+  stage: deploy
+  dependencies: 
+    - build:prod
 
   before_script:
     - 'which ssh-agent || ( apt-get update -y && apt-get install openssh-client -y )'
@@ -53,9 +90,9 @@ deploy:dev:staging:
     name: staging
     url: https://staging.rabbl.de
   only:
-    - staging
+    - master
 
-deploy:dev:production:
+deploy:prod:production:
   stage: deploy
   dependencies: 
     - build:dev
@@ -79,53 +116,3 @@ deploy:dev:production:
   when: manual    
   only:
     - staging    
-
-deploy:dev:
-  image: docker:latest
-  stage: deploy
-  dependencies: 
-    - build:dev
-    
-  before_script:
-   - docker info
-   - docker login -u $DOCKERHUB_USERNAME -p $DOCKERHUB_PASSWORD
-  
-  script: 
-    - docker build  -t inowas/inowas-dss-cra:dev .
-    - docker push inowas/inowas-dss-cra
-
-  only:
-    - dev
-    
-build:prod:
-  image: node:11
-  stage: build
-  
-  script: 
-    - yarn install
-    - REACT_APP_API_URL=https://api.dss.inowas.hydro.tu-dresden.de NODE_PATH=src yarn build
-    - VERSION=$(git describe --tags --always --dirty=+) && DATE=$(date +%Y-%m-%dT%H:%M:%S) && sed -i "s/@@__VERSION__@@/${VERSION}/g;s/@@__BUILT__@@/${DATE}/g" ./build/index.html
-
-  artifacts:
-    paths:
-      - build/
-      
-  only:
-    - master
-    
-deploy:prod:
-  image: docker:latest
-  stage: deploy
-  dependencies: 
-    - build:dev
-    
-  before_script:
-   - docker info
-   - docker login -u $DOCKERHUB_USERNAME -p $DOCKERHUB_PASSWORD
-  
-  script: 
-    - docker build  -t inowas/inowas-dss-cra:prod .
-    - docker push inowas/inowas-dss-cra
-
-  only:
-    - master
