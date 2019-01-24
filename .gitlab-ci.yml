@@ -43,7 +43,7 @@ deploy:dev:staging:
     - ssh-add <(echo "$STAGING_PRIVATE_KEY")
     - apt-get install rsync -y
   script:
-    - ssh -p22 SSH_CREDENTIALS_STAGING_SERVER "mkdir -p /w0190139/staging.rabbl.de.tmp/"
+    - ssh -p22 $SSH_CREDENTIALS_STAGING_SERVER "mkdir -p /w0190139/staging.rabbl.de.tmp/"
     - rsync -rav -e ssh ./build $SSH_CREDENTIALS_STAGING_SERVER:/w0190139/staging.rabbl.de.tmp/
     - ssh -p22 user@staging.example.com "mv /w0190139/staging.rabbl.de /w0190139/staging.rabbl.de.old"
     - ssh -p22 user@staging.example.com "mv /w0190139/staging.rabbl.de.tmp /w0190139/staging.rabbl.de"
