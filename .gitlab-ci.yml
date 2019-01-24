@@ -2,9 +2,6 @@ stages:
   - test
   - build
   - deploy
-  
-services:
-  - docker:dind  
 
 test:
   image: node:11
@@ -29,8 +26,8 @@ build:dev:
       
   only:
     - dev
-
-deploy:dev:staging:
+    
+deploy:dev:
   stage: deploy
   dependencies: 
     - build:dev
@@ -41,34 +38,19 @@ deploy:dev:staging:
     - eval $(ssh-agent -s)
     - '[[ -f /.dockerenv ]] && echo -e "Host *\n\tStrictHostKeyChecking no\n\n" > ~/.ssh/config'
     - ssh-add <(echo "$STAGING_PRIVATE_KEY")
-    - apt-get install rsync
+    - apt-get install rsync -y
   script:
-    - ssh -p22 SSH_CREDENTIALS_STAGING_SERVER "mkdir -p /w0190139/staging.inowas.com.tmp"
-    - rsync -rav -e ssh ./build SSH_CREDENTIALS_STAGING_SERVER:/w0190139/staging.inowas.com.tmp/
-    - ssh -p22 user@staging.example.com "mv /w0190139/staging.inowas.com /w0190139/staging.inowas.com.old"
-    - ssh -p22 user@staging.example.com "mv /w0190139/staging.inowas.com.tmp /w0190139/staging.inowas.com"
-    
+    - ssh -p22 $SSH_CREDENTIALS_DEVELOPMENT_SERVER "mkdir -p $DEVELOPMENT_PATH.tmp/"
+    - rsync -rav -e ssh ./build/ $SSH_CREDENTIALS_DEVELOPMENT_SERVER:/$DEVELOPMENT_PATH.tmp/
+    - ssh -p22 $SSH_CREDENTIALS_DEVELOPMENT_SERVER "mv $DEVELOPMENT_PATH $DEVELOPMENT_PATH.old"
+    - ssh -p22 $SSH_CREDENTIALS_DEVELOPMENT_SERVER "mv $DEVELOPMENT_PATH.tmp $DEVELOPMENT_PATH"
+    - ssh -p22 $SSH_CREDENTIALS_DEVELOPMENT_SERVER "rm -rf $DEVELOPMENT_PATH.old"
+  environment:
+    name: development
+    url: https://dev.rabbl.de
   only:
-    - staging
-    
+    - dev    
 
-deploy:dev:
-  image: docker:latest
-  stage: deploy
-  dependencies: 
-    - build:dev
-    
-  before_script:
-   - docker info
-   - docker login -u $DOCKERHUB_USERNAME -p $DOCKERHUB_PASSWORD
-  
-  script: 
-    - docker build  -t inowas/inowas-dss-cra:dev .
-    - docker push inowas/inowas-dss-cra
-
-  only:
-    - dev
-    
 build:prod:
   image: node:11
   stage: build
@@ -84,20 +66,52 @@ build:prod:
       
   only:
     - master
-    
-deploy:prod:
-  image: docker:latest
+
+deploy:prod:staging:
+  stage: deploy
+  dependencies: 
+    - build:prod
+
+  before_script:
+    - 'which ssh-agent || ( apt-get update -y && apt-get install openssh-client -y )'
+    - mkdir -p ~/.ssh
+    - eval $(ssh-agent -s)
+    - '[[ -f /.dockerenv ]] && echo -e "Host *\n\tStrictHostKeyChecking no\n\n" > ~/.ssh/config'
+    - ssh-add <(echo "$STAGING_PRIVATE_KEY")
+    - apt-get install rsync -y
+  script:
+    - ssh -p22 $SSH_CREDENTIALS_STAGING_SERVER "mkdir -p $STAGING_PATH.tmp/"
+    - rsync -rav -e ssh ./build/ $SSH_CREDENTIALS_STAGING_SERVER:/$STAGING_PATH.tmp/
+    - ssh -p22 $SSH_CREDENTIALS_STAGING_SERVER "mv $STAGING_PATH $STAGING_PATH.old"
+    - ssh -p22 $SSH_CREDENTIALS_STAGING_SERVER "mv $STAGING_PATH.tmp $STAGING_PATH"
+    - ssh -p22 $SSH_CREDENTIALS_STAGING_SERVER "rm -rf $STAGING_PATH.old"
+  environment:
+    name: staging
+    url: https://staging.rabbl.de
+  only:
+    - master
+
+deploy:prod:production:
   stage: deploy
   dependencies: 
     - build:dev
-    
-  before_script:
-   - docker info
-   - docker login -u $DOCKERHUB_USERNAME -p $DOCKERHUB_PASSWORD
-  
-  script: 
-    - docker build  -t inowas/inowas-dss-cra:prod .
-    - docker push inowas/inowas-dss-cra
 
+  before_script:
+    - 'which ssh-agent || ( apt-get update -y && apt-get install openssh-client -y )'
+    - mkdir -p ~/.ssh
+    - eval $(ssh-agent -s)
+    - '[[ -f /.dockerenv ]] && echo -e "Host *\n\tStrictHostKeyChecking no\n\n" > ~/.ssh/config'
+    - ssh-add <(echo "$STAGING_PRIVATE_KEY")
+    - apt-get install rsync -y
+  script:
+    - ssh -p22 $SSH_CREDENTIALS_PRODUCTION_SERVER "mkdir -p $PRODUCTION_PATH.tmp/"
+    - rsync -rav -e ssh ./build/ $SSH_CREDENTIALS_PRODUCTION_SERVER:/$PRODUCTION_PATH.tmp/
+    - ssh -p22 $SSH_CREDENTIALS_PRODUCTION_SERVER "mv $PRODUCTION_PATH $PRODUCTION_PATH.old"
+    - ssh -p22 $SSH_CREDENTIALS_PRODUCTION_SERVER "mv $PRODUCTION_PATH.tmp $PRODUCTION_PATH"
+    - ssh -p22 $SSH_CREDENTIALS_PRODUCTION_SERVER "rm -rf $PRODUCTION_PATH.old"
+  environment:
+    name: production
+    url: https://production.rabbl.de    
+  when: manual    
   only:
-    - master
+    - master    
