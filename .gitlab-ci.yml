@@ -49,10 +49,36 @@ deploy:dev:staging:
     - ssh -p22 $SSH_CREDENTIALS_STAGING_SERVER "mv $STAGING_PATH $STAGING_PATH.old"
     - ssh -p22 $SSH_CREDENTIALS_STAGING_SERVER "mv $STAGING_PATH.tmp $STAGING_PATH"
     - ssh -p22 $SSH_CREDENTIALS_STAGING_SERVER "rm -rf $STAGING_PATH.old"
-    
+  environment:
+    name: staging
+    url: https://staging.rabbl.de
   only:
     - staging
-    
+
+deploy:dev:production:
+  stage: deploy
+  dependencies: 
+    - build:dev
+
+  before_script:
+    - 'which ssh-agent || ( apt-get update -y && apt-get install openssh-client -y )'
+    - mkdir -p ~/.ssh
+    - eval $(ssh-agent -s)
+    - '[[ -f /.dockerenv ]] && echo -e "Host *\n\tStrictHostKeyChecking no\n\n" > ~/.ssh/config'
+    - ssh-add <(echo "$STAGING_PRIVATE_KEY")
+    - apt-get install rsync -y
+  script:
+    - ssh -p22 $SSH_CREDENTIALS_STAGING_SERVER "mkdir -p $STAGING_PATH.tmp/"
+    - rsync -rav -e ssh ./build/ $SSH_CREDENTIALS_STAGING_SERVER:/$PRODUCTION_PATH.tmp/
+    - ssh -p22 $SSH_CREDENTIALS_STAGING_SERVER "mv $PRODUCTION_PATH $PRODUCTION_PATH.old"
+    - ssh -p22 $SSH_CREDENTIALS_STAGING_SERVER "mv $PRODUCTION_PATH.tmp $PRODUCTION_PATH"
+    - ssh -p22 $SSH_CREDENTIALS_STAGING_SERVER "rm -rf $PRODUCTION_PATH.old"
+  environment:
+    name: production
+    url: https://production.rabbl.de    
+  when: manual    
+  only:
+    - staging    
 
 deploy:dev:
   image: docker:latest
