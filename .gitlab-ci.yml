@@ -45,7 +45,7 @@ deploy:dev:staging:
     - apt-get install rsync -y
   script:
     - ssh -p22 $SSH_CREDENTIALS_STAGING_SERVER "mkdir -p $STAGING_PATH.tmp/"
-    - rsync -rav -e ssh ./build $SSH_CREDENTIALS_STAGING_SERVER:/w0190139/$STAGING_PATH.tmp/
+    - rsync -rav -e ssh ./build $SSH_CREDENTIALS_STAGING_SERVER:/$STAGING_PATH.tmp/
     - ssh -p22 $SSH_CREDENTIALS_STAGING_SERVER "mv $STAGING_PATH $STAGING_PATH.old"
     - ssh -p22 $SSH_CREDENTIALS_STAGING_SERVER "mv $STAGING_PATH.tmp $STAGING_PATH"
     
