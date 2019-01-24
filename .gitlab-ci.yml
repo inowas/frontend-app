@@ -26,7 +26,6 @@ build:dev:
       
   only:
     - dev
-    - staging
     
 deploy:dev:
   stage: deploy
@@ -115,4 +114,4 @@ deploy:prod:production:
     url: https://production.rabbl.de    
   when: manual    
   only:
-    - staging    
+    - master    
