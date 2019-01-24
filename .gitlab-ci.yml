@@ -68,7 +68,7 @@ deploy:dev:production:
     - ssh-add <(echo "$STAGING_PRIVATE_KEY")
     - apt-get install rsync -y
   script:
-    - ssh -p22 $SSH_CREDENTIALS_STAGING_SERVER "mkdir -p $STAGING_PATH.tmp/"
+    - ssh -p22 $SSH_CREDENTIALS_STAGING_SERVER "mkdir -p $PRODUCTION_PATH.tmp/"
     - rsync -rav -e ssh ./build/ $SSH_CREDENTIALS_STAGING_SERVER:/$PRODUCTION_PATH.tmp/
     - ssh -p22 $SSH_CREDENTIALS_STAGING_SERVER "mv $PRODUCTION_PATH $PRODUCTION_PATH.old"
     - ssh -p22 $SSH_CREDENTIALS_STAGING_SERVER "mv $PRODUCTION_PATH.tmp $PRODUCTION_PATH"
