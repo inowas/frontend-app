@@ -43,10 +43,11 @@ deploy:dev:staging:
     - ssh-add <(echo "$STAGING_PRIVATE_KEY")
     - apt-get install rsync
   script:
-    - ssh -p22 user@staging.example.com "mkdir -p /html/wp-content/themes/_tmp"
-    - rsync -rav -e ssh ./build user@staging.example.com:/staging.inowas.com/
-    - ssh -p22 user@staging.example.com "mv /html/wp-content/themes/fbn /html/wp-content/themes/_old && mv /html/wp-content/themes/_tmp /html/wp-content/themes/fbn"
-    - ssh -p22 user@staging.example.com "rm -rf /html/wp-content/themes/_old"
+    - ssh -p22 SSH_CREDENTIALS_STAGING_SERVER "mkdir -p /w0190139/staging.inowas.com.tmp"
+    - rsync -rav -e ssh ./build SSH_CREDENTIALS_STAGING_SERVER:/w0190139/staging.inowas.com.tmp/
+    - ssh -p22 user@staging.example.com "mv /w0190139/staging.inowas.com /w0190139/staging.inowas.com.old"
+    - ssh -p22 user@staging.example.com "mv /w0190139/staging.inowas.com.tmp /w0190139/staging.inowas.com"
+    
   only:
     - staging
     
