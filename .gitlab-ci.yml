@@ -29,6 +29,7 @@ build:dev:
       
   only:
     - dev
+    - staging
 
 deploy:dev:staging:
   stage: deploy
