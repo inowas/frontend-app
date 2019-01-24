@@ -34,7 +34,7 @@ class StressperiodsEditor extends React.Component {
         const stressperiods = Stressperiods.fromObject(this.state.stressperiods);
         const command = ModflowModelCommand.updateStressperiods({
             id: this.props.id,
-            stress_periods: stressperiods.toObject()
+            stress_periods: stressperiods.toCommand()
         });
 
         return sendCommand(command,
@@ -57,7 +57,6 @@ class StressperiodsEditor extends React.Component {
         const stressperiods = Stressperiods.fromObject(this.state.stressperiods);
         stressperiods.startDateTime = moment(this.state.stressperiodsLocal.start_date_time);
         stressperiods.endDateTime = moment(this.state.stressperiodsLocal.end_date_time);
-        console.log(stressperiods);
         stressperiods.recalculateStressperiods();
         return this.setState({
             stressperiods: stressperiods.toObject(),

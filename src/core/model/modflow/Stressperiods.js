@@ -5,6 +5,8 @@ import {TimeUnit} from './index';
 
 const dateToString = (date) => moment.utc(date).format('YYYY-MM-DD');
 
+const dateToDateTimeString = (date) => moment.utc(date).format('YYYY-MM-DDTHH:mm:ss');
+
 class Stressperiods {
 
     _startDateTime = null;
@@ -163,6 +165,15 @@ class Stressperiods {
         return {
             start_date_time: dateToString(this.startDateTime),
             end_date_time: dateToString(this.endDateTime),
+            stress_periods: this.stressperiods.map(sp => sp.toObject()),
+            time_unit: this.timeUnit
+        };
+    }
+
+    toCommand() {
+        return {
+            start_date_time: dateToDateTimeString(this.startDateTime),
+            end_date_time: dateToDateTimeString(this.endDateTime),
             stress_periods: this.stressperiods.map(sp => sp.toObject()),
             time_unit: this.timeUnit
         };
