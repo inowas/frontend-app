@@ -29,7 +29,28 @@ build:dev:
       
   only:
     - dev
+
+deploy:dev:staging:
+  stage: deploy
+  dependencies: 
+    - build:dev
+
+  before_script:
+    - 'which ssh-agent || ( apt-get update -y && apt-get install openssh-client -y )'
+    - mkdir -p ~/.ssh
+    - eval $(ssh-agent -s)
+    - '[[ -f /.dockerenv ]] && echo -e "Host *\n\tStrictHostKeyChecking no\n\n" > ~/.ssh/config'
+    - ssh-add <(echo "$STAGING_PRIVATE_KEY")
+    - apt-get install rsync
+  script:
+    - ssh -p22 user@staging.example.com "mkdir -p /html/wp-content/themes/_tmp"
+    - rsync -rav -e ssh ./build user@staging.example.com:/staging.inowas.com/
+    - ssh -p22 user@staging.example.com "mv /html/wp-content/themes/fbn /html/wp-content/themes/_old && mv /html/wp-content/themes/_tmp /html/wp-content/themes/fbn"
+    - ssh -p22 user@staging.example.com "rm -rf /html/wp-content/themes/_old"
+  only:
+    - staging
     
+
 deploy:dev:
   image: docker:latest
   stage: deploy
@@ -38,7 +59,7 @@ deploy:dev:
     
   before_script:
    - docker info
-   - docker login -u rabbl -p ululate-feaze-shrill
+   - docker login -u $DOCKERHUB_USERNAME -p $DOCKERHUB_PASSWORD
   
   script: 
     - docker build  -t inowas/inowas-dss-cra:dev .
@@ -71,7 +92,7 @@ deploy:prod:
     
   before_script:
    - docker info
-   - docker login -u rabbl -p ululate-feaze-shrill
+   - docker login -u $DOCKERHUB_USERNAME -p $DOCKERHUB_PASSWORD
   
   script: 
     - docker build  -t inowas/inowas-dss-cra:prod .
