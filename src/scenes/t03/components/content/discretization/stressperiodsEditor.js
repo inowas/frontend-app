@@ -16,8 +16,15 @@ import ModflowModelCommand from '../../../commands/modflowModelCommand';
 class StressperiodsEditor extends React.Component {
     constructor(props) {
         super(props);
+
+        const stressPeriods = props.stressperiods;
+
         this.state = {
-            stressperiods: props.stressperiods.toObject(),
+            stressperiods: stressPeriods.toObject(),
+            stressperiodsLocal: {
+                start_date_time: stressPeriods.startDateTime.format('YYYY-MM-DD'),
+                end_date_time: stressPeriods.endDateTime.format('YYYY-MM-DD')
+            },
             isDirty: false,
             isError: false
         }
@@ -39,14 +46,19 @@ class StressperiodsEditor extends React.Component {
         )
     };
 
-    handleInputChange = (e) => {
-        const {target} = e;
-        const {name, value} = target;
-        const date = moment(value);
+    handleLocalDateTimeChange = (e, {name, value}) => this.setState(prevState => ({
+        stressperiodsLocal: {
+            ...prevState.stressperiodsLocal,
+            [name]: value
+        }
+    }));
+
+    handleDateTimeChange = () => {
         const stressperiods = Stressperiods.fromObject(this.state.stressperiods);
-        stressperiods[name] = date;
+        stressperiods.startDateTime = new moment.utc(this.state.stressperiodsLocal.start_date_time);
+        stressperiods.endDateTime = new moment.utc(this.state.stressperiodsLocal.end_date_time);
         stressperiods.recalculateStressperiods();
-        this.setState({
+        return this.setState({
             stressperiods: stressperiods.toObject(),
             isDirty: true
         });
@@ -79,16 +91,18 @@ class StressperiodsEditor extends React.Component {
                             <Form.Input
                                 type='date'
                                 label='Start Date'
-                                name={'startDateTime'}
-                                value={Stressperiods.fromObject(this.state.stressperiods).startDateTime.format('YYYY-MM-DD')}
-                                onChange={this.handleInputChange}
+                                name={'start_date_time'}
+                                value={this.state.stressperiodsLocal.start_date_time}
+                                onBlur={this.handleDateTimeChange}
+                                onChange={this.handleLocalDateTimeChange}
                             />
                             <Form.Input
                                 type='date'
                                 label='End Date'
-                                name={'endDateTime'}
-                                value={Stressperiods.fromObject(this.state.stressperiods).endDateTime.format('YYYY-MM-DD')}
-                                onChange={this.handleInputChange}
+                                name={'end_date_time'}
+                                value={this.state.stressperiodsLocal.end_date_time}
+                                onBlur={this.handleDateTimeChange}
+                                onChange={this.handleLocalDateTimeChange}
                             />
                             <Form.Select
                                 label='Time unit'

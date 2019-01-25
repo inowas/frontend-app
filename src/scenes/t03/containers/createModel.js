@@ -34,7 +34,10 @@ class CreateModel extends React.Component {
             error: false,
             loading: false,
             gridSizeLocal: defaults.gridSize.toObject(),
-            stressperiodsLocal: defaults.stressperiods.toObject(),
+            stressperiodsLocal: {
+                startDateTime: defaults.stressperiods.startDateTime.format('YYYY-MM-DD'),
+                endDateTime: defaults.stressperiods.endDateTime.format('YYYY-MM-DD'),
+            },
             validation: [false, []]
         }
     }
@@ -98,16 +101,20 @@ class CreateModel extends React.Component {
         const {type, target} = e;
         const {name, value} = target;
 
-        const date = moment(value);
-
         if (type === 'change') {
-            const stressperiods = Stressperiods.fromObject(this.state.stressperiods);
-            stressperiods[name] = date;
-            this.setState({stressperiodsLocal: stressperiods.toObject()});
+            this.setState(prevState => ({
+                stressperiodsLocal: {
+                    ...prevState.stressperiodsLocal,
+                    [name]: value
+                }
+            }));
         }
 
         if (type === 'blur') {
-            this.setState({stressperiods: this.state.stressperiodsLocal}, () => this.validate());
+            const stressPeriods = Stressperiods.fromObject(this.state.stressperiods);
+            stressPeriods.startDateTime = new moment.utc(this.state.stressperiodsLocal.startDateTime);
+            stressPeriods.endDateTime = new moment.utc(this.state.stressperiodsLocal.endDateTime);
+            this.setState({stressperiods: stressPeriods.toObject()}, () => this.validate());
         }
     };
 
@@ -200,7 +207,7 @@ class CreateModel extends React.Component {
                                             type='date'
                                             label='Start Date'
                                             name={'startDateTime'}
-                                            value={Stressperiods.fromObject(this.state.stressperiodsLocal).startDateTime.format('YYYY-MM-DD')}
+                                            value={this.state.stressperiodsLocal.startDateTime}
                                             onChange={this.handleStressperiodsChange}
                                             onBlur={this.handleStressperiodsChange}
                                         />
@@ -208,7 +215,7 @@ class CreateModel extends React.Component {
                                             type='date'
                                             label='End Date'
                                             name={'endDateTime'}
-                                            value={Stressperiods.fromObject(this.state.stressperiodsLocal).endDateTime.format('YYYY-MM-DD')}
+                                            value={this.state.stressperiodsLocal.endDateTime}
                                             onChange={this.handleStressperiodsChange}
                                             onBlur={this.handleStressperiodsChange}
                                         />

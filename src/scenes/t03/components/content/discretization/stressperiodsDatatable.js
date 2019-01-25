@@ -88,7 +88,7 @@ class StressPeriodsDataTable extends React.Component {
                         type='date'
                         name={'startDateTime'}
                         idx={idx}
-                        value={moment(startDateTime).add(sp.totimStart, 'days').format('YYYY-MM-DD')}
+                        value={new moment.utc(startDateTime).add(sp.totimStart, 'days').format('YYYY-MM-DD')}
                         onChange={this.handleStressperiodChange}
                     />
                 </Table.Cell>
