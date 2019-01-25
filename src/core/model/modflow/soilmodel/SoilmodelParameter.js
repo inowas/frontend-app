@@ -85,7 +85,7 @@ class SoilmodelParameter {
             'label': this.label,
             'name': this.name,
             'unit': this.unit,
-            'value': this.value,
+            'value': this.value
         };
     }
 

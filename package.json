@@ -89,7 +89,7 @@
         "start": "react-scripts start",
         "build": "react-scripts build",
         "test": "react-scripts test",
-        "test:wc": "CI=true react-scripts test --coverage --coverageReporters=lcov",
+        "test:wc": "CI=true react-scripts test --coverage --coverageReporters=lcov --colors",
         "eject": "react-scripts eject"
     },
     "eslintConfig": {

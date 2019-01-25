@@ -11,7 +11,7 @@ class ZonesCollection extends AbstractCollection {
     }
 
     validateInput(zone) {
-        if (!zone instanceof SoilmodelZone) {
+        if (!(zone instanceof SoilmodelZone)) {
             throw new Error('Zone expected to be from Type Zone.');
         }
         return zone;

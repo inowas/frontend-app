@@ -9,7 +9,7 @@ class LayersCollection extends AbstractCollection {
     }
 
     validateInput(layer) {
-        if (!layer instanceof SoilmodelLayer) {
+        if (!(layer instanceof SoilmodelLayer)) {
             throw new Error('Layer expected to be from Type Layer.');
         }
         return layer;

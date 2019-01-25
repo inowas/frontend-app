@@ -38,7 +38,7 @@ class SoilmodelZone {
             zone.id = obj.id;
             zone.name = obj.name;
             zone.geometry = obj.geometry ? Geometry.fromObject(obj.geometry) : null;
-            zone.activeCells = obj.activeCells ? ActiveCells.fromArray(obj.activeCells) : null;
+            zone.activeCells = obj.activeCells ? ActiveCells.fromArray(obj.activeCells) : ActiveCells.create();
             zone.priority = obj.priority;
             zone.top = this.refactorParameter(obj.top, parseParameters);
             zone.botm = this.refactorParameter(obj.botm, parseParameters);
@@ -89,7 +89,7 @@ class SoilmodelZone {
     }
 
     set activeCells(value) {
-        this._activeCells = value ? value : [];
+        this._activeCells = value ? value : ActiveCells.create();
     }
 
     get priority() {
@@ -105,7 +105,7 @@ class SoilmodelZone {
     }
 
     set top(value) {
-        this._top = value;
+        this._top = value || SoilmodelParameter.fromObject(defaultParameters.top);
     }
 
     get botm() {
@@ -113,7 +113,7 @@ class SoilmodelZone {
     }
 
     set botm(value) {
-        this._botm = value;
+        this._botm = value || SoilmodelParameter.fromObject(defaultParameters.botm);
     }
 
     get hk() {
@@ -121,7 +121,7 @@ class SoilmodelZone {
     }
 
     set hk(value) {
-        this._hk = value;
+        this._hk = value || SoilmodelParameter.fromObject(defaultParameters.hk);
     }
 
     get hani() {
@@ -129,7 +129,7 @@ class SoilmodelZone {
     }
 
     set hani(value) {
-        this._hani = value;
+        this._hani = value || SoilmodelParameter.fromObject(defaultParameters.hani);
     }
 
     get vka() {
@@ -137,7 +137,7 @@ class SoilmodelZone {
     }
 
     set vka(value) {
-        this._vka = value;
+        this._vka = value || SoilmodelParameter.fromObject(defaultParameters.vka);
     }
 
     get ss() {
@@ -145,7 +145,7 @@ class SoilmodelZone {
     }
 
     set ss(value) {
-        this._ss = value;
+        this._ss = value || SoilmodelParameter.fromObject(defaultParameters.ss);
     }
 
     get sy() {
@@ -153,7 +153,7 @@ class SoilmodelZone {
     }
 
     set sy(value) {
-        this._sy = value;
+        this._sy = value || SoilmodelParameter.fromObject(defaultParameters.sy);
     }
 
     toObject() {
@@ -161,7 +161,7 @@ class SoilmodelZone {
             'id': this.id,
             'name': this.name,
             'geometry': this.geometry ? this.geometry.toObject() : null,
-            'activeCells': this.activeCells ? this.activeCells.toArray() : [],
+            'activeCells': this.activeCells.toArray(),
             'priority': this.priority,
             'top': this.top.toObject(),
             'botm': this.botm.toObject(),

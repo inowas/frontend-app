@@ -82,7 +82,7 @@ class SoilmodelLayer {
 
     set meta(value) {
         this._meta = value ? value : {
-            _zones: []
+            _zones: new ZonesCollection()
         };
     }
 
