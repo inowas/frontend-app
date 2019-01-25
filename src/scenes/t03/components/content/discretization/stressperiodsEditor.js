@@ -16,15 +16,10 @@ import ModflowModelCommand from '../../../commands/modflowModelCommand';
 class StressperiodsEditor extends React.Component {
     constructor(props) {
         super(props);
-
-        const stressPeriods = props.stressperiods;
-
         this.state = {
-            stressperiods: stressPeriods.toObject(),
-            stressperiodsLocal: {
-                start_date_time: stressPeriods.startDateTime.format('YYYY-MM-DD'),
-                end_date_time: stressPeriods.endDateTime.format('YYYY-MM-DD')
-            },
+            stressperiods: props.stressperiods.toObject(),
+            startDateTime: props.stressperiods.startDateTime.format('YYYY-MM-DD'),
+            endDateTime: props.stressperiods.endDateTime.format('YYYY-MM-DD'),
             isDirty: false,
             isError: false
         }
@@ -46,22 +41,26 @@ class StressperiodsEditor extends React.Component {
         )
     };
 
-    handleLocalDateTimeChange = (e, {name, value}) => this.setState(prevState => ({
-        stressperiodsLocal: {
-            ...prevState.stressperiodsLocal,
-            [name]: value
+    handleDateTimeChange = (e) => {
+        const  {name, value} = e.target;
+        if (e.type === 'change') {
+            this.setState({[name]: value})
         }
-    }));
 
-    handleDateTimeChange = () => {
-        const stressperiods = Stressperiods.fromObject(this.state.stressperiods);
-        stressperiods.startDateTime = new moment.utc(this.state.stressperiodsLocal.start_date_time);
-        stressperiods.endDateTime = new moment.utc(this.state.stressperiodsLocal.end_date_time);
-        stressperiods.recalculateStressperiods();
-        return this.setState({
-            stressperiods: stressperiods.toObject(),
-            isDirty: true
-        });
+        const date = moment.utc(value);
+        if (!date.isValid()) {
+            return;
+        }
+
+        if (e.type === 'blur') {
+            const stressperiods = Stressperiods.fromObject(this.state.stressperiods);
+            stressperiods[name] = date;
+            stressperiods.recalculateStressperiods();
+            this.setState({
+                stressperiods: stressperiods.toObject(),
+                isDirty: true
+            })
+        }
     };
 
     handleChange = stressperiods => {
@@ -91,18 +90,18 @@ class StressperiodsEditor extends React.Component {
                             <Form.Input
                                 type='date'
                                 label='Start Date'
-                                name={'start_date_time'}
-                                value={this.state.stressperiodsLocal.start_date_time}
+                                name={'startDateTime'}
+                                value={this.state.startDateTime}
                                 onBlur={this.handleDateTimeChange}
-                                onChange={this.handleLocalDateTimeChange}
+                                onChange={this.handleDateTimeChange}
                             />
                             <Form.Input
                                 type='date'
                                 label='End Date'
-                                name={'end_date_time'}
-                                value={this.state.stressperiodsLocal.end_date_time}
+                                name={'endDateTime'}
+                                value={this.state.endDateTime}
                                 onBlur={this.handleDateTimeChange}
-                                onChange={this.handleLocalDateTimeChange}
+                                onChange={this.handleDateTimeChange}
                             />
                             <Form.Select
                                 label='Time unit'
@@ -112,7 +111,7 @@ class StressperiodsEditor extends React.Component {
                             />
                         </Form>
                         <Message color={'blue'}>
-                            <strong>Total time: </strong>{Stressperiods.fromObject(this.state.stressperiods).totim} days
+                            <strong>Total time: </strong>{stressperiods.totim} days
                         </Message>
                     </Grid.Column>
                     <Grid.Column width={11}>

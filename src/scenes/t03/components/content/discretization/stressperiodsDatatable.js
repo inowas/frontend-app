@@ -9,18 +9,6 @@ class StressPeriodsDataTable extends React.Component {
         <Table.Row>
             <Table.HeaderCell width={6}>Start Date</Table.HeaderCell>
             <Popup
-                trigger={<Table.HeaderCell width={1}>tt</Table.HeaderCell>}
-                content='Total time'
-                hideOnScroll
-                size='tiny'
-            />
-            <Popup
-                trigger={<Table.HeaderCell width={1}>pl</Table.HeaderCell>}
-                content='Period length'
-                hideOnScroll
-                size='tiny'
-            />
-            <Popup
                 trigger={<Table.HeaderCell width={2}>nstp</Table.HeaderCell>}
                 content='No. of time steps'
                 hideOnScroll
@@ -54,8 +42,7 @@ class StressPeriodsDataTable extends React.Component {
         const stressperiod = stressperiods.getStressperiodByIdx(idx);
 
         if (name === 'startDateTime') {
-            const date = moment.utc(value);
-            stressperiod.totimStart = stressperiods.totimFromDate(date);
+            stressperiod.startDateTime = moment.utc(value);
         }
 
         if (name === 'steady') {
@@ -63,7 +50,6 @@ class StressPeriodsDataTable extends React.Component {
         }
 
         stressperiods.updateStressperiodByIdx(idx, stressperiod);
-        this.setState({stressperiods: stressperiods.toObject()});
         this.props.onChange(stressperiods);
     };
 
@@ -79,7 +65,6 @@ class StressPeriodsDataTable extends React.Component {
     render() {
         const {readOnly} = this.props.readOnly || false;
         const stressperiods = this.props.stressperiods;
-        const startDateTime = stressperiods.startDateTime;
         const rows = stressperiods.stressperiods.map((sp, idx) => (
             <Table.Row key={idx + '-' + sp.totim}>
                 <Table.Cell>
@@ -88,12 +73,10 @@ class StressPeriodsDataTable extends React.Component {
                         type='date'
                         name={'startDateTime'}
                         idx={idx}
-                        value={new moment.utc(startDateTime).add(sp.totimStart, 'days').format('YYYY-MM-DD')}
+                        value={moment.utc(sp.startDateTime).format('YYYY-MM-DD')}
                         onChange={this.handleStressperiodChange}
                     />
                 </Table.Cell>
-                <Table.Cell>{sp.totimStart}</Table.Cell>
-                <Table.Cell>{sp.perlen}</Table.Cell>
                 <Table.Cell>{sp.nstp}</Table.Cell>
                 <Table.Cell>{sp.tsmult}</Table.Cell>
                 <Table.Cell>
