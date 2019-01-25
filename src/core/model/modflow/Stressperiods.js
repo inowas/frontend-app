@@ -3,7 +3,7 @@ import Stressperiod from './Stressperiod';
 import {orderBy} from 'lodash';
 import {TimeUnit} from './index';
 
-const dateToString = (date) => moment.utc(date).format();
+const dateToString = (date) => moment.utc(date).toISOString();
 
 class Stressperiods {
 
