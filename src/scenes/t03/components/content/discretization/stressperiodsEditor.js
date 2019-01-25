@@ -17,13 +17,13 @@ class StressperiodsEditor extends React.Component {
     constructor(props) {
         super(props);
 
-        const stressPeriods = props.stressperiods.toObject();
+        const stressPeriods = props.stressperiods;
 
         this.state = {
-            stressperiods: stressPeriods,
+            stressperiods: stressPeriods.toObject(),
             stressperiodsLocal: {
-                start_date_time: stressPeriods.start_date_time,
-                end_date_time: stressPeriods.end_date_time
+                start_date_time: stressPeriods.startDateTime.format('YYYY-MM-DD'),
+                end_date_time: stressPeriods.endDateTime.format('YYYY-MM-DD')
             },
             isDirty: false,
             isError: false
@@ -34,7 +34,7 @@ class StressperiodsEditor extends React.Component {
         const stressperiods = Stressperiods.fromObject(this.state.stressperiods);
         const command = ModflowModelCommand.updateStressperiods({
             id: this.props.id,
-            stress_periods: stressperiods.toCommand()
+            stress_periods: stressperiods.toObject()
         });
 
         return sendCommand(command,
@@ -55,8 +55,8 @@ class StressperiodsEditor extends React.Component {
 
     handleDateTimeChange = () => {
         const stressperiods = Stressperiods.fromObject(this.state.stressperiods);
-        stressperiods.startDateTime = moment(this.state.stressperiodsLocal.start_date_time);
-        stressperiods.endDateTime = moment(this.state.stressperiodsLocal.end_date_time);
+        stressperiods.startDateTime = new moment.utc(this.state.stressperiodsLocal.start_date_time);
+        stressperiods.endDateTime = new moment.utc(this.state.stressperiodsLocal.end_date_time);
         stressperiods.recalculateStressperiods();
         return this.setState({
             stressperiods: stressperiods.toObject(),

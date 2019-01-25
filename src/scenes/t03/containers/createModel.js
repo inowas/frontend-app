@@ -35,8 +35,8 @@ class CreateModel extends React.Component {
             loading: false,
             gridSizeLocal: defaults.gridSize.toObject(),
             stressperiodsLocal: {
-                startDateTime: '2000-01-01',
-                endDateTime: '2019-12-31'
+                startDateTime: defaults.stressperiods.startDateTime.format('YYYY-MM-DD'),
+                endDateTime: defaults.stressperiods.endDateTime.format('YYYY-MM-DD'),
             },
             validation: [false, []]
         }
@@ -112,8 +112,8 @@ class CreateModel extends React.Component {
 
         if (type === 'blur') {
             const stressPeriods = Stressperiods.fromObject(this.state.stressperiods);
-            stressPeriods.startDateTime = moment(this.state.stressperiodsLocal.startDateTime);
-            stressPeriods.endDateTime = moment(this.state.stressperiodsLocal.endDateTime);
+            stressPeriods.startDateTime = new moment.utc(this.state.stressperiodsLocal.startDateTime);
+            stressPeriods.endDateTime = new moment.utc(this.state.stressperiodsLocal.endDateTime);
             this.setState({stressperiods: stressPeriods.toObject()}, () => this.validate());
         }
     };
