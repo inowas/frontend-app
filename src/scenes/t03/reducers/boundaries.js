@@ -1,4 +1,5 @@
 import {CLEAR} from './model';
+import {LOGOUT, UNAUTHORIZED} from '../../user/actions/actions';
 
 export const UPDATE_BOUNDARIES = 'T03_UPDATE_BOUNDARIES';
 
@@ -11,6 +12,11 @@ const boundaries = (state = initialState, action) => {
 
         case UPDATE_BOUNDARIES:
             return action.boundaries;
+
+        case UNAUTHORIZED:
+        case LOGOUT: {
+            return initialState;
+        }
 
         default:
             return state;

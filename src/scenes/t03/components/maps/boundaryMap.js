@@ -5,13 +5,13 @@ import {GeoJSON, Map, CircleMarker} from 'react-leaflet';
 import {Boundary, Geometry, MultipleOPBoundary} from 'core/model/modflow';
 import {BasicTileLayer} from 'services/geoTools/tileLayers';
 
-import {disableMap, getStyle} from './index';
+import {getStyle} from './index';
 
 
 
 const style = {
     map: {
-        height: '200px',
+        height: '400px',
     }
 };
 
@@ -72,9 +72,6 @@ class BoundaryMap extends Component {
         return (
             <Map
                 style={style.map}
-                ref={map => {
-                    disableMap(map)
-                }}
                 zoomControl={false}
                 bounds={geometry.getBoundsLatLng()}
             >

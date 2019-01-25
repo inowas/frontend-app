@@ -1,8 +1,9 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import moment from 'moment';
+import uuidv4 from 'uuid/v4';
 
-import {Button, Table} from 'semantic-ui-react';
+import {Button, Icon, Input, Table} from 'semantic-ui-react';
 import {Boundary, Stressperiods} from 'core/model/modflow';
 import {cloneDeep} from 'lodash';
 import CsvUpload from '../../../../shared/simpleTools/upload/CsvUpload';
@@ -13,17 +14,25 @@ class BoundaryValuesDataTable extends React.Component {
         super(props);
         this.state = {
             uploadState: {
+                activeInput: null,
                 error: false,
-                errorMsg: '',
+                errorMsg: [],
+                id: uuidv4(),
                 success: false
             }
         };
     }
 
-    handleDateTimeValueChange = (row, col) => (e) => {
-        const name = e.target.name;
-        const value = e.target.value;
+    handleLocalChange = (row, col) => e => this.setState({
+        activeInput: {
+            col,
+            name: e.target.name,
+            row,
+            value: e.target.value
+        }
+    });
 
+    handleDateTimeChange = row => (e, {name, value}) => {
         const {boundary, selectedOP} = this.props;
         let dateTimeValues = boundary.getDateTimeValues(selectedOP);
 
@@ -37,6 +46,24 @@ class BoundaryValuesDataTable extends React.Component {
                 return dtv;
             });
         }
+
+        boundary.setDateTimeValues(dateTimeValues, selectedOP);
+        this.props.onChange(boundary)
+    };
+
+    handleDateTimeValueChange = () => {
+        if (!this.state.activeInput) {
+            return;
+        }
+
+        const {name, value, row, col} = this.state.activeInput;
+
+        this.setState({
+            activeInput: null
+        });
+
+        const {boundary, selectedOP} = this.props;
+        let dateTimeValues = boundary.getDateTimeValues(selectedOP);
 
         if (name === 'dateTimeValue') {
             dateTimeValues = dateTimeValues.map((dtv, dtvIdx) => {
@@ -98,33 +125,35 @@ class BoundaryValuesDataTable extends React.Component {
         }
     };
 
-    body = (dateTimeValues) => (
-        dateTimeValues.map((dtv, dtvIdx) => (
+    body = (dateTimeValues) => {
+        const {activeInput} = this.state;
+
+        return dateTimeValues.map((dtv, dtvIdx) => (
             <Table.Row key={dtvIdx}>
                 <Table.Cell>
-                    <input
+                    <Input
                         style={this.getCellStyle()}
                         disabled={this.props.readOnly}
                         id={dtvIdx}
                         name={'dateTime'}
-                        onChange={this.handleDateTimeValueChange(dtvIdx)}
+                        onChange={this.handleDateTimeChange(dtvIdx)}
                         type={'date'}
                         value={moment(dtv.date_time).format('YYYY-MM-DD')}
                     />
                 </Table.Cell>
                 {dtv.values.map((v, vIdx) => (
-                    <Table.Cell key={vIdx}>
-                        <input
+                    <Table.Cell key={vIdx} width={10}>
+                        <Input
                             style={this.getCellStyle(dtv.values.length)}
                             disabled={this.props.readOnly}
                             id={dtvIdx}
                             col={vIdx}
                             name={'dateTimeValue'}
-                            onChange={this.handleDateTimeValueChange(dtvIdx, vIdx)}
+                            onBlur={this.handleDateTimeValueChange}
+                            onChange={this.handleLocalChange(dtvIdx, vIdx)}
                             type={'number'}
-                            value={v}
-                        >
-                        </input>
+                            value={activeInput && activeInput.col === vIdx && activeInput.row === dtvIdx ? activeInput.value : v}
+                        />
                     </Table.Cell>
                 ))}
                 <Table.Cell>
@@ -137,24 +166,43 @@ class BoundaryValuesDataTable extends React.Component {
                 </Table.Cell>
             </Table.Row>
         ))
-    );
+    };
 
     handleCSV = (e) => {
+        let hasError = false;
+        const errorMessages = [];
         const dateTimeValues = [];
 
-        if (!moment.utc(e.data[0]).isValid()) {
+        const dateCodes = ['years', 'months', 'days', 'hours', 'minutes', 'seconds', 'milliseconds'];
+        const firstLine = moment.utc(e.data[0][0]);
+
+        if (!firstLine.isValid()) {
             return this.setState({
                 uploadState: {
                     error: true,
-                    errorMsg: 'Error: wrong file format',
+                    errorMsg: [`Invalid date_time at line 1 at ${dateCodes[firstLine.invalidAt()]}.`],
+                    id: uuidv4(),
                     success: false
                 }
             });
         }
 
-        e.data.forEach(row => {
-            const values = this.props.boundary.defaultValues.map((v, key) => row[key + 1] || v);
+        e.data.forEach((row, rKey) => {
+            const values = this.props.boundary.defaultValues.map((v, vKey) => {
+                if (row[vKey + 1] && isNaN(row[vKey + 1])) {
+                    hasError = true;
+                    errorMessages.push(`Invalid value at line ${rKey + 1}, column ${vKey + 1}: value is not a number.`);
+                }
+
+                return row[vKey + 1] || v;
+            });
             const date_time = moment.utc(row[0]);
+
+            if (!date_time.isValid()) {
+                hasError = true;
+                errorMessages.push(`Invalid date_time at line ${rKey + 1} at ${dateCodes[firstLine.invalidAt()]}.`);
+                return;
+            }
 
             const dateTimeValue = {
                 date_time: date_time.toISOString(),
@@ -162,15 +210,20 @@ class BoundaryValuesDataTable extends React.Component {
             };
             dateTimeValues.push(dateTimeValue);
         });
-        const {boundary, selectedOP} = this.props;
-        boundary.setDateTimeValues(dateTimeValues, selectedOP);
-        this.props.onChange(boundary);
+
+        if (!hasError) {
+            const {boundary, selectedOP} = this.props;
+            boundary.setDateTimeValues(dateTimeValues, selectedOP);
+            this.props.onChange(boundary);
+        }
 
         return this.setState({
             uploadState: {
                 ...this.state.uploadState,
-                error: false,
-                success: true
+                error: hasError,
+                errorMsg: errorMessages,
+                id: uuidv4(),
+                success: !hasError
             }
         });
     };
@@ -181,7 +234,8 @@ class BoundaryValuesDataTable extends React.Component {
 
         return (
             <div>
-                <Table color={'red'} size={'small'} singleLine>
+                <CsvUpload uploadState={this.state.uploadState} onUploaded={this.handleCSV}/>
+                <Table size={'small'} singleLine>
                     <Table.Header>
                         <Table.Row>
                             <Table.HeaderCell>Start Date</Table.HeaderCell>
@@ -192,12 +246,14 @@ class BoundaryValuesDataTable extends React.Component {
                     </Table.Header>
                     <Table.Body>{dateTimeValues && this.body(dateTimeValues)}</Table.Body>
                 </Table>
-                <Button.Group fluid>
-                    <Button onClick={() => this.addNewDatetimeValue(1, 'days')}>+1 Day</Button>
-                    <Button onClick={() => this.addNewDatetimeValue(1, 'weeks')}>+1 Week</Button>
-                    <Button onClick={() => this.addNewDatetimeValue(1, 'months')}>+1 Month</Button>
-                    <Button onClick={() => this.addNewDatetimeValue(1, 'years')}>+1 Year</Button>
-                    <CsvUpload uploadState={this.state.uploadState} onUploaded={this.handleCSV} />
+                <Button.Group size={'small'}>
+                    <Button icon onClick={() => this.addNewDatetimeValue(1, 'days')}><Icon name='add circle'/> 1
+                        Day</Button>
+                    <Button icon onClick={() => this.addNewDatetimeValue(1, 'weeks')}><Icon name='add circle'/> 1
+                        Week</Button>
+                    <Button icon onClick={() => this.addNewDatetimeValue(1, 'months')}><Icon name='add circle'/> 1 Month</Button>
+                    <Button icon onClick={() => this.addNewDatetimeValue(1, 'years')}><Icon name='add circle'/> 1
+                        Year</Button>
                 </Button.Group>
             </div>
         )

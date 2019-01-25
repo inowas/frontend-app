@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import {SoilmodelLayer, SoilmodelZone} from 'core/model/modflow/soilmodel';
-import {Accordion, Button, Form, Grid, Header, Icon, Segment} from 'semantic-ui-react';
+import {Button, Form, Grid, Header, Icon} from 'semantic-ui-react';
 import {ModflowModel} from 'core/model/modflow';
 import ZoneModal from './zoneModal';
 import ZonesTable from './zonesTable';
@@ -66,14 +66,6 @@ class LayerParameter extends React.Component {
         })
     };
 
-    onClickAccordion = (e, titleProps) => {
-        const {index} = titleProps;
-        const {activeIndex} = this.state;
-        const newIndex = activeIndex === index ? -1 : index;
-
-        this.setState({activeIndex: newIndex});
-    };
-
     onEditZone = (id) => {
         const layer = SoilmodelLayer.fromObject(this.state.layer);
         const zone = layer.zonesCollection.findById(id);
@@ -108,7 +100,7 @@ class LayerParameter extends React.Component {
         const {parameter} = this.state;
         const layer = SoilmodelLayer.fromObject(this.state.layer);
         const base = layer.zonesCollection.findBy('priority', 0, true);
-        base[parameter.name] = Array.from(data);
+        base[parameter.name].value = Array.from(data);
         layer.zonesCollection.update(base);
         layer.zonesToParameters(this.props.model.gridSize, parameter.name);
         this.setState({showRasterUploadModal: false});
@@ -124,82 +116,72 @@ class LayerParameter extends React.Component {
 
         return (
             <div>
-                <Segment>
-                    <Header as="h4">{parameter.description}, {parameter.name} [{parameter.unit}]</Header>
-                    <Grid divided>
-                        <Grid.Column width={8}>
-                            <RasterDataMap
-                                data={layer[parameter.name]}
-                                model={model}
-                                unit={parameter.unit}
-                            />
-                        </Grid.Column>
-                        <Grid.Column width={8}>
-                            <Accordion fluid>
-                                <Accordion.Title active={this.state.activeIndex === 1} index={1}
-                                                 onClick={this.onClickAccordion}>
-                                    <Icon name="dropdown"/>
-                                    Smoothing
-                                </Accordion.Title>
-                                <Accordion.Content active={this.state.activeIndex === 1}>
-                                    <Form.Field>
-                                        <label>Cycles</label>
-                                        <Form.Input
-                                            type="number"
-                                            name="cycles"
-                                            value={this.state.smoothParams.cycles}
-                                            placeholder="cycles ="
-                                            onChange={this.onChangeSmoothParams}
-                                        />
-                                    </Form.Field>
-                                    <Form.Field>
-                                        <label>Distance</label>
-                                        <Form.Input
-                                            type="number"
-                                            name="distance"
-                                            value={this.state.smoothParams.distance}
-                                            placeholder="distance ="
-                                            onChange={this.onChangeSmoothParams}
-                                        />
-                                    </Form.Field>
-                                    <Button.Group fluid>
-                                        <Button
-                                            icon
-                                            onClick={this.smoothMap}
-                                        >
-                                            <Icon name="tint"/> Start Smoothing
-                                        </Button>
-                                        <Button
-                                            icon
-                                            onClick={this.recalculateMap}
-                                        >
-                                            <Icon name="trash"/> Remove Smoothing
-                                        </Button>
-                                    </Button.Group>
-                                </Accordion.Content>
-                            </Accordion>
-                        </Grid.Column>
+                    <Grid>
+                        <Grid.Row>
+                            <Grid.Column>
+                                <Header as="h4">{parameter.description}, {parameter.name} [{parameter.unit}]</Header>
+                                <RasterDataMap
+                                    data={layer[parameter.name]}
+                                    model={model}
+                                    unit={parameter.unit}
+                                />
+                            </Grid.Column>
+                        </Grid.Row>
+                        <Grid.Row >
+                            <Grid.Column>
+                                <Form.Group>
+                                    <Form.Input
+                                        label='Cycles'
+                                        type="number"
+                                        name="cycles"
+                                        value={this.state.smoothParams.cycles}
+                                        placeholder="cycles="
+                                        onChange={this.onChangeSmoothParams}
+                                        width={4}
+                                    />
+                                    <Form.Input
+                                        label='Distance'
+                                        type="number"
+                                        name="distance"
+                                        value={this.state.smoothParams.distance}
+                                        placeholder="distance ="
+                                        onChange={this.onChangeSmoothParams}
+                                        width={5}
+                                    />
+                                    <Form.Button
+                                        icon='tint'
+                                        labelPosition='left'
+                                        onClick={this.smoothMap}
+                                        content={'Start Smoothing'}
+                                        width={8}
+                                        style={{marginTop: '23px'}}
+                                    />
+                                    <Form.Button
+                                        icon='trash'
+                                        labelPosition='left'
+                                        onClick={this.recalculateMap}
+                                        content={'Remove Smoothing'}
+                                        width={8}
+                                        style={{marginTop: '23px'}}
+                                     />
+                                </Form.Group>
+                            </Grid.Column>
+                        </Grid.Row>
                     </Grid>
-                </Segment>
-                <Segment>
-                    <Form.Group>
-                        <Button
-                            icon
-                            fluid
+                        <Button icon primary
                             onClick={this.onAddZone}
                         >
-                            <Icon name="add circle"/> Add new zone
+                            <Icon name="add"/> Add Zone
                         </Button>
-                    </Form.Group>
                     <ZonesTable
                         onClickUpload={this.onClickUpload}
                         onChange={this.onChange}
                         onEdit={this.onEditZone}
-                        parameter={parameter.name}
+                        parameter={parameter}
                         readOnly={readOnly}
                         layer={SoilmodelLayer.fromObject(layer)}
                     />
-                </Segment>
+
                 {selectedZone &&
                 <ZoneModal
                     onCancel={() => this.setState({selectedZone: null})}

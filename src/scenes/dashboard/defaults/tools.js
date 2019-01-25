@@ -49,7 +49,7 @@ const availableTools = [
         slug: 'T07',
         name: 'MODFLOW model scenario manager',
         path: '/tools/',
-        subPath: '/CrossSection',
+        subPath: '',
         role: ROLE_NM_MF,
         instances: []
     }, {

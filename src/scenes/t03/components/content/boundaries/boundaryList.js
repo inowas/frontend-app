@@ -12,7 +12,7 @@ class BoundaryList extends React.Component {
     }
 
     boundaryTypes = () => ([
-        {key: 'all', value: 'all', text: 'Show All'},
+        {key: 'all', value: 'all', text: 'All'},
         {key: 'chd', value: 'chd', text: 'CHD'},
         {key: 'ghb', value: 'ghb', text: 'GHB'},
         {key: 'rch', value: 'rch', text: 'RCH'},
@@ -40,6 +40,7 @@ class BoundaryList extends React.Component {
                             trigger={<Icon name='ellipsis horizontal'/>}
                             content={
                                 <div>
+                                    <Button.Group size='small'>
                                     <Popup
                                         trigger={<Button icon={'clone'} onClick={() => this.props.onClone(b.id)}/>}
                                         content='Clone'
@@ -54,6 +55,7 @@ class BoundaryList extends React.Component {
                                         size='mini'
                                         inverted
                                     />
+                                    </Button.Group>
                                 </div>
                             }
                             on={'click'}
@@ -67,6 +69,8 @@ class BoundaryList extends React.Component {
     };
 
     render() {
+        const {boundaries} = this.props;
+
         return (
             <Grid padded>
                 <Grid.Row>
@@ -74,7 +78,20 @@ class BoundaryList extends React.Component {
                         <Button as='div' labelPosition='left'>
                             <Dropdown
                                 selection
-                                options={this.boundaryTypes()}
+                                options={this.boundaryTypes().map(b => {
+                                    let numberOfBoundaries = boundaries.length;
+                                    if (b.value !== 'all') {
+                                        numberOfBoundaries = boundaries.findBy('type', b.value).length;
+                                    }
+
+                                    let name = `${b.text} (${numberOfBoundaries})`;
+
+                                    return {
+                                        ...b,
+                                        disabled: b.value !== 'all' && numberOfBoundaries === 0,
+                                        text: name
+                                    }
+                                })}
                                 onChange={(e, {value}) => this.setState({selectedType: value})}
                                 value={this.state.selectedType}
                                 style={{minWidth: '120px', width: '120px'}}

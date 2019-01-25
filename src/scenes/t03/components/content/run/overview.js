@@ -19,8 +19,7 @@ class Overview extends React.Component {
     };
 
     onStartCalculationClick = () => {
-        const {model} = this.props;
-        const {calculation} = model;
+        const {model, calculation} = this.props;
         calculation.state = CALCULATION_STATE_STARTED;
         this.setState({sendingCommand: true});
         sendCommand(
@@ -33,9 +32,7 @@ class Overview extends React.Component {
     };
 
     render() {
-
-        const {model} = this.props;
-        const {calculation} = model;
+        const {calculation, model} = this.props;
 
         if (!(calculation instanceof Calculation)) {
             return null;
@@ -76,7 +73,7 @@ class Overview extends React.Component {
                                 Calculate
                             </Button>}
                             <Header as={'h3'}>Progress</Header>
-                            {model.calculation && <CalculationStatus calculation={model.calculation}/>}
+                            {calculation && <CalculationStatus calculation={calculation}/>}
                         </Segment>
                     </Grid.Column>
                     <Grid.Column width={10}>
@@ -96,6 +93,7 @@ class Overview extends React.Component {
 }
 
 const mapStateToProps = state => ({
+    calculation: state.T03.calculation ? Calculation.fromObject(state.T03.calculation) : null,
     model: ModflowModel.fromObject(state.T03.model)
 });
 
@@ -105,6 +103,7 @@ const mapDispatchToProps = {
 
 
 Overview.proptypes = {
+    calculation: PropTypes.instanceOf(Calculation),
     model: PropTypes.instanceOf(ModflowModel).isRequired
 };
 

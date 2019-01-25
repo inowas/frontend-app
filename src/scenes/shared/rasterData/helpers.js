@@ -24,7 +24,11 @@ export function min(a) {
     if (isValue(a)) {
         return a;
     }
-    const values = a.map(arr => (Math.min.apply(null, arr)));
+
+    const values = a
+        .map(row => row.filter(v => (!isNaN(v) && v !== null)))
+        .map(arr => (Math.min.apply(null, arr)));
+
     return Math.min.apply(null, values);
 }
 
@@ -32,7 +36,10 @@ export function max(a) {
     if (isValue(a)) {
         return a;
     }
-    const values = a.map(arr => (Math.max.apply(null, arr)));
+
+    const values = a
+        .map(row => row.filter(v => (!isNaN(v) && v !== null)))
+        .map(arr => (Math.max.apply(null, arr)));
     return Math.max.apply(null, values);
 }
 
@@ -46,7 +53,7 @@ export function mean(data) {
         let numberOfElements = 0;
 
         data.forEach(
-            row => ( row.forEach(
+            row => (row.forEach(
                 col => {
                     sum += col;
                     numberOfElements += 1;
@@ -101,11 +108,13 @@ export function createGridData(value, nx, ny) {
     if (isRaster(value) && getGridSize(value).x === nx && getGridSize(value).y === ny) {
         for (let y = 0; y < ny; y++) {
             for (let x = 0; x < nx; x++) {
-                data.push({
-                    x: x,
-                    y: y,
-                    value: value[y][x]
-                });
+                if (!isNaN(value[y][x]) && value[y][x] !== null) {
+                    data.push({
+                        x: x,
+                        y: y,
+                        value: value[y][x]
+                    });
+                }
             }
         }
         return data;
@@ -161,7 +170,8 @@ export function rainbowFactory(numberRange = {min: -50, max: 50}, spectrum = nul
                 return rainbow;
             }
 
-            rainbow.setNumberRange((rMin - rMin / 10), (rMax + rMax / 10));
+            rainbow.setNumberRange((rMin - Math.abs(rMin / 10)), (rMax + Math.abs(rMax / 10)));
+
             return rainbow;
         }
 
@@ -174,7 +184,7 @@ export function rainbowFactory(numberRange = {min: -50, max: 50}, spectrum = nul
 
 export const disableMap = (map) => {
     if (map) {
-        map.leafletElement._handlers.forEach(function(handler) {
+        map.leafletElement._handlers.forEach(function (handler) {
             handler.disable();
         });
     }

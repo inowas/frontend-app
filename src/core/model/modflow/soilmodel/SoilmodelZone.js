@@ -1,6 +1,8 @@
 import uuidv4 from 'uuid/v4';
 import Geometry from '../Geometry';
 import ActiveCells from '../ActiveCells';
+import SoilmodelParameter from './SoilmodelParameter';
+import {defaultParameters} from 'scenes/t03/defaults/soilmodel';
 
 class SoilmodelZone {
     _id = uuidv4();
@@ -8,25 +10,25 @@ class SoilmodelZone {
     _geometry = null;
     _activeCells = null;
     _priority = 0;
-    _top = null;
-    _botm = null;
-    _hk = null;
-    _hani = null;
-    _vka = null;
-    _ss = null;
-    _sy = null;
+    _top = new SoilmodelParameter();
+    _botm = new SoilmodelParameter();
+    _hk = new SoilmodelParameter();
+    _hani = new SoilmodelParameter();
+    _vka = new SoilmodelParameter();
+    _ss = new SoilmodelParameter();
+    _sy = new SoilmodelParameter();
 
     static fromDefault() {
         const zone = new SoilmodelZone();
         zone.name = 'Default';
         zone.priority = 0;
-        zone.top = 1;
-        zone.botm = 0;
-        zone.hk = 10;
-        zone.hani = 1;
-        zone.vka = 1;
-        zone.ss = 0.00002;
-        zone.sy = 0.15;
+        zone.top = SoilmodelParameter.fromObject(defaultParameters.top);
+        zone.botm = SoilmodelParameter.fromObject(defaultParameters.botm);
+        zone.hk = SoilmodelParameter.fromObject(defaultParameters.hk);
+        zone.hani = SoilmodelParameter.fromObject(defaultParameters.hani);
+        zone.vka = SoilmodelParameter.fromObject(defaultParameters.vka);
+        zone.ss = SoilmodelParameter.fromObject(defaultParameters.ss);
+        zone.sy = SoilmodelParameter.fromObject(defaultParameters.sy);
         return zone;
     }
 
@@ -38,15 +40,24 @@ class SoilmodelZone {
             zone.geometry = obj.geometry ? Geometry.fromObject(obj.geometry) : null;
             zone.activeCells = obj.activeCells ? ActiveCells.fromArray(obj.activeCells) : null;
             zone.priority = obj.priority;
-            zone.top = parseParameters ? zone.parseValue(obj.top) : obj.top;
-            zone.botm = parseParameters ? zone.parseValue(obj.botm) : obj.botm;
-            zone.hk = parseParameters ? zone.parseValue(obj.hk) : obj.hk;
-            zone.hani = parseParameters ? zone.parseValue(obj.hani) : obj.hani;
-            zone.vka = parseParameters ? zone.parseValue(obj.vka) : obj.vka;
-            zone.ss = parseParameters ? zone.parseValue(obj.ss) : obj.ss;
-            zone.sy = parseParameters ? zone.parseValue(obj.sy) : obj.sy;
+            zone.top = this.refactorParameter(obj.top, parseParameters);
+            zone.botm = this.refactorParameter(obj.botm, parseParameters);
+            zone.hk = this.refactorParameter(obj.hk, parseParameters);
+            zone.hani = this.refactorParameter(obj.hani, parseParameters);
+            zone.vka = this.refactorParameter(obj.vka, parseParameters);
+            zone.ss = this.refactorParameter(obj.ss, parseParameters);
+            zone.sy = this.refactorParameter(obj.sy, parseParameters);
         }
         return zone;
+    }
+
+    static refactorParameter(value, parseParameters) {
+        if (value instanceof Object) {
+            return SoilmodelParameter.fromObject(value, parseParameters);
+        }
+        const param = SoilmodelParameter.fromObject(defaultParameters.top);
+        param.value = value;
+        return param;
     }
 
     get id() {
@@ -152,24 +163,14 @@ class SoilmodelZone {
             'geometry': this.geometry ? this.geometry.toObject() : null,
             'activeCells': this.activeCells ? this.activeCells.toArray() : [],
             'priority': this.priority,
-            'top': this.top,
-            'botm': this.botm,
-            'hk': this.hk,
-            'hani': this.hani,
-            'vka': this.vka,
-            'ss': this.ss,
-            'sy': this.sy
+            'top': this.top.toObject(),
+            'botm': this.botm.toObject(),
+            'hk': this.hk.toObject(),
+            'hani': this.hani.toObject(),
+            'vka': this.vka.toObject(),
+            'ss': this.ss.toObject(),
+            'sy': this.sy.toObject()
         };
-    }
-
-    parseValue(value) {
-        if (this.priority === 0 && Array.isArray(value)) {
-            return value;
-        }
-        if (this.priority === 0) {
-            return isNaN(value) ? 0 : parseFloat(value);
-        }
-        return isNaN(value) ? null : parseFloat(value);
     }
 }
 

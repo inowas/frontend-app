@@ -1,0 +1,19 @@
+{
+  "type": "object",
+  "id": "https://inowas.com/schema/command/deleteModflowModelPayload",
+  "properties": {
+    "id": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$"
+    },
+    "scenario_id": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$"
+    }
+  },
+  "required": [
+    "id",
+    "basemodel_id",
+    "scenario_id"
+  ]
+}

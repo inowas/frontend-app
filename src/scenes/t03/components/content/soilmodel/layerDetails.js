@@ -4,7 +4,7 @@ import {Button, Form, Grid, Tab} from 'semantic-ui-react';
 import {ModflowModel} from 'core/model/modflow';
 import {SoilmodelLayer} from 'core/model/modflow/soilmodel';
 
-import layerParameters from '../../../defaults/soilmodel';
+import {layerParameters} from '../../../defaults/soilmodel';
 import LayerParameter from './layerParameter';
 
 class LayerDetails extends React.Component {
@@ -53,7 +53,7 @@ class LayerDetails extends React.Component {
         }
 
         const panes = [{
-            menuItem: 'Name and Type', render: () =>
+            menuItem: 'Properties', render: () =>
                 <Tab.Pane>
                     <Grid>
                         <Grid.Row>

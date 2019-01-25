@@ -2,73 +2,81 @@ import React from 'react';
 import {connect} from 'react-redux';
 import PropTypes from 'prop-types';
 
-import {Grid, Header, Menu, Segment} from 'semantic-ui-react';
-import {BoundaryCollection, Calculation, ModflowModel} from 'core/model/modflow';
+import {Grid, Header, Segment} from 'semantic-ui-react';
+import {BoundaryCollection, Calculation, CalculationResults, ModflowModel, Soilmodel} from 'core/model/modflow';
 import {fetchUrl} from 'services/api';
 import {last} from 'lodash';
 import ResultsMap from '../../maps/resultsMap';
-import ResultsChart from './resultsChart';
-
-const menuItems = [
-    {id: 'head', name: 'Heads'},
-    {id: 'drawdown', name: 'Drawdowns'},
-    {id: 'budget', name: 'Budgets'}
-];
+import ResultsChart from '../../../../shared/complexTools/ResultsChart';
+import ResultsSelector from '../../../../shared/complexTools/ResultsSelector';
 
 class Results extends React.Component {
 
     constructor(props) {
         super(props);
         this.state = {
-            selectedMenuItem: menuItems[0].id,
-            metaData: null,
             isLoading: false,
 
+            calculationId: null,
+            layerValues: null,
+            totalTimes: null,
             selectedCol: 0,
             selectedLay: 0,
             selectedRow: 0,
-            selectedTotim: null,
-            selectedType: null,
+            selectedTotim: 0,
+            selectedType: 'head',
             data: null,
             fetching: false
         }
     }
 
     componentDidMount() {
-        this.fetchMetaData();
-    }
-
-    componentWillReceiveProps(nextProps, nextContext) {
-        if (!this.state.metadata) {
-            this.fetchMetaData();
+        const {calculation} = this.props;
+        const {calculationId} = this.state;
+        if ((calculation instanceof Calculation) && !calculationId) {
+            this.fetchResults();
         }
-    }
 
-    fetchMetaData() {
         const {model} = this.props;
-        const {calculation} = model;
+        const {gridSize} = model;
 
-        if (!calculation) {
-            return null;
+        return this.setState({
+            selectedCol: Math.floor(gridSize.nX / 2),
+            selectedRow: Math.floor(gridSize.nY / 2),
+        })
+    }
+
+    componentWillReceiveProps(nextProps) {
+        const {calculation} = nextProps;
+        const {calculationId} = this.state;
+        if ((calculation instanceof Calculation) && !calculationId) {
+            this.fetchResults();
         }
+    }
 
+    fetchResults() {
+        const {model} = this.props;
         this.setState({isLoading: true},
             () => fetchUrl(`modflowmodels/${model.id}/results`,
-                metaData => {
-                    this.setState({metaData, isLoading: false});
-                    this.onChangeTypeLayerOrTime({
-                        type: this.state.selectedMenuItem,
-                        totim: last(metaData.times.total_times),
-                        layer: 0
-                    });
+                data => {
+                    const results = CalculationResults.fromQuery(data);
+                    const calculationId = results.calculationId;
+                    const totalTimes = results.totalTimes;
+                    const layerValues = results.layerValues;
+                    return this.setState({calculationId, layerValues, totalTimes, isLoading: false},
+                        () => this.onChangeTypeLayerOrTime({
+                            type: this.state.selectedType,
+                            totim: last(totalTimes),
+                            layer: this.state.selectedLay
+                        })
+                    );
                 },
                 (e) => this.setState({isError: e, isLoading: false}))
         );
     }
 
     fetchData({layer, totim, type}) {
-        const calculationId = this.state.metaData.calculation_id;
-
+        const {calculationId} = this.state;
         this.setState({fetching: true},
             () => fetchUrl(`calculations/${calculationId}/results/types/${type}/layers/${layer}/totims/${totim}`,
                 data => this.setState({
@@ -97,10 +105,10 @@ class Results extends React.Component {
     };
 
     render() {
-        const {selectedMenuItem, metaData, data, selectedCol, selectedRow} = this.state;
-        const {model, boundaries} = this.props;
+        const {calculationId, data, selectedCol, selectedRow, selectedType, selectedLay, selectedTotim, layerValues, totalTimes} = this.state;
+        const {model, boundaries, soilmodel} = this.props;
 
-        if (!metaData) {
+        if (!calculationId || !data) {
             return null;
         }
 
@@ -108,50 +116,57 @@ class Results extends React.Component {
             <Segment color={'grey'} loading={this.state.isLoading}>
                 <Grid padded>
                     <Grid.Row>
-                        <Grid.Column width={3}>
-                            <Menu fluid vertical tabular>
-                                <Menu.Item>&nbsp;</Menu.Item>
-                                {menuItems.map(i =>
-                                    <Menu.Item
-                                        name={i.name}
-                                        key={i.id}
-                                        active={i.id === selectedMenuItem}
-                                        onClick={() => {
-                                            this.onChangeTypeLayerOrTime({type: i.id});
-                                            this.setState({selectedMenuItem: i.id})
-                                        }}
-                                    />
-                                )}
-                                <Menu.Item>&nbsp;</Menu.Item>
-                            </Menu>
-                        </Grid.Column>
-                        <Grid.Column width={13}>
+                        <Grid.Column>
+                            <ResultsSelector
+                                data={{
+                                    type: selectedType,
+                                    layer: selectedLay,
+                                    totim: selectedTotim,
+                                }}
+                                onChange={({type, layer, totim}) => {
+                                    return this.setState({
+                                        selectedType: type,
+                                        selectedLay: layer,
+                                        selectedTotim: totim
+                                    }, () => this.fetchData({layer, totim, type}));
+                                }}
+                                layerValues={layerValues}
+                                soilmodel={soilmodel}
+                                stressperiods={model.stressperiods}
+                                totalTimes={totalTimes}
+                            />
                             <Segment loading={this.state.fetching} color={'grey'}>
                                 {data &&
                                 <ResultsMap
+                                    activeCell={[selectedCol, selectedRow]}
                                     boundaries={boundaries}
                                     data={data}
                                     model={model}
-                                    onClick={colRow => {this.setState({
-                                        selectedRow: colRow[1],
-                                        selectedCol: colRow[0]
-                                    })}}
+                                    onClick={colRow => {
+                                        this.setState({
+                                            selectedCol: colRow[0],
+                                            selectedRow: colRow[1]
+                                        })
+                                    }}
                                 />
                                 }
                             </Segment>
-
                             <Grid>
                                 <Grid.Row columns={2}>
                                     <Grid.Column>
                                         <Segment loading={this.state.fetching} color={'blue'}>
                                             <Header textAlign={'center'} as={'h4'}>Horizontal cross section</Header>
-                                            {data && <ResultsChart data={data} row={selectedRow} col={selectedCol} show={'row'}/>}
+                                            {data &&
+                                            <ResultsChart data={data} col={selectedCol} row={selectedRow} show={'row'}/>
+                                            }
                                         </Segment>
                                     </Grid.Column>
                                     <Grid.Column>
                                         <Segment loading={this.state.fetching} color={'blue'}>
                                             <Header textAlign={'center'} as={'h4'}>Vertical cross section</Header>
-                                            {data && <ResultsChart data={data} col={selectedCol} row={selectedRow} show={'col'}/>}
+                                            {data &&
+                                            <ResultsChart data={data} col={selectedCol} row={selectedRow} show={'col'}/>
+                                            }
                                         </Segment>
                                     </Grid.Column>
                                 </Grid.Row>
@@ -167,14 +182,18 @@ class Results extends React.Component {
 
 const mapStateToProps = state => {
     return {
-        model: ModflowModel.fromObject(state.T03.model),
+        calculation: state.T03.calculation ? Calculation.fromObject(state.T03.calculation) : null,
         boundaries: BoundaryCollection.fromObject(state.T03.boundaries),
+        model: ModflowModel.fromObject(state.T03.model),
+        soilmodel: state.T03.soilmodel ? Soilmodel.fromObject(state.T03.soilmodel) : null
     };
 };
 
 Results.proptypes = {
+    boundaries: PropTypes.instanceOf(BoundaryCollection).isRequired,
     calculation: PropTypes.instanceOf(Calculation).isRequired,
     model: PropTypes.instanceOf(ModflowModel).isRequired,
+    soilmodel: PropTypes.instanceOf(Soilmodel).isRequired,
 };
 
 export default connect(mapStateToProps)(Results);
