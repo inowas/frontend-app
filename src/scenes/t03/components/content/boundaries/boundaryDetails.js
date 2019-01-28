@@ -90,7 +90,7 @@ class BoundaryDetails extends React.Component {
                 <Form>
                     <Form.Group widths='equal'>
                         <Form.Input
-                            value={boundary.type}
+                            value={boundary.type.toUpperCase()}
                             label='Type'
                             readOnly
                             width={5}
