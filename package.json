@@ -12,6 +12,7 @@
         "gulp": "^3.9.1",
         "gwflowjs": "https://github.com/inowas/gwflowjs.git#master",
         "history": "^4.7.2",
+        "json-schema-ref-parser": "^6.0.3",
         "leaflet": "^1.3.4",
         "leaflet-draw": "^1.0.4",
         "lodash": "^4.17.11",
@@ -79,8 +80,14 @@
         "yamljs": "^0.3.0"
     },
     "jest": {
-        "collectCoverageFrom": ["src/**/*.{js,jsx}", "!**/node_modules/**", "!src/semantic/**"],
-        "coverageReporters": ["text"]
+        "collectCoverageFrom": [
+            "src/**/*.{js,jsx}",
+            "!**/node_modules/**",
+            "!src/semantic/**"
+        ],
+        "coverageReporters": [
+            "text"
+        ]
     },
     "resolutions": {
         "**/event-stream": "^4.0.1"
