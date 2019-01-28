@@ -3,6 +3,7 @@ import ajv0 from 'ajv/lib/refs/json-schema-draft-04';
 import jsrp from 'json-schema-ref-parser'
 import uuid from 'uuid';
 
+export const JSON_SCHEMA_URL = 'https://schema.inowas.com/';
 
 export default class AbstractCommand {
 
@@ -18,6 +19,7 @@ export default class AbstractCommand {
 
     validate() {
         return new Promise((resolve) => {
+
             if (!this.schema) {
                 const message = 'No schema given for validation';
                 console.warn(message);
@@ -41,7 +43,10 @@ export default class AbstractCommand {
 
                         resolve([isValid, errors]);
                     })
-                    .catch(e => resolve([false, e]));
+                    .catch(e => {
+                        console.log(e);
+                        resolve([false, e]);
+                    });
                 return;
             }
 
