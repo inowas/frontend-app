@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types';
 import React from 'react';
-import {signUpUser} from 'services/api';
+import {submitSignUpCredentials} from 'services/api';
 
 import {connect} from 'react-redux';
 import {hasSessionKey} from '../reducers/index';
@@ -192,7 +192,7 @@ class SignUp extends React.Component {
     };
 
     signUpRequest = (name, username, email, password, redirectTo) => {
-        signUpUser(
+        submitSignUpCredentials(
             {name, username, email, password, redirectTo},
             () => this.setState({success: true, loading: false}),
             () => this.setState({error: true, loading: false})
@@ -202,7 +202,13 @@ class SignUp extends React.Component {
     onSignUpClick = () => {
         const formValidation = this.validateForm();
         if (formValidation.isValid) {
-            const redirectTo = process.env.REACT_APP_BASE_URL + '/login';
+
+            let redirectTo = '';
+            if (typeof window !== 'undefined') {
+                // eslint-disable-next-line no-restricted-globals
+                redirectTo = location.protocol + '//' + location.host + '/login';
+            }
+
             this.signUpRequest(this.state.name, this.state.username, this.state.email, this.state.password, redirectTo);
             this.setState({loading: true});
         }

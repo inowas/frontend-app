@@ -1,9 +1,9 @@
 import React from 'react';
 import {pure} from 'recompose';
 import PropTypes from 'prop-types';
-import {mounding} from 'gwflowjs';
-import {Grid, Header} from "semantic-ui-react";
-import {getParameterValues} from "../../shared/simpleTools/helpers";
+import {mounding} from 'gwflowjs/lib/library';
+import {Grid, Header} from 'semantic-ui-react';
+import {getParameterValues} from '../../shared/simpleTools/helpers';
 
 const Info = ({parameters}) => {
     const {L, W, w, hi, Sy, K, t} = getParameterValues(parameters);

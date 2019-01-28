@@ -1,43 +1,35 @@
 class Stressperiod {
 
-    _totimStart;
-    _perlen;
+    _startDateTime;
     _nstp;
     _tsmult;
     _steady;
 
     static fromObject(obj) {
         const stressPeriod = new Stressperiod();
-        stressPeriod.totimStart = obj.totim_start;
-        stressPeriod.perlen = obj.perlen;
-        stressPeriod.nstp = obj.nstp;
-        stressPeriod.tsmult = obj.tsmult;
-        stressPeriod.steady = obj.steady;
+        stressPeriod._startDateTime = obj.start_date_time;
+        //stressPeriod._totimStart = obj.totim_start;
+        //stressPeriod._perlen = obj.perlen;
+        stressPeriod._nstp = obj.nstp;
+        stressPeriod._tsmult = obj.tsmult;
+        stressPeriod._steady = obj.steady;
         return stressPeriod;
     }
 
-    constructor(totimStart, perlen, nstp, tsmult, steady) {
-        this.totimStart = totimStart;
-        this.perlen = perlen;
-        this.nstp = nstp;
-        this.tsmult = tsmult;
-        this.steady = steady;
+    constructor(startDateTime, nstp, tsmult, steady) {
+        this._startDateTime = startDateTime;
+        this._nstp = nstp;
+        this._tsmult = tsmult;
+        this._steady = steady;
     }
 
-    get totimStart() {
-        return this._totimStart;
+
+    get startDateTime() {
+        return this._startDateTime;
     }
 
-    set totimStart(value) {
-        this._totimStart = value;
-    }
-
-    get perlen() {
-        return this._perlen;
-    }
-
-    set perlen(value) {
-        this._perlen = value;
+    set startDateTime(value) {
+        this._startDateTime = value;
     }
 
     get nstp() {
@@ -64,18 +56,15 @@ class Stressperiod {
         this._steady = value;
     }
 
-    toObject = () => {
-        return {
-            totim_start: this.totimStart,
-            perlen: this.perlen,
-            nstp: this.nstp,
-            tsmult: this.tsmult,
-            steady: this.steady
-        };
-    };
+    toObject = () => ({
+        start_date_time: this._startDateTime,
+        nstp: this._nstp,
+        tsmult: this._tsmult,
+        steady: this._steady
+    });
 
     clone = () => (
-        new Stressperiod(this.totimStart, this.perlen, this.nstp, this.tsmult, this.steady)
+        new Stressperiod(this._startDateTime, this._nstp, this._tsmult, this._steady)
     )
 }
 

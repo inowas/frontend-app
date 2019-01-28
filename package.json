@@ -78,10 +78,18 @@
         "run-sequence": "^2.2.1",
         "yamljs": "^0.3.0"
     },
+    "jest": {
+        "collectCoverageFrom": ["src/**/*.{js,jsx}", "!**/node_modules/**", "!src/semantic/**"],
+        "coverageReporters": ["text"]
+    },
+    "resolutions": {
+        "**/event-stream": "^4.0.1"
+    },
     "scripts": {
         "start": "react-scripts start",
         "build": "react-scripts build",
         "test": "react-scripts test",
+        "test:wc": "CI=true react-scripts test --coverage --coverageReporters=lcov",
         "eject": "react-scripts eject"
     },
     "eslintConfig": {
