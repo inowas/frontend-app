@@ -1,6 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import {mounding} from 'gwflowjs';
+import {mounding} from 'gwflowjs/lib/library';
 import {pure} from 'recompose';
 
 import {

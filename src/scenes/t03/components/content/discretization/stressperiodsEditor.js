@@ -18,6 +18,8 @@ class StressperiodsEditor extends React.Component {
         super(props);
         this.state = {
             stressperiods: props.stressperiods.toObject(),
+            startDateTime: props.stressperiods.startDateTime.format('YYYY-MM-DD'),
+            endDateTime: props.stressperiods.endDateTime.format('YYYY-MM-DD'),
             isDirty: false,
             isError: false
         }
@@ -39,17 +41,26 @@ class StressperiodsEditor extends React.Component {
         )
     };
 
-    handleInputChange = (e) => {
-        const {target} = e;
-        const {name, value} = target;
-        const date = moment(value);
-        const stressperiods = Stressperiods.fromObject(this.state.stressperiods);
-        stressperiods[name] = date;
-        stressperiods.recalculateStressperiods();
-        this.setState({
-            stressperiods: stressperiods.toObject(),
-            isDirty: true
-        });
+    handleDateTimeChange = (e) => {
+        const  {name, value} = e.target;
+        if (e.type === 'change') {
+            this.setState({[name]: value})
+        }
+
+        const date = moment.utc(value);
+        if (!date.isValid()) {
+            return;
+        }
+
+        if (e.type === 'blur') {
+            const stressperiods = Stressperiods.fromObject(this.state.stressperiods);
+            stressperiods[name] = date;
+            stressperiods.recalculateStressperiods();
+            this.setState({
+                stressperiods: stressperiods.toObject(),
+                isDirty: true
+            })
+        }
     };
 
     handleChange = stressperiods => {
@@ -80,15 +91,17 @@ class StressperiodsEditor extends React.Component {
                                 type='date'
                                 label='Start Date'
                                 name={'startDateTime'}
-                                value={Stressperiods.fromObject(this.state.stressperiods).startDateTime.format('YYYY-MM-DD')}
-                                onChange={this.handleInputChange}
+                                value={this.state.startDateTime}
+                                onBlur={this.handleDateTimeChange}
+                                onChange={this.handleDateTimeChange}
                             />
                             <Form.Input
                                 type='date'
                                 label='End Date'
                                 name={'endDateTime'}
-                                value={Stressperiods.fromObject(this.state.stressperiods).endDateTime.format('YYYY-MM-DD')}
-                                onChange={this.handleInputChange}
+                                value={this.state.endDateTime}
+                                onBlur={this.handleDateTimeChange}
+                                onChange={this.handleDateTimeChange}
                             />
                             <Form.Select
                                 label='Time unit'
@@ -98,7 +111,7 @@ class StressperiodsEditor extends React.Component {
                             />
                         </Form>
                         <Message color={'blue'}>
-                            <strong>Total time: </strong>{Stressperiods.fromObject(this.state.stressperiods).totim} days
+                            <strong>Total time: </strong>{stressperiods.totim} days
                         </Message>
                     </Grid.Column>
                     <Grid.Column width={11}>

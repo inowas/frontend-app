@@ -2,15 +2,14 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import {connect} from 'react-redux';
 
-import {ModflowModel} from 'core/model/modflow';
+import {Calculation} from 'core/model/modflow';
 import {Grid, Header, Segment} from 'semantic-ui-react';
 import Terminal from '../../../../shared/complexTools/Terminal';
 
 class Log extends React.Component {
 
     render() {
-        const {model} = this.props;
-        const {calculation} = model;
+        const {calculation} = this.props;
 
         return (
             <Grid padded>
@@ -29,12 +28,12 @@ class Log extends React.Component {
 
 const mapStateToProps = state => {
     return {
-        model: ModflowModel.fromObject(state.T03.model)
+        calculation: state.T03.calculation ? Calculation.fromObject(state.T03.calculation) : null
     };
 };
 
 Log.proptypes = {
-    model: PropTypes.instanceOf(ModflowModel).isRequired
+    calculation: PropTypes.instanceOf(Calculation),
 };
 
 export default connect(mapStateToProps)(Log);

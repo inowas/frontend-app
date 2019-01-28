@@ -1,4 +1,4 @@
-import {LOGOUT, SET_USER} from '../actions/actions';
+import {LOGOUT, SET_USER, UNAUTHORIZED} from '../actions/actions';
 import {SET_USER_PROFILE} from '../actions/events';
 
 function initialState() {
@@ -39,6 +39,7 @@ export const user = (state = initialState(), action) => {
             };
         }
 
+        case UNAUTHORIZED:
         case LOGOUT: {
             return initialState();
         }

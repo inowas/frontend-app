@@ -127,7 +127,7 @@ class Boundaries extends React.Component {
                             <ContentToolBar
                                 onSave={this.onSave}
                                 isValid={(this.state.boundary !== null)}
-                                isDirty={isDirty}
+                                isDirty={isDirty && !!this.state.geometry && !!this.state.activeCells}
                                 isError={error}
                                 saveButton={!readOnly}
                             />

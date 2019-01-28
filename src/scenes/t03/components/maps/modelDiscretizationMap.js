@@ -13,7 +13,7 @@ import Geometry from 'core/model/modflow/Geometry';
 import GridSize from 'core/model/modflow/GridSize';
 import {getStyle} from './index';
 import {pure} from 'recompose';
-import {uniqueId} from 'recharts/es6/util/DataUtils';
+import {uniqueId} from 'lodash';
 
 const style = {
     map: {
