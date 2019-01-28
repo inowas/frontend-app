@@ -6,6 +6,14 @@
     text-align: right;
 }
 
+input[readonly], input[readonly='readonly'] {
+    background: @white !important;
+    box-shadow: none !important;
+    border: 1px solid rgba(34,36,38,.15) !important;
+    color: rgba(0,0,0,.45) !important;
+    cursor: auto;
+}
+
 /*-------------------
       Borders
 --------------------*/
