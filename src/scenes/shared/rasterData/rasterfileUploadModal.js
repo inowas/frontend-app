@@ -3,7 +3,7 @@ import React from 'react';
 import {Button, Dimmer, Form, Grid, Input, Radio, Header, List, Segment, Modal, Loader} from 'semantic-ui-react';
 import RasterDataImage from './rasterDataImage';
 import {GridSize} from 'core/model/geometry';
-import {fetchRasterfile, uploadRasterfile} from 'services/api';
+import {fetchRasterMetaData, fetchRasterData, uploadRasterfile} from 'services/api';
 
 const styles = {
     input: {
@@ -110,14 +110,17 @@ class RasterfileUploadModal extends React.Component {
 
         this.setState({isLoading: true});
 
-        uploadRasterfile(file,
-            ({hash}) => {
-                this.setState({fetching: true, hash});
-                fetchRasterfile(
+        uploadRasterfile(file, ({hash}) => {
+                this.setState({fetching: true, hash: hash});
+
+                fetchRasterMetaData({hash}, response => {
+                    this.setState({isLoading: false, metadata: response});
+                }, (errorFetching) => this.setState({errorFetching}));
+
+                fetchRasterData(
                     {hash, width: this.props.gridSize.nX, height: this.props.gridSize.nY},
-                    ({data, metadata}) => {
-                        console.log({data, metadata});
-                        this.setState({isLoading: false, data, metadata})
+                    data => {
+                        this.setState({isLoading: false, data})
                     },
                     (errorFetching) => this.setState({errorFetching}))
             },
