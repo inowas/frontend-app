@@ -1,4 +1,4 @@
-import AbstractCollection from '../../AbstractCollection';
+import AbstractCollection from '../../collection/AbstractCollection';
 import GisArea from './GisArea';
 
 class GisAreasCollection extends AbstractCollection {

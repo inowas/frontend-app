@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types';
 import React from 'react';
-import {Rule} from 'core/mcda/criteria';
+import {Rule} from 'core/model/mcda/criteria';
 import {Button, Form, List, Message, Modal} from 'semantic-ui-react';
 
 class CriteriaReclassificationModal extends React.Component {

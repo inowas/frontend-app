@@ -2,8 +2,8 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import {Button, Input, Message, Select, Table} from 'semantic-ui-react';
 
-import {MCDA} from 'core/mcda';
-import {Criterion, CriteriaCollection} from 'core/mcda/criteria';
+import {MCDA} from 'core/model/mcda';
+import {Criterion, CriteriaCollection} from 'core/model/mcda/criteria';
 
 class CriteriaEditor extends React.Component {
     constructor(props) {

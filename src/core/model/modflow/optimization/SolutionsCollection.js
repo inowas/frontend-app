@@ -1,4 +1,4 @@
-import AbstractCollection from '../../../AbstractCollection';
+import AbstractCollection from '../../collection/AbstractCollection';
 import OptimizationSolution from './Solution';
 
 class OptimizationSolutionsCollection extends AbstractCollection {

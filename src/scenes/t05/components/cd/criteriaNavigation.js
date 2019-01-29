@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import {withRouter} from 'react-router-dom';
 import {Icon, Input, Menu, Segment} from 'semantic-ui-react';
-import {MCDA} from 'core/mcda';
+import {MCDA} from 'core/model/mcda';
 
 class CriteriaNavigation extends React.Component {
 

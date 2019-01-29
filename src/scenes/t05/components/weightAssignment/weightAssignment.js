@@ -1,9 +1,9 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import {MCDA} from 'core/mcda';
+import {MCDA} from 'core/model/mcda';
 import {pure} from 'recompose';
 import {Button, Grid, Icon, Menu, Message, Table} from 'semantic-ui-react';
-import {WeightAssignment} from 'core/mcda/criteria';
+import {WeightAssignment} from 'core/model/mcda/criteria';
 import Ranking from './ranking';
 import MultiInfluence from './multiInfluence';
 import PairwiseComparison from './pairwise';

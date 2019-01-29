@@ -2,7 +2,7 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import {Button, Dimmer, Form, Grid, Input, Radio, Header, List, Segment, Modal, Loader} from 'semantic-ui-react';
 import RasterDataImage from './rasterDataImage';
-import {GridSize} from 'core/geometry';
+import {GridSize} from 'core/model/geometry';
 import {fetchRasterfile, uploadRasterfile} from 'services/api';
 
 const styles = {
@@ -11,8 +11,6 @@ const styles = {
         padding: 0
     }
 };
-
-let fileReader;
 
 class RasterfileUploadModal extends React.Component {
     state = {
@@ -106,23 +104,9 @@ class RasterfileUploadModal extends React.Component {
         );
     };
 
-    handleFileRead = e => {
-        const content = fileReader.result;
-
-        const image = new Image();
-        image.src = content;
-
-        console.log(image.getImageData(0, 0, 100, 100));
-    };
-
     handleUploadFile = e => {
         const files = e.target.files;
         const file = files[0];
-
-        /*console.log(file);
-        fileReader = new FileReader();
-        fileReader.onloadend = this.handleFileRead;
-        fileReader.readAsDataURL(file);*/
 
         this.setState({isLoading: true});
 
@@ -131,7 +115,10 @@ class RasterfileUploadModal extends React.Component {
                 this.setState({fetching: true, hash});
                 fetchRasterfile(
                     {hash, width: this.props.gridSize.nX, height: this.props.gridSize.nY},
-                    ({data, metadata}) => this.setState({isLoading: false, data, metadata}),
+                    ({data, metadata}) => {
+                        console.log({data, metadata});
+                        this.setState({isLoading: false, data, metadata})
+                    },
                     (errorFetching) => this.setState({errorFetching}))
             },
             (errorUploading) => this.setState({errorUploading})

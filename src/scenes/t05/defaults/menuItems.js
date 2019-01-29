@@ -1,4 +1,4 @@
-import MCDA from 'core/mcda/MCDA';
+import MCDA from 'core/model/mcda/MCDA';
 
 const getMenuItems = (mcda) => {
 

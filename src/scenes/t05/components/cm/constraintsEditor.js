@@ -1,9 +1,10 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import {Button, Form, Grid, Message} from 'semantic-ui-react';
-import {MCDA} from 'core/mcda';
+import {MCDA} from 'core/model/mcda';
+import {GisMap} from 'core/model/mcda/gis';
 import ConstraintsMap from './constraintsMap';
-import {GisMap} from 'core/mcda/gis';
+
 
 class ConstraintsEditor extends React.Component {
     constructor(props) {

@@ -1,4 +1,4 @@
-import AbstractCollection from '../../AbstractCollection';
+import AbstractCollection from '../../collection/AbstractCollection';
 import Tile from './Tile';
 import BoundingBox from '../../geometry/BoundingBox';
 

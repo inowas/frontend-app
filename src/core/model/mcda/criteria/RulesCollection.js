@@ -1,4 +1,4 @@
-import AbstractCollection from '../../AbstractCollection';
+import AbstractCollection from '../../collection/AbstractCollection';
 import Rule from './Rule';
 
 class RulesCollection extends AbstractCollection {

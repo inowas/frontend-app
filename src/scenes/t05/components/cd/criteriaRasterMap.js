@@ -3,12 +3,12 @@ import React from 'react';
 import {createGridData, max, min, rainbowFactory} from '../../../shared/rasterData/helpers';
 import {BasicTileLayer} from 'services/geoTools/tileLayers';
 import {Map, Rectangle, FeatureGroup} from 'react-leaflet';
-import {Raster} from 'core/mcda/gis';
+import {Raster} from 'core/model/mcda/gis';
 import CanvasHeatMapOverlay from '../../../shared/rasterData/ReactLeafletHeatMapCanvasOverlay';
 import ColorLegend from '../../../shared/rasterData/ColorLegend';
 import {EditControl} from 'react-leaflet-draw';
 import {getStyle} from '../../../t03/components/maps';
-import {BoundingBox} from 'core/geometry';
+import {BoundingBox} from 'core/model/geometry';
 
 const styles = {
     map: {

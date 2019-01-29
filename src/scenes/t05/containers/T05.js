@@ -22,9 +22,9 @@ import {
 import {defaultsT05} from '../defaults';
 import getMenuItems from '../defaults/menuItems';
 
-import {MCDA} from 'core/mcda';
+import {MCDA} from 'core/model/mcda';
 import ContentToolBar from '../../shared/ContentToolbar';
-import {WeightAssignment, WeightAssignmentsCollection} from 'core/mcda/criteria';
+import {WeightAssignment, WeightAssignmentsCollection} from 'core/model/mcda/criteria';
 
 const navigation = [{
     name: 'Documentation',

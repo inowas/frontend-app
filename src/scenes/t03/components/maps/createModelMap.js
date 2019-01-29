@@ -8,7 +8,7 @@ import md5 from 'md5';
 import ActiveCellsLayer from 'services/geoTools/activeCellsLayer';
 import {BasicTileLayer} from 'services/geoTools/tileLayers';
 import {Icon, Message} from 'semantic-ui-react';
-import {ActiveCells, BoundingBox, Geometry, GridSize} from 'core/geometry';
+import {ActiveCells, BoundingBox, Geometry, GridSize} from 'core/model/geometry';
 import {getStyle} from './index';
 import {pure} from 'recompose';
 

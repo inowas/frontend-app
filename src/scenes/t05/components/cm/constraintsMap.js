@@ -4,13 +4,12 @@ import {FeatureGroup, GeoJSON, Map, Polygon} from 'react-leaflet';
 import {EditControl} from 'react-leaflet-draw';
 import md5 from 'md5';
 import uuidv4 from 'uuid/v4';
-
-import {BasicTileLayer} from 'services/geoTools/tileLayers';
-import {BoundingBox, Geometry} from 'core/geometry';
 import {pure} from 'recompose';
 import {Button, Popup} from 'semantic-ui-react';
-import {GisArea, GisAreasCollection, GisMap} from 'core/mcda/gis';
 import ActiveCellsLayer from 'services/geoTools/activeCellsLayer';
+import {BasicTileLayer} from 'services/geoTools/tileLayers';
+import {BoundingBox, Geometry} from 'core/model/geometry';
+import {GisArea, GisAreasCollection, GisMap} from 'core/model/mcda/gis';
 
 const style = {
     map: {

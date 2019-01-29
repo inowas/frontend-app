@@ -1,4 +1,4 @@
-import AbstractCollection from '../../AbstractCollection';
+import AbstractCollection from '../../collection/AbstractCollection';
 import WeightAssignment from './WeightAssignment';
 
 class WeightAssignmentsCollection extends AbstractCollection {

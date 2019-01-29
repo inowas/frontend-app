@@ -1,5 +1,5 @@
 import Criterion from './Criterion';
-import AbstractCollection from '../../AbstractCollection';
+import AbstractCollection from '../../collection/AbstractCollection';
 
 class CriteriaCollection extends AbstractCollection {
     static fromArray(array) {

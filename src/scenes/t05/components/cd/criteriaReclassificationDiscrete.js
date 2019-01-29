@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types';
 import React from 'react';
-import {Criterion} from 'core/mcda/criteria';
+import {Criterion} from 'core/model/mcda/criteria';
 import {Button, Grid, Icon, Message, Segment, Table} from 'semantic-ui-react';
 
 class CriteriaReclassificationDiscrete extends React.Component {

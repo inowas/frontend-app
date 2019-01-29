@@ -1,8 +1,8 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import {withRouter} from 'react-router-dom';
-import {MCDA} from 'core/mcda';
-import {Criterion} from 'core/mcda/criteria';
+import {MCDA} from 'core/model/mcda';
+import {Criterion} from 'core/model/mcda/criteria';
 import {Message, Step} from 'semantic-ui-react';
 
 import {CriteriaReclassification, CriteriaRasterUpload} from './index';

@@ -1,13 +1,13 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import {Criterion} from 'core/mcda/criteria';
+import {Criterion} from 'core/model/mcda/criteria';
 import {Grid, Button, Icon, Message, Form, Segment, Checkbox} from 'semantic-ui-react';
 import RasterfileUploadModal from '../../../shared/rasterData/rasterfileUploadModal';
 import CriteriaRasterMap from './criteriaRasterMap';
-import {Rule, RulesCollection} from 'core/mcda/criteria';
-import {Raster, Tile} from 'core/mcda/gis';
+import {Rule, RulesCollection} from 'core/model/mcda/criteria';
+import {Raster, Tile} from 'core/model/mcda/gis';
 import {min, max} from 'scenes/shared/rasterData/helpers';
-import {BoundingBox, GridSize} from 'core/geometry';
+import {BoundingBox, GridSize} from 'core/model/geometry';
 import TilesMap from './tilesMap';
 
 class CriteriaRasterUpload extends React.Component {

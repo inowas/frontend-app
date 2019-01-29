@@ -1,5 +1,5 @@
 import Weight from './Weight';
-import AbstractCollection from '../../AbstractCollection';
+import AbstractCollection from '../../collection/AbstractCollection';
 
 class WeightsCollection extends AbstractCollection {
     static fromArray(array) {
