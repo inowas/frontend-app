@@ -18,22 +18,22 @@ class ToolNavigation extends React.Component {
 
         const menuItems = navigationItems.map((i, idx) => (
             <Menu.Item
-                disabled={i.status === 'warning'}
+                disabled={i.status && i.status.val === 'warning'}
                 key={idx}
                 active={property === i.property}
                 route={basePath + id + '/' + i.property}
                 onClick={property !== i.property ? this.handleItemClick : null}
             >
-                {i.status === 'locked' &&
+                {i.status && i.status.val === 'locked' &&
                 <Icon name='lock' color='green'/>
                 }
-                {i.status === 'success' &&
+                {i.status && i.status.val === 'success' &&
                 <Icon name='check circle' color='green'/>
                 }
-                {i.msg && i.status === 'warning' &&
+                {i.status && i.status.msg && i.status.val === 'warning' &&
                 <Popup
                     trigger={<Icon name='exclamation circle' color='yellow'/>}
-                    content='At least two criteria are needed for weight assignment.'
+                    content={i.status.msg}
                 />
                 }
                 {i.name}

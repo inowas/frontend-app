@@ -2,8 +2,7 @@ import uuidv4 from 'uuid/v4';
 import {SoilmodelZone, ZonesCollection} from './index';
 import {GridSize} from '../index';
 import {cloneDeep} from 'lodash';
-import Geometry from '../Geometry';
-import ActiveCells from '../ActiveCells';
+import {ActiveCells, Geometry} from 'core/model/geometry';
 import ModflowModel from '../ModflowModel';
 
 class SoilmodelLayer {

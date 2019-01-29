@@ -147,14 +147,8 @@ export function meanValue(data) {
     return 'Wrong data.';
 }
 
-export function rainbowFactory(numberRange = {min: -50, max: 50}, spectrum = null) {
+export function rainbowFactory(numberRange = {min: -50, max: 50}, spectrum = ['#31a354', '#addd8e', '#d8b365']) {
     const rainbow = new Rainbow();
-
-    rainbow.setSpectrum(
-        '#31a354',
-        '#addd8e',
-        '#d8b365',
-    );
 
     if (spectrum) {
         rainbow.setSpectrumByArray(spectrum)

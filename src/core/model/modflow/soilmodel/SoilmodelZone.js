@@ -1,6 +1,6 @@
 import uuidv4 from 'uuid/v4';
-import Geometry from '../Geometry';
-import ActiveCells from '../ActiveCells';
+import Geometry from '../../geometry/Geometry';
+import ActiveCells from '../../geometry/ActiveCells';
 import SoilmodelParameter from './SoilmodelParameter';
 import {defaultParameters} from 'scenes/t03/defaults/soilmodel';
 

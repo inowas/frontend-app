@@ -1,105 +1,103 @@
-import AbstractCommand from 'core/model/command/AbstractCommand';
-
-import addLayerPayloadSchema from './addLayerPayloadSchema';
-import addBoundaryPayloadSchema from './addBoundaryPayloadSchema';
-import calculateOptimizationPayloadSchema from './calculateOptimizationPayloadSchema';
-import cancelOptimizationCalculationPayloadSchema from './cancelOptimizationCalculationPayloadSchema';
-import cloneModflowModelPayloadSchema from './cloneModflowModelPayloadSchema';
-import createModflowModelPayloadSchema from './createModflowModelPayloadSchema';
-import deleteModflowModelPayloadSchema from './deleteModflowModelPayloadSchema';
-import removeLayerPayloadSchema from './removeLayerPayloadSchema';
-import removeBoundaryPayloadSchema from './removeBoundaryPayloadSchema';
-import updateBoundaryPayloadSchema from './updateBoundaryPayloadSchema';
-import updateModflowModelPayloadSchema from './updateModflowModelPayloadSchema';
-import updateMt3dmsPayloadSchema from './updateMt3dmsPayloadSchema';
-import updateOptimizationInputPayloadSchema from './updateOptimizationInputPayloadSchema';
-import updateStressperiodsPayloadSchema from './updateStressperiodsPayloadSchema';
+import AbstractCommand, {JSON_SCHEMA_URL} from 'core/model/command/AbstractCommand';
 
 class ModflowModelCommand extends AbstractCommand {
 
-    static addSoilmodelLayer(modelId, layer) {
-        return new ModflowModelCommand(
-            'addLayer',
-            {id: modelId, layer: layer.toObject()},
-            addLayerPayloadSchema);
-    }
-
     static addBoundary(modelId, boundary) {
+        const name = 'addBoundary';
         return new ModflowModelCommand(
-            'addBoundary',
+            name,
             {id: modelId, boundary: boundary.toObject},
-            addBoundaryPayloadSchema
+            JSON_SCHEMA_URL + 'commands/' + name
         );
     }
 
-    static calculateOptimization(payload) {
-        return new ModflowModelCommand('calculateOptimization', payload, calculateOptimizationPayloadSchema);
-    }
-
-    static cancelOptimizationCalculation(payload) {
-        return new ModflowModelCommand('cancelOptimizationCalculation', payload,
-            cancelOptimizationCalculationPayloadSchema
+    static addSoilmodelLayer(modelId, layer) {
+        const name = 'addLayer';
+        return new ModflowModelCommand(
+            name,
+            {id: modelId, layer: layer.toObject()},
+            JSON_SCHEMA_URL + 'commands/' + name
         );
     }
 
     static calculateModflowModel(id) {
-        return new ModflowModelCommand('calculateModflowModel', {id});
+        const name = 'calculateModflowModel';
+        return new ModflowModelCommand(name, {id}, JSON_SCHEMA_URL + 'commands/' + name);
+    }
+
+    static calculateOptimization(payload) {
+        const name = 'calculateOptimization';
+        return new ModflowModelCommand(name, payload, JSON_SCHEMA_URL + 'commands/' + name);
+    }
+
+    static cancelOptimizationCalculation(payload) {
+        const name = 'cancelOptimizationCalculation';
+        return new ModflowModelCommand(name, payload, JSON_SCHEMA_URL + 'commands/' + name);
     }
 
     static cloneModflowModel({id, newId, isTool}) {
-        return new ModflowModelCommand(
-            'cloneModflowModel',
-            {id, new_id: newId, is_tool: isTool},
-            cloneModflowModelPayloadSchema
-        );
+        const name = 'cloneModflowModel';
+        return new ModflowModelCommand(name, {
+            id,
+            new_id: newId,
+            is_tool: isTool
+        }, JSON_SCHEMA_URL + 'commands/' + name);
     }
 
     static createModflowModel(payload) {
-        return new ModflowModelCommand('createModflowModel', payload, createModflowModelPayloadSchema);
+        const name = 'createModflowModel';
+        return new ModflowModelCommand(name, payload, JSON_SCHEMA_URL + 'commands/' + name);
     }
 
     static deleteModflowModel({id}) {
-        return new ModflowModelCommand('deleteModflowModel', {id}, deleteModflowModelPayloadSchema);
+        const name = 'deleteModflowModel';
+        return new ModflowModelCommand(name, {id}, JSON_SCHEMA_URL + 'commands/' + name);
     }
 
     static removeSoilmodelLayer(payload) {
-        return new ModflowModelCommand('removeLayer', payload, removeLayerPayloadSchema);
+        const name = 'removeLayer';
+        return new ModflowModelCommand(name, payload, JSON_SCHEMA_URL + 'commands/' + name);
     }
 
     static removeBoundary(modelId, boundaryId) {
+        const name = 'removeBoundary';
         return new ModflowModelCommand(
-            'removeBoundary',
-            {id: modelId, boundary_id: boundaryId},
-            removeBoundaryPayloadSchema
+            name, {id: modelId, boundary_id: boundaryId}, JSON_SCHEMA_URL + 'commands/' + name
         );
     }
 
     static updateBoundary(modelId, boundary) {
+        const name = 'updateBoundary';
         return new ModflowModelCommand(
-            'updateBoundary',
+            name,
             {id: modelId, boundary_id: boundary.id, boundary: boundary.toObject},
-            updateBoundaryPayloadSchema
+            JSON_SCHEMA_URL + 'commands/' + name
         );
     }
 
     static updateModflowModel(payload) {
-        return new ModflowModelCommand('updateModflowModel', payload, updateModflowModelPayloadSchema);
+        const name = 'updateModflowModel';
+        return new ModflowModelCommand(name, payload, JSON_SCHEMA_URL + 'commands/' + name);
     }
 
     static updateMt3dms(payload) {
-        return new ModflowModelCommand('updateMt3dms', payload, updateMt3dmsPayloadSchema);
+        const name = 'updateMt3dms';
+        return new ModflowModelCommand(name, payload, JSON_SCHEMA_URL + 'commands/' + name);
     }
 
     static updateOptimizationInput(payload) {
-        return new ModflowModelCommand('updateOptimizationInput', payload, updateOptimizationInputPayloadSchema)
+        const name = 'updateOptimizationInput';
+        return new ModflowModelCommand(name, payload, JSON_SCHEMA_URL + 'commands/' + name);
     }
 
     static updateSoilmodelLayer(payload) {
-        return new ModflowModelCommand('updateLayer', payload, addLayerPayloadSchema);
+        const name = 'updateLayer';
+        return new ModflowModelCommand(name, payload, JSON_SCHEMA_URL + 'commands/' + name);
     }
 
     static updateStressperiods(payload) {
-        return new ModflowModelCommand('updateStressPeriods', payload, updateStressperiodsPayloadSchema);
+        const name = 'updateStressPeriods';
+        return new ModflowModelCommand(name, payload, JSON_SCHEMA_URL + 'commands/' + name);
     }
 }
 
