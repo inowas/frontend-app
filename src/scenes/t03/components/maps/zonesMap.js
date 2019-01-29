@@ -72,7 +72,8 @@ class ZonesMap extends Component {
                                     id={z.id}
                                     positions={z.geometry.coordinatesLatLng}
                                     color='grey'
-                                    weight={0.1}
+                                    weight={1}
+                                    fillOpacity='0.4'
                                 />
                             );
                         })}
@@ -92,6 +93,7 @@ class ZonesMap extends Component {
                         key={zone.id}
                         id={zone.id}
                         positions={zone.geometry.coordinatesLatLng}
+                        color='#7C4DFF'
                     />
                     }
                 </FeatureGroup>

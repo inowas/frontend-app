@@ -46,14 +46,12 @@ class BoundaryList extends React.Component {
                                         content='Clone'
                                         position='top center'
                                         size='mini'
-                                        inverted
                                     />
                                     <Popup
                                         trigger={<Button icon={'trash'} onClick={() => this.props.onRemove(b.id)}/>}
                                         content='Delete'
                                         position='top center'
                                         size='mini'
-                                        inverted
                                     />
                                     </Button.Group>
                                 </div>
