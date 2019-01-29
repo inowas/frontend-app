@@ -11,7 +11,7 @@ const cells = [
 {x:1, y:5, geometry: geometry},
 ]
 */
-const getGridCells = (boundingBox, gridSize) => {
+export const getGridCells = (boundingBox, gridSize) => {
 
     if (!boundingBox instanceof BoundingBox) {
         throw new Error('Geometry needs to be instance of BoundingBox');

@@ -1,4 +1,4 @@
-import AbstractCollection from '../../../AbstractCollection';
+import AbstractCollection from '../../collection/AbstractCollection';
 import SoilmodelLayer from './SoilmodelLayer';
 
 class LayersCollection extends AbstractCollection {

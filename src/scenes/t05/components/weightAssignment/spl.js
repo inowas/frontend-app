@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import {Grid, Input, Message, Segment, Table} from 'semantic-ui-react';
-import {WeightsCollection, WeightAssignment} from 'core/mcda/criteria';
+import {WeightsCollection, WeightAssignment} from 'core/model/mcda/criteria';
 import {cloneDeep} from 'lodash';
 
 class SimpleWeightAssignment extends React.Component {

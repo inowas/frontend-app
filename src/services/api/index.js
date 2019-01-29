@@ -28,11 +28,17 @@ export const sendCommand = (command, onSuccess, onError) => {
         .catch(onError);
 };
 
-export const uploadRasterfile = (file, onSuccess, onError) => {
+export const uploadRasterfileToApi = (file, onSuccess, onError) => {
     const uploadData = new FormData();
     uploadData.append('file', file);
     const api = createApi(true);
     api.post('rasterfile', uploadData).then(response => response.data).then(onSuccess).catch(onError);
+};
+
+export const uploadRasterfile = (file, onSuccess, onError) => {
+    const uploadData = new FormData();
+    uploadData.append('file', file);
+    axios.post('https://geoprocessing.inowas.com', uploadData).then(response => response.data).then(onSuccess).catch(onError);
 };
 
 export const fetchRasterfile = (

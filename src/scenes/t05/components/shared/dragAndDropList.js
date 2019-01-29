@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import {DragDropContext, Draggable, Droppable} from 'react-beautiful-dnd';
 import {Button, Segment} from 'semantic-ui-react';
-import AbstractCollection from 'core/AbstractCollection';
+import AbstractCollection from 'core/model/collection/AbstractCollection';
 import {pure} from 'recompose';
 
 const styles = {

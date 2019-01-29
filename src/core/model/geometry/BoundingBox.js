@@ -97,10 +97,26 @@ class BoundingBox {
         }
     }
 
+    isValid = () => !(!this.xMin || !this.xMax || !this.yMin || !this.yMax);
+
     toArray = () => ([
         [this._xMin, this._yMin],
         [this._xMax, this._yMax]
     ]);
+
+    northEast = () => {
+        return {
+            lat: this._yMax,
+            lon: this._xMax
+        };
+    };
+
+    southWest = () => {
+        return {
+            lat: this._yMin,
+            lon: this._xMin
+        };
+    };
 
     getBoundsLatLng = () => {
         return [
@@ -111,7 +127,7 @@ class BoundingBox {
 
     sameAs = (obj) => {
         return isEqual(obj.toArray(), this.toArray())
-    }
+    };
 }
 
 export default BoundingBox;

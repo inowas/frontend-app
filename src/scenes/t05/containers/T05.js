@@ -10,14 +10,21 @@ import {deepMerge} from '../../shared/simpleTools/helpers';
 import {Divider, Grid, Icon, Segment} from 'semantic-ui-react';
 import AppContainer from '../../shared/AppContainer';
 import ToolMetaData from '../../shared/simpleTools/ToolMetaData';
-import {CriteriaEditor, ToolNavigation, WeightAssignmentEditor} from '../components';
+import {
+    CriteriaEditor,
+    CriteriaDataEditor,
+    CriteriaNavigation,
+    ConstraintsEditor,
+    ToolNavigation,
+    WeightAssignmentEditor
+} from '../components';
 
 import {defaultsT05} from '../defaults';
 import getMenuItems from '../defaults/menuItems';
 
-import {MCDA} from 'core/mcda';
+import {MCDA} from 'core/model/mcda';
 import ContentToolBar from '../../shared/ContentToolbar';
-import {WeightAssignment, WeightAssignmentsCollection} from 'core/mcda/criteria';
+import {WeightAssignment, WeightAssignmentsCollection} from 'core/model/mcda/criteria';
 
 const navigation = [{
     name: 'Documentation',
@@ -85,6 +92,10 @@ class T05 extends React.Component {
             }
         }
 
+        if (name === 'constraints') {
+            mcda.constraints = value;
+        }
+
         return this.setState({
             tool: {
                 ...this.state.tool,
@@ -135,19 +146,32 @@ class T05 extends React.Component {
         }
     });
 
-    routeTo = (type = null) => {
+    handleClickCriteriaNavigation = (e, {name}) => this.routeTo(name);
+
+    handleClickCriteriaTool = name => this.routeTo(null, name);
+
+    routeTo = (nCid = null, nTool = null) => {
         const {id, property} = this.props.match.params;
+        const cid = nCid || this.props.match.params.cid || null;
+        const tool = nTool || this.props.match.params.tool || null;
         const path = this.props.match.path;
         const basePath = path.split(':')[0];
-        if (!!type) {
-            return this.props.history.push(basePath + id + '/' + property + '/' + type);
+        if (!!cid && !!tool) {
+            return this.props.history.push(basePath + id + '/' + property + '/' + cid + '/' + tool);
+        }
+        if (!!cid) {
+            if (property === 'cd') {
+                return this.props.history.push(basePath + id + '/' + property + '/' + cid + '/upload');
+            }
+            return this.props.history.push(basePath + id + '/' + property + '/' + cid);
         }
         return this.props.history.push(basePath + id + '/' + property);
     };
 
     renderContent() {
         const {id, property} = this.props.match.params;
-        const type = this.props.match.params.type ? this.props.match.params.type : null;
+        const cid = this.props.match.params.cid || null;
+        const tool = this.props.match.params.tool || null;
         const mcda = MCDA.fromObject(this.state.tool.data.mcda);
 
         const {permissions} = this.state.tool;
@@ -160,10 +184,17 @@ class T05 extends React.Component {
                         readOnly={readOnly || mcda.weightAssignmentsCollection.length > 0}
                         mcda={mcda}
                         handleChange={this.handleChange}
-                    />)
-                    ;
+                    />);
+            case 'cm':
+                return (
+                    <ConstraintsEditor
+                        readOnly={readOnly}
+                        mcda={mcda}
+                        handleChange={this.handleChange}
+                    />
+                );
             case 'wa':
-                const weightAssignment = type ? mcda.weightAssignmentsCollection.findById(type) : null;
+                const weightAssignment = cid ? mcda.weightAssignmentsCollection.findById(cid) : null;
 
                 return (
                     <WeightAssignmentEditor
@@ -172,6 +203,18 @@ class T05 extends React.Component {
                         selectedWeightAssignment={weightAssignment}
                         handleChange={this.handleChange}
                         routeTo={this.routeTo}
+                    />
+                );
+            case 'cd':
+                const criterion = cid ? mcda.criteriaCollection.findById(cid) : null;
+
+                return (
+                    <CriteriaDataEditor
+                        activeTool={tool}
+                        criterion={criterion}
+                        handleChange={this.handleChange}
+                        mcda={mcda}
+                        onClickTool={this.handleClickCriteriaTool}
                     />
                 );
             default:
@@ -189,7 +232,7 @@ class T05 extends React.Component {
         const mcda = MCDA.fromObject(this.state.tool.data.mcda);
         const {tool, isDirty, isLoading} = this.state;
 
-        const {type} = this.props.match.params;
+        const {cid, property} = this.props.match.params;
 
         const {permissions} = tool;
         const readOnly = !includes(permissions, 'w');
@@ -212,11 +255,22 @@ class T05 extends React.Component {
                     <Grid.Row>
                         <Grid.Column width={4}>
                             <ToolNavigation navigationItems={menuItems}/>
+                            {property === 'cd' &&
+                            <CriteriaNavigation
+                                activeCriterion={cid}
+                                mcda={mcda}
+                                onClick={this.handleClickCriteriaNavigation}
+                            />
+                            }
                         </Grid.Column>
                         <Grid.Column width={12}>
                             <Segment color={'grey'} loading={isLoading}>
-                                <ContentToolBar backButton={!!type} onBack={this.routeTo} isDirty={isDirty} save
-                                                onSave={this.handleSave}/>
+                                <ContentToolBar
+                                    backButton={!!cid && property !== 'cd'}
+                                    onBack={this.routeTo}
+                                    isDirty={isDirty} save
+                                    onSave={this.handleSave}
+                                />
                                 <Divider/>
                                 {this.renderContent()}
                             </Segment>

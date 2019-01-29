@@ -1,5 +1,5 @@
 import {floor, isEqual} from 'lodash';
-import {BoundingBox, GridSize} from './index';
+import {BoundingBox, GridSize} from '../modflow/index';
 
 class ActiveCells {
 

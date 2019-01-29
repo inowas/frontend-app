@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import {createGridData, min, max, rainbowFactory} from './helpers';
 import ColorLegend from './ColorLegend';
-import GridSize from 'core/model/modflow/GridSize';
+import {GridSize} from 'core/model/geometry';
 
 const styles = {
     canvas: {
@@ -19,6 +19,7 @@ class RasterDataImage extends React.Component {
             const rainbowVis = rainbowFactory({min: min(data), max: max(data)});
             const width = gridSize.nX;
             const height = gridSize.nY;
+            console.log('START DRAWING');
             this.drawCanvas(data, width, height, rainbowVis);
         }
     }

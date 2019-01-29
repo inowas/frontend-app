@@ -36,6 +36,8 @@ class Geometry {
     get coordinatesLatLng() {
         const coordinates = this._geometry.coordinates;
         switch (this._geometry.type.toLowerCase()) {
+            case 'multipolygon':
+                return (coordinates.map(c => this.getLatLngFromXY(c)));
             case 'polygon':
                 return (this.getLatLngFromXY(coordinates[0]));
             case 'linestring':
