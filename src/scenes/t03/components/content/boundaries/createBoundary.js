@@ -6,7 +6,7 @@ import {sendCommand} from 'services/api';
 import {Form, Grid, Header, Segment} from 'semantic-ui-react';
 import {ModflowModel, Soilmodel} from 'core/model/modflow';
 import {updateBoundaries} from '../../../actions/actions';
-import {Boundary, BoundaryCollection, BoundaryFactory} from 'core/model/modflow/boundaries';
+import {BoundaryCollection, BoundaryFactory} from 'core/model/modflow/boundaries';
 import ContentToolBar from 'scenes/shared/ContentToolbar';
 import ModflowModelCommand from '../../../commands/modflowModelCommand';
 import {CreateBoundaryMap} from '../../maps';
@@ -24,53 +24,49 @@ class Boundaries extends React.Component {
             affectedLayers: [0],
             subType: BoundaryFactory.fromType(type).subType,
             subTypes: BoundaryFactory.fromType(type).subTypes,
+            geometry: null,
+            activeCells: null,
             isLoading: false,
             isDirty: false,
             error: false,
-            state: null,
-            boundary: null
+            state: null
         }
     }
 
     onChangeGeometry = geometry => {
         const activeCells = calculateActiveCells(geometry, this.props.model.boundingBox, this.props.model.gridSize);
-        const boundary = BoundaryFactory.createByTypeAndStartDate({
-            name: this.state.name,
-            type: this.props.match.params.type,
-            geometry: geometry,
-            utcIsoStartDateTimes: this.props.model.stressperiods.dateTimes
-        });
-
-        boundary.activeCells = activeCells;
         this.setState({
-            boundary: boundary.toObject,
+            activeCells,
+            geometry,
             isDirty: true
-        })
+        });
     };
 
-    // TODO:
     handleChange = (e, {name, value}) => {
-
         if (name === 'affectedLayers') {
             value = [value];
         }
 
-        const boundary = this.state.boundary ? BoundaryFactory.fromObjectData(this.state.boundary) : null;
-        if (boundary instanceof Boundary) {
-            boundary[name] = value;
-        }
-
         this.setState({
             [name]: value,
-            boundary: boundary ? boundary.toObject : this.state.boundary,
             isDirty: true
-        })
+        });
     };
 
     onSave = () => {
         const {id, property} = this.props.match.params;
         const {model} = this.props;
-        const boundary = BoundaryFactory.fromObjectData(this.state.boundary);
+
+        const boundary = BoundaryFactory.createByTypeAndStartDate({
+            name: this.state.name,
+            type: this.props.match.params.type,
+            geometry: this.state.geometry,
+            utcIsoStartDateTimes: this.props.model.stressperiods.dateTimes
+        });
+
+        boundary.activeCells = this.state.activeCells;
+        boundary.affectedLayers = this.state.affectedLayers;
+
         return sendCommand(ModflowModelCommand.addBoundary(model.id, boundary),
             () => {
                 this.props.updateBoundaries(this.props.boundaries.addBoundary(boundary));
@@ -131,7 +127,7 @@ class Boundaries extends React.Component {
                             <ContentToolBar
                                 onSave={this.onSave}
                                 isValid={(this.state.boundary !== null)}
-                                isDirty={isDirty}
+                                isDirty={isDirty && !!this.state.geometry && !!this.state.activeCells}
                                 isError={error}
                                 saveButton={!readOnly}
                             />

@@ -1,4 +1,5 @@
 import LayersCollection from './LayersCollection';
+import ModflowModel from '../ModflowModel';
 
 class Soilmodel {
     _meta = {};
@@ -12,7 +13,6 @@ class Soilmodel {
     }
 
     static fromObject(obj) {
-
         if(!obj) {
             return Soilmodel.fromDefaults();
         }
@@ -61,6 +61,13 @@ class Soilmodel {
             'general': this.general,
             'layers': this.layersCollection.toArray()
         };
+    }
+
+    updateGeometry(model) {
+        if (!(model instanceof ModflowModel)) {
+            throw new Error('Model needs to be instance of ModflowModel');
+        }
+        this.layersCollection.items = this.layersCollection.all.map(layer => layer.updateGeometry(model));
     }
 }
 

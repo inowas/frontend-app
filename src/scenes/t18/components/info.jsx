@@ -8,41 +8,57 @@ import {
 } from '../calculations/calculationT18';
 
 import {getParameterValues} from '../../shared/simpleTools/helpers';
-import {Grid, Header} from 'semantic-ui-react';
+import {Grid, Icon, Message} from 'semantic-ui-react';
 
 
 const renderCoWarning = (CoToHigh) => {
     if (CoToHigh) {
         return (
-            <p>
-                <i className="glyphicon glyphicon-warning-sign pull-right"/>
-                C<sub>o</sub> is too high and a better pre-treatment is necessary.
-            </p>
+            <Message icon warning>
+                <Icon name='exclamation triangle' color='orange' />
+                <Message.Content>
+                    <p>
+                        C<sub>o</sub> is too high and a better pre-treatment is necessary.
+                    </p>
+                </Message.Content>
+            </Message>
         );
     }
 
     return (
-        <p>
-            <i className="glyphicon glyphicon-warning-sign pull-right"/>
-            C<sub>o</sub> is within acceptable loading.
-        </p>
+        <Message icon info>
+            <Icon name='info circle' color='blue' />
+            <Message.Content>
+                <p>
+                    C<sub>o</sub> is within acceptable loading.
+                </p>
+            </Message.Content>
+        </Message>
     );
 };
 const renderCnWarning = (CnToHigh) => {
     if (CnToHigh) {
         return (
-            <p>
-                <i className="glyphicon glyphicon-warning-sign pull-right"/>
-                C<sub>n</sub> is too high and a better pre-treatment is necessary.
-            </p>
+            <Message icon warning>
+                <Icon name='exclamation triangle' color='orange' />
+                <Message.Content>
+                    <p>
+                        C<sub>n</sub> is too high and a better pre-treatment is necessary.
+                    </p>
+                </Message.Content>
+            </Message>
         );
     }
 
     return (
-        <p>
-            <i className="glyphicon glyphicon-warning-sign pull-right"/>
-            C<sub>n</sub> is within acceptable loading.
-        </p>
+        <Message icon info>
+            <Icon name='info circle' color='blue' />
+            <Message.Content>
+                <p>
+                    C<sub>n</sub> is within acceptable loading.
+                </p>
+            </Message.Content>
+        </Message>
     );
 };
 const renderText = (AH, AN, AO) => {
@@ -50,29 +66,44 @@ const renderText = (AH, AN, AO) => {
 
     if (maxA === AH) {
         return (
-            <p>
-                <b>Infiltration rate</b> is defining the estimated field area. <br/>
-                The area can be reduced by lowering the flow rate (Q).
-            </p>
+            <Message icon info>
+                <Icon name='info circle' color='blue' />
+                <Message.Content>
+                    <p>
+                        <b>Infiltration rate</b> is defining the estimated field area. <br/>
+                        The area can be reduced by lowering the flow rate (Q).
+                    </p>
+                </Message.Content>
+            </Message>
         );
     }
 
     if (maxA === AN) {
         return (
-            <p>
-                <b>Nitrogen loading</b> is defining the estimated field area. <br/>
-                The area can be reduced by lowering the flow rate (Q) or by the pre-treatment of infiltration water for the reduction of nitrogen concentration.
-            </p>
+            <Message icon info>
+                <Icon name='info circle' color='blue' />
+                <Message.Content>
+                    <p>
+                        <b>Nitrogen loading</b> is defining the estimated field area. <br/>
+                        The area can be reduced by lowering the flow rate (Q) or by the pre-treatment of infiltration water for the reduction of nitrogen concentration.
+                    </p>
+                </Message.Content>
+            </Message>
         );
     }
 
 
     return (
-        <p>
-            <b>BOD loading</b> is defining the estimated field area. <br/>
-            The area can be reduced by lowering the flow rate
-            (Q) or by the pre-treatment of infiltration water for the reduction of organic matter concentration.
-        </p>
+        <Message icon info>
+            <Icon name='info circle' color='blue' />
+            <Message.Content>
+                <p>
+                    <b>BOD loading</b> is defining the estimated field area. <br/>
+                    The area can be reduced by lowering the flow rate
+                    (Q) or by the pre-treatment of infiltration water for the reduction of organic matter concentration.
+                </p>
+            </Message.Content>
+        </Message>
     );
 };
 
@@ -88,23 +119,16 @@ const Info = ({parameters, settings}) => {
     return (
         <Grid>
             <Grid.Row centered>
-                <Header as='h2'>Info</Header>
-            </Grid.Row>
-            <Grid.Row centered>
                 {renderCoWarning(CoToHigh)}
                 {renderCnWarning()}
             </Grid.Row>
             <Grid.Row centered>
                 <p>The required area calculated based on: </p>
-            </Grid.Row>
-            <Grid.Row centered>
                 <p>
                     Infiltration rate = {AH.toFixed(2)} m<sup>2</sup><br/>
                     BOD loading = {AO.toFixed(2)} m<sup>2</sup><br/>
                     Nitrogen loading = {AN.toFixed(2)} m<sup>2</sup>
                 </p>
-            </Grid.Row>
-            <Grid.Row centered>
                 {renderText(AH, AN, AO)}
             </Grid.Row>
         </Grid>

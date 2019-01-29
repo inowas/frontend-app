@@ -10,7 +10,7 @@ import {BasicTileLayer} from 'services/geoTools/tileLayers';
 import {ActiveCells, BoundingBox, Geometry, GridSize} from 'core/model/geometry';
 import {getStyle} from './index';
 import {pure} from 'recompose';
-import {uniqueId} from 'recharts/es6/util/DataUtils';
+import {uniqueId} from 'lodash';
 
 const style = {
     map: {

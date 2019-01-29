@@ -3,7 +3,7 @@ import React from 'react';
 
 import {GeoJSON, Map, CircleMarker} from 'react-leaflet';
 
-import {disableMap, getStyle} from './helpers';
+import {disableMap, getStyle} from './index';
 import {uniqueId} from 'lodash';
 import {BasicTileLayer} from 'services/geoTools/tileLayers';
 import {nearestPointOnLine} from '@turf/turf';

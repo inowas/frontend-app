@@ -22,6 +22,7 @@ class SoilmodelEditor extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
+            activeTab: 0,
             selectedLayer: null,
             isLoading: false,
             isDirty: false,
@@ -62,6 +63,8 @@ class SoilmodelEditor extends React.Component {
             selectedLayer: layer.toObject()
         });
     };
+
+    handleTabChange = (e, {activeIndex}) => this.setState({activeTab: activeIndex});
 
     handleAddLayer = () => {
         const {id, property, type} = this.props.match.params;
@@ -161,10 +164,13 @@ class SoilmodelEditor extends React.Component {
                             <div>
                                 <ContentToolBar isDirty={isDirty} isError={isError} save onSave={this.onSave}/>
                                 <LayerDetails
+                                    activeIndex={this.state.activeTab}
                                     layer={SoilmodelLayer.fromObject(selectedLayer)}
                                     model={model}
                                     onChange={this.onChangeLayer}
+                                    onChangeTab={this.handleTabChange}
                                     onRemove={this.handleRemoveLayer}
+                                    readOnly={model.readOnly}
                                 />
                             </div>
                             }

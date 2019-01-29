@@ -2,10 +2,10 @@ import AbstractCollection from '../../collection/AbstractCollection';
 import SoilmodelZone from './SoilmodelZone';
 
 class ZonesCollection extends AbstractCollection {
-    static fromArray(array) {
+    static fromArray(array, parseParameters = true) {
         const zc = new ZonesCollection();
         zc.items = array.map(zone => {
-            return SoilmodelZone.fromObject(zone);
+            return SoilmodelZone.fromObject(zone, parseParameters);
         });
         return zc;
     }

@@ -1,18 +1,43 @@
 import React from 'react';
 import Proptypes from 'prop-types';
 import {Stressperiods} from 'core/model/modflow';
-import {Button, Checkbox, Form, Table} from 'semantic-ui-react';
+import {Button, Checkbox, Form, Icon, Popup, Table} from 'semantic-ui-react';
 import moment from 'moment/moment';
 
 class StressPeriodsDataTable extends React.Component {
     header = () => (
         <Table.Row>
             <Table.HeaderCell width={6}>Start Date</Table.HeaderCell>
-            <Table.HeaderCell width={1}>tt</Table.HeaderCell>
-            <Table.HeaderCell width={1}>pl</Table.HeaderCell>
-            <Table.HeaderCell width={2}>nstp</Table.HeaderCell>
-            <Table.HeaderCell width={2}>tsmult</Table.HeaderCell>
-            <Table.HeaderCell width={2}>steady</Table.HeaderCell>
+            <Popup
+                trigger={<Table.HeaderCell width={1}>tt</Table.HeaderCell>}
+                content='Total time'
+                hideOnScroll
+                size='tiny'
+            />
+            <Popup
+                trigger={<Table.HeaderCell width={1}>pl</Table.HeaderCell>}
+                content='Period length'
+                hideOnScroll
+                size='tiny'
+            />
+            <Popup
+                trigger={<Table.HeaderCell width={2}>nstp</Table.HeaderCell>}
+                content='No. of time steps'
+                hideOnScroll
+                size='tiny'
+            />
+            <Popup
+                trigger={<Table.HeaderCell width={2}>tsmult</Table.HeaderCell>}
+                content='Time step multiplier'
+                hideOnScroll
+                size='tiny'
+            />
+            <Popup
+                trigger={<Table.HeaderCell width={2}>steady</Table.HeaderCell>}
+                content='State of stress period'
+                hideOnScroll
+                size='tiny'
+            />
             <Table.HeaderCell width={2}/>
         </Table.Row>
     );
@@ -63,7 +88,7 @@ class StressPeriodsDataTable extends React.Component {
                         type='date'
                         name={'startDateTime'}
                         idx={idx}
-                        value={moment(startDateTime).add(sp.totimStart, 'days').format('YYYY-MM-DD')}
+                        value={new moment.utc(startDateTime).add(sp.totimStart, 'days').format('YYYY-MM-DD')}
                         onChange={this.handleStressperiodChange}
                     />
                 </Table.Cell>
@@ -81,7 +106,7 @@ class StressPeriodsDataTable extends React.Component {
                     />
                 </Table.Cell>
                 <Table.Cell>
-                    {!readOnly && <Button
+                    {!readOnly && <Button basic
                         floated={'right'}
                         icon={'trash'}
                         onClick={() => this.handleRemoveStressperiod(idx)}
@@ -92,16 +117,19 @@ class StressPeriodsDataTable extends React.Component {
 
         return (
             <div>
-                <Table color={'red'} size={'small'}>
+                <Table size={'small'}>
                     <Table.Header>{this.header()}</Table.Header>
                     <Table.Body>
                         {rows}
                     </Table.Body>
                 </Table>
-                <Button.Group>
-                    <Button onClick={() => this.addNewStressperiod(1)}>+1 Day</Button>
-                    <Button onClick={() => this.addNewStressperiod(30)}>+1 Month</Button>
-                    <Button onClick={() => this.addNewStressperiod(365)}>+1 Year</Button>
+                <Button.Group size={'small'}>
+                    <Button icon onClick={() => this.addNewStressperiod(1)}>
+                        <Icon name='add circle' /> 1 Day</Button>
+                    <Button icon onClick={() => this.addNewStressperiod(30)}>
+                        <Icon name='add circle' /> 1 Month</Button>
+                    <Button icon onClick={() => this.addNewStressperiod(365)}>
+                        <Icon name='add circle' /> 1 Year</Button>
                 </Button.Group>
             </div>
         )

@@ -1,15 +1,16 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import {Button, Icon, Menu} from 'semantic-ui-react';
+import {Button, Icon, Menu, Popup} from 'semantic-ui-react';
 import {pure} from 'recompose';
 import {Soilmodel} from 'core/model/modflow/soilmodel';
 
 const LayersList = ({addLayer, soilmodel, onChange, selected}) => {
     return (
         <div>
-            <Button onClick={addLayer} fluid>
-                <Icon name='plus' />
-                New Layer
+            <Button positive icon='plus' labelPosition='left'
+                onClick={addLayer}
+                content={'Add Layer'}
+            >
             </Button>
             <Menu fluid vertical tabular>
                 {soilmodel.layersCollection.all.map(layer => (
@@ -19,6 +20,31 @@ const LayersList = ({addLayer, soilmodel, onChange, selected}) => {
                         active={layer.id === selected}
                         onClick={() => onChange(layer.id)}
                     >
+                        <Popup
+                            trigger={<Icon name='ellipsis horizontal'/>}
+                            content={
+                                <div>
+                                    <Button.Group size='small'>
+                                        <Popup
+                                            trigger={<Button icon={'clone'} onClick={() => this.props.onClone(layer.id)}/>}
+                                            content='Clone'
+                                            position='top center'
+                                            size='mini'
+                                            inverted
+                                        />
+                                        <Popup
+                                            trigger={<Button icon={'trash'} onClick={() => this.props.onRemove(layer.id)}/>}
+                                            content='Delete'
+                                            position='top center'
+                                            size='mini'
+                                            inverted
+                                        />
+                                    </Button.Group>
+                                </div>
+                            }
+                            on={'click'}
+                            position={'right center'}
+                        />
                         {layer.number}: {layer.name}
                     </Menu.Item>
                 ))}

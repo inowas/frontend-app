@@ -1,35 +1,46 @@
+import {Icon} from 'semantic-ui-react';
+import React from 'react';
+
 const menuItems = [
     {
         name: 'Discretization',
         property: 'discretization',
+        icon: <Icon name="calendar alternate outline"/>
     },
     {
         name: 'Soilmodel',
-        property: 'soilmodel'
+        property: 'soilmodel',
+        icon: <Icon name="expand"/>
     },
     {
         name: 'Boundaries',
-        property: 'boundaries'
+        property: 'boundaries',
+        icon: <Icon name="map marker alternate"/>
     },
     {
         name: 'Observations',
-        property: 'observations'
+        property: 'observations',
+        icon: <Icon name="clipboard outline"/>
     },
     {
         name: 'Transport',
-        property: 'transport'
+        property: 'transport',
+        icon: <Icon name="exchange"/>
     },
     {
         name: 'Run',
-        property: 'run'
+        property: 'run',
+        icon: <Icon name="calculator"/>
     },
     {
         name: 'Results',
-        property: 'results'
+        property: 'results',
+        icon: <Icon name="chart bar outline"/>
     },
     {
         name: 'Optimization',
-        property: 'optimization'
+        property: 'optimization',
+        icon: <Icon name="sliders horizontal"/>
     }
 ];
 

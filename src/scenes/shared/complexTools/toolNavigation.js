@@ -24,7 +24,9 @@ class ToolNavigation extends React.Component {
                 active={property === i.property}
                 route={basePath + id + '/' + i.property}
                 onClick={this.handleItemClick}
-            />
+                >
+                {i.icon}{i.name}
+            </Menu.Item>
         ));
         return (
             <Segment color={'blue'} style={this.props.style}>

@@ -40,8 +40,22 @@ class BoundaryList extends React.Component {
                             trigger={<Icon name='ellipsis horizontal'/>}
                             content={
                                 <div>
-                                    <Button icon={'clone'} onClick={() => this.props.onClone(b.id)}/>
-                                    <Button icon={'trash'} onClick={() => this.props.onRemove(b.id)}/>
+                                    <Button.Group size='small'>
+                                    <Popup
+                                        trigger={<Button icon={'clone'} onClick={() => this.props.onClone(b.id)}/>}
+                                        content='Clone'
+                                        position='top center'
+                                        size='mini'
+                                        inverted
+                                    />
+                                    <Popup
+                                        trigger={<Button icon={'trash'} onClick={() => this.props.onRemove(b.id)}/>}
+                                        content='Delete'
+                                        position='top center'
+                                        size='mini'
+                                        inverted
+                                    />
+                                    </Button.Group>
                                 </div>
                             }
                             on={'click'}
@@ -55,6 +69,8 @@ class BoundaryList extends React.Component {
     };
 
     render() {
+        const {boundaries} = this.props;
+
         return (
             <Grid padded>
                 <Grid.Row>
@@ -62,14 +78,27 @@ class BoundaryList extends React.Component {
                         <Button as='div' labelPosition='left'>
                             <Dropdown
                                 selection
-                                options={this.boundaryTypes()}
+                                options={this.boundaryTypes().map(b => {
+                                    let numberOfBoundaries = boundaries.length;
+                                    if (b.value !== 'all') {
+                                        numberOfBoundaries = boundaries.findBy('type', b.value).length;
+                                    }
+
+                                    let name = `${b.text} (${numberOfBoundaries})`;
+
+                                    return {
+                                        ...b,
+                                        disabled: b.value !== 'all' && numberOfBoundaries === 0,
+                                        text: name
+                                    }
+                                })}
                                 onChange={(e, {value}) => this.setState({selectedType: value})}
                                 value={this.state.selectedType}
                                 style={{minWidth: '120px', width: '120px'}}
                             />
-                            <Dropdown text='Add' icon='add' labeled button className='icon'>
+                            <Dropdown text='Add' icon='add' labeled button className='icon blue'>
                                 <Dropdown.Menu>
-                                    <Dropdown.Header/>
+                                    <Dropdown.Header>Choose type</Dropdown.Header>
                                     {this.boundaryTypes()
                                         .filter(b => b.value !== 'all')
                                         .map(o => <Dropdown.Item

@@ -1,29 +1,49 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-import {ModflowModel} from 'core/model/modflow';
+import {Calculation, ModflowModel} from 'core/model/modflow';
 import {Button, Grid, Header, List, Segment} from 'semantic-ui-react';
 import RunModelOverviewMap from '../../maps/runModelOverviewMap';
 import {connect} from 'react-redux';
-import CalculationStatus from './CalculationStatus';
+import CalculationStatus, {CALCULATION_STATE_STARTED} from './CalculationStatus';
 import {sendCommand} from 'services/api';
 import ModflowModelCommand from '../../../commands/modflowModelCommand';
+import {updateCalculation} from '../../../actions/actions';
 
 class Overview extends React.Component {
 
     state = {
         canBeCalculated: true,
         canBeCanceled: false,
+        sendingCommand: false
     };
 
     onStartCalculationClick = () => {
-        const {model} = this.props;
-        sendCommand(ModflowModelCommand.calculateModflowModel(model.id))
+        const {model, calculation} = this.props;
+        calculation.state = CALCULATION_STATE_STARTED;
+        this.setState({sendingCommand: true});
+        sendCommand(
+            ModflowModelCommand.calculateModflowModel(model.id),
+            () => {
+                this.setState({sendingCommand: false});
+                this.props.updateCalculation(calculation);
+            }
+        )
     };
 
-
     render() {
-        const {model} = this.props;
+        const {calculation, model} = this.props;
+
+        if (!(calculation instanceof Calculation)) {
+            return null;
+        }
+
+        let canBeCalculated = true;
+        if (calculation.state > 0 && calculation.state < 6) {
+            canBeCalculated = false;
+        }
+
+        const {sendingCommand} = this.state;
 
         return (
             <Grid padded>
@@ -43,12 +63,17 @@ class Overview extends React.Component {
                         </Segment>
                         <Header as={'h3'}>Calculation</Header>
                         <Segment>
-                            {this.state.canBeCalculated &&
-                            <Button positive fluid onClick={this.onStartCalculationClick}>
+                            {canBeCalculated &&
+                            <Button
+                                positive
+                                fluid
+                                onClick={this.onStartCalculationClick}
+                                loading={sendingCommand}
+                            >
                                 Calculate
                             </Button>}
                             <Header as={'h3'}>Progress</Header>
-                            {model.calculation && <CalculationStatus calculation={model.calculation}/>}
+                            {calculation && <CalculationStatus calculation={calculation}/>}
                         </Segment>
                     </Grid.Column>
                     <Grid.Column width={10}>
@@ -67,14 +92,19 @@ class Overview extends React.Component {
     }
 }
 
-const mapStateToProps = state => {
-    return {
-        model: ModflowModel.fromObject(state.T03.model)
-    };
+const mapStateToProps = state => ({
+    calculation: state.T03.calculation ? Calculation.fromObject(state.T03.calculation) : null,
+    model: ModflowModel.fromObject(state.T03.model)
+});
+
+const mapDispatchToProps = {
+    updateCalculation
 };
 
+
 Overview.proptypes = {
+    calculation: PropTypes.instanceOf(Calculation),
     model: PropTypes.instanceOf(ModflowModel).isRequired
 };
 
-export default connect(mapStateToProps)(Overview);
+export default connect(mapStateToProps, mapDispatchToProps)(Overview);

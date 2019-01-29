@@ -1,6 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import {Breadcrumb, Button, Checkbox, Form, Grid, Header, Modal} from 'semantic-ui-react';
+import {withRouter} from 'react-router-dom';
 
 class ToolMetaData extends React.Component {
     constructor(props) {
@@ -35,9 +36,14 @@ class ToolMetaData extends React.Component {
 
     renderBreadcrumbs = () => (
         <Breadcrumb size='large'>
-            <Breadcrumb.Section link>Tools</Breadcrumb.Section>
-            <Breadcrumb.Divider/>
-            <Breadcrumb.Section link>{this.props.tool.type}</Breadcrumb.Section>
+            <Breadcrumb.Section
+                link
+                onClick={() => this.props.history.push('/tools')}
+            >
+                Tools
+            </Breadcrumb.Section>
+            <Breadcrumb.Divider icon='right angle'/>
+            <Breadcrumb.Section>{this.props.tool.type}</Breadcrumb.Section>
             <Breadcrumb.Divider icon='right angle'/>
             <Breadcrumb.Section>
                 {this.state.tool.name}
@@ -127,7 +133,10 @@ ToolMetaData.propTypes = {
     onSave: PropTypes.func.isRequired,
     readOnly: PropTypes.bool.isRequired,
     saveButton: PropTypes.bool,
-    tool: PropTypes.object.isRequired
+    tool: PropTypes.object.isRequired,
+    history: PropTypes.object.isRequired,
+    location: PropTypes.object.isRequired,
+    match: PropTypes.object.isRequired,
 };
 
-export default ToolMetaData;
+export default withRouter(ToolMetaData);

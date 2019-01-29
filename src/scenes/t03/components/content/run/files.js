@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import {connect} from 'react-redux';
 
-import {ModflowModel} from 'core/model/modflow';
+import {Calculation} from 'core/model/modflow';
 import {Grid, Header, List, Segment} from 'semantic-ui-react';
 import Terminal from '../../../../shared/complexTools/Terminal';
 
@@ -25,12 +25,7 @@ class Files extends React.Component {
 
 
     fetchFile = () => {
-        const {model} = this.props;
-        if (!(model instanceof ModflowModel)) {
-            return;
-        }
-
-        const {calculation} = model;
+        const {calculation} = this.props;
         if (!calculation) {
             return;
         }
@@ -49,12 +44,7 @@ class Files extends React.Component {
     };
 
     fetchFileList = () => {
-        const {model} = this.props;
-        if (!(model instanceof ModflowModel)) {
-            return;
-        }
-
-        const {calculation} = model;
+        const {calculation} = this.props;
         if (!calculation) {
             return;
         }
@@ -77,9 +67,8 @@ class Files extends React.Component {
     };
 
     render() {
-        const {model} = this.props;
+        const {calculation} = this.props;
         const {selectedFile} = this.state;
-        const {calculation} = model;
 
         if (!calculation) {
             return null;
@@ -119,12 +108,12 @@ class Files extends React.Component {
 
 const mapStateToProps = state => {
     return {
-        model: ModflowModel.fromObject(state.T03.model)
+        calculation: state.T03.calculation ? Calculation.fromObject(state.T03.calculation) : null
     };
 };
 
 Files.proptypes = {
-    model: PropTypes.instanceOf(ModflowModel).isRequired
+    calculation: PropTypes.instanceOf(Calculation)
 };
 
 export default connect(mapStateToProps)(Files);

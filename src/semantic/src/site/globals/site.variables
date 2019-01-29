@@ -46,8 +46,11 @@
 @orange     : #ED8D05;
 @red        : #FF5B4D; /*#BA3005*/
 
-@lightGrey  : #E1E1E1;
+@lightGrey  : #EEEEEE;
 @lightBlue  : #3AC6FF;
+
+@red              : #FF5B4D;
+@brown            : #CC6C00;
 
 
 /*---   Neutrals  ---*/
@@ -57,9 +60,16 @@
 @midWhite       : #DCDDDE;
 @white          : #FFFFFF;
 
+/*--- Colored Backgrounds ---*/
+
+@blueBackground   : #DBF3FD;
+
 @orangeHover    : #CC6C00;
 @blueHover      : #0A75A0;
 
+/*-------------------
+    Emotive Colors
+--------------------*/
 
 /* Positive */
 @positiveColor           : @blue;
@@ -74,6 +84,14 @@
 @negativeBorderColor     : #E0B4B4;
 @negativeHeaderColor     : #912D2B;
 @negativeTextColor       : #9F3A38;
+
+/* Info */
+@infoBackgroundColor    : #F0FDFF;
+@infoTextColor          : #0A75A0;
+
+/* Warning */
+@warningTextColor       : #CC6C00;
+
 
 
 /*-------------------
@@ -98,6 +116,18 @@
 @h5               : 1rem;
 
 
+/*--------------
+   Form Input
+---------------*/
+
+@inputBackground: @lightGrey;
+
+/* Input Text Color */
+@inputColor: @textColor;
+@inputPlaceholderColor: lighten(@inputColor, 25);
+@inputPlaceholderFocusColor: lighten(@inputColor, 35);
+
+
 /*-------------------
        Links
 --------------------*/
@@ -120,7 +150,7 @@
       Borders
 --------------------*/
 
-@borderColor               : rgba(34, 36, 38, 0.15); /* #CACBCD */
+@borderColor               : @lightGrey; /* rgba(34, 36, 38, 0.15); #CACBCD */
 
 /*-------------------
        Recharts

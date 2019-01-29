@@ -10,7 +10,7 @@ import ToolNavigation from '../../shared/complexTools/toolNavigation';
 import menuItems from '../defaults/menuItems';
 import * as Content from '../components/content/index';
 import ToolMetaData from '../../shared/simpleTools/ToolMetaData';
-import {fetchUrl} from 'services/api';
+import {fetchUrl, sendCommand} from 'services/api';
 
 import {
     clear,
@@ -21,11 +21,20 @@ import {
     updateSoilmodel
 } from '../actions/actions';
 
-import {BoundaryCollection, BoundaryFactory, Calculation, ModflowModel, Soilmodel} from 'core/model/modflow';
+import {
+    BoundaryCollection,
+    BoundaryFactory,
+    Calculation,
+    ModflowModel,
+    Soilmodel,
+} from 'core/model/modflow';
+import ModflowModelCommand from '../commands/modflowModelCommand';
+import CalculationProgressBar from '../components/content/run/calculationProgressBar';
+import OptimizationProgressBar from '../components/content/optimization/optimizationProgressBar';
 
 const navigation = [{
     name: 'Documentation',
-    path: 'https://inowas.hydro.tu-dresden.de/tools/t02-groundwater-mounding-hantush/',
+    path: 'https://inowas.com/tools/t03-modflow-model-setup-and-editor/',
     icon: <Icon name="file"/>
 }];
 
@@ -34,7 +43,6 @@ class T03 extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            model: null,
             error: false,
             isLoading: false
         }
@@ -123,27 +131,6 @@ class T03 extends React.Component {
         }
     };
 
-    renderToolMetaData = () => {
-        if (!this.props.model) {
-            return null;
-        }
-
-        return (<ToolMetaData
-            isDirty={false}
-            onChange={this.onChangeMetaData}
-            readOnly={false}
-            tool={{
-                type: 'T03',
-                name: this.props.model.name,
-                description: this.props.model.description,
-                public: this.props.model.public
-            }}
-            saveButton={false}
-            onSave={this.saveMetaData}
-        />)
-
-    };
-
     renderContent(id, property, type) {
         switch (property) {
             case 'discretization':
@@ -175,25 +162,28 @@ class T03 extends React.Component {
     }
 
     onChangeMetaData = (metaData) => {
-        const model = ModflowModel.fromObject(this.state.model);
+        const model = this.props.model;
         model.name = metaData.name;
         model.description = metaData.description;
         model.public = metaData.public;
         model.isDirty = true;
-
-        this.setState({
-            model: model.toObject()
-        })
+        this.props.updateModel(model);
     };
 
     saveMetaData = () => {
+        return sendCommand(
+            ModflowModelCommand.updateModflowModel(this.props.model.toPayload()),
+            (e) => this.setState({error: e})
+        );
     };
 
     render() {
         if (!this.props.model) {
             return (
                 <AppContainer navbarItems={navigation}>
-                    <Message>LOADING</Message>
+                    <Message icon>
+                        <Icon name='circle notched' loading />
+                    </Message>
                 </AppContainer>
             )
         }
@@ -205,12 +195,26 @@ class T03 extends React.Component {
                     <Grid.Row>
                         <Grid.Column width={3}/>
                         <Grid.Column width={13}>
-                            {this.renderToolMetaData()}
+                            <ToolMetaData
+                                isDirty={false}
+                                onChange={this.onChangeMetaData}
+                                readOnly={false}
+                                tool={{
+                                    type: 'T03',
+                                    name: this.props.model.name,
+                                    description: this.props.model.description,
+                                    public: this.props.model.public
+                                }}
+                                saveButton={false}
+                                onSave={this.saveMetaData}
+                            />
                         </Grid.Column>
                     </Grid.Row>
                     <Grid.Row>
                         <Grid.Column width={3}>
                             <ToolNavigation navigationItems={menuItems}/>
+                            <CalculationProgressBar/>
+                            <OptimizationProgressBar/>
                         </Grid.Column>
                         <Grid.Column width={13}>
                             {this.renderContent(id, property, type)}

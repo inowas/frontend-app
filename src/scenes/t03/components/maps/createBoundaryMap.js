@@ -7,6 +7,7 @@ import {BoundaryFactory, Geometry} from 'core/model/modflow';
 import {BasicTileLayer} from 'services/geoTools/tileLayers';
 import {getStyle} from './index';
 
+
 const style = {
     map: {
         height: '400px',
@@ -23,10 +24,21 @@ class CreateBoundaryMap extends Component {
         }
     }
 
-    onCreated = e => this.props.onChangeGeometry(Geometry.fromGeoJson(e.layer.toGeoJSON()));
+    onCreated = e => {
+        const geometry = Geometry.fromGeoJson(e.layer.toGeoJSON());
+        this.props.onChangeGeometry(geometry);
+        this.setState({geometry});
+    };
+
+    onEdited = e => {
+        e.layers.eachLayer(layer => {
+            const geometry = Geometry.fromGeoJson(layer.toGeoJSON());
+            this.setState({geometry});
+            this.props.onChangeGeometry(geometry);
+        });
+    };
 
     editControl = () => {
-
         const geometryType = BoundaryFactory.fromType(this.props.type).geometryType;
         return (
             <FeatureGroup>
@@ -34,42 +46,42 @@ class CreateBoundaryMap extends Component {
                     position='topright'
                     draw={{
                         circle: false,
-                        circlemarker: geometryType.toLowerCase() === 'point',
+                        circlemarker: geometryType.toLowerCase() === 'point' && !this.state.geometry,
                         marker: false,
-                        polyline: geometryType.toLowerCase() === 'linestring',
+                        polyline: geometryType.toLowerCase() === 'linestring' && !this.state.geometry,
                         rectangle: false,
-                        polygon: geometryType.toLowerCase() === 'polygon'
+                        polygon: geometryType.toLowerCase() === 'polygon' && !this.state.geometry
                     }}
                     edit={{
-                        edit: false,
+                        edit: !!this.state.geometry,
                         remove: false
                     }}
                     onCreated={this.onCreated}
-                />
+                    onEdited={this.onEdited}
+                >
+                    {this.state.geometry && this.renderGeometry(this.state.geometry)}
+                </EditControl>
             </FeatureGroup>
         );
     };
 
-    // noinspection JSMethodCanBeStatic
-    renderBoundaryGeometry(b) {
-        if (b.type === 'wel' || b.type === 'hob') {
+    renderGeometry(geometry) {
+        const gType = BoundaryFactory.fromType(this.props.type).geometryType.toLowerCase();
+        if (gType === 'point') {
             return (
                 <CircleMarker
-                    key={b.id}
-                    center={[
-                        b.geometry.coordinates[1],
-                        b.geometry.coordinates[0]
-                    ]}
-                    {...getStyle(b.type, b.metadata.well_type)}
+                    key={Math.random()}
+                    center={geometry.coordinatesLatLng}
+                    {...getStyle(this.props.type)}
                 />
             );
         }
 
         return (
             <GeoJSON
-                key={b.geometry.hash()}
-                data={b.geometry}
-                style={getStyle(b.type)}
+                key={geometry.hash()}
+                data={geometry}
+                style={getStyle(this.props.type)}
             />
         );
     }

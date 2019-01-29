@@ -16,10 +16,8 @@ const Settings = ({settings, onChange}) => {
                 <Header as='h2'>Settings</Header>
             </Grid.Row>
             <Grid.Row centered>
-                <Header as='h3'>The infiltration rate was estimated using:</Header>
-            </Grid.Row>
-            <Grid.Row centered>
-                <Form>
+                <p>The infiltration rate was estimated using:</p>
+                <Form style={{textAlign:'left'}}>
                     <Form.Field>
                         <Radio
                             label='Basin infiltration test'

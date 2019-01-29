@@ -42,7 +42,7 @@ const BackgroundT13D = ({parameters, history}) => {
                 The water divide is located at {xwd}m. <br/>
                 Proceed with:
                 <strong
-                    style={{color: 'red', cursor: 'pointer'}}
+                    style={{color: '#1EB1ED', cursor: 'pointer', paddingLeft: '0.5em'}}
                     onClick={() => history.push('/tools/' + tool(xwd).href)}
                 >
                     {tool(xwd).name}

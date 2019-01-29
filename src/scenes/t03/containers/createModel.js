@@ -4,7 +4,7 @@ import {withRouter} from 'react-router-dom';
 import {sendCommand} from 'services/api';
 import {Button, Checkbox, Form, Grid, Icon, Segment} from 'semantic-ui-react';
 import {CreateModelMap} from '../components/maps';
-import {GridSize, ModflowModel, Stressperiods} from 'core/model/modflow';
+import {ActiveCells, Geometry, GridSize, ModflowModel, Stressperiods} from 'core/model/modflow';
 import ModflowModelCommand from '../commands/modflowModelCommand';
 import defaults from '../defaults/createModel';
 import moment from 'moment/moment';
@@ -13,7 +13,7 @@ import {SoilmodelLayer} from 'core/model/modflow/soilmodel';
 
 const navigation = [{
     name: 'Documentation',
-    path: 'https://inowas.hydro.tu-dresden.de/tools/t02-groundwater-mounding-hantush/',
+    path: 'https://inowas.hydro.tu-dresden.de/tools/t03-modflow-model-setup-and-editor/',
     icon: <Icon name="file"/>
 }];
 
@@ -34,7 +34,10 @@ class CreateModel extends React.Component {
             error: false,
             loading: false,
             gridSizeLocal: defaults.gridSize.toObject(),
-            stressperiodsLocal: defaults.stressperiods.toObject(),
+            stressperiodsLocal: {
+                startDateTime: defaults.stressperiods.startDateTime.format('YYYY-MM-DD'),
+                endDateTime: defaults.stressperiods.endDateTime.format('YYYY-MM-DD'),
+            },
             validation: [false, []]
         }
     }
@@ -61,7 +64,10 @@ class CreateModel extends React.Component {
                         id: this.state.id,
                         stress_periods: Stressperiods.fromObject(this.state.stressperiods).toObject()
                     }),
-                    () => sendCommand(ModflowModelCommand.addSoilmodelLayer(this.state.id, SoilmodelLayer.fromDefault()),
+                    () => sendCommand(ModflowModelCommand.addSoilmodelLayer(
+                        this.state.id,
+                        SoilmodelLayer.fromDefault(Geometry.fromObject(this.state.geometry), ActiveCells.fromArray(this.state.activeCells))
+                        ),
                         () => this.props.history.push('T03/' + this.state.id),
                         (e) => this.setState({error: e})),
                     (e) => this.setState({error: e})),
@@ -95,16 +101,20 @@ class CreateModel extends React.Component {
         const {type, target} = e;
         const {name, value} = target;
 
-        const date = moment(value);
-
         if (type === 'change') {
-            const stressperiods = Stressperiods.fromObject(this.state.stressperiods);
-            stressperiods[name] = date;
-            this.setState({stressperiodsLocal: stressperiods.toObject()});
+            this.setState(prevState => ({
+                stressperiodsLocal: {
+                    ...prevState.stressperiodsLocal,
+                    [name]: value
+                }
+            }));
         }
 
         if (type === 'blur') {
-            this.setState({stressperiods: this.state.stressperiodsLocal}, () => this.validate());
+            const stressPeriods = Stressperiods.fromObject(this.state.stressperiods);
+            stressPeriods.startDateTime = new moment.utc(this.state.stressperiodsLocal.startDateTime);
+            stressPeriods.endDateTime = new moment.utc(this.state.stressperiodsLocal.endDateTime);
+            this.setState({stressperiods: stressPeriods.toObject()}, () => this.validate());
         }
     };
 
@@ -127,8 +137,8 @@ class CreateModel extends React.Component {
                     <Grid padded>
                         <Grid.Row>
                             <Grid.Column width={8}>
-                                <Segment color={'grey'}>
-                                    <Form color={'grey'}>
+                                <Segment>
+                                    <Form>
                                         <Form.Group>
                                             <Form.Input
                                                 label='Name'
@@ -162,8 +172,8 @@ class CreateModel extends React.Component {
                                 </Segment>
                             </Grid.Column>
                             <Grid.Column width={4}>
-                                <Segment color={'grey'}>
-                                    <Form color={'grey'}>
+                                <Segment>
+                                    <Form>
                                         <Form.Input
                                             type='number'
                                             label='Rows'
@@ -191,13 +201,13 @@ class CreateModel extends React.Component {
                                 </Segment>
                             </Grid.Column>
                             <Grid.Column width={4}>
-                                <Segment color={'grey'}>
-                                    <Form color={'grey'}>
+                                <Segment>
+                                    <Form>
                                         <Form.Input
                                             type='date'
                                             label='Start Date'
                                             name={'startDateTime'}
-                                            value={Stressperiods.fromObject(this.state.stressperiodsLocal).startDateTime.format('YYYY-MM-DD')}
+                                            value={this.state.stressperiodsLocal.startDateTime}
                                             onChange={this.handleStressperiodsChange}
                                             onBlur={this.handleStressperiodsChange}
                                         />
@@ -205,7 +215,7 @@ class CreateModel extends React.Component {
                                             type='date'
                                             label='End Date'
                                             name={'endDateTime'}
-                                            value={Stressperiods.fromObject(this.state.stressperiodsLocal).endDateTime.format('YYYY-MM-DD')}
+                                            value={this.state.stressperiodsLocal.endDateTime}
                                             onChange={this.handleStressperiodsChange}
                                             onBlur={this.handleStressperiodsChange}
                                         />

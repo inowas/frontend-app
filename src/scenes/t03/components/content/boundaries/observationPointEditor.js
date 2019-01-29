@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-import {Button, Grid, Form, Header, Modal, Segment} from 'semantic-ui-react';
+import {Button, Form, Modal} from 'semantic-ui-react';
 
 import ObservationPointMap from '../../maps/observationPointEditorMap';
 import {ModflowModel, MultipleOPBoundary} from 'core/model/modflow';
@@ -69,51 +69,38 @@ class ObservationPointEditor extends React.Component {
         const longitude = geometry ? geometry.coordinates[0] : '';
 
         return (
-            <Modal size={'large'} open>
+            <Modal size={'large'} open dimmer={'inverted'}>
                 <Modal.Header>Add observation point</Modal.Header>
                 <Modal.Content>
-                    <Grid divided={'vertically'}>
-                        <Grid.Row columns={2}>
-                            <Grid.Column width={6}>
-                                <Segment color="blue">
-                                    <Header as="h3" dividing>Observation point properties</Header>
-                                    <Form>
-                                        <Form.Field>
-                                            <label>Name</label>
-                                            <input
-                                                placeholder="Observation point name"
-                                                value={observationPoint.name}
-                                                onChange={this.handleChange}
-                                                name={'name'}
-                                            />
-                                        </Form.Field>
-                                        <Form.Group widths="equal">
-                                            <Form.Field>
-                                                <label>Latitude</label>
-                                                <input disabled placeholder="Latitude" value={latitude}/>
-                                            </Form.Field>
-                                            <Form.Field>
-                                                <label>Longitude</label>
-                                                <input disabled placeholder="Longitude" value={longitude}/>
-                                            </Form.Field>
-                                        </Form.Group>
-                                    </Form>
-                                </Segment>
-                            </Grid.Column>
-                            <Grid.Column width={10}>
-                                <Segment color="blue">
-                                    <ObservationPointMap
-                                        area={model.geometry}
-                                        boundary={boundary}
-                                        observationPoint={observationPoint}
-                                        onChange={this.handleChangeObservationPoint}
-                                    />
-                                </Segment>
-                            </Grid.Column>
-                        </Grid.Row>
-                    </Grid>
+                    <Form>
+                        <Form.Group>
+                            <Form.Input label='Name'
+                                placeholder="Observation point name"
+                                value={observationPoint.name}
+                                onChange={this.handleChange}
+                                name={'name'}
+                                width={10}
+                            />
+                            <Form.Field>
+                                <label>Latitude</label>
+                                <input disabled placeholder="Latitude" value={latitude} width={3}/>
+                            </Form.Field>
+                            <Form.Field>
+                                <label>Longitude</label>
+                                <input disabled placeholder="Longitude" value={longitude} width={3}/>
+                            </Form.Field>
+                        </Form.Group>
+                    </Form>
+                    <ObservationPointMap
+                        area={model.geometry}
+                        boundary={boundary}
+                        observationPoint={observationPoint}
+                        onChange={this.handleChangeObservationPoint}
+                    />
+
                 </Modal.Content>
                 <Modal.Actions>
+                    <Button onClick={this.props.onCancel}>Cancel</Button>
                     <Button
                         positive
                         onClick={() => {

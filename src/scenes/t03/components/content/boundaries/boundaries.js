@@ -42,18 +42,14 @@ class Boundaries extends React.Component {
         }
     }
 
-    fetchBoundary = (modelId, boundaryId) => (
-        fetchUrl(`modflowmodels/${modelId}/boundaries/${boundaryId}`,
-            (boundary) => this.setState({selectedBoundary: boundary})
-        )
+    fetchBoundary = (modelId, boundaryId) => fetchUrl(`modflowmodels/${modelId}/boundaries/${boundaryId}`,
+        (boundary) => this.setState({selectedBoundary: boundary})
     );
 
-    onChangeBoundary = boundary => (
-        this.setState({
-            selectedBoundary: boundary.toObject,
-            isDirty: true
-        })
-    );
+    onChangeBoundary = boundary => this.setState({
+        selectedBoundary: boundary.toObject,
+        isDirty: true
+    });
 
     handleBoundaryListClick = (bid) => {
         const {id, property} = this.props.match.params;

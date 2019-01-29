@@ -2,10 +2,10 @@
          Site Overrides
 *******************************/
 
+.ui.input > input[type=number] {
+    text-align: right;
+}
+
 /*-------------------
       Borders
 --------------------*/
-
-input {
-    border: 1px solid rgba(34, 36, 38, 0.15);
-}

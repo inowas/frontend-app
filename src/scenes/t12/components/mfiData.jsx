@@ -81,40 +81,38 @@ class MfiData extends React.Component {
     render() {
         const rows = this.state.mfi.map(item => (
             <Table.Row key={item.id}>
-                <Table.Cell>
+                <Table.Cell style={{borderTop:0}}>
                     <Input
                         id={item.id}
                         name={'t'}
                         onBlur={this.save}
                         onChange={this.onChangeItem}
-                        size={'small'}
                         step={1}
                         type={'number'}
                         value={item.t}
                     />
                 </Table.Cell>
-                <Table.Cell>
+                <Table.Cell style={{borderTop:0}}>
                     <Input
                         id={item.id}
                         name={'V'}
                         onBlur={this.save}
                         onChange={this.onChangeItem}
-                        size={'small'}
                         step={0.01}
                         type={'number'}
                         value={item.V}
                     />
                 </Table.Cell>
-                <Table.Cell>
-                    <Button icon='trash' onClick={() => this.removeItem(item.id)}/>
+                <Table.Cell style={{borderTop:0}}>
+                    <Button icon='trash' onClick={() => this.removeItem(item.id)} size='small' />
                 </Table.Cell>
             </Table.Row>
         ));
 
         return (
             <Form>
-                <Header as={'h3'} textAlign={'center'}>Filtration</Header>
-                <Table singleLine striped size='small' color={'red'}>
+                <Header as={'h3'} textAlign={'center'}>MFI</Header>
+                <Table singleLine size='small'>
                     <Table.Header>
                         <Table.Row>
                             <Table.HeaderCell textAlign={'center'}>Time [s]</Table.HeaderCell>
@@ -126,28 +124,26 @@ class MfiData extends React.Component {
                     <Table.Body>
                         {rows}
                         <Table.Row>
-                            <Table.Cell>
+                            <Table.Cell style={{borderTop:0}}>
                                 <Input
                                     name={'t'}
                                     onChange={this.onChangeNewItem}
-                                    size={'small'}
                                     step={1}
                                     type={'number'}
                                     value={this.state.newItem.t}
                                 />
                             </Table.Cell>
-                            <Table.Cell>
+                            <Table.Cell style={{borderTop:0}}>
                                 <Input
                                     name={'V'}
                                     onChange={this.onChangeNewItem}
-                                    size={'small'}
                                     step={0.01}
                                     type={'number'}
                                     value={this.state.newItem.V}
                                 />
                             </Table.Cell>
-                            <Table.Cell>
-                                <Button icon='add' onClick={this.addItem}/>
+                            <Table.Cell style={{borderTop:0}}>
+                                <Button icon='add' onClick={this.addItem} size='small' />
                             </Table.Cell>
                         </Table.Row>
                     </Table.Body>

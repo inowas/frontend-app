@@ -1,6 +1,5 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import md5 from 'md5';
 
 import {CircleMarker, FeatureGroup, GeoJSON, Map, Polygon, Polyline} from 'react-leaflet';
 import {EditControl} from 'react-leaflet-draw';
@@ -21,7 +20,7 @@ import {
 
 const style = {
     map: {
-        height: '400px',
+        height: '500px',
         width: '100%'
     }
 };
@@ -121,13 +120,13 @@ class BoundaryDiscretizationMap extends React.Component {
         )
     };
 
-    boundingBoxLayer = () => {
-        const boundingBox = this.props.model.boundingBox;
+    modelGeometryLayer = () => {
+        const geometry = this.props.model.geometry;
         return (
             <GeoJSON
-                key={md5(JSON.stringify(boundingBox.toArray()))}
-                data={boundingBox.geoJson}
-                style={getStyle('bounding_box')}
+                key={geometry.hash()}
+                data={geometry.toGeoJSON()}
+                style={getStyle('area')}
             />
         )
     };
@@ -173,7 +172,7 @@ class BoundaryDiscretizationMap extends React.Component {
             >
                 <BasicTileLayer/>
                 {this.props.showBoundaryGeometry && this.showBoundaryGeometry()}
-                {this.boundingBoxLayer()}
+                {this.modelGeometryLayer()}
                 {this.props.showActiveCells && this.activeCellsLayer()}
             </Map>
         )

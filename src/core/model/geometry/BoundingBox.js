@@ -1,5 +1,6 @@
 import {isEqual} from 'lodash';
 import {envelope} from '@turf/turf';
+import md5 from 'md5';
 
 class BoundingBox {
 
@@ -76,6 +77,8 @@ class BoundingBox {
     get dY() {
         return this._yMax - this._yMin;
     }
+
+    hash = () => (md5(JSON.stringify(this.geoJson)));
 
     get geoJson() {
         return {
