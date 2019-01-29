@@ -1,4 +1,4 @@
-import MCDA from 'core/mcda/MCDA';
+import MCDA from 'core/model/mcda/MCDA';
 
 const getMenuItems = (mcda) => {
 
@@ -8,12 +8,44 @@ const getMenuItems = (mcda) => {
 
     const criteriaStatus = () => {
         if (mcda.weightAssignmentsCollection.length > 0) {
-            return 'locked';
+            return {
+                val: 'locked',
+                msg: null
+            };
         }
         if (mcda.criteriaCollection.length > 0) {
-            return 'success';
+            return {
+                val: 'success',
+                msg: null
+            };
         }
-        return '';
+        return null;
+    };
+
+    const weightAssignmentStatus = () => {
+        if (mcda.criteriaCollection.length < 2) {
+            return {
+                val: 'warning',
+                msg: 'At least two criteria are needed for weight assignment.'
+            };
+        }
+        if (mcda.weightAssignmentsCollection.length >= 1) {
+            return {
+                val: 'success',
+                msg: null
+            };
+        }
+        return null;
+    };
+
+    const criteriaDataStatus = () => {
+        if (mcda.criteriaCollection.length < 1) {
+            return {
+                val: 'warning',
+                msg: 'At least one criteria is needed for data.'
+            };
+        }
+        return null;
     };
 
     return [
@@ -25,12 +57,16 @@ const getMenuItems = (mcda) => {
         {
             name: 'Weight Assignment',
             property: 'wa',
-            status: mcda.criteriaCollection.all.length < 2 ? 'warning' : '',
-            msg: 'At least two criteria are needed for weight assignment.'
+            status: weightAssignmentStatus()
         },
         {
-            name: 'Raster Editor',
-            property: 'editor'
+            name: 'Constraint Mapping',
+            property: 'cm'
+        },
+        {
+            name: 'Criteria Data',
+            property: 'cd',
+            status: criteriaDataStatus()
         },
         {
             name: 'Suitability',

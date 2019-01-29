@@ -13,7 +13,7 @@ const routes = (
         <PrivateRoute exact path="/tools/T03/" component={Scenes.T03.CreateModel} forRoles={['ROLE_USER']}/>
         <PrivateRoute exact path="/tools/T03/:id?/:property?/:type?/:pid?" component={Scenes.T03.EditModel} forRoles={['ROLE_USER']}/>
         <PrivateRoute exact path="/tools/T04" component={Scenes.T04} forRoles={['ROLE_USER']}/>
-        <PrivateRoute exact path="/tools/T05/:id?/:property?/:type?" component={Scenes.T05} forRoles={['ROLE_USER']}/>
+        <PrivateRoute exact path="/tools/T05/:id?/:property?/:cid?/:tool?" component={Scenes.T05} forRoles={['ROLE_USER']}/>
         <PrivateRoute exact path="/tools/T06" component={Scenes.T06} forRoles={['ROLE_USER']}/>
         <PrivateRoute exact path="/tools/T07/:id?/:property?/:type?/:pid?" component={Scenes.T07} forRoles={['ROLE_USER']}/>
         <PrivateRoute exact path="/tools/T08/:id?" component={Scenes.T08} forRoles={['ROLE_USER']}/>

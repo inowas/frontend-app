@@ -1,6 +1,6 @@
 import {Boundary, BoundaryFactory} from './index';
 import {sortBy} from 'lodash';
-import AbstractCollection from '../../../AbstractCollection';
+import AbstractCollection from '../../collection/AbstractCollection';
 
 class BoundaryCollection extends AbstractCollection {
 

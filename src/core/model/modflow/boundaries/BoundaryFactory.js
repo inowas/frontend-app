@@ -6,7 +6,7 @@ import RechargeBoundary from './RechargeBoundary';
 import RiverBoundary from './RiverBoundary';
 import WellBoundary from './WellBoundary';
 import HeadObservation from './HeadObservation';
-import Geometry from '../Geometry';
+import Geometry from '../../geometry/Geometry';
 import {ActiveCells} from '../index';
 
 export default class BoundaryFactory {

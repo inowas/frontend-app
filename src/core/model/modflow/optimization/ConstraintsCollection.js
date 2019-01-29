@@ -1,4 +1,4 @@
-import AbstractCollection from '../../../AbstractCollection';
+import AbstractCollection from '../../collection/AbstractCollection';
 import OptimizationConstraint from './Constraint';
 
 class OptimizationConstraintsCollection extends AbstractCollection {

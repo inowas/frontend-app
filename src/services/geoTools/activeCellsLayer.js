@@ -2,9 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import {Polyline, FeatureGroup} from 'react-leaflet';
 import {pure} from 'recompose';
-import BoundingBox from 'core/model/modflow/BoundingBox';
-import GridSize from 'core/model/modflow/GridSize';
-import ActiveCells from 'core/model/modflow/ActiveCells';
+import {ActiveCells, BoundingBox, GridSize} from 'core/model/geometry';
 
 const renderGridCell = (key, xMin, xMax, yMin, yMax, styles) => {
     return (<Polyline key={key} positions={[
