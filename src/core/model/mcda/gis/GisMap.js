@@ -1,6 +1,6 @@
 import GisAreasCollection from './GisAreasCollection';
 import {ActiveCells, BoundingBox, GridSize} from '../../geometry';
-import {booleanContains, booleanOverlap} from '@turf/turf/index';
+import {booleanContains, booleanOverlap} from '@turf/turf';
 import {getGridCells} from 'services/geoTools';
 
 class GisMap {
