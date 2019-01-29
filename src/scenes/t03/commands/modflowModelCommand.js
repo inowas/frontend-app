@@ -1,4 +1,5 @@
-import AbstractCommand, {JSON_SCHEMA_URL} from 'core/model/command/AbstractCommand';
+import AbstractCommand from 'core/model/command/AbstractCommand';
+import {JSON_SCHEMA_URL} from 'services/api';
 
 class ModflowModelCommand extends AbstractCommand {
 

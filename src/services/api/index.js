@@ -2,6 +2,8 @@ import axios from 'axios';
 import storeToCreate from 'store';
 
 const BASE_URL = process.env.REACT_APP_API_URL + '/v2';
+export const GEOPROCESSING_URL = 'https://geoprocessing.inowas.com';
+export const JSON_SCHEMA_URL = 'https://schema.inowas.com/';
 
 const getToken = () => {
     const store = storeToCreate();
@@ -38,16 +40,50 @@ export const uploadRasterfileToApi = (file, onSuccess, onError) => {
 export const uploadRasterfile = (file, onSuccess, onError) => {
     const uploadData = new FormData();
     uploadData.append('file', file);
-    axios.post('https://geoprocessing.inowas.com', uploadData).then(response => response.data).then(onSuccess).catch(onError);
+    return axios({
+        method: 'POST',
+        url: GEOPROCESSING_URL,
+        data: uploadData,
+        mode: 'no-cors',
+        headers: {
+            'Access-Control-Allow-Origin': '*',
+            'Content-Type': 'application/json',
+        }
+    }).then(response => response.data).then(onSuccess).catch(onError);
 };
 
-export const fetchRasterfile = (
+export const fetchRasterData = (
     {hash, width = null, height = null}, onSuccess, onError) => {
-    let url = 'rasterfile/' + hash;
+    let url = GEOPROCESSING_URL + '/' + hash + '/data';
+
     if (width && height) {
-        url += '?width=' + width + '&height=' + height
+        url += '/' + width + '/' + height;
     }
-    return fetchUrl(url, onSuccess, onError);
+
+    return axios({
+        method: 'GET',
+        url: url,
+        mode: 'no-cors',
+        headers: {
+            'Access-Control-Allow-Origin': '*',
+            'Content-Type': 'application/json'
+        }
+    }).then(response => response.data).then(onSuccess).catch(onError);
+};
+
+export const fetchRasterMetaData = (
+    {hash}, onSuccess, onError) => {
+    const url = GEOPROCESSING_URL + '/' + hash;
+
+    return axios({
+        method: 'GET',
+        url: url,
+        mode: 'no-cors',
+        headers: {
+            'Access-Control-Allow-Origin': '*',
+            'Content-Type': 'application/json'
+        }
+    }).then(response => response.data).then(onSuccess).catch(onError);
 };
 
 export const fetchTool = (tool, id, onSuccess, onError) => {

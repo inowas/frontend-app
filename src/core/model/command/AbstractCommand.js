@@ -3,8 +3,6 @@ import ajv0 from 'ajv/lib/refs/json-schema-draft-04';
 import jsrp from 'json-schema-ref-parser'
 import uuid from 'uuid';
 
-export const JSON_SCHEMA_URL = 'https://schema.inowas.com/';
-
 export default class AbstractCommand {
 
     metadata = {};
