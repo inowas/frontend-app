@@ -523,11 +523,10 @@
 input[readonly],
 input[readonly='readonly'] {
   background: #FFFFFF !important;
-  -webkit-box-shadow: none !important;
-          box-shadow: none !important;
-  border: 1px solid rgba(34, 36, 38, 0.15) !important;
-  color: rgba(0, 0, 0, 0.45) !important;
-  cursor: auto;
+  -webkit-box-shadow: inset 0 0 0 1px rgba(34, 36, 38, 0.15) !important;
+          box-shadow: inset 0 0 0 1px rgba(34, 36, 38, 0.15) !important;
+  cursor: default !important;
+  color: rgba(0, 0, 0, 0.6) !important;
 }
 
 /*-------------------
