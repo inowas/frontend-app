@@ -104,8 +104,6 @@ class CriteriaRasterUpload extends React.Component {
         const {activeTile, showInfo, showBasicLayer, showUploadModal} = this.state;
         const {tilesCollection} = this.props.criterion;
 
-        console.log(this.props.criterion);
-
         return (
             <Grid>
                 <Grid.Row>
