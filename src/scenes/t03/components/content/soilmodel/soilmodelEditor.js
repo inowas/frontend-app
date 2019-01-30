@@ -147,7 +147,7 @@ class SoilmodelEditor extends React.Component {
             return <Redirect to={`${baseUrl}/${id}/${property}/${type || '!'}/${lid}`}/>;
         }
 
-        if (pid && !this.props.soilmodel.layersCollection.findBy('id', pid, true)) {
+        if (pid && !this.props.soilmodel.layersCollection.findBy('id', pid, {first: true})) {
             return <Redirect to={`${baseUrl}/${id}/${property}`}/>;
         }
 

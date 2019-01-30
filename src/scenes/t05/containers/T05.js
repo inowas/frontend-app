@@ -7,7 +7,7 @@ import {fetchTool, sendCommand} from 'services/api';
 import Command from '../../shared/simpleTools/commands/command';
 import {deepMerge} from '../../shared/simpleTools/helpers';
 
-import {Divider, Grid, Icon, Segment} from 'semantic-ui-react';
+import {Divider, Grid, Icon, Message, Segment} from 'semantic-ui-react';
 import AppContainer from '../../shared/AppContainer';
 import ToolMetaData from '../../shared/simpleTools/ToolMetaData';
 import {
@@ -77,7 +77,7 @@ class T05 extends React.Component {
     });
 
     handleChange = ({name, value}) => {
-        const mcda = MCDA.fromObject(this.state.tool.data.mcda);
+        let mcda = MCDA.fromObject(this.state.tool.data.mcda);
 
         if (name === 'criteria') {
             mcda.updateCriteria(value);
@@ -94,6 +94,10 @@ class T05 extends React.Component {
 
         if (name === 'constraints') {
             mcda.constraints = value;
+        }
+
+        if (name === 'mcda') {
+            mcda = value;
         }
 
         return this.setState({
@@ -148,11 +152,11 @@ class T05 extends React.Component {
 
     handleClickCriteriaNavigation = (e, {name}) => this.routeTo(name);
 
-    handleClickCriteriaTool = name => this.routeTo(null, name);
+    handleClickCriteriaTool = (cid, name) => this.routeTo(cid, name);
 
     routeTo = (nCid = null, nTool = null) => {
         const {id, property} = this.props.match.params;
-        const cid = nCid || this.props.match.params.cid || null;
+        const cid = nCid || null;
         const tool = nTool || this.props.match.params.tool || null;
         const path = this.props.match.path;
         const basePath = path.split(':')[0];
@@ -181,6 +185,7 @@ class T05 extends React.Component {
             case 'criteria':
                 return (
                     <CriteriaEditor
+                        toolName={this.state.tool.name}
                         readOnly={readOnly || mcda.weightAssignmentsCollection.length > 0}
                         mcda={mcda}
                         handleChange={this.handleChange}
@@ -207,6 +212,15 @@ class T05 extends React.Component {
                 );
             case 'cd':
                 const criterion = cid ? mcda.criteriaCollection.findById(cid) : null;
+
+                if (!criterion || (mcda.withAhp && !criterion.parentId)) {
+                    return (
+                        <Message warning>
+                            <Message.Header>Criterion not found or not eligible</Message.Header>
+                            <p>The requested criterion id couldn't be found or the related criterion is not eligible for raster data.</p>
+                        </Message>
+                    );
+                }
 
                 return (
                     <CriteriaDataEditor

@@ -2,12 +2,13 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import {MCDA} from 'core/model/mcda';
 import {pure} from 'recompose';
-import {Button, Grid, Icon, Menu, Message, Table} from 'semantic-ui-react';
+import {Button, Dropdown, Grid, Icon, Menu, Message, Table} from 'semantic-ui-react';
 import {WeightAssignment} from 'core/model/mcda/criteria';
 import Ranking from './ranking';
 import MultiInfluence from './multiInfluence';
 import PairwiseComparison from './pairwise';
 import SimpleWeightAssignment from './spl';
+import AbstractCollection from 'core/model/collection/AbstractCollection';
 
 class WeightAssignmentEditor extends React.Component {
     handleClickDelete = (id) => {
@@ -18,8 +19,12 @@ class WeightAssignmentEditor extends React.Component {
         });
     };
 
-    handleClickNew = (e, {name}) => {
-        const wa = WeightAssignment.fromMethodAndCriteria(name, this.props.mcda.criteriaCollection);
+    handleClickNew = criteriaCollection => (e, {name}) => {
+        if(!(criteriaCollection instanceof AbstractCollection)) {
+            throw new Error('CriteriaCollection expected to be instance of AbstractCollection');
+        }
+
+        const wa = WeightAssignment.fromMethodAndCriteria(name, criteriaCollection);
 
         this.props.handleChange({
             name: 'weights',
@@ -74,8 +79,25 @@ class WeightAssignmentEditor extends React.Component {
         }
     }
 
+    renderMethods(name, criterion = null, key = null) {
+        const {mcda} = this.props;
+        const subCriteria = !criterion ? mcda.criteriaCollection.findBy('parentId', null, {returnCollection: true}) : mcda.criteriaCollection.findBy('parentId', criterion.id, {returnCollection: true});
+
+        return (
+            <Dropdown item text={`${name} (${subCriteria.length})`} key={key}>
+                <Dropdown.Menu>
+                    <Dropdown.Item name='spl' icon='write' onClick={this.handleClickNew(subCriteria)} text='Simple Weights' />
+                    <Dropdown.Item name='rnk' icon='ordered list' onClick={this.handleClickNew(subCriteria)} text='Ranking' />
+                    <Dropdown.Item name='mif' icon='fork' onClick={this.handleClickNew(subCriteria)} text='Multi-Influence' />
+                    <Dropdown.Item name='pwc' icon='sliders horizontal' onClick={this.handleClickNew(subCriteria)} text='Pairwise Comparison' />
+                </Dropdown.Menu>
+            </Dropdown>
+        );
+    }
+
     render() {
         const {mcda} = this.props;
+        const mainCriteria = mcda.withAhp ? mcda.criteriaCollection.findBy('parentId', null, {returnCollection: true}) : mcda.criteriaCollection;
 
         if (this.props.selectedWeightAssignment) {
             return this.renderContent();
@@ -84,46 +106,48 @@ class WeightAssignmentEditor extends React.Component {
         return (
             <Grid>
                 <Grid.Row>
-                    <Grid.Column width={3}>
-                        <Menu icon='labeled' fluid vertical>
-                            <Menu.Item
-                                name='spl'
-                                onClick={this.handleClickNew}>
-                                <Icon name='write'/>
-                                Simple Weights
-                            </Menu.Item>
-                            <Menu.Item
-                                name='rnk'
-                                onClick={this.handleClickNew}
-                            >
-                                <Icon name='ordered list'/>
-                                Ranking
-                            </Menu.Item>
-                            <Menu.Item
-                                name='mif'
-                                onClick={this.handleClickNew}
-                            >
-                                <Icon name='fork'/>
-                                Multi-Influence
-                            </Menu.Item>
-                            <Menu.Item
-                                name='pwc'
-                                onClick={this.handleClickNew}
-                            >
-                                <Icon name='sliders horizontal'/>
-                                Pairwise Comparison
-                            </Menu.Item>
-                            <Menu.Item
-                                disabled
-                                name='ahp'
-                                onClick={this.handleClickNew}
-                            >
-                                <Icon name='sitemap'/>
-                                Analytical Hierarchy
-                            </Menu.Item>
-                        </Menu>
+                    <Grid.Column width={5}>
+                        {!mcda.withAhp &&
+                            <Menu icon='labeled' fluid vertical>
+                                <Menu.Item
+                                    name='spl'
+                                    onClick={this.handleClickNew(mainCriteria)}>
+                                    <Icon name='write'/>
+                                    Simple Weights
+                                </Menu.Item>
+                                <Menu.Item
+                                    name='rnk'
+                                    onClick={this.handleClickNew(mainCriteria)}
+                                >
+                                    <Icon name='ordered list'/>
+                                    Ranking
+                                </Menu.Item>
+                                <Menu.Item
+                                    name='mif'
+                                    onClick={this.handleClickNew(mainCriteria)}
+                                >
+                                    <Icon name='fork'/>
+                                    Multi-Influence
+                                </Menu.Item>
+                                <Menu.Item
+                                    name='pwc'
+                                    onClick={this.handleClickNew(mainCriteria)}
+                                >
+                                    <Icon name='sliders horizontal'/>
+                                    Pairwise Comparison
+                                </Menu.Item>
+                            </Menu>
+                        }
+                        {mcda.withAhp &&
+                            <Menu fluid vertical>
+                                {this.renderMethods('Main Criteria')}
+                                {mainCriteria.all.map((c, key) =>
+                                    this.renderMethods(`Sub Criteria of ${c.name}`, c, key)
+                                )}
+                            </Menu>
+                        }
                     </Grid.Column>
-                    <Grid.Column width={13}>
+                    <Grid.Column width={11}>
                         {mcda.weightAssignmentsCollection.length < 1 &&
                         <Message
                             icon='arrow left'

@@ -53,7 +53,7 @@ class ConstraintsEditor extends React.Component {
 
     onCalculateActiveCells = () => {
         const constraints = GisMap.fromObject(this.state.constraints);
-        const area = constraints.areasCollection.findBy('type', 'area', true);
+        const area = constraints.areasCollection.findBy('type', 'area', {first: true});
 
         if (!area) {
             return null;

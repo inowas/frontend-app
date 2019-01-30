@@ -9,6 +9,7 @@ const validTypes = ['discrete', 'continuous'];
 
 class Criterion {
     _id = uuidv4();
+    _parent = null;
     _name = 'New Criterion';
     _type = 'discrete';
     _tiles = new TilesCollection();
@@ -18,6 +19,7 @@ class Criterion {
     static fromObject(obj) {
         const criterion = new Criterion();
         criterion.id = obj.id;
+        criterion.parentId = obj.parentId;
         criterion.name = obj.name;
         criterion.type = obj.type;
         criterion.tilesCollection = obj.tiles ? TilesCollection.fromArray(obj.tiles) : new TilesCollection();
@@ -32,6 +34,14 @@ class Criterion {
 
     set id(value) {
         this._id = value ? value : uuidv4();
+    }
+
+    get parentId() {
+        return this._parent;
+    }
+
+    set parentId(value) {
+        this._parent = value || null;
     }
 
     get name() {
@@ -80,6 +90,7 @@ class Criterion {
     toObject() {
         return ({
             id: this.id,
+            parentId: this.parentId,
             name: this.name,
             type: this.type,
             tiles: this.tilesCollection.toArray(),

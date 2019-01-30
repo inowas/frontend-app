@@ -5,7 +5,7 @@ import {max, min} from 'scenes/shared/rasterData/helpers';
 import uuidv4 from 'uuid/v4';
 
 class Raster {
-    _boundingBox = new BoundingBox();
+    _boundingBox = new BoundingBox(0, 0, 0, 0);
     _gridSize = new GridSize(10, 10);
     _data = [];
     _id = uuidv4();
