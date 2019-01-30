@@ -1,6 +1,6 @@
 import GisAreasCollection from './GisAreasCollection';
 import {ActiveCells, BoundingBox, GridSize} from '../../geometry';
-import {booleanContains, booleanOverlap} from '@turf/turf/index';
+import {booleanContains, booleanOverlap} from '@turf/turf';
 import {getGridCells} from 'services/geoTools';
 
 class GisMap {
@@ -69,8 +69,8 @@ class GisMap {
         const activeCells = new ActiveCells([]);
         const gridCells = getGridCells(this.boundingBox, this.gridSize);
 
-        const suitableArea = this.areasCollection.findBy('type', 'area', true);
-        const nonSuitableAreas = this.areasCollection.findBy('type', 'hole', false);
+        const suitableArea = this.areasCollection.findBy('type', 'area', {first: true});
+        const nonSuitableAreas = this.areasCollection.findBy('type', 'hole');
 
         if (!suitableArea) {
             return null;

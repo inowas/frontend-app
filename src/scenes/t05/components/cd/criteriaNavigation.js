@@ -20,12 +20,17 @@ class CriteriaNavigation extends React.Component {
 
     filteredCriteria = () => {
         const {mcda} = this.props;
+        let criteria = mcda.criteriaCollection;
 
-        if (this.state.searchTerm === '') {
-            return mcda.criteriaCollection.all;
+        if (mcda.withAhp) {
+            criteria = mcda.criteriaCollection.findBy('parentId', null, {equal: false, returnCollection: true});
         }
 
-        return mcda.criteriaCollection.filterBy('name', this.state.searchTerm);
+        if (this.state.searchTerm === '') {
+            return criteria.all;
+        }
+
+        return criteria.filterBy('name', this.state.searchTerm);
     };
 
     render() {

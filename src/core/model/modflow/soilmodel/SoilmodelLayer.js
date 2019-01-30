@@ -227,7 +227,7 @@ class SoilmodelLayer {
             throw new Error('Model needs to be instance of ModflowModel');
         }
 
-        const defaultZone = this.zonesCollection.findBy('priority', 0, true);
+        const defaultZone = this.zonesCollection.findBy('priority', 0, {first: true});
         if (defaultZone) {
             defaultZone.geometry = model.geometry;
             defaultZone.activeCells = model.activeCells;

@@ -22,12 +22,12 @@ class ZonesCollection extends AbstractCollection {
         let zoneToSwitch = null;
         switch (order) {
             case 'up':
-                zoneToSwitch = this.findBy('priority', zone.priority + 1, true);
+                zoneToSwitch = this.findBy('priority', zone.priority + 1, {first: true});
                 zoneToSwitch.priority = zoneToSwitch.priority - 1;
                 zone.priority = zone.priority + 1;
                 break;
             case 'down':
-                zoneToSwitch = this.findBy('priority', zone.priority - 1, true);
+                zoneToSwitch = this.findBy('priority', zone.priority - 1, {first: true});
                 zoneToSwitch.priority = zoneToSwitch.priority + 1;
                 zone.priority = zone.priority - 1;
                 break;
