@@ -1,5 +1,6 @@
 import uuidv4 from 'uuid/v4';
-import {CriteriaCollection, CriteriaRelation, Weight, WeightsCollection} from './index';
+import {CriteriaRelation, Weight, WeightsCollection} from './index';
+import AbstractCollection from '../../collection/AbstractCollection';
 
 const methods = {
     spl: 'Simple Weights',
@@ -17,8 +18,8 @@ class WeightAssignment {
     _weights = new WeightsCollection();
 
     static fromMethodAndCriteria(method, criteriaCollection) {
-        if (!(criteriaCollection instanceof CriteriaCollection)) {
-            throw new Error('CriteriaCollection expected to be instance of CriteriaCollection');
+        if (!(criteriaCollection instanceof AbstractCollection)) {
+            throw new Error('CriteriaCollection expected to be instance of AbstractCollection');
         }
 
         const wa = new WeightAssignment();

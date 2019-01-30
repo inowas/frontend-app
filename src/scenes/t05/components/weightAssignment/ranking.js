@@ -26,7 +26,7 @@ class Ranking extends React.Component {
 
             if (weight) {
                 weight.rank = item.rank;
-                newWeights.push(weight);
+                newWeights.push(weight.toObject());
             }
         });
 

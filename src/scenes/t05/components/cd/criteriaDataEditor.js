@@ -10,7 +10,7 @@ import CriteriaDataResults from './criteriaDataResults';
 
 class CriteriaDataEditor extends React.Component {
 
-    handleClickStep = (e, {name}) => this.props.onClickTool(name);
+    handleClickStep = (e, {name}) => this.props.onClickTool(this.props.criterion.id, name);
 
     handleChange = criterion => {
         if(!(criterion instanceof Criterion)) {

@@ -1,4 +1,4 @@
-import {cloneDeep as _cloneDeep, orderBy as _orderBy} from 'lodash';
+import * as _ from 'lodash';
 
 class AbstractCollection {
 
@@ -35,21 +35,36 @@ class AbstractCollection {
         return this._items.filter(item => (item[property].toLowerCase()).indexOf(value.toLowerCase()) > -1)
     }
 
-    findBy(property, value, first = false) {
-        const items = this.all.filter(item => item[property] === value);
-        if (first) {
+    findBy(property, value, options) {
+        options = _.defaults({}, _.clone(options), {
+            first: false,               // If set to true, findBy only returns the first found element or null
+            equal: true,                // If set to true, === is used for comparison, otherwise !== is used
+            returnCollection: false     // If set to true, findBy returns a new AbstractCollection, otherwise an array is returned
+        });
+        const items = this.all.filter(item => {
+            if (options.equal) {
+                return item[property] === value;
+            }
+            return item[property] !== value;
+        });
+
+        if (options.first) {
             return items[0] || null;
+        }
+
+        if (options.returnCollection) {
+            return AbstractCollection.fromArray(items);
         }
 
         return items || [];
     }
 
     findById(value) {
-        return this.findBy('id', value, true);
+        return this.findBy('id', value, {first: true});
     }
 
     orderBy(property, order = 'asc') {
-        this._items = _orderBy(this._items, [property], [order]);
+        this._items = _.orderBy(this._items, [property], [order]);
         return this;
     }
 
@@ -70,7 +85,7 @@ class AbstractCollection {
     }
 
     toArray() {
-        return _cloneDeep(this.all.map(item => item.toObject()));
+        return _.cloneDeep(this.all.map(item => item.toObject()));
     }
 
     update(updatedItem, createIfNotExisting = true) {

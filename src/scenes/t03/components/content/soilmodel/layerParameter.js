@@ -99,7 +99,7 @@ class LayerParameter extends React.Component {
     onUploadRaster = (data) => {
         const {parameter} = this.state;
         const layer = SoilmodelLayer.fromObject(this.state.layer);
-        const base = layer.zonesCollection.findBy('priority', 0, true);
+        const base = layer.zonesCollection.findBy('priority', 0, {first: true});
         base[parameter.name].value = Array.from(data);
         layer.zonesCollection.update(base);
         layer.zonesToParameters(this.props.model.gridSize, parameter.name);

@@ -54,7 +54,7 @@ class PairwiseComparison extends React.Component {
                 }
                 return relation;
             });
-            return weight;
+            return weight.toObject();
         });
 
         const weightAssignment = this.props.weightAssignment;

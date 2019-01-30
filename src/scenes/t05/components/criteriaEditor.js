@@ -1,18 +1,42 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import {Button, Input, Message, Select, Table} from 'semantic-ui-react';
+import {Button, Grid, Header, Icon, Input, Message, Radio, Segment, Select, Table} from 'semantic-ui-react';
 
 import {MCDA} from 'core/model/mcda';
 import {Criterion, CriteriaCollection} from 'core/model/mcda/criteria';
+
+import Graph from 'vis-react';
+
+const styles = {
+    graph: {
+        minHeight: '300px'
+    },
+    nodes: {
+        color: {
+            background: '#ffffff',
+            border: '#000000'
+        },
+        shadow: true,
+        shape: 'box',
+        shapeProperties: {
+            borderRadius: 0
+        }
+    }
+};
 
 class CriteriaEditor extends React.Component {
     constructor(props) {
         super();
 
         this.state = {
-            criteria: props.mcda.criteriaCollection.toArray()
+            criteria: props.mcda.criteriaCollection.toArray(),
+            network: null
         };
     }
+
+    setNetworkInstance = nw => this.setState({
+        network: nw
+    });
 
     componentWillReceiveProps(nextProps) {
         this.setState({
@@ -26,6 +50,14 @@ class CriteriaEditor extends React.Component {
         return this.handleChange(criteriaCollection);
     };
 
+    handleAddSubCriterion = id => {
+        const criterion = new Criterion();
+        criterion.parentId = id;
+        const criteriaCollection = CriteriaCollection.fromArray(this.state.criteria);
+        criteriaCollection.add(criterion);
+        return this.handleChange(criteriaCollection);
+    };
+
     handleChange = criteriaCollection => {
         if (!(criteriaCollection instanceof CriteriaCollection)) {
             throw new Error('CriteriaCollection expected to be of type CriteriaCollection.');
@@ -34,6 +66,15 @@ class CriteriaEditor extends React.Component {
         return this.props.handleChange({
             name: 'criteria',
             value: criteriaCollection
+        });
+    };
+
+    handleClickAhp = () => {
+        const mcda = this.props.mcda.toObject();
+        mcda.withAhp = !this.props.mcda.withAhp;
+        return this.props.handleChange({
+            name: 'mcda',
+            value: MCDA.fromObject(mcda)
         });
     };
 
@@ -53,7 +94,7 @@ class CriteriaEditor extends React.Component {
     };
 
     handleRemoveCriteria = id => this.handleChange(
-        CriteriaCollection.fromArray(this.state.criteria).remove(id)
+        CriteriaCollection.fromArray(this.state.criteria).remove(id).removeBy('parentId', id)
     );
 
     handleSelectChange = id => (e, {name, value}) => {
@@ -74,84 +115,207 @@ class CriteriaEditor extends React.Component {
     );
 
     render() {
-        const {readOnly} = this.props;
-        const {criteria} = this.state;
+        const {mcda, readOnly} = this.props;
+        const allCriteria = this.state.criteria;
+        let criteria = allCriteria;
+
+        if (mcda.withAhp) {
+            criteria = allCriteria.filter(c => !c.parentId);
+        }
+
+        const options = {
+            height: '500px',
+            interaction: {
+                dragNodes: true,
+                dragView: true
+            },
+            manipulation: {
+                enabled: false
+            },
+            nodes: styles.nodes,
+            layout: {
+                hierarchical: {
+                    direction: 'UD'
+                }
+            },
+            edges: {
+                color: '#000000'
+            },
+            physics: false
+        };
+
+        const graph = {
+            nodes: [{id: 0, label: this.props.toolName, level: 0}].concat(allCriteria.map(c => {
+                return {
+                    id: c.id,
+                    label: c.name,
+                    level: !c.parentId ? 1 : 2
+                };
+            })),
+            edges: allCriteria.map((c, key) => {
+                return {
+                    id: key,
+                    from: c.parentId || 0,
+                    to: c.id
+                }
+            })
+        };
 
         return (
-            <div>
-                <Message>
-                    <Message.Header>Choose your criteria</Message.Header>
-                    <p>If you are unsure which criteria to use, please refer to the review on criteria used in
-                        literature: T04</p>
-                </Message>
+            <Grid>
+                <Grid.Row>
+                    <Grid.Column width={16}>
+                        <Message>
+                            <Message.Header>Choose your criteria</Message.Header>
+                            <p>If you are unsure which criteria to use, please refer to the review on criteria used in
+                                literature: T04</p>
+                        </Message>
+                    </Grid.Column>
+                </Grid.Row>
+                <Grid.Row>
+                    <Grid.Column width={3}>
+                        <Segment textAlign='center'>
+                            <Header as='h5' icon>
+                                <Icon name='sitemap'/>
+                                Analytical Hierarchy Process</Header>
+                            <Radio
+                                checked={mcda.withAhp}
+                                onChange={this.handleClickAhp}
+                                toggle
+                            />
+                        </Segment>
+                    </Grid.Column>
+                    <Grid.Column width={13}>
 
-                {this.props.mcda.weightAssignmentsCollection.length > 0 &&
-                <Message
-                    content='To change, delete or add criteria, you have to delete all weight assignments first or start
+                        {this.props.mcda.weightAssignmentsCollection.length > 0 &&
+                        <Message
+                            content='To change, delete or add criteria, you have to delete all weight assignments first or start
                         a new project.'
-                    icon='lock'
-                    warning
-                />
-                }
+                            icon='lock'
+                            warning
+                        />
+                        }
 
-                {criteria.length > 0 &&
-                <Table>
-                    <Table.Header>
-                        <Table.Row>
-                            <Table.HeaderCell/>
-                            <Table.HeaderCell>Name</Table.HeaderCell>
-                            <Table.HeaderCell>Type</Table.HeaderCell>
-                            <Table.HeaderCell/>
-                        </Table.Row>
-                    </Table.Header>
-                    <Table.Body>
-                        {criteria.map((c, key) =>
-                            <Table.Row key={key}>
-                                <Table.Cell>{key + 1}</Table.Cell>
-                                <Table.Cell>
-                                    <Input
-                                        name='name'
-                                        disabled={readOnly}
-                                        value={c.name}
-                                        onBlur={this.onBlur}
-                                        onChange={this.handleLocalChange(c.id)}
-                                    />
-                                </Table.Cell>
-                                <Table.Cell>
-                                    <Select
-                                        name='type'
-                                        disabled={readOnly}
-                                        value={c.type}
-                                        onChange={this.handleSelectChange(c.id)}
-                                        options={[
-                                            {key: 'discrete', value: 'discrete', text: 'Discrete'},
-                                            {key: 'continuous', value: 'continuous', text: 'Continuous'}
-                                        ]}
-                                    />
-                                </Table.Cell>
-                                <Table.Cell>
-                                    {!readOnly &&
-                                    <Button
-                                        negative
-                                        icon='trash'
-                                        onClick={() => this.handleRemoveCriteria(c.id)}
-                                    />
-                                    }
-                                </Table.Cell>
-                            </Table.Row>
-                        )}
-                    </Table.Body>
-                </Table>
+                        {criteria.length > 0 &&
+                        <Table>
+                            <Table.Header>
+                                <Table.Row>
+                                    <Table.HeaderCell/>
+                                    <Table.HeaderCell>Name</Table.HeaderCell>
+                                    <Table.HeaderCell>Type</Table.HeaderCell>
+                                    <Table.HeaderCell/>
+                                </Table.Row>
+                            </Table.Header>
+                            {criteria.map((c, key) =>
+                                <Table.Body key={key}>
+                                    <Table.Row>
+                                        <Table.Cell>{key + 1}</Table.Cell>
+                                        <Table.Cell>
+                                            <Input
+                                                name='name'
+                                                disabled={readOnly}
+                                                value={c.name}
+                                                onBlur={this.onBlur}
+                                                onChange={this.handleLocalChange(c.id)}
+                                            />
+                                        </Table.Cell>
+                                        <Table.Cell>
+                                            {!mcda.withAhp ?
+                                                <Select
+                                                    name='type'
+                                                    disabled={readOnly}
+                                                    value={c.type}
+                                                    onChange={this.handleSelectChange(c.id)}
+                                                    options={[
+                                                        {key: 'discrete', value: 'discrete', text: 'Discrete'},
+                                                        {key: 'continuous', value: 'continuous', text: 'Continuous'}
+                                                    ]}
+                                                /> : <Input type='text' value='Main Criterion' readOnly/>
+                                            }
+                                        </Table.Cell>
+                                        <Table.Cell textAlign='right'>
+                                            {!readOnly &&
+                                            <Button.Group>
+                                                {mcda.withAhp &&
+                                                <Button
+                                                    positive
+                                                    icon='add'
+                                                    onClick={() => this.handleAddSubCriterion(c.id)}
+                                                />
+                                                }
+                                                <Button
+                                                    negative
+                                                    icon='trash'
+                                                    onClick={() => this.handleRemoveCriteria(c.id)}
+                                                />
+                                            </Button.Group>
+                                            }
+                                        </Table.Cell>
+                                    </Table.Row>
+                                    {mcda.withAhp && allCriteria.filter(cc => cc.parentId === c.id).map((cc, ckey) =>
+                                        <Table.Row key={cc.id}>
+                                            <Table.Cell>{key + 1}.{ckey + 1}</Table.Cell>
+                                            <Table.Cell>
+                                                <Input
+                                                    name='name'
+                                                    disabled={readOnly}
+                                                    value={cc.name}
+                                                    onBlur={this.onBlur}
+                                                    onChange={this.handleLocalChange(cc.id)}
+                                                />
+                                            </Table.Cell>
+                                            <Table.Cell>
+                                                <Select
+                                                    name='type'
+                                                    disabled={readOnly}
+                                                    value={cc.type}
+                                                    onChange={this.handleSelectChange(cc.id)}
+                                                    options={[
+                                                        {key: 'discrete', value: 'discrete', text: 'Discrete'},
+                                                        {key: 'continuous', value: 'continuous', text: 'Continuous'}
+                                                    ]}
+                                                />
+                                            </Table.Cell>
+                                            <Table.Cell textAlign='right'>
+                                                {!readOnly &&
+                                                <Button.Group>
+                                                    <Button
+                                                        negative
+                                                        icon='trash'
+                                                        onClick={() => this.handleRemoveCriteria(cc.id)}
+                                                    />
+                                                </Button.Group>
+                                                }
+                                            </Table.Cell>
+                                        </Table.Row>
+                                    )}
+                                </Table.Body>
+                            )}
+                        </Table>
+                        }
+                        {!readOnly &&
+                        <Button
+                            fluid
+                            onClick={this.handleAddCriteria}
+                        >
+                            Add new {mcda.withAhp ? 'main' : ''} criterion
+                        </Button>
+                        }
+                    </Grid.Column>
+                </Grid.Row>
+                {mcda.withAhp &&
+                    <Grid.Row>
+                        <Grid.Column with={16}>
+                            <Graph
+                                getNetwork={this.setNetworkInstance}
+                                graph={graph}
+                                options={options}
+                                style={styles.graph}
+                            />
+                        </Grid.Column>
+                    </Grid.Row>
                 }
-                {!readOnly &&
-                <Button
-                    fluid
-                    onClick={this.handleAddCriteria}
-                >
-                    Add new criteria
-                </Button>
-                }
-            </div>
+            </Grid>
         );
     }
 
@@ -159,6 +323,7 @@ class CriteriaEditor extends React.Component {
 
 CriteriaEditor.propTypes = {
     mcda: PropTypes.instanceOf(MCDA).isRequired,
+    toolName: PropTypes.string.isRequired,
     handleChange: PropTypes.func.isRequired,
     readOnly: PropTypes.bool,
     routeTo: PropTypes.func
