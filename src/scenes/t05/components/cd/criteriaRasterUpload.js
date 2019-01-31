@@ -192,6 +192,7 @@ class CriteriaRasterUpload extends React.Component {
                             onChange={this.handleChangeRaster}
                             raster={Tile.fromObject(activeTile)}
                             showBasicLayer={showBasicLayer}
+                            discreteValues={this.props.criterion.type === 'discrete' ? this.props.criterion.tilesCollection.uniqueValues : null}
                         />
                         }
                     </Grid.Column>
@@ -202,6 +203,7 @@ class CriteriaRasterUpload extends React.Component {
                     onCancel={this.handleCancelModal}
                     onChange={this.handleUploadFile}
                     parameter={{unit: 'm'}}
+                    discreteRescaling={this.props.criterion.type === 'discrete'}
                 />
                 }
             </Grid>

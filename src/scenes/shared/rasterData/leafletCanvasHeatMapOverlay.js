@@ -5,6 +5,7 @@ import {
     DomUtil,
     latLngBounds as toLatLngBounds
 } from 'leaflet';
+import Rainbow from '../../../../node_modules/rainbowvis.js/rainbowvis';
 
 export const CanvasHeatMapOverlay = Layer.extend({
     options: {
@@ -211,7 +212,11 @@ export const CanvasHeatMapOverlay = Layer.extend({
     _runDraw: function() {
         this._ctx.clearRect(0, 0, this._canvas.width, this._canvas.height);
         this._dataArray.forEach(d => {
-            this._ctx.fillStyle = '#' + this._rainbow.colourAt(d.value);
+            if (this._rainbow instanceof Rainbow) {
+                this._ctx.fillStyle = '#' + this._rainbow.colourAt(d.value);
+            } else {
+                this._ctx.fillStyle = this._rainbow[d.value];
+            }
             this._ctx.fillRect(d.x, d.y, 1, 1);
         });
     },

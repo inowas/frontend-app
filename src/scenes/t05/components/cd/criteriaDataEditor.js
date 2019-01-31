@@ -59,12 +59,11 @@ class CriteriaDataEditor extends React.Component {
 
     render() {
         const {activeTool, criterion} = this.props;
-
         return (
             <div>
                 {!criterion &&
                 <Message
-                    content='Select a criterion from the navigation on the bottom left.'
+                    content="Select a criterion from the navigation on the bottom left. Don't forget to set gridSize first."
                     icon='lock'
                     warning
                 />
