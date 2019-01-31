@@ -109,11 +109,32 @@ class ResultsSelector extends React.Component {
         const {type, layer} = data;
 
         return (
-            <Grid>
-                <Grid.Row>
-                    <Grid.Column width={3}>
-                        <Segment color={'grey'}>
-                            <Header textAlign={'center'} as={'h4'}>Select type</Header>
+            <Grid columns={2}>
+                <Grid.Row stretched>
+                    <Grid.Column width={6}>
+                        <Segment>
+                            <Form>
+                                <Form.Group inline>
+                                    <label>Select type</label>
+                                    <Form.Radio
+                                        label='Head'
+                                        name='checkboxRadioGroup'
+                                        value='this'
+                                        checked={this.state.value === 'this'}
+                                        onChange={this.handleChange}
+                                    />
+                                    <Form.Radio
+                                        radio
+                                        label='Drawdown'
+                                        name='checkboxRadioGroup'
+                                        value='that'
+                                        checked={this.state.value === 'that'}
+                                        onChange={this.handleChange}
+                                    />
+                                </Form.Group>
+
+
+                            {/*<Header textAlign={'center'} as={'h4'}>Select type</Header>
                             <Form.Dropdown
                                 style={{zIndex: 1000}}
                                 selection
@@ -121,22 +142,17 @@ class ResultsSelector extends React.Component {
                                 options={this.typeOptions()}
                                 value={type}
                                 onChange={this.handleChangeType}
-                            />
-                        </Segment>
-                    </Grid.Column>
-                    <Grid.Column width={3}>
-                        <Segment color={'grey'}>
-                            <Header textAlign={'center'} as={'h4'}>Select layer</Header>
-                            <Form.Dropdown
+                            />*/}
+
+                            <Form.Select
                                 loading={!(this.props.soilmodel instanceof Soilmodel)}
-                                style={{zIndex: 1000}}
-                                selection
                                 fluid
                                 options={this.layerOptions()}
                                 value={layer}
                                 name={'affectedLayers'}
                                 onChange={this.handleChangeLayer}
                             />
+                            </Form>
                         </Segment>
                     </Grid.Column>
                     <Grid.Column width={10}>

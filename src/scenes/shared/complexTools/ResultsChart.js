@@ -31,17 +31,20 @@ const ResultsChart = ({data = null, selectedModels = null, globalMinMax = null, 
         const minData = Math.floor(min(flattenData));
         const maxData = Math.ceil(max(flattenData));
 
+        let labelFormatter;
         let processedData = [];
         let referenceTo;
 
         if (show === 'row') {
             processedData = data[row].map((v, colIdx) => ({name: colIdx, value: v}));
             referenceTo = col;
+            labelFormatter = value => `Column: ${value}`;
         }
 
         if (show === 'col') {
             processedData = data.map((r, idx) => ({name: idx, value: r[col]})).reverse();
             referenceTo = row;
+            labelFormatter = value => `Row: ${value}`;
         }
 
         return (
@@ -50,7 +53,9 @@ const ResultsChart = ({data = null, selectedModels = null, globalMinMax = null, 
                     <XAxis dataKey="name" domain={['dataMin', 'dataMax']}/>
                     <YAxis domain={[minData, maxData]}/>
                     <CartesianGrid strokeDasharray="3 3"/>
-                    <Tooltip/>
+                    <Tooltip
+                        labelFormatter={labelFormatter}
+                    />
                     <ReferenceLine x={referenceTo} stroke="#000" strokeDasharray="3 3"/>
                     <Area type="linear" dataKey="value" stroke="#3ac6ff" fill="#3ac6ff"/>
                 </AreaChart>
