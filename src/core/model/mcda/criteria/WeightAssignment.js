@@ -16,6 +16,7 @@ class WeightAssignment {
     _method = 'rnk';
     _name = 'New Weight Assignment';
     _weights = new WeightsCollection();
+    _isActive = false;
 
     static fromMethodAndCriteria(method, criteriaCollection) {
         if (!(criteriaCollection instanceof AbstractCollection)) {
@@ -53,6 +54,7 @@ class WeightAssignment {
     static fromObject(obj) {
         const wa = new WeightAssignment();
         wa.id = obj.id;
+        wa.isActive = obj.isActive;
         wa.method = obj.method;
         wa.name = obj.name;
         wa.weightsCollection = WeightsCollection.fromArray(obj.weights);
@@ -65,6 +67,14 @@ class WeightAssignment {
 
     set id(value) {
         this._id = value ? value : uuidv4();
+    }
+
+    get isActive() {
+        return this._isActive;
+    }
+
+    set isActive(value) {
+        this._isActive = value;
     }
 
     get method() {
@@ -97,6 +107,7 @@ class WeightAssignment {
     toObject() {
         return ({
             id: this.id,
+            isActive: this.isActive,
             method: this.method,
             name: this.name,
             weights: this.weightsCollection.toArray()

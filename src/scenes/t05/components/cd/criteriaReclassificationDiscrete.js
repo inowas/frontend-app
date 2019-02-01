@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types';
 import React from 'react';
 import {Criterion} from 'core/model/mcda/criteria';
-import {Button, Grid, Icon, Message, Segment, Table} from 'semantic-ui-react';
+import {Button, Grid, Icon, Input, Message, Segment, Table} from 'semantic-ui-react';
 
 class CriteriaReclassificationDiscrete extends React.Component {
 
@@ -9,23 +9,47 @@ class CriteriaReclassificationDiscrete extends React.Component {
         super(props);
 
         const criterion = props.criterion;
-        console.log('CRITERION', criterion);
-
-
-        //if (criterion.rulesCollection.length === 0) {
-            const uniqueValues = criterion.tilesCollection.uniqueValues;
-            console.log('UNIQUE', uniqueValues);
-        //}
+        criterion.rulesCollection.orderBy('from');
 
         this.state = {
+            criterion: criterion.toObject(),
             selectedRule: null,
             showInfo: true
         }
     }
 
+    componentWillReceiveProps(nextProps) {
+        const criterion = nextProps.criterion;
+        criterion.rulesCollection.orderBy('from');
+
+        this.setState({
+            criterion: criterion.toObject(),
+        });
+    }
+
+    handleChange = () => this.props.onChange(Criterion.fromObject(this.state.criterion));
+
+    handleLocalChange = id => (e, {name, value}) => this.setState(prevState => ({
+        criterion: {
+            ...prevState.criterion,
+            rules: prevState.criterion.rules.map(rule => {
+                if (rule.id === id) {
+                    rule[name] = value;
+                }
+                return rule;
+            })
+        }
+    }));
+
+    handleClickCalculate = () => {
+        const criterion = this.props.criterion;
+        criterion.calculateSuitability();
+        return this.props.onChange(criterion);
+    };
+
     render() {
-        const {showInfo} = this.state;
-        const rules = [];
+        const {criterion, showInfo} = this.state;
+        const rules = criterion.rules;
 
         return (
             <Grid>
@@ -56,30 +80,32 @@ class CriteriaReclassificationDiscrete extends React.Component {
                         <Table>
                             <Table.Header>
                                 <Table.Row>
-                                    <Table.HeaderCell>From</Table.HeaderCell>
-                                    <Table.HeaderCell>To</Table.HeaderCell>
-                                    <Table.HeaderCell>Suitability Index</Table.HeaderCell>
-                                    <Table.HeaderCell/>
+                                    <Table.HeaderCell>Value</Table.HeaderCell>
+                                    <Table.HeaderCell>Name</Table.HeaderCell>
+                                    <Table.HeaderCell>Class</Table.HeaderCell>
                                 </Table.Row>
                                 {rules.map((rule, key) =>
                                     <Table.Row key={key}>
                                         <Table.Cell>
-                                            {rule.fromOperator} {rule.from}
+                                            {rule.from}
                                         </Table.Cell>
                                         <Table.Cell>
-                                            {rule.toOperator} {rule.to}
+                                            <Input
+                                                name='name'
+                                                onBlur={this.handleChange}
+                                                onChange={this.handleLocalChange(rule.id)}
+                                                type='text'
+                                                value={rule.name}
+                                            />
                                         </Table.Cell>
                                         <Table.Cell>
-                                            {rule.type === 'calc' ? rule.expression : rule.value}
-                                        </Table.Cell>
-                                        <Table.Cell textAlign='right'>
-                                            <Button.Group>
-                                                {this.props.criterion.rulesCollection.isError(rule) &&
-                                                <Button negative icon='warning sign'/>
-                                                }
-                                                <Button onClick={() => this.handleEditRule(rule.id)} icon='edit'/>
-                                                <Button onClick={() => this.handleRemoveRule(rule.id)} icon='trash'/>
-                                            </Button.Group>
+                                            <Input
+                                                name='value'
+                                                onBlur={this.handleChange}
+                                                onChange={this.handleLocalChange(rule.id)}
+                                                type='number'
+                                                value={rule.value}
+                                            />
                                         </Table.Cell>
                                     </Table.Row>
                                 )}

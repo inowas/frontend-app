@@ -15,6 +15,10 @@ class WeightAssignmentsCollection extends AbstractCollection {
         }
         return weightAssignment;
     }
+
+    isFinished() {
+        return this.length >= 1;
+    }
 }
 
 export default WeightAssignmentsCollection;

@@ -123,6 +123,7 @@ class CriteriaDataResults extends React.Component {
                         colors={layer === 'suitability' ? heatMapColors[colors] : heatMapColors.terrain}
                         raster={layer === 'suitability' ? Raster.fromObject(criterion.suitability) : raster}
                         showBasicLayer={showBasicLayer}
+                        discreteValues={layer === 'criteria' && criterion.type === 'discrete' ? this.props.criterion.tilesCollection.uniqueValues : null}
                     />
                 }
                 </Grid.Column>

@@ -29,7 +29,7 @@ const getMenuItems = (mcda) => {
                 msg: 'At least two criteria are needed for weight assignment.'
             };
         }
-        if (mcda.weightAssignmentsCollection.length >= 1) {
+        if (mcda.weightAssignmentsCollection.isFinished()) {
             return {
                 val: 'success',
                 msg: null
@@ -38,11 +38,35 @@ const getMenuItems = (mcda) => {
         return null;
     };
 
+    const criteriaAreFinished = mcda.criteriaCollection.isFinished();
+
     const criteriaDataStatus = () => {
         if (mcda.criteriaCollection.length < 1) {
             return {
                 val: 'warning',
                 msg: 'At least one criteria is needed for data.'
+            };
+        }
+        if (criteriaAreFinished) {
+            return {
+                val: 'success',
+                msg: null
+            };
+        }
+        return null;
+    };
+
+    const suitabilityDataStatus = () => {
+        if (!criteriaAreFinished) {
+            return {
+                val: 'warning',
+                msg: 'All the criteria data is needed first.'
+            };
+        }
+        if (mcda.suitability && mcda.suitability.data.length > 0) {
+            return {
+                val: 'success',
+                msg: null
             };
         }
         return null;
@@ -60,17 +84,14 @@ const getMenuItems = (mcda) => {
             status: weightAssignmentStatus()
         },
         {
-            name: 'Constraint Mapping',
-            property: 'cm'
-        },
-        {
             name: 'Criteria Data',
             property: 'cd',
             status: criteriaDataStatus()
         },
         {
             name: 'Suitability',
-            property: 'suitability'
+            property: 'su',
+            status: suitabilityDataStatus()
         },
         {
             name: 'Results',

@@ -2,6 +2,7 @@ import uuidv4 from 'uuid/v4';
 
 class Rule {
     _id = uuidv4();
+    _name = 'New Class';
     _expression = '';
     _from = 0;
     _fromOperator = '>=';
@@ -13,6 +14,7 @@ class Rule {
     static fromObject(obj) {
         const rule = new Rule();
         rule.id = obj.id;
+        rule.name = obj.name;
         rule.expression = obj.expression;
         rule.from = obj.from;
         rule.fromOperator = obj.fromOperator;
@@ -29,6 +31,14 @@ class Rule {
 
     set id(value) {
         this._id = value;
+    }
+
+    get name() {
+        return this._name;
+    }
+
+    set name(value) {
+        this._name = value;
     }
 
     get expression() {
@@ -90,6 +100,7 @@ class Rule {
     toObject() {
         return ({
             id: this.id,
+            name: this.name,
             expression: this.expression,
             from: this.from,
             fromOperator: this.fromOperator,

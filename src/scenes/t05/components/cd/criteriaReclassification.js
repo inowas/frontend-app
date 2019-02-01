@@ -135,7 +135,7 @@ class CriteriaReclassification extends React.Component {
                                 <Table.Row>
                                     <Table.HeaderCell>From</Table.HeaderCell>
                                     <Table.HeaderCell>To</Table.HeaderCell>
-                                    <Table.HeaderCell>Suitability Index</Table.HeaderCell>
+                                    <Table.HeaderCell>Class</Table.HeaderCell>
                                     <Table.HeaderCell/>
                                 </Table.Row>
                                 {rules.all.map((rule, key) =>
@@ -212,7 +212,7 @@ class CriteriaReclassification extends React.Component {
                 {criterion.type === 'discrete' &&
                 <CriteriaReclassificationDiscrete
                     criterion={this.props.criterion}
-                    onChange={() => null}
+                    onChange={this.props.onChange}
                 />
                 }
             </div>

@@ -15,6 +15,7 @@ import {
     CriteriaDataEditor,
     CriteriaNavigation,
     ConstraintsEditor,
+    Suitability,
     ToolNavigation,
     WeightAssignmentEditor
 } from '../components';
@@ -220,6 +221,13 @@ class T05 extends React.Component {
                         handleChange={this.handleChange}
                         mcda={mcda}
                         onClickTool={this.handleClickCriteriaTool}
+                    />
+                );
+            case 'su':
+                return (
+                    <Suitability
+                        handleChange={this.handleChange}
+                        mcda={mcda}
                     />
                 );
             default:
