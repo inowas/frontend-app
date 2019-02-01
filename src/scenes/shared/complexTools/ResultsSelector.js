@@ -38,7 +38,18 @@ class ResultsSelector extends React.Component {
     }
 
     sliderMarks = () => {
-        const {totalTimes} = this.props;
+        const maxNumberOfMarks = 10;
+        let {totalTimes} = this.props;
+
+        if (totalTimes.length > maxNumberOfMarks) {
+            const minTotim = totalTimes[0];
+            const maxTotim = totalTimes[totalTimes.length - 1];
+            const dTotim = Math.round((maxTotim - minTotim) / maxNumberOfMarks);
+
+            totalTimes = new Array(maxNumberOfMarks).fill(0).map((value, key) => (minTotim + key * dTotim));
+            totalTimes.push(maxTotim);
+        }
+
         let marks = {};
         totalTimes.forEach((value) => {
             marks[value] = value;
@@ -143,7 +154,7 @@ class ResultsSelector extends React.Component {
                         <Segment color={'grey'} style={{paddingBottom: 40}}>
                             <Header textAlign={'center'} as={'h4'}>Select total time [days]</Header>
                             <SliderWithTooltip
-                                dots
+                                dots={totalTimes.length < 20}
                                 dotStyle={styles.dot}
                                 trackStyle={styles.track}
                                 defaultValue={temporaryTotim}

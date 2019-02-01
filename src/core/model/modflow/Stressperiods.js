@@ -53,10 +53,10 @@ class Stressperiods {
     static dateTimeFromTotim(startDateTime, totim, timeUnit) {
         switch (timeUnit) {
             case(4): {
-                return moment.utc(startDateTime).add(totim, 'days').format();
+                return new moment.utc(startDateTime).add(totim, 'days').format();
             }
             default:
-                return moment.utc(startDateTime).add(totim, 'days').format();
+                return new moment.utc(startDateTime).add(totim, 'days').format();
         }
     }
 
@@ -130,7 +130,7 @@ class Stressperiods {
     }
 
     get dateTimes() {
-        return this.stressperiods.map(sp => Stressperiods.dateTimeFromTotim(this.startDateTime, sp.totimStart, this.timeUnit));
+        return this.stressperiods.map(sp => sp.startDateTime);
     }
 
     get timeUnit() {

@@ -136,7 +136,7 @@ class ResultsMap extends React.Component {
 
                     return (
                         <GeoJSON
-                            key={b.geometry.hash()}
+                            key={b.geometry.hash() + '-' + b.affectedLayers.join('-')}
                             data={b.geometry}
                             style={getStyle(b.type)}
                         />
@@ -210,7 +210,6 @@ class ResultsMap extends React.Component {
                     {this.renderBoundaryOverlay(boundaries, 'Rivers', 'riv', true)}
                     {this.renderBoundaryOverlay(boundaries, 'Recharge', 'rch')}
                     {this.renderBoundaryOverlay(boundaries, 'Wells', 'wel', true)}
-
 
                     {data && <ReactLeafletHeatMapCanvasOverlay
                         nX={gridSize.nX}

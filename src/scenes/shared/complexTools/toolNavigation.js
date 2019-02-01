@@ -18,7 +18,7 @@ class ToolNavigation extends React.Component {
 
         const menuItems = navigationItems.map((i, idx) => (
             <Menu.Item
-                disabled={!id}
+                disabled={!id || i.disabled}
                 key={idx}
                 name={i.name}
                 active={property === i.property}
