@@ -12,6 +12,7 @@ import {
 } from 'recharts';
 import {flatten, max, min} from 'lodash';
 import {GridSize} from '../../../core/model/modflow';
+import {Message} from 'semantic-ui-react';
 
 const cbPalette = [
     '#0A75A0' /* navy */,
@@ -23,6 +24,22 @@ const cbPalette = [
     '#FF5B4D' /* red */,
     '#999999' /* grey */
 ];
+
+const renderTooltip = (e, show) => {
+    const data = e.payload && e.payload.length >= 1 ? e.payload[0].payload : {name: '', value: 0};
+    let name = 'Column';
+
+    if (show === 'row') {
+        name = 'Row';
+    }
+
+    return (
+        <Message size='tiny' color='black' style={{backgroundColor: 'rgba(0, 0, 0, 0.8)', padding: '6px', textAlign: 'center'}}>
+            <p>{name} {data.name}</p>
+            <Message.Header>{data.value.toFixed(2)}</Message.Header>
+        </Message>
+    );
+};
 
 const ResultsChart = ({data = null, selectedModels = null, globalMinMax = null, row, col, show}) => {
 
@@ -50,7 +67,9 @@ const ResultsChart = ({data = null, selectedModels = null, globalMinMax = null, 
                     <XAxis dataKey="name" domain={['dataMin', 'dataMax']}/>
                     <YAxis domain={[minData, maxData]}/>
                     <CartesianGrid strokeDasharray="3 3"/>
-                    <Tooltip/>
+                    <Tooltip
+                        content={e => renderTooltip(e, show)}
+                    />
                     <ReferenceLine x={referenceTo} stroke="#000" strokeDasharray="3 3"/>
                     <Area type="linear" dataKey="value" stroke="#3ac6ff" fill="#3ac6ff"/>
                 </AreaChart>

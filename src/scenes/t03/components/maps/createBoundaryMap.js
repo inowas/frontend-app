@@ -1,11 +1,11 @@
-import React, {Component} from 'react';
+import React from 'react';
 import PropTypes from 'prop-types';
 import {GeoJSON, Map, CircleMarker, FeatureGroup} from 'react-leaflet';
 import {EditControl} from 'react-leaflet-draw';
-
 import {BoundaryFactory, Geometry} from 'core/model/modflow';
 import {BasicTileLayer} from 'services/geoTools/tileLayers';
 import {getStyle} from './index';
+import CenterControl from '../../../shared/leaflet/CenterControl';
 
 
 const style = {
@@ -15,13 +15,17 @@ const style = {
     }
 };
 
-class CreateBoundaryMap extends Component {
+class CreateBoundaryMap extends React.Component {
 
     constructor(props) {
         super(props);
         this.state = {
             geometry: null
         }
+    }
+
+    componentDidMount() {
+        this.map = this.mapInstance.leafletElement
     }
 
     onCreated = e => {
@@ -36,6 +40,7 @@ class CreateBoundaryMap extends Component {
             this.setState({geometry});
             this.props.onChangeGeometry(geometry);
         });
+        this.map.flyTo([40.730610, -73.935242], 15)
     };
 
     editControl = () => {
@@ -58,6 +63,8 @@ class CreateBoundaryMap extends Component {
                     }}
                     onCreated={this.onCreated}
                     onEdited={this.onEdited}
+                    onEditStart={this.props.onToggleEditMode}
+                    onEditStop={this.props.onToggleEditMode}
                 >
                     {this.state.geometry && this.renderGeometry(this.state.geometry)}
                 </EditControl>
@@ -88,11 +95,14 @@ class CreateBoundaryMap extends Component {
 
     render() {
         const {geometry} = this.props;
+
         return (
             <Map
                 style={style.map}
                 bounds={geometry.getBoundsLatLng()}
+                ref={e => { this.mapInstance = e }}
             >
+                <CenterControl map={this.map} bounds={geometry.getBoundsLatLng()}/>
                 <BasicTileLayer/>
                 {this.editControl()}
                 <GeoJSON
@@ -108,6 +118,7 @@ class CreateBoundaryMap extends Component {
 CreateBoundaryMap.propTypes = {
     geometry: PropTypes.instanceOf(Geometry).isRequired,
     onChangeGeometry: PropTypes.func.isRequired,
+    onToggleEditMode: PropTypes.func,
     type: PropTypes.string.isRequired
 };
 
