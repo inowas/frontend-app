@@ -16,7 +16,7 @@ class CriteriaCollection extends AbstractCollection {
     }
 
     isFinished() {
-        return this.all.filter(c => !c.suitability || c.suitability.data.length === 0).length === 0;
+        return this.length > 0 && this.all.filter(c => !c.suitability || c.suitability.data.length === 0).length === 0;
     }
 }
 

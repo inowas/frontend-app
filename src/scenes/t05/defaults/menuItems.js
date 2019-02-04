@@ -60,7 +60,7 @@ const getMenuItems = (mcda) => {
         if (!criteriaAreFinished) {
             return {
                 val: 'warning',
-                msg: 'All the criteria data is needed first.'
+                msg: 'Criteria data is needed first.'
             };
         }
         if (mcda.suitability && mcda.suitability.data.length > 0) {

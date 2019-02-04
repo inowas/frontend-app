@@ -32,7 +32,6 @@ class RasterDataImage extends React.Component {
         const ctx = this.canvas.getContext('2d');
         ctx.clearRect(0, 0, width, height);
         const gridData = createGridData(data, width, height);
-        console.log('gridData', gridData);
         gridData.forEach(d => {
             ctx.fillStyle = '#' + rainbowVis.colourAt(d.value);
             ctx.fillRect(d.x, d.y, 1, 1);
