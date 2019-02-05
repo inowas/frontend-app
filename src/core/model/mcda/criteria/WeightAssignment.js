@@ -14,6 +14,7 @@ const methods = {
 class WeightAssignment {
     _id = uuidv4();
     _method = 'rnk';
+    _subMethod = '';
     _name = 'New Weight Assignment';
     _weights = new WeightsCollection();
     _isActive = false;
@@ -27,12 +28,16 @@ class WeightAssignment {
         wa.method = method;
         wa.name = methods[method];
 
+        if (method === 'rnk') {
+            wa.subMethod = 'sum';
+        }
+
         let addedRelations = [];
 
         criteriaCollection.all.forEach((criterion, key) => {
             const weight = new Weight();
             weight.criterion = criterion;
-            weight.rank = key + 1;
+            weight.initialValue = key + 1;
 
             addedRelations.push(weight.criterion.id);
             if (method === 'pwc') {
@@ -56,6 +61,7 @@ class WeightAssignment {
         wa.id = obj.id;
         wa.isActive = obj.isActive;
         wa.method = obj.method;
+        wa.subMethod = obj.subMethod;
         wa.name = obj.name;
         wa.weightsCollection = WeightsCollection.fromArray(obj.weights);
         return wa;
@@ -88,6 +94,14 @@ class WeightAssignment {
         this._method = value;
     }
 
+    get subMethod() {
+        return this._subMethod;
+    }
+
+    set subMethod(value) {
+        this._subMethod = value;
+    }
+
     get name() {
         return this._name;
     }
@@ -109,6 +123,7 @@ class WeightAssignment {
             id: this.id,
             isActive: this.isActive,
             method: this.method,
+            subMethod: this.subMethod,
             name: this.name,
             weights: this.weightsCollection.toArray()
         });
@@ -121,24 +136,39 @@ class WeightAssignment {
             return null;
         }
 
+        if (this.method === 'spl') {
+            const sum = weights.sumBy('initialValue');
+            weights.all.forEach(weight => {
+                if (sum > 0) {
+                    weight.value = (parseFloat(weight.initialValue) / sum).toFixed(3);
+                }
+                this.weightsCollection.update(weight);
+            });
+        }
+
         if (this.method === 'rnk') {
             const variables = weights.all.map(w => {
                 return {
-                    rank: w.rank,
-                    n: weights.length - w.rank + 1,
-                    r: 1 / w.rank
+                    rank: w.initialValue,
+                    n: weights.length - w.initialValue + 1,
+                    r: 1 / w.initialValue
                 }
             });
 
-            const nSum = variables.reduce((prev, cur) => {
+            const sum = variables.reduce((prev, cur) => {
+                if (this.subMethod === 'rec') {
+                    return prev + cur.r;
+                }
                 return prev + cur.n;
             }, 0);
-            /*const rSum = variables.reduce((prev, cur) => {
-                return prev + cur.r;
-            }, 0);*/
 
             weights.all.forEach((weight, key) => {
-                weight.value = variables[key].n / nSum;
+                if (this.subMethod === 'sum') {
+                    weight.value = variables[key].n / sum;
+                }
+                if (this.subMethod === 'rec') {
+                    weight.value = variables[key].r / sum;
+                }
                 this.weightsCollection.update(weight);
             });
         }

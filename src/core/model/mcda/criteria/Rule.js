@@ -2,6 +2,7 @@ import uuidv4 from 'uuid/v4';
 
 class Rule {
     _id = uuidv4();
+    _color = '#ffffff';
     _name = 'New Class';
     _expression = '';
     _from = 0;
@@ -14,6 +15,7 @@ class Rule {
     static fromObject(obj) {
         const rule = new Rule();
         rule.id = obj.id;
+        rule.color = obj.color;
         rule.name = obj.name;
         rule.expression = obj.expression;
         rule.from = obj.from;
@@ -39,6 +41,14 @@ class Rule {
 
     set name(value) {
         this._name = value;
+    }
+
+    get color() {
+        return this._color;
+    }
+
+    set color(value) {
+        this._color = value;
     }
 
     get expression() {
@@ -100,6 +110,7 @@ class Rule {
     toObject() {
         return ({
             id: this.id,
+            color: this.color,
             name: this.name,
             expression: this.expression,
             from: this.from,

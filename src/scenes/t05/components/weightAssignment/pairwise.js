@@ -1,6 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import {Grid, Message, Segment, Table} from 'semantic-ui-react';
+import {Form, Grid, Message, Segment, Table} from 'semantic-ui-react';
 import Slider from 'rc-slider';
 import {CriteriaCollection, WeightAssignment, WeightsCollection} from 'core/model/mcda/criteria';
 
@@ -22,7 +22,8 @@ class PairwiseComparison extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            relations: this.prepareState(props)
+            relations: this.prepareState(props),
+            wa: this.props.weightAssignment.toObject()
         };
     }
 
@@ -57,7 +58,7 @@ class PairwiseComparison extends React.Component {
             return weight.toObject();
         });
 
-        const weightAssignment = this.props.weightAssignment;
+        const weightAssignment = WeightAssignment.fromObject(this.state.wa);
         weightAssignment.weightsCollection = WeightsCollection.fromArray(newWeights);
         weightAssignment.calculateWeights();
 
@@ -77,6 +78,13 @@ class PairwiseComparison extends React.Component {
             })
         });
     };
+
+    handleLocalChange = (e, {name, value}) => this.setState(prevState => ({
+        wa: {
+            ...prevState.wa,
+            [name]: value
+        }
+    }));
 
     render() {
         const {readOnly} = this.props;
@@ -126,6 +134,22 @@ class PairwiseComparison extends React.Component {
                         </Segment>
                     </Grid.Column>
                     <Grid.Column width={7}>
+                        <Segment textAlign='center' inverted color='grey' secondary>
+                            Settings
+                        </Segment>
+                        <Form>
+                            <Form.Field>
+                                <Form.Input
+                                    fluid
+                                    onBlur={this.handleAfterChange(null)}
+                                    onChange={this.handleLocalChange}
+                                    name='name'
+                                    type='text'
+                                    label='Name'
+                                    value={this.state.wa.name}
+                                />
+                            </Form.Field>
+                        </Form>
                         <Segment textAlign='center' inverted color='grey' secondary>
                             Weight Assignment
                         </Segment>

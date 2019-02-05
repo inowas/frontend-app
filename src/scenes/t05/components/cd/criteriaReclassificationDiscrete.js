@@ -2,6 +2,21 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import {Criterion} from 'core/model/mcda/criteria';
 import {Button, Grid, Icon, Input, Message, Segment, Table} from 'semantic-ui-react';
+import {SketchPicker} from 'react-color';
+
+const styles = {
+    popover: {
+        position: 'absolute',
+        zIndex: '2',
+    },
+    cover: {
+        position: 'fixed',
+        top: '0px',
+        right: '0px',
+        bottom: '0px',
+        left: '0px',
+    }
+};
 
 class CriteriaReclassificationDiscrete extends React.Component {
 
@@ -13,6 +28,7 @@ class CriteriaReclassificationDiscrete extends React.Component {
 
         this.state = {
             criterion: criterion.toObject(),
+            ruleToPickColorFor: false,
             selectedRule: null,
             showInfo: true
         }
@@ -41,10 +57,29 @@ class CriteriaReclassificationDiscrete extends React.Component {
         }
     }));
 
+    handleChangeColor = color => {
+        const rule = this.state.ruleToPickColorFor;
+        return this.setState(prevState => ({
+            criterion: {
+                ...prevState.criterion,
+                rules: prevState.criterion.rules.map(r => {
+                    if (rule.id === r.id) {
+                        r.color = color.hex;
+                    }
+                    return r;
+                })
+            }
+        }));
+    };
+
     handleClickCalculate = () => {
         const criterion = this.props.criterion;
         criterion.calculateSuitability();
         return this.props.onChange(criterion);
+    };
+
+    handleCloseColorPicker = () => {
+        this.setState({ruleToPickColorFor: false}, this.handleChange());
     };
 
     render() {
@@ -77,10 +112,21 @@ class CriteriaReclassificationDiscrete extends React.Component {
                         </Segment>
                     </Grid.Column>
                     <Grid.Column width={11}>
+                        {this.state.ruleToPickColorFor &&
+                        <div style={styles.popover}>
+                            <div style={styles.cover} onClick={this.handleCloseColorPicker}/>
+                            <SketchPicker
+                                disableAlpha={true}
+                                color={this.state.ruleToPickColorFor.color}
+                                onChange={this.handleChangeColor}
+                            />
+                        </div>
+                        }
                         <Table>
                             <Table.Header>
                                 <Table.Row>
                                     <Table.HeaderCell>Value</Table.HeaderCell>
+                                    <Table.HeaderCell>Color</Table.HeaderCell>
                                     <Table.HeaderCell>Name</Table.HeaderCell>
                                     <Table.HeaderCell>Class</Table.HeaderCell>
                                 </Table.Row>
@@ -88,6 +134,14 @@ class CriteriaReclassificationDiscrete extends React.Component {
                                     <Table.Row key={key}>
                                         <Table.Cell>
                                             {rule.from}
+                                        </Table.Cell>
+                                        <Table.Cell>
+                                            <Button
+                                                onClick={() => this.setState({ruleToPickColorFor: rule})}
+                                                fluid
+                                                style={{color: rule.color}}
+                                                icon='circle'
+                                            />
                                         </Table.Cell>
                                         <Table.Cell>
                                             <Input

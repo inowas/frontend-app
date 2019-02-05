@@ -1,6 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import {Button, Grid, Message, Segment, Table} from 'semantic-ui-react';
+import {Button, Form, Grid, Message, Segment, Table} from 'semantic-ui-react';
 import Graph from 'vis-react';
 import {CriteriaCollection, Weight, WeightAssignment} from 'core/model/mcda/criteria';
 
@@ -42,7 +42,8 @@ class MultiInfluence extends React.Component {
             }),
             editEdgeMode: false,
             selectedEdges: null,
-            network: null
+            network: null,
+            wa: props.weightAssignment.toObject()
         };
     }
 
@@ -61,7 +62,8 @@ class MultiInfluence extends React.Component {
                     id: criterion.id,
                     label: criterion.name
                 }
-            })
+            }),
+            wa: nextProps.weightAssignment.toObject()
         });
     }
 
@@ -124,7 +126,7 @@ class MultiInfluence extends React.Component {
                 })
             }
         });
-        const weightAssignment = this.props.weightAssignment;
+        const weightAssignment = WeightAssignment.fromObject(this.state.wa);
 
         weights.forEach(w => {
             weightAssignment.weightsCollection.update(Weight.fromObject(w));
@@ -136,6 +138,13 @@ class MultiInfluence extends React.Component {
             value: weightAssignment
         });
     };
+
+    handleLocalChange = (e, {name, value}) => this.setState(prevState => ({
+        wa: {
+            ...prevState.wa,
+            [name]: value
+        }
+    }));
 
     setNetworkInstance = nw => this.setState({
         network: nw
@@ -222,6 +231,22 @@ class MultiInfluence extends React.Component {
                         }
                     </Grid.Column>
                     <Grid.Column>
+                        <Segment textAlign='center' inverted color='grey' secondary>
+                            Settings
+                        </Segment>
+                        <Form>
+                            <Form.Field>
+                                <Form.Input
+                                    fluid
+                                    onBlur={this.onSaveEdges}
+                                    onChange={this.handleLocalChange}
+                                    name='name'
+                                    type='text'
+                                    label='Name'
+                                    value={this.state.wa.name}
+                                />
+                            </Form.Field>
+                        </Form>
                         <Segment textAlign='center' inverted color='grey' secondary>
                             Weight Assignment
                         </Segment>
