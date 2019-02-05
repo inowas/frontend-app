@@ -40,7 +40,6 @@ class CreateBoundaryMap extends React.Component {
             this.setState({geometry});
             this.props.onChangeGeometry(geometry);
         });
-        this.map.flyTo([40.730610, -73.935242], 15)
     };
 
     editControl = () => {
