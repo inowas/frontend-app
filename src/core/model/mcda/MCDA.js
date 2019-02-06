@@ -99,6 +99,7 @@ class MCDA {
         this.suitability.boundingBox = boundingBox;
         this.suitability.gridSize = this.constraints.gridSize;
         this.suitability.data = math.add(...data);
+        this.suitability.calculateMinMax();
 
         return this;
     }

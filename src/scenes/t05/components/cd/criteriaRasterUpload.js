@@ -192,7 +192,7 @@ class CriteriaRasterUpload extends React.Component {
                             onChange={this.handleChangeRaster}
                             raster={Tile.fromObject(activeTile)}
                             showBasicLayer={showBasicLayer}
-                            discreteValues={this.props.criterion.type === 'discrete' ? this.props.criterion.tilesCollection.uniqueValues : null}
+                            legend={this.props.criterion.generateLegend()}
                         />
                         }
                     </Grid.Column>

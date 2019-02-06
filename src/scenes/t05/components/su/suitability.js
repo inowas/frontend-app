@@ -100,9 +100,9 @@ class Suitability extends React.Component {
                     <Grid.Column>
                         {mcda.suitability && mcda.suitability.data.length > 0 &&
                             <CriteriaRasterMap
-                                colors={heatMapColors['default']}
                                 raster={mcda.suitability}
                                 showBasicLayer={true}
+                                legend={mcda.suitability.generateRainbow(heatMapColors.default)}
                             />
                         }
                     </Grid.Column>

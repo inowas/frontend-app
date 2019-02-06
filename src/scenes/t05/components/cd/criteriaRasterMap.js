@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types';
 import React from 'react';
-import {createGridData, max, min, rainbowFactory, discreteRainbowFactory} from '../../../shared/rasterData/helpers';
+import {createGridData} from '../../../shared/rasterData/helpers';
 import {BasicTileLayer} from 'services/geoTools/tileLayers';
 import {Map, Rectangle, FeatureGroup} from 'react-leaflet';
 import {Raster} from 'core/model/mcda/gis';
@@ -68,15 +68,7 @@ class CriteriaRasterMap extends React.Component {
     };
 
     render() {
-        let rainbowVis = null;
         const {data, boundingBox, gridSize} = this.props.raster;
-
-        if (data.length > 0) {
-            rainbowVis = rainbowFactory({min: min(data), max: max(data)}, this.props.colors);
-        }
-        if (this.props.discreteValues) {
-            rainbowVis = discreteRainbowFactory(this.props.discreteValues);
-        }
 
         return (
             <Map
@@ -104,12 +96,12 @@ class CriteriaRasterMap extends React.Component {
                     <CanvasHeatMapOverlay
                         nX={gridSize.nX}
                         nY={gridSize.nY}
-                        rainbow={rainbowVis}
+                        rainbow={this.props.legend}
                         dataArray={createGridData(data, gridSize.nX, gridSize.nY)}
                         bounds={boundingBox.getBoundsLatLng()}
                         opacity={0.75}
                     />
-                    {this.renderLegend(rainbowVis)}
+                    {this.renderLegend(this.props.legend)}
                 </div>
                 }
             </Map>
@@ -118,11 +110,10 @@ class CriteriaRasterMap extends React.Component {
 }
 
 CriteriaRasterMap.propTypes = {
-    colors: PropTypes.array,
     onChange: PropTypes.func,
     raster: PropTypes.instanceOf(Raster).isRequired,
     showBasicLayer: PropTypes.bool.isRequired,
-    discreteValues: PropTypes.array
+    legend: PropTypes.oneOfType([PropTypes.array, PropTypes.instanceOf(Rainbow)])
 };
 
 export default CriteriaRasterMap;

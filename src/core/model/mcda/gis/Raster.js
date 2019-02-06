@@ -1,8 +1,8 @@
 import {BoundingBox, GridSize} from '../../geometry';
 import {cloneDeep} from 'lodash';
 import {distanceBetweenCoordinates} from 'services/geoTools/distance';
-import {max, min} from 'scenes/shared/rasterData/helpers';
 import uuidv4 from 'uuid/v4';
+import {max, min, rainbowFactory} from "scenes/shared/rasterData/helpers";
 
 class Raster {
     _boundingBox = new BoundingBox(0, 0, 0, 0);
@@ -105,6 +105,15 @@ class Raster {
             max: this.max,
             min: this.min
         }
+    }
+
+    calculateMinMax() {
+        this.max = max(this.data);
+        this.min = min(this.data);
+    }
+
+    generateRainbow(colors) {
+        return rainbowFactory({min: this.min, max: this.max}, colors);
     }
 
     assignMinMax() {

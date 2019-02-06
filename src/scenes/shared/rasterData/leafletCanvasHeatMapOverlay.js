@@ -215,7 +215,10 @@ export const CanvasHeatMapOverlay = Layer.extend({
             if (this._rainbow instanceof Rainbow) {
                 this._ctx.fillStyle = '#' + this._rainbow.colourAt(d.value);
             } else {
-                this._ctx.fillStyle = this._rainbow[d.value];
+                const data = this._rainbow.filter(row => row.value === d.value);
+                if (data.length > 0) {
+                    this._ctx.fillStyle = data[0].color;
+                }
             }
             this._ctx.fillRect(d.x, d.y, 1, 1);
         });

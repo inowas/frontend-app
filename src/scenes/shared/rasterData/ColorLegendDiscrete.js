@@ -31,12 +31,12 @@ class ColorLegend extends React.Component {
             <div>
                 <div style={styles.vertical}>
                     <ul style={styles.legend}>
-                        {Object.keys(legend).map((key, index) =>
+                        {legend.map((item, index) =>
                             <li key={index}>
                             <span style={{
                                 ...styles.legendSpan,
-                                backgroundColor: legend[key]
-                            }}/> {key}
+                                backgroundColor: item.color
+                            }}/> {item.label}
                             </li>
                         )}
                     </ul>
@@ -47,7 +47,7 @@ class ColorLegend extends React.Component {
 }
 
 ColorLegend.propTypes = {
-    legend: PropTypes.object
+    legend: PropTypes.array.isRequired
 };
 
 export default ColorLegend;
