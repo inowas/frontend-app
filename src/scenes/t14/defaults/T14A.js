@@ -7,7 +7,7 @@ export const defaults = () => {
         description: 'Simple tool description',
         public: false,
         permissions: 'rwx',
-        type: 'T14A',
+        tool: 'T14A',
         data: {
             parameters: [{
                 order: 0,

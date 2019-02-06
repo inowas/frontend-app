@@ -10,7 +10,7 @@ export const defaults = () => {
         description: 'Simple tool description',
         permissions: 'rwx',
         public: false,
-        type: 'T18',
+        tool: 'T18',
         data: {
             settings: {
                 AF: 0.07

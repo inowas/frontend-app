@@ -1,4 +1,4 @@
-import * as ReactDOM from "react-dom";
+import * as ReactDOM from 'react-dom';
 
 export const getParameterValues = (arr) => {
     const parameters = {};
@@ -38,15 +38,15 @@ export const deepMerge = (state, fetched) => {
     }
 ;
 
-export const buildPayload = (tool) => ({
-    id: tool.id,
-    name: tool.name,
-    description: tool.description,
-    public: tool.public,
-    type: tool.type,
+export const buildPayload = (toolInstance) => ({
+    id: toolInstance.id,
+    name: toolInstance.name,
+    description: toolInstance.description,
+    public: toolInstance.public,
+    tool: toolInstance.tool,
     data: {
-        ...tool.data,
-        parameters: tool.data.parameters.map(p => ({
+        ...toolInstance.data,
+        parameters: toolInstance.data.parameters.map(p => ({
             id: p.id,
             max: p.max,
             min: p.min,
@@ -56,7 +56,7 @@ export const buildPayload = (tool) => ({
 });
 
 const downloadFile = (name, uri) => {
-    const downloadLink = document.createElement("a");
+    const downloadLink = document.createElement('a');
     downloadLink.href = uri;
     downloadLink.download = name;
     document.body.appendChild(downloadLink);
@@ -88,15 +88,15 @@ export const exportChartImage = (ref) => {
     svg.setAttribute('xmlns', 'http://www.w3.org/2000/svg');
     const svgData = svg.outerHTML;
     const preface = '<?xml version="1.0" standalone="no"?>\r\n';
-    const svgBlob = new Blob([preface, svgData], {type: "image/svg+xml;charset=utf-8"});
+    const svgBlob = new Blob([preface, svgData], {type: 'image/svg+xml;charset=utf-8'});
     const svgUrl = URL.createObjectURL(svgBlob);
 
-    const canvas = document.createElement("canvas");
+    const canvas = document.createElement('canvas');
     const bbox = svg.getBBox();
     canvas.width = bbox.width + 50;
     canvas.height = bbox.height + 50;
 
-    const ctx = canvas.getContext("2d");
+    const ctx = canvas.getContext('2d');
     ctx.clearRect(0, 0, bbox.width, bbox.height);
 
     const img = new Image();
@@ -104,8 +104,8 @@ export const exportChartImage = (ref) => {
         ctx.drawImage(img, 15, 15);
         URL.revokeObjectURL(svgUrl);
         const imgURI = canvas
-            .toDataURL("image/png")
-            .replace("image/png", "image/octet-stream");
+            .toDataURL('image/png')
+            .replace('image/png', 'image/octet-stream');
 
         downloadFile('chart.jpg', imgURI);
     };

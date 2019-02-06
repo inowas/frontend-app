@@ -33,8 +33,8 @@ const navigation = [{
 }];
 
 class T05 extends React.Component {
-    constructor() {
-        super();
+    constructor(props) {
+        super(props);
 
         this.state = {
             isDirty: false,
@@ -70,7 +70,7 @@ class T05 extends React.Component {
         name: tool.name,
         description: tool.description,
         public: tool.public,
-        type: tool.type,
+        tool: tool.tool,
         data: {
             mcda: MCDA.fromObject(this.state.tool.data.mcda).toObject()
         }
