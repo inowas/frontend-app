@@ -35,12 +35,14 @@ const menuItems = [
     {
         name: 'Results',
         property: 'results',
-        icon: <Icon name="chart bar outline"/>
+        icon: <Icon name="chart bar outline"/>,
+        disabled: true
     },
     {
         name: 'Optimization',
         property: 'optimization',
-        icon: <Icon name="sliders horizontal"/>
+        icon: <Icon name="sliders horizontal"/>,
+        disabled: true
     }
 ];
 

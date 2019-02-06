@@ -31,6 +31,7 @@ import {
 import ModflowModelCommand from '../commands/modflowModelCommand';
 import CalculationProgressBar from '../components/content/run/calculationProgressBar';
 import OptimizationProgressBar from '../components/content/optimization/optimizationProgressBar';
+import {CALCULATION_STATE_FINISHED} from '../components/content/run/CalculationStatus';
 
 const navigation = [{
     name: 'Documentation',
@@ -43,6 +44,7 @@ class T03 extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
+            menuItems: menuItems,
             error: false,
             isLoading: false
         }
@@ -64,6 +66,20 @@ class T03 extends React.Component {
                     () => this.fetchModel(id)
                 )
             }
+        }
+
+        if (nextProps.calculation) {
+            const calculationState =  nextProps.calculation.state;
+            this.setState({
+                menuItems: menuItems.map(mi => {
+                    if (mi.property === 'results' || mi.property === 'optimization') {
+                        mi.disabled = calculationState !== CALCULATION_STATE_FINISHED;
+                        return mi;
+                    }
+
+                    return mi;
+                })
+            })
         }
 
         this.setState({
@@ -212,7 +228,7 @@ class T03 extends React.Component {
                     </Grid.Row>
                     <Grid.Row>
                         <Grid.Column width={3}>
-                            <ToolNavigation navigationItems={menuItems}/>
+                            <ToolNavigation navigationItems={this.state.menuItems}/>
                             <CalculationProgressBar/>
                             <OptimizationProgressBar/>
                         </Grid.Column>
@@ -228,6 +244,7 @@ class T03 extends React.Component {
 
 const mapStateToProps = state => ({
     model: state.T03.model && ModflowModel.fromObject(state.T03.model),
+    calculation: state.T03.calculation && Calculation.fromObject(state.T03.calculation),
     boundaries: state.T03.boundaries
 });
 
