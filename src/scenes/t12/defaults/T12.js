@@ -7,7 +7,7 @@ export const defaults = () => {
         description: 'Simple tool description',
         permissions: 'rwx',
         public: false,
-        type: 'T12',
+        tool: 'T12',
         data: {
             mfi: [{
                 t: 10,

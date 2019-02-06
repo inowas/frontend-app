@@ -12,12 +12,12 @@ export const defaults = () => {
         description: 'Simple tool description',
         permissions: 'rwx',
         public: false,
-        type: 'T08',
+        tool: 'T08',
         data: {
             parameters: [{
                 order: 0,
                 id: 'C0',
-                name: `Initial concentration of the solute, C<sub>0</sub> [mg/l]`,
+                name: 'Initial concentration of the solute, C<sub>0</sub> [mg/l]',
                 min: 0.0,
                 max: 1000.0,
                 value: 100,

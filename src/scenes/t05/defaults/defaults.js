@@ -8,7 +8,7 @@ export const defaults = () => {
         description: 'Description of multi-criteria decision analysis.',
         permissions: 'rwx',
         public: false,
-        type: 'T05',
+        tool: 'T05',
         data: {
             mcda: (new MCDA()).toObject()
         }
