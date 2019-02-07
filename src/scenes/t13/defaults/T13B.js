@@ -11,7 +11,7 @@ export const defaults = () => {
         description: 'Simple tool description',
         permissions: 'rwx',
         public: false,
-        type: 'T13B',
+        tool: 'T13B',
         data: {
             settings: {
                 selected: SETTINGS_SELECTED_NOTHING
