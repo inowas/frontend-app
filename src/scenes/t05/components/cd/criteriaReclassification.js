@@ -133,6 +133,8 @@ class CriteriaReclassification extends React.Component {
                         <Table>
                             <Table.Header>
                                 <Table.Row>
+                                    <Table.HeaderCell/>
+                                    <Table.HeaderCell>Name</Table.HeaderCell>
                                     <Table.HeaderCell>From</Table.HeaderCell>
                                     <Table.HeaderCell>To</Table.HeaderCell>
                                     <Table.HeaderCell>Class</Table.HeaderCell>
@@ -140,6 +142,12 @@ class CriteriaReclassification extends React.Component {
                                 </Table.Row>
                                 {rules.all.map((rule, key) =>
                                     <Table.Row key={key}>
+                                        <Table.Cell>
+                                            <Icon name='circle' style={{color: rule.color}}/>
+                                        </Table.Cell>
+                                        <Table.Cell>
+                                            {rule.name}
+                                        </Table.Cell>
                                         <Table.Cell>
                                             {rule.fromOperator} {rule.from}
                                         </Table.Cell>
@@ -175,14 +183,14 @@ class CriteriaReclassification extends React.Component {
                             <CartesianGrid strokeDasharray="3 3"/>
                             <XAxis type="number" dataKey={'x'} domain={[Math.floor(raster.min), Math.ceil(raster.max)]}
                                    name='criterion'/>
-                            <YAxis type="number" dataKey={'y'} name='suitability'/>
+                            <YAxis type="number" dataKey={'y'} domain={[0, 1]} name='suitability'/>
                             <Scatter
                                 name="Suitability"
                                 line={{stroke: '#8884d8', strokeWidth: 1}}
                                 data={data}
                                 shape={() => {
                                     return null;
-                                }} //<circle cx={1} cy={1} r={2} stroke="black" strokeWidth={1} fill="#8884d8"/>
+                                }}
                                 dataKey='suitability'
                             />
                         </ScatterChart>

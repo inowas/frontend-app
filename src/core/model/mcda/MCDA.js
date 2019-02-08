@@ -83,6 +83,7 @@ class MCDA {
         if (!wa) {
             throw new Error('There is no active weight assignment method.');
         }
+
         // STEP 1: multiply criteria data with weights
         const data = this.criteriaCollection.all.map(criterion => {
             if (!criterion.suitability || criterion.suitability.data.length === 0) {
@@ -99,6 +100,15 @@ class MCDA {
         this.suitability.boundingBox = boundingBox;
         this.suitability.gridSize = this.constraints.gridSize;
         this.suitability.data = math.add(...data);
+
+        // STEP 2: multiply with constraints
+        this.criteriaCollection.all.forEach(c => {
+            if (c.constraintRaster && c.constraintRaster.data.length > 0) {
+                this.suitability.data = math.dotMultiply(this.suitability.data, c.constraintRaster.data);
+            }
+        });
+
+
         this.suitability.calculateMinMax();
 
         return this;

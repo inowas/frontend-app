@@ -17,7 +17,17 @@ class CriteriaDataResults extends React.Component {
         }
     }
 
-    handleChange = (e, {name, value}) => this.setState({[name]: value});
+    handleChange = (e, {name, value}) => {
+        if (name === 'layer') {
+            return this.setState({
+                layer: value,
+                colors: 'default'
+            });
+        }
+        return this.setState({
+            [name]: value
+        });
+    };
 
     handleToggleBasicLayer = () => this.setState(prevState => ({showBasicLayer: !prevState.showBasicLayer}));
 

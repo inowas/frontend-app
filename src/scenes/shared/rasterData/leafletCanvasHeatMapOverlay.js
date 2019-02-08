@@ -211,14 +211,16 @@ export const CanvasHeatMapOverlay = Layer.extend({
 
     _runDraw: function() {
         this._ctx.clearRect(0, 0, this._canvas.width, this._canvas.height);
+
         this._dataArray.forEach(d => {
             if (this._rainbow instanceof Rainbow) {
                 this._ctx.fillStyle = '#' + this._rainbow.colourAt(d.value);
             } else {
-                const data = this._rainbow.filter(row => row.value === d.value);
-                if (data.length > 0) {
-                    this._ctx.fillStyle = data[0].color;
-                }
+                const data = this._rainbow[0].isContinuous ?
+                    this._rainbow.filter(row => (row.fromOperator === '>' ? d.value > row.from : d.value >= row.from) && (row.toOperator === '<' ? d.value < row.to : d.value <= row.to)) :
+                    this._rainbow.filter(row => row.value === d.value);
+
+                this._ctx.fillStyle = data.length > 0 ? data[0].color : '#fff';
             }
             this._ctx.fillRect(d.x, d.y, 1, 1);
         });

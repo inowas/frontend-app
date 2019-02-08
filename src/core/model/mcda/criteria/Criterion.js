@@ -194,6 +194,7 @@ class Criterion {
                 uniqueValues.sort((a, b) => a - b).forEach((v, key) => {
                         legend.push({
                             color: key < heatMapColors.discrete.length ? heatMapColors.discrete[key] : '#000000',
+                            isContinuous: false,
                             label: v,
                             value: v
                         })
@@ -204,6 +205,7 @@ class Criterion {
             this.rulesCollection.orderBy('from').all.forEach(rule => {
                 legend.push({
                     color: rule.color,
+                    isContinuous: false,
                     label: rule.name,
                     value: rule.from
                 });
@@ -218,12 +220,19 @@ class Criterion {
                 }, heatMapColors.terrain);
                 return rainbow;
             }
-            // TODO: classified
-            rainbow = rainbowFactory({
-                min: this.tilesCollection.first.min,
-                max: this.tilesCollection.first.max
-            }, heatMapColors.default);
-            return rainbow;
+            this.rulesCollection.orderBy('from').all.forEach(rule => {
+                legend.push({
+                    color: rule.color,
+                    label: rule.name,
+                    fromOperator: rule.fromOperator,
+                    from: rule.from,
+                    isContinuous: true,
+                    toOperator: rule.toOperator,
+                    to: rule.to
+                });
+            });
+            legend.push({color: '#fff', label: 'Not Classified'});
+            return legend;
         }
     }
 }
