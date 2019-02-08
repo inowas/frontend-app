@@ -394,7 +394,7 @@
                 "mxss": {
                     "type": "null"
                 },
-                "stress_period_data": {
+                "stressperiod_data": {
                     "oneOf": [
                         {
                             "type": "array",

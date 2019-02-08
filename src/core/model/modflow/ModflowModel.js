@@ -33,7 +33,7 @@ export default class ModflowModel {
         model.mt3dms = obj.mt3dms ? Mt3dms.fromObject(obj.mt3dms) : Mt3dms.fromDefaults();
         model.permissions = obj.permissions;
         model.public = obj.public;
-        model.stressperiods = (obj.stress_periods) ? Stressperiods.fromObject(obj.stress_periods) : Stressperiods.fromDefaults();
+        model.stressperiods = (obj.stressperiods) ? Stressperiods.fromObject(obj.stressperiods) : Stressperiods.fromDefaults();
         model.timeUnit = obj.time_unit;
         model.calculation = obj.calculation ? Calculation.fromObject(obj.calculation) : null;
         return model;
@@ -187,7 +187,7 @@ export default class ModflowModel {
         mt3dms: this.mt3dms.toObject(),
         permissions: this.permissions,
         public: this.public,
-        stress_periods: this.stressperiods.toObject(),
+        stressperiods: this.stressperiods.toObject(),
         time_unit: this.timeUnit,
         calculation: (this.calculation instanceof Calculation) ? this.calculation.toObject() : null
     });
@@ -203,7 +203,7 @@ export default class ModflowModel {
         length_unit: this._lengthUnit,
         mt3dms: (this._mt3dms instanceof Mt3dms) ? this._mt3dms.toObject(): this._mt3dms,
         public: this._public,
-        stress_periods: (this._stressperiods instanceof Stressperiods) ? this._stressperiods.toObject() : this._stressperiods,
+        stressperiods: (this._stressperiods instanceof Stressperiods) ? this._stressperiods.toObject() : this._stressperiods,
         time_unit: this._timeUnit,
     });
 }

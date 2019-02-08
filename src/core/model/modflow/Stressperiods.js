@@ -38,7 +38,7 @@ class Stressperiods {
         stressPeriods.endDateTime = endDateTime;
         stressPeriods.timeUnit = timeUnit;
 
-        obj.stress_periods.forEach(sp => {
+        obj.stressperiods.forEach(sp => {
             stressPeriods.addStressPeriod(Stressperiod.fromObject({
                 start_date_time: Stressperiods.dateTimeFromTotim(startDateTime, sp.totim_start, timeUnit),
                 nstp: sp.nstp,
@@ -200,7 +200,7 @@ class Stressperiods {
         return {
             start_date_time: this.startDateTime.toISOString(),
             end_date_time: this.endDateTime.toISOString(),
-            stress_periods: stressperiods,
+            stressperiods: stressperiods,
             time_unit: this.timeUnit
         };
     }

@@ -1,6 +1,6 @@
 class Mt3dStressPeriodDataSet {
 
-    // SET stress_period_data
+    // SET stressperiod_data
     // ssm_data[0] = [
     // [4, 4, 4, 1.0, itype['GHB'], 1.0, 100.0)]
 

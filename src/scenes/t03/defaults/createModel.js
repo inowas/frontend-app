@@ -13,7 +13,7 @@ const createModelDefaults = {
         start_date_time: '2000-01-01',
         end_date_time: '2019-12-31',
         time_unit: TimeUnit.days().toInt(),
-        stress_periods: [{
+        stressperiods: [{
             totim_start: 0,
             perlen: 3650,
             nstp: 1,

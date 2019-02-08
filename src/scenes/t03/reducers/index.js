@@ -6,9 +6,9 @@ import optimization from './optimization';
 import soilmodel from './soilmodel';
 
 const T03 = combineReducers({
+    model,
     boundaries,
     calculation,
-    model,
     optimization,
     soilmodel
 });

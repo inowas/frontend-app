@@ -62,7 +62,7 @@ class CreateModel extends React.Component {
             () => sendCommand(ModflowModelCommand.updateModflowModel(this.getPayload()),
                 () => sendCommand(ModflowModelCommand.updateStressperiods({
                         id: this.state.id,
-                        stress_periods: Stressperiods.fromObject(this.state.stressperiods).toObject()
+                        stressperiods: Stressperiods.fromObject(this.state.stressperiods).toObject()
                     }),
                     () => sendCommand(ModflowModelCommand.addSoilmodelLayer(
                         this.state.id,

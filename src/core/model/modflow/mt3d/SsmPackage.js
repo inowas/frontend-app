@@ -3,7 +3,7 @@ import SsmSubstance from './SsmSubstance';
 
 class SsmPackage extends AbstractMt3dPackage {
 
-    // SET stress_period_data
+    // SET stressperiod_data
     // ssm_data[0] = [
     //      [#lay, #row, #col, #value1, #itype, #value1, #value2)]
     //      [4, 4, 4, 1.0, itype['GHB'], 1.0, 100.0)]
@@ -27,7 +27,7 @@ class SsmPackage extends AbstractMt3dPackage {
         ssm.crch = obj.crch;
         ssm.cevt = obj.cevt;
         ssm.mxss = obj.mxss;
-        ssm.stressPeriodData = obj.stress_period_data;
+        ssm.stressPeriodData = obj.stressperiod_data;
         ssm.dtype = obj.dtype;
         ssm.extension = obj.extension;
         ssm.unitnumber = obj.unitnumber;
@@ -219,7 +219,7 @@ class SsmPackage extends AbstractMt3dPackage {
             crch: this.crch,
             cevt: this.cevt,
             mxss: this.mxss,
-            stress_period_data: this.stressPeriodData,
+            stressperiod_data: this.stressPeriodData,
             dtype: this.dtype,
             extension: this.extension,
             unitnumber: this.unitnumber,
