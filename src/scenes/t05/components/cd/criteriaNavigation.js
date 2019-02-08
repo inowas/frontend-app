@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import {withRouter} from 'react-router-dom';
-import {Form, Icon, Input, Menu, Segment} from 'semantic-ui-react';
+import {Button, Form, Icon, Input, Menu, Segment} from 'semantic-ui-react';
 import {MCDA} from 'core/model/mcda';
 import {GisMap} from 'core/model/mcda/gis';
 
@@ -20,6 +20,7 @@ class CriteriaNavigation extends React.Component {
         this.state = {
             searchTerm: '',
             constraints: props.mcda.constraints.toObject(),
+            debugging: true
         };
     }
 
@@ -43,6 +44,18 @@ class CriteriaNavigation extends React.Component {
             }
         }
     }));
+
+    onClickUpdate = () => {
+        const cc = this.props.mcda.criteriaCollection;
+        cc.all.forEach(criterion => {
+            criterion.constraintsCollection = criterion.rulesCollection;
+            cc.update(criterion);
+        });
+        this.props.handleChange({
+            name: 'criteria',
+            value: cc
+        });
+    };
 
     onSearchCriterion = (e, {name, value}) => this.setState({
         searchTerm: value
@@ -119,6 +132,16 @@ class CriteriaNavigation extends React.Component {
                         />
                     </Menu.Item>
                     {items}
+                    {this.state.debugging &&
+                    <Menu.Item>
+                        <Button
+                            primary
+                            fluid
+                            content='Update Criteria'
+                            onClick={this.onClickUpdate}
+                        />
+                    </Menu.Item>
+                    }
                 </Menu>
             </Segment>
         )

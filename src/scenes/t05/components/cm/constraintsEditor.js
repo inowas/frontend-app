@@ -1,24 +1,23 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import {Button, Form, Grid, Message} from 'semantic-ui-react';
-import {MCDA} from 'core/model/mcda';
 import {GisMap} from 'core/model/mcda/gis';
 import ConstraintsMap from './constraintsMap';
 
 
 class ConstraintsEditor extends React.Component {
     constructor(props) {
-        super();
+        super(props);
 
         this.state = {
-            constraints: props.mcda.constraints.toObject(),
+            constraints: props.constraints.toObject(),
             mode: 'map'
         }
     }
 
     componentWillReceiveProps(nextProps) {
         this.setState({
-            constraints: nextProps.mcda.constraints.toObject()
+            constraints: nextProps.constraints.toObject()
         });
     }
 
@@ -126,7 +125,7 @@ class ConstraintsEditor extends React.Component {
                     </Grid.Column>
                     <Grid.Column width={12}>
                         <ConstraintsMap
-                            map={this.props.mcda.constraints}
+                            map={this.props.constraints}
                             onChange={this.handleChange}
                             mode={this.state.mode}
                             readOnly={readOnly}
@@ -141,7 +140,7 @@ class ConstraintsEditor extends React.Component {
 
 ConstraintsEditor.propTypes = {
     handleChange: PropTypes.func.isRequired,
-    mcda: PropTypes.instanceOf(MCDA).isRequired,
+    constraints: PropTypes.instanceOf(GisMap).isRequired,
     readOnly: PropTypes.bool
 };
 

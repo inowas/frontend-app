@@ -82,6 +82,53 @@ class CriteriaReclassificationDiscrete extends React.Component {
         this.setState({ruleToPickColorFor: false}, this.handleChange());
     };
 
+    renderTableRow(rule, key) {
+        let isConstraint = false;
+        const criterion = this.state.criterion;
+
+        if (criterion.constraintRules.length > 0) {
+            const constraint = criterion.constraintRules.filter(r => r.from === rule.from && r.value === 0);
+            if (constraint.length > 0) {
+                isConstraint = true;
+            }
+        }
+
+        return (
+            <Table.Row key={key}>
+                <Table.Cell>
+                    {rule.from}
+                </Table.Cell>
+                <Table.Cell>
+                    <Button
+                        onClick={() => this.setState({ruleToPickColorFor: rule})}
+                        fluid
+                        style={{color: rule.color}}
+                        icon='circle'
+                    />
+                </Table.Cell>
+                <Table.Cell>
+                    <Input
+                        name='name'
+                        onBlur={this.handleChange}
+                        onChange={this.handleLocalChange(rule.id)}
+                        type='text'
+                        value={rule.name}
+                    />
+                </Table.Cell>
+                <Table.Cell>
+                    <Input
+                        name='value'
+                        onBlur={this.handleChange}
+                        onChange={this.handleLocalChange(rule.id)}
+                        readOnly={isConstraint}
+                        type='number'
+                        value={isConstraint ? 0 : rule.value}
+                    />
+                </Table.Cell>
+            </Table.Row>
+        );
+    }
+
     render() {
         const {criterion, showInfo} = this.state;
         const rules = criterion.rules;
@@ -130,39 +177,7 @@ class CriteriaReclassificationDiscrete extends React.Component {
                                     <Table.HeaderCell>Name</Table.HeaderCell>
                                     <Table.HeaderCell>Class</Table.HeaderCell>
                                 </Table.Row>
-                                {rules.map((rule, key) =>
-                                    <Table.Row key={key}>
-                                        <Table.Cell>
-                                            {rule.from}
-                                        </Table.Cell>
-                                        <Table.Cell>
-                                            <Button
-                                                onClick={() => this.setState({ruleToPickColorFor: rule})}
-                                                fluid
-                                                style={{color: rule.color}}
-                                                icon='circle'
-                                            />
-                                        </Table.Cell>
-                                        <Table.Cell>
-                                            <Input
-                                                name='name'
-                                                onBlur={this.handleChange}
-                                                onChange={this.handleLocalChange(rule.id)}
-                                                type='text'
-                                                value={rule.name}
-                                            />
-                                        </Table.Cell>
-                                        <Table.Cell>
-                                            <Input
-                                                name='value'
-                                                onBlur={this.handleChange}
-                                                onChange={this.handleLocalChange(rule.id)}
-                                                type='number'
-                                                value={rule.value}
-                                            />
-                                        </Table.Cell>
-                                    </Table.Row>
-                                )}
+                                {rules.map((rule, key) => this.renderTableRow(rule, key))}
                             </Table.Header>
                         </Table>
                     </Grid.Column>

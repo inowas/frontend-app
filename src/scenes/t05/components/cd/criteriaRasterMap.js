@@ -113,7 +113,7 @@ CriteriaRasterMap.propTypes = {
     onChange: PropTypes.func,
     raster: PropTypes.instanceOf(Raster).isRequired,
     showBasicLayer: PropTypes.bool.isRequired,
-    legend: PropTypes.oneOfType([PropTypes.array, PropTypes.instanceOf(Rainbow)])
+    legend: PropTypes.oneOfType([PropTypes.array, PropTypes.instanceOf(Rainbow)]).isRequired
 };
 
 export default CriteriaRasterMap;

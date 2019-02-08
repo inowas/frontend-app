@@ -106,7 +106,7 @@ class PairwiseComparison extends React.Component {
 
         let consistency = null;
 
-        if(weightAssignment.meta && weightAssignment.meta.consistency) {
+        if (weightAssignment.meta && weightAssignment.meta.consistency) {
             consistency = weightAssignment.meta.consistency;
         }
 
@@ -197,18 +197,21 @@ class PairwiseComparison extends React.Component {
                             <Segment textAlign='center' inverted color='grey' secondary>
                                 Consistency Ratio
                             </Segment>
-                                <Message
-                                    negative={consistency >= 0.1}
-                                    positive={consistency < 0.1}
-                                    style={{textAlign: 'center'}}
-                                >
-                                    <Message.Header>CR = {consistency} {consistency >= 0.1 ? '>=' : '<'} 0.1</Message.Header>
-                                    {consistency < 0.1 ?
-                                        <p>Your comparisons are reasonably consistent.</p>
-                                        :
-                                        <p>Inconsistent result: Please check your comparison values.</p>
-                                    }
-                                </Message>
+                            <Message
+                                negative={consistency >= 0.1}
+                                positive={consistency < 0.1}
+                                style={{textAlign: 'center'}}
+                            >
+                                <Message.Header>
+                                    CR = {consistency.toFixed(3)} {consistency >= 0.1 ? '>=' : '<'} 0.100
+                                </Message.Header>
+                                {consistency < 0.1
+                                    ?
+                                    <p>Your comparisons are reasonably consistent.</p>
+                                    :
+                                    <p>Inconsistent result: Please check your comparison values.</p>
+                                }
+                            </Message>
                         </div>
                         }
                     </Grid.Column>

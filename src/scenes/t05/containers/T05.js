@@ -26,6 +26,8 @@ import getMenuItems from '../defaults/menuItems';
 import {MCDA} from 'core/model/mcda';
 import ContentToolBar from '../../shared/ContentToolbar';
 import {WeightAssignment, WeightAssignmentsCollection} from 'core/model/mcda/criteria';
+import CriteriaCollection from "../../../core/model/mcda/criteria/CriteriaCollection";
+import Criterion from "../../../core/model/mcda/criteria/Criterion";
 
 const navigation = [{
     name: 'Documentation',
@@ -81,7 +83,12 @@ class T05 extends React.Component {
         let mcda = MCDA.fromObject(this.state.tool.data.mcda);
 
         if (name === 'criteria') {
-            mcda.updateCriteria(value);
+            if (value instanceof Criterion) {
+                mcda.updateCriteria(value);
+            }
+            if (value instanceof CriteriaCollection) {
+                mcda.criteriaCollection = value;
+            }
         }
 
         if (name === 'weights') {
