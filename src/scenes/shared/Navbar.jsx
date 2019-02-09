@@ -124,7 +124,7 @@ class NavBar extends React.Component {
 
         return (
 
-            <Menu fixed='top' inverted color='grey'>
+            <Menu fixed='top' inverted color='grey' style={{zIndex:9999}}>
                 <Container style={{minWidth: '1280px',padding: '0 1em'}}>
                     {this.renderLinks(standardLinks)}
                     {userIsLoggedIn && this.renderLinks(standardLinksAuthenticationRequired.concat(this.props.links))}
