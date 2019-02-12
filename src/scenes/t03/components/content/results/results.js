@@ -2,7 +2,7 @@ import React from 'react';
 import {connect} from 'react-redux';
 import PropTypes from 'prop-types';
 
-import {Grid, Header, Segment} from 'semantic-ui-react';
+import {Accordion, Grid, Header, Icon, Segment} from 'semantic-ui-react';
 import {BoundaryCollection, Calculation, CalculationResults, ModflowModel, Soilmodel} from 'core/model/modflow';
 import {fetchUrl} from 'services/api';
 import {last} from 'lodash';
@@ -26,7 +26,8 @@ class Results extends React.Component {
             selectedTotim: 0,
             selectedType: 'head',
             data: null,
-            fetching: false
+            fetching: false,
+            activeIndex: 0
         }
     }
 
@@ -104,9 +105,20 @@ class Results extends React.Component {
         this.fetchData({layer, totim, type});
     };
 
+    handleClickAccordion = (e, titleProps) => {
+        const {index} = titleProps;
+        const {activeIndex} = this.state;
+        const newIndex = activeIndex === index ? -1 : index;
+
+        this.setState({
+            activeIndex: newIndex
+        });
+    };
+
     render() {
         const {calculationId, data, selectedCol, selectedRow, selectedType, selectedLay, selectedTotim, layerValues, totalTimes} = this.state;
         const {model, boundaries, soilmodel} = this.props;
+        const {activeIndex} = this.state;
 
         if (!calculationId || !data) {
             return null;
@@ -135,21 +147,30 @@ class Results extends React.Component {
                                 stressperiods={model.stressperiods}
                                 totalTimes={totalTimes}
                             />
-                            <Segment loading={this.state.fetching} color={'grey'}>
-                                {data &&
-                                <ResultsMap
-                                    activeCell={[selectedCol, selectedRow]}
-                                    boundaries={boundaries}
-                                    data={data}
-                                    model={model}
-                                    onClick={colRow => {
-                                        this.setState({
-                                            selectedCol: colRow[0],
-                                            selectedRow: colRow[1]
-                                        })
-                                    }}
-                                />
-                                }
+
+                            <Segment color={'grey'}>
+                                <Accordion>
+                                    <Accordion.Title active={activeIndex === 0} index={0} onClick={this.handleClickAccordion}>
+                                        <Icon name='dropdown'/>
+                                        Results Map
+                                    </Accordion.Title>
+                                    <Accordion.Content active={activeIndex === 0} loading={this.state.fetching}>
+                                            {data &&
+                                            <ResultsMap
+                                                activeCell={[selectedCol, selectedRow]}
+                                                boundaries={boundaries}
+                                                data={data}
+                                                model={model}
+                                                onClick={colRow => {
+                                                    this.setState({
+                                                        selectedCol: colRow[0],
+                                                        selectedRow: colRow[1]
+                                                    })
+                                                }}
+                                            />
+                                            }
+                                    </Accordion.Content>
+                                </Accordion>
                             </Segment>
                             <Grid>
                                 <Grid.Row columns={2}>

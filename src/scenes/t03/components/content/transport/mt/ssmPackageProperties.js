@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types';
 import React from 'react';
 import AbstractPackageProperties from './AbstractPackageProperties';
-import {Button, Divider, Dropdown, Form, Grid, Icon, Message} from 'semantic-ui-react';
+import {Button, Divider, Dropdown, Form, Grid, Message, Popup} from 'semantic-ui-react';
 import SsmSubstanceEditor from './SsmSubstanceEditor';
 import {Stressperiods} from 'core/model/modflow';
 import {SsmPackage, SsmSubstance} from 'core/model/modflow/mt3d';
@@ -84,20 +84,17 @@ class SsmPackageProperties extends AbstractPackageProperties {
         return (
             <div>
                 <Grid>
-                    <Grid.Row columns={2}>
-                        <Grid.Column>
-                            <BoundarySelector
-                                boundaries={boundaries}
-                                onChange={this.handleSelectBoundary}
-                                selected={selectedBoundary}
-                            />
-                        </Grid.Column>
+                    <Grid.Row>
                         <Grid.Column>
                             <Form>
                                 <Form.Group>
+                                    <BoundarySelector
+                                        boundaries={boundaries}
+                                        onChange={this.handleSelectBoundary}
+                                        selected={selectedBoundary}
+                                    />
                                     <Dropdown
                                         placeholder="Select Substance"
-                                        fluid
                                         search
                                         selection
                                         options={SsmPackageProperties.substanceOptions(substances)}
@@ -105,21 +102,24 @@ class SsmPackageProperties extends AbstractPackageProperties {
                                         value={this.state.selectedSubstance}
                                     />
                                     <Button.Group>
-                                        <Button
-                                            icon
-                                            onClick={() => this.addSubstance('new substance')}
-                                            disabled={readonly}
-                                        >
-                                            <Icon name="add circle"/>
-                                        </Button>
-
-                                        <Button
-                                            icon
-                                            onClick={() => this.removeSubstance(this.state.selectedSubstance)}
-                                            disabled={readonly}
-                                        >
-                                            <Icon name="trash"/>
-                                        </Button>
+                                        <Popup
+                                            trigger={<Button icon='add circle'
+                                                onClick={() => this.addSubstance('new substance')}
+                                                disabled={readonly}
+                                            />}
+                                            content='Add substance'
+                                            position='top center'
+                                            size='mini'
+                                        />
+                                        <Popup
+                                            trigger={<Button icon='trash'
+                                                    onClick={() => this.removeSubstance(this.state.selectedSubstance)}
+                                                    disabled={readonly}
+                                                />}
+                                                content='Delete substance'
+                                                position='top center'
+                                                size='mini'
+                                                />
                                     </Button.Group>
                                 </Form.Group>
                             </Form>

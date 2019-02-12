@@ -73,7 +73,7 @@ class ZonesMap extends Component {
                                     positions={z.geometry.coordinatesLatLng}
                                     color='grey'
                                     weight={1}
-                                    fillOpacity='0.4'
+                                    fillOpacity='0.3'
                                 />
                             );
                         })}
