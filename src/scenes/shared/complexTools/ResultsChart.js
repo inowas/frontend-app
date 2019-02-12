@@ -25,6 +25,13 @@ const cbPalette = [
     '#999999' /* grey */
 ];
 
+const styles = {
+    chartTooltip: {
+        opacity: '0.8',
+        padding: '6px'
+    }
+};
+
 const renderTooltip = (e, show) => {
     const data = e.payload && e.payload.length >= 1 ? e.payload[0].payload : {name: '', value: 0};
     let name = 'Column';
@@ -34,7 +41,7 @@ const renderTooltip = (e, show) => {
     }
 
     return (
-        <Message size='tiny' color='black' style={{backgroundColor: 'rgba(0, 0, 0, 0.8)', padding: '6px', textAlign: 'center'}}>
+        <Message size='tiny' color='black' style={styles.chartTooltip}>
             <p>{name} {data.name}</p>
             <Message.Header>{data.value.toFixed(2)}</Message.Header>
         </Message>
