@@ -26,6 +26,10 @@ class WeightAssignmentEditor extends React.Component {
 
         const wa = WeightAssignment.fromMethodAndCriteria(name, criteriaCollection);
 
+        if (this.props.mcda.withAhp) {
+            wa.parent = criteriaCollection.first.parentId;
+        }
+
         this.props.handleChange({
             name: 'weights',
             value: wa
@@ -51,6 +55,7 @@ class WeightAssignmentEditor extends React.Component {
                     return (
                         <MultiInfluence
                             criteriaCollection={this.props.mcda.criteriaCollection}
+                            toolName={this.props.toolName}
                             weightAssignment={this.props.selectedWeightAssignment}
                             handleChange={this.props.handleChange}
                             readOnly={this.props.readOnly}
@@ -198,6 +203,7 @@ class WeightAssignmentEditor extends React.Component {
 }
 
 WeightAssignmentEditor.propTypes = {
+    toolName: PropTypes.string.isRequired,
     mcda: PropTypes.instanceOf(MCDA).isRequired,
     selectedWeightAssignment: PropTypes.instanceOf(WeightAssignment),
     handleChange: PropTypes.func.isRequired,

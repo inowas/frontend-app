@@ -1,6 +1,7 @@
 import uuidv4 from 'uuid/v4';
 import {CriteriaRelation, Weight, WeightsCollection} from './index';
 import AbstractCollection from '../../collection/AbstractCollection';
+import {calculatePwcWeights} from '../calculations';
 
 const methods = {
     spl: 'Simple Weights',
@@ -13,9 +14,13 @@ const methods = {
 
 class WeightAssignment {
     _id = uuidv4();
+    _meta = {};
     _method = 'rnk';
+    _subMethod = '';
     _name = 'New Weight Assignment';
     _weights = new WeightsCollection();
+    _isActive = false;
+    _parent = null;
 
     static fromMethodAndCriteria(method, criteriaCollection) {
         if (!(criteriaCollection instanceof AbstractCollection)) {
@@ -26,25 +31,29 @@ class WeightAssignment {
         wa.method = method;
         wa.name = methods[method];
 
+        if (method === 'rnk') {
+            wa.subMethod = 'sum';
+        }
+
         let addedRelations = [];
 
         criteriaCollection.all.forEach((criterion, key) => {
             const weight = new Weight();
             weight.criterion = criterion;
-            weight.rank = key + 1;
+            weight.initialValue = key + 1;
 
             addedRelations.push(weight.criterion.id);
             if (method === 'pwc') {
                 weight.relations = criteriaCollection.all.filter(c => !addedRelations.includes(c.id)).map(criterion => {
                     const cr = new CriteriaRelation();
                     cr.to = criterion.id;
+                    cr.value = 1;
                     return cr;
                 });
             }
 
             wa.weightsCollection.add(weight);
         });
-
 
         wa.calculateWeights();
         return wa;
@@ -53,8 +62,12 @@ class WeightAssignment {
     static fromObject(obj) {
         const wa = new WeightAssignment();
         wa.id = obj.id;
+        wa.isActive = obj.isActive;
+        wa.meta = obj.meta || {};
         wa.method = obj.method;
+        wa.subMethod = obj.subMethod;
         wa.name = obj.name;
+        wa.parent = obj.parent;
         wa.weightsCollection = WeightsCollection.fromArray(obj.weights);
         return wa;
     }
@@ -65,6 +78,22 @@ class WeightAssignment {
 
     set id(value) {
         this._id = value ? value : uuidv4();
+    }
+
+    get meta() {
+        return this._meta;
+    }
+
+    set meta(value) {
+        this._meta = value;
+    }
+
+    get isActive() {
+        return this._isActive;
+    }
+
+    set isActive(value) {
+        this._isActive = value;
     }
 
     get method() {
@@ -78,12 +107,28 @@ class WeightAssignment {
         this._method = value;
     }
 
+    get subMethod() {
+        return this._subMethod;
+    }
+
+    set subMethod(value) {
+        this._subMethod = value;
+    }
+
     get name() {
         return this._name;
     }
 
     set name(value) {
         this._name = value;
+    }
+
+    get parent() {
+        return this._parent;
+    }
+
+    set parent(value) {
+        this._parent = value;
     }
 
     get weightsCollection() {
@@ -97,8 +142,12 @@ class WeightAssignment {
     toObject() {
         return ({
             id: this.id,
+            meta: this.meta,
+            isActive: this.isActive,
             method: this.method,
+            subMethod: this.subMethod,
             name: this.name,
+            parent: this.parent,
             weights: this.weightsCollection.toArray()
         });
     }
@@ -110,24 +159,39 @@ class WeightAssignment {
             return null;
         }
 
+        if (this.method === 'spl') {
+            const sum = weights.sumBy('initialValue');
+            weights.all.forEach(weight => {
+                if (sum > 0) {
+                    weight.value = (parseFloat(weight.initialValue) / sum).toFixed(3);
+                }
+                this.weightsCollection.update(weight);
+            });
+        }
+
         if (this.method === 'rnk') {
             const variables = weights.all.map(w => {
                 return {
-                    rank: w.rank,
-                    n: weights.length - w.rank + 1,
-                    r: 1 / w.rank
+                    rank: w.initialValue,
+                    n: weights.length - w.initialValue + 1,
+                    r: 1 / w.initialValue
                 }
             });
 
-            const nSum = variables.reduce((prev, cur) => {
+            const sum = variables.reduce((prev, cur) => {
+                if (this.subMethod === 'rec') {
+                    return prev + cur.r;
+                }
                 return prev + cur.n;
             }, 0);
-            /*const rSum = variables.reduce((prev, cur) => {
-                return prev + cur.r;
-            }, 0);*/
 
             weights.all.forEach((weight, key) => {
-                weight.value = variables[key].n / nSum;
+                if (this.subMethod === 'sum') {
+                    weight.value = variables[key].n / sum;
+                }
+                if (this.subMethod === 'rec') {
+                    weight.value = variables[key].r / sum;
+                }
                 this.weightsCollection.update(weight);
             });
         }
@@ -155,46 +219,12 @@ class WeightAssignment {
             const criteria = this.weightsCollection.allCriteriaIds;
             const relations = this.weightsCollection.allRelations;
 
-            const colSums = new Array(criteria.length).fill(0);
+            const results = calculatePwcWeights(criteria, relations);
 
-            const rowSums = criteria.map(criterion => {
-                return {
-                    id: criterion,
-                    value: 0
-                };
-            });
-
-            const matrix = criteria.map(row => {
-                return criteria.map((col, key) => {
-                    let value = 0;
-                    if (row === col) {
-                        value = 1;
-                    }
-                    const reld = relations.filter(relation => relation.from === col && relation.to === row);
-                    if (reld.length > 0) {
-                        value = reld[0].value >= 0 ? reld[0].value : -1 / reld[0].value;
-                    }
-                    const reli = relations.filter(relation => relation.from === row && relation.to === col);
-                    if (reli.length > 0) {
-                        value = reli[0].value > 0 ? 1 / reli[0].value : -1 * reli[0].value;
-                    }
-                    colSums[key] += value;
-                    return value;
-                });
-            });
-
-            matrix.forEach((row, rkey) => {
-                row.forEach((col, ckey) => {
-                    rowSums[rkey].value += col / colSums[ckey];
-                });
-            });
-
-            this.weightsCollection.all.forEach(weight => {
-                const row = rowSums.filter(r => r.id === weight.criterion.id);
-                if (row.length > 0) {
-                    weight.value = row[0].value / criteria.length;
-                    this.weightsCollection.update(weight);
-                }
+            weights.all.forEach(weight => {
+                weight.value = results[weight.criterion.id].w;
+                this.meta.consistency = results.cr;
+                this.weightsCollection.update(weight);
             });
         }
 

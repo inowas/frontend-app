@@ -7,6 +7,7 @@ import {Message, Step} from 'semantic-ui-react';
 
 import {CriteriaReclassification, CriteriaRasterUpload} from './index';
 import CriteriaDataResults from './criteriaDataResults';
+import CriteriaDataConstraints from './criteriaDataConstraints';
 
 class CriteriaDataEditor extends React.Component {
 
@@ -39,6 +40,13 @@ class CriteriaDataEditor extends React.Component {
                         onChange={this.handleChange}
                     />
                 );
+            case 'constraints':
+                return (
+                    <CriteriaDataConstraints
+                        criterion={this.props.criterion}
+                        onChange={this.handleChange}
+                    />
+                );
             case 'results':
                 return (
                     <CriteriaDataResults
@@ -59,12 +67,11 @@ class CriteriaDataEditor extends React.Component {
 
     render() {
         const {activeTool, criterion} = this.props;
-
         return (
             <div>
                 {!criterion &&
                 <Message
-                    content='Select a criterion from the navigation on the bottom left.'
+                    content="Select a criterion from the navigation on the bottom left. Don't forget to set gridSize first."
                     icon='lock'
                     warning
                 />
@@ -77,6 +84,15 @@ class CriteriaDataEditor extends React.Component {
                                 name='upload'
                                 icon='upload'
                                 title='Upload'
+                                link
+                                onClick={this.handleClickStep}
+                            />
+                            <Step
+                                active={activeTool === 'constraints'}
+                                disabled={criterion.tilesCollection.length === 0}
+                                name='constraints'
+                                icon='eraser'
+                                title='Constraints'
                                 link
                                 onClick={this.handleClickStep}
                             />

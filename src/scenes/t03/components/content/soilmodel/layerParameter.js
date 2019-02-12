@@ -6,6 +6,7 @@ import {ModflowModel} from 'core/model/modflow';
 import ZoneModal from './zoneModal';
 import ZonesTable from './zonesTable';
 import {RasterDataMap, RasterfileUploadModal} from 'scenes/shared/rasterData';
+import {cloneDeep} from 'lodash';
 
 class LayerParameter extends React.Component {
     constructor(props) {
@@ -96,11 +97,11 @@ class LayerParameter extends React.Component {
         });
     };
 
-    onUploadRaster = (data) => {
+    onUploadRaster = (result) => {
         const {parameter} = this.state;
         const layer = SoilmodelLayer.fromObject(this.state.layer);
         const base = layer.zonesCollection.findBy('priority', 0, {first: true});
-        base[parameter.name].value = Array.from(data);
+        base[parameter.name].value = cloneDeep(result.data);
         layer.zonesCollection.update(base);
         layer.zonesToParameters(this.props.model.gridSize, parameter.name);
         this.setState({showRasterUploadModal: false});

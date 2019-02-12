@@ -7,7 +7,7 @@ import {fetchTool, sendCommand} from 'services/api';
 import Command from '../../shared/simpleTools/commands/command';
 import {deepMerge} from '../../shared/simpleTools/helpers';
 
-import {Divider, Grid, Icon, Message, Segment} from 'semantic-ui-react';
+import {Divider, Grid, Icon, Segment} from 'semantic-ui-react';
 import AppContainer from '../../shared/AppContainer';
 import ToolMetaData from '../../shared/simpleTools/ToolMetaData';
 import {
@@ -15,6 +15,7 @@ import {
     CriteriaDataEditor,
     CriteriaNavigation,
     ConstraintsEditor,
+    Suitability,
     ToolNavigation,
     WeightAssignmentEditor
 } from '../components';
@@ -24,7 +25,7 @@ import getMenuItems from '../defaults/menuItems';
 
 import {MCDA} from 'core/model/mcda';
 import ContentToolBar from '../../shared/ContentToolbar';
-import {WeightAssignment, WeightAssignmentsCollection} from 'core/model/mcda/criteria';
+import {Criterion, CriteriaCollection, WeightAssignment, WeightAssignmentsCollection} from 'core/model/mcda/criteria';
 
 const navigation = [{
     name: 'Documentation',
@@ -80,7 +81,12 @@ class T05 extends React.Component {
         let mcda = MCDA.fromObject(this.state.tool.data.mcda);
 
         if (name === 'criteria') {
-            mcda.updateCriteria(value);
+            if (value instanceof Criterion) {
+                mcda.updateCriteria(value);
+            }
+            if (value instanceof CriteriaCollection) {
+                mcda.criteriaCollection = value;
+            }
         }
 
         if (name === 'weights') {
@@ -191,10 +197,16 @@ class T05 extends React.Component {
                         handleChange={this.handleChange}
                     />);
             case 'cm':
+                const constraints = mcda.constraints;
+
+                if (mcda.criteriaCollection.length > 0 && !constraints.boundingBox) {
+                    constraints.boundingBox = mcda.criteriaCollection.getBoundingBox();
+                }
+
                 return (
                     <ConstraintsEditor
                         readOnly={readOnly}
-                        mcda={mcda}
+                        constraints={constraints}
                         handleChange={this.handleChange}
                     />
                 );
@@ -203,6 +215,7 @@ class T05 extends React.Component {
 
                 return (
                     <WeightAssignmentEditor
+                        toolName={this.state.tool.name}
                         readOnly={readOnly}
                         mcda={mcda}
                         selectedWeightAssignment={weightAssignment}
@@ -213,15 +226,6 @@ class T05 extends React.Component {
             case 'cd':
                 const criterion = cid ? mcda.criteriaCollection.findById(cid) : null;
 
-                if (!criterion || (mcda.withAhp && !criterion.parentId)) {
-                    return (
-                        <Message warning>
-                            <Message.Header>Criterion not found or not eligible</Message.Header>
-                            <p>The requested criterion id couldn't be found or the related criterion is not eligible for raster data.</p>
-                        </Message>
-                    );
-                }
-
                 return (
                     <CriteriaDataEditor
                         activeTool={tool}
@@ -229,6 +233,13 @@ class T05 extends React.Component {
                         handleChange={this.handleChange}
                         mcda={mcda}
                         onClickTool={this.handleClickCriteriaTool}
+                    />
+                );
+            case 'su':
+                return (
+                    <Suitability
+                        handleChange={this.handleChange}
+                        mcda={mcda}
                     />
                 );
             default:
@@ -274,6 +285,7 @@ class T05 extends React.Component {
                                 activeCriterion={cid}
                                 mcda={mcda}
                                 onClick={this.handleClickCriteriaNavigation}
+                                handleChange={this.handleChange}
                             />
                             }
                         </Grid.Column>

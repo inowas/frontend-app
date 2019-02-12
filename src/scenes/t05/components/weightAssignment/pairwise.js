@@ -1,6 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import {Grid, Message, Segment, Table} from 'semantic-ui-react';
+import {Form, Grid, Message, Segment, Table} from 'semantic-ui-react';
 import Slider from 'rc-slider';
 import {CriteriaCollection, WeightAssignment, WeightsCollection} from 'core/model/mcda/criteria';
 
@@ -18,11 +18,26 @@ const styles = {
 
 const SliderWithTooltip = Slider.createSliderWithTooltip(Slider);
 
+const fromSliderValue = value => {
+    if (value < 0) {
+        return -1 * (value - 1);
+    }
+    return 1 / (value + 1);
+};
+
+const toSliderValue = value => {
+    if (value >= 1) {
+        return -1 * value + 1;
+    }
+    return Math.pow(value, -1) - 1;
+};
+
 class PairwiseComparison extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            relations: this.prepareState(props)
+            relations: this.prepareState(props),
+            wa: this.props.weightAssignment.toObject()
         };
     }
 
@@ -50,14 +65,14 @@ class PairwiseComparison extends React.Component {
         const newWeights = weights.all.map(weight => {
             weight.relations = weight.relations.map(relation => {
                 if (relation.id === id) {
-                    relation.value = value;
+                    relation.value = fromSliderValue(value);
                 }
                 return relation;
             });
             return weight.toObject();
         });
 
-        const weightAssignment = this.props.weightAssignment;
+        const weightAssignment = WeightAssignment.fromObject(this.state.wa);
         weightAssignment.weightsCollection = WeightsCollection.fromArray(newWeights);
         weightAssignment.calculateWeights();
 
@@ -71,16 +86,29 @@ class PairwiseComparison extends React.Component {
         this.setState({
             relations: this.state.relations.map(r => {
                 if (r.id === id) {
-                    r.value = value;
+                    r.value = fromSliderValue(value);
                 }
                 return r;
             })
         });
     };
 
+    handleLocalChange = (e, {name, value}) => this.setState(prevState => ({
+        wa: {
+            ...prevState.wa,
+            [name]: value
+        }
+    }));
+
     render() {
-        const {readOnly} = this.props;
+        const {readOnly, weightAssignment} = this.props;
         const {relations} = this.state;
+
+        let consistency = null;
+
+        if (weightAssignment.meta && weightAssignment.meta.consistency) {
+            consistency = weightAssignment.meta.consistency;
+        }
 
         return (
             <div>
@@ -108,13 +136,13 @@ class PairwiseComparison extends React.Component {
                                                 dots
                                                 dotStyle={styles.dot}
                                                 trackStyle={styles.track}
-                                                defaultValue={0}
+                                                defaultValue={1}
                                                 disabled={readOnly}
-                                                min={-9}
-                                                max={9}
+                                                min={-8}
+                                                max={8}
                                                 onAfterChange={this.handleAfterChange(relation.id)}
                                                 onChange={this.handleChangeSlider(relation.id)}
-                                                value={relation.value}
+                                                value={toSliderValue(relation.value)}
                                             />
                                         </Grid.Column>
                                         <Grid.Column width={5} textAlign='right'>
@@ -127,6 +155,22 @@ class PairwiseComparison extends React.Component {
                     </Grid.Column>
                     <Grid.Column width={7}>
                         <Segment textAlign='center' inverted color='grey' secondary>
+                            Settings
+                        </Segment>
+                        <Form>
+                            <Form.Field>
+                                <Form.Input
+                                    fluid
+                                    onBlur={this.handleAfterChange(null)}
+                                    onChange={this.handleLocalChange}
+                                    name='name'
+                                    type='text'
+                                    label='Name'
+                                    value={this.state.wa.name}
+                                />
+                            </Form.Field>
+                        </Form>
+                        <Segment textAlign='center' inverted color='grey' secondary>
                             Weight Assignment
                         </Segment>
                         <Table>
@@ -137,7 +181,7 @@ class PairwiseComparison extends React.Component {
                                 </Table.Row>
                             </Table.Header>
                             <Table.Body>
-                                {this.props.weightAssignment.weightsCollection.all.map((w, key) =>
+                                {weightAssignment.weightsCollection.all.map((w, key) =>
                                     <Table.Row key={key}>
                                         <Table.Cell>{w.criterion.name}</Table.Cell>
                                         <Table.Cell
@@ -148,6 +192,28 @@ class PairwiseComparison extends React.Component {
                                 )}
                             </Table.Body>
                         </Table>
+                        {!!consistency &&
+                        <div>
+                            <Segment textAlign='center' inverted color='grey' secondary>
+                                Consistency Ratio
+                            </Segment>
+                            <Message
+                                negative={consistency >= 0.1}
+                                positive={consistency < 0.1}
+                                style={{textAlign: 'center'}}
+                            >
+                                <Message.Header>
+                                    CR = {consistency.toFixed(3)} {consistency >= 0.1 ? '>=' : '<'} 0.100
+                                </Message.Header>
+                                {consistency < 0.1
+                                    ?
+                                    <p>Your comparisons are reasonably consistent.</p>
+                                    :
+                                    <p>Inconsistent result: Please check your comparison values.</p>
+                                }
+                            </Message>
+                        </div>
+                        }
                     </Grid.Column>
                 </Grid>
                 }
