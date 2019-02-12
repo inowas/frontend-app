@@ -1,9 +1,8 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import {Button, Form, Grid, Message} from 'semantic-ui-react';
+import {Button, Form, Grid, Message, Radio, Segment} from 'semantic-ui-react';
 import {GisMap} from 'core/model/mcda/gis';
 import ConstraintsMap from './constraintsMap';
-
 
 class ConstraintsEditor extends React.Component {
     constructor(props) {
@@ -32,39 +31,24 @@ class ConstraintsEditor extends React.Component {
         });
     };
 
-    onClickBack = () => this.setState({
-        mode: 'map'
-    });
-
     onBlur = () => {
         this.handleChange(GisMap.fromObject(this.state.constraints));
     };
 
-    onChangeGridSize = (e, {name, value}) => this.setState(prevState => ({
-        constraints: {
-            ...prevState.constraints,
-            gridSize: {
-                ...prevState.constraints.gridSize,
-                [name]: value
-            }
-        }
-    }));
-
     onCalculateActiveCells = () => {
         const constraints = GisMap.fromObject(this.state.constraints);
-        const area = constraints.areasCollection.findBy('type', 'area', {first: true});
-
-        if (!area) {
-            return null;
-        }
 
         constraints.calculateActiveCells();
         this.handleChange(constraints);
 
         this.setState({
-            mode: 'cells'
+            mode: 'raster'
         });
     };
+
+    onChangeMode = (e, {name, value}) => this.setState({
+        mode: value
+    });
 
     render() {
         const {readOnly} = this.props;
@@ -77,34 +61,53 @@ class ConstraintsEditor extends React.Component {
                     <p>Set the outline of your project area and define the grid size.</p>
                 </Message>
                 <Grid>
-                    <Grid.Column width={4}>
-                        {mode !== 'cells' &&
+                    <Grid.Column width={5}>
+                        <Segment textAlign='center' inverted color='grey' secondary>
+                            Mode
+                        </Segment>
+                        <Form>
+                            <Form.Group grouped>
+                                <Form.Field>
+                                    <Radio
+                                        label='Constraints'
+                                        name='mode'
+                                        value='map'
+                                        checked={mode === 'map'}
+                                        onChange={this.onChangeMode}
+                                    />
+                                </Form.Field>
+                                <Form.Field>
+                                    <Radio
+                                        label='Raster'
+                                        name='mode'
+                                        value='raster'
+                                        checked={mode === 'raster'}
+                                        disabled={!constraints.raster || constraints.raster.data.length === 0}
+                                        onChange={this.onChangeMode}
+                                    />
+                                </Form.Field>
+                                <Form.Field>
+                                    <Radio
+                                        label='Suitable Cells'
+                                        name='mode'
+                                        value='cells'
+                                        checked={mode === 'cells'}
+                                        disabled={!constraints.activeCells || constraints.activeCells.length === 0}
+                                        onChange={this.onChangeMode}
+                                    />
+                                </Form.Field>
+                            </Form.Group>
+                        </Form>
+                        {mode === 'map' &&
                         <div>
-                            <Form>
-                                <Form.Input
-                                    type='number'
-                                    label='Rows'
-                                    name='n_y'
-                                    value={constraints.gridSize.n_y}
-                                    onBlur={this.onBlur}
-                                    onChange={this.onChangeGridSize}
-                                />
-                                <Form.Input
-                                    type='number'
-                                    label='Columns'
-                                    name='n_x'
-                                    value={constraints.gridSize.n_x}
-                                    onBlur={this.onBlur}
-                                    onChange={this.onChangeGridSize}
-                                />
-                            </Form>
-
+                            <Segment textAlign='center' inverted color='grey' secondary>
+                                Commands
+                            </Segment>
                             <Message>
                                 <p>Click the button below, to cut out the created clip features from the project area
                                     and
                                     calculate the suitability grid according to the given grid size.</p>
                             </Message>
-
                             <Button
                                 fluid positive
                                 disabled={readOnly || constraints.areas.length === 0}
@@ -114,16 +117,8 @@ class ConstraintsEditor extends React.Component {
                             </Button>
                         </div>
                         }
-                        {mode === 'cells' &&
-                        <Button
-                            fluid
-                            onClick={this.onClickBack}
-                        >
-                            Back
-                        </Button>
-                        }
                     </Grid.Column>
-                    <Grid.Column width={12}>
+                    <Grid.Column width={11}>
                         <ConstraintsMap
                             map={this.props.constraints}
                             onChange={this.handleChange}

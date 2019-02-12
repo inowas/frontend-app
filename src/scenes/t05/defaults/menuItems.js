@@ -1,6 +1,6 @@
 import MCDA from 'core/model/mcda/MCDA';
 
-const getMenuItems = (mcda) => {
+const getMenuItems = mcda => {
 
     if (!(mcda instanceof MCDA)) {
         throw new Error('T05 ToolNavigation expects parameter of type MCDA.');
@@ -38,7 +38,7 @@ const getMenuItems = (mcda) => {
         return null;
     };
 
-    const criteriaAreFinished = mcda.criteriaCollection.isFinished();
+    const criteriaAreFinished = mcda.criteriaCollection.isFinished(mcda.withAhp);
 
     const criteriaDataStatus = () => {
         if (mcda.criteriaCollection.length < 1) {
@@ -54,6 +54,15 @@ const getMenuItems = (mcda) => {
             };
         }
         return null;
+    };
+
+    const constraintsStatus = () => {
+        if (!criteriaAreFinished) {
+            return {
+                val: 'warning',
+                msg: 'Criteria data is needed first.'
+            };
+        }
     };
 
     const suitabilityDataStatus = () => {
@@ -89,13 +98,14 @@ const getMenuItems = (mcda) => {
             status: criteriaDataStatus()
         },
         {
+            name: 'Global Constraints',
+            property: 'cm',
+            status: constraintsStatus()
+        },
+        {
             name: 'Suitability',
             property: 'su',
             status: suitabilityDataStatus()
-        },
-        {
-            name: 'Results',
-            property: 'results'
         }
     ];
 };

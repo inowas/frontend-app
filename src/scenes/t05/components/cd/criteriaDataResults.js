@@ -37,17 +37,34 @@ class CriteriaDataResults extends React.Component {
         const suitability = criterion.suitability;
 
         let legend = null;
-        if (layer === 'criteria' && colors === 'classes') {
-            legend = criterion.generateLegend('classified');
+        if (layer === 'criteria') {
+            if (colors === 'classes') {
+                legend = criterion.generateLegend('classified');
+            }
+            if (colors === 'default') {
+                legend = criterion.generateLegend();
+            }
         }
-        if (layer === 'criteria' && colors === 'default') {
-            legend = criterion.generateLegend();
+        if (layer === 'suitability' || layer === 'constraints') {
+            if (colors === 'default') {
+                legend = suitability.generateRainbow(heatMapColors.default, [0, 1]);
+            }
+            if (colors === 'colorBlind') {
+                legend = suitability.generateRainbow(heatMapColors.colorBlind, [0, 1]);
+            }
         }
-        if (layer === 'suitability' && colors === 'default') {
-            legend = suitability.generateRainbow(heatMapColors.default);
-        }
-        if (layer === 'suitability' && colors === 'colorBlind') {
-            legend = suitability.generateRainbow(heatMapColors.colorBlind);
+
+        let raster;
+        switch (layer) {
+            case 'suitability':
+                raster = criterion.suitability;
+                break;
+            case 'constraints':
+                raster = criterion.constraintRaster;
+                break;
+            default:
+                raster = criterion.tilesCollection.first;
+                break;
         }
 
         return (
@@ -78,6 +95,18 @@ class CriteriaDataResults extends React.Component {
                                     onChange={this.handleChange}
                                 />
                             </Form.Field>
+                            {criterion.constraintRaster && criterion.constraintRaster.data.length > 0 &&
+                            <Form.Field>
+                                    <Checkbox
+                                        radio
+                                        label='Constraints'
+                                        name='layer'
+                                        value='constraints'
+                                        checked={layer === 'constraints'}
+                                        onChange={this.handleChange}
+                                    />
+                                </Form.Field>
+                            }
                         </Form>
                     </Segment>
                     <Segment textAlign='center' inverted color='grey' secondary>
@@ -108,7 +137,7 @@ class CriteriaDataResults extends React.Component {
                             </Form.Field>
                         </Form>
                         }
-                        {layer === 'suitability' &&
+                        {(layer === 'suitability' || layer === 'constraints') &&
                             <Form>
                                 <Form.Field>
                                     <Checkbox
@@ -153,7 +182,7 @@ class CriteriaDataResults extends React.Component {
                 <Grid.Column width={11}>
                 {criterion.suitability.data.length > 0 && !!legend &&
                     <CriteriaRasterMap
-                        raster={layer === 'suitability' ? criterion.suitability : criterion.tilesCollection.first}
+                        raster={raster}
                         showBasicLayer={showBasicLayer}
                         legend={legend}
                     />

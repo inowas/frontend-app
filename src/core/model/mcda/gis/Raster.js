@@ -112,8 +112,8 @@ class Raster {
         this.min = min(this.data);
     }
 
-    generateRainbow(colors) {
-        return rainbowFactory({min: this.min, max: this.max}, colors);
+    generateRainbow(colors, fixedInterval = false) {
+        return rainbowFactory({min: fixedInterval ? fixedInterval[0] : this.min, max: fixedInterval ? fixedInterval[1] : this.max}, colors);
     }
 
     assignMinMax() {

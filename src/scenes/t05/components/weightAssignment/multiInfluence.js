@@ -23,23 +23,12 @@ const styles = {
 
 class MultiInfluence extends React.Component {
     constructor(props) {
-        super();
+        super(props);
+        const data = this.prepareData(props);
 
         this.state = {
-            edges: props.weightAssignment.weightsCollection.allRelations.map(relation => {
-                return {
-                    id: relation.id,
-                    from: relation.from,
-                    to: relation.to,
-                    dashes: relation.value === 0
-                }
-            }),
-            nodes: props.criteriaCollection.all.map(criterion => {
-                return {
-                    id: criterion.id,
-                    label: criterion.name
-                }
-            }),
+            edges: data.edges,
+            nodes: data.nodes,
             editEdgeMode: false,
             selectedEdges: null,
             network: null,
@@ -48,26 +37,40 @@ class MultiInfluence extends React.Component {
     }
 
     componentWillReceiveProps(nextProps) {
+        const data = this.prepareData(nextProps);
+
         this.setState({
-            edges: nextProps.weightAssignment.weightsCollection.allRelations.map(relation => {
-                return {
-                    id: relation.id,
-                    from: relation.from,
-                    to: relation.to,
-                    dashes: relation.value === 0
-                }
-            }),
-            nodes: nextProps.criteriaCollection.all.map(criterion => {
-                return {
-                    id: criterion.id,
-                    label: criterion.name
-                }
-            }),
+            edges: data.edges,
+            nodes: data.nodes,
             wa: nextProps.weightAssignment.toObject()
         });
     }
 
-    addEdge = (data) => {
+    prepareData(props) {
+        const edges = props.weightAssignment.weightsCollection.allRelations.map(relation => {
+            return {
+                id: relation.id,
+                from: relation.from,
+                to: relation.to,
+                dashes: relation.value === 0
+            }
+        });
+        const nodes = props.weightAssignment.weightsCollection.all.map(weight => {
+            return {
+                id: weight.criterion.id,
+                label: weight.criterion.name
+            }
+        });
+
+        nodes.push({
+            id: 'mcda-main-node',
+            label: this.props.toolName
+        });
+
+        return {edges, nodes};
+    };
+
+    addEdge = data => {
         const edges = this.state.edges;
         edges.push({
             id: data.id,
@@ -109,7 +112,7 @@ class MultiInfluence extends React.Component {
 
     onDeselectEdge = () => this.setState({selectedEdges: null});
 
-    onSelectEdge = (edges) => this.setState({
+    onSelectEdge = edges => this.setState({
         selectedEdges: edges
     });
 
@@ -282,6 +285,7 @@ MultiInfluence.propTypes = {
     criteriaCollection: PropTypes.instanceOf(CriteriaCollection).isRequired,
     weightAssignment: PropTypes.instanceOf(WeightAssignment).isRequired,
     handleChange: PropTypes.func.isRequired,
+    toolName: PropTypes.string.isRequired,
     readOnly: PropTypes.bool
 };
 

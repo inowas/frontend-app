@@ -201,11 +201,13 @@ class CriteriaDataConstraints extends React.Component {
                     </Button>
                 </Grid.Column>
                 <Grid.Column width={8}>
-                    <CriteriaRasterMap
-                        legend={legend}
-                        raster={criterion.constraintRaster}
-                        showBasicLayer={false}
-                    />
+                    {criterion.constraintRaster && criterion.constraintRaster.data.length > 0 &&
+                        <CriteriaRasterMap
+                            legend={legend}
+                            raster={criterion.constraintRaster}
+                            showBasicLayer={false}
+                        />
+                    }
                 </Grid.Column>
             </Grid.Row>
         );

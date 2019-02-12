@@ -78,26 +78,29 @@ class MCDA {
     }
 
     calculate() {
-        let boundingBox;
-        const wa = this.weightAssignmentsCollection.findBy('isActive', true, {first: true});
-        if (!wa) {
-            throw new Error('There is no active weight assignment method.');
-        }
+        const criteria = !this.withAhp ? this.criteriaCollection.all : this.criteriaCollection.all.filter(c => c.parentId);
+        const weights = this.weightAssignmentsCollection.collectActiveWeights();
 
-        // STEP 1: multiply criteria data with weights
-        const data = this.criteriaCollection.all.map(criterion => {
-            if (!criterion.suitability || criterion.suitability.data.length === 0) {
-                throw new Error(`There is no suitability array for criterion ${criterion.name}.`);
+        // STEP 1: multiply parent weight with weight and criteria data
+        const data = criteria.map(criterion => {
+            let parentWeightValue = 1;
+            if (this.withAhp) {
+                const parentWeight = weights.all.filter(w => w.criterion.id === criterion.parentId);
+                if (parentWeight.length === 1) {
+                    parentWeightValue = parentWeight[0].value;
+                }
             }
-            const weight = wa.weightsCollection.findByCriteriaId(criterion.id);
-            if (!weight) {
-                throw new Error(`There is no weight for criterion ${criterion.name}.`);
+
+            let weight = 1;
+            const filteredWeight = weights.all.filter(w => w.criterion.id === criterion.id);
+            if (filteredWeight.length === 1) {
+                weight = filteredWeight[0].value * parentWeightValue;
             }
-            boundingBox = criterion.suitability.boundingBox;
-            return math.dotMultiply(criterion.suitability.data, weight.value);
+
+            return math.dotMultiply(criterion.suitability.data, weight);
         });
 
-        this.suitability.boundingBox = boundingBox;
+        this.suitability.boundingBox = criteria[0].suitability.boundingBox;
         this.suitability.gridSize = this.constraints.gridSize;
         this.suitability.data = math.add(...data);
 
@@ -108,6 +111,10 @@ class MCDA {
             }
         });
 
+        // STEP 3: multiply global constraints
+        if (this.constraints.raster && this.constraints.raster.data.length > 0) {
+            this.suitability.data = math.dotMultiply(this.suitability.data, this.constraints.raster.data);
+        }
 
         this.suitability.calculateMinMax();
 

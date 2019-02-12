@@ -20,6 +20,7 @@ class WeightAssignment {
     _name = 'New Weight Assignment';
     _weights = new WeightsCollection();
     _isActive = false;
+    _parent = null;
 
     static fromMethodAndCriteria(method, criteriaCollection) {
         if (!(criteriaCollection instanceof AbstractCollection)) {
@@ -54,7 +55,6 @@ class WeightAssignment {
             wa.weightsCollection.add(weight);
         });
 
-
         wa.calculateWeights();
         return wa;
     }
@@ -67,6 +67,7 @@ class WeightAssignment {
         wa.method = obj.method;
         wa.subMethod = obj.subMethod;
         wa.name = obj.name;
+        wa.parent = obj.parent;
         wa.weightsCollection = WeightsCollection.fromArray(obj.weights);
         return wa;
     }
@@ -122,6 +123,14 @@ class WeightAssignment {
         this._name = value;
     }
 
+    get parent() {
+        return this._parent;
+    }
+
+    set parent(value) {
+        this._parent = value;
+    }
+
     get weightsCollection() {
         return this._weights;
     }
@@ -138,6 +147,7 @@ class WeightAssignment {
             method: this.method,
             subMethod: this.subMethod,
             name: this.name,
+            parent: this.parent,
             weights: this.weightsCollection.toArray()
         });
     }

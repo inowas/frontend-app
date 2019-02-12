@@ -8,12 +8,14 @@ import {pure} from 'recompose';
 import {Button, Popup} from 'semantic-ui-react';
 import ActiveCellsLayer from 'services/geoTools/activeCellsLayer';
 import {BasicTileLayer} from 'services/geoTools/tileLayers';
-import {BoundingBox, Geometry} from 'core/model/geometry';
+import {Geometry} from 'core/model/geometry';
 import {GisArea, GisAreasCollection, GisMap} from 'core/model/mcda/gis';
+import CriteriaRasterMap from '../cd/criteriaRasterMap';
+import {heatMapColors} from '../../defaults/gis';
 
 const style = {
     map: {
-        height: '400px',
+        height: '600px',
         width: '100%'
     }
 };
@@ -28,21 +30,6 @@ class ConstraintsMap extends React.Component {
             refreshKey: uuidv4()
         }
     }
-
-    onCreateArea = e => {
-        const polygon = e.layer.toGeoJSON();
-
-        const area = new GisArea();
-        area.geometry = Geometry.fromGeoJson(polygon);
-
-        const map = this.props.map;
-        map.boundingBox = BoundingBox.fromGeoJson(polygon);
-        map.areasCollection.add(area);
-
-        this.setState({
-            refreshKey: uuidv4()
-        }, this.props.onChange(map));
-    };
 
     onCreateHole = e => {
         const polygon = e.layer.toGeoJSON();
@@ -110,7 +97,7 @@ class ConstraintsMap extends React.Component {
                         remove: !this.props.readOnly
                     }}
                     onClick={this.onDeleted}
-                    onCreated={map.areasCollection.length === 0 ? this.onCreateArea : this.onCreateHole}
+                    onCreated={this.onCreateHole}
                     onDeleted={this.onDeleted}
                     onEdited={this.onEdited}
                     onMounted={e => drawControl = e}
@@ -151,14 +138,6 @@ class ConstraintsMap extends React.Component {
         color='grey'
     />;
 
-    getBoundsLatLng = () => {
-        if (this.props.map.boundingBox) {
-            return this.props.map.boundingBox.getBoundsLatLng();
-        }
-
-        return [[60, 10], [45, 30]];
-    };
-
     render() {
         const {map, mode, readOnly} = this.props;
 
@@ -168,18 +147,7 @@ class ConstraintsMap extends React.Component {
                     <Popup
                         trigger={
                             <Button
-                                disabled={readOnly || map.areasCollection.length > 0 || mode !== 'map'}
-                                icon='map outline'
-                                onClick={this.onClickDrawArea}
-                            />
-                        }
-                        content='Define project area'
-                        position='top center'
-                    />
-                    <Popup
-                        trigger={
-                            <Button
-                                disabled={readOnly || map.areasCollection.length === 0 || mode !== 'map'}
+                                disabled={readOnly || mode !== 'map'}
                                 icon='eraser'
                                 onClick={this.onClickDrawArea}
                             />
@@ -188,10 +156,14 @@ class ConstraintsMap extends React.Component {
                         position='top center'
                     />
                 </Button.Group>
+                {mode === 'raster' &&
+                    <CriteriaRasterMap raster={map.raster} showBasicLayer={true} legend={map.raster.generateRainbow(heatMapColors.colorBlind)}/>
+                }
+                {mode !== 'raster' && map.boundingBox &&
                 <Map
                     key={this.state.refreshKey}
                     style={style.map}
-                    bounds={this.getBoundsLatLng()}
+                    bounds={map.boundingBox.getBoundsLatLng()}
                     onClick={this.handleClickOnMap}
                 >
                     <BasicTileLayer/>
@@ -199,6 +171,7 @@ class ConstraintsMap extends React.Component {
                     {mode === 'cells' && this.activeCellsLayer()}
                     {map.boundingBox && this.boundingBoxLayer()}
                 </Map>
+                }
             </div>
         )
     }
