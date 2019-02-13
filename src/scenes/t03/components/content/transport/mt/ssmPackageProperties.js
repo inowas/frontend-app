@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types';
 import React from 'react';
 import AbstractPackageProperties from './AbstractPackageProperties';
-import {Button, Divider, Dropdown, Form, Grid, Message, Popup} from 'semantic-ui-react';
+import {Button, Divider, Form, Grid, Message, Popup} from 'semantic-ui-react';
 import SsmSubstanceEditor from './SsmSubstanceEditor';
 import {Stressperiods} from 'core/model/modflow';
 import {SsmPackage, SsmSubstance} from 'core/model/modflow/mt3d';
@@ -93,19 +93,20 @@ class SsmPackageProperties extends AbstractPackageProperties {
                                         onChange={this.handleSelectBoundary}
                                         selected={selectedBoundary}
                                     />
-                                    <Dropdown
+                                    <Form.Dropdown
                                         placeholder="Select Substance"
+                                        label='Select substance'
                                         search
                                         selection
                                         options={SsmPackageProperties.substanceOptions(substances)}
                                         onChange={this.handleSelectSubstance}
                                         value={this.state.selectedSubstance}
                                     />
-                                    <Button.Group>
+                                    <Button.Group style={{marginTop:'23px'}}>
                                         <Popup
                                             trigger={<Button icon='add circle'
-                                                onClick={() => this.addSubstance('new substance')}
-                                                disabled={readonly}
+                                                             onClick={() => this.addSubstance('new substance')}
+                                                             disabled={readonly}
                                             />}
                                             content='Add substance'
                                             position='top center'
@@ -113,14 +114,14 @@ class SsmPackageProperties extends AbstractPackageProperties {
                                         />
                                         <Popup
                                             trigger={<Button icon='trash'
-                                                    onClick={() => this.removeSubstance(this.state.selectedSubstance)}
-                                                    disabled={readonly}
-                                                />}
-                                                content='Delete substance'
-                                                position='top center'
-                                                size='mini'
-                                                />
-                                    </Button.Group>
+                                                             onClick={() => this.removeSubstance(this.state.selectedSubstance)}
+                                                             disabled={readonly}
+                                            />}
+                                            content='Delete substance'
+                                            position='top center'
+                                            size='mini'
+                                        />
+                                </Button.Group>
                                 </Form.Group>
                             </Form>
                         </Grid.Column>

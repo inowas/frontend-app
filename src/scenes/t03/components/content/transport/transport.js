@@ -105,7 +105,7 @@ class Transport extends React.Component {
             }, this.props.updateMt3dms(newMt3dms));
         }
 
-        throw new Error('Package hat to be instance of AbstractMt3dPackage');
+        throw new Error('Package has to be instance of AbstractMt3dPackage');
     };
 
     handleToggleEnabled = () => {
