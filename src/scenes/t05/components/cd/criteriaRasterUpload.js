@@ -106,16 +106,28 @@ class CriteriaRasterUpload extends React.Component {
 
         return (
             <Grid>
+                {showInfo &&
                 <Grid.Row>
                     <Grid.Column width={16}>
-                        {showInfo &&
                         <Message onDismiss={this.handleDismiss}>
                             <Message.Header>Upload raster</Message.Header>
-                            <p>...</p>
+                            <p>
+                                Before uploading raster data, it is necessary to set the desired grid size on the bottom
+                                left frame. The grid size is set for the whole project including the resulting
+                                suitability map.
+                            </p>
+                            <p>
+                                At this development state of the app, it is necessary, that raster files for the
+                                different criteria have the exact same bounds. Please be sure, that all files fulfill
+                                the following conditions:
+                            </p>
+                            <p><b>
+                                File size: smaller than 100 MB | File type: geoTiff | Projection: EPSG:4326 - WGS 84
+                            </b></p>
                         </Message>
-                        }
                     </Grid.Column>
                 </Grid.Row>
+                }
                 <Grid.Row>
                     <Grid.Column width={5}>
                         <Segment textAlign='center' inverted color='grey' secondary>

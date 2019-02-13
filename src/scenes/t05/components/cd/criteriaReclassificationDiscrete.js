@@ -43,6 +43,8 @@ class CriteriaReclassificationDiscrete extends React.Component {
         });
     }
 
+    handleDismiss = () => this.setState({showInfo: false});
+
     handleChange = () => this.props.onChange(Criterion.fromObject(this.state.criterion));
 
     handleLocalChange = id => (e, {name, value}) => this.setState(prevState => ({
@@ -140,8 +142,12 @@ class CriteriaReclassificationDiscrete extends React.Component {
                         {showInfo &&
                         <Message onDismiss={this.handleDismiss}>
                             <Message.Header>Reclassification for discrete values</Message.Header>
-                            <p>All suitabilities, whose raster values are not covered by the rules, will be set with
-                                0.</p>
+                            <p>
+                                A suitability value between 0 and 1 can be set for each unique value of the uploaded
+                                raster. It is also possible to choose a color and name for each value for a better
+                                visualization of the criteria data in the next step. It is necessary to click on the
+                                'Perform Reclassification' button after making changes.
+                            </p>
                         </Message>
                         }
                     </Grid.Column>
@@ -154,7 +160,7 @@ class CriteriaReclassificationDiscrete extends React.Component {
                         <Segment>
                             <Button positive icon fluid labelPosition='left' onClick={this.handleClickCalculate}>
                                 <Icon name='calculator'/>
-                                Calculate Suitability
+                                Perform Reclassification
                             </Button>
                         </Segment>
                     </Grid.Column>

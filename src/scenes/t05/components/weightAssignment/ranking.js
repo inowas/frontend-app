@@ -9,10 +9,11 @@ import AbstractCollection from 'core/model/collection/AbstractCollection';
 class Ranking extends React.Component {
 
     constructor(props) {
-        super();
+        super(props);
 
         this.state = {
-            wa: props.weightAssignment.toObject()
+            wa: props.weightAssignment.toObject(),
+            showInfo: true
         };
     }
 
@@ -21,6 +22,8 @@ class Ranking extends React.Component {
             wa: nextProps.weightAssignment.toObject()
         })
     }
+
+    handleDismiss = () => this.setState({showInfo: false});
 
     handleChangeState = () => this.props.handleChange({
         name: 'weights',
@@ -84,13 +87,17 @@ class Ranking extends React.Component {
 
         return (
             <div>
-                <Message>
-                    <Message.Header>Weight Assignment: Ranking Method</Message.Header>
-                    <p>You can perform more of the weight assignment methods and compare the results in the end.</p>
-                    <p>Ranking: place the criteria in your preferred order by drag and drop or using the arrow buttons
-                        on the right.</p>
+                {this.state.showInfo &&
+                <Message onDismiss={this.handleDismiss}>
+                    <Message.Header>Weight Assignment: Ranking</Message.Header>
+                    <p>Place the criteria in your preferred order by drag and drop or using the arrow buttons. The
+                        higher a position of a criterion, the more important and the higher is it's weight. You can
+                        choose between two methods:</p>
+                    <p><b>Rank sum weight:</b> (n - rj + 1) / &Sigma;(n - rj + 1)</p>
+                    <p><b>Reciprocal weight:</b> (1 / rj) / &Sigma;(1 / rj)</p>
+                    <p>... for n = number of criteria, j = 1...n, rj = rank of criteria j and &Sigma; sum from j to n</p>
                 </Message>
-
+                }
                 {weights.length > 0 &&
                 <Grid columns={2}>
                     <Grid.Column>
