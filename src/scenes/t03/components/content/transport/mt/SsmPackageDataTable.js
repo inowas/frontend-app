@@ -5,7 +5,6 @@ import moment from 'moment/moment';
 
 const styles = {
     input: {
-        border: 0,
         maxWidth: '200px'
     }
 };
@@ -38,7 +37,7 @@ class SsmPackageDataTable extends React.Component {
         const {rows} = this.props;
 
         return (
-            <Table color={'red'} size={'small'} singleLine>
+            <Table size={'small'} singleLine>
                 <Table.Header>
                     <Table.Row>
                         <Table.HeaderCell>Start Time</Table.HeaderCell>

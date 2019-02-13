@@ -11,7 +11,7 @@ import {Grid, Icon, Container, Header, Breadcrumb} from 'semantic-ui-react';
 
 const navigation = [{
     name: 'Documentation',
-    path: 'https://inowas.hydro.tu-dresden.de/tools/t04a-database-for-gis-based-suitability-mapping/',
+    path: 'https://inowas.com/tools/t04a-database-for-gis-based-suitability-mapping/',
     icon: <Icon name="file"/>
 }];
 

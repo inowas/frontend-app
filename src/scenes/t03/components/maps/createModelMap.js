@@ -14,7 +14,7 @@ import {pure} from 'recompose';
 
 const style = {
     map: {
-        height: '400px',
+        height: '500px',
         width: '100%'
     }
 };

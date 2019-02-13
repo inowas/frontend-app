@@ -2,7 +2,6 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import {Criterion} from 'core/model/mcda/criteria';
 import CriteriaRasterMap from './criteriaRasterMap';
-import {Raster} from 'core/model/mcda/gis';
 import {heatMapColors} from '../../defaults/gis';
 import {Checkbox, Form, Grid, Radio, Segment} from 'semantic-ui-react';
 
@@ -11,23 +10,62 @@ class CriteriaDataResults extends React.Component {
     constructor(props) {
         super(props);
 
-        const criterion = this.props.criterion;
-
         this.state = {
             colors: 'default',
-            criterion: criterion.toObject(),
             layer: 'suitability',
             showBasicLayer: false
         }
     }
 
-    handleChange = (e, {name, value}) => this.setState({[name]: value});
+    handleChange = (e, {name, value}) => {
+        if (name === 'layer') {
+            return this.setState({
+                layer: value,
+                colors: 'default'
+            });
+        }
+        return this.setState({
+            [name]: value
+        });
+    };
 
     handleToggleBasicLayer = () => this.setState(prevState => ({showBasicLayer: !prevState.showBasicLayer}));
 
     render() {
-        const {colors, criterion, layer, showBasicLayer} = this.state;
-        const raster = this.props.criterion.tilesCollection.first;
+        const {colors, layer, showBasicLayer} = this.state;
+        const {criterion} = this.props;
+        const suitability = criterion.suitability;
+
+        let legend = null;
+        if (layer === 'criteria') {
+            if (colors === 'classes') {
+                legend = criterion.generateLegend('classified');
+            }
+            if (colors === 'default') {
+                legend = criterion.generateLegend();
+            }
+        }
+        if (layer === 'suitability' || layer === 'constraints') {
+            if (colors === 'default') {
+                legend = suitability.generateRainbow(heatMapColors.default, [0, 1]);
+            }
+            if (colors === 'colorBlind') {
+                legend = suitability.generateRainbow(heatMapColors.colorBlind, [0, 1]);
+            }
+        }
+
+        let raster;
+        switch (layer) {
+            case 'suitability':
+                raster = criterion.suitability;
+                break;
+            case 'constraints':
+                raster = criterion.constraintRaster;
+                break;
+            default:
+                raster = criterion.tilesCollection.first;
+                break;
+        }
 
         return (
             <Grid>
@@ -57,6 +95,18 @@ class CriteriaDataResults extends React.Component {
                                     onChange={this.handleChange}
                                 />
                             </Form.Field>
+                            {criterion.constraintRaster && criterion.constraintRaster.data.length > 0 &&
+                            <Form.Field>
+                                    <Checkbox
+                                        radio
+                                        label='Constraints'
+                                        name='layer'
+                                        value='constraints'
+                                        checked={layer === 'constraints'}
+                                        onChange={this.handleChange}
+                                    />
+                                </Form.Field>
+                            }
                         </Form>
                     </Segment>
                     <Segment textAlign='center' inverted color='grey' secondary>
@@ -69,13 +119,25 @@ class CriteriaDataResults extends React.Component {
                                 <Checkbox
                                     radio
                                     label='Default'
-                                    checked={true}
-                                    readOnly
+                                    value='default'
+                                    name='colors'
+                                    checked={colors === 'default'}
+                                    onChange={this.handleChange}
+                                />
+                            </Form.Field>
+                            <Form.Field>
+                                <Checkbox
+                                    radio
+                                    label='Reclassified'
+                                    value='classes'
+                                    name='colors'
+                                    checked={colors === 'classes'}
+                                    onChange={this.handleChange}
                                 />
                             </Form.Field>
                         </Form>
                         }
-                        {layer === 'suitability' &&
+                        {(layer === 'suitability' || layer === 'constraints') &&
                             <Form>
                                 <Form.Field>
                                     <Checkbox
@@ -118,11 +180,11 @@ class CriteriaDataResults extends React.Component {
                     </Segment>
                 </Grid.Column>
                 <Grid.Column width={11}>
-                {criterion.suitability.data.length > 0 &&
+                {criterion.suitability.data.length > 0 && !!legend &&
                     <CriteriaRasterMap
-                        colors={layer === 'suitability' ? heatMapColors[colors] : heatMapColors.terrain}
-                        raster={layer === 'suitability' ? Raster.fromObject(criterion.suitability) : raster}
+                        raster={raster}
                         showBasicLayer={showBasicLayer}
+                        legend={legend}
                     />
                 }
                 </Grid.Column>

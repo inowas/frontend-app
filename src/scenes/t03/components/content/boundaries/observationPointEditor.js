@@ -83,11 +83,11 @@ class ObservationPointEditor extends React.Component {
                             />
                             <Form.Field>
                                 <label>Latitude</label>
-                                <input disabled placeholder="Latitude" value={latitude} width={3}/>
+                                <input readOnly value={latitude} width={3}/>
                             </Form.Field>
                             <Form.Field>
                                 <label>Longitude</label>
-                                <input disabled placeholder="Longitude" value={longitude} width={3}/>
+                                <input readOnly value={longitude} width={3}/>
                             </Form.Field>
                         </Form.Group>
                     </Form>

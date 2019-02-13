@@ -28,7 +28,8 @@ class Boundaries extends React.Component {
             activeCells: null,
             isLoading: false,
             isDirty: false,
-            error: false,
+            isEditing: false,
+            isError: false,
             state: null
         }
     }
@@ -41,6 +42,10 @@ class Boundaries extends React.Component {
             isDirty: true
         });
     };
+
+    onToggleEditMode = () => this.setState(prevState => ({
+        isEditing: !prevState.isEditing
+    }));
 
     handleChange = (e, {name, value}) => {
         if (name === 'affectedLayers') {
@@ -72,14 +77,14 @@ class Boundaries extends React.Component {
                 this.props.updateBoundaries(this.props.boundaries.addBoundary(boundary));
                 this.props.history.push(`${baseUrl}/${id}/${property}/${'!'}/${boundary.id}`);
             },
-            () => this.setState({error: true})
+            () => this.setState({isError: true})
         )
     };
 
     render() {
         const {model} = this.props;
         const readOnly = model.readOnly;
-        const {error, isDirty, name, affectedLayers, subType, subTypes} = this.state;
+        const {isError, isDirty, name, affectedLayers, subType, subTypes} = this.state;
         const {type} = this.props.match.params;
 
         return (
@@ -126,15 +131,16 @@ class Boundaries extends React.Component {
                         <Grid.Column width={12}>
                             <ContentToolBar
                                 onSave={this.onSave}
-                                isValid={(this.state.boundary !== null)}
+                                isValid={this.state.boundary !== null}
                                 isDirty={isDirty && !!this.state.geometry && !!this.state.activeCells}
-                                isError={error}
-                                saveButton={!readOnly}
+                                isError={isError}
+                                saveButton={!readOnly && !this.state.isEditing}
                             />
                             <CreateBoundaryMap
                                 type={type}
                                 geometry={model.geometry}
                                 onChangeGeometry={this.onChangeGeometry}
+                                onToggleEditMode={this.onToggleEditMode}
                             />
                         </Grid.Column>
                     </Grid.Row>

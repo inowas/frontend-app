@@ -70,6 +70,9 @@ class CriteriaRasterUpload extends React.Component {
         tile.boundingBox = boundingBox;
         criterion.tilesCollection.add(tile);
 
+        criterion.constraintRaster.boundingBox = boundingBox;
+        criterion.constraintRaster.gridSize = this.props.gridSize;
+
         criterion.rulesCollection = new RulesCollection();
         if (criterion.type === 'continuous') {
             const rule = new Rule();
@@ -85,10 +88,7 @@ class CriteriaRasterUpload extends React.Component {
                 rule.to = value;
                 criterion.rulesCollection.add(rule);
             });
-            console.log({
-                uniqueValues,
-                criterion
-            });
+            criterion.constraintRules = criterion.rulesCollection;
         }
 
         this.setState({
@@ -192,6 +192,7 @@ class CriteriaRasterUpload extends React.Component {
                             onChange={this.handleChangeRaster}
                             raster={Tile.fromObject(activeTile)}
                             showBasicLayer={showBasicLayer}
+                            legend={this.props.criterion.generateLegend()}
                         />
                         }
                     </Grid.Column>
@@ -202,6 +203,7 @@ class CriteriaRasterUpload extends React.Component {
                     onCancel={this.handleCancelModal}
                     onChange={this.handleUploadFile}
                     parameter={{unit: 'm'}}
+                    discreteRescaling={this.props.criterion.type === 'discrete'}
                 />
                 }
             </Grid>

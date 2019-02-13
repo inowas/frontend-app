@@ -2,6 +2,21 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import {Rule} from 'core/model/mcda/criteria';
 import {Button, Form, List, Message, Modal} from 'semantic-ui-react';
+import {SketchPicker} from 'react-color';
+
+const styles = {
+    popover: {
+        position: 'absolute',
+        zIndex: '2',
+    },
+    cover: {
+        position: 'fixed',
+        top: '0px',
+        right: '0px',
+        bottom: '0px',
+        left: '0px',
+    }
+};
 
 class CriteriaReclassificationModal extends React.Component {
 
@@ -9,16 +24,28 @@ class CriteriaReclassificationModal extends React.Component {
         super(props);
 
         this.state = {
+            displayColorPicker: false,
             rule: props.rule.toObject()
         }
     }
 
-    handleLocalChange = (e, {name, value}) => this.setState({
+    handleCloseColorPicker = () => {
+        this.setState({displayColorPicker: false})
+    };
+
+    handleChangeColor = color => this.setState(prevState => ({
         rule: {
-            ...this.state.rule,
+            ...prevState.rule,
+            color: color.hex
+        }
+    }));
+
+    handleLocalChange = (e, {name, value}) => this.setState(prevState => ({
+        rule: {
+            ...prevState.rule,
             [name]: value
         }
-    });
+    }));
 
     handleSave = () => {
         this.props.onSave(Rule.fromObject(this.state.rule))
@@ -32,6 +59,36 @@ class CriteriaReclassificationModal extends React.Component {
                 <Modal.Header>Edit reclassification rule</Modal.Header>
                 <Modal.Content>
                     <Form>
+                        <Form.Group>
+                            <Form.Button
+                                onClick={() => this.setState({displayColorPicker: true})}
+                                fluid
+                                style={{color: rule.color}}
+                                icon='circle'
+                                label='Color'
+                                name='name'
+                                width={3}
+                            />
+                            {this.state.displayColorPicker &&
+                            <div style={styles.popover}>
+                                <div style={styles.cover} onClick={this.handleCloseColorPicker}/>
+                                <SketchPicker
+                                    disableAlpha={true}
+                                    color={rule.color}
+                                    onChange={this.handleChangeColor}
+                                />
+                            </div>
+                            }
+                            <Form.Input
+                                fluid
+                                label='Class Name'
+                                name='name'
+                                type='text'
+                                onChange={this.handleLocalChange}
+                                value={rule.name}
+                                width={13}
+                            />
+                        </Form.Group>
                         <Form.Group widths='equal'>
                             <Form.Select
                                 fluid
@@ -114,18 +171,18 @@ class CriteriaReclassificationModal extends React.Component {
                         </Form.Group>
                     </Form>
                     {rule.type === 'calc' &&
-                        <Message>
-                            <Message.Header>Suitability Calculation</Message.Header>
-                            <p>
-                                To get suitability values out of the raster data, you can use a calculation formula. The
-                                following commands are available:
-                            </p>
-                            <List>
-                                <List.Item>value represents the value of the raster cell</List.Item>
-                                <List.Item>max represents the biggest value of inside the raster</List.Item>
-                                <List.Item>min represents the lowest value of inside the raster</List.Item>
-                            </List>
-                        </Message>
+                    <Message>
+                        <Message.Header>Suitability Calculation</Message.Header>
+                        <p>
+                            To get suitability values out of the raster data, you can use a calculation formula. The
+                            following commands are available:
+                        </p>
+                        <List>
+                            <List.Item>value represents the value of the raster cell</List.Item>
+                            <List.Item>max represents the biggest value of inside the raster</List.Item>
+                            <List.Item>min represents the lowest value of inside the raster</List.Item>
+                        </List>
+                    </Message>
                     }
                 </Modal.Content>
                 <Modal.Actions>

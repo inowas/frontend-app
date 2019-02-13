@@ -13,7 +13,7 @@ import {SoilmodelLayer} from 'core/model/modflow/soilmodel';
 
 const navigation = [{
     name: 'Documentation',
-    path: 'https://inowas.hydro.tu-dresden.de/tools/t03-modflow-model-setup-and-editor/',
+    path: 'https://inowas.com/tools/t03-modflow-model-setup-and-editor/',
     icon: <Icon name="file"/>
 }];
 
@@ -134,9 +134,9 @@ class CreateModel extends React.Component {
         return (
             <AppContainer navbarItems={navigation}>
                 <Segment color={'grey'}>
-                    <Grid padded>
-                        <Grid.Row>
-                            <Grid.Column width={8}>
+                    <Grid padded columns={2}>
+                        <Grid.Row stretched>
+                            <Grid.Column width={6}>
                                 <Segment>
                                     <Form>
                                         <Form.Group>
@@ -147,7 +147,7 @@ class CreateModel extends React.Component {
                                                 width={14}
                                                 onChange={this.handleInputChange}
                                             />
-                                            <Form.Field width={1}>
+                                            <Form.Field>
                                                 <label>Public</label>
                                                 <Checkbox
                                                     toggle
@@ -158,80 +158,89 @@ class CreateModel extends React.Component {
                                                 />
                                             </Form.Field>
                                         </Form.Group>
-                                        <Form.Group>
-                                            <Form.TextArea
-                                                label="Description"
-                                                name="description"
-                                                onChange={this.handleInputChange}
-                                                placeholder="Description"
-                                                value={this.state.description}
-                                                width={16}
-                                            />
-                                        </Form.Group>
-                                    </Form>
-                                </Segment>
-                            </Grid.Column>
-                            <Grid.Column width={4}>
-                                <Segment>
-                                    <Form>
-                                        <Form.Input
-                                            type='number'
-                                            label='Rows'
-                                            name={'nY'}
-                                            value={(GridSize.fromObject(this.state.gridSizeLocal)).nY}
-                                            onChange={this.handleGridSizeChange}
-                                            onBlur={this.handleGridSizeChange}
-                                        />
-                                        <Form.Input
-                                            type='number'
-                                            label='Columns'
-                                            name={'nX'}
-                                            value={GridSize.fromObject(this.state.gridSizeLocal).nX}
-                                            onChange={this.handleGridSizeChange}
-                                            onBlur={this.handleGridSizeChange}
-                                        />
-                                        <Form.Select
-                                            label='Length unit'
-                                            options={[{key: 2, text: 'meters', value: 2}]}
-                                            style={{zIndex: 10000}}
-                                            value={this.state.lengthUnit}
+                                        <Form.TextArea
+                                            label="Description"
+                                            name="description"
+                                            onChange={this.handleInputChange}
+                                            placeholder="Description"
+                                            value={this.state.description}
                                             width={16}
                                         />
                                     </Form>
                                 </Segment>
+                                <Grid columns={2}>
+                                    <Grid.Row>
+                                        <Grid.Column>
+                                            <Segment>
+                                                <Form>
+                                                    <Form.Input
+                                                        type='number'
+                                                        label='Rows'
+                                                        name={'nY'}
+                                                        value={(GridSize.fromObject(this.state.gridSizeLocal)).nY}
+                                                        onChange={this.handleGridSizeChange}
+                                                        onBlur={this.handleGridSizeChange}
+                                                    />
+                                                    <Form.Input
+                                                        type='number'
+                                                        label='Columns'
+                                                        name={'nX'}
+                                                        value={GridSize.fromObject(this.state.gridSizeLocal).nX}
+                                                        onChange={this.handleGridSizeChange}
+                                                        onBlur={this.handleGridSizeChange}
+                                                    />
+                                                    <Form.Select compact
+                                                        label='Length unit'
+                                                        options={[{key: 2, text: 'meters', value: 2}]}
+                                                        style={{zIndex: 10000}}
+                                                        value={this.state.lengthUnit}
+                                                    />
+                                                </Form>
+                                            </Segment>
+                                        </Grid.Column>
+                                        <Grid.Column>
+                                            <Segment>
+                                                <Form>
+                                                    <Form.Input
+                                                        type='date'
+                                                        label='Start Date'
+                                                        name={'startDateTime'}
+                                                        value={this.state.stressperiodsLocal.startDateTime}
+                                                        onChange={this.handleStressperiodsChange}
+                                                        onBlur={this.handleStressperiodsChange}
+                                                    />
+                                                    <Form.Input
+                                                        type='date'
+                                                        label='End Date'
+                                                        name={'endDateTime'}
+                                                        value={this.state.stressperiodsLocal.endDateTime}
+                                                        onChange={this.handleStressperiodsChange}
+                                                        onBlur={this.handleStressperiodsChange}
+                                                    />
+                                                    <Form.Select compact
+                                                        label='Time unit'
+                                                        options={[{key: 4, text: 'days', value: 4}]}
+                                                        style={{zIndex: 10000}}
+                                                        value={this.state.timeUnit}
+                                                    />
+                                                </Form>
+                                            </Segment>
+                                        </Grid.Column>
+                                    </Grid.Row>
+                                    <Grid.Row>
+                                        <Grid.Column width={16}>
+                                            <Button primary
+                                                    type='submit'
+                                                    onClick={this.handleSave}
+                                                    disabled={!this.state.validation[0]}
+                                            >
+                                                Create model
+                                            </Button>
+                                        </Grid.Column>
+                                    </Grid.Row>
+                                </Grid>
                             </Grid.Column>
-                            <Grid.Column width={4}>
-                                <Segment>
-                                    <Form>
-                                        <Form.Input
-                                            type='date'
-                                            label='Start Date'
-                                            name={'startDateTime'}
-                                            value={this.state.stressperiodsLocal.startDateTime}
-                                            onChange={this.handleStressperiodsChange}
-                                            onBlur={this.handleStressperiodsChange}
-                                        />
-                                        <Form.Input
-                                            type='date'
-                                            label='End Date'
-                                            name={'endDateTime'}
-                                            value={this.state.stressperiodsLocal.endDateTime}
-                                            onChange={this.handleStressperiodsChange}
-                                            onBlur={this.handleStressperiodsChange}
-                                        />
-                                        <Form.Select
-                                            label='Time unit'
-                                            options={[{key: 4, text: 'days', value: 4}]}
-                                            style={{zIndex: 10000}}
-                                            value={this.state.timeUnit}
-                                            width={16}
-                                        />
-                                    </Form>
-                                </Segment>
-                            </Grid.Column>
-                        </Grid.Row>
-                        <Grid.Row>
-                            <Grid.Column width={16}>
+                            <Grid.Column width={10}>
                                 <CreateModelMap
                                     gridSize={GridSize.fromObject(this.state.gridSize)}
                                     styles={this.state.styles}
@@ -240,15 +249,7 @@ class CreateModel extends React.Component {
                             </Grid.Column>
                         </Grid.Row>
                         <Grid.Row>
-                            <Grid.Column width={16}>
-                                <Button primary
-                                    type='submit'
-                                    onClick={this.handleSave}
-                                    disabled={!this.state.validation[0]}
-                                >
-                                    Create
-                                </Button>
-                            </Grid.Column>
+
                         </Grid.Row>
                     </Grid>
                 </Segment>

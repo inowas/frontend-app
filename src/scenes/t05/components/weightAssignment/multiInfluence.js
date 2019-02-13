@@ -1,6 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import {Button, Grid, Message, Segment, Table} from 'semantic-ui-react';
+import {Button, Form, Grid, Message, Segment, Table} from 'semantic-ui-react';
 import Graph from 'vis-react';
 import {CriteriaCollection, Weight, WeightAssignment} from 'core/model/mcda/criteria';
 
@@ -23,49 +23,54 @@ const styles = {
 
 class MultiInfluence extends React.Component {
     constructor(props) {
-        super();
+        super(props);
+        const data = this.prepareData(props);
 
         this.state = {
-            edges: props.weightAssignment.weightsCollection.allRelations.map(relation => {
-                return {
-                    id: relation.id,
-                    from: relation.from,
-                    to: relation.to,
-                    dashes: relation.value === 0
-                }
-            }),
-            nodes: props.criteriaCollection.all.map(criterion => {
-                return {
-                    id: criterion.id,
-                    label: criterion.name
-                }
-            }),
+            edges: data.edges,
+            nodes: data.nodes,
             editEdgeMode: false,
             selectedEdges: null,
-            network: null
+            network: null,
+            wa: props.weightAssignment.toObject()
         };
     }
 
     componentWillReceiveProps(nextProps) {
+        const data = this.prepareData(nextProps);
+
         this.setState({
-            edges: nextProps.weightAssignment.weightsCollection.allRelations.map(relation => {
-                return {
-                    id: relation.id,
-                    from: relation.from,
-                    to: relation.to,
-                    dashes: relation.value === 0
-                }
-            }),
-            nodes: nextProps.criteriaCollection.all.map(criterion => {
-                return {
-                    id: criterion.id,
-                    label: criterion.name
-                }
-            })
+            edges: data.edges,
+            nodes: data.nodes,
+            wa: nextProps.weightAssignment.toObject()
         });
     }
 
-    addEdge = (data) => {
+    prepareData(props) {
+        const edges = props.weightAssignment.weightsCollection.allRelations.map(relation => {
+            return {
+                id: relation.id,
+                from: relation.from,
+                to: relation.to,
+                dashes: relation.value === 0
+            }
+        });
+        const nodes = props.weightAssignment.weightsCollection.all.map(weight => {
+            return {
+                id: weight.criterion.id,
+                label: weight.criterion.name
+            }
+        });
+
+        nodes.push({
+            id: 'mcda-main-node',
+            label: this.props.toolName
+        });
+
+        return {edges, nodes};
+    };
+
+    addEdge = data => {
         const edges = this.state.edges;
         edges.push({
             id: data.id,
@@ -107,7 +112,7 @@ class MultiInfluence extends React.Component {
 
     onDeselectEdge = () => this.setState({selectedEdges: null});
 
-    onSelectEdge = (edges) => this.setState({
+    onSelectEdge = edges => this.setState({
         selectedEdges: edges
     });
 
@@ -124,7 +129,7 @@ class MultiInfluence extends React.Component {
                 })
             }
         });
-        const weightAssignment = this.props.weightAssignment;
+        const weightAssignment = WeightAssignment.fromObject(this.state.wa);
 
         weights.forEach(w => {
             weightAssignment.weightsCollection.update(Weight.fromObject(w));
@@ -136,6 +141,13 @@ class MultiInfluence extends React.Component {
             value: weightAssignment
         });
     };
+
+    handleLocalChange = (e, {name, value}) => this.setState(prevState => ({
+        wa: {
+            ...prevState.wa,
+            [name]: value
+        }
+    }));
 
     setNetworkInstance = nw => this.setState({
         network: nw
@@ -223,6 +235,22 @@ class MultiInfluence extends React.Component {
                     </Grid.Column>
                     <Grid.Column>
                         <Segment textAlign='center' inverted color='grey' secondary>
+                            Settings
+                        </Segment>
+                        <Form>
+                            <Form.Field>
+                                <Form.Input
+                                    fluid
+                                    onBlur={this.onSaveEdges}
+                                    onChange={this.handleLocalChange}
+                                    name='name'
+                                    type='text'
+                                    label='Name'
+                                    value={this.state.wa.name}
+                                />
+                            </Form.Field>
+                        </Form>
+                        <Segment textAlign='center' inverted color='grey' secondary>
                             Weight Assignment
                         </Segment>
                         <Table>
@@ -257,6 +285,7 @@ MultiInfluence.propTypes = {
     criteriaCollection: PropTypes.instanceOf(CriteriaCollection).isRequired,
     weightAssignment: PropTypes.instanceOf(WeightAssignment).isRequired,
     handleChange: PropTypes.func.isRequired,
+    toolName: PropTypes.string.isRequired,
     readOnly: PropTypes.bool
 };
 

@@ -33,6 +33,14 @@ class WeightsCollection extends AbstractCollection {
         return relations;
     }
 
+    findByCriteriaId(id) {
+        const c = this.all.filter(w => w.criterion.id === id);
+        if (c.length > 0) {
+            return c[0];
+        }
+        return null;
+    }
+
     validateInput (weight) {
         if (!(weight instanceof Weight)) {
             throw new Error(`Weight expected to be instance of Weight but is type of ${typeof weight}`);
