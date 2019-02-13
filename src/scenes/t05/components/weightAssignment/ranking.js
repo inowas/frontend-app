@@ -91,7 +91,7 @@ class Ranking extends React.Component {
                 <Message onDismiss={this.handleDismiss}>
                     <Message.Header>Weight Assignment: Ranking</Message.Header>
                     <p>Place the criteria in your preferred order by drag and drop or using the arrow buttons. The
-                        higher a position of a criterion, the more important and the higher is it's weight. You can
+                        higher a position of a criterion, the more important and the higher is its weight. You can
                         choose between two methods:</p>
                     <p><b>Rank sum weight:</b> (n - rj + 1) / &Sigma;(n - rj + 1)</p>
                     <p><b>Reciprocal weight:</b> (1 / rj) / &Sigma;(1 / rj)</p>
