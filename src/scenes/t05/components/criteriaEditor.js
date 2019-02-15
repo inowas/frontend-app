@@ -21,16 +21,21 @@ const styles = {
         shapeProperties: {
             borderRadius: 0
         }
+    },
+    link: {
+        lineHeight: '0.2em',
+        backgroundColor: 'none'
     }
 };
 
 class CriteriaEditor extends React.Component {
     constructor(props) {
-        super();
+        super(props);
 
         this.state = {
             criteria: props.mcda.criteriaCollection.toArray(),
-            network: null
+            network: null,
+            showInfo: true
         };
     }
 
@@ -43,6 +48,8 @@ class CriteriaEditor extends React.Component {
             criteria: nextProps.mcda.criteriaCollection.toArray()
         });
     }
+
+    handleDismiss = () => this.setState({showInfo: false});
 
     handleAddCriteria = () => {
         const criteriaCollection = CriteriaCollection.fromArray(this.state.criteria);
@@ -163,15 +170,23 @@ class CriteriaEditor extends React.Component {
 
         return (
             <Grid>
+                {this.state.showInfo &&
                 <Grid.Row>
                     <Grid.Column width={16}>
-                        <Message>
+                        <Message onDismiss={this.handleDismiss}>
                             <Message.Header>Choose your criteria</Message.Header>
-                            <p>If you are unsure which criteria to use, please refer to the review on criteria used in
-                                literature: T04</p>
+                            <p>For managed aquifer recharge (MAR) MCDA you can find information of former scientific
+                                works and recommendations for criteria in our database:
+                                <Button basic style={styles.link} onClick={this.props.routeTo}>T04</Button>
+                                Do not forget to specify, if a criteria is described by continuous or discrete values.
+                            </p>
+                            <p><b>Analytical Hierarchy Process</b> <i>(Saaty, 1980)</i>: Choose this method, to separate
+                                your criteria in main and sub criteria. It is recommended, to use it for large numbers
+                                of criteria. You should decide to use this method before adding criteria. </p>
                         </Message>
                     </Grid.Column>
                 </Grid.Row>
+                }
                 <Grid.Row>
                     <Grid.Column width={3}>
                         <Segment textAlign='center'>
@@ -304,16 +319,16 @@ class CriteriaEditor extends React.Component {
                     </Grid.Column>
                 </Grid.Row>
                 {mcda.withAhp &&
-                    <Grid.Row>
-                        <Grid.Column with={16}>
-                            <Graph
-                                getNetwork={this.setNetworkInstance}
-                                graph={graph}
-                                options={options}
-                                style={styles.graph}
-                            />
-                        </Grid.Column>
-                    </Grid.Row>
+                <Grid.Row>
+                    <Grid.Column with={16}>
+                        <Graph
+                            getNetwork={this.setNetworkInstance}
+                            graph={graph}
+                            options={options}
+                            style={styles.graph}
+                        />
+                    </Grid.Column>
+                </Grid.Row>
                 }
             </Grid>
         );

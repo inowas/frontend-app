@@ -37,9 +37,12 @@ class PairwiseComparison extends React.Component {
         super(props);
         this.state = {
             relations: this.prepareState(props),
-            wa: this.props.weightAssignment.toObject()
+            wa: this.props.weightAssignment.toObject(),
+            showInfo: true
         };
     }
+
+    handleDismiss = () => this.setState({showInfo: false});
 
     prepareState = (props) => {
         let relations = [];
@@ -112,12 +115,19 @@ class PairwiseComparison extends React.Component {
 
         return (
             <div>
-                <Message>
-                    <Message.Header>Weight Assignment: Pairwise comparison method</Message.Header>
-                    <p>You can perform more of the weight assignment methods and compare the results in the end.</p>
-                    <p>...</p>
+                {this.state.showInfo &&
+                <Message onDismiss={this.handleDismiss}>
+                    <Message.Header>Weight Assignment: Pairwise Comparison</Message.Header>
+                    <p>Compare all criteria with each other, by moving the slider to either the left or the right side,
+                        depending which criterion is more and for instance how much more important. The further
+                        the slider is at one side, the bigger is the importance of the related criterion in comparison
+                        to the criterion on the other side. The slider values can be translated by following key:</p>
+                    <p>0: Equally important | 3: Slightly more important | 5: Much more important | 7: Far more
+                        important | 8: Extremely more important</p>
+                    <p>If there are more than two criteria, the consistency ratio is printed on the bottom right. Its
+                        value should be smaller than 0.1, to have consistent weights.</p>
                 </Message>
-
+                }
                 {relations.length > 0 &&
                 <Grid>
                     <Grid.Column width={9}>

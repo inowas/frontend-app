@@ -12,7 +12,8 @@ class CriteriaDataConstraints extends React.Component {
         super(props);
 
         this.state = {
-            criterion: props.criterion.toObject()
+            criterion: props.criterion.toObject(),
+            showInfo: true
         }
     }
 
@@ -202,11 +203,11 @@ class CriteriaDataConstraints extends React.Component {
                 </Grid.Column>
                 <Grid.Column width={8}>
                     {criterion.constraintRaster && criterion.constraintRaster.data.length > 0 &&
-                        <CriteriaRasterMap
-                            legend={legend}
-                            raster={criterion.constraintRaster}
-                            showBasicLayer={false}
-                        />
+                    <CriteriaRasterMap
+                        legend={legend}
+                        raster={criterion.constraintRaster}
+                        showBasicLayer={false}
+                    />
                     }
                 </Grid.Column>
             </Grid.Row>
@@ -225,8 +226,13 @@ class CriteriaDataConstraints extends React.Component {
                             {this.state.showInfo &&
                             <Message onDismiss={this.handleDismiss}>
                                 <Message.Header>Constraints</Message.Header>
-                                <p>You can add constraints for the criterion, for which it is totally unsuitable.</p>
-                                <p>[{raster.min.toFixed(3)}, {raster.max.toFixed(3)}]</p>
+                                {criterion.type === 'continuous' ?
+                                    <p>You can set intervals, for which the corresponding cells should not be respected
+                                        in the suitability calculation.</p> :
+                                    <p>You can deactivate the switch on values, for which the corresponding cells should
+                                        not be respected in the suitability calculation.</p>
+                                }
+                                <p>Data interval: [{raster.min.toFixed(3)}, {raster.max.toFixed(3)}]</p>
                             </Message>
                             }
                         </Grid.Column>
