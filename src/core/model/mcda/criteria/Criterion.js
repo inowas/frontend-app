@@ -14,6 +14,7 @@ class Criterion {
     _parent = null;
     _name = 'New Criterion';
     _type = 'discrete';
+    _unit = '-';
     _tiles = new TilesCollection();
     _rules = new RulesCollection();
     _suitability = new Raster();
@@ -26,6 +27,7 @@ class Criterion {
         criterion.parentId = obj.parentId;
         criterion.name = obj.name;
         criterion.type = obj.type;
+        criterion.unit = obj.unit;
         criterion.tilesCollection = obj.tiles ? TilesCollection.fromArray(obj.tiles) : new TilesCollection();
         criterion.rulesCollection = obj.rules ? RulesCollection.fromArray(obj.rules) : new RulesCollection();
         criterion.suitability = obj.suitability ? Raster.fromObject(obj.suitability) : Raster.fromObject(obj.raster);
@@ -67,6 +69,14 @@ class Criterion {
             throw new Error(`Invalid type ${value} of Criteria`);
         }
         this._type = value;
+    }
+
+    get unit() {
+        return this._unit;
+    }
+
+    set unit(value) {
+        this._unit = value;
     }
 
     get tilesCollection() {
@@ -115,6 +125,7 @@ class Criterion {
             parentId: this.parentId,
             name: this.name,
             type: this.type,
+            unit: this.unit,
             tiles: this.tilesCollection.toArray(),
             rules: this.rulesCollection.toArray(),
             suitability: this.suitability.toObject(),

@@ -203,6 +203,7 @@ class CriteriaEditor extends React.Component {
                                     <Table.HeaderCell/>
                                     <Table.HeaderCell>Name</Table.HeaderCell>
                                     <Table.HeaderCell>Type</Table.HeaderCell>
+                                    <Table.HeaderCell>Unit</Table.HeaderCell>
                                     <Table.HeaderCell/>
                                 </Table.Row>
                             </Table.Header>
@@ -232,6 +233,15 @@ class CriteriaEditor extends React.Component {
                                                     ]}
                                                 /> : <Input type='text' value='Main Criterion' readOnly/>
                                             }
+                                        </Table.Cell>
+                                        <Table.Cell>
+                                            <Input
+                                                name='unit'
+                                                disabled={readOnly}
+                                                value={c.unit}
+                                                onBlur={this.onBlur}
+                                                onChange={this.handleLocalChange(c.id)}
+                                            />
                                         </Table.Cell>
                                         <Table.Cell textAlign='right'>
                                             {!readOnly &&
