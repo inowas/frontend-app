@@ -170,7 +170,12 @@ class Suitability extends React.Component {
                 {showInfo &&
                 <Message onDismiss={this.handleDismiss}>
                     <Message.Header>Suitability</Message.Header>
-                    <p>...</p>
+                    {mcda.withAhp ?
+                        <p>Select a weight assignment method for each criteria set: the main criteria and each group of
+                            sub criteria. Click on the 'Start Calculation' button afterwards.</p> :
+                        <p>Select the desired assignment method and click on the 'Start Calculation' button
+                            afterwards.</p>
+                    }
                 </Message>
                 }
                 <Grid columns={2}>
@@ -195,7 +200,7 @@ class Suitability extends React.Component {
                         <CriteriaRasterMap
                             raster={mcda.suitability}
                             showBasicLayer={true}
-                            legend={mcda.suitability.generateRainbow(heatMapColors.default)}
+                            legend={mcda.suitability.generateRainbow(heatMapColors.default, [0, 1])}
                         />
                         }
                     </Grid.Column>
