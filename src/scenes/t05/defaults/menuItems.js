@@ -72,7 +72,7 @@ const getMenuItems = mcda => {
                 msg: 'Criteria data is needed first.'
             };
         }
-        if (mcda.suitability && mcda.suitability.data.length > 0) {
+        if (mcda.suitability.rasterData && mcda.suitability.rasterData.data.length > 0) {
             return {
                 val: 'success',
                 msg: null

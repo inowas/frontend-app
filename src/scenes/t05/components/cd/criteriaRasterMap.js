@@ -98,7 +98,7 @@ class CriteriaRasterMap extends React.Component {
                         opacity={0.75}
                         sharpening={10}
                     />
-                    {this.renderLegend(this.props.legend)}
+                    {this.props.showLegend && this.renderLegend(this.props.legend)}
                 </div>
                 }
             </Map>
@@ -110,8 +110,13 @@ CriteriaRasterMap.propTypes = {
     onChange: PropTypes.func,
     raster: PropTypes.instanceOf(Raster).isRequired,
     showBasicLayer: PropTypes.bool.isRequired,
+    showLegend: PropTypes.bool,
     legend: PropTypes.oneOfType([PropTypes.array, PropTypes.instanceOf(Rainbow)]).isRequired,
     mapHeight: PropTypes.string
+};
+
+CriteriaRasterMap.defaultProps = {
+    showLegend: true
 };
 
 export default CriteriaRasterMap;

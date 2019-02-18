@@ -12,7 +12,6 @@ class Tile extends Raster {
         raster.data = obj.data;
         raster.gridSize = obj.gridSize ? GridSize.fromObject(obj.gridSize) : new GridSize(10, 10);
         raster.id = obj.id || uuidv4();
-        raster.initial = obj.initial;
         raster.min = obj.min;
         raster.max = obj.max;
         raster.x = obj.x;
@@ -42,7 +41,6 @@ class Tile extends Raster {
             data: this.data,
             gridSize: this.gridSize.toObject(),
             id: this.id,
-            initial: this.initialToObject(),
             max: this.max,
             min: this.min,
             x: this.x,

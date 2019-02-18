@@ -15,7 +15,7 @@ import {
     CriteriaDataEditor,
     CriteriaNavigation,
     ConstraintsEditor,
-    Suitability,
+    SuitabilityEditor,
     ToolNavigation,
     WeightAssignmentEditor
 } from '../components';
@@ -241,7 +241,7 @@ class T05 extends React.Component {
                 );
             case 'su':
                 return (
-                    <Suitability
+                    <SuitabilityEditor
                         activeTool={cid}
                         handleChange={this.handleChange}
                         mcda={mcda}
@@ -294,12 +294,18 @@ class T05 extends React.Component {
                                 handleChange={this.handleChange}
                             />
                             }
-                            {property === 'su' && (!cid || cid === 'weightAssignment') && mcda.suitability && mcda.suitability.data.length > 0 &&
+                            {property === 'su' && (!cid || cid === 'weightAssignment' || cid === 'classes') && mcda.suitability && mcda.suitability.raster.data.length > 0 &&
                             <Segment color='blue'>
+                                <p>Overview</p>
                                 <CriteriaRasterMap
-                                    raster={mcda.suitability}
+                                    raster={mcda.suitability.raster}
                                     showBasicLayer={false}
-                                    legend={mcda.suitability.generateRainbow(heatMapColors.default)}
+                                    showLegend={cid !== 'classes'}
+                                    legend={!cid || cid === 'weightAssignment' ?
+                                        mcda.suitability.raster.generateRainbow(heatMapColors.default, [0, 1])
+                                        :
+                                        mcda.suitability.generateLegend()
+                                    }
                                     mapHeight='200px'
                                 />
                             </Segment>

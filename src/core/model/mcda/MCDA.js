@@ -1,16 +1,14 @@
 import {CriteriaCollection, WeightAssignmentsCollection} from './criteria';
-import {GisMap, Raster} from './gis';
+import {GisMap} from './gis';
 import math from 'mathjs';
-import RulesCollection from './criteria/RulesCollection';
-import {suitabilityRules} from 'scenes/t05/defaults/gis';
+import Suitability from './Suitability';
 
 class MCDA {
     _criteria = new CriteriaCollection();
     _weightAssignments = new WeightAssignmentsCollection();
     _constraints = new GisMap();
     _withAhp = false;
-    _suitability = new Raster();
-    _suitabilityRules = new RulesCollection();
+    _suitability = new Suitability();
 
     static fromObject(obj) {
         const mcda = new MCDA();
@@ -18,8 +16,7 @@ class MCDA {
         mcda.weightAssignmentsCollection = WeightAssignmentsCollection.fromArray(obj.weightAssignments);
         mcda.constraints = GisMap.fromObject(obj.constraints);
         mcda.withAhp = obj.withAhp;
-        mcda.suitability = obj.suitability ? Raster.fromObject(obj.suitability) : new Raster();
-        mcda.suitabilityRules = obj.suitabilityRules ? RulesCollection.fromArray(obj.suitabilityRules) : RulesCollection.fromArray(suitabilityRules);
+        mcda.suitability = obj.suitability ? Suitability.fromObject(obj.suitability) : new Suitability();
         return mcda;
     }
 
@@ -63,22 +60,13 @@ class MCDA {
         this._suitability = value;
     }
 
-    get suitabilityRules() {
-        return this._suitabilityRules;
-    }
-
-    set suitabilityRules(value) {
-        this._suitabilityRules = value;
-    }
-
     toObject() {
         return ({
             criteria: this.criteriaCollection.toArray(),
             weightAssignments: this.weightAssignmentsCollection.toArray(),
             constraints: this.constraints.toObject(),
             withAhp: this.withAhp,
-            suitability: this.suitability.toObject(),
-            suitabilityRules: this.suitabilityRules.toArray()
+            suitability: this.suitability.toObject()
         });
     }
 
@@ -113,23 +101,25 @@ class MCDA {
             return math.dotMultiply(criterion.suitability.data, weight);
         });
 
-        this.suitability.boundingBox = criteria[0].suitability.boundingBox;
-        this.suitability.gridSize = this.constraints.gridSize;
-        this.suitability.data = math.add(...data);
+        const rasterData = this.suitability.raster;
+
+        rasterData.boundingBox = criteria[0].suitability.boundingBox;
+        rasterData.gridSize = this.constraints.gridSize;
+        rasterData.data = math.add(...data);
 
         // STEP 2: multiply with constraints
         this.criteriaCollection.all.forEach(c => {
             if (c.constraintRaster && c.constraintRaster.data.length > 0) {
-                this.suitability.data = math.dotMultiply(this.suitability.data, c.constraintRaster.data);
+                rasterData.data = math.dotMultiply(rasterData.data, c.constraintRaster.data);
             }
         });
 
         // STEP 3: multiply global constraints
         if (this.constraints.raster && this.constraints.raster.data.length > 0) {
-            this.suitability.data = math.dotMultiply(this.suitability.data, this.constraints.raster.data);
+            rasterData.data = math.dotMultiply(rasterData.data, this.constraints.raster.data);
         }
 
-        this.suitability.calculateMinMax();
+        this.suitability.raster = rasterData.calculateMinMax();
 
         return this;
     }

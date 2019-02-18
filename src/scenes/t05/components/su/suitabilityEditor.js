@@ -5,15 +5,18 @@ import {MCDA} from 'core/model/mcda';
 import {Step} from 'semantic-ui-react';
 import SuitabilityWeightAssignment from './suitabilityWA';
 import SuitabilityClasses from './suitabilityClasses';
+import SuitabilityResults from './suitabilityResults';
 
-class Suitability extends React.Component {
+class SuitabilityEditor extends React.Component {
     handleClickStep = (e, {name}) => this.props.onClickTool(name);
 
     renderTool() {
         switch (this.props.activeTool) {
             case 'results':
                 return (
-                    <div>RESULTS</div>
+                    <SuitabilityResults
+                        mcda={this.props.mcda}
+                    />
                 );
             case 'classes':
                 return (
@@ -69,11 +72,11 @@ class Suitability extends React.Component {
     }
 }
 
-Suitability.proptypes = {
+SuitabilityEditor.proptypes = {
     activeTool: PropTypes.string,
     handleChange: PropTypes.func.isRequired,
     onClickTool: PropTypes.func.isRequired,
     mcda: PropTypes.instanceOf(MCDA).isRequired
 };
 
-export default withRouter(Suitability);
+export default withRouter(SuitabilityEditor);

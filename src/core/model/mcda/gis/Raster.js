@@ -3,17 +3,13 @@ import {cloneDeep} from 'lodash';
 import {distanceBetweenCoordinates} from 'services/geoTools/distance';
 import uuidv4 from 'uuid/v4';
 import {max, min, rainbowFactory} from 'scenes/shared/rasterData/helpers';
+import {heatMapColors} from "../../../../scenes/t05/defaults/gis";
 
 class Raster {
     _boundingBox = new BoundingBox(0, 0, 0, 0);
     _gridSize = new GridSize(10, 10);
     _data = [];
     _id = uuidv4();
-    _initial = {
-        boundingBox: new BoundingBox(),
-        gridSize: new GridSize(10, 10),
-        data: []
-    };
     _min = 0;
     _max = 0;
 
@@ -23,7 +19,6 @@ class Raster {
         raster.boundingBox = BoundingBox.fromArray(obj.boundingBox);
         raster.data = obj.data;
         raster.gridSize = GridSize.fromObject(obj.gridSize);
-        raster.initial = obj.initial;
         raster.min = obj.min;
         raster.max = obj.max;
         return raster;
@@ -61,10 +56,6 @@ class Raster {
         this._gridSize = value;
     }
 
-    get initial() {
-        return this._initial;
-    }
-
     get min() {
         return this._min;
     }
@@ -81,39 +72,92 @@ class Raster {
         this._max = value;
     }
 
-    initialToObject() {
-        return {
-            boundingBox: this._initial.boundingBox.toArray(),
-            data: this._initial.data,
-            gridSize: this._initial.gridSize.toObject()
-        }
-    }
-
-    set initial(value) {
-        this._initial.boundingBox = BoundingBox.fromArray(value.boundingBox);
-        this._initial.gridSize = GridSize.fromObject(value.gridSize);
-        this._initial.data = value.data;
-    }
-
     toObject() {
         return {
             boundingBox: this.boundingBox.toArray(),
             data: this.data,
             gridSize: this.gridSize.toObject(),
             id: this.id,
-            initial: this.initialToObject(),
             max: this.max,
             min: this.min
         }
     }
 
+    get uniqueValues() {
+        const distinct = [];
+
+        this.data.forEach(row => {
+            row.forEach(value => {
+                if (!distinct.includes(value)) {
+                    distinct.push(value);
+                }
+            })
+        });
+
+        return distinct;
+    }
+
     calculateMinMax() {
         this.max = max(this.data);
         this.min = min(this.data);
+        return this;
     }
 
     generateRainbow(colors, fixedInterval = false) {
-        return rainbowFactory({min: fixedInterval ? fixedInterval[0] : this.min, max: fixedInterval ? fixedInterval[1] : this.max}, colors);
+        return rainbowFactory({
+            min: fixedInterval ? fixedInterval[0] : this.min,
+            max: fixedInterval ? fixedInterval[1] : this.max
+        }, colors);
+    }
+
+    generateLegend(rulesCollection, type = 'discrete', mode = 'unclassified') {
+        const legend = [];
+        let rainbow;
+        if (type === 'discrete') {
+            if (mode === 'unclassified' || rulesCollection.length === 0) {
+                this.uniqueValues.sort((a, b) => a - b).forEach((v, key) => {
+                        legend.push({
+                            color: key < heatMapColors.discrete.length ? heatMapColors.discrete[key] : '#000000',
+                            isContinuous: false,
+                            label: v,
+                            value: v
+                        })
+                    }
+                );
+                return legend;
+            }
+            rulesCollection.orderBy('from').all.forEach(rule => {
+                legend.push({
+                    color: rule.color,
+                    isContinuous: false,
+                    label: rule.name,
+                    value: rule.from
+                });
+            });
+            return legend;
+        }
+        if (type === 'continuous') {
+            if (mode === 'unclassified' || rulesCollection.length === 0) {
+                rainbow = rainbowFactory({
+                    min: this.min,
+                    max: this.max
+                }, heatMapColors.terrain);
+                return rainbow;
+            }
+            rulesCollection.orderBy('from').all.forEach(rule => {
+                legend.push({
+                    color: rule.color,
+                    label: rule.name,
+                    fromOperator: rule.fromOperator,
+                    from: rule.from,
+                    isContinuous: true,
+                    toOperator: rule.toOperator,
+                    to: rule.to
+                });
+            });
+            legend.push({color: '#fff', label: 'Not Classified'});
+            return legend;
+        }
     }
 
     assignMinMax() {

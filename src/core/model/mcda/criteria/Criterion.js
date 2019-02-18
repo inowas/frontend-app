@@ -4,8 +4,6 @@ import RulesCollection from './RulesCollection';
 import {cloneDeep as _cloneDeep} from 'lodash';
 import TilesCollection from '../gis/TilesCollection';
 import * as math from 'mathjs';
-import {heatMapColors} from 'scenes/t05/defaults/gis'
-import {rainbowFactory} from 'scenes/shared/rasterData/helpers';
 
 const validTypes = ['discrete', 'continuous'];
 
@@ -197,54 +195,7 @@ class Criterion {
     }
 
     generateLegend(mode = 'unclassified') {
-        const legend = [];
-        let rainbow;
-        if (this.type === 'discrete') {
-            if (mode === 'unclassified' || this.rulesCollection.length === 0) {
-                const uniqueValues = this.tilesCollection.uniqueValues;
-                uniqueValues.sort((a, b) => a - b).forEach((v, key) => {
-                        legend.push({
-                            color: key < heatMapColors.discrete.length ? heatMapColors.discrete[key] : '#000000',
-                            isContinuous: false,
-                            label: v,
-                            value: v
-                        })
-                    }
-                );
-                return legend;
-            }
-            this.rulesCollection.orderBy('from').all.forEach(rule => {
-                legend.push({
-                    color: rule.color,
-                    isContinuous: false,
-                    label: rule.name,
-                    value: rule.from
-                });
-            });
-            return legend;
-        }
-        if (this.type === 'continuous') {
-            if (mode === 'unclassified' || this.rulesCollection.length === 0) {
-                rainbow = rainbowFactory({
-                    min: this.tilesCollection.first.min,
-                    max: this.tilesCollection.first.max
-                }, heatMapColors.terrain);
-                return rainbow;
-            }
-            this.rulesCollection.orderBy('from').all.forEach(rule => {
-                legend.push({
-                    color: rule.color,
-                    label: rule.name,
-                    fromOperator: rule.fromOperator,
-                    from: rule.from,
-                    isContinuous: true,
-                    toOperator: rule.toOperator,
-                    to: rule.to
-                });
-            });
-            legend.push({color: '#fff', label: 'Not Classified'});
-            return legend;
-        }
+        return this.tilesCollection.first.generateLegend(this.rulesCollection, this.type, mode);
     }
 }
 
