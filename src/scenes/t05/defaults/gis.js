@@ -48,6 +48,16 @@ const heatMapColors = {
     ]
 };
 
+const suitabilityRules = [
+    {type: 'fixed', color: '#a6611a', name: 'Unsuitable', from: 0, to: 0, fromOperator: '>=', toOperator: '<=', value: 0},
+    {type: 'fixed', color: '#dfc27d', name: 'Very low suitable', from: 0, to: 0.2, fromOperator: '>', toOperator: '<=', value: 1},
+    {type: 'fixed', color: '#f5f5f5', name: 'Low suitable', from: 0.2, to: 0.4, fromOperator: '>', toOperator: '<=', value: 2},
+    {type: 'fixed', color: '#b1cdc2', name: 'Moderately suitable', from: 0.4, to: 0.6, fromOperator: '>', toOperator: '<=', value: 3},
+    {type: 'fixed', color: '#80cdc1', name: 'Suitable', from: 0.6, to: 0.8, fromOperator: '>', toOperator: '<=', value: 4},
+    {type: 'fixed', color: '#018571', name: 'Very suitable', from: 0.8, to: 1, fromOperator: '>', toOperator: '<=', value: 5},
+];
+
 export {
-    heatMapColors
+    heatMapColors,
+    suitabilityRules
 };

@@ -14,7 +14,7 @@ class Rule {
 
     static fromObject(obj) {
         const rule = new Rule();
-        rule.id = obj.id;
+        rule.id = obj.id || uuidv4();
         rule.color = obj.color;
         rule.name = obj.name;
         rule.expression = obj.expression;

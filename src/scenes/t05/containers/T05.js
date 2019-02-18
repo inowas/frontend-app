@@ -26,6 +26,8 @@ import getMenuItems from '../defaults/menuItems';
 import {MCDA} from 'core/model/mcda';
 import ContentToolBar from '../../shared/ContentToolbar';
 import {Criterion, CriteriaCollection, WeightAssignment, WeightAssignmentsCollection} from 'core/model/mcda/criteria';
+import {heatMapColors} from '../defaults/gis';
+import CriteriaRasterMap from '../components/cd/criteriaRasterMap';
 
 const navigation = [{
     name: 'Documentation',
@@ -160,6 +162,8 @@ class T05 extends React.Component {
 
     handleClickCriteriaTool = (cid, name) => this.routeTo(cid, name);
 
+    handleClickSuitabilityTool = (name) => this.routeTo(name);
+
     routeTo = (nCid = null, nTool = null) => {
         const {id, property} = this.props.match.params;
         const cid = nCid || null;
@@ -238,8 +242,10 @@ class T05 extends React.Component {
             case 'su':
                 return (
                     <Suitability
+                        activeTool={cid}
                         handleChange={this.handleChange}
                         mcda={mcda}
+                        onClickTool={this.handleClickSuitabilityTool}
                     />
                 );
             default:
@@ -288,11 +294,21 @@ class T05 extends React.Component {
                                 handleChange={this.handleChange}
                             />
                             }
+                            {property === 'su' && (!cid || cid === 'weightAssignment') && mcda.suitability && mcda.suitability.data.length > 0 &&
+                            <Segment color='blue'>
+                                <CriteriaRasterMap
+                                    raster={mcda.suitability}
+                                    showBasicLayer={false}
+                                    legend={mcda.suitability.generateRainbow(heatMapColors.default)}
+                                    mapHeight='200px'
+                                />
+                            </Segment>
+                            }
                         </Grid.Column>
                         <Grid.Column width={12}>
                             <Segment color={'grey'} loading={isLoading}>
                                 <ContentToolBar
-                                    backButton={!!cid && property !== 'cd'}
+                                    backButton={!!cid && property !== 'cd' && property !== 'su'}
                                     onBack={this.routeTo}
                                     isDirty={isDirty} save
                                     onSave={this.handleSave}

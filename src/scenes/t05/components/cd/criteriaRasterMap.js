@@ -12,13 +12,6 @@ import {getStyle} from '../../../t03/components/maps';
 import {BoundingBox} from 'core/model/geometry';
 import Rainbow from '../../../../../node_modules/rainbowvis.js/rainbowvis';
 
-const styles = {
-    map: {
-        width: '100%',
-        height: '600px'
-    }
-};
-
 const options = {
     edit: {
         remove: false
@@ -72,7 +65,10 @@ class CriteriaRasterMap extends React.Component {
 
         return (
             <Map
-                style={styles.map}
+                style={{
+                    width: '100%',
+                    height: this.props.mapHeight || '600px'
+                }}
                 bounds={boundingBox.getBoundsLatLng()}
             >
                 {this.props.showBasicLayer &&
@@ -100,6 +96,7 @@ class CriteriaRasterMap extends React.Component {
                         dataArray={createGridData(data, gridSize.nX, gridSize.nY)}
                         bounds={boundingBox.getBoundsLatLng()}
                         opacity={0.75}
+                        sharpening={10}
                     />
                     {this.renderLegend(this.props.legend)}
                 </div>
@@ -113,7 +110,8 @@ CriteriaRasterMap.propTypes = {
     onChange: PropTypes.func,
     raster: PropTypes.instanceOf(Raster).isRequired,
     showBasicLayer: PropTypes.bool.isRequired,
-    legend: PropTypes.oneOfType([PropTypes.array, PropTypes.instanceOf(Rainbow)]).isRequired
+    legend: PropTypes.oneOfType([PropTypes.array, PropTypes.instanceOf(Rainbow)]).isRequired,
+    mapHeight: PropTypes.string
 };
 
 export default CriteriaRasterMap;

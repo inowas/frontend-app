@@ -1,6 +1,8 @@
 import {CriteriaCollection, WeightAssignmentsCollection} from './criteria';
 import {GisMap, Raster} from './gis';
 import math from 'mathjs';
+import RulesCollection from './criteria/RulesCollection';
+import {suitabilityRules} from 'scenes/t05/defaults/gis';
 
 class MCDA {
     _criteria = new CriteriaCollection();
@@ -8,6 +10,7 @@ class MCDA {
     _constraints = new GisMap();
     _withAhp = false;
     _suitability = new Raster();
+    _suitabilityRules = new RulesCollection();
 
     static fromObject(obj) {
         const mcda = new MCDA();
@@ -16,6 +19,7 @@ class MCDA {
         mcda.constraints = GisMap.fromObject(obj.constraints);
         mcda.withAhp = obj.withAhp;
         mcda.suitability = obj.suitability ? Raster.fromObject(obj.suitability) : new Raster();
+        mcda.suitabilityRules = obj.suitabilityRules ? RulesCollection.fromArray(obj.suitabilityRules) : RulesCollection.fromArray(suitabilityRules);
         return mcda;
     }
 
@@ -59,13 +63,22 @@ class MCDA {
         this._suitability = value;
     }
 
+    get suitabilityRules() {
+        return this._suitabilityRules;
+    }
+
+    set suitabilityRules(value) {
+        this._suitabilityRules = value;
+    }
+
     toObject() {
         return ({
             criteria: this.criteriaCollection.toArray(),
             weightAssignments: this.weightAssignmentsCollection.toArray(),
             constraints: this.constraints.toObject(),
             withAhp: this.withAhp,
-            suitability: this.suitability.toObject()
+            suitability: this.suitability.toObject(),
+            suitabilityRules: this.suitabilityRules.toArray()
         });
     }
 
