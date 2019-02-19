@@ -1,7 +1,7 @@
 import React from 'react';
 
 import {groupBy, intersection, union} from 'lodash';
-import {Checkbox, Form, Grid, Header, Icon, Image, Table, Breadcrumb} from 'semantic-ui-react';
+import {Checkbox, Form, Grid, Header, Icon, Item, Breadcrumb, Label} from 'semantic-ui-react';
 
 import {getData} from '../data';
 import {AppContainer} from '../../shared';
@@ -9,13 +9,18 @@ import {ToolGrid} from '../../shared/simpleTools';
 
 const navigation = [{
     name: 'Documentation',
-    path: 'https://inowas.hydro.tu-dresden.de/tools/t06-mar-method-selection/',
+    path: 'https://inowas.com/tools/t06-mar-method-selection/',
     icon: <Icon name="file"/>
 }];
 
 const styles = {
     h2: {
         textAlign: 'center',
+        textTransform: 'uppercase'
+    },
+    h4: {
+        color: 'rgba(0,0,0,.85)',
+        fontWeight: '700',
         textTransform: 'uppercase'
     }
 };
@@ -72,7 +77,7 @@ class T06 extends React.Component {
                     <Grid key={this.replaceAll(category, ' ', '_')}>
                         <Grid.Row>
                             <Grid.Column>
-                                <Header as={'h4'} dividing>{category}</Header>
+                                <Header as={'h4'} dividing style={styles.h4}>{category}</Header>
                                 {conditionsList}
                             </Grid.Column>
                         </Grid.Row>
@@ -85,7 +90,7 @@ class T06 extends React.Component {
     }
 
     renderBreadcrumbs = () => (
-        <Breadcrumb>
+        <Breadcrumb size='big'>
             <Breadcrumb.Section link>Tools</Breadcrumb.Section>
             <Breadcrumb.Divider icon='right angle'/>
             <Breadcrumb.Section>T06. MAR method selection</Breadcrumb.Section>
@@ -127,16 +132,19 @@ class T06 extends React.Component {
                 return (m.slug === am);
             });
             return (
-                <Table.Row key={method.slug}>
-                    <Table.Cell>{method.name}</Table.Cell>
-                    <Table.Cell>{method.highCost ? 'high' : 'low'}</Table.Cell>
-                    <Table.Cell>{method.highLandNeed ? 'high' : 'low'}</Table.Cell>
-                    <Table.Cell>
-                        <a href={method.href} target={'_blank'}>
-                            <Image src={method.image} size='medium'/>
-                        </a>
-                    </Table.Cell>
-                </Table.Row>
+                <Item key={method.slug}>
+                    <Item.Image src={method.image} size='medium'/>
+                    <Item.Content>
+                        <Item.Header as='h4'>{method.name} <Icon name='checkmark' color='green'/></Item.Header>
+                        <Item.Description>{method.description}</Item.Description>
+                        <Item.Extra><a href={method.href} target={'_blank'}>Read more</a></Item.Extra>
+                        <Item.Extra>
+                            <Label>Cost: {method.highCost ? <Icon name='arrow up' fitted/> : <Icon name='arrow down' fitted/>}</Label>
+                            <Label>Area: {method.highLandNeed ? <Icon name='arrow up' fitted/> : <Icon name='arrow up' fitted/>}</Label>
+                        </Item.Extra>
+                    </Item.Content>
+                </Item>
+
             );
         }));
     }
@@ -144,20 +152,23 @@ class T06 extends React.Component {
     render() {
         return (
             <AppContainer navbarItems={navigation}>
-                <div style={{margin: '0 0 0 1em' }}>
-                <Header as={'h1'} size={'large'}>T06. MAR method selection</Header>
-                {this.renderBreadcrumbs()}
-                </div>
+                <Grid padded>
+                    <Grid.Column style={{paddingTop: 0, paddingBottom: 0}}>
+                        {this.renderBreadcrumbs()}
+                    </Grid.Column>
+                </Grid>
                 <ToolGrid rows={1}>
                     <div>
-                        <Header as={'h2'} style={styles.h2}>Input Conditions</Header>
                         <Form>
                             {this.conditions()}
                         </Form>
                     </div>
                     <div>
-                        <Header as={'h2'} style={styles.h2}>Methods Suggested</Header>
-                        <Table celled padded>
+                        <Item.Group divided>
+                            {this.methods()}
+                        </Item.Group>
+
+                        {/*<Table celled padded>
                             <Table.Header>
                                 <Table.Row>
                                     <Table.HeaderCell width={4} singleLine>MAR methods</Table.HeaderCell>
@@ -169,7 +180,7 @@ class T06 extends React.Component {
                             <Table.Body>
                                 {this.methods()}
                             </Table.Body>
-                        </Table>
+                        </Table>*/}
                     </div>
                 </ToolGrid>
             </AppContainer>
