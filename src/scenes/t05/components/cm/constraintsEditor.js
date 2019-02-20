@@ -10,7 +10,8 @@ class ConstraintsEditor extends React.Component {
 
         this.state = {
             constraints: props.constraints.toObject(),
-            mode: 'map'
+            mode: 'map',
+            showInfo: true
         }
     }
 
@@ -19,6 +20,8 @@ class ConstraintsEditor extends React.Component {
             constraints: nextProps.constraints.toObject()
         });
     }
+
+    handleDismiss = () => this.setState({showInfo: false});
 
     handleChange = constraints => {
         if (!(constraints instanceof GisMap)) {
@@ -52,14 +55,19 @@ class ConstraintsEditor extends React.Component {
 
     render() {
         const {readOnly} = this.props;
-        const {constraints, mode} = this.state;
+        const {constraints, mode, showInfo} = this.state;
 
         return (
             <div>
-                <Message>
-                    <Message.Header>Spatial Discretization</Message.Header>
-                    <p>Set the outline of your project area and define the grid size.</p>
+                {showInfo &&
+                <Message onDismiss={this.handleDismiss}>
+                    <Message.Header>Global Constraints</Message.Header>
+                    <p>
+                        Draw zones, which should not be respected in the suitability calculation. It is necessary to
+                        click on the 'Cut and Process' button, after making changes.
+                    </p>
                 </Message>
+                }
                 <Grid>
                     <Grid.Column width={5}>
                         <Segment textAlign='center' inverted color='grey' secondary>

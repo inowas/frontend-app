@@ -6,13 +6,16 @@ import {WeightAssignment} from 'core/model/mcda/criteria';
 class SimpleWeightAssignment extends React.Component {
 
     constructor(props) {
-        super();
+        super(props);
 
         this.state = {
             sum: props.weightAssignment.weightsCollection.sumBy('value'),
-            wa: props.weightAssignment.toObject()
+            wa: props.weightAssignment.toObject(),
+            showInfo: true
         };
     }
+
+    handleDismiss = () => this.setState({showInfo: false});
 
     onLocalChange = (e, {name, value}) => this.setState(prevState => ({
         wa: {
@@ -50,12 +53,13 @@ class SimpleWeightAssignment extends React.Component {
 
         return (
             <div>
-                <Message>
-                    <Message.Header>Weight Assignment: Simple</Message.Header>
-                    <p>You can perform more of the weight assignment methods and compare the results in the end.</p>
-                    <p>Simple Assignment: assign weights to the criteria completely free by filling the input
-                        fields.</p>
+                {this.state.showInfo &&
+                <Message onDismiss={this.handleDismiss}>
+                    <Message.Header>Weight Assignment: Free Input</Message.Header>
+                    <p>Assign values to each criterion completely free by filling the input fields. The given values are
+                        then normalized and calculated to weights between 0 and 1 in relation to the other values.</p>
                 </Message>
+                }
 
                 {wa.weights.length > 0 &&
                 <Grid columns={2}>

@@ -32,7 +32,8 @@ class MultiInfluence extends React.Component {
             editEdgeMode: false,
             selectedEdges: null,
             network: null,
-            wa: props.weightAssignment.toObject()
+            wa: props.weightAssignment.toObject(),
+            showInfo: true
         };
     }
 
@@ -69,6 +70,8 @@ class MultiInfluence extends React.Component {
 
         return {edges, nodes};
     };
+
+    handleDismiss = () => this.setState({showInfo: false});
 
     addEdge = data => {
         const edges = this.state.edges;
@@ -194,22 +197,30 @@ class MultiInfluence extends React.Component {
 
         return (
             <div>
-                <Message>
-                    <Message.Header>Weight Assignment: Multi-influence factor method</Message.Header>
-                    <p>You can perform more of the weight assignment methods and compare the results in the end.</p>
-                    <p>If editing mode is not active, you can drag and drop the criteria and move around inside the
-                        editor window. To start editing relations, click on the button. If editing mode is active, you
-                        can click on a criterion, hold the mouse key and move it to another criterion to set the
-                        relation. You can select relations by clicking on the arrows. You can select all incoming and
-                        outgoing relations by clicking on a criterion. When there are selected relations, you can delete
-                        them or change their effect value with the buttons on the right.</p>
+                {this.state.showInfo &&
+                <Message onDismiss={this.handleDismiss}>
+                    <Message.Header>Weight Assignment: Multi-Influence Factor</Message.Header>
+                    <p>
+                        To activate editing, click on the button below the influence chart. If editing mode is not
+                        active, you can drag and drop the criteria and move around inside the editor window. If editing
+                        mode is active, you can click on a criterion, hold the mouse key and move it to another
+                        criterion to set the relation. You can select relations by clicking on the arrows. You can
+                        select all incoming and outgoing relations by clicking on a criterion. When there are selected
+                        relations, you can delete them or change their effect value with the buttons on the right.
+                        Do not forget to save changes by clicking on the blue button on the left.
+                    </p>
+                    <p>
+                        There is one more node, than criteria, which describes the whole suitability project itself. You
+                        can connect criteria with this node, to give information about their influence on the whole
+                        project.
+                    </p>
                 </Message>
-
+                }
                 {weights.length > 0 &&
                 <Grid columns={2}>
                     <Grid.Column>
                         <Segment textAlign='center' inverted color='grey' secondary>
-                            Influence Editor
+                            Influence Chart
                         </Segment>
                         <Segment>
                             <Graph getNetwork={this.setNetworkInstance} graph={graph} options={options} events={events}

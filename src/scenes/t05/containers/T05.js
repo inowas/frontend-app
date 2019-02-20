@@ -74,6 +74,7 @@ class T05 extends React.Component {
         description: tool.description,
         public: tool.public,
         tool: tool.tool,
+        type: tool.tool,
         data: {
             mcda: MCDA.fromObject(this.state.tool.data.mcda).toObject()
         }
@@ -257,6 +258,7 @@ class T05 extends React.Component {
                     <CriteriaEditor
                         toolName={this.state.tool.name}
                         readOnly={readOnly || mcda.weightAssignmentsCollection.length > 0}
+                        routeTo={() => {this.props.history.push('/tools/t04')}}
                         mcda={mcda}
                         handleDeleteCriterion={this.handleDeleteCriterion}
                         handleUpdateCriterion={this.handleUpdateCriterion}

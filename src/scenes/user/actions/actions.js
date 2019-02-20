@@ -37,12 +37,12 @@ export function fetchUser() {
     };
 }
 
-export function login(username, apiKey) {
+export function login(username, token) {
     return {
         type: LOGIN,
         payload: {
             username,
-            apiKey
+            token
         }
     };
 }

@@ -1,6 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import {Radio, Segment, Table} from 'semantic-ui-react';
+import {Message, Radio, Segment, Table} from 'semantic-ui-react';
 import {MCDA} from 'core/model/mcda';
 
 const styles = {
@@ -13,9 +13,19 @@ const styles = {
 };
 
 class WeightAssignmentTable extends React.Component {
+    constructor(props) {
+        super(props);
+
+        this.state = {
+            showInfo: true
+        }
+    }
+
+    handleDismiss = () => this.setState({showInfo: false});
 
     render() {
         const {mcda} = this.props;
+        const {showInfo} = this.state;
 
         if (!mcda.withAhp) {
             return (
@@ -50,6 +60,17 @@ class WeightAssignmentTable extends React.Component {
 
         return (
             <div>
+                {showInfo &&
+                <Message onDismiss={this.handleDismiss}>
+                    <Message.Header>Suitability</Message.Header>
+                    {mcda.withAhp ?
+                        <p>Select a weight assignment method for each criteria set: the main criteria and each group of
+                            sub criteria. Click on the 'Start Calculation' button afterwards.</p> :
+                        <p>Select the desired assignment method and click on the 'Start Calculation' button
+                            afterwards.</p>
+                    }
+                </Message>
+                }
                 <Segment textAlign='center' inverted color='grey' secondary style={styles.noMargin}>
                     Main Criteria
                 </Segment>

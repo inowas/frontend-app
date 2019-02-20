@@ -43,7 +43,7 @@ class ToolMetaData extends React.Component {
                 Tools
             </Breadcrumb.Section>
             <Breadcrumb.Divider icon='right angle'/>
-            <Breadcrumb.Section>{this.props.tool.type}</Breadcrumb.Section>
+            <Breadcrumb.Section>{this.props.tool.tool}</Breadcrumb.Section>
             <Breadcrumb.Divider icon='right angle'/>
             <Breadcrumb.Section>
                 {this.state.tool.name}

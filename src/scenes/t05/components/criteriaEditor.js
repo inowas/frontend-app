@@ -21,17 +21,22 @@ const styles = {
         shapeProperties: {
             borderRadius: 0
         }
+    },
+    link: {
+        lineHeight: '0.2em',
+        backgroundColor: 'none'
     }
 };
 
 class CriteriaEditor extends React.Component {
     constructor(props) {
-        super();
+        super(props);
 
         this.state = {
             criteria: props.mcda.criteriaCollection.toArray(),
             network: null,
-            isDirty: false
+            isDirty: false,
+            showInfo: true
         };
     }
 
@@ -46,6 +51,8 @@ class CriteriaEditor extends React.Component {
     }
 
     handleAddCriteria = () => this.props.handleUpdateCriterion(new Criterion());
+
+    handleDismiss = () => this.setState({showInfo: false});
 
     handleAddSubCriterion = id => {
         const criterion = new Criterion();
@@ -140,15 +147,23 @@ class CriteriaEditor extends React.Component {
 
         return (
             <Grid>
+                {this.state.showInfo &&
                 <Grid.Row>
                     <Grid.Column width={16}>
-                        <Message>
+                        <Message onDismiss={this.handleDismiss}>
                             <Message.Header>Choose your criteria</Message.Header>
-                            <p>If you are unsure which criteria to use, please refer to the review on criteria used in
-                                literature: T04</p>
+                            <p>For managed aquifer recharge (MAR) MCDA you can find information of former scientific
+                                works and recommendations for criteria in our database:
+                                <Button basic style={styles.link} onClick={this.props.routeTo}>T04</Button>
+                                Do not forget to specify, if a criteria is described by continuous or discrete values.
+                            </p>
+                            <p><b>Analytical Hierarchy Process</b> <i>(Saaty, 1980)</i>: Choose this method, to separate
+                                your criteria in main and sub criteria. It is recommended, to use it for large numbers
+                                of criteria. You should decide to use this method before adding criteria. </p>
                         </Message>
                     </Grid.Column>
                 </Grid.Row>
+                }
                 <Grid.Row>
                     <Grid.Column width={3}>
                         <Segment textAlign='center'>
