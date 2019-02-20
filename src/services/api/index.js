@@ -1,7 +1,7 @@
 import axios from 'axios';
 import storeToCreate from 'store';
 
-const BASE_URL = process.env.REACT_APP_API_URL + '/api';
+const BASE_URL = process.env.REACT_APP_API_URL + '/v3';
 export const GEOPROCESSING_URL = 'https://geoprocessing.inowas.com';
 export const JSON_SCHEMA_URL = 'https://schema.inowas.com/';
 
