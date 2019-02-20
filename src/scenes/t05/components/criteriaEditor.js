@@ -30,7 +30,8 @@ class CriteriaEditor extends React.Component {
 
         this.state = {
             criteria: props.mcda.criteriaCollection.toArray(),
-            network: null
+            network: null,
+            isDirty: false
         };
     }
 
@@ -44,58 +45,21 @@ class CriteriaEditor extends React.Component {
         });
     }
 
-    handleAddCriteria = () => {
-        const criteriaCollection = CriteriaCollection.fromArray(this.state.criteria);
-        criteriaCollection.add(new Criterion());
-        return this.handleChange(criteriaCollection);
-    };
+    handleAddCriteria = () => this.props.handleUpdateCriterion(new Criterion());
 
     handleAddSubCriterion = id => {
         const criterion = new Criterion();
         criterion.parentId = id;
-        const criteriaCollection = CriteriaCollection.fromArray(this.state.criteria);
-        criteriaCollection.add(criterion);
-        return this.handleChange(criteriaCollection);
-    };
-
-    handleChange = criteriaCollection => {
-        if (!(criteriaCollection instanceof CriteriaCollection)) {
-            throw new Error('CriteriaCollection expected to be of type CriteriaCollection.');
-        }
-
-        return this.props.handleChange({
-            name: 'criteria',
-            value: criteriaCollection
-        });
+        return this.props.handleUpdateCriterion(criterion);
     };
 
     handleClickAhp = () => {
         const mcda = this.props.mcda.toObject();
         mcda.withAhp = !this.props.mcda.withAhp;
-        return this.props.handleChange({
-            name: 'mcda',
-            value: MCDA.fromObject(mcda)
-        });
+        return this.props.handleUpdateProject(mcda);
     };
 
-    handleLocalChange = id => (e, {name, value}) => {
-        const criteriaCollection = CriteriaCollection.fromArray(this.state.criteria);
-        const criterion = criteriaCollection.findById(id);
-
-        if (!criterion) {
-            return;
-        }
-
-        criterion[name] = value;
-
-        return this.setState({
-            criteria: criteriaCollection.update(criterion).toArray()
-        });
-    };
-
-    handleRemoveCriteria = id => this.handleChange(
-        CriteriaCollection.fromArray(this.state.criteria).remove(id).removeBy('parentId', id)
-    );
+    handleRemoveCriterion = id => this.props.handleDeleteCriterion(id);
 
     handleSelectChange = id => (e, {name, value}) => {
         const criteriaCollection = CriteriaCollection.fromArray(this.state.criteria);
@@ -106,13 +70,26 @@ class CriteriaEditor extends React.Component {
         }
 
         criterion[name] = value;
-
-        return this.handleChange(criteriaCollection.update(criterion));
+        return this.props.handleUpdateCriterion(criterion);
     };
 
-    onBlur = () => this.handleChange(
-        CriteriaCollection.fromArray(this.state.criteria)
-    );
+    handleLocalChange = (id, blur = false) => event => {
+        const criteriaCollection = CriteriaCollection.fromArray(this.state.criteria);
+        const criterion = criteriaCollection.findById(id);
+
+        if (!criterion) {
+            return;
+        }
+
+        if (blur) {
+            return this.props.handleUpdateCriterion(criterion);
+        }
+
+        criterion[event.target.name] = event.target.value;
+        return this.setState({
+            criteria: criteriaCollection.update(criterion).toArray()
+        });
+    };
 
     render() {
         const {mcda, readOnly} = this.props;
@@ -216,7 +193,7 @@ class CriteriaEditor extends React.Component {
                                                 name='name'
                                                 disabled={readOnly}
                                                 value={c.name}
-                                                onBlur={this.onBlur}
+                                                onBlur={this.handleLocalChange(c.id, true)}
                                                 onChange={this.handleLocalChange(c.id)}
                                             />
                                         </Table.Cell>
@@ -235,13 +212,15 @@ class CriteriaEditor extends React.Component {
                                             }
                                         </Table.Cell>
                                         <Table.Cell>
+                                            {!mcda.withAhp &&
                                             <Input
                                                 name='unit'
                                                 disabled={readOnly}
                                                 value={c.unit}
-                                                onBlur={this.onBlur}
+                                                onBlur={this.handleLocalChange(c.id, true)}
                                                 onChange={this.handleLocalChange(c.id)}
                                             />
+                                            }
                                         </Table.Cell>
                                         <Table.Cell textAlign='right'>
                                             {!readOnly &&
@@ -256,7 +235,7 @@ class CriteriaEditor extends React.Component {
                                                 <Button
                                                     negative
                                                     icon='trash'
-                                                    onClick={() => this.handleRemoveCriteria(c.id)}
+                                                    onClick={() => this.handleRemoveCriterion(c.id)}
                                                 />
                                             </Button.Group>
                                             }
@@ -270,7 +249,7 @@ class CriteriaEditor extends React.Component {
                                                     name='name'
                                                     disabled={readOnly}
                                                     value={cc.name}
-                                                    onBlur={this.onBlur}
+                                                    onBlur={this.handleLocalChange(cc.id, true)}
                                                     onChange={this.handleLocalChange(cc.id)}
                                                 />
                                             </Table.Cell>
@@ -286,13 +265,22 @@ class CriteriaEditor extends React.Component {
                                                     ]}
                                                 />
                                             </Table.Cell>
+                                            <Table.Cell>
+                                                <Input
+                                                    name='unit'
+                                                    disabled={readOnly}
+                                                    value={c.unit}
+                                                    onBlur={this.handleLocalChange(cc.id, true)}
+                                                    onChange={this.handleLocalChange(cc.id)}
+                                                />
+                                            </Table.Cell>
                                             <Table.Cell textAlign='right'>
                                                 {!readOnly &&
                                                 <Button.Group>
                                                     <Button
                                                         negative
                                                         icon='trash'
-                                                        onClick={() => this.handleRemoveCriteria(cc.id)}
+                                                        onClick={() => this.handleRemoveCriterion(cc.id)}
                                                     />
                                                 </Button.Group>
                                                 }
@@ -314,16 +302,16 @@ class CriteriaEditor extends React.Component {
                     </Grid.Column>
                 </Grid.Row>
                 {mcda.withAhp &&
-                    <Grid.Row>
-                        <Grid.Column with={16}>
-                            <Graph
-                                getNetwork={this.setNetworkInstance}
-                                graph={graph}
-                                options={options}
-                                style={styles.graph}
-                            />
-                        </Grid.Column>
-                    </Grid.Row>
+                <Grid.Row>
+                    <Grid.Column with={16}>
+                        <Graph
+                            getNetwork={this.setNetworkInstance}
+                            graph={graph}
+                            options={options}
+                            style={styles.graph}
+                        />
+                    </Grid.Column>
+                </Grid.Row>
                 }
             </Grid>
         );
@@ -334,7 +322,9 @@ class CriteriaEditor extends React.Component {
 CriteriaEditor.propTypes = {
     mcda: PropTypes.instanceOf(MCDA).isRequired,
     toolName: PropTypes.string.isRequired,
-    handleChange: PropTypes.func.isRequired,
+    handleDeleteCriterion: PropTypes.func.isRequired,
+    handleUpdateCriterion: PropTypes.func.isRequired,
+    handleUpdateProject: PropTypes.func.isRequired,
     readOnly: PropTypes.bool,
     routeTo: PropTypes.func
 };

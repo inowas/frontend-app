@@ -7,7 +7,7 @@ import {fetchTool, sendCommand} from 'services/api';
 import Command from '../../shared/simpleTools/commands/command';
 import {deepMerge} from '../../shared/simpleTools/helpers';
 
-import {Divider, Grid, Icon, Segment} from 'semantic-ui-react';
+import {Grid, Icon, Segment} from 'semantic-ui-react';
 import AppContainer from '../../shared/AppContainer';
 import ToolMetaData from '../../shared/simpleTools/ToolMetaData';
 import {
@@ -24,10 +24,10 @@ import {defaultsT05} from '../defaults';
 import getMenuItems from '../defaults/menuItems';
 
 import {MCDA} from 'core/model/mcda';
-import ContentToolBar from '../../shared/ContentToolbar';
 import {Criterion, CriteriaCollection, WeightAssignment, WeightAssignmentsCollection} from 'core/model/mcda/criteria';
 import {heatMapColors} from '../defaults/gis';
 import CriteriaRasterMap from '../components/cd/criteriaRasterMap';
+import McdaCommand from '../commands/mcdaCommand';
 
 const navigation = [{
     name: 'Documentation',
@@ -68,7 +68,7 @@ class T05 extends React.Component {
         }
     }
 
-    buildPayload = (tool) => ({
+    buildPayload = tool => ({
         id: tool.id,
         name: tool.name,
         description: tool.description,
@@ -152,6 +152,66 @@ class T05 extends React.Component {
         );
     };
 
+    handleDeleteCriterion = id => {
+        sendCommand(
+            McdaCommand.deleteCriterion({
+                id: this.state.tool.id,
+                criterion_id: id
+            }),
+            () => this.setState({
+                isDirty: false,
+                isLoading: false
+            }),
+            () => this.setState({
+                isError: true,
+                isLoading: false
+            })
+        );
+    };
+
+    handleUpdateCriterion = criterion => {
+        if (!(criterion instanceof Criterion)) {
+            throw new Error('Criterion expected to be instance of Criterion.');
+        }
+        sendCommand(
+            McdaCommand.updateCriterion({
+                id: this.state.tool.id,
+                criterion: criterion.toObject()
+            }),
+            () => this.setState({
+                isDirty: false,
+                isLoading: false
+            }),
+            () => this.setState({
+                isError: true,
+                isLoading: false
+            })
+        );
+    };
+
+    handleUpdateProject = () => {
+        const mcda = this.state.tool.data.mcda;
+        sendCommand(
+            McdaCommand.updateProject({
+                id: this.state.tool.id,
+                data: {
+                    constraints: mcda.constraints,
+                    suitability: mcda.suitability,
+                    weightAssignments: mcda.weightAssignments,
+                    withAhp: mcda.withAhp
+                }
+            }),
+            () => this.setState({
+                isDirty: false,
+                isLoading: false
+            }),
+            () => this.setState({
+                isError: true,
+                isLoading: false
+            })
+        );
+    };
+
     handleUpdateMetaData = (tool) => this.setState({
         tool: {
             ...tool
@@ -198,7 +258,9 @@ class T05 extends React.Component {
                         toolName={this.state.tool.name}
                         readOnly={readOnly || mcda.weightAssignmentsCollection.length > 0}
                         mcda={mcda}
-                        handleChange={this.handleChange}
+                        handleDeleteCriterion={this.handleDeleteCriterion}
+                        handleUpdateCriterion={this.handleUpdateCriterion}
+                        handleUpdateProject={this.handleUpdateProject}
                     />);
             case 'cm':
                 const constraints = mcda.constraints;
@@ -313,13 +375,6 @@ class T05 extends React.Component {
                         </Grid.Column>
                         <Grid.Column width={12}>
                             <Segment color={'grey'} loading={isLoading}>
-                                <ContentToolBar
-                                    backButton={!!cid && property !== 'cd' && property !== 'su'}
-                                    onBack={this.routeTo}
-                                    isDirty={isDirty} save
-                                    onSave={this.handleSave}
-                                />
-                                <Divider/>
                                 {this.renderContent()}
                             </Segment>
                         </Grid.Column>
