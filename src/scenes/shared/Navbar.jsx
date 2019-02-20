@@ -120,7 +120,7 @@ class NavBar extends React.Component {
             }
         ];
 
-        const userIsLoggedIn = this.props.session.apiKey;
+        const userIsLoggedIn = this.props.session.token;
 
         return (
 

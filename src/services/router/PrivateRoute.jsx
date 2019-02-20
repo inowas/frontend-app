@@ -23,9 +23,14 @@ class PrivateRoute extends React.Component {
     fetchUser = () => {
         fetchUrl('/user',
             response => {
-                this.props.setUser(response);
+                this.props.setUser(response)
             },
-            e => this.setState({error: e})
+            error => {
+                if (error.response.status === 401) {
+                    return (<Redirect to={'/logout'}/>);
+                }
+                return this.setState({error});
+            }
         )
     };
 
