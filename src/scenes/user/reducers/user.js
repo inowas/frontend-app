@@ -22,7 +22,7 @@ export const user = (state = initialState(), action) => {
         case SET_USER: {
             return {
                 ...state,
-                userName: action.payload.user_name || state.userName,
+                userName: action.payload.username || state.userName,
                 name: action.payload.name || state.name,
                 email: action.payload.email || state.email,
                 roles: action.payload.roles || state.roles,

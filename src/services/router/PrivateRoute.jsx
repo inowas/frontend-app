@@ -21,7 +21,7 @@ class PrivateRoute extends React.Component {
     };
 
     fetchUser = () => {
-        fetchUrl('/users.json',
+        fetchUrl('/user',
             response => {
                 this.props.setUser(response);
             },
