@@ -90,10 +90,10 @@ class T06 extends React.Component {
     }
 
     renderBreadcrumbs = () => (
-        <Breadcrumb size='big'>
-            <Breadcrumb.Section link>Tools</Breadcrumb.Section>
+        <Breadcrumb size='large'>
+            <Breadcrumb.Section link onClick={() => this.props.history.push('/tools')}>Tools</Breadcrumb.Section>
             <Breadcrumb.Divider icon='right angle'/>
-            <Breadcrumb.Section>T06. MAR method selection</Breadcrumb.Section>
+            <Breadcrumb.Section active>T06. MAR method selection</Breadcrumb.Section>
         </Breadcrumb>
     );
 
@@ -153,7 +153,7 @@ class T06 extends React.Component {
         return (
             <AppContainer navbarItems={navigation}>
                 <Grid padded>
-                    <Grid.Column style={{paddingTop: 0, paddingBottom: 0}}>
+                    <Grid.Column style={{paddingTop: '0.3em'}}>
                         {this.renderBreadcrumbs()}
                     </Grid.Column>
                 </Grid>

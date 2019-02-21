@@ -148,13 +148,13 @@ class Results extends React.Component {
                                 totalTimes={totalTimes}
                             />
 
-                            <Segment color={'grey'}>
+                            <Segment color={'grey'} loading={this.state.fetching}>
                                 <Accordion>
                                     <Accordion.Title active={activeIndex === 0} index={0} onClick={this.handleClickAccordion}>
                                         <Icon name='dropdown'/>
                                         Results Map
                                     </Accordion.Title>
-                                    <Accordion.Content active={activeIndex === 0} loading={this.state.fetching}>
+                                    <Accordion.Content active={activeIndex === 0}>
                                             {data &&
                                             <ResultsMap
                                                 activeCell={[selectedCol, selectedRow]}
