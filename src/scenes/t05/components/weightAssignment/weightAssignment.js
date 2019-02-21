@@ -11,6 +11,17 @@ import SimpleWeightAssignment from './spl';
 import AbstractCollection from 'core/model/collection/AbstractCollection';
 
 class WeightAssignmentEditor extends React.Component {
+
+    constructor(props) {
+        super(props);
+
+        this.state = {
+            showInfo: true
+        };
+    }
+
+    handleDismiss = () => this.setState({showInfo: false});
+
     handleClickDelete = (id) => {
         const wac = this.props.mcda.weightAssignmentsCollection;
         this.props.handleChange({
@@ -20,11 +31,15 @@ class WeightAssignmentEditor extends React.Component {
     };
 
     handleClickNew = criteriaCollection => (e, {name}) => {
-        if(!(criteriaCollection instanceof AbstractCollection)) {
+        if (!(criteriaCollection instanceof AbstractCollection)) {
             throw new Error('CriteriaCollection expected to be instance of AbstractCollection');
         }
 
         const wa = WeightAssignment.fromMethodAndCriteria(name, criteriaCollection);
+
+        if (this.props.mcda.withAhp) {
+            wa.parent = criteriaCollection.first.parentId;
+        }
 
         this.props.handleChange({
             name: 'weights',
@@ -51,6 +66,7 @@ class WeightAssignmentEditor extends React.Component {
                     return (
                         <MultiInfluence
                             criteriaCollection={this.props.mcda.criteriaCollection}
+                            toolName={this.props.toolName}
                             weightAssignment={this.props.selectedWeightAssignment}
                             handleChange={this.props.handleChange}
                             readOnly={this.props.readOnly}
@@ -86,10 +102,14 @@ class WeightAssignmentEditor extends React.Component {
         return (
             <Dropdown item text={`${name} (${subCriteria.length})`} key={key}>
                 <Dropdown.Menu>
-                    <Dropdown.Item name='spl' icon='write' onClick={this.handleClickNew(subCriteria)} text='Simple Weights' />
-                    <Dropdown.Item name='rnk' icon='ordered list' onClick={this.handleClickNew(subCriteria)} text='Ranking' />
-                    <Dropdown.Item name='mif' icon='fork' onClick={this.handleClickNew(subCriteria)} text='Multi-Influence' />
-                    <Dropdown.Item name='pwc' icon='sliders horizontal' onClick={this.handleClickNew(subCriteria)} text='Pairwise Comparison' />
+                    <Dropdown.Item name='spl' icon='write' onClick={this.handleClickNew(subCriteria)}
+                                   text='Free Input'/>
+                    <Dropdown.Item name='rnk' icon='ordered list' onClick={this.handleClickNew(subCriteria)}
+                                   text='Ranking'/>
+                    <Dropdown.Item name='mif' icon='fork' onClick={this.handleClickNew(subCriteria)}
+                                   text='Multi-Influence'/>
+                    <Dropdown.Item name='pwc' icon='sliders horizontal' onClick={this.handleClickNew(subCriteria)}
+                                   text='Pairwise Comparison'/>
                 </Dropdown.Menu>
             </Dropdown>
         );
@@ -105,46 +125,64 @@ class WeightAssignmentEditor extends React.Component {
 
         return (
             <Grid>
+                {this.state.showInfo &&
+                <Grid.Row>
+                    <Grid.Column width={16}>
+                        <Message onDismiss={this.handleDismiss}>
+                            <Message.Header>Weight Assignment</Message.Header>
+                            <p>For suitability mapping it is necessary to give weight to each criterion. There are
+                                different methods of weight assignment. Click on a method, to get further information
+                                about it. You can perform as many weight assignments as you want, compare the results
+                                and choose which method to use for the calculation in the end (Step suitability in the
+                                left navigation).</p>
+                            {mcda.withAhp &&
+                            <p><b>Analytical hierarchy method:</b> You need to do a weight assignment for each criteria
+                                set: the main criteria and each group of sub criteria.</p>
+                            }
+                        </Message>
+                    </Grid.Column>
+                </Grid.Row>
+                }
                 <Grid.Row>
                     <Grid.Column width={5}>
                         {!mcda.withAhp &&
-                            <Menu icon='labeled' fluid vertical>
-                                <Menu.Item
-                                    name='spl'
-                                    onClick={this.handleClickNew(mainCriteria)}>
-                                    <Icon name='write'/>
-                                    Simple Weights
-                                </Menu.Item>
-                                <Menu.Item
-                                    name='rnk'
-                                    onClick={this.handleClickNew(mainCriteria)}
-                                >
-                                    <Icon name='ordered list'/>
-                                    Ranking
-                                </Menu.Item>
-                                <Menu.Item
-                                    name='mif'
-                                    onClick={this.handleClickNew(mainCriteria)}
-                                >
-                                    <Icon name='fork'/>
-                                    Multi-Influence
-                                </Menu.Item>
-                                <Menu.Item
-                                    name='pwc'
-                                    onClick={this.handleClickNew(mainCriteria)}
-                                >
-                                    <Icon name='sliders horizontal'/>
-                                    Pairwise Comparison
-                                </Menu.Item>
-                            </Menu>
+                        <Menu icon='labeled' fluid vertical>
+                            <Menu.Item
+                                name='spl'
+                                onClick={this.handleClickNew(mainCriteria)}>
+                                <Icon name='write'/>
+                                Free Input
+                            </Menu.Item>
+                            <Menu.Item
+                                name='rnk'
+                                onClick={this.handleClickNew(mainCriteria)}
+                            >
+                                <Icon name='ordered list'/>
+                                Ranking
+                            </Menu.Item>
+                            <Menu.Item
+                                name='mif'
+                                onClick={this.handleClickNew(mainCriteria)}
+                            >
+                                <Icon name='fork'/>
+                                Multi-Influence
+                            </Menu.Item>
+                            <Menu.Item
+                                name='pwc'
+                                onClick={this.handleClickNew(mainCriteria)}
+                            >
+                                <Icon name='sliders horizontal'/>
+                                Pairwise Comparison
+                            </Menu.Item>
+                        </Menu>
                         }
                         {mcda.withAhp &&
-                            <Menu fluid vertical>
-                                {this.renderMethods('Main Criteria')}
-                                {mainCriteria.all.map((c, key) =>
-                                    this.renderMethods(`Sub Criteria of ${c.name}`, c, key)
-                                )}
-                            </Menu>
+                        <Menu fluid vertical>
+                            {this.renderMethods('Main Criteria')}
+                            {mainCriteria.all.map((c, key) =>
+                                this.renderMethods(`Sub Criteria of ${c.name}`, c, key)
+                            )}
+                        </Menu>
                         }
                     </Grid.Column>
                     <Grid.Column width={11}>
@@ -198,6 +236,7 @@ class WeightAssignmentEditor extends React.Component {
 }
 
 WeightAssignmentEditor.propTypes = {
+    toolName: PropTypes.string.isRequired,
     mcda: PropTypes.instanceOf(MCDA).isRequired,
     selectedWeightAssignment: PropTypes.instanceOf(WeightAssignment),
     handleChange: PropTypes.func.isRequired,

@@ -1,7 +1,7 @@
 import * as React from 'react';
 import PropTypes from 'prop-types';
 import {pure} from 'recompose';
-import {Dropdown} from 'semantic-ui-react';
+import {Form} from 'semantic-ui-react';
 import {Boundary, BoundaryCollection, BoundaryFactory} from 'core/model/modflow/boundaries';
 
 class BoundarySelector extends React.Component {
@@ -52,26 +52,28 @@ class BoundarySelector extends React.Component {
 
         return (
             <div>
-                <Dropdown
-                    placeholder="Select Boundary"
-                    search
-                    selection
-                    options={this.boundaryOptions}
-                    onChange={this.handleSelectBoundary}
-                    value={selectedId}
-                />
+                    <Form.Dropdown
+                        placeholder="Select Boundary"
+                        label='Select boundary'
+                        search
+                        selection
+                        options={this.boundaryOptions}
+                        onChange={this.handleSelectBoundary}
+                        value={selectedId}
+                    />
 
-                {this.selectedBoundary &&
-                <Dropdown
-                    disabled
-                    multiple
-                    options={this.layerOptions}
-                    placeholder={'Layers'}
-                    selection
-                    value={this.selectedBoundary.affectedLayers}
-                />
-                }
 
+                    {this.selectedBoundary &&
+                    <Form.Dropdown
+                        disabled
+                        label='Select boundary'
+                        multiple
+                        options={this.layerOptions}
+                        placeholder={'Layers'}
+                        selection
+                        value={this.selectedBoundary.affectedLayers}
+                    />
+                    }
             </div>
         );
     }

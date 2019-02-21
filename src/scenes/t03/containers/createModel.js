@@ -126,9 +126,12 @@ class CreateModel extends React.Component {
         }, () => this.validate())
     };
 
-    validate = () => (
-        this.setState({validation: ModflowModelCommand.createModflowModel(this.getPayload()).validate()})
-    );
+    validate = () => {
+        const command = ModflowModelCommand.createModflowModel(this.getPayload());
+        command.validate().then(
+            validation => this.setState({validation})
+        );
+    };
 
     render() {
         return (
@@ -190,10 +193,10 @@ class CreateModel extends React.Component {
                                                         onBlur={this.handleGridSizeChange}
                                                     />
                                                     <Form.Select compact
-                                                        label='Length unit'
-                                                        options={[{key: 2, text: 'meters', value: 2}]}
-                                                        style={{zIndex: 10000}}
-                                                        value={this.state.lengthUnit}
+                                                                 label='Length unit'
+                                                                 options={[{key: 2, text: 'meters', value: 2}]}
+                                                                 style={{zIndex: 10000}}
+                                                                 value={this.state.lengthUnit}
                                                     />
                                                 </Form>
                                             </Segment>
@@ -218,10 +221,10 @@ class CreateModel extends React.Component {
                                                         onBlur={this.handleStressperiodsChange}
                                                     />
                                                     <Form.Select compact
-                                                        label='Time unit'
-                                                        options={[{key: 4, text: 'days', value: 4}]}
-                                                        style={{zIndex: 10000}}
-                                                        value={this.state.timeUnit}
+                                                                 label='Time unit'
+                                                                 options={[{key: 4, text: 'days', value: 4}]}
+                                                                 style={{zIndex: 10000}}
+                                                                 value={this.state.timeUnit}
                                                     />
                                                 </Form>
                                             </Segment>
@@ -247,9 +250,6 @@ class CreateModel extends React.Component {
                                     onChange={this.handleMapInputChange}
                                 />
                             </Grid.Column>
-                        </Grid.Row>
-                        <Grid.Row>
-
                         </Grid.Row>
                     </Grid>
                 </Segment>

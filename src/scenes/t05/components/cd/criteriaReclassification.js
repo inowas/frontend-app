@@ -100,18 +100,31 @@ class CriteriaReclassification extends React.Component {
 
         return (
             <Grid>
+                {showInfo &&
                 <Grid.Row>
                     <Grid.Column width={16}>
-                        {showInfo &&
                         <Message onDismiss={this.handleDismiss}>
                             <Message.Header>Reclassification for continuous values</Message.Header>
-                            <p>All suitabilities, whose raster values are not covered by the rules, will be set with
-                                0.</p>
-                            <p>[{raster.min.toFixed(3)}, {raster.max.toFixed(3)}]</p>
+                            <p>
+                                Classes are defined by intervals of cell values and a corresponding suitability value
+                                or formula to calculate the suitability value. All cells, which are not covered by the
+                                rules, will be set with value 1. In formula you can use following commands:
+                            </p>
+                            <p>
+                                x ... current value | max ... maximum value | min ... minimum value | sqrt(x) ... square
+                                root | sin(x), cos(x), etc. ... mathematical functions <br/> x + 1, x - 1, x / max, -1 *
+                                x ... basic mathematical operations | x^(-1*sin(x/max)) ... complex equations
+                            </p>
+                            <p>
+                                It is also possible to choose a color and name for each value for a better
+                                visualization of the criteria data in the next step. It is necessary to click on the
+                                'Perform Reclassification' button after making changes.
+                            </p>
+                            <p>Data interval: [{raster.min.toFixed(3)}, {raster.max.toFixed(3)}]</p>
                         </Message>
-                        }
                     </Grid.Column>
                 </Grid.Row>
+                }
                 <Grid.Row>
                     <Grid.Column width={5}>
                         <Segment textAlign='center' inverted color='grey' secondary>
@@ -120,7 +133,7 @@ class CriteriaReclassification extends React.Component {
                         <Segment>
                             <Button primary icon fluid labelPosition='left' onClick={this.handleAddRule}>
                                 <Icon name='add'/>
-                                Add Rule
+                                Add Class
                             </Button>
                             <br/>
                             <Button positive icon fluid labelPosition='left' onClick={this.handleClickCalculate}>
@@ -133,13 +146,21 @@ class CriteriaReclassification extends React.Component {
                         <Table>
                             <Table.Header>
                                 <Table.Row>
+                                    <Table.HeaderCell/>
+                                    <Table.HeaderCell>Name</Table.HeaderCell>
                                     <Table.HeaderCell>From</Table.HeaderCell>
                                     <Table.HeaderCell>To</Table.HeaderCell>
-                                    <Table.HeaderCell>Suitability Index</Table.HeaderCell>
+                                    <Table.HeaderCell>Class</Table.HeaderCell>
                                     <Table.HeaderCell/>
                                 </Table.Row>
                                 {rules.all.map((rule, key) =>
                                     <Table.Row key={key}>
+                                        <Table.Cell>
+                                            <Icon name='circle' style={{color: rule.color}}/>
+                                        </Table.Cell>
+                                        <Table.Cell>
+                                            {rule.name}
+                                        </Table.Cell>
                                         <Table.Cell>
                                             {rule.fromOperator} {rule.from}
                                         </Table.Cell>
@@ -175,14 +196,14 @@ class CriteriaReclassification extends React.Component {
                             <CartesianGrid strokeDasharray="3 3"/>
                             <XAxis type="number" dataKey={'x'} domain={[Math.floor(raster.min), Math.ceil(raster.max)]}
                                    name='criterion'/>
-                            <YAxis type="number" dataKey={'y'} name='suitability'/>
+                            <YAxis type="number" dataKey={'y'} domain={[0, 1]} name='suitability'/>
                             <Scatter
                                 name="Suitability"
                                 line={{stroke: '#8884d8', strokeWidth: 1}}
                                 data={data}
                                 shape={() => {
                                     return null;
-                                }} //<circle cx={1} cy={1} r={2} stroke="black" strokeWidth={1} fill="#8884d8"/>
+                                }}
                                 dataKey='suitability'
                             />
                         </ScatterChart>
@@ -212,7 +233,7 @@ class CriteriaReclassification extends React.Component {
                 {criterion.type === 'discrete' &&
                 <CriteriaReclassificationDiscrete
                     criterion={this.props.criterion}
-                    onChange={() => null}
+                    onChange={this.props.onChange}
                 />
                 }
             </div>

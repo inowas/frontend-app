@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types';
 import React from 'react';
-import {Checkbox, Form, Select} from 'semantic-ui-react';
+import {Checkbox, Form, Input, Select} from 'semantic-ui-react';
 
 import AbstractPackageProperties from './AbstractPackageProperties';
 import {MtPackage} from 'core/model/modflow/mt3d';
@@ -32,7 +32,7 @@ class MtPackageProperties extends AbstractPackageProperties {
                     <Checkbox checked={enabled} onChange={toggleEnabled} disabled={readonly}/>
                 </Form.Field>
                 <Form.Group>
-                    <Form.Field width={15}>
+                    <Form.Field>
                         <label>Executable name</label>
                         <Select
                             options={[
@@ -44,23 +44,23 @@ class MtPackageProperties extends AbstractPackageProperties {
                             disabled={readonly}
                         />
                     </Form.Field>
-                    <Form.Field width={1}>
+                    <Form.Field>
                         <label>&nbsp;</label>
                         {this.renderInfoPopup('PLACEHOLDER', 'Method', 'top right', true)}
                     </Form.Field>
-                </Form.Group>
-                <Form.Field>
-                    <label>Version</label>
-                    <input value={mtPackage.version} readOnly/>
-                </Form.Field>
-                <Form.Field>
-                    <label>Ftl filename</label>
-                    <input value={mtPackage.ftlfilename} readOnly/>
-                </Form.Field>
-                <Form.Field>
-                    <label>Verbose</label>
-                    <input value={mtPackage.verbose} readOnly/>
-                </Form.Field>
+                    <Form.Field>
+                        <label>Version</label>
+                        <Input value={mtPackage.version} readOnly/>
+                    </Form.Field>
+                    <Form.Field>
+                        <label>Ftl filename</label>
+                        <Input value={mtPackage.ftlfilename} readOnly/>
+                    </Form.Field>
+                    <Form.Field width={7}>
+                        <label>Verbose</label>
+                        <Input value={mtPackage.verbose} readOnly/>
+                    </Form.Field>
+                    </Form.Group>
             </Form>
         );
     }

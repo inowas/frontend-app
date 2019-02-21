@@ -53,11 +53,15 @@ export const uploadRasterfile = (file, onSuccess, onError) => {
 };
 
 export const fetchRasterData = (
-    {hash, width = null, height = null}, onSuccess, onError) => {
+    {hash, width = null, height = null, method = 1}, onSuccess, onError) => {
     let url = GEOPROCESSING_URL + '/' + hash + '/data';
 
     if (width && height) {
         url += '/' + width + '/' + height;
+
+        if (!isNaN(method)) {
+            url += '/' + method;
+        }
     }
 
     return axios({

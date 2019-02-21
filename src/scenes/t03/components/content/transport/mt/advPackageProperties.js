@@ -7,12 +7,13 @@ import {documentation} from '../../../../defaults/transport';
 import InfoPopup from '../../../../../shared/InfoPopup';
 
 const styles = {
-    accordionFix: {
-        width: 'auto'
-    },
     inputFix: {
         padding: '0',
         height: 'auto'
+    },
+    headerLabel: {
+        color:'rgba(0,0,0,.95)',
+        fontSize:'1em'
     }
 };
 
@@ -27,10 +28,10 @@ class AdvPackageProperties extends AbstractPackageProperties {
 
         return (
             <Form>
-                <Segment color='grey'>
+                <Segment>
                     <Form.Group>
                         <Form.Field width={15}>
-                            <label>Advection solution option (Mixelm)</label>
+                            <label style={styles.headerLabel}>Advection solution option (Mixelm)</label>
                             <Select fluid
                                     name={'mixelm'}
                                     value={mtPackage.mixelm}
@@ -51,7 +52,8 @@ class AdvPackageProperties extends AbstractPackageProperties {
                         </Form.Field>
                     </Form.Group>
                 </Segment>
-                <Accordion styled style={styles.accordionFix}>
+
+                <Accordion styled fluid>
                     <Accordion.Title active={activeIndex === 5} index={5} onClick={this.handleClickAccordion}>
                         <Icon name='dropdown'/>
                         Advection Parameters and Particle Tracking
@@ -144,6 +146,7 @@ class AdvPackageProperties extends AbstractPackageProperties {
                         </div>
                         }
                     </Accordion.Content>
+
                     {[1, 3].includes(mtPackage.mixelm) &&
                     <div>
                         <Accordion.Title active={activeIndex === 1} index={1} onClick={this.handleClickAccordion}>
@@ -151,32 +154,34 @@ class AdvPackageProperties extends AbstractPackageProperties {
                             Particle Distribution
                         </Accordion.Title>
                         <Accordion.Content active={activeIndex === 1}>
-                            <Form.Field>
-                                <label>Dceps</label>
-                                <Input
-                                    type={'number'}
-                                    name={'dceps'}
-                                    value={mtPackage.dceps}
-                                    disabled={readonly}
-                                    onBlur={this.handleOnBlur(parseFloat)}
-                                    onChange={this.handleOnChange}
-                                    style={styles.inputFix}
-                                    icon={<InfoPopup description={documentation.dceps} title='DCEPS' position='top right' />}
-                                />
-                            </Form.Field>
-                            <Form.Field>
-                                <label>Nplane</label>
-                                <Input
-                                    type={'number'}
-                                    name={'nplane'}
-                                    value={mtPackage.nplane}
-                                    disabled={readonly}
-                                    onBlur={this.handleOnBlur(parseInt)}
-                                    onChange={this.handleOnChange}
-                                    style={styles.inputFix}
-                                    icon={<InfoPopup description={documentation.nplane} title='NPLANE' position='top right' />}
-                                />
-                            </Form.Field>
+                            <Form.Group widths='equal'>
+                                <Form.Field>
+                                    <label>Dceps</label>
+                                    <Input
+                                        type={'number'}
+                                        name={'dceps'}
+                                        value={mtPackage.dceps}
+                                        disabled={readonly}
+                                        onBlur={this.handleOnBlur(parseFloat)}
+                                        onChange={this.handleOnChange}
+                                        style={styles.inputFix}
+                                        icon={<InfoPopup description={documentation.dceps} title='DCEPS' position='top right' />}
+                                    />
+                                </Form.Field>
+                                <Form.Field>
+                                    <label>Nplane</label>
+                                    <Input
+                                        type={'number'}
+                                        name={'nplane'}
+                                        value={mtPackage.nplane}
+                                        disabled={readonly}
+                                        onBlur={this.handleOnBlur(parseInt)}
+                                        onChange={this.handleOnChange}
+                                        style={styles.inputFix}
+                                        icon={<InfoPopup description={documentation.nplane} title='NPLANE' position='top right' />}
+                                    />
+                                </Form.Field>
+                            </Form.Group>
                             <Form.Group widths='equal'>
                                 <Form.Field>
                                     <label>Npl</label>
@@ -236,6 +241,7 @@ class AdvPackageProperties extends AbstractPackageProperties {
                         </Accordion.Content>
                     </div>
                     }
+
                     {[2, 3].includes(mtPackage.mixelm) &&
                     <div>
                         <Accordion.Title active={activeIndex === 2} index={2} onClick={this.handleClickAccordion}>

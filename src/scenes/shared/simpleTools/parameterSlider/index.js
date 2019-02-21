@@ -62,7 +62,7 @@ class ParameterSlider extends React.Component {
 
         return this.setState({
             param: param.toObject
-        });
+        }, this.handleChange);
     };
 
     handleChange = () => this.props.handleChange(SliderParameter.fromObject(this.state.param));
