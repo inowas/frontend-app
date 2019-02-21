@@ -121,3 +121,15 @@ export const submitLoginCredentials = ({username, password}, onSuccess, onError)
         .then(onSuccess)
         .catch(onError);
 };
+
+export const dropData = (data, onSuccess, onError) => {
+    const api = createApi(getToken());
+    api.post('datadropper', data)
+        .then(response => response.data)
+        .then(onSuccess)
+        .catch(onError);
+};
+
+export const retrieveDroppedData = (filename, onSuccess, onError) => {
+    return fetchUrl('datadropper/'+filename, onSuccess, onError);
+};
