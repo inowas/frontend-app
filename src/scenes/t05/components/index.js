@@ -1,5 +1,5 @@
 import CriteriaEditor from './criteriaEditor';
-import {CriteriaDataEditor, CriteriaNavigation} from './cd';
+import {CriteriaDataEditor, CriteriaNavigation, CriteriaRasterMap} from './cd';
 import WeightAssignmentEditor from './weightAssignment/weightAssignment';
 import SuitabilityEditor from './su/suitabilityEditor';
 import ToolNavigation from './toolNavigation';
@@ -9,6 +9,7 @@ export {
     CriteriaEditor,
     CriteriaDataEditor,
     CriteriaNavigation,
+    CriteriaRasterMap,
     ConstraintsEditor,
     SuitabilityEditor,
     ToolNavigation,

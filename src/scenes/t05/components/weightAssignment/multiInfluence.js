@@ -196,7 +196,7 @@ class MultiInfluence extends React.Component {
         };
 
         return (
-            <div>
+            <div style={{marginTop: '30px'}}>
                 {this.state.showInfo &&
                 <Message onDismiss={this.handleDismiss}>
                     <Message.Header>Weight Assignment: Multi-Influence Factor</Message.Header>

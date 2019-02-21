@@ -38,7 +38,11 @@ class ContentToolBar extends React.Component {
         if (notSaved) {state = 'notSaved'}
         if (!isValid) {state = 'notValid'}
 
-        const message = this.getMessage(state);
+        let message = this.getMessage(state);
+
+        if (!this.props.saveButton && nextProps.isDirty) {
+            message = null;
+        }
 
         if (hasBeenSaved || error || notSaved) {
             this.setState({
@@ -95,7 +99,7 @@ class ContentToolBar extends React.Component {
 
         return (
             <Grid>
-                <Grid.Row columns={3}>
+                <Grid.Row columns={3} style={{height: '42px'}}>
                     <Grid.Column>
                         {this.props.backButton &&
                         <Button icon onClick={() => this.props.onBack()} labelPosition="left">

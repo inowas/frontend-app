@@ -12,11 +12,11 @@ class MCDA {
 
     static fromObject(obj) {
         const mcda = new MCDA();
-        mcda.criteriaCollection = CriteriaCollection.fromArray(obj.criteria);
-        mcda.weightAssignmentsCollection = WeightAssignmentsCollection.fromArray(obj.weightAssignments);
         mcda.constraints = GisMap.fromObject(obj.constraints);
-        mcda.withAhp = obj.withAhp;
+        mcda.criteriaCollection = CriteriaCollection.fromArray(obj.criteria);
         mcda.suitability = obj.suitability ? Suitability.fromObject(obj.suitability) : new Suitability();
+        mcda.weightAssignmentsCollection = WeightAssignmentsCollection.fromArray(obj.weight_assignments);
+        mcda.withAhp = obj.with_ahp;
         return mcda;
     }
 
@@ -62,11 +62,20 @@ class MCDA {
 
     toObject() {
         return ({
-            criteria: this.criteriaCollection.toArray(),
-            weightAssignments: this.weightAssignmentsCollection.toArray(),
             constraints: this.constraints.toObject(),
-            withAhp: this.withAhp,
-            suitability: this.suitability.toObject()
+            criteria: this.criteriaCollection.toArray(),
+            suitability: this.suitability.toObject(),
+            weight_assignments: this.weightAssignmentsCollection.toArray(),
+            with_ahp: this.withAhp
+        });
+    }
+
+    toProject() {
+        return ({
+            constraints: this.constraints.toObject(),
+            suitability: this.suitability.toObject(),
+            weight_assignments: this.weightAssignmentsCollection.toArray(),
+            with_ahp: this.withAhp
         });
     }
 

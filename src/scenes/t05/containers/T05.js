@@ -2,32 +2,33 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import {withRouter} from 'react-router-dom';
 import {includes} from 'lodash';
-
+import {Divider, Grid, Icon, Segment} from 'semantic-ui-react';
 import {fetchTool, sendCommand} from 'services/api';
+
+import {MCDA} from 'core/model/mcda';
+import {Criterion, CriteriaCollection, WeightAssignment, WeightAssignmentsCollection} from 'core/model/mcda/criteria';
+import {GisMap} from 'core/model/mcda/gis';
+
+import {defaultsT05, getMenuItems} from '../defaults';
+import {heatMapColors} from '../defaults/gis';
+
+import McdaCommand from '../commands/mcdaCommand';
+
 import Command from '../../shared/simpleTools/commands/command';
 import {deepMerge} from '../../shared/simpleTools/helpers';
-
-import {Grid, Icon, Segment} from 'semantic-ui-react';
 import AppContainer from '../../shared/AppContainer';
+import ContentToolBar from '../../shared/ContentToolbar';
 import ToolMetaData from '../../shared/simpleTools/ToolMetaData';
 import {
     CriteriaEditor,
     CriteriaDataEditor,
     CriteriaNavigation,
+    CriteriaRasterMap,
     ConstraintsEditor,
     SuitabilityEditor,
     ToolNavigation,
     WeightAssignmentEditor
 } from '../components';
-
-import {defaultsT05} from '../defaults';
-import getMenuItems from '../defaults/menuItems';
-
-import {MCDA} from 'core/model/mcda';
-import {Criterion, CriteriaCollection, WeightAssignment, WeightAssignmentsCollection} from 'core/model/mcda/criteria';
-import {heatMapColors} from '../defaults/gis';
-import CriteriaRasterMap from '../components/cd/criteriaRasterMap';
-import McdaCommand from '../commands/mcdaCommand';
 
 const navigation = [{
     name: 'Documentation',
@@ -74,23 +75,11 @@ class T05 extends React.Component {
         description: tool.description,
         public: tool.public,
         tool: tool.tool,
-        type: tool.tool,
-        data: {
-            mcda: MCDA.fromObject(this.state.tool.data.mcda).toObject()
-        }
+        data: MCDA.fromObject(this.state.tool.data).toObject()
     });
 
     handleChange = ({name, value}) => {
-        let mcda = MCDA.fromObject(this.state.tool.data.mcda);
-
-        if (name === 'criteria') {
-            if (value instanceof Criterion) {
-                mcda.updateCriteria(value);
-            }
-            if (value instanceof CriteriaCollection) {
-                mcda.criteriaCollection = value;
-            }
-        }
+        let mcda = MCDA.fromObject(this.state.tool.data);
 
         if (name === 'weights') {
             if (value instanceof WeightAssignmentsCollection) {
@@ -101,24 +90,34 @@ class T05 extends React.Component {
             }
         }
 
-        if (name === 'constraints') {
+        if (name === 'constraints' && value instanceof GisMap) {
             mcda.constraints = value;
         }
 
-        if (name === 'mcda') {
+        if (name === 'mcda' && value instanceof MCDA) {
             mcda = value;
         }
 
-        return this.setState({
-            tool: {
-                ...this.state.tool,
-                data: {
-                    ...this.state.tool.data,
-                    mcda: mcda.toObject()
-                }
-            },
-            isDirty: true
-        });
+        this.handleUpdateProject(mcda);
+    };
+
+    handleSaveMetadata = () => {
+        sendCommand(
+            Command.updateToolInstanceMetadata({
+                id: this.state.tool.id,
+                name: this.state.tool.name,
+                description: this.state.tool.description,
+                public: this.state.tool.public
+            }),
+            () => this.setState({
+                isDirty: false,
+                isLoading: false
+            }),
+            () => this.setState({
+                isError: true,
+                isLoading: false
+            })
+        );
     };
 
     handleSave = () => {
@@ -154,66 +153,92 @@ class T05 extends React.Component {
     };
 
     handleDeleteCriterion = id => {
-        sendCommand(
+        const criteriaCollection = CriteriaCollection.fromArray(this.state.tool.data.criteria);
+        criteriaCollection.remove(id);
+
+        this.setState({isDirty: true}, sendCommand(
             McdaCommand.deleteCriterion({
                 id: this.state.tool.id,
                 criterion_id: id
             }),
+            () => this.setState(prevState => ({
+                isDirty: false,
+                isLoading: false,
+                tool: {
+                    ...prevState.tool,
+                    data: {
+                        ...prevState.tool.data,
+                        criteria: criteriaCollection.toArray()
+                    }
+                }
+            })),
             () => this.setState({
                 isDirty: false,
-                isLoading: false
-            }),
-            () => this.setState({
                 isError: true,
                 isLoading: false
             })
-        );
+        ));
     };
 
     handleUpdateCriterion = criterion => {
         if (!(criterion instanceof Criterion)) {
             throw new Error('Criterion expected to be instance of Criterion.');
         }
-        sendCommand(
+
+        const criteriaCollection = CriteriaCollection.fromArray(this.state.tool.data.criteria);
+        criteriaCollection.update(criterion);
+
+        this.setState({isDirty: true}, sendCommand(
             McdaCommand.updateCriterion({
                 id: this.state.tool.id,
                 criterion: criterion.toObject()
             }),
+            () => this.setState(prevState => ({
+                isDirty: false,
+                isLoading: false,
+                tool: {
+                    ...prevState.tool,
+                    data: {
+                        ...prevState.tool.data,
+                        criteria: criteriaCollection.toArray()
+                    }
+                }
+            })),
             () => this.setState({
                 isDirty: false,
-                isLoading: false
-            }),
-            () => this.setState({
                 isError: true,
                 isLoading: false
             })
-        );
+        ));
     };
 
-    handleUpdateProject = () => {
-        const mcda = this.state.tool.data.mcda;
-        sendCommand(
+    handleUpdateProject = mcda => {
+        if (!(mcda instanceof MCDA)) {
+            throw new Error('MCDA expected to be instance of MCDA.');
+        }
+
+        this.setState({isDirty: true}, sendCommand(
             McdaCommand.updateProject({
                 id: this.state.tool.id,
-                data: {
-                    constraints: mcda.constraints,
-                    suitability: mcda.suitability,
-                    weightAssignments: mcda.weightAssignments,
-                    withAhp: mcda.withAhp
-                }
+                data: mcda.toProject()
             }),
+            () => this.setState(prevState => ({
+                isDirty: false,
+                isLoading: false,
+                tool: {
+                    ...prevState.tool,
+                    data: mcda.toObject()
+                }
+            })),
             () => this.setState({
                 isDirty: false,
-                isLoading: false
-            }),
-            () => this.setState({
                 isError: true,
                 isLoading: false
             })
-        );
+        ));
     };
 
-    handleUpdateMetaData = (tool) => this.setState({
+    handleUpdateMetaData = tool => this.setState({
         tool: {
             ...tool
         }
@@ -247,7 +272,7 @@ class T05 extends React.Component {
         const {id, property} = this.props.match.params;
         const cid = this.props.match.params.cid || null;
         const tool = this.props.match.params.tool || null;
-        const mcda = MCDA.fromObject(this.state.tool.data.mcda);
+        const mcda = MCDA.fromObject(this.state.tool.data);
 
         const {permissions} = this.state.tool;
         const readOnly = !includes(permissions, 'w');
@@ -258,7 +283,9 @@ class T05 extends React.Component {
                     <CriteriaEditor
                         toolName={this.state.tool.name}
                         readOnly={readOnly || mcda.weightAssignmentsCollection.length > 0}
-                        routeTo={() => {this.props.history.push('/tools/t04')}}
+                        routeTo={() => {
+                            this.props.history.push('/tools/t04')
+                        }}
                         mcda={mcda}
                         handleDeleteCriterion={this.handleDeleteCriterion}
                         handleUpdateCriterion={this.handleUpdateCriterion}
@@ -324,7 +351,7 @@ class T05 extends React.Component {
     }
 
     render() {
-        const mcda = MCDA.fromObject(this.state.tool.data.mcda);
+        const mcda = MCDA.fromObject(this.state.tool.data);
         const {tool, isDirty, isLoading} = this.state;
 
         const {cid, property} = this.props.match.params;
@@ -342,9 +369,10 @@ class T05 extends React.Component {
                         <Grid.Column width={12}>
                             <ToolMetaData
                                 tool={tool} readOnly={readOnly} onChange={this.handleUpdateMetaData}
-                                onSave={this.handleSave}
+                                onSave={this.handleSaveMetadata}
                                 saveButton={false}
-                                isDirty={isDirty}/>
+                                isDirty={isDirty}
+                            />
                         </Grid.Column>
                     </Grid.Row>
                     <Grid.Row>
@@ -377,6 +405,13 @@ class T05 extends React.Component {
                         </Grid.Column>
                         <Grid.Column width={12}>
                             <Segment color={'grey'} loading={isLoading}>
+                                <ContentToolBar
+                                    backButton={!!cid && property !== 'cd'}
+                                    onBack={this.routeTo}
+                                    isDirty={isDirty}
+                                    saveButton={false}
+                                />
+                                <Divider />
                                 {this.renderContent()}
                             </Segment>
                         </Grid.Column>

@@ -61,7 +61,7 @@ class CriteriaEditor extends React.Component {
     };
 
     handleClickAhp = () => {
-        const mcda = this.props.mcda.toObject();
+        const mcda = this.props.mcda;
         mcda.withAhp = !this.props.mcda.withAhp;
         return this.props.handleUpdateProject(mcda);
     };
@@ -147,9 +147,9 @@ class CriteriaEditor extends React.Component {
 
         return (
             <Grid>
-                {this.state.showInfo &&
                 <Grid.Row>
-                    <Grid.Column width={16}>
+                    <Grid.Column width={13}>
+                        {this.state.showInfo &&
                         <Message onDismiss={this.handleDismiss}>
                             <Message.Header>Choose your criteria</Message.Header>
                             <p>For managed aquifer recharge (MAR) MCDA you can find information of former scientific
@@ -161,10 +161,8 @@ class CriteriaEditor extends React.Component {
                                 your criteria in main and sub criteria. It is recommended, to use it for large numbers
                                 of criteria. You should decide to use this method before adding criteria. </p>
                         </Message>
+                        }
                     </Grid.Column>
-                </Grid.Row>
-                }
-                <Grid.Row>
                     <Grid.Column width={3}>
                         <Segment textAlign='center'>
                             <Header as='h5' icon>
@@ -177,9 +175,10 @@ class CriteriaEditor extends React.Component {
                             />
                         </Segment>
                     </Grid.Column>
-                    <Grid.Column width={13}>
-
-                        {this.props.mcda.weightAssignmentsCollection.length > 0 &&
+                </Grid.Row>
+                <Grid.Row>
+                    <Grid.Column width={16}>
+                        {mcda.weightAssignmentsCollection.length > 0 &&
                         <Message
                             content='To change, delete or add criteria, you have to delete all weight assignments first or start
                         a new project.'
@@ -187,7 +186,6 @@ class CriteriaEditor extends React.Component {
                             warning
                         />
                         }
-
                         {criteria.length > 0 &&
                         <Table>
                             <Table.Header>
@@ -213,7 +211,7 @@ class CriteriaEditor extends React.Component {
                                             />
                                         </Table.Cell>
                                         <Table.Cell>
-                                            {!mcda.withAhp ?
+                                            {!mcda.withAhp &&
                                                 <Select
                                                     name='type'
                                                     disabled={readOnly}
@@ -223,7 +221,7 @@ class CriteriaEditor extends React.Component {
                                                         {key: 'discrete', value: 'discrete', text: 'Discrete'},
                                                         {key: 'continuous', value: 'continuous', text: 'Continuous'}
                                                     ]}
-                                                /> : <Input type='text' value='Main Criterion' readOnly/>
+                                                />
                                             }
                                         </Table.Cell>
                                         <Table.Cell>
@@ -284,7 +282,7 @@ class CriteriaEditor extends React.Component {
                                                 <Input
                                                     name='unit'
                                                     disabled={readOnly}
-                                                    value={c.unit}
+                                                    value={cc.unit}
                                                     onBlur={this.handleLocalChange(cc.id, true)}
                                                     onChange={this.handleLocalChange(cc.id)}
                                                 />
