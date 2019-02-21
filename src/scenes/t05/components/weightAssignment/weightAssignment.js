@@ -200,18 +200,22 @@ class WeightAssignmentEditor extends React.Component {
                             <Table.Header>
                                 <Table.Row>
                                     <Table.HeaderCell>Name</Table.HeaderCell>
-                                    <Table.HeaderCell>Method</Table.HeaderCell>
+                                    {mcda.withAhp && <Table.HeaderCell>Criteria Group</Table.HeaderCell>}
                                     <Table.HeaderCell/>
                                 </Table.Row>
                             </Table.Header>
                             <Table.Body>
                                 {mcda.weightAssignmentsCollection.all.map(wa => (
                                     <Table.Row key={wa.id}>
-                                        <Table.Cell width={9}>
+                                        <Table.Cell width={mcda.withAhp ? 8 : 14}>
                                             <Button basic size='small'
                                                     onClick={() => this.props.routeTo(wa.id)}>{wa.name}</Button>
                                         </Table.Cell>
-                                        <Table.Cell width={5}>{wa.method}</Table.Cell>
+                                        {mcda.withAhp &&
+                                        <Table.Cell width={6}>
+                                            {wa.parent ? mcda.criteriaCollection.findById(wa.parent).name : 'Main Criteria'}
+                                        </Table.Cell>
+                                        }
                                         <Table.Cell width={2} textAlign='right'>
                                             <Button
                                                 icon

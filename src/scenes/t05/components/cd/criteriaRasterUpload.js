@@ -9,6 +9,7 @@ import {Raster, Tile} from 'core/model/mcda/gis';
 import {min, max} from 'scenes/shared/rasterData/helpers';
 import {BoundingBox, GridSize} from 'core/model/geometry';
 import TilesMap from './tilesMap';
+import {dropData} from 'services/api';
 
 class CriteriaRasterUpload extends React.Component {
     state = {
@@ -45,6 +46,7 @@ class CriteriaRasterUpload extends React.Component {
         if (!(raster instanceof Raster)) {
             throw new Error('Raster expected to be instance of Raster.');
         }
+
         const criterion = this.props.criterion;
         criterion.raster = raster;
         return this.props.onChange(criterion);
@@ -55,47 +57,56 @@ class CriteriaRasterUpload extends React.Component {
 
         const criterion = this.props.criterion;
         const tile = new Tile();
-        tile.data = Array.from(data);
-        tile.min = min(tile.data);
-        tile.max = max(tile.data);
-        tile.gridSize = this.props.gridSize;
+        dropData(
+            JSON.stringify(data),
+            response => {
+                tile.url = response.filename;
+                tile.data = data;
+                tile.min = min(tile.data);
+                tile.max = max(tile.data);
+                tile.gridSize = this.props.gridSize;
 
-        let boundingBox = null;
-        if (metadata) {
-            boundingBox = BoundingBox.fromPoints([
-                [parseFloat(metadata.origin[0]), parseFloat(metadata.origin[1] + metadata.pixelSize[1] * metadata.rasterYSize)],
-                [parseFloat(metadata.origin[0] + metadata.pixelSize[0] * metadata.rasterXSize), parseFloat(metadata.origin[1])]
-            ]);
-        }
-        tile.boundingBox = boundingBox;
-        criterion.tilesCollection.add(tile);
+                let boundingBox = null;
+                if (metadata) {
+                    boundingBox = BoundingBox.fromPoints([
+                        [parseFloat(metadata.origin[0]), parseFloat(metadata.origin[1] + metadata.pixelSize[1] * metadata.rasterYSize)],
+                        [parseFloat(metadata.origin[0] + metadata.pixelSize[0] * metadata.rasterXSize), parseFloat(metadata.origin[1])]
+                    ]);
+                }
+                tile.boundingBox = boundingBox;
+                criterion.tilesCollection.add(tile);
 
-        criterion.constraintRaster.boundingBox = boundingBox;
-        criterion.constraintRaster.gridSize = this.props.gridSize;
+                criterion.constraintRaster.boundingBox = boundingBox;
+                criterion.constraintRaster.gridSize = this.props.gridSize;
 
-        criterion.rulesCollection = new RulesCollection();
-        if (criterion.type === 'continuous') {
-            const rule = new Rule();
-            rule.from = tile.min;
-            rule.to = tile.max;
-            criterion.rulesCollection.add(rule);
-        }
-        if (criterion.type === 'discrete') {
-            const uniqueValues = criterion.tilesCollection.uniqueValues;
-            uniqueValues.forEach(value => {
-                const rule = new Rule();
-                rule.from = value;
-                rule.to = value;
-                criterion.rulesCollection.add(rule);
-            });
-            criterion.constraintRules = criterion.rulesCollection;
-        }
+                criterion.rulesCollection = new RulesCollection();
+                if (criterion.type === 'continuous') {
+                    const rule = new Rule();
+                    rule.from = tile.min;
+                    rule.to = tile.max;
+                    criterion.rulesCollection.add(rule);
+                }
+                if (criterion.type === 'discrete') {
+                    const uniqueValues = criterion.tilesCollection.uniqueValues;
+                    uniqueValues.forEach(value => {
+                        const rule = new Rule();
+                        rule.from = value;
+                        rule.to = value;
+                        criterion.rulesCollection.add(rule);
+                    });
+                    criterion.constraintRules = criterion.rulesCollection;
+                }
 
-        this.setState({
-            activeTile: tile.toObject(),
-            showUploadModal: false
-        });
-        return this.props.onChange(criterion);
+                this.setState({
+                    activeTile: tile.toObject(),
+                    showUploadModal: false
+                });
+                return this.props.onChange(criterion);
+            },
+            response => {
+                throw new Error(response);
+            }
+        );
     };
 
     onToggleBasicLayer = () => this.setState({showBasicLayer: !this.state.showBasicLayer});

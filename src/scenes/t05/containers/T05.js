@@ -3,6 +3,7 @@ import React from 'react';
 import {withRouter} from 'react-router-dom';
 import {includes} from 'lodash';
 import {Divider, Grid, Icon, Segment} from 'semantic-ui-react';
+
 import {fetchTool, sendCommand} from 'services/api';
 
 import {MCDA} from 'core/model/mcda';
@@ -325,7 +326,7 @@ class T05 extends React.Component {
                     <CriteriaDataEditor
                         activeTool={tool}
                         criterion={criterion}
-                        handleChange={this.handleChange}
+                        handleChange={this.handleUpdateCriterion}
                         mcda={mcda}
                         onClickTool={this.handleClickCriteriaTool}
                     />

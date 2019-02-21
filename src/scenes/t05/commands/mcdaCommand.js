@@ -14,6 +14,7 @@ class McdaCommand extends AbstractCommand {
 
     static updateProject({id, data}) {
         const name = 'mcdaUpdateProject';
+
         return new McdaCommand(name, {id, data}, JSON_SCHEMA_URL + 'commands/' + name);
     }
 }

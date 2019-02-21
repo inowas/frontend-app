@@ -3,24 +3,26 @@ import {cloneDeep} from 'lodash';
 import {distanceBetweenCoordinates} from 'services/geoTools/distance';
 import uuidv4 from 'uuid/v4';
 import {max, min, rainbowFactory} from 'scenes/shared/rasterData/helpers';
-import {heatMapColors} from "../../../../scenes/t05/defaults/gis";
+import {heatMapColors} from 'scenes/t05/defaults/gis';
 
 class Raster {
     _boundingBox = new BoundingBox(0, 0, 0, 0);
     _gridSize = new GridSize(10, 10);
     _data = [];
     _id = uuidv4();
+    _isFetching = false;
     _min = 0;
     _max = 0;
+    _url = '';
 
     static fromObject(obj) {
         const raster = new Raster();
         raster.id = obj.id || uuidv4();
         raster.boundingBox = BoundingBox.fromArray(obj.boundingBox);
-        raster.data = obj.data;
         raster.gridSize = GridSize.fromObject(obj.gridSize);
         raster.min = obj.min;
         raster.max = obj.max;
+        raster.url = obj.url;
         return raster;
     }
 
@@ -56,6 +58,14 @@ class Raster {
         this._gridSize = value;
     }
 
+    get isFetching() {
+        return this._isFetching;
+    }
+
+    set isFetching(value) {
+        this._isFetching = value;
+    }
+
     get min() {
         return this._min;
     }
@@ -72,14 +82,29 @@ class Raster {
         this._max = value;
     }
 
+    get url() {
+        return this._url;
+    }
+
+    set url(value) {
+        this._url = value;
+    }
+
     toObject() {
         return {
             boundingBox: this.boundingBox.toArray(),
-            data: this.data,
             gridSize: this.gridSize.toObject(),
             id: this.id,
             max: this.max,
-            min: this.min
+            min: this.min,
+            url: this.url
+        }
+    }
+
+    toMap() {
+        return {
+            data: this.data,
+            isFetching: this.isFetching,
         }
     }
 

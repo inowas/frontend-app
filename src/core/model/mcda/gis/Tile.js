@@ -9,13 +9,13 @@ class Tile extends Raster {
     static fromObject(obj) {
         const raster = new Tile();
         raster.boundingBox = obj.boundingBox ? BoundingBox.fromArray(obj.boundingBox) : new BoundingBox();
-        raster.data = obj.data;
         raster.gridSize = obj.gridSize ? GridSize.fromObject(obj.gridSize) : new GridSize(10, 10);
         raster.id = obj.id || uuidv4();
         raster.min = obj.min;
         raster.max = obj.max;
         raster.x = obj.x;
         raster.y = obj.y;
+        raster.url = obj.url;
         return raster;
     }
 
@@ -38,13 +38,13 @@ class Tile extends Raster {
     toObject() {
         return {
             boundingBox: this.boundingBox.toArray(),
-            data: this.data,
             gridSize: this.gridSize.toObject(),
             id: this.id,
             max: this.max,
             min: this.min,
             x: this.x,
-            y: this.y
+            y: this.y,
+            url: this.url
         }
     }
 }

@@ -11,6 +11,8 @@ import {EditControl} from 'react-leaflet-draw';
 import {getStyle} from '../../../t03/components/maps';
 import {BoundingBox} from 'core/model/geometry';
 import Rainbow from '../../../../../node_modules/rainbowvis.js/rainbowvis';
+import {retrieveDroppedData} from 'services/api';
+import {Dimmer, Loader} from 'semantic-ui-react';
 
 const options = {
     edit: {
@@ -30,6 +32,37 @@ const options = {
 };
 
 class CriteriaRasterMap extends React.Component {
+    constructor(props) {
+        super(props);
+
+        this.state = {
+            raster: props.raster.toMap()
+        }
+    }
+
+    componentDidMount() {
+        if (this.props.raster.data.length === 0) {
+            this.setState(prevState => ({
+                raster: {
+                    ...prevState.raster,
+                    isFetching: true
+                }
+            }));
+            retrieveDroppedData(
+                this.props.raster.url,
+                response => this.setState(prevState => ({
+                    raster: {
+                        ...prevState.raster,
+                        data: response,
+                        isFetching: false
+                    }
+                })),
+                response => {
+                    throw new Error(response)
+                }
+            )
+        }
+    }
 
     onEditPath = e => {
         const layers = e.layers;
@@ -61,7 +94,16 @@ class CriteriaRasterMap extends React.Component {
     };
 
     render() {
-        const {data, boundingBox, gridSize} = this.props.raster;
+        const {raster} = this.state;
+        const {boundingBox, gridSize} = this.props.raster;
+
+        if (raster.isFetching) {
+            return (
+                <Dimmer active inverted>
+                    <Loader inverted indeterminate>Preparing Data</Loader>
+                </Dimmer>
+            );
+        }
 
         return (
             <Map
@@ -75,25 +117,25 @@ class CriteriaRasterMap extends React.Component {
                 <BasicTileLayer/>
                 }
                 {!!this.props.onChange &&
-                    <FeatureGroup>
-                        <EditControl
-                            position="bottomright"
-                            onEdited={this.onEditPath}
-                            {...options}
-                        />
-                        <Rectangle
-                            bounds={boundingBox.getBoundsLatLng()}
-                            {...getStyle('bounding_box')}
-                        />
-                    </FeatureGroup>
+                <FeatureGroup>
+                    <EditControl
+                        position="bottomright"
+                        onEdited={this.onEditPath}
+                        {...options}
+                    />
+                    <Rectangle
+                        bounds={boundingBox.getBoundsLatLng()}
+                        {...getStyle('bounding_box')}
+                    />
+                </FeatureGroup>
                 }
-                {data.length > 0 &&
+                {raster.data.length > 0 &&
                 <div>
                     <CanvasHeatMapOverlay
                         nX={gridSize.nX}
                         nY={gridSize.nY}
                         rainbow={this.props.legend}
-                        dataArray={createGridData(data, gridSize.nX, gridSize.nY)}
+                        dataArray={createGridData(raster.data, gridSize.nX, gridSize.nY)}
                         bounds={boundingBox.getBoundsLatLng()}
                         opacity={0.75}
                         sharpening={10}

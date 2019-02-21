@@ -1,6 +1,6 @@
 import Criterion from './Criterion';
 import AbstractCollection from '../../collection/AbstractCollection';
-import BoundingBox from "../../geometry/BoundingBox";
+import BoundingBox from '../../geometry/BoundingBox';
 
 class CriteriaCollection extends AbstractCollection {
     static fromArray(array) {
@@ -19,7 +19,7 @@ class CriteriaCollection extends AbstractCollection {
     isFinished(withAhp = false) {
         if (withAhp) {
             return this.length > 0 && this.all.filter(c =>
-                c.parent && (!c.suitability || c.suitability.data.length === 0)
+                c.parentId && (!c.suitability || c.suitability.data.length === 0)
             ).length === 0;
         }
 

@@ -13,20 +13,6 @@ class CriteriaDataEditor extends React.Component {
 
     handleClickStep = (e, {name}) => this.props.onClickTool(this.props.criterion.id, name);
 
-    handleChange = criterion => {
-        if(!(criterion instanceof Criterion)) {
-            throw new Error('Criterion expected to be instance of Criterion.');
-        }
-
-        const cc = this.props.mcda.criteriaCollection;
-        cc.update(criterion);
-
-        return this.props.handleChange({
-            name: 'criteria',
-            value: cc
-        });
-    };
-
     renderTool() {
         if (!this.props.criterion) {
             return;
@@ -37,21 +23,21 @@ class CriteriaDataEditor extends React.Component {
                 return (
                     <CriteriaReclassification
                         criterion={this.props.criterion}
-                        onChange={this.handleChange}
+                        onChange={this.props.handleChange}
                     />
                 );
             case 'constraints':
                 return (
                     <CriteriaDataConstraints
                         criterion={this.props.criterion}
-                        onChange={this.handleChange}
+                        onChange={this.props.handleChange}
                     />
                 );
             case 'results':
                 return (
                     <CriteriaDataResults
                         criterion={this.props.criterion}
-                        onChange={this.handleChange}
+                        onChange={this.props.handleChange}
                     />
                 );
             default:
@@ -59,7 +45,7 @@ class CriteriaDataEditor extends React.Component {
                     <CriteriaRasterUpload
                         criterion={this.props.criterion}
                         gridSize={this.props.mcda.constraints.gridSize}
-                        onChange={this.handleChange}
+                        onChange={this.props.handleChange}
                     />
                 );
         }
