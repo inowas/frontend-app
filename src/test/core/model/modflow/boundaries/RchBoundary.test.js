@@ -1,27 +1,44 @@
-import Moment from  'moment';
 import Uuid from 'uuid';
-
 import {RechargeBoundary} from 'core/model/modflow/boundaries';
 
-test('RchBoundary createWithStartDate', () => {
+
+const createRechargeBoundary = () => {
     const id = Uuid.v4();
-    const name = 'NameOfBoundary';
-    const geometry = {type: 'Polygon', coordinates: [[0, 0], [0, 10], [10, 10], [10, 0], [0, 0]]};
-    const utcIsoStartDateTime = new Moment.utc('2015-01-02').toISOString();
+    const name = 'NameOfRecharge';
+    const geometry = {type: 'Polygon', coordinates: [[[3, 4], [3, 5], [4, 5], [4, 3], [3, 4]]]};
+    const layers = [1];
+    const cells = [[1, 2], [2, 3]];
+    const spValues = [1, 2, 3];
 
-    const boundary = RechargeBoundary.createWithStartDate({
-        id,
-        name,
-        geometry,
-        utcIsoStartDateTime
-    });
+    return RechargeBoundary.create(
+        id, geometry, name, layers, cells, spValues
+    );
+};
 
-    expect(boundary).toBeInstanceOf(RechargeBoundary);
-    expect(boundary.id).toEqual(id);
-    expect(boundary.name).toEqual(name);
-    expect(boundary.geometry).toEqual(geometry);
-    expect(boundary.affectedLayers).toEqual([0]);
-    expect(boundary.metadata).toEqual({});
-    expect(boundary.getDateTimeValues()).toEqual([{date_time: utcIsoStartDateTime, values: [0]}]);
-    expect(boundary.activeCells).toBeNull();
+test('RechargeBoundary create', () => {
+    const id = Uuid.v4();
+    const name = 'NameOfRecharge';
+    const geometry = {type: 'Polygon', coordinates: [[[3, 4], [3, 5], [4, 5], [4, 3], [3, 4]]]};
+    const layers = [1];
+    const cells = [[1, 2], [2, 3]];
+    const spValues = [1, 2, 3];
+
+    const rechargeBoundary = RechargeBoundary.create(
+        id, geometry, name, layers, cells, spValues
+    );
+
+    expect(rechargeBoundary).toBeInstanceOf(RechargeBoundary);
+    expect(rechargeBoundary.id).toEqual(id);
+    expect(rechargeBoundary.name).toEqual(name);
+    expect(rechargeBoundary.geometry).toEqual(geometry);
+    expect(rechargeBoundary.layers).toEqual(layers);
+    expect(rechargeBoundary.cells).toEqual(cells);
+    expect(rechargeBoundary.spValues).toEqual(spValues);
+});
+
+
+test('RechargeBoundary fromObject', () => {
+    const obj = createRechargeBoundary().toObject();
+    const rechargeBoundary = RechargeBoundary.fromObject(obj);
+    expect(rechargeBoundary.toObject()).toEqual(obj);
 });

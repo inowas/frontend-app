@@ -1,53 +1,114 @@
-import BoundaryFactory from './BoundaryFactory';
-import SingleOPBoundary from './SingleOPBoundary';
+export default class RechargeBoundary {
 
-const boundaryType = 'rch';
+    _type = 'rch';
+    _id;
+    _geometry;
+    _name;
+    _layers;
+    _cells;
+    _spValues;
 
-export default class RechargeBoundary extends SingleOPBoundary {
-
-    static createWithStartDate({id = null, name = null, geometry, utcIsoStartDateTime}) {
-        return BoundaryFactory.createByTypeAndStartDate({id, name, type: boundaryType, geometry, utcIsoStartDateTimes: utcIsoStartDateTime});
+    static create(id, geometry, name, layers, cells, spValues) {
+        const boundary = new RechargeBoundary();
+        boundary._id = id;
+        boundary._geometry = geometry;
+        boundary._name = name;
+        boundary._layers = layers;
+        boundary._cells = cells;
+        boundary._spValues = spValues;
+        return boundary;
     }
 
-    static createFromObject(objectData) {
-        objectData.type = boundaryType;
-        return BoundaryFactory.fromObjectData(objectData);
+    static fromObject(obj) {
+        return RechargeBoundary.create(
+            obj.id,
+            obj.geometry,
+            obj.properties.name,
+            obj.properties.layers,
+            obj.properties.cells,
+            obj.properties.sp_values,
+        );
     }
 
-    constructor() {
-        super();
-        this._defaultValues = [0];
-        this._type = boundaryType;
+    get type() {
+        return this._type;
     }
 
-    isValid() {
-        super.isValid();
+    get id() {
+        return this._id;
+    }
 
-        if (!(this._type === boundaryType)) {
-            throw new Error('The parameter type is not not valid.');
+    set id(value) {
+        this._id = value;
+    }
+
+    get geometry() {
+        return this._geometry;
+    }
+
+    set geometry(value) {
+        this._geometry = value;
+    }
+
+    get name() {
+        return this._name;
+    }
+
+    set name(value) {
+        this._name = value;
+    }
+
+    get layers() {
+        return this._layers;
+    }
+
+    set layers(value) {
+        this._layers = value;
+    }
+
+    get cells() {
+        return this._cells;
+    }
+
+    set cells(value) {
+        this._cells = value;
+    }
+
+    get spValues() {
+        return this._spValues;
+    }
+
+    set spValues(value) {
+        this._spValues = value;
+    }
+
+    toObject() {
+        return {
+            'type': 'Feature',
+            'id': this.id,
+            'geometry': this.geometry,
+            'properties': {
+                'name': this.name,
+                'type': this.type,
+                'layers': this.layers,
+                'cells': this.cells,
+                'sp_values': this.spValues
+            }
         }
-
-        // noinspection RedundantIfStatementJS
-        if (this.geometry.type !== 'Polygon') {
-            throw new Error('The parameter geometry.type is not not valid.');
-        }
-
-        return true;
     }
 
     get geometryType() {
-        return 'Polygon';
+        return this.geometry()['type'];
     }
 
-
-    get valueProperties() {
+    static get valueProperties() {
         return [
             {
                 name: 'Recharge rate',
-                description:'Recharge rate to the groundwater head',
+                description: 'Recharge rate into layer',
                 unit: 'm/day',
-                decimals: 5
-            }
+                decimals: 5,
+            },
         ]
     }
 }

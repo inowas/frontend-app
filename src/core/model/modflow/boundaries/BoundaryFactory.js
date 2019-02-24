@@ -6,8 +6,6 @@ import RechargeBoundary from './RechargeBoundary';
 import RiverBoundary from './RiverBoundary';
 import WellBoundary from './WellBoundary';
 import HeadObservation from './HeadObservation';
-import Geometry from '../../geometry/Geometry';
-import {ActiveCells} from '../index';
 
 export default class BoundaryFactory {
 
@@ -32,6 +30,15 @@ export default class BoundaryFactory {
         }
     };
 
+    static createNewFromType(id, name, type, geometry, spValues) {
+        const boundary = BoundaryFactory.fromType(type);
+        boundary.id = id;
+        boundary.name = name;
+        boundary.geometry = geometry;
+        boundary.spValues = spValues;
+        return boundary;
+    }
+
     static createByTypeAndStartDate({id = null, name = null, type, geometry, utcIsoStartDateTimes}) {
         const boundary = BoundaryFactory.fromType(type);
         boundary.id = id ? id : Uuid.v4();
@@ -41,29 +48,25 @@ export default class BoundaryFactory {
         return boundary;
     }
 
-    static fromObjectData = (objectData) => {
-        if (!objectData) {
+    static fromObject = (obj) => {
+        if (!obj) {
             return null;
         }
 
-        const {id, name, geometry, type, affected_layers, metadata, date_time_values, observation_points, active_cells} = objectData;
-        const boundary = BoundaryFactory.fromType(type);
-
-        boundary.id = id;
-        boundary.name = name;
-        boundary.geometry = Geometry.fromObject(geometry);
-        boundary.affectedLayers = affected_layers;
-        boundary.metadata = metadata;
-        boundary.activeCells = ActiveCells.fromArray(active_cells);
-
-        if (date_time_values) {
-            boundary.setDateTimeValues(date_time_values);
+        if (obj.type === 'Feature') {
+            const type = obj.properties.type;
+            return BoundaryFactory.createNewFromType(type);
         }
 
-        if (observation_points) {
-            boundary.observationPoints = observation_points;
+        if (obj.type === 'FeatureCollection') {
+            obj.features.forEach(feature => {
+                if (BoundaryFactory.availableTypes.indexOf(feature.type) >= 0) {
+                    const type = feature.properties.type;
+                    return BoundaryFactory.createNewFromType(type);
+                }
+            });
         }
 
-        return boundary;
+        return null;
     };
 }

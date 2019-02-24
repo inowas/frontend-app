@@ -1,26 +1,43 @@
-import Moment from  'moment';
 import Uuid from 'uuid';
 import {RiverBoundary} from 'core/model/modflow/boundaries';
 
-test('RivBoundary createWithStartDate', () => {
+
+const createRiverBoundary = () => {
     const id = Uuid.v4();
-    const name = 'NameOfBoundary';
-    const geometry = {type: 'LineString', coordinates: [[0, 0], [0, 10], [10, 10], [10, 0]]};
-    const startDateTime = new Moment.utc('2015-01-02').toISOString();
+    const name = 'NameOfRRiver';
+    const geometry = {type: 'LineString', coordinates: [[3, 4], [3, 5], [4, 5], [4, 3], [3, 4]]};
+    const layers = [1];
+    const cells = [[1, 2], [2, 3]];
+    const spValues = [1, 2, 3];
 
-    const boundary = RiverBoundary.createWithStartDate({
-        id,
-        name,
-        geometry,
-        utcIsoStartDateTime: startDateTime
-    });
+    return RiverBoundary.create(
+        id, geometry, name, layers, cells, spValues
+    );
+};
 
-    expect(boundary).toBeInstanceOf(RiverBoundary);
-    expect(boundary.id).toEqual(id);
-    expect(boundary.name).toEqual(name);
-    expect(boundary.geometry).toEqual(geometry);
-    expect(boundary.affectedLayers).toEqual([0]);
-    expect(boundary.metadata).toEqual({});
-    expect(boundary.getDateTimeValues()).toEqual([{date_time: startDateTime, values: [0, 0, 0]}]);
-    expect(boundary.activeCells).toBeNull();
+test('RiverBoundary create', () => {
+    const id = Uuid.v4();
+    const name = 'NameOfRRiver';
+    const geometry = {type: 'LineString', coordinates: [[3, 4], [3, 5], [4, 5], [4, 3], [3, 4]]};
+    const layers = [1];
+    const cells = [[1, 2], [2, 3]];
+    const spValues = [1, 2, 3];
+
+    const riverBoundary = RiverBoundary.create(
+        id, geometry, name, layers, cells, spValues
+    );
+
+    expect(riverBoundary).toBeInstanceOf(RiverBoundary);
+    expect(riverBoundary.id).toEqual(id);
+    expect(riverBoundary.name).toEqual(name);
+    expect(riverBoundary.geometry).toEqual(geometry);
+    expect(riverBoundary.layers).toEqual(layers);
+    expect(riverBoundary.cells).toEqual(cells);
+});
+
+
+test('RiverBoundary fromObject', () => {
+    const obj = createRiverBoundary().toObject();
+    const riverBoundary = RiverBoundary.fromObject(obj);
+    expect(riverBoundary.toObject()).toEqual(obj);
 });

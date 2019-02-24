@@ -1,45 +1,43 @@
-import SingleOPBoundary from './SingleOPBoundary';
-import BoundaryFactory from './BoundaryFactory';
+export default class WellBoundary {
 
-const boundaryType = 'wel';
+    _type = 'wel';
+    _id;
+    _geometry;
+    _name;
+    _layers;
+    _cells;
+    _wellType;
+    _spValues;
 
-export default class WellBoundary extends SingleOPBoundary {
-
-    static createWithStartDate({id = null, name = null, geometry, utcIsoStartDateTime}) {
-        return BoundaryFactory.createByTypeAndStartDate({id, name, type: boundaryType, geometry, utcIsoStartDateTimes: utcIsoStartDateTime});
+    static create(id, geometry, name, layers, cells, spValues) {
+        const boundary = new WellBoundary();
+        boundary._id = id;
+        boundary._geometry = geometry;
+        boundary._name = name;
+        boundary._layers = layers;
+        boundary._cells = cells;
+        boundary._wellType = WellBoundary.wellTypes['default'];
+        boundary._spValues = spValues;
+        return boundary;
     }
 
-    static createFromObject(objectData) {
-        objectData.type = boundaryType;
-        return BoundaryFactory.fromObjectData(objectData);
+    static fromObject(obj) {
+        const wellBoundary = WellBoundary.create(
+            obj.id,
+            obj.geometry,
+            obj.properties.name,
+            obj.properties.layers,
+            obj.properties.cells,
+            obj.properties.sp_values,
+        );
+
+        wellBoundary.wellType = obj.properties.well_type;
+        return wellBoundary;
     }
 
-    constructor() {
-        super();
-        this._defaultValues = [0];
-        this._metadata = {well_type: 'puw'};
-        this._type = boundaryType;
-    }
-
-    get wellType() {
-        return (this._metadata && this._metadata.well_type) || 'puw';
-    }
-
-    set wellType(type) {
-        this._metadata.well_type = type;
-    }
-
-    get subType() {
-        return (this._metadata && this._metadata.well_type) || 'puw';
-    }
-
-    set subType(type) {
-        this._metadata.well_type = type;
-    }
-
-    get subTypes() {
+    static get wellTypes() {
         return {
-            name: 'Well type',
+            default: 'puw',
             types: [
                 {
                     name: 'Public Well',
@@ -65,34 +63,94 @@ export default class WellBoundary extends SingleOPBoundary {
         }
     }
 
-    get geometryType() {
-        return 'Point';
+    get type() {
+        return this._type;
     }
 
-    get valueProperties() {
+    get id() {
+        return this._id;
+    }
+
+    set id(value) {
+        this._id = value;
+    }
+
+    get geometry() {
+        return this._geometry;
+    }
+
+    set geometry(value) {
+        this._geometry = value;
+    }
+
+    get name() {
+        return this._name;
+    }
+
+    set name(value) {
+        this._name = value;
+    }
+
+    get layers() {
+        return this._layers;
+    }
+
+    set layers(value) {
+        this._layers = value;
+    }
+
+    get cells() {
+        return this._cells;
+    }
+
+    set cells(value) {
+        this._cells = value;
+    }
+
+    get wellType() {
+        return this._wellType;
+    }
+
+    set wellType(value) {
+        this._wellType = value;
+    }
+
+    get spValues() {
+        return this._spValues;
+    }
+
+    set spValues(value) {
+        this._spValues = value;
+    }
+
+    toObject() {
+        return {
+            'type': 'Feature',
+            'id': this.id,
+            'geometry': this.geometry,
+            'properties': {
+                'name': this.name,
+                'type': this.type,
+                'layers': this.layers,
+                'cells': this.cells,
+                'well_type': this.wellType,
+                'sp_values': this.spValues
+            }
+        }
+    }
+
+    get geometryType() {
+        return this.geometry()['type'];
+    }
+
+    static get valueProperties() {
         return [
             {
                 name: 'Pumping rate',
-                description:'Pumping rate of the well, positive values = infiltration',
+                description: 'Pumping rate of the well, positive values = infiltration',
                 unit: 'm3/day',
                 decimals: 1,
             },
         ]
-    }
-
-
-    isValid() {
-        super.isValid();
-
-        if (!(this._type === boundaryType)) {
-            throw new Error('The parameter type is not not valid.');
-        }
-
-        // noinspection RedundantIfStatementJS
-        if (this.geometry.type !== 'Point') {
-            throw new Error('The parameter geometry.type is not not valid.');
-        }
-
-        return true;
     }
 }

@@ -7,6 +7,7 @@ import {Button, Icon, Input, Table} from 'semantic-ui-react';
 import {Boundary, Stressperiods} from 'core/model/modflow';
 import {cloneDeep} from 'lodash';
 import CsvUpload from '../../../../shared/simpleTools/upload/CsvUpload';
+import WellBoundary from '../../../../../core/model/modflow/boundaries/WellBoundary';
 
 class BoundaryValuesDataTable extends React.Component {
 
@@ -239,7 +240,7 @@ class BoundaryValuesDataTable extends React.Component {
                     <Table.Header>
                         <Table.Row>
                             <Table.HeaderCell>Start Date</Table.HeaderCell>
-                            {boundary.valueProperties.map((p, idx) => (
+                            {WellBoundary.valueProperties.map((p, idx) => (
                                 <Table.HeaderCell key={idx}>{p.name}</Table.HeaderCell>))}
                             <Table.HeaderCell/>
                         </Table.Row>
