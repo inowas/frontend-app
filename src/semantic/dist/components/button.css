@@ -3836,3 +3836,8 @@
          Site Overrides
 *******************************/
 
+.downloadButtons {
+  position: absolute;
+  top: 0;
+  right: 2em;
+}

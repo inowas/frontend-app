@@ -75,7 +75,7 @@ export const defaults = () => {
             }, {
                 order: 7,
                 id: 'df',
-                name: 'Density of freshwater [g/cm³]',
+                name: 'Density of freshwater<br/>ρ<sub>f</sub> [g/cm³]',
                 min: 1.000,
                 max: 1.005,
                 value: 1.000,
@@ -84,7 +84,7 @@ export const defaults = () => {
             }, {
                 order: 8,
                 id: 'ds',
-                name: 'Density of saltwater [g/cm³]',
+                name: 'Density of saltwater<br/>ρ<sub>s</sub> [g/cm³]',
                 min: 1.020,
                 max: 1.030,
                 value: 1.025,

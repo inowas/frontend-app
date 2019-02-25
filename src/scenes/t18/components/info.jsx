@@ -8,7 +8,7 @@ import {
 } from '../calculations/calculationT18';
 
 import {getParameterValues} from '../../shared/simpleTools/helpers';
-import {Grid, Icon, Message} from 'semantic-ui-react';
+import {Grid, Header, Icon, Message} from 'semantic-ui-react';
 
 
 const renderCoWarning = (CoToHigh) => {
@@ -119,18 +119,19 @@ const Info = ({parameters, settings}) => {
     return (
         <Grid>
             <Grid.Row centered>
+                <Header as='h4'>The required area calculated based on:</Header>
+            <p>
+                Infiltration rate, A<sub>H</sub> = <strong>{AH.toFixed(2)} m<sup>2</sup></strong><br/>
+                BOD loading, A<sub>O</sub> = <strong>{AO.toFixed(2)} m<sup>2</sup></strong><br/>
+                Nitrogen loading, A<sub>N</sub> = <strong>{AN.toFixed(2)} m<sup>2</sup></strong>
+            </p>
+            {renderText(AH, AN, AO)}
+            </Grid.Row>
+            <Grid.Row centered>
                 {renderCoWarning(CoToHigh)}
                 {renderCnWarning()}
             </Grid.Row>
-            <Grid.Row centered>
-                <p>The required area calculated based on: </p>
-                <p>
-                    Infiltration rate = {AH.toFixed(2)} m<sup>2</sup><br/>
-                    BOD loading = {AO.toFixed(2)} m<sup>2</sup><br/>
-                    Nitrogen loading = {AN.toFixed(2)} m<sup>2</sup>
-                </p>
-                {renderText(AH, AN, AO)}
-            </Grid.Row>
+
         </Grid>
     );
 };

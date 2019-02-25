@@ -19,9 +19,8 @@ const Settings = ({settings, onChange}) => {
     return (
         <Grid padded>
             <Grid.Row centered>
-                <Header as='h2'>Settings</Header>
                 <Form>
-                    <p>Select the axis for the calculation of groundwater mounding:</p>
+                    <Header as='h4'>Select variable</Header>
                     <Segment>
                         <Form.Field>
                             <Radio
@@ -42,7 +41,7 @@ const Settings = ({settings, onChange}) => {
                             />
                         </Form.Field>
                     </Segment>
-                    <p>Select the type of infiltration</p>
+                    <Header as='h4'>Select the type of infiltration</Header>
                     <Segment>
                         <Form.Field>
                             <Radio

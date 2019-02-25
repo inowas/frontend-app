@@ -73,7 +73,7 @@ class ParameterSlider extends React.Component {
         return (
             <Grid.Row columns={3} style={styles.row}>
                 <Grid.Column width={5} textAlign='right'>
-                    <div dangerouslySetInnerHTML={{__html: param.name}}/>
+                    <div dangerouslySetInnerHTML={{__html: param.name}} style={{minHeight: '50px'}}/>
                 </Grid.Column>
                 <Grid.Column width={8}>
                     <Grid columns={2}>

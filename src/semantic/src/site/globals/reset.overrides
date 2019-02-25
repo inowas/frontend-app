@@ -28,3 +28,11 @@
 .rc-slider-track {
     background-color: @blue;
     }
+
+/*-------------------
+      SVG
+--------------------*/
+
+svg:not(:root) {
+    overflow: visible;
+}

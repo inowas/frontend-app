@@ -11,7 +11,7 @@ import {
     Line, Label
 } from 'recharts'
 
-import {Button, Segment} from 'semantic-ui-react';
+import {Button, Grid, Icon, Segment} from 'semantic-ui-react';
 import {exportChartData, exportChartImage, getParameterValues} from '../../shared/simpleTools/helpers';
 
 function range(start, stop, step) {
@@ -66,21 +66,9 @@ export function calculateXT(i, b, rho_f, rho_s) {
 const styles = {
     chart: {
         top: 20,
-        right: 40,
+        right: 20,
         left: 20,
         bottom: 0
-    },
-    diagramLabel: {
-        position: 'absolute',
-        top: '30px',
-        left: '110px',
-        background: '#EFF3F6',
-        opacity: 0.9
-    },
-    downloadButtons: {
-        position: 'absolute',
-        top: '5px',
-        right: '60px'
     }
 };
 
@@ -98,78 +86,82 @@ const Chart = ({parameters}) => {
 
     return (
         <div>
-                <ResponsiveContainer width="100%" aspect={2}>
-                <LineChart
-                    data={data}
-                    margin={styles.chart}
-                    ref={(chart) => currentChart = chart}
-                >
-                    <XAxis
-                        type="number"
-                        domain={xDomain}
-                        dataKey="x"
-                        allowDecimals={false}
-                        tickLine={false}
+            <Grid>
+                <Grid.Column>
+                    <ResponsiveContainer width="100%" aspect={2.5}>
+                    <LineChart
+                        data={data}
+                        margin={styles.chart}
+                        ref={(chart) => currentChart = chart}
                     >
-                        <Label value={'x [m]'} offset={0} position="bottom" fill={'#4C4C4C'}/>
-                    </XAxis>
-                    <YAxis
-                        type="number"
-                        domain={yDomain}
-                        allowDecimals={false}
-                        tickLine={false}
-                        tickFormatter={(x) => x.toFixed(1)}
-                    >
-                        <Label
-                            angle={270}
-                            position='left'
-                            style={{textAnchor: 'center'}}
-                            value={'z [m]'}
-                            fill={'#4C4C4C'}
+                        <XAxis
+                            type="number"
+                            domain={xDomain}
+                            dataKey="x"
+                            allowDecimals={false}
+                            tickLine={false}
+                        >
+                            <Label value={'x [m]'} offset={0} position="bottom" fill={'#4C4C4C'} style={{fontSize: '13px'}}/>
+                        </XAxis>
+                        <YAxis
+                            type="number"
+                            domain={yDomain}
+                            allowDecimals={false}
+                            tickLine={false}
+                            tickFormatter={(x) => x.toFixed(1)}
+                        >
+                            <Label
+                                angle={270}
+                                position='left'
+                                style={{textAnchor: 'center', fontSize: '13px'}}
+                                value={'z [m]'}
+                                fill={'#4C4C4C'}
+                            />
+                        </YAxis>
+                        <CartesianGrid strokeDasharray="3 3"/>
+                        {/*<Line
+                            dot={false}
+                            isAnimationActive={false}
+                            type="basis"
+                            dataKey="b"
+                            stroke="#000000"
+                            strokeWidth="5"
+                            fillOpacity={1}
+                        />*/}
+                        <Line
+                            dot={false}
+                            isAnimationActive={false}
+                            type="basis"
+                            dataKey="z"
+                            stroke="#ED8D05"
+                            strokeWidth="5"
+                            fillOpacity={1}
                         />
-                    </YAxis>
-                    <CartesianGrid strokeDasharray="3 3"/>
-                    <Line
-                        dot={false}
-                        isAnimationActive={false}
-                        type="basis"
-                        dataKey="b"
-                        stroke="#000000"
-                        strokeWidth="5"
-                        fillOpacity={1}
-                    />
-                    <Line
-                        dot={false}
-                        isAnimationActive={false}
-                        type="basis"
-                        dataKey="z"
-                        stroke="#ED8D05"
-                        strokeWidth="5"
-                        fillOpacity={1}
-                    />
-                </LineChart>
-            </ResponsiveContainer>
+                    </LineChart>
+                </ResponsiveContainer>
 
-            <Segment raised style={styles.diagramLabel}>
-                <p>z<sub>0</sub>&nbsp;=&nbsp;<strong>{z.toFixed(1)}</strong>&nbsp;m</p>
-                <p>L&nbsp; = &nbsp;<strong>{L.toFixed(1)}</strong>&nbsp;m</p>
-                <p>x<sub>T</sub>&nbsp;=&nbsp;<strong>{xT.toFixed(1)}</strong>&nbsp;m</p>
-            </Segment>
+                <Segment raised className={'diagramLabel topLeft'}>
+                    <p>z<sub>0</sub>&nbsp;=&nbsp;<strong>{z.toFixed(1)}</strong>&nbsp;m</p>
+                    <p>L&nbsp; = &nbsp;<strong>{L.toFixed(1)}</strong>&nbsp;m</p>
+                    <p>x<sub>T</sub>&nbsp;=&nbsp;<strong>{xT.toFixed(1)}</strong>&nbsp;m</p>
+                </Segment>
 
-            <div style={styles.downloadButtons}>
-                <Button
-                    size={'tiny'}
-                    color={'grey'}
-                    content='JPG'
-                    onClick={() => exportChartImage(currentChart)}
-                />
-                <Button
-                    size={'tiny'}
-                    color={'grey'}
-                    content='CSV'
-                    onClick={() => exportChartData(currentChart)}
-                />
-            </div>
+                <div className='downloadButtons'>
+                    <Button compact basic icon
+                            size={'small'}
+                            onClick={() => exportChartImage(currentChart)}
+                    >
+                        <Icon name='download' /> JPG
+                    </Button>
+                    <Button compact basic icon
+                            size={'small'}
+                            onClick={() => exportChartData(currentChart)}
+                    >
+                        <Icon name='download' /> CSV
+                    </Button>
+                </div>
+                </Grid.Column>
+            </Grid>
         </div>
     );
 };

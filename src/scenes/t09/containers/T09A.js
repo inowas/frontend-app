@@ -5,7 +5,7 @@ import {includes} from 'lodash';
 import {withRouter} from 'react-router-dom';
 
 import {AppContainer} from '../../shared';
-import {Background, ChartT09A as Chart, Parameters} from '../components';
+import {Background, ChartT09A as Chart, InfoT09A as Info, Parameters} from '../components';
 import {SliderParameter, ToolGrid, ToolMetaData} from '../../shared/simpleTools';
 import {navigation} from './T09';
 
@@ -119,7 +119,7 @@ class T09A extends React.Component {
                         title={'T09A. SALTWATER INTRUSION // DEPTH OF FRESHWATER - SALTWATER INTERFACE (GHYBEN-HERZBERG RELATION)'}
                     />
                     <Chart parameters={parameters}/>
-                    <div/>
+                    <Info parameters={parameters}/>
                     <Parameters
                         parameters={parameters.map(p => SliderParameter.fromObject(p))}
                         handleChange={this.handleChangeParameters}

@@ -565,6 +565,14 @@ template {
 .rc-slider-track {
   background-color: #1EB1ED;
 }
+
+/*-------------------
+      SVG
+--------------------*/
+
+svg:not(:root) {
+  overflow: visible;
+}
 /*!
  * # Semantic UI undefined - Site
  * http://github.com/semantic-org/semantic-ui/
@@ -5142,6 +5150,12 @@ body .ui.inverted::-webkit-scrollbar-thumb:hover {
 /*******************************
          Site Overrides
 *******************************/
+
+.downloadButtons {
+  position: absolute;
+  top: 0;
+  right: 2em;
+}
 /*!
  * # Semantic UI undefined - Container
  * http://github.com/semantic-org/semantic-ui/
@@ -19349,6 +19363,32 @@ ol.ui.horizontal.list li:before,
 /*******************************
          Site Overrides
 *******************************/
+
+.diagramLabel {
+  position: absolute !important;
+  background-color: #EFF3F6 !important;
+  opacity: 0.9;
+}
+
+.diagramLabel.topRight {
+  top: 24px;
+  right: 40px;
+}
+
+.diagramLabel.bottomRight {
+  bottom: 70px;
+  right: 40px;
+}
+
+.diagramLabel.topLeft {
+  top: 40px;
+  left: 110px;
+}
+
+.diagramLabel.bottomLeft {
+  bottom: 40px;
+  left: 40px;
+}
 /*!
  * # Semantic UI undefined - Step
  * http://github.com/semantic-org/semantic-ui/
@@ -20170,6 +20210,10 @@ ol.ui.horizontal.list li:before,
 /*******************************
          Site Overrides
 *******************************/
+
+.ui.large.breadcrumb a.section {
+  font-size: 1rem;
+}
 /*!
  * # Semantic UI undefined - Form
  * http://github.com/semantic-org/semantic-ui/
@@ -20905,7 +20949,7 @@ ol.ui.horizontal.list li:before,
 .ui.form .required.field > .checkbox:after {
   margin: -0.2em 0em 0em 0.2em;
   content: '*';
-  color: #ED8D05;
+  color: #FF9800;
 }
 
 .ui.form .required.fields:not(.grouped) > .field > label:after,
@@ -26376,24 +26420,24 @@ Floated Menu / Item
 
 .ui.red.message {
   background-color: #FFE8E6;
-  color: #FF5B4D;
-  -webkit-box-shadow: 0px 0px 0px 1px #FF5B4D inset, 0px 0px 0px 0px rgba(0, 0, 0, 0);
-  box-shadow: 0px 0px 0px 1px #FF5B4D inset, 0px 0px 0px 0px rgba(0, 0, 0, 0);
+  color: #F44336;
+  -webkit-box-shadow: 0px 0px 0px 1px #F44336 inset, 0px 0px 0px 0px rgba(0, 0, 0, 0);
+  box-shadow: 0px 0px 0px 1px #F44336 inset, 0px 0px 0px 0px rgba(0, 0, 0, 0);
 }
 
 .ui.red.message .header {
-  color: #ff4433;
+  color: #f32c1e;
 }
 
 .ui.orange.message {
   background-color: #FFEDDE;
-  color: #ED8D05;
-  -webkit-box-shadow: 0px 0px 0px 1px #ED8D05 inset, 0px 0px 0px 0px rgba(0, 0, 0, 0);
-  box-shadow: 0px 0px 0px 1px #ED8D05 inset, 0px 0px 0px 0px rgba(0, 0, 0, 0);
+  color: #FF9800;
+  -webkit-box-shadow: 0px 0px 0px 1px #FF9800 inset, 0px 0px 0px 0px rgba(0, 0, 0, 0);
+  box-shadow: 0px 0px 0px 1px #FF9800 inset, 0px 0px 0px 0px rgba(0, 0, 0, 0);
 }
 
 .ui.orange.message .header {
-  color: #d47e04;
+  color: #e68900;
 }
 
 .ui.yellow.message {
@@ -26475,24 +26519,24 @@ Floated Menu / Item
 
 .ui.pink.message {
   background-color: #FFE3FB;
-  color: #E03997;
-  -webkit-box-shadow: 0px 0px 0px 1px #E03997 inset, 0px 0px 0px 0px rgba(0, 0, 0, 0);
-  box-shadow: 0px 0px 0px 1px #E03997 inset, 0px 0px 0px 0px rgba(0, 0, 0, 0);
+  color: #E91E63;
+  -webkit-box-shadow: 0px 0px 0px 1px #E91E63 inset, 0px 0px 0px 0px rgba(0, 0, 0, 0);
+  box-shadow: 0px 0px 0px 1px #E91E63 inset, 0px 0px 0px 0px rgba(0, 0, 0, 0);
 }
 
 .ui.pink.message .header {
-  color: #dd238b;
+  color: #d81557;
 }
 
 .ui.brown.message {
   background-color: #F1E2D3;
-  color: #CC6C00;
-  -webkit-box-shadow: 0px 0px 0px 1px #CC6C00 inset, 0px 0px 0px 0px rgba(0, 0, 0, 0);
-  box-shadow: 0px 0px 0px 1px #CC6C00 inset, 0px 0px 0px 0px rgba(0, 0, 0, 0);
+  color: #795548;
+  -webkit-box-shadow: 0px 0px 0px 1px #795548 inset, 0px 0px 0px 0px rgba(0, 0, 0, 0);
+  box-shadow: 0px 0px 0px 1px #795548 inset, 0px 0px 0px 0px rgba(0, 0, 0, 0);
 }
 
 .ui.brown.message .header {
-  color: #b35f00;
+  color: #694a3e;
 }
 
 /*--------------

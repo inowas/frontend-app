@@ -1,27 +1,21 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import {Grid, Segment} from "semantic-ui-react";
-
-const styles = {
-    segment: {
-        height: '100%',
-    }
-};
+import {Grid, Segment} from 'semantic-ui-react';
 
 class ToolGrid extends React.Component {
 
     renderRow = (numberOfRow) => (
-        <Grid.Row key={numberOfRow}>
+        <Grid.Row key={numberOfRow} stretched>
             <Grid.Column width={6}>
                 {this.props.children[numberOfRow * 2] &&
-                <Segment style={styles.segment} color={'grey'} padded>
+                <Segment color={'grey'} padded>
                     {this.props.children[numberOfRow * 2]}
                 </Segment>
                 }
             </Grid.Column>
             <Grid.Column width={10}>
                 {this.props.children[numberOfRow * 2 + 1] &&
-                <Segment style={styles.segment} color={'blue'} padded>
+                <Segment color={'blue'} padded>
                     {this.props.children[numberOfRow * 2 + 1]}
                 </Segment>
                 }

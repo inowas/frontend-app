@@ -5,6 +5,7 @@ import ChartT09C from './chartT09C';
 import ChartT09D from './chartT09D';
 import ChartT09E from './chartT09E';
 import ChartT09F from './chartT09F';
+import InfoT09A from './infoT09A';
 import InfoT09B from './infoT09B';
 import InfoT09C from './infoT09C';
 import InfoT09D from './infoT09D';
@@ -22,6 +23,7 @@ export {
     ChartT09D,
     ChartT09E,
     ChartT09F,
+    InfoT09A,
     InfoT09B,
     InfoT09C,
     InfoT09D,

@@ -122,3 +122,6 @@
          Site Overrides
 *******************************/
 
+.ui.large.breadcrumb a.section {
+  font-size: 1rem;
+}
