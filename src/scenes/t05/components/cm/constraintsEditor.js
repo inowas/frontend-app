@@ -1,8 +1,10 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import {Button, Form, Grid, Message, Radio, Segment} from 'semantic-ui-react';
+import {Button, Dimmer, Form, Grid, Loader, Message, Radio, Segment} from 'semantic-ui-react';
 import {GisMap} from 'core/model/mcda/gis';
 import ConstraintsMap from './constraintsMap';
+import {dropData} from 'services/api';
+import {retrieveDroppedData} from 'services/api';
 
 class ConstraintsEditor extends React.Component {
     constructor(props) {
@@ -10,13 +12,39 @@ class ConstraintsEditor extends React.Component {
 
         this.state = {
             constraints: props.constraints.toObject(),
+            isFetching: false,
             mode: 'map',
             showInfo: true
         }
     }
 
     componentWillReceiveProps(nextProps) {
-        this.setState({
+        const raster = nextProps.constraints.raster;
+
+        if (raster && raster.data && raster.data.length === 0 && raster.url) {
+            this.setState({
+                isFetching: true
+            }, () => {
+                retrieveDroppedData(
+                    raster.url,
+                    response => {
+                        raster.data = response;
+                        this.setState({
+                            isFetching: false,
+                            constraints: {
+                                ...nextProps.constraints.toObject(),
+                                raster: raster.toObject()
+                            }
+                        });
+                    },
+                    response => {
+                        throw new Error(response);
+                    }
+                )
+            })
+        }
+
+        return this.setState({
             constraints: nextProps.constraints.toObject()
         });
     }
@@ -28,10 +56,21 @@ class ConstraintsEditor extends React.Component {
             throw new Error('Constraints expected to be of type GisMap.');
         }
 
-        return this.props.handleChange({
-            name: 'constraints',
-            value: constraints
-        });
+        const raster = constraints.raster;
+        dropData(
+            JSON.stringify(raster.data),
+            response => {
+                raster.url = response.filename;
+                constraints.raster = raster;
+                this.props.handleChange({
+                    name: 'constraints',
+                    value: constraints
+                });
+            },
+            response => {
+                throw new Error(response)
+            }
+        );
     };
 
     onBlur = () => {
@@ -55,10 +94,15 @@ class ConstraintsEditor extends React.Component {
 
     render() {
         const {readOnly} = this.props;
-        const {constraints, mode, showInfo} = this.state;
+        const {constraints, isFetching, mode, showInfo} = this.state;
 
         return (
             <div>
+                {isFetching &&
+                <Dimmer active inverted>
+                    <Loader indeterminate>Preparing Files</Loader>
+                </Dimmer>
+                }
                 {showInfo &&
                 <Message onDismiss={this.handleDismiss}>
                     <Message.Header>Global Constraints</Message.Header>

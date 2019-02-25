@@ -3,47 +3,109 @@ import PropTypes from 'prop-types';
 import {withRouter} from 'react-router-dom';
 import {MCDA} from 'core/model/mcda';
 import {Criterion} from 'core/model/mcda/criteria';
-import {Message, Step} from 'semantic-ui-react';
+import {Dimmer, Loader, Message, Step} from 'semantic-ui-react';
 
 import {CriteriaReclassification, CriteriaRasterUpload} from './index';
 import CriteriaDataResults from './criteriaDataResults';
 import CriteriaDataConstraints from './criteriaDataConstraints';
+import {retrieveDroppedData} from 'services/api';
 
 class CriteriaDataEditor extends React.Component {
+    constructor(props) {
+        super(props);
+
+        this.state = {
+            criterion: null,
+            isFetching: {}
+        }
+    }
+
+    componentWillReceiveProps(nextProps) {
+        this.criterionToState(nextProps);
+    }
+
+    criterionToState = props => {
+        if (!props.criterion) {
+            return;
+        }
+
+        const criterion = props.criterion.toObject();
+
+        this.getRasterData(criterion.raster, response => {
+            criterion.raster = response;
+        });
+
+        this.getRasterData(criterion.constraintRaster, response => {
+            criterion.constraintRaster = response;
+        });
+
+        this.getRasterData(criterion.suitability, response => {
+            criterion.suitability = response;
+        });
+
+        this.setState({
+            criterion
+        });
+    };
+
+    getRasterData = (raster, onSuccess) => {
+        if (raster.data && raster.data.length === 0 && raster.url) {
+            this.setState(prevState => ({
+                isFetching: {
+                    ...prevState.isFetching,
+                    [raster.id]: true
+                }
+            }), () => {
+                retrieveDroppedData(
+                    raster.url,
+                    response => {
+                        raster.data = response;
+                        this.setState(prevState => ({
+                            isFetching: {
+                                ...prevState.isFetching,
+                                [raster.id]: false
+                            }
+                        }), () => onSuccess(raster));
+                    },
+                    response => {
+                        throw new Error(response);
+                    }
+                )
+            })
+        }
+    };
 
     handleClickStep = (e, {name}) => this.props.onClickTool(this.props.criterion.id, name);
 
     renderTool() {
-        if (!this.props.criterion) {
-            return;
-        }
+        const criterion = Criterion.fromObject(this.state.criterion);
 
         switch (this.props.activeTool) {
             case 'reclassification':
                 return (
                     <CriteriaReclassification
-                        criterion={this.props.criterion}
+                        criterion={criterion}
                         onChange={this.props.handleChange}
                     />
                 );
             case 'constraints':
                 return (
                     <CriteriaDataConstraints
-                        criterion={this.props.criterion}
+                        criterion={criterion}
                         onChange={this.props.handleChange}
                     />
                 );
             case 'results':
                 return (
                     <CriteriaDataResults
-                        criterion={this.props.criterion}
+                        criterion={criterion}
                         onChange={this.props.handleChange}
                     />
                 );
             default:
                 return (
                     <CriteriaRasterUpload
-                        criterion={this.props.criterion}
+                        criterion={criterion}
                         gridSize={this.props.mcda.constraints.gridSize}
                         onChange={this.props.handleChange}
                     />
@@ -52,17 +114,23 @@ class CriteriaDataEditor extends React.Component {
     }
 
     render() {
-        const {activeTool, criterion} = this.props;
+        const {activeTool} = this.props;
+        const {criterion, isFetching} = this.state;
+
         return (
             <div>
-                {!criterion &&
-                <Message
-                    content="Select a criterion from the navigation on the bottom left. Don't forget to set gridSize first."
-                    icon='lock'
-                    warning
-                />
+                {Object.keys(isFetching).some(k => isFetching[k]) &&
+                <Dimmer active inverted>
+                    <Loader indeterminate>Preparing Files</Loader>
+                </Dimmer>
                 }
-                {!!criterion &&
+                {!criterion ?
+                    <Message
+                        content="Select a criterion from the navigation on the bottom left. Don't forget to set gridSize first."
+                        icon='lock'
+                        warning
+                    />
+                    :
                     <div>
                         <Step.Group fluid>
                             <Step
@@ -75,7 +143,7 @@ class CriteriaDataEditor extends React.Component {
                             />
                             <Step
                                 active={activeTool === 'constraints'}
-                                disabled={criterion.tilesCollection.length === 0}
+                                disabled={criterion.raster.data.length === 0}
                                 name='constraints'
                                 icon='eraser'
                                 title='Constraints'
@@ -84,7 +152,7 @@ class CriteriaDataEditor extends React.Component {
                             />
                             <Step
                                 active={activeTool === 'reclassification'}
-                                disabled={criterion.tilesCollection.length === 0}
+                                disabled={criterion.raster.data.length === 0}
                                 name='reclassification'
                                 icon='chart bar'
                                 title='Reclassification'
@@ -113,7 +181,7 @@ class CriteriaDataEditor extends React.Component {
 
 CriteriaDataEditor.proptypes = {
     activeTool: PropTypes.string,
-    criterion: PropTypes.instanceOf(Criterion),
+    criterion: PropTypes.instanceOf(Criterion).isRequired,
     handleChange: PropTypes.func.isRequired,
     mcda: PropTypes.instanceOf(MCDA).isRequired,
     onClickTool: PropTypes.func.isRequired

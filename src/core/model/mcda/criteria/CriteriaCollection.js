@@ -19,11 +19,13 @@ class CriteriaCollection extends AbstractCollection {
     isFinished(withAhp = false) {
         if (withAhp) {
             return this.length > 0 && this.all.filter(c =>
-                c.parentId && (!c.suitability || c.suitability.data.length === 0)
+                c.parentId && (!c.suitability || !c.suitability.url || c.suitability.url === '')
             ).length === 0;
         }
 
-        return this.length > 0 && this.all.filter(c => !c.suitability || c.suitability.data.length === 0).length === 0;
+        console.log(this.length > 0 && this.all.filter(c => !c.suitability || !c.suitability.url || c.suitability.url === '').length === 0);
+
+        return this.length > 0 && this.all.filter(c => !c.suitability || !c.suitability.url || c.suitability.url === '').length === 0;
     }
 
     getBoundingBox() {
@@ -32,13 +34,11 @@ class CriteriaCollection extends AbstractCollection {
         let yMin = 90;
         let yMax = -90;
         this.all.forEach(criterion => {
-            if (criterion.tilesCollection.length > 0) {
-                const bb = criterion.tilesCollection.boundingBox;
-                xMin = bb.xMin < xMin ? bb.xMin : xMin;
-                xMax = bb.xMax > xMax ? bb.xMax : xMax;
-                yMin = bb.yMin < yMin ? bb.yMin : yMin;
-                yMax = bb.yMax > yMax ? bb.yMax : yMax;
-            }
+            const bb = criterion.raster.boundingBox;
+            xMin = bb.xMin < xMin ? bb.xMin : xMin;
+            xMax = bb.xMax > xMax ? bb.xMax : xMax;
+            yMin = bb.yMin < yMin ? bb.yMin : yMin;
+            yMax = bb.yMax > yMax ? bb.yMax : yMax;
         });
         return BoundingBox.fromArray([[xMin, yMin], [xMax, yMax]]);
     }

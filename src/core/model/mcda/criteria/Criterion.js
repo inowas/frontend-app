@@ -2,7 +2,6 @@ import uuidv4 from 'uuid/v4';
 import Raster from '../gis/Raster';
 import RulesCollection from './RulesCollection';
 import {cloneDeep as _cloneDeep} from 'lodash';
-import TilesCollection from '../gis/TilesCollection';
 import * as math from 'mathjs';
 
 const validTypes = ['discrete', 'continuous'];
@@ -13,7 +12,7 @@ class Criterion {
     _name = 'New Criterion';
     _type = 'discrete';
     _unit = '-';
-    _tiles = new TilesCollection();
+    _raster = new Raster();
     _rules = new RulesCollection();
     _suitability = new Raster();
     _constraintRaster = new Raster();
@@ -26,7 +25,7 @@ class Criterion {
         criterion.name = obj.name;
         criterion.type = obj.type;
         criterion.unit = obj.unit;
-        criterion.tilesCollection = obj.tiles ? TilesCollection.fromArray(obj.tiles) : new TilesCollection();
+        criterion.raster = obj.raster ? Raster.fromObject(obj.raster) : new Raster();
         criterion.rulesCollection = obj.rules ? RulesCollection.fromArray(obj.rules) : new RulesCollection();
         criterion.suitability = obj.suitability ? Raster.fromObject(obj.suitability) : Raster.fromObject(obj.raster);
         criterion.constraintRaster = obj.constraintRaster ? Raster.fromObject(obj.constraintRaster) : new Raster();
@@ -77,12 +76,12 @@ class Criterion {
         this._unit = value;
     }
 
-    get tilesCollection() {
-        return this._tiles;
+    get raster() {
+        return this._raster;
     }
 
-    set tilesCollection(value) {
-        this._tiles = value;
+    set raster(value) {
+        this._raster = value;
     }
 
     get rulesCollection() {
@@ -124,10 +123,25 @@ class Criterion {
             name: this.name,
             type: this.type,
             unit: this.unit,
-            tiles: this.tilesCollection.toArray(),
+            raster: this.raster.toObject(),
             rules: this.rulesCollection.toArray(),
             suitability: this.suitability.toObject(),
             constraintRaster: this.constraintRaster.toObject(),
+            constraintRules: this.constraintRules.toArray()
+        });
+    }
+
+    toPayload() {
+        return ({
+            id: this.id,
+            parentId: this.parentId,
+            name: this.name,
+            type: this.type,
+            unit: this.unit,
+            raster: this.raster.toPayload(),
+            rules: this.rulesCollection.toArray(),
+            suitability: this.suitability.toPayload(),
+            constraintRaster: this.constraintRaster.toPayload(),
             constraintRules: this.constraintRules.toArray()
         });
     }
@@ -141,9 +155,8 @@ class Criterion {
         }
 
         const newRaster = _cloneDeep(raster);
-        const data = raster.data;
 
-        newRaster.data = _cloneDeep(data).map(row => {
+        newRaster.data = _cloneDeep(raster.data).map(row => {
             return row.map(cell => {
                 const rules = rulesCollection.findByValue(cell);
                 if (rules.length === 0) {
@@ -162,7 +175,7 @@ class Criterion {
             });
         });
 
-        if (!!factor) {
+        if (factor && factor.data && factor.data.length > 0) {
             newRaster.data = newRaster.data.map((x, xKey) => {
                 return x.map((y, yKey) => {
                     if (factor.data[xKey][yKey]) {
@@ -178,24 +191,24 @@ class Criterion {
     }
 
     calculateConstraints() {
-        if (!this.tilesCollection || this.tilesCollection.length === 0) {
+        if (!this.raster || this.raster.data.length === 0) {
             throw new Error(`There is now raster uploaded for criterion ${this.name}.`);
         }
 
-        this.constraintRaster = this.calculateRaster(this.tilesCollection.first, this.constraintRules);
-        this.suitability = this.calculateRaster(this.tilesCollection.first, this.rulesCollection, this.constraintRaster);
+        this.constraintRaster = this.calculateRaster(this.raster, this.constraintRules);
+        this.suitability = this.calculateRaster(this.raster, this.rulesCollection, this.constraintRaster);
     }
 
     calculateSuitability() {
-        if (!this.tilesCollection || this.tilesCollection.length === 0) {
+        if (!this.raster || this.raster.data.length === 0) {
             throw new Error(`There is now raster uploaded for criterion ${this.name}.`);
         }
 
-        this.suitability = this.calculateRaster(this.tilesCollection.first, this.rulesCollection, this.constraintRaster);
+        this.suitability = this.calculateRaster(this.raster, this.rulesCollection, this.constraintRaster);
     }
 
     generateLegend(mode = 'unclassified') {
-        return this.tilesCollection.first.generateLegend(this.rulesCollection, this.type, mode);
+        return this.raster.generateLegend(this.rulesCollection, this.type, mode);
     }
 }
 

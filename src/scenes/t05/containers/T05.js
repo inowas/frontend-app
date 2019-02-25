@@ -192,7 +192,7 @@ class T05 extends React.Component {
         this.setState({isDirty: true}, sendCommand(
             McdaCommand.updateCriterion({
                 id: this.state.tool.id,
-                criterion: criterion.toObject()
+                criterion: criterion.toPayload()
             }),
             () => this.setState(prevState => ({
                 isDirty: false,

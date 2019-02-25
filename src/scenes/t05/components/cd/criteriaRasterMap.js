@@ -11,8 +11,6 @@ import {EditControl} from 'react-leaflet-draw';
 import {getStyle} from '../../../t03/components/maps';
 import {BoundingBox} from 'core/model/geometry';
 import Rainbow from '../../../../../node_modules/rainbowvis.js/rainbowvis';
-import {retrieveDroppedData} from 'services/api';
-import {Dimmer, Loader} from 'semantic-ui-react';
 
 const options = {
     edit: {
@@ -32,38 +30,6 @@ const options = {
 };
 
 class CriteriaRasterMap extends React.Component {
-    constructor(props) {
-        super(props);
-
-        this.state = {
-            raster: props.raster.toMap()
-        }
-    }
-
-    componentDidMount() {
-        if (this.props.raster.data.length === 0) {
-            this.setState(prevState => ({
-                raster: {
-                    ...prevState.raster,
-                    isFetching: true
-                }
-            }));
-            retrieveDroppedData(
-                this.props.raster.url,
-                response => this.setState(prevState => ({
-                    raster: {
-                        ...prevState.raster,
-                        data: response,
-                        isFetching: false
-                    }
-                })),
-                response => {
-                    throw new Error(response)
-                }
-            )
-        }
-    }
-
     onEditPath = e => {
         const layers = e.layers;
 
@@ -94,16 +60,8 @@ class CriteriaRasterMap extends React.Component {
     };
 
     render() {
-        const {raster} = this.state;
+        const {raster} = this.props;
         const {boundingBox, gridSize} = this.props.raster;
-
-        if (raster.isFetching) {
-            return (
-                <Dimmer active inverted>
-                    <Loader inverted indeterminate>Preparing Data</Loader>
-                </Dimmer>
-            );
-        }
 
         return (
             <Map

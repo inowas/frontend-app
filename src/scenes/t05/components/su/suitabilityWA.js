@@ -1,15 +1,17 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import {MCDA} from '../../../../core/model/mcda';
-import {Button, Message} from 'semantic-ui-react';
+import {Button, Dimmer, Loader, Message} from 'semantic-ui-react';
 import WeightAssignmentTable from './weightAssignmentTable';
 import {WeightAssignmentsCollection} from 'core/model/mcda/criteria';
+import {dropData, retrieveDroppedData} from "../../../../services/api";
 
 class SuitabilityWeightAssignment extends React.Component {
     constructor(props) {
         super(props);
 
         this.state = {
+            isFetching: {},
             showInfo: true
         }
     }
@@ -39,20 +41,83 @@ class SuitabilityWeightAssignment extends React.Component {
         });
     };
 
+    getRasterData = (raster, onSuccess) => {
+        if (raster.data && raster.data.length === 0 && raster.url) {
+            this.setState(prevState => ({
+                isFetching: {
+                    ...prevState.isFetching,
+                    [raster.id]: true
+                }
+            }), () => {
+                retrieveDroppedData(
+                    raster.url,
+                    response => {
+                        raster.data = response;
+                        this.setState(prevState => ({
+                            isFetching: {
+                                ...prevState.isFetching,
+                                [raster.id]: false
+                            }
+                        }), () => onSuccess(raster));
+                    },
+                    response => {
+                        throw new Error(response);
+                    }
+                )
+            })
+        }
+    };
+
     handleClickCalculation = () => {
-        const mcda = this.props.mcda.calculate();
-        return this.props.handleChange({
-            name: 'mcda',
-            value: mcda
+        const mcda = this.props.mcda;
+
+        mcda.criteriaCollection.items = mcda.criteriaCollection.all.map(c => {
+            this.getRasterData(c.suitability, response => {
+                c.suitability = response;
+            });
+            this.getRasterData(c.constraintRaster, response => {
+                c.constraintRaster = response;
+            });
+            return c;
         });
+
+
+        this.getRasterData(mcda.constraints.raster, response => {
+            mcda.constraints.raster = response;
+        });
+
+        console.log('MCDA', mcda);
+
+        if (Object.keys(this.state.isFetching).some(k => !this.state.isFetching[k])) {
+            mcda.calculate();
+
+            dropData(
+                JSON.stringify(mcda.suitability.raster.data),
+                response => {
+                    mcda.suitability.raster.url = response.filename;
+                    this.props.handleChange({
+                        name: 'mcda',
+                        value: mcda
+                    });
+                },
+                response => {
+                    throw new Error(response)
+                }
+            );
+        }
     };
 
     render() {
         const {mcda} = this.props;
-        const {showInfo} = this.state;
+        const {isFetching, showInfo} = this.state;
 
         return (
             <div>
+                {Object.keys(isFetching).some(k => isFetching[k]) &&
+                <Dimmer active inverted>
+                    <Loader indeterminate>Preparing Files</Loader>
+                </Dimmer>
+                }
                 {showInfo &&
                 <Message onDismiss={this.handleDismiss}>
                     <Message.Header>Suitability</Message.Header>

@@ -84,14 +84,14 @@ class CriteriaNavigation extends React.Component {
                 name={criterion.id}
                 onClick={this.props.onClick}
             >
-                {criterion.suitability && criterion.suitability.data.length > 0 &&
+                {criterion.suitability && criterion.suitability.url !== '' &&
                 <Icon name='check circle' color='green'/>
                 }
                 {criterion.name}
             </Menu.Item>
         ));
 
-        const gridSizeEditable = this.props.mcda.criteriaCollection.all.filter(c => c.tilesCollection.length > 0).length === 0;
+        const gridSizeEditable = this.props.mcda.criteriaCollection.all.filter(c => c.raster.data.length > 0).length === 0;
 
         return (
             <Segment color={'black'} style={this.props.style}>

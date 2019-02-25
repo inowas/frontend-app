@@ -3,6 +3,7 @@ import React from 'react';
 import {Criterion} from 'core/model/mcda/criteria';
 import {Button, Grid, Icon, Input, Message, Segment, Table} from 'semantic-ui-react';
 import {SketchPicker} from 'react-color';
+import {dropData} from "../../../../services/api";
 
 const styles = {
     popover: {
@@ -43,6 +44,19 @@ class CriteriaReclassificationDiscrete extends React.Component {
         });
     }
 
+    saveRaster(criterion) {
+        dropData(
+            criterion.suitability.data,
+            response => {
+                criterion.suitability.url = response.filename;
+                this.props.onChange(criterion);
+            },
+            response => {
+                throw new Error(response);
+            }
+        );
+    }
+
     handleDismiss = () => this.setState({showInfo: false});
 
     handleChange = () => this.props.onChange(Criterion.fromObject(this.state.criterion));
@@ -77,7 +91,7 @@ class CriteriaReclassificationDiscrete extends React.Component {
     handleClickCalculate = () => {
         const criterion = this.props.criterion;
         criterion.calculateSuitability();
-        return this.props.onChange(criterion);
+        this.saveRaster(criterion);
     };
 
     handleCloseColorPicker = () => {

@@ -19,7 +19,9 @@ class Raster {
         const raster = new Raster();
         raster.id = obj.id || uuidv4();
         raster.boundingBox = BoundingBox.fromArray(obj.boundingBox);
+        raster.data = obj.data || [];
         raster.gridSize = GridSize.fromObject(obj.gridSize);
+        raster.isFetching = !!obj.isFetching;
         raster.min = obj.min;
         raster.max = obj.max;
         raster.url = obj.url;
@@ -93,6 +95,8 @@ class Raster {
     toObject() {
         return {
             boundingBox: this.boundingBox.toArray(),
+            data: this.data,
+            isFetching: this.isFetching,
             gridSize: this.gridSize.toObject(),
             id: this.id,
             max: this.max,
@@ -101,10 +105,14 @@ class Raster {
         }
     }
 
-    toMap() {
+    toPayload() {
         return {
-            data: this.data,
-            isFetching: this.isFetching,
+            boundingBox: this.boundingBox.toArray(),
+            gridSize: this.gridSize.toObject(),
+            id: this.id,
+            max: this.max,
+            min: this.min,
+            url: this.url
         }
     }
 
