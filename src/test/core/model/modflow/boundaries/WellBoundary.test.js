@@ -1,11 +1,13 @@
 import Uuid from 'uuid';
 import {WellBoundary} from 'core/model/modflow/boundaries';
+import {validate} from 'services/jsonSchemaValidator'
+import {JSON_SCHEMA_URL} from '../../../../../services/api';
 
 
 const createWellBoundary = () => {
     const id = Uuid.v4();
     const name = 'NameOfWell';
-    const geometry = {type: 'Point', coordinates: [[3, 4]]};
+    const geometry = {type: 'Point', coordinates: [3, 4]};
     const layers = [1];
     const cells = [[1, 2]];
     const spValues = [1, 2, 3];
@@ -46,4 +48,10 @@ test('WellBoundary fromObject', () => {
 
     const wellBoundary = WellBoundary.fromObject(obj);
     expect(wellBoundary.toObject()).toEqual(obj);
+});
+
+test('WellBoundary schema validation', () => {
+    const data = createWellBoundary().toObject();
+    const schema = JSON_SCHEMA_URL + 'modflow/boundary/wellBoundary';
+    validate(data, schema).then(response => expect(response).toEqual([true, null]));
 });

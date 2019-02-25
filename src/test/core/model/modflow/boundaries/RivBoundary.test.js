@@ -1,5 +1,7 @@
 import Uuid from 'uuid';
 import {RiverBoundary} from 'core/model/modflow/boundaries';
+import {validate} from 'services/jsonSchemaValidator';
+import {JSON_SCHEMA_URL} from '../../../../../services/api';
 
 
 const createRiverBoundary = () => {
@@ -84,4 +86,10 @@ test('RiverBoundary fromObject', () => {
     const obj = createRiverBoundary().toObject();
     const riverBoundary = RiverBoundary.fromObject(obj);
     expect(riverBoundary.toObject()).toEqual(obj);
+});
+
+test('RiverBoundary schema validation', () => {
+    const data = createRiverBoundary().toObject();
+    const schema = JSON_SCHEMA_URL + 'modflow/boundary/riverBoundary';
+    validate(data, schema).then(response => expect(response).toEqual([true, null]));
 });

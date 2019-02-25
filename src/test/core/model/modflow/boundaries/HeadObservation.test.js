@@ -1,10 +1,12 @@
 import Uuid from 'uuid';
 import {HeadObservationWell} from 'core/model/modflow/boundaries';
+import {validate} from 'services/jsonSchemaValidator';
+import {JSON_SCHEMA_URL} from 'services/api';
 
 const createHeadObservationWell = () => {
     const id = Uuid.v4();
     const name = 'NameOfWell';
-    const geometry = {type: 'Point', coordinates: [[3, 4]]};
+    const geometry = {type: 'Point', coordinates: [3, 4]};
     const layers = [1];
     const cells = [[1, 2]];
     const spValues = [1, 2, 3];
@@ -38,7 +40,12 @@ test('HeadObservationWell create', () => {
 
 test('HeadObservationWell fromObject', () => {
     const obj = createHeadObservationWell().toObject();
-
     const headObservationWell = HeadObservationWell.fromObject(obj);
     expect(headObservationWell.toObject()).toEqual(obj);
+});
+
+test('HeadObservationWell schema validation', () => {
+    const data = createHeadObservationWell().toObject();
+    const schema = JSON_SCHEMA_URL + 'modflow/boundary/headObservationWell';
+    validate(data, schema).then(response => expect(response).toEqual([true, null]));
 });

@@ -11,7 +11,7 @@ export default class RechargeBoundary extends Boundary {
     _spValues;
 
     static create(id, geometry, name, layers, cells, spValues) {
-        const boundary = new RechargeBoundary();
+        const boundary = new this();
         boundary._id = id;
         boundary._geometry = geometry;
         boundary._name = name;
@@ -22,7 +22,7 @@ export default class RechargeBoundary extends Boundary {
     }
 
     static fromObject(obj) {
-        return RechargeBoundary.create(
+        return this.create(
             obj.id,
             obj.geometry,
             obj.properties.name,
