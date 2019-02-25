@@ -1,10 +1,9 @@
 import SsmPackage from './SsmPackage';
 import Boundary from '../boundaries/Boundary';
-import AffectedCells from '../boundaries/AffectedCells';
 
 class SsmBoundaryValues {
 
-    _affectedCells;
+    _cells;
     _boundaryType;
     _boundaryId;
     _stressPeriodValues;
@@ -16,24 +15,24 @@ class SsmBoundaryValues {
             throw new Error('Boundary must be from instance Boundary');
         }
 
-        value._affectedCells = boundary.affectedCells.toObject;
+        value._cells = boundary.cells;
         value._boundaryId = boundary.id;
-        value._boundaryType = boundary.type;
+        value._boundaryType = Boundary.type;
         value._stressPeriodValues = new Array(numberOfStressPeriods).fill(0);
         return value;
     }
 
     static fromObject(obj) {
         const substance = new SsmBoundaryValues();
-        substance._affectedCells = obj.affectedCells;
+        substance._cells = obj.cells;
         substance._boundaryId = obj.boundaryId;
         substance._boundaryType = obj.boundaryType;
         substance._stressPeriodValues = obj.stressPeriodValues;
         return substance;
     }
 
-    get affectedCells() {
-        return AffectedCells.fromObject(this._affectedCells);
+    get cells() {
+        return this._cells;
     }
 
     get boundaryId() {
@@ -64,7 +63,7 @@ class SsmBoundaryValues {
         return (
             this.stressPeriodValues.map(sp => {
                 const spData = [];
-                this.affectedCells.cells.forEach(c => {
+                this.cells.forEach(c => {
                     spData.push([c[2], c[1], c[0], sp, SsmPackage.itype[this.boundaryType.toUpperCase()]]);
                 });
                 return spData;
@@ -74,7 +73,7 @@ class SsmBoundaryValues {
 
     toObject() {
         return {
-            affectedCells: this._affectedCells,
+            cells: this.cells,
             boundaryId: this.boundaryId,
             boundaryType: this.boundaryType,
             stressPeriodValues: this.stressPeriodValues,

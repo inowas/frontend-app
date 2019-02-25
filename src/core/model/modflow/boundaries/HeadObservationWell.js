@@ -1,17 +1,19 @@
 import Boundary from './Boundary';
 
-export default class RechargeBoundary extends Boundary {
+export default class HeadObservationWell extends Boundary {
 
-    _type = 'rch';
+    _type = 'hob';
+    
     _id;
     _geometry;
     _name;
     _layers;
     _cells;
+    _wellType;
     _spValues;
 
     static create(id, geometry, name, layers, cells, spValues) {
-        const boundary = new RechargeBoundary();
+        const boundary = new this();
         boundary._id = id;
         boundary._geometry = geometry;
         boundary._name = name;
@@ -22,7 +24,7 @@ export default class RechargeBoundary extends Boundary {
     }
 
     static fromObject(obj) {
-        return RechargeBoundary.create(
+        return this.create(
             obj.id,
             obj.geometry,
             obj.properties.name,
@@ -106,10 +108,11 @@ export default class RechargeBoundary extends Boundary {
     static get valueProperties() {
         return [
             {
-                name: 'Recharge rate',
-                description: 'Recharge rate into layer',
-                unit: 'm/day',
-                decimals: 5,
+                name: 'Observed head',
+                description: 'Observed head',
+                unit: 'm',
+                decimals: 2,
+                default: 0
             },
         ]
     }

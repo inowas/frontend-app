@@ -1,11 +1,10 @@
 /* eslint-disable camelcase */
-import Uuid from 'uuid';
 import ConstantHeadBoundary from './ConstantHeadBoundary';
 import GeneralHeadBoundary from './GeneralHeadBoundary';
+import HeadObservationWell from './HeadObservationWell';
 import RechargeBoundary from './RechargeBoundary';
 import RiverBoundary from './RiverBoundary';
 import WellBoundary from './WellBoundary';
-import HeadObservation from './HeadObservation';
 
 export default class BoundaryFactory {
 
@@ -18,7 +17,7 @@ export default class BoundaryFactory {
             case 'ghb':
                 return new GeneralHeadBoundary();
             case 'hob':
-                return new HeadObservation();
+                return new HeadObservationWell();
             case 'rch':
                 return new RechargeBoundary();
             case 'riv':
@@ -36,15 +35,6 @@ export default class BoundaryFactory {
         boundary.name = name;
         boundary.geometry = geometry;
         boundary.spValues = spValues;
-        return boundary;
-    }
-
-    static createByTypeAndStartDate({id = null, name = null, type, geometry, utcIsoStartDateTimes}) {
-        const boundary = BoundaryFactory.fromType(type);
-        boundary.id = id ? id : Uuid.v4();
-        boundary.name = name ? name : 'new ' + type + '-boundary';
-        boundary.geometry = geometry;
-        boundary.setDefaultStartValues(utcIsoStartDateTimes);
         return boundary;
     }
 

@@ -3,7 +3,7 @@ import BoundaryCollection from './BoundaryCollection';
 import BoundaryFactory from './BoundaryFactory';
 import ConstantHeadBoundary from './ConstantHeadBoundary';
 import GeneralHeadBoundary from './GeneralHeadBoundary';
-import HeadObservation from './HeadObservation';
+import HeadObservationWell from './HeadObservationWell';
 import RechargeBoundary from './RechargeBoundary';
 import RiverBoundary from './RiverBoundary';
 import WellBoundary from './WellBoundary';
@@ -14,7 +14,7 @@ export {
     BoundaryFactory,
     ConstantHeadBoundary,
     GeneralHeadBoundary,
-    HeadObservation,
+    HeadObservationWell,
     RechargeBoundary,
     RiverBoundary,
     WellBoundary

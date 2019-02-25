@@ -1,4 +1,6 @@
-export default class WellBoundary {
+import Boundary from './Boundary';
+
+export default class WellBoundary extends Boundary {
 
     _type = 'wel';
     _id;

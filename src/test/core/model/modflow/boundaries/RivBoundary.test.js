@@ -35,6 +35,50 @@ test('RiverBoundary create', () => {
     expect(riverBoundary.cells).toEqual(cells);
 });
 
+test('RiverBoundary add ObservationPoint', () => {
+    const riverBoundary = createRiverBoundary();
+    riverBoundary.addObservationPoint('Op2', {type: 'Point', coordinates: [1, 2]}, [3, 2, 1]);
+    expect(riverBoundary._observationPoints).toHaveLength(2);
+
+    const op2 = riverBoundary.findObservationPointByName('Op2');
+    expect(op2).toBeTruthy();
+    expect(op2.id).toBeTruthy();
+    expect(op2.type).toEqual('Feature');
+    expect(op2.properties.name).toEqual('Op2');
+    expect(op2.geometry).toEqual({type: 'Point', coordinates: [1, 2]});
+});
+
+test('RiverBoundary update ObservationPoint', () => {
+    const riverBoundary = createRiverBoundary();
+    riverBoundary.addObservationPoint('Op2', {type: 'Point', coordinates: [1, 2]}, [3, 2, 1]);
+    expect(riverBoundary._observationPoints).toHaveLength(2);
+    const op2 = riverBoundary.findObservationPointByName('Op2');
+
+    const id = op2.id;
+    const geometry = {type: 'Point', coordinates: [11, 12]};
+    const name = 'op2_new';
+    const spValues = [3, 3, 3];
+
+    riverBoundary.updateObservationPoint(id, name, geometry, spValues);
+
+    const op2_new = riverBoundary.findObservationPointByName('op2_new');
+    expect(op2_new).toBeTruthy();
+    expect(op2_new.id).toEqual(id);
+    expect(op2_new.type).toEqual('Feature');
+    expect(op2_new.properties.name).toEqual(name);
+    expect(op2_new.geometry).toEqual(geometry);
+    expect(op2_new.properties.sp_values).toEqual(spValues);
+});
+
+test('RiverBoundary remove ObservationPoint', () => {
+    const riverBoundary = createRiverBoundary();
+    riverBoundary.addObservationPoint('Op2', {type: 'Point', coordinates: [1, 2]}, [3, 2, 1]);
+    expect(riverBoundary._observationPoints).toHaveLength(2);
+    const op2 = riverBoundary.findObservationPointByName('Op2');
+    riverBoundary.removeObservationPoint(op2.id);
+    expect(riverBoundary._observationPoints).toHaveLength(1);
+
+});
 
 test('RiverBoundary fromObject', () => {
     const obj = createRiverBoundary().toObject();
