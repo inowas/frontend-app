@@ -6,9 +6,6 @@ import {documentation} from '../../../../defaults/transport';
 import {BtnPackage} from 'core/model/modflow/mt3d';
 
 const styles = {
-    accordionFix: {
-        width: 'auto'
-    },
     inputFix: {
         padding: '0',
         height: 'auto'
@@ -26,7 +23,7 @@ class BtnPackageProperties extends AbstractPackageProperties {
 
         return (
             <Form>
-                <Accordion styled style={styles.accordionFix}>
+                <Accordion styled fluid>
                     <Accordion.Title active={activeIndex === 0} index={0} onClick={this.handleClickAccordion}>
                         <Icon name='dropdown'/>
                         Basic Transport Parameters

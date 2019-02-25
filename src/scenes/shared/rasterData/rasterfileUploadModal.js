@@ -105,6 +105,7 @@ class RasterfileUploadModal extends React.Component {
     };
 
     handleUploadFile = e => {
+        const {discreteRescaling} = this.props;
         const files = e.target.files;
         const file = files[0];
 
@@ -113,14 +114,21 @@ class RasterfileUploadModal extends React.Component {
         uploadRasterfile(file, ({hash}) => {
                 this.setState({fetching: true, hash: hash});
 
+                const fetchOptions = {
+                    hash,
+                    width: this.props.gridSize.nX,
+                    height: this.props.gridSize.nY,
+                    method: discreteRescaling ? 0 : 1
+                };
+
                 fetchRasterMetaData({hash}, response => {
                     this.setState({isLoading: false, metadata: response});
                 }, (errorFetching) => this.setState({errorFetching}));
 
                 fetchRasterData(
-                    {hash, width: this.props.gridSize.nX, height: this.props.gridSize.nY},
+                    fetchOptions,
                     data => {
-                        this.setState({isLoading: false, data})
+                        this.setState({isLoading: false, data: data})
                     },
                     (errorFetching) => this.setState({errorFetching}))
             },
@@ -164,13 +172,15 @@ class RasterfileUploadModal extends React.Component {
                                 {data && this.renderBands()}
                             </Grid.Column>
                             <Grid.Column>
-                                {data && <Segment color={'green'}>
+                                {data &&
+                                <Segment color={'green'}>
                                     <RasterDataImage
                                         data={data[selectedBand]}
                                         unit={this.props.parameter.unit}
                                         gridSize={this.props.gridSize}
                                     />
-                                </Segment>}
+                                </Segment>
+                                }
                             </Grid.Column>
                         </Grid.Row>
                     </Grid>
@@ -202,6 +212,7 @@ RasterfileUploadModal.propTypes = {
     onCancel: PropTypes.func.isRequired,
     onChange: PropTypes.func.isRequired,
     parameter: PropTypes.object.isRequired,
+    discreteRescaling: PropTypes.bool
 };
 
 export default RasterfileUploadModal;

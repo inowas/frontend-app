@@ -148,7 +148,7 @@ class ResultsSelector extends React.Component {
                         </Segment>
                     </Grid.Column>
                     <Grid.Column width={10}>
-                        <Segment color={'grey'} style={{paddingBottom: 40}}>
+                        <Segment color={'grey'}>
                             <Header textAlign={'center'} as={'h4'}>Select total time [days]</Header>
                             <SliderWithTooltip
                                 dots={totalTimes.length < 20}

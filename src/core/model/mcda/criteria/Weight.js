@@ -5,7 +5,7 @@ import CriteriaRelation from './CriteriaRelation';
 class Weight {
     _id = uuidv4();
     _criterion = null;
-    _rank = 0;
+    _initialValue = 0;
     _relations = [];
     _value = 0;
 
@@ -13,7 +13,7 @@ class Weight {
         const weight = new Weight();
         weight.id = obj.id;
         weight.criterion = Criteria.fromObject(obj.criterion);
-        weight.rank = obj.rank;
+        weight.initialValue = obj.initialValue;
         weight.relations = obj.relations.map(r => CriteriaRelation.fromObject(r));
         weight.value = obj.value;
         return weight;
@@ -25,6 +25,14 @@ class Weight {
 
     set id(value) {
         this._id = value ? value : uuidv4();
+    }
+
+    get initialValue() {
+        return this._initialValue;
+    }
+
+    set initialValue(value) {
+        this._initialValue = !isNaN(value) ? parseFloat(value) : 0;
     }
 
     get criterion() {
@@ -43,14 +51,6 @@ class Weight {
         this._relations = value || [];
     }
 
-    get rank() {
-        return this._rank;
-    }
-
-    set rank(value) {
-        this._rank = value ? value : 0;
-    }
-
     get value() {
         return this._value;
     }
@@ -62,8 +62,8 @@ class Weight {
     toObject() {
         return ({
             id: this.id,
+            initialValue: this.initialValue,
             criterion: this.criterion.toObject(),
-            rank: this.rank,
             relations: this.relations.map(r => r.toObject()),
             value: this.value
         });

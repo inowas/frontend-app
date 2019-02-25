@@ -15,18 +15,10 @@ class TilesCollection extends AbstractCollection {
         let yMin = 90;
         let yMax = -90;
         this.all.forEach(tile => {
-            if (tile.boundingBox.xMin < xMin) {
-                xMin = tile.boundingBox.xMin;
-            }
-            if (tile.boundingBox.xMax > xMax) {
-                xMax = tile.boundingBox.xMax;
-            }
-            if (tile.boundingBox.yMin < yMin) {
-                yMin = tile.boundingBox.yMin;
-            }
-            if (tile.boundingBox.yMax > yMax) {
-                yMax = tile.boundingBox.yMax;
-            }
+            xMin = tile.boundingBox.xMin < xMin ? tile.boundingBox.xMin : xMin;
+            xMax = tile.boundingBox.xMax > xMax ? tile.boundingBox.xMax : xMax;
+            yMin = tile.boundingBox.yMin < yMin ? tile.boundingBox.yMin : yMin;
+            yMax = tile.boundingBox.yMax > yMax ? tile.boundingBox.yMax : yMax;
         });
         return BoundingBox.fromArray([[xMin, yMin], [xMax, yMax]]);
     }
