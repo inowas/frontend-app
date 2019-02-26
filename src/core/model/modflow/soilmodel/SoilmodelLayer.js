@@ -201,6 +201,11 @@ class SoilmodelLayer {
         this._meta._zones = value;
     }
 
+    clone(newId) {
+        this._id = newId;
+        return SoilmodelLayer.fromObject(this.toObject());
+    }
+
     toObject() {
         return {
             'id': this.id,

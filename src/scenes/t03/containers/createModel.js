@@ -60,7 +60,7 @@ class CreateModel extends React.Component {
     handleSave = () => {
         return sendCommand(
             ModflowModelCommand.createModflowModel(this.getPayload()),
-            () => sendCommand(ModflowModelCommand.addSoilmodelLayer(this.state.id,
+            () => sendCommand(ModflowModelCommand.addLayer(this.state.id,
                 SoilmodelLayer.fromDefault(Geometry.fromObject(this.state.geometry), Cells.fromArray(this.state.cells))),
                 () => this.props.history.push('T03/' + this.state.id),
                 (e) => this.setState({error: e})),

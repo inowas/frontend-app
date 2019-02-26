@@ -12,7 +12,7 @@ class ModflowModelCommand extends AbstractCommand {
         );
     }
 
-    static addSoilmodelLayer(modelId, layer) {
+    static addLayer(modelId, layer) {
         const name = 'addLayer';
         return new ModflowModelCommand(
             name,
@@ -45,6 +45,15 @@ class ModflowModelCommand extends AbstractCommand {
         }, JSON_SCHEMA_URL + 'commands/' + name);
     }
 
+    static cloneLayer(modelId, layerId, newLayerId) {
+        const name = 'cloneLayer';
+        return new ModflowModelCommand(
+            name,
+            {id: modelId, layer_id: layerId, new_layer_id: newLayerId},
+            JSON_SCHEMA_URL + 'commands/' + name
+        );
+    }
+
     static createModflowModel(payload) {
         const name = 'createModflowModel';
         return new ModflowModelCommand(name, payload, JSON_SCHEMA_URL + 'commands/' + name);
@@ -55,7 +64,7 @@ class ModflowModelCommand extends AbstractCommand {
         return new ModflowModelCommand(name, {id}, JSON_SCHEMA_URL + 'commands/' + name);
     }
 
-    static removeSoilmodelLayer(payload) {
+    static removeLayer(payload) {
         const name = 'removeLayer';
         return new ModflowModelCommand(name, payload, JSON_SCHEMA_URL + 'commands/' + name);
     }

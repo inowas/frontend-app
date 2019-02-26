@@ -1,5 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import Uuid from 'uuid';
 import {connect} from 'react-redux';
 import {Redirect, withRouter} from 'react-router-dom';
 import {fetchUrl} from 'services/api';
@@ -10,7 +11,7 @@ import {Soilmodel, SoilmodelLayer, SoilmodelZone} from 'core/model/modflow/soilm
 
 import LayerDetails from './layerDetails';
 import LayersList from './layersList';
-import {addSoilmodelLayer, removeSoilmodelLayer, updateSoilmodel, updateSoilmodelLayer} from '../../../actions/actions';
+import {addLayer, cloneLayer, removeLayer, updateSoilmodel, updateLayer} from '../../../actions/actions';
 import Command from '../../../commands/modflowModelCommand';
 import ContentToolBar from '../../../../shared/ContentToolbar';
 import {sendCommand} from 'services/api';
@@ -81,11 +82,27 @@ class SoilmodelEditor extends React.Component {
         this.setState({isLoading: true});
 
         return sendCommand(
-            Command.addSoilmodelLayer(this.props.model.id, layer), () => {
-                this.props.addSoilmodelLayer(layer);
+            Command.addLayer(this.props.model.id, layer), () => {
+                this.props.addLayer(layer);
                 this.setState({
                     isLoading: false
                 }, this.props.history.push(`${baseUrl}/${id}/${property}/${type || '!'}/${layer.id}`))
+            }
+        );
+    };
+
+    handleCloneLayer = (layerId) => {
+        const {id, property, type} = this.props.match.params;
+        this.setState({isLoading: true});
+
+        const newLayerId = Uuid.v4();
+
+        return sendCommand(
+            Command.cloneLayer(this.props.model.id, layerId, newLayerId), () => {
+                this.props.cloneLayer(layerId, newLayerId);
+                this.setState({
+                    isLoading: false
+                }, this.props.history.push(`${baseUrl}/${id}/${property}/${type || '!'}/${newLayerId}`))
             }
         );
     };
@@ -94,11 +111,11 @@ class SoilmodelEditor extends React.Component {
         this.setState({isLoading: true});
 
         return sendCommand(
-            Command.removeSoilmodelLayer({
+            Command.removeLayer({
                 id: this.props.model.id,
                 layer_id: layerId
             }), () => {
-                this.props.removeSoilmodelLayer(layerId);
+                this.props.removeLayer(layerId);
                 this.setState({
                     selectedLayer: null,
                     isLoading: false
@@ -156,8 +173,14 @@ class SoilmodelEditor extends React.Component {
                 <Grid>
                     <Grid.Row>
                         <Grid.Column width={4}>
-                            <LayersList addLayer={this.handleAddLayer} onChange={this.handleLayerListClick}
-                                        soilmodel={this.props.soilmodel} selected={lid}/>
+                            <LayersList
+                                addLayer={this.handleAddLayer}
+                                onClick={this.handleLayerListClick}
+                                onClone={this.handleCloneLayer}
+                                onRemove={this.handleRemoveLayer}
+                                soilmodel={this.props.soilmodel}
+                                selected={lid}
+                            />
                         </Grid.Column>
                         <Grid.Column width={12}>
                             {!isLoading && selectedLayer &&
@@ -190,7 +213,7 @@ const mapStateToProps = state => {
 };
 
 const mapDispatchToProps = {
-    addSoilmodelLayer, removeSoilmodelLayer, updateSoilmodel, updateSoilmodelLayer
+    addLayer, cloneLayer, removeLayer, updateSoilmodel, updateLayer
 };
 
 
