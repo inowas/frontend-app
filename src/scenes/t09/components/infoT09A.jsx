@@ -3,8 +3,6 @@ import PropTypes from 'prop-types';
 import {Icon, Message} from 'semantic-ui-react';
 import {pure} from 'recompose';
 
-
-
 const Info = ({parameters}) => {
 
     return (

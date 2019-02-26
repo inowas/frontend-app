@@ -12,7 +12,7 @@ export const defaults = () => {
             parameters: [{
                 order: 0,
                 id: 'k',
-                name: 'Hydraulic conductivity, K [m/d]',
+                name: 'Hydraulic conductivity<br/>K [m/d]',
                 min: 1,
                 max: 100,
                 value: 20,
@@ -21,7 +21,7 @@ export const defaults = () => {
             }, {
                 order: 1,
                 id: 'z0',
-                name: 'Depth to base of aquifer, z₀ [m]',
+                name: 'Depth to base of aquifer<br/>z<sub>0</sub> [m]',
                 min: 0,
                 max: 100,
                 value: 25,
@@ -30,7 +30,7 @@ export const defaults = () => {
             }, {
                 order: 2,
                 id: 'l',
-                name: 'Distance to inland boundary, L [m]',
+                name: 'Distance to inland boundary<br/>L [m]',
                 min: 0,
                 max: 10000,
                 value: 2000,
@@ -39,7 +39,7 @@ export const defaults = () => {
             }, {
                 order: 3,
                 id: 'w',
-                name: 'Recharge rate, w [m³/d]',
+                name: 'Recharge rate<br/>w [m³/d]',
                 min: 0,
                 max: 0.001,
                 value: 0.0001,
@@ -48,7 +48,7 @@ export const defaults = () => {
             }, {
                 order: 4,
                 id: 'dz',
-                name: 'Sea level rise, dz₀ [m]',
+                name: 'Sea level rise<br/>dz<sub>0</sub> [m]',
                 min: 0,
                 max: 2,
                 value: 1,
@@ -57,7 +57,7 @@ export const defaults = () => {
             }, {
                 order: 5,
                 id: 'hi',
-                name: 'Constant head at inland boundary, hᵢ [m]',
+                name: 'Constant head boundary inland <br/>h<sub>i</sub> [m]',
                 min: 0,
                 max: 10,
                 value: 2,
@@ -66,7 +66,7 @@ export const defaults = () => {
             }, {
                 order: 6,
                 id: 'i',
-                name: 'Hydraulic gradient, i [-]',
+                name: 'Hydraulic gradient<br/>i [-]',
                 min: 0,
                 max: 0.01,
                 value: 0.001,

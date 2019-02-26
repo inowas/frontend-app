@@ -12,7 +12,7 @@ export const defaults = () => {
             parameters: [{
                 order: 0,
                 id: 'q',
-                name: 'Pumping rate, Q [m³/d]',
+                name: 'Pumping rate<br/>Q [m³/d]',
                 min: 1,
                 validMin: function(x) {
                     return x > 0;
@@ -24,7 +24,7 @@ export const defaults = () => {
             }, {
                 order: 1,
                 id: 'k',
-                name: 'Hydraulic conductivity, K [m/d]',
+                name: 'Hydraulic conductivity<br/>K [m/d]',
                 min: 1,
                 validMin: function(x) {
                     return x > 0;
@@ -39,7 +39,7 @@ export const defaults = () => {
             }, {
                 order: 2,
                 id: 'd',
-                name: 'Pre-pumping distance, d [m]',
+                name: 'Pre-pumping distance<br/>d [m]',
                 min: 1,
                 validMin: function(x) {
                     return x > 0;

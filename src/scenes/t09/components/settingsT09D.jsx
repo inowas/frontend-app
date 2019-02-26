@@ -14,25 +14,25 @@ const Settings = ({settings, onChange}) => {
             <Grid.Row centered>
                 <Form>
                     <Header as='h4'>Choose the aquifer type:</Header>
-                    <Segment>
-                    <Form.Field>
-                        <Radio
-                            label='Confined Aquifer'
-                            value={'confined'}
-                            name='AqType'
-                            checked={settings.AqType === 'confined'}
-                            onChange={handleChange}
-                        />
-                    </Form.Field>
-                    <Form.Field>
-                        <Radio
-                            label='Unconfined Aquifer'
-                            value={'unconfined'}
-                            name='AqType'
-                            checked={settings.AqType === 'unconfined'}
-                            onChange={handleChange}
-                        />
-                    </Form.Field>
+                    <Segment style={{textAlign:'left'}}>
+                        <Form.Field>
+                            <Radio
+                                label='Confined Aquifer'
+                                value={'confined'}
+                                name='AqType'
+                                checked={settings.AqType === 'confined'}
+                                onChange={handleChange}
+                            />
+                        </Form.Field>
+                        <Form.Field>
+                            <Radio
+                                label='Unconfined Aquifer'
+                                value={'unconfined'}
+                                name='AqType'
+                                checked={settings.AqType === 'unconfined'}
+                                onChange={handleChange}
+                            />
+                        </Form.Field>
                     </Segment>
                 </Form>
             </Grid.Row>

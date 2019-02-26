@@ -120,7 +120,7 @@ const Chart = ({parameters, settings}) => {
                                     angle={90}
                                     position='right'
                                     style={{textAnchor: 'center', fontSize: '13px'}}
-                                    value={'z0 [m]'}
+                                    value={'z₀ [m]'}
                                     fill={'#4C4C4C'}
                                 />
                             </YAxis>

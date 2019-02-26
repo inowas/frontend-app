@@ -70,7 +70,7 @@ const Chart = ({parameters}) => {
                                 domain={[Math.floor(newXt / 100) * 100, l]}
                             >
                                 <Label
-                                    value={'z0 [m]'}
+                                    value={'z₀ [m]'}
                                     offset={0}
                                     position="bottom"
                                     fill={'#4C4C4C'}

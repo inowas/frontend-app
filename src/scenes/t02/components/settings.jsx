@@ -15,7 +15,7 @@ const Settings = ({settings, onChange}) => {
                 <Form>
                     <Header as={'h4'}>Select the axis:</Header>
                     <Segment>
-                    <Form.Group>
+                    <Form.Group style={{marginBottom: 0}}>
                         <Form.Field>
                             <Radio
                                 label='x-axis'

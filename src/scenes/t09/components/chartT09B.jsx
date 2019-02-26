@@ -142,7 +142,7 @@ const Chart = ({parameters}) => {
 
                 <Segment raised className={'diagramLabel topLeft'}>
                     <p>z<sub>0</sub>&nbsp;=&nbsp;<strong>{z.toFixed(1)}</strong>&nbsp;m</p>
-                    <p>L&nbsp; = &nbsp;<strong>{L.toFixed(1)}</strong>&nbsp;m</p>
+                    <p>L&nbsp;=&nbsp;<strong>{L.toFixed(1)}</strong>&nbsp;m</p>
                     <p>x<sub>T</sub>&nbsp;=&nbsp;<strong>{xT.toFixed(1)}</strong>&nbsp;m</p>
                 </Segment>
 
