@@ -111,7 +111,7 @@ class ModflowModelCommand extends AbstractCommand {
     }
 
     static updateStressperiods(payload) {
-        const name = 'updateStressPeriods';
+        const name = 'updateStressperiods';
         return new ModflowModelCommand(name, payload, JSON_SCHEMA_URL + 'commands/' + name);
     }
 }
