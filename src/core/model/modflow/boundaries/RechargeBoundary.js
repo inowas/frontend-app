@@ -100,10 +100,10 @@ export default class RechargeBoundary extends Boundary {
     }
 
     get geometryType() {
-        return this.geometry()['type'];
+        return 'Polygon';
     }
 
-    static get valueProperties() {
+    get valueProperties() {
         return [
             {
                 name: 'Recharge rate',

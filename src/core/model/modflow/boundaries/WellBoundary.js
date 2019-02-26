@@ -13,13 +13,13 @@ export default class WellBoundary extends Boundary {
 
     static create(id, geometry, name, layers, cells, spValues) {
         const boundary = new this();
-        boundary._id = id;
-        boundary._geometry = geometry;
-        boundary._name = name;
-        boundary._layers = layers;
-        boundary._cells = cells;
-        boundary._wellType = this.wellTypes['default'];
-        boundary._spValues = spValues;
+        boundary.id = id;
+        boundary.geometry = geometry;
+        boundary.name = name;
+        boundary.layers = layers;
+        boundary.cells = cells;
+        boundary.wellType = boundary.wellTypes.default;
+        boundary.spValues = spValues;
         return boundary;
     }
 
@@ -35,34 +35,6 @@ export default class WellBoundary extends Boundary {
 
         wellBoundary.wellType = obj.properties.well_type;
         return wellBoundary;
-    }
-
-    static get wellTypes() {
-        return {
-            default: 'puw',
-            types: [
-                {
-                    name: 'Public Well',
-                    value: 'puw'
-                },
-                {
-                    name: 'Infiltration Well',
-                    value: 'inw'
-                },
-                {
-                    name: 'Industrial Well',
-                    value: 'iw'
-                },
-                {
-                    name: 'Irrigation Well',
-                    value: 'irw'
-                },
-                {
-                    name: 'Optimized Well',
-                    value: 'opw'
-                }
-            ]
-        }
     }
 
     get type() {
@@ -125,14 +97,6 @@ export default class WellBoundary extends Boundary {
         this._spValues = value;
     }
 
-    get subType() {
-        return this.wellType;
-    }
-
-    get subTypes() {
-        return WellBoundary.wellTypes;
-    }
-
     toObject() {
         return {
             'type': 'Feature',
@@ -150,10 +114,38 @@ export default class WellBoundary extends Boundary {
     }
 
     get geometryType() {
-        return this.geometry()['type'];
+        return 'Point';
     }
 
-    static get valueProperties() {
+    get wellTypes() {
+        return {
+            default: 'puw',
+            types: [
+                {
+                    name: 'Public Well',
+                    value: 'puw'
+                },
+                {
+                    name: 'Infiltration Well',
+                    value: 'inw'
+                },
+                {
+                    name: 'Industrial Well',
+                    value: 'iw'
+                },
+                {
+                    name: 'Irrigation Well',
+                    value: 'irw'
+                },
+                {
+                    name: 'Optimized Well',
+                    value: 'opw'
+                }
+            ]
+        }
+    }
+
+    get valueProperties() {
         return [
             {
                 name: 'Pumping rate',

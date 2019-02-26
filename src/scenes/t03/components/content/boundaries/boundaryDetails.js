@@ -106,21 +106,21 @@ class BoundaryDetails extends React.Component {
                             multiple={multipleLayers}
                             selection
                             options={this.layerOptions()}
-                            value={multipleLayers ? boundary.affectedLayers : boundary.affectedLayers[0]}
+                            value={multipleLayers ? boundary.layers : boundary.layers[0]}
                             name={'affectedLayers'}
                             onChange={this.handleChange}
                         />
 
-                        {boundary.subTypes &&
+                        {boundary.type === 'wel' &&
                         <Form.Dropdown
-                            label={boundary.subTypes.name}
+                            label={'Well type'}
                             style={{zIndex: 1000}}
                             selection
-                            options={boundary.subTypes.types.map(t => (
+                            options={boundary.wellTypes.types.map(t => (
                                 {key: t.value, value: t.value, text: t.name}
                             ))}
-                            value={boundary.subType}
-                            name={'subType'}
+                            value={boundary.wellType}
+                            name={'wellType'}
                             onChange={this.handleChange}
                         />
                         }

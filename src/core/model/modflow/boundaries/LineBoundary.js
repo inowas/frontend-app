@@ -192,7 +192,7 @@ export default class LineBoundary extends Boundary {
     }
 
     get geometryType() {
-        return this._main.geometry()['type'];
+        return 'LineString';
     }
 
     get valueProperties() {

@@ -42,6 +42,12 @@ test('WellBoundary create', () => {
     expect(wellBoundary.wellType).toEqual('puw');
 });
 
+test('WellBoundary getter and setter', () => {
+    const boundary = new WellBoundary();
+    boundary.id = 1;
+    expect(boundary.id).toEqual(1);
+});
+
 
 test('WellBoundary fromObject', () => {
     const obj = createWellBoundary().toObject();

@@ -4,7 +4,7 @@ import moment from 'moment';
 import uuidv4 from 'uuid/v4';
 
 import {Button, Icon, Input, Table} from 'semantic-ui-react';
-import {Boundary, Stressperiods} from 'core/model/modflow';
+import {Boundary, LineBoundary, Stressperiods} from 'core/model/modflow';
 import {cloneDeep} from 'lodash';
 import CsvUpload from '../../../../shared/simpleTools/upload/CsvUpload';
 import WellBoundary from '../../../../../core/model/modflow/boundaries/WellBoundary';
@@ -81,28 +81,6 @@ class BoundaryValuesDataTable extends React.Component {
         this.props.onChange(boundary)
     };
 
-    handleRemoveDateTimeValues = (dtvIdx) => () => {
-        const {boundary, selectedOP} = this.props;
-        let dateTimeValues = boundary.getDateTimeValues(selectedOP);
-        dateTimeValues = dateTimeValues.filter((dtv, idx) => (dtvIdx !== idx));
-        boundary.setDateTimeValues(dateTimeValues, selectedOP);
-        if (boundary.getDateTimeValues(selectedOP).length === 0) {
-            boundary.setDefaultValues(this.props.stressperiods.startDateTime);
-        }
-        this.props.onChange(boundary);
-    };
-
-    addNewDatetimeValue = (number, unit = 'days') => {
-        const {boundary, selectedOP} = this.props;
-        const dateTimeValues = boundary.getDateTimeValues(selectedOP);
-        const lastDateTimeValue = dateTimeValues[dateTimeValues.length - 1];
-        const newDateTimeValue = cloneDeep(lastDateTimeValue);
-        newDateTimeValue.date_time = moment.utc(lastDateTimeValue.date_time).add(number, unit).toISOString();
-        dateTimeValues.push(newDateTimeValue);
-        boundary.setDateTimeValues(dateTimeValues, selectedOP);
-        this.props.onChange(boundary);
-    };
-
     getCellStyle = (numberOfCells) => {
         switch (numberOfCells) {
             case 2:
@@ -126,47 +104,53 @@ class BoundaryValuesDataTable extends React.Component {
         }
     };
 
-    body = (dateTimeValues) => {
+    body = (spValues) => {
         const {activeInput} = this.state;
+        const {stressperiods} = this.props;
 
-        return dateTimeValues.map((dtv, dtvIdx) => (
-            <Table.Row key={dtvIdx}>
-                <Table.Cell>
-                    <Input
-                        style={this.getCellStyle()}
-                        disabled={this.props.readOnly}
-                        id={dtvIdx}
-                        name={'dateTime'}
-                        onChange={this.handleDateTimeChange(dtvIdx)}
-                        type={'date'}
-                        value={moment(dtv.date_time).format('YYYY-MM-DD')}
-                    />
-                </Table.Cell>
-                {dtv.values.map((v, vIdx) => (
-                    <Table.Cell key={vIdx} width={10}>
+        const dateTimes = stressperiods.dateTimes;
+
+        if (dateTimes.length !== spValues.length) {
+            // do something;
+        }
+
+        console.log(stressperiods);
+
+        return spValues.map((spValue, spIdx) => {
+            if (!Array.isArray(spValue)) {
+                spValue = [spValue];
+            }
+
+            return (
+                <Table.Row key={spIdx}>
+                    <Table.Cell>
                         <Input
-                            style={this.getCellStyle(dtv.values.length)}
-                            disabled={this.props.readOnly}
-                            id={dtvIdx}
-                            col={vIdx}
-                            name={'dateTimeValue'}
-                            onBlur={this.handleDateTimeValueChange}
-                            onChange={this.handleLocalChange(dtvIdx, vIdx)}
-                            type={'number'}
-                            value={activeInput && activeInput.col === vIdx && activeInput.row === dtvIdx ? activeInput.value : v}
+                            style={this.getCellStyle()}
+                            disabled={true}
+                            id={spIdx}
+                            name={'dateTime'}
+                            type={'date'}
+                            value={moment(dateTimes[spIdx]).format('YYYY-MM-DD')}
                         />
                     </Table.Cell>
-                ))}
-                <Table.Cell>
-                    {!this.props.readOnly && <Button
-                        basic
-                        floated={'right'}
-                        icon={'trash'}
-                        onClick={this.handleRemoveDateTimeValues(dtvIdx)}
-                    />}
-                </Table.Cell>
-            </Table.Row>
-        ))
+                    {spValue.map((v, vIdx) => (
+                        <Table.Cell key={vIdx} width={10}>
+                            <Input
+                                style={this.getCellStyle(spValue.length)}
+                                disabled={this.props.readOnly}
+                                id={spIdx}
+                                col={vIdx}
+                                name={'dateTimeValue'}
+                                onBlur={this.handleDateTimeValueChange}
+                                onChange={this.handleLocalChange(spIdx, vIdx)}
+                                type={'number'}
+                                value={activeInput && activeInput.col === vIdx && activeInput.row === spIdx ? activeInput.value : v}
+                            />
+                        </Table.Cell>
+                    ))}
+                </Table.Row>
+            );
+        });
     };
 
     handleCSV = (e) => {
@@ -229,9 +213,17 @@ class BoundaryValuesDataTable extends React.Component {
         });
     };
 
+    getSpValues = (boundary, selectedOp = null) => {
+        if (!(boundary instanceof LineBoundary)) {
+            return boundary.spValues;
+        }
+
+        return null;
+    };
+
     render() {
         const {boundary, selectedOP} = this.props;
-        const dateTimeValues = boundary.getDateTimeValues(selectedOP);
+        const spValues = this.getSpValues(boundary, selectedOP);
 
         return (
             <div>
@@ -240,22 +232,13 @@ class BoundaryValuesDataTable extends React.Component {
                     <Table.Header>
                         <Table.Row>
                             <Table.HeaderCell>Start Date</Table.HeaderCell>
-                            {WellBoundary.valueProperties.map((p, idx) => (
+                            {boundary.valueProperties.map((p, idx) => (
                                 <Table.HeaderCell key={idx}>{p.name}</Table.HeaderCell>))}
                             <Table.HeaderCell/>
                         </Table.Row>
                     </Table.Header>
-                    <Table.Body>{dateTimeValues && this.body(dateTimeValues)}</Table.Body>
+                    <Table.Body>{spValues && this.body(spValues)}</Table.Body>
                 </Table>
-                <Button.Group size={'small'}>
-                    <Button icon onClick={() => this.addNewDatetimeValue(1, 'days')}><Icon name='add circle'/> 1
-                        Day</Button>
-                    <Button icon onClick={() => this.addNewDatetimeValue(1, 'weeks')}><Icon name='add circle'/> 1
-                        Week</Button>
-                    <Button icon onClick={() => this.addNewDatetimeValue(1, 'months')}><Icon name='add circle'/> 1 Month</Button>
-                    <Button icon onClick={() => this.addNewDatetimeValue(1, 'years')}><Icon name='add circle'/> 1
-                        Year</Button>
-                </Button.Group>
             </div>
         )
     }

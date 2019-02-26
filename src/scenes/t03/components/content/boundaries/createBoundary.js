@@ -15,7 +15,7 @@ import {calculateActiveCells} from 'services/geoTools';
 
 const baseUrl = '/tools/T03';
 
-class Boundaries extends React.Component {
+class CreateBoundary extends React.Component {
     constructor(props) {
         super(props);
         const {type} = this.props.match.params;
@@ -35,10 +35,10 @@ class Boundaries extends React.Component {
     }
 
     onChangeGeometry = geometry => {
-        const activeCells = calculateActiveCells(geometry, this.props.model.boundingBox, this.props.model.gridSize);
+        const cells = calculateActiveCells(geometry, this.props.model.boundingBox, this.props.model.gridSize);
         this.setState({
-            activeCells,
-            geometry,
+            cells: cells.toArray(),
+            geometry: geometry.toObject(),
             isDirty: true
         });
     };
@@ -70,16 +70,15 @@ class Boundaries extends React.Component {
             values = values[0];
         }
 
-        const boundary = BoundaryFactory.createNewFromType(
+        const boundary = BoundaryFactory.createNewFromProps(
             type,
             Uuid.v4(),
-            name,
             geometry,
+            name,
+            layers,
+            cells,
             new Array(stressperiods.count).fill(values)
         );
-
-        boundary.cells = cells;
-        boundary.layers = layers;
 
         return sendCommand(ModflowModelCommand.addBoundary(model.id, boundary),
             () => {
@@ -93,7 +92,7 @@ class Boundaries extends React.Component {
     render() {
         const {model} = this.props;
         const readOnly = model.readOnly;
-        const {isError, isDirty, name, layers} = this.state;
+        const {isError, isDirty, cells, geometry, name, layers} = this.state;
         const {type} = this.props.match.params;
 
         return (
@@ -126,8 +125,8 @@ class Boundaries extends React.Component {
                         <Grid.Column width={12}>
                             <ContentToolBar
                                 onSave={this.onSave}
-                                isValid={this.state.boundary !== null}
-                                isDirty={isDirty && !!this.state.geometry && !!this.state.activeCells}
+                                isValid={!!geometry}
+                                isDirty={isDirty && !!geometry && !!cells}
                                 isError={isError}
                                 saveButton={!readOnly && !this.state.isEditing}
                             />
@@ -159,7 +158,7 @@ const mapDispatchToProps = {
 };
 
 
-Boundaries.proptypes = {
+CreateBoundary.proptypes = {
     history: PropTypes.object.isRequired,
     location: PropTypes.object.isRequired,
     match: PropTypes.object.isRequired,
@@ -169,4 +168,4 @@ Boundaries.proptypes = {
     stressperiods: PropTypes.instanceOf(Stressperiods).isRequired,
 };
 
-export default withRouter(connect(mapStateToProps, mapDispatchToProps)(Boundaries));
+export default withRouter(connect(mapStateToProps, mapDispatchToProps)(CreateBoundary));

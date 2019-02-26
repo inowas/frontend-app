@@ -52,7 +52,7 @@ class BoundaryMap extends Component {
                         b.geometry.coordinates[1],
                         b.geometry.coordinates[0]
                     ]}
-                    {...getStyle(b.type, b.metadata.well_type)}
+                    {...getStyle(b.type, b.wellType)}
                 />
             );
         }

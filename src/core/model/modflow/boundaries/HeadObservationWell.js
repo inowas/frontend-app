@@ -3,13 +3,12 @@ import Boundary from './Boundary';
 export default class HeadObservationWell extends Boundary {
 
     _type = 'hob';
-    
+
     _id;
     _geometry;
     _name;
     _layers;
     _cells;
-    _wellType;
     _spValues;
 
     static create(id, geometry, name, layers, cells, spValues) {
@@ -102,10 +101,10 @@ export default class HeadObservationWell extends Boundary {
     }
 
     get geometryType() {
-        return this.geometry()['type'];
+        return 'Point';
     }
 
-    static get valueProperties() {
+    get valueProperties() {
         return [
             {
                 name: 'Observed head',

@@ -29,13 +29,33 @@ export default class BoundaryFactory {
         }
     };
 
-    static createNewFromType(type, id, name, geometry, spValues) {
-        const boundary = BoundaryFactory.fromType(type);
-        boundary.id = id;
-        boundary.name = name;
-        boundary.geometry = geometry;
-        boundary.spValues = spValues;
-        return boundary;
+    static getClassName = (type) => {
+        switch (type) {
+            case 'chd':
+                return ConstantHeadBoundary;
+            case 'ghb':
+                return GeneralHeadBoundary;
+            case 'hob':
+                return HeadObservationWell;
+            case 'rch':
+                return RechargeBoundary;
+            case 'riv':
+                return RiverBoundary;
+            case 'wel':
+                return WellBoundary;
+            default:
+                throw new Error('BoundaryType ' + type + ' not implemented yet.');
+        }
+    };
+
+    static createNewFromProps(type, id, geometry, name, layers, cells, spValues) {
+        const className = BoundaryFactory.getClassName(type);
+        return className.create(id, geometry, name, layers, cells, spValues);
+    }
+
+    static createFromTypeAndObject(type, obj) {
+        const className = BoundaryFactory.getClassName(type);
+        return className.fromObject(obj);
     }
 
     static fromObject = (obj) => {
@@ -45,14 +65,14 @@ export default class BoundaryFactory {
 
         if (obj.type === 'Feature') {
             const type = obj.properties.type;
-            return BoundaryFactory.createNewFromType(type);
+            return BoundaryFactory.createFromTypeAndObject(type, obj);
         }
 
         if (obj.type === 'FeatureCollection') {
             obj.features.forEach(feature => {
                 if (BoundaryFactory.availableTypes.indexOf(feature.type) >= 0) {
                     const type = feature.properties.type;
-                    return BoundaryFactory.createNewFromType(type);
+                    return BoundaryFactory.createFromTypeAndObject(type, obj);
                 }
             });
         }
