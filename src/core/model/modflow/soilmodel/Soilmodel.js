@@ -13,7 +13,6 @@ class Soilmodel {
     }
 
     static fromObject(obj) {
-        console.log(obj);
         if(!obj) {
             return Soilmodel.fromDefaults();
         }

@@ -45,15 +45,6 @@ class ModflowModelCommand extends AbstractCommand {
         }, JSON_SCHEMA_URL + 'commands/' + name);
     }
 
-    static cloneLayer(modelId, layerId, newLayerId) {
-        const name = 'cloneLayer';
-        return new ModflowModelCommand(
-            name,
-            {id: modelId, layer_id: layerId, new_layer_id: newLayerId},
-            JSON_SCHEMA_URL + 'commands/' + name
-        );
-    }
-
     static createModflowModel(payload) {
         const name = 'createModflowModel';
         return new ModflowModelCommand(name, payload, JSON_SCHEMA_URL + 'commands/' + name);
@@ -114,7 +105,7 @@ class ModflowModelCommand extends AbstractCommand {
         return new ModflowModelCommand(name, payload, JSON_SCHEMA_URL + 'commands/' + name);
     }
 
-    static updateSoilmodelLayer(payload) {
+    static updateLayer(payload) {
         const name = 'updateLayer';
         return new ModflowModelCommand(name, payload, JSON_SCHEMA_URL + 'commands/' + name);
     }

@@ -27,7 +27,7 @@ const LayersList = ({addLayer, soilmodel, onClick, onClone, onRemove, selected})
                                     <Button.Group size='small'>
                                         <Popup
                                             trigger={<Button icon={'clone'}
-                                                             onClick={() => onClone(layer.id)}/>}
+                                                             onClick={() => onClone(layer)}/>}
                                             content='Clone'
                                             position='top center'
                                             size='mini'

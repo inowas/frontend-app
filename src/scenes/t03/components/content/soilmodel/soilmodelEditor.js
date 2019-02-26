@@ -41,6 +41,9 @@ class SoilmodelEditor extends React.Component {
 
     componentWillReceiveProps(nextProps, nextContext) {
         const {id, pid} = nextProps.match.params;
+
+        if (!pid) {return}
+
         if ((this.props.match.params.id !== id) || (this.props.match.params.pid !== pid)) {
             this.fetchLayer(id, pid);
         }
@@ -91,51 +94,54 @@ class SoilmodelEditor extends React.Component {
         );
     };
 
-    handleCloneLayer = (layerId) => {
+    handleCloneLayer = (layer) => {
         const {id, property, type} = this.props.match.params;
         this.setState({isLoading: true});
 
-        const newLayerId = Uuid.v4();
+        fetchUrl(`modflowmodels/${id}/soilmodel/${layer.id}`,
+            layer => {
+                const newLayer = SoilmodelLayer.fromObject(layer);
+                newLayer.id = Uuid.v4();
+                newLayer.name = layer.name + ' (clone)';
 
-        return sendCommand(
-            Command.cloneLayer(this.props.model.id, layerId, newLayerId), () => {
-                this.props.cloneLayer(layerId, newLayerId);
-                this.setState({
-                    isLoading: false
-                }, this.props.history.push(`${baseUrl}/${id}/${property}/${type || '!'}/${newLayerId}`))
+                return sendCommand(
+                    Command.addLayer(this.props.model.id, newLayer), () => {
+                        this.props.addLayer(newLayer);
+                        this.setState({
+                            isLoading: false
+                        }, this.props.history.push(`${baseUrl}/${id}/${property}/${type || '!'}/${newLayer.id}`))
+                    }
+                );
             }
         );
     };
 
     handleRemoveLayer = (layerId) => {
-        this.setState({isLoading: true});
+        const {id, property} = this.props.match.params;
 
+        this.setState({isLoading: true});
         return sendCommand(
             Command.removeLayer({
-                id: this.props.model.id,
+                id,
                 layer_id: layerId
             }), () => {
                 this.props.removeLayer(layerId);
-                this.setState({
-                    selectedLayer: null,
-                    isLoading: false
-                });
+                this.setState({isLoading: false},
+                    () => this.props.history.push(`${baseUrl}/${id}/${property}`))
             }
         );
     };
 
     onSave = () => {
         const layer = SoilmodelLayer.fromObject(this.state.selectedLayer);
-
         this.setState({isLoading: true});
-
         return sendCommand(
-            Command.updateSoilmodelLayer({
+            Command.updateLayer({
                 id: this.props.model.id,
                 layer_id: layer.id,
                 layer: layer.toObject()
             }), () => {
-                this.props.updateSoilmodelLayer(layer);
+                this.props.updateLayer(layer);
                 this.setState({
                     isDirty: false,
                     isLoading: false
@@ -192,7 +198,6 @@ class SoilmodelEditor extends React.Component {
                                     model={model}
                                     onChange={this.onChangeLayer}
                                     onChangeTab={this.handleTabChange}
-                                    onRemove={this.handleRemoveLayer}
                                     readOnly={model.readOnly}
                                 />
                             </div>
