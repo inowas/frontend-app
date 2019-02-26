@@ -12,19 +12,19 @@ export default class WellBoundary extends Boundary {
     _spValues;
 
     static create(id, geometry, name, layers, cells, spValues) {
-        const boundary = new WellBoundary();
+        const boundary = new this();
         boundary._id = id;
         boundary._geometry = geometry;
         boundary._name = name;
         boundary._layers = layers;
         boundary._cells = cells;
-        boundary._wellType = WellBoundary.wellTypes['default'];
+        boundary._wellType = this.wellTypes['default'];
         boundary._spValues = spValues;
         return boundary;
     }
 
     static fromObject(obj) {
-        const wellBoundary = WellBoundary.create(
+        const wellBoundary = this.create(
             obj.id,
             obj.geometry,
             obj.properties.name,
@@ -125,6 +125,14 @@ export default class WellBoundary extends Boundary {
         this._spValues = value;
     }
 
+    get subType() {
+        return this.wellType;
+    }
+
+    get subTypes() {
+        return WellBoundary.wellTypes;
+    }
+
     toObject() {
         return {
             'type': 'Feature',
@@ -152,6 +160,7 @@ export default class WellBoundary extends Boundary {
                 description: 'Pumping rate of the well, positive values = infiltration',
                 unit: 'm3/day',
                 decimals: 1,
+                default: 0
             },
         ]
     }

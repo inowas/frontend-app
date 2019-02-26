@@ -1,4 +1,8 @@
+import Uuid from 'uuid';
+
 export default class Boundary {
+
+    _id = Uuid.v4();
 
     // noinspection JSMethodCanBeStatic
     get type() {
@@ -31,11 +35,6 @@ export default class Boundary {
     }
 
     // noinspection JSMethodCanBeStatic
-    toObject() {
-        throw new Error('You have to implement the method toObject!');
-    }
-
-    // noinspection JSMethodCanBeStatic
     get geometryType() {
         throw new Error('You have to implement the getter for geometryType!');
     }
@@ -43,5 +42,25 @@ export default class Boundary {
     // noinspection JSMethodCanBeStatic
     get valueProperties() {
         throw new Error('You have to implement the getter for valueProperties!');
+    }
+
+    // noinspection JSMethodCanBeStatic
+    get subType() {
+        return null
+    }
+
+    // noinspection JSMethodCanBeStatic
+    get subTypes() {
+        return null
+    }
+
+    // noinspection JSMethodCanBeStatic
+    toObject() {
+        throw new Error('You have to implement the method toObject!');
+    }
+
+    clone() {
+        this._id = Uuid.v4();
+        return this;
     }
 }

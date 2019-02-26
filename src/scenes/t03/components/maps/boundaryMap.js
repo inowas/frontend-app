@@ -2,7 +2,7 @@ import React, {Component} from 'react';
 import PropTypes from 'prop-types';
 import {uniqueId} from 'lodash';
 import {GeoJSON, Map, CircleMarker} from 'react-leaflet';
-import {Boundary, Geometry, MultipleOPBoundary} from 'core/model/modflow';
+import {Boundary, Geometry, LineBoundary} from 'core/model/modflow';
 import {BasicTileLayer} from 'services/geoTools/tileLayers';
 
 import {getStyle} from './index';
@@ -18,7 +18,7 @@ const style = {
 class BoundaryMap extends Component {
 
     renderObservationPoints(b) {
-        if (!(b instanceof MultipleOPBoundary)) {
+        if (!(b instanceof LineBoundary)) {
             return null;
         }
 

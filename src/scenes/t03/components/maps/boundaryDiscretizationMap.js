@@ -92,7 +92,7 @@ class BoundaryDiscretizationMap extends React.Component {
             return (this.renderBoundaryGeometry(boundary));
         }
 
-        // When rendering ActiveCells, the geometry should not be editable
+        // When rendering Cells, the geometry should not be editable
         if (showActiveCells) {
             return (this.renderBoundaryGeometry(boundary));
         }
@@ -136,7 +136,7 @@ class BoundaryDiscretizationMap extends React.Component {
             <ActiveCellsLayer
                 boundingBox={this.props.model.boundingBox}
                 gridSize={this.props.model.gridSize}
-                activeCells={this.props.boundary.activeCells}
+                activeCells={this.props.boundary.cells}
                 styles={getStyle('active_cells')}
             />
         )
@@ -151,7 +151,7 @@ class BoundaryDiscretizationMap extends React.Component {
             return null;
         }
 
-        const activeCells = this.props.boundary.activeCells;
+        const activeCells = this.props.boundary.cells;
         const boundingBox = this.props.model.boundingBox;
         const gridSize = this.props.model.gridSize;
         const x = latlng.lng;
@@ -159,7 +159,7 @@ class BoundaryDiscretizationMap extends React.Component {
 
         activeCells.toggle([x, y], boundingBox, gridSize).toArray();
         const boundary = this.props.boundary;
-        boundary.activeCells = activeCells;
+        boundary.cells = activeCells;
         this.props.onChange(boundary);
     };
 

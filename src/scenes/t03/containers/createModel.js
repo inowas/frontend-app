@@ -4,7 +4,7 @@ import {withRouter} from 'react-router-dom';
 import {sendCommand} from 'services/api';
 import {Button, Checkbox, Form, Grid, Icon, Segment} from 'semantic-ui-react';
 import {CreateModelMap} from '../components/maps';
-import {ActiveCells, Geometry, GridSize, ModflowModel, Stressperiods} from 'core/model/modflow';
+import {Cells, Geometry, GridSize, ModflowModel, Stressperiods} from 'core/model/modflow';
 import ModflowModelCommand from '../commands/modflowModelCommand';
 import defaults from '../defaults/createModel';
 import moment from 'moment/moment';
@@ -27,6 +27,7 @@ class CreateModel extends React.Component {
             geometry: null,
             boundingBox: null,
             gridSize: defaults.gridSize.toObject(),
+            cells: [],
             lengthUnit: defaults.lengthUnit,
             timeUnit: defaults.timeUnit,
             isPublic: defaults.isPublic,
@@ -42,14 +43,14 @@ class CreateModel extends React.Component {
         }
     }
 
-    getPayload = () => (ModflowModel.fromParameters(
+    getPayload = () => (ModflowModel.createFromParameters(
         this.state.id,
         this.state.name,
         this.state.description,
         this.state.geometry,
         this.state.boundingBox,
         this.state.gridSize,
-        this.state.activeCells,
+        this.state.cells,
         this.state.lengthUnit,
         this.state.timeUnit,
         this.state.stressperiods,
@@ -59,18 +60,9 @@ class CreateModel extends React.Component {
     handleSave = () => {
         return sendCommand(
             ModflowModelCommand.createModflowModel(this.getPayload()),
-            () => sendCommand(ModflowModelCommand.updateModflowModel(this.getPayload()),
-                () => sendCommand(ModflowModelCommand.updateStressperiods({
-                        id: this.state.id,
-                        stress_periods: Stressperiods.fromObject(this.state.stressperiods).toObject()
-                    }),
-                    () => sendCommand(ModflowModelCommand.addSoilmodelLayer(
-                        this.state.id,
-                        SoilmodelLayer.fromDefault(Geometry.fromObject(this.state.geometry), ActiveCells.fromArray(this.state.activeCells))
-                        ),
-                        () => this.props.history.push('T03/' + this.state.id),
-                        (e) => this.setState({error: e})),
-                    (e) => this.setState({error: e})),
+            () => sendCommand(ModflowModelCommand.addSoilmodelLayer(this.state.id,
+                SoilmodelLayer.fromDefault(Geometry.fromObject(this.state.geometry), Cells.fromArray(this.state.cells))),
+                () => this.props.history.push('T03/' + this.state.id),
                 (e) => this.setState({error: e})),
             (e) => this.setState({error: e})
         );
@@ -118,9 +110,9 @@ class CreateModel extends React.Component {
         }
     };
 
-    handleMapInputChange = ({activeCells, boundingBox, geometry}) => {
-        this.setState({
-            activeCells: activeCells.toArray(),
+    handleMapInputChange = ({cells, boundingBox, geometry}) => {
+        return this.setState({
+            cells: cells.toArray(),
             boundingBox: boundingBox.toArray(),
             geometry: geometry.toObject()
         }, () => this.validate())

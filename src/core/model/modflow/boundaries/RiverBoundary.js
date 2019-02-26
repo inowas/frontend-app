@@ -12,19 +12,22 @@ export default class RiverBoundary extends LineBoundary {
                 name: 'Stage',
                 description: 'River stage in m above sea level',
                 unit: 'm',
-                decimals: 1
+                decimals: 1,
+                default: 0
             },
             {
                 name: 'Cond',
                 description: 'Riverbed conductance',
                 unit: 'm/day',
-                decimals: 1
+                decimals: 1,
+                default: 0
             },
             {
                 name: 'Bottom',
                 description: 'River bottom in m above sea level',
                 unit: 'm',
-                decimals: 1
+                decimals: 1,
+                default: 0
             }
         ]
     }

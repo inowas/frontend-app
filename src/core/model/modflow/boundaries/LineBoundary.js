@@ -62,6 +62,10 @@ export default class LineBoundary extends Boundary {
         this._main.type = type
     }
 
+    get observationPoints() {
+        return this._observationPoints;
+    }
+
     addObservationPoint = (name, geometry, spValues) => {
         const op = {
             type: 'Feature',
@@ -75,6 +79,18 @@ export default class LineBoundary extends Boundary {
         };
 
         this._observationPoints.push(op)
+    };
+
+    cloneObservationPoint = (id, newId) => {
+        const filtered = this._observationPoints.filter(op => op.id === id);
+
+        if (filtered.length === 0) {
+            return;
+        }
+
+        const op = filtered[0];
+        op.id = newId;
+        this._observationPoints.push(op);
     };
 
     updateObservationPoint = (id, name, geometry, spValues) => {
@@ -104,6 +120,15 @@ export default class LineBoundary extends Boundary {
 
     findObservationPointByName = name => {
         const filtered = this._observationPoints.filter(op => op.properties.name === name);
+        if (filtered.length > 0) {
+            return filtered[0];
+        }
+
+        return null;
+    };
+
+    findObservationPointById = id => {
+        const filtered = this._observationPoints.filter(op => op.id === id);
         if (filtered.length > 0) {
             return filtered[0];
         }

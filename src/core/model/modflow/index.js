@@ -1,6 +1,7 @@
-import ActiveCells from '../geometry/ActiveCells';
+import Cells from '../geometry/Cells';
 import BoundingBox from '../geometry/BoundingBox';
 import Boundary from './boundaries/Boundary';
+import LineBoundary from './boundaries/LineBoundary';
 import Calculation from './Calculation';
 import BoundaryCollection from './boundaries/BoundaryCollection';
 import BoundaryFactory from './boundaries/BoundaryFactory';
@@ -15,7 +16,7 @@ import Stressperiods from './Stressperiods';
 import TimeUnit from './TimeUnit';
 
 export {
-    ActiveCells,
+    Cells,
     Boundary,
     BoundaryCollection,
     BoundaryFactory,
@@ -24,6 +25,7 @@ export {
     Geometry,
     GridSize,
     LengthUnit,
+    LineBoundary,
     ModflowModel,
     Optimization,
     CalculationResults,

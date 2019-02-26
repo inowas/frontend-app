@@ -50,6 +50,17 @@ test('RiverBoundary add ObservationPoint', () => {
     expect(op2.geometry).toEqual({type: 'Point', coordinates: [1, 2]});
 });
 
+test('RiverBoundary clone ObservationPoint', () => {
+    const riverBoundary = createRiverBoundary();
+    riverBoundary.addObservationPoint('Op2', {type: 'Point', coordinates: [1, 2]}, [3, 2, 1]);
+    expect(riverBoundary._observationPoints).toHaveLength(2);
+    const op2 = riverBoundary.findObservationPointByName('Op2');
+
+    const newId = Uuid.v4();
+    riverBoundary.cloneObservationPoint(op2.id, newId);
+    expect(riverBoundary._observationPoints).toHaveLength(3);
+});
+
 test('RiverBoundary update ObservationPoint', () => {
     const riverBoundary = createRiverBoundary();
     riverBoundary.addObservationPoint('Op2', {type: 'Point', coordinates: [1, 2]}, [3, 2, 1]);

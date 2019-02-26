@@ -100,7 +100,7 @@ class ConstraintsEditor extends React.Component {
                                         name='mode'
                                         value='cells'
                                         checked={mode === 'cells'}
-                                        disabled={!constraints.activeCells || constraints.activeCells.length === 0}
+                                        disabled={!constraints.cells || constraints.cells.length === 0}
                                         onChange={this.onChangeMode}
                                     />
                                 </Form.Field>

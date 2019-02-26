@@ -110,6 +110,7 @@ export default class RechargeBoundary extends Boundary {
                 description: 'Recharge rate into layer',
                 unit: 'm/day',
                 decimals: 5,
+                default: 0
             },
         ]
     }

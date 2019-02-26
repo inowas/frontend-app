@@ -4,7 +4,7 @@ import PropTypes from 'prop-types';
 import {Button, Form, Modal} from 'semantic-ui-react';
 
 import ObservationPointMap from '../../maps/observationPointEditorMap';
-import {ModflowModel, MultipleOPBoundary} from 'core/model/modflow';
+import {ModflowModel, LineBoundary} from 'core/model/modflow';
 
 class ObservationPointEditor extends React.Component {
     constructor(props) {
@@ -17,11 +17,11 @@ class ObservationPointEditor extends React.Component {
 
     componentWillMount() {
         const {boundary, observationPointId} = this.props;
-        if (!(boundary instanceof MultipleOPBoundary)) {
+        if (!(boundary instanceof LineBoundary)) {
             return null;
         }
 
-        let observationPoint = boundary.getObservationPointById(observationPointId);
+        let observationPoint = boundary.findObservationPointById(observationPointId);
         if (observationPoint) {
             return this.setState({observationPoint});
         }
@@ -29,11 +29,11 @@ class ObservationPointEditor extends React.Component {
 
     componentWillReceiveProps(nextProps) {
         const {boundary, observationPointId} = nextProps;
-        if (!(boundary instanceof MultipleOPBoundary)) {
+        if (!(boundary instanceof LineBoundary)) {
             return null;
         }
 
-        let observationPoint = boundary.getObservationPointById(observationPointId);
+        let observationPoint = boundary.findObservationPointById(observationPointId);
         if (observationPoint) {
             return this.setState({observationPoint});
         }
@@ -119,7 +119,7 @@ class ObservationPointEditor extends React.Component {
 
 ObservationPointEditor.propTypes = {
     model: PropTypes.instanceOf(ModflowModel).isRequired,
-    boundary: PropTypes.instanceOf(MultipleOPBoundary).isRequired,
+    boundary: PropTypes.instanceOf(LineBoundary).isRequired,
     observationPointId: PropTypes.string,
     onCancel: PropTypes.func.isRequired,
     onChange: PropTypes.func.isRequired,

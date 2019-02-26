@@ -7,7 +7,7 @@ class ModflowModelCommand extends AbstractCommand {
         const name = 'addBoundary';
         return new ModflowModelCommand(
             name,
-            {id: modelId, boundary: boundary.toObject},
+            {id: modelId, boundary: boundary.toObject()},
             JSON_SCHEMA_URL + 'commands/' + name
         );
     }
@@ -76,9 +76,23 @@ class ModflowModelCommand extends AbstractCommand {
         );
     }
 
-    static updateModflowModel(payload) {
-        const name = 'updateModflowModel';
-        return new ModflowModelCommand(name, payload, JSON_SCHEMA_URL + 'commands/' + name);
+    static updateModflowModelMetadata(id, name, description, isPubic) {
+        const commandName = 'updateModflowModelMetadata';
+        return new ModflowModelCommand(
+            commandName,
+            {id, name, description, public: isPubic},
+            JSON_SCHEMA_URL + 'commands/' + commandName);
+    }
+
+    static updateModflowModelDiscretization(id, geometry, boundingBox, gridSize, cells, stressperiods, lengthUnit, timeUnit) {
+        const commandName = 'updateModflowModelDiscretization';
+        const payload = {
+            id, geometry, bounding_box: boundingBox,
+            grid_size: gridSize, cells, stressperiods,
+            length_unit: lengthUnit, time_unit: timeUnit
+        };
+
+        return new ModflowModelCommand(commandName, payload, JSON_SCHEMA_URL + 'commands/' + commandName);
     }
 
     static updateMt3dms(payload) {

@@ -1,10 +1,11 @@
 import React from 'react';
+import Uuid from 'uuid';
 import {connect} from 'react-redux';
 import PropTypes from 'prop-types';
 import {withRouter} from 'react-router-dom';
 import {sendCommand} from 'services/api';
 import {Form, Grid, Header, Segment} from 'semantic-ui-react';
-import {ModflowModel, Soilmodel} from 'core/model/modflow';
+import {ModflowModel, Soilmodel, Stressperiods} from 'core/model/modflow';
 import {updateBoundaries} from '../../../actions/actions';
 import {BoundaryCollection, BoundaryFactory} from 'core/model/modflow/boundaries';
 import ContentToolBar from 'scenes/shared/ContentToolbar';
@@ -21,11 +22,10 @@ class Boundaries extends React.Component {
 
         this.state = {
             name: 'New ' + type + '-Boundary',
-            affectedLayers: [0],
-            subType: BoundaryFactory.fromType(type).subType,
-            subTypes: BoundaryFactory.fromType(type).subTypes,
             geometry: null,
-            activeCells: null,
+            cells: null,
+            layers: [0],
+
             isLoading: false,
             isDirty: false,
             isEditing: false,
@@ -48,7 +48,7 @@ class Boundaries extends React.Component {
     }));
 
     handleChange = (e, {name, value}) => {
-        if (name === 'affectedLayers') {
+        if (name === 'layers') {
             value = [value];
         }
 
@@ -59,18 +59,27 @@ class Boundaries extends React.Component {
     };
 
     onSave = () => {
-        const {id, property} = this.props.match.params;
-        const {model} = this.props;
+        const {id, property, type} = this.props.match.params;
+        const {model, stressperiods} = this.props;
+        const {name, geometry, cells, layers} = this.state;
 
-        const boundary = BoundaryFactory.createByTypeAndStartDate({
-            name: this.state.name,
-            type: this.props.match.params.type,
-            geometry: this.state.geometry,
-            utcIsoStartDateTimes: this.props.model.stressperiods.dateTimes
-        });
+        const valueProperties = BoundaryFactory.fromType(type).valueProperties;
 
-        boundary.activeCells = this.state.activeCells;
-        boundary.affectedLayers = this.state.affectedLayers;
+        let values = valueProperties.map(vp => vp.default);
+        if (values.length === 1) {
+            values = values[0];
+        }
+
+        const boundary = BoundaryFactory.createNewFromType(
+            type,
+            Uuid.v4(),
+            name,
+            geometry,
+            new Array(stressperiods.count).fill(values)
+        );
+
+        boundary.cells = cells;
+        boundary.layers = layers;
 
         return sendCommand(ModflowModelCommand.addBoundary(model.id, boundary),
             () => {
@@ -84,7 +93,7 @@ class Boundaries extends React.Component {
     render() {
         const {model} = this.props;
         const readOnly = model.readOnly;
-        const {isError, isDirty, name, affectedLayers, subType, subTypes} = this.state;
+        const {isError, isDirty, name, layers} = this.state;
         const {type} = this.props.match.params;
 
         return (
@@ -108,24 +117,10 @@ class Boundaries extends React.Component {
                                     options={this.props.soilmodel.layersCollection.all.map((l, key) => (
                                         {key: l.id, value: key, text: l.name}
                                     ))}
-                                    value={affectedLayers[0]}
-                                    name={'affectedLayers'}
+                                    value={layers[0]}
+                                    name={'layers'}
                                     onChange={this.handleChange}
                                 />
-
-                                {subTypes &&
-                                <Form.Dropdown
-                                    label={subTypes.name}
-                                    selection
-                                    fluid
-                                    options={subTypes.types.map(t => (
-                                        {key: t.value, value: t.value, text: t.name}
-                                    ))}
-                                    value={subType}
-                                    name={'subType'}
-                                    onChange={this.handleChange}
-                                />
-                                }
                             </Form>
                         </Grid.Column>
                         <Grid.Column width={12}>
@@ -154,6 +149,7 @@ const mapStateToProps = state => {
     return {
         boundaries: BoundaryCollection.fromObject(state.T03.boundaries),
         model: ModflowModel.fromObject(state.T03.model),
+        stressperiods: ModflowModel.fromObject(state.T03.model).stressperiods,
         soilmodel: Soilmodel.fromObject(state.T03.soilmodel)
     };
 };
@@ -170,6 +166,7 @@ Boundaries.proptypes = {
     boundaries: PropTypes.instanceOf(BoundaryCollection).isRequired,
     model: PropTypes.instanceOf(ModflowModel).isRequired,
     soilmodel: PropTypes.instanceOf(Soilmodel).isRequired,
+    stressperiods: PropTypes.instanceOf(Stressperiods).isRequired,
 };
 
 export default withRouter(connect(mapStateToProps, mapDispatchToProps)(Boundaries));

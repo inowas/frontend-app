@@ -44,7 +44,7 @@ class BoundaryCollection extends AbstractCollection {
     }
 
     toObject = () => {
-        return this.boundaries.map(b => b.toObject)
+        return this.boundaries.map(b => b.toObject())
     };
 }
 

@@ -1,11 +1,11 @@
 import GisAreasCollection from './GisAreasCollection';
-import {ActiveCells, BoundingBox, GridSize} from '../../geometry';
+import {Cells, BoundingBox, GridSize} from '../../geometry';
 import {booleanContains, booleanOverlap} from '@turf/turf';
 import {getGridCells} from 'services/geoTools';
 import Raster from './Raster';
 
 class GisMap {
-    _activeCells = ActiveCells.create();
+    _activeCells = Cells.create();
     _boundingBox = null;
     _areas = new GisAreasCollection();
     _gridSize = new GridSize(10, 10);
@@ -13,8 +13,8 @@ class GisMap {
 
     static fromObject(obj) {
         const cm = new GisMap();
-        if (obj && obj.activeCells) {
-            cm.activeCells = ActiveCells.fromArray(obj.activeCells);
+        if (obj && obj.cells) {
+            cm.cells = Cells.fromArray(obj.cells);
         }
         cm.boundingBox = obj.boundingBox ? BoundingBox.fromArray(obj.boundingBox) : null;
         if (obj && obj.areas) {
@@ -71,7 +71,7 @@ class GisMap {
 
     toObject() {
         return {
-            activeCells: this.activeCells.toArray(),
+            cells: this.activeCells.toArray(),
             boundingBox: this.boundingBox ? this.boundingBox.toArray() : null,
             areas: this.areasCollection.toArray(),
             gridSize: this.gridSize.toObject(),
@@ -80,7 +80,7 @@ class GisMap {
     }
 
     calculateActiveCells() {
-        const activeCells = new ActiveCells([]);
+        const activeCells = new Cells([]);
         const gridCells = getGridCells(this.boundingBox, this.gridSize);
         const raster = new Raster();
         raster.data = Array(this.gridSize.nY).fill(0).map(() => Array(this.gridSize.nX).fill(1));

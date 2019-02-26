@@ -5,7 +5,7 @@ import uuid from 'uuid';
 import {Button, Dropdown, Form, Header, List, Popup} from 'semantic-ui-react';
 
 import BoundaryMap from '../../maps/boundaryMap';
-import {Boundary, ModflowModel, MultipleOPBoundary, SingleOPBoundary, Soilmodel} from 'core/model/modflow';
+import {Boundary, LineBoundary, ModflowModel, Soilmodel} from 'core/model/modflow';
 import BoundaryValuesDataTable from './boundaryValuesDataTable';
 import BoundaryGeometryEditor from './boundaryGeometryEditor';
 import ObservationPointEditor from './observationPointEditor';
@@ -27,11 +27,7 @@ class BoundaryDetails extends React.Component {
             return;
         }
 
-        if ((nextProps.boundary instanceof SingleOPBoundary)) {
-            return this.setState({observationPointId: null})
-        }
-
-        if ((nextProps.boundary instanceof MultipleOPBoundary) && !this.state.observationPointId) {
+        if ((nextProps.boundary instanceof LineBoundary) && !this.state.observationPointId) {
             return this.setState({
                 observationPointId: nextProps.boundary.observationPoints[0].id
             })
@@ -142,7 +138,7 @@ class BoundaryDetails extends React.Component {
                     boundary={boundary}
                     selectedObservationPointId={observationPointId}
                 />
-                {(boundary instanceof MultipleOPBoundary) &&
+                {(boundary instanceof LineBoundary) &&
                 <div>
                     <Button as={'div'} labelPosition={'left'} fluid>
                         <Popup trigger={

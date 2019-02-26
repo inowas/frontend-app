@@ -29,7 +29,7 @@ export default class BoundaryFactory {
         }
     };
 
-    static createNewFromType(id, name, type, geometry, spValues) {
+    static createNewFromType(type, id, name, geometry, spValues) {
         const boundary = BoundaryFactory.fromType(type);
         boundary.id = id;
         boundary.name = name;
