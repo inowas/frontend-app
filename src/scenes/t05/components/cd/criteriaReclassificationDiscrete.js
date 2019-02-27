@@ -3,9 +3,9 @@ import React from 'react';
 import {Criterion} from 'core/model/mcda/criteria';
 import {Button, Grid, Icon, Input, Message, Segment, Table} from 'semantic-ui-react';
 import {SketchPicker} from 'react-color';
-import {dropData} from "../../../../services/api";
-import CsvUpload from "../../../shared/simpleTools/upload/CsvUpload";
-import uuidv4 from "uuid/v4";
+import {dropData} from 'services/api';
+import CsvUpload from '../../../shared/simpleTools/upload/CsvUpload';
+import uuidv4 from 'uuid/v4';
 
 const styles = {
     popover: {

@@ -196,8 +196,8 @@ class T05 extends React.Component {
                 return (
                     <ConstraintsEditor
                         readOnly={readOnly}
-                        constraints={constraints}
-                        handleChange={this.handleChange}
+                        mcda={mcda}
+                        onChange={this.handleChange}
                     />
                 );
             case 'wa':
@@ -226,11 +226,10 @@ class T05 extends React.Component {
                     />
                 );
             case 'su':
-                console.log('MCDA IN CONTENT', mcda.suitability);
                 return (
                     <SuitabilityEditor
                         activeTool={cid}
-                        handleChange={this.handleChange}
+                        onChange={this.handleChange}
                         mcda={mcda}
                         onClickTool={this.handleClickSuitabilityTool}
                     />

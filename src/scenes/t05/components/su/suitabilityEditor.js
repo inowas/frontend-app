@@ -6,7 +6,7 @@ import {Step} from 'semantic-ui-react';
 import SuitabilityWeightAssignment from './suitabilityWA';
 import SuitabilityClasses from './suitabilityClasses';
 import SuitabilityResults from './suitabilityResults';
-import {retrieveDroppedData} from 'services/api';
+import {retrieveRasters} from 'services/api/rasterHelper';
 
 class SuitabilityEditor extends React.Component {
     constructor(props) {
@@ -19,34 +19,41 @@ class SuitabilityEditor extends React.Component {
     }
 
     componentWillReceiveProps(nextProps) {
-        const mcda = nextProps.mcda.toObject();
+        const prevMcda = this.props.mcda || null;
+        const mcda = nextProps.mcda;
 
-        if (mcda.suitability.raster.url !== '' && mcda.suitability.raster) {
-            this.setState({
-                isFetching: true
-            });
-            retrieveDroppedData(
-                mcda.suitability.raster.url,
-                response => {
-                    mcda.suitability.raster.data = response;
-                    this.setState({
-                        isFetching: false,
-                        mcda: mcda
-                    });
-                },
-                response => {
-                    throw new Error(response);
-                }
-            );
+        if (mcda) {
+            this.suitabilityToState(prevMcda ? prevMcda.toObject() : null, mcda.toObject());
         }
     }
+
+    suitabilityToState = (prevMcda, mcda) => {
+        this.setState({
+            isFetching: true
+        });
+
+        const newMcda = mcda;
+
+        const tasks = [
+            {
+                raster: mcda.suitability.raster,
+                oldUrl: prevMcda ? prevMcda.suitability.raster.url : '',
+                onSuccess: raster => newMcda.suitability.raster = raster
+            }
+        ];
+
+        retrieveRasters(tasks, () => {
+            this.setState({
+                mcda: newMcda,
+                isFetching: false
+            });
+        });
+    };
 
     handleClickStep = (e, {name}) => this.props.onClickTool(name);
 
     renderTool() {
         const mcda = MCDA.fromObject(this.state.mcda);
-
-        console.log(mcda);
 
         switch (this.props.activeTool) {
             case 'results':
@@ -59,14 +66,14 @@ class SuitabilityEditor extends React.Component {
                 return (
                     <SuitabilityClasses
                         mcda={mcda}
-                        handleChange={this.props.handleChange}
+                        handleChange={this.props.onChange}
                     />
                 );
             default:
                 return (
                     <SuitabilityWeightAssignment
                         mcda={mcda}
-                        handleChange={this.props.handleChange}
+                        handleChange={this.props.onChange}
                     />
                 );
         }
@@ -111,7 +118,7 @@ class SuitabilityEditor extends React.Component {
 
 SuitabilityEditor.proptypes = {
     activeTool: PropTypes.string,
-    handleChange: PropTypes.func.isRequired,
+    onChange: PropTypes.func.isRequired,
     onClickTool: PropTypes.func.isRequired,
     mcda: PropTypes.instanceOf(MCDA).isRequired
 };

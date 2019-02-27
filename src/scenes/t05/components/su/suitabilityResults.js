@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types';
 import React from 'react';
 import {heatMapColors} from '../../defaults/gis';
-import {Checkbox, Form, Grid, Radio, Segment} from 'semantic-ui-react';
+import {Button, Checkbox, Form, Grid, Icon, Radio, Segment} from 'semantic-ui-react';
 import {MCDA} from 'core/model/mcda';
 import CriteriaRasterMap from '../cd/criteriaRasterMap';
 
@@ -27,6 +27,39 @@ class SuitabilityResults extends React.Component {
         return this.setState({
             [name]: value
         });
+    };
+
+    handleDownload = () => {
+        const {mcda} = this.props;
+
+        const cellSize = (mcda.constraints.boundingBox.yMax - mcda.constraints.boundingBox.yMin) / mcda.constraints.gridSize.nY;
+
+        let content = `NCOLS ${mcda.constraints.gridSize.nX}
+NROWS ${mcda.constraints.gridSize.nY}
+XLLCORNER ${mcda.constraints.boundingBox.xMin}
+YLLCORNER ${mcda.constraints.boundingBox.yMin}
+CELLSIZE ${cellSize}
+NODATA_VALUE -9999
+`;
+
+        mcda.suitability.raster.data.forEach(row => {
+            content += row.join(' ');
+            content += '\n';
+
+        });
+
+        console.log({
+            data: mcda.suitability.raster.data,
+        });
+
+        console.log(content);
+
+
+        const file = new Blob([content], {type: 'text/plain'});
+        const element = document.createElement('a');
+        element.href = URL.createObjectURL(file);
+        element.download = 'suitability.asc';
+        element.click();
     };
 
     handleToggleBasicLayer = () => this.setState(prevState => ({showBasicLayer: !prevState.showBasicLayer}));
@@ -131,6 +164,19 @@ class SuitabilityResults extends React.Component {
                             </Form.Field>
                         </Form>
                     </Segment>
+                    <Segment textAlign='center' inverted color='grey' secondary>
+                        Commands
+                    </Segment>
+                    <Button
+                        fluid
+                        primary
+                        icon
+                        labelPosition='left'
+                        onClick={this.handleDownload}
+                    >
+                        <Icon name='download'/>
+                        Download GeoTiff
+                    </Button>
                 </Grid.Column>
                 <Grid.Column width={11}>
                     {mcda.suitability.raster.data.length > 0 && !!legend &&

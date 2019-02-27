@@ -45,19 +45,13 @@ class SuitabilityClasses extends React.Component {
         const mcda = this.props.mcda;
         mcda.suitability.rulesCollection.update(rule);
         this.handleCloseModal();
-        return this.props.handleChange({
-            name: 'mcda',
-            value: mcda
-        });
+        return this.props.handleChange(mcda);
     };
 
     handleRemoveRule = id => {
         const mcda = this.props.mcda;
         mcda.suitability.rulesCollection.remove(id);
-        return this.props.handleChange({
-            name: 'mcda',
-            value: mcda
-        });
+        return this.props.handleChange(mcda);
     };
 
     render() {

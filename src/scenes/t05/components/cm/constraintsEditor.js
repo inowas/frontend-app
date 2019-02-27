@@ -4,14 +4,15 @@ import {Button, Dimmer, Form, Grid, Loader, Message, Radio, Segment} from 'seman
 import {GisMap} from 'core/model/mcda/gis';
 import ConstraintsMap from './constraintsMap';
 import {dropData} from 'services/api';
-import {retrieveDroppedData} from 'services/api';
+import {MCDA} from 'core/model/mcda';
+import {retrieveRasters} from 'services/api/rasterHelper';
 
 class ConstraintsEditor extends React.Component {
     constructor(props) {
         super(props);
 
         this.state = {
-            constraints: props.constraints.toObject(),
+            constraints: props.mcda.constraints.toObject(),
             isFetching: false,
             mode: 'map',
             showInfo: true
@@ -19,35 +20,36 @@ class ConstraintsEditor extends React.Component {
     }
 
     componentWillReceiveProps(nextProps) {
-        const raster = nextProps.constraints.raster;
+        const prevConstraints = this.props.mcda.constraints || null;
+        const constraints = nextProps.mcda.constraints;
 
-        if (raster && raster.data && raster.data.length === 0 && raster.url) {
-            this.setState({
-                isFetching: true
-            }, () => {
-                retrieveDroppedData(
-                    raster.url,
-                    response => {
-                        raster.data = response;
-                        this.setState({
-                            isFetching: false,
-                            constraints: {
-                                ...nextProps.constraints.toObject(),
-                                raster: raster.toObject()
-                            }
-                        });
-                    },
-                    response => {
-                        throw new Error(response);
-                    }
-                )
-            })
+        if (constraints) {
+            this.constraintsToState(prevConstraints ? prevConstraints.toObject() : null, constraints.toObject());
         }
-
-        return this.setState({
-            constraints: nextProps.constraints.toObject()
-        });
     }
+
+    constraintsToState = (prevConstraints, constraints) => {
+        this.setState({
+            isFetching: true
+        });
+
+        const newConstraints = constraints;
+
+        const tasks = [
+            {
+                raster: constraints.raster,
+                oldUrl: prevConstraints ? prevConstraints.raster.url : '',
+                onSuccess: raster => newConstraints.raster = raster
+            }
+        ];
+
+        retrieveRasters(tasks, () => {
+            this.setState({
+                constraints: newConstraints,
+                isFetching: false
+            });
+        });
+    };
 
     handleDismiss = () => this.setState({showInfo: false});
 
@@ -56,16 +58,13 @@ class ConstraintsEditor extends React.Component {
             throw new Error('Constraints expected to be of type GisMap.');
         }
 
-        const raster = constraints.raster;
+        const mcda = this.props.mcda;
+        mcda.constraints = constraints;
         dropData(
-            JSON.stringify(raster.data),
+            JSON.stringify(constraints.raster.data),
             response => {
-                raster.url = response.filename;
-                constraints.raster = raster;
-                this.props.handleChange({
-                    name: 'constraints',
-                    value: constraints
-                });
+                mcda.constraints.raster.url = response.filename;
+                this.props.onChange(mcda);
             },
             response => {
                 throw new Error(response)
@@ -138,16 +137,6 @@ class ConstraintsEditor extends React.Component {
                                         onChange={this.onChangeMode}
                                     />
                                 </Form.Field>
-                                <Form.Field>
-                                    <Radio
-                                        label='Suitable Cells'
-                                        name='mode'
-                                        value='cells'
-                                        checked={mode === 'cells'}
-                                        disabled={!constraints.activeCells || constraints.activeCells.length === 0}
-                                        onChange={this.onChangeMode}
-                                    />
-                                </Form.Field>
                             </Form.Group>
                         </Form>
                         {mode === 'map' &&
@@ -172,9 +161,9 @@ class ConstraintsEditor extends React.Component {
                     </Grid.Column>
                     <Grid.Column width={11}>
                         <ConstraintsMap
-                            map={this.props.constraints}
+                            map={GisMap.fromObject(constraints)}
                             onChange={this.handleChange}
-                            mode={this.state.mode}
+                            mode={mode}
                             readOnly={readOnly}
                         />
                     </Grid.Column>
@@ -186,8 +175,8 @@ class ConstraintsEditor extends React.Component {
 }
 
 ConstraintsEditor.propTypes = {
-    handleChange: PropTypes.func.isRequired,
-    constraints: PropTypes.instanceOf(GisMap).isRequired,
+    onChange: PropTypes.func.isRequired,
+    mcda: PropTypes.instanceOf(MCDA).isRequired,
     readOnly: PropTypes.bool
 };
 

@@ -131,8 +131,6 @@ class MCDA {
 
         this.suitability.raster = rasterData.calculateMinMax();
 
-        console.log('CALCULATION FINISHED', this.suitability.raster);
-
         return this;
     }
 }

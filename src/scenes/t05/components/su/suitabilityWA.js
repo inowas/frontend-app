@@ -16,7 +16,6 @@ class SuitabilityWeightAssignment extends React.Component {
                 task: 0
             },
             isRunning: false,
-            mcda: props.mcda.toObject(),
             numberOfTasks: 0,
             showInfo: true,
             openRequests: null
@@ -39,13 +38,12 @@ class SuitabilityWeightAssignment extends React.Component {
             if (wa.isActive && parentId && (wa.parent === parentId || (!wa.parent && parentId === 'main')) && wa.id !== name) {
                 wa.isActive = false;
             }
+
             return wa;
         });
 
-        return this.props.handleChange({
-            name: 'weights',
-            value: WeightAssignmentsCollection.fromArray(wac)
-        });
+        mcda.weightAssignmentsCollection = WeightAssignmentsCollection.fromArray(wac);
+        return this.props.handleChange(mcda);
     };
 
     calculateSuitability(mcda) {
@@ -62,21 +60,17 @@ class SuitabilityWeightAssignment extends React.Component {
             }));
             const updatedMcda = MCDA.fromObject(mcda).calculate();
             dropData(
-                updatedMcda.suitability.data,
+                updatedMcda.suitability.raster.data,
                 response => {
-                    updatedMcda.url = response.filename;
+                    updatedMcda.suitability.raster.url = response.filename;
                     this.setState(prevState => ({
                         calculationState: {
                             task: prevState.calculationState.task + 1,
                             message: 'Calculation finished'
                         },
-                        isRunning: false,
-                        mcda: updatedMcda.toObject()
+                        isRunning: false
                     }));
-                    this.props.handleChange({
-                        name: 'mcda',
-                        value: updatedMcda
-                    });
+                    this.props.handleChange(updatedMcda);
                 },
                 response => {
                     throw new Error(response)
@@ -171,7 +165,7 @@ class SuitabilityWeightAssignment extends React.Component {
     }
 
     handleClickCalculation = () => {
-        const mcda = this.state.mcda;
+        const mcda = this.props.mcda.toObject();
         const criteria1 = mcda.criteria.filter(criterion => criterion.suitability.url !== '' && criterion.suitability.data.length === 0);
         const criteria2 = mcda.criteria.filter(criterion => criterion.constraintRaster.url !== '' && criterion.constraintRaster.data.length === 0);
         const globalCon = mcda.constraints.raster.url !== '' && mcda.constraints.raster.data.length === 0 ? 1 : 0;
