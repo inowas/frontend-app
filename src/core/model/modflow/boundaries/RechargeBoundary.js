@@ -84,6 +84,14 @@ export default class RechargeBoundary extends Boundary {
         this._spValues = value;
     }
 
+    getSpValues() {
+        return this._spValues;
+    }
+
+    setSpValues(spValues, opId = null) {
+        this._spValues = spValues;
+    }
+
     toObject() {
         return {
             'type': 'Feature',

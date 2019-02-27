@@ -46,10 +46,12 @@ class Boundaries extends React.Component {
         (boundary) => this.setState({selectedBoundary: boundary})
     );
 
-    onChangeBoundary = boundary => this.setState({
-        selectedBoundary: boundary.toObject(),
-        isDirty: true
-    });
+    onChangeBoundary = boundary => {
+        return this.setState({
+            selectedBoundary: boundary.toObject(),
+            isDirty: true
+        });
+    };
 
     handleBoundaryListClick = (bid) => {
         const {id, property} = this.props.match.params;

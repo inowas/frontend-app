@@ -1,7 +1,7 @@
 import Uuid from 'uuid';
 import {WellBoundary} from 'core/model/modflow/boundaries';
 import {validate} from 'services/jsonSchemaValidator'
-import {JSON_SCHEMA_URL} from '../../../../../services/api';
+import {JSON_SCHEMA_URL} from 'services/api';
 
 
 const createWellBoundary = () => {
@@ -10,7 +10,7 @@ const createWellBoundary = () => {
     const geometry = {type: 'Point', coordinates: [3, 4]};
     const layers = [1];
     const cells = [[1, 2]];
-    const spValues = [1, 2, 3];
+    const spValues = [[1], [2], [3]];
 
     const wb = WellBoundary.create(
         id, geometry, name, layers, cells, spValues
@@ -26,7 +26,7 @@ test('WellBoundary create', () => {
     const geometry = {type: 'Point', coordinates: [[3, 4]]};
     const layers = [1];
     const cells = [[1, 2]];
-    const spValues = [1, 2, 3];
+    const spValues = [[1], [2], [3]];
 
     const wellBoundary = WellBoundary.create(
         id, geometry, name, layers, cells, spValues

@@ -64,11 +64,7 @@ class CreateBoundary extends React.Component {
         const {name, geometry, cells, layers} = this.state;
 
         const valueProperties = BoundaryFactory.fromType(type).valueProperties;
-
-        let values = valueProperties.map(vp => vp.default);
-        if (values.length === 1) {
-            values = values[0];
-        }
+        const values = valueProperties.map(vp => vp.default);
 
         const boundary = BoundaryFactory.createNewFromProps(
             type,

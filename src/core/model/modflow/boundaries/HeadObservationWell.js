@@ -85,6 +85,14 @@ export default class HeadObservationWell extends Boundary {
         this._spValues = value;
     }
 
+    getSpValues() {
+        return this._spValues;
+    }
+
+    setSpValues(spValues, opId = null) {
+        this._spValues = spValues;
+    }
+
     toObject() {
         return {
             'type': 'Feature',
@@ -95,7 +103,7 @@ export default class HeadObservationWell extends Boundary {
                 'type': this.type,
                 'layers': this.layers,
                 'cells': this.cells,
-                'sp_values': this.spValues
+                'sp_values': this.getSpValues()
             }
         }
     }

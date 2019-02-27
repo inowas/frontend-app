@@ -24,6 +24,10 @@ export default class Boundary {
         throw new Error('You have to implement the getter for name!');
     }
 
+    set name(name) {
+        throw new Error('You have to implement the setter for name!');
+    }
+
     // noinspection JSMethodCanBeStatic
     get cells() {
         throw new Error('You have to implement the getter for cells!');
@@ -44,14 +48,12 @@ export default class Boundary {
         throw new Error('You have to implement the getter for valueProperties!');
     }
 
-    // noinspection JSMethodCanBeStatic
-    get subType() {
-        return null
+    getSpValues(opId = null) {
+        throw new Error('You have to implement the getSpValues function!');
     }
 
-    // noinspection JSMethodCanBeStatic
-    get subTypes() {
-        return null
+    setSpValues(spValues, opId = null) {
+        throw new Error('You have to implement the spValues function!');
     }
 
     // noinspection JSMethodCanBeStatic
@@ -61,6 +63,7 @@ export default class Boundary {
 
     clone() {
         this._id = Uuid.v4();
+        this.name = this.name + ' (clone)';
         return this;
     }
 }

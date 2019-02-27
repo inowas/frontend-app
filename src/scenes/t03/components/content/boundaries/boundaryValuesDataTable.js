@@ -3,11 +3,9 @@ import PropTypes from 'prop-types';
 import moment from 'moment';
 import uuidv4 from 'uuid/v4';
 
-import {Button, Icon, Input, Table} from 'semantic-ui-react';
-import {Boundary, LineBoundary, Stressperiods} from 'core/model/modflow';
-import {cloneDeep} from 'lodash';
+import {Input, Table} from 'semantic-ui-react';
+import {Boundary, Stressperiods} from 'core/model/modflow';
 import CsvUpload from '../../../../shared/simpleTools/upload/CsvUpload';
-import WellBoundary from '../../../../../core/model/modflow/boundaries/WellBoundary';
 
 class BoundaryValuesDataTable extends React.Component {
 
@@ -33,51 +31,27 @@ class BoundaryValuesDataTable extends React.Component {
         }
     });
 
-    handleDateTimeChange = row => (e, {name, value}) => {
-        const {boundary, selectedOP} = this.props;
-        let dateTimeValues = boundary.getDateTimeValues(selectedOP);
-
-        if (name === 'dateTime') {
-            dateTimeValues = dateTimeValues.map((dtv, dtvIdx) => {
-                if (row === dtvIdx) {
-                    dtv.date_time = moment.utc(value).toISOString();
-                    return dtv;
-                }
-
-                return dtv;
-            });
-        }
-
-        boundary.setDateTimeValues(dateTimeValues, selectedOP);
-        this.props.onChange(boundary)
-    };
-
-    handleDateTimeValueChange = () => {
+    handleSpValuesChange = () => {
         if (!this.state.activeInput) {
             return;
         }
-
-        const {name, value, row, col} = this.state.activeInput;
-
+        const {value, row, col} = this.state.activeInput;
         this.setState({
             activeInput: null
         });
 
         const {boundary, selectedOP} = this.props;
-        let dateTimeValues = boundary.getDateTimeValues(selectedOP);
+        const spValues = boundary.getSpValues(selectedOP);
 
-        if (name === 'dateTimeValue') {
-            dateTimeValues = dateTimeValues.map((dtv, dtvIdx) => {
-                if (row === dtvIdx) {
-                    dtv.values[col] = parseFloat(value) || 0;
-                    return dtv;
-                }
+        const updatedSpValues = spValues.map((spv, spvIdx) => {
+            if (row === spvIdx) {
+                spv[col] = parseFloat(value) || 0;
+                return spv;
+            }
+            return spv;
+        });
 
-                return dtv;
-            });
-        }
-
-        boundary.setDateTimeValues(dateTimeValues, selectedOP);
+        boundary.setSpValues(updatedSpValues, selectedOP);
         this.props.onChange(boundary)
     };
 
@@ -114,43 +88,35 @@ class BoundaryValuesDataTable extends React.Component {
             // do something;
         }
 
-        console.log(stressperiods);
-
-        return spValues.map((spValue, spIdx) => {
-            if (!Array.isArray(spValue)) {
-                spValue = [spValue];
-            }
-
-            return (
-                <Table.Row key={spIdx}>
-                    <Table.Cell>
+        return spValues.map((spValue, spIdx) => (
+            <Table.Row key={spIdx}>
+                <Table.Cell>
+                    <Input
+                        style={this.getCellStyle()}
+                        disabled={true}
+                        id={spIdx}
+                        name={'dateTime'}
+                        type={'date'}
+                        value={moment(dateTimes[spIdx]).format('YYYY-MM-DD')}
+                    />
+                </Table.Cell>
+                {spValue.map((v, vIdx) => (
+                    <Table.Cell key={vIdx} width={10}>
                         <Input
-                            style={this.getCellStyle()}
-                            disabled={true}
+                            style={this.getCellStyle(spValue.length)}
+                            disabled={this.props.readOnly}
                             id={spIdx}
-                            name={'dateTime'}
-                            type={'date'}
-                            value={moment(dateTimes[spIdx]).format('YYYY-MM-DD')}
+                            col={vIdx}
+                            name={'dateTimeValue'}
+                            onBlur={this.handleSpValuesChange}
+                            onChange={this.handleLocalChange(spIdx, vIdx)}
+                            type={'number'}
+                            value={activeInput && activeInput.col === vIdx && activeInput.row === spIdx ? activeInput.value : v}
                         />
                     </Table.Cell>
-                    {spValue.map((v, vIdx) => (
-                        <Table.Cell key={vIdx} width={10}>
-                            <Input
-                                style={this.getCellStyle(spValue.length)}
-                                disabled={this.props.readOnly}
-                                id={spIdx}
-                                col={vIdx}
-                                name={'dateTimeValue'}
-                                onBlur={this.handleDateTimeValueChange}
-                                onChange={this.handleLocalChange(spIdx, vIdx)}
-                                type={'number'}
-                                value={activeInput && activeInput.col === vIdx && activeInput.row === spIdx ? activeInput.value : v}
-                            />
-                        </Table.Cell>
-                    ))}
-                </Table.Row>
-            );
-        });
+                ))}
+            </Table.Row>
+        ));
     };
 
     handleCSV = (e) => {
@@ -213,17 +179,9 @@ class BoundaryValuesDataTable extends React.Component {
         });
     };
 
-    getSpValues = (boundary, selectedOp = null) => {
-        if (!(boundary instanceof LineBoundary)) {
-            return boundary.spValues;
-        }
-
-        return null;
-    };
-
     render() {
         const {boundary, selectedOP} = this.props;
-        const spValues = this.getSpValues(boundary, selectedOP);
+        const spValues = boundary.getSpValues(selectedOP);
 
         return (
             <div>

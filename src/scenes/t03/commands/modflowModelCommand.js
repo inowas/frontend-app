@@ -71,7 +71,7 @@ class ModflowModelCommand extends AbstractCommand {
         const name = 'updateBoundary';
         return new ModflowModelCommand(
             name,
-            {id: modelId, boundary_id: boundary.id, boundary: boundary.toObject},
+            {id: modelId, boundary_id: boundary.id, boundary: boundary.toObject()},
             JSON_SCHEMA_URL + 'commands/' + name
         );
     }
