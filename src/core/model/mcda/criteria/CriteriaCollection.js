@@ -23,8 +23,6 @@ class CriteriaCollection extends AbstractCollection {
             ).length === 0;
         }
 
-        console.log(this.length > 0 && this.all.filter(c => !c.suitability || !c.suitability.url || c.suitability.url === '').length === 0);
-
         return this.length > 0 && this.all.filter(c => !c.suitability || !c.suitability.url || c.suitability.url === '').length === 0;
     }
 

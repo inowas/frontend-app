@@ -154,8 +154,9 @@ class Criterion {
             throw new Error('RulesCollection is expected to be instance of RulesCollection.');
         }
 
-        const newRaster = _cloneDeep(raster);
-
+        const newRaster = new Raster();
+        newRaster.boundingBox = raster.boundingBox;
+        newRaster.gridSize = raster.gridSize;
         newRaster.data = _cloneDeep(raster.data).map(row => {
             return row.map(cell => {
                 const rules = rulesCollection.findByValue(cell);

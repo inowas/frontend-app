@@ -26,9 +26,9 @@ class CriteriaDataConstraints extends React.Component {
 
     saveRaster(criterion) {
         dropData(
-            criterion.suitability.data,
+            criterion.constraintRaster.data,
             response => {
-                criterion.suitability.url = response.filename;
+                criterion.constraintRaster.url = response.filename;
                 this.props.onChange(criterion);
             },
             response => {

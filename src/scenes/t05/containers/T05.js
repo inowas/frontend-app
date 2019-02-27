@@ -2,18 +2,14 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import {withRouter} from 'react-router-dom';
 import {includes} from 'lodash';
-import {Divider, Grid, Icon, Segment} from 'semantic-ui-react';
+import {Divider, Grid, Icon, Message, Segment} from 'semantic-ui-react';
 
 import {fetchTool, sendCommand} from 'services/api';
 
 import {MCDA} from 'core/model/mcda';
-import {Criterion, CriteriaCollection, WeightAssignment, WeightAssignmentsCollection} from 'core/model/mcda/criteria';
-import {GisMap} from 'core/model/mcda/gis';
 
 import {defaultsT05, getMenuItems} from '../defaults';
 import {heatMapColors} from '../defaults/gis';
-
-import McdaCommand from '../commands/mcdaCommand';
 
 import Command from '../../shared/simpleTools/commands/command';
 import {deepMerge} from '../../shared/simpleTools/helpers';
@@ -30,6 +26,8 @@ import {
     ToolNavigation,
     WeightAssignmentEditor
 } from '../components';
+import {updateMcda} from '../actions/actions';
+import {connect} from 'react-redux';
 
 const navigation = [{
     name: 'Documentation',
@@ -55,11 +53,14 @@ class T05 extends React.Component {
             fetchTool(
                 this.state.tool.tool,
                 this.props.match.params.id,
-                tool => this.setState({
-                    tool: deepMerge(this.state.tool, tool),
-                    isDirty: false,
-                    isLoading: false
-                }),
+                tool => {
+                    this.props.updateMcda(MCDA.fromObject(tool.data));
+                    this.setState({
+                        tool: deepMerge(this.state.tool, tool),
+                        isDirty: false,
+                        isLoading: false
+                    });
+                },
                 error => {
                     console.log('ERROR', error);
                     this.setState({isError: true, isLoading: false})
@@ -76,31 +77,12 @@ class T05 extends React.Component {
         description: tool.description,
         public: tool.public,
         tool: tool.tool,
-        data: MCDA.fromObject(this.state.tool.data).toObject()
+        data: this.props.mcda.toObject()
     });
 
-    handleChange = ({name, value}) => {
-        let mcda = MCDA.fromObject(this.state.tool.data);
-
-        if (name === 'weights') {
-            if (value instanceof WeightAssignmentsCollection) {
-                mcda.weightAssignmentsCollection = value;
-            }
-            if (value instanceof WeightAssignment) {
-                mcda.weightAssignmentsCollection.update(value);
-            }
-        }
-
-        if (name === 'constraints' && value instanceof GisMap) {
-            mcda.constraints = value;
-        }
-
-        if (name === 'mcda' && value instanceof MCDA) {
-            mcda = value;
-        }
-
-        this.handleUpdateProject(mcda);
-    };
+    handleChange = mcda => this.setState({
+        isDirty: true
+    }, this.props.updateMcda(mcda));
 
     handleSaveMetadata = () => {
         sendCommand(
@@ -153,92 +135,6 @@ class T05 extends React.Component {
         );
     };
 
-    handleDeleteCriterion = id => {
-        const criteriaCollection = CriteriaCollection.fromArray(this.state.tool.data.criteria);
-        criteriaCollection.remove(id);
-
-        this.setState({isDirty: true}, sendCommand(
-            McdaCommand.deleteCriterion({
-                id: this.state.tool.id,
-                criterion_id: id
-            }),
-            () => this.setState(prevState => ({
-                isDirty: false,
-                isLoading: false,
-                tool: {
-                    ...prevState.tool,
-                    data: {
-                        ...prevState.tool.data,
-                        criteria: criteriaCollection.toArray()
-                    }
-                }
-            })),
-            () => this.setState({
-                isDirty: false,
-                isError: true,
-                isLoading: false
-            })
-        ));
-    };
-
-    handleUpdateCriterion = criterion => {
-        if (!(criterion instanceof Criterion)) {
-            throw new Error('Criterion expected to be instance of Criterion.');
-        }
-
-        const criteriaCollection = CriteriaCollection.fromArray(this.state.tool.data.criteria);
-        criteriaCollection.update(criterion);
-
-        this.setState({isDirty: true}, sendCommand(
-            McdaCommand.updateCriterion({
-                id: this.state.tool.id,
-                criterion: criterion.toPayload()
-            }),
-            () => this.setState(prevState => ({
-                isDirty: false,
-                isLoading: false,
-                tool: {
-                    ...prevState.tool,
-                    data: {
-                        ...prevState.tool.data,
-                        criteria: criteriaCollection.toArray()
-                    }
-                }
-            })),
-            () => this.setState({
-                isDirty: false,
-                isError: true,
-                isLoading: false
-            })
-        ));
-    };
-
-    handleUpdateProject = mcda => {
-        if (!(mcda instanceof MCDA)) {
-            throw new Error('MCDA expected to be instance of MCDA.');
-        }
-
-        this.setState({isDirty: true}, sendCommand(
-            McdaCommand.updateProject({
-                id: this.state.tool.id,
-                data: mcda.toProject()
-            }),
-            () => this.setState(prevState => ({
-                isDirty: false,
-                isLoading: false,
-                tool: {
-                    ...prevState.tool,
-                    data: mcda.toObject()
-                }
-            })),
-            () => this.setState({
-                isDirty: false,
-                isError: true,
-                isLoading: false
-            })
-        ));
-    };
-
     handleUpdateMetaData = tool => this.setState({
         tool: {
             ...tool
@@ -273,7 +169,7 @@ class T05 extends React.Component {
         const {id, property} = this.props.match.params;
         const cid = this.props.match.params.cid || null;
         const tool = this.props.match.params.tool || null;
-        const mcda = MCDA.fromObject(this.state.tool.data);
+        const mcda = this.props.mcda;
 
         const {permissions} = this.state.tool;
         const readOnly = !includes(permissions, 'w');
@@ -288,9 +184,7 @@ class T05 extends React.Component {
                             this.props.history.push('/tools/t04')
                         }}
                         mcda={mcda}
-                        handleDeleteCriterion={this.handleDeleteCriterion}
-                        handleUpdateCriterion={this.handleUpdateCriterion}
-                        handleUpdateProject={this.handleUpdateProject}
+                        onChange={this.handleChange}
                     />);
             case 'cm':
                 const constraints = mcda.constraints;
@@ -315,7 +209,7 @@ class T05 extends React.Component {
                         readOnly={readOnly}
                         mcda={mcda}
                         selectedWeightAssignment={weightAssignment}
-                        handleChange={this.handleChange}
+                        onChange={this.handleChange}
                         routeTo={this.routeTo}
                     />
                 );
@@ -326,12 +220,13 @@ class T05 extends React.Component {
                     <CriteriaDataEditor
                         activeTool={tool}
                         criterion={criterion}
-                        handleChange={this.handleUpdateCriterion}
+                        onChange={this.handleChange}
                         mcda={mcda}
                         onClickTool={this.handleClickCriteriaTool}
                     />
                 );
             case 'su':
+                console.log('MCDA IN CONTENT', mcda.suitability);
                 return (
                     <SuitabilityEditor
                         activeTool={cid}
@@ -352,8 +247,18 @@ class T05 extends React.Component {
     }
 
     render() {
-        const mcda = MCDA.fromObject(this.state.tool.data);
-        const {tool, isDirty, isLoading} = this.state;
+        if (!this.props.mcda) {
+            return (
+                <AppContainer navbarItems={navigation}>
+                    <Message icon>
+                        <Icon name='circle notched' loading/>
+                    </Message>
+                </AppContainer>
+            )
+        }
+        const mcda = this.props.mcda;
+
+        const {tool, isDirty, isError, isLoading} = this.state;
 
         const {cid, property} = this.props.match.params;
 
@@ -409,10 +314,12 @@ class T05 extends React.Component {
                                 <ContentToolBar
                                     backButton={!!cid && property !== 'cd'}
                                     onBack={this.routeTo}
+                                    onSave={this.handleSave}
                                     isDirty={isDirty}
-                                    saveButton={false}
+                                    isError={isError}
+                                    saveButton
                                 />
-                                <Divider />
+                                <Divider/>
                                 {this.renderContent()}
                             </Segment>
                         </Grid.Column>
@@ -423,10 +330,22 @@ class T05 extends React.Component {
     }
 }
 
+const mapStateToProps = state => {
+    return ({
+        mcda: state.T05.mcda && MCDA.fromObject(state.T05.mcda),
+    });
+};
+
+const mapDispatchToProps = {
+    updateMcda
+};
+
 T05.propTypes = {
     history: PropTypes.object.isRequired,
     location: PropTypes.object.isRequired,
     match: PropTypes.object.isRequired,
+    mcda: PropTypes.object,
+    updateMcda: PropTypes.func.isRequired
 };
 
-export default withRouter(T05);
+export default withRouter(connect(mapStateToProps, mapDispatchToProps)(T05));

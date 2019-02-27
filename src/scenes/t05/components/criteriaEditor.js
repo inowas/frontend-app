@@ -50,23 +50,37 @@ class CriteriaEditor extends React.Component {
         });
     }
 
-    handleAddCriteria = () => this.props.handleUpdateCriterion(new Criterion());
+    handleAddCriteria = () => {
+        const mcda = this.props.mcda;
+        mcda.criteriaCollection.add(new Criterion());
+        return this.props.onChange(mcda);
+    };
 
     handleDismiss = () => this.setState({showInfo: false});
 
     handleAddSubCriterion = id => {
         const criterion = new Criterion();
         criterion.parentId = id;
-        return this.props.handleUpdateCriterion(criterion);
+        return this.handleChangeCriterion(criterion);
+    };
+
+    handleChangeCriterion = criterion => {
+        const mcda = this.props.mcda;
+        mcda.criteriaCollection.update(criterion);
+        return this.props.onChange(mcda);
     };
 
     handleClickAhp = () => {
         const mcda = this.props.mcda;
         mcda.withAhp = !this.props.mcda.withAhp;
-        return this.props.handleUpdateProject(mcda);
+        return this.props.onChange(mcda);
     };
 
-    handleRemoveCriterion = id => this.props.handleDeleteCriterion(id);
+    handleRemoveCriterion = id => {
+        const mcda = this.props.mcda;
+        mcda.criteriaCollection.remove(id);
+        return this.props.onChange(mcda);
+    };
 
     handleSelectChange = id => (e, {name, value}) => {
         const criteriaCollection = CriteriaCollection.fromArray(this.state.criteria);
@@ -77,7 +91,7 @@ class CriteriaEditor extends React.Component {
         }
 
         criterion[name] = value;
-        return this.props.handleUpdateCriterion(criterion);
+        return this.handleChangeCriterion(criterion);
     };
 
     handleLocalChange = (id, blur = false) => event => {
@@ -89,7 +103,7 @@ class CriteriaEditor extends React.Component {
         }
 
         if (blur) {
-            return this.props.handleUpdateCriterion(criterion);
+            return this.handleChangeCriterion(criterion);
         }
 
         criterion[event.target.name] = event.target.value;
@@ -212,16 +226,16 @@ class CriteriaEditor extends React.Component {
                                         </Table.Cell>
                                         <Table.Cell>
                                             {!mcda.withAhp &&
-                                                <Select
-                                                    name='type'
-                                                    disabled={readOnly}
-                                                    value={c.type}
-                                                    onChange={this.handleSelectChange(c.id)}
-                                                    options={[
-                                                        {key: 'discrete', value: 'discrete', text: 'Discrete'},
-                                                        {key: 'continuous', value: 'continuous', text: 'Continuous'}
-                                                    ]}
-                                                />
+                                            <Select
+                                                name='type'
+                                                disabled={readOnly}
+                                                value={c.type}
+                                                onChange={this.handleSelectChange(c.id)}
+                                                options={[
+                                                    {key: 'discrete', value: 'discrete', text: 'Discrete'},
+                                                    {key: 'continuous', value: 'continuous', text: 'Continuous'}
+                                                ]}
+                                            />
                                             }
                                         </Table.Cell>
                                         <Table.Cell>
@@ -335,9 +349,7 @@ class CriteriaEditor extends React.Component {
 CriteriaEditor.propTypes = {
     mcda: PropTypes.instanceOf(MCDA).isRequired,
     toolName: PropTypes.string.isRequired,
-    handleDeleteCriterion: PropTypes.func.isRequired,
-    handleUpdateCriterion: PropTypes.func.isRequired,
-    handleUpdateProject: PropTypes.func.isRequired,
+    onChange: PropTypes.func.isRequired,
     readOnly: PropTypes.bool,
     routeTo: PropTypes.func
 };

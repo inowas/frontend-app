@@ -99,7 +99,7 @@ class ContentToolBar extends React.Component {
 
         return (
             <Grid>
-                <Grid.Row columns={3} style={{height: '42px'}}>
+                <Grid.Row columns={3}>
                     <Grid.Column>
                         {this.props.backButton &&
                         <Button icon onClick={() => this.props.onBack()} labelPosition="left">

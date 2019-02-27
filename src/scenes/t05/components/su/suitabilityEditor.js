@@ -6,29 +6,66 @@ import {Step} from 'semantic-ui-react';
 import SuitabilityWeightAssignment from './suitabilityWA';
 import SuitabilityClasses from './suitabilityClasses';
 import SuitabilityResults from './suitabilityResults';
+import {retrieveDroppedData} from 'services/api';
 
 class SuitabilityEditor extends React.Component {
+    constructor(props) {
+        super(props);
+
+        this.state = {
+            isFetching: false,
+            mcda: props.mcda.toObject()
+        }
+    }
+
+    componentWillReceiveProps(nextProps) {
+        const mcda = nextProps.mcda.toObject();
+
+        if (mcda.suitability.raster.url !== '' && mcda.suitability.raster) {
+            this.setState({
+                isFetching: true
+            });
+            retrieveDroppedData(
+                mcda.suitability.raster.url,
+                response => {
+                    mcda.suitability.raster.data = response;
+                    this.setState({
+                        isFetching: false,
+                        mcda: mcda
+                    });
+                },
+                response => {
+                    throw new Error(response);
+                }
+            );
+        }
+    }
+
     handleClickStep = (e, {name}) => this.props.onClickTool(name);
 
     renderTool() {
+        const mcda = MCDA.fromObject(this.state.mcda);
+
+        console.log(mcda);
+
         switch (this.props.activeTool) {
             case 'results':
                 return (
                     <SuitabilityResults
-                        mcda={this.props.mcda}
+                        mcda={mcda}
                     />
                 );
             case 'classes':
                 return (
                     <SuitabilityClasses
-                        mcda={this.props.mcda}
+                        mcda={mcda}
                         handleChange={this.props.handleChange}
                     />
                 );
             default:
                 return (
                     <SuitabilityWeightAssignment
-                        mcda={this.props.mcda}
+                        mcda={mcda}
                         handleChange={this.props.handleChange}
                     />
                 );
@@ -45,7 +82,7 @@ class SuitabilityEditor extends React.Component {
                         active={activeTool === 'weightAssignment' || !activeTool}
                         name='weightAssignment'
                         icon='list ol'
-                        title='Weight Assignment'
+                        title='Calculation'
                         link
                         onClick={this.handleClickStep}
                     />

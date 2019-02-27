@@ -8,7 +8,7 @@ import {Dimmer, Loader, Message, Step} from 'semantic-ui-react';
 import {CriteriaReclassification, CriteriaRasterUpload} from './index';
 import CriteriaDataResults from './criteriaDataResults';
 import CriteriaDataConstraints from './criteriaDataConstraints';
-import {retrieveDroppedData} from 'services/api';
+import {retrieveRasters} from 'services/api/rasterHelper';
 
 class CriteriaDataEditor extends React.Component {
     constructor(props) {
@@ -16,63 +16,56 @@ class CriteriaDataEditor extends React.Component {
 
         this.state = {
             criterion: null,
-            isFetching: {}
+            isFetching: false
         }
     }
 
     componentWillReceiveProps(nextProps) {
-        this.criterionToState(nextProps);
+        const prevCriterion = this.props.criterion || null;
+        const criterion = nextProps.criterion;
+
+        if (criterion) {
+            this.criterionToState(prevCriterion ? prevCriterion.toObject() : null, criterion.toObject());
+        }
     }
 
-    criterionToState = props => {
-        if (!props.criterion) {
-            return;
-        }
-
-        const criterion = props.criterion.toObject();
-
-        this.getRasterData(criterion.raster, response => {
-            criterion.raster = response;
-        });
-
-        this.getRasterData(criterion.constraintRaster, response => {
-            criterion.constraintRaster = response;
-        });
-
-        this.getRasterData(criterion.suitability, response => {
-            criterion.suitability = response;
-        });
-
+    criterionToState = (prevCriterion, criterion) => {
         this.setState({
-            criterion
+            isFetching: true
+        });
+
+        const newCriterion = criterion;
+
+        const tasks = [
+            {
+                raster: criterion.raster,
+                oldUrl: prevCriterion ? prevCriterion.raster.url : '',
+                onSuccess: raster => newCriterion.raster = raster
+            },
+            {
+                raster: criterion.constraintRaster,
+                oldUrl: prevCriterion ? prevCriterion.constraintRaster.url : '',
+                onSuccess: raster => newCriterion.constraintRaster = raster
+            },
+            {
+                raster: criterion.suitability,
+                oldUrl: prevCriterion ? prevCriterion.suitability.url : '',
+                onSuccess: raster => newCriterion.suitability = raster
+            },
+        ];
+
+        retrieveRasters(tasks, () => {
+            this.setState({
+                criterion: newCriterion,
+                isFetching: false
+            });
         });
     };
 
-    getRasterData = (raster, onSuccess) => {
-        if (raster.data && raster.data.length === 0 && raster.url) {
-            this.setState(prevState => ({
-                isFetching: {
-                    ...prevState.isFetching,
-                    [raster.id]: true
-                }
-            }), () => {
-                retrieveDroppedData(
-                    raster.url,
-                    response => {
-                        raster.data = response;
-                        this.setState(prevState => ({
-                            isFetching: {
-                                ...prevState.isFetching,
-                                [raster.id]: false
-                            }
-                        }), () => onSuccess(raster));
-                    },
-                    response => {
-                        throw new Error(response);
-                    }
-                )
-            })
-        }
+    handleChange = criterion => {
+        const mcda = this.props.mcda;
+        mcda.criteriaCollection.update(criterion);
+        return this.props.onChange(mcda);
     };
 
     handleClickStep = (e, {name}) => this.props.onClickTool(this.props.criterion.id, name);
@@ -85,21 +78,21 @@ class CriteriaDataEditor extends React.Component {
                 return (
                     <CriteriaReclassification
                         criterion={criterion}
-                        onChange={this.props.handleChange}
+                        onChange={this.handleChange}
                     />
                 );
             case 'constraints':
                 return (
                     <CriteriaDataConstraints
                         criterion={criterion}
-                        onChange={this.props.handleChange}
+                        onChange={this.handleChange}
                     />
                 );
             case 'results':
                 return (
                     <CriteriaDataResults
                         criterion={criterion}
-                        onChange={this.props.handleChange}
+                        onChange={this.handleChange}
                     />
                 );
             default:
@@ -107,7 +100,7 @@ class CriteriaDataEditor extends React.Component {
                     <CriteriaRasterUpload
                         criterion={criterion}
                         gridSize={this.props.mcda.constraints.gridSize}
-                        onChange={this.props.handleChange}
+                        onChange={this.handleChange}
                     />
                 );
         }
@@ -119,7 +112,7 @@ class CriteriaDataEditor extends React.Component {
 
         return (
             <div>
-                {Object.keys(isFetching).some(k => isFetching[k]) &&
+                {isFetching &&
                 <Dimmer active inverted>
                     <Loader indeterminate>Preparing Files</Loader>
                 </Dimmer>
@@ -182,7 +175,7 @@ class CriteriaDataEditor extends React.Component {
 CriteriaDataEditor.proptypes = {
     activeTool: PropTypes.string,
     criterion: PropTypes.instanceOf(Criterion).isRequired,
-    handleChange: PropTypes.func.isRequired,
+    onChange: PropTypes.func.isRequired,
     mcda: PropTypes.instanceOf(MCDA).isRequired,
     onClickTool: PropTypes.func.isRequired
 };

@@ -2,6 +2,7 @@ import {CriteriaCollection, WeightAssignmentsCollection} from './criteria';
 import {GisMap} from './gis';
 import math from 'mathjs';
 import Suitability from './Suitability';
+import {cloneDeep as _cloneDeep} from 'lodash';
 
 class MCDA {
     _criteria = new CriteriaCollection();
@@ -107,20 +108,14 @@ class MCDA {
                 weight = filteredWeight[0].value * parentWeightValue;
             }
 
-            console.log({suit: criterion.suitability, data: criterion.suitability.data, weight: weight});
-
             return math.dotMultiply(criterion.suitability.data, weight);
         });
 
-        console.log('DATA 1', data);
-
-        const rasterData = this.suitability.raster;
+        const rasterData = _cloneDeep(this.suitability.raster);
 
         rasterData.boundingBox = criteria[0].suitability.boundingBox;
         rasterData.gridSize = this.constraints.gridSize;
         rasterData.data = math.add(...data);
-
-        console.log('DATA 2', rasterData);
 
         // STEP 2: multiply with constraints
         this.criteriaCollection.all.forEach(c => {
@@ -135,6 +130,8 @@ class MCDA {
         }
 
         this.suitability.raster = rasterData.calculateMinMax();
+
+        console.log('CALCULATION FINISHED', this.suitability.raster);
 
         return this;
     }
