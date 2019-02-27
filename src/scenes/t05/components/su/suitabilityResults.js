@@ -48,13 +48,6 @@ NODATA_VALUE -9999
 
         });
 
-        console.log({
-            data: mcda.suitability.raster.data,
-        });
-
-        console.log(content);
-
-
         const file = new Blob([content], {type: 'text/plain'});
         const element = document.createElement('a');
         element.href = URL.createObjectURL(file);
