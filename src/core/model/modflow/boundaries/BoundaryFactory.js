@@ -69,14 +69,16 @@ export default class BoundaryFactory {
         }
 
         if (obj.type === 'FeatureCollection') {
+            let type = null;
             obj.features.forEach(feature => {
-                if (BoundaryFactory.availableTypes.indexOf(feature.type) >= 0) {
-                    const type = feature.properties.type;
-                    return BoundaryFactory.createFromTypeAndObject(type, obj);
+                if (BoundaryFactory.availableTypes.indexOf(feature.properties.type) >= 0) {
+                    type = feature.properties.type;
                 }
             });
-        }
 
-        return null;
+            if (type) {
+                return BoundaryFactory.createFromTypeAndObject(type,obj);
+            }
+        }
     };
 }

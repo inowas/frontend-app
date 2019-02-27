@@ -59,7 +59,7 @@ class BoundaryMap extends Component {
 
         return (
             <GeoJSON
-                key={b.geometry.hash()}
+                key={Geometry.fromGeoJson(b.geometry).hash()}
                 data={b.geometry}
                 style={getStyle(b.type)}
             />

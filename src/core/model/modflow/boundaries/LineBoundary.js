@@ -4,13 +4,14 @@ import Boundary from './Boundary';
 export default class LineBoundary extends Boundary {
 
     _main = {
-        type: '',
+        type: 'Feature',
         id: '',
         geometry: {
             type: 'LineString',
             coordinates: [],
         },
         properties: {
+            type: '',
             name: '',
             layers: [],
             cells: []
@@ -29,7 +30,7 @@ export default class LineBoundary extends Boundary {
         boundary._main.properties.cells = cells;
 
         if (spValues) {
-            boundary.addObservationPoint('' +
+            boundary.addObservationPoint(
                 'OP1',
                 {type: 'Point', coordinates: geometry.coordinates[0]},
                 spValues
@@ -56,10 +57,9 @@ export default class LineBoundary extends Boundary {
         return boundary;
     }
 
-
     constructor(type) {
         super();
-        this._main.type = type
+        this._main.properties.type = type
     }
 
     get observationPoints() {
@@ -101,6 +101,7 @@ export default class LineBoundary extends Boundary {
                     id,
                     geometry,
                     properties: {
+                        type: 'op',
                         name,
                         sp_values: spValues
                     }
@@ -137,7 +138,7 @@ export default class LineBoundary extends Boundary {
     };
 
     get type() {
-        return this._main.type;
+        return this._main.properties.type;
     }
 
     get id() {
@@ -178,6 +179,25 @@ export default class LineBoundary extends Boundary {
 
     set layers(value) {
         this._main.properties.layers = value;
+    }
+
+
+    getSpValues(opId) {
+        const op = this.findObservationPointById(opId);
+        if (op === null) {
+            return null;
+        }
+
+        return op.properties.sp_values;
+    }
+
+    setSpValues(opId, spValues) {
+        const op = this.findObservationPointById(opId);
+        if (op === null) {
+            return null;
+        }
+
+        this.updateObservationPoint(opId, op.properties.name, op.geometry, spValues);
     }
 
     toObject() {
