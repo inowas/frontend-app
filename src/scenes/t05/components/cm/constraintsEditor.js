@@ -144,6 +144,16 @@ class ConstraintsEditor extends React.Component {
                                         onChange={this.onChangeMode}
                                     />
                                 </Form.Field>
+                                <Form.Field>
+                                    <Radio
+                                        label='Suitable Cells'
+                                        name='mode'
+                                        value='cells'
+                                        checked={mode === 'cells'}
+                                        disabled={!constraints.activeCells || constraints.activeCells.length === 0}
+                                        onChange={this.onChangeMode}
+                                    />
+                                </Form.Field>
                             </Form.Group>
                         </Form>
                         {mode === 'map' &&

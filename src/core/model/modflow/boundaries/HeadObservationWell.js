@@ -1,30 +1,29 @@
 import Boundary from './Boundary';
 
-export default class WellBoundary extends Boundary {
+export default class HeadObservationWell extends Boundary {
 
-    _type = 'wel';
+    _type = 'hob';
+
     _id;
     _geometry;
     _name;
     _layers;
     _cells;
-    _wellType;
     _spValues;
 
     static create(id, geometry, name, layers, cells, spValues) {
         const boundary = new this();
-        boundary.id = id;
-        boundary.geometry = geometry;
-        boundary.name = name;
-        boundary.layers = layers;
-        boundary.cells = cells;
-        boundary.wellType = boundary.wellTypes.default;
-        boundary.spValues = spValues;
+        boundary._id = id;
+        boundary._geometry = geometry;
+        boundary._name = name;
+        boundary._layers = layers;
+        boundary._cells = cells;
+        boundary._spValues = spValues;
         return boundary;
     }
 
     static fromObject(obj) {
-        const wellBoundary = this.create(
+        return this.create(
             obj.id,
             obj.geometry,
             obj.properties.name,
@@ -32,9 +31,6 @@ export default class WellBoundary extends Boundary {
             obj.properties.cells,
             obj.properties.sp_values,
         );
-
-        wellBoundary.wellType = obj.properties.well_type;
-        return wellBoundary;
     }
 
     get type() {
@@ -81,14 +77,6 @@ export default class WellBoundary extends Boundary {
         this._cells = value;
     }
 
-    get wellType() {
-        return this._wellType;
-    }
-
-    set wellType(value) {
-        this._wellType = value;
-    }
-
     get spValues() {
         return this._spValues;
     }
@@ -115,8 +103,7 @@ export default class WellBoundary extends Boundary {
                 'type': this.type,
                 'layers': this.layers,
                 'cells': this.cells,
-                'well_type': this.wellType,
-                'sp_values': this.spValues
+                'sp_values': this.getSpValues()
             }
         }
     }
@@ -125,41 +112,13 @@ export default class WellBoundary extends Boundary {
         return 'Point';
     }
 
-    get wellTypes() {
-        return {
-            default: 'puw',
-            types: [
-                {
-                    name: 'Public Well',
-                    value: 'puw'
-                },
-                {
-                    name: 'Infiltration Well',
-                    value: 'inw'
-                },
-                {
-                    name: 'Industrial Well',
-                    value: 'iw'
-                },
-                {
-                    name: 'Irrigation Well',
-                    value: 'irw'
-                },
-                {
-                    name: 'Optimized Well',
-                    value: 'opw'
-                }
-            ]
-        }
-    }
-
     get valueProperties() {
         return [
             {
-                name: 'Pumping rate',
-                description: 'Pumping rate of the well, positive values = infiltration',
-                unit: 'm3/day',
-                decimals: 1,
+                name: 'Observed head',
+                description: 'Observed head',
+                unit: 'm',
+                decimals: 2,
                 default: 0
             },
         ]

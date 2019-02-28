@@ -2,7 +2,7 @@ import {UPDATE_BOUNDARIES} from '../reducers/boundaries';
 import {UPDATE_CALCULATION} from '../reducers/calculation';
 import {CLEAR, UPDATE_MODEL, UPDATE_MT3DMS, UPDATE_STRESSPERIODS} from '../reducers/model';
 import {
-    ADD_SOILMODEL_LAYER,
+    ADD_SOILMODEL_LAYER, CLONE_SOILMODEL_LAYER,
     REMOVE_SOILMODEL_LAYER,
     UPDATE_SOILMODEL,
     UPDATE_SOILMODEL_LAYER
@@ -76,7 +76,7 @@ export function updateMt3dms(mt3dms) {
     };
 }
 
-export function addSoilmodelLayer(layer) {
+export function addLayer(layer) {
     if (!layer instanceof SoilmodelLayer) {
         throw new Error('Layer is expected to be instance of SoilmodelLayer');
     }
@@ -87,7 +87,14 @@ export function addSoilmodelLayer(layer) {
     };
 }
 
-export function removeSoilmodelLayer(layer_id) {
+export function cloneLayer(layer_id, new_layer_id) {
+    return {
+        type: CLONE_SOILMODEL_LAYER,
+        layer_id, new_layer_id
+    }
+}
+
+export function removeLayer(layer_id) {
     return {
         type: REMOVE_SOILMODEL_LAYER,
         layer_id: layer_id
@@ -116,7 +123,7 @@ export function updateSoilmodel(soilmodel) {
     };
 }
 
-export function updateSoilmodelLayer(layer) {
+export function updateLayer(layer) {
     if (!layer instanceof SoilmodelLayer) {
         throw new Error('Layer is expected to be instance of SoilmodelLayer');
     }

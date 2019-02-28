@@ -1,26 +1,51 @@
-import Moment from  'moment';
 import Uuid from 'uuid';
-import {HeadObservation} from 'core/model/modflow/boundaries';
+import {HeadObservationWell} from 'core/model/modflow/boundaries';
+import {validate} from 'services/jsonSchemaValidator';
+import {JSON_SCHEMA_URL} from 'services/api';
 
-test('HeadObservation createWithStartDate', () => {
+const createHeadObservationWell = () => {
     const id = Uuid.v4();
-    const name = 'NameOfHeadObservation';
+    const name = 'NameOfWell';
+    const geometry = {type: 'Point', coordinates: [3, 4]};
+    const layers = [1];
+    const cells = [[1, 2]];
+    const spValues = [[1], [2], [3]];
+
+    return HeadObservationWell.create(
+        id, geometry, name, layers, cells, spValues
+    );
+};
+
+test('HeadObservationWell create', () => {
+    const id = Uuid.v4();
+    const name = 'NameOfWell';
     const geometry = {type: 'Point', coordinates: [[3, 4]]};
-    const startDateTime = new Moment.utc('2015-01-02').toISOString();
+    const layers = [1];
+    const cells = [[1, 2]];
+    const spValues = [[1], [2], [3]];
 
-    const headObservation = HeadObservation.createWithStartDate({
-        id,
-        name,
-        geometry,
-        utcIsoStartDateTime: startDateTime
-    });
+    const headObservationWell = HeadObservationWell.create(
+        id, geometry, name, layers, cells, spValues
+    );
 
-    expect(headObservation).toBeInstanceOf(HeadObservation);
-    expect(headObservation.id).toEqual(id);
-    expect(headObservation.name).toEqual(name);
-    expect(headObservation.geometry).toEqual(geometry);
-    expect(headObservation.affectedLayers).toEqual([0]);
-    expect(headObservation.metadata).toEqual({});
-    expect(headObservation.getDateTimeValues()).toEqual([{date_time: startDateTime, values: [0]}]);
-    expect(headObservation.activeCells).toBeNull();
+    expect(headObservationWell).toBeInstanceOf(HeadObservationWell);
+    expect(headObservationWell.id).toEqual(id);
+    expect(headObservationWell.name).toEqual(name);
+    expect(headObservationWell.geometry).toEqual(geometry);
+    expect(headObservationWell.layers).toEqual(layers);
+    expect(headObservationWell.cells).toEqual(cells);
+    expect(headObservationWell.spValues).toEqual(spValues);
+});
+
+
+test('HeadObservationWell fromObject', () => {
+    const obj = createHeadObservationWell().toObject();
+    const headObservationWell = HeadObservationWell.fromObject(obj);
+    expect(headObservationWell.toObject()).toEqual(obj);
+});
+
+test('HeadObservationWell schema validation', () => {
+    const data = createHeadObservationWell().toObject();
+    const schema = JSON_SCHEMA_URL + 'modflow/boundary/headObservationWell';
+    validate(data, schema).then(response => expect(response).toEqual([true, null]));
 });
