@@ -27,10 +27,20 @@ class BoundaryDetails extends React.Component {
             return;
         }
 
-        if ((nextProps.boundary instanceof LineBoundary) && !this.state.observationPointId) {
-            return this.setState({
-                observationPointId: nextProps.boundary.observationPoints[0].id
-            })
+        if (nextProps.boundary instanceof LineBoundary) {
+            if (null === this.state.observationPointId) {
+                return this.setState({
+                    observationPointId: nextProps.boundary.observationPoints[0].id
+                })
+            }
+
+            try {
+                nextProps.boundary.findObservationPointById(this.state.observationPointId);
+            } catch (err) {
+                return this.setState({
+                    observationPointId: nextProps.boundary.observationPoints[0].id
+                })
+            }
         }
     }
 

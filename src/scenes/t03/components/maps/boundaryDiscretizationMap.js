@@ -4,11 +4,10 @@ import PropTypes from 'prop-types';
 import {CircleMarker, FeatureGroup, GeoJSON, Map, Polygon, Polyline} from 'react-leaflet';
 import {EditControl} from 'react-leaflet-draw';
 
-
 import ActiveCellsLayer from 'services/geoTools/activeCellsLayer';
-
 import {BasicTileLayer} from 'services/geoTools/tileLayers';
 import {calculateActiveCells} from 'services/geoTools';
+
 import {getStyle} from './index';
 
 import {
@@ -70,14 +69,14 @@ class BoundaryDiscretizationMap extends React.Component {
                 return (
                     <Polyline
                         key={b.id}
-                        positions={b.geometry.coordinatesLatLng}
+                        positions={Geometry.fromObject(b.geometry).coordinatesLatLng}
                     />
                 );
             case 'polygon':
                 return (
                     <Polygon
                         key={b.id}
-                        positions={b.geometry.coordinatesLatLng}
+                        positions={Geometry.fromObject(b.geometry).coordinatesLatLng}
                     />
                 );
             default:

@@ -5,7 +5,7 @@ import uuidv4 from 'uuid/v4';
 
 import {Input, Table} from 'semantic-ui-react';
 import {Boundary, Stressperiods} from 'core/model/modflow';
-import CsvUpload from '../../../../shared/simpleTools/upload/CsvUpload';
+// import CsvUpload from '../../../../shared/simpleTools/upload/CsvUpload';
 
 class BoundaryValuesDataTable extends React.Component {
 
@@ -185,7 +185,7 @@ class BoundaryValuesDataTable extends React.Component {
 
         return (
             <div>
-                <CsvUpload uploadState={this.state.uploadState} onUploaded={this.handleCSV}/>
+                {/*<CsvUpload uploadState={this.state.uploadState} onUploaded={this.handleCSV}/>*/}
                 <Table size={'small'} singleLine>
                     <Table.Header>
                         <Table.Row>

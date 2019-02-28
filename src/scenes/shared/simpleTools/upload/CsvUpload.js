@@ -71,9 +71,13 @@ class CsvUpload extends React.Component {
                     </Modal.Actions>
                 </Modal>
                 }
-                <label htmlFor={'inputField'} className={classes}>
-                            <Icon name='file excel'/> Import CSV
-                        </label>
+
+                <label
+                    htmlFor={'inputField'}
+                    className={classes}
+                >
+                    <Icon name='file excel'/> Import CSV
+                </label>
                 <input
                     type="file" id='inputField'
                     style={{display: 'none'}}

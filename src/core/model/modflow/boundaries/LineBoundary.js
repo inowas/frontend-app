@@ -1,5 +1,6 @@
 import Uuid from 'uuid';
 import Boundary from './Boundary';
+import ObservationPoint from './ObservationPoint';
 
 export default class LineBoundary extends Boundary {
 
@@ -63,7 +64,7 @@ export default class LineBoundary extends Boundary {
     }
 
     get observationPoints() {
-        return this._observationPoints;
+        return this._observationPoints.map(op => ObservationPoint.fromObject(op));
     }
 
     addObservationPoint = (name, geometry, spValues) => {
@@ -82,15 +83,9 @@ export default class LineBoundary extends Boundary {
     };
 
     cloneObservationPoint = (id, newId) => {
-        const filtered = this._observationPoints.filter(op => op.id === id);
-
-        if (filtered.length === 0) {
-            return;
-        }
-
-        const op = filtered[0];
+        let op = ObservationPoint.fromObject(this.findObservationPointById(id));
         op.id = newId;
-        this._observationPoints.push(op);
+        this._observationPoints.push(op.toObject());
     };
 
     updateObservationPoint = (id, name, geometry, spValues) => {
@@ -125,16 +120,17 @@ export default class LineBoundary extends Boundary {
             return filtered[0];
         }
 
-        return null;
+        throw new Error('ObservationPoint with name: ' + name + ' not found.')
     };
 
     findObservationPointById = id => {
         const filtered = this._observationPoints.filter(op => op.id === id);
+        
         if (filtered.length > 0) {
             return filtered[0];
         }
 
-        return null;
+        throw new Error('ObservationPoint with id: ' + id + ' not found.')
     };
 
     get type() {
@@ -191,12 +187,8 @@ export default class LineBoundary extends Boundary {
         return op.properties.sp_values;
     }
 
-    setSpValues(opId, spValues) {
+    setSpValues(spValues, opId) {
         const op = this.findObservationPointById(opId);
-        if (op === null) {
-            return null;
-        }
-
         this.updateObservationPoint(opId, op.properties.name, op.geometry, spValues);
     }
 

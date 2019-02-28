@@ -5,6 +5,7 @@ import {Button, Form, Modal} from 'semantic-ui-react';
 
 import ObservationPointMap from '../../maps/observationPointEditorMap';
 import {ModflowModel, LineBoundary} from 'core/model/modflow';
+import ObservationPoint from '../../../../../core/model/modflow/boundaries/ObservationPoint';
 
 class ObservationPointEditor extends React.Component {
     constructor(props) {
@@ -40,17 +41,22 @@ class ObservationPointEditor extends React.Component {
     }
 
     handleChange = e => {
-        const observationPoint = {...this.state.observationPoint, [e.target.name]: e.target.value};
-        this.handleChangeObservationPoint(observationPoint);
+        const observationPoint = ObservationPoint.fromObject(this.state.observationPoint);
+        observationPoint[e.target.name] = e.target.value;
+        this.setState({
+            observationPoint: observationPoint.toObject()
+        });
     };
 
     handleChangeObservationPoint = observationPoint => {
-        this.setState({observationPoint});
+        this.setState({
+            observationPoint: observationPoint.toObject()
+        });
     };
 
-    handleApply = observationPoint => {
+    handleApply = op => {
         const {boundary} = this.props;
-        boundary.updateObservationPoint(observationPoint);
+        boundary.updateObservationPoint(op.id, op.name, op.geometry, op.spValues);
         this.props.onChange(boundary);
     };
 
@@ -58,12 +64,12 @@ class ObservationPointEditor extends React.Component {
 
     render() {
         const {boundary, model, onCancel} = this.props;
-        const {observationPoint} = this.state;
 
-        if (!observationPoint) {
+        if (!this.state.observationPoint) {
             return null;
         }
 
+        const observationPoint = ObservationPoint.fromObject(this.state.observationPoint);
         const {geometry} = observationPoint;
         const latitude = geometry ? geometry.coordinates[1] : '';
         const longitude = geometry ? geometry.coordinates[0] : '';
@@ -75,11 +81,11 @@ class ObservationPointEditor extends React.Component {
                     <Form>
                         <Form.Group>
                             <Form.Input label='Name'
-                                placeholder="Observation point name"
-                                value={observationPoint.name}
-                                onChange={this.handleChange}
-                                name={'name'}
-                                width={10}
+                                        placeholder="Observation point name"
+                                        value={observationPoint.name}
+                                        onChange={this.handleChange}
+                                        name={'name'}
+                                        width={10}
                             />
                             <Form.Field>
                                 <label>Latitude</label>
