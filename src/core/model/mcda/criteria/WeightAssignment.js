@@ -39,7 +39,10 @@ class WeightAssignment {
 
         criteriaCollection.all.forEach((criterion, key) => {
             const weight = new Weight();
-            weight.criterion = criterion;
+            weight.criterion = {
+                id: criterion.id,
+                name: criterion.name
+            };
             weight.initialValue = key + 1;
 
             addedRelations.push(weight.criterion.id);
@@ -56,6 +59,7 @@ class WeightAssignment {
         });
 
         wa.calculateWeights();
+        console.log(wa.toObject());
         return wa;
     }
 

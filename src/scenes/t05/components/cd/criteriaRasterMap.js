@@ -12,13 +12,6 @@ import {getStyle} from '../../../t03/components/maps';
 import {BoundingBox} from 'core/model/geometry';
 import Rainbow from '../../../../../node_modules/rainbowvis.js/rainbowvis';
 
-const styles = {
-    map: {
-        width: '100%',
-        height: '600px'
-    }
-};
-
 const options = {
     edit: {
         remove: false
@@ -37,7 +30,6 @@ const options = {
 };
 
 class CriteriaRasterMap extends React.Component {
-
     onEditPath = e => {
         const layers = e.layers;
 
@@ -68,40 +60,45 @@ class CriteriaRasterMap extends React.Component {
     };
 
     render() {
-        const {data, boundingBox, gridSize} = this.props.raster;
+        const {raster} = this.props;
+        const {boundingBox, gridSize} = this.props.raster;
 
         return (
             <Map
-                style={styles.map}
+                style={{
+                    width: '100%',
+                    height: this.props.mapHeight || '600px'
+                }}
                 bounds={boundingBox.getBoundsLatLng()}
             >
                 {this.props.showBasicLayer &&
                 <BasicTileLayer/>
                 }
                 {!!this.props.onChange &&
-                    <FeatureGroup>
-                        <EditControl
-                            position="bottomright"
-                            onEdited={this.onEditPath}
-                            {...options}
-                        />
-                        <Rectangle
-                            bounds={boundingBox.getBoundsLatLng()}
-                            {...getStyle('bounding_box')}
-                        />
-                    </FeatureGroup>
+                <FeatureGroup>
+                    <EditControl
+                        position="bottomright"
+                        onEdited={this.onEditPath}
+                        {...options}
+                    />
+                    <Rectangle
+                        bounds={boundingBox.getBoundsLatLng()}
+                        {...getStyle('bounding_box')}
+                    />
+                </FeatureGroup>
                 }
-                {data.length > 0 &&
+                {raster.data.length > 0 &&
                 <div>
                     <CanvasHeatMapOverlay
                         nX={gridSize.nX}
                         nY={gridSize.nY}
                         rainbow={this.props.legend}
-                        dataArray={createGridData(data, gridSize.nX, gridSize.nY)}
+                        dataArray={createGridData(raster.data, gridSize.nX, gridSize.nY)}
                         bounds={boundingBox.getBoundsLatLng()}
                         opacity={0.75}
+                        sharpening={10}
                     />
-                    {this.renderLegend(this.props.legend)}
+                    {this.props.showLegend && this.renderLegend(this.props.legend)}
                 </div>
                 }
             </Map>
@@ -113,7 +110,13 @@ CriteriaRasterMap.propTypes = {
     onChange: PropTypes.func,
     raster: PropTypes.instanceOf(Raster).isRequired,
     showBasicLayer: PropTypes.bool.isRequired,
-    legend: PropTypes.oneOfType([PropTypes.array, PropTypes.instanceOf(Rainbow)]).isRequired
+    showLegend: PropTypes.bool,
+    legend: PropTypes.oneOfType([PropTypes.array, PropTypes.instanceOf(Rainbow)]).isRequired,
+    mapHeight: PropTypes.string
+};
+
+CriteriaRasterMap.defaultProps = {
+    showLegend: true
 };
 
 export default CriteriaRasterMap;

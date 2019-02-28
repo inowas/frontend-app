@@ -2,10 +2,7 @@ import uuidv4 from 'uuid/v4';
 import Raster from '../gis/Raster';
 import RulesCollection from './RulesCollection';
 import {cloneDeep as _cloneDeep} from 'lodash';
-import TilesCollection from '../gis/TilesCollection';
 import * as math from 'mathjs';
-import {heatMapColors} from 'scenes/t05/defaults/gis'
-import {rainbowFactory} from 'scenes/shared/rasterData/helpers';
 
 const validTypes = ['discrete', 'continuous'];
 
@@ -14,7 +11,8 @@ class Criterion {
     _parent = null;
     _name = 'New Criterion';
     _type = 'discrete';
-    _tiles = new TilesCollection();
+    _unit = '-';
+    _raster = new Raster();
     _rules = new RulesCollection();
     _suitability = new Raster();
     _constraintRaster = new Raster();
@@ -26,7 +24,8 @@ class Criterion {
         criterion.parentId = obj.parentId;
         criterion.name = obj.name;
         criterion.type = obj.type;
-        criterion.tilesCollection = obj.tiles ? TilesCollection.fromArray(obj.tiles) : new TilesCollection();
+        criterion.unit = obj.unit;
+        criterion.raster = obj.raster ? Raster.fromObject(obj.raster) : new Raster();
         criterion.rulesCollection = obj.rules ? RulesCollection.fromArray(obj.rules) : new RulesCollection();
         criterion.suitability = obj.suitability ? Raster.fromObject(obj.suitability) : Raster.fromObject(obj.raster);
         criterion.constraintRaster = obj.constraintRaster ? Raster.fromObject(obj.constraintRaster) : new Raster();
@@ -69,12 +68,20 @@ class Criterion {
         this._type = value;
     }
 
-    get tilesCollection() {
-        return this._tiles;
+    get unit() {
+        return this._unit;
     }
 
-    set tilesCollection(value) {
-        this._tiles = value;
+    set unit(value) {
+        this._unit = value;
+    }
+
+    get raster() {
+        return this._raster;
+    }
+
+    set raster(value) {
+        this._raster = value;
     }
 
     get rulesCollection() {
@@ -115,10 +122,26 @@ class Criterion {
             parentId: this.parentId,
             name: this.name,
             type: this.type,
-            tiles: this.tilesCollection.toArray(),
+            unit: this.unit,
+            raster: this.raster.toObject(),
             rules: this.rulesCollection.toArray(),
             suitability: this.suitability.toObject(),
             constraintRaster: this.constraintRaster.toObject(),
+            constraintRules: this.constraintRules.toArray()
+        });
+    }
+
+    toPayload() {
+        return ({
+            id: this.id,
+            parentId: this.parentId,
+            name: this.name,
+            type: this.type,
+            unit: this.unit,
+            raster: this.raster.toPayload(),
+            rules: this.rulesCollection.toArray(),
+            suitability: this.suitability.toPayload(),
+            constraintRaster: this.constraintRaster.toPayload(),
             constraintRules: this.constraintRules.toArray()
         });
     }
@@ -131,10 +154,10 @@ class Criterion {
             throw new Error('RulesCollection is expected to be instance of RulesCollection.');
         }
 
-        const newRaster = _cloneDeep(raster);
-        const data = raster.data;
-
-        newRaster.data = _cloneDeep(data).map(row => {
+        const newRaster = new Raster();
+        newRaster.boundingBox = raster.boundingBox;
+        newRaster.gridSize = raster.gridSize;
+        newRaster.data = _cloneDeep(raster.data).map(row => {
             return row.map(cell => {
                 const rules = rulesCollection.findByValue(cell);
                 if (rules.length === 0) {
@@ -153,7 +176,7 @@ class Criterion {
             });
         });
 
-        if (!!factor) {
+        if (factor && factor.data && factor.data.length > 0) {
             newRaster.data = newRaster.data.map((x, xKey) => {
                 return x.map((y, yKey) => {
                     if (factor.data[xKey][yKey]) {
@@ -169,71 +192,24 @@ class Criterion {
     }
 
     calculateConstraints() {
-        if (!this.tilesCollection || this.tilesCollection.length === 0) {
+        if (!this.raster || this.raster.data.length === 0) {
             throw new Error(`There is now raster uploaded for criterion ${this.name}.`);
         }
 
-        this.constraintRaster = this.calculateRaster(this.tilesCollection.first, this.constraintRules);
-        this.suitability = this.calculateRaster(this.tilesCollection.first, this.rulesCollection, this.constraintRaster);
+        this.constraintRaster = this.calculateRaster(this.raster, this.constraintRules);
+        this.suitability = this.calculateRaster(this.raster, this.rulesCollection, this.constraintRaster);
     }
 
     calculateSuitability() {
-        if (!this.tilesCollection || this.tilesCollection.length === 0) {
+        if (!this.raster || this.raster.data.length === 0) {
             throw new Error(`There is now raster uploaded for criterion ${this.name}.`);
         }
 
-        this.suitability = this.calculateRaster(this.tilesCollection.first, this.rulesCollection, this.constraintRaster);
+        this.suitability = this.calculateRaster(this.raster, this.rulesCollection, this.constraintRaster);
     }
 
     generateLegend(mode = 'unclassified') {
-        const legend = [];
-        let rainbow;
-        if (this.type === 'discrete') {
-            if (mode === 'unclassified' || this.rulesCollection.length === 0) {
-                const uniqueValues = this.tilesCollection.uniqueValues;
-                uniqueValues.sort((a, b) => a - b).forEach((v, key) => {
-                        legend.push({
-                            color: key < heatMapColors.discrete.length ? heatMapColors.discrete[key] : '#000000',
-                            isContinuous: false,
-                            label: v,
-                            value: v
-                        })
-                    }
-                );
-                return legend;
-            }
-            this.rulesCollection.orderBy('from').all.forEach(rule => {
-                legend.push({
-                    color: rule.color,
-                    isContinuous: false,
-                    label: rule.name,
-                    value: rule.from
-                });
-            });
-            return legend;
-        }
-        if (this.type === 'continuous') {
-            if (mode === 'unclassified' || this.rulesCollection.length === 0) {
-                rainbow = rainbowFactory({
-                    min: this.tilesCollection.first.min,
-                    max: this.tilesCollection.first.max
-                }, heatMapColors.terrain);
-                return rainbow;
-            }
-            this.rulesCollection.orderBy('from').all.forEach(rule => {
-                legend.push({
-                    color: rule.color,
-                    label: rule.name,
-                    fromOperator: rule.fromOperator,
-                    from: rule.from,
-                    isContinuous: true,
-                    toOperator: rule.toOperator,
-                    to: rule.to
-                });
-            });
-            legend.push({color: '#fff', label: 'Not Classified'});
-            return legend;
-        }
+        return this.raster.generateLegend(this.rulesCollection, this.type, mode);
     }
 }
 

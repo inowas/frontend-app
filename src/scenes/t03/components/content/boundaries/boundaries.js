@@ -46,10 +46,12 @@ class Boundaries extends React.Component {
         (boundary) => this.setState({selectedBoundary: boundary})
     );
 
-    onChangeBoundary = boundary => this.setState({
-        selectedBoundary: boundary.toObject,
-        isDirty: true
-    });
+    onChangeBoundary = boundary => {
+        return this.setState({
+            selectedBoundary: boundary.toObject(),
+            isDirty: true
+        });
+    };
 
     handleBoundaryListClick = (bid) => {
         const {id, property} = this.props.match.params;
@@ -71,7 +73,7 @@ class Boundaries extends React.Component {
         const model = this.props.model;
         fetchUrl(`modflowmodels/${model.id}/boundaries/${boundaryId}`,
             (boundary) => {
-                const clonedBoundary = BoundaryFactory.fromObjectData(boundary).clone;
+                const clonedBoundary = BoundaryFactory.fromObject(boundary).clone();
                 sendCommand(ModflowModelCommand.addBoundary(model.id, clonedBoundary),
                     () => {
                         this.props.updateBoundaries(this.props.boundaries.addBoundary(clonedBoundary));
@@ -96,7 +98,7 @@ class Boundaries extends React.Component {
 
     onUpdate = () => {
         const model = this.props.model;
-        const boundary = BoundaryFactory.fromObjectData(this.state.selectedBoundary);
+        const boundary = BoundaryFactory.fromObject(this.state.selectedBoundary);
         return sendCommand(ModflowModelCommand.updateBoundary(model.id, boundary),
             () => {
                 this.setState({isDirty: false});
@@ -120,7 +122,7 @@ class Boundaries extends React.Component {
             return <Redirect to={`${baseUrl}/${id}/${property}/${'!'}/${bid}`}/>
         }
 
-        const boundary = BoundaryFactory.fromObjectData(selectedBoundary);
+        const boundary = BoundaryFactory.fromObject(selectedBoundary);
         return (
             <Segment color={'grey'} loading={isLoading}>
                 <Grid>

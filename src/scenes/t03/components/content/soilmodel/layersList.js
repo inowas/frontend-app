@@ -4,12 +4,12 @@ import {Button, Icon, Menu, Popup} from 'semantic-ui-react';
 import {pure} from 'recompose';
 import {Soilmodel} from 'core/model/modflow/soilmodel';
 
-const LayersList = ({addLayer, soilmodel, onChange, selected}) => {
+const LayersList = ({addLayer, soilmodel, onClick, onClone, onRemove, selected}) => {
     return (
         <div>
             <Button positive icon='plus' labelPosition='left'
-                onClick={addLayer}
-                content={'Add Layer'}
+                    onClick={addLayer}
+                    content={'Add Layer'}
             >
             </Button>
             <Menu fluid vertical tabular>
@@ -18,7 +18,7 @@ const LayersList = ({addLayer, soilmodel, onChange, selected}) => {
                         name={layer.name}
                         key={layer.id}
                         active={layer.id === selected}
-                        onClick={() => onChange(layer.id)}
+                        onClick={() => onClick(layer.id)}
                     >
                         <Popup
                             trigger={<Icon name='ellipsis horizontal'/>}
@@ -26,13 +26,15 @@ const LayersList = ({addLayer, soilmodel, onChange, selected}) => {
                                 <div>
                                     <Button.Group size='small'>
                                         <Popup
-                                            trigger={<Button icon={'clone'} onClick={() => this.props.onClone(layer.id)}/>}
+                                            trigger={<Button icon={'clone'}
+                                                             onClick={() => onClone(layer)}/>}
                                             content='Clone'
                                             position='top center'
                                             size='mini'
                                         />
                                         <Popup
-                                            trigger={<Button icon={'trash'} onClick={() => this.props.onRemove(layer.id)}/>}
+                                            trigger={<Button icon={'trash'}
+                                                             onClick={() => onRemove(layer.id)}/>}
                                             content='Delete'
                                             position='top center'
                                             size='mini'
@@ -54,7 +56,9 @@ const LayersList = ({addLayer, soilmodel, onChange, selected}) => {
 LayersList.propTypes = {
     addLayer: PropTypes.func.isRequired,
     soilmodel: PropTypes.instanceOf(Soilmodel).isRequired,
-    onChange: PropTypes.func.isRequired,
+    onClick: PropTypes.func.isRequired,
+    onClone: PropTypes.func.isRequired,
+    onRemove: PropTypes.func.isRequired,
     selected: PropTypes.string
 };
 

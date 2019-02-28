@@ -21,6 +21,7 @@ export default withLeaflet(class CanvasHeatMapOverlay extends MapLayer {
             props.dataArray,
             props.bounds,
             props.rainbow,
+            props.sharpening,
             this.getOptions(props)
         );
     }
@@ -48,6 +49,9 @@ export default withLeaflet(class CanvasHeatMapOverlay extends MapLayer {
         }
         if (toProps.zIndex !== fromProps.zIndex) {
             this.leafletElement.setZIndex(toProps.zIndex);
+        }
+        if (toProps.sharpening !== fromProps.sharpening) {
+            this.leafletElement.setSharpening(toProps.sharpening);
         }
     };
 })

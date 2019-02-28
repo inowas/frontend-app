@@ -6,6 +6,7 @@ import CriteriaReclassificationModal from './criteriaReclassificationModal';
 import {CartesianGrid, Scatter, ScatterChart, XAxis, YAxis} from 'recharts';
 import * as math from 'mathjs'
 import CriteriaReclassificationDiscrete from './criteriaReclassificationDiscrete';
+import {dropData} from 'services/api';
 
 class CriteriaReclassification extends React.Component {
 
@@ -16,6 +17,19 @@ class CriteriaReclassification extends React.Component {
             selectedRule: null,
             showInfo: true
         }
+    }
+
+    saveRaster(criterion) {
+        dropData(
+            criterion.suitability.data,
+            response => {
+                criterion.suitability.url = response.filename;
+                this.props.onChange(criterion);
+            },
+            response => {
+                throw new Error(response);
+            }
+        );
     }
 
     handleCloseModal = () => this.setState({selectedRule: null});
@@ -42,13 +56,13 @@ class CriteriaReclassification extends React.Component {
         const criterion = this.props.criterion;
         criterion.rulesCollection.items = criterion.rulesCollection.all.filter(rule => rule.id !== id);
         criterion.calculateSuitability();
-        return this.props.onChange(criterion);
+        return this.saveRaster(criterion);
     };
 
     handleClickCalculate = () => {
         const criterion = this.props.criterion;
         criterion.calculateSuitability();
-        return this.props.onChange(criterion);
+        return this.saveRaster(criterion);
     };
 
     handleChangeRule = rule => {
@@ -61,13 +75,13 @@ class CriteriaReclassification extends React.Component {
         criterion.rulesCollection.update(rule);
         criterion.calculateSuitability();
         this.handleCloseModal();
-        return this.props.onChange(criterion);
+        return this.saveRaster(criterion);
     };
 
     renderEditorContinuous() {
         const {showInfo} = this.state;
         const criterion = this.props.criterion;
-        const raster = criterion.tilesCollection.first;
+        const raster = criterion.raster;
 
         if (!criterion.rulesCollection || criterion.rulesCollection.length === 0) {
             return (

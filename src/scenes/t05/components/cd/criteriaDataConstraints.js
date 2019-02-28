@@ -5,6 +5,7 @@ import {Button, Form, Grid, Icon, Message, Radio, Table} from 'semantic-ui-react
 import CriteriaRasterMap from './criteriaRasterMap';
 import {rainbowFactory} from '../../../shared/rasterData/helpers';
 import {heatMapColors} from '../../defaults/gis';
+import {dropData} from 'services/api';
 
 class CriteriaDataConstraints extends React.Component {
 
@@ -21,6 +22,19 @@ class CriteriaDataConstraints extends React.Component {
         this.setState({
             criterion: nextProps.criterion.toObject()
         })
+    }
+
+    saveRaster(criterion) {
+        dropData(
+            criterion.constraintRaster.data,
+            response => {
+                criterion.constraintRaster.url = response.filename;
+                this.props.onChange(criterion);
+            },
+            response => {
+                throw new Error(response);
+            }
+        );
     }
 
     handleDismiss = () => this.setState({showInfo: false});
@@ -55,14 +69,14 @@ class CriteriaDataConstraints extends React.Component {
     handleChange = () => {
         const criterion = Criterion.fromObject(this.state.criterion);
         criterion.calculateConstraints();
-        this.props.onChange(criterion);
+        this.saveRaster(criterion);
     };
 
     handleRemoveRule = id => {
         const criterion = Criterion.fromObject(this.state.criterion);
         criterion.constraintRules.items = criterion.constraintRules.all.filter(rule => rule.id !== id);
         criterion.calculateConstraints();
-        return this.props.onChange(criterion);
+        this.saveRaster(criterion);
     };
 
     handleToggleRule = rule => {
@@ -74,7 +88,7 @@ class CriteriaDataConstraints extends React.Component {
         criterion.constraintRules.update(rule);
         criterion.constraintRaster = criterion.suitability;
         criterion.calculateConstraints();
-        return this.props.onChange(criterion);
+        this.saveRaster(criterion);
     };
 
     renderEditorDiscrete() {
@@ -216,7 +230,7 @@ class CriteriaDataConstraints extends React.Component {
 
     render() {
         const {criterion} = this.props;
-        const raster = criterion.tilesCollection.first;
+        const raster = criterion.raster;
 
         return (
             <div>

@@ -27,11 +27,7 @@ class SimpleWeightAssignment extends React.Component {
     onBlurValue = () => {
         const wa = WeightAssignment.fromObject(this.state.wa);
         wa.calculateWeights();
-
-        return this.props.handleChange({
-            name: 'weights',
-            value: wa
-        });
+        return this.props.handleChange(wa);
     };
 
     onChangeValue = (e, {name, value}) => {

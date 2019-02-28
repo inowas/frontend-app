@@ -121,7 +121,7 @@ class ConstraintsMap extends React.Component {
             <ActiveCellsLayer
                 boundingBox={this.props.map.boundingBox}
                 gridSize={this.props.map.gridSize}
-                activeCells={this.props.map.activeCells}
+                activeCells={this.props.map.cells}
                 styles={{
                     line: {
                         color: 'black',
