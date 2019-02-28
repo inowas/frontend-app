@@ -29,11 +29,11 @@ class GisMap {
         return cm;
     }
 
-    get activeCells() {
+    get cells() {
         return this._activeCells;
     }
 
-    set activeCells(value) {
+    set cells(value) {
         this._activeCells = value;
     }
 
@@ -71,7 +71,7 @@ class GisMap {
 
     toObject() {
         return {
-            cells: this.activeCells.toArray(),
+            cells: this.cells.toArray(),
             boundingBox: this.boundingBox ? this.boundingBox.toArray() : null,
             areas: this.areasCollection.toArray(),
             gridSize: this.gridSize.toObject(),
