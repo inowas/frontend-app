@@ -23,6 +23,12 @@ class ConstraintsEditor extends React.Component {
         const prevConstraints = this.props.mcda.constraints || null;
         const constraints = nextProps.mcda.constraints;
 
+        if (!constraints.raster) {
+            return this.setState({
+                constraints: constraints.toObject()
+            })
+        }
+
         if (constraints) {
             this.constraintsToState(prevConstraints ? prevConstraints.toObject() : null, constraints.toObject());
         }
@@ -38,7 +44,7 @@ class ConstraintsEditor extends React.Component {
         const tasks = [
             {
                 raster: constraints.raster,
-                oldUrl: prevConstraints ? prevConstraints.raster.url : '',
+                oldUrl: prevConstraints && prevConstraints.raster ? prevConstraints.raster.url : '',
                 onSuccess: raster => newConstraints.raster = raster
             }
         ];
@@ -60,6 +66,11 @@ class ConstraintsEditor extends React.Component {
 
         const mcda = this.props.mcda;
         mcda.constraints = constraints;
+
+        if (!constraints.raster || !constraints.raster.data) {
+            return this.props.onChange(mcda);
+        }
+
         dropData(
             JSON.stringify(constraints.raster.data),
             response => {
@@ -80,11 +91,7 @@ class ConstraintsEditor extends React.Component {
         const constraints = GisMap.fromObject(this.state.constraints);
 
         constraints.calculateActiveCells();
-        this.handleChange(constraints);
-
-        this.setState({
-            mode: 'raster'
-        });
+        return this.handleChange(constraints);
     };
 
     onChangeMode = (e, {name, value}) => this.setState({

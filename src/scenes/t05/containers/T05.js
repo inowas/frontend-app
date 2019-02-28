@@ -2,7 +2,7 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import {withRouter} from 'react-router-dom';
 import {includes} from 'lodash';
-import {Divider, Grid, Icon, Message, Segment} from 'semantic-ui-react';
+import {Divider, Grid, Icon, Segment} from 'semantic-ui-react';
 
 import {fetchTool, sendCommand} from 'services/api';
 
@@ -26,8 +26,6 @@ import {
     ToolNavigation,
     WeightAssignmentEditor
 } from '../components';
-import {updateMcda} from '../actions/actions';
-import {connect} from 'react-redux';
 
 const navigation = [{
     name: 'Documentation',
@@ -54,7 +52,6 @@ class T05 extends React.Component {
                 this.state.tool.tool,
                 this.props.match.params.id,
                 tool => {
-                    this.props.updateMcda(MCDA.fromObject(tool.data));
                     this.setState({
                         tool: deepMerge(this.state.tool, tool),
                         isDirty: false,
@@ -77,12 +74,16 @@ class T05 extends React.Component {
         description: tool.description,
         public: tool.public,
         tool: tool.tool,
-        data: this.props.mcda.toObject()
+        data: this.state.tool.data
     });
 
-    handleChange = mcda => this.setState({
-        isDirty: true
-    }, this.props.updateMcda(mcda));
+    handleChange = mcda => this.setState(prevState => ({
+        isDirty: true,
+        tool: {
+            ...prevState.tool,
+            data: mcda.toObject()
+        }
+    }));
 
     handleSaveMetadata = () => {
         sendCommand(
@@ -169,7 +170,7 @@ class T05 extends React.Component {
         const {id, property} = this.props.match.params;
         const cid = this.props.match.params.cid || null;
         const tool = this.props.match.params.tool || null;
-        const mcda = this.props.mcda;
+        const mcda = MCDA.fromObject(this.state.tool.data);
 
         const {permissions} = this.state.tool;
         const readOnly = !includes(permissions, 'w');
@@ -187,10 +188,9 @@ class T05 extends React.Component {
                         onChange={this.handleChange}
                     />);
             case 'cm':
-                const constraints = mcda.constraints;
 
-                if (mcda.criteriaCollection.length > 0 && !constraints.boundingBox) {
-                    constraints.boundingBox = mcda.criteriaCollection.getBoundingBox();
+                if (mcda.criteriaCollection.length > 0 && !mcda.constraints.boundingBox) {
+                    mcda.constraints.boundingBox = mcda.criteriaCollection.getBoundingBox(mcda.withAhp);
                 }
 
                 return (
@@ -246,16 +246,7 @@ class T05 extends React.Component {
     }
 
     render() {
-        if (!this.props.mcda) {
-            return (
-                <AppContainer navbarItems={navigation}>
-                    <Message icon>
-                        <Icon name='circle notched' loading/>
-                    </Message>
-                </AppContainer>
-            )
-        }
-        const mcda = this.props.mcda;
+        const mcda = MCDA.fromObject(this.state.tool.data);
 
         const {tool, isDirty, isError, isLoading} = this.state;
 
@@ -329,22 +320,11 @@ class T05 extends React.Component {
     }
 }
 
-const mapStateToProps = state => {
-    return ({
-        mcda: state.T05.mcda && MCDA.fromObject(state.T05.mcda),
-    });
-};
-
-const mapDispatchToProps = {
-    updateMcda
-};
-
 T05.propTypes = {
     history: PropTypes.object.isRequired,
     location: PropTypes.object.isRequired,
     match: PropTypes.object.isRequired,
-    mcda: PropTypes.object,
-    updateMcda: PropTypes.func.isRequired
+    mcda: PropTypes.object
 };
 
-export default withRouter(connect(mapStateToProps, mapDispatchToProps)(T05));
+export default withRouter(T05);

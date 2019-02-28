@@ -88,7 +88,7 @@ class SuitabilityEditor extends React.Component {
                     <Step
                         active={activeTool === 'weightAssignment' || !activeTool}
                         name='weightAssignment'
-                        icon='list ol'
+                        icon='calculator'
                         title='Calculation'
                         link
                         onClick={this.handleClickStep}

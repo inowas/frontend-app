@@ -8,7 +8,7 @@ export const retrieveRasters = (tasks, onSuccess) => {
 
     const task = tasks.shift();
 
-    if (task.raster.url && task.raster.data.length === 0) {
+    if (task.raster.url !== '' && task.raster.data.length === 0) {
         retrieveDroppedData(
             task.raster.url,
             response => {

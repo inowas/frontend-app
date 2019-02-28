@@ -1,13 +1,14 @@
-import {MCDA} from 'core/model/mcda';
-import {UPDATE_MCDA} from '../reducers/mcda';
+import {CLEAR_TOOL, UPDATE_TOOL} from '../reducers/mcda';
 
-export function updateMcda(mcda) {
-    if (!(mcda instanceof MCDA)) {
-        throw new Error('MCDA is expected to be instance of MCDA');
-    }
-
+export function clearTool() {
     return {
-        type: UPDATE_MCDA,
-        mcda: mcda.toObject()
+        type: CLEAR_TOOL
+    }
+}
+
+export function updateTool(payload) {
+    return {
+        type: UPDATE_TOOL,
+        payload: payload
     };
 }

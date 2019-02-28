@@ -168,7 +168,7 @@ NODATA_VALUE -9999
                         onClick={this.handleDownload}
                     >
                         <Icon name='download'/>
-                        Download GeoTiff
+                        Download Raster
                     </Button>
                 </Grid.Column>
                 <Grid.Column width={11}>

@@ -1,12 +1,28 @@
-export const UPDATE_MCDA = 'T05_UPDATE_MCDA';
+import MCDA from 'core/model/mcda/MCDA';
+import uuidv4 from 'uuid';
 
-const initialState = null;
+export const UPDATE_TOOL = 'T05_UPDATE';
+export const CLEAR_TOOL = 'T05_CLEAR';
+
+const initialState = {
+    id: uuidv4(),
+    name: 'New Multi-criteria decision analysis',
+    description: 'Description of multi-criteria decision analysis.',
+    permissions: 'rwx',
+    public: false,
+    tool: 'T05',
+    type: 'T05',
+    data: (new MCDA()).toObject()
+};
 
 const model = (state = initialState, action) => {
     switch (action.type) {
-        case UPDATE_MCDA:
+        case CLEAR_TOOL:
+            return initialState;
+
+        case UPDATE_TOOL:
             return {
-                ...state, ...action.mcda
+                ...state, ...action.tool
             };
 
         default:

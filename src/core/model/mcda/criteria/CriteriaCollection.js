@@ -26,12 +26,12 @@ class CriteriaCollection extends AbstractCollection {
         return this.length > 0 && this.all.filter(c => !c.suitability || !c.suitability.url || c.suitability.url === '').length === 0;
     }
 
-    getBoundingBox() {
+    getBoundingBox(withAhp = false) {
         let xMin = 180;
         let xMax = -180;
         let yMin = 90;
         let yMax = -90;
-        this.all.forEach(criterion => {
+        this.all.filter(criterion => !withAhp || (withAhp && criterion.parentId)).forEach(criterion => {
             const bb = criterion.raster.boundingBox;
             xMin = bb.xMin < xMin ? bb.xMin : xMin;
             xMax = bb.xMax > xMax ? bb.xMax : xMax;
