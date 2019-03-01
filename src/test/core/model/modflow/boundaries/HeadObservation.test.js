@@ -47,5 +47,9 @@ test('HeadObservationWell fromObject', () => {
 test('HeadObservationWell schema validation', () => {
     const data = createHeadObservationWell().toObject();
     const schema = JSON_SCHEMA_URL + 'modflow/boundary/headObservationWell';
-    validate(data, schema).then(response => expect(response).toEqual([true, null]));
+    validate(data, schema).then(response => expect(response)
+        .toEqual([true, null]))
+        .catch((error) => {
+            expect(error).toEqual('');
+        });
 });

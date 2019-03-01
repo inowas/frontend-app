@@ -102,5 +102,9 @@ test('RiverBoundary fromObject', () => {
 test('RiverBoundary schema validation', () => {
     const data = createRiverBoundary().toObject();
     const schema = JSON_SCHEMA_URL + 'modflow/boundary/riverBoundary';
-    validate(data, schema).then(response => expect(response).toEqual([true, null]));
+    validate(data, schema).then(response => expect(response)
+        .toEqual([true, null]))
+        .catch((error) => {
+            expect(error).toEqual('');
+        });
 });

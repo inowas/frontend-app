@@ -91,5 +91,9 @@ test('ConstantHeadBoundary fromObject', () => {
 test('ConstantHeadBoundary schema validation', () => {
     const data = createConstantHeadBoundary().toObject();
     const schema = JSON_SCHEMA_URL + 'modflow/boundary/constantHeadBoundary';
-    validate(data, schema).then(response => expect(response).toEqual([true, null]));
+    validate(data, schema).then(response => expect(response)
+        .toEqual([true, null]))
+        .catch((error) => {
+            expect(error).toEqual('');
+        });
 });

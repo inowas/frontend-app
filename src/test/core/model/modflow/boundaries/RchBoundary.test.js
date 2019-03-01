@@ -10,7 +10,7 @@ const createRechargeBoundary = () => {
     const geometry = {type: 'Polygon', coordinates: [[[3, 4], [3, 5], [4, 5], [4, 3], [3, 4]]]};
     const layers = [1];
     const cells = [[1, 2], [2, 3]];
-    const spValues = [1, 2, 3];
+    const spValues = [[1], [1], [1]];
 
     return RechargeBoundary.create(
         id, geometry, name, layers, cells, spValues
@@ -23,7 +23,7 @@ test('RechargeBoundary create', () => {
     const geometry = {type: 'Polygon', coordinates: [[[3, 4], [3, 5], [4, 5], [4, 3], [3, 4]]]};
     const layers = [1];
     const cells = [[1, 2], [2, 3]];
-    const spValues = [1, 2, 3];
+    const spValues = [[1], [1], [1]];
 
     const rechargeBoundary = RechargeBoundary.create(
         id, geometry, name, layers, cells, spValues
@@ -48,5 +48,9 @@ test('RechargeBoundary fromObject', () => {
 test('RechargeBoundary schema validation', () => {
     const data = createRechargeBoundary().toObject();
     const schema = JSON_SCHEMA_URL + 'modflow/boundary/rechargeBoundary';
-    validate(data, schema).then(response => expect(response).toEqual([true, null]));
+    validate(data, schema).then(response => expect(response)
+        .toEqual([true, null]))
+        .catch((error) => {
+            expect(error).toEqual('');
+        });
 });

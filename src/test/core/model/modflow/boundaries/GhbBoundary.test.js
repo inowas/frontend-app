@@ -91,5 +91,9 @@ test('GeneralHeadBoundary fromObject', () => {
 test('GeneralHeadBoundary schema validation', () => {
     const data = createGeneralHeadBoundary().toObject();
     const schema = JSON_SCHEMA_URL + 'modflow/boundary/generalHeadBoundary';
-    validate(data, schema).then(response => expect(response).toEqual([true, null]));
+    validate(data, schema).then(response => expect(response)
+        .toEqual([true, null]))
+        .catch((error) => {
+            expect(error).toEqual('');
+        });
 });
