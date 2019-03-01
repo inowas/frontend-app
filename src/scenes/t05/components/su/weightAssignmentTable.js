@@ -34,7 +34,7 @@ class WeightAssignmentTable extends React.Component {
                         <Table.Row>
                             <Table.HeaderCell/>
                             <Table.HeaderCell>Method</Table.HeaderCell>
-                            {mcda.criteriaCollection.all.map((c, ckey) =>
+                            {mcda.criteriaCollection.orderBy('id').all.map((c, ckey) =>
                                 <Table.HeaderCell key={ckey}>{c.name}</Table.HeaderCell>
                             )}
                         </Table.Row>
@@ -45,7 +45,7 @@ class WeightAssignmentTable extends React.Component {
                                 <Table.Cell><Radio name={wa.id} onChange={this.props.handleChange()}
                                                    checked={wa.isActive}/></Table.Cell>
                                 <Table.Cell>{wa.name}</Table.Cell>
-                                {wa.weightsCollection.all.map((w, wKey) =>
+                                {wa.weightsCollection.orderBy('criterion.id').all.map((w, wKey) =>
                                     <Table.Cell key={wKey}>{w.value.toFixed(3)}</Table.Cell>
                                 )}
                             </Table.Row>
@@ -55,7 +55,7 @@ class WeightAssignmentTable extends React.Component {
             );
         }
 
-        const mainCriteria = mcda.criteriaCollection.findBy('parentId', null, {returnCollection: true});
+        const mainCriteria = mcda.criteriaCollection.orderBy('id', 'asc').findBy('parentId', null, {returnCollection: true});
         const mainCriteriaMethods = mcda.weightAssignmentsCollection.findBy('parent', null, {returnCollection: true});
 
         return (
@@ -80,9 +80,11 @@ class WeightAssignmentTable extends React.Component {
                             <Table.Row>
                                 <Table.HeaderCell/>
                                 <Table.HeaderCell>Method</Table.HeaderCell>
-                                {mainCriteria.all.map((c, ckey) =>
-                                    <Table.HeaderCell key={ckey}>{c.name}</Table.HeaderCell>
-                                )}
+                                {
+                                    mainCriteria.all.map((c, ckey) =>
+                                        <Table.HeaderCell key={ckey}>{c.name}</Table.HeaderCell>
+                                    )
+                                }
                             </Table.Row>
                         </Table.Header>
                         <Table.Body>
@@ -93,7 +95,7 @@ class WeightAssignmentTable extends React.Component {
                                                checked={wa.isActive}/>
                                     </Table.Cell>
                                     <Table.Cell>{wa.name}</Table.Cell>
-                                    {wa.weightsCollection.all.map((w, wKey) =>
+                                    {wa.weightsCollection.orderBy('criterion.id', 'asc').all.map((w, wKey) =>
                                         <Table.Cell key={wKey}>{w.value.toFixed(3)}</Table.Cell>
                                     )}
                                 </Table.Row>
@@ -111,7 +113,7 @@ class WeightAssignmentTable extends React.Component {
                                 <Table.Row>
                                     <Table.HeaderCell/>
                                     <Table.HeaderCell>Method</Table.HeaderCell>
-                                    {mcda.criteriaCollection.findBy('parentId', mc.id).map((c, ckey) =>
+                                    {mcda.criteriaCollection.orderBy('id').findBy('parentId', mc.id).map((c, ckey) =>
                                         <Table.HeaderCell key={ckey}>{c.name}</Table.HeaderCell>
                                     )}
                                 </Table.Row>
@@ -124,7 +126,7 @@ class WeightAssignmentTable extends React.Component {
                                                    checked={wa.isActive}/>
                                         </Table.Cell>
                                         <Table.Cell>{wa.name}</Table.Cell>
-                                        {wa.weightsCollection.all.map((w, wKey) =>
+                                        {wa.weightsCollection.orderBy('criterion.id').all.map((w, wKey) =>
                                             <Table.Cell key={wKey}>{w.value.toFixed(3)}</Table.Cell>
                                         )}
                                     </Table.Row>
