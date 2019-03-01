@@ -12,7 +12,7 @@ export const defaults = () => {
             parameters: [{
                 order: 0,
                 id: 'b',
-                name: 'Aquifer thickness, b [m]',
+                name: 'Aquifer thickness<br/>b [m]',
                 min: 1,
                 validMin: x => x > 0,
                 max: 100,
@@ -22,7 +22,7 @@ export const defaults = () => {
             }, {
                 order: 1,
                 id: 'i',
-                name: 'Hydraulic gradient, i [-]',
+                name: 'Hydraulic gradient<br/>i [-]',
                 min: 0.000,
                 validMin: x => x >= 0,
                 max: 0.010,

@@ -25,6 +25,22 @@ function range(start, stop, step) {
     return a;
 }
 
+export function resultDiv(df, ds, z, qmax) {
+    if (df >= ds) {
+        return (
+            <Segment raised className={'diagramLabel topLeft'}>
+                <p>Saltwater density is lower than the density of freshwater.</p>
+            </Segment>
+        );
+    }
+    return (
+        <Segment raised className={'diagramLabel topRight'}>
+            <p>z&nbsp;=&nbsp;<strong>{z.toFixed(1)}</strong>&nbsp;m</p>
+            Q<sub>max</sub>&nbsp;=&nbsp;<strong>{qmax.toFixed(1)}</strong>&nbsp;m<sup>3</sup>/d
+        </Segment>
+    );
+}
+
 export function calculateDiagramData(q, k, d, df, ds, start, stop, step) {
 
     const xRange = range(start, stop, step);
@@ -139,10 +155,7 @@ const Chart = ({parameters}) => {
                         </LineChart>
                     </ResponsiveContainer>
 
-                    <Segment raised className={'diagramLabel topRight'}>
-                        <p>z&nbsp;=&nbsp;<strong>{z.toFixed(1)}</strong>&nbsp;m</p>
-                        Q<sub>max</sub>&nbsp;=&nbsp;<strong>{qmax.toFixed(1)}</strong>&nbsp;m<sup>3</sup>/d
-                    </Segment>
+                    {resultDiv(df, ds, z, qmax)}
 
                     <div className='downloadButtons'>
                         <Button compact basic icon

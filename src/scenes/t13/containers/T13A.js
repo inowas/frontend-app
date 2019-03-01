@@ -5,13 +5,13 @@ import {includes} from 'lodash';
 import {withRouter} from 'react-router-dom';
 
 import {AppContainer} from '../../shared';
-import {Background, ChartT13A as Chart, Parameters} from '../components';
+import {Background, ChartT13A as Chart, InfoT13A as Info, Parameters} from '../components';
 import {SliderParameter, ToolGrid, ToolMetaData} from '../../shared/simpleTools';
 import {navigation} from './T13';
 
 import SimpleToolsCommand from '../../shared/simpleTools/commands/SimpleToolsCommand';
 
-import image from '../images/T13A_bg.png';
+import image from '../images/T13A.png';
 import {defaults} from '../defaults/T13A';
 
 import {fetchTool, sendCommand} from 'services/api';
@@ -119,7 +119,7 @@ class T13A extends React.Component {
                         title='T13A. Travel time // Aquifer system with a no-flow boundary and fixed head boundary condition'
                     />
                     <Chart parameters={parameters}/>
-                    <div/>
+                    <Info parameters={parameters}/>
                     <Parameters
                         parameters={parameters.map(p => SliderParameter.fromObject(p))}
                         handleChange={this.handleChangeParameters}

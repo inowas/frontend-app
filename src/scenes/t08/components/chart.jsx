@@ -126,7 +126,7 @@ const Chart = ({settings, parameters}) => {
                                     position='left'
                                     fill={'#4C4C4C'}
                                     style={{textAnchor: 'center', fontSize: '13px'}}
-                                    value={'C/C0 [-]'}
+                                    value={'C/C₀ [-]'}
                                 />
                             </YAxis>
                             <CartesianGrid strokeDasharray="3 3"/>

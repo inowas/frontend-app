@@ -56,9 +56,7 @@ const Info = ({parameters, settings}) => {
                         interface prior sea level rise is <strong>{Math.abs(data[1].xt).toFixed(1)} m</strong>. The distance of the
                         toe of the interface after sea level rise is <strong>{Math.abs(data[2].xt).toFixed(1)} m</strong>.
                         Therefore, the toe of the freshwater-saltwater interface will move <strong>{(Math.abs(data[2].xt)
-                        - Math.abs(data[1].xt)).toFixed(2)}&nbsp;m</strong>
-                        inland caused by sea level
-                        rise.
+                        - Math.abs(data[1].xt)).toFixed(2)}&nbsp;m</strong> inland caused by sea level rise.
                     </p>
                 </Message.Content>
             </Message>

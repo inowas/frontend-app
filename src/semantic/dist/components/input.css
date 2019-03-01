@@ -528,6 +528,14 @@ input[readonly='readonly'] {
   cursor: default !important;
   color: rgba(0, 0, 0, 0.6) !important;
 }
+input.extraMini {
+  background-color: #EEEEEE;
+  -webkit-box-shadow: 0px 1px 2px 0px rgba(0, 0, 0, 0.1) inset;
+          box-shadow: 0px 1px 2px 0px rgba(0, 0, 0, 0.1) inset;
+  border: none;
+  padding: 3px;
+  line-height: 1.5em;
+}
 
 /*-------------------
       Borders

@@ -19,22 +19,26 @@ export const navigation = [{
 const items = [
     {
         tool: 'T14A',
-        description: 'Fully penetrating stream with no streambed resistance – Pumping from wells besides streams lowers the groundwater level and reduces surface water flow within the stream. This tool helps to estimate the stream depletion rate induced by well pumping.',
+        name: 'Fully penetrating stream with no streambed resistance.',
+        description: 'Pumping from wells besides streams lowers the groundwater level and reduces surface water flow within the stream. This tool helps to estimate the stream depletion rate induced by well pumping.',
         image: image14A
     },
     {
         tool: 'T14B',
-        description: 'Fully penetrating stream with semipervious layer – Pumping from wells besides streams lowers the groundwater level and reduces surface water flow within the stream. This tool helps to estimate the stream depletion rate induced by well pumping.',
+        name: 'Fully penetrating stream with semipervious layer.',
+        description: 'Pumping from wells besides streams lowers the groundwater level and reduces surface water flow within the stream. This tool helps to estimate the stream depletion rate induced by well pumping.',
         image: image14B
     },
     {
         tool: 'T14C',
-        description: 'Partially penetrating stream with streambed resistance – Pumping from wells besides streams lowers the groundwater level and reduces surface water flow within the stream. This tool helps to estimate the stream depletion rate induced by well pumping.',
+        name: 'Partially penetrating stream with streambed resistance.',
+        description: 'Pumping from wells besides streams lowers the groundwater level and reduces surface water flow within the stream. This tool helps to estimate the stream depletion rate induced by well pumping.',
         image: image14C
     },
     {
         tool: 'T14D',
-        description: 'Partially penetrating stream in an aquitard overlying a pumped aquifer – Pumping from wells besides streams lowers the groundwater level and reduces surface water flow within the stream. This tool helps to estimate the stream depletion rate induced by well pumping.',
+        name: 'Partially penetrating stream in an aquitard overlying a pumped aquifer.',
+        description: 'Pumping from wells besides streams lowers the groundwater level and reduces surface water flow within the stream. This tool helps to estimate the stream depletion rate induced by well pumping.',
         image: image14D
     }
 ];
@@ -50,10 +54,8 @@ class T14 extends React.Component {
             <Grid.Column key={i.tool} onClick={() => this.redirectTo(i.tool)}>
                 <Segment color={'blue'} style={{cursor: 'pointer'}} padded>
                     <Image src={i.image} size={'medium'} floated={'left'}/>
-                    <Header as={'h2'} color={'blue'}>{i.tool}</Header>
-                    <p>
-                        {i.description}
-                    </p>
+                    <Header as={'h2'} color={'blue'} style={{marginTop: 0}}>{i.tool}</Header>
+                    <p><strong>{i.name}</strong>&nbsp;{i.description}</p>
                 </Segment>
             </Grid.Column>
         ));

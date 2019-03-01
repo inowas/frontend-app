@@ -4,12 +4,13 @@ import {pure} from 'recompose';
 
 import {
     ResponsiveContainer,
+    Label,
     LineChart,
     Line,
     XAxis,
     YAxis,
     CartesianGrid,
-    ReferenceLine, Label
+    ReferenceLine
 } from 'recharts';
 
 import {Button, Grid, Icon, Segment} from 'semantic-ui-react';

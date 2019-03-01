@@ -17,7 +17,7 @@ const styles = {
         top: 20,
         right: 20,
         left: 0,
-        bottom: 20
+        bottom: 0
     },
     diagramLabel: {
         position: 'absolute',

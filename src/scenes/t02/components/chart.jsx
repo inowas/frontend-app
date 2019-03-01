@@ -135,7 +135,7 @@ const Chart = ({settings, parameters}) => {
                                     fill={'#4C4C4C'}
                                     position='left'
                                     style={{textAnchor: 'center', fontSize: '13px'}}
-                                    value={'h-hi [m]'}
+                                    value={'h-hᵢ [m]'}
                                 />
                             </YAxis>
                             <CartesianGrid strokeDasharray="3 3"  />
@@ -156,7 +156,7 @@ const Chart = ({settings, parameters}) => {
                         </LineChart>
                     </ResponsiveContainer>
                     <Segment raised className={'diagramLabel topRight'}>
-                        <p>h<sub>max</sub>=<strong>{hMax.toFixed(2)}</strong>m</p>
+                        <p>h<sub>max</sub>&nbsp;=&nbsp;<strong>{hMax.toFixed(2)}</strong>&nbsp;m</p>
                     </Segment>
                     <div className='downloadButtons'>
                         <Button compact basic icon

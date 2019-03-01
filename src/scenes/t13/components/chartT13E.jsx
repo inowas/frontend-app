@@ -33,9 +33,9 @@ let currentChart;
 const styles = {
     chart: {
         top: 20,
-        right: 20,
-        left: 30,
-        bottom: 20
+        right: 30,
+        left: 20,
+        bottom: 0
     }
 };
 
