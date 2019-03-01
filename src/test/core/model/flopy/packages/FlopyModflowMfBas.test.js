@@ -1,10 +1,13 @@
 import FlopyModflowMf from 'core/model/flopy/packages/mf/FlopyModflowMf'
 import FlopyModflowMfbas from 'core/model/flopy/packages/mf/FlopyModflowMfbas'
 
-test('It can instantiate FlopyModflowMf', () => {
+test('It can instantiate FlopyModflowMfbas', () => {
     const model = new FlopyModflowMf();
-    const mfBas = new FlopyModflowMfbas(model);
+    const mfBas = FlopyModflowMfbas.createWithModel(model);
     expect(mfBas).toBeInstanceOf(FlopyModflowMfbas);
+    expect(model.packages['bas']).toEqual(mfBas.toObject());
+    expect(model.getPackage('bas')).toBeInstanceOf(FlopyModflowMfbas);
+    expect(model.getPackage('bas')).toEqual(mfBas)
 });
 
 test('It can be created fromObject', () => {
@@ -18,8 +21,7 @@ test('It can be created fromObject', () => {
         'ixsec': false,
         'stoper': null,
         'strt': 1,
-        'unitnumber': null,
-        'enabled': true
+        'unitnumber': null
     };
 
     const mfBas = FlopyModflowMfbas.fromObject(obj);
