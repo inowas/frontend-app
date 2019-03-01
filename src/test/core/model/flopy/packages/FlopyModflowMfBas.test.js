@@ -7,7 +7,7 @@ test('It can instantiate FlopyModflowMfbas', () => {
     expect(mfBas).toBeInstanceOf(FlopyModflowMfbas);
     expect(model.packages['bas']).toEqual(mfBas.toObject());
     expect(model.getPackage('bas')).toBeInstanceOf(FlopyModflowMfbas);
-    expect(model.getPackage('bas')).toEqual(mfBas)
+    expect(model.getPackage('bas').toObject()).toEqual(mfBas.toObject())
 });
 
 test('It can be created fromObject', () => {
