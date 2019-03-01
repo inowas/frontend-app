@@ -13,7 +13,7 @@ import {
 } from 'recharts';
 
 import {exportChartData, exportChartImage, getParameterValues} from '../../shared/simpleTools/helpers';
-import {Button, Grid, Segment} from 'semantic-ui-react';
+import {Button, Grid, Icon, Segment} from 'semantic-ui-react';
 
 const styles = {
     chart: {
@@ -21,18 +21,6 @@ const styles = {
         right: 20,
         left: 20,
         bottom: 20
-    },
-    diagramLabel: {
-        position: 'absolute',
-        top: '120px',
-        right: '35px',
-        background: '#EFF3F6',
-        opacity: 0.9
-    },
-    downloadButtons: {
-        position: 'absolute',
-        top: '0px',
-        right: '35px'
     }
 };
 
@@ -41,23 +29,23 @@ let currentChart;
 const renderLabels = (dQ) => {
     return (
         <div>
-            <Segment raised style={styles.diagramLabel}>
+            <Segment raised className='diagramLabel bottomRight'>
                 <p>&#916;Q&nbsp;=&nbsp;<strong>{dQ.toFixed(1)}</strong>&nbsp;m³/d</p>
             </Segment>
 
-            <div style={styles.downloadButtons}>
-                <Button
-                    size={'tiny'}
-                    color={'grey'}
-                    content='JPG'
-                    onClick={() => exportChartImage(currentChart)}
-                />
-                <Button
-                    size={'tiny'}
-                    color={'grey'}
-                    content='CSV'
-                    onClick={() => exportChartData(currentChart)}
-                />
+            <div className='downloadButtons'>
+                <Button compact basic icon
+                        size={'small'}
+                        onClick={() => exportChartImage(currentChart)}
+                >
+                    <Icon name='download' /> JPG
+                </Button>
+                <Button compact basic icon
+                        size={'small'}
+                        onClick={() => exportChartData(currentChart)}
+                >
+                    <Icon name='download' /> CSV
+                </Button>
             </div>
         </div>
     );
@@ -72,8 +60,8 @@ const Chart = ({parameters}) => {
     return (
         <div>
             <Grid>
-                <Grid.Row>
-                    <ResponsiveContainer width={'100%'} aspect={3}>
+                <Grid.Column>
+                    <ResponsiveContainer width={'100%'} aspect={2.5}>
                         <LineChart
                             data={data}
                             margin={styles.chart}
@@ -90,6 +78,7 @@ const Chart = ({parameters}) => {
                                     offset={0}
                                     position="bottom"
                                     fill={'#4C4C4C'}
+                                    style={{fontSize: '13px'}}
                                 />
                             </XAxis>
                             <YAxis
@@ -102,7 +91,7 @@ const Chart = ({parameters}) => {
                                 <Label
                                     angle={270}
                                     position='left'
-                                    style={{textAnchor: 'center'}}
+                                    style={{textAnchor: 'center', fontSize: '13px'}}
                                     value={'dQ [m³/d]'}
                                     fill={'#4C4C4C'}
                                 />
@@ -119,7 +108,7 @@ const Chart = ({parameters}) => {
                         </LineChart>
                     </ResponsiveContainer>
                     {renderLabels(dQ)}
-                </Grid.Row>
+                </Grid.Column>
             </Grid>
         </div>
     );

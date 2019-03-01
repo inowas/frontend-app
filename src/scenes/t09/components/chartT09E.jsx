@@ -14,7 +14,7 @@ import {
 
 import {calcXtQ0Flux, calcXtQ0Head, dRho, calculateDiagramData} from '../calculations/calculationT09E';
 import {exportChartData, exportChartImage, getParameterValues} from '../../shared/simpleTools/helpers';
-import {Button, Grid, Segment} from 'semantic-ui-react';
+import {Button, Grid, Icon, Segment} from 'semantic-ui-react';
 
 const calculationErrorOverlay = (maxIter, valid, dxt) => {
     if (!valid) {
@@ -45,21 +45,9 @@ const calculationErrorOverlay = (maxIter, valid, dxt) => {
 const styles = {
     chart: {
         top: 20,
-        right: 20,
+        right: 10,
         left: 30,
-        bottom: 20
-    },
-    diagramLabel: {
-        position: 'absolute',
-        top: '5px',
-        left: '120px',
-        background: '#EFF3F6',
-        opacity: 0.9
-    },
-    downloadButtons: {
-        position: 'absolute',
-        top: '5px',
-        right: '100px'
+        bottom: 0
     }
 };
 
@@ -106,7 +94,7 @@ const Chart = ({parameters, settings}) => {
         <div>
             <Grid>
                 <Grid.Column>
-                    <ResponsiveContainer width={'100%'} aspect={2}>
+                    <ResponsiveContainer width={'100%'} aspect={2.5}>
                         <LineChart
                             data={data}
                             margin={styles.chart}
@@ -118,6 +106,7 @@ const Chart = ({parameters, settings}) => {
                                     offset={0}
                                     position="bottom"
                                     fill={'#4C4C4C'}
+                                    style={{fontSize: '13px'}}
                                 />
                             </XAxis>
                             <YAxis
@@ -130,7 +119,7 @@ const Chart = ({parameters, settings}) => {
                                 <Label
                                     angle={90}
                                     position='right'
-                                    style={{textAnchor: 'center'}}
+                                    style={{textAnchor: 'center', fontSize: '13px'}}
                                     value={'z0 [m]'}
                                     fill={'#4C4C4C'}
                                 />
@@ -180,23 +169,23 @@ const Chart = ({parameters, settings}) => {
                         </LineChart>
                     </ResponsiveContainer>
 
-                    <Segment raised style={styles.diagramLabel}>
+                    <Segment raised className='diagramLabel topLeft'>
                         <p>Change in x<sub>t</sub>&nbsp;=&nbsp;<strong>{dxt.toFixed(1)}</strong>&nbsp;m</p>
                     </Segment>
 
-                    <div style={styles.downloadButtons}>
-                        <Button
-                            size={'tiny'}
-                            color={'grey'}
-                            content='JPG'
-                            onClick={() => exportChartImage(currentChart)}
-                        />
-                        <Button
-                            size={'tiny'}
-                            color={'grey'}
-                            content='CSV'
-                            onClick={() => exportChartData(currentChart)}
-                        />
+                    <div className='downloadButtons'>
+                        <Button compact basic icon
+                                size={'small'}
+                                onClick={() => exportChartImage(currentChart)}
+                        >
+                            <Icon name='download' /> JPG
+                        </Button>
+                        <Button compact basic icon
+                                size={'small'}
+                                onClick={() => exportChartData(currentChart)}
+                        >
+                            <Icon name='download' /> CSV
+                        </Button>
                     </div>
 
                     {calculationErrorOverlay(maxIter, isValid, dxt)}

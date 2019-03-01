@@ -61,8 +61,8 @@ const Chart = ({data}) => {
             <Grid>
                 <Grid.Column>
                     <div style={styles.diagram}>
-                        <ResponsiveContainer width={'100%'} aspect={2}>
-                            <ScatterChart data={data} margin={{top: 20, right: 30, left: 20, bottom: 0}}>
+                        <ResponsiveContainer width={'100%'} aspect={2.5}>
+                            <ScatterChart data={data} margin={{top: 20, right: 20, left: 20, bottom: 0}}>
                                 <CartesianGrid strokeDasharray="3 3"/>
 
                                 <XAxis type={'number'} dataKey={'x'} name={'Specific volume'} tick={{fill: '#B5B5B5', fontSize: 'small', transform: 'translate(0, 5)'}} />

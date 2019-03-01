@@ -10,12 +10,12 @@ import {
 
 import {calculateDiagramData} from '../calculations/calculationT18';
 import {exportChartData, exportChartImage, getParameterValues} from '../../shared/simpleTools/helpers';
-import {Button, Grid} from 'semantic-ui-react';
+import {Button, Grid, Icon} from 'semantic-ui-react';
 
 const styles = {
     chart: {
-        top: 10,
-        right: 30,
+        top: 20,
+        right: 20,
         left: 0,
         bottom: 20
     },
@@ -25,11 +25,6 @@ const styles = {
         right: '65px',
         background: '#EFF3F6',
         opacity: 0.9
-    },
-    downloadButtons: {
-        position: 'absolute',
-        top: '0px',
-        right: '60px'
     }
 };
 
@@ -43,8 +38,8 @@ const Chart = ({parameters, settings}) => {
     return (
         <div>
             <Grid>
-                <Grid.Row>
-                    <ResponsiveContainer width="100%" aspect={2.0}>
+                <Grid.Column>
+                    <ResponsiveContainer width="100%" aspect={2.5}>
                         <BarChart
                             layout="vertical"
                             data={data}
@@ -57,6 +52,7 @@ const Chart = ({parameters, settings}) => {
                                     offset={0}
                                     position="bottom"
                                     fill={'#4C4C4C'}
+                                    style={{fontSize: '13px'}}
                                 />
                             </XAxis>
                             <YAxis type="category" dataKey="name"/>
@@ -69,21 +65,21 @@ const Chart = ({parameters, settings}) => {
                         </BarChart>
                     </ResponsiveContainer>
 
-                    <div style={styles.downloadButtons}>
-                        <Button
-                            size={'tiny'}
-                            color={'grey'}
-                            content='JPG'
-                            onClick={() => exportChartImage(currentChart)}
-                        />
-                        <Button
-                            size={'tiny'}
-                            color={'grey'}
-                            content='CSV'
-                            onClick={() => exportChartData(currentChart)}
-                        />
+                    <div className='downloadButtons'>
+                        <Button compact basic icon
+                                size={'small'}
+                                onClick={() => exportChartImage(currentChart)}
+                        >
+                            <Icon name='download' /> JPG
+                        </Button>
+                        <Button compact basic icon
+                                size={'small'}
+                                onClick={() => exportChartData(currentChart)}
+                        >
+                            <Icon name='download' /> CSV
+                        </Button>
                     </div>
-                </Grid.Row>
+                </Grid.Column>
             </Grid>
         </div>
     );

@@ -1,7 +1,7 @@
 import React from 'react';
 import {pure} from 'recompose';
 import PropTypes from 'prop-types';
-import {Form, Grid, Header, Radio} from "semantic-ui-react";
+import {Form, Grid, Radio, Header, Segment} from 'semantic-ui-react';
 
 const Settings = ({settings, onChange}) => {
 
@@ -12,14 +12,9 @@ const Settings = ({settings, onChange}) => {
     return (
         <Grid padded>
             <Grid.Row centered>
-                <Header as='h2'>Settings</Header>
-            </Grid.Row>
-            <Grid.Row centered>
-                <p>Please select the axis for the calculation of groundwater
-                    mounding:</p>
-            </Grid.Row>
-            <Grid.Row centered>
                 <Form>
+                    <Header as={'h4'}>Select the axis:</Header>
+                    <Segment>
                     <Form.Group>
                         <Form.Field>
                             <Radio
@@ -40,6 +35,7 @@ const Settings = ({settings, onChange}) => {
                             />
                         </Form.Field>
                     </Form.Group>
+                    </Segment>
                 </Form>
             </Grid.Row>
         </Grid>

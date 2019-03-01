@@ -877,3 +877,24 @@
          Site Overrides
 *******************************/
 
+.diagramLabel {
+  position: absolute !important;
+  background-color: #EFF3F6 !important;
+  opacity: 0.9;
+}
+.diagramLabel.topRight {
+  top: 24px;
+  right: 40px;
+}
+.diagramLabel.bottomRight {
+  bottom: 70px;
+  right: 40px;
+}
+.diagramLabel.topLeft {
+  top: 40px;
+  left: 110px;
+}
+.diagramLabel.bottomLeft {
+  bottom: 40px;
+  left: 40px;
+}

@@ -15,7 +15,7 @@ import {
 import {calculateTravelTimeT13E} from '../calculations';
 
 import {exportChartData, exportChartImage, getParameterValues} from '../../shared/simpleTools/helpers';
-import {Button, Grid, Segment} from 'semantic-ui-react';
+import {Button, Grid, Icon, Segment} from 'semantic-ui-react';
 
 const calculateDiagramData = (Qw, ne, hL, h0, x, xi) => {
     const data = [];
@@ -36,18 +36,6 @@ const styles = {
         right: 20,
         left: 30,
         bottom: 20
-    },
-    diagramLabel: {
-        position: 'absolute',
-        top: '75px',
-        left: '55px',
-        background: '#EFF3F6',
-        opacity: 0.9
-    },
-    downloadButtons: {
-        position: 'absolute',
-        top: '0px',
-        left: '55px'
     }
 };
 
@@ -61,7 +49,7 @@ const Chart = ({parameters}) => {
         <div>
             <Grid>
                 <Grid.Column>
-                    <ResponsiveContainer width={'100%'} aspect={3}>
+                    <ResponsiveContainer width={'100%'} aspect={2.5}>
                         <LineChart
                             data={data}
                             margin={styles.chart}
@@ -78,6 +66,7 @@ const Chart = ({parameters}) => {
                                     offset={0}
                                     position="bottom"
                                     fill={'#4C4C4C'}
+                                    style={{fontSize: '13px'}}
                                 />
                             </XAxis>
                             <YAxis type="number"
@@ -89,7 +78,7 @@ const Chart = ({parameters}) => {
                                 <Label
                                     angle={90}
                                     position='right'
-                                    style={{textAnchor: 'center'}}
+                                    style={{textAnchor: 'center', fontSize: '13px'}}
                                     value={'t [d]'}
                                     fill={'#4C4C4C'}
                                 />
@@ -107,23 +96,23 @@ const Chart = ({parameters}) => {
                         </LineChart>
                     </ResponsiveContainer>
 
-                    <Segment raised style={styles.diagramLabel}>
+                    <Segment raised className='diagramLabel topLeft' style={{left: '50px'}}>
                         <p>t&nbsp;=&nbsp;<strong>{tMax.toFixed(1)}</strong>&nbsp;days</p>
                     </Segment>
 
-                    <div style={styles.downloadButtons}>
-                        <Button
-                            size={'tiny'}
-                            color={'grey'}
-                            content='JPG'
-                            onClick={() => exportChartImage(currentChart)}
-                        />
-                        <Button
-                            size={'tiny'}
-                            color={'grey'}
-                            content='CSV'
-                            onClick={() => exportChartData(currentChart)}
-                        />
+                    <div className='downloadButtons'>
+                        <Button compact basic icon
+                                size={'small'}
+                                onClick={() => exportChartImage(currentChart)}
+                        >
+                            <Icon name='download' /> JPG
+                        </Button>
+                        <Button compact basic icon
+                                size={'small'}
+                                onClick={() => exportChartData(currentChart)}
+                        >
+                            <Icon name='download' /> CSV
+                        </Button>
                     </div>
                 </Grid.Column>
             </Grid>

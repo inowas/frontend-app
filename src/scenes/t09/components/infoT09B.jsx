@@ -13,12 +13,12 @@ const Info = ({parameters}) => {
     const {b, i, df, ds} = getParameterValues(parameters);
     const xT = calculateXT(i, b, df, ds);
     return (
-            <Message icon>
+            <Message icon info>
                 <Icon name='info circle' color='blue' />
                 <Message.Content>
                     <p>
                         Inland extent of the toe of the saltwater interface at the base of the aquifer
-                        is <strong>{xT.toFixed(2)} m</strong>.
+                        is<br/> x<sub>T</sub> = <strong>{xT.toFixed(2)} m</strong>.
                     </p>
                 </Message.Content>
             </Message>
