@@ -10,7 +10,7 @@ const createGeneralHeadBoundary = () => {
     const geometry = {type: 'LineString', coordinates: [[3, 4], [3, 5], [4, 5], [4, 3], [3, 4]]};
     const layers = [1, 2];
     const cells = [[1, 2], [2, 3], [4, 5]];
-    const spValues = [1, 2, 3];
+    const spValues = [[1, 2], [1, 2], [1, 2]];
 
     return GeneralHeadBoundary.create(
         id, geometry, name, layers, cells, spValues
@@ -23,7 +23,7 @@ test('GeneralHeadBoundary create', () => {
     const geometry = {type: 'LineString', coordinates: [[3, 4], [3, 5], [4, 5], [4, 3], [3, 4]]};
     const layers = [1, 2];
     const cells = [[1, 2], [2, 3], [4, 5]];
-    const spValues = [1, 2, 3];
+    const spValues = [[1, 2], [1, 2], [1, 2]];
 
     const generalHeadBoundary = GeneralHeadBoundary.create(
         id, geometry, name, layers, cells, spValues
@@ -91,9 +91,5 @@ test('GeneralHeadBoundary fromObject', () => {
 test('GeneralHeadBoundary schema validation', () => {
     const data = createGeneralHeadBoundary().toObject();
     const schema = JSON_SCHEMA_URL + 'modflow/boundary/generalHeadBoundary';
-    validate(data, schema).then(response => expect(response)
-        .toEqual([true, null]))
-        .catch((error) => {
-            expect(error).toEqual('');
-        });
+    return expect(validate(data, schema)).resolves.toEqual([true, null]);
 });

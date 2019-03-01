@@ -10,7 +10,7 @@ const createRiverBoundary = () => {
     const geometry = {type: 'LineString', coordinates: [[3, 4], [3, 5], [4, 5], [4, 3], [3, 4]]};
     const layers = [1];
     const cells = [[1, 2], [2, 3]];
-    const spValues = [1, 2, 3];
+    const spValues = [[1, 2, 3], [1, 2, 3], [1, 2, 3]];
 
     return RiverBoundary.create(
         id, geometry, name, layers, cells, spValues
@@ -23,7 +23,7 @@ test('RiverBoundary create', () => {
     const geometry = {type: 'LineString', coordinates: [[3, 4], [3, 5], [4, 5], [4, 3], [3, 4]]};
     const layers = [1];
     const cells = [[1, 2], [2, 3]];
-    const spValues = [1, 2, 3];
+    const spValues = [[1,2,3], [1,2,3], [1,2,3]];
 
     const riverBoundary = RiverBoundary.create(
         id, geometry, name, layers, cells, spValues
@@ -102,9 +102,5 @@ test('RiverBoundary fromObject', () => {
 test('RiverBoundary schema validation', () => {
     const data = createRiverBoundary().toObject();
     const schema = JSON_SCHEMA_URL + 'modflow/boundary/riverBoundary';
-    validate(data, schema).then(response => expect(response)
-        .toEqual([true, null]))
-        .catch((error) => {
-            expect(error).toEqual('');
-        });
+    return expect(validate(data, schema)).resolves.toEqual([true, null]);
 });

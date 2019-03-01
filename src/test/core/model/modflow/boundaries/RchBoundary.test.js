@@ -48,9 +48,5 @@ test('RechargeBoundary fromObject', () => {
 test('RechargeBoundary schema validation', () => {
     const data = createRechargeBoundary().toObject();
     const schema = JSON_SCHEMA_URL + 'modflow/boundary/rechargeBoundary';
-    validate(data, schema).then(response => expect(response)
-        .toEqual([true, null]))
-        .catch((error) => {
-            expect(error).toEqual('');
-        });
+    return expect(validate(data, schema)).resolves.toEqual([true, null]);
 });

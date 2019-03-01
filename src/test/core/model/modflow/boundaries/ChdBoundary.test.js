@@ -10,7 +10,7 @@ const createConstantHeadBoundary = () => {
     const geometry = {type: 'LineString', coordinates: [[3, 4], [3, 5], [4, 5], [4, 3], [3, 4]]};
     const layers = [1, 2];
     const cells = [[1, 2], [2, 3], [4, 5]];
-    const spValues = [1, 2, 3];
+    const spValues = [[1, 2], [1, 2], [1, 2]];
 
     return ConstantHeadBoundary.create(
         id, geometry, name, layers, cells, spValues
@@ -23,7 +23,7 @@ test('ConstantHeadBoundary create', () => {
     const geometry = {type: 'LineString', coordinates: [[3, 4], [3, 5], [4, 5], [4, 3], [3, 4]]};
     const layers = [1, 2];
     const cells = [[1, 2], [2, 3], [4, 5]];
-    const spValues = [1, 2, 3];
+    const spValues = [[1, 2], [1, 2], [1, 2]];
 
     const constantHeadBoundary = ConstantHeadBoundary.create(
         id, geometry, name, layers, cells, spValues
@@ -91,9 +91,5 @@ test('ConstantHeadBoundary fromObject', () => {
 test('ConstantHeadBoundary schema validation', () => {
     const data = createConstantHeadBoundary().toObject();
     const schema = JSON_SCHEMA_URL + 'modflow/boundary/constantHeadBoundary';
-    validate(data, schema).then(response => expect(response)
-        .toEqual([true, null]))
-        .catch((error) => {
-            expect(error).toEqual('');
-        });
+    return expect(validate(data, schema)).resolves.toEqual([true, null]);
 });
