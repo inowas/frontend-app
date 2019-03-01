@@ -507,3 +507,11 @@ template {
 .rc-slider-track {
   background-color: #1EB1ED;
 }
+
+/*-------------------
+      SVG
+--------------------*/
+
+svg:not(:root) {
+  overflow: visible;
+}

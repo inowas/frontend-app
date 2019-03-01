@@ -19,7 +19,7 @@ import {buildPayload, deepMerge} from '../../shared/simpleTools/helpers';
 
 const navigation = [{
     name: 'Documentation',
-    path: 'https://inowas.hydro.tu-dresden.de/tools/t02-groundwater-mounding-hantush/',
+    path: 'https://inowas.com/tools/t02-groundwater-mounding-calculator/',
     icon: <Icon name="file"/>
 }];
 

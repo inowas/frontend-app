@@ -3,6 +3,9 @@ import React from 'react';
 import {Criterion} from 'core/model/mcda/criteria';
 import {Button, Grid, Icon, Input, Message, Segment, Table} from 'semantic-ui-react';
 import {SketchPicker} from 'react-color';
+import {dropData} from 'services/api';
+import CsvUpload from '../../../shared/simpleTools/upload/CsvUpload';
+import uuidv4 from 'uuid/v4';
 
 const styles = {
     popover: {
@@ -30,7 +33,14 @@ class CriteriaReclassificationDiscrete extends React.Component {
             criterion: criterion.toObject(),
             ruleToPickColorFor: false,
             selectedRule: null,
-            showInfo: true
+            showInfo: true,
+            uploadState: {
+                activeInput: null,
+                error: false,
+                errorMsg: [],
+                id: uuidv4(),
+                success: false
+            }
         }
     }
 
@@ -41,6 +51,19 @@ class CriteriaReclassificationDiscrete extends React.Component {
         this.setState({
             criterion: criterion.toObject(),
         });
+    }
+
+    saveRaster(criterion) {
+        dropData(
+            criterion.suitability.data,
+            response => {
+                criterion.suitability.url = response.filename;
+                this.props.onChange(criterion);
+            },
+            response => {
+                throw new Error(response);
+            }
+        );
     }
 
     handleDismiss = () => this.setState({showInfo: false});
@@ -77,11 +100,35 @@ class CriteriaReclassificationDiscrete extends React.Component {
     handleClickCalculate = () => {
         const criterion = this.props.criterion;
         criterion.calculateSuitability();
-        return this.props.onChange(criterion);
+        this.saveRaster(criterion);
     };
 
     handleCloseColorPicker = () => {
         this.setState({ruleToPickColorFor: false}, this.handleChange());
+    };
+
+    handleCsv = response => {
+        if (!response) {
+            return;
+        }
+
+        if (response.errors && response.errors.length > 0) {
+            throw new Error('ERROR HANDLING FILE UPLOAD');
+        }
+
+        const criterion = Criterion.fromObject(this.state.criterion);
+
+        response.data.forEach(row => {
+             const rules = criterion.rulesCollection.findByValue(row[0]);
+             if (rules.length > 0) {
+                 const rule = rules[0];
+                 rule.color = row[1];
+                 rule.name = row[2];
+                 rule.value = row[3];
+                 criterion.rulesCollection.update(rule);
+             }
+        });
+        return this.props.onChange(criterion);
     };
 
     renderTableRow(rule, key) {
@@ -132,7 +179,7 @@ class CriteriaReclassificationDiscrete extends React.Component {
     }
 
     render() {
-        const {criterion, showInfo} = this.state;
+        const {criterion, showInfo, uploadState} = this.state;
         const rules = criterion.rules;
 
         return (
@@ -162,6 +209,12 @@ class CriteriaReclassificationDiscrete extends React.Component {
                                 <Icon name='calculator'/>
                                 Perform Reclassification
                             </Button>
+                            <br />
+                            <CsvUpload
+                                baseClasses='ui icon button fluid left labeled'
+                                onUploaded={this.handleCsv}
+                                uploadState={uploadState}
+                            />
                         </Segment>
                     </Grid.Column>
                     <Grid.Column width={11}>

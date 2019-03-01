@@ -42,7 +42,7 @@ const Info = ({parameters}) => {
     }
 
     return (
-        <Message icon>
+        <Message icon info>
             <Icon name='info circle' color='blue' />
             <Message.Content>
                 <p>

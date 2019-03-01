@@ -36,7 +36,7 @@ const Info = ({parameters, settings}) => {
     const c = C0 * C;
 
     return (
-            <Message icon>
+            <Message icon info>
                 <Icon name='info circle' color='blue' />
                     <Message.Content>
                         {renderContent(settings, t, c, x)}

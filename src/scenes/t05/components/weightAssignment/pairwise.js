@@ -78,11 +78,7 @@ class PairwiseComparison extends React.Component {
         const weightAssignment = WeightAssignment.fromObject(this.state.wa);
         weightAssignment.weightsCollection = WeightsCollection.fromArray(newWeights);
         weightAssignment.calculateWeights();
-
-        this.props.handleChange({
-            name: 'weights',
-            value: weightAssignment
-        });
+        return this.props.handleChange(weightAssignment);
     };
 
     handleChangeSlider = id => value => {

@@ -1,25 +1,61 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import {Button, Form, Grid, Message, Radio, Segment} from 'semantic-ui-react';
+import {Button, Dimmer, Form, Grid, Loader, Message, Radio, Segment} from 'semantic-ui-react';
 import {GisMap} from 'core/model/mcda/gis';
 import ConstraintsMap from './constraintsMap';
+import {dropData} from 'services/api';
+import {MCDA} from 'core/model/mcda';
+import {retrieveRasters} from 'services/api/rasterHelper';
 
 class ConstraintsEditor extends React.Component {
     constructor(props) {
         super(props);
 
         this.state = {
-            constraints: props.constraints.toObject(),
+            constraints: props.mcda.constraints.toObject(),
+            isFetching: false,
             mode: 'map',
             showInfo: true
         }
     }
 
     componentWillReceiveProps(nextProps) {
-        this.setState({
-            constraints: nextProps.constraints.toObject()
-        });
+        const prevConstraints = this.props.mcda.constraints || null;
+        const constraints = nextProps.mcda.constraints;
+
+        if (!constraints.raster) {
+            return this.setState({
+                constraints: constraints.toObject()
+            })
+        }
+
+        if (constraints) {
+            this.constraintsToState(prevConstraints ? prevConstraints.toObject() : null, constraints.toObject());
+        }
     }
+
+    constraintsToState = (prevConstraints, constraints) => {
+        this.setState({
+            isFetching: true
+        });
+
+        const newConstraints = constraints;
+
+        const tasks = [
+            {
+                raster: constraints.raster,
+                oldUrl: prevConstraints && prevConstraints.raster ? prevConstraints.raster.url : '',
+                onSuccess: raster => newConstraints.raster = raster
+            }
+        ];
+
+        retrieveRasters(tasks, () => {
+            this.setState({
+                constraints: newConstraints,
+                isFetching: false
+            });
+        });
+    };
 
     handleDismiss = () => this.setState({showInfo: false});
 
@@ -28,10 +64,23 @@ class ConstraintsEditor extends React.Component {
             throw new Error('Constraints expected to be of type GisMap.');
         }
 
-        return this.props.handleChange({
-            name: 'constraints',
-            value: constraints
-        });
+        const mcda = this.props.mcda;
+        mcda.constraints = constraints;
+
+        if (!constraints.raster || !constraints.raster.data) {
+            return this.props.onChange(mcda);
+        }
+
+        dropData(
+            JSON.stringify(constraints.raster.data),
+            response => {
+                mcda.constraints.raster.url = response.filename;
+                this.props.onChange(mcda);
+            },
+            response => {
+                throw new Error(response)
+            }
+        );
     };
 
     onBlur = () => {
@@ -42,11 +91,7 @@ class ConstraintsEditor extends React.Component {
         const constraints = GisMap.fromObject(this.state.constraints);
 
         constraints.calculateActiveCells();
-        this.handleChange(constraints);
-
-        this.setState({
-            mode: 'raster'
-        });
+        return this.handleChange(constraints);
     };
 
     onChangeMode = (e, {name, value}) => this.setState({
@@ -55,10 +100,15 @@ class ConstraintsEditor extends React.Component {
 
     render() {
         const {readOnly} = this.props;
-        const {constraints, mode, showInfo} = this.state;
+        const {constraints, isFetching, mode, showInfo} = this.state;
 
         return (
             <div>
+                {isFetching &&
+                <Dimmer active inverted>
+                    <Loader indeterminate>Preparing Files</Loader>
+                </Dimmer>
+                }
                 {showInfo &&
                 <Message onDismiss={this.handleDismiss}>
                     <Message.Header>Global Constraints</Message.Header>
@@ -100,7 +150,7 @@ class ConstraintsEditor extends React.Component {
                                         name='mode'
                                         value='cells'
                                         checked={mode === 'cells'}
-                                        disabled={!constraints.cells || constraints.cells.length === 0}
+                                        disabled={!constraints.activeCells || constraints.activeCells.length === 0}
                                         onChange={this.onChangeMode}
                                     />
                                 </Form.Field>
@@ -128,9 +178,9 @@ class ConstraintsEditor extends React.Component {
                     </Grid.Column>
                     <Grid.Column width={11}>
                         <ConstraintsMap
-                            map={this.props.constraints}
+                            map={GisMap.fromObject(constraints)}
                             onChange={this.handleChange}
-                            mode={this.state.mode}
+                            mode={mode}
                             readOnly={readOnly}
                         />
                     </Grid.Column>
@@ -142,8 +192,8 @@ class ConstraintsEditor extends React.Component {
 }
 
 ConstraintsEditor.propTypes = {
-    handleChange: PropTypes.func.isRequired,
-    constraints: PropTypes.instanceOf(GisMap).isRequired,
+    onChange: PropTypes.func.isRequired,
+    mcda: PropTypes.instanceOf(MCDA).isRequired,
     readOnly: PropTypes.bool
 };
 

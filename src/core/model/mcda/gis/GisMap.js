@@ -29,11 +29,11 @@ class GisMap {
         return cm;
     }
 
-    get activeCells() {
+    get cells() {
         return this._activeCells;
     }
 
-    set activeCells(value) {
+    set cells(value) {
         this._activeCells = value;
     }
 
@@ -71,7 +71,7 @@ class GisMap {
 
     toObject() {
         return {
-            cells: this.activeCells.toArray(),
+            cells: this.cells.toArray(),
             boundingBox: this.boundingBox ? this.boundingBox.toArray() : null,
             areas: this.areasCollection.toArray(),
             gridSize: this.gridSize.toObject(),
@@ -80,7 +80,7 @@ class GisMap {
     }
 
     calculateActiveCells() {
-        const activeCells = new Cells([]);
+        //const activeCells = new ActiveCells([]);
         const gridCells = getGridCells(this.boundingBox, this.gridSize);
         const raster = new Raster();
         raster.data = Array(this.gridSize.nY).fill(0).map(() => Array(this.gridSize.nX).fill(1));
@@ -105,14 +105,14 @@ class GisMap {
                         return cellIsSuitable;
                     }
                 });
-                if (cellIsSuitable) {
+                /*if (cellIsSuitable) {
                     activeCells.addCell([cell.x, cell.y]);
-                }
+                }*/
                 raster.data[cell.y][cell.x] = cellIsSuitable ? 1 : 0;
             }
         });
 
-        this.activeCells = activeCells;
+        //this.activeCells = activeCells;
         this.raster = raster;
     }
 }

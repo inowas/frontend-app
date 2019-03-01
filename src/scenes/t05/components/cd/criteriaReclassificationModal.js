@@ -133,6 +133,7 @@ class CriteriaReclassificationModal extends React.Component {
                                 value={rule.to}
                             />
                         </Form.Group>
+                        {!this.props.valueIsStatic &&
                         <Form.Group widths='equal'>
                             <Form.Select
                                 fluid
@@ -169,6 +170,7 @@ class CriteriaReclassificationModal extends React.Component {
                                 />
                             }
                         </Form.Group>
+                        }
                     </Form>
                     {rule.type === 'calc' &&
                     <Message>
@@ -197,7 +199,8 @@ class CriteriaReclassificationModal extends React.Component {
 CriteriaReclassificationModal.propTypes = {
     rule: PropTypes.instanceOf(Rule).isRequired,
     onSave: PropTypes.func.isRequired,
-    onClose: PropTypes.func.isRequired
+    onClose: PropTypes.func.isRequired,
+    valueIsStatic: PropTypes.bool
 };
 
 

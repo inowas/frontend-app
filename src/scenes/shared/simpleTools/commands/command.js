@@ -2,7 +2,7 @@ import uuid from 'uuid';
 
 class Command {
 
-    metadata = [];
+    metadata = {};
     uuid = uuid();
 
     static createToolInstance = (payload) => {
@@ -11,6 +11,10 @@ class Command {
 
     static updateToolInstance = (payload) => {
         return new Command('updateToolInstance', payload);
+    };
+
+    static updateToolInstanceMetadata = payload => {
+        return new Command('updateToolInstanceMetadata', payload);
     };
 
     constructor(name, payload) {
