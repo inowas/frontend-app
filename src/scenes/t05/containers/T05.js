@@ -266,6 +266,7 @@ class T05 extends React.Component {
                             <ToolMetaData
                                 tool={tool} readOnly={readOnly} onChange={this.handleUpdateMetaData}
                                 onSave={this.handleSaveMetadata}
+                                defaultButton={false}
                                 saveButton={false}
                                 isDirty={isDirty}
                             />

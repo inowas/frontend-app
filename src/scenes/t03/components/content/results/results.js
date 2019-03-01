@@ -154,7 +154,7 @@ class Results extends React.Component {
                                         <Icon name='dropdown'/>
                                         Results Map
                                     </Accordion.Title>
-                                    <Accordion.Content active={activeIndex === 0} >
+                                    <Accordion.Content active={activeIndex === 0}>
                                             {data &&
                                             <ResultsMap
                                                 activeCell={[selectedCol, selectedRow]}

@@ -1,6 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import {Breadcrumb, Button, Checkbox, Form, Grid, Header, Modal} from 'semantic-ui-react';
+import {Breadcrumb, Button, Checkbox, Form, Grid, Modal} from 'semantic-ui-react';
 import {withRouter} from 'react-router-dom';
 
 class ToolMetaData extends React.Component {
@@ -43,14 +43,29 @@ class ToolMetaData extends React.Component {
                 Tools
             </Breadcrumb.Section>
             <Breadcrumb.Divider icon='right angle'/>
-            <Breadcrumb.Section>{this.props.tool.tool}</Breadcrumb.Section>
+            <Breadcrumb.Section link>{this.state.tool.name}</Breadcrumb.Section>
             <Breadcrumb.Divider icon='right angle'/>
-            <Breadcrumb.Section>
+            <Breadcrumb.Section active>
                 {this.state.tool.name}
                 {!this.props.readOnly && <Button basic size={'small'} icon='pencil' onClick={this.handleButtonClick}/>}
             </Breadcrumb.Section>
         </Breadcrumb>
     );
+
+    renderDefaultButton = () => {
+        const defaultButton = typeof this.props.defaultButton === 'boolean' ? this.props.defaultButton : true;
+        if (!this.props.readOnly && defaultButton) {
+            return (
+                <Button
+                    floated={'right'}
+                    onClick={this.handleReset}
+                    disabled={!this.props.isDirty || false}
+                >
+                    Default
+                </Button>
+            )
+        }
+    };
 
     renderSaveButton = () => {
         const saveButton = typeof this.props.saveButton === 'boolean' ? this.props.saveButton : true;
@@ -76,9 +91,9 @@ class ToolMetaData extends React.Component {
             <div>
                 <Grid padded>
                     <Grid.Column style={{paddingTop: 0, paddingBottom: 0}}>
-                        <Header as={'h1'} size={'large'}>{this.state.tool.name}</Header>
                         {this.renderBreadcrumbs()}
                         {this.renderSaveButton()}
+                        {this.renderDefaultButton()}
                     </Grid.Column>
                 </Grid>
 
