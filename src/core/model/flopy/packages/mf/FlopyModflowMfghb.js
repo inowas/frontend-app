@@ -1,5 +1,28 @@
 import FlopyModflowPackage from './FlopyModflowPackage';
 
+/*
+https://modflowpy.github.io/flopydoc/mfghb.html
+
+stress_period_data =
+{0: [
+    [lay, row, col, stage, cond],
+    [lay, row, col, stage, cond],
+    [lay, row, col, stage, cond],
+    ],
+1:  [
+    [lay, row, col, stage, cond],
+    [lay, row, col, stage, cond],
+    [lay, row, col, stage, cond],
+    ], ...
+kper:
+    [
+    [lay, row, col, stage, cond],
+    [lay, row, col, stage, cond],
+    [lay, row, col, stage, cond],
+    ]
+}
+ */
+
 export default class FlopyModflowMfghb extends FlopyModflowPackage {
 
     _ipakcb = null;

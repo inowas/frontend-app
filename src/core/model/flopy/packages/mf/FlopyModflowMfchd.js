@@ -1,5 +1,27 @@
 import FlopyModflowPackage from './FlopyModflowPackage';
 
+/*
+https://modflowpy.github.io/flopydoc/mfchd.html
+
+stress_period_data =
+{0: [
+    [lay, row, col, shead, ehead],
+    [lay, row, col, shead, ehead],
+    [lay, row, col, shead, ehead]
+    ],
+1:  [
+    [lay, row, col, shead, ehead],
+    [lay, row, col, shead, ehead],
+    [lay, row, col, shead, ehead]
+    ], ...
+kper:
+    [
+    [lay, row, col, shead, ehead],
+    [lay, row, col, shead, ehead],
+    [lay, row, col, shead, ehead]
+    ]
+}
+ */
 export default class FlopyModflowMfchd extends FlopyModflowPackage {
 
     _stress_period_data = null;
