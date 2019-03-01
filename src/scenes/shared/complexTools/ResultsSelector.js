@@ -135,15 +135,15 @@ class ResultsSelector extends React.Component {
                                         onChange={this.handleChangeType}
                                     />
                                 </Form.Group>
-                                    <Form.Select
-                                        loading={!(this.props.soilmodel instanceof Soilmodel)}
-                                        style={{zIndex: 1001}}
-                                        fluid
-                                        options={this.layerOptions()}
-                                        value={layer}
-                                        name={'affectedLayers'}
-                                        onChange={this.handleChangeLayer}
-                                    />
+                                <Form.Select
+                                    loading={!(this.props.soilmodel instanceof Soilmodel)}
+                                    style={{zIndex: 1001}}
+                                    fluid
+                                    options={this.layerOptions()}
+                                    value={layer}
+                                    name={'affectedLayers'}
+                                    onChange={this.handleChangeLayer}
+                                />
                             </Form>
                         </Segment>
                     </Grid.Column>

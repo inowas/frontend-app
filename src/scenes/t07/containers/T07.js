@@ -353,25 +353,21 @@ class T07 extends React.Component {
         const {id, property} = this.props.match.params;
         return (
             <AppContainer navbarItems={navigation}>
+                <ToolMetaData
+                    isDirty={false}
+                    onChange={this.onChangeMetaData}
+                    readOnly={false}
+                    tool={{
+                        type: 'T07',
+                        name: this.props.scenarioAnalysis.name,
+                        description: this.props.scenarioAnalysis.description,
+                        public: this.props.scenarioAnalysis.public
+                    }}
+                    defaultButton={false}
+                    saveButton={false}
+                    onSave={this.saveMetaData}
+                />
                 <Grid padded>
-                    <Grid.Row>
-                        <Grid.Column width={3}/>
-                        <Grid.Column width={13}>
-                            <ToolMetaData
-                                isDirty={false}
-                                onChange={this.onChangeMetaData}
-                                readOnly={false}
-                                tool={{
-                                    type: 'T07',
-                                    name: this.props.scenarioAnalysis.name,
-                                    description: this.props.scenarioAnalysis.description,
-                                    public: this.props.scenarioAnalysis.public
-                                }}
-                                saveButton={false}
-                                onSave={this.saveMetaData}
-                            />
-                        </Grid.Column>
-                    </Grid.Row>
                     <Grid.Row>
                         <Grid.Column width={3}>
                             <ToolNavigation navigationItems={menuItems}/>

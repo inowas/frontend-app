@@ -12,7 +12,7 @@ import {
     XAxis,
     YAxis,
 } from 'recharts';
-import {Button, Grid, Segment} from 'semantic-ui-react';
+import {Button, Grid, Icon, Segment} from 'semantic-ui-react';
 import {exportChartData, exportChartImage, getParameterValues} from '../../shared/simpleTools/helpers';
 
 const styles = {
@@ -21,21 +21,9 @@ const styles = {
     },
     chart: {
         top: 20,
-        right: 40,
+        right: 20,
         left: 20,
-        bottom: 20
-    },
-    diagramLabel: {
-        position: 'absolute',
-        top: '40px',
-        left: '110px',
-        background: '#EFF3F6',
-        opacity: 0.9
-    },
-    downloadButtons: {
-        position: 'absolute',
-        top: '45px',
-        right: '60px'
+        bottom: 0
     }
 };
 
@@ -115,7 +103,7 @@ const Chart = ({settings, parameters}) => {
 
     if (variable === 'x') {
         xAxis = (
-            <XAxis type="number" dataKey="x"  tick={{fill: '#B5B5B5', fontSize: 'small', transform: 'translate(0, 5)'}}>
+            <XAxis type="number" dataKey="x"  tick={{fontSize: 'small', transform: 'translate(0, 5)'}}>
                 <Label
                     fill={'#4C4C4C'}
                     value='x [m]'
@@ -134,20 +122,20 @@ const Chart = ({settings, parameters}) => {
         <div>
             <Grid>
                 <Grid.Column>
-                    <ResponsiveContainer width={'100%'} aspect={1.5}>
+                    <ResponsiveContainer width={'100%'} aspect={2.5}>
                         <LineChart
                             data={data}
                             margin={styles.chart}
                             ref={(chart) => currentChart = chart}
                         >
                             {xAxis}
-                            <YAxis type="number" tickLine={false} tick={{fill: '#B5B5B5', fontSize: 'small', transform: 'translate(-3, 0)'}}>
+                            <YAxis type="number" tickLine={false} tick={{fontSize: 'small', transform: 'translate(-3, 0)'}}>
                                 <Label
                                     angle={270}
                                     fill={'#4C4C4C'}
                                     position='left'
                                     style={{textAnchor: 'center', fontSize: '13px'}}
-                                    value={'h-hi [m]'}
+                                    value={'h-hᵢ [m]'}
                                 />
                             </YAxis>
                             <CartesianGrid strokeDasharray="3 3"  />
@@ -167,22 +155,22 @@ const Chart = ({settings, parameters}) => {
                             />
                         </LineChart>
                     </ResponsiveContainer>
-                    <Segment raised style={styles.diagramLabel}>
-                        <p>h<sub>max</sub>=<strong>{hMax.toFixed(2)}</strong>m</p>
+                    <Segment raised className={'diagramLabel topRight'}>
+                        <p>h<sub>max</sub>&nbsp;=&nbsp;<strong>{hMax.toFixed(2)}</strong>&nbsp;m</p>
                     </Segment>
-                    <div style={styles.downloadButtons}>
-                        <Button
-                            size={'tiny'}
-                            color={'orange'}
-                            content='JPG'
-                            onClick={() => exportChartImage(currentChart)}
-                        />
-                        <Button
-                            size={'tiny'}
-                            color={'orange'}
-                            content='CSV'
-                            onClick={() => exportChartData(currentChart)}
-                        />
+                    <div className='downloadButtons'>
+                        <Button compact basic icon
+                                size={'small'}
+                                onClick={() => exportChartImage(currentChart)}
+                        >
+                            <Icon name='download' /> JPG
+                        </Button>
+                        <Button compact basic icon
+                                size={'small'}
+                                onClick={() => exportChartData(currentChart)}
+                        >
+                            <Icon name='download' /> CSV
+                        </Button>
                     </div>
                 </Grid.Column>
             </Grid>

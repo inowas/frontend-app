@@ -12,7 +12,7 @@ export const defaults = () => {
             parameters: [{
                 order: 0,
                 id: 'k',
-                name: 'Hydraulic conductivity, K [m/d]',
+                name: 'Hydraulic conductivity<br/>K [m/d]',
                 min: 1,
                 validMin: x => x > 0,
                 max: 100,
@@ -22,7 +22,7 @@ export const defaults = () => {
             }, {
                 order: 1,
                 id: 'b',
-                name: 'Aquifer thickness below sea level, b [m]',
+                name: 'Aquifer thickness below sea level<br/>b [m]',
                 min: 10,
                 validMin: x => x > 0,
                 max: 100,
@@ -32,7 +32,7 @@ export const defaults = () => {
             }, {
                 order: 2,
                 id: 'q',
-                name: 'Offshore discharge rate, q [m³/d]',
+                name: 'Offshore discharge rate<br/>q [m³/d]',
                 min: 0.1,
                 validMin: x => x > 0,
                 max: 10,
@@ -42,7 +42,7 @@ export const defaults = () => {
             }, {
                 order: 3,
                 id: 'Q',
-                name: 'Well pumping rate, Q [m³/d]',
+                name: 'Well pumping rate<br/>Q [m³/d]',
                 min: 0,
                 validMin: x => x >= 0,
                 max: 10000,
@@ -52,7 +52,7 @@ export const defaults = () => {
             }, {
                 order: 4,
                 id: 'xw',
-                name: 'Distance from well to shoreline, xw [m]',
+                name: 'Distance from well to shoreline<br/>x<sub>w</sub> [m]',
                 min: 1000,
                 validMin: x => x > 0,
                 max: 5000,
@@ -62,7 +62,7 @@ export const defaults = () => {
             }, {
                 order: 5,
                 id: 'rhof',
-                name: 'Density of freshwater [g/cm³]',
+                name: 'Density of freshwater<br/>ρ<sub>f</sub> [g/cm³]',
                 min: 0.9,
                 validMin: x => x >= 0.9,
                 max: 1.03,
@@ -73,7 +73,7 @@ export const defaults = () => {
             }, {
                 order: 6,
                 id: 'rhos',
-                name: 'Density of saltwater [g/cm³]',
+                name: 'Density of saltwater<br/>ρ<sub>s</sub> [g/cm³]',
                 min: 0.9,
                 validMin: x => x >= 0.9,
                 max: 1.03,

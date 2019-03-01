@@ -12,7 +12,7 @@ export const defaults = () => {
             parameters: [{
                 order: 0,
                 id: 'W',
-                name: 'Average infiltration rate, W [m/d]',
+                name: 'Average infiltration rate<br/>W [m/d]',
                 min: 0.001,
                 max: 0.01,
                 value: 0.009,
@@ -21,7 +21,7 @@ export const defaults = () => {
             }, {
                 order: 1,
                 id: 'K',
-                name: 'Hydraulic conductivity, K [m/d]',
+                name: 'Hydraulic conductivity<br/>K [m/d]',
                 min: 0.1,
                 max: 1000,
                 value: 10.1,
@@ -30,7 +30,7 @@ export const defaults = () => {
             }, {
                 order: 2,
                 id: 'ne',
-                name: 'Effective porosity, n [-]',
+                name: 'Effective porosity<br/>n [-]',
                 min: 0,
                 max: 0.5,
                 value: 0.35,
@@ -39,7 +39,7 @@ export const defaults = () => {
             }, {
                 order: 3,
                 id: 'L',
-                name: 'Aquifer length, L´ [m]',
+                name: 'Aquifer length<br/>L´ [m]',
                 min: 0,
                 max: 1000,
                 value: 500,
@@ -48,7 +48,7 @@ export const defaults = () => {
             }, {
                 order: 4,
                 id: 'hL',
-                name: 'Downstream fixed head boundary, h<sub>L</sub>´ [m]',
+                name: 'Downstream fixed head boundary<br/>h<sub>L</sub>´ [m]',
                 min: 0,
                 max: 10,
                 value: 2,
@@ -57,7 +57,7 @@ export const defaults = () => {
             }, {
                 order: 5,
                 id: 'xi',
-                name: 'Initial position, x<sub>i</sub> [m]',
+                name: 'Initial position<br/>x<sub>i</sub> [m]',
                 min: 0,
                 max: 1000,
                 value: 50,
@@ -66,7 +66,7 @@ export const defaults = () => {
             }, {
                 order: 6,
                 id: 'xe',
-                name: 'Arrival location, x<sub>e</sub> [m]',
+                name: 'Arrival location<br/>x<sub>e</sub> [m]',
                 min: 1,
                 max: 1000,
                 value: 500,

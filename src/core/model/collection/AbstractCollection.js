@@ -63,8 +63,8 @@ class AbstractCollection {
         return this.findBy('id', value, {first: true});
     }
 
-    orderBy(property, order = 'asc') {
-        this._items = _.orderBy(this._items, [property], [order]);
+    orderBy(properties, orders = 'asc') {
+        this._items = _.orderBy(this._items, Array.isArray(properties) ? properties : [properties], Array.isArray(orders) ? orders : [orders]);
         return this;
     }
 

@@ -208,25 +208,21 @@ class T03 extends React.Component {
         const {id, property, type} = this.props.match.params;
         return (
             <AppContainer navbarItems={navigation}>
+                <ToolMetaData
+                    isDirty={false}
+                    onChange={this.onChangeMetaData}
+                    readOnly={false}
+                    tool={{
+                        type: 'T03',
+                        name: this.props.model.name,
+                        description: this.props.model.description,
+                        public: this.props.model.public
+                    }}
+                    defaultButton={false}
+                    saveButton={false}
+                    onSave={this.saveMetaData}
+                />
                 <Grid padded>
-                    <Grid.Row>
-                        <Grid.Column width={3}/>
-                        <Grid.Column width={13}>
-                            <ToolMetaData
-                                isDirty={false}
-                                onChange={this.onChangeMetaData}
-                                readOnly={false}
-                                tool={{
-                                    type: 'T03',
-                                    name: this.props.model.name,
-                                    description: this.props.model.description,
-                                    public: this.props.model.public
-                                }}
-                                saveButton={false}
-                                onSave={this.saveMetaData}
-                            />
-                        </Grid.Column>
-                    </Grid.Row>
                     <Grid.Row>
                         <Grid.Column width={3}>
                             <ToolNavigation navigationItems={this.state.menuItems}/>

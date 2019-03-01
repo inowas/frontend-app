@@ -15,7 +15,7 @@ const Info = ({parameters}) => {
     const I = calc.calcI({dz, k, z0, l, w, theta, x, df, ds});
 
     return (
-        <Message icon>
+        <Message icon info>
             <Icon name='info circle' color='blue' />
             <Message.Content>
                 <p>

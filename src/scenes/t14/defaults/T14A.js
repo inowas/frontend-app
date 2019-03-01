@@ -12,7 +12,7 @@ export const defaults = () => {
             parameters: [{
                 order: 0,
                 id: 'Qw',
-                name: 'Pumping rate, Q' + 'w'.sub() + ' [m' + '3'.sup() + '/d]',
+                name: 'Pumping rate<br/>Q' + 'w'.sub() + ' [m' + '3'.sup() + '/d]',
                 min: 1,
                 validMin: x => x > 0,
                 max: 1000,
@@ -22,7 +22,7 @@ export const defaults = () => {
             }, {
                 order: 1,
                 id: 't',
-                name: 'Duration of pumping, t [d]',
+                name: 'Duration of pumping<br/>t [d]',
                 min: 1,
                 validMin: x => x > 1,
                 max: 500,
@@ -32,7 +32,7 @@ export const defaults = () => {
             }, {
                 order: 2,
                 id: 'S',
-                name: 'Aquifer storage coefficient, S [-]',
+                name: 'Aquifer storage coefficient<br/>S [-]',
                 min: 0.1,
                 validMin: x => x > 0,
                 max: 0.5,
@@ -43,7 +43,7 @@ export const defaults = () => {
             }, {
                 order: 3,
                 id: 'T',
-                name: 'Aquifer transmissivity, T [m' + '2'.sup() + '/d]',
+                name: 'Aquifer transmissivity<br/>T [m' + '2'.sup() + '/d]',
                 min: 1000,
                 validMin: x => x > 0,
                 max: 3000,
@@ -53,7 +53,7 @@ export const defaults = () => {
             }, {
                 order: 4,
                 id: 'd',
-                name: 'Distance from stream to well, d [m]',
+                name: 'Distance from stream to well<br/>d [m]',
                 min: 200,
                 validMin: x => x > 0,
                 max: 1000,
