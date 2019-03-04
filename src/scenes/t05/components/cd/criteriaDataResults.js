@@ -184,6 +184,7 @@ class CriteriaDataResults extends React.Component {
                     <CriteriaRasterMap
                         raster={raster}
                         showBasicLayer={showBasicLayer}
+                        showButton={true}
                         legend={legend}
                     />
                 }

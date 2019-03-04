@@ -180,6 +180,7 @@ class CriteriaRasterUpload extends React.Component {
                             onChange={this.handleChangeRaster}
                             raster={raster}
                             showBasicLayer={showBasicLayer}
+                            showButton={true}
                             legend={this.props.criterion.generateLegend()}
                         />
                         }
