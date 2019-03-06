@@ -20220,8 +20220,8 @@ ol.ui.horizontal.list li:before,
          Site Overrides
 *******************************/
 
-.ui.large.breadcrumb a.section {
-  font-size: 1rem;
+.ui.breadcrumb .active.section {
+  font-size: 1.14285714rem;
 }
 /*!
  * # Semantic UI undefined - Form

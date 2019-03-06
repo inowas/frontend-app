@@ -5,6 +5,20 @@ import ParameterSlider from 'scenes/shared/simpleTools/parameterSlider';
 import {Button, Grid} from 'semantic-ui-react';
 import SliderParameter from './simpleTools/parameterSlider/SliderParameter';
 
+const styles = {
+    row: {
+        paddingBottom: '0',
+    },
+    column: {
+        height: '55px',
+        paddingRight: '1.8rem',
+        verticalAlign: 'top'
+    },
+    defaultButton: {
+        width: '100px'
+    }
+};
+
 class Parameters extends React.Component {
 
     constructor(props) {
@@ -47,9 +61,9 @@ class Parameters extends React.Component {
 
         return (
             <Grid verticalAlign='middle'>
-                <Grid.Row>
-                    <Grid.Column textAlign='right'>
-                        <Button onClick={this.props.handleReset}>Default</Button>
+                <Grid.Row style={styles.row}>
+                    <Grid.Column textAlign='right' style={styles.column}>
+                        <Button onClick={this.props.handleReset} style={styles.defaultButton}>Default</Button>
                     </Grid.Column>
                 </Grid.Row>
                 {params}

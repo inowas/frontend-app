@@ -2,6 +2,6 @@
          Site Overrides
 *******************************/
 
-.ui.large.breadcrumb a.section {
-    font-size: @medium;
+.ui.breadcrumb .active.section {
+    font-size: @large;
 }

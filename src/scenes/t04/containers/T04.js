@@ -40,9 +40,9 @@ class T04 extends React.Component {
     };
 
     renderBreadcrumbs = () => (
-        <Breadcrumb size='large'>
+        <Breadcrumb>
             <Breadcrumb.Section link onClick={() => this.props.history.push('/tools')}>Tools</Breadcrumb.Section>
-            <Breadcrumb.Divider icon='right angle'/>
+            <Breadcrumb.Divider icon='right chevron'/>
             <Breadcrumb.Section active>T04. Database for GIS Based Site Suitability Mapping</Breadcrumb.Section>
         </Breadcrumb>
     );
