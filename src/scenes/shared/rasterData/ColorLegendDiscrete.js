@@ -2,10 +2,17 @@ import PropTypes from 'prop-types';
 import React from 'react';
 
 const styles = {
+    horizontal: {
+        height: '12px'
+    },
     legend: {
         margin: '5px',
         padding: 0,
         listStyle: 'none'
+    },
+    legendLi: {
+        float: 'left',
+        marginRight: '10px'
     },
     legendSpan: {
         float: 'left',
@@ -25,7 +32,24 @@ const styles = {
 
 class ColorLegend extends React.Component {
     render() {
-        const {legend} = this.props;
+        const {horizontal, legend, unit} = this.props;
+
+        if (horizontal) {
+            return (
+                <div>
+                    <div style={styles.horizontal}>
+                        <ul style={styles.legend}>
+                            {legend.map((item, index) => <li key={index} style={styles.legendLi}>
+                            <span style={{
+                                ...styles.legendSpan,
+                                backgroundColor: item.color
+                            }}/> {item.label} {unit}
+                            </li>)}
+                        </ul>
+                    </div>
+                </div>
+            );
+        }
 
         return (
             <div>
@@ -36,7 +60,7 @@ class ColorLegend extends React.Component {
                             <span style={{
                                 ...styles.legendSpan,
                                 backgroundColor: item.color
-                            }}/> {item.label}
+                            }}/> {item.label} {unit}
                             </li>
                         )}
                     </ul>
@@ -47,7 +71,9 @@ class ColorLegend extends React.Component {
 }
 
 ColorLegend.propTypes = {
-    legend: PropTypes.array.isRequired
+    horizontal: PropTypes.bool,
+    legend: PropTypes.array.isRequired,
+    unit: PropTypes.string
 };
 
 export default ColorLegend;

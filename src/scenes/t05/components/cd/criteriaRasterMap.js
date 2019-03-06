@@ -11,6 +11,8 @@ import {EditControl} from 'react-leaflet-draw';
 import {getStyle} from '../../../t03/components/maps';
 import {BoundingBox} from 'core/model/geometry';
 import Rainbow from '../../../../../node_modules/rainbowvis.js/rainbowvis';
+import RasterDataImage from '../../../shared/rasterData/rasterDataImage';
+import {Button, Icon} from 'semantic-ui-react';
 
 const options = {
     edit: {
@@ -29,7 +31,23 @@ const options = {
     }
 };
 
+const maximumGridCells = 10000;
+
 class CriteriaRasterMap extends React.Component {
+    constructor(props) {
+        super(props);
+
+        this.state = {
+            showMap: props.raster.gridSize.nX * props.raster.gridSize.nY <= maximumGridCells
+        }
+    }
+
+    componentWillReceiveProps(nextProps) {
+        this.setState({
+            showMap: nextProps.showBasicLayer === true || nextProps.raster.gridSize.nX * nextProps.raster.gridSize.nY <= maximumGridCells
+        });
+    }
+
     onEditPath = e => {
         const layers = e.layers;
 
@@ -40,6 +58,10 @@ class CriteriaRasterMap extends React.Component {
             this.props.onChange(raster);
         });
     };
+
+    onToggleShowMap = () => this.setState(prevState => ({
+        showMap: !prevState.showMap
+    }));
 
     renderLegend(rainbow) {
         if (rainbow instanceof Rainbow) {
@@ -60,48 +82,85 @@ class CriteriaRasterMap extends React.Component {
     };
 
     render() {
-        const {raster} = this.props;
+        const {raster, showButton} = this.props;
         const {boundingBox, gridSize} = this.props.raster;
 
-        return (
-            <Map
-                style={{
-                    width: '100%',
-                    height: this.props.mapHeight || '600px'
-                }}
-                bounds={boundingBox.getBoundsLatLng()}
-            >
-                {this.props.showBasicLayer &&
-                <BasicTileLayer/>
-                }
-                {!!this.props.onChange &&
-                <FeatureGroup>
-                    <EditControl
-                        position="bottomright"
-                        onEdited={this.onEditPath}
-                        {...options}
-                    />
-                    <Rectangle
-                        bounds={boundingBox.getBoundsLatLng()}
-                        {...getStyle('bounding_box')}
-                    />
-                </FeatureGroup>
-                }
-                {raster.data.length > 0 &&
+        if (!this.state.showMap) {
+            return (
                 <div>
-                    <CanvasHeatMapOverlay
-                        nX={gridSize.nX}
-                        nY={gridSize.nY}
-                        rainbow={this.props.legend}
-                        dataArray={createGridData(raster.data, gridSize.nX, gridSize.nY)}
-                        bounds={boundingBox.getBoundsLatLng()}
-                        opacity={0.75}
-                        sharpening={10}
+                    {showButton &&
+                    <Button
+                        icon
+                        fluid
+                        onClick={this.onToggleShowMap}
+                        labelPosition='left'
+                    >
+                        <Icon name='map'/>
+                        Show on map (might take a while to render because of big grid size)
+                    </Button>
+                    }
+                    <RasterDataImage
+                        data={raster.data}
+                        legend={this.props.legend}
+                        unit=''
+                        gridSize={gridSize}
                     />
-                    {this.props.showLegend && this.renderLegend(this.props.legend)}
                 </div>
+            );
+        }
+
+        return (
+            <div>
+                {showButton && gridSize.nX * gridSize.nY > maximumGridCells &&
+                <Button
+                    icon
+                    fluid
+                    onClick={this.onToggleShowMap}
+                    labelPosition='left'
+                >
+                    <Icon name='image'/>
+                    Show as Image (better performance)
+                </Button>
                 }
-            </Map>
+                <Map
+                    style={{
+                        width: '100%',
+                        height: this.props.mapHeight || '600px'
+                    }}
+                    bounds={boundingBox.getBoundsLatLng()}
+                >
+                    {this.props.showBasicLayer &&
+                    <BasicTileLayer/>
+                    }
+                    {!!this.props.onChange &&
+                    <FeatureGroup>
+                        <EditControl
+                            position="bottomright"
+                            onEdited={this.onEditPath}
+                            {...options}
+                        />
+                        <Rectangle
+                            bounds={boundingBox.getBoundsLatLng()}
+                            {...getStyle('bounding_box')}
+                        />
+                    </FeatureGroup>
+                    }
+                    {raster.data.length > 0 &&
+                    <div>
+                        <CanvasHeatMapOverlay
+                            nX={gridSize.nX}
+                            nY={gridSize.nY}
+                            rainbow={this.props.legend}
+                            dataArray={createGridData(raster.data, gridSize.nX, gridSize.nY)}
+                            bounds={boundingBox.getBoundsLatLng()}
+                            opacity={0.75}
+                            sharpening={10}
+                        />
+                        {this.props.showLegend && this.renderLegend(this.props.legend)}
+                    </div>
+                    }
+                </Map>
+            </div>
         );
     }
 }
@@ -110,6 +169,7 @@ CriteriaRasterMap.propTypes = {
     onChange: PropTypes.func,
     raster: PropTypes.instanceOf(Raster).isRequired,
     showBasicLayer: PropTypes.bool.isRequired,
+    showButton: PropTypes.bool,
     showLegend: PropTypes.bool,
     legend: PropTypes.oneOfType([PropTypes.array, PropTypes.instanceOf(Rainbow)]).isRequired,
     mapHeight: PropTypes.string

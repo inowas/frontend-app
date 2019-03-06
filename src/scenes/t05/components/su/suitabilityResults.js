@@ -176,6 +176,7 @@ NODATA_VALUE -9999
                     <CriteriaRasterMap
                         raster={raster}
                         showBasicLayer={showBasicLayer}
+                        showButton={true}
                         legend={legend}
                     />
                     }
