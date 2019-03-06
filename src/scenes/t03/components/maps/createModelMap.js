@@ -8,7 +8,7 @@ import md5 from 'md5';
 import ActiveCellsLayer from 'services/geoTools/activeCellsLayer';
 import {BasicTileLayer} from 'services/geoTools/tileLayers';
 import {Icon, Message} from 'semantic-ui-react';
-import {ActiveCells, BoundingBox, Geometry, GridSize} from 'core/model/geometry';
+import {Cells, BoundingBox, Geometry, GridSize} from 'core/model/geometry';
 import {getStyle} from './index';
 import {pure} from 'recompose';
 
@@ -23,7 +23,7 @@ class CreateModelMap extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            activeCells: null,
+            cells: null,
             boundingBox: null,
             geometry: null,
             gridSize: props.gridSize.toObject(),
@@ -57,16 +57,16 @@ class CreateModelMap extends React.Component {
 
         this.setState({calculating: true});
         this.calculate(geometry, boundingBox, gridSize)
-            .then(activeCells => this.setState({
-                    activeCells: activeCells.toArray(),
+            .then(cells => this.setState({
+                    cells: cells.toArray(),
                     gridSize: gridSize.toObject(),
                     calculating: false
-                }, this.handleChange({activeCells, boundingBox, geometry})
+                }, this.handleChange({cells: cells, boundingBox, geometry})
             ));
     };
 
-    handleChange = ({activeCells, boundingBox, geometry}) => {
-        return this.props.onChange({activeCells, boundingBox, geometry});
+    handleChange = ({cells, boundingBox, geometry}) => {
+        return this.props.onChange({cells, boundingBox, geometry});
     };
 
     onCreated = e => {
@@ -77,14 +77,14 @@ class CreateModelMap extends React.Component {
 
         this.setState({calculating: true});
         this.calculate(geometry, boundingBox, gridSize).then(
-            activeCells => {
+            cells => {
                 return this.setState({
-                        activeCells: activeCells.toArray(),
+                        cells: cells.toArray(),
                         boundingBox: boundingBox.toArray(),
                         geometry: geometry.toObject(),
                         calculating: false
                     },
-                    this.handleChange({activeCells, boundingBox, geometry})
+                    this.handleChange({cells, boundingBox, geometry})
                 )
             }
         )
@@ -132,12 +132,12 @@ class CreateModelMap extends React.Component {
         )
     };
 
-    activeCellsLayer = () => {
+    cellsLayer = () => {
         return (
             <ActiveCellsLayer
                 boundingBox={BoundingBox.fromArray(this.state.boundingBox)}
                 gridSize={GridSize.fromObject(this.state.gridSize)}
-                activeCells={ActiveCells.fromArray(this.state.activeCells)}
+                activeCells={Cells.fromArray(this.state.cells)}
                 styles={getStyle('active_cells')}
             />
         )
@@ -173,18 +173,18 @@ class CreateModelMap extends React.Component {
     };
 
     handleClickOnMap = ({latlng}) => {
-        if (!this.state.activeCells) {
+        if (!this.state.cells) {
             return null;
         }
 
-        const activeCells = ActiveCells.fromArray(this.state.activeCells);
+        const activeCells = Cells.fromArray(this.state.cells);
         const boundingBox = BoundingBox.fromArray(this.state.boundingBox);
         const gridSize = GridSize.fromObject(this.state.gridSize);
         const x = latlng.lng;
         const y = latlng.lat;
 
         this.setState({
-            activeCells: activeCells.toggle([x, y], boundingBox, gridSize).toArray()
+            cells: activeCells.toggle([x, y], boundingBox, gridSize).toArray()
         })
     };
 
@@ -199,7 +199,7 @@ class CreateModelMap extends React.Component {
                 {!this.state.geometry && this.editControl()}
                 {this.state.geometry && this.areaLayer()}
                 {this.state.boundingBox && this.boundingBoxLayer()}
-                {this.state.activeCells && this.activeCellsLayer()}
+                {this.state.cells && this.cellsLayer()}
                 {this.renderCalculationMessage()}
             </Map>
         )

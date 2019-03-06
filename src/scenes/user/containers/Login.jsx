@@ -45,7 +45,7 @@ class Login extends React.Component {
         return this.setState({loading: true},
             () => submitLoginCredentials({username, password},
                 response => {
-                    this.props.login(username, response.data.api_key);
+                    this.props.login(username, response.data.token);
                     this.setState({loading: false})
                 },
                 (e) => {

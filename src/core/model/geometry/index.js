@@ -1,10 +1,10 @@
-import ActiveCells from './ActiveCells';
+import Cells from './Cells';
 import BoundingBox from './BoundingBox';
 import Geometry from './Geometry';
 import GridSize from './GridSize';
 
 export {
-    ActiveCells,
+    Cells,
     BoundingBox,
     Geometry,
     GridSize

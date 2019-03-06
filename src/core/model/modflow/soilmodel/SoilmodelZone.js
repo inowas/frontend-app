@@ -1,6 +1,6 @@
 import uuidv4 from 'uuid/v4';
 import Geometry from '../../geometry/Geometry';
-import ActiveCells from '../../geometry/ActiveCells';
+import Cells from '../../geometry/Cells';
 import SoilmodelParameter from './SoilmodelParameter';
 import {defaultParameters} from 'scenes/t03/defaults/soilmodel';
 
@@ -38,7 +38,7 @@ class SoilmodelZone {
             zone.id = obj.id;
             zone.name = obj.name;
             zone.geometry = obj.geometry ? Geometry.fromObject(obj.geometry) : null;
-            zone.activeCells = obj.activeCells ? ActiveCells.fromArray(obj.activeCells) : null;
+            zone.cells = obj.cells ? Cells.fromArray(obj.cells) : null;
             zone.priority = obj.priority;
             zone.top = this.refactorParameter(obj.top, parseParameters);
             zone.botm = this.refactorParameter(obj.botm, parseParameters);
@@ -161,7 +161,7 @@ class SoilmodelZone {
             'id': this.id,
             'name': this.name,
             'geometry': this.geometry ? this.geometry.toObject() : null,
-            'activeCells': this.activeCells ? this.activeCells.toArray() : [],
+            'cells': this.activeCells ? this.activeCells.toArray() : [],
             'priority': this.priority,
             'top': this.top.toObject(),
             'botm': this.botm.toObject(),

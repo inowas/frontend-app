@@ -22,12 +22,20 @@ class WeightAssignmentEditor extends React.Component {
 
     handleDismiss = () => this.setState({showInfo: false});
 
-    handleClickDelete = (id) => {
-        const wac = this.props.mcda.weightAssignmentsCollection;
-        this.props.handleChange({
-            name: 'weights',
-            value: wac.remove(id)
-        });
+    handleClickDelete = id => {
+        const mcda = this.props.mcda;
+        mcda.weightAssignmentsCollection.remove(id);
+        this.props.onChange(mcda);
+    };
+
+    handleChange = weightAssignment => {
+        if (!(weightAssignment instanceof WeightAssignment)) {
+            throw new Error('WeightAssignment expected to be instance of WeightAssignment');
+        }
+
+        const mcda = this.props.mcda;
+        mcda.weightAssignmentsCollection.update(weightAssignment);
+        this.props.onChange(mcda);
     };
 
     handleClickNew = criteriaCollection => (e, {name}) => {
@@ -36,16 +44,14 @@ class WeightAssignmentEditor extends React.Component {
         }
 
         const wa = WeightAssignment.fromMethodAndCriteria(name, criteriaCollection);
-
         if (this.props.mcda.withAhp) {
             wa.parent = criteriaCollection.first.parentId;
         }
 
-        this.props.handleChange({
-            name: 'weights',
-            value: wa
-        });
+        const mcda = this.props.mcda;
+        mcda.weightAssignmentsCollection.add(wa);
 
+        this.props.onChange(mcda);
         return this.props.routeTo(wa.id);
     };
 
@@ -58,7 +64,7 @@ class WeightAssignmentEditor extends React.Component {
                     return (
                         <SimpleWeightAssignment
                             weightAssignment={this.props.selectedWeightAssignment}
-                            handleChange={this.props.handleChange}
+                            handleChange={this.handleChange}
                             readOnly={this.props.readOnly}
                         />
                     );
@@ -68,7 +74,7 @@ class WeightAssignmentEditor extends React.Component {
                             criteriaCollection={this.props.mcda.criteriaCollection}
                             toolName={this.props.toolName}
                             weightAssignment={this.props.selectedWeightAssignment}
-                            handleChange={this.props.handleChange}
+                            handleChange={this.handleChange}
                             readOnly={this.props.readOnly}
                         />
                     );
@@ -78,7 +84,7 @@ class WeightAssignmentEditor extends React.Component {
                         <PairwiseComparison
                             criteriaCollection={this.props.mcda.criteriaCollection}
                             weightAssignment={this.props.selectedWeightAssignment}
-                            handleChange={this.props.handleChange}
+                            handleChange={this.handleChange}
                             readOnly={this.props.readOnly}
                         />
                     );
@@ -87,7 +93,7 @@ class WeightAssignmentEditor extends React.Component {
                     return (
                         <Ranking
                             weightAssignment={this.props.selectedWeightAssignment}
-                            handleChange={this.props.handleChange}
+                            handleChange={this.handleChange}
                             readOnly={this.props.readOnly}
                         />
                     );
@@ -200,18 +206,22 @@ class WeightAssignmentEditor extends React.Component {
                             <Table.Header>
                                 <Table.Row>
                                     <Table.HeaderCell>Name</Table.HeaderCell>
-                                    <Table.HeaderCell>Method</Table.HeaderCell>
+                                    {mcda.withAhp && <Table.HeaderCell>Criteria Group</Table.HeaderCell>}
                                     <Table.HeaderCell/>
                                 </Table.Row>
                             </Table.Header>
                             <Table.Body>
                                 {mcda.weightAssignmentsCollection.all.map(wa => (
                                     <Table.Row key={wa.id}>
-                                        <Table.Cell width={9}>
+                                        <Table.Cell width={mcda.withAhp ? 8 : 14}>
                                             <Button basic size='small'
                                                     onClick={() => this.props.routeTo(wa.id)}>{wa.name}</Button>
                                         </Table.Cell>
-                                        <Table.Cell width={5}>{wa.method}</Table.Cell>
+                                        {mcda.withAhp &&
+                                        <Table.Cell width={6}>
+                                            {wa.parent ? mcda.criteriaCollection.findById(wa.parent).name : 'Main Criteria'}
+                                        </Table.Cell>
+                                        }
                                         <Table.Cell width={2} textAlign='right'>
                                             <Button
                                                 icon
@@ -239,7 +249,7 @@ WeightAssignmentEditor.propTypes = {
     toolName: PropTypes.string.isRequired,
     mcda: PropTypes.instanceOf(MCDA).isRequired,
     selectedWeightAssignment: PropTypes.instanceOf(WeightAssignment),
-    handleChange: PropTypes.func.isRequired,
+    onChange: PropTypes.func.isRequired,
     readOnly: PropTypes.bool,
     routeTo: PropTypes.func
 };

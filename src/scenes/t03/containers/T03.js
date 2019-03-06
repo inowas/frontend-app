@@ -187,8 +187,9 @@ class T03 extends React.Component {
     };
 
     saveMetaData = () => {
+        const {id, name, description, isPublic} = this.props.model;
         return sendCommand(
-            ModflowModelCommand.updateModflowModel(this.props.model.toPayload()),
+            ModflowModelCommand.updateModflowModelMetadata(id, name, description, isPublic),
             (e) => this.setState({error: e})
         );
     };

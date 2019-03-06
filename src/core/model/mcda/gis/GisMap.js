@@ -1,11 +1,11 @@
 import GisAreasCollection from './GisAreasCollection';
-import {ActiveCells, BoundingBox, GridSize} from '../../geometry';
+import {Cells, BoundingBox, GridSize} from '../../geometry';
 import {booleanContains, booleanOverlap} from '@turf/turf';
 import {getGridCells} from 'services/geoTools';
 import Raster from './Raster';
 
 class GisMap {
-    _activeCells = ActiveCells.create();
+    _activeCells = Cells.create();
     _boundingBox = null;
     _areas = new GisAreasCollection();
     _gridSize = new GridSize(10, 10);
@@ -13,8 +13,8 @@ class GisMap {
 
     static fromObject(obj) {
         const cm = new GisMap();
-        if (obj && obj.activeCells) {
-            cm.activeCells = ActiveCells.fromArray(obj.activeCells);
+        if (obj && obj.cells) {
+            cm.cells = Cells.fromArray(obj.cells);
         }
         cm.boundingBox = obj.boundingBox ? BoundingBox.fromArray(obj.boundingBox) : null;
         if (obj && obj.areas) {
@@ -29,11 +29,11 @@ class GisMap {
         return cm;
     }
 
-    get activeCells() {
+    get cells() {
         return this._activeCells;
     }
 
-    set activeCells(value) {
+    set cells(value) {
         this._activeCells = value;
     }
 
@@ -71,7 +71,7 @@ class GisMap {
 
     toObject() {
         return {
-            activeCells: this.activeCells.toArray(),
+            cells: this.cells.toArray(),
             boundingBox: this.boundingBox ? this.boundingBox.toArray() : null,
             areas: this.areasCollection.toArray(),
             gridSize: this.gridSize.toObject(),
@@ -80,7 +80,7 @@ class GisMap {
     }
 
     calculateActiveCells() {
-        const activeCells = new ActiveCells([]);
+        //const activeCells = new ActiveCells([]);
         const gridCells = getGridCells(this.boundingBox, this.gridSize);
         const raster = new Raster();
         raster.data = Array(this.gridSize.nY).fill(0).map(() => Array(this.gridSize.nX).fill(1));
@@ -105,14 +105,14 @@ class GisMap {
                         return cellIsSuitable;
                     }
                 });
-                if (cellIsSuitable) {
+                /*if (cellIsSuitable) {
                     activeCells.addCell([cell.x, cell.y]);
-                }
+                }*/
                 raster.data[cell.y][cell.x] = cellIsSuitable ? 1 : 0;
             }
         });
 
-        this.activeCells = activeCells;
+        //this.activeCells = activeCells;
         this.raster = raster;
     }
 }

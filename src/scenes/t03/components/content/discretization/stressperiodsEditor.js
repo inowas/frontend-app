@@ -29,7 +29,7 @@ class StressperiodsEditor extends React.Component {
         const stressperiods = Stressperiods.fromObject(this.state.stressperiods);
         const command = ModflowModelCommand.updateStressperiods({
             id: this.props.id,
-            stress_periods: stressperiods.toObject()
+            stressperiods: stressperiods.toObject()
         });
 
         return sendCommand(command,

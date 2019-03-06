@@ -25,19 +25,13 @@ class Ranking extends React.Component {
 
     handleDismiss = () => this.setState({showInfo: false});
 
-    handleChangeState = () => this.props.handleChange({
-        name: 'weights',
-        value: WeightAssignment.fromObject(this.state.wa)
-    });
+    handleChangeState = () => this.props.handleChange(WeightAssignment.fromObject(this.state.wa));
 
     handleChangeSubMethod = (e, {name, value}) => {
         const wa = WeightAssignment.fromObject(this.state.wa);
         wa[name] = value;
         wa.calculateWeights();
-        this.props.handleChange({
-            name: 'weights',
-            value: wa
-        });
+        this.props.handleChange(wa);
     };
 
     handleLocalChange = (e, {name, value}) => this.setState(prevState => ({
@@ -52,10 +46,7 @@ class Ranking extends React.Component {
         weightAssignment.weightsCollection = WeightsCollection.fromArray(weights);
         weightAssignment.calculateWeights();
 
-        return this.props.handleChange({
-            name: 'weights',
-            value: weightAssignment
-        });
+        return this.props.handleChange(weightAssignment);
     };
 
     handleChangeOrder = (items) => {

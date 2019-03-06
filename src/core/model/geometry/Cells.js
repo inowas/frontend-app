@@ -1,16 +1,16 @@
 import {floor, isEqual} from 'lodash';
 import {BoundingBox, GridSize} from '../modflow/index';
 
-class ActiveCells {
+class Cells {
 
     _cells = [];
 
     static create(cells = []) {
-        return new ActiveCells(cells);
+        return new this(cells);
     }
 
     static fromArray(cells) {
-        return new ActiveCells(cells);
+        return new this(cells);
     }
 
     constructor(cells) {
@@ -18,9 +18,8 @@ class ActiveCells {
     }
 
     toggle = ([x, y], boundingBox, gridSize) => {
-
         if (!(boundingBox instanceof BoundingBox)) {
-            throw new Error('Geometry needs to be instance of BoundingBox');
+            throw new Error('BoundingBox needs to be instance of BoundingBox');
         }
 
         if (!(gridSize instanceof GridSize)) {
@@ -69,4 +68,4 @@ class ActiveCells {
     }
 }
 
-export default ActiveCells;
+export default Cells;

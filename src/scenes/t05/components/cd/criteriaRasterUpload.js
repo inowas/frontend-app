@@ -5,14 +5,13 @@ import {Grid, Button, Icon, Message, Form, Segment, Checkbox} from 'semantic-ui-
 import RasterfileUploadModal from '../../../shared/rasterData/rasterfileUploadModal';
 import CriteriaRasterMap from './criteriaRasterMap';
 import {Rule, RulesCollection} from 'core/model/mcda/criteria';
-import {Raster, Tile} from 'core/model/mcda/gis';
+import {Raster} from 'core/model/mcda/gis';
 import {min, max} from 'scenes/shared/rasterData/helpers';
 import {BoundingBox, GridSize} from 'core/model/geometry';
-import TilesMap from './tilesMap';
+import {dropData} from 'services/api';
 
 class CriteriaRasterUpload extends React.Component {
     state = {
-        activeTile: null,
         hash: null,
         metadata: null,
         selectedBand: 0,
@@ -23,28 +22,17 @@ class CriteriaRasterUpload extends React.Component {
         showBasicLayer: false
     };
 
-    handleClickTile = tile => this.setState({
-        activeTile: tile.toObject()
-    });
-
     handleDismiss = () => this.setState({showInfo: false});
 
     handleUploadClick = () => this.setState({showUploadModal: true});
 
     handleCancelModal = () => this.setState({showUploadModal: false});
 
-    handleClickDeleteTile = () => {
-        const criterion = this.props.criterion;
-        criterion.tilesCollection.remove(this.state.activeTile.id);
-        return this.setState({
-            activeTile: null
-        }, this.props.onChange(criterion));
-    };
-
     handleChangeRaster = raster => {
         if (!(raster instanceof Raster)) {
             throw new Error('Raster expected to be instance of Raster.');
         }
+
         const criterion = this.props.criterion;
         criterion.raster = raster;
         return this.props.onChange(criterion);
@@ -54,55 +42,63 @@ class CriteriaRasterUpload extends React.Component {
         const {data, metadata} = result;
 
         const criterion = this.props.criterion;
-        const tile = new Tile();
-        tile.data = Array.from(data);
-        tile.min = min(tile.data);
-        tile.max = max(tile.data);
-        tile.gridSize = this.props.gridSize;
+        const raster = new Raster();
+        dropData(
+            JSON.stringify(data),
+            response => {
+                raster.url = response.filename;
+                raster.data = data;
+                raster.min = min(raster.data);
+                raster.max = max(raster.data);
+                raster.gridSize = this.props.gridSize;
 
-        let boundingBox = null;
-        if (metadata) {
-            boundingBox = BoundingBox.fromPoints([
-                [parseFloat(metadata.origin[0]), parseFloat(metadata.origin[1] + metadata.pixelSize[1] * metadata.rasterYSize)],
-                [parseFloat(metadata.origin[0] + metadata.pixelSize[0] * metadata.rasterXSize), parseFloat(metadata.origin[1])]
-            ]);
-        }
-        tile.boundingBox = boundingBox;
-        criterion.tilesCollection.add(tile);
+                let boundingBox = null;
+                if (metadata) {
+                    boundingBox = BoundingBox.fromPoints([
+                        [parseFloat(metadata.origin[0]), parseFloat(metadata.origin[1] + metadata.pixelSize[1] * metadata.rasterYSize)],
+                        [parseFloat(metadata.origin[0] + metadata.pixelSize[0] * metadata.rasterXSize), parseFloat(metadata.origin[1])]
+                    ]);
+                }
+                raster.boundingBox = boundingBox;
+                criterion.raster = raster;
 
-        criterion.constraintRaster.boundingBox = boundingBox;
-        criterion.constraintRaster.gridSize = this.props.gridSize;
+                criterion.constraintRaster.boundingBox = boundingBox;
+                criterion.constraintRaster.gridSize = this.props.gridSize;
 
-        criterion.rulesCollection = new RulesCollection();
-        if (criterion.type === 'continuous') {
-            const rule = new Rule();
-            rule.from = tile.min;
-            rule.to = tile.max;
-            criterion.rulesCollection.add(rule);
-        }
-        if (criterion.type === 'discrete') {
-            const uniqueValues = criterion.tilesCollection.uniqueValues;
-            uniqueValues.forEach(value => {
-                const rule = new Rule();
-                rule.from = value;
-                rule.to = value;
-                criterion.rulesCollection.add(rule);
-            });
-            criterion.constraintRules = criterion.rulesCollection;
-        }
+                criterion.rulesCollection = new RulesCollection();
+                if (criterion.type === 'continuous') {
+                    const rule = new Rule();
+                    rule.from = raster.min;
+                    rule.to = raster.max;
+                    criterion.rulesCollection.add(rule);
+                }
+                if (criterion.type === 'discrete') {
+                    const uniqueValues = criterion.raster.uniqueValues;
+                    uniqueValues.forEach(value => {
+                        const rule = new Rule();
+                        rule.from = value;
+                        rule.to = value;
+                        criterion.rulesCollection.add(rule);
+                    });
+                    criterion.constraintRules = criterion.rulesCollection;
+                }
 
-        this.setState({
-            activeTile: tile.toObject(),
-            showUploadModal: false
-        });
-        return this.props.onChange(criterion);
+                this.setState({
+                    showUploadModal: false
+                });
+                return this.props.onChange(criterion);
+            },
+            response => {
+                throw new Error(response);
+            }
+        );
     };
 
     onToggleBasicLayer = () => this.setState({showBasicLayer: !this.state.showBasicLayer});
 
     render() {
-        const {activeTile, showInfo, showBasicLayer, showUploadModal} = this.state;
-        const {tilesCollection} = this.props.criterion;
+        const {showInfo, showBasicLayer, showUploadModal} = this.state;
+        const {raster} = this.props.criterion;
 
         return (
             <Grid>
@@ -142,7 +138,6 @@ class CriteriaRasterUpload extends React.Component {
                                         labelPosition='left'
                                         fluid
                                         onClick={this.handleUploadClick}
-                                        disabled={tilesCollection.length > 0}
                                     >
                                         <Icon name='upload'/>Upload Raster Tile
                                     </Button>
@@ -153,44 +148,25 @@ class CriteriaRasterUpload extends React.Component {
                             </Form>
                         </Segment>
                         <Segment textAlign='center' inverted color='grey' secondary>
-                            Tiles
+                            Bounding Box
                         </Segment>
-                        {tilesCollection.length > 0 ?
-                            <TilesMap
-                                activeTile={!!activeTile ? Tile.fromObject(activeTile) : null}
-                                handleClick={this.handleClickTile}
-                                tilesCollection={tilesCollection}
-                            /> :
-                            <Segment>
-                                No tiles found ...
-                            </Segment>
-                        }
-                        {!!activeTile &&
+                        {raster && raster.boundingBox &&
                         <div>
-                            <Button
-                                negative
-                                icon
-                                labelPosition='left'
-                                fluid
-                                onClick={this.handleClickDeleteTile}
-                            >
-                                <Icon name='trash'/>Delete Tile
-                            </Button>
                             <table width='90%' style={{textAlign: 'right'}}>
                                 <tbody>
                                 <tr>
                                     <td/>
-                                    <td>{activeTile.boundingBox[1][1].toFixed(3)}</td>
+                                    <td>{raster.boundingBox.yMax.toFixed(3)}</td>
                                     <td/>
                                 </tr>
                                 <tr>
-                                    <td>{activeTile.boundingBox[0][0].toFixed(3)}</td>
+                                    <td>{raster.boundingBox.xMin.toFixed(3)}</td>
                                     <td/>
-                                    <td>{activeTile.boundingBox[1][0].toFixed(3)}</td>
+                                    <td>{raster.boundingBox.xMax.toFixed(3)}</td>
                                 </tr>
                                 <tr>
                                     <td/>
-                                    <td>{activeTile.boundingBox[0][1].toFixed(3)}</td>
+                                    <td>{raster.boundingBox.yMin.toFixed(3)}</td>
                                     <td/>
                                 </tr>
                                 </tbody>
@@ -199,10 +175,10 @@ class CriteriaRasterUpload extends React.Component {
                         }
                     </Grid.Column>
                     <Grid.Column width={11}>
-                        {tilesCollection.length > 0 && !!activeTile &&
+                        {raster && raster.data.length > 0 &&
                         <CriteriaRasterMap
                             onChange={this.handleChangeRaster}
-                            raster={Tile.fromObject(activeTile)}
+                            raster={raster}
                             showBasicLayer={showBasicLayer}
                             legend={this.props.criterion.generateLegend()}
                         />

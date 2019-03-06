@@ -7,12 +7,12 @@ class ModflowModelCommand extends AbstractCommand {
         const name = 'addBoundary';
         return new ModflowModelCommand(
             name,
-            {id: modelId, boundary: boundary.toObject},
+            {id: modelId, boundary: boundary.toObject()},
             JSON_SCHEMA_URL + 'commands/' + name
         );
     }
 
-    static addSoilmodelLayer(modelId, layer) {
+    static addLayer(modelId, layer) {
         const name = 'addLayer';
         return new ModflowModelCommand(
             name,
@@ -55,7 +55,7 @@ class ModflowModelCommand extends AbstractCommand {
         return new ModflowModelCommand(name, {id}, JSON_SCHEMA_URL + 'commands/' + name);
     }
 
-    static removeSoilmodelLayer(payload) {
+    static removeLayer(payload) {
         const name = 'removeLayer';
         return new ModflowModelCommand(name, payload, JSON_SCHEMA_URL + 'commands/' + name);
     }
@@ -71,14 +71,28 @@ class ModflowModelCommand extends AbstractCommand {
         const name = 'updateBoundary';
         return new ModflowModelCommand(
             name,
-            {id: modelId, boundary_id: boundary.id, boundary: boundary.toObject},
+            {id: modelId, boundary_id: boundary.id, boundary: boundary.toObject()},
             JSON_SCHEMA_URL + 'commands/' + name
         );
     }
 
-    static updateModflowModel(payload) {
-        const name = 'updateModflowModel';
-        return new ModflowModelCommand(name, payload, JSON_SCHEMA_URL + 'commands/' + name);
+    static updateModflowModelMetadata(id, name, description, isPubic) {
+        const commandName = 'updateModflowModelMetadata';
+        return new ModflowModelCommand(
+            commandName,
+            {id, name, description, public: isPubic},
+            JSON_SCHEMA_URL + 'commands/' + commandName);
+    }
+
+    static updateModflowModelDiscretization(id, geometry, boundingBox, gridSize, cells, stressperiods, lengthUnit, timeUnit) {
+        const commandName = 'updateModflowModelDiscretization';
+        const payload = {
+            id, geometry, bounding_box: boundingBox,
+            grid_size: gridSize, cells, stressperiods,
+            length_unit: lengthUnit, time_unit: timeUnit
+        };
+
+        return new ModflowModelCommand(commandName, payload, JSON_SCHEMA_URL + 'commands/' + commandName);
     }
 
     static updateMt3dms(payload) {
@@ -91,13 +105,13 @@ class ModflowModelCommand extends AbstractCommand {
         return new ModflowModelCommand(name, payload, JSON_SCHEMA_URL + 'commands/' + name);
     }
 
-    static updateSoilmodelLayer(payload) {
+    static updateLayer(payload) {
         const name = 'updateLayer';
         return new ModflowModelCommand(name, payload, JSON_SCHEMA_URL + 'commands/' + name);
     }
 
     static updateStressperiods(payload) {
-        const name = 'updateStressPeriods';
+        const name = 'updateStressperiods';
         return new ModflowModelCommand(name, payload, JSON_SCHEMA_URL + 'commands/' + name);
     }
 }

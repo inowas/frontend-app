@@ -63,6 +63,13 @@ const getMenuItems = mcda => {
                 msg: 'Criteria data is needed first.'
             };
         }
+        if (mcda.constraints.raster && mcda.constraints.raster.data.length > 0) {
+            return {
+                val: 'success',
+                msg: null
+            };
+        }
+        return null;
     };
 
     const suitabilityDataStatus = () => {
@@ -72,7 +79,7 @@ const getMenuItems = mcda => {
                 msg: 'Criteria data is needed first.'
             };
         }
-        if (mcda.suitability && mcda.suitability.data.length > 0) {
+        if (mcda.suitability.raster && mcda.suitability.raster.data.length > 0) {
             return {
                 val: 'success',
                 msg: null
