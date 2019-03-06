@@ -10,7 +10,10 @@ class BoundaryCollection extends AbstractCollection {
         }
 
         const bc = new BoundaryCollection();
-        query.forEach(b => bc.addBoundary(BoundaryFactory.fromObjectData(b)));
+        query.forEach(b => {
+            const boundary = BoundaryFactory.fromObject(b);
+            bc.addBoundary(boundary);
+        });
         return bc;
     }
 
@@ -20,7 +23,7 @@ class BoundaryCollection extends AbstractCollection {
         }
 
         const bc = new BoundaryCollection();
-        query.forEach(b => bc.addBoundary(BoundaryFactory.fromObjectData(b)));
+        query.forEach(b => bc.addBoundary(BoundaryFactory.fromObject(b)));
         return bc;
     }
 
@@ -44,7 +47,7 @@ class BoundaryCollection extends AbstractCollection {
     }
 
     toObject = () => {
-        return this.boundaries.map(b => b.toObject)
+        return this.boundaries.map(b => b.toObject())
     };
 }
 

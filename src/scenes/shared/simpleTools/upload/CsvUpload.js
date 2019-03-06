@@ -34,18 +34,23 @@ class CsvUpload extends React.Component {
 
     render() {
         const {uploadState} = this.props;
+        let baseClasses = this.props.baseClasses || 'ui icon button';
 
-        let classes = 'ui icon button positive';
+        if (!this.props.baseClasses) {
+
+        }
+
+        let classes = `${baseClasses} positive`;
 
         if (uploadState.error) {
-            classes = 'ui icon button negative';
+            classes = `${baseClasses} positive`;
         }
         if (uploadState.success) {
-            classes = 'ui icon button positive disabled';
+            classes = `${baseClasses} positive disabled`;
         }
 
         return (
-            <span>
+            <span style={this.props.style ? {...this.props.style} : {}}>
                 {uploadState.error &&
                 <Modal
                     open={this.state.modalOpen}
@@ -71,9 +76,13 @@ class CsvUpload extends React.Component {
                     </Modal.Actions>
                 </Modal>
                 }
-                <label htmlFor={'inputField'} className={classes}>
-                            <Icon name='file excel'/> Import CSV
-                        </label>
+
+                <label
+                    htmlFor={'inputField'}
+                    className={classes}
+                >
+                    <Icon name='file excel'/> Import CSV
+                </label>
                 <input
                     type="file" id='inputField'
                     style={{display: 'none'}}
@@ -85,6 +94,7 @@ class CsvUpload extends React.Component {
 }
 
 CsvUpload.proptypes = {
+    baseClasses: PropTypes.string,
     onUploaded: PropTypes.func.isRequired,
     uploadState: PropTypes.object
 };

@@ -167,11 +167,11 @@ class OptimizationObjectsComponent extends React.Component {
                         <Grid.Column>
                             {(!selectedObject && objects.length < 1) &&
                             <Message>
-                                <p>No optimization objectives</p>
+                                <p>No decision variables</p>
                             </Message>
                             }
                             {(!selectedObject && objects.length > 0) ?
-                                <Table celled striped>
+                                <Table small striped>
                                     <Table.Header>
                                         <Table.Row>
                                             <Table.HeaderCell>Name</Table.HeaderCell>

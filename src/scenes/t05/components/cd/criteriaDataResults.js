@@ -63,7 +63,7 @@ class CriteriaDataResults extends React.Component {
                 raster = criterion.constraintRaster;
                 break;
             default:
-                raster = criterion.tilesCollection.first;
+                raster = criterion.raster;
                 break;
         }
 

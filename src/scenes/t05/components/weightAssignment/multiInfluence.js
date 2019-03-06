@@ -139,10 +139,7 @@ class MultiInfluence extends React.Component {
         });
         weightAssignment.calculateWeights();
 
-        return this.props.handleChange({
-            name: 'weights',
-            value: weightAssignment
-        });
+        return this.props.handleChange(weightAssignment);
     };
 
     handleLocalChange = (e, {name, value}) => this.setState(prevState => ({
@@ -196,7 +193,7 @@ class MultiInfluence extends React.Component {
         };
 
         return (
-            <div>
+            <div style={{marginTop: '30px'}}>
                 {this.state.showInfo &&
                 <Message onDismiss={this.handleDismiss}>
                     <Message.Header>Weight Assignment: Multi-Influence Factor</Message.Header>

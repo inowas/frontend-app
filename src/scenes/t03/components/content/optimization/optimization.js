@@ -297,13 +297,13 @@ class OptimizationContainer extends React.Component {
             return (
                 <Menu.Item>
                     <Button.Group fluid>
-                        <Button primary disabled={true}>
+                        <Button secondary disabled={true}>
                             Run Optimization
                         </Button>
                         <Popup
                             wide='very'
                             trigger={
-                                <Button primary icon>
+                                <Button icon negative>
                                     <Icon name="exclamation"/>
                                 </Button>
                             }
@@ -313,7 +313,7 @@ class OptimizationContainer extends React.Component {
                                     {errorMsg.list.length > 0
                                         ?
                                         <List.Item>
-                                            <b>Mayor Errors</b>
+                                            <b>Major Errors</b>
                                             {errorMsg.list.map((element, key) => (
                                                 <List.Item as='li' value='*' key={key}>{element}</List.Item>
                                             ))}

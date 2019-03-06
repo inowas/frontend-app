@@ -4,6 +4,7 @@ import {Button, Dimmer, Form, Grid, Input, Radio, Header, List, Segment, Modal, 
 import RasterDataImage from './rasterDataImage';
 import {GridSize} from 'core/model/geometry';
 import {fetchRasterMetaData, fetchRasterData, uploadRasterfile} from 'services/api';
+import math from 'mathjs';
 
 const styles = {
     input: {
@@ -128,7 +129,7 @@ class RasterfileUploadModal extends React.Component {
                 fetchRasterData(
                     fetchOptions,
                     data => {
-                        this.setState({isLoading: false, data: data})
+                        this.setState({isLoading: false, data: math.round(data, 3)})
                     },
                     (errorFetching) => this.setState({errorFetching}))
             },

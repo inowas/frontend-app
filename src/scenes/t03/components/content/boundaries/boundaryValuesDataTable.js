@@ -3,10 +3,9 @@ import PropTypes from 'prop-types';
 import moment from 'moment';
 import uuidv4 from 'uuid/v4';
 
-import {Button, Icon, Input, Table} from 'semantic-ui-react';
+import {Input, Table} from 'semantic-ui-react';
 import {Boundary, Stressperiods} from 'core/model/modflow';
-import {cloneDeep} from 'lodash';
-import CsvUpload from '../../../../shared/simpleTools/upload/CsvUpload';
+// import CsvUpload from '../../../../shared/simpleTools/upload/CsvUpload';
 
 class BoundaryValuesDataTable extends React.Component {
 
@@ -32,74 +31,28 @@ class BoundaryValuesDataTable extends React.Component {
         }
     });
 
-    handleDateTimeChange = row => (e, {name, value}) => {
-        const {boundary, selectedOP} = this.props;
-        let dateTimeValues = boundary.getDateTimeValues(selectedOP);
-
-        if (name === 'dateTime') {
-            dateTimeValues = dateTimeValues.map((dtv, dtvIdx) => {
-                if (row === dtvIdx) {
-                    dtv.date_time = moment.utc(value).toISOString();
-                    return dtv;
-                }
-
-                return dtv;
-            });
-        }
-
-        boundary.setDateTimeValues(dateTimeValues, selectedOP);
-        this.props.onChange(boundary)
-    };
-
-    handleDateTimeValueChange = () => {
+    handleSpValuesChange = () => {
         if (!this.state.activeInput) {
             return;
         }
-
-        const {name, value, row, col} = this.state.activeInput;
-
+        const {value, row, col} = this.state.activeInput;
         this.setState({
             activeInput: null
         });
 
         const {boundary, selectedOP} = this.props;
-        let dateTimeValues = boundary.getDateTimeValues(selectedOP);
+        const spValues = boundary.getSpValues(selectedOP);
 
-        if (name === 'dateTimeValue') {
-            dateTimeValues = dateTimeValues.map((dtv, dtvIdx) => {
-                if (row === dtvIdx) {
-                    dtv.values[col] = parseFloat(value) || 0;
-                    return dtv;
-                }
+        const updatedSpValues = spValues.map((spv, spvIdx) => {
+            if (row === spvIdx) {
+                spv[col] = parseFloat(value) || 0;
+                return spv;
+            }
+            return spv;
+        });
 
-                return dtv;
-            });
-        }
-
-        boundary.setDateTimeValues(dateTimeValues, selectedOP);
+        boundary.setSpValues(updatedSpValues, selectedOP);
         this.props.onChange(boundary)
-    };
-
-    handleRemoveDateTimeValues = (dtvIdx) => () => {
-        const {boundary, selectedOP} = this.props;
-        let dateTimeValues = boundary.getDateTimeValues(selectedOP);
-        dateTimeValues = dateTimeValues.filter((dtv, idx) => (dtvIdx !== idx));
-        boundary.setDateTimeValues(dateTimeValues, selectedOP);
-        if (boundary.getDateTimeValues(selectedOP).length === 0) {
-            boundary.setDefaultValues(this.props.stressperiods.startDateTime);
-        }
-        this.props.onChange(boundary);
-    };
-
-    addNewDatetimeValue = (number, unit = 'days') => {
-        const {boundary, selectedOP} = this.props;
-        const dateTimeValues = boundary.getDateTimeValues(selectedOP);
-        const lastDateTimeValue = dateTimeValues[dateTimeValues.length - 1];
-        const newDateTimeValue = cloneDeep(lastDateTimeValue);
-        newDateTimeValue.date_time = moment.utc(lastDateTimeValue.date_time).add(number, unit).toISOString();
-        dateTimeValues.push(newDateTimeValue);
-        boundary.setDateTimeValues(dateTimeValues, selectedOP);
-        this.props.onChange(boundary);
     };
 
     getCellStyle = (numberOfCells) => {
@@ -125,47 +78,45 @@ class BoundaryValuesDataTable extends React.Component {
         }
     };
 
-    body = (dateTimeValues) => {
+    body = (spValues) => {
         const {activeInput} = this.state;
+        const {stressperiods} = this.props;
 
-        return dateTimeValues.map((dtv, dtvIdx) => (
-            <Table.Row key={dtvIdx}>
+        const dateTimes = stressperiods.dateTimes;
+
+        if (dateTimes.length !== spValues.length) {
+            // do something;
+        }
+
+        return spValues.map((spValue, spIdx) => (
+            <Table.Row key={spIdx}>
                 <Table.Cell>
                     <Input
                         style={this.getCellStyle()}
-                        disabled={this.props.readOnly}
-                        id={dtvIdx}
+                        disabled={true}
+                        id={spIdx}
                         name={'dateTime'}
-                        onChange={this.handleDateTimeChange(dtvIdx)}
                         type={'date'}
-                        value={moment(dtv.date_time).format('YYYY-MM-DD')}
+                        value={moment(dateTimes[spIdx]).format('YYYY-MM-DD')}
                     />
                 </Table.Cell>
-                {dtv.values.map((v, vIdx) => (
+                {spValue.map((v, vIdx) => (
                     <Table.Cell key={vIdx} width={10}>
                         <Input
-                            style={this.getCellStyle(dtv.values.length)}
+                            style={this.getCellStyle(spValue.length)}
                             disabled={this.props.readOnly}
-                            id={dtvIdx}
+                            id={spIdx}
                             col={vIdx}
                             name={'dateTimeValue'}
-                            onBlur={this.handleDateTimeValueChange}
-                            onChange={this.handleLocalChange(dtvIdx, vIdx)}
+                            onBlur={this.handleSpValuesChange}
+                            onChange={this.handleLocalChange(spIdx, vIdx)}
                             type={'number'}
-                            value={activeInput && activeInput.col === vIdx && activeInput.row === dtvIdx ? activeInput.value : v}
+                            value={activeInput && activeInput.col === vIdx && activeInput.row === spIdx ? activeInput.value : v}
                         />
                     </Table.Cell>
                 ))}
-                <Table.Cell>
-                    {!this.props.readOnly && <Button
-                        basic
-                        floated={'right'}
-                        icon={'trash'}
-                        onClick={this.handleRemoveDateTimeValues(dtvIdx)}
-                    />}
-                </Table.Cell>
             </Table.Row>
-        ))
+        ));
     };
 
     handleCSV = (e) => {
@@ -230,11 +181,11 @@ class BoundaryValuesDataTable extends React.Component {
 
     render() {
         const {boundary, selectedOP} = this.props;
-        const dateTimeValues = boundary.getDateTimeValues(selectedOP);
+        const spValues = boundary.getSpValues(selectedOP);
 
         return (
             <div>
-                <CsvUpload uploadState={this.state.uploadState} onUploaded={this.handleCSV}/>
+                {/*<CsvUpload uploadState={this.state.uploadState} onUploaded={this.handleCSV}/>*/}
                 <Table size={'small'} singleLine>
                     <Table.Header>
                         <Table.Row>
@@ -244,17 +195,8 @@ class BoundaryValuesDataTable extends React.Component {
                             <Table.HeaderCell/>
                         </Table.Row>
                     </Table.Header>
-                    <Table.Body>{dateTimeValues && this.body(dateTimeValues)}</Table.Body>
+                    <Table.Body>{spValues && this.body(spValues)}</Table.Body>
                 </Table>
-                <Button.Group size={'small'}>
-                    <Button icon onClick={() => this.addNewDatetimeValue(1, 'days')}><Icon name='add circle'/> 1
-                        Day</Button>
-                    <Button icon onClick={() => this.addNewDatetimeValue(1, 'weeks')}><Icon name='add circle'/> 1
-                        Week</Button>
-                    <Button icon onClick={() => this.addNewDatetimeValue(1, 'months')}><Icon name='add circle'/> 1 Month</Button>
-                    <Button icon onClick={() => this.addNewDatetimeValue(1, 'years')}><Icon name='add circle'/> 1
-                        Year</Button>
-                </Button.Group>
             </div>
         )
     }

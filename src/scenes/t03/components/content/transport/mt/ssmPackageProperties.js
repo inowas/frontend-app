@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types';
 import React from 'react';
 import AbstractPackageProperties from './AbstractPackageProperties';
-import {Button, Divider, Form, Grid, Message, Popup} from 'semantic-ui-react';
+import {Button, Header, Form, Grid, Message, Popup} from 'semantic-ui-react';
 import SsmSubstanceEditor from './SsmSubstanceEditor';
 import {Stressperiods} from 'core/model/modflow';
 import {SsmPackage, SsmSubstance} from 'core/model/modflow/mt3d';
@@ -129,7 +129,7 @@ class SsmPackageProperties extends AbstractPackageProperties {
                 </Grid>
                 {(selectedSubstance instanceof SsmSubstance) && (selectedBoundary instanceof Boundary) &&
                 <div>
-                    <Divider horizontal>{selectedSubstance.name} at {selectedBoundary.name}</Divider>
+                    <Header as='h4' dividing>{selectedSubstance.name} at {selectedBoundary.name}</Header>
                     <SsmSubstanceEditor
                         boundary={selectedBoundary}
                         onChange={this.handleChangeSubstance}

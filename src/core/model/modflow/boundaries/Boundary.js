@@ -1,148 +1,69 @@
-/* eslint-disable camelcase */
 import Uuid from 'uuid';
-import AffectedCells from './AffectedCells';
 
 export default class Boundary {
-    _id;
-    _name;
-    _geometry;
-    _affectedLayers = [0];
-    _metadata = {};
-    _activeCells = null;
-    _defaultValues = [];
-    _type = null;
 
-    constructor() {
-        this._id = Uuid.v4();
+    _id = Uuid.v4();
+
+    // noinspection JSMethodCanBeStatic
+    get type() {
+        throw new Error('You have to implement the getter for type!');
     }
 
+    // noinspection JSMethodCanBeStatic
     get id() {
-        return this._id;
+        throw new Error('You have to implement the getter for id!');
     }
 
-    set id(id) {
-        this._id = id;
+    // noinspection JSMethodCanBeStatic
+    get geometry() {
+        throw new Error('You have to implement the getter for geometry!');
     }
 
+    // noinspection JSMethodCanBeStatic
     get name() {
-        return this._name;
+        throw new Error('You have to implement the getter for name!');
     }
 
     set name(name) {
-        this._name = name;
+        throw new Error('You have to implement the setter for name!');
     }
 
-    get geometry() {
-        return this._geometry;
+    // noinspection JSMethodCanBeStatic
+    get cells() {
+        throw new Error('You have to implement the getter for cells!');
     }
 
-    set geometry(geometry) {
-        this._geometry = geometry;
+    // noinspection JSMethodCanBeStatic
+    get layers() {
+        throw new Error('You have to implement the getter for layers!');
     }
 
-    get affectedLayers() {
-        return this._affectedLayers;
-    }
-
-    set affectedLayers(affectedLayers) {
-        if(!Array.isArray(affectedLayers)) {
-            this._affectedLayers = [affectedLayers];
-            return;
-        }
-
-        this._affectedLayers = affectedLayers;
-    }
-
-    get metadata() {
-        return this._metadata;
-    }
-
-    set metadata(metadata) {
-        this._metadata = metadata;
-    }
-
-    get activeCells() {
-        return this._activeCells;
-    }
-
-    set activeCells(activeCells) {
-        this._activeCells = activeCells;
-    }
-
-    get type() {
-        return this._type;
-    }
-
-    get subTypes() {
-        return null;
-    }
-
-    get affectedCells() {
-        return AffectedCells.fromLayersAndCells(this.affectedLayers, this.activeCells);
-    }
-
-    isValid() {
-        if (!this._id) {
-            throw new Error('The parameter id is not not valid.');
-        }
-        if (!this._name) {
-            throw new Error('The parameter name is not not valid.');
-        }
-        if (!(this._geometry && this.geometry.type && this.geometry.coordinates && this.geometry.coordinates.length > 0)) {
-            throw new Error('The parameter geometry is not not valid.');
-        }
-
-        if (!(Array.isArray(this._affectedLayers) && (this._affectedLayers.length > 0))) {
-            throw new Error('The parameter affectedLayers is not not valid.');
-        }
-
-        // noinspection RedundantIfStatementJS
-        if (typeof this._metadata !== 'object') {
-            throw new Error('The parameter metadata is not not valid.');
-        }
-
-        return true;
-    }
-
-    get toObject() {
-        return {
-            id: this.id,
-            name: this.name,
-            geometry: this.geometry.toObject(),
-            type: this.type,
-            active_cells: this.activeCells.toArray(),
-            affected_layers: this.affectedLayers,
-            metadata: this.metadata
-        };
-    }
-
-    get defaultValues() {
-        return this._defaultValues;
-    }
-
-    get valueProperties() {
-        return [];
-    }
-
+    // noinspection JSMethodCanBeStatic
     get geometryType() {
-        return '';
+        throw new Error('You have to implement the getter for geometryType!');
     }
 
-    get numberOfValues() {
-        return this.defaultValues.length;
+    // noinspection JSMethodCanBeStatic
+    get valueProperties() {
+        throw new Error('You have to implement the getter for valueProperties!');
     }
 
-    get clone() {
+    getSpValues(opId = null) {
+        throw new Error('You have to implement the getSpValues function!');
+    }
+
+    setSpValues(spValues, opId = null) {
+        throw new Error('You have to implement the spValues function!');
+    }
+
+    // noinspection JSMethodCanBeStatic
+    toObject() {
+        throw new Error('You have to implement the method toObject!');
+    }
+
+    clone() {
+        this._id = Uuid.v4();
         this.name = this.name + ' (clone)';
-        this.id = Uuid.v4();
         return this;
-    }
-
-    cloneInstance = () => {
-        return Object.assign( Object.create( Object.getPrototypeOf(this)), this);
-    };
-
-    hasObservationPoint(oId) {
-        return false;
     }
 }

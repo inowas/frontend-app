@@ -38,7 +38,11 @@ class ContentToolBar extends React.Component {
         if (notSaved) {state = 'notSaved'}
         if (!isValid) {state = 'notValid'}
 
-        const message = this.getMessage(state);
+        let message = this.getMessage(state);
+
+        if (!this.props.saveButton && nextProps.isDirty) {
+            message = null;
+        }
 
         if (hasBeenSaved || error || notSaved) {
             this.setState({
