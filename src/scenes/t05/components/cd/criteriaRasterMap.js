@@ -44,7 +44,7 @@ class CriteriaRasterMap extends React.Component {
 
     componentWillReceiveProps(nextProps) {
         this.setState({
-            showMap: nextProps.raster.gridSize.nX * nextProps.raster.gridSize.nY <= maximumGridCells
+            showMap: nextProps.showBasicLayer === true || nextProps.raster.gridSize.nX * nextProps.raster.gridSize.nY <= maximumGridCells
         });
     }
 
@@ -102,7 +102,7 @@ class CriteriaRasterMap extends React.Component {
                     <RasterDataImage
                         data={raster.data}
                         legend={this.props.legend}
-                        unit='-'
+                        unit=''
                         gridSize={gridSize}
                     />
                 </div>
