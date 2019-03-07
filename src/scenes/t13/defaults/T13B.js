@@ -11,7 +11,7 @@ export const defaults = () => {
         description: 'Simple tool description',
         permissions: 'rwx',
         public: false,
-        type: 'T13B',
+        tool: 'T13B',
         data: {
             settings: {
                 selected: SETTINGS_SELECTED_NOTHING
@@ -19,7 +19,7 @@ export const defaults = () => {
             parameters: [{
                 order: 0,
                 id: 'W',
-                name: 'Average infiltration rate, W [m/d]',
+                name: 'Average infiltration rate<br/>W [m/d]',
                 min: 0.001,
                 max: 0.01,
                 value: 0.00112,
@@ -29,7 +29,7 @@ export const defaults = () => {
             }, {
                 order: 1,
                 id: 'K',
-                name: 'Hydraulic conductivity, K [m/d]',
+                name: 'Hydraulic conductivity<br/>K [m/d]',
                 min: 0.1,
                 max: 1000,
                 value: 30.2,
@@ -39,7 +39,7 @@ export const defaults = () => {
             }, {
                 order: 2,
                 id: 'L',
-                name: 'Aquifer length, L [m]',
+                name: 'Aquifer length<br/>L [m]',
                 min: 0,
                 max: 1000,
                 value: 1000,
@@ -49,7 +49,7 @@ export const defaults = () => {
             }, {
                 order: 3,
                 id: 'hL',
-                name: 'Downstream head, h<sub>L</sub> [m]',
+                name: 'Downstream head<br/>h<sub>L</sub> [m]',
                 min: 0,
                 max: 10,
                 value: 2,
@@ -59,7 +59,7 @@ export const defaults = () => {
             }, {
                 order: 4,
                 id: 'h0',
-                name: 'Upstream head, h<sub>e</sub> [m]',
+                name: 'Upstream head<br/>h<sub>e</sub> [m]',
                 min: 0,
                 max: 10,
                 value: 5,
@@ -69,7 +69,7 @@ export const defaults = () => {
             }, {
                 order: 5,
                 id: 'ne',
-                name: 'Effective porosity, n [-]',
+                name: 'Effective porosity<br/>n [-]',
                 min: 0,
                 max: 0.5,
                 value: 0.35,
@@ -79,7 +79,7 @@ export const defaults = () => {
             }, {
                 order: 6,
                 id: 'xi',
-                name: 'Initial position, x<sub>i</sub> [m]',
+                name: 'Initial position<br/>x<sub>i</sub> [m]',
                 min: 0,
                 max: 1000,
                 value: 50,
@@ -89,7 +89,7 @@ export const defaults = () => {
             }, {
                 order: 7,
                 id: 'xe',
-                name: 'Arrival location, x<sub>e</sub> [m]',
+                name: 'Arrival location<br/>x<sub>e</sub> [m]',
                 min: 1,
                 max: 1000,
                 value: 200,

@@ -681,7 +681,7 @@
 .ui.form .required.field > .checkbox:after {
   margin: -0.2em 0em 0em 0.2em;
   content: '*';
-  color: #ED8D05;
+  color: #FF9800;
 }
 .ui.form .required.fields:not(.grouped) > .field > label:after,
 .ui.form .required.fields.grouped > label:after,
@@ -1080,4 +1080,14 @@
 
 input[type='number'] {
   text-align: right;
+}
+input[readonly],
+input[readonly]:focus,
+input[readonly="readonly"],
+input[readonly="readonly"]:focus {
+  background-color: #FFFFFF !important;
+  -webkit-box-shadow: inset 0px 0px 0px 1px rgba(34, 36, 38, 0.15) !important;
+          box-shadow: inset 0px 0px 0px 1px rgba(34, 36, 38, 0.15) !important;
+  cursor: default !important;
+  color: rgba(0, 0, 0, 0.6) !important;
 }

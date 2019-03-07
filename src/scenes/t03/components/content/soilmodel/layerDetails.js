@@ -1,6 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import {Button, Form, Grid, Tab} from 'semantic-ui-react';
+import {Form, Grid, Tab} from 'semantic-ui-react';
 import {ModflowModel} from 'core/model/modflow';
 import {SoilmodelLayer} from 'core/model/modflow/soilmodel';
 
@@ -135,11 +135,6 @@ class LayerDetails extends React.Component {
                                         },
                                     ]}
                                 />
-                                <Button negative icon='trash' labelPosition='left' floated={'right'}
-                                        onClick={() => this.props.onRemove(layer.id)}
-                                        content={'Delete'}
-                                >
-                                </Button>
                             </Grid.Column>
                         </Grid.Row>
                     </Grid>
@@ -167,7 +162,8 @@ class LayerDetails extends React.Component {
 
         return (
             <Form>
-                <Tab menu={{secondary: true, pointing: true}} activeIndex={this.props.activeIndex || 0} onTabChange={this.props.onChangeTab} panes={panes}/>
+                <Tab menu={{secondary: true, pointing: true}} activeIndex={this.props.activeIndex || 0}
+                     onTabChange={this.props.onChangeTab} panes={panes}/>
             </Form>
         )
     }
@@ -179,7 +175,6 @@ LayerDetails.proptypes = {
     model: PropTypes.instanceOf(ModflowModel).isRequired,
     onChange: PropTypes.func.isRequired,
     onChangeTab: PropTypes.func.isRequired,
-    onRemove: PropTypes.func.isRequired,
     readOnly: PropTypes.bool
 };
 

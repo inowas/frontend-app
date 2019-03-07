@@ -618,10 +618,10 @@
 
 /* Green */
 .ui.green.segment:not(.inverted) {
-  border-top: 2px solid #21BA45 !important;
+  border-top: 2px solid #4CAF53 !important;
 }
 .ui.inverted.green.segment {
-  background-color: #21BA45 !important;
+  background-color: #4CAF53 !important;
   color: #FFFFFF !important;
 }
 
@@ -877,3 +877,24 @@
          Site Overrides
 *******************************/
 
+.diagramLabel {
+  position: absolute !important;
+  background-color: #EFF3F6 !important;
+  opacity: 0.9;
+}
+.diagramLabel.topRight {
+  top: 24px;
+  right: 40px;
+}
+.diagramLabel.bottomRight {
+  bottom: 70px;
+  right: 40px;
+}
+.diagramLabel.topLeft {
+  top: 40px;
+  left: 110px;
+}
+.diagramLabel.bottomLeft {
+  bottom: 40px;
+  left: 40px;
+}

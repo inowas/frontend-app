@@ -1,13 +1,12 @@
-import ActiveCells from './ActiveCells';
-import BoundingBox from './BoundingBox';
+import Cells from '../geometry/Cells';
+import BoundingBox from '../geometry/BoundingBox';
 import Boundary from './boundaries/Boundary';
+import LineBoundary from './boundaries/LineBoundary';
 import Calculation from './Calculation';
-import MultipleOPBoundary from './boundaries/MultipleOPBoundary';
-import SingleOPBoundary from './boundaries/SingleOPBoundary';
 import BoundaryCollection from './boundaries/BoundaryCollection';
 import BoundaryFactory from './boundaries/BoundaryFactory';
-import Geometry from './Geometry';
-import GridSize from './GridSize';
+import Geometry from '../geometry/Geometry';
+import GridSize from '../geometry/GridSize';
 import LengthUnit from './LengthUnit';
 import ModflowModel from './ModflowModel';
 import Optimization from './optimization/Optimization';
@@ -17,7 +16,7 @@ import Stressperiods from './Stressperiods';
 import TimeUnit from './TimeUnit';
 
 export {
-    ActiveCells,
+    Cells,
     Boundary,
     BoundaryCollection,
     BoundaryFactory,
@@ -26,11 +25,10 @@ export {
     Geometry,
     GridSize,
     LengthUnit,
+    LineBoundary,
     ModflowModel,
-    MultipleOPBoundary,
     Optimization,
     CalculationResults,
-    SingleOPBoundary,
     Soilmodel,
     Stressperiods,
     TimeUnit

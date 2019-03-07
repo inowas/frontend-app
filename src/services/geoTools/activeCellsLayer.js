@@ -2,9 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import {Polyline, FeatureGroup} from 'react-leaflet';
 import {pure} from 'recompose';
-import BoundingBox from 'core/model/modflow/BoundingBox';
-import GridSize from 'core/model/modflow/GridSize';
-import ActiveCells from 'core/model/modflow/ActiveCells';
+import {Cells, BoundingBox, GridSize} from 'core/model/geometry';
 
 const renderGridCell = (key, xMin, xMax, yMin, yMax, styles) => {
     return (<Polyline key={key} positions={[
@@ -16,13 +14,13 @@ const renderGridCell = (key, xMin, xMax, yMin, yMax, styles) => {
     ]} {...styles.line}/>);
 };
 
-const calculateGridCells = (boundingBox, gridSize, activeCells) => {
+const calculateGridCells = (boundingBox, gridSize, cells) => {
 
     const dX = boundingBox.dX / gridSize.nX;
     const dY = boundingBox.dY / gridSize.nY;
     const gridCells = [];
 
-    activeCells.cells.forEach(a => {
+    cells.cells.forEach(a => {
         const x = a[0];
         const y = a[1];
 
@@ -37,12 +35,12 @@ const calculateGridCells = (boundingBox, gridSize, activeCells) => {
     return gridCells;
 };
 
-const ActiveCellsLayer = ({boundingBox, gridSize, activeCells, styles}) => {
-    if (!activeCells) {
+const ActiveCellsLayer = ({boundingBox, gridSize, cells, styles}) => {
+    if (!cells) {
         return null;
     }
 
-    const gridCells = calculateGridCells(boundingBox, gridSize, activeCells);
+    const gridCells = calculateGridCells(boundingBox, gridSize, cells);
 
     return (
         <FeatureGroup>
@@ -54,7 +52,7 @@ const ActiveCellsLayer = ({boundingBox, gridSize, activeCells, styles}) => {
 ActiveCellsLayer.propTypes = {
     boundingBox: PropTypes.instanceOf(BoundingBox),
     gridSize: PropTypes.instanceOf(GridSize),
-    activeCells: PropTypes.instanceOf(ActiveCells),
+    cells: PropTypes.instanceOf(Cells),
     styles: PropTypes.object
 };
 

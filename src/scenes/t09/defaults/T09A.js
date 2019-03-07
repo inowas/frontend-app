@@ -7,12 +7,12 @@ export const defaults = () => {
         description: 'Simple tool description',
         permissions: 'rwx',
         public: false,
-        type: 'T09A',
+        tool: 'T09A',
         data: {
             parameters: [{
                 order: 0,
                 id: 'h',
-                name: 'Freshwater thickness, h [m]',
+                name: 'Freshwater thickness<br/>h [m]',
                 min: 0,
                 max: 10,
                 value: 1,
@@ -21,7 +21,7 @@ export const defaults = () => {
             }, {
                 order: 1,
                 id: 'df',
-                name: 'Density of freshwater [g/cm³]',
+                name: 'Density of freshwater<br/>ρ<sub>f</sub> [g/cm³]',
                 min: 0.9,
                 validMin: x => x >= 0.9,
                 max: 1.03,
@@ -32,7 +32,7 @@ export const defaults = () => {
             }, {
                 order: 2,
                 id: 'ds',
-                name: 'Density of saltwater [g/cm³]',
+                name: 'Density of saltwater<br/>ρ<sub>s</sub> [g/cm³]',
                 min: 0.9,
                 validMin: x => x >= 0.9,
                 max: 1.03,

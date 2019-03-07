@@ -7,12 +7,12 @@ export const defaults = () => {
         description: 'Simple tool description',
         permissions: 'rwx',
         public: false,
-        type: 'T09B',
+        tool: 'T09B',
         data: {
             parameters: [{
                 order: 0,
                 id: 'b',
-                name: 'Aquifer thickness, b [m]',
+                name: 'Aquifer thickness<br/>b [m]',
                 min: 1,
                 validMin: x => x > 0,
                 max: 100,
@@ -22,7 +22,7 @@ export const defaults = () => {
             }, {
                 order: 1,
                 id: 'i',
-                name: 'Hydraulic gradient, i [-]',
+                name: 'Hydraulic gradient<br/>i [-]',
                 min: 0.000,
                 validMin: x => x >= 0,
                 max: 0.010,
@@ -33,7 +33,7 @@ export const defaults = () => {
             }, {
                 order: 2,
                 id: 'df',
-                name: 'Density of freshwater [g/cm³]',
+                name: 'Density of freshwater<br/>ρ<sub>f</sub> [g/cm³]',
                 min: 0.9,
                 validMin: x => x >= 0.9,
                 max: 1.03,
@@ -44,7 +44,7 @@ export const defaults = () => {
             }, {
                 order: 3,
                 id: 'ds',
-                name: 'Density of saltwater [g/cm³]',
+                name: 'Density of saltwater<br/>ρ<sub>s</sub> [g/cm³]',
                 min: 0.9,
                 validMin: x => x >= 0.9,
                 max: 1.03,

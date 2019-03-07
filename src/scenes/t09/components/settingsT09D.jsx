@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types';
 import React from 'react';
 import {pure} from 'recompose';
-import {Form, Grid, Header, Radio} from 'semantic-ui-react';
+import {Form, Grid, Header, Radio, Segment} from 'semantic-ui-react';
 
 const Settings = ({settings, onChange}) => {
 
@@ -12,31 +12,28 @@ const Settings = ({settings, onChange}) => {
     return (
         <Grid padded>
             <Grid.Row centered>
-                <Header as='h2'>Settings</Header>
-            </Grid.Row>
-            <Grid.Row centered>
-                <p>Please choose the aquifer type:</p>
-            </Grid.Row>
-            <Grid.Row centered>
                 <Form>
-                    <Form.Field>
-                        <Radio
-                            label='Confined Aquifer'
-                            value={'confined'}
-                            name='AqType'
-                            checked={settings.AqType === 'confined'}
-                            onChange={handleChange}
-                        />
-                    </Form.Field>
-                    <Form.Field>
-                        <Radio
-                            label='Unconfined Aquifer'
-                            value={'unconfined'}
-                            name='AqType'
-                            checked={settings.AqType === 'unconfined'}
-                            onChange={handleChange}
-                        />
-                    </Form.Field>
+                    <Header as='h4'>Choose the aquifer type:</Header>
+                    <Segment style={{textAlign:'left'}}>
+                        <Form.Field>
+                            <Radio
+                                label='Confined Aquifer'
+                                value={'confined'}
+                                name='AqType'
+                                checked={settings.AqType === 'confined'}
+                                onChange={handleChange}
+                            />
+                        </Form.Field>
+                        <Form.Field>
+                            <Radio
+                                label='Unconfined Aquifer'
+                                value={'unconfined'}
+                                name='AqType'
+                                checked={settings.AqType === 'unconfined'}
+                                onChange={handleChange}
+                            />
+                        </Form.Field>
+                    </Segment>
                 </Form>
             </Grid.Row>
         </Grid>

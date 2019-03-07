@@ -1,64 +1,63 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import {Grid, Input, Message, Segment, Table} from 'semantic-ui-react';
-import {WeightsCollection, WeightAssignment} from 'core/mcda/criteria';
-import {cloneDeep} from 'lodash';
+import {Form, Grid, Input, Message, Segment, Table} from 'semantic-ui-react';
+import {WeightAssignment} from 'core/model/mcda/criteria';
 
 class SimpleWeightAssignment extends React.Component {
 
     constructor(props) {
-        super();
+        super(props);
 
         this.state = {
             sum: props.weightAssignment.weightsCollection.sumBy('value'),
-            weights: props.weightAssignment.weightsCollection.toArray()
+            wa: props.weightAssignment.toObject(),
+            showInfo: true
         };
     }
 
-    handleChange = weights => {
-        const weightAssignment = this.props.weightAssignment;
-        weightAssignment.weightsCollection = WeightsCollection.fromArray(weights);
+    handleDismiss = () => this.setState({showInfo: false});
 
-        return this.props.handleChange({
-            name: 'weights',
-            value: weightAssignment
-        });
+    onLocalChange = (e, {name, value}) => this.setState(prevState => ({
+        wa: {
+            ...prevState.wa,
+            [name]: value
+        }
+    }));
+
+    onBlurValue = () => {
+        const wa = WeightAssignment.fromObject(this.state.wa);
+        wa.calculateWeights();
+        return this.props.handleChange(wa);
     };
 
-    onBlur = () => {
-        const sum = WeightsCollection.fromArray(this.state.weights).sumBy('value');
-        const newWeights = cloneDeep(this.state.weights).map(w => {
-            w.value = w.value / sum;
-            return w;
-        });
-        this.handleChange(newWeights);
-    };
-
-    onChange = (e, {name, value}) => {
-        const newWeights = this.state.weights.map(weight => {
+    onChangeValue = (e, {name, value}) => {
+        const wa = this.state.wa;
+        wa.weights = wa.weights.map(weight => {
             if (name === weight.id) {
-                weight.value = parseFloat(value);
+                weight.initialValue = value;
             }
             return weight;
         });
         return this.setState({
-            weights: newWeights
+            wa: wa
         });
     };
 
     render() {
         const {readOnly} = this.props;
+        const {wa} = this.state;
 
         return (
             <div>
-                <Message>
-                    <Message.Header>Weight Assignment: Simple</Message.Header>
-                    <p>You can perform more of the weight assignment methods and compare the results in the end.</p>
-                    <p>Simple Assignment: assign weights to the criteria completely free by filling the input
-                        fields.</p>
+                {this.state.showInfo &&
+                <Message onDismiss={this.handleDismiss}>
+                    <Message.Header>Weight Assignment: Free Input</Message.Header>
+                    <p>Assign values to each criterion completely free by filling the input fields. The given values are
+                        then normalized and calculated to weights between 0 and 1 in relation to the other values.</p>
                 </Message>
+                }
 
-                {this.state.weights.length > 0 &&
+                {wa.weights.length > 0 &&
                 <Grid columns={2}>
                     <Grid.Column>
                         <Segment textAlign='center' inverted color='grey' secondary>
@@ -66,7 +65,7 @@ class SimpleWeightAssignment extends React.Component {
                         </Segment>
                         <Segment>
                             <Grid>
-                                {this.state.weights.map((weight, key) =>
+                                {wa.weights.map((weight, key) =>
                                     <Grid.Row key={key}>
                                         <Grid.Column width={5}>
                                             {weight.criterion.name}
@@ -76,9 +75,9 @@ class SimpleWeightAssignment extends React.Component {
                                                 type='number'
                                                 disabled={readOnly}
                                                 name={weight.id}
-                                                onBlur={this.onBlur}
-                                                onChange={this.onChange}
-                                                value={weight.value}
+                                                onBlur={this.onBlurValue}
+                                                onChange={this.onChangeValue}
+                                                value={weight.initialValue}
                                             />
                                         </Grid.Column>
                                     </Grid.Row>
@@ -87,6 +86,20 @@ class SimpleWeightAssignment extends React.Component {
                         </Segment>
                     </Grid.Column>
                     <Grid.Column>
+                        <Segment textAlign='center' inverted color='grey' secondary>
+                            Settings
+                        </Segment>
+                        <Form>
+                            <Form.Input
+                                fluid
+                                onBlur={this.onBlurValue}
+                                onChange={this.onLocalChange}
+                                name='name'
+                                type='text'
+                                label='Name'
+                                value={wa.name}
+                            />
+                        </Form>
                         <Segment textAlign='center' inverted color='grey' secondary>
                             Weight Assignment
                         </Segment>

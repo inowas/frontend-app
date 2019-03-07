@@ -11,7 +11,7 @@ import {
     CartesianGrid, Label
 } from 'recharts';
 
-import {Button, Grid, Segment} from 'semantic-ui-react';
+import {Button, Grid, Icon, Segment} from 'semantic-ui-react';
 
 import {
     calcC,
@@ -28,21 +28,9 @@ import {exportChartData, exportChartImage, getParameterValues} from '../../share
 const styles = {
     chart: {
         top: 20,
-        right: 40,
+        right: 20,
         left: 20,
-        bottom: 20
-    },
-    diagramLabel: {
-        position: 'absolute',
-        bottom: '90px',
-        right: '65px',
-        background: '#EFF3F6',
-        opacity: 0.9
-    },
-    downloadButtons: {
-        position: 'absolute',
-        top: '45px',
-        right: '60px'
+        bottom: 0
     }
 };
 
@@ -116,8 +104,8 @@ const Chart = ({settings, parameters}) => {
     return (
         <div>
             <Grid>
-                <Grid.Row>
-                    <ResponsiveContainer width={'100%'} aspect={2}>
+                <Grid.Column>
+                    <ResponsiveContainer width={'100%'} aspect={2.5}>
                         <LineChart
                             data={data}
                             margin={styles.chart}
@@ -128,14 +116,17 @@ const Chart = ({settings, parameters}) => {
                                     value={label}
                                     offset={0}
                                     position="bottom"
+                                    fill={'#4C4C4C'}
+                                    style={{textAnchor: 'center', fontSize: '13px'}}
                                 />
                             </XAxis>
                             <YAxis type="number" domain={[0, 'auto']}>
                                 <Label
                                     angle={270}
                                     position='left'
-                                    style={{textAnchor: 'center'}}
-                                    value={'C/C0 [-]'}
+                                    fill={'#4C4C4C'}
+                                    style={{textAnchor: 'center', fontSize: '13px'}}
+                                    value={'C/C₀ [-]'}
                                 />
                             </YAxis>
                             <CartesianGrid strokeDasharray="3 3"/>
@@ -150,28 +141,28 @@ const Chart = ({settings, parameters}) => {
                         </LineChart>
                     </ResponsiveContainer>
 
-                    <Segment raised style={styles.diagramLabel}>
+                    <Segment raised className={'diagramLabel topRight'}>
                         <p>C&nbsp;=&nbsp;<strong>{(C * C0).toFixed(2)}</strong>&nbsp;mg/L</p>
                         <p>{variable}<sub>0</sub>&nbsp;=&nbsp;<strong>{val0}</strong>&nbsp;{unit}</p>
                         <p>{variable}<sub>50</sub>&nbsp;=&nbsp;<strong>{val50}</strong>&nbsp;{unit}</p>
                         <p>{variable}<sub>max</sub>&nbsp;=&nbsp;<strong>{valmax}</strong>&nbsp;{unit}</p>
                     </Segment>
 
-                    <div style={styles.downloadButtons}>
-                        <Button
-                            size={'tiny'}
-                            color={'grey'}
-                            content='JPG'
-                            onClick={() => exportChartImage(currentChart)}
-                        />
-                        <Button
-                            size={'tiny'}
-                            color={'grey'}
-                            content='CSV'
-                            onClick={() => exportChartData(currentChart)}
-                        />
+                    <div className='downloadButtons'>
+                        <Button compact basic icon
+                                size={'small'}
+                                onClick={() => exportChartImage(currentChart)}
+                        >
+                            <Icon name='download' /> JPG
+                        </Button>
+                        <Button compact basic icon
+                                size={'small'}
+                                onClick={() => exportChartData(currentChart)}
+                        >
+                            <Icon name='download' /> CSV
+                        </Button>
                     </div>
-                </Grid.Row>
+                </Grid.Column>
             </Grid>
         </div>
     );

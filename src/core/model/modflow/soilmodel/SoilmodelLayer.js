@@ -2,8 +2,7 @@ import uuidv4 from 'uuid/v4';
 import {SoilmodelZone, ZonesCollection} from './index';
 import {GridSize} from '../index';
 import {cloneDeep} from 'lodash';
-import Geometry from '../Geometry';
-import ActiveCells from '../ActiveCells';
+import {Cells, Geometry} from 'core/model/geometry';
 import ModflowModel from '../ModflowModel';
 
 class SoilmodelLayer {
@@ -25,12 +24,13 @@ class SoilmodelLayer {
     _ss = 0.00002;
     _sy = 0.15;
 
-    static fromDefault(geometry, activeCells) {
+    static fromDefault(geometry, cells) {
         if (!(geometry instanceof Geometry)) {
             throw new Error('GridSize needs to be instance of GridSize');
         }
-        if (!(activeCells instanceof ActiveCells)) {
-            throw new Error('GridSize needs to be instance of GridSize');
+
+        if (!(cells instanceof Cells)) {
+            throw new Error('Cells needs to be instance of Cells');
         }
 
         const layer = new SoilmodelLayer();
@@ -39,7 +39,7 @@ class SoilmodelLayer {
 
         const defaultZone = SoilmodelZone.fromDefault();
         defaultZone.geometry = geometry;
-        defaultZone.activeCells = activeCells;
+        defaultZone.activeCells = cells;
         layer.zonesCollection.add(defaultZone);
         return layer;
     }
@@ -201,6 +201,11 @@ class SoilmodelLayer {
         this._meta._zones = value;
     }
 
+    clone(newId) {
+        this._id = newId;
+        return SoilmodelLayer.fromObject(this.toObject());
+    }
+
     toObject() {
         return {
             'id': this.id,
@@ -228,10 +233,10 @@ class SoilmodelLayer {
             throw new Error('Model needs to be instance of ModflowModel');
         }
 
-        const defaultZone = this.zonesCollection.findBy('priority', 0, true);
+        const defaultZone = this.zonesCollection.findBy('priority', 0, {first: true});
         if (defaultZone) {
             defaultZone.geometry = model.geometry;
-            defaultZone.activeCells = model.activeCells;
+            defaultZone.activeCells = model.cells;
             this.zonesCollection.update(defaultZone);
             this.resetParameters().zonesToParameters(model.gridSize);
         }
@@ -311,7 +316,7 @@ class SoilmodelLayer {
                     // ... if not:
                     if (zone.priority > 0 || (zone.priority === 0 && !zoneParameter.isArray())) {
                         // update the values for the parameter in the cells given by the zone
-                        zone.activeCells.cells.forEach(cell => {
+                        zone.cells.cells.forEach(cell => {
                             //console.log(`set ${parameter} at ${cell[1]} ${cell[0]} with value ${zone[parameter]}`);
                             this[parameter][cell[1]][cell[0]] = zoneParameter.value;
                         });

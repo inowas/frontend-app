@@ -120,11 +120,11 @@ class NavBar extends React.Component {
             }
         ];
 
-        const userIsLoggedIn = this.props.session.apiKey;
+        const userIsLoggedIn = this.props.session.token;
 
         return (
 
-            <Menu fixed='top' inverted color='grey'>
+            <Menu fixed='top' inverted color='grey' style={{zIndex:9999}}>
                 <Container style={{minWidth: '1280px',padding: '0 1em'}}>
                     {this.renderLinks(standardLinks)}
                     {userIsLoggedIn && this.renderLinks(standardLinksAuthenticationRequired.concat(this.props.links))}

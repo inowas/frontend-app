@@ -17,7 +17,7 @@ build:dev:
   
   script: 
     - yarn install
-    - REACT_APP_API_URL=https://api.dev.inowas.hydro.tu-dresden.de NODE_PATH=src yarn build
+    - REACT_APP_API_URL=https://api.dev.inowas.com NODE_PATH=src yarn build
     - VERSION=$(git describe --tags --always --dirty=+) && DATE=$(date +%Y-%m-%dT%H:%M:%S) && sed -i "s/@@__VERSION__@@/${VERSION}/g;s/@@__BUILT__@@/${DATE}/g" ./build/index.html
 
   artifacts:
@@ -47,7 +47,7 @@ deploy:dev:
     - ssh -p22 $SSH_CREDENTIALS_DEVELOPMENT_SERVER "rm -rf $DEVELOPMENT_PATH.old"
   environment:
     name: development
-    url: https://dev.rabbl.de
+    url: https://dev.inowas.com
   only:
     - dev    
 
@@ -57,7 +57,7 @@ build:prod:
   
   script: 
     - yarn install
-    - REACT_APP_API_URL=https://api.dss.inowas.hydro.tu-dresden.de NODE_PATH=src yarn build
+    - REACT_APP_API_URL=https://api.dev.inowas.hydro.tu-dresden.de NODE_PATH=src yarn build
     - VERSION=$(git describe --tags --always --dirty=+) && DATE=$(date +%Y-%m-%dT%H:%M:%S) && sed -i "s/@@__VERSION__@@/${VERSION}/g;s/@@__BUILT__@@/${DATE}/g" ./build/index.html
 
   artifacts:
@@ -87,14 +87,14 @@ deploy:prod:staging:
     - ssh -p22 $SSH_CREDENTIALS_STAGING_SERVER "rm -rf $STAGING_PATH.old"
   environment:
     name: staging
-    url: https://staging.rabbl.de
+    url: https://staging.inowas.com
   only:
     - master
 
 deploy:prod:production:
   stage: deploy
   dependencies: 
-    - build:dev
+    - build:prod
 
   before_script:
     - 'which ssh-agent || ( apt-get update -y && apt-get install openssh-client -y )'
@@ -111,7 +111,7 @@ deploy:prod:production:
     - ssh -p22 $SSH_CREDENTIALS_PRODUCTION_SERVER "rm -rf $PRODUCTION_PATH.old"
   environment:
     name: production
-    url: https://production.rabbl.de    
+    url: https://dss.inowas.com
   when: manual    
   only:
     - master    

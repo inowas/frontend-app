@@ -7,12 +7,12 @@ export const defaults = () => {
         description: 'Simple tool description',
         permissions: 'rwx',
         public: false,
-        type: 'T13E',
+        tool: 'T13E',
         data: {
             parameters: [{
                 order: 0,
                 id: 'Qw',
-                name: 'Constant pumped flow rate, Q<sub>w [m3/d]',
+                name: 'Constant pumped flow rate<br/>Q<sub>w [m3/d]',
                 min: 0,
                 max: 10000,
                 value: 1300,
@@ -21,7 +21,7 @@ export const defaults = () => {
             }, {
                 order: 1,
                 id: 'ne',
-                name: 'Effective porosity, n [-]',
+                name: 'Effective porosity<br/>n [-]',
                 min: 0,
                 max: 0.5,
                 value: 0.35,
@@ -30,7 +30,7 @@ export const defaults = () => {
             }, {
                 order: 2,
                 id: 'hL',
-                name: 'Downstream head, h<sub>L</sub> [m]',
+                name: 'Downstream head<br/>h<sub>L</sub> [m]',
                 min: 0,
                 max: 20,
                 value: 6,
@@ -39,7 +39,7 @@ export const defaults = () => {
             }, {
                 order: 3,
                 id: 'h0',
-                name: 'Upstream head, h<sub>0</sub> [m]',
+                name: 'Upstream head<br/>h<sub>0</sub> [m]',
                 min: 0,
                 max: 20,
                 value: 10,
@@ -48,7 +48,7 @@ export const defaults = () => {
             }, {
                 order: 4,
                 id: 'xi',
-                name: 'Initial position, x<sub>i</sub> [m]',
+                name: 'Initial position<br/>x<sub>i</sub> [m]',
                 min: 0,
                 max: 1000,
                 value: 303,
@@ -57,7 +57,7 @@ export const defaults = () => {
             }, {
                 order: 5,
                 id: 'x',
-                name: 'Location of the well, x [m]',
+                name: 'Location of the well<br/>x [m]',
                 min: 0,
                 max: 1000,
                 value: 0.1,

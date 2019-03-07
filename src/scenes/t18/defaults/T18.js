@@ -10,7 +10,7 @@ export const defaults = () => {
         description: 'Simple tool description',
         permissions: 'rwx',
         public: false,
-        type: 'T18',
+        tool: 'T18',
         data: {
             settings: {
                 AF: 0.07
@@ -18,7 +18,7 @@ export const defaults = () => {
             parameters: [{
                 order: 0,
                 id: 'LLRN',
-                name: 'Limiting loading rates N (kg/m²/y)',
+                name: 'Limiting loading rates<br/>N (kg/m²/y)',
                 min: 0,
                 validMin: x => x >= 0,
                 max: 500,
@@ -28,7 +28,7 @@ export const defaults = () => {
             }, {
                 order: 1,
                 id: 'LLRO',
-                name: 'Limiting loading rates BOD (kg/m²/y)',
+                name: 'Limiting loading rates<br/>BOD (kg/m²/y)',
                 min: 0,
                 validMin: x => x >= 0,
                 max: 1000,
@@ -38,7 +38,7 @@ export const defaults = () => {
             }, {
                 order: 2,
                 id: 'Q',
-                name: 'Flow rate, Q (million m³/y)',
+                name: 'Flow rate<br/>Q (million m³/y)',
                 min: 0,
                 validMin: x => x >= 0,
                 max: 30,
@@ -48,7 +48,7 @@ export const defaults = () => {
             }, {
                 order: 3,
                 id: 'IR',
-                name: 'Infiltration rate, I' + 'R'.sub() + '(m/y)',
+                name: 'Infiltration rate<br/>I' + 'R'.sub() + '(m/y)',
                 min: 0,
                 validMin: x => x >= 0,
                 max: 1000,
@@ -58,7 +58,7 @@ export const defaults = () => {
             }, {
                 order: 4,
                 id: 'OD',
-                name: 'No. operation days per year, OD (d)',
+                name: 'No. operation days per year<br/>OD (d)',
                 min: 0,
                 validMin: x => x >= 0,
                 max: 365,
@@ -69,7 +69,7 @@ export const defaults = () => {
             }, {
                 order: 5,
                 id: 'Cn',
-                name: 'Nitrogen concentration, C' + 'N'.sub() + '(mg/l)',
+                name: 'Nitrogen concentration<br/>C' + 'N'.sub() + '(mg/l)',
                 min: 0,
                 validMin: x => x >= 0,
                 max: 100,
@@ -79,7 +79,7 @@ export const defaults = () => {
             }, {
                 order: 6,
                 id: 'Co',
-                name: 'Organic concentration, C' + 'O'.sub() + '(BOD in mg/l)',
+                name: 'Organic concentration<br/>C' + 'O'.sub() + '(BOD in mg/l)',
                 min: 0,
                 validMin: x => x >= 0,
                 max: 100,

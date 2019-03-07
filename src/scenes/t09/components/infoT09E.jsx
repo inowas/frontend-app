@@ -28,15 +28,15 @@ const Info = ({parameters, settings}) => {
         data = calculateDiagramData(xt, z0, xtSlr, z0 + dz, isValid);
 
         return (
-            <Message icon>
+            <Message icon info>
                 <Icon name='info circle' color='blue' />
                 <Message.Content>
                     <p>
-                        With a hydraulic gradient i of {-i.toFixed(3)} m/m, the calculated distance of the toe of
-                        interface prior sea level rise is {Math.abs(data[1].xt).toFixed(1)} m. The distance of the toe
-                        of the interface after sea level rise is {Math.abs(data[2].xt).toFixed(1)} m.
-                        Therefore, the toe of the freshwater-saltwater interface will move {(Math.abs(data[2].xt)
-                        - Math.abs(data[1].xt)).toFixed(2)}&nbsp;m inland caused by sea level rise.
+                        With a hydraulic gradient i of <strong>{-i.toFixed(3)} m/m</strong>, the calculated distance of the toe of
+                        interface prior sea level rise is <strong>{Math.abs(data[1].xt).toFixed(1)} m</strong>. The distance of the toe
+                        of the interface after sea level rise is <strong>{Math.abs(data[2].xt).toFixed(1)} m</strong>.
+                        Therefore, the toe of the freshwater-saltwater interface will move <strong>{(Math.abs(data[2].xt)
+                        - Math.abs(data[1].xt)).toFixed(2)}&nbsp;m</strong> inland caused by sea level rise.
                     </p>
                 </Message.Content>
             </Message>
@@ -48,17 +48,15 @@ const Info = ({parameters, settings}) => {
         data = calculateDiagramData(xt, z0, xtSlr, z0 + dz, isValid);
 
         return (
-            <Message icon>
+            <Message icon info>
                 <Icon name='info circle' color='blue' />
                 <Message.Content>
                     <p>
-                        With a hydraulic gradient i of {-i.toFixed(3)} m/m, the calculated distance of the toe of
-                        interface prior sea level rise is {Math.abs(data[1].xt).toFixed(1)} m. The distance of the
-                        toe of the interface after sea level rise is {Math.abs(data[2].xt).toFixed(1)} m.
-                        Therefore, the toe of the freshwater-saltwater interface will move {(Math.abs(data[2].xt)
-                        - Math.abs(data[1].xt)).toFixed(2)}&nbsp;m
-                        inland caused by sea level
-                        rise.
+                        With a hydraulic gradient i of <strong>{-i.toFixed(3)} m/m</strong>, the calculated distance of the toe of
+                        interface prior sea level rise is <strong>{Math.abs(data[1].xt).toFixed(1)} m</strong>. The distance of the
+                        toe of the interface after sea level rise is <strong>{Math.abs(data[2].xt).toFixed(1)} m</strong>.
+                        Therefore, the toe of the freshwater-saltwater interface will move <strong>{(Math.abs(data[2].xt)
+                        - Math.abs(data[1].xt)).toFixed(2)}&nbsp;m</strong> inland caused by sea level rise.
                     </p>
                 </Message.Content>
             </Message>

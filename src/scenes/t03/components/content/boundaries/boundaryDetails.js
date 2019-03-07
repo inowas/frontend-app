@@ -5,7 +5,7 @@ import uuid from 'uuid';
 import {Button, Dropdown, Form, Header, List, Popup} from 'semantic-ui-react';
 
 import BoundaryMap from '../../maps/boundaryMap';
-import {Boundary, ModflowModel, MultipleOPBoundary, SingleOPBoundary, Soilmodel} from 'core/model/modflow';
+import {Boundary, LineBoundary, ModflowModel, Soilmodel} from 'core/model/modflow';
 import BoundaryValuesDataTable from './boundaryValuesDataTable';
 import BoundaryGeometryEditor from './boundaryGeometryEditor';
 import ObservationPointEditor from './observationPointEditor';
@@ -27,14 +27,20 @@ class BoundaryDetails extends React.Component {
             return;
         }
 
-        if ((nextProps.boundary instanceof SingleOPBoundary)) {
-            return this.setState({observationPointId: null})
-        }
+        if (nextProps.boundary instanceof LineBoundary) {
+            if (null === this.state.observationPointId) {
+                return this.setState({
+                    observationPointId: nextProps.boundary.observationPoints[0].id
+                })
+            }
 
-        if ((nextProps.boundary instanceof MultipleOPBoundary) && !this.state.observationPointId) {
-            return this.setState({
-                observationPointId: nextProps.boundary.observationPoints[0].id
-            })
+            try {
+                nextProps.boundary.findObservationPointById(this.state.observationPointId);
+            } catch (err) {
+                return this.setState({
+                    observationPointId: nextProps.boundary.observationPoints[0].id
+                })
+            }
         }
     }
 
@@ -90,7 +96,7 @@ class BoundaryDetails extends React.Component {
                 <Form>
                     <Form.Group widths='equal'>
                         <Form.Input
-                            value={boundary.type}
+                            value={boundary.type.toUpperCase()}
                             label='Type'
                             readOnly
                             width={5}
@@ -110,21 +116,21 @@ class BoundaryDetails extends React.Component {
                             multiple={multipleLayers}
                             selection
                             options={this.layerOptions()}
-                            value={multipleLayers ? boundary.affectedLayers : boundary.affectedLayers[0]}
+                            value={multipleLayers ? boundary.layers : boundary.layers[0]}
                             name={'affectedLayers'}
                             onChange={this.handleChange}
                         />
 
-                        {boundary.subTypes &&
+                        {boundary.type === 'wel' &&
                         <Form.Dropdown
-                            label={boundary.subTypes.name}
+                            label={'Well type'}
                             style={{zIndex: 1000}}
                             selection
-                            options={boundary.subTypes.types.map(t => (
+                            options={boundary.wellTypes.types.map(t => (
                                 {key: t.value, value: t.value, text: t.name}
                             ))}
-                            value={boundary.subType}
-                            name={'subType'}
+                            value={boundary.wellType}
+                            name={'wellType'}
                             onChange={this.handleChange}
                         />
                         }
@@ -142,7 +148,7 @@ class BoundaryDetails extends React.Component {
                     boundary={boundary}
                     selectedObservationPointId={observationPointId}
                 />
-                {(boundary instanceof MultipleOPBoundary) &&
+                {(boundary instanceof LineBoundary) &&
                 <div>
                     <Button as={'div'} labelPosition={'left'} fluid>
                         <Popup trigger={

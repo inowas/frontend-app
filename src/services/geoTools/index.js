@@ -1,6 +1,6 @@
 import {booleanCrosses, booleanContains, booleanOverlap, envelope, lineString} from '@turf/turf';
 import {floor} from 'lodash';
-import {ActiveCells, BoundingBox, Geometry, GridSize} from 'core/model/modflow';
+import {Cells, BoundingBox, Geometry, GridSize} from 'core/model/modflow';
 
 /* Calculate GridCells
 Structure:
@@ -11,7 +11,7 @@ const cells = [
 {x:1, y:5, geometry: geometry},
 ]
 */
-const getGridCells = (boundingBox, gridSize) => {
+export const getGridCells = (boundingBox, gridSize) => {
 
     if (!boundingBox instanceof BoundingBox) {
         throw new Error('Geometry needs to be instance of BoundingBox');
@@ -76,7 +76,7 @@ export const calculateActiveCells = (geometry, boundingBox, gridSize) => {
         throw new Error('GridSize needs to be instance of GridSize');
     }
 
-    const activeCells = new ActiveCells([]);
+    const activeCells = new Cells([]);
 
     if (geometry.fromType('point')) {
         const coordinate = geometry.coordinates;

@@ -15,7 +15,7 @@ import image from '../images/T12.png';
 import {defaults} from '../defaults/T12';
 
 import {fetchTool, sendCommand} from 'services/api';
-import {buildPayload, deepMerge} from '../../shared/simpleTools/helpers';
+import {buildPayloadToolInstance, deepMerge} from '../../shared/simpleTools/helpers';
 
 const navigation = [];
 
@@ -34,7 +34,7 @@ class T12 extends React.Component {
         if (this.props.match.params.id) {
             this.setState({isLoading: true});
             fetchTool(
-                this.state.tool.type,
+                this.state.tool.tool,
                 this.props.match.params.id,
                 tool => this.setState({
                     tool: deepMerge(this.state.tool, tool),
@@ -51,7 +51,7 @@ class T12 extends React.Component {
 
         if (id) {
             sendCommand(
-                SimpleToolsCommand.updateToolInstance(buildPayload(tool)),
+                SimpleToolsCommand.updateToolInstance(buildPayloadToolInstance(tool)),
                 () => this.setState({isDirty: false}),
                 () => this.setState({error: true})
             );
@@ -59,7 +59,7 @@ class T12 extends React.Component {
         }
 
         sendCommand(
-            SimpleToolsCommand.createToolInstance(buildPayload(tool)),
+            SimpleToolsCommand.createToolInstance(buildPayloadToolInstance(tool)),
             () => this.props.history.push(`${this.props.location.pathname}/${tool.id}`),
             () => this.setState({error: true})
         );

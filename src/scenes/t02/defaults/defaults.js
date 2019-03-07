@@ -7,7 +7,7 @@ export const defaults = () => {
         description: 'Simple tool description',
         permissions: 'rwx',
         public: false,
-        type: 'T02',
+        tool: 'T02',
         data: {
             settings: {
                 variable: 'x'
@@ -15,7 +15,7 @@ export const defaults = () => {
             parameters: [{
                 order: 0,
                 id: 'w',
-                name: 'Percolation rate, w (m/d)',
+                name: 'Percolation rate<br/>w (m/d)',
                 min: 0,
                 validMin: (x) => x >= 0,
                 max: 10,
@@ -26,7 +26,7 @@ export const defaults = () => {
             }, {
                 order: 1,
                 id: 'L',
-                name: 'Basin length, L (m)',
+                name: 'Basin length<br/>L (m)',
                 min: 0,
                 validMin: (x) => x > 0,
                 max: 1000,
@@ -37,7 +37,7 @@ export const defaults = () => {
             }, {
                 order: 2,
                 id: 'W',
-                name: 'Basin width, W (m)',
+                name: 'Basin width<br/>W (m)',
                 min: 0,
                 validMin: (x) => x > 0,
                 max: 100,
@@ -48,7 +48,7 @@ export const defaults = () => {
             }, {
                 order: 3,
                 id: 'hi',
-                name: 'Initial groundwater Level, hi (m)',
+                name: 'Initial groundwater Level<br/>h<sub>i</sub> (m)',
                 min: 0,
                 validMin: (x) => x >= 0,
                 max: 100,
@@ -59,7 +59,7 @@ export const defaults = () => {
             }, {
                 order: 4,
                 id: 'Sy',
-                name: 'Specific yield, Sy (-)',
+                name: 'Specific yield<br/>S<sub>y</sub> (-)',
                 min: 0.000,
                 validMin: (x) => x > 0,
                 max: 0.5,
@@ -71,7 +71,7 @@ export const defaults = () => {
             }, {
                 order: 5,
                 id: 'K',
-                name: 'Hydraulic conductivity, K (m/d)',
+                name: 'Hydraulic conductivity<br/>K (m/d)',
                 min: 0.1,
                 validMin: (x) => x > 0,
                 max: 10,
@@ -83,7 +83,7 @@ export const defaults = () => {
             }, {
                 order: 6,
                 id: 't',
-                name: 'Infiltration time, t (d)',
+                name: 'Infiltration time<br/>t (d)',
                 min: 0,
                 validMin: x => x > 0,
                 max: 100,

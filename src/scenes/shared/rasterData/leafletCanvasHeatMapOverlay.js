@@ -5,6 +5,7 @@ import {
     DomUtil,
     latLngBounds as toLatLngBounds
 } from 'leaflet';
+import Rainbow from '../../../../node_modules/rainbowvis.js/rainbowvis';
 
 export const CanvasHeatMapOverlay = Layer.extend({
     options: {
@@ -14,17 +15,18 @@ export const CanvasHeatMapOverlay = Layer.extend({
         className: ''
     },
 
-    initialize: function(nX, nY, data, bounds, rainbow, options) {
+    initialize: function (nX, nY, data, bounds, rainbow, sharpening = 1, options) {
         this._nX = nX;
         this._nY = nY;
         this._dataArray = data;
         this._bounds = toLatLngBounds(bounds);
         this._rainbow = rainbow;
+        this._sharpening = sharpening;
 
         Util.setOptions(this, options);
     },
 
-    onAdd: function() {
+    onAdd: function () {
         if (!this._canvas) {
             this._initCanvas();
 
@@ -42,14 +44,14 @@ export const CanvasHeatMapOverlay = Layer.extend({
         this._reset();
     },
 
-    onRemove: function() {
+    onRemove: function () {
         DomUtil.remove(this._canvas);
         if (this.options.interactive) {
             this.removeInteractiveTarget(this._canvas);
         }
     },
 
-    setOpacity: function(opacity) {
+    setOpacity: function (opacity) {
         this.options.opacity = opacity;
 
         if (this._canvas) {
@@ -58,28 +60,28 @@ export const CanvasHeatMapOverlay = Layer.extend({
         return this;
     },
 
-    setStyle: function(styleOpts) {
+    setStyle: function (styleOpts) {
         if (styleOpts.opacity) {
             this.setOpacity(styleOpts.opacity);
         }
         return this;
     },
 
-    bringToFront: function() {
+    bringToFront: function () {
         if (this._map) {
             DomUtil.toFront(this._canvas);
         }
         return this;
     },
 
-    bringToBack: function() {
+    bringToBack: function () {
         if (this._map) {
             DomUtil.toBack(this._canvas);
         }
         return this;
     },
 
-    setNX: function(nX) {
+    setNX: function (nX) {
         this._nX = nX;
 
         if (this._map) {
@@ -89,7 +91,7 @@ export const CanvasHeatMapOverlay = Layer.extend({
         return this;
     },
 
-    setNY: function(nY) {
+    setNY: function (nY) {
         this._nY = nY;
 
         if (this._map) {
@@ -99,7 +101,7 @@ export const CanvasHeatMapOverlay = Layer.extend({
         return this;
     },
 
-    setDataArray: function(dataArray) {
+    setDataArray: function (dataArray) {
         this._dataArray = dataArray;
 
         if (this._map) {
@@ -108,7 +110,7 @@ export const CanvasHeatMapOverlay = Layer.extend({
         return this;
     },
 
-    setBounds: function(bounds) {
+    setBounds: function (bounds) {
         this._bounds = toLatLngBounds(bounds);
 
         if (this._map) {
@@ -117,7 +119,7 @@ export const CanvasHeatMapOverlay = Layer.extend({
         return this;
     },
 
-    setRainbow: function(rainbow) {
+    setRainbow: function (rainbow) {
         this._rainbow = rainbow;
 
         if (this._map) {
@@ -126,7 +128,16 @@ export const CanvasHeatMapOverlay = Layer.extend({
         return this;
     },
 
-    getEvents: function() {
+    setSharpening: function (sharpening) {
+        this._sharpening = sharpening;
+
+        if (this._map) {
+            this._runDraw();
+        }
+        return this;
+    },
+
+    getEvents: function () {
         const events = {
             zoom: this._reset,
             viewreset: this._reset
@@ -139,21 +150,21 @@ export const CanvasHeatMapOverlay = Layer.extend({
         return events;
     },
 
-    setZIndex: function(value) {
+    setZIndex: function (value) {
         this.options.zIndex = value;
         this._updateZIndex();
         return this;
     },
 
-    getBounds: function() {
+    getBounds: function () {
         return this._bounds;
     },
 
-    getElement: function() {
+    getElement: function () {
         return this._canvas;
     },
 
-    _initCanvas: function() {
+    _initCanvas: function () {
         const canvas = (this._canvas = DomUtil.create(
             'canvas',
             'leaflet-layer ' +
@@ -163,8 +174,8 @@ export const CanvasHeatMapOverlay = Layer.extend({
 
         this._ctx = canvas.getContext('2d');
 
-        canvas.width = this._nX;
-        canvas.height = this._nY;
+        canvas.width = this._nX * this._sharpening;
+        canvas.height = this._nY * this._sharpening;
 
         canvas.onselectstart = Util.falseFn;
         canvas.onmousemove = Util.falseFn;
@@ -180,10 +191,11 @@ export const CanvasHeatMapOverlay = Layer.extend({
             this._updateZIndex();
         }
 
+        this._ctx.scale(this._sharpening, this._sharpening);
         this._runDraw();
     },
 
-    _animateZoom: function(e) {
+    _animateZoom: function (e) {
         const scale = this._map.getZoomScale(e.zoom);
         const offset = this._map._latLngBoundsToNewLayerBounds(
             this._bounds,
@@ -194,7 +206,7 @@ export const CanvasHeatMapOverlay = Layer.extend({
         DomUtil.setTransform(this._canvas, offset, scale);
     },
 
-    _reset: function() {
+    _reset: function () {
         const canvas = this._canvas;
         const bounds = new Bounds(
             this._map.latLngToLayerPoint(this._bounds.getNorthWest()),
@@ -208,19 +220,26 @@ export const CanvasHeatMapOverlay = Layer.extend({
         canvas.style.height = size.y + 'px';
     },
 
-    _runDraw: function() {
+    _runDraw: function () {
         this._ctx.clearRect(0, 0, this._canvas.width, this._canvas.height);
         this._dataArray.forEach(d => {
-            this._ctx.fillStyle = '#' + this._rainbow.colourAt(d.value);
-            this._ctx.fillRect(d.x, d.y, 1, 1);
+            if (this._rainbow instanceof Rainbow) {
+                this._ctx.fillStyle = '#' + this._rainbow.colourAt(d.value);
+            } else {
+                const data = this._rainbow[0].isContinuous ?
+                    this._rainbow.filter(row => (row.fromOperator === '>' ? d.value > row.from : d.value >= row.from) && (row.toOperator === '<' ? d.value < row.to : d.value <= row.to)) :
+                    this._rainbow.filter(row => row.value === d.value);
+                this._ctx.fillStyle = data.length > 0 ? data[0].color : '#fff';
+            }
+            this._ctx.fillRect(d.x, d.y, 100, 100);
         });
     },
 
-    _updateOpacity: function() {
+    _updateOpacity: function () {
         DomUtil.setOpacity(this._canvas, this.options.opacity);
     },
 
-    _updateZIndex: function() {
+    _updateZIndex: function () {
         if (
             this._canvas &&
             this.options.zIndex !== undefined &&
@@ -230,7 +249,7 @@ export const CanvasHeatMapOverlay = Layer.extend({
         }
     },
 
-    _overlayOnError: function() {
+    _overlayOnError: function () {
         this.fire('error');
 
         const errorUrl = this.options.errorOverlayUrl;
@@ -241,11 +260,11 @@ export const CanvasHeatMapOverlay = Layer.extend({
     }
 });
 
-export const canvasHeatMapOverlay = function(nX,
-                                             nY,
-                                             data,
-                                             bounds,
-                                             rainbow,
-                                             options) {
+export const canvasHeatMapOverlay = function (nX,
+                                              nY,
+                                              data,
+                                              bounds,
+                                              rainbow,
+                                              options) {
     return new CanvasHeatMapOverlay(nX, nY, data, bounds, rainbow, options);
 };

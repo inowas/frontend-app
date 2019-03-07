@@ -19,6 +19,12 @@ import {BoundaryCollection, CalculationResults, ModflowModel, Soilmodel} from 'c
 import ToolNavigation from '../../shared/complexTools/toolNavigation';
 import {cloneDeep} from 'lodash';
 
+const styles = {
+    modelitem: {
+        cursor: 'pointer'
+    }
+};
+
 const navigation = [
     {
         name: 'Documentation',
@@ -233,18 +239,19 @@ class T07 extends React.Component {
         return (
             <Grid.Column key={id}>
                 <Segment
-                    style={{cursor: 'pointer'}}
+                    className='modelitem'
+                    style={styles.modelitem}
                     color={'blue'}
                     inverted={this.state.selected.indexOf(id) >= 0}
                 >
                     <Grid>
                         <Grid.Row>
-                            <Grid.Column width={12} onClick={() => this.handleScenarioClick(id)}>
-                                <Header as={'a'}>{name}</Header>
+                            <Grid.Column width={14} onClick={() => this.handleScenarioClick(id)}>
+                                <Header as={'a'} size='tiny'>{name}</Header>
                             </Grid.Column>
-                            <Grid.Column width={4}>
+                            <Grid.Column width={2} style={{padding:'0'}}>
                                 <Popup
-                                    trigger={<Icon name='ellipsis horizontal'/>}
+                                    trigger={<Icon name='ellipsis vertical'/>}
                                     content={
                                         <Button.Group size='small'>
                                             <Popup
@@ -346,25 +353,21 @@ class T07 extends React.Component {
         const {id, property} = this.props.match.params;
         return (
             <AppContainer navbarItems={navigation}>
+                <ToolMetaData
+                    isDirty={false}
+                    onChange={this.onChangeMetaData}
+                    readOnly={false}
+                    tool={{
+                        type: 'T07',
+                        name: this.props.scenarioAnalysis.name,
+                        description: this.props.scenarioAnalysis.description,
+                        public: this.props.scenarioAnalysis.public
+                    }}
+                    defaultButton={false}
+                    saveButton={false}
+                    onSave={this.saveMetaData}
+                />
                 <Grid padded>
-                    <Grid.Row>
-                        <Grid.Column width={3}/>
-                        <Grid.Column width={13}>
-                            <ToolMetaData
-                                isDirty={false}
-                                onChange={this.onChangeMetaData}
-                                readOnly={false}
-                                tool={{
-                                    type: 'T07',
-                                    name: this.props.scenarioAnalysis.name,
-                                    description: this.props.scenarioAnalysis.description,
-                                    public: this.props.scenarioAnalysis.public
-                                }}
-                                saveButton={false}
-                                onSave={this.saveMetaData}
-                            />
-                        </Grid.Column>
-                    </Grid.Row>
                     <Grid.Row>
                         <Grid.Column width={3}>
                             <ToolNavigation navigationItems={menuItems}/>

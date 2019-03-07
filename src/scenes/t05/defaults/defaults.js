@@ -1,5 +1,5 @@
 import uuidv4 from 'uuid';
-import {MCDA} from 'core/mcda';
+import {MCDA} from 'core/model/mcda';
 
 export const defaults = () => {
     return {
@@ -8,9 +8,8 @@ export const defaults = () => {
         description: 'Description of multi-criteria decision analysis.',
         permissions: 'rwx',
         public: false,
+        tool: 'T05',
         type: 'T05',
-        data: {
-            mcda: (new MCDA()).toObject()
-        }
+        data: (new MCDA()).toObject()
     };
 };
