@@ -4,6 +4,8 @@ import React from 'react';
 import {createGridData, min, max, rainbowFactory} from './helpers';
 import ColorLegend from './ColorLegend';
 import {GridSize} from 'core/model/geometry';
+import Rainbow from 'rainbowvis.js';
+import ColorLegendDiscrete from './ColorLegendDiscrete';
 
 const styles = {
     canvas: {
@@ -15,8 +17,8 @@ const styles = {
 class RasterDataImage extends React.Component {
     componentDidMount() {
         if (this.canvas) {
-            const {data, gridSize} = this.props;
-            const rainbowVis = rainbowFactory({min: min(data), max: max(data)});
+            const {data, gridSize, legend} = this.props;
+            const rainbowVis = legend || rainbowFactory({min: min(data), max: max(data)});
             const width = gridSize.nX;
             const height = gridSize.nY;
             this.drawCanvas(data, width, height, rainbowVis);
@@ -24,43 +26,54 @@ class RasterDataImage extends React.Component {
     }
 
     shouldComponentUpdate(nextProps) {
-        return this.props.data !== nextProps.data;
+        return this.props.legend !== nextProps.legend || this.props.data !== nextProps.data;
     }
 
     drawCanvas(data, width, height, rainbowVis) {
         const ctx = this.canvas.getContext('2d');
         ctx.clearRect(0, 0, width, height);
         const gridData = createGridData(data, width, height);
+
         gridData.forEach(d => {
-            ctx.fillStyle = '#' + rainbowVis.colourAt(d.value);
+            if (rainbowVis instanceof Rainbow) {
+                ctx.fillStyle = '#' + rainbowVis.colourAt(d.value);
+            } else {
+                const data = rainbowVis[0].isContinuous ?
+                    rainbowVis.filter(row => (row.fromOperator === '>' ? d.value > row.from : d.value >= row.from) && (row.toOperator === '<' ? d.value < row.to : d.value <= row.to)) :
+                    rainbowVis.filter(row => row.value === d.value);
+                ctx.fillStyle = data.length > 0 ? data[0].color : '#fff';
+            }
             ctx.fillRect(d.x, d.y, 1, 1);
         });
     }
 
     drawLegend(rainbowVis, unit) {
-        // slice() to make an immutable copy
-        const gradients = rainbowVis
-            .getGradients()
-            .slice()
-            .reverse();
-        const lastGradient = gradients[gradients.length - 1];
-        const legend = gradients.map(gradient => ({
-            color: '#' + gradient.getEndColour(),
-            value: Number(gradient.getMaxNum()).toFixed(2)
-        }));
+        if (rainbowVis instanceof Rainbow) {
+            // slice() to make an immutable copy
+            const gradients = rainbowVis
+                .getGradients()
+                .slice()
+                .reverse();
+            const lastGradient = gradients[gradients.length - 1];
+            const legend = gradients.map(gradient => ({
+                color: '#' + gradient.getEndColour(),
+                value: Number(gradient.getMaxNum()).toFixed(2)
+            }));
 
-        legend.push({
-            color: '#' + lastGradient.getStartColour(),
-            value: Number(lastGradient.getMinNum()).toFixed(2)
-        });
+            legend.push({
+                color: '#' + lastGradient.getStartColour(),
+                value: Number(lastGradient.getMinNum()).toFixed(2)
+            });
 
-        return <ColorLegend legend={legend} orientation={'horizontal'} unit={unit}/>;
+            return <ColorLegend legend={legend} orientation={'horizontal'} unit={unit}/>;
+        }
+        return <ColorLegendDiscrete legend={rainbowVis} horizontal unit={''}/>;
     }
 
     render() {
         const {data, gridSize, unit} = this.props;
 
-        const rainbowVis = rainbowFactory({min: min(data), max: max(data)});
+        const rainbowVis = this.props.legend || rainbowFactory({min: min(data), max: max(data)});
         const width = gridSize.nX;
         const height = gridSize.nY;
 
@@ -90,6 +103,7 @@ class RasterDataImage extends React.Component {
 RasterDataImage.propTypes = {
     data: PropTypes.oneOfType([PropTypes.array, PropTypes.number]).isRequired,
     gridSize: PropTypes.instanceOf(GridSize).isRequired,
+    legend: PropTypes.oneOfType([PropTypes.array, PropTypes.instanceOf(Rainbow)]),
     unit: PropTypes.string.isRequired
 };
 
