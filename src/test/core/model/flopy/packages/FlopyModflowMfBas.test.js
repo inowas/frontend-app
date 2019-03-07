@@ -3,7 +3,7 @@ import FlopyModflowMfbas from 'core/model/flopy/packages/mf/FlopyModflowMfbas'
 
 test('It can instantiate FlopyModflowMfbas', () => {
     const model = new FlopyModflowMf();
-    const mfBas = FlopyModflowMfbas.createWithModel(model);
+    const mfBas = FlopyModflowMfbas.create(model);
     expect(mfBas).toBeInstanceOf(FlopyModflowMfbas);
     expect(model.packages['bas']).toEqual(mfBas.toObject());
     expect(model.getPackage('bas')).toBeInstanceOf(FlopyModflowMfbas);
