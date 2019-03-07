@@ -259,19 +259,14 @@ class T05 extends React.Component {
 
         return (
             <AppContainer navbarItems={navigation}>
+                <ToolMetaData
+                    tool={tool} readOnly={readOnly} onChange={this.handleUpdateMetaData}
+                    onSave={this.handleSaveMetadata}
+                    defaultButton={false}
+                    saveButton={false}
+                    isDirty={isDirty}
+                />
                 <Grid padded>
-                    <Grid.Row>
-                        <Grid.Column width={4}/>
-                        <Grid.Column width={12}>
-                            <ToolMetaData
-                                tool={tool} readOnly={readOnly} onChange={this.handleUpdateMetaData}
-                                onSave={this.handleSaveMetadata}
-                                defaultButton={false}
-                                saveButton={false}
-                                isDirty={isDirty}
-                            />
-                        </Grid.Column>
-                    </Grid.Row>
                     <Grid.Row>
                         <Grid.Column width={4}>
                             <ToolNavigation navigationItems={menuItems}/>

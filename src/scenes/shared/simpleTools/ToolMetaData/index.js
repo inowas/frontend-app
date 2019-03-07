@@ -37,7 +37,6 @@ class ToolMetaData extends React.Component {
 
     renderBreadcrumbs = () => {
         let tool = {name: 'Undefined'};
-        console.log(tools);
         const filteredTools = tools.filter(tool => this.state.tool.tool === tool.slug);
         if (filteredTools.length > 0) {
             tool = filteredTools[0];
@@ -52,7 +51,7 @@ class ToolMetaData extends React.Component {
                     Tools
                 </Breadcrumb.Section>
                 <Breadcrumb.Divider icon='right chevron'/>
-                <Breadcrumb.Section link>{this.state.tool.tool}: {tool.name}</Breadcrumb.Section>
+                <Breadcrumb.Section>{this.state.tool.tool}. {tool.name}</Breadcrumb.Section>
                 <Breadcrumb.Divider icon='right arrow'/>
                 <Breadcrumb.Section active>
                     {this.state.tool.name}
