@@ -15,7 +15,7 @@ import image from '../images/T09A.png';
 import {defaults} from '../defaults/T09A';
 
 import {fetchTool, sendCommand} from 'services/api';
-import {buildPayload, deepMerge} from '../../shared/simpleTools/helpers';
+import {buildPayloadToolInstance, deepMerge} from '../../shared/simpleTools/helpers';
 
 class T09A extends React.Component {
     constructor(props) {
@@ -50,7 +50,7 @@ class T09A extends React.Component {
 
         if (id) {
             sendCommand(
-                SimpleToolsCommand.updateToolInstance(buildPayload(tool)),
+                SimpleToolsCommand.updateToolInstance(buildPayloadToolInstance(tool)),
                 () => this.setState({isDirty: false}),
                 () => this.setState({error: true})
             );
@@ -58,7 +58,7 @@ class T09A extends React.Component {
         }
 
         sendCommand(
-            SimpleToolsCommand.createToolInstance(buildPayload(tool)),
+            SimpleToolsCommand.createToolInstance(buildPayloadToolInstance(tool)),
             () => this.props.history.push(`${this.props.location.pathname}/${tool.id}`),
             () => this.setState({error: true})
         );

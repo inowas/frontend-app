@@ -12,7 +12,7 @@ export const getParameterValues = (arr) => {
 export const deepMerge = (state, fetched) => {
         let parameters = null;
 
-        if(state.data.parameters) {
+        if (state.data.parameters) {
             const fetchedParams = fetched.data.parameters;
 
             parameters = state.data.parameters.map(
@@ -38,7 +38,7 @@ export const deepMerge = (state, fetched) => {
     }
 ;
 
-export const buildPayload = (toolInstance) => ({
+export const buildPayloadToolInstance = (toolInstance) => ({
     id: toolInstance.id,
     name: toolInstance.name,
     description: toolInstance.description,
@@ -47,6 +47,23 @@ export const buildPayload = (toolInstance) => ({
     data: {
         ...toolInstance.data,
         parameters: toolInstance.data.parameters.map(p => ({
+            id: p.id,
+            max: p.max,
+            min: p.min,
+            value: p.value
+        }))
+    }
+});
+
+export const buildPayloadUpdateMetadata = (id, name, description, isPublic) => ({
+    id, name, description, public: isPublic
+});
+
+export const buildPayloadUpdateData = (id, data) => ({
+    id,
+    data: {
+        ...data,
+        parameters: data.parameters.map(p => ({
             id: p.id,
             max: p.max,
             min: p.min,
