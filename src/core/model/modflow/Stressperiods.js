@@ -21,7 +21,9 @@ class Stressperiods {
             nstp: 1,
             tsmult: 1,
             steady: true
-        }))
+        }));
+
+        return stressPeriods;
     }
 
     static fromDefaults() {

@@ -12,6 +12,7 @@ import ModflowModel from './ModflowModel';
 import Optimization from './optimization/Optimization';
 import CalculationResults from './CalculationResults';
 import Soilmodel from './soilmodel/Soilmodel';
+import Stressperiod from './Stressperiod';
 import Stressperiods from './Stressperiods';
 import TimeUnit from './TimeUnit';
 
@@ -30,6 +31,7 @@ export {
     Optimization,
     CalculationResults,
     Soilmodel,
+    Stressperiod,
     Stressperiods,
     TimeUnit
 }

@@ -1,4 +1,6 @@
 import FlopyModflowPackage from './FlopyModflowPackage';
+import {WellBoundary} from '../../../modflow/boundaries';
+import Stressperiods from '../../../modflow/Stressperiods';
 
 /*
 https://modflowpy.github.io/flopydoc/mfwel.html
@@ -27,6 +29,54 @@ export default class FlopyModflowMfwel extends FlopyModflowPackage {
     _binary = false;
     _unitnumber = null;
     _filenames = null;
+
+    _wells = [];
+
+    static createWithWellsAndStressperiods = (model, wells, stressperiods) => {
+        const self = FlopyModflowMfwel.create(model);
+        wells.forEach(well => {
+            if (well instanceof WellBoundary) {
+                self._wells.push(well)
+            }
+        });
+
+        self.calculateSpData(stressperiods);
+        return self;
+    };
+
+    calculateSpData = (stressperiods) => {
+        if (!(stressperiods instanceof Stressperiods)) {
+            throw new Error('Stressperiods has to be instance of Stressperiods');
+        }
+
+        let spData = [];
+        stressperiods.stressperiods.forEach(() => {
+            spData.push([]);
+        });
+
+        stressperiods.stressperiods.forEach((sp, idx) => {
+            this._wells.forEach(well => {
+                const layer = well.layers[0];
+                const cell = well.cells[0];
+                const data = [layer, cell[1], cell[0]].concat(well.spValues[idx]);
+
+                let push = true;
+                spData[idx] = spData[idx].map(spd => {
+                    if (spd[0] === data[0] && spd[1] === data[1] && spd[2] === data[2]) {
+                        push = false;
+                        spd[3] = spd[3] + data[3];
+                    }
+                    return spd;
+                });
+
+                if (push) {
+                    spData[idx].push(data);
+                }
+            })
+        });
+
+        this._stress_period_data = this.arrayToObject(spData);
+    };
 
     get ipakcb() {
         return this._ipakcb;
