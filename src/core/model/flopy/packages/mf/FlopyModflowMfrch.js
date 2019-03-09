@@ -1,5 +1,4 @@
 import FlopyModflowBoundary from './FlopyModflowBoundary';
-import Stressperiods from '../../../modflow/Stressperiods';
 import {RechargeBoundary} from '../../../modflow/boundaries';
 
 /*
@@ -21,43 +20,38 @@ export default class FlopyModflowMfrch extends FlopyModflowBoundary {
     _unitnumber = null;
     _filenames = null;
 
-    calculateSpData = (boundaries, stressperiods) => {
-        if (!(stressperiods instanceof Stressperiods)) {
-            throw new Error('Stressperiods has to be instance of Stressperiods');
-        }
+    static calculateSpData = (boundaries, nper, nrow, ncol) => {
 
-        const recharges = boundaries.filter(well => (well instanceof RechargeBoundary));
-        if (recharges.length === 0) {
-            return this._stress_period_data = null;
+        const rechargeBoundaries = boundaries.filter(rch => (rch instanceof RechargeBoundary));
+        if (rechargeBoundaries.length === 0) {
+            return null;
         }
 
         let spData = [];
-        stressperiods.stressperiods.forEach(() => {
-            spData.push([]);
-        });
-
-        stressperiods.stressperiods.forEach((sp, idx) => {
-            recharges.forEach(well => {
-                const layer = well.layers[0];
-                const cell = well.cells[0];
-                const data = [layer, cell[1], cell[0]].concat(well.spValues[idx]);
-
-                let push = true;
-                spData[idx] = spData[idx].map(spd => {
-                    if (spd[0] === data[0] && spd[1] === data[1] && spd[2] === data[2]) {
-                        push = false;
-                        spd[3] = spd[3] + data[3];
-                    }
-                    return spd;
-                });
-
-                if (push) {
-                    spData[idx].push(data);
+        for (let per = 0; per < nper; per++) {
+            spData[per] = [];
+            for (let row = 0; row < nrow; row++) {
+                spData[per][row] = [];
+                for (let col = 0; col < ncol; col++) {
+                    spData[per][row][col] = 0;
                 }
-            })
+            }
+        }
+
+        rechargeBoundaries.forEach(rch => {
+            const cells = rch.cells;
+            const spValues = rch.spValues;
+
+            spData.forEach((sp, per) => {
+                cells.forEach(cell => {
+                    const row = cell[1];
+                    const col = cell[0];
+                    spData[per][row][col] = spValues[per][0];
+                });
+            });
         });
 
-        this._stress_period_data = this.arrayToObject(spData);
+        return FlopyModflowMfrch.arrayToObject(spData);
     };
 
     get nrchop() {
