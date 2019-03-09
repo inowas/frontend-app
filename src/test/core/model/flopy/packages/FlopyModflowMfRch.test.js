@@ -16,6 +16,19 @@ const createRechargeBoundary = () => {
     );
 };
 
+const createRechargeBoundary_2 = () => {
+    const id = Uuid.v4();
+    const name = 'NameOfRecharge';
+    const geometry = {type: 'Polygon', coordinates: [[[3, 4], [3, 5], [4, 5], [4, 3], [3, 4]]]};
+    const layers = [1];
+    const cells = [[2,1], [3, 2]];
+    const spValues = [[2], [3], [4]];
+
+    return RechargeBoundary.create(
+        id, geometry, name, layers, cells, spValues
+    );
+};
+
 test('It can instantiate FlopyModflowMfRch', () => {
     const model = new FlopyModflowMf();
     const spData = {'0': 1, '1': 2, '2': 3};
@@ -27,12 +40,12 @@ test('It can instantiate FlopyModflowMfRch', () => {
     expect(model.getPackage('rch').toObject()).toEqual(mfRch.toObject())
 });
 
-test('It can calculate spData with one recharge', () => {
-    const spData = FlopyModflowMfrch.calculateSpData([createRechargeBoundary()], 3, 5, 5);
+test('It can calculate spData with multiple recharge boundaries', () => {
+    const spData = FlopyModflowMfrch.calculateSpData([createRechargeBoundary(), createRechargeBoundary_2()], 3, 5, 5);
     expect(spData).toEqual({
-        '0': [[0, 0, 0, 0, 0], [0, 0, 0, 0, 0], [0, 1, 0, 0, 0], [0, 0, 1, 0, 0], [0, 0, 0, 0, 0]],
-        '1': [[0, 0, 0, 0, 0], [0, 0, 0, 0, 0], [0, 2, 0, 0, 0], [0, 0, 2, 0, 0], [0, 0, 0, 0, 0]],
-        '2': [[0, 0, 0, 0, 0], [0, 0, 0, 0, 0], [0, 3, 0, 0, 0], [0, 0, 3, 0, 0], [0, 0, 0, 0, 0]],
+        '0': [[0, 0, 0, 0, 0], [0, 0, 2, 0, 0], [0, 1, 0, 2, 0], [0, 0, 1, 0, 0], [0, 0, 0, 0, 0]],
+        '1': [[0, 0, 0, 0, 0], [0, 0, 3, 0, 0], [0, 2, 0, 3, 0], [0, 0, 2, 0, 0], [0, 0, 0, 0, 0]],
+        '2': [[0, 0, 0, 0, 0], [0, 0, 4, 0, 0], [0, 3, 0, 4, 0], [0, 0, 3, 0, 0], [0, 0, 0, 0, 0]],
     });
 });
 
