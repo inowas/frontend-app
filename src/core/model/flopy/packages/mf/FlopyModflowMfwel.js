@@ -1,6 +1,5 @@
-import FlopyModflowPackage from './FlopyModflowPackage';
 import {WellBoundary} from '../../../modflow/boundaries';
-import Stressperiods from '../../../modflow/Stressperiods';
+import FlopyModflowBoundary from './FlopyModflowBoundary';
 
 /*
 https://modflowpy.github.io/flopydoc/mfwel.html
@@ -19,7 +18,7 @@ stress_period_data = {
 }
  */
 
-export default class FlopyModflowMfwel extends FlopyModflowPackage {
+export default class FlopyModflowMfwel extends FlopyModflowBoundary {
 
     _ipakcb = null;
     _stress_period_data = null;
@@ -30,32 +29,17 @@ export default class FlopyModflowMfwel extends FlopyModflowPackage {
     _unitnumber = null;
     _filenames = null;
 
-    _wells = [];
+    static calculateSpData = (boundaries, nper) => {
 
-    static createWithWellsAndStressperiods = (model, wells, stressperiods) => {
-        const self = FlopyModflowMfwel.create(model);
-        wells.forEach(well => {
-            if (well instanceof WellBoundary) {
-                self._wells.push(well)
-            }
-        });
-
-        self.calculateSpData(stressperiods);
-        return self;
-    };
-
-    calculateSpData = (stressperiods) => {
-        if (!(stressperiods instanceof Stressperiods)) {
-            throw new Error('Stressperiods has to be instance of Stressperiods');
+        const wells = boundaries.filter(well => (well instanceof WellBoundary));
+        if (wells.length === 0) {
+            return null;
         }
 
-        let spData = [];
-        stressperiods.stressperiods.forEach(() => {
-            spData.push([]);
-        });
+        let spData = new Array(nper).fill([]);
 
-        stressperiods.stressperiods.forEach((sp, idx) => {
-            this._wells.forEach(well => {
+        spData.forEach((sp, idx) => {
+            wells.forEach(well => {
                 const layer = well.layers[0];
                 const cell = well.cells[0];
                 const data = [layer, cell[1], cell[0]].concat(well.spValues[idx]);
@@ -75,7 +59,7 @@ export default class FlopyModflowMfwel extends FlopyModflowPackage {
             })
         });
 
-        this._stress_period_data = this.arrayToObject(spData);
+        return FlopyModflowMfwel.arrayToObject(spData);
     };
 
     get ipakcb() {

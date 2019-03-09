@@ -10,12 +10,4 @@ export default class FlopyModflowPackage extends FlopyModflowSerializable {
         }
         return self;
     }
-
-    arrayToObject = (array) => {
-        const obj = {};
-        array.forEach((item, idx) => {
-            obj[idx] = item;
-        });
-        return obj;
-    }
 }

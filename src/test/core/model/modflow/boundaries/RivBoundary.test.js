@@ -1,7 +1,7 @@
 import Uuid from 'uuid';
 import {RiverBoundary} from 'core/model/modflow/boundaries';
 import {validate} from 'services/jsonSchemaValidator';
-import {JSON_SCHEMA_URL} from '../../../../../services/api';
+import {JSON_SCHEMA_URL} from 'services/api';
 
 
 const createRiverBoundary = () => {
