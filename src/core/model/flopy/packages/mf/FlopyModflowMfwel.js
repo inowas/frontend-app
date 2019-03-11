@@ -1,4 +1,5 @@
-import FlopyModflowPackage from './FlopyModflowPackage';
+import {WellBoundary} from '../../../modflow/boundaries';
+import FlopyModflowBoundary from './FlopyModflowBoundary';
 
 /*
 https://modflowpy.github.io/flopydoc/mfwel.html
@@ -17,7 +18,7 @@ stress_period_data = {
 }
  */
 
-export default class FlopyModflowMfwel extends FlopyModflowPackage {
+export default class FlopyModflowMfwel extends FlopyModflowBoundary {
 
     _ipakcb = null;
     _stress_period_data = null;
@@ -27,6 +28,39 @@ export default class FlopyModflowMfwel extends FlopyModflowPackage {
     _binary = false;
     _unitnumber = null;
     _filenames = null;
+
+    static calculateSpData = (boundaries, nper) => {
+
+        const wells = boundaries.filter(well => (well instanceof WellBoundary));
+        if (wells.length === 0) {
+            return null;
+        }
+
+        let spData = new Array(nper).fill([]);
+
+        spData.forEach((sp, idx) => {
+            wells.forEach(well => {
+                const layer = well.layers[0];
+                const cell = well.cells[0];
+                const data = [layer, cell[1], cell[0]].concat(well.spValues[idx]);
+
+                let push = true;
+                spData[idx] = spData[idx].map(spd => {
+                    if (spd[0] === data[0] && spd[1] === data[1] && spd[2] === data[2]) {
+                        push = false;
+                        spd[3] = spd[3] + data[3];
+                    }
+                    return spd;
+                });
+
+                if (push) {
+                    spData[idx].push(data);
+                }
+            })
+        });
+
+        return FlopyModflowMfwel.arrayToObject(spData);
+    };
 
     get ipakcb() {
         return this._ipakcb;

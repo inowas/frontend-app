@@ -89,8 +89,8 @@ export default class LineBoundary extends Boundary {
     };
 
     updateObservationPoint = (id, name, geometry, spValues) => {
-        this._observationPoints = this._observationPoints.map(exitingOp => {
-            if (id === exitingOp.id) {
+        this._observationPoints = this._observationPoints.map(existingOp => {
+            if (id === existingOp.id) {
                 return {
                     type: 'Feature',
                     id,
@@ -103,7 +103,7 @@ export default class LineBoundary extends Boundary {
                 };
             }
 
-            return exitingOp;
+            return existingOp;
         });
     };
 

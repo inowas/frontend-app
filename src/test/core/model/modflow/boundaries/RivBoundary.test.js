@@ -1,8 +1,8 @@
 import Uuid from 'uuid';
 import {RiverBoundary} from 'core/model/modflow/boundaries';
 import {validate} from 'services/jsonSchemaValidator';
-import {JSON_SCHEMA_URL} from '../../../../../services/api';
-
+import {JSON_SCHEMA_URL} from 'services/api';
+import {BoundingBox, Cells, GridSize, Geometry} from 'core/model/geometry';
 
 const createRiverBoundary = () => {
     const id = Uuid.v4();
@@ -23,7 +23,7 @@ test('RiverBoundary create', () => {
     const geometry = {type: 'LineString', coordinates: [[3, 4], [3, 5], [4, 5], [4, 3], [3, 4]]};
     const layers = [1];
     const cells = [[1, 2], [2, 3]];
-    const spValues = [[1,2,3], [1,2,3], [1,2,3]];
+    const spValues = [[1, 2, 3], [1, 2, 3], [1, 2, 3]];
 
     const riverBoundary = RiverBoundary.create(
         id, geometry, name, layers, cells, spValues
@@ -103,4 +103,57 @@ test('RiverBoundary schema validation', () => {
     const data = createRiverBoundary().toObject();
     const schema = JSON_SCHEMA_URL + 'modflow/boundary/riverBoundary';
     return expect(validate(data, schema)).resolves.toEqual([true, null]);
+});
+
+test('RiverBoundary activeCells calculation', () => {
+    const id = Uuid.v4();
+    const name = 'NameOfRRiver';
+    const geometry = Geometry.fromGeoJson({
+        type: 'LineString',
+        coordinates: [[0, -4], [3, -4], [11, 0], [11, 4], [15, 2], [19, 2], [19, -2]]
+    });
+    const layers = [0];
+    const spValues = [[1, 2, 3]];
+
+    const boundingBox = new BoundingBox(0, 20, -5, 5);
+    const gridSize = new GridSize(10, 5);
+
+    const cells = Cells.fromGeometry(geometry, boundingBox, gridSize);
+    expect(cells.cells.length).toBe(17);
+
+    const riverBoundary = RiverBoundary.create(id, geometry, name, layers, cells, spValues);
+
+    const op1 = riverBoundary.observationPoints[0];
+    riverBoundary.updateObservationPoint(op1.id, 'OP1', {'type': 'Point', coordinates: [3, -4]}, [[10, 20, 30]]);
+    riverBoundary.addObservationPoint('OP3', {'type': 'Point', coordinates: [19, 2]}, [[30, 40, 50]]);
+    riverBoundary.addObservationPoint('OP2', {'type': 'Point', coordinates: [11, 0]}, [[20, 30, 40]]);
+
+    expect(riverBoundary.observationPoints.length).toBe(3);
+
+    cells.calculateValues(riverBoundary, boundingBox, gridSize);
+
+    const expectedCellsRoundedValues = cells.cells.map(c => {
+        c[2] = Math.round(c[2] * 100) / 100;
+        return c;
+    });
+
+    expect(expectedCellsRoundedValues).toEqual([
+        [0, 4, 0],
+        [1, 4, 0],
+        [2, 4, 0.20],
+        [2, 3, 0.30],
+        [3, 3, 0.50],
+        [4, 3, 0.70],
+        [4, 2, 0.80],
+        [5, 2, 1],
+        [5, 1, 1.16],
+        [5, 0, 1.32],
+        [6, 0, 1.46],
+        [6, 1, 1.54],
+        [7, 1, 1.68],
+        [8, 1, 1.84],
+        [9, 1, 2],
+        [9, 2, 2],
+        [9, 3, 2]],
+    );
 });

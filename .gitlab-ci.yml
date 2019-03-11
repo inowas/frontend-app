@@ -57,7 +57,7 @@ build:prod:
   
   script: 
     - yarn install
-    - REACT_APP_API_URL=https://api.dss.inowas.hydro.tu-dresden.de NODE_PATH=src yarn build
+    - REACT_APP_API_URL=https://api.dev.inowas.com NODE_PATH=src yarn build
     - VERSION=$(git describe --tags --always --dirty=+) && DATE=$(date +%Y-%m-%dT%H:%M:%S) && sed -i "s/@@__VERSION__@@/${VERSION}/g;s/@@__BUILT__@@/${DATE}/g" ./build/index.html
 
   artifacts:

@@ -4,14 +4,16 @@ export default class ObservationPoint {
     _id;
     _name;
     _geometry;
+    _distance;
     _spValues;
 
-    static create(id, geometry, name, spValues) {
+    static create(id, geometry, name, spValues, distance = 0) {
         const op = new this();
         op.id = id;
         op.geometry = geometry;
         op.name = name;
         op.spValues = spValues;
+        op.distance = distance;
         return op;
     }
 
@@ -21,6 +23,7 @@ export default class ObservationPoint {
             obj.geometry,
             obj.properties.name,
             obj.properties.sp_values,
+            obj.properties.distance,
         );
     }
 
@@ -34,6 +37,14 @@ export default class ObservationPoint {
 
     set id(value) {
         this._id = value;
+    }
+
+    get distance() {
+        return this._distance;
+    }
+
+    set distance(value) {
+        this._distance = value;
     }
 
     get geometry() {
@@ -76,7 +87,8 @@ export default class ObservationPoint {
             'properties': {
                 'name': this.name,
                 'type': this.type,
-                'sp_values': this.spValues
+                'sp_values': this.spValues,
+                'distance': this.distance
             }
         }
     }

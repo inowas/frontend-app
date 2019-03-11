@@ -38,7 +38,7 @@ export const deleteToolInstance = (tool, id) => {
 export const updateToolInstance = (tool, payload) => {
     switch (tool) {
         case 'T03':
-            return (ModflowModelCommand.updateModflowModel(payload));
+            return (ModflowModelCommand.updateModflowModelMetadata(payload));
         case 'T07':
             return (ScenarioAnalysisCommand.updateScenarioAnalysis(payload));
         default:
