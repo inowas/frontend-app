@@ -358,7 +358,7 @@ class T07 extends React.Component {
                     onChange={this.onChangeMetaData}
                     readOnly={false}
                     tool={{
-                        type: 'T07',
+                        tool: 'T07',
                         name: this.props.scenarioAnalysis.name,
                         description: this.props.scenarioAnalysis.description,
                         public: this.props.scenarioAnalysis.public

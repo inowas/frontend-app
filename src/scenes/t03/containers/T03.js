@@ -213,7 +213,7 @@ class T03 extends React.Component {
                     onChange={this.onChangeMetaData}
                     readOnly={false}
                     tool={{
-                        type: 'T03',
+                        tool: 'T03',
                         name: this.props.model.name,
                         description: this.props.model.description,
                         public: this.props.model.public
