@@ -36,6 +36,13 @@ class Suitability {
         });
     }
 
+    toPayload() {
+        return ({
+            raster: this.raster.toPayload(),
+            rules: this.rulesCollection.toArray()
+        });
+    }
+
     generateLegend(mode = 'reclassified') {
         return this.raster.generateLegend(this.rulesCollection, 'continuous', mode);
     }

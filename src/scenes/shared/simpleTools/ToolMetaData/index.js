@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import {Breadcrumb, Button, Checkbox, Form, Grid, Modal} from 'semantic-ui-react';
-import tools from '../../../dashboard/defaults/tools';
+import tools from '../../../dashboard/defaults/toolNames';
 import {withRouter} from 'react-router-dom';
 
 class ToolMetaData extends React.Component {
@@ -36,7 +36,7 @@ class ToolMetaData extends React.Component {
     };
 
     renderBreadcrumbs = () => {
-        let tool = {name: 'Undefined'};
+        let tool = {name: ''};
         const filteredTools = tools.filter(tool => this.state.tool.tool === tool.slug);
         if (filteredTools.length > 0) {
             tool = filteredTools[0];
