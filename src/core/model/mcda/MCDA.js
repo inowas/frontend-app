@@ -71,10 +71,11 @@ class MCDA {
         });
     }
 
-    toProject() {
+    toPayload() {
         return ({
-            constraints: this.constraints.toObject(),
-            suitability: this.suitability.toObject(),
+            constraints: this.constraints.toPayload(),
+            criteria: this.criteriaCollection.toPayload(),
+            suitability: this.suitability.toPayload(),
             weight_assignments: this.weightAssignmentsCollection.toArray(),
             with_ahp: this.withAhp
         });
