@@ -18,7 +18,7 @@ class SsmPackageProperties extends AbstractPackageProperties {
 
     handleSelectBoundary = boundaryId => {
         return this.setState({
-            selectedBoundary: this.props.boundaries.findById(boundaryId).toObject
+            selectedBoundary: this.props.boundaries.findById(boundaryId).toObject()
         });
     };
 
