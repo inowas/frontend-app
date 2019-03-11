@@ -68,6 +68,7 @@ class CriteriaDataConstraints extends React.Component {
 
     handleChange = () => {
         const criterion = Criterion.fromObject(this.state.criterion);
+        criterion.raster.calculateMinMax(criterion.constraintRules);
         criterion.calculateConstraints();
         this.saveRaster(criterion);
     };
