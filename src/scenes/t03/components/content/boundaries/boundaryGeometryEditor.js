@@ -10,12 +10,12 @@ class BoundaryGeometryEditor extends React.Component {
         super(props);
         this.state = {
             activeItem: 'geometry',
-            boundary: props.boundary.toObject
+            boundary: props.boundary.toObject()
         };
     }
 
     componentWillReceiveProps(nextProps, nextContext) {
-        this.setState({boundary: nextProps.boundary.toObject})
+        this.setState({boundary: nextProps.boundary.toObject()})
     }
 
     handleChange = (e) => {
@@ -23,7 +23,7 @@ class BoundaryGeometryEditor extends React.Component {
         const {name, value} = target;
         const boundary = BoundaryFactory.fromObject(this.state.boundary);
         boundary[name] = value;
-        this.setState({boundary: boundary.toObject})
+        this.setState({boundary: boundary.toObject()})
     };
 
     handleItemClick = (e, {name}) => this.setState({activeItem: name});
