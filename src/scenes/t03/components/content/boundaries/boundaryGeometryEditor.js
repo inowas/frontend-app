@@ -21,7 +21,7 @@ class BoundaryGeometryEditor extends React.Component {
     handleChange = (e) => {
         const target = e.target;
         const {name, value} = target;
-        const boundary = BoundaryFactory.fromObjectData(this.state.boundary);
+        const boundary = BoundaryFactory.fromObject(this.state.boundary);
         boundary[name] = value;
         this.setState({boundary: boundary.toObject})
     };
@@ -31,7 +31,7 @@ class BoundaryGeometryEditor extends React.Component {
     render() {
         const {model, onCancel, onChange, readOnly} = this.props;
         const {activeItem} = this.state;
-        const boundary = BoundaryFactory.fromObjectData(this.state.boundary);
+        const boundary = BoundaryFactory.fromObject(this.state.boundary);
 
         return (
             <Modal size={'large'} open onClose={onCancel} dimmer={'inverted'}>

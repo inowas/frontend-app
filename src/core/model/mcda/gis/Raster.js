@@ -4,6 +4,7 @@ import {distanceBetweenCoordinates} from 'services/geoTools/distance';
 import uuidv4 from 'uuid/v4';
 import {max, min, rainbowFactory} from 'scenes/shared/rasterData/helpers';
 import {heatMapColors} from 'scenes/t05/defaults/gis';
+import {RulesCollection} from '../criteria';
 
 class Raster {
     _boundingBox = new BoundingBox(0, 0, 0, 0);
@@ -130,9 +131,22 @@ class Raster {
         return distinct;
     }
 
-    calculateMinMax() {
-        this.max = max(this.data);
-        this.min = min(this.data);
+    calculateMinMax(constraintRules = null) {
+        let data = this.data;
+        if (constraintRules && constraintRules instanceof RulesCollection) {
+            data = this.data.map(row => {
+                return row.map(cell => {
+                    const rules = constraintRules.findByValue(cell);
+                    if (rules.length === 0) {
+                        return cell;
+                    }
+                    return null;
+                });
+            });
+        }
+
+        this.max = max(data);
+        this.min = min(data);
         return this;
     }
 

@@ -171,16 +171,7 @@ class Cells {
 
         const lineString = turf.lineString(boundary.geometry.coordinates);
 
-        // order observationPoints
-        observationPoints = observationPoints.map(op => {
-            const point = turf.point(op.geometry.coordinates);
-            const snapped = nearestPointOnLine(lineString, point);
-            op.geometry = snapped.geometry;
-            op.distance = distanceOnLine(lineString, op);
-            return op;
-        });
-
-        // order the observationPoints on the line
+        // order the observationPoints on the line by distance from root
         observationPoints.sort((op1, op2) => {
             return op1.distance - op2.distance;
         });
