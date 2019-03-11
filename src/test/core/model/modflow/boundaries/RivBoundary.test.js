@@ -105,6 +105,43 @@ test('RiverBoundary schema validation', () => {
     return expect(validate(data, schema)).resolves.toEqual([true, null]);
 });
 
+test('RiverBoundary adding ObservationPoint, orders by OPs by distance', () => {
+    const id = Uuid.v4();
+    const name = 'NameOfRRiver';
+    const geometry = Geometry.fromGeoJson({
+        type: 'LineString',
+        coordinates: [[0, -4], [3, -4], [11, 0], [11, 4], [15, 2], [19, 2], [19, -2]]
+    });
+    const layers = [0];
+    const spValues = [[1, 2, 3]];
+
+    const boundingBox = new BoundingBox(0, 20, -5, 5);
+    const gridSize = new GridSize(10, 5);
+
+    const cells = Cells.fromGeometry(geometry, boundingBox, gridSize);
+    expect(cells.cells.length).toBe(17);
+
+    const riverBoundary = RiverBoundary.create(id, geometry, name, layers, cells, spValues);
+
+    const op1 = riverBoundary.observationPoints[0];
+    riverBoundary.updateObservationPoint(op1.id, 'OP1', {'type': 'Point', coordinates: [3, -4]}, [[10, 20, 30]]);
+    riverBoundary.addObservationPoint('OP3', {'type': 'Point', coordinates: [19, 2]}, [[30, 40, 50]]);
+    riverBoundary.addObservationPoint('OP2', {'type': 'Point', coordinates: [11, 0]}, [[20, 30, 40]]);
+
+    expect(riverBoundary.observationPoints.length).toBe(3);
+    expect(riverBoundary.observationPoints[0].name).toEqual('OP1');
+    expect(riverBoundary.observationPoints[1].name).toEqual('OP2');
+    expect(riverBoundary.observationPoints[2].name).toEqual('OP3');
+
+    riverBoundary.updateObservationPoint(op1.id, 'OP1', {'type': 'Point', coordinates: [19, 1]}, [[10, 20, 30]]);
+
+    expect(riverBoundary.observationPoints.length).toBe(3);
+    expect(riverBoundary.observationPoints[0].name).toEqual('OP2');
+    expect(riverBoundary.observationPoints[1].name).toEqual('OP3');
+    expect(riverBoundary.observationPoints[2].name).toEqual('OP1');
+
+});
+
 test('RiverBoundary activeCells calculation', () => {
     const id = Uuid.v4();
     const name = 'NameOfRRiver';
