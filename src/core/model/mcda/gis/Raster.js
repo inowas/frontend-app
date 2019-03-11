@@ -10,7 +10,6 @@ class Raster {
     _boundingBox = new BoundingBox(0, 0, 0, 0);
     _gridSize = new GridSize(10, 10);
     _data = [];
-    _nodata = null;
     _id = uuidv4();
     _isFetching = false;
     _min = 0;
@@ -22,7 +21,6 @@ class Raster {
         raster.id = obj.id || uuidv4();
         raster.boundingBox = BoundingBox.fromArray(obj.boundingBox);
         raster.data = obj.data || [];
-        raster.nodata = obj.nodata;
         raster.gridSize = GridSize.fromObject(obj.gridSize);
         raster.isFetching = !!obj.isFetching;
         raster.min = obj.min;
@@ -53,14 +51,6 @@ class Raster {
 
     set data(value) {
         this._data = value;
-    }
-
-    get nodata() {
-        return this._nodata;
-    }
-
-    set nodata(value) {
-        this._nodata = value;
     }
 
     get gridSize() {
@@ -112,7 +102,6 @@ class Raster {
             id: this.id,
             max: this.max,
             min: this.min,
-            nodata: this.nodata,
             url: this.url
         }
     }
@@ -124,7 +113,6 @@ class Raster {
             id: this.id,
             max: this.max,
             min: this.min,
-            nodata: this.nodata,
             url: this.url
         }
     }
