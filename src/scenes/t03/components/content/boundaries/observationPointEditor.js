@@ -5,7 +5,7 @@ import {Button, Form, Modal} from 'semantic-ui-react';
 
 import ObservationPointMap from '../../maps/observationPointEditorMap';
 import {ModflowModel, LineBoundary} from 'core/model/modflow';
-import ObservationPoint from '../../../../../core/model/modflow/boundaries/ObservationPoint';
+import ObservationPoint from 'core/model/modflow/boundaries/ObservationPoint';
 
 class ObservationPointEditor extends React.Component {
     constructor(props) {
