@@ -137,11 +137,11 @@ class Transport extends React.Component {
         const {boundaries} = this.props;
 
         const model = this.props.model.toObject();
-        if (!model.stress_periods) {
+        if (!model.stressperiods) {
             return null;
         }
 
-        const stressPeriods = Stressperiods.fromObject(model.stress_periods);
+        const stressperiods = Stressperiods.fromObject(model.stressperiods);
 
         if (!boundaries) {
             return null;
@@ -189,7 +189,7 @@ class Transport extends React.Component {
                     <SsmPackageProperties
                         mtPackage={mt3d.getPackage(type)}
                         boundaries={boundaries}
-                        stressPeriods={stressPeriods}
+                        stressperiods={stressperiods}
                         onChange={this.handleChangePackage}
                         readonly={readOnly}
                     />

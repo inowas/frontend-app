@@ -68,14 +68,18 @@ class T05 extends React.Component {
         }
     }
 
-    buildPayload = tool => ({
-        id: tool.id,
-        name: tool.name,
-        description: tool.description,
-        public: tool.public,
-        tool: tool.tool,
-        data: this.state.tool.data
-    });
+    buildPayload = tool => {
+        const data = MCDA.fromObject(this.state.tool.data);
+
+        return ({
+            id: tool.id,
+            name: tool.name,
+            description: tool.description,
+            public: tool.public,
+            tool: tool.tool,
+            data: data.toPayload()
+        });
+    };
 
     handleChange = mcda => this.setState(prevState => ({
         isDirty: true,
