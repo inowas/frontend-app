@@ -90,9 +90,9 @@ class T06 extends React.Component {
     }
 
     renderBreadcrumbs = () => (
-        <Breadcrumb size='large'>
+        <Breadcrumb>
             <Breadcrumb.Section link>Tools</Breadcrumb.Section>
-            <Breadcrumb.Divider icon='right angle'/>
+            <Breadcrumb.Divider icon='right chevron'/>
             <Breadcrumb.Section active>T06. MAR method selection</Breadcrumb.Section>
         </Breadcrumb>
     );

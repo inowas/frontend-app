@@ -8,6 +8,10 @@ const styles = {
         paddingBottom: '6.929px',
         fontSize: '1rem',
         textAlign: 'center'
+    },
+    thinMessageIcon: {
+        display: 'inline-block',
+        fontSize: '1em'
     }
 };
 
@@ -65,14 +69,14 @@ class ContentToolBar extends React.Component {
                 return {
                     content: 'Changes not saved!',
                     warning: true,
-                    icon: <Icon name="exclamation triangle" style={{display: 'inline-block', fontSize: '1em'}}/>
+                    icon: <Icon name="exclamation triangle" style={styles.thinMessageIcon}/>
                 };
             }
             case 'error': {
                 return {
                     content: 'Error saving changes!',
                     warning: true,
-                    icon: <Icon name="exclamation triangle" style={{display: 'inline-block', fontSize: '1em'}}/>
+                    icon: <Icon name="exclamation triangle" style={styles.thinMessageIcon}/>
                 };
             }
 
@@ -80,7 +84,7 @@ class ContentToolBar extends React.Component {
                 return {
                     content: 'Changes saved!',
                     positive: true,
-                    icon: <Icon name="check circle" style={{display: 'inline-block', fontSize: '1em'}}/>
+                    icon: <Icon name="check circle" style={styles.thinMessageIcon}/>
                 };
             }
             default:
