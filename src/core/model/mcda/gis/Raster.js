@@ -4,11 +4,13 @@ import {distanceBetweenCoordinates} from 'services/geoTools/distance';
 import uuidv4 from 'uuid/v4';
 import {max, min, rainbowFactory} from 'scenes/shared/rasterData/helpers';
 import {heatMapColors} from 'scenes/t05/defaults/gis';
+import {RulesCollection} from '../criteria';
 
 class Raster {
     _boundingBox = new BoundingBox(0, 0, 0, 0);
     _gridSize = new GridSize(10, 10);
     _data = [];
+    _nodata = null;
     _id = uuidv4();
     _isFetching = false;
     _min = 0;
@@ -20,6 +22,7 @@ class Raster {
         raster.id = obj.id || uuidv4();
         raster.boundingBox = BoundingBox.fromArray(obj.boundingBox);
         raster.data = obj.data || [];
+        raster.nodata = obj.nodata;
         raster.gridSize = GridSize.fromObject(obj.gridSize);
         raster.isFetching = !!obj.isFetching;
         raster.min = obj.min;
@@ -50,6 +53,14 @@ class Raster {
 
     set data(value) {
         this._data = value;
+    }
+
+    get nodata() {
+        return this._nodata;
+    }
+
+    set nodata(value) {
+        this._nodata = value;
     }
 
     get gridSize() {
@@ -101,6 +112,7 @@ class Raster {
             id: this.id,
             max: this.max,
             min: this.min,
+            nodata: this.nodata,
             url: this.url
         }
     }
@@ -112,6 +124,7 @@ class Raster {
             id: this.id,
             max: this.max,
             min: this.min,
+            nodata: this.nodata,
             url: this.url
         }
     }
@@ -130,9 +143,22 @@ class Raster {
         return distinct;
     }
 
-    calculateMinMax() {
-        this.max = max(this.data);
-        this.min = min(this.data);
+    calculateMinMax(constraintRules = null) {
+        let data = this.data;
+        if (constraintRules && constraintRules instanceof RulesCollection) {
+            data = this.data.map(row => {
+                return row.map(cell => {
+                    const rules = constraintRules.findByValue(cell);
+                    if (rules.length === 0) {
+                        return cell;
+                    }
+                    return null;
+                });
+            });
+        }
+
+        this.max = max(data);
+        this.min = min(data);
         return this;
     }
 
