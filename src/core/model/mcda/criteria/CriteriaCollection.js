@@ -1,12 +1,17 @@
 import Criterion from './Criterion';
 import AbstractCollection from '../../collection/AbstractCollection';
 import BoundingBox from '../../geometry/BoundingBox';
+import {cloneDeep as _cloneDeep} from 'lodash';
 
 class CriteriaCollection extends AbstractCollection {
     static fromArray(array) {
         const cc = new CriteriaCollection();
         cc.items = array.map(c => Criterion.fromObject(c));
         return cc;
+    }
+
+    toPayload() {
+        return _cloneDeep(this.all.map(item => item.toPayload()));
     }
 
     validateInput(criterion) {

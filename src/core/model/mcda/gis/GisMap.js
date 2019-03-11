@@ -79,6 +79,16 @@ class GisMap {
         }
     }
 
+    toPayload() {
+        return {
+            cells: this.cells.toArray(),
+            boundingBox: this.boundingBox ? this.boundingBox.toArray() : null,
+            areas: this.areasCollection.toArray(),
+            gridSize: this.gridSize.toObject(),
+            raster: this.raster ? this.raster.toPayload() : null
+        }
+    }
+
     calculateActiveCells() {
         //const activeCells = new ActiveCells([]);
         const gridCells = getGridCells(this.boundingBox, this.gridSize);

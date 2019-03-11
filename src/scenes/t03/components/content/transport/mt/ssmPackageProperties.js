@@ -64,7 +64,7 @@ class SsmPackageProperties extends AbstractPackageProperties {
     };
 
     render() {
-        const {boundaries, readonly, stressPeriods} = this.props;
+        const {boundaries, readonly, stressperiods} = this.props;
 
         if (boundaries.length === 0) {
             return <Message warning>
@@ -78,7 +78,7 @@ class SsmPackageProperties extends AbstractPackageProperties {
 
         let selectedBoundary;
         if (this.state.selectedBoundary) {
-            selectedBoundary = BoundaryFactory.fromObjectData(boundaries.all.filter(b => b.id === this.state.selectedBoundary.id)[0]);
+            selectedBoundary = BoundaryFactory.fromObject(boundaries.all.filter(b => b.id === this.state.selectedBoundary.id)[0]);
         }
 
         return (
@@ -134,7 +134,7 @@ class SsmPackageProperties extends AbstractPackageProperties {
                         boundary={selectedBoundary}
                         onChange={this.handleChangeSubstance}
                         readOnly={readonly}
-                        stressPeriods={stressPeriods}
+                        stressperiods={stressperiods}
                         substance={selectedSubstance}
                     />
                 </div>
@@ -146,7 +146,7 @@ class SsmPackageProperties extends AbstractPackageProperties {
 
 SsmPackageProperties.propTypes = {
     boundaries: PropTypes.instanceOf(BoundaryCollection).isRequired,
-    stressPeriods: PropTypes.instanceOf(Stressperiods).isRequired,
+    stressperiods: PropTypes.instanceOf(Stressperiods).isRequired,
     mtPackage: PropTypes.instanceOf(SsmPackage),
     onChange: PropTypes.func.isRequired,
     readonly: PropTypes.bool.isRequired,
