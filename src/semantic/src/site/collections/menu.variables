@@ -16,6 +16,7 @@
 /* Hovered Item */
 
 /* Active Item */
+@activeItemBackground: #EEF5F8;
 
 
 /* Header
