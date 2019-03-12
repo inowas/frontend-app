@@ -1,4 +1,5 @@
-import FlopyModflowPackage from './FlopyModflowPackage';
+import {RiverBoundary} from '../../../modflow/boundaries';
+import FlopyModflowLineBoundary from './FlopyModflowLineBoundary';
 
 /*
 https://modflowpy.github.io/flopydoc/mfriv.html
@@ -23,7 +24,7 @@ kper:
 }
  */
 
-export default class FlopyModflowMfriv extends FlopyModflowPackage {
+export default class FlopyModflowMfriv extends FlopyModflowLineBoundary {
 
     _ipakcb = null;
     _stress_period_data = null;
@@ -32,6 +33,16 @@ export default class FlopyModflowMfriv extends FlopyModflowPackage {
     _options = null;
     _unitnumber = null;
     _filenames = null;
+
+    static calculateSpData = (boundaries, nper) => {
+
+        boundaries = boundaries.filter(boundary => (boundary instanceof RiverBoundary));
+        if (boundaries.length === 0) {
+            return null;
+        }
+
+        return FlopyModflowLineBoundary.calculateSpData(boundaries, nper);
+    };
 
     get ipakcb() {
         return this._ipakcb;

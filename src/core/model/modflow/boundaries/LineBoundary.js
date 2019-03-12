@@ -80,6 +80,7 @@ export default class LineBoundary extends Boundary {
     addObservationPoint = (name, geometry, spValues) => {
         const op = ObservationPoint.create(Uuid.v4(), geometry, name, spValues, distanceOnLine(this.geometry, geometry));
         this._observationPoints.push(op.toObject());
+        this._observationPoints.sort((a, b) => ObservationPoint.fromObject(a).distance - ObservationPoint.fromObject(b).distance);
     };
 
     cloneObservationPoint = (id, newId) => {
@@ -102,6 +103,8 @@ export default class LineBoundary extends Boundary {
 
             return existingOp;
         });
+
+        this._observationPoints.sort((a, b) => ObservationPoint.fromObject(a).distance - ObservationPoint.fromObject(b).distance);
     };
 
     removeObservationPoint = (opId) => {
@@ -122,7 +125,7 @@ export default class LineBoundary extends Boundary {
 
     findObservationPointById = id => {
         const filtered = this._observationPoints.filter(op => op.id === id);
-        
+
         if (filtered.length > 0) {
             return filtered[0];
         }
