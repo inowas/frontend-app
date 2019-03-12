@@ -12,7 +12,7 @@ import AppContainer from '../../shared/AppContainer';
 
 export const navigation = [{
     name: 'Documentation',
-    path: 'https://inowas.hydro.tu-dresden.de/tools/t14-pumping-induced-river-drawdown/',
+    path: 'https://inowas.com/tools/t14-pumping-induced-river-drawdown/',
     icon: <Icon name="file"/>
 }];
 
@@ -20,25 +20,25 @@ const items = [
     {
         tool: 'T14A',
         name: 'Fully penetrating stream with no streambed resistance.',
-        description: 'Pumping from wells besides streams lowers the groundwater level and reduces surface water flow within the stream. This tool helps to estimate the stream depletion rate induced by well pumping.',
+        description: '',
         image: image14A
     },
     {
         tool: 'T14B',
         name: 'Fully penetrating stream with semipervious layer.',
-        description: 'Pumping from wells besides streams lowers the groundwater level and reduces surface water flow within the stream. This tool helps to estimate the stream depletion rate induced by well pumping.',
+        description: '',
         image: image14B
     },
     {
         tool: 'T14C',
         name: 'Partially penetrating stream with streambed resistance.',
-        description: 'Pumping from wells besides streams lowers the groundwater level and reduces surface water flow within the stream. This tool helps to estimate the stream depletion rate induced by well pumping.',
+        description: '',
         image: image14C
     },
     {
         tool: 'T14D',
         name: 'Partially penetrating stream in an aquitard overlying a pumped aquifer.',
-        description: 'Pumping from wells besides streams lowers the groundwater level and reduces surface water flow within the stream. This tool helps to estimate the stream depletion rate induced by well pumping.',
+        description: '',
         image: image14D
     }
 ];
