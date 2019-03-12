@@ -100,6 +100,25 @@ class Mt3dms {
         return obj;
     }
 
+    toFlopyCalculation = () => {
+        if (!this.enabled) {
+            return null;
+        }
+
+        const obj = {
+            packages: Object.keys(this.packages)
+        };
+
+        for (const key in this.packages) {
+            if (this.packages.hasOwnProperty(key)) {
+                const p = this.packages[key];
+                obj[p.packageName] = p.toObject();
+            }
+        }
+
+        return this.toObject();
+    };
+
     validate() {
         const schema = mt3dmsSchema;
         const ajv = new Ajv({schemaId: 'id'});

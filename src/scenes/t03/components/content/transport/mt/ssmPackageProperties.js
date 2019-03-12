@@ -4,7 +4,7 @@ import AbstractPackageProperties from './AbstractPackageProperties';
 import {Button, Header, Form, Grid, Message, Popup} from 'semantic-ui-react';
 import SsmSubstanceEditor from './SsmSubstanceEditor';
 import {Stressperiods} from 'core/model/modflow';
-import {SsmPackage, SsmSubstance} from 'core/model/modflow/mt3d';
+import {SsmPackage, SsmSubstance} from 'core/model/flopy/packages/mt';
 import {Boundary, BoundaryCollection, BoundaryFactory} from 'core/model/modflow/boundaries';
 import BoundarySelector from './BoundarySelector';
 

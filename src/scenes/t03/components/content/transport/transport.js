@@ -8,7 +8,7 @@ import ModflowModelCommand from '../../../commands/modflowModelCommand';
 import {Grid, Menu, Segment} from 'semantic-ui-react';
 import {ModflowModel, Stressperiods} from 'core/model/modflow';
 import {BoundaryCollection} from 'core/model/modflow/boundaries';
-import {AbstractMt3dPackage, Mt3dms} from 'core/model/modflow/mt3d';
+import {AbstractMt3dPackage, Mt3dms} from 'core/model/flopy/packages/mt';
 import {
     AdvPackageProperties,
     BtnPackageProperties,

@@ -12,7 +12,7 @@ import {UPDATE_OPTIMIZATION} from '../reducers/optimization';
 import {Calculation, ModflowModel, Stressperiods} from 'core/model/modflow';
 import {BoundaryCollection} from 'core/model/modflow/boundaries';
 import {Soilmodel, SoilmodelLayer} from 'core/model/modflow/soilmodel';
-import {Mt3dms} from 'core/model/modflow/mt3d';
+import {Mt3dms} from 'core/model/flopy/packages/mt';
 import {Optimization} from 'core/model/modflow/optimization';
 
 export function clear() {

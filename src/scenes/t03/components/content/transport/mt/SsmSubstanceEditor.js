@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import {pure} from 'recompose';
 import {Form, Input} from 'semantic-ui-react';
 import SsmPackageDataTable from './SsmPackageDataTable';
-import {SsmBoundaryValues, SsmSubstance} from 'core/model/modflow/mt3d';
+import {SsmBoundaryValues, SsmSubstance} from 'core/model/flopy/packages/mt';
 import Boundary from 'core/model/modflow/boundaries/Boundary';
 import {Stressperiods} from 'core/model/modflow';
 

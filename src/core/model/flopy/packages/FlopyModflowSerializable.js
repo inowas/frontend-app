@@ -5,10 +5,15 @@ export default class FlopyModflowSerializable {
     static fromObject(obj) {
         const self = new this();
         for (const key in obj) {
-            // noinspection JSUnfilteredForInLoop
-            self['_' + key] = obj[key]
+            if (obj.hasOwnProperty(key)) {
+                self['_' + key] = obj[key]
+            }
         }
         return self;
+    }
+
+    get packages() {
+        throw new Error('The getter for packages has to be implemented.');
     }
 
     toObject() {
@@ -48,8 +53,8 @@ export default class FlopyModflowSerializable {
         return sortedObj;
     };
 
-    hash = () => {
-        const sorted = this.sort(this.packages);
+    hash = (data) => {
+        const sorted = this.sort(data);
         return md5(JSON.stringify(sorted));
     }
 }

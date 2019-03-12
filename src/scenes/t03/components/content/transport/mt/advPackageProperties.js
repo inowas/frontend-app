@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types';
 import React from 'react';
 import AbstractPackageProperties from './AbstractPackageProperties';
-import {AdvPackage} from 'core/model/modflow/mt3d';
+import {AdvPackage} from 'core/model/flopy/packages/mt';
 import {Accordion, Form, Icon, Input, Segment, Select} from 'semantic-ui-react';
 import {documentation} from '../../../../defaults/transport';
 import InfoPopup from '../../../../../shared/InfoPopup';
