@@ -1,5 +1,5 @@
 import SsmPackage from './SsmPackage';
-import Boundary from '../boundaries/Boundary';
+import Boundary from '../../../modflow/boundaries/Boundary';
 
 class SsmBoundaryValues {
 

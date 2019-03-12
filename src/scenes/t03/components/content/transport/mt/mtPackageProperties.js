@@ -3,7 +3,7 @@ import React from 'react';
 import {Checkbox, Form, Input, Select} from 'semantic-ui-react';
 
 import AbstractPackageProperties from './AbstractPackageProperties';
-import {MtPackage} from 'core/model/modflow/mt3d';
+import {MtPackage} from 'core/model/flopy/packages/mt';
 
 
 class MtPackageProperties extends AbstractPackageProperties {

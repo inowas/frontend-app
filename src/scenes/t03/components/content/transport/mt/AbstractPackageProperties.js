@@ -2,7 +2,7 @@ import PropTypes from 'prop-types';
 import React from 'react';
 
 import {Icon, Popup} from 'semantic-ui-react';
-import {AbstractMt3dPackage, Mt3dPackageFactory} from 'core/model/modflow/mt3d';
+import {AbstractMt3dPackage, Mt3dPackageFactory} from 'core/model/flopy/packages/mt';
 
 const styles = {
     iconFix: {

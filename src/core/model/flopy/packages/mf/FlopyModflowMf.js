@@ -1,4 +1,4 @@
-import FlopyModflowSerializable from './FlopyModflowSerializable';
+import FlopyModflowSerializable from '../FlopyModflowSerializable';
 import FlopyModflowMfbas from './FlopyModflowMfbas';
 import FlopyModflowMfchd from './FlopyModflowMfchd';
 import FlopyModflowMfdis from './FlopyModflowMfdis';
@@ -136,5 +136,19 @@ export default class FlopyModflowMf extends FlopyModflowSerializable {
         }
 
         return packagesMap[name].fromObject(this._packages[name]);
+    }
+
+    toFlopyCalculation = () => {
+        const obj = {
+            packages: Object.keys(this.packages)
+        };
+
+        for (const prop in this.packages) {
+            if (this.packages.hasOwnProperty(prop)) {
+                obj[prop] = this.packages[prop];
+            }
+        }
+
+        return obj;
     }
 }

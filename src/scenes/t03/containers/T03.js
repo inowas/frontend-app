@@ -128,6 +128,16 @@ class T03 extends React.Component {
         );
     };
 
+    fetchPackages(id) {
+        fetchUrl(`modflowmodels/${id}/packages`,
+            data => this.props.updateCalculation(Calculation.fromQuery(data)),
+            error => this.setState(
+                {error, isLoading: false},
+                () => this.handleError(error)
+            )
+        );
+    };
+
     fetchSoilmodel(id) {
         fetchUrl(`modflowmodels/${id}/soilmodel`,
             data => this.props.updateSoilmodel(Soilmodel.fromObject(data)),

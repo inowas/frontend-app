@@ -1,6 +1,6 @@
 import {includes} from 'lodash';
 import {Cells, BoundingBox, Geometry, GridSize, Stressperiods} from './index';
-import {Mt3dms} from './mt3d';
+import {Mt3dms} from '../flopy/packages/mt';
 import Calculation from './Calculation';
 
 export default class ModflowModel {

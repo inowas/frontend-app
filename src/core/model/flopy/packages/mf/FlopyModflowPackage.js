@@ -1,4 +1,4 @@
-import FlopyModflowSerializable from './FlopyModflowSerializable';
+import FlopyModflowSerializable from '../FlopyModflowSerializable';
 import FlopyModflowMf from './FlopyModflowMf';
 
 export default class FlopyModflowPackage extends FlopyModflowSerializable {

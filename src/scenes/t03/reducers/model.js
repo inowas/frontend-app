@@ -1,5 +1,5 @@
 import {ModflowModel, Stressperiods} from 'core/model/modflow';
-import {Mt3dms} from 'core/model/modflow/mt3d';
+import {Mt3dms} from 'core/model/flopy/packages/mt';
 import {LOGOUT, UNAUTHORIZED} from '../../user/actions/actions';
 
 export const CLEAR = 'T03_CLEAR';
