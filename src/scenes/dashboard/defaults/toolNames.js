@@ -22,31 +22,52 @@ const toolNames = [
         name: '1D transport model (Ogata-Banks)',
     }, {
         slug: 'T09A',
-        name: 'Simple saltwater intrusion equations',
+        name: 'Depth of saltwater–freshwater interface',
     }, {
         slug: 'T09B',
-        name: 'Simple saltwater intrusion equations',
+        name: 'Shape and extent of freshwater-saltwater interface',
     }, {
         slug: 'T09C',
-        name: 'Simple saltwater intrusion equations',
+        name: 'Upconing of the saltwater interface by pumping',
     }, {
         slug: 'T09D',
-        name: 'Simple saltwater intrusion equations',
+        name: 'Critical well discharge',
     }, {
         slug: 'T09E',
-        name: 'Simple saltwater intrusion equations',
+        name: 'Sea level rise (vertical cliff)',
     }, {
         slug: 'T09F',
-        name: 'Simple saltwater intrusion equations',
+        name: 'Sea level rise (inclined coast)',
     }, {
         slug: 'T11',
         name: 'MAR model selection',
     }, {
-        slug: 'T13',
-        name: 'Travel time through unconfined aquifer',
+        slug: 'T13A',
+        name: '',
     }, {
-        slug: 'T14',
-        name: 'Pumping-induced river drawdown',
+        slug: 'T13B',
+        name: '',
+    }, {
+        slug: 'T13C',
+        name: '',
+    }, {
+        slug: 'T13D',
+        name: '',
+    }, {
+        slug: 'T13E',
+        name: '',
+    }, {
+        slug: 'T14A',
+        name: 'Fully penetrating stream with no streambed resistance',
+    }, {
+        slug: 'T14B',
+        name: 'Fully penetrating stream with semipervious layer',
+    }, {
+        slug: 'T14C',
+        name: 'Partially penetrating stream with streambed resistance',
+    }, {
+        slug: 'T14D',
+        name: 'Partially penetrating stream in an aquitard overlying a pumped aquifer',
     }, {
         slug: 'T17',
         name: 'Global MAR portal',

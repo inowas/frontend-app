@@ -365,21 +365,21 @@
 }
 .ui.red.message {
   background-color: #FFE8E6;
-  color: #F44336;
-  -webkit-box-shadow: 0px 0px 0px 1px #F44336 inset, 0px 0px 0px 0px rgba(0, 0, 0, 0);
-          box-shadow: 0px 0px 0px 1px #F44336 inset, 0px 0px 0px 0px rgba(0, 0, 0, 0);
+  color: #FF5B4D;
+  -webkit-box-shadow: 0px 0px 0px 1px #FF5B4D inset, 0px 0px 0px 0px rgba(0, 0, 0, 0);
+          box-shadow: 0px 0px 0px 1px #FF5B4D inset, 0px 0px 0px 0px rgba(0, 0, 0, 0);
 }
 .ui.red.message .header {
-  color: #f32c1e;
+  color: #ff4433;
 }
 .ui.orange.message {
   background-color: #FFEDDE;
-  color: #FF9800;
-  -webkit-box-shadow: 0px 0px 0px 1px #FF9800 inset, 0px 0px 0px 0px rgba(0, 0, 0, 0);
-          box-shadow: 0px 0px 0px 1px #FF9800 inset, 0px 0px 0px 0px rgba(0, 0, 0, 0);
+  color: #ED8D05;
+  -webkit-box-shadow: 0px 0px 0px 1px #ED8D05 inset, 0px 0px 0px 0px rgba(0, 0, 0, 0);
+          box-shadow: 0px 0px 0px 1px #ED8D05 inset, 0px 0px 0px 0px rgba(0, 0, 0, 0);
 }
 .ui.orange.message .header {
-  color: #e68900;
+  color: #d47e04;
 }
 .ui.yellow.message {
   background-color: #FFF8DB;
@@ -446,21 +446,21 @@
 }
 .ui.pink.message {
   background-color: #FFE3FB;
-  color: #E91E63;
-  -webkit-box-shadow: 0px 0px 0px 1px #E91E63 inset, 0px 0px 0px 0px rgba(0, 0, 0, 0);
-          box-shadow: 0px 0px 0px 1px #E91E63 inset, 0px 0px 0px 0px rgba(0, 0, 0, 0);
+  color: #E03997;
+  -webkit-box-shadow: 0px 0px 0px 1px #E03997 inset, 0px 0px 0px 0px rgba(0, 0, 0, 0);
+          box-shadow: 0px 0px 0px 1px #E03997 inset, 0px 0px 0px 0px rgba(0, 0, 0, 0);
 }
 .ui.pink.message .header {
-  color: #d81557;
+  color: #dd238b;
 }
 .ui.brown.message {
   background-color: #F1E2D3;
-  color: #795548;
-  -webkit-box-shadow: 0px 0px 0px 1px #795548 inset, 0px 0px 0px 0px rgba(0, 0, 0, 0);
-          box-shadow: 0px 0px 0px 1px #795548 inset, 0px 0px 0px 0px rgba(0, 0, 0, 0);
+  color: #CC6C00;
+  -webkit-box-shadow: 0px 0px 0px 1px #CC6C00 inset, 0px 0px 0px 0px rgba(0, 0, 0, 0);
+          box-shadow: 0px 0px 0px 1px #CC6C00 inset, 0px 0px 0px 0px rgba(0, 0, 0, 0);
 }
 .ui.brown.message .header {
-  color: #694a3e;
+  color: #b35f00;
 }
 
 /*--------------
