@@ -14,5 +14,19 @@ test('It can instantiate FlopyModelCalculation', () => {
     expect(flopyModelCalculation.model_id).toEqual(modelId);
     expect(flopyModelCalculation.mf.toObject()).toEqual(mf.toObject());
 
-    expect(flopyModelCalculation.toFlopyCalculation()).toEqual({});
+    expect(flopyModelCalculation.toFlopyCalculation().data).toEqual({
+        'mf': {
+            'mf': {
+                'exe_name': 'mf2005',
+                'external_path': null,
+                'listunit': 2,
+                'model_ws': '.',
+                'modelname': 'modflowtest',
+                'namefile_ext': 'nam',
+                'structured': true,
+                'verbose': false,
+                'version': 'mf2005'
+            }, 'packages': ['mf']
+        }
+    });
 });
