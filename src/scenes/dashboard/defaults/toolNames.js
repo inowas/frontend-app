@@ -58,16 +58,16 @@ const toolNames = [
         name: '',
     }, {
         slug: 'T14A',
-        name: '',
+        name: 'Fully penetrating stream with no streambed resistance',
     }, {
         slug: 'T14B',
-        name: '',
+        name: 'Fully penetrating stream with semipervious layer',
     }, {
         slug: 'T14C',
-        name: '',
+        name: 'Partially penetrating stream with streambed resistance',
     }, {
         slug: 'T14D',
-        name: '',
+        name: 'Partially penetrating stream in an aquitard overlying a pumped aquifer',
     }, {
         slug: 'T17',
         name: 'Global MAR portal',
