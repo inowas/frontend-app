@@ -81,8 +81,10 @@ class T09 extends React.Component {
                     <Image src={i.image} size={'medium'} floated={'left'}/>
                     <Header as={'h2'} color={'blue'} style={{marginTop: 0}}>{i.tool}</Header>
                     <p><strong>{i.name}</strong>&nbsp;{i.description}</p>
-                    <Dimmer active={active === i.tool}>
-                        <Button primary>Select {i.tool}</Button>
+                    <Dimmer inverted active={active === i.tool}>
+                        <Button icon primary size='large' labelPosition='left'>
+                            <Icon name='pin' />
+                            Select {i.tool}</Button>
                     </Dimmer>
                 </Dimmer.Dimmable>
             </Grid.Column>
