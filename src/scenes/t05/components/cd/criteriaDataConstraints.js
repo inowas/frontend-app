@@ -44,12 +44,12 @@ class CriteriaDataConstraints extends React.Component {
         rule.value = 0;
         const criterion = Criterion.fromObject(this.state.criterion);
         criterion.constraintRules.add(rule);
-        this.setState({
-            criterion: criterion.toObject()
-        });
+        criterion.step = 1;
+        criterion.raster.calculateMinMax(criterion.constraintRules);
+        this.props.onChange(criterion);
     };
 
-    handleLocalChange = (id, recalculate = false) => (e, {name, value}) => {
+    handleLocalChange = id => (e, {name, value}) => {
         const criterion = Criterion.fromObject(this.state.criterion);
         criterion.constraintRules.items = criterion.constraintRules.all.map(c => {
             if (c.id === id) {
@@ -57,27 +57,45 @@ class CriteriaDataConstraints extends React.Component {
             }
             return c;
         });
-        this.setState({
+        criterion.step = 1;
+        return this.setState({
             criterion: criterion.toObject()
-        }, () => {
-            if (recalculate) {
-                this.handleChange();
-            }
         });
+    };
+
+    handleChangeSelect = id => (e, {name, value}) => {
+        const criterion = Criterion.fromObject(this.state.criterion);
+        criterion.constraintRules.items = criterion.constraintRules.all.map(c => {
+            if (c.id === id) {
+                c[name] = value;
+            }
+            return c;
+        });
+        criterion.raster.calculateMinMax(criterion.constraintRules);
+        criterion.step = 1;
+        this.props.onChange(criterion);
     };
 
     handleChange = () => {
         const criterion = Criterion.fromObject(this.state.criterion);
         criterion.raster.calculateMinMax(criterion.constraintRules);
+        criterion.step = 1;
+        this.props.onChange(criterion);
+    };
+
+    handleClickRecalculate = () => {
+        const criterion = Criterion.fromObject(this.state.criterion);
         criterion.calculateConstraints();
+        criterion.raster.calculateMinMax(criterion.constraintRules);
+        criterion.step = 2;
         this.saveRaster(criterion);
     };
 
     handleRemoveRule = id => {
         const criterion = Criterion.fromObject(this.state.criterion);
-        criterion.constraintRules.items = criterion.constraintRules.all.filter(rule => rule.id !== id);
-        criterion.calculateConstraints();
-        this.saveRaster(criterion);
+        criterion.raster.calculateMinMax(criterion.constraintRules);
+        criterion.constraintRules.remove(id);
+        this.props.onChange(criterion);
     };
 
     handleToggleRule = rule => {
@@ -87,8 +105,8 @@ class CriteriaDataConstraints extends React.Component {
         rule.value = rule.value === 1 ? 0 : 1;
         const criterion = this.props.criterion;
         criterion.constraintRules.update(rule);
-        criterion.constraintRaster = criterion.suitability;
         criterion.calculateConstraints();
+        criterion.step = 2;
         this.saveRaster(criterion);
     };
 
@@ -162,7 +180,7 @@ class CriteriaDataConstraints extends React.Component {
                                                     ]}
                                                     placeholder='Operator'
                                                     name={'fromOperator'}
-                                                    onChange={this.handleLocalChange(rule.id, true)}
+                                                    onChange={this.handleChangeSelect(rule.id)}
                                                     value={rule.fromOperator}
                                                 />
                                                 <Form.Input
@@ -187,7 +205,7 @@ class CriteriaDataConstraints extends React.Component {
                                                     ]}
                                                     placeholder='Operator'
                                                     name='toOperator'
-                                                    onChange={this.handleLocalChange(rule.id, true)}
+                                                    onChange={this.handleChangeSelect(rule.id)}
                                                     value={rule.toOperator}
                                                 />
                                                 <Form.Input
@@ -217,12 +235,23 @@ class CriteriaDataConstraints extends React.Component {
                     </Button>
                 </Grid.Column>
                 <Grid.Column width={8}>
-                    {criterion.constraintRaster && criterion.constraintRaster.data.length > 0 &&
+                    {criterion.constraintRaster && criterion.constraintRaster.data.length > 0 && criterion.step > 1 &&
                     <CriteriaRasterMap
                         legend={legend}
                         raster={criterion.constraintRaster}
                         showBasicLayer={false}
                     />
+                    }
+                    {criterion.step < 2 &&
+                    <Button
+                        primary
+                        icon
+                        fluid labelPosition='left'
+                        onClick={this.handleClickRecalculate}
+                    >
+                        <Icon name='calculator'/>
+                        Recalculate Raster
+                    </Button>
                     }
                 </Grid.Column>
             </Grid.Row>
