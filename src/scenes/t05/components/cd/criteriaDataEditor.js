@@ -24,39 +24,64 @@ class CriteriaDataEditor extends React.Component {
         const prevCriterion = this.props.criterion || null;
         const criterion = nextProps.criterion;
 
-        if (criterion) {
-            this.criterionToState(prevCriterion ? prevCriterion.toObject() : null, criterion.toObject());
+        const fetchRasters = (!this.props.criterion && nextProps.criterion) ||
+            (nextProps.criterion && this.props.criterion.id !== nextProps.criterion.id) ||
+            (nextProps.criterion && (
+                (nextProps.criterion.raster.url !== this.props.criterion.raster.url) ||
+                (nextProps.criterion.constraintRaster.url !== this.props.criterion.constraintRaster.url) ||
+                (nextProps.criterion.suitability.url !== this.props.criterion.suitability.url)
+            ));
+
+        if (fetchRasters) {
+            return this.getRasterData(prevCriterion ? prevCriterion.toObject() : null, criterion.toObject());
+        }
+
+        if (criterion && !fetchRasters) {
+            const newCriterion = criterion.toObject();
+
+            return this.setState(prevState => ({
+                criterion: {
+                    ...newCriterion,
+                    raster: prevState.criterion.raster,
+                    constraintRaster: prevState.criterion.constraintRaster,
+                    suitability: prevState.criterion.suitability
+                }
+            }));
         }
     }
 
-    criterionToState = (prevCriterion, criterion) => {
+    getRasterData = (prevCriterion, criterion) => {
         this.setState({
             isFetching: true
         });
-
-        const newCriterion = criterion;
 
         const tasks = [
             {
                 raster: criterion.raster,
                 oldUrl: prevCriterion ? prevCriterion.raster.url : '',
-                onSuccess: raster => newCriterion.raster = raster
+                onSuccess: response => {
+                    criterion.raster = response;
+                }
             },
             {
                 raster: criterion.constraintRaster,
                 oldUrl: prevCriterion ? prevCriterion.constraintRaster.url : '',
-                onSuccess: raster => newCriterion.constraintRaster = raster
+                onSuccess: response => {
+                    criterion.constraintRaster = response;
+                }
             },
             {
                 raster: criterion.suitability,
                 oldUrl: prevCriterion ? prevCriterion.suitability.url : '',
-                onSuccess: raster => newCriterion.suitability = raster
+                onSuccess: response => {
+                    criterion.suitability = response;
+                }
             },
         ];
 
         retrieveRasters(tasks, () => {
             this.setState({
-                criterion: newCriterion,
+                criterion: criterion,
                 isFetching: false
             });
         });
@@ -136,7 +161,7 @@ class CriteriaDataEditor extends React.Component {
                             />
                             <Step
                                 active={activeTool === 'constraints'}
-                                disabled={criterion.raster.data.length === 0}
+                                disabled={criterion.step < 1}
                                 name='constraints'
                                 icon='eraser'
                                 title='Constraints'
@@ -145,7 +170,7 @@ class CriteriaDataEditor extends React.Component {
                             />
                             <Step
                                 active={activeTool === 'reclassification'}
-                                disabled={criterion.raster.data.length === 0}
+                                disabled={criterion.step < 2}
                                 name='reclassification'
                                 icon='chart bar'
                                 title='Reclassification'
@@ -154,7 +179,7 @@ class CriteriaDataEditor extends React.Component {
                             />
                             <Step
                                 active={activeTool === 'results'}
-                                disabled={!criterion.suitability || (criterion.suitability && criterion.suitability.data.length === 0)}
+                                disabled={criterion.step < 3}
                                 name='results'
                                 icon='map'
                                 title='Results'

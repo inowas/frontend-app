@@ -78,7 +78,8 @@ class CriteriaReclassificationDiscrete extends React.Component {
                     rule[name] = value;
                 }
                 return rule;
-            })
+            }),
+            step: 2
         }
     }));
 
@@ -92,13 +93,15 @@ class CriteriaReclassificationDiscrete extends React.Component {
                         r.color = color.hex;
                     }
                     return r;
-                })
+                }),
+                step: 2
             }
         }));
     };
 
     handleClickCalculate = () => {
         const criterion = this.props.criterion;
+        criterion.step = 3;
         criterion.calculateSuitability();
         this.saveRaster(criterion);
     };

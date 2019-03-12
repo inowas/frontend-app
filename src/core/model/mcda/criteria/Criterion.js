@@ -17,6 +17,7 @@ class Criterion {
     _suitability = new Raster();
     _constraintRaster = new Raster();
     _constraintRules = new RulesCollection();
+    _step = 0;
 
     static fromObject(obj) {
         const criterion = new Criterion();
@@ -27,9 +28,10 @@ class Criterion {
         criterion.unit = obj.unit;
         criterion.raster = obj.raster ? Raster.fromObject(obj.raster) : new Raster();
         criterion.rulesCollection = obj.rules ? RulesCollection.fromArray(obj.rules) : new RulesCollection();
-        criterion.suitability = obj.suitability ? Raster.fromObject(obj.suitability) : Raster.fromObject(obj.raster);
+        criterion.suitability = obj.suitability ? Raster.fromObject(obj.suitability) : new Raster();
         criterion.constraintRaster = obj.constraintRaster ? Raster.fromObject(obj.constraintRaster) : new Raster();
         criterion.constraintRules = obj.constraintRules ? RulesCollection.fromArray(obj.constraintRules) : new RulesCollection();
+        criterion.step = obj.step || 1;
         return criterion;
     }
 
@@ -116,6 +118,14 @@ class Criterion {
         this._constraintRules = value;
     }
 
+    get step() {
+        return this._step;
+    }
+
+    set step(value) {
+        this._step = value;
+    }
+
     toObject() {
         return ({
             id: this.id,
@@ -127,7 +137,8 @@ class Criterion {
             rules: this.rulesCollection.toArray(),
             suitability: this.suitability.toObject(),
             constraintRaster: this.constraintRaster.toObject(),
-            constraintRules: this.constraintRules.toArray()
+            constraintRules: this.constraintRules.toArray(),
+            step: this.step
         });
     }
 
@@ -142,7 +153,8 @@ class Criterion {
             rules: this.rulesCollection.toArray(),
             suitability: this.suitability.toPayload(),
             constraintRaster: this.constraintRaster.toPayload(),
-            constraintRules: this.constraintRules.toArray()
+            constraintRules: this.constraintRules.toArray(),
+            step: this.step
         });
     }
 
