@@ -19,7 +19,7 @@ const availableTools = [
         instances: []
     }, {
         slug: 'T03',
-        name: 'MODFLOW model setup and editor',
+        name: 'Numerical groundwater modelling and optimization',
         path: '/tools/',
         subPath: '',
         role: ROLE_NM_MF,
