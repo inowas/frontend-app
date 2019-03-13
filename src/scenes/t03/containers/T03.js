@@ -32,9 +32,9 @@ import ModflowModelCommand from '../commands/modflowModelCommand';
 import CalculationProgressBar from '../components/content/run/calculationProgressBar';
 import OptimizationProgressBar from '../components/content/optimization/optimizationProgressBar';
 import {CALCULATION_STATE_FINISHED} from '../components/content/run/CalculationStatus';
-import FlopyPackages from '../../../core/model/flopy/packages/FlopyPackages';
-import {FlopyModflow} from '../../../core/model/flopy/packages/mf';
-import {Mt3dms} from '../../../core/model/flopy/packages/mt';
+import FlopyPackages from 'core/model/flopy/packages/FlopyPackages';
+import {FlopyModflow} from 'core/model/flopy/packages/mf';
+import {Mt3dms} from 'core/model/flopy/packages/mt';
 
 const navigation = [{
     name: 'Documentation',
@@ -187,6 +187,8 @@ class T03 extends React.Component {
                 return (<Content.Boundaries/>);
             case 'observations':
                 return (<Content.Observations/>);
+            case 'flow':
+                return (<Content.Flow/>);
             case 'transport':
                 return (<Content.Transport/>);
             case 'run':

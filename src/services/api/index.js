@@ -3,6 +3,7 @@ import storeToCreate from 'store';
 
 const BASE_URL = process.env.REACT_APP_API_URL + '/v3';
 export const GEOPROCESSING_URL = 'https://geoprocessing.inowas.com';
+export const MODFLOW_CALCULATION_URL = 'https://modflow.inowas.com';
 export const JSON_SCHEMA_URL = 'https://schema.inowas.com/';
 
 const getToken = () => {
@@ -44,6 +45,19 @@ export const uploadRasterfile = (file, onSuccess, onError) => {
         method: 'POST',
         url: GEOPROCESSING_URL,
         data: uploadData,
+        mode: 'no-cors',
+        headers: {
+            'Access-Control-Allow-Origin': '*',
+            'Content-Type': 'application/json',
+        }
+    }).then(response => response.data).then(onSuccess).catch(onError);
+};
+
+export const sendCalculationRequest = (data, onSuccess, onError) => {
+    return axios({
+        method: 'POST',
+        url: MODFLOW_CALCULATION_URL,
+        data: data,
         mode: 'no-cors',
         headers: {
             'Access-Control-Allow-Origin': '*',

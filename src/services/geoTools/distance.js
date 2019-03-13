@@ -69,7 +69,7 @@ export const delc = (boundingBox, gridSize) => {
 
     const options = {units: 'kilometers'};
 
-    return distance(point1, point2, options)/gridSize.nY;
+    return Number((distance(point1, point2, options) / gridSize.nY * 1000).toFixed(3));
 };
 
 
@@ -94,7 +94,7 @@ export const delr = (boundingBox, gridSize) => {
 
     const options = {units: 'kilometers'};
 
-    return distance(point1, point2, options)/gridSize.nX;
+    return Number((distance(point1, point2, options) / gridSize.nX * 1000).toFixed(3));
 };
 
 export const distanceBetweenCoordinates = (lat1, lon1, lat2, lon2) => {

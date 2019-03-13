@@ -1,6 +1,6 @@
 import moment from 'moment/moment';
 import Stressperiod from './Stressperiod';
-import {cloneDeep, orderBy} from 'lodash';
+import {cloneDeep} from 'lodash';
 import {TimeUnit} from './index';
 
 class Stressperiods {
@@ -90,10 +90,6 @@ class Stressperiods {
         return this._stressperiods;
     }
 
-    orderStressperiods() {
-        this._stressperiods = orderBy(this._stressperiods, [sp => sp.totimStart], ['asc']);
-    }
-
     getStressperiodByIdx(idx) {
         return this._stressperiods[idx];
     }
@@ -145,6 +141,22 @@ class Stressperiods {
 
     get totim() {
         return this.endDateTime.diff(this.startDateTime, 'days') + 1;
+    }
+
+    get perlens() {
+        const totims = [];
+        this.stressperiods.forEach(sp => {
+            totims.push(this.totimFromDate(sp.startDateTime))
+        });
+
+        totims.push(this.totimFromDate(this.endDateTime));
+
+        const perlens = [];
+        for (let i = 1; i < totims.length; i++) {
+            perlens.push(totims[i] - totims[i - 1]);
+        }
+
+        return perlens;
     }
 
     totimFromDate(dateTime) {

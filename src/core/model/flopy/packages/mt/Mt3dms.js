@@ -125,7 +125,7 @@ class Mt3dms {
         const ajv = new Ajv({schemaId: 'id'});
         ajv.addMetaSchema(ajv0);
         const validate = ajv.compile(schema);
-        return [validate(this.toObject()), validate.errors];
+        return [validate(this.toFlopyCalculation()), validate.errors];
     }
 }
 

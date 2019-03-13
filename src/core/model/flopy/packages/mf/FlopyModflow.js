@@ -1,3 +1,7 @@
+import Ajv from 'ajv';
+import ajv0 from 'ajv/lib/refs/json-schema-draft-04';
+import schema from './FlopyModflow.schema';
+
 import FlopyModflowMf from './FlopyModflowMf';
 import FlopyModflowMfbas from './FlopyModflowMfbas';
 import FlopyModflowMfbcf from './FlopyModflowMfbcf';
@@ -125,10 +129,13 @@ export default class FlopyModflow {
         mfDis.top = layers[0].top;
         mfDis.botm = layers.map(l => l.botm);
 
-        mfDis.perlen = model.stressperiods.stressperiods.map(sp => sp.perlen);
-        mfDis.nstp = model.stressperiods.stressperiods.map(sp => sp.nstp);
-        mfDis.tsmult = model.stressperiods.stressperiods.map(sp => sp.tsmult);
-        mfDis.steady = model.stressperiods.stressperiods.map(sp => sp.steady);
+        const stressperiods = model.stressperiods;
+        stressperiods.recalculateStressperiods();
+
+        mfDis.perlen = stressperiods.perlens;
+        mfDis.nstp = stressperiods.stressperiods.map(sp => sp.nstp);
+        mfDis.tsmult = stressperiods.stressperiods.map(sp => sp.tsmult);
+        mfDis.steady = stressperiods.stressperiods.map(sp => sp.steady);
 
         mfDis.itmuni = model.timeUnit;
         mfDis.lenuni = model.lengthUnit;
@@ -137,14 +144,14 @@ export default class FlopyModflow {
         mfDis.yul = model.boundingBox.yMax;
         mfDis.rotation = 0;
         mfDis.proj4_str = 'EPSG:3857';
-        mfDis.start_date_time = model.stressperiods.startDateTime;
+        mfDis.start_datetime = stressperiods.startDateTime.format('YYYY-MM-DD');
 
         this.setPackage(mfDis);
 
         const mfBas = FlopyModflowMfbas.create(null, {});
         mfBas.iBound = model.cells.calculateIBound(mfDis.nlay, mfDis.nrow, mfDis.ncol);
         mfBas.strt = mfDis.top;
-        this.setPackage(mfDis);
+        this.setPackage(mfBas);
     }
 
     setBoundaries = (boundaries) => {
@@ -316,5 +323,12 @@ export default class FlopyModflow {
         }
 
         return obj;
+    };
+
+    validate() {
+        const ajv = new Ajv({schemaId: 'id'});
+        ajv.addMetaSchema(ajv0);
+        const validate = ajv.compile(schema);
+        return [validate(this.toFlopyCalculation()), validate.errors];
     }
 }
