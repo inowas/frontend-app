@@ -1,13 +1,12 @@
 import Uuid from 'uuid';
-import {FlopyModflow, FlopyModflowMf} from 'core/model/flopy/packages/mf';
+import {FlopyModflow} from 'core/model/flopy/packages/mf';
 import {Mt3dms} from 'core/model/flopy/packages/mt';
 import FlopyPackages from 'core/model/flopy/packages/FlopyPackages';
 
 test('It can instantiate FlopyPackages', () => {
     const modelId = Uuid.v4();
-    const mf = new FlopyModflow();
-    FlopyModflowMf.create(mf);
 
+    const mf = new FlopyModflow();
     const mt = Mt3dms.fromDefaults();
 
     const flopyPackages = new FlopyPackages(modelId, mf, mt);

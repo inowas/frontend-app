@@ -15,6 +15,14 @@ export default class FlopyPackages {
     _mf;
     _mt;
 
+    static fromQuery(obj) {
+        if (obj === []) {
+            return null;
+        }
+
+        return FlopyPackages.fromObject(obj);
+    }
+
     static fromObject(obj) {
         const mf = FlopyModflow.fromObject(obj.mf);
         const mt = Mt3dms.fromObject(obj.mt);
@@ -121,9 +129,10 @@ export default class FlopyPackages {
     toObject = () => {
         return {
             author: this.author,
-            version: this.flopy_version,
-            model_id: this.model_id,
             project: this.project,
+            version: this.flopy_version,
+            calculation_id: this.calculation_id,
+            model_id: this.model_id,
             mf: this.mf.toObject(),
             mt: this.mt.toObject()
         }

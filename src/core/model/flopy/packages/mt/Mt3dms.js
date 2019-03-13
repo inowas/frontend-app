@@ -32,14 +32,16 @@ class Mt3dms {
     }
 
     static fromObject(obj) {
-        const mt = new Mt3dms();
+        const mt = new this();
         mt.enabled = obj.enabled;
-        obj.packages.forEach(packageName => {
-            const mt3dPackage = Mt3dPackageFactory.fromData(obj[packageName]);
-            if (mt3dPackage) {
-                mt.addPackage(mt3dPackage);
+        for (const prop in obj) {
+            if (obj.hasOwnProperty(prop)) {
+                const p = Mt3dPackageFactory.fromData(obj[prop]);
+                if (p instanceof AbstractMt3dPackage) {
+                    mt.addPackage(p);
+                }
             }
-        });
+        }
 
         return mt;
     }
@@ -86,8 +88,7 @@ class Mt3dms {
 
     toObject() {
         const obj = {
-            enabled: this.enabled,
-            packages: Object.keys(this.packages)
+            enabled: this.enabled
         };
 
         for (const key in this.packages) {

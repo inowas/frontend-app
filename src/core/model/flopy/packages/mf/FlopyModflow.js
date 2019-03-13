@@ -11,7 +11,6 @@ import FlopyModflowMfpcg from './FlopyModflowMfpcg';
 import FlopyModflowMfrch from './FlopyModflowMfrch';
 import FlopyModflowMfriv from './FlopyModflowMfriv';
 import FlopyModflowMfwel from './FlopyModflowMfwel';
-import FlopyModflowSerializable from '../FlopyModflowSerializable';
 
 import {BoundaryCollection, ModflowModel, Soilmodel} from 'core/model/modflow';
 import {delc, delr} from 'services/geoTools/distance';
@@ -33,7 +32,7 @@ const packagesMap = {
     'wel': FlopyModflowMfwel
 };
 
-export default class FlopyModflow extends FlopyModflowSerializable {
+export default class FlopyModflow {
 
     _packages = {};
 
@@ -72,8 +71,7 @@ export default class FlopyModflow extends FlopyModflowSerializable {
     }
 
     constructor() {
-        super();
-        this.setPackage(FlopyModflowMf.create(null, {}));
+        this.setPackage(FlopyModflowMf.create());
     }
 
     updateDiscretization = (model, soilmodel, boundaries) => {
@@ -150,6 +148,7 @@ export default class FlopyModflow extends FlopyModflowSerializable {
     }
 
     setBoundaries = (boundaries) => {
+
         if (!(boundaries instanceof BoundaryCollection)) {
             throw new Error('Expecting instance of BoundaryCollection')
         }
@@ -161,7 +160,7 @@ export default class FlopyModflow extends FlopyModflowSerializable {
         const mfChd = FlopyModflowMfchd.create();
         this.removePackageIfExists(mfChd);
 
-        let spData = FlopyModflowMfchd.calculateSpData(boundaries, nper);
+        let spData = FlopyModflowMfchd.calculateSpData(boundaries.all, nper);
         if (spData) {
             const mfChd = FlopyModflowMfchd.create();
             mfChd.stress_period_data = spData;
@@ -173,7 +172,7 @@ export default class FlopyModflow extends FlopyModflowSerializable {
         const mfGhb = FlopyModflowMfghb.create();
         this.removePackageIfExists(mfGhb);
 
-        spData = FlopyModflowMfghb.calculateSpData(boundaries, nper);
+        spData = FlopyModflowMfghb.calculateSpData(boundaries.all, nper);
         if (spData) {
             mfGhb.stress_period_data = spData;
             this.setPackage(mfGhb);
@@ -182,7 +181,7 @@ export default class FlopyModflow extends FlopyModflowSerializable {
         // RCHs
         const mfRch = FlopyModflowMfrch.create();
         this.removePackageIfExists(mfRch);
-        spData = FlopyModflowMfrch.calculateSpData(boundaries, nper, nrow, ncol);
+        spData = FlopyModflowMfrch.calculateSpData(boundaries.all, nper, nrow, ncol);
         if (spData) {
             mfRch.rech = spData;
             this.setPackage(mfRch);
@@ -191,7 +190,7 @@ export default class FlopyModflow extends FlopyModflowSerializable {
         // RIV
         const mfRiv = FlopyModflowMfriv.create();
         this.removePackageIfExists(mfRiv);
-        spData = FlopyModflowMfriv.calculateSpData(boundaries, nper);
+        spData = FlopyModflowMfriv.calculateSpData(boundaries.all, nper);
         if (spData) {
             mfRiv.stress_period_data = spData;
             this.setPackage(mfRiv);
@@ -200,7 +199,7 @@ export default class FlopyModflow extends FlopyModflowSerializable {
         // WEL
         const mfWel = FlopyModflowMfwel.create();
         this.removePackageIfExists(mfWel);
-        spData = FlopyModflowMfwel.calculateSpData(boundaries, nper);
+        spData = FlopyModflowMfwel.calculateSpData(boundaries.all, nper);
         if (spData) {
             mfWel.stress_period_data = spData;
             this.setPackage(mfWel);
@@ -227,10 +226,10 @@ export default class FlopyModflow extends FlopyModflowSerializable {
             mfLpf.vka = layers.map(l => l.vka);
             mfLpf.ss = layers.map(l => l.ss);
             mfLpf.sy = layers.map(l => l.sy);
-            this.setPackage(mfLpf);
+            return this.setPackage(mfLpf);
         }
 
-        throw new Error('FlowPackage from type ' + type + 'is not implemented.');
+        throw new Error('FlowPackage from type ' + type + ' is not implemented.');
     };
 
     setSolver = type => {
