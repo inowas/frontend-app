@@ -41,6 +41,7 @@ export default class FlopyModelCalculation {
         this._model_id = modelId;
         this._mf = mf;
         this._mt = mt;
+        this.mf.setTransportEnabled(mt.enabled);
         this.calculateHash();
     }
 
@@ -98,6 +99,7 @@ export default class FlopyModelCalculation {
             throw new Error('Mt has to be instance of Mt3dms')
         }
         this._mt = value;
+        this.mf.setTransportEnabled(value.enabled);
         this.calculateHash();
     }
 

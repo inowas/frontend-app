@@ -15,6 +15,7 @@ import FlopyModflowSerializable from '../FlopyModflowSerializable';
 
 import {BoundaryCollection, ModflowModel, Soilmodel} from 'core/model/modflow';
 import {delc, delr} from 'services/geoTools/distance';
+import FlopyModflowMflmt from './FlopyModflowMflmt';
 
 const packagesMap = {
     'mf': FlopyModflowMf,
@@ -253,6 +254,14 @@ export default class FlopyModflow extends FlopyModflowSerializable {
         this.setPackage(mfOc);
     };
 
+    setTransportEnabled = enabled => {
+        if (enabled) {
+            return this.setPackage(FlopyModflowMflmt.create());
+        }
+
+        this.removePackageIfExists(FlopyModflowMflmt.create());
+    };
+
     get packages() {
         return this._packages;
     }
@@ -274,10 +283,6 @@ export default class FlopyModflow extends FlopyModflowSerializable {
         }
 
         return this._packages[name];
-    }
-
-    hasPackage(name) {
-        return this.packages.hasOwnProperty(name);
     }
 
     removePackageIfExists(p) {
