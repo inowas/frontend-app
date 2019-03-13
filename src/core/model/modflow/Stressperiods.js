@@ -114,7 +114,7 @@ class Stressperiods {
 
     addStressPeriod(stressPeriod) {
         if (!stressPeriod instanceof Stressperiod) {
-            throw new Error('Stressperiod ess expected to be instance of Stressperiod')
+            throw new Error('Stressperiod expected to be instance of Stressperiod')
         }
 
         this._stressperiods.push(stressPeriod);

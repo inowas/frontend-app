@@ -1,3 +1,4 @@
+import FlopyModflow from './FlopyModflow';
 import FlopyModflowMf from './FlopyModflowMf';
 import FlopyModflowMfbas from './FlopyModflowMfbas';
 import FlopyModflowMfchd from './FlopyModflowMfchd';
@@ -14,6 +15,7 @@ import FlopyModflowPackage from './FlopyModflowPackage';
 import FlopyModflowSerializable from '../FlopyModflowSerializable';
 
 export {
+    FlopyModflow,
     FlopyModflowMf,
     FlopyModflowMfbas,
     FlopyModflowMfchd,

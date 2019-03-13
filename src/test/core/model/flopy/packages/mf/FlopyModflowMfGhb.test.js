@@ -1,7 +1,7 @@
 import Uuid from 'uuid';
 import {GeneralHeadBoundary} from 'core/model/modflow/boundaries';
 import {BoundingBox, Cells, Geometry, GridSize} from 'core/model/geometry';
-import {FlopyModflowMf, FlopyModflowMfghb} from 'core/model/flopy/packages/mf';
+import {FlopyModflow, FlopyModflowMfghb} from 'core/model/flopy/packages/mf';
 
 const createGeneralHeadBoundary = () => {
     const id = Uuid.v4();
@@ -31,12 +31,11 @@ const createGeneralHeadBoundary = () => {
 };
 
 test('It can instantiate FlopyModflowMfGhb', () => {
-    const model = new FlopyModflowMf();
+    const model = new FlopyModflow();
     const spData = {'0': [1, 2, 4, 4, 5], '1': [1, 2, 4, 4, 5], '2': [1, 2, 4, 4, 5]};
     const mfGhb = FlopyModflowMfghb.create(model, {stress_period_data: spData});
     expect(mfGhb).toBeInstanceOf(FlopyModflowMfghb);
     expect(mfGhb.stress_period_data).toEqual(spData);
-    expect(model.packages['ghb']).toEqual(mfGhb.toObject());
     expect(model.getPackage('ghb')).toBeInstanceOf(FlopyModflowMfghb);
     expect(model.getPackage('ghb').toObject()).toEqual(mfGhb.toObject())
 });

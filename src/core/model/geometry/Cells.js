@@ -198,7 +198,7 @@ class Cells {
                 const nextOp = observationPoints[opIdx + 1]; // undefined if not existing
 
                 if (cell.distance >= prevOp.distance && nextOp && cell.distance < nextOp.distance) {
-                    cell.value = opIdx+((cell.distance - prevOp.distance) / (nextOp.distance - prevOp.distance))
+                    cell.value = opIdx + ((cell.distance - prevOp.distance) / (nextOp.distance - prevOp.distance))
                 }
 
                 if (!nextOp && cell.distance >= prevOp.distance) {
@@ -248,6 +248,27 @@ class Cells {
 
     addCell = (cell) => {
         this._cells.push(cell);
+    };
+
+    calculateIBound = (nlay, nrow, ncol) => {
+        const iBound2D = [];
+        for (let row = 0; row < nrow; row++) {
+            iBound2D[row] = [];
+            for (let col = 0; col < ncol; col++) {
+                iBound2D[row][col] = 0;
+            }
+        }
+
+        this.cells.forEach(cell => {
+            iBound2D[cell[1]][cell[0]] = 1;
+        });
+
+        const iBound = [];
+        for (let lay = 0; lay < nlay; lay++) {
+            iBound[lay] = iBound2D;
+        }
+
+        return iBound;
     };
 
     get cells() {

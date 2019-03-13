@@ -42,6 +42,10 @@ class BoundaryCollection extends AbstractCollection {
         return boundary;
     }
 
+    countByType(type) {
+        return this.boundaries.filter(b => b.type === type).length;
+    }
+
     get boundaries() {
         return sortBy(this._items, [(b) => b.name.toUpperCase()]);
     }

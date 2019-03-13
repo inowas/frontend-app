@@ -1,11 +1,13 @@
 import Uuid from 'uuid';
-import {FlopyModflowMf} from 'core/model/flopy/packages/mf';
+import {FlopyModflow, FlopyModflowMf} from 'core/model/flopy/packages/mf';
 import {Mt3dms} from 'core/model/flopy/packages/mt';
 import FlopyModelCalculation from 'core/model/flopy/packages/FlopyModelCalculation';
 
 test('It can instantiate FlopyModelCalculation', () => {
     const modelId = Uuid.v4();
-    const mf = new FlopyModflowMf();
+    const mf = new FlopyModflow();
+    FlopyModflowMf.create(mf);
+
     const mt = Mt3dms.fromDefaults();
 
     const flopyModelCalculation = new FlopyModelCalculation(modelId, mf, mt);

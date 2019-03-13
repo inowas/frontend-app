@@ -1,7 +1,7 @@
 import Uuid from 'uuid';
 import {RiverBoundary} from 'core/model/modflow/boundaries';
 import {BoundingBox, Cells, Geometry, GridSize} from 'core/model/geometry';
-import {FlopyModflowMf, FlopyModflowMfriv} from 'core/model/flopy/packages/mf';
+import {FlopyModflow, FlopyModflowMfriv} from 'core/model/flopy/packages/mf';
 
 const createRiverBoundary = () => {
     const id = Uuid.v4();
@@ -35,12 +35,11 @@ const createRiverBoundary = () => {
 };
 
 test('It can instantiate FlopyModflowMfRiv', () => {
-    const model = new FlopyModflowMf();
+    const model = new FlopyModflow();
     const spData = {'0': [1, 2, 4, 4, 5, 5], '1': [1, 2, 4, 4, 5, 5], '2': [1, 2, 4, 4, 5, 5]};
     const mfRiv = FlopyModflowMfriv.create(model, {stress_period_data: spData});
     expect(mfRiv).toBeInstanceOf(FlopyModflowMfriv);
     expect(mfRiv.stress_period_data).toEqual(spData);
-    expect(model.packages['riv']).toEqual(mfRiv.toObject());
     expect(model.getPackage('riv')).toBeInstanceOf(FlopyModflowMfriv);
     expect(model.getPackage('riv').toObject()).toEqual(mfRiv.toObject())
 });
