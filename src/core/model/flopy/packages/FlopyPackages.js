@@ -2,7 +2,7 @@ import {Mt3dms} from './mt';
 import FlopyModflow from './mf/FlopyModflow';
 import md5 from 'md5';
 
-export default class FlopyModelCalculation {
+export default class FlopyPackages {
 
     _flopy_version = '3.2.10';
 
