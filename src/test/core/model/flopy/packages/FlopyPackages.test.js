@@ -10,13 +10,13 @@ test('It can instantiate FlopyPackages', () => {
 
     const mt = Mt3dms.fromDefaults();
 
-    const flopyModelCalculation = new FlopyPackages(modelId, mf, mt);
-    expect(flopyModelCalculation).toBeInstanceOf(FlopyPackages);
+    const flopyPackages = new FlopyPackages(modelId, mf, mt);
+    expect(flopyPackages).toBeInstanceOf(FlopyPackages);
 
-    expect(flopyModelCalculation.model_id).toEqual(modelId);
-    expect(flopyModelCalculation.mf.toObject()).toEqual(mf.toObject());
+    expect(flopyPackages.model_id).toEqual(modelId);
+    expect(flopyPackages.mf.toObject()).toEqual(mf.toObject());
 
-    expect(flopyModelCalculation.toFlopyCalculation().data).toEqual({
+    expect(flopyPackages.toFlopyCalculation().data).toEqual({
         'mf': {
             'mf': {
                 'exe_name': 'mf2005',
