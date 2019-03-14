@@ -1,5 +1,6 @@
 import axios from 'axios';
 import storeToCreate from 'store';
+import FlopyPackages from '../../core/model/flopy/packages/FlopyPackages';
 
 const BASE_URL = process.env.REACT_APP_API_URL + '/v3';
 export const GEOPROCESSING_URL = 'https://geoprocessing.inowas.com';
@@ -53,17 +54,23 @@ export const uploadRasterfile = (file, onSuccess, onError) => {
     }).then(response => response.data).then(onSuccess).catch(onError);
 };
 
-export const sendCalculationRequest = (data, onSuccess, onError) => {
-    return axios({
-        method: 'POST',
-        url: MODFLOW_CALCULATION_URL,
-        data: data,
-        mode: 'no-cors',
-        headers: {
-            'Access-Control-Allow-Origin': '*',
-            'Content-Type': 'application/json',
-        }
-    }).then(response => response.data).then(onSuccess).catch(onError);
+export const sendCalculationRequest = (flopyPackages, onSuccess, onError) => {
+    if (!(flopyPackages instanceof FlopyPackages)) {
+        throw new Error('Expecting instance of FlopyPackages');
+    }
+
+    flopyPackages.validate(true).then(
+        () => axios({
+            method: 'POST',
+            url: MODFLOW_CALCULATION_URL,
+            data: flopyPackages.toFlopyCalculation(),
+            mode: 'no-cors',
+            headers: {
+                'Access-Control-Allow-Origin': '*',
+                'Content-Type': 'application/json',
+            }
+        }).then(response => response.data).then(onSuccess).catch(onError),
+    ).catch(e => console.log(e));
 };
 
 export const fetchRasterData = (
@@ -145,5 +152,5 @@ export const dropData = (data, onSuccess, onError) => {
 };
 
 export const retrieveDroppedData = (filename, onSuccess, onError) => {
-    return fetchUrl('datadropper/'+filename, onSuccess, onError);
+    return fetchUrl('datadropper/' + filename, onSuccess, onError);
 };

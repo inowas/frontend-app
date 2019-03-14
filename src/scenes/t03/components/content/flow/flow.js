@@ -45,6 +45,12 @@ class Flow extends React.Component {
         }
     }
 
+    componentWillReceiveProps(nextProps, nextContext) {
+        this.setState({
+            mf: nextProps.packages.mf.toObject()
+        })
+    }
+
     handleSave = () => {
         const packages = this.props.packages;
         packages.model_id = this.props.model.id;
@@ -70,16 +76,21 @@ class Flow extends React.Component {
             this.handleSave();
         }
 
-        sendCalculationRequest(packages.toFlopyCalculation(),
+        sendCalculationRequest(packages,
             data => console.log(data),
             error => console.log(error)
         );
     };
 
     handleRecalculate = () => {
-        const mf = FlopyModflow.createFromModel(this.props.model, this.props.soilmodel, this.props.boundaries);
-        console.log(JSON.stringify(mf.toFlopyCalculation()));
-        console.log(mf.validate());
+        const packages = this.props.packages;
+        packages.model_id = this.props.model.id;
+        packages.mf = FlopyModflow.createFromModel(this.props.model, this.props.soilmodel, this.props.boundaries);
+        packages.validate().then(data => {
+            if (data[0] === true) {
+                this.props.updatePackages(packages)
+            }
+        });
     };
 
     handleChangePackage = (p) => {

@@ -1,7 +1,3 @@
-import Ajv from 'ajv';
-import ajv0 from 'ajv/lib/refs/json-schema-draft-04';
-import schema from './FlopyModflow.schema';
-
 import FlopyModflowMf from './FlopyModflowMf';
 import FlopyModflowMfbas from './FlopyModflowMfbas';
 import FlopyModflowMfbcf from './FlopyModflowMfbcf';
@@ -19,6 +15,7 @@ import FlopyModflowMfwel from './FlopyModflowMfwel';
 import {BoundaryCollection, ModflowModel, Soilmodel} from 'core/model/modflow';
 import {delc, delr} from 'services/geoTools/distance';
 import FlopyModflowMflmt from './FlopyModflowMflmt';
+
 
 const packagesMap = {
     'mf': FlopyModflowMf,
@@ -324,11 +321,4 @@ export default class FlopyModflow {
 
         return obj;
     };
-
-    validate() {
-        const ajv = new Ajv({schemaId: 'id'});
-        ajv.addMetaSchema(ajv0);
-        const validate = ajv.compile(schema);
-        return [validate(this.toFlopyCalculation()), validate.errors];
-    }
 }

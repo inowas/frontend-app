@@ -105,11 +105,6 @@ class ModflowModelCommand extends AbstractCommand {
         return new ModflowModelCommand(name, payload, JSON_SCHEMA_URL + 'commands/' + name);
     }
 
-    static updateMt3dms(payload) {
-        const name = 'updateMt3dms';
-        return new ModflowModelCommand(name, payload, JSON_SCHEMA_URL + 'commands/' + name);
-    }
-
     static updateOptimizationInput(payload) {
         const name = 'updateOptimizationInput';
         return new ModflowModelCommand(name, payload, JSON_SCHEMA_URL + 'commands/' + name);

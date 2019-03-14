@@ -1,10 +1,14 @@
-import {Mt3dms} from './mt';
-import FlopyModflow from './mf/FlopyModflow';
+import Ajv from 'ajv';
+import jsrp from 'json-schema-ref-parser';
+
 import md5 from 'md5';
+import FlopyModflow from './mf/FlopyModflow';
+import Mt3dms from './mt/Mt3dms';
+import {JSON_SCHEMA_URL} from 'services/api';
 
 export default class FlopyPackages {
 
-    _flopy_version = '3.2.10';
+    _version = '3.2.10';
 
     _author = '';
     _project = '';
@@ -29,7 +33,7 @@ export default class FlopyPackages {
         const modelId = obj.model_id;
 
         const self = new this(modelId, mf, mt);
-        self._flopy_version = obj.version;
+        self._version = obj.version;
         self._author = obj.author;
         self._project = obj.project;
 
@@ -53,8 +57,8 @@ export default class FlopyPackages {
         this.calculateHash();
     }
 
-    get flopy_version() {
-        return this._flopy_version;
+    get version() {
+        return this._version;
     }
 
     get author() {
@@ -130,7 +134,7 @@ export default class FlopyPackages {
         return {
             author: this.author,
             project: this.project,
-            version: this.flopy_version,
+            version: this.version,
             calculation_id: this.calculation_id,
             model_id: this.model_id,
             mf: this.mf.toObject(),
@@ -142,7 +146,7 @@ export default class FlopyPackages {
         return {
             author: this.author,
             project: this.project,
-            version: this.flopy_version,
+            version: this.version,
             calculation_id: this.calculation_id,
             model_id: this.model_id,
             data: this.getData()
@@ -177,5 +181,35 @@ export default class FlopyPackages {
     hash = (data) => {
         const sorted = this.sort(data);
         return md5(JSON.stringify(sorted));
+    };
+
+    validate(forCalculationServer = true) {
+
+        let schema = JSON_SCHEMA_URL + 'modflow/packages/flopyCalculationPackages.schema.json';
+        let data = this.toObject();
+        if (forCalculationServer) {
+            schema = JSON_SCHEMA_URL + 'modflow/packages/flopyCalculation.schema.json';
+            data = this.toFlopyCalculation();
+        }
+
+        return new Promise((resolve) => {
+            const ajv = new Ajv({schemaId: 'auto'});
+            jsrp.dereference({'$ref': schema})
+                .then(schema => {
+                    const val = ajv.compile(schema);
+                    const isValid = val(data);
+                    const errors = val.errors;
+
+                    if (!isValid) {
+                        console.warn('Invalid ' + data, schema, JSON.stringify(errors));
+                    }
+
+                    resolve([isValid, errors]);
+                })
+                .catch(e => {
+                    console.log(e);
+                    resolve([false, e]);
+                });
+        });
     }
 }

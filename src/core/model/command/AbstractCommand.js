@@ -9,6 +9,7 @@ export default class AbstractCommand {
     uuid = uuid();
 
     constructor(name, payload, schema = null) {
+        console.log(name, payload, schema);
         this.message_name = name;
         this.payload = payload;
         this.schema = schema;

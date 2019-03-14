@@ -1,7 +1,3 @@
-import Ajv from 'ajv';
-import ajv0 from 'ajv/lib/refs/json-schema-draft-04';
-import mt3dmsSchema from './mt3dms.schema.json';
-
 import AbstractMt3dPackage from './AbstractMt3dPackage';
 import AdvPackage from './AdvPackage';
 import BtnPackage from './BtnPackage';
@@ -119,14 +115,6 @@ class Mt3dms {
 
         return this.toObject();
     };
-
-    validate() {
-        const schema = mt3dmsSchema;
-        const ajv = new Ajv({schemaId: 'id'});
-        ajv.addMetaSchema(ajv0);
-        const validate = ajv.compile(schema);
-        return [validate(this.toFlopyCalculation()), validate.errors];
-    }
 }
 
 export default Mt3dms;
