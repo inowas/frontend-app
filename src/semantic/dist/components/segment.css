@@ -871,34 +871,3 @@
          Theme Overrides
 *******************************/
 
-
-
-/*******************************
-         Site Overrides
-*******************************/
-
-.diagramLabel {
-  position: absolute !important;
-  background-color: #EFF3F6 !important;
-  opacity: 0.9;
-}
-.diagramLabel.topRight {
-  top: 24px;
-  right: 40px;
-}
-.diagramLabel.bottomRight {
-  bottom: 50px;
-  right: 40px;
-}
-.diagramLabel.topLeft {
-  top: 24px;
-  left: 110px;
-  margin-top: 1rem !important;
-}
-.diagramLabel.bottomLeft {
-  bottom: 40px;
-  left: 40px;
-}
-.diagramLabel.diagramOverlay {
-  opacity: 1;
-}

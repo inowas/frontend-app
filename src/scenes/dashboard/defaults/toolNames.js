@@ -4,7 +4,7 @@ const toolNames = [
         name: 'Groundwater mounding (Hantush)',
     }, {
         slug: 'T03',
-        name: 'MODFLOW model setup and editor',
+        name: 'Numerical groundwater modelling and optimization',
     }, {
         slug: 'T04',
         name: 'Database for GIS-based suitability mapping',

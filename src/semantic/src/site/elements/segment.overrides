@@ -2,6 +2,10 @@
          Site Overrides
 *******************************/
 
+/*-------------------
+  Recharts Elements
+ -------------------*/
+
 .diagramLabel {
     position: absolute !important;
     background-color: #EFF3F6 !important;
@@ -27,3 +31,23 @@
 .diagramLabel.diagramOverlay {
     opacity: 1;
 }
+
+/*-------------------
+  Custom Menu in T03
+ -------------------*/
+
+ .ui.blue.segment.customMenuContainer {
+     padding-top: 0.5em !important;
+     padding-bottom: 0.5em !important;
+ }
+
+ /*----------------------
+  Custom Segment in T07
+  ----------------------*/
+
+ .ui.blue.segment:not(.inverted).modelitem {
+     border-top: none !important;
+ }
+ .ui.inverted.blue.segment.modelitem .ui.header {
+     color: #FFFFFF;
+ }
