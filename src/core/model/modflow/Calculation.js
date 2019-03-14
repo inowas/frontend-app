@@ -1,16 +1,21 @@
 class Calculation {
 
-    _id = '';
+    _id = null;
     _state = 0;
+
     _message = '';
+    _times = null;
     _files = [];
+    _layer_values = null;
 
     static fromQuery(query) {
         const calculation = new Calculation();
-        calculation.id = query['calculation_id'];
-        calculation.state = query['state'];
-        calculation.message = query['message'];
-        calculation.files = query['files'];
+        calculation.id = query['id'] || query['calculation_id'] || null;
+        calculation.state = query['state'] || null;
+        calculation.message = query['message'] || '';
+        calculation.files = query['files'] || [];
+        calculation.times = query['times'] || null;
+        calculation.layer_values = query['layer_values'] || null;
         return calculation;
     }
 
@@ -20,6 +25,8 @@ class Calculation {
         calculation.state = obj.state;
         calculation.message = obj.message;
         calculation.files = obj.files;
+        calculation.times = obj.times;
+        calculation.layer_values = obj.layer_values;
         return calculation;
     }
 
@@ -55,14 +62,34 @@ class Calculation {
         this._files = value;
     }
 
+    get times() {
+        return this._times;
+    }
+
+    set times(value) {
+        this._times = value;
+    }
+
+    get layer_values() {
+        return this._layer_values;
+    }
+
+    set layer_values(value) {
+        this._layer_values = value;
+    }
+
+    isValid = () => {
+        return !!(this.state && this.id);
+    };
+
     toObject = () => ({
         id: this.id,
         state: this.state,
         message: this.message,
-        files: this.files
+        files: this.files,
+        times: this.times,
+        layer_values: this.layer_values
     });
-
 }
-
 
 export default Calculation;

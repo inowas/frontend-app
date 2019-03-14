@@ -92,7 +92,8 @@ export const fetchRasterData = (
         headers: {
             'Access-Control-Allow-Origin': '*',
             'Content-Type': 'application/json'
-        }
+        },
+        data: {}
     }).then(response => response.data).then(onSuccess).catch(onError);
 };
 
@@ -107,7 +108,40 @@ export const fetchRasterMetaData = (
         headers: {
             'Access-Control-Allow-Origin': '*',
             'Content-Type': 'application/json'
-        }
+        },
+        data: {}
+    }).then(response => response.data).then(onSuccess).catch(onError);
+};
+
+export const fetchCalculationDetails = (
+    calculation_id, onSuccess, onError) => {
+    const url = MODFLOW_CALCULATION_URL + '/' + calculation_id;
+
+    return axios({
+        method: 'GET',
+        url: url,
+        mode: 'no-cors',
+        headers: {
+            'Access-Control-Allow-Origin': '*',
+            'Content-Type': 'application/json'
+        },
+        data: {}
+    }).then(response => response.data).then(onSuccess).catch(onError);
+};
+
+export const fetchModflowFile = (
+    calculation_id, file_name, onSuccess, onError) => {
+    const url = MODFLOW_CALCULATION_URL + '/' + calculation_id + '/files/' + file_name;
+
+    return axios({
+        method: 'GET',
+        url: url,
+        mode: 'no-cors',
+        headers: {
+            'Access-Control-Allow-Origin': '*',
+            'Content-Type': 'application/json'
+        },
+        data: {}
     }).then(response => response.data).then(onSuccess).catch(onError);
 };
 

@@ -75,6 +75,10 @@ export default class FlopyModflowMfwel extends FlopyModflowBoundary {
     }
 
     set stress_period_data(value) {
+        if (Array.isArray(value)) {
+            value = FlopyModflowBoundary.arrayToObject(value);
+        }
+
         this._stress_period_data = value;
     }
 

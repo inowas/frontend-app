@@ -5,7 +5,7 @@ import Flow from './flow/flow';
 import Observations from './observations';
 import Optimization from './optimization/optimization.js';
 import Results from './results/results';
-import Run from './run/run';
+import Calculation from './calculation/calculation';
 import Transport from './transport/transport.js';
 import SoilmodelEditor from './soilmodel/soilmodelEditor';
 
@@ -17,7 +17,7 @@ export {
     Observations,
     Optimization,
     Results,
-    Run,
+    Calculation,
     Transport,
     SoilmodelEditor
 }

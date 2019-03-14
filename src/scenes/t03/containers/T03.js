@@ -15,6 +15,7 @@ import {fetchUrl, sendCommand} from 'services/api';
 import {
     clear,
     updateBoundaries,
+    updateCalculation,
     updateModel,
     updateOptimization,
     updatePackages,
@@ -29,12 +30,13 @@ import {
     Soilmodel,
 } from 'core/model/modflow';
 import ModflowModelCommand from '../commands/modflowModelCommand';
-import CalculationProgressBar from '../components/content/run/calculationProgressBar';
+import CalculationProgressBar from '../components/content/calculation/calculationProgressBar';
 import OptimizationProgressBar from '../components/content/optimization/optimizationProgressBar';
-import {CALCULATION_STATE_FINISHED} from '../components/content/run/CalculationStatus';
+import {CALCULATION_STATE_FINISHED} from '../components/content/calculation/CalculationStatus';
 import FlopyPackages from 'core/model/flopy/packages/FlopyPackages';
 import {FlopyModflow} from 'core/model/flopy/packages/mf';
 import {Mt3dms} from 'core/model/flopy/packages/mt';
+import {fetchCalculationDetails} from '../../../services/api';
 
 const navigation = [{
     name: 'Documentation',
@@ -101,6 +103,7 @@ class T03 extends React.Component {
                 this.props.updateModel(ModflowModel.fromQuery(data));
                 this.setState({isLoading: false}, () => {
                     this.fetchBoundaries(id);
+                    this.fetchCalculation(id);
                     this.fetchPackages(id);
                     this.fetchSoilmodel(id);
                 });
@@ -115,6 +118,24 @@ class T03 extends React.Component {
     fetchBoundaries(id) {
         fetchUrl(`modflowmodels/${id}/boundaries`,
             data => this.props.updateBoundaries(BoundaryCollection.fromQuery(data)),
+            error => this.setState(
+                {error, isLoading: false},
+                () => this.handleError(error)
+            )
+        );
+    };
+
+    fetchCalculation(id) {
+        fetchUrl(`modflowmodels/${id}/calculation`,
+            data => {
+                const calculation = Calculation.fromQuery(data);
+                if (calculation.id) {
+                    fetchCalculationDetails(calculation.id,
+                        data => this.props.updateCalculation(Calculation.fromQuery(data)),
+                        error => console.log(error)
+                    )
+                }
+            },
             error => this.setState(
                 {error, isLoading: false},
                 () => this.handleError(error)
@@ -191,8 +212,8 @@ class T03 extends React.Component {
                 return (<Content.Flow/>);
             case 'transport':
                 return (<Content.Transport/>);
-            case 'run':
-                return (<Content.Run/>);
+            case 'calculation':
+                return (<Content.Calculation/>);
             case 'results':
                 return (<Content.Results/>);
             case 'optimization':
@@ -241,7 +262,7 @@ class T03 extends React.Component {
             this.calculatePackages().then(packages => {
                 this.props.updatePackages(packages);
                 return sendCommand(
-                    ModflowModelCommand.updateFlopyPackages(id, packages),
+                    ModflowModelCommand.updateFlopyPackages(this.props.model.id, packages),
                     (e) => this.setState({error: e})
                 );
             });
@@ -300,7 +321,7 @@ const mapStateToProps = state => ({
 });
 
 const mapDispatchToProps = {
-    clear, updateBoundaries, updatePackages, updateModel, updateOptimization, updateSoilmodel
+    clear, updateCalculation, updateBoundaries, updatePackages, updateModel, updateOptimization, updateSoilmodel
 };
 
 

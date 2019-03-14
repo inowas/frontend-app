@@ -16,7 +16,7 @@ import FlopyPackages from 'core/model/flopy/packages/FlopyPackages';
 import {
     MfPackageProperties
 } from './mf';
-import {sendCalculationRequest, sendCommand} from '../../../../../services/api';
+import {sendCalculationRequest, sendCommand} from 'services/api';
 import ModflowModelCommand from '../../../commands/modflowModelCommand';
 
 const sideBar = (boundaries) => ([

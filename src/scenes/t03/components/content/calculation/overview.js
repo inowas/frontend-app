@@ -5,30 +5,38 @@ import {Calculation, ModflowModel} from 'core/model/modflow';
 import {Button, Grid, Header, List, Segment} from 'semantic-ui-react';
 import RunModelOverviewMap from '../../maps/runModelOverviewMap';
 import {connect} from 'react-redux';
-import CalculationStatus, {CALCULATION_STATE_STARTED} from './CalculationStatus';
-import {sendCommand} from 'services/api';
-import ModflowModelCommand from '../../../commands/modflowModelCommand';
+import CalculationStatus, {CALCULATION_STATE_QUEUED} from './CalculationStatus';
+import {sendCalculationRequest, sendCommand} from 'services/api';
 import {updateCalculation} from '../../../actions/actions';
+import FlopyPackages from 'core/model/flopy/packages/FlopyPackages';
+import ModflowModelCommand from '../../../commands/modflowModelCommand';
 
 class Overview extends React.Component {
 
-    state = {
-        canBeCalculated: true,
-        canBeCanceled: false,
-        sendingCommand: false
-    };
+    constructor(props) {
+        super(props);
+
+        this.state = {
+            canBeCalculated: true,
+            canBeCanceled: false,
+            sending: false
+        };
+    }
 
     onStartCalculationClick = () => {
-        const {model, calculation} = this.props;
-        calculation.state = CALCULATION_STATE_STARTED;
-        this.setState({sendingCommand: true});
-        sendCommand(
-            ModflowModelCommand.calculateModflowModel(model.id),
-            () => {
-                this.setState({sendingCommand: false});
-                this.props.updateCalculation(calculation);
-            }
-        )
+        const calculation = Calculation.fromObject(this.props.calculation.toObject());
+        calculation.state = CALCULATION_STATE_QUEUED;
+        calculation.id = this.props.packages.calculation_id;
+
+        this.setState({sending: true},
+            () => sendCalculationRequest(this.props.packages,
+                () => {
+                    sendCommand(ModflowModelCommand.updateModflowModelCalculation(this.props.model.id, calculation));
+                    this.props.updateCalculation(calculation)
+                },
+                e => console.error(e)
+            )
+        );
     };
 
     render() {
@@ -39,7 +47,7 @@ class Overview extends React.Component {
         }
 
         let canBeCalculated = true;
-        if (calculation.state > 0 && calculation.state < 6) {
+        if (calculation.state > 0 && calculation.state < 100) {
             canBeCalculated = false;
         }
 
@@ -94,17 +102,18 @@ class Overview extends React.Component {
 
 const mapStateToProps = state => ({
     calculation: state.T03.calculation ? Calculation.fromObject(state.T03.calculation) : null,
-    model: ModflowModel.fromObject(state.T03.model)
+    model: ModflowModel.fromObject(state.T03.model),
+    packages: FlopyPackages.fromObject(state.T03.packages)
 });
 
 const mapDispatchToProps = {
     updateCalculation
 };
 
-
 Overview.proptypes = {
-    calculation: PropTypes.instanceOf(Calculation),
-    model: PropTypes.instanceOf(ModflowModel).isRequired
+    calculation: PropTypes.instanceOf(Calculation).isRequired,
+    model: PropTypes.instanceOf(ModflowModel).isRequired,
+    packages: PropTypes.instanceOf(FlopyPackages).isRequired
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(Overview);

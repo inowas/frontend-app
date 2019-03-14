@@ -2,9 +2,9 @@ import React from 'react';
 import {connect} from 'react-redux';
 import {ModflowModel, Calculation} from 'core/model/modflow';
 import {updateCalculation} from '../../../actions/actions';
-import CalculationStatus, {CALCULATION_STATE_FINISHED, CALCULATION_STATE_STARTED} from './CalculationStatus';
-import {fetchUrl} from 'services/api';
+import CalculationStatus, {CALCULATION_STATE_QUEUED, CALCULATION_STATE_FINISHED} from './CalculationStatus';
 import {Message} from 'semantic-ui-react';
+import {fetchCalculationDetails} from 'services/api';
 
 class CalculationProgressBar extends React.Component {
 
@@ -31,7 +31,7 @@ class CalculationProgressBar extends React.Component {
             this.stopPolling();
         }
 
-        if (state < CALCULATION_STATE_STARTED || state > CALCULATION_STATE_FINISHED) {
+        if (state < CALCULATION_STATE_QUEUED || state > CALCULATION_STATE_FINISHED) {
             return this.setState({visible: false});
         }
 
@@ -72,29 +72,36 @@ class CalculationProgressBar extends React.Component {
         }
 
         const {state} = calculation;
-        if (state < CALCULATION_STATE_STARTED || state >= CALCULATION_STATE_FINISHED) {
+        if (state < CALCULATION_STATE_QUEUED || state >= CALCULATION_STATE_FINISHED) {
             return;
         }
 
-        this.setState({fetching: true});
-        fetchUrl(`modflowmodels/${model.id}/calculation`,
-            data => {
-                this.setState({fetching: false});
-                this.props.updateCalculation(Calculation.fromQuery(data));
-            },
-            error => this.setState(
-                {error, fetching: false},
-                () => this.handleError(error)
+        this.setState({fetching: true},
+            () => fetchCalculationDetails(calculation.id,
+                data => {
+                    const calculation = Calculation.fromQuery(data);
+                    if (calculation.isValid()) {
+                        this.setState({fetching: false});
+                        this.props.updateCalculation(calculation);
+                    }
+                },
+                error => this.setState(
+                    {error, fetching: false},
+                    () => this.handleError(error)
+                )
             )
         );
-    };
+    }
 
     render() {
         if (this.state.visible) {
             return (
                 <Message
                     color='blue'
-                    onDismiss={() => this.setState({visible: false})}
+                    onDismiss={() => {
+                        this.stopPolling();
+                        this.setState({visible: false});
+                    }}
                 >
                     <Message.Header as={'h4'}>Calculation Progress</Message.Header>
                     <Message.Content>

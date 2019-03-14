@@ -4,7 +4,7 @@ export default class FlopyModflowSerializable {
         const self = new this();
         for (const key in obj) {
             if (obj.hasOwnProperty(key)) {
-                self['_' + key] = obj[key]
+                self[key] = obj[key]
             }
         }
         return self;

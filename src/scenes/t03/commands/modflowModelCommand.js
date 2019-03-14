@@ -1,6 +1,7 @@
 import AbstractCommand from 'core/model/command/AbstractCommand';
 import {JSON_SCHEMA_URL} from 'services/api';
 import FlopyPackages from '../../../core/model/flopy/packages/FlopyPackages';
+import {Calculation} from '../../../core/model/modflow';
 
 class ModflowModelCommand extends AbstractCommand {
 
@@ -82,6 +83,21 @@ class ModflowModelCommand extends AbstractCommand {
         return new ModflowModelCommand(
             commandName,
             {id, name, description, public: isPubic},
+            JSON_SCHEMA_URL + 'commands/' + commandName);
+    }
+
+    static updateModflowModelCalculation(id, calculation) {
+
+        console.log(calculation);
+        if (!(calculation instanceof Calculation)) {
+            throw new Error('Expecting instance of Calculation');
+        }
+
+        console.log(calculation);
+        const commandName = 'updateModflowModelCalculation';
+        return new ModflowModelCommand(
+            commandName,
+            {id, calculation: calculation.toObject()},
             JSON_SCHEMA_URL + 'commands/' + commandName);
     }
 

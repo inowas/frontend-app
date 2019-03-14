@@ -1,5 +1,6 @@
 import {GeneralHeadBoundary} from '../../../modflow/boundaries';
 import FlopyModflowLineBoundary from './FlopyModflowLineBoundary';
+import FlopyModflowBoundary from './FlopyModflowBoundary';
 
 /*
 https://modflowpy.github.io/flopydoc/mfghb.html
@@ -58,6 +59,9 @@ export default class FlopyModflowMfghb extends FlopyModflowLineBoundary {
     }
 
     set stress_period_data(value) {
+        if (Array.isArray(value)) {
+            value = FlopyModflowBoundary.arrayToObject(value);
+        }
         this._stress_period_data = value;
     }
 
