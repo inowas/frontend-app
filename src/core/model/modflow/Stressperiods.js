@@ -91,7 +91,7 @@ class Stressperiods {
     }
 
     orderStressperiods() {
-        this._stressperiods = orderBy(this._stressperiods, [sp => sp.totimStart], ['asc']);
+        this._stressperiods = orderBy(this._stressperiods, [sp => sp.startDateTime], ['asc']);
     }
 
     getStressperiodByIdx(idx) {
@@ -105,7 +105,6 @@ class Stressperiods {
     updateStressperiodByIdx(idx, stressperiod) {
         this._stressperiods[idx] = stressperiod;
         this.stressperiods = this.recalculate(this.stressperiods);
-
     }
 
     get count() {
@@ -180,7 +179,6 @@ class Stressperiods {
     };
 
     toObject = () => {
-
         const stressperiods = [];
         let lastTotimStart = 0;
 

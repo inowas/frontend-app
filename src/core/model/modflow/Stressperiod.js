@@ -1,5 +1,4 @@
 class Stressperiod {
-
     _startDateTime;
     _nstp;
     _tsmult;
@@ -8,8 +7,6 @@ class Stressperiod {
     static fromObject(obj) {
         const stressPeriod = new Stressperiod();
         stressPeriod._startDateTime = obj.start_date_time;
-        //stressPeriod._totimStart = obj.totim_start;
-        //stressPeriod._perlen = obj.perlen;
         stressPeriod._nstp = obj.nstp;
         stressPeriod._tsmult = obj.tsmult;
         stressPeriod._steady = obj.steady;

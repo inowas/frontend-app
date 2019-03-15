@@ -72,6 +72,7 @@ class StressperiodsEditor extends React.Component {
 
     render() {
         const stressperiods = Stressperiods.fromObject(this.state.stressperiods);
+        stressperiods.orderStressperiods();
         return (
             <Grid>
                 <Grid.Row>
