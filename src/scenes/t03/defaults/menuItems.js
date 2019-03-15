@@ -42,7 +42,6 @@ const menuItems = [
                 name: 'Results',
                 property: 'results',
                 icon: <Icon name="chart bar outline"/>,
-                disabled: true
             }
         ]
     }, {

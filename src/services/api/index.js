@@ -115,7 +115,22 @@ export const fetchRasterMetaData = (
 
 export const fetchCalculationDetails = (
     calculation_id, onSuccess, onError) => {
-    const url = MODFLOW_CALCULATION_URL + '/' + calculation_id;
+    const url = `${MODFLOW_CALCULATION_URL}/${calculation_id}`;
+
+    return axios({
+        method: 'GET',
+        url: url,
+        mode: 'no-cors',
+        headers: {
+            'Access-Control-Allow-Origin': '*',
+            'Content-Type': 'application/json'
+        },
+        data: {}
+    }).then(response => response.data).then(onSuccess).catch(onError);
+};
+
+export const fetchCalculationResults = ({calculationId, layer, totim, type}, onSuccess, onError) => {
+    const url = `${MODFLOW_CALCULATION_URL}/${calculationId}/results/types/${type}/layers/${layer}/totims/${totim}`;
 
     return axios({
         method: 'GET',

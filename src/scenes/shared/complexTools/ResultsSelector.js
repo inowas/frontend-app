@@ -62,8 +62,8 @@ class ResultsSelector extends React.Component {
             return [];
         }
 
-        return this.props.soilmodel.layersCollection.all.map(l => (
-            {key: l.id, value: l.number, text: l.name}
+        return this.props.soilmodel.layersCollection.all.map((l, idx) => (
+            {key: l.id, value: idx, text: l.name}
         ))
     };
 
