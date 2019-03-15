@@ -17,6 +17,8 @@ export default class ModflowModel {
     _stressperiods;
     _timeUnit;
 
+    _calculationId;
+
     _permissions;
 
     static fromObject(obj) {
@@ -34,6 +36,8 @@ export default class ModflowModel {
 
         model.stressperiods = (obj.stressperiods) ? Stressperiods.fromObject(obj.stressperiods) : Stressperiods.fromDefaults();
         model.timeUnit = obj.time_unit;
+
+        model.calculationId = obj.calculation_id;
 
         model.permissions = obj.permissions;
         return model;
@@ -75,6 +79,8 @@ export default class ModflowModel {
 
         model.stressperiods = (discretization.stressperiods) ? Stressperiods.fromObject(discretization.stressperiods) : Stressperiods.fromDefaults();
         model.timeUnit = discretization.time_unit;
+
+        model.calculationId = query.calculation_id;
 
         return model;
     }
@@ -179,6 +185,14 @@ export default class ModflowModel {
         this._timeUnit = value;
     }
 
+    get calculationId() {
+        return this._calculationId;
+    }
+
+    set calculationId(value) {
+        this._calculationId = value;
+    }
+
     get readOnly() {
         return !includes(this.permissions, 'w');
     }
@@ -196,6 +210,7 @@ export default class ModflowModel {
         public: this.public,
         stressperiods: this.stressperiods.toObject(),
         time_unit: this.timeUnit,
+        calculation_id: this.calculationId
     });
 
     toPayload = () => ({

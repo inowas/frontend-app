@@ -8,8 +8,15 @@ class Calculation {
     _files = [];
     _layer_values = null;
 
+    static fromCalculationIdAndState(calculationId, state) {
+        const self = new this();
+        self.id = calculationId;
+        self.state = state;
+        return self;
+    }
+
     static fromQuery(query) {
-        const calculation = new Calculation();
+        const calculation = new this();
         calculation.id = query['id'] || query['calculation_id'] || null;
         calculation.state = query['state'] || null;
         calculation.message = query['message'] || '';
@@ -20,7 +27,7 @@ class Calculation {
     }
 
     static fromObject(obj) {
-        const calculation = new Calculation();
+        const calculation = new this();
         calculation.id = obj.id;
         calculation.state = obj.state;
         calculation.message = obj.message;

@@ -26,6 +26,7 @@ const packagesMap = {
     'ghb': FlopyModflowMfghb,
     'hob': FlopyModflowMfhob,
     'lpf': FlopyModflowMflpf,
+    'lmt': FlopyModflowMflmt,
     'oc': FlopyModflowMfoc,
     'pcg': FlopyModflowMfpcg,
     'rch': FlopyModflowMfrch,

@@ -100,12 +100,19 @@ class T03 extends React.Component {
         fetchUrl(
             `modflowmodels/${id}`,
             data => {
-                this.props.updateModel(ModflowModel.fromQuery(data));
+                const modflowModel = ModflowModel.fromQuery(data);
+                this.props.updateModel(modflowModel);
                 this.setState({isLoading: false}, () => {
                     this.fetchBoundaries(id);
-                    this.fetchCalculation(id);
                     this.fetchPackages(id);
                     this.fetchSoilmodel(id);
+
+                    if (modflowModel.calculationId) {
+                        fetchCalculationDetails(modflowModel.calculationId,
+                            data => this.props.updateCalculation(Calculation.fromQuery(data)),
+                            error => console.log(error)
+                        )
+                    }
                 });
             },
             error => this.setState(
@@ -118,24 +125,6 @@ class T03 extends React.Component {
     fetchBoundaries(id) {
         fetchUrl(`modflowmodels/${id}/boundaries`,
             data => this.props.updateBoundaries(BoundaryCollection.fromQuery(data)),
-            error => this.setState(
-                {error, isLoading: false},
-                () => this.handleError(error)
-            )
-        );
-    };
-
-    fetchCalculation(id) {
-        fetchUrl(`modflowmodels/${id}/calculation`,
-            data => {
-                const calculation = Calculation.fromQuery(data);
-                if (calculation.id) {
-                    fetchCalculationDetails(calculation.id,
-                        data => this.props.updateCalculation(Calculation.fromQuery(data)),
-                        error => console.log(error)
-                    )
-                }
-            },
             error => this.setState(
                 {error, isLoading: false},
                 () => this.handleError(error)

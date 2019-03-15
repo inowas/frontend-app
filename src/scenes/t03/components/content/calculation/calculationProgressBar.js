@@ -2,7 +2,7 @@ import React from 'react';
 import {connect} from 'react-redux';
 import {ModflowModel, Calculation} from 'core/model/modflow';
 import {updateCalculation} from '../../../actions/actions';
-import CalculationStatus, {CALCULATION_STATE_QUEUED, CALCULATION_STATE_FINISHED} from './CalculationStatus';
+import CalculationStatus, {CALCULATION_STATE_NEW, CALCULATION_STATE_FINISHED} from './CalculationStatus';
 import {Message} from 'semantic-ui-react';
 import {fetchCalculationDetails} from 'services/api';
 
@@ -16,6 +16,7 @@ class CalculationProgressBar extends React.Component {
     };
 
     componentWillReceiveProps(nextProps) {
+        console.log(nextProps);
         const {model} = nextProps;
         if (!(model instanceof ModflowModel)) {
             return this.setState({visible: false});
@@ -27,11 +28,11 @@ class CalculationProgressBar extends React.Component {
         }
 
         const {state} = calculation;
-        if (state > CALCULATION_STATE_FINISHED) {
+        if (state >= CALCULATION_STATE_FINISHED) {
             this.stopPolling();
         }
 
-        if (state < CALCULATION_STATE_QUEUED || state > CALCULATION_STATE_FINISHED) {
+        if (state < CALCULATION_STATE_NEW || state > CALCULATION_STATE_FINISHED) {
             return this.setState({visible: false});
         }
 
@@ -72,7 +73,7 @@ class CalculationProgressBar extends React.Component {
         }
 
         const {state} = calculation;
-        if (state < CALCULATION_STATE_QUEUED || state >= CALCULATION_STATE_FINISHED) {
+        if (state < CALCULATION_STATE_NEW || state >= CALCULATION_STATE_FINISHED) {
             return;
         }
 

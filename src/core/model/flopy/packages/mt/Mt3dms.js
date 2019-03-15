@@ -113,7 +113,7 @@ class Mt3dms {
             }
         }
 
-        return this.toObject();
+        return obj;
     };
 }
 

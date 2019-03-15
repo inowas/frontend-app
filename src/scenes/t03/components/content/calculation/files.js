@@ -14,9 +14,13 @@ class Files extends React.Component {
         isLoading: false,
         isError: false,
         selectedFile: 'mf.list',
-        file: ''
+        file: null
 
     };
+
+    componentDidMount() {
+        this.fetchFile();
+    }
 
 
     fetchFile = () => {
@@ -77,7 +81,7 @@ class Files extends React.Component {
                     <Grid.Column width={12}>
                         <Header as={'h3'}>Content file: {this.state.selectedFile}</Header>
                         <Segment color={'grey'} loading={this.state.isLoading}>
-                            <Terminal content={this.state.file.content}/>
+                            {this.state.file && <Terminal content={this.state.file.content}/>}
                         </Segment>
                     </Grid.Column>
                 </Grid.Row>
