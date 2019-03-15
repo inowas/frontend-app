@@ -5,6 +5,19 @@ import {Button, Checkbox, Form, Icon, Popup, Table} from 'semantic-ui-react';
 import moment from 'moment/moment';
 
 class StressPeriodsDataTable extends React.Component {
+    constructor(props) {
+        super(props);
+        this.state = {
+            stressperiods: props.stressperiods.toObject()
+        }
+    }
+
+    componentWillReceiveProps(nextProps) {
+        this.setState({
+            stressperiods: nextProps.stressperiods.toObject()
+        });
+    }
+
     header = () => (
         <Table.Row>
             <Table.HeaderCell width={6}>Start Date</Table.HeaderCell>
@@ -31,14 +44,17 @@ class StressPeriodsDataTable extends React.Component {
     );
 
     handleRemoveStressperiod = (idx) => {
-        const stressperiods = this.props.stressperiods;
-        stressperiods.removeStressPeriod(idx);
-        this.props.onChange(stressperiods);
+        const stressperiods = Stressperiods.fromObject(this.state.stressperiods);
+
+        if (stressperiods.count > 1) {
+            stressperiods.removeStressPeriod(idx);
+            this.props.onChange(stressperiods);
+        }
     };
 
     handleStressperiodChange = (e, props) => {
         const {value, name, idx, checked} = props;
-        const stressperiods = this.props.stressperiods;
+        const stressperiods = Stressperiods.fromObject(this.state.stressperiods);
         const stressperiod = stressperiods.getStressperiodByIdx(idx);
 
         if (name === 'startDateTime') {
@@ -50,13 +66,27 @@ class StressPeriodsDataTable extends React.Component {
         }
 
         stressperiods.updateStressperiodByIdx(idx, stressperiod);
-        this.props.onChange(stressperiods);
+        return this.setState({
+            stressperiods: stressperiods.toObject()
+        });
     };
 
-    addNewStressperiod = (numberOfDays) => {
-        const stressperiods = this.props.stressperiods;
+    handleChange = (e, props) => {
+        const {idx} = props;
+        const stressperiods = Stressperiods.fromObject(this.state.stressperiods);
+        if (moment(stressperiods.dateTimes[idx]) <= stressperiods.startDateTime) {
+            const edited = stressperiods.stressperiods[idx];
+            edited.startDateTime = moment.utc(stressperiods.startDateTime).add(1, 'days');
+            stressperiods.updateStressperiodByIdx(idx, edited);
+        }
+
+        return this.props.onChange(stressperiods);
+    };
+
+    addNewStressperiod = numberOfDays => {
+        const stressperiods = Stressperiods.fromObject(this.state.stressperiods);
         const newStressperiod = stressperiods.last().clone();
-        newStressperiod.totimStart = newStressperiod.totimStart + numberOfDays;
+        newStressperiod.startDateTime = moment.utc(stressperiods.last().startDateTime).add(numberOfDays, 'days');
         stressperiods.addStressPeriod(newStressperiod);
         stressperiods.recalculateStressperiods();
         this.props.onChange(stressperiods);
@@ -64,7 +94,7 @@ class StressPeriodsDataTable extends React.Component {
 
     render() {
         const {readOnly} = this.props.readOnly || false;
-        const stressperiods = this.props.stressperiods;
+        const stressperiods = Stressperiods.fromObject(this.state.stressperiods);
         const rows = stressperiods.stressperiods.map((sp, idx) => (
             <Table.Row key={idx + '-' + sp.totim}>
                 <Table.Cell>
@@ -74,6 +104,7 @@ class StressPeriodsDataTable extends React.Component {
                         name={'startDateTime'}
                         idx={idx}
                         value={moment.utc(sp.startDateTime).format('YYYY-MM-DD')}
+                        onBlur={e => this.handleChange(e, {idx})}
                         onChange={this.handleStressperiodChange}
                     />
                 </Table.Cell>
@@ -89,7 +120,7 @@ class StressPeriodsDataTable extends React.Component {
                     />
                 </Table.Cell>
                 <Table.Cell>
-                    {!readOnly && <Button basic
+                    {!readOnly && idx !== 0 && <Button basic
                         floated={'right'}
                         icon={'trash'}
                         onClick={() => this.handleRemoveStressperiod(idx)}
