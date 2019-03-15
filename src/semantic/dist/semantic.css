@@ -781,14 +781,6 @@ body .ui.inverted::-webkit-scrollbar-thumb:hover {
 /*******************************
          Site Overrides
 *******************************/
-
-.ui.blue.segment:not(.inverted).modelitem {
-  border-top: none !important;
-}
-
-.ui.inverted.blue.segment.modelitem .ui.header {
-  color: #FFFFFF;
-}
 /*!
  * # Semantic UI undefined - Button
  * http://github.com/semantic-org/semantic-ui/
@@ -19373,6 +19365,10 @@ ol.ui.horizontal.list li:before,
          Site Overrides
 *******************************/
 
+/*-------------------
+  Recharts Elements
+ -------------------*/
+
 .diagramLabel {
   position: absolute !important;
   background-color: #EFF3F6 !important;
@@ -19385,18 +19381,44 @@ ol.ui.horizontal.list li:before,
 }
 
 .diagramLabel.bottomRight {
-  bottom: 70px;
+  bottom: 50px;
   right: 40px;
 }
 
 .diagramLabel.topLeft {
-  top: 40px;
+  top: 24px;
   left: 110px;
+  margin-top: 1rem !important;
 }
 
 .diagramLabel.bottomLeft {
   bottom: 40px;
   left: 40px;
+}
+
+.diagramLabel.diagramOverlay {
+  opacity: 1;
+}
+
+/*-------------------
+  Custom Menu in T03
+ -------------------*/
+
+.ui.blue.segment.customMenuContainer {
+  padding-top: 0.5em !important;
+  padding-bottom: 0.5em !important;
+}
+
+/*----------------------
+  Custom Segment in T07
+  ----------------------*/
+
+.ui.blue.segment:not(.inverted).modelitem {
+  border-top: none !important;
+}
+
+.ui.inverted.blue.segment.modelitem .ui.header {
+  color: #FFFFFF;
 }
 /*!
  * # Semantic UI undefined - Step
@@ -26021,6 +26043,25 @@ Floated Menu / Item
 /*******************************
          Site Overrides
 *******************************/
+
+/*------------------
+ Custom Menu in T03
+ ------------------*/
+
+.ui.vertical.menu.customVertMenu {
+  -webkit-box-shadow: none;
+  box-shadow: none;
+  border: none;
+}
+
+.ui.vertical.menu .item.menuItemGroup {
+  padding-left: 0.5em;
+  font-size: 1.07145em;
+}
+
+.menuItemHeader {
+  text-transform: uppercase;
+}
 /*!
  * # Semantic UI undefined - Message
  * http://github.com/semantic-org/semantic-ui/

@@ -192,9 +192,3 @@ body .ui.inverted::-webkit-scrollbar-thumb:hover {
          Site Overrides
 *******************************/
 
-.ui.blue.segment:not(.inverted).modelitem {
-  border-top: none !important;
-}
-.ui.inverted.blue.segment.modelitem .ui.header {
-  color: #FFFFFF;
-}

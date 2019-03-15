@@ -3,23 +3,6 @@ import PropTypes from 'prop-types';
 import {withRouter} from 'react-router-dom';
 import {Menu, Segment} from 'semantic-ui-react';
 
-const styles = {
-    customMenuContainer: {
-        paddingTop: '0.5em',
-        paddingBottom: '0.5em'
-    },
-    customVertMenu: {
-        boxShadow: 'none'
-    },
-    menuItemGroup: {
-        paddingLeft: '0.5em',
-        fontSize: '1.07145em'
-    },
-    menuItemHeader: {
-        textTransform: 'uppercase'
-    }
-};
-
 class ToolNavigation extends React.Component {
 
     handleItemClick = (e, {route}) => {
@@ -35,8 +18,8 @@ class ToolNavigation extends React.Component {
 
         const menuItems = navigationItems.map((itemGroup, itemGroupIdx) => (
 
-                <Menu.Item key={itemGroupIdx} style={styles.menuItemGroup}>
-                    <Menu.Header as='h4' style={styles.menuItemHeader}>{itemGroup.header}</Menu.Header>
+                <Menu.Item key={itemGroupIdx} className="menuItemGroup">
+                    <Menu.Header as='h4' className="menuItemHeader">{itemGroup.header}</Menu.Header>
                     <Menu.Menu>
                         {itemGroup.items.map((i, idx) => (
                             <Menu.Item
@@ -56,8 +39,8 @@ class ToolNavigation extends React.Component {
 
 
         return (
-            <Segment color={'blue'} style={styles.customMenuContainer}>
-                <Menu vertical fluid style={styles.customVertMenu}>
+            <Segment color={'blue'} className="customMenuContainer">
+                <Menu vertical fluid className="customVertMenu">
                         {menuItems}
                 </Menu>
             </Segment>
