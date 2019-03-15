@@ -3,7 +3,7 @@ import {connect} from 'react-redux';
 import {withRouter} from 'react-router-dom';
 import PropTypes from 'prop-types';
 
-import {Button, Grid, Menu, Segment} from 'semantic-ui-react';
+import {Grid, Menu, Segment} from 'semantic-ui-react';
 import {ModflowModel, Soilmodel} from 'core/model/modflow';
 import {BoundaryCollection} from 'core/model/modflow/boundaries';
 
@@ -16,7 +16,7 @@ import FlopyPackages from 'core/model/flopy/packages/FlopyPackages';
 import {
     MfPackageProperties
 } from './mf';
-import {sendCalculationRequest, sendCommand} from 'services/api';
+import {sendCommand} from 'services/api';
 import ModflowModelCommand from '../../../commands/modflowModelCommand';
 
 const sideBar = (boundaries) => ([
@@ -45,6 +45,13 @@ class Flow extends React.Component {
         }
     }
 
+    componentDidMount() {
+        const {boundaries, model, soilmodel} = this.props;
+        const packages = FlopyPackages.fromObject(this.props.packages.toObject());
+        packages.mf.recalculate(model, soilmodel, boundaries);
+        this.props.updatePackages(packages);
+    }
+
     componentWillReceiveProps(nextProps, nextContext) {
         this.setState({
             mf: nextProps.packages.mf.toObject()
@@ -65,32 +72,6 @@ class Flow extends React.Component {
                 }
             )
         );
-    };
-
-    handleCalculate = () => {
-        const packages = this.props.packages;
-        packages.model_id = this.props.model.id;
-        packages.mf = FlopyModflow.fromObject(this.state.mf);
-
-        if (this.state.isDirty) {
-            this.handleSave();
-        }
-
-        sendCalculationRequest(packages,
-            data => console.log(data),
-            error => console.log(error)
-        );
-    };
-
-    handleRecalculate = () => {
-        const packages = this.props.packages;
-        packages.model_id = this.props.model.id;
-        packages.mf = FlopyModflow.createFromModel(this.props.model, this.props.soilmodel, this.props.boundaries);
-        packages.validate().then(data => {
-            if (data[0] === true) {
-                this.props.updatePackages(packages)
-            }
-        });
     };
 
     handleChangePackage = (p) => {
@@ -162,8 +143,6 @@ class Flow extends React.Component {
                         return null;
                     })}
                 </Menu>
-                <Button onClick={this.handleCalculate}>Calculate</Button>
-                <Button onClick={this.handleRecalculate}>Recalculate</Button>
             </div>
         );
     };

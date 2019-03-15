@@ -34,12 +34,12 @@ class SoilmodelLayer {
         }
 
         const layer = new SoilmodelLayer();
-        layer.name = 'Default Layer';
-        layer.number = 1;
+        layer.name = 'Top Layer';
+        layer.number = 0;
 
         const defaultZone = SoilmodelZone.fromDefault();
         defaultZone.geometry = geometry;
-        defaultZone.activeCells = cells;
+        defaultZone.cells = cells;
         layer.zonesCollection.add(defaultZone);
         return layer;
     }
@@ -236,7 +236,7 @@ class SoilmodelLayer {
         const defaultZone = this.zonesCollection.findBy('priority', 0, {first: true});
         if (defaultZone) {
             defaultZone.geometry = model.geometry;
-            defaultZone.activeCells = model.cells;
+            defaultZone.cells = model.cells;
             this.zonesCollection.update(defaultZone);
             this.resetParameters().zonesToParameters(model.gridSize);
         }

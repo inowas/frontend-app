@@ -2,7 +2,7 @@ import React from 'react';
 import {connect} from 'react-redux';
 import {withRouter} from 'react-router-dom';
 import PropTypes from 'prop-types';
-import {fetchUrl, sendCommand} from 'services/api';
+import {sendCommand} from 'services/api';
 import ModflowModelCommand from '../../../commands/modflowModelCommand';
 
 import {Grid, Menu, Segment} from 'semantic-ui-react';
@@ -19,7 +19,7 @@ import {
 } from './mt';
 import ContentToolBar from '../../../../shared/ContentToolbar';
 import {updatePackages} from '../../../actions/actions';
-import FlopyPackages from '../../../../../core/model/flopy/packages/FlopyPackages';
+import FlopyPackages from 'core/model/flopy/packages/FlopyPackages';
 
 const sideBar = [
     {
@@ -56,32 +56,19 @@ class Transport extends React.Component {
             mt3dms: this.props.packages.mt.toObject(),
             isError: false,
             isDirty: false,
-            isLoading: true,
+            isLoading: false,
         }
     }
 
     componentWillReceiveProps(nextProps) {
-        if (nextProps.model.mt3dms) {
-            this.setState({
-                mt3dms: nextProps.packages.mt.toObject()
-            });
-        }
-    }
-
-    componentDidMount() {
-        fetchUrl(
-            `modflowmodels/${this.props.match.params.id}/boundaries`,
-            boundaries => this.setState({
-                boundaries,
-                isLoading: false
-            }),
-            error => this.setState({error, isLoading: false})
-        );
+        this.setState({
+            mt3dms: nextProps.packages.mt.toObject()
+        });
     }
 
     handleSave = () => {
         const mt3dms = Mt3dms.fromObject(this.state.mt3dms);
-        const packages = this.props.packages;
+        const packages = FlopyPackages.fromObject(this.props.packages.toObject());
         packages.mt = mt3dms;
 
         this.setState({loading: true}, () =>

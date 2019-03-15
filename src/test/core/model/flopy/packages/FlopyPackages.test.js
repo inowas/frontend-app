@@ -9,7 +9,7 @@ test('It can instantiate FlopyPackages', () => {
     const mf = new FlopyModflow();
     const mt = Mt3dms.fromDefaults();
 
-    const flopyPackages = new FlopyPackages(modelId, mf, mt);
+    const flopyPackages = FlopyPackages.create(modelId, mf, mt);
     expect(flopyPackages).toBeInstanceOf(FlopyPackages);
 
     expect(flopyPackages.model_id).toEqual(modelId);

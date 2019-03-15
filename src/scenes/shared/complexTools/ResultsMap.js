@@ -136,7 +136,7 @@ class ResultsMap extends React.Component {
 
                     return (
                         <GeoJSON
-                            key={Geometry.fromGeoJson(b.geometry).hash() + '-' + b.affectedLayers.join('-')}
+                            key={Geometry.fromGeoJson(b.geometry).hash() + '-' + b.layers.join('-')}
                             data={b.geometry}
                             style={getStyle(b.type)}
                         />

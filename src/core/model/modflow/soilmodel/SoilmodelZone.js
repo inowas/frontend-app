@@ -8,7 +8,7 @@ class SoilmodelZone {
     _id = uuidv4();
     _name = 'New Zone';
     _geometry = null;
-    _activeCells = null;
+    _cells = null;
     _priority = 0;
     _top = new SoilmodelParameter();
     _botm = new SoilmodelParameter();
@@ -84,12 +84,12 @@ class SoilmodelZone {
         this._geometry = value ? value : null;
     }
 
-    get activeCells() {
-        return this._activeCells;
+    get cells() {
+        return this._cells;
     }
 
-    set activeCells(value) {
-        this._activeCells = value ? value : [];
+    set cells(value) {
+        this._cells = value ? value : [];
     }
 
     get priority() {
@@ -161,7 +161,7 @@ class SoilmodelZone {
             'id': this.id,
             'name': this.name,
             'geometry': this.geometry ? this.geometry.toObject() : null,
-            'cells': this.activeCells ? this.activeCells.toArray() : [],
+            'cells': this.cells ? this.cells.toArray() : [],
             'priority': this.priority,
             'top': this.top.toObject(),
             'botm': this.botm.toObject(),

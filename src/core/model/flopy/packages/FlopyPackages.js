@@ -14,10 +14,26 @@ export default class FlopyPackages {
     _project = '';
 
     _model_id;
-    _calculation_id;
 
     _mf;
     _mt;
+
+    static create(modelId, mf, mt) {
+        if (!(mf instanceof FlopyModflow)) {
+            throw new Error('Mf has to be instance of FlopyModflowMf')
+        }
+
+        if (!(mt instanceof Mt3dms)) {
+            throw new Error('Mt has to be instance of Mt3dms')
+        }
+
+        const self = new this();
+        self.model_id = modelId;
+        self.mf = mf;
+        self.mt = mt;
+        self.mf.setTransportEnabled(mt.enabled);
+        return self;
+    }
 
     static fromQuery(obj) {
         if (obj === []) {
@@ -32,29 +48,14 @@ export default class FlopyPackages {
         const mt = Mt3dms.fromObject(obj.mt);
         const modelId = obj.model_id;
 
-        const self = new this(modelId, mf, mt);
+        const self = new this();
+        self._model_id = modelId;
+        self._mf = mf;
+        self._mt = mt;
         self._version = obj.version;
         self._author = obj.author;
         self._project = obj.project;
-
-        self._calculation_id = obj.calculation_id;
         return self;
-    }
-
-    constructor(modelId, mf, mt) {
-        if (!(mf instanceof FlopyModflow)) {
-            throw new Error('Mf has to be instance of FlopyModflowMf')
-        }
-
-        if (!(mt instanceof Mt3dms)) {
-            throw new Error('Mt has to be instance of Mt3dms')
-        }
-
-        this._model_id = modelId;
-        this._mf = mf;
-        this._mt = mt;
-        this.mf.setTransportEnabled(mt.enabled);
-        this.calculateHash();
     }
 
     get version() {
@@ -78,7 +79,7 @@ export default class FlopyPackages {
     }
 
     get calculation_id() {
-        return this._calculation_id;
+        return this.hash(this.getData());
     }
 
     get model_id() {
@@ -99,7 +100,6 @@ export default class FlopyPackages {
         }
 
         this._mf = value;
-        this.calculateHash();
     }
 
     get mt() {
@@ -112,7 +112,6 @@ export default class FlopyPackages {
         }
         this._mt = value;
         this.mf.setTransportEnabled(value.enabled);
-        this.calculateHash();
     }
 
     getData = () => {
@@ -126,16 +125,11 @@ export default class FlopyPackages {
         return data;
     };
 
-    calculateHash = () => {
-        this._calculation_id = this.hash(this.getData());
-    };
-
     toObject = () => {
         return {
             author: this.author,
             project: this.project,
             version: this.version,
-            calculation_id: this.calculation_id,
             model_id: this.model_id,
             mf: this.mf.toObject(),
             mt: this.mt.toObject()

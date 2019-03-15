@@ -13,7 +13,7 @@ const LayersList = ({addLayer, soilmodel, onClick, onClone, onRemove, selected})
             >
             </Button>
             <Menu fluid vertical tabular>
-                {soilmodel.layersCollection.all.map(layer => (
+                {soilmodel.layersCollection.reorder().all.map(layer => (
                     <Menu.Item
                         name={layer.name}
                         key={layer.id}
@@ -32,13 +32,13 @@ const LayersList = ({addLayer, soilmodel, onClick, onClone, onRemove, selected})
                                             position='top center'
                                             size='mini'
                                         />
-                                        <Popup
+                                        {layer.number !== 0 && <Popup
                                             trigger={<Button icon={'trash'}
                                                              onClick={() => onRemove(layer.id)}/>}
                                             content='Delete'
                                             position='top center'
                                             size='mini'
-                                        />
+                                        />}
                                     </Button.Group>
                                 </div>
                             }

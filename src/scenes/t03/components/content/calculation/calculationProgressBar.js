@@ -16,7 +16,6 @@ class CalculationProgressBar extends React.Component {
     };
 
     componentWillReceiveProps(nextProps) {
-        console.log(nextProps);
         const {model} = nextProps;
         if (!(model instanceof ModflowModel)) {
             return this.setState({visible: false});

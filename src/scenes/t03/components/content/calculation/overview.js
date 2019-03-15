@@ -1,15 +1,16 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-import {Calculation, ModflowModel} from 'core/model/modflow';
+import {Calculation, ModflowModel, Soilmodel} from 'core/model/modflow';
 import {Button, Grid, Header, List, Segment} from 'semantic-ui-react';
 import RunModelOverviewMap from '../../maps/runModelOverviewMap';
 import {connect} from 'react-redux';
 import CalculationStatus, {CALCULATION_STATE_NEW} from './CalculationStatus';
 import {sendCalculationRequest, sendCommand} from 'services/api';
-import {updateCalculation} from '../../../actions/actions';
+import {updateCalculation, updatePackages} from '../../../actions/actions';
 import FlopyPackages from 'core/model/flopy/packages/FlopyPackages';
 import ModflowModelCommand from '../../../commands/modflowModelCommand';
+import {BoundaryCollection} from 'core/model/modflow/boundaries';
 
 class Overview extends React.Component {
 
@@ -21,6 +22,16 @@ class Overview extends React.Component {
             canBeCanceled: false,
             sending: false
         };
+    }
+
+    componentDidMount() {
+        const {boundaries, model, soilmodel} = this.props;
+        const packages = FlopyPackages.fromObject(this.props.packages.toObject());
+        const mf = packages.mf;
+        mf.recalculate(model, soilmodel, boundaries);
+        console.log(boundaries);
+        packages.mf = mf;
+        this.props.updatePackages(packages);
     }
 
     onStartCalculationClick = () => {
@@ -77,8 +88,10 @@ class Overview extends React.Component {
         }
 
         if (calculationId === packages.calculation_id) {
-           canBeCalculated = false;
+            canBeCalculated = false;
         }
+
+        console.log(calculationId, packages.calculation_id);
 
         return (
             <Grid padded>
@@ -117,19 +130,25 @@ class Overview extends React.Component {
 }
 
 const mapStateToProps = state => ({
+    boundaries: BoundaryCollection.fromObject(state.T03.boundaries),
+    calculation: state.T03.calculation ? Calculation.fromObject(state.T03.calculation) : null,
     model: ModflowModel.fromObject(state.T03.model),
     packages: FlopyPackages.fromObject(state.T03.packages),
-    calculation: state.T03.calculation ? Calculation.fromObject(state.T03.calculation) : null,
+    soilmodel: Soilmodel.fromObject(state.T03.soilmodel),
 });
 
 const mapDispatchToProps = {
-    updateCalculation
+    updateCalculation, updatePackages
 };
 
 Overview.proptypes = {
-    calculation: PropTypes.instanceOf(Calculation).isRequired,
+    boundaries: PropTypes.instanceOf(BoundaryCollection).isRequired,
+    calculation: PropTypes.instanceOf(Calculation),
     model: PropTypes.instanceOf(ModflowModel).isRequired,
-    packages: PropTypes.instanceOf(FlopyPackages).isRequired
+    packages: PropTypes.instanceOf(FlopyPackages).isRequired,
+    soilmodel: PropTypes.instanceOf(Soilmodel).isRequired,
+    updateCalculation: PropTypes.func.isRequired,
+    updatePackages: PropTypes.func.isRequired,
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(Overview);

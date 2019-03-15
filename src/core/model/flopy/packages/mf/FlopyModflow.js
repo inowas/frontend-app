@@ -76,7 +76,7 @@ export default class FlopyModflow {
         this.setPackage(FlopyModflowMf.create());
     }
 
-    updateDiscretization = (model, soilmodel, boundaries) => {
+    recalculate = (model, soilmodel, boundaries) => {
         if (!(model instanceof ModflowModel)) {
             throw new Error('Expecting instance of ModflowModel')
         }
@@ -91,6 +91,7 @@ export default class FlopyModflow {
 
         this.setDiscretization(model, soilmodel);
         this.setBoundaries(boundaries);
+        this.setDefaultOutputControl(model.stressperiods.count)
     };
 
     updateBoundaries = boundaries => {
@@ -99,10 +100,7 @@ export default class FlopyModflow {
             throw new Error('Expecting instance of BoundaryCollection')
         }
 
-        const self = new this();
         this.setBoundaries(boundaries);
-
-        return self;
     };
 
     setDiscretization(model, soilmodel) {
@@ -140,15 +138,14 @@ export default class FlopyModflow {
 
         mfDis.xul = model.boundingBox.xMin;
         mfDis.yul = model.boundingBox.yMax;
-        mfDis.rotation = 0;
         mfDis.proj4_str = 'EPSG:3857';
         mfDis.start_datetime = stressperiods.startDateTime.format('YYYY-MM-DD');
 
         this.setPackage(mfDis);
 
         const mfBas = FlopyModflowMfbas.create(null, {});
-        mfBas.iBound = model.cells.calculateIBound(mfDis.nlay, mfDis.nrow, mfDis.ncol);
-        mfBas.strt = mfDis.top;
+        mfBas.ibound = model.cells.calculateIBound(mfDis.nlay, mfDis.nrow, mfDis.ncol);
+        mfBas.strt = new Array(mfDis.nlay).fill(mfDis.top);
         this.setPackage(mfBas);
     }
 

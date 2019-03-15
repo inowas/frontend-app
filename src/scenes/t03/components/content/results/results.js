@@ -53,8 +53,8 @@ class Results extends React.Component {
                         fetching: false
                     }),
                 (e) => this.setState({isError: e})
-            ))
-        ;
+            )
+        );
     }
 
     handleClickAccordion = (e, titleProps) => {

@@ -267,7 +267,7 @@ class Cells {
         for (let lay = 0; lay < nlay; lay++) {
             iBound[lay] = iBound2D;
         }
-
+        console.log(iBound);
         return iBound;
     };
 
