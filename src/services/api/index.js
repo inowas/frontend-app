@@ -176,10 +176,10 @@ export const fetchUrl = (url, onSuccess, onError) => {
         .catch(onError);
 };
 
-export const submitSignUpCredentials = ({name, username, email, password, redirectTo}, onSuccess, onError) => {
+export const submitSignUpCredentials = ({name, email, password}, onSuccess, onError) => {
     const api = createApi();
-    const payload = {name, username, email, password, redirectTo};
-    api.post('users/signup.json', payload)
+    const payload = {name, email, password};
+    api.post('register', payload)
         .then(onSuccess)
         .catch(onError);
 };

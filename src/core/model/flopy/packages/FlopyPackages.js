@@ -3,7 +3,7 @@ import jsrp from 'json-schema-ref-parser';
 
 import md5 from 'md5';
 import FlopyModflow from './mf/FlopyModflow';
-import Mt3dms from './mt/Mt3dms';
+import FlopyMt3d from './mt/Mt3dms';
 import {JSON_SCHEMA_URL} from 'services/api';
 
 export default class FlopyPackages {
@@ -23,8 +23,8 @@ export default class FlopyPackages {
             throw new Error('Mf has to be instance of FlopyModflowMf')
         }
 
-        if (!(mt instanceof Mt3dms)) {
-            throw new Error('Mt has to be instance of Mt3dms')
+        if (!(mt instanceof FlopyMt3d)) {
+            throw new Error('Mt has to be instance of FlopyMt3d')
         }
 
         const self = new this();
@@ -45,7 +45,7 @@ export default class FlopyPackages {
 
     static fromObject(obj) {
         const mf = FlopyModflow.fromObject(obj.mf);
-        const mt = Mt3dms.fromObject(obj.mt);
+        const mt = FlopyMt3d.fromObject(obj.mt);
         const modelId = obj.model_id;
 
         const self = new this();
@@ -107,8 +107,8 @@ export default class FlopyPackages {
     }
 
     set mt(value) {
-        if (!(value instanceof Mt3dms)) {
-            throw new Error('Mt has to be instance of Mt3dms')
+        if (!(value instanceof FlopyMt3d)) {
+            throw new Error('Mt has to be instance of FlopyMt3d')
         }
         this._mt = value;
         this.mf.setTransportEnabled(value.enabled);
