@@ -6,14 +6,16 @@ export default class FlopyModflowLineBoundary extends FlopyModflowBoundary {
 
         const spData = [];
 
+        for (let per = 0; per < nper; per++) {
+            spData[per] = [];
+        }
+
         boundaries.forEach(boundary => {
             const cells = boundary.cells;
             const layers = boundary.layers;
             const ops = boundary.observationPoints;
 
             for (let per = 0; per < nper; per++) {
-                spData[per] = [];
-
                 layers.forEach(lay => {
                     cells.forEach(cell => {
                         const col = cell[0];

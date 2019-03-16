@@ -27,10 +27,7 @@ class Overview extends React.Component {
     componentDidMount() {
         const {boundaries, model, soilmodel} = this.props;
         const packages = FlopyPackages.fromObject(this.props.packages.toObject());
-        const mf = packages.mf;
-        mf.recalculate(model, soilmodel, boundaries);
-        console.log(boundaries);
-        packages.mf = mf;
+        packages.mf.recalculate(model, soilmodel, boundaries);
         this.props.updatePackages(packages);
     }
 
@@ -78,6 +75,10 @@ class Overview extends React.Component {
         const {model, calculation, packages} = this.props;
         const {calculationId} = model;
 
+        if (!(packages instanceof FlopyPackages)) {
+            return null;
+        }
+
         let canBeCalculated = true;
 
 
@@ -90,8 +91,6 @@ class Overview extends React.Component {
         if (calculationId === packages.calculation_id) {
             canBeCalculated = false;
         }
-
-        console.log(calculationId, packages.calculation_id);
 
         return (
             <Grid padded>
