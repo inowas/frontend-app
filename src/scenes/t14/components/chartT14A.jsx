@@ -29,7 +29,7 @@ let currentChart;
 const renderLabels = (dQ) => {
     return (
         <div>
-            <Segment padded className='diagramLabel bottomRight'>
+            <Segment raised className='diagramLabel bottomRight'>
                 <p>&#916;Q&nbsp;=&nbsp;<strong>{dQ.toFixed(1)}</strong>&nbsp;m³/d</p>
             </Segment>
 
@@ -106,9 +106,10 @@ const Chart = ({parameters}) => {
                             />
                         </LineChart>
                     </ResponsiveContainer>
+                    {renderLabels(dQ)}
                 </Grid.Column>
             </Grid>
-            {renderLabels(dQ)}
+
         </div>
     )
 };

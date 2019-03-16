@@ -59,7 +59,6 @@ class WeightAssignment {
         });
 
         wa.calculateWeights();
-        console.log(wa.toObject());
         return wa;
     }
 

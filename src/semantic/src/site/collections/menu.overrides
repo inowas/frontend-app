@@ -2,3 +2,18 @@
          Site Overrides
 *******************************/
 
+/*------------------
+ Custom Menu in T03
+ ------------------*/
+
+.ui.vertical.menu.customVertMenu {
+    box-shadow: none;
+    border: none;
+}
+.ui.vertical.menu .item.menuItemGroup {
+    padding-left: 0.5em;
+    font-size: 1.07145em;
+}
+.menuItemHeader {
+    text-transform: uppercase;
+}
