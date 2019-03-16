@@ -142,7 +142,7 @@ test('RiverBoundary adding ObservationPoint, orders by OPs by distance', () => {
 
 });
 
-test('RiverBoundary activeCells calculation', () => {
+test('RiverBoundary cells calculation', () => {
     const id = Uuid.v4();
     const name = 'NameOfRRiver';
     const geometry = Geometry.fromGeoJson({

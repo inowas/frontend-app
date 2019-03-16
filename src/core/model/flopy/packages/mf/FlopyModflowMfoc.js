@@ -8,7 +8,7 @@ export default class FlopyModflowMfoc extends FlopyModflowPackage {
     _cddnfm = null;
     _cboufm = null;
     _compact = true;
-    _stress_period_data = [[0, 0], ['save head']];
+    _stress_period_data = [[[0, 0], ['save head']]];
     _extension = ['oc', 'hds', 'ddn', 'cbc', 'ibo'];
     _unitnumber = null;
     _filenames = null;

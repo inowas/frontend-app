@@ -1,4 +1,3 @@
-
 import PropTypes from 'prop-types';
 import React from 'react';
 
@@ -9,11 +8,18 @@ import {Button, Container, Form, Grid, Header, Image, Message} from 'semantic-ui
 import NavBar from '../../shared/Navbar';
 import {putUserProfile} from '../actions/actions';
 import logo from '../images/favicon.png';
+import {sendCommand} from '../../../services/api';
+import UserCommand from '../commands/userCommand';
 
 const styles = {
     link: {cursor: 'pointer'},
     wrapper: {marginTop: 40},
-    form: {textAlign: 'left'}
+    form: {textAlign: 'left'},
+    profile: {
+        position: 'relative',
+        top: '50%',
+        transform: 'translateY(60%)'
+    }
 };
 
 class UserProfile extends React.Component {
@@ -74,10 +80,16 @@ class UserProfile extends React.Component {
         const {name, email, institution} = this.state;
         const formValidation = this.validate(email);
         if (formValidation.isValid) {
-            this.props.putUserProfile({
-                name, email, institution
-            });
-            this.setState({loading: true});
+            const profile = {name, email, institution};
+            this.setState({loading: true}, () =>
+                sendCommand(UserCommand.changeUserProfile(this.props.user.id, profile),
+                    () => {
+                        this.setState({loading: false});
+                        this.props.putUserProfile(profile);
+                    },
+                    () => this.setState({error: true}),
+                )
+            );
         }
 
         this.setState({
@@ -103,7 +115,7 @@ class UserProfile extends React.Component {
         return (
             <div>
                 <NavBar/>
-                <Container className={'profile'}>
+                <Container style={styles.profile}>
                     <Grid textAlign="center">
                         <Grid.Column style={{maxWidth: 350}}>
                             <Header as="h2">
@@ -166,7 +178,8 @@ class UserProfile extends React.Component {
 const mapStateToProps = state => {
     return {
         userIsLoggedIn: hasSessionKey(state.user),
-        profile: state.user.profile
+        profile: state.user.profile,
+        user: state.user
     };
 };
 
@@ -177,7 +190,8 @@ const mapDispatchToProps = {
 UserProfile.propTypes = {
     profile: PropTypes.object.isRequired,
     putUserProfile: PropTypes.func.isRequired,
-    router: PropTypes.object.isRequired
+    router: PropTypes.object.isRequired,
+    user: PropTypes.object.isRequired,
 };
 
 export default withRouter(connect(mapStateToProps, mapDispatchToProps)(UserProfile));

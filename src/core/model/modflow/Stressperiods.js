@@ -1,6 +1,6 @@
 import moment from 'moment/moment';
 import Stressperiod from './Stressperiod';
-import {cloneDeep, orderBy} from 'lodash';
+import {cloneDeep} from 'lodash';
 import {TimeUnit} from './index';
 
 class Stressperiods {
@@ -113,7 +113,7 @@ class Stressperiods {
 
     addStressPeriod(stressPeriod) {
         if (!stressPeriod instanceof Stressperiod) {
-            throw new Error('Stressperiod ess expected to be instance of Stressperiod')
+            throw new Error('Stressperiod expected to be instance of Stressperiod')
         }
 
         this._stressperiods.push(stressPeriod);
@@ -144,6 +144,22 @@ class Stressperiods {
 
     get totim() {
         return this.endDateTime.diff(this.startDateTime, 'days') + 1;
+    }
+
+    get perlens() {
+        const totims = [];
+        this.stressperiods.forEach(sp => {
+            totims.push(this.totimFromDate(sp.startDateTime))
+        });
+
+        totims.push(this.totimFromDate(this.endDateTime));
+
+        const perlens = [];
+        for (let i = 1; i < totims.length; i++) {
+            perlens.push(totims[i] - totims[i - 1]);
+        }
+
+        return perlens;
     }
 
     totimFromDate(dateTime) {

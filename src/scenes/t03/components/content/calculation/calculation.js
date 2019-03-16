@@ -13,6 +13,6 @@ const menuItems = [
  // {id: 'calibration', name: 'Calibration data', component: <div>GridEditor</div>},
 ];
 
-const run = () => <SubMenuWithContent menuItems={menuItems}/>;
+const calculation = () => <SubMenuWithContent menuItems={menuItems}/>;
 
-export default run;
+export default calculation;

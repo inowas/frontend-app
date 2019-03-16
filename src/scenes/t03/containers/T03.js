@@ -14,10 +14,11 @@ import {fetchUrl, sendCommand} from 'services/api';
 
 import {
     clear,
-    updateCalculation,
     updateBoundaries,
+    updateCalculation,
     updateModel,
     updateOptimization,
+    updatePackages,
     updateSoilmodel
 } from '../actions/actions';
 
@@ -29,9 +30,13 @@ import {
     Soilmodel,
 } from 'core/model/modflow';
 import ModflowModelCommand from '../commands/modflowModelCommand';
-import CalculationProgressBar from '../components/content/run/calculationProgressBar';
+import CalculationProgressBar from '../components/content/calculation/calculationProgressBar';
 import OptimizationProgressBar from '../components/content/optimization/optimizationProgressBar';
-import {CALCULATION_STATE_FINISHED} from '../components/content/run/CalculationStatus';
+import {CALCULATION_STATE_FINISHED} from '../components/content/calculation/CalculationStatus';
+import FlopyPackages from 'core/model/flopy/packages/FlopyPackages';
+import {FlopyModflow} from 'core/model/flopy/packages/mf';
+import {Mt3dms} from 'core/model/flopy/packages/mt';
+import {fetchCalculationDetails} from '../../../services/api';
 
 const navigation = [{
     name: 'Documentation',
@@ -46,7 +51,8 @@ class T03 extends React.Component {
         this.state = {
             menuItems: menuItems,
             error: false,
-            isLoading: false
+            isLoading: false,
+            calculatePackages: false
         }
     }
 
@@ -69,7 +75,7 @@ class T03 extends React.Component {
         }
 
         if (nextProps.calculation) {
-            const calculationState =  nextProps.calculation.state;
+            const calculationState = nextProps.calculation.state;
             this.setState({
                 menuItems: menuItems.map(mi => {
                     if (mi.property === 'results' || mi.property === 'optimization') {
@@ -94,11 +100,19 @@ class T03 extends React.Component {
         fetchUrl(
             `modflowmodels/${id}`,
             data => {
-                this.props.updateModel(ModflowModel.fromQuery(data));
+                const modflowModel = ModflowModel.fromQuery(data);
+                this.props.updateModel(modflowModel);
                 this.setState({isLoading: false}, () => {
                     this.fetchBoundaries(id);
-                    this.fetchCalculation(id);
+                    this.fetchPackages(id);
                     this.fetchSoilmodel(id);
+
+                    if (modflowModel.calculationId) {
+                        fetchCalculationDetails(modflowModel.calculationId,
+                            data => this.props.updateCalculation(Calculation.fromQuery(data)),
+                            error => console.log(error)
+                        )
+                    }
                 });
             },
             error => this.setState(
@@ -118,19 +132,14 @@ class T03 extends React.Component {
         );
     };
 
-    fetchCalculation(id) {
-        fetchUrl(`modflowmodels/${id}/calculation`,
-            data => this.props.updateCalculation(Calculation.fromQuery(data)),
-            error => this.setState(
-                {error, isLoading: false},
-                () => this.handleError(error)
-            )
-        );
-    };
-
     fetchPackages(id) {
         fetchUrl(`modflowmodels/${id}/packages`,
-            data => this.props.updateCalculation(Calculation.fromQuery(data)),
+            data => {
+                if (Array.isArray(data) && data.length === 0) {
+                    return this.setState({calculatePackages: true})
+                }
+                return this.props.updatePackages(FlopyPackages.fromQuery(data));
+            },
             error => this.setState(
                 {error, isLoading: false},
                 () => this.handleError(error)
@@ -146,6 +155,24 @@ class T03 extends React.Component {
                 () => this.handleError(error)
             )
         );
+    };
+
+    calculatePackages = () => {
+        return new Promise((resolve, reject) => {
+            this.setState({calculatePackages: 'calculation'});
+            const mf = FlopyModflow.createFromModel(this.props.model, this.props.soilmodel, this.props.boundaries);
+            const mt = Mt3dms.fromDefaults();
+            const modelId = this.props.model.id;
+
+            const flopyPackages = new FlopyPackages(modelId, mf, mt);
+            if (flopyPackages instanceof FlopyPackages) {
+                this.setState({calculatePackages: false});
+                resolve(flopyPackages);
+            }
+
+            this.setState({calculatePackages: 'error'});
+            reject('Error creating instance of FlopyPackages.');
+        })
     };
 
     handleError = error => {
@@ -174,8 +201,8 @@ class T03 extends React.Component {
                 return (<Content.Flow/>);
             case 'transport':
                 return (<Content.Transport/>);
-            case 'run':
-                return (<Content.Run/>);
+            case 'calculation':
+                return (<Content.Calculation/>);
             case 'results':
                 return (<Content.Results/>);
             case 'optimization':
@@ -207,11 +234,34 @@ class T03 extends React.Component {
     };
 
     render() {
-        if (!this.props.model) {
+        if (!(this.props.model instanceof ModflowModel) ||
+            !(this.props.boundaries instanceof BoundaryCollection) ||
+            !(this.props.soilmodel instanceof Soilmodel)
+        ) {
             return (
                 <AppContainer navbarItems={navigation}>
                     <Message icon>
-                        <Icon name='circle notched' loading />
+                        <Icon name='circle notched' loading/>
+                    </Message>
+                </AppContainer>
+            )
+        }
+
+        if (this.state.calculatePackages === true) {
+            this.calculatePackages().then(packages => {
+                this.props.updatePackages(packages);
+                return sendCommand(
+                    ModflowModelCommand.updateFlopyPackages(this.props.model.id, packages),
+                    (e) => this.setState({error: e})
+                );
+            });
+        }
+
+        if (!(this.props.packages instanceof FlopyPackages)) {
+            return (
+                <AppContainer navbarItems={navigation}>
+                    <Message icon>
+                        <Icon name='circle notched' loading/>
                     </Message>
                 </AppContainer>
             )
@@ -252,13 +302,15 @@ class T03 extends React.Component {
 }
 
 const mapStateToProps = state => ({
-    model: state.T03.model && ModflowModel.fromObject(state.T03.model),
-    calculation: state.T03.calculation && Calculation.fromObject(state.T03.calculation),
-    boundaries: state.T03.boundaries
+    model: state.T03.model ? ModflowModel.fromObject(state.T03.model) : null,
+    boundaries: state.T03.boundaries ? BoundaryCollection.fromObject(state.T03.boundaries) : null,
+    calculation: state.T03.calculation ? Calculation.fromObject(state.T03.calculation) : null,
+    packages: state.T03.packages ? FlopyPackages.fromObject(state.T03.packages) : null,
+    soilmodel: state.T03.soilmodel ? Soilmodel.fromObject(state.T03.soilmodel) : null
 });
 
 const mapDispatchToProps = {
-    clear, updateBoundaries, updateCalculation, updateModel, updateOptimization, updateSoilmodel
+    clear, updateCalculation, updateBoundaries, updatePackages, updateModel, updateOptimization, updateSoilmodel
 };
 
 
@@ -266,11 +318,14 @@ T03.proptypes = {
     history: PropTypes.object.isRequired,
     location: PropTypes.object.isRequired,
     match: PropTypes.object.isRequired,
-    boundaries: PropTypes.array.isRequired,
-    model: PropTypes.object.isRequired,
+    boundaries: PropTypes.instanceOf(BoundaryCollection).isRequired,
+    calculation: PropTypes.instanceOf(Calculation).isRequired,
+    packages: PropTypes.instanceOf(FlopyPackages).isRequired,
+    model: PropTypes.instanceOf(ModflowModel).isRequired,
+    soilmodel: PropTypes.instanceOf(Soilmodel).isRequired,
     clear: PropTypes.func.isRequired,
     updateModel: PropTypes.func.isRequired,
-    updateCalculation: PropTypes.func.isRequired,
+    updatePackages: PropTypes.func.isRequired,
     updateBoundaries: PropTypes.func.isRequired,
     updateOptimization: PropTypes.func.isRequired,
     updateSoilmodel: PropTypes.func.isRequired,

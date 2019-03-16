@@ -1,5 +1,6 @@
 import AbstractCommand from 'core/model/command/AbstractCommand';
 import {JSON_SCHEMA_URL} from 'services/api';
+import FlopyPackages from '../../../core/model/flopy/packages/FlopyPackages';
 
 class ModflowModelCommand extends AbstractCommand {
 
@@ -84,6 +85,14 @@ class ModflowModelCommand extends AbstractCommand {
             JSON_SCHEMA_URL + 'commands/' + commandName);
     }
 
+    static updateModflowModelCalculationId(id, calculationId) {
+        const commandName = 'updateModflowModelCalculationId';
+        return new ModflowModelCommand(
+            commandName,
+            {id, calculation_id: calculationId},
+            JSON_SCHEMA_URL + 'commands/' + commandName);
+    }
+
     static updateModflowModelDiscretization(id, geometry, boundingBox, gridSize, cells, stressperiods, lengthUnit, timeUnit) {
         const commandName = 'updateModflowModelDiscretization';
         const payload = {
@@ -95,8 +104,12 @@ class ModflowModelCommand extends AbstractCommand {
         return new ModflowModelCommand(commandName, payload, JSON_SCHEMA_URL + 'commands/' + commandName);
     }
 
-    static updateMt3dms(payload) {
-        const name = 'updateMt3dms';
+    static updateFlopyPackages(id, packages) {
+        if (!(packages instanceof FlopyPackages)) {
+            throw new Error('Expecting instance of FlopyPackages');
+        }
+        const name = 'updateFlopyPackages';
+        const payload = {id, packages: packages.toObject()};
         return new ModflowModelCommand(name, payload, JSON_SCHEMA_URL + 'commands/' + name);
     }
 
