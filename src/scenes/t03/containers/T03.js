@@ -164,7 +164,7 @@ class T03 extends React.Component {
             const mt = Mt3dms.fromDefaults();
             const modelId = this.props.model.id;
 
-            const flopyPackages = new FlopyPackages(modelId, mf, mt);
+            const flopyPackages = FlopyPackages.create(modelId, mf, mt);
             if (flopyPackages instanceof FlopyPackages) {
                 this.setState({calculatePackages: false});
                 resolve(flopyPackages);

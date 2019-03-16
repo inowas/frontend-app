@@ -1,9 +1,8 @@
 import CreateBoundary from './boundaries/createBoundary';
 import Boundaries from './boundaries/boundaries';
 import Discretization from './discretization/discretization';
-import Flow from './flow/flow';
 import Observations from './observations';
-import Flow from './flow';
+import Flow from './flow/flow';
 import Optimization from './optimization/optimization.js';
 import Results from './results/results';
 import Calculation from './calculation/calculation';
@@ -16,7 +15,6 @@ export {
     Discretization,
     Flow,
     Observations,
-    Flow,
     Optimization,
     Results,
     Calculation,

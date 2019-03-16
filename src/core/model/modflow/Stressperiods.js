@@ -90,10 +90,6 @@ class Stressperiods {
         return this._stressperiods;
     }
 
-    orderStressperiods() {
-        this._stressperiods = orderBy(this._stressperiods, [sp => sp.startDateTime], ['asc']);
-    }
-
     getStressperiodByIdx(idx) {
         return this._stressperiods[idx];
     }
