@@ -225,6 +225,10 @@ class Cells {
             throw new Error('GridSize needs to be instance of GridSize');
         }
 
+        if (!(gridSize instanceof GridSize)) {
+            throw new Error('GridSize needs to be instance of GridSize');
+        }
+
         const dx = boundingBox.dX / gridSize.nX;
         const dy = boundingBox.dY / gridSize.nY;
 

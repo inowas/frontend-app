@@ -65,7 +65,7 @@ class BoundaryDiscretizationMap extends React.Component {
                             b.geometry.coordinates[1],
                             b.geometry.coordinates[0]
                         ]}
-                        {...getStyle(b.type, b.metadata.well_type)}
+                        {...getStyle(b.type, b.wellType)}
                     />
                 );
             case 'linestring':
@@ -162,7 +162,10 @@ class BoundaryDiscretizationMap extends React.Component {
         const y = latlng.lat;
 
         cells.toggle([x, y], boundingBox, gridSize);
-        cells.calculateValues(this.props.boundary, boundingBox, gridSize);
+
+        if (boundary instanceof LineBoundary) {
+            cells.calculateValues(this.props.boundary, boundingBox, gridSize);
+        }
 
         boundary.cells = cells.toArray();
         this.props.onChange(boundary);
