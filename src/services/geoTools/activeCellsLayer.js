@@ -36,7 +36,7 @@ const calculateGridCells = (boundingBox, gridSize, cells) => {
 };
 
 const ActiveCellsLayer = ({boundingBox, gridSize, cells, styles}) => {
-    if (!cells) {
+    if (!(cells instanceof Cells)){
         return null;
     }
 
