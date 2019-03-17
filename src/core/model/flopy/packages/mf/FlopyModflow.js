@@ -286,6 +286,14 @@ export default class FlopyModflow {
         return this._packages[name];
     }
 
+    getSolverPackage() {
+        return this._packages['pcg'];
+    }
+
+    getFlowPackage() {
+        return this._packages['lpf'];
+    }
+
     removePackageIfExists(p) {
         for (const name in packagesMap) {
             if (p instanceof packagesMap[name]) {

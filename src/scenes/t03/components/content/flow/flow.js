@@ -14,7 +14,17 @@ import {FlopyModflow, FlopyModflowPackage} from 'core/model/flopy/packages/mf';
 import FlopyPackages from 'core/model/flopy/packages/FlopyPackages';
 
 import {
-    MfPackageProperties
+    BasPackageProperties,
+    ChdPackageProperties,
+    DisPackageProperties,
+    FlowPackageProperties,
+    GhbPackageProperties,
+    MfPackageProperties,
+    OcPackageProperties,
+    RchPackageProperties,
+    RivPackageProperties,
+    SolverPackageProperties,
+    WelPackageProperties
 } from './mf';
 import {sendCommand} from 'services/api';
 import ModflowModelCommand from '../../../commands/modflowModelCommand';
@@ -75,7 +85,6 @@ class Flow extends React.Component {
     };
 
     handleChangePackage = (p) => {
-        console.log(p);
         if (p instanceof FlopyModflowPackage) {
             const mf = FlopyModflow.fromObject(this.state.mf);
             mf.setPackage(p);
@@ -105,6 +114,46 @@ class Flow extends React.Component {
         const {type} = this.props.match.params;
 
         switch (type) {
+            case 'bas':
+                return (
+                    <BasPackageProperties
+                        mfPackage={mf.getPackage(type)}
+                        onChange={this.handleChangePackage}
+                        readonly={readOnly}
+                    />
+                );
+            case 'chd':
+                return (
+                    <ChdPackageProperties
+                        mfPackage={mf.getPackage(type)}
+                        onChange={this.handleChangePackage}
+                        readonly={readOnly}
+                    />
+                );
+            case 'dis':
+                return (
+                    <DisPackageProperties
+                        mfPackage={mf.getPackage(type)}
+                        onChange={this.handleChangePackage}
+                        readonly={readOnly}
+                    />
+                );
+            case 'flow':
+                return (
+                    <FlowPackageProperties
+                        mfPackage={mf.getFlowPackage()}
+                        onChange={this.handleChangePackage}
+                        readonly={readOnly}
+                    />
+                );
+            case 'ghb':
+                return (
+                    <GhbPackageProperties
+                        mfPackage={mf.getPackage(type)}
+                        onChange={this.handleChangePackage}
+                        readonly={readOnly}
+                    />
+                );
             case 'mf':
                 return (
                     <MfPackageProperties
@@ -113,6 +162,47 @@ class Flow extends React.Component {
                         readonly={readOnly}
                     />
                 );
+            case 'oc':
+                return (
+                    <OcPackageProperties
+                        mfPackage={mf.getPackage(type)}
+                        onChange={this.handleChangePackage}
+                        readonly={readOnly}
+                    />
+                );
+            case 'rch':
+                return (
+                    <RchPackageProperties
+                        mfPackage={mf.getPackage(type)}
+                        onChange={this.handleChangePackage}
+                        readonly={readOnly}
+                    />
+                );
+            case 'riv':
+                return (
+                    <RivPackageProperties
+                        mfPackage={mf.getPackage(type)}
+                        onChange={this.handleChangePackage}
+                        readonly={readOnly}
+                    />
+                );
+            case 'solver':
+                return (
+                    <SolverPackageProperties
+                        mfPackage={mf.getSolverPackage()}
+                        onChange={this.handleChangePackage}
+                        readonly={readOnly}
+                    />
+                );
+            case 'wel':
+                return (
+                    <WelPackageProperties
+                        mfPackage={mf.getPackage(type)}
+                        onChange={this.handleChangePackage}
+                        readonly={readOnly}
+                    />
+                );
+
             default:
                 return (
                     <MfPackageProperties
