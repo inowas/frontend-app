@@ -8,15 +8,6 @@ import {FlopyModflowMf} from 'core/model/flopy/packages/mf';
 
 class MfPackageProperties extends AbstractPackageProperties {
 
-    handleSelectExecutable = (e, {value}) => {
-        const mf = FlopyModflowMf.fromObject(this.state.mfPackage);
-        mf.exe_name = value;
-        this.props.onChange(mf);
-        this.setState({
-            mfPackage: mf.toObject()
-        });
-    };
-
     render() {
         if (!this.state.mfPackage) {
             return null;
@@ -33,10 +24,12 @@ class MfPackageProperties extends AbstractPackageProperties {
                         <Select
                             options={[
                                 {key: 0, value: 'mf2005', text: 'MF2005'},
+                                {key: 1, value: 'mfnwt', text: 'MFNWT'},
                             ]}
-                            onChange={this.handleSelectExecutable}
+                            onChange={this.handleOnSelect}
                             value={mfPackage.exe_name}
                             disabled={readonly}
+                            name={'exe_name'}
                         />
                     </Form.Field>
                     <Form.Field>

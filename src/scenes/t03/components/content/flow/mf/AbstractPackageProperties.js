@@ -2,7 +2,6 @@ import PropTypes from 'prop-types';
 import React from 'react';
 
 import {Icon, Popup} from 'semantic-ui-react';
-import {Mt3dPackageFactory} from 'core/model/flopy/packages/mt';
 import {FlopyModflowPackage} from 'core/model/flopy/packages/mf';
 
 const styles = {
@@ -62,18 +61,17 @@ class AbstractPackageProperties extends React.Component {
     };
 
     handleOnSelect = (e, {name, value}) => {
-        const mfPackage = {...this.state.mfPackage, [name]: value};
-        this.props.onChange(Mt3dPackageFactory.fromData(mfPackage));
+        const mfPackage = this.props.mfPackage;
+        mfPackage[name] = value;
+        this.props.onChange(mfPackage);
     };
 
-    handleOnBlur = (cast) => (e) => {
-        const {name} = e.target;
-        let value;
-
-        (typeof cast === 'function') ? value = cast(e.target.value) : value = e.target.value;
-        const mfPackage = {...this.state.mfPackage, [name]: value};
-        this.setState({mfPackage});
-        this.props.onChange(Mt3dPackageFactory.fromData(mfPackage));
+    handleOnBlur = (e) => {
+        const {name, value} = e.target;
+        this.setState({mfPackage: {...this.state.mfPackage, [name]: value}});
+        const mfPackage = this.props.mfPackage;
+        mfPackage[name] = value;
+        this.props.onChange(mfPackage);
     };
 
     renderInfoPopup = (description, title, position = 'top left', iconOutside = false) => {

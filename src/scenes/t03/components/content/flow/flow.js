@@ -61,7 +61,7 @@ class Flow extends React.Component {
     handleSave = () => {
         const packages = this.props.packages;
         packages.model_id = this.props.model.id;
-        packages.mf = ModflowModel.fromObject(this.state.mf);
+        packages.mf = FlopyModflow.fromObject(this.state.mf);
 
         this.setState({loading: true}, () =>
             sendCommand(
@@ -75,12 +75,12 @@ class Flow extends React.Component {
     };
 
     handleChangePackage = (p) => {
+        console.log(p);
         if (p instanceof FlopyModflowPackage) {
             const mf = FlopyModflow.fromObject(this.state.mf);
             mf.setPackage(p);
 
-            return this.setState({mf: mf.toObject(), isDirty: true},
-                () => this.props.updatePackages(mf));
+            return this.setState({mf: mf.toObject(), isDirty: true});
         }
 
         throw new Error('Package has to be instance of FlopyModflowPackage');
