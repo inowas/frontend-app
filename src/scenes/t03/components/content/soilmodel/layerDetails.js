@@ -141,13 +141,13 @@ class LayerDetails extends React.Component {
                 </Tab.Pane>
         }];
 
-        layerParameters.forEach(p => {
+        layerParameters.forEach((p, idx) => {
             if (p.name === 'top' && layer.number > 1) {
                 return;
             }
             panes.push({
                 menuItem: (
-                    <Menu.Item>
+                    <Menu.Item key={idx}>
                         <Popup
                             trigger={<span>{p.name}</span>}
                             content={p.description}

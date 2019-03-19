@@ -14,6 +14,8 @@ import {BoundaryCollection} from 'core/model/modflow/boundaries';
 import {Soilmodel, SoilmodelLayer} from 'core/model/modflow/soilmodel';
 import {Mt3dms} from 'core/model/flopy/packages/mt';
 import {Optimization} from 'core/model/modflow/optimization';
+import FlopyPackages from '../../../core/model/flopy/packages/FlopyPackages';
+import {UPDATE_PACKAGES} from '../reducers/packages';
 
 export function clear() {
     return {
@@ -62,6 +64,17 @@ export function updateCalculation(calculation) {
     return {
         type: UPDATE_CALCULATION,
         payload: calculation.toObject()
+    };
+}
+
+export function updatePackages(packages) {
+    if (!(packages instanceof FlopyPackages)) {
+        throw new Error('Packages is expected to be instance of FlopyPackages');
+    }
+
+    return {
+        type: UPDATE_PACKAGES,
+        payload: packages.toObject()
     };
 }
 

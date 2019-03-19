@@ -117,18 +117,18 @@ class Cells {
             throw new Error('GridSize needs to be instance of GridSize');
         }
 
-        const activeCells = new this();
+        const cells = new this();
 
         if (geometry.fromType('point')) {
             const coordinate = geometry.coordinates;
-            activeCells.addCell(getActiveCellFromCoordinate(coordinate, boundingBox, gridSize));
+            cells.addCell(getActiveCellFromCoordinate(coordinate, boundingBox, gridSize));
         }
 
         if (geometry.fromType('linestring')) {
             const gridCells = getGridCells(boundingBox, gridSize);
             gridCells.forEach(cell => {
                 if (booleanCrosses(geometry, cell.geometry)) {
-                    activeCells.addCell([cell.x, cell.y, 0]);
+                    cells.addCell([cell.x, cell.y, 0]);
                 }
             });
         }
@@ -137,12 +137,12 @@ class Cells {
             const gridCells = getGridCells(boundingBox, gridSize);
             gridCells.forEach(cell => {
                 if (booleanContains(geometry, cell.geometry) || booleanOverlap(geometry, cell.geometry)) {
-                    activeCells.addCell([cell.x, cell.y]);
+                    cells.addCell([cell.x, cell.y]);
                 }
             });
         }
 
-        return activeCells;
+        return cells;
     }
 
     constructor(cells = []) {
@@ -162,10 +162,14 @@ class Cells {
             throw new Error('GridSize needs to be instance of GridSize');
         }
 
+        this._cells = this._cells.map(c => {
+            c[2] = 0;
+            return c;
+        });
+
         let {observationPoints} = boundary;
 
         if (observationPoints.length <= 1) {
-            this._cells = this._cells.map(c => c[2] = 0);
             return;
         }
 
@@ -198,7 +202,7 @@ class Cells {
                 const nextOp = observationPoints[opIdx + 1]; // undefined if not existing
 
                 if (cell.distance >= prevOp.distance && nextOp && cell.distance < nextOp.distance) {
-                    cell.value = opIdx+((cell.distance - prevOp.distance) / (nextOp.distance - prevOp.distance))
+                    cell.value = opIdx + ((cell.distance - prevOp.distance) / (nextOp.distance - prevOp.distance))
                 }
 
                 if (!nextOp && cell.distance >= prevOp.distance) {
@@ -215,6 +219,10 @@ class Cells {
     toggle = ([x, y], boundingBox, gridSize) => {
         if (!(boundingBox instanceof BoundingBox)) {
             throw new Error('BoundingBox needs to be instance of BoundingBox');
+        }
+
+        if (!(gridSize instanceof GridSize)) {
+            throw new Error('GridSize needs to be instance of GridSize');
         }
 
         if (!(gridSize instanceof GridSize)) {
@@ -248,6 +256,26 @@ class Cells {
 
     addCell = (cell) => {
         this._cells.push(cell);
+    };
+
+    calculateIBound = (nlay, nrow, ncol) => {
+        const iBound2D = [];
+        for (let row = 0; row < nrow; row++) {
+            iBound2D[row] = [];
+            for (let col = 0; col < ncol; col++) {
+                iBound2D[row][col] = 0;
+            }
+        }
+
+        this.cells.forEach(cell => {
+            iBound2D[cell[1]][cell[0]] = 1;
+        });
+
+        const iBound = [];
+        for (let lay = 0; lay < nlay; lay++) {
+            iBound[lay] = iBound2D;
+        }
+        return iBound;
     };
 
     get cells() {

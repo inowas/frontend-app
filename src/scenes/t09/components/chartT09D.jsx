@@ -85,13 +85,13 @@ const Chart = ({parameters}) => {
                                 type="number"
                                 allowDecimals={false}
                                 tickLine={false}
-                                // tickFormatter={(x) => x.toFixed(1)}
+                                tickFormatter={(x) => parseFloat(x).toFixed(1)}
                             >
                                 <Label
                                     angle={270}
                                     position='left'
                                     style={{textAnchor: 'center', fontSize: '13px'}}
-                                    value={'Qcrit [m3/d]'}
+                                    value={'Qcrit [m³/d]'}
                                     fill={'#4C4C4C'}
                                 />
                             </YAxis>

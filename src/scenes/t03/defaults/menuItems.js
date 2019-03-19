@@ -34,16 +34,14 @@ const menuItems = [
                 icon: <Icon name="exchange"/>
             },
             {
-                name: 'Files',
-                property: 'files',
-                icon: <Icon name="save outline"/>,
-                disabled: true
+                name: 'Calculation',
+                property: 'calculation',
+                icon: <Icon name="save outline"/>
             },
             {
                 name: 'Results',
                 property: 'results',
                 icon: <Icon name="chart bar outline"/>,
-                disabled: true
             }
         ]
     }, {
@@ -52,7 +50,8 @@ const menuItems = [
             {
                 name: 'Observations',
                 property: 'observations',
-                icon: <Icon name="clipboard outline"/>
+                icon: <Icon name="clipboard outline"/>,
+                disabled: true
             },
             {
                 name: 'Calibration',

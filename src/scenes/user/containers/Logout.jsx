@@ -5,9 +5,13 @@ import {withRouter} from 'react-router-dom';
 import {Action} from '../actions/index';
 
 class Logout extends React.Component {
-    render() {
+
+    componentDidMount() {
         this.props.logout();
         this.props.history.push('/');
+    }
+
+    render() {
         return null;
     }
 }

@@ -6,7 +6,7 @@ import {Calculation} from 'core/model/modflow';
 import {Grid, Header, List, Segment} from 'semantic-ui-react';
 import Terminal from '../../../../shared/complexTools/Terminal';
 
-import {fetchUrl} from 'services/api';
+import {fetchModflowFile} from 'services/api';
 
 class Files extends React.Component {
 
@@ -14,13 +14,12 @@ class Files extends React.Component {
         isLoading: false,
         isError: false,
         selectedFile: 'mf.list',
-        fileList: [],
-        file: ''
+        file: null
 
     };
 
     componentDidMount() {
-        this.fetchFileList();
+        this.fetchFile();
     }
 
 
@@ -36,30 +35,15 @@ class Files extends React.Component {
         }
 
         const {selectedFile} = this.state;
-        const extension = selectedFile.split('.')[1];
-        this.setState({isLoading: true}, () =>
-            fetchUrl(`calculations/${calculationId}/file/${extension}`,
-                (file) => this.setState({file, isLoading: false})
-            ))
-    };
-
-    fetchFileList = () => {
-        const {calculation} = this.props;
-        if (!calculation) {
-            return;
-        }
-
-        const calculationId = calculation.id;
-        if (!calculationId || calculationId === '') {
-            return;
-        }
 
         this.setState({isLoading: true}, () =>
-            fetchUrl(`calculations/${calculationId}/filelist`,
-                (fileList) => this.setState({fileList, isLoading: false}, () => this.fetchFile()),
-                (e) => this.setState({isError: e})
-            )
-        );
+            fetchModflowFile(calculationId, selectedFile,
+                file => this.setState({file, isLoading: false}),
+                e => {
+                    this.setState({isError: true, isLoading: false});
+                    console.error(e);
+                })
+        )
     };
 
     onClickFile = (file) => {
@@ -97,7 +81,7 @@ class Files extends React.Component {
                     <Grid.Column width={12}>
                         <Header as={'h3'}>Content file: {this.state.selectedFile}</Header>
                         <Segment color={'grey'} loading={this.state.isLoading}>
-                            <Terminal content={this.state.file}/>
+                            {this.state.file && <Terminal content={this.state.file.content}/>}
                         </Segment>
                     </Grid.Column>
                 </Grid.Row>

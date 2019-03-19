@@ -143,6 +143,7 @@ const Chart = ({parameters}) => {
                                 />
                             </YAxis>
                             <CartesianGrid strokeDasharray="3 3"/>
+                            {df < ds &&
                             <Line
                                 isAnimationActive={false}
                                 type="basis"
@@ -150,10 +151,13 @@ const Chart = ({parameters}) => {
                                 stroke="#ED8D05"
                                 strokeWidth="5"
                                 dot={false}
-                            />
-                            <ReferenceLine y={zCrit} stroke="#ED8D05" strokeWidth="5" strokeDasharray="20 20"/>
+                            />}
+                            {df < ds &&
+                            <ReferenceLine y={zCrit} stroke='#ED8D05' strokeWidth='5' strokeDasharray='20 20'/>
+                            }
                         </LineChart>
                     </ResponsiveContainer>
+
 
                     {resultDiv(df, ds, z, qmax)}
 
@@ -162,13 +166,13 @@ const Chart = ({parameters}) => {
                                 size={'small'}
                                 onClick={() => exportChartImage(currentChart)}
                         >
-                            <Icon name='download' /> JPG
+                            <Icon name='download'/> JPG
                         </Button>
                         <Button compact basic icon
                                 size={'small'}
                                 onClick={() => exportChartData(currentChart)}
                         >
-                            <Icon name='download' /> CSV
+                            <Icon name='download'/> CSV
                         </Button>
                     </div>
 

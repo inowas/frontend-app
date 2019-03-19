@@ -1,7 +1,3 @@
-import Ajv from 'ajv';
-import ajv0 from 'ajv/lib/refs/json-schema-draft-04';
-import mt3dmsSchema from './mt3dms.schema.json';
-
 import AbstractMt3dPackage from './AbstractMt3dPackage';
 import AdvPackage from './AdvPackage';
 import BtnPackage from './BtnPackage';
@@ -32,14 +28,16 @@ class Mt3dms {
     }
 
     static fromObject(obj) {
-        const mt = new Mt3dms();
+        const mt = new this();
         mt.enabled = obj.enabled;
-        obj.packages.forEach(packageName => {
-            const mt3dPackage = Mt3dPackageFactory.fromData(obj[packageName]);
-            if (mt3dPackage) {
-                mt.addPackage(mt3dPackage);
+        for (const prop in obj) {
+            if (obj.hasOwnProperty(prop)) {
+                const p = Mt3dPackageFactory.fromData(obj[prop]);
+                if (p instanceof AbstractMt3dPackage) {
+                    mt.addPackage(p);
+                }
             }
-        });
+        }
 
         return mt;
     }
@@ -86,8 +84,7 @@ class Mt3dms {
 
     toObject() {
         const obj = {
-            enabled: this.enabled,
-            packages: Object.keys(this.packages)
+            enabled: this.enabled
         };
 
         for (const key in this.packages) {
@@ -116,16 +113,8 @@ class Mt3dms {
             }
         }
 
-        return this.toObject();
+        return obj;
     };
-
-    validate() {
-        const schema = mt3dmsSchema;
-        const ajv = new Ajv({schemaId: 'id'});
-        ajv.addMetaSchema(ajv0);
-        const validate = ajv.compile(schema);
-        return [validate(this.toObject()), validate.errors];
-    }
 }
 
 export default Mt3dms;

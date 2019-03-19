@@ -1,5 +1,6 @@
 import {RiverBoundary} from '../../../modflow/boundaries';
 import FlopyModflowLineBoundary from './FlopyModflowLineBoundary';
+import FlopyModflowBoundary from './FlopyModflowBoundary';
 
 /*
 https://modflowpy.github.io/flopydoc/mfriv.html
@@ -57,6 +58,9 @@ export default class FlopyModflowMfriv extends FlopyModflowLineBoundary {
     }
 
     set stress_period_data(value) {
+        if (Array.isArray(value)) {
+            value = FlopyModflowBoundary.arrayToObject(value);
+        }
         this._stress_period_data = value;
     }
 

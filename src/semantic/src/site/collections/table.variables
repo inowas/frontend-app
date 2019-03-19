@@ -10,3 +10,4 @@
 /* Table Cell */
 @cellVerticalPadding: 0.2em;
 @cellHorizontalPadding: @relativeMini;
+

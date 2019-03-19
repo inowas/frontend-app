@@ -1,9 +1,10 @@
 import uuidv4 from 'uuid/v4';
-import {SoilmodelZone, ZonesCollection} from './index';
+import {ZonesCollection} from './index';
 import {GridSize} from '../index';
 import {cloneDeep} from 'lodash';
 import {Cells, Geometry} from 'core/model/geometry';
 import ModflowModel from '../ModflowModel';
+import DefaultZone from './DefaultZone';
 
 class SoilmodelLayer {
     _id = uuidv4();
@@ -34,12 +35,10 @@ class SoilmodelLayer {
         }
 
         const layer = new SoilmodelLayer();
-        layer.name = 'Default Layer';
-        layer.number = 1;
+        layer.name = 'Top Layer';
+        layer.number = 0;
 
-        const defaultZone = SoilmodelZone.fromDefault();
-        defaultZone.geometry = geometry;
-        defaultZone.activeCells = cells;
+        const defaultZone = DefaultZone.fromDefault();
         layer.zonesCollection.add(defaultZone);
         return layer;
     }
@@ -63,6 +62,11 @@ class SoilmodelLayer {
             layer.ss = obj.ss;
             layer.sy = obj.sy;
             layer.zonesCollection = obj._meta && obj._meta.zones ? ZonesCollection.fromArray(obj._meta.zones, parseParameters) : new ZonesCollection();
+
+            if (layer.zonesCollection.length === 0) {
+                const defaultZone = DefaultZone.fromLayer(layer);
+                layer.zonesCollection.add(defaultZone);
+            }
         }
 
         return layer;
@@ -236,7 +240,7 @@ class SoilmodelLayer {
         const defaultZone = this.zonesCollection.findBy('priority', 0, {first: true});
         if (defaultZone) {
             defaultZone.geometry = model.geometry;
-            defaultZone.activeCells = model.cells;
+            defaultZone.cells = model.cells;
             this.zonesCollection.update(defaultZone);
             this.resetParameters().zonesToParameters(model.gridSize);
         }
@@ -297,24 +301,22 @@ class SoilmodelLayer {
 
             parameters.forEach(parameter => {
                 // ... and check if the current zone has values for the parameter
-
                 const zoneParameter = zone[parameter];
 
                 if (zoneParameter.isActive) {
-                    // apply array with default values to parameter, if zone with parameter exists
-                    // x is number of columns, y number of rows (grid resolution of model)
-                    if (!Array.isArray(this[parameter])) {
-                        const paramValue = this[parameter];
-                        this[parameter] = new Array(gridSize.nY).fill(0).map(() => new Array(gridSize.nX).fill(paramValue)).slice(0);
+                    if (zone.priority === 0) {
+                        // default zone parameter value is a number:
+                        if (!zoneParameter.isArray()) {
+                            this[parameter] = new Array(gridSize.nY).fill(0).map(() => new Array(gridSize.nX).fill(zoneParameter.value));
+                        }
+                        // default zone parameter value is a raster:
+                        if (zoneParameter.isArray()) {
+                            this[parameter] = cloneDeep(zoneParameter.value);
+                        }
                     }
 
-                    // check if zone is default zone and has a raster uploaded
-                    if (zone.priority === 0 && zoneParameter.isArray()) {
-                        this[parameter] = cloneDeep(zoneParameter.value);
-                    }
-
-                    // ... if not:
-                    if (zone.priority > 0 || (zone.priority === 0 && !zoneParameter.isArray())) {
+                    // ... zone is not default:
+                    if (zone.priority > 0) {
                         // update the values for the parameter in the cells given by the zone
                         zone.cells.cells.forEach(cell => {
                             //console.log(`set ${parameter} at ${cell[1]} ${cell[0]} with value ${zone[parameter]}`);

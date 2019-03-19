@@ -7,7 +7,7 @@ import {fetchUrl} from 'services/api';
 import {Grid, Segment} from 'semantic-ui-react';
 
 import {ModflowModel} from 'core/model/modflow';
-import {Soilmodel, SoilmodelLayer, SoilmodelZone} from 'core/model/modflow/soilmodel';
+import {DefaultZone, Soilmodel, SoilmodelLayer} from 'core/model/modflow/soilmodel';
 
 import LayerDetails from './layerDetails';
 import LayersList from './layersList';
@@ -77,9 +77,7 @@ class SoilmodelEditor extends React.Component {
         const layer = new SoilmodelLayer();
         layer.number = lc.length > 0 ? lc.orderBy('number', 'desc').first.number + 1 : 1;
 
-        const base = SoilmodelZone.fromDefault();
-        base.geometry = this.props.model.geometry;
-        base.activeCells = this.props.model.cells;
+        const base = DefaultZone.fromDefault();
         layer.zonesCollection.add(base);
 
         this.setState({isLoading: true});

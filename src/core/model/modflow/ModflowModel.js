@@ -1,7 +1,5 @@
 import {includes} from 'lodash';
 import {Cells, BoundingBox, Geometry, GridSize, Stressperiods} from './index';
-import {Mt3dms} from '../flopy/packages/mt';
-import Calculation from './Calculation';
 
 export default class ModflowModel {
 
@@ -19,8 +17,8 @@ export default class ModflowModel {
     _stressperiods;
     _timeUnit;
 
-    _mt3dms;
-    _calculation;
+    _calculationId;
+
     _permissions;
 
     static fromObject(obj) {
@@ -39,8 +37,8 @@ export default class ModflowModel {
         model.stressperiods = (obj.stressperiods) ? Stressperiods.fromObject(obj.stressperiods) : Stressperiods.fromDefaults();
         model.timeUnit = obj.time_unit;
 
-        model.mt3dms = obj.mt3dms ? Mt3dms.fromObject(obj.mt3dms) : Mt3dms.fromDefaults();
-        model.calculation = obj.calculation ? Calculation.fromObject(obj.calculation) : null;
+        model.calculationId = obj.calculation_id;
+
         model.permissions = obj.permissions;
         return model;
     }
@@ -55,7 +53,7 @@ export default class ModflowModel {
         model._geometry = (geometry instanceof Geometry) ? geometry.toObject() : geometry;
         model._boundingBox = (boundingBox instanceof BoundingBox) ? boundingBox.toArray() : boundingBox;
         model._gridSize = (gridSize instanceof GridSize) ? gridSize.toObject() : gridSize;
-        model._cells = (cells instanceof Cells) ? cells.toArray(): cells;
+        model._cells = (cells instanceof Cells) ? cells.toArray() : cells;
         model._lengthUnit = lengthUnit;
 
         model._stressperiods = (stressperiods instanceof Stressperiods) ? stressperiods.toObject() : stressperiods;
@@ -82,7 +80,7 @@ export default class ModflowModel {
         model.stressperiods = (discretization.stressperiods) ? Stressperiods.fromObject(discretization.stressperiods) : Stressperiods.fromDefaults();
         model.timeUnit = discretization.time_unit;
 
-        model.mt3dms = Mt3dms.fromDefaults();
+        model.calculationId = query.calculation_id;
 
         return model;
     }
@@ -127,14 +125,6 @@ export default class ModflowModel {
         this._boundingBox = value;
     }
 
-    get calculation() {
-        return this._calculation;
-    }
-
-    set calculation(value) {
-        this._calculation = value;
-    }
-
     get geometry() {
         return this._geometry;
     }
@@ -157,14 +147,6 @@ export default class ModflowModel {
 
     set lengthUnit(value) {
         this._lengthUnit = value;
-    }
-
-    get mt3dms() {
-        return this._mt3dms;
-    }
-
-    set mt3dms(value) {
-        this._mt3dms = value;
     }
 
     get permissions() {
@@ -203,6 +185,14 @@ export default class ModflowModel {
         this._timeUnit = value;
     }
 
+    get calculationId() {
+        return this._calculationId;
+    }
+
+    set calculationId(value) {
+        this._calculationId = value;
+    }
+
     get readOnly() {
         return !includes(this.permissions, 'w');
     }
@@ -216,12 +206,11 @@ export default class ModflowModel {
         geometry: this.geometry.toObject(),
         grid_size: this.gridSize.toObject(),
         length_unit: this.lengthUnit,
-        mt3dms: this.mt3dms.toObject(),
         permissions: this.permissions,
         public: this.public,
         stressperiods: this.stressperiods.toObject(),
         time_unit: this.timeUnit,
-        calculation: (this.calculation instanceof Calculation) ? this.calculation.toObject() : null
+        calculation_id: this.calculationId
     });
 
     toPayload = () => ({
@@ -237,8 +226,6 @@ export default class ModflowModel {
         length_unit: this._lengthUnit,
 
         stressperiods: (this._stressperiods instanceof Stressperiods) ? this._stressperiods.toObject() : this._stressperiods,
-        time_unit: this._timeUnit,
-
-        mt3dms: (this._mt3dms instanceof Mt3dms) ? this._mt3dms.toObject() : this._mt3dms
+        time_unit: this._timeUnit
     });
 }

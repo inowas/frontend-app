@@ -23,7 +23,6 @@ class SignUp extends React.Component {
         this.checkAuthentication(this.props);
         this.state = {
             name: '',
-            username: '',
             email: '',
             password: '',
             passwordConfirmation: '',
@@ -34,13 +33,8 @@ class SignUp extends React.Component {
         };
     }
 
-    componentWillReceiveProps(nextProps) {
-        this.checkAuthentication(nextProps);
-        if (this.props.userSignUpPending) {
-            this.setState({
-                success: true
-            });
-        }
+    componentDidMount() {
+        this.checkAuthentication();
     }
 
     checkAuthentication() {
@@ -62,22 +56,7 @@ class SignUp extends React.Component {
                 name,
                 this.state.email,
                 this.state.password,
-                this.state.passwordConfirmation,
-                this.state.username
-            )
-        });
-    };
-
-    onUsernameChange = e => {
-        const username = e.target.value;
-        this.setState({
-            username,
-            validInput: this.validate(
-                this.state.name,
-                this.state.email,
-                this.state.password,
-                this.state.passwordConfirmation,
-                username
+                this.state.passwordConfirmation
             )
         });
     };
@@ -90,8 +69,7 @@ class SignUp extends React.Component {
                 this.state.name,
                 email,
                 this.state.password,
-                this.state.passwordConfirmation,
-                this.state.username
+                this.state.passwordConfirmation
             )
         });
     };
@@ -104,8 +82,7 @@ class SignUp extends React.Component {
                 this.state.name,
                 this.state.email,
                 password,
-                this.state.passwordConfirmation,
-                this.state.username
+                this.state.passwordConfirmation
             )
         });
     };
@@ -118,20 +95,9 @@ class SignUp extends React.Component {
                 this.state.name,
                 this.state.email,
                 this.state.password,
-                passwordConfirmation,
-                this.state.username
+                passwordConfirmation
             )
         });
-    };
-
-    validateUsername = (username) => {
-        const re = /^[a-zA-Z.-]+$/;
-
-        if (username.length <= 5) {
-            return false;
-        }
-
-        return re.test(username);
     };
 
     validateEmail = (email) => {
@@ -144,23 +110,15 @@ class SignUp extends React.Component {
             this.state.name,
             this.state.email,
             this.state.password,
-            this.state.passwordConfirmation,
-            this.state.username
+            this.state.passwordConfirmation
         );
     };
 
-    validate = (name, email, password, passwordConfirmation, username) => {
+    validate = (name, email, password, passwordConfirmation) => {
         if (name.length <= 5) {
             return {
                 isValid: false,
                 message: 'The name has to be larger then 5 digits.'
-            };
-        }
-
-        if (!this.validateUsername(username)) {
-            return {
-                isValid: false,
-                message: 'The username can contain only alphanumeric characters and dots.'
             };
         }
 
@@ -191,9 +149,9 @@ class SignUp extends React.Component {
         };
     };
 
-    signUpRequest = (name, username, email, password, redirectTo) => {
+    signUpRequest = (name, email, password) => {
         submitSignUpCredentials(
-            {name, username, email, password, redirectTo},
+            {name, email, password},
             () => this.setState({success: true, loading: false}),
             () => this.setState({error: true, loading: false})
         );
@@ -202,14 +160,7 @@ class SignUp extends React.Component {
     onSignUpClick = () => {
         const formValidation = this.validateForm();
         if (formValidation.isValid) {
-
-            let redirectTo = '';
-            if (typeof window !== 'undefined') {
-                // eslint-disable-next-line no-restricted-globals
-                redirectTo = location.protocol + '//' + location.host + '/login';
-            }
-
-            this.signUpRequest(this.state.name, this.state.username, this.state.email, this.state.password, redirectTo);
+            this.signUpRequest(this.state.name, this.state.email, this.state.password);
             this.setState({loading: true});
         }
 
@@ -235,7 +186,7 @@ class SignUp extends React.Component {
         if (this.state.success) {
             return (
                 <Message color={'blue'}>
-                    Thank you, please check your E-Mail Inbox.
+                    You are registered successfully. You can sign in at the login page.
                 </Message>
             );
         }
@@ -286,13 +237,6 @@ class SignUp extends React.Component {
                                     type="text"
                                     onChange={this.onNameChange}
                                     placeholder="Name"
-                                />
-                            </Form.Field>
-                            <Form.Field>
-                                <input
-                                    type="text"
-                                    onChange={this.onUsernameChange}
-                                    placeholder="Username"
                                 />
                             </Form.Field>
                             <Form.Field>
