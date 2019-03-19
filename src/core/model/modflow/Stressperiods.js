@@ -1,6 +1,6 @@
 import moment from 'moment/moment';
 import Stressperiod from './Stressperiod';
-import {cloneDeep} from 'lodash';
+import {cloneDeep, orderBy} from 'lodash';
 import {TimeUnit} from './index';
 
 class Stressperiods {
@@ -96,6 +96,10 @@ class Stressperiods {
 
     last() {
         return this.stressperiods[this.count - 1];
+    }
+
+    orderStressperiods() {
+        this._stressperiods = orderBy(this._stressperiods, [sp => sp.startDateTime], ['asc']);
     }
 
     updateStressperiodByIdx(idx, stressperiod) {
