@@ -18,20 +18,6 @@ class SoilmodelZone {
     _ss = new SoilmodelParameter();
     _sy = new SoilmodelParameter();
 
-    static fromDefault() {
-        const zone = new SoilmodelZone();
-        zone.name = 'Default';
-        zone.priority = 0;
-        zone.top = SoilmodelParameter.fromObject(defaultParameters.top);
-        zone.botm = SoilmodelParameter.fromObject(defaultParameters.botm);
-        zone.hk = SoilmodelParameter.fromObject(defaultParameters.hk);
-        zone.hani = SoilmodelParameter.fromObject(defaultParameters.hani);
-        zone.vka = SoilmodelParameter.fromObject(defaultParameters.vka);
-        zone.ss = SoilmodelParameter.fromObject(defaultParameters.ss);
-        zone.sy = SoilmodelParameter.fromObject(defaultParameters.sy);
-        return zone;
-    }
-
     static fromObject(obj, parseParameters = true) {
         const zone = new SoilmodelZone();
         if (obj) {
