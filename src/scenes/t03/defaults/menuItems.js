@@ -11,7 +11,7 @@ const menuItems = [
                 icon: <Icon name="calendar alternate outline"/>
             },
             {
-                name: 'Soilmodel',
+                name: 'Soil Layers',
                 property: 'soilmodel',
                 icon: <Icon name="expand"/>
             },
