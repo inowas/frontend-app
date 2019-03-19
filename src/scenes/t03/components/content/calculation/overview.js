@@ -112,7 +112,7 @@ class Overview extends React.Component {
                 <div>
                     <Header as={'h3'}>Log</Header>
                     <Segment color={'black'} loading={this.state.fetchingFile}>
-                        <Terminal content={calculation.message}/>
+                        <Terminal content={calculation.message} styles={{fontSize: 8}}/>
                     </Segment>
                 </div>
             )
