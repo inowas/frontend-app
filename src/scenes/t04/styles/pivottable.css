@@ -209,14 +209,25 @@ table.pvtTable tbody tr td {
     font-size: 13px;
     font-weight: 700;
 }
-.pvtRows.pvtVertList li {
+.pvtRows.pvtVertList {
     background-color: #E5F0F5;
+    box-shadow: 0 0 0 3px inset #FFFFFF;
+}
+.pvtRows.pvtVertList li,
+.pvtHorizList.pvtCols li {
+    background-color: #FFFFFF;
+    border: 1px dashed #D9D9D9;
 }
 .pvtRows.pvtVertList:before {
     content: 'Selected Row Attributes';
     padding: 0 5px;
     font-size: 13px;
     font-weight: 700;
+}
+.pvtHorizList.pvtCols {
+    background-color: #E5F0F5;
+    width: 100%;
+    box-shadow: 0 0 0 3px inset #FFFFFF;
 }
 .pvtCols.pvtHorizList:before {
     content: 'Selected Column Attributes';

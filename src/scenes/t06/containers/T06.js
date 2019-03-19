@@ -140,7 +140,7 @@ class T06 extends React.Component {
                         <Item.Extra><a href={method.href} target={'_blank'}>Read more</a></Item.Extra>
                         <Item.Extra>
                             <Label>Cost: {method.highCost ? <Icon name='arrow up' fitted/> : <Icon name='arrow down' fitted/>}</Label>
-                            <Label>Area: {method.highLandNeed ? <Icon name='arrow up' fitted/> : <Icon name='arrow up' fitted/>}</Label>
+                            <Label>Area: {method.highLandNeed ? <Icon name='arrow up' fitted/> : <Icon name='arrow down' fitted/>}</Label>
                         </Item.Extra>
                     </Item.Content>
                 </Item>
