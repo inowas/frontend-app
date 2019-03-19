@@ -30,12 +30,49 @@ const calculateDiagramData = (Qw, ne, hL, h0, x, xi) => {
 
 let currentChart;
 
+const renderLabels = (x, xi, tMax) => {
+    if (x >= xi) {
+        return (
+            <Segment inverted color='orange' secondary style={styles.diagramErrorLabel}>
+                <p>Initial position <strong>x<sub>i</sub></strong> can not be smaller than location of well <strong>x</strong>.</p>
+            </Segment>
+        );
+    }
+    return (
+        <div>
+            <Segment raised className='diagramLabel topLeft' style={{left: '50px'}}>
+                <p>t&nbsp;=&nbsp;<strong>{tMax.toFixed(1)}</strong>&nbsp;days</p>
+            </Segment>
+
+            <div className='downloadButtons'>
+                <Button compact basic icon
+                        size={'small'}
+                        onClick={() => exportChartImage(currentChart)}
+                >
+                    <Icon name='download' /> JPG
+                </Button>
+                <Button compact basic icon
+                        size={'small'}
+                        onClick={() => exportChartData(currentChart)}
+                >
+                    <Icon name='download' /> CSV
+                </Button>
+            </div>
+        </div>
+    );
+};
+
 const styles = {
     chart: {
         top: 20,
         right: 30,
         left: 20,
         bottom: 0
+    },
+    diagramErrorLabel: {
+        position: 'absolute',
+        top: '60px',
+        left: '200px'
     }
 };
 
@@ -95,25 +132,8 @@ const Chart = ({parameters}) => {
                             />
                         </LineChart>
                     </ResponsiveContainer>
+                    {renderLabels(x, xi, tMax)}
 
-                    <Segment raised className='diagramLabel topLeft' style={{left: '50px'}}>
-                        <p>t&nbsp;=&nbsp;<strong>{tMax.toFixed(1)}</strong>&nbsp;days</p>
-                    </Segment>
-
-                    <div className='downloadButtons'>
-                        <Button compact basic icon
-                                size={'small'}
-                                onClick={() => exportChartImage(currentChart)}
-                        >
-                            <Icon name='download' /> JPG
-                        </Button>
-                        <Button compact basic icon
-                                size={'small'}
-                                onClick={() => exportChartData(currentChart)}
-                        >
-                            <Icon name='download' /> CSV
-                        </Button>
-                    </div>
                 </Grid.Column>
             </Grid>
         </div>
