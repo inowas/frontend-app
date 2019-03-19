@@ -22,13 +22,13 @@ const toolNames = [
         name: '1D transport model (Ogata-Banks)',
     }, {
         slug: 'T09A',
-        name: 'Depth of saltwater–freshwater interface',
+        name: 'Depth of saltwater interface',
     }, {
         slug: 'T09B',
-        name: 'Shape and extent of freshwater-saltwater interface',
+        name: 'Freshwater-saltwater interface',
     }, {
         slug: 'T09C',
-        name: 'Upconing of the saltwater interface by pumping',
+        name: 'Upconing',
     }, {
         slug: 'T09D',
         name: 'Critical well discharge',
