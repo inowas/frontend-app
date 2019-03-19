@@ -1,9 +1,10 @@
 import uuidv4 from 'uuid/v4';
-import {SoilmodelZone, ZonesCollection} from './index';
+import {ZonesCollection} from './index';
 import {GridSize} from '../index';
 import {cloneDeep} from 'lodash';
 import {Cells, Geometry} from 'core/model/geometry';
 import ModflowModel from '../ModflowModel';
+import DefaultZone from './DefaultZone';
 
 class SoilmodelLayer {
     _id = uuidv4();
@@ -37,9 +38,7 @@ class SoilmodelLayer {
         layer.name = 'Top Layer';
         layer.number = 0;
 
-        const defaultZone = SoilmodelZone.fromDefault();
-        defaultZone.geometry = geometry;
-        defaultZone.cells = cells;
+        const defaultZone = DefaultZone.fromDefault();
         layer.zonesCollection.add(defaultZone);
         return layer;
     }
@@ -63,6 +62,11 @@ class SoilmodelLayer {
             layer.ss = obj.ss;
             layer.sy = obj.sy;
             layer.zonesCollection = obj._meta && obj._meta.zones ? ZonesCollection.fromArray(obj._meta.zones, parseParameters) : new ZonesCollection();
+
+            if (layer.zonesCollection.length === 0) {
+                const defaultZone = DefaultZone.fromLayer(layer);
+                layer.zonesCollection.add(defaultZone);
+            }
         }
 
         return layer;
@@ -302,11 +306,11 @@ class SoilmodelLayer {
                 if (zoneParameter.isActive) {
                     if (zone.priority === 0) {
                         // default zone parameter value is a number:
-                        if (zone.priority === 0 && !zoneParameter.isArray()) {
+                        if (!zoneParameter.isArray()) {
                             this[parameter] = new Array(gridSize.nY).fill(0).map(() => new Array(gridSize.nX).fill(zoneParameter.value));
                         }
                         // default zone parameter value is a raster:
-                        if (zone.priority === 0 && zoneParameter.isArray()) {
+                        if (zoneParameter.isArray()) {
                             this[parameter] = cloneDeep(zoneParameter.value);
                         }
                     }
