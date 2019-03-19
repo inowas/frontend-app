@@ -16,7 +16,7 @@ export default class RiverBoundary extends LineBoundary {
                 default: 0
             },
             {
-                name: 'Cond',
+                name: 'Conductance',
                 description: 'Riverbed conductance',
                 unit: 'm/day',
                 decimals: 1,
