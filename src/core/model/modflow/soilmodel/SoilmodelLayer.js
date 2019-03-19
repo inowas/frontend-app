@@ -297,24 +297,22 @@ class SoilmodelLayer {
 
             parameters.forEach(parameter => {
                 // ... and check if the current zone has values for the parameter
-
                 const zoneParameter = zone[parameter];
 
                 if (zoneParameter.isActive) {
-                    // apply array with default values to parameter, if zone with parameter exists
-                    // x is number of columns, y number of rows (grid resolution of model)
-                    if (!Array.isArray(this[parameter])) {
-                        const paramValue = this[parameter];
-                        this[parameter] = new Array(gridSize.nY).fill(0).map(() => new Array(gridSize.nX).fill(paramValue)).slice(0);
+                    if (zone.priority === 0) {
+                        // default zone parameter value is a number:
+                        if (zone.priority === 0 && !zoneParameter.isArray()) {
+                            this[parameter] = new Array(gridSize.nY).fill(0).map(() => new Array(gridSize.nX).fill(zoneParameter.value));
+                        }
+                        // default zone parameter value is a raster:
+                        if (zone.priority === 0 && zoneParameter.isArray()) {
+                            this[parameter] = cloneDeep(zoneParameter.value);
+                        }
                     }
 
-                    // check if zone is default zone and has a raster uploaded
-                    if (zone.priority === 0 && zoneParameter.isArray()) {
-                        this[parameter] = cloneDeep(zoneParameter.value);
-                    }
-
-                    // ... if not:
-                    if (zone.priority > 0 || (zone.priority === 0 && !zoneParameter.isArray())) {
+                    // ... zone is not default:
+                    if (zone.priority > 0) {
                         // update the values for the parameter in the cells given by the zone
                         zone.cells.cells.forEach(cell => {
                             //console.log(`set ${parameter} at ${cell[1]} ${cell[0]} with value ${zone[parameter]}`);
