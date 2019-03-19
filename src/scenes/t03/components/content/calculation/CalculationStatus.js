@@ -13,8 +13,8 @@ const CalculationStatus = ({calculation}) => (
     <Progress value={calculation.state} total={4} success={calculation.state === 200}>
         {calculation.state === CALCULATION_STATE_NEW && 'Sending data...'}
         {calculation.state === CALCULATION_STATE_QUEUED && 'Queued...'}
-        {calculation.state === CALCULATION_STATE_CALCULATING && 'Calculating..'}
-        {calculation.state === CALCULATION_STATE_FINISHED && 'Finished successful!'}
+        {calculation.state === CALCULATION_STATE_CALCULATING && 'Calculating...'}
+        {calculation.state === CALCULATION_STATE_FINISHED && 'Finished successfully!'}
         {calculation.state === CALCULATION_STATE_ERROR_MODEL && 'Model error!'}
         {calculation.state === CALCULATION_STATE_ERROR_SERVER && 'Server error!'}
     </Progress>
