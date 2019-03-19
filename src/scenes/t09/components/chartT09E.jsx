@@ -19,7 +19,7 @@ import {Button, Grid, Icon, Segment} from 'semantic-ui-react';
 const calculationErrorOverlay = (maxIter, valid, dxt) => {
     if (!valid) {
         return (
-            <Segment raised  inverted color='orange' tertiary className={'diagramLabel diagramOverlay topLeft'}>
+            <Segment inverted color='orange' secondary className={'diagramLabel diagramOverlay topLeft'}>
                 <p>Invalid values: square root gets minus.</p>
                 <p>Offshore discharge rate is less than minimum discharge rate</p>
             </Segment>
@@ -28,7 +28,7 @@ const calculationErrorOverlay = (maxIter, valid, dxt) => {
 
     if (maxIter) {
         return (
-            <Segment raised  inverted color='orange' tertiary className={'diagramLabel diagramOverlay topLeft'}>
+            <Segment inverted color='orange' secondary className={'diagramLabel diagramOverlay topLeft'}>
                     <p>Maximum number of iterations are conducted.</p>
                     <p>Change in x <sub>t</sub>&nbsp;=&nbsp;<strong>{dxt.toFixed(1)}</strong>&nbsp;m</p>
             </Segment>

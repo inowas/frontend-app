@@ -19360,66 +19360,6 @@ ol.ui.horizontal.list li:before,
 /*******************************
          Theme Overrides
 *******************************/
-
-/*******************************
-         Site Overrides
-*******************************/
-
-/*-------------------
-  Recharts Elements
- -------------------*/
-
-.diagramLabel {
-  position: absolute !important;
-  background-color: #EFF3F6 !important;
-  opacity: 0.9;
-}
-
-.diagramLabel.topRight {
-  top: 24px;
-  right: 40px;
-}
-
-.diagramLabel.bottomRight {
-  bottom: 50px;
-  right: 40px;
-}
-
-.diagramLabel.topLeft {
-  top: 24px;
-  left: 110px;
-  margin-top: 1rem !important;
-}
-
-.diagramLabel.bottomLeft {
-  bottom: 40px;
-  left: 40px;
-}
-
-.diagramLabel.diagramOverlay {
-  opacity: 1;
-}
-
-/*-------------------
-  Custom Menu in T03
- -------------------*/
-
-.ui.blue.segment.customMenuContainer {
-  padding-top: 0.5em !important;
-  padding-bottom: 0.5em !important;
-}
-
-/*----------------------
-  Custom Segment in T07
-  ----------------------*/
-
-.ui.blue.segment:not(.inverted).modelitem {
-  border-top: none !important;
-}
-
-.ui.inverted.blue.segment.modelitem .ui.header {
-  color: #FFFFFF;
-}
 /*!
  * # Semantic UI undefined - Step
  * http://github.com/semantic-org/semantic-ui/
@@ -24219,7 +24159,7 @@ input[readonly="readonly"]:focus {
 ---------------*/
 
 .ui.menu .active.item {
-  background: #EEF5F8;
+  background: #E5F0F5;
   color: rgba(0, 0, 0, 0.95);
   font-weight: normal;
   -webkit-box-shadow: none;
@@ -24380,7 +24320,7 @@ Floated Menu / Item
 /* Vertical Active */
 
 .ui.vertical.menu .active.item {
-  background: #EEF5F8;
+  background: #E5F0F5;
   border-radius: 0em;
   -webkit-box-shadow: none;
   box-shadow: none;

@@ -210,7 +210,7 @@ table.pvtTable tbody tr td {
     font-weight: 700;
 }
 .pvtRows.pvtVertList li {
-    background-color: #1eb1ed;
+    background-color: #E5F0F5;
 }
 .pvtRows.pvtVertList:before {
     content: 'Selected Row Attributes';
@@ -339,7 +339,7 @@ table.pvtTable tbody tr td {
 }
 
 .pvtCheckContainer p.selected {
-    background: #ebf0f8;
+    background: #EFF3F6;
 }
 
 .pvtOnly {
