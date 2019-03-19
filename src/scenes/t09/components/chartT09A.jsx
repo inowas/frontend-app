@@ -61,7 +61,7 @@ const Chart = ({parameters}) => {
                         </BarChart>
                     </ResponsiveContainer>
 
-                    <Segment raised className='diagramLabel bottomRight'>
+                    <Segment raised className='diagramLabel bottomRight' style={{marginBottom: '0px'}}>
                         <p>h&nbsp;=&nbsp;<strong>{h.toFixed(1)}</strong>&nbsp;m</p>
                         <p>z&nbsp;=&nbsp;<strong>{z.toFixed(1)}</strong>&nbsp;m</p>
                     </Segment>
