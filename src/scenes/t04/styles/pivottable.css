@@ -204,7 +204,7 @@ table.pvtTable tbody tr td {
     vertical-align: top;
 }
 .pvtUnused.pvtVertList:before {
-    content: 'Filter Attributes';
+    content: 'Database Attributes';
     padding: 0 5px;
     font-size: 13px;
     font-weight: 700;
@@ -219,10 +219,10 @@ table.pvtTable tbody tr td {
     border: 1px dashed #D9D9D9;
 }
 .pvtRows.pvtVertList:before {
-    content: 'Selected Row Attributes';
-    padding: 0 5px;
+    content: '\F064 Drag attributes into row field';
+    padding: 5px;
     font-size: 13px;
-    font-weight: 700;
+    font-family: Icons, sans-serif;
 }
 .pvtHorizList.pvtCols {
     background-color: #E5F0F5;
@@ -230,11 +230,11 @@ table.pvtTable tbody tr td {
     box-shadow: 0 0 0 3px inset #FFFFFF;
 }
 .pvtCols.pvtHorizList:before {
-    content: 'Selected Column Attributes';
+    content: '\F064 Drag attributes into column field';
     display: block;
-    padding: 0 5px;
+    padding: 5px;
     font-size: 13px;
-    font-weight: 700;
+    font-family: Icons, sans-serif;
 }
 .pvtFilteredAttribute {
     font-style: italic;
