@@ -6,16 +6,17 @@ import {EditControl} from 'react-leaflet-draw';
 
 import ActiveCellsLayer from 'services/geoTools/activeCellsLayer';
 import {BasicTileLayer} from 'services/geoTools/tileLayers';
-import {calculateActiveCells} from 'services/geoTools';
 
 import {getStyle} from './index';
 
 import {
     Boundary,
     BoundaryCollection,
-    Geometry,
+    Geometry, LineBoundary,
     ModflowModel
 } from 'core/model/modflow';
+
+import Cells from 'core/model/geometry/Cells';
 
 const style = {
     map: {
@@ -26,11 +27,13 @@ const style = {
 
 class BoundaryDiscretizationMap extends React.Component {
 
-
-    calculate = (geometry, boundingBox, gridSize) => {
+    calculate = (boundary, geometry, boundingBox, gridSize) => {
         return new Promise(resolve => {
-            const activeCells = calculateActiveCells(geometry, boundingBox, gridSize);
-            resolve(activeCells);
+            const cells = Cells.fromGeometry(geometry, boundingBox, gridSize);
+            if (boundary instanceof LineBoundary) {
+                cells.calculateValues(boundary, boundingBox, gridSize);
+            }
+            resolve(cells);
         })
     };
 
@@ -40,10 +43,10 @@ class BoundaryDiscretizationMap extends React.Component {
 
         e.layers.eachLayer(layer => {
             const geometry = Geometry.fromGeoJson(layer.toGeoJSON());
-            this.calculate(geometry, boundingBox, gridSize)
-                .then(activeCells => {
-                    boundary.activeCells = activeCells;
-                    boundary.geometry = geometry;
+            this.calculate(boundary, geometry, boundingBox, gridSize)
+                .then(cells => {
+                    boundary.cells = cells.toArray();
+                    boundary.geometry = geometry.toObject();
                     return onChange(boundary);
                 });
         });
@@ -57,25 +60,25 @@ class BoundaryDiscretizationMap extends React.Component {
             case 'point':
                 return (
                     <CircleMarker
-                        key={b.id}
+                        key={Geometry.fromObject(b.geometry).hash()}
                         center={[
                             b.geometry.coordinates[1],
                             b.geometry.coordinates[0]
                         ]}
-                        {...getStyle(b.type, b.metadata.well_type)}
+                        {...getStyle(b.type, b.wellType)}
                     />
                 );
             case 'linestring':
                 return (
                     <Polyline
-                        key={b.id}
+                        key={Geometry.fromObject(b.geometry).hash()}
                         positions={Geometry.fromObject(b.geometry).coordinatesLatLng}
                     />
                 );
             case 'polygon':
                 return (
                     <Polygon
-                        key={b.id}
+                        key={Geometry.fromObject(b.geometry).hash()}
                         positions={Geometry.fromObject(b.geometry).coordinatesLatLng}
                     />
                 );
@@ -120,7 +123,7 @@ class BoundaryDiscretizationMap extends React.Component {
     };
 
     modelGeometryLayer = () => {
-        const geometry = this.props.model.geometry;
+        const {geometry} = this.props.model;
         return (
             <GeoJSON
                 key={geometry.hash()}
@@ -131,11 +134,12 @@ class BoundaryDiscretizationMap extends React.Component {
     };
 
     activeCellsLayer = () => {
+        const {boundingBox, gridSize} = this.props.model;
         return (
             <ActiveCellsLayer
-                boundingBox={this.props.model.boundingBox}
-                gridSize={this.props.model.gridSize}
-                activeCells={this.props.boundary.cells}
+                boundingBox={boundingBox}
+                gridSize={gridSize}
+                cells={Cells.fromArray(this.props.boundary.cells)}
                 styles={getStyle('active_cells')}
             />
         )
@@ -150,15 +154,20 @@ class BoundaryDiscretizationMap extends React.Component {
             return null;
         }
 
-        const activeCells = this.props.boundary.cells;
+        const boundary = this.props.boundary;
+        const cells = Cells.fromArray(boundary.cells);
         const boundingBox = this.props.model.boundingBox;
         const gridSize = this.props.model.gridSize;
         const x = latlng.lng;
         const y = latlng.lat;
 
-        activeCells.toggle([x, y], boundingBox, gridSize).toArray();
-        const boundary = this.props.boundary;
-        boundary.cells = activeCells;
+        cells.toggle([x, y], boundingBox, gridSize);
+
+        if (boundary instanceof LineBoundary) {
+            cells.calculateValues(this.props.boundary, boundingBox, gridSize);
+        }
+
+        boundary.cells = cells.toArray();
         this.props.onChange(boundary);
     };
 

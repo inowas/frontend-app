@@ -79,7 +79,7 @@ class SoilmodelEditor extends React.Component {
 
         const base = SoilmodelZone.fromDefault();
         base.geometry = this.props.model.geometry;
-        base.activeCells = this.props.model.cells;
+        base.cells = this.props.model.cells;
         layer.zonesCollection.add(base);
 
         this.setState({isLoading: true});

@@ -75,6 +75,9 @@ export default class FlopyModflowMfrch extends FlopyModflowBoundary {
     }
 
     set rech(value) {
+        if (Array.isArray(value)) {
+            value = FlopyModflowBoundary.arrayToObject(value);
+        }
         this._rech = value;
     }
 

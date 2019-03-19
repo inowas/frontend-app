@@ -4,7 +4,7 @@ stages:
   - deploy
 
 test:
-  image: node:11
+  image: node:10
   stage: test
 
   script:
@@ -12,7 +12,7 @@ test:
     - CI=true yarn test --all --colors
 
 build:dev:
-  image: node:11
+  image: node:10
   stage: build
   
   script: 
@@ -52,7 +52,7 @@ deploy:dev:
     - dev    
 
 build:prod:
-  image: node:11
+  image: node:10
   stage: build
   
   script: 

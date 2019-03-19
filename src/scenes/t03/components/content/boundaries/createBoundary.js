@@ -78,7 +78,9 @@ class CreateBoundary extends React.Component {
 
         return sendCommand(ModflowModelCommand.addBoundary(model.id, boundary),
             () => {
-                this.props.updateBoundaries(this.props.boundaries.addBoundary(boundary));
+                const boundaries = this.props.boundaries;
+                boundaries.addBoundary(boundary);
+                this.props.updateBoundaries(boundaries);
                 this.props.history.push(`${baseUrl}/${id}/${property}/${'!'}/${boundary.id}`);
             },
             () => this.setState({isError: true})
@@ -162,6 +164,7 @@ CreateBoundary.proptypes = {
     model: PropTypes.instanceOf(ModflowModel).isRequired,
     soilmodel: PropTypes.instanceOf(Soilmodel).isRequired,
     stressperiods: PropTypes.instanceOf(Stressperiods).isRequired,
+    updateBoundaries: PropTypes.func.isRequired,
 };
 
 export default withRouter(connect(mapStateToProps, mapDispatchToProps)(CreateBoundary));

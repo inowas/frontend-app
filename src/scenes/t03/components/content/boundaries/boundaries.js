@@ -76,7 +76,9 @@ class Boundaries extends React.Component {
                 const clonedBoundary = BoundaryFactory.fromObject(boundary).clone();
                 sendCommand(ModflowModelCommand.addBoundary(model.id, clonedBoundary),
                     () => {
-                        this.props.updateBoundaries(this.props.boundaries.addBoundary(clonedBoundary));
+                        const boundaries = this.props.boundaries;
+                        boundaries.addBoundary(clonedBoundary);
+                        this.props.updateBoundaries(boundaries);
                         this.handleBoundaryListClick(clonedBoundary.id);
                     },
                     () => this.setState({error: true})
@@ -89,8 +91,10 @@ class Boundaries extends React.Component {
         const model = this.props.model;
         return sendCommand(ModflowModelCommand.removeBoundary(model.id, boundaryId),
             () => {
-                this.props.updateBoundaries(this.props.boundaries.removeById(boundaryId));
-                this.handleBoundaryListClick(this.props.boundaries.first.id);
+                const boundaries = this.props.boundaries;
+                boundaries.removeById(boundaryId);
+                this.props.updateBoundaries(boundaries);
+                this.handleBoundaryListClick(boundaries.first.id);
             },
             () => this.setState({error: true})
         )
@@ -103,7 +107,10 @@ class Boundaries extends React.Component {
             () => {
                 this.setState({isDirty: false});
                 this.fetchBoundary(model.id, boundary.id);
-                this.props.updateBoundaries(this.props.boundaries.update(boundary))
+
+                const boundaries = this.props.boundaries;
+                boundaries.update(boundary);
+                this.props.updateBoundaries(boundaries);
             },
             () => this.setState({error: true})
         )
@@ -162,9 +169,9 @@ class Boundaries extends React.Component {
 
 const mapStateToProps = state => {
     return {
-        model: ModflowModel.fromObject(state.T03.model),
         boundaries: BoundaryCollection.fromObject(state.T03.boundaries),
-        soilmodel: state.T03.soilmodel ? Soilmodel.fromObject(state.T03.soilmodel) : null
+        model: ModflowModel.fromObject(state.T03.model),
+        soilmodel: Soilmodel.fromObject(state.T03.soilmodel)
     };
 };
 
@@ -180,6 +187,8 @@ Boundaries.proptypes = {
     boundaries: PropTypes.instanceOf(BoundaryCollection).isRequired,
     model: PropTypes.instanceOf(ModflowModel).isRequired,
     soilmodel: PropTypes.instanceOf(Soilmodel).isRequired,
+    updateBoundaries: PropTypes.func.isRequired,
+    updateModel: PropTypes.func.isRequired
 };
 
 export default withRouter(connect(mapStateToProps, mapDispatchToProps)(Boundaries));

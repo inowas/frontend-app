@@ -112,6 +112,7 @@ class GridEditor extends React.Component {
                                     onChange={this.handleGridSizeChange}
                                     onBlur={this.handleGridSizeChange}
                                     width={'6'}
+                                    readOnly
                                 />
                                 <Form.Input
                                     type='number'
@@ -121,18 +122,21 @@ class GridEditor extends React.Component {
                                     onChange={this.handleGridSizeChange}
                                     onBlur={this.handleGridSizeChange}
                                     width={'6'}
+                                    readOnly
                                 />
                                 <Form.Input
                                     type='number'
                                     label='Cell height'
                                     value={Math.round(dyCell(boundingBox, gridSize) * 10000) / 10}
                                     width={'6'}
+                                    readOnly
                                 />
                                 <Form.Input
                                     type='number'
                                     label='Cell width'
                                     value={Math.round(dxCell(boundingBox, gridSize) * 10000) / 10}
                                     width={'6'}
+                                    readOnly
                                 />
                                 <Form.Select compact
                                              label='Length unit'

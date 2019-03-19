@@ -36,7 +36,10 @@ export default class FlopyModflowMfwel extends FlopyModflowBoundary {
             return null;
         }
 
-        let spData = new Array(nper).fill([]);
+        let spData = [];
+        for (let per = 0; per < nper; per++) {
+            spData[per] = [];
+        }
 
         spData.forEach((sp, idx) => {
             wells.forEach(well => {
@@ -75,6 +78,10 @@ export default class FlopyModflowMfwel extends FlopyModflowBoundary {
     }
 
     set stress_period_data(value) {
+        if (Array.isArray(value)) {
+            value = FlopyModflowBoundary.arrayToObject(value);
+        }
+
         this._stress_period_data = value;
     }
 

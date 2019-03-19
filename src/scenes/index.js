@@ -3,6 +3,8 @@ import Impressum from './impressum/Impressum';
 import LandingPage from './landingPage/LandingPage';
 import Login from './user/containers/Login';
 import Logout from './user/containers/Logout';
+import UserProfile from './user/containers/UserProfile';
+import UserCredentials from './user/containers/UserCredentials';
 import SignUp from './user/containers/SignUp';
 import {T01} from './t01/containers';
 import {T02} from './t02/containers';
@@ -25,6 +27,8 @@ export {
     LandingPage,
     Login,
     Logout,
+    UserCredentials,
+    UserProfile,
     SignUp,
     T01,
     T02,
