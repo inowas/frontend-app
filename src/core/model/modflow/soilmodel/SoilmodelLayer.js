@@ -302,11 +302,11 @@ class SoilmodelLayer {
                 if (zoneParameter.isActive) {
                     if (zone.priority === 0) {
                         // default zone parameter value is a number:
-                        if (zone.priority === 0 && !zoneParameter.isArray()) {
+                        if (!zoneParameter.isArray()) {
                             this[parameter] = new Array(gridSize.nY).fill(0).map(() => new Array(gridSize.nX).fill(zoneParameter.value));
                         }
                         // default zone parameter value is a raster:
-                        if (zone.priority === 0 && zoneParameter.isArray()) {
+                        if (zoneParameter.isArray()) {
                             this[parameter] = cloneDeep(zoneParameter.value);
                         }
                     }
