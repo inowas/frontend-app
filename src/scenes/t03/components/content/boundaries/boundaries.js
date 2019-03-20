@@ -120,7 +120,6 @@ class Boundaries extends React.Component {
         const {boundaries, model, soilmodel} = this.props;
         const readOnly = model.readOnly;
         const {error, isDirty, isLoading, selectedBoundary} = this.state;
-
         const {id, pid, property} = this.props.match.params;
 
         // If no boundary is selected, redirect to the first.

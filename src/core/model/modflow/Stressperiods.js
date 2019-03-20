@@ -52,6 +52,23 @@ class Stressperiods {
         return stressPeriods;
     }
 
+    static fromImport(obj) {
+        const stressperiods = new Stressperiods();
+        const startDateTime = moment.utc(obj.start_date_time);
+        const endDateTime = moment.utc(obj.end_date_time);
+        const timeUnit = obj.time_unit;
+
+        stressperiods.startDateTime = startDateTime;
+        stressperiods.endDateTime = endDateTime;
+        stressperiods.timeUnit = timeUnit;
+
+        obj.stressperiods.forEach(sp => {
+            stressperiods.addStressPeriod(new Stressperiod(sp.start_date_time, sp.nstp, sp.tsmult, sp.steady));
+        });
+
+        return stressperiods;
+    }
+
     static dateTimeFromTotim(startDateTime, totim, timeUnit) {
         switch (timeUnit) {
             case(4): {
@@ -111,12 +128,12 @@ class Stressperiods {
         return this._stressperiods.length;
     }
 
-    addStressPeriod(stressPeriod) {
-        if (!stressPeriod instanceof Stressperiod) {
+    addStressPeriod(stressperiod) {
+        if (!stressperiod instanceof Stressperiod) {
             throw new Error('Stressperiod expected to be instance of Stressperiod')
         }
 
-        this._stressperiods.push(stressPeriod);
+        this._stressperiods.push(stressperiod);
     }
 
     removeStressPeriod(id) {

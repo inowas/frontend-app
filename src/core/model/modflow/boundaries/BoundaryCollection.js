@@ -27,6 +27,16 @@ class BoundaryCollection extends AbstractCollection {
         return bc;
     }
 
+    static fromImport(i, boundingBox, gridSize) {
+        if (!Array.isArray(i)) {
+            throw new Error('Boundary-Import expected to be an Array.');
+        }
+
+        const bc = new BoundaryCollection();
+        i.forEach(b => bc.addBoundary(BoundaryFactory.fromImport(b, boundingBox, gridSize)));
+        return bc;
+    }
+
     addBoundary(boundary) {
         return this.add(boundary);
     }
