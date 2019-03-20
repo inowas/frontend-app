@@ -1,12 +1,11 @@
 import React, {Component} from 'react';
 import PropTypes from 'prop-types';
 import {uniqueId} from 'lodash';
-import {GeoJSON, Map, CircleMarker} from 'react-leaflet';
-import {Boundary, Geometry, LineBoundary} from 'core/model/modflow';
+import {GeoJSON, Map, CircleMarker, Polyline, Polygon} from 'react-leaflet';
+import {Boundary, BoundaryCollection, Geometry, LineBoundary} from 'core/model/modflow';
 import {BasicTileLayer} from 'services/geoTools/tileLayers';
 
 import {getStyle} from './index';
-
 
 
 const style = {
@@ -43,31 +42,74 @@ class BoundaryMap extends Component {
     }
 
     // noinspection JSMethodCanBeStatic
-    renderBoundaryGeometry(b) {
-        if (b.type === 'wel' || b.type === 'hob') {
-            return (
-                <CircleMarker
-                    key={b.id}
-                    center={[
-                        b.geometry.coordinates[1],
-                        b.geometry.coordinates[0]
-                    ]}
-                    {...getStyle(b.type, b.wellType)}
-                />
-            );
+    renderBoundaryGeometry(b, underlay = false) {
+        const geometryType = b.geometryType;
+
+        if (underlay) {
+            switch (geometryType.toLowerCase()) {
+                case 'point':
+                    return (
+                        <CircleMarker
+                            key={Geometry.fromObject(b.geometry).hash()}
+                            center={[
+                                b.geometry.coordinates[1],
+                                b.geometry.coordinates[0]
+                            ]}
+                            {...getStyle('underlay')}
+                        />
+                    );
+                case 'linestring':
+                    return (
+                        <Polyline
+                            key={Geometry.fromObject(b.geometry).hash()}
+                            positions={Geometry.fromObject(b.geometry).coordinatesLatLng}
+                            {...getStyle('underlay')}
+                        />
+                    );
+                default:
+                    return null;
+            }
         }
 
-        return (
-            <GeoJSON
-                key={Geometry.fromGeoJson(b.geometry).hash()}
-                data={b.geometry}
-                style={getStyle(b.type)}
-            />
-        );
+        switch (geometryType.toLowerCase()) {
+            case 'point':
+                return (
+                    <CircleMarker
+                        key={Geometry.fromObject(b.geometry).hash()}
+                        center={[
+                            b.geometry.coordinates[1],
+                            b.geometry.coordinates[0]
+                        ]}
+                        {...getStyle(b.type, b.wellType)}
+                    />
+                );
+            case 'linestring':
+                return (
+                    <Polyline
+                        key={Geometry.fromObject(b.geometry).hash()}
+                        positions={Geometry.fromObject(b.geometry).coordinatesLatLng}
+                    />
+                );
+            case 'polygon':
+                return (
+                    <Polygon
+                        key={Geometry.fromObject(b.geometry).hash()}
+                        positions={Geometry.fromObject(b.geometry).coordinatesLatLng}
+                    />
+                );
+            default:
+                return null;
+        }
+    }
+
+    renderOtherBoundaries(boundaries) {
+        return boundaries.boundaries
+            .filter(b => b.id !== this.props.boundary.id)
+            .map(b => this.renderBoundaryGeometry(b, true));
     }
 
     render() {
-        const {geometry, boundary} = this.props;
+        const {geometry, boundary, boundaries} = this.props;
 
         return (
             <Map
@@ -81,6 +123,7 @@ class BoundaryMap extends Component {
                     data={geometry.toGeoJSON()}
                     style={getStyle('area')}
                 />
+                {this.renderOtherBoundaries(boundaries)}
                 {this.renderBoundaryGeometry(boundary)}
                 {this.renderObservationPoints(boundary)}
             </Map>
@@ -90,6 +133,7 @@ class BoundaryMap extends Component {
 
 BoundaryMap.propTypes = {
     boundary: PropTypes.instanceOf(Boundary).isRequired,
+    boundaries: PropTypes.instanceOf(BoundaryCollection).isRequired,
     geometry: PropTypes.instanceOf(Geometry).isRequired,
     selectedObservationPointId: PropTypes.string,
 };

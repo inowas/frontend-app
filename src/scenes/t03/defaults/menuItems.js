@@ -74,3 +74,29 @@ const menuItems = [
 ];
 
 export default menuItems;
+
+export const enableProperty = (name, menuItems) => {
+    return menuItems.map(itemGroup => {
+        itemGroup = itemGroup.map(item => {
+            if (item.property === name) {
+                item.disabled = false;
+            }
+
+            return item;
+        });
+        return itemGroup;
+    })
+};
+
+export const disableProperty = (name, menuItems) => {
+    return menuItems.map(itemGroup => {
+        itemGroup = itemGroup.map(item => {
+            if (item.property === name) {
+                item.disabled = true;
+            }
+
+            return item;
+        });
+        return itemGroup;
+    })
+};

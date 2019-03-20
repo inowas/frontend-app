@@ -13,26 +13,53 @@ class Results extends React.Component {
 
     constructor(props) {
         super(props);
-        const {model, calculation} = this.props;
+        const {model} = this.props;
         const {gridSize} = model;
 
-        const totalTimes = calculation.times.total_times;
 
         this.state = {
             isLoading: false,
             selectedLay: 0,
             selectedRow: Math.floor(gridSize.nY / 2),
             selectedCol: Math.floor(gridSize.nX / 2),
-            selectedTotim: totalTimes.slice(-1)[0],
+            selectedTotim: 0,
             selectedType: 'head',
-            layerValues: calculation.layer_values,
-            totalTimes,
+            layerValues: null,
+            totalTimes: null,
             fetching: false,
             activeIndex: 0
+        };
+
+        if (props.calculation instanceof Calculation) {
+            const totalTimes = props.calculation.times.total_times;
+            this.state.layerValues = props.calculation.layer_values;
+            this.state.selectedTotim = totalTimes.slice(-1)[0];
+            this.state.totalTimes = totalTimes;
+        }
+    }
+
+    componentWillReceiveProps(nextProps, nextContext) {
+        if (!(nextProps.calculation instanceof Calculation)) {
+            return null;
+        }
+
+        if (!this.state.totalTimes) {
+            const {calculation} = nextProps;
+            const totalTimes = calculation.times.total_times;
+
+            return this.setState({
+                layerValues: calculation.layer_values,
+                selectedTotim: totalTimes.slice(-1)[0],
+                totalTimes
+            })
         }
     }
 
     componentDidMount() {
+        if (!(this.props.calculation instanceof Calculation)) {
+            return null;
+        }
+
         this.fetchData({
             layer: this.state.selectedLay,
             totim: this.state.selectedTotim,
@@ -71,7 +98,14 @@ class Results extends React.Component {
         const {calculation} = this.props;
 
         if (!(calculation instanceof Calculation)) {
-            return null;
+            return (
+                <Segment color={'grey'} loading={this.state.isLoading}>
+                    <Header as={'h2'}>
+                        No result data found. <br/>
+                        Have you started the calculation?
+                    </Header>
+                </Segment>
+            )
         }
 
 
@@ -160,7 +194,7 @@ class Results extends React.Component {
 const mapStateToProps = state => {
     return {
         boundaries: BoundaryCollection.fromObject(state.T03.boundaries),
-        calculation: Calculation.fromObject(state.T03.calculation),
+        calculation: state.T03.calculation ? Calculation.fromObject(state.T03.calculation) : null,
         model: ModflowModel.fromObject(state.T03.model),
         soilmodel: Soilmodel.fromObject(state.T03.soilmodel)
     };

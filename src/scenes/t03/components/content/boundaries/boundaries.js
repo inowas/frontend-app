@@ -153,6 +153,7 @@ class Boundaries extends React.Component {
                             {!isLoading &&
                             <BoundaryDetails
                                 boundary={boundary}
+                                boundaries={boundaries}
                                 model={model}
                                 soilmodel={soilmodel}
                                 onChange={this.onChangeBoundary}

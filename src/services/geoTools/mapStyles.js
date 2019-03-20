@@ -7,9 +7,9 @@ const styles = {
     },
     area: {
         weight: 2,
-        opacity: 0.7,
+        opacity: 1,
         color: '#1D7FED',
-        fill: '#1D7FED',
+        fill: false,
         dashArray: '5,3'
     },
     bounding_box: {
@@ -62,42 +62,42 @@ const styles = {
     },
     wel: {
         cw: {
-            radius: 4,
+            radius: 5,
             color: 'black',
             weight: 2,
             fillColor: '#4CAF53',
             fillOpacity: 0.7
         },
         puw: {
-            radius: 4,
+            radius: 5,
             color: 'black',
             weight: 2,
             fillColor: '#0288D1',
             fillOpacity: 0.7
         },
         iw: {
-            radius: 4,
+            radius: 5,
             color: 'black',
             weight: 2,
             fillColor: '#1D7FED',
             fillOpacity: 0.7
         },
         inw: {
-            radius: 4,
+            radius: 5,
             color: 'black',
             weight: 2,
             fillColor: '#FBBD08',
             fillOpacity: 0.7
         },
         irw: {
-            radius: 4,
+            radius: 5,
             color: 'black',
             weight: 2,
             fillColor: '#4CAF53',
             fillOpacity: 0.7
         },
         opw: {
-            radius: 4,
+            radius: 5,
             color: '#D50E00',
             weight: 2,
             fillColor: '#FF5B4D',
@@ -118,7 +118,7 @@ const styles = {
             fillOpacity: 0.7
         },
         prw: {
-            radius: 3,
+            radius: 5,
             color: 'black',
             weight: 1,
             fillColor: '#0288D1',
@@ -176,6 +176,15 @@ const styles = {
         weight: 1,
         fillColor: '#D50E00',
         fillOpacity: 1
+    },
+    underlay: {
+        radius: 5,
+        weight: 2,
+        opacity: 1,
+        color: '#787677',
+        dashArray: '1',
+        fillColor: '#ede5ec',
+        fillOpacity: 0
     },
     default: {
         radius: 5,
