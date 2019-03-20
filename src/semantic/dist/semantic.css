@@ -24219,7 +24219,7 @@ input[readonly="readonly"]:focus {
 ---------------*/
 
 .ui.menu .active.item {
-  background: #EEF5F8;
+  background: #E5F0F5;
   color: rgba(0, 0, 0, 0.95);
   font-weight: normal;
   -webkit-box-shadow: none;
@@ -24380,7 +24380,7 @@ Floated Menu / Item
 /* Vertical Active */
 
 .ui.vertical.menu .active.item {
-  background: #EEF5F8;
+  background: #E5F0F5;
   border-radius: 0em;
   -webkit-box-shadow: none;
   box-shadow: none;

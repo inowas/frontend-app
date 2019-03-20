@@ -1,6 +1,6 @@
 import moment from 'moment/moment';
 import Stressperiod from './Stressperiod';
-import {cloneDeep, orderBy} from 'lodash';
+import {cloneDeep} from 'lodash';
 import {TimeUnit} from './index';
 
 class Stressperiods {

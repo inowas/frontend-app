@@ -37,21 +37,21 @@ let currentChart;
 const renderLabels = (xe, xi, L, data, xwd) => {
     if (xe < xi) {
         return (
-            <Segment raised inverted color='orange' tertiary style={styles.diagramErrorLabel}>
+            <Segment inverted color='orange' secondary style={styles.diagramErrorLabel}>
                 <p>Arrival location, x<sub>e</sub>, can not be smaller than initial position, x<sub>i</sub>.</p>
             </Segment>
         );
     }
     if (xe > L + Math.abs(xwd)) {
         return (
-            <Segment raised inverted color='orange' tertiary style={styles.diagramErrorLabel}>
+            <Segment inverted color='orange' secondary style={styles.diagramErrorLabel}>
                 <p>Arrival location, x<sub>e</sub>, can not be bigger than L<sup>'</sup>+|xwd|.</p>
             </Segment>
         );
     }
     if (xi > L) {
         return (
-            <Segment raised inverted color='orange' tertiary style={styles.diagramErrorLabel}>
+            <Segment inverted color='orange' secondary style={styles.diagramErrorLabel}>
                 <p>Initial location, x<sub>i</sub>, can not be bigger than the Aquifer length, L<sup>'</sup>.</p>
             </Segment>
         );
@@ -91,9 +91,7 @@ const styles = {
     diagramErrorLabel: {
         position: 'absolute',
         top: '60px',
-        left: '200px',
-        background: '#EFF3F6',
-        opacity: 0.9
+        left: '200px'
     }
 };
 

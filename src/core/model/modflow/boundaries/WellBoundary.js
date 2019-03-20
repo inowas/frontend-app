@@ -158,7 +158,7 @@ export default class WellBoundary extends Boundary {
             {
                 name: 'Pumping rate',
                 description: 'Pumping rate of the well, positive values = infiltration',
-                unit: 'm3/day',
+                unit: 'm³/day',
                 decimals: 1,
                 default: 0
             },

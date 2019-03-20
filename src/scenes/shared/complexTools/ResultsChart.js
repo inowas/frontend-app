@@ -71,8 +71,15 @@ const ResultsChart = ({data = null, selectedModels = null, globalMinMax = null, 
         return (
             <ResponsiveContainer aspect={1.5}>
                 <AreaChart data={processedData}>
-                    <XAxis dataKey="name" domain={['dataMin', 'dataMax']}/>
-                    <YAxis domain={[minData, maxData]}/>
+                    <XAxis
+                        dataKey="name"
+                        domain={['dataMin', 'dataMax']}
+                        label={{value: 'X-Axis Label', position: 'insideBottom', offset: -10, fill: '#4C4C4C', fontSize: '13px'}}
+                    />
+                    <YAxis
+                        domain={[minData, maxData]}
+                        label={{value: 'Y-Axis Label', position: 'insideLeft', angle: -90, fill: '#4C4C4C', fontSize: '13px'}}
+                    />
                     <CartesianGrid strokeDasharray="3 3"/>
                     <Tooltip
                         content={e => renderTooltip(e, show)}
