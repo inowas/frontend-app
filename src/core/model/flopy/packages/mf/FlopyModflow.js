@@ -185,7 +185,7 @@ export default class FlopyModflow {
         this.removePackageIfExists(mfRch);
         spData = FlopyModflowMfrch.calculateSpData(boundaries.all, nper, nrow, ncol);
         if (spData) {
-            mfRch.rech = spData;
+            mfRch.stress_period_data = spData;
             this.setPackage(mfRch);
         }
 

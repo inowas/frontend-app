@@ -4,7 +4,7 @@ import {RechargeBoundary} from '../../../modflow/boundaries';
 /*
 https://modflowpy.github.io/flopydoc/mfrch.html
 
-rech = {
+stress_period_data = {
     0: 0.001,
     1: 0.002,
     4: 0.004
@@ -14,7 +14,7 @@ export default class FlopyModflowMfrch extends FlopyModflowBoundary {
 
     _nrchop = 3;
     _ipakcb = null;
-    _rech = 0.001;
+    _stress_period_data = 0.001;
     _irch = 0;
     _extension = 'rch';
     _unitnumber = null;
@@ -70,15 +70,15 @@ export default class FlopyModflowMfrch extends FlopyModflowBoundary {
         this._ipakcb = value;
     }
 
-    get rech() {
-        return this._rech;
+    get stress_period_data() {
+        return this._stress_period_data;
     }
 
-    set rech(value) {
+    set stress_period_data(value) {
         if (Array.isArray(value)) {
             value = FlopyModflowBoundary.arrayToObject(value);
         }
-        this._rech = value;
+        this._stress_period_data = value;
     }
 
     get irch() {

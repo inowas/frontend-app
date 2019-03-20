@@ -53,8 +53,34 @@ class BoundaryDiscretizationMap extends React.Component {
     };
 
     // noinspection JSMethodCanBeStatic
-    renderBoundaryGeometry(b) {
+    renderBoundaryGeometry(b, underlay = false) {
         const geometryType = b.geometryType;
+
+        if (underlay) {
+            switch (geometryType.toLowerCase()) {
+                case 'point':
+                    return (
+                        <CircleMarker
+                            key={Geometry.fromObject(b.geometry).hash()}
+                            center={[
+                                b.geometry.coordinates[1],
+                                b.geometry.coordinates[0]
+                            ]}
+                            {...getStyle('underlay')}
+                        />
+                    );
+                case 'linestring':
+                    return (
+                        <Polyline
+                            key={Geometry.fromObject(b.geometry).hash()}
+                            positions={Geometry.fromObject(b.geometry).coordinatesLatLng}
+                            {...getStyle('underlay')}
+                        />
+                    );
+                default:
+                    return null;
+            }
+        }
 
         switch (geometryType.toLowerCase()) {
             case 'point':
@@ -85,6 +111,12 @@ class BoundaryDiscretizationMap extends React.Component {
             default:
                 return null;
         }
+    }
+
+    renderOtherBoundaries(boundaries) {
+        return boundaries.boundaries
+            .filter(b => b.id !== this.props.boundary.id)
+            .map(b => this.renderBoundaryGeometry(b, true));
     }
 
     showBoundaryGeometry = () => {
@@ -179,6 +211,7 @@ class BoundaryDiscretizationMap extends React.Component {
                 onClick={!this.props.readOnly && this.handleClickOnMap}
             >
                 <BasicTileLayer/>
+                {this.renderOtherBoundaries(this.props.boundaries)}
                 {this.props.showBoundaryGeometry && this.showBoundaryGeometry()}
                 {this.modelGeometryLayer()}
                 {this.props.showActiveCells && this.activeCellsLayer()}
@@ -190,7 +223,7 @@ class BoundaryDiscretizationMap extends React.Component {
 BoundaryDiscretizationMap.proptypes = {
     model: PropTypes.instanceOf(ModflowModel).isRequired,
     boundary: PropTypes.instanceOf(Boundary).isRequired,
-    boundaries: PropTypes.instanceOf(BoundaryCollection),
+    boundaries: PropTypes.instanceOf(BoundaryCollection).isRequired,
     onChange: PropTypes.func.isRequired,
     readOnly: PropTypes.bool.isRequired,
     showActiveCells: PropTypes.bool.isRequired,

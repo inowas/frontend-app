@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import {Button, Form, Modal, Segment, Menu, Icon} from 'semantic-ui-react';
-import {Boundary, BoundaryFactory, ModflowModel} from 'core/model/modflow';
+import {Boundary, BoundaryCollection, BoundaryFactory, ModflowModel} from 'core/model/modflow';
 import BoundaryDiscretizationMap from '../../maps/boundaryDiscretizationMap';
 
 class BoundaryGeometryEditor extends React.Component {
@@ -29,7 +29,7 @@ class BoundaryGeometryEditor extends React.Component {
     handleItemClick = (e, {name}) => this.setState({activeItem: name});
 
     render() {
-        const {model, onCancel, onChange, readOnly} = this.props;
+        const {boundaries, model, onCancel, onChange, readOnly} = this.props;
         const {activeItem} = this.state;
         const boundary = BoundaryFactory.fromObject(this.state.boundary);
 
@@ -73,6 +73,7 @@ class BoundaryGeometryEditor extends React.Component {
                         {activeItem === 'geometry' && <BoundaryDiscretizationMap
                             model={model}
                             boundary={boundary}
+                            boundaries={boundaries}
                             onChange={onChange}
                             readOnly={readOnly}
                             showBoundaryGeometry={true}
@@ -81,6 +82,7 @@ class BoundaryGeometryEditor extends React.Component {
                         {activeItem === 'affected cells' && <BoundaryDiscretizationMap
                             model={model}
                             boundary={boundary}
+                            boundaries={boundaries}
                             onChange={onChange}
                             readOnly={readOnly}
                             showBoundaryGeometry={true}
@@ -103,6 +105,7 @@ class BoundaryGeometryEditor extends React.Component {
 
 BoundaryGeometryEditor.propTypes = {
     boundary: PropTypes.instanceOf(Boundary).isRequired,
+    boundaries: PropTypes.instanceOf(BoundaryCollection).isRequired,
     model: PropTypes.instanceOf(ModflowModel).isRequired,
     onCancel: PropTypes.func.isRequired,
     onChange: PropTypes.func.isRequired,
