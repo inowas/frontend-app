@@ -9,6 +9,10 @@ class GridSize {
         return new GridSize(nX, nY);
     }
 
+    static fromArray([nX, nY]) {
+        return new GridSize(nX, nY);
+    }
+
     static fromObject({n_x, n_y}) {
         return new GridSize(n_x, n_y);
     }

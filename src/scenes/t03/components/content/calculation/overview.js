@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 
 import {Calculation, ModflowModel, Soilmodel} from 'core/model/modflow';
-import {Button, Grid, Header, List, Segment} from 'semantic-ui-react';
+import {Button, Grid, Header, Segment} from 'semantic-ui-react';
 import RunModelOverviewMap from '../../maps/runModelOverviewMap';
 import {connect} from 'react-redux';
 import CalculationStatus, {CALCULATION_STATE_NEW} from './CalculationStatus';
@@ -11,6 +11,7 @@ import {updateCalculation, updatePackages} from '../../../actions/actions';
 import FlopyPackages from 'core/model/flopy/packages/FlopyPackages';
 import ModflowModelCommand from '../../../commands/modflowModelCommand';
 import {BoundaryCollection} from 'core/model/modflow/boundaries';
+import Terminal from '../../../../shared/complexTools/Terminal';
 
 class Overview extends React.Component {
 
@@ -20,7 +21,9 @@ class Overview extends React.Component {
         this.state = {
             canBeCalculated: true,
             canBeCanceled: false,
-            sending: false
+            sending: false,
+            file: null,
+            fetchingFile: false
         };
     }
 
@@ -43,8 +46,8 @@ class Overview extends React.Component {
         );
     };
 
-    calculationButton = canBeCalculated => {
-        const {sendingCommand} = this.state;
+    renderCalculationButton = canBeCalculated => {
+        const {sending} = this.state;
 
         if (canBeCalculated) {
             return (
@@ -52,7 +55,7 @@ class Overview extends React.Component {
                     positive
                     fluid
                     onClick={this.onStartCalculationClick}
-                    loading={sendingCommand}
+                    loading={sending}
                 >
                     Calculate
                 </Button>
@@ -70,6 +73,60 @@ class Overview extends React.Component {
         )
     };
 
+    renderCalculationProgress = calculation => {
+        const {packages, model} = this.props;
+        const {calculationId} = model;
+
+        let showProgress = false;
+
+        if (calculation instanceof Calculation) {
+            if (calculation.state > 0 && calculation.state < 100) {
+                showProgress = true;
+            }
+        }
+
+        if (calculationId === packages.calculation_id) {
+            showProgress = true;
+        }
+
+        if (showProgress) {
+            return (
+                <div style={{marginTop: 20}}>
+                    <Header as={'h3'}>Progress</Header>
+                    <Segment>
+                        {calculation && <CalculationStatus calculation={calculation}/>}
+                    </Segment>
+                </div>
+            )
+        }
+
+        return null;
+    };
+
+    renderMapOrLog = calculation => {
+        const {packages, model} = this.props;
+        const {calculationId} = model;
+
+        if (calculationId === packages.calculation_id && calculation && calculation.state >= 200) {
+            return (
+                <div>
+                    <Header as={'h3'}>Log</Header>
+                    <Segment color={'black'} loading={this.state.fetchingFile}>
+                        <Terminal content={calculation.message} styles={{fontSize: 8}}/>
+                    </Segment>
+                </div>
+            )
+        }
+
+        return (
+            <div>
+                <Header as={'h3'}>Map</Header>
+                <Segment color={'red'}>
+                    <RunModelOverviewMap model={model}/>
+                </Segment>
+            </div>
+        )
+    };
 
     render() {
         const {model, calculation, packages} = this.props;
@@ -80,8 +137,6 @@ class Overview extends React.Component {
         }
 
         let canBeCalculated = true;
-
-
         if (calculation instanceof Calculation) {
             if (calculation.state > 0 && calculation.state < 100) {
                 canBeCalculated = false;
@@ -96,27 +151,13 @@ class Overview extends React.Component {
             <Grid padded>
                 <Grid.Row>
                     <Grid.Column width={6}>
-                        <Header as={'h3'}>Overview</Header>
-                        <Segment color={'green'}>
-                            <List>
-                                <List.Item icon='users' content={model.name}/>
-                                <List.Item icon='marker' content={'...'}/>
-                                <List.Item icon='mail' content={'...'}/>
-                                <List.Item icon='linkify' content={'...'}/>
-                            </List>
-                        </Segment>
                         <Header as={'h3'}>Calculation</Header>
-                        <Segment>
-                            {this.calculationButton(canBeCalculated)}
-                            <Header as={'h3'}>Progress</Header>
-                            {calculation && <CalculationStatus calculation={calculation}/>}
-                        </Segment>
+                        {this.renderCalculationButton(canBeCalculated)}
+                        {this.renderCalculationProgress(calculation)}
+
                     </Grid.Column>
                     <Grid.Column width={10}>
-                        <Header as={'h3'}>Map</Header>
-                        <Segment color={'red'}>
-                            <RunModelOverviewMap model={model}/>
-                        </Segment>
+                        {this.renderMapOrLog(calculation)}
                     </Grid.Column>
                 </Grid.Row>
                 <Grid.Row>

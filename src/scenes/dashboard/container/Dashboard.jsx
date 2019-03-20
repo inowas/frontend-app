@@ -15,6 +15,7 @@ import ToolsDataTable from '../components/ToolsDataTable';
 import {fetchUrl, sendCommand} from 'services/api';
 
 import uuid from 'uuid';
+import ModflowModelImport from '../components/ModflowModelImport';
 
 
 const styles = {
@@ -46,7 +47,8 @@ class Dashboard extends React.Component {
         hoveredInstance: null,
         isLoading: true,
         toolInstances: [],
-        error: false
+        error: false,
+        import: false
     };
 
     componentDidMount() {
@@ -110,6 +112,17 @@ class Dashboard extends React.Component {
         )
     };
 
+    renderImportOrSearch = (tool) => {
+        if (tool.slug === 'T03') {
+            return (
+                <ModflowModelImport />
+            )
+        }
+
+        return (
+            <Search/>
+        )
+    };
 
     render() {
         const {activeTool, roles, history, showPublicInstances} = this.props;
@@ -137,14 +150,14 @@ class Dashboard extends React.Component {
                                 </Grid.Row>
                                 <Grid.Row columns={3}>
                                     <Grid.Column width={4} floated='left' textAlign='center'>
-                                        <Button content='Add new' positive icon='plus' labelPosition='left' fluid
+                                        <Button content='Create new' positive icon='plus' labelPosition='left' fluid
                                                 style={styles.iconFix}
                                                 onClick={() => push(activeTool.path + activeTool.slug)}
                                         >
                                         </Button>
                                     </Grid.Column>
-                                    <Grid.Column width={6}>
-                                        <Search/>
+                                    <Grid.Column width={4}>
+                                        {this.renderImportOrSearch(activeTool)}
                                     </Grid.Column>
                                     <Grid.Column width={4} floated='right' textAlign='right'>
                                         <Button.Group fluid size='tiny'>

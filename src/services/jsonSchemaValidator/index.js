@@ -2,12 +2,6 @@ import Ajv from 'ajv';
 import ajv0 from 'ajv/lib/refs/json-schema-draft-04';
 import jsrp from 'json-schema-ref-parser'
 
-export const getValidator = () => {
-    const ajv = new Ajv({schemaId: 'auto'});
-    ajv.addMetaSchema(ajv0);
-    return ajv;
-};
-
 export const validate = (data, schema) => {
     return new Promise((resolve) => {
         if (!schema) {

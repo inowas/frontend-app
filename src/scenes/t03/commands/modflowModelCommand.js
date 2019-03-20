@@ -56,6 +56,11 @@ class ModflowModelCommand extends AbstractCommand {
         return new ModflowModelCommand(name, {id}, JSON_SCHEMA_URL + 'commands/' + name);
     }
 
+    static importModflowModel(payload) {
+        const name = 'importModflowModel';
+        return new ModflowModelCommand(name, payload, JSON_SCHEMA_URL + 'commands/' + name);
+    }
+
     static removeLayer(payload) {
         const name = 'removeLayer';
         return new ModflowModelCommand(name, payload, JSON_SCHEMA_URL + 'commands/' + name);
