@@ -50,7 +50,7 @@ class BoundaryMap extends Component {
                 case 'point':
                     return (
                         <CircleMarker
-                            key={Geometry.fromObject(b.geometry).hash()}
+                            key={uniqueId(Geometry.fromObject(b.geometry).hash())}
                             center={[
                                 b.geometry.coordinates[1],
                                 b.geometry.coordinates[0]
@@ -62,7 +62,7 @@ class BoundaryMap extends Component {
                 case 'linestring':
                     return (
                         <Polyline
-                            key={Geometry.fromObject(b.geometry).hash()}
+                            key={uniqueId(Geometry.fromObject(b.geometry).hash())}
                             positions={Geometry.fromObject(b.geometry).coordinatesLatLng}
                             {...getStyle('underlay')}
                             onClick={() => this.props.onClick(b.id)}
@@ -77,7 +77,7 @@ class BoundaryMap extends Component {
             case 'point':
                 return (
                     <CircleMarker
-                        key={Geometry.fromObject(b.geometry).hash()}
+                        key={uniqueId(Geometry.fromObject(b.geometry).hash())}
                         center={[
                             b.geometry.coordinates[1],
                             b.geometry.coordinates[0]
@@ -88,14 +88,14 @@ class BoundaryMap extends Component {
             case 'linestring':
                 return (
                     <Polyline
-                        key={Geometry.fromObject(b.geometry).hash()}
+                        key={uniqueId(Geometry.fromObject(b.geometry).hash())}
                         positions={Geometry.fromObject(b.geometry).coordinatesLatLng}
                     />
                 );
             case 'polygon':
                 return (
                     <Polygon
-                        key={Geometry.fromObject(b.geometry).hash()}
+                        key={uniqueId(Geometry.fromObject(b.geometry).hash())}
                         positions={Geometry.fromObject(b.geometry).coordinatesLatLng}
                     />
                 );
