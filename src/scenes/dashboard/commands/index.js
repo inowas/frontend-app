@@ -18,7 +18,7 @@ export const cloneToolInstance = (tool, id, newId) => {
         case 'T03':
             return (ModflowModelCommand.cloneModflowModel({id, newId, isTool: true}));
         case 'T07':
-            return (ScenarioAnalysisCommand.cloneScenarioAnalysis({id, newId}));
+            return ScenarioAnalysisCommand.cloneScenarioAnalysis({id, newId});
         default:
             return (SimpleToolCommand.cloneToolInstance({id, newId}));
     }
