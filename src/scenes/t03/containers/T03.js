@@ -50,6 +50,7 @@ class T03 extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
+            model: props.model ? props.model.toObject() : null,
             menuItems: menuItems,
             error: false,
             isLoading: false,
@@ -242,19 +243,18 @@ class T03 extends React.Component {
         }
     }
 
-    onChangeMetaData = (metaData) => {
-        const model = this.props.model;
-        model.name = metaData.name;
-        model.description = metaData.description;
-        model.public = metaData.public;
-        model.isDirty = true;
-        this.props.updateModel(model);
-    };
+    saveMetaData = tool => {
+        const {name, description} = tool;
+        const isPublic = tool.public;
 
-    saveMetaData = () => {
-        const {id, name, description, isPublic} = this.props.model;
+        const {model} = this.props;
+        model.name = name;
+        model.description = description;
+        model.public = isPublic;
+
         return sendCommand(
-            ModflowModelCommand.updateModflowModelMetadata(id, name, description, isPublic),
+            ModflowModelCommand.updateModflowModelMetadata(model.id, name, description, isPublic),
+            () => this.props.updateModel(model),
             (e) => this.setState({error: e})
         );
     };
@@ -300,7 +300,7 @@ class T03 extends React.Component {
             <AppContainer navbarItems={navigation}>
                 <ToolMetaData
                     isDirty={false}
-                    onChange={this.onChangeMetaData}
+                    onChange={() => {}}
                     readOnly={false}
                     tool={{
                         tool: 'T03',

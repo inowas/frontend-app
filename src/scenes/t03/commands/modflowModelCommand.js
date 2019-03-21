@@ -82,11 +82,11 @@ class ModflowModelCommand extends AbstractCommand {
         );
     }
 
-    static updateModflowModelMetadata(id, name, description, isPubic) {
+    static updateModflowModelMetadata(id, name, description, isPublic) {
         const commandName = 'updateModflowModelMetadata';
         return new ModflowModelCommand(
             commandName,
-            {id, name, description, public: isPubic},
+            {id, name, description, public: isPublic},
             JSON_SCHEMA_URL + 'commands/' + commandName);
     }
 
