@@ -185,7 +185,7 @@ export default class FlopyModflow {
         this.removePackageIfExists(mfRch);
         spData = FlopyModflowMfrch.calculateSpData(boundaries.all, nper, nrow, ncol);
         if (spData) {
-            mfRch.rech = spData;
+            mfRch.stress_period_data = spData;
             this.setPackage(mfRch);
         }
 
@@ -247,7 +247,7 @@ export default class FlopyModflow {
 
         const spData = [];
         for (let per = 0; per < nper; per++) {
-            spData.push([[per, 0], ['save head', 'save drawdown', 'save budget']]);
+            spData.push([[per, 0], ['save head', 'save drawdown']]);
         }
 
         const mfOc = FlopyModflowMfoc.create();

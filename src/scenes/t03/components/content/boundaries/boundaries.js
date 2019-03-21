@@ -53,7 +53,7 @@ class Boundaries extends React.Component {
         });
     };
 
-    handleBoundaryListClick = (bid) => {
+    handleBoundaryClick = (bid) => {
         const {id, property} = this.props.match.params;
         this.props.history.push(`${baseUrl}/${id}/${property}/${'!'}/${bid}`);
     };
@@ -79,7 +79,7 @@ class Boundaries extends React.Component {
                         const boundaries = this.props.boundaries;
                         boundaries.addBoundary(clonedBoundary);
                         this.props.updateBoundaries(boundaries);
-                        this.handleBoundaryListClick(clonedBoundary.id);
+                        this.handleBoundaryClick(clonedBoundary.id);
                     },
                     () => this.setState({error: true})
                 )
@@ -94,7 +94,7 @@ class Boundaries extends React.Component {
                 const boundaries = this.props.boundaries;
                 boundaries.removeById(boundaryId);
                 this.props.updateBoundaries(boundaries);
-                this.handleBoundaryListClick(boundaries.first.id);
+                this.handleBoundaryClick(boundaries.first.id);
             },
             () => this.setState({error: true})
         )
@@ -137,7 +137,7 @@ class Boundaries extends React.Component {
                             <BoundaryList
                                 boundaries={boundaries}
                                 onAdd={this.onAdd}
-                                onClick={this.handleBoundaryListClick}
+                                onClick={this.handleBoundaryClick}
                                 onClone={this.onClone}
                                 onRemove={this.onRemove}
                                 selected={pid}
@@ -153,8 +153,10 @@ class Boundaries extends React.Component {
                             {!isLoading &&
                             <BoundaryDetails
                                 boundary={boundary}
+                                boundaries={boundaries}
                                 model={model}
                                 soilmodel={soilmodel}
+                                onClick={this.handleBoundaryClick}
                                 onChange={this.onChangeBoundary}
                                 readOnly={readOnly}
                             />}

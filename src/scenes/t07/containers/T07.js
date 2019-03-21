@@ -1,4 +1,5 @@
 import React from 'react';
+import Uuid from 'uuid';
 import {connect} from 'react-redux';
 import {Redirect, withRouter} from 'react-router-dom';
 import PropTypes from 'prop-types';
@@ -6,7 +7,7 @@ import PropTypes from 'prop-types';
 import AppContainer from '../../shared/AppContainer';
 import {Button, Grid, Header, Icon, Message, Popup, Segment} from 'semantic-ui-react';
 import ToolMetaData from '../../shared/simpleTools/ToolMetaData';
-import {fetchUrl, sendCommand} from 'services/api';
+import {fetchCalculationDetails, fetchUrl, sendCommand} from 'services/api';
 
 import * as Content from '../components';
 
@@ -15,9 +16,11 @@ import {
 } from '../actions/actions';
 
 import {ScenarioAnalysis} from 'core/model/scenarioAnalysis';
-import {BoundaryCollection, CalculationResults, ModflowModel, Soilmodel} from 'core/model/modflow';
+import {BoundaryCollection, Calculation, ModflowModel, Soilmodel} from 'core/model/modflow';
 import ToolNavigation from '../../shared/complexTools/toolNavigation';
 import {cloneDeep} from 'lodash';
+import SimpleToolsCommand from '../../shared/simpleTools/commands/SimpleToolsCommand';
+import ScenarioAnalysisCommand from '../commands/scenarioAnalysisCommand';
 
 const styles = {
     modelitem: {
@@ -33,32 +36,42 @@ const navigation = [
     }
 ];
 
-const menuItems = [
-    {
-        name: 'Cross Section',
-        property: 'crosssection',
-        icon: <Icon name="calendar alternate outline"/>
-    },
-    {
-        name: 'Head Difference',
-        property: 'difference',
-        icon: <Icon name="expand"/>
-    },
-    // {
-    //     name: 'Time Series',
-    //     property: 'timeseries',
-    //     icon: <Icon name="map marker alternate"/>
-    // }
-];
+const menuItems = [{
+    header: '',
+    items: [
+        {
+            name: 'Cross Section',
+            property: 'crosssection',
+            icon: <Icon name="calendar alternate outline"/>
+        },
+        {
+            name: 'Head Difference',
+            property: 'difference',
+            icon: <Icon name="expand"/>,
+            disabled: true
+        },
+        {
+            name: 'Time Series',
+            property: 'timeseries',
+            icon: <Icon name="map marker alternate"/>,
+            disabled: true
+        }
+    ]
+}];
 
 class T07 extends React.Component {
 
     constructor(props) {
         super(props);
         this.state = {
+            scenarioAnalysis: null,
+            models: [],
+            boundaries: [],
+            calculations: [],
+            soilmodels: [],
+            selected: [],
             error: false,
-            isLoading: false,
-            selected: []
+            isLoading: false
         }
     }
 
@@ -69,20 +82,6 @@ class T07 extends React.Component {
         )
     };
 
-    componentWillReceiveProps(nextProps, nextContext) {
-        const {id} = nextProps.match.params;
-        if (!this.props.scenarioAnalysis || this.props.scenarioAnalysis.id !== id) {
-            if (!this.state.isLoading) {
-                return this.setState({isLoading: true},
-                    () => this.fetchScenarioAnalysis(id)
-                )
-            }
-        }
-
-        this.setState({
-            model: nextProps.model
-        })
-    }
 
     fetchScenarioAnalysis(id) {
         if (this.props.scenarioAnalysis && this.props.scenarioAnalysis.id !== id) {
@@ -90,27 +89,16 @@ class T07 extends React.Component {
         }
 
         fetchUrl(
-            `scenarioanalyses/${id}`,
+            `tools/T07/${id}`,
             data => {
                 const scenarioAnalysis = ScenarioAnalysis.fromQuery(data);
-                this.props.updateScenarioAnalysis(scenarioAnalysis);
                 this.setState({
-                    isLoading: false,
-                    selected: [scenarioAnalysis.baseModel.id]
+                    isLoading: true,
+                    scenarioAnalysis: scenarioAnalysis.toObject(),
+                    selected: [scenarioAnalysis.basemodelId]
                 }, () => {
-
-                    // Fetch soilmodel, stressperiods and results from basemodel
-                    this.fetchResults(scenarioAnalysis.baseModel.id);
-                    this.fetchSoilmodel(scenarioAnalysis.baseModel.id);
-                    this.fetchStressPeriods(scenarioAnalysis.baseModel.id);
-
-                    // Fetch Boundaries from all models
-                    const modelIds = [scenarioAnalysis.baseModel.id].concat(scenarioAnalysis.scenarios.map(sc => sc.id));
-                    modelIds.forEach(id => {
-                        this.fetchModel(id);
-                        this.fetchBoundaries(id);
-                    });
-                    this.setState({isLoading: false})
+                    this.fetchModel(scenarioAnalysis.basemodelId);
+                    scenarioAnalysis.scenarioIds.forEach(id => this.fetchModel(id));
                 });
             },
             error => this.setState(
@@ -120,67 +108,69 @@ class T07 extends React.Component {
         );
     };
 
-    fetchResults(id) {
-        fetchUrl(`modflowmodels/${id}/results`,
-            data => {
-                const {scenarioAnalysis} = this.props;
-                scenarioAnalysis.results = CalculationResults.fromQuery(data);
-                this.props.updateScenarioAnalysis(scenarioAnalysis);
-            },
-            (e) => this.setState({isError: e, isLoading: false})
-        );
-    }
-
-    fetchSoilmodel(id) {
-        fetchUrl(`modflowmodels/${id}/soilmodel`,
-            data => {
-                const {scenarioAnalysis} = this.props;
-                scenarioAnalysis.soilmodel = Soilmodel.fromObject(data);
-                this.props.updateScenarioAnalysis(scenarioAnalysis);
-            },
-            error => this.setState(
-                {error, isLoading: false},
-                () => this.handleError(error)
-            )
-        );
-    };
-
-    fetchStressPeriods(id) {
+    fetchModel(id) {
         fetchUrl(
             `modflowmodels/${id}`,
             data => {
-                this.setState({isLoading: false});
-                const model = ModflowModel.fromQuery(data);
-                const {scenarioAnalysis} = this.props;
-                scenarioAnalysis.stressperiods = model.stressperiods;
-                this.props.updateScenarioAnalysis(scenarioAnalysis);
+                const modflow = ModflowModel.fromQuery(data);
+                this.setState({
+                    models: {
+                        ...this.state.models, [id]: modflow.toObject()
+                    }
+                }, () => {
+                    this.fetchBoundaries(id);
+                    this.fetchSoilmodel(id);
+                    if (modflow.calculationId) {
+                        this.fetchCalculationDetails(id, modflow.calculationId);
+                    }
+                });
             },
-            error => this.setState(
-                {error, isLoading: false},
-                () => this.handleError(error)
-            )
+            error => console.log(error)
         );
     };
 
     fetchBoundaries(id) {
         fetchUrl(`modflowmodels/${id}/boundaries`,
-            data => this.props.updateBoundaries(BoundaryCollection.fromQuery(data), id),
-            error => this.setState(
-                {error, isLoading: false},
-                () => this.handleError(error)
-            )
+            data => {
+                const boundaries = BoundaryCollection.fromQuery(data);
+                this.setState({
+                    boundaries: {
+                        isLoading: true,
+                        ...this.state.boundaries, [id]: boundaries.toObject()
+                    }
+                });
+            },
+            error => console.log(error)
         );
     };
 
-    fetchModel(id) {
-        fetchUrl(`modflowmodels/${id}`,
-            data => this.props.updateModel(ModflowModel.fromQuery(data)),
-            error => this.setState(
-                {error, isLoading: false},
-                () => this.handleError(error)
-            )
+    fetchSoilmodel(id) {
+        fetchUrl(`modflowmodels/${id}/soilmodel`,
+            data => {
+                const soilmodel = Soilmodel.fromObject(data);
+                this.setState({
+                    soilmodels: {
+                        ...this.state.soilmodels, [id]: soilmodel.toObject()
+                    }
+                });
+            },
+            error => console.log(error)
         );
     };
+
+    fetchCalculationDetails(id, calculationId) {
+        fetchCalculationDetails(calculationId,
+            data => {
+                const calculation = Calculation.fromQuery(data);
+                this.setState({
+                    calculations: {
+                        ...this.state.calculations, [id]: calculation.toObject()
+                    }
+                });
+            },
+            error => console.log(error)
+        )
+    }
 
     handleError = error => {
         console.error(error);
@@ -192,9 +182,49 @@ class T07 extends React.Component {
     };
 
     renderContent(id, property) {
+        const scenarioAnalysis = ScenarioAnalysis.fromObject(this.state.scenarioAnalysis);
+        const {models, boundaries, calculations, soilmodels} = this.state;
+
+        let basemodel = null;
+        if (models.hasOwnProperty(scenarioAnalysis.basemodelId)) {
+            basemodel = ModflowModel.fromObject(models[scenarioAnalysis.basemodelId])
+        }
+
+        if (!basemodel) {
+            return;
+        }
+
+        let basemodelCalculation = null;
+        if (calculations.hasOwnProperty(scenarioAnalysis.basemodelId)) {
+            basemodelCalculation = Calculation.fromObject(calculations[scenarioAnalysis.basemodelId])
+        }
+
+        if (!basemodelCalculation) {
+            return;
+        }
+
+        let basemodelSoilmodel = null;
+        if (soilmodels.hasOwnProperty(scenarioAnalysis.basemodelId)) {
+            basemodelSoilmodel = Soilmodel.fromObject(soilmodels[scenarioAnalysis.basemodelId])
+        }
+
+        if (!basemodelSoilmodel) {
+            return;
+        }
+
         switch (property) {
             case 'crosssection':
-                return (<Content.CrossSection selected={this.state.selected}/>);
+                return (
+                    <Content.CrossSection
+                        boundaries={boundaries}
+                        calculations={calculations}
+                        models={models}
+                        scenarioAnalysis={scenarioAnalysis}
+                        basemodel={basemodel}
+                        basemodelCalculation={basemodelCalculation}
+                        basemodelSoilmodel={basemodelSoilmodel}
+                        selected={this.state.selected}
+                    />);
             case 'difference':
                 return (<Content.Difference/>);
             case 'timeseries':
@@ -208,30 +238,37 @@ class T07 extends React.Component {
     }
 
     onChangeMetaData = (metaData) => {
-        const scenarioAnalysis = this.props.scenarioAnalysis;
+        const scenarioAnalysis = ScenarioAnalysis.fromObject(this.state.scenarioAnalysis);
         scenarioAnalysis.name = metaData.name;
         scenarioAnalysis.description = metaData.description;
         scenarioAnalysis.public = metaData.public;
-        scenarioAnalysis.isDirty = true;
-        this.props.updateScenarioAnalysis(scenarioAnalysis);
+        this.setState({scenarioAnalysis: scenarioAnalysis.toObject()});
     };
 
     saveMetaData = () => {
-        return sendCommand(
-            //ModflowModelCommand.updateModflowModel(this.props.model.toPayload()),
-            (e) => this.setState({error: e})
-        );
+        const scenarioAnalysis = ScenarioAnalysis.fromObject(this.state.scenarioAnalysis);
+        this.setState({isLoading: true},
+            () => sendCommand(SimpleToolsCommand.updateToolInstanceMetadata(
+                scenarioAnalysis.id,
+                scenarioAnalysis.name,
+                scenarioAnalysis.description,
+                scenarioAnalysis.public
+                ),
+                () => this.setState({isLoading: false}),
+                (e) => this.setState({isLoading: false, error: e})
+            ))
     };
 
     handleScenarioClick = (id) => {
-        const {selected} = this.state;
+        const selected = cloneDeep(this.state.selected);
+
         if (selected.indexOf(id) >= 0) {
             return this.setState({selected: selected.filter(v => v !== id)})
         }
 
         selected.push(id);
         return this.setState({
-            selected: cloneDeep(selected)
+            selected
         })
     };
 
@@ -249,7 +286,7 @@ class T07 extends React.Component {
                             <Grid.Column width={14} onClick={() => this.handleScenarioClick(id)}>
                                 <Header as={'a'} size='tiny'>{name}</Header>
                             </Grid.Column>
-                            <Grid.Column width={2} style={{padding:'0'}}>
+                            <Grid.Column width={2} style={{padding: '0'}}>
                                 <Popup
                                     trigger={<Icon name='ellipsis vertical'/>}
                                     content={
@@ -262,7 +299,8 @@ class T07 extends React.Component {
                                                 inverted
                                             />
                                             <Popup
-                                                trigger={<Button icon={'clone'} onClick={() => this.cloneScenario(id)}/>}
+                                                trigger={<Button icon={'clone'}
+                                                                 onClick={() => this.cloneScenario(id)}/>}
                                                 content='Clone'
                                                 position='top center'
                                                 size='mini'
@@ -270,7 +308,8 @@ class T07 extends React.Component {
                                             />
                                             {canBeDeleted &&
                                             <Popup
-                                                trigger={<Button icon={'trash'} onClick={() => this.deleteScenario(id)}/>}
+                                                trigger={<Button icon={'trash'}
+                                                                 onClick={() => this.deleteScenario(id)}/>}
                                                 content='Delete'
                                                 position='top center'
                                                 size='mini'
@@ -291,60 +330,53 @@ class T07 extends React.Component {
     };
 
     cloneScenario = (id) => {
-
+        const scenarioAnalysis = ScenarioAnalysis.fromObject(this.state.scenarioAnalysis);
+        const newId = Uuid.v4();
+        sendCommand(ScenarioAnalysisCommand.createScenario(scenarioAnalysis.id, id, newId), () => this.fetchScenarioAnalysis(scenarioAnalysis.id))
     };
 
     deleteScenario = (id) => {
-
+        const scenarioAnalysis = ScenarioAnalysis.fromObject(this.state.scenarioAnalysis);
+        sendCommand(ScenarioAnalysisCommand.deleteScenario(scenarioAnalysis.id, id), () => this.fetchScenarioAnalysis(scenarioAnalysis.id))
     };
 
     editScenario = (id) => {
-
+        const scenarioAnalysis = ScenarioAnalysis.fromObject(this.state.scenarioAnalysis);
+        return this.props.history.push(`/tools/T03/${id}?sid=${scenarioAnalysis.id}`)
     };
 
     renderModelList = () => {
-        const {scenarioAnalysis} = this.props;
-        const {baseModel, scenarios} = scenarioAnalysis;
 
-        const elements = [];
-        elements.push(this.renderModelListItem({
-            id: baseModel.id,
-            name: baseModel.name,
-            description: baseModel.description,
-            canBeDeleted: false
-        }));
+        const scenarioAnalysis = ScenarioAnalysis.fromObject(this.state.scenarioAnalysis);
 
-        scenarios.forEach(sc => {
-            elements.push(this.renderModelListItem({
-                id: sc.id,
-                name: sc.name,
-                description: sc.description
-            }))
+        return scenarioAnalysis.getModelIds().map((id, idx) => {
+            if (this.state.models.hasOwnProperty(id)) {
+                const model = ModflowModel.fromObject(this.state.models[id]);
+                return this.renderModelListItem({
+                    id: model.id,
+                    name: model.name,
+                    description: model.description,
+                    canBeDeleted: idx !== 0
+                })
+            }
+
+            return null;
         });
-
-        return (elements);
     };
 
     render() {
-        const {scenarioAnalysis} = this.props;
+        if (!this.state.scenarioAnalysis) {
+            return null;
+        }
+
+        const scenarioAnalysis = ScenarioAnalysis.fromObject(this.state.scenarioAnalysis);
+
         if (!scenarioAnalysis) {
             return (
                 <AppContainer navbarItems={navigation}>
                     <Message icon>
                         <Icon name='circle notched' loading/>
                         Loading ScenarioAnalysis
-                    </Message>
-                </AppContainer>
-            )
-        }
-
-        const {results, soilmodel, stressperiods} = scenarioAnalysis;
-        if (!results || !soilmodel || !stressperiods) {
-            return (
-                <AppContainer navbarItems={navigation}>
-                    <Message icon>
-                        <Icon name='circle notched' loading/>
-                        Loading BaseModel
                     </Message>
                 </AppContainer>
             )
@@ -359,9 +391,9 @@ class T07 extends React.Component {
                     readOnly={false}
                     tool={{
                         tool: 'T07',
-                        name: this.props.scenarioAnalysis.name,
-                        description: this.props.scenarioAnalysis.description,
-                        public: this.props.scenarioAnalysis.public
+                        name: scenarioAnalysis.name,
+                        description: scenarioAnalysis.description,
+                        public: scenarioAnalysis.public
                     }}
                     defaultButton={false}
                     saveButton={false}
