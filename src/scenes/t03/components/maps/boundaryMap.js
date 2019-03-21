@@ -56,6 +56,7 @@ class BoundaryMap extends Component {
                                 b.geometry.coordinates[0]
                             ]}
                             {...getStyle('underlay')}
+                            onClick={() => this.props.onClick(b.id)}
                         />
                     );
                 case 'linestring':
@@ -64,6 +65,7 @@ class BoundaryMap extends Component {
                             key={Geometry.fromObject(b.geometry).hash()}
                             positions={Geometry.fromObject(b.geometry).coordinatesLatLng}
                             {...getStyle('underlay')}
+                            onClick={() => this.props.onClick(b.id)}
                         />
                     );
                 default:
@@ -136,6 +138,7 @@ BoundaryMap.propTypes = {
     boundaries: PropTypes.instanceOf(BoundaryCollection).isRequired,
     geometry: PropTypes.instanceOf(Geometry).isRequired,
     selectedObservationPointId: PropTypes.string,
+    onClick: PropTypes.func
 };
 
 export default BoundaryMap;

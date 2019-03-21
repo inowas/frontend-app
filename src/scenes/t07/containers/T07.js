@@ -172,7 +172,6 @@ class T07 extends React.Component {
         )
     }
 
-
     handleError = error => {
         console.error(error);
         const {response} = error;
@@ -261,14 +260,15 @@ class T07 extends React.Component {
     };
 
     handleScenarioClick = (id) => {
-        const {selected} = this.state;
+        const selected = cloneDeep(this.state.selected);
+
         if (selected.indexOf(id) >= 0) {
             return this.setState({selected: selected.filter(v => v !== id)})
         }
 
         selected.push(id);
         return this.setState({
-            selected: cloneDeep(selected)
+            selected
         })
     };
 
@@ -341,7 +341,8 @@ class T07 extends React.Component {
     };
 
     editScenario = (id) => {
-
+        const scenarioAnalysis = ScenarioAnalysis.fromObject(this.state.scenarioAnalysis);
+        return this.props.history.push(`/tools/T03/${id}?sid=${scenarioAnalysis.id}`)
     };
 
     renderModelList = () => {
