@@ -47,11 +47,10 @@ class ScenarioAnalysisCommand extends AbstractCommand {
         );
     }
 
-    static deleteScenarioAnalysis(scenarioanalysisId) {
+    static deleteScenarioAnalysis(id) {
+        console.log(id);
         return new ScenarioAnalysisCommand(
-            'deleteScenarioAnalysis', {
-                id: scenarioanalysisId
-            },
+            'deleteScenarioAnalysis', {id},
             JSON_SCHEMA_URL + 'commands/deleteScenarioAnalysis'
         );
     }

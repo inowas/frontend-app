@@ -1,38 +1,68 @@
 import React from 'react';
+import Uuid from 'uuid';
 import {connect} from 'react-redux';
 import PropTypes from 'prop-types';
 
-import {Accordion, Grid, Header, Icon, Segment} from 'semantic-ui-react';
+import {Accordion, Button, Grid, Header, Icon, Segment} from 'semantic-ui-react';
 import {BoundaryCollection, Calculation, ModflowModel, Soilmodel} from 'core/model/modflow';
 import ResultsMap from '../../maps/resultsMap';
 import ResultsChart from '../../../../shared/complexTools/ResultsChart';
 import ResultsSelector from '../../../../shared/complexTools/ResultsSelector';
-import {fetchCalculationResults} from 'services/api';
+import {fetchCalculationResults, sendCommand} from 'services/api';
+import ScenarioAnalysisCommand from '../../../../t07/commands/scenarioAnalysisCommand';
+import {withRouter} from 'react-router-dom';
 
 class Results extends React.Component {
 
     constructor(props) {
         super(props);
-        const {model, calculation} = this.props;
+        const {model} = this.props;
         const {gridSize} = model;
 
-        const totalTimes = calculation.times.total_times;
 
         this.state = {
             isLoading: false,
             selectedLay: 0,
             selectedRow: Math.floor(gridSize.nY / 2),
             selectedCol: Math.floor(gridSize.nX / 2),
-            selectedTotim: totalTimes.slice(-1)[0],
+            selectedTotim: 0,
             selectedType: 'head',
-            layerValues: calculation.layer_values,
-            totalTimes,
+            layerValues: null,
+            totalTimes: null,
             fetching: false,
             activeIndex: 0
+        };
+
+        if (props.calculation instanceof Calculation) {
+            const totalTimes = props.calculation.times.total_times;
+            this.state.layerValues = props.calculation.layer_values;
+            this.state.selectedTotim = totalTimes.slice(-1)[0];
+            this.state.totalTimes = totalTimes;
+        }
+    }
+
+    componentWillReceiveProps(nextProps, nextContext) {
+        if (!(nextProps.calculation instanceof Calculation)) {
+            return null;
+        }
+
+        if (!this.state.totalTimes) {
+            const {calculation} = nextProps;
+            const totalTimes = calculation.times.total_times;
+
+            return this.setState({
+                layerValues: calculation.layer_values,
+                selectedTotim: totalTimes.slice(-1)[0],
+                totalTimes
+            })
         }
     }
 
     componentDidMount() {
+        if (!(this.props.calculation instanceof Calculation)) {
+            return null;
+        }
+
         this.fetchData({
             layer: this.state.selectedLay,
             totim: this.state.selectedTotim,
@@ -67,11 +97,32 @@ class Results extends React.Component {
         });
     };
 
+    onCreateScenarioAnalysisClick = () => {
+        const scenarioAnalysisId = Uuid.v4();
+        sendCommand(ScenarioAnalysisCommand.createScenarioAnalysis(
+            scenarioAnalysisId,
+            this.props.model.id,
+            'New scenario analysis ' + this.props.model.name,
+            '',
+            this.props.model.isPublic
+            ),
+            () => this.props.history.push('/tools/T07/' + scenarioAnalysisId),
+            () => this.setState({error: true})
+        )
+    };
+
     render() {
         const {calculation} = this.props;
 
         if (!(calculation instanceof Calculation)) {
-            return null;
+            return (
+                <Segment color={'grey'} loading={this.state.isLoading}>
+                    <Header as={'h2'}>
+                        No result data found. <br/>
+                        Have you started the calculation?
+                    </Header>
+                </Segment>
+            )
         }
 
 
@@ -148,6 +199,19 @@ class Results extends React.Component {
                                     </Grid.Column>
                                 </Grid.Row>
                             </Grid>
+                            {!model.readOnly &&
+                            <Grid>
+                                <Grid.Row>
+                                    <Grid.Column>
+                                        <Button
+                                            onClick={this.onCreateScenarioAnalysisClick}
+                                        >
+                                            Create Scenario Analysis
+                                        </Button>
+                                    </Grid.Column>
+                                </Grid.Row>
+                            </Grid>
+                            }
                         </Grid.Column>
                     </Grid.Row>
                 </Grid>
@@ -160,17 +224,18 @@ class Results extends React.Component {
 const mapStateToProps = state => {
     return {
         boundaries: BoundaryCollection.fromObject(state.T03.boundaries),
-        calculation: Calculation.fromObject(state.T03.calculation),
+        calculation: state.T03.calculation ? Calculation.fromObject(state.T03.calculation) : null,
         model: ModflowModel.fromObject(state.T03.model),
         soilmodel: Soilmodel.fromObject(state.T03.soilmodel)
     };
 };
 
 Results.proptypes = {
+    history: PropTypes.object.isRequired,
     boundaries: PropTypes.instanceOf(BoundaryCollection).isRequired,
     calculation: PropTypes.instanceOf(Calculation).isRequired,
     model: PropTypes.instanceOf(ModflowModel).isRequired,
     soilmodel: PropTypes.instanceOf(Soilmodel).isRequired,
 };
 
-export default connect(mapStateToProps)(Results);
+export default withRouter(connect(mapStateToProps)(Results));

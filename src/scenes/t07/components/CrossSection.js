@@ -1,26 +1,27 @@
 import React from 'react';
-import {connect} from 'react-redux';
 import PropTypes from 'prop-types';
 
 import {Grid, Header, Segment} from 'semantic-ui-react';
-import {BoundaryCollection, ModflowModel} from 'core/model/modflow';
-import {fetchUrl} from 'services/api';
+import {BoundaryCollection, Calculation, ModflowModel, Soilmodel} from 'core/model/modflow';
 import {ScenarioAnalysis} from 'core/model/scenarioAnalysis';
 import ResultsSelector from '../../shared/complexTools/ResultsSelector';
 import ResultsMap from '../../shared/complexTools/ResultsMap';
 import ResultsChart from '../../shared/complexTools/ResultsChart';
 import {chunk, compact, flatten} from 'lodash';
+import {fetchCalculationResults} from '../../../services/api';
 
 class CrossSection extends React.Component {
 
     constructor(props) {
         super(props);
         this.state = {
-            results: null,
-            soilmodel: null,
-            stressperiods: null,
 
             selectedModels: [],
+            data: [],
+
+            boundaries: [],
+            calculations: [],
+            models: [],
 
             isLoading: false,
             selectedCol: null,
@@ -29,37 +30,52 @@ class CrossSection extends React.Component {
             selectedTotim: null,
             selectedType: 'head',
 
+            layerValues: null,
+            totalTimes: null,
+
             commonViewPort: null
         }
     }
 
     componentDidMount() {
-        const {scenarioAnalysis} = this.props;
-        const selectedModels = scenarioAnalysis.models.filter(m => this.props.selected.indexOf(m.id) > -1);
-        const {gridSize, results, soilmodel, stressperiods} = scenarioAnalysis;
+
+        const {basemodel, basemodelCalculation} = this.props;
+        const selectedModels = this.props.selected.map(id => {
+            if (this.props.models.hasOwnProperty(id)) {
+                return ModflowModel.fromObject(this.props.models[id]);
+            }
+
+            return null;
+        }).filter(e => e !== null);
+
+        const {gridSize, stressperiods} = basemodel;
 
         const selectedLay = 0;
         const selectedCol = Math.floor(gridSize.nX / 2);
         const selectedRow = Math.floor(gridSize.nY / 2);
-        const selectedTotim = results.totalTimes[0];
+        const selectedTotim = basemodelCalculation.times.total_times[0];
+        const totalTimes = basemodelCalculation.times.total_times;
+        const layerValues = basemodelCalculation.layer_values;
+
 
         return this.setState({
-                results,
-                soilmodel,
                 stressperiods,
                 selectedCol,
                 selectedLay,
                 selectedRow,
                 selectedTotim,
-                selectedModels
+                selectedModels,
+                totalTimes,
+                layerValues
             },
             () => this.fetchData());
     }
 
     componentWillReceiveProps(nextProps, nextContext) {
         if (nextProps.selected.length !== this.state.selectedModels.length) {
-            const selectedModels = nextProps.scenarioAnalysis.models
-                .filter(m => nextProps.selected.indexOf(m.id) > -1);
+            const selectedModels = Object.values(nextProps.models)
+                .filter(m => nextProps.selected.indexOf(m.id) > -1).map(m => ModflowModel.fromObject(m));
+
             return this.setState({selectedModels}, () => this.fetchData());
         }
     }
@@ -78,19 +94,16 @@ class CrossSection extends React.Component {
         return this.setState({models, fetching: true},
             () => models.forEach(m => {
                 if (this.props.selected.indexOf(m.id) >= 0) {
-                    fetchUrl(`calculations/${m.calculation_id}/results/types/${selectedType}/layers/${selectedLay}/totims/${selectedTotim}`,
-                        data => this.setState((prevState) => {
-                            const models = prevState.selectedModels.map(sm => {
-                                if (m.id === sm.id) {
-                                    sm.data = data;
-                                    sm.loading = false;
-                                    return sm;
-                                }
-                                return sm;
-                            });
-                            return {selectedModels: models};
-                        }),
-                        (e) => this.setState({isError: e}));
+                    fetchCalculationResults({
+                        calculationId: m.calculationId,
+                        type: selectedType,
+                        totim: selectedTotim,
+                        layer: selectedLay
+                    }, data => {
+                        this.setState({
+                            data: {...this.state.data, [m.id]: data}
+                        })
+                    });
                 }
             })
         )
@@ -111,13 +124,13 @@ class CrossSection extends React.Component {
 
     renderMap = (id, length, globalMinMax) => {
 
-        if (!this.props.models[id] || !this.props.boundaries[id]) {
+        if (!this.props.models.hasOwnProperty(id) || !this.props.boundaries.hasOwnProperty(id) || !this.state.data.hasOwnProperty(id)) {
             return null;
         }
 
         const model = ModflowModel.fromObject(this.props.models[id]);
         const boundaries = BoundaryCollection.fromObject(this.props.boundaries[id]);
-        const data = this.state.selectedModels.filter(m => m.id === id)[0].data;
+        const data = this.state.data[id];
 
         if (!model || !boundaries || !data) {
             return <Segment loading/>;
@@ -160,7 +173,8 @@ class CrossSection extends React.Component {
                 {modelChunks.map((chunk, cIdx) => (
                     <Grid.Row key={cIdx} columns={numberOfCols}>
                         {chunk.map(m => (
-                            <Grid.Column key={m.id}>{this.renderMap(m.id, this.props.selected.length, globalMinMax)}</Grid.Column>
+                            <Grid.Column
+                                key={m.id}>{this.renderMap(m.id, this.props.selected.length, globalMinMax)}</Grid.Column>
                         ))}
                     </Grid.Row>
                 ))}
@@ -168,21 +182,20 @@ class CrossSection extends React.Component {
         );
     };
 
-    calculateGlobalMinMax = (selectedModels) => {
-        const sortedValues = compact(flatten(flatten(selectedModels.map(m => m.data)))).sort();
+    calculateGlobalMinMax = () => {
+        const sortedValues = compact(flatten(flatten(Object.values(this.state.data)))).sort();
         const min = Math.floor(sortedValues[0]);
         const max = Math.ceil(sortedValues[sortedValues.length - 1]);
         return [min, max];
     };
 
     render() {
-        const {results, soilmodel, stressperiods, selectedType, selectedCol, selectedLay, selectedModels, selectedRow, selectedTotim} = this.state;
-        if (results === null || soilmodel === null ||
+        const {layerValues, totalTimes, soilmodel, stressperiods, selectedType, selectedCol, selectedLay, selectedModels, selectedRow, selectedTotim} = this.state;
+        if (soilmodel === null ||
             stressperiods === null || selectedLay === null || selectedTotim === null) {
             return null;
         }
 
-        const {layerValues, totalTimes} = results;
 
         if (selectedModels.length === 0) {
             return null;
@@ -190,6 +203,15 @@ class CrossSection extends React.Component {
 
         const globalMinMax = this.calculateGlobalMinMax(selectedModels);
 
+        const mappedModelsForResultChart = selectedModels.map(m => {
+            const model = m.toObject();
+
+            return {
+                id: model.id,
+                name: model.name,
+                data: this.state.data[model.id]
+            }
+        });
         return (
             <div>
                 <Segment color={'grey'} loading={this.state.isLoading}>
@@ -201,7 +223,7 @@ class CrossSection extends React.Component {
                         }}
                         onChange={this.onChangeTypeLayerOrTotim}
                         layerValues={layerValues}
-                        soilmodel={soilmodel}
+                        soilmodel={this.props.basemodelSoilmodel}
                         stressperiods={stressperiods}
                         totalTimes={totalTimes}
                     />
@@ -218,7 +240,7 @@ class CrossSection extends React.Component {
                                 <Segment>
                                     <Header textAlign={'center'} as={'h4'}>Horizontal cross section</Header>
                                     <ResultsChart
-                                        selectedModels={selectedModels}
+                                        selectedModels={mappedModelsForResultChart}
                                         col={selectedCol}
                                         row={selectedRow}
                                         show={'row'}
@@ -230,7 +252,7 @@ class CrossSection extends React.Component {
                                 <Segment>
                                     <Header textAlign={'center'} as={'h4'}>Vertical cross section</Header>
                                     <ResultsChart
-                                        selectedModels={selectedModels}
+                                        selectedModels={mappedModelsForResultChart}
                                         col={selectedCol}
                                         row={selectedRow}
                                         show={'col'}
@@ -246,19 +268,15 @@ class CrossSection extends React.Component {
     }
 }
 
-
-const mapStateToProps = state => {
-    return {
-        boundaries: state.T07.boundaries,
-        models: state.T07.models,
-        scenarioAnalysis: state.T07.scenarioAnalysis ? ScenarioAnalysis.fromObject(state.T07.scenarioAnalysis) : null
-    };
-};
-
 CrossSection.proptypes = {
+    basemodel: PropTypes.instanceOf(ModflowModel).isRequired,
+    basemodelCalculation: PropTypes.instanceOf(Calculation).isRequired,
+    basemodelSoilmodel: PropTypes.instanceOf(Soilmodel).isRequired,
     models: PropTypes.array.isRequired,
+    boundaries: PropTypes.array.isRequired,
+    calculations: PropTypes.array.isRequired,
     scenarioAnalysis: PropTypes.instanceOf(ScenarioAnalysis).isRequired,
     selected: PropTypes.array.isRequired,
 };
 
-export default connect(mapStateToProps)(CrossSection);
+export default CrossSection;
