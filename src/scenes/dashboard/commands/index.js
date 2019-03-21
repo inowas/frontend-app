@@ -29,7 +29,7 @@ export const deleteToolInstance = (tool, id) => {
         case 'T03':
             return (ModflowModelCommand.deleteModflowModel({id}));
         case 'T07':
-            return (ScenarioAnalysisCommand.deleteScenarioAnalysis({id}));
+            return (ScenarioAnalysisCommand.deleteScenarioAnalysis(id));
         default:
             return (SimpleToolCommand.deleteToolInstance({id}));
     }

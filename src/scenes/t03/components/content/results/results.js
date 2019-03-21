@@ -1,13 +1,16 @@
 import React from 'react';
+import Uuid from 'uuid';
 import {connect} from 'react-redux';
 import PropTypes from 'prop-types';
 
-import {Accordion, Grid, Header, Icon, Segment} from 'semantic-ui-react';
+import {Accordion, Button, Grid, Header, Icon, Segment} from 'semantic-ui-react';
 import {BoundaryCollection, Calculation, ModflowModel, Soilmodel} from 'core/model/modflow';
 import ResultsMap from '../../maps/resultsMap';
 import ResultsChart from '../../../../shared/complexTools/ResultsChart';
 import ResultsSelector from '../../../../shared/complexTools/ResultsSelector';
-import {fetchCalculationResults} from 'services/api';
+import {fetchCalculationResults, sendCommand} from 'services/api';
+import ScenarioAnalysisCommand from '../../../../t07/commands/scenarioAnalysisCommand';
+import {withRouter} from 'react-router-dom';
 
 class Results extends React.Component {
 
@@ -92,6 +95,20 @@ class Results extends React.Component {
         this.setState({
             activeIndex: newIndex
         });
+    };
+
+    onCreateScenarioAnalysisClick = () => {
+        const scenarioAnalysisId = Uuid.v4();
+        sendCommand(ScenarioAnalysisCommand.createScenarioAnalysis(
+            scenarioAnalysisId,
+            this.props.model.id,
+            'New scenario analysis ' + this.props.model.name,
+            '',
+            this.props.model.isPublic
+            ),
+            () => this.props.history.push('/tools/T07/' + scenarioAnalysisId),
+            () => this.setState({error: true})
+        )
     };
 
     render() {
@@ -182,6 +199,19 @@ class Results extends React.Component {
                                     </Grid.Column>
                                 </Grid.Row>
                             </Grid>
+                            {!model.readOnly &&
+                            <Grid>
+                                <Grid.Row>
+                                    <Grid.Column>
+                                        <Button
+                                            onClick={this.onCreateScenarioAnalysisClick}
+                                        >
+                                            Create Scenario Analysis
+                                        </Button>
+                                    </Grid.Column>
+                                </Grid.Row>
+                            </Grid>
+                            }
                         </Grid.Column>
                     </Grid.Row>
                 </Grid>
@@ -201,10 +231,11 @@ const mapStateToProps = state => {
 };
 
 Results.proptypes = {
+    history: PropTypes.object.isRequired,
     boundaries: PropTypes.instanceOf(BoundaryCollection).isRequired,
     calculation: PropTypes.instanceOf(Calculation).isRequired,
     model: PropTypes.instanceOf(ModflowModel).isRequired,
     soilmodel: PropTypes.instanceOf(Soilmodel).isRequired,
 };
 
-export default connect(mapStateToProps)(Results);
+export default withRouter(connect(mapStateToProps)(Results));
