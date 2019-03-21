@@ -39,11 +39,11 @@ class SimpleToolsCommand extends AbstractCommand {
         )
     }
 
-    static updateToolInstanceMetadata(id, name, description, isPubic) {
+    static updateToolInstanceMetadata(id, name, description, isPublic) {
         const commandName = 'updateToolInstanceMetadata';
         return new SimpleToolsCommand(
             commandName,
-            {id, name, description, public: isPubic},
+            {id, name, description, public: isPublic},
             JSON_SCHEMA_URL + 'commands/' + commandName
         );
     }

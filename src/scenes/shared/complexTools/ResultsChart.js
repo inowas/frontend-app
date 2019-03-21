@@ -115,7 +115,6 @@ const ResultsChart = ({data = null, selectedModels = null, globalMinMax = null, 
     }
 
     if (selectedModels) {
-
         if (!globalMinMax) {
             throw new Error('If more then one model in selectedModels, please provide a globalMinMax-Prop');
         }
