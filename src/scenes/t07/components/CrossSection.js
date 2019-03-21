@@ -73,8 +73,19 @@ class CrossSection extends React.Component {
 
     componentWillReceiveProps(nextProps, nextContext) {
         if (nextProps.selected.length !== this.state.selectedModels.length) {
-            const selectedModels = Object.values(nextProps.models)
-                .filter(m => nextProps.selected.indexOf(m.id) > -1).map(m => ModflowModel.fromObject(m));
+            const unsortedSelectedModels = Object.values(nextProps.models)
+                .filter(m => nextProps.selected.indexOf(m.id) > -1)
+                .map(m => ModflowModel.fromObject(m));
+
+            const selectedModels = [];
+
+            const modelIds = this.props.scenarioAnalysis.getModelIds();
+            modelIds.forEach(id => {
+                const filtered = unsortedSelectedModels.filter(m => m.id === id);
+                if (filtered.length === 1) {
+                    selectedModels.push(filtered[0])
+                }
+            });
 
             return this.setState({selectedModels}, () => this.fetchData());
         }

@@ -148,6 +148,7 @@ class BoundaryDetails extends React.Component {
                     boundary={boundary}
                     boundaries={boundaries}
                     selectedObservationPointId={observationPointId}
+                    onClick={this.props.onClick}
                 />
                 {(boundary instanceof LineBoundary) &&
                 <div>
@@ -230,7 +231,10 @@ BoundaryDetails.proptypes = {
     model: PropTypes.instanceOf(ModflowModel).isRequired,
     soilmodel: PropTypes.instanceOf(Soilmodel).isRequired,
     onChange: PropTypes.func.isRequired,
-    readOnly: PropTypes.bool.isRequired
+    onClick: PropTypes.func.isRequired,
+    readOnly: PropTypes.bool.isRequired,
+
+
 };
 
 export default BoundaryDetails;
