@@ -37,7 +37,7 @@ const navigation = [
 ];
 
 const menuItems = [{
-    header: '',
+    header: 'Results',
     items: [
         {
             name: 'Cross Section',
@@ -45,7 +45,7 @@ const menuItems = [{
             icon: <Icon name="calendar alternate outline"/>
         },
         {
-            name: 'Head Difference',
+            name: 'Difference',
             property: 'difference',
             icon: <Icon name="expand"/>,
             disabled: true
