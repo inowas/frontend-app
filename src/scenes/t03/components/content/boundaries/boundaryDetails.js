@@ -5,7 +5,7 @@ import uuid from 'uuid';
 import {Button, Dropdown, Form, Header, List, Popup} from 'semantic-ui-react';
 
 import BoundaryMap from '../../maps/boundaryMap';
-import {Boundary, LineBoundary, ModflowModel, Soilmodel} from 'core/model/modflow';
+import {Boundary, BoundaryCollection, LineBoundary, ModflowModel, Soilmodel} from 'core/model/modflow';
 import BoundaryValuesDataTable from './boundaryValuesDataTable';
 import BoundaryGeometryEditor from './boundaryGeometryEditor';
 import ObservationPointEditor from './observationPointEditor';
@@ -81,7 +81,7 @@ class BoundaryDetails extends React.Component {
     };
 
     render() {
-        const {boundary, model} = this.props;
+        const {boundary, boundaries, model} = this.props;
         const {geometry, stressperiods} = model;
         const {observationPointId} = this.state;
 
@@ -146,7 +146,9 @@ class BoundaryDetails extends React.Component {
                 <BoundaryMap
                     geometry={geometry}
                     boundary={boundary}
+                    boundaries={boundaries}
                     selectedObservationPointId={observationPointId}
+                    onClick={this.props.onClick}
                 />
                 {(boundary instanceof LineBoundary) &&
                 <div>
@@ -191,6 +193,7 @@ class BoundaryDetails extends React.Component {
                 <Header as={'h4'}>Time dependent boundary values at observation point</Header>
                 <BoundaryValuesDataTable
                     boundary={boundary}
+                    boundaries={boundaries}
                     onChange={this.props.onChange}
                     readOnly={this.props.readOnly}
                     selectedOP={observationPointId}
@@ -200,6 +203,7 @@ class BoundaryDetails extends React.Component {
                 {this.state.showBoundaryEditor &&
                 <BoundaryGeometryEditor
                     boundary={boundary}
+                    boundaries={boundaries}
                     model={model}
                     onCancel={() => this.setState({showBoundaryEditor: false})}
                     onChange={this.props.onChange}
@@ -223,10 +227,14 @@ class BoundaryDetails extends React.Component {
 
 BoundaryDetails.proptypes = {
     boundary: PropTypes.instanceOf(Boundary).isRequired,
+    boundaries: PropTypes.instanceOf(BoundaryCollection).isRequired,
     model: PropTypes.instanceOf(ModflowModel).isRequired,
     soilmodel: PropTypes.instanceOf(Soilmodel).isRequired,
     onChange: PropTypes.func.isRequired,
-    readOnly: PropTypes.bool.isRequired
+    onClick: PropTypes.func.isRequired,
+    readOnly: PropTypes.bool.isRequired,
+
+
 };
 
 export default BoundaryDetails;

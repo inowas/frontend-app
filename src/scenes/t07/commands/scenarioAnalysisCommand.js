@@ -3,10 +3,10 @@ import {JSON_SCHEMA_URL} from 'services/api';
 
 class ScenarioAnalysisCommand extends AbstractCommand {
 
-    static cloneScenarioAnalysis(scenarioanalysisId, newId) {
+    static cloneScenarioAnalysis({id, newId}) {
         return new ScenarioAnalysisCommand(
             'cloneScenarioAnalysis', {
-                id: scenarioanalysisId,
+                id,
                 new_id: newId
             },
             JSON_SCHEMA_URL + 'commands/cloneScenarioAnalysis'
@@ -47,11 +47,9 @@ class ScenarioAnalysisCommand extends AbstractCommand {
         );
     }
 
-    static deleteScenarioAnalysis(scenarioanalysisId) {
+    static deleteScenarioAnalysis(id) {
         return new ScenarioAnalysisCommand(
-            'deleteScenarioAnalysis', {
-                id: scenarioanalysisId
-            },
+            'deleteScenarioAnalysis', {id},
             JSON_SCHEMA_URL + 'commands/deleteScenarioAnalysis'
         );
     }

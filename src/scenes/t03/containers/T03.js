@@ -36,7 +36,8 @@ import {CALCULATION_STATE_FINISHED} from '../components/content/calculation/Calc
 import FlopyPackages from 'core/model/flopy/packages/FlopyPackages';
 import {FlopyModflow} from 'core/model/flopy/packages/mf';
 import {Mt3dms} from 'core/model/flopy/packages/mt';
-import {fetchCalculationDetails} from '../../../services/api';
+import {fetchCalculationDetails} from 'services/api';
+import {cloneDeep} from 'lodash';
 
 const navigation = [{
     name: 'Documentation',
@@ -49,15 +50,35 @@ class T03 extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
+            model: props.model ? props.model.toObject() : null,
             menuItems: menuItems,
             error: false,
             isLoading: false,
-            calculatePackages: false
+            calculatePackages: false,
+            scenarioAnalysisId: null,
+            navigation
         }
     }
 
     componentDidMount() {
         const {id} = this.props.match.params;
+        const {search} = this.props.location;
+
+        if (search.startsWith('?sid=')) {
+            const scenarioAnalysisId = search.split('=')[1];
+
+            const navigation = cloneDeep(this.state.navigation);
+            navigation.push({
+                name: 'Return to ScenarioAnalysis',
+                path: '/tools/T07/' + scenarioAnalysisId,
+                icon: <Icon name="file"/>
+            });
+
+            this.setState({
+                scenarioAnalysisId,
+                navigation
+            })
+        }
 
         return this.setState({isLoading: true},
             () => this.fetchModel(id)
@@ -76,15 +97,21 @@ class T03 extends React.Component {
 
         if (nextProps.calculation) {
             const calculationState = nextProps.calculation.state;
-            this.setState({
-                menuItems: menuItems.map(mi => {
-                    if (mi.property === 'results' || mi.property === 'optimization') {
-                        mi.disabled = calculationState !== CALCULATION_STATE_FINISHED;
-                        return mi;
+            const mappedMenuItems = menuItems.map(mi => {
+                mi.items = mi.items.map(i => {
+                    if (i.property === 'results') {
+                        i.disabled = calculationState !== CALCULATION_STATE_FINISHED;
+                        return i;
                     }
 
-                    return mi;
-                })
+                    return i;
+                });
+
+                return mi;
+            });
+
+            this.setState({
+                menuItems: mappedMenuItems
             })
         }
 
@@ -211,29 +238,30 @@ class T03 extends React.Component {
                 const path = this.props.match.path;
                 const basePath = path.split(':')[0];
                 return (
-                    <Redirect to={basePath + id + '/discretization'}/>
+                    <Redirect to={basePath + id + '/discretization' + this.props.location.search}/>
                 );
         }
     }
 
-    onChangeMetaData = (metaData) => {
-        const model = this.props.model;
-        model.name = metaData.name;
-        model.description = metaData.description;
-        model.public = metaData.public;
-        model.isDirty = true;
-        this.props.updateModel(model);
-    };
+    saveMetaData = tool => {
+        const {name, description} = tool;
+        const isPublic = tool.public;
 
-    saveMetaData = () => {
-        const {id, name, description, isPublic} = this.props.model;
+        const {model} = this.props;
+        model.name = name;
+        model.description = description;
+        model.public = isPublic;
+
         return sendCommand(
-            ModflowModelCommand.updateModflowModelMetadata(id, name, description, isPublic),
+            ModflowModelCommand.updateModflowModelMetadata(model.id, name, description, isPublic),
+            () => this.props.updateModel(model),
             (e) => this.setState({error: e})
         );
     };
 
     render() {
+        const {navigation} = this.state;
+
         if (!(this.props.model instanceof ModflowModel) ||
             !(this.props.boundaries instanceof BoundaryCollection) ||
             !(this.props.soilmodel instanceof Soilmodel)
@@ -272,7 +300,7 @@ class T03 extends React.Component {
             <AppContainer navbarItems={navigation}>
                 <ToolMetaData
                     isDirty={false}
-                    onChange={this.onChangeMetaData}
+                    onChange={() => {}}
                     readOnly={false}
                     tool={{
                         tool: 'T03',

@@ -9,7 +9,7 @@ export const UPDATE_MODEL_BOUNDARIES = 'T07_UPDATE_MODEL_BOUNDARIES';
 
 const initialState = {};
 
-const models = (state = initialState, action) => {
+const boundaries = (state = initialState, action) => {
     switch (action.type) {
         case CLEAR:
             return initialState;
@@ -32,4 +32,4 @@ const models = (state = initialState, action) => {
     }
 };
 
-export default models;
+export default boundaries;
