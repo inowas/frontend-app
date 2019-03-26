@@ -65,7 +65,7 @@ build:training:
       - build/
 
   only:
-    - training
+    - dev
 
 deploy:training:
   stage: deploy
@@ -89,7 +89,7 @@ deploy:training:
     name: training
     url: https://training.inowas.com
   only:
-    - training
+    - dev
 
 build:prod:
   image: node:10
