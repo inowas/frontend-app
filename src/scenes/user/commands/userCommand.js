@@ -8,7 +8,7 @@ class UserCommand extends AbstractCommand {
         return new UserCommand(name, {
             user_id: userId,
             profile
-        }, JSON_SCHEMA_URL + 'commands/' + name);
+        }, JSON_SCHEMA_URL + '/commands/' + name);
     }
 
     static changeUserPassword(userId, password, newPassword) {
@@ -17,7 +17,7 @@ class UserCommand extends AbstractCommand {
             user_id: userId,
             password,
             new_password: newPassword
-        }, JSON_SCHEMA_URL + 'commands/' + name);
+        }, JSON_SCHEMA_URL + '/commands/' + name);
     }
 }
 

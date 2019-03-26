@@ -58,6 +58,6 @@ test('WellBoundary fromObject', () => {
 
 test('WellBoundary schema validation', () => {
     const data = createWellBoundary().toObject();
-    const schema = JSON_SCHEMA_URL + 'modflow/boundary/wellBoundary';
+    const schema = JSON_SCHEMA_URL + '/modflow/boundary/wellBoundary';
     return expect(validate(data, schema)).resolves.toEqual([true, null]);
 });
