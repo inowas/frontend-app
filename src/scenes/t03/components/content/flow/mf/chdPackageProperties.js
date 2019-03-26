@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types';
 import React from 'react';
-import {Container, Header} from 'semantic-ui-react';
+import {Header, Form} from 'semantic-ui-react';
 
 import AbstractPackageProperties from './AbstractPackageProperties';
 import {FlopyModflowMfchd} from 'core/model/flopy/packages/mf';
@@ -12,13 +12,14 @@ class ChdPackageProperties extends AbstractPackageProperties {
             return null;
         }
 
-        //const {readonly} = this.props;
-        //const {mfPackage} = this.state;
+        const {readonly, mfPackage} = this.props;
 
         return (
-            <Container>
-                <Header as={'h2'}>To be implemented</Header>
-            </Container>
+            <Form>
+                <Header as={'h4'}>To be implemented</Header>
+                <Form.Field>
+                </Form.Field>
+            </Form>
         );
     }
 }
