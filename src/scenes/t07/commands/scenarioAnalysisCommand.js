@@ -9,7 +9,7 @@ class ScenarioAnalysisCommand extends AbstractCommand {
                 id,
                 new_id: newId
             },
-            JSON_SCHEMA_URL + 'commands/cloneScenarioAnalysis'
+            JSON_SCHEMA_URL + '/commands/cloneScenarioAnalysis'
         );
     }
 
@@ -22,7 +22,7 @@ class ScenarioAnalysisCommand extends AbstractCommand {
                 description: description,
                 public: isPublic
             },
-            JSON_SCHEMA_URL + 'commands/createScenarioAnalysis'
+            JSON_SCHEMA_URL + '/commands/createScenarioAnalysis'
         );
     }
 
@@ -33,7 +33,7 @@ class ScenarioAnalysisCommand extends AbstractCommand {
                 basemodel_id: modelToCloneId,
                 scenario_id: newId
             },
-            JSON_SCHEMA_URL + 'commands/createScenario'
+            JSON_SCHEMA_URL + '/commands/createScenario'
         );
     }
 
@@ -43,14 +43,14 @@ class ScenarioAnalysisCommand extends AbstractCommand {
                 id: scenarioanalysisId,
                 scenario_id: scenarioId
             },
-            JSON_SCHEMA_URL + 'commands/deleteScenario'
+            JSON_SCHEMA_URL + '/commands/deleteScenario'
         );
     }
 
     static deleteScenarioAnalysis(id) {
         return new ScenarioAnalysisCommand(
             'deleteScenarioAnalysis', {id},
-            JSON_SCHEMA_URL + 'commands/deleteScenarioAnalysis'
+            JSON_SCHEMA_URL + '/commands/deleteScenarioAnalysis'
         );
     }
 
@@ -62,7 +62,7 @@ class ScenarioAnalysisCommand extends AbstractCommand {
                 description: description,
                 public: isPublic
             },
-            JSON_SCHEMA_URL + 'commands/updateScenarioAnalysis'
+            JSON_SCHEMA_URL + '/commands/updateScenarioAnalysis'
         );
     }
 }

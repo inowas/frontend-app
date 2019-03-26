@@ -1,7 +1,7 @@
 import Uuid from 'uuid';
 import {ConstantHeadBoundary} from 'core/model/modflow/boundaries';
-import {JSON_SCHEMA_URL} from '../../../../../services/api';
-import {validate} from '../../../../../services/jsonSchemaValidator';
+import {JSON_SCHEMA_URL} from 'services/api';
+import {validate} from 'services/jsonSchemaValidator';
 
 
 const createConstantHeadBoundary = () => {
@@ -90,6 +90,6 @@ test('ConstantHeadBoundary fromObject', () => {
 
 test('ConstantHeadBoundary schema validation', () => {
     const data = createConstantHeadBoundary().toObject();
-    const schema = JSON_SCHEMA_URL + 'modflow/boundary/constantHeadBoundary';
+    const schema = JSON_SCHEMA_URL + '/modflow/boundary/constantHeadBoundary';
     return expect(validate(data, schema)).resolves.toEqual([true, null]);
 });

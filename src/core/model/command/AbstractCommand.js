@@ -1,5 +1,4 @@
 import Ajv from 'ajv';
-import ajv0 from 'ajv/lib/refs/json-schema-draft-04';
 import jsrp from 'json-schema-ref-parser'
 import uuid from 'uuid';
 
@@ -27,40 +26,23 @@ export default class AbstractCommand {
 
             const ajv = new Ajv({schemaId: 'auto'});
 
-            // THE WAY WITH URLs
-            if (this.schema.indexOf('https://') === 0) {
-                jsrp.dereference({'$ref': this.schema})
-                    .then(schema => {
-                        const val = ajv.compile(schema);
-                        const isValid = val(this.toObject());
-                        const errors = val.errors;
+            jsrp.dereference({'$ref': this.schema})
+                .then(schema => {
+                    const val = ajv.compile(schema);
+                    const isValid = val(this.toObject());
+                    const errors = val.errors;
 
-                        if (!isValid) {
-                            console.warn('Invalid payload sending ' + this.message_name, this.toObject(), this.schema, JSON.stringify(errors));
-                        }
+                    if (!isValid) {
+                        console.warn('Invalid payload sending ' + this.message_name, this.toObject(), this.schema, JSON.stringify(errors));
+                    }
 
-                        resolve([isValid, errors]);
-                    })
-                    .catch(e => {
-                        console.log(e);
-                        resolve([false, e]);
-                    });
-                return;
-            }
-
-            // THE OLD WAY
-            ajv.addMetaSchema(ajv0);
-            const val = ajv.compile(this.schema);
-            const isValid = val(this.payload);
-            const errors = val.errors;
-
-            if (!isValid) {
-                console.warn('Invalid payload sending ' + this.message_name, JSON.stringify(errors));
-            }
-            resolve([isValid, errors]);
+                    resolve([isValid, errors]);
+                })
+                .catch(e => {
+                    console.log(e);
+                    resolve([false, e]);
+                });
         });
-
-
     }
 
     toObject = () => ({

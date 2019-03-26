@@ -179,10 +179,10 @@ export default class FlopyPackages {
 
     validate(forCalculationServer = true) {
 
-        let schema = JSON_SCHEMA_URL + 'modflow/packages/flopyCalculationPackages.json';
+        let schema = JSON_SCHEMA_URL + '/modflow/packages/flopyCalculationPackages.json';
         let data = this.toObject();
         if (forCalculationServer) {
-            schema = JSON_SCHEMA_URL + 'modflow/packages/flopyCalculation.json';
+            schema = JSON_SCHEMA_URL + '/modflow/packages/flopyCalculation.json';
             data = this.toFlopyCalculation();
         }
 
