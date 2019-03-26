@@ -17,6 +17,7 @@ import {
 } from 'core/model/modflow';
 
 import Cells from 'core/model/geometry/Cells';
+import {uniqueId} from 'recharts/es6/util/DataUtils';
 
 const style = {
     map: {
@@ -61,7 +62,7 @@ class BoundaryDiscretizationMap extends React.Component {
                 case 'point':
                     return (
                         <CircleMarker
-                            key={Geometry.fromObject(b.geometry).hash()}
+                            key={uniqueId(Geometry.fromObject(b.geometry).hash())}
                             center={[
                                 b.geometry.coordinates[1],
                                 b.geometry.coordinates[0]
@@ -72,7 +73,7 @@ class BoundaryDiscretizationMap extends React.Component {
                 case 'linestring':
                     return (
                         <Polyline
-                            key={Geometry.fromObject(b.geometry).hash()}
+                            key={uniqueId(Geometry.fromObject(b.geometry).hash())}
                             positions={Geometry.fromObject(b.geometry).coordinatesLatLng}
                             {...getStyle('underlay')}
                         />
@@ -86,7 +87,7 @@ class BoundaryDiscretizationMap extends React.Component {
             case 'point':
                 return (
                     <CircleMarker
-                        key={Geometry.fromObject(b.geometry).hash()}
+                        key={uniqueId(Geometry.fromObject(b.geometry).hash())}
                         center={[
                             b.geometry.coordinates[1],
                             b.geometry.coordinates[0]
@@ -97,7 +98,7 @@ class BoundaryDiscretizationMap extends React.Component {
             case 'linestring':
                 return (
                     <Polyline
-                        key={Geometry.fromObject(b.geometry).hash()}
+                        key={uniqueId(Geometry.fromObject(b.geometry).hash())}
                         positions={Geometry.fromObject(b.geometry).coordinatesLatLng}
                     />
                 );
