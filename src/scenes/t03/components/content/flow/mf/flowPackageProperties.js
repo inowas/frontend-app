@@ -21,7 +21,7 @@ class FlowPackageProperties extends AbstractPackageProperties {
             return null;
         }
 
-        const {readonly, mfPackage} = this.props;
+        const {mfPackage} = this.props;
 
         return (
             <Form>
@@ -39,7 +39,8 @@ class FlowPackageProperties extends AbstractPackageProperties {
                     </Form.Field>
                     <Form.Field width={1}>
                         <label>&nbsp;</label>
-                        <InfoPopup description={documentation.model} title='Model' position='top right' iconOutside={true} />
+                        <InfoPopup description={documentation.model} title='Model' position='top right'
+                                   iconOutside={true}/>
                     </Form.Field>
                 </Form.Group>
 

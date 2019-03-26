@@ -12,8 +12,6 @@ class ChdPackageProperties extends AbstractPackageProperties {
             return null;
         }
 
-        const {readonly, mfPackage} = this.props;
-
         return (
             <Form>
                 <Header as={'h4'}>To be implemented</Header>

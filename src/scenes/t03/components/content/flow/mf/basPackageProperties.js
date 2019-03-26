@@ -20,7 +20,7 @@ class BasPackageProperties extends AbstractPackageProperties {
             return null;
         }
 
-        const {readonly, mfPackage} = this.props;
+        const {mfPackage} = this.props;
 
         return (
             <Form>
