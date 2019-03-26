@@ -91,6 +91,7 @@ export default class FlopyModflow {
 
         this.setDiscretization(model, soilmodel);
         this.setBoundaries(boundaries);
+        this.setFlowPackage('lpf', soilmodel);
         this.setDefaultOutputControl(model.stressperiods.count)
     };
 
