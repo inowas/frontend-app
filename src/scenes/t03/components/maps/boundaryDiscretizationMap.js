@@ -6,7 +6,7 @@ import {EditControl} from 'react-leaflet-draw';
 
 import ActiveCellsLayer from 'services/geoTools/activeCellsLayer';
 import {BasicTileLayer} from 'services/geoTools/tileLayers';
-
+import {uniqueId} from 'lodash';
 import {getStyle} from './index';
 
 import {
@@ -17,7 +17,6 @@ import {
 } from 'core/model/modflow';
 
 import Cells from 'core/model/geometry/Cells';
-import {uniqueId} from 'recharts/es6/util/DataUtils';
 
 const style = {
     map: {
