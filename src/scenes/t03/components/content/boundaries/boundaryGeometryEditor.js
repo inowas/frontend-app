@@ -10,7 +10,8 @@ class BoundaryGeometryEditor extends React.Component {
         super(props);
         this.state = {
             activeItem: 'geometry',
-            boundary: props.boundary.toObject()
+            boundary: props.boundary.toObject(),
+            buttonsDisabled: true
         };
     }
 
@@ -23,14 +24,24 @@ class BoundaryGeometryEditor extends React.Component {
         const {name, value} = target;
         const boundary = BoundaryFactory.fromObject(this.state.boundary);
         boundary[name] = value;
-        this.setState({boundary: boundary.toObject()})
+        this.setState({
+            boundary: boundary.toObject(),
+            buttonsDisabled: false
+        })
+    };
+
+    onChangeGeometry = boundary => {
+        this.setState({
+            boundary: boundary.toObject(),
+            buttonsDisabled: false
+        }, () => this.props.onChange(boundary));
     };
 
     handleItemClick = (e, {name}) => this.setState({activeItem: name});
 
     render() {
         const {boundaries, model, onCancel, onChange, readOnly} = this.props;
-        const {activeItem} = this.state;
+        const {activeItem, buttonsDisabled} = this.state;
         const boundary = BoundaryFactory.fromObject(this.state.boundary);
 
         return (
@@ -74,7 +85,7 @@ class BoundaryGeometryEditor extends React.Component {
                             model={model}
                             boundary={boundary}
                             boundaries={boundaries}
-                            onChange={onChange}
+                            onChange={this.onChangeGeometry}
                             readOnly={readOnly}
                             showBoundaryGeometry={true}
                             showActiveCells={false}
@@ -83,7 +94,7 @@ class BoundaryGeometryEditor extends React.Component {
                             model={model}
                             boundary={boundary}
                             boundaries={boundaries}
-                            onChange={onChange}
+                            onChange={this.onChangeGeometry}
                             readOnly={readOnly}
                             showBoundaryGeometry={true}
                             showActiveCells={true}
@@ -92,11 +103,22 @@ class BoundaryGeometryEditor extends React.Component {
 
                 </Modal.Content>
                 <Modal.Actions>
-                    <Button negative onClick={onCancel}>Cancel</Button>
-                    <Button positive onClick={() => {
-                        onChange(boundary);
-                        onCancel();
-                    }}>Apply</Button>
+                    <Button
+                        negative
+                        onClick={onCancel}
+                    >
+                        Cancel
+                    </Button>
+                    <Button
+                        positive
+                        onClick={() => {
+                            onChange(boundary);
+                            onCancel();
+                        }}
+                        disabled={buttonsDisabled}
+                    >
+                        Apply
+                    </Button>
                 </Modal.Actions>
             </Modal>
         );
