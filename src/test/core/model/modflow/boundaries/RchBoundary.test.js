@@ -1,7 +1,7 @@
 import Uuid from 'uuid';
 import {RechargeBoundary} from 'core/model/modflow/boundaries';
 import {validate} from 'services/jsonSchemaValidator';
-import {JSON_SCHEMA_URL} from '../../../../../services/api';
+import {JSON_SCHEMA_URL} from 'services/api';
 
 
 const createRechargeBoundary = () => {
@@ -47,6 +47,6 @@ test('RechargeBoundary fromObject', () => {
 
 test('RechargeBoundary schema validation', () => {
     const data = createRechargeBoundary().toObject();
-    const schema = JSON_SCHEMA_URL + 'modflow/boundary/rechargeBoundary';
+    const schema = JSON_SCHEMA_URL + '/modflow/boundary/rechargeBoundary';
     return expect(validate(data, schema)).resolves.toEqual([true, null]);
 });

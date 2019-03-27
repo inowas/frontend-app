@@ -6,7 +6,7 @@ import {EditControl} from 'react-leaflet-draw';
 
 import ActiveCellsLayer from 'services/geoTools/activeCellsLayer';
 import {BasicTileLayer} from 'services/geoTools/tileLayers';
-
+import {uniqueId} from 'lodash';
 import {getStyle} from './index';
 
 import {
@@ -61,7 +61,7 @@ class BoundaryDiscretizationMap extends React.Component {
                 case 'point':
                     return (
                         <CircleMarker
-                            key={Geometry.fromObject(b.geometry).hash()}
+                            key={uniqueId(Geometry.fromObject(b.geometry).hash())}
                             center={[
                                 b.geometry.coordinates[1],
                                 b.geometry.coordinates[0]
@@ -72,7 +72,7 @@ class BoundaryDiscretizationMap extends React.Component {
                 case 'linestring':
                     return (
                         <Polyline
-                            key={Geometry.fromObject(b.geometry).hash()}
+                            key={uniqueId(Geometry.fromObject(b.geometry).hash())}
                             positions={Geometry.fromObject(b.geometry).coordinatesLatLng}
                             {...getStyle('underlay')}
                         />
@@ -86,7 +86,7 @@ class BoundaryDiscretizationMap extends React.Component {
             case 'point':
                 return (
                     <CircleMarker
-                        key={Geometry.fromObject(b.geometry).hash()}
+                        key={uniqueId(Geometry.fromObject(b.geometry).hash())}
                         center={[
                             b.geometry.coordinates[1],
                             b.geometry.coordinates[0]
@@ -97,7 +97,7 @@ class BoundaryDiscretizationMap extends React.Component {
             case 'linestring':
                 return (
                     <Polyline
-                        key={Geometry.fromObject(b.geometry).hash()}
+                        key={uniqueId(Geometry.fromObject(b.geometry).hash())}
                         positions={Geometry.fromObject(b.geometry).coordinatesLatLng}
                     />
                 );

@@ -152,8 +152,8 @@ class Overview extends React.Component {
                 <Grid.Row>
                     <Grid.Column width={6}>
                         <Header as={'h3'}>Calculation</Header>
-                        {this.renderCalculationButton(canBeCalculated)}
-                        {this.renderCalculationProgress(calculation)}
+                        {!model.readOnly && this.renderCalculationButton(canBeCalculated)}
+                        {!model.readOnly && this.renderCalculationProgress(calculation)}
 
                     </Grid.Column>
                     <Grid.Column width={10}>

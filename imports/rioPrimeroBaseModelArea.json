@@ -1,0 +1,114 @@
+{
+  "name": "Rio Primero Base Model",
+  "description": "Rio Primero Base Model",
+  "public": true,
+  "discretization": {
+    "geometry": {
+      "type": "Polygon",
+      "coordinates": [
+        [
+          [
+            -63.687336,
+            -31.313615
+          ],
+          [
+            -63.687336,
+            -31.367449
+          ],
+          [
+            -63.569260,
+            -31.367449
+          ],
+          [
+            -63.569260,
+            -31.313615
+          ],
+          [
+            -63.687336,
+            -31.313615
+          ]
+        ]
+      ]
+    },
+    "grid_size": [
+      75,
+      40
+    ],
+    "stressperiods": {
+      "start_date_time": "2015-01-01",
+      "end_date_time": "2019-12-31",
+      "time_unit": 4,
+      "stressperiods": [
+        {
+          "start_date_time": "2015-01-01",
+          "tsmult": 1,
+          "nstp": 1,
+          "steady": true
+        }
+      ]
+    },
+    "length_unit": 2,
+    "time_unit": 4
+  },
+  "soilmodel": {
+    "layers": [
+      {
+        "name": "Top layer",
+        "description": "The one and only",
+        "number": 0,
+        "laytyp": 0,
+        "top": 460,
+        "botm": 390,
+        "hk": 8.64,
+        "hani": 1,
+        "vka": 0.864,
+        "layavg": 0,
+        "laywet": 0,
+        "ss": 1e-5,
+        "sy": 0.2
+      }
+    ]
+  },
+  "boundaries": [
+    {
+      "type": "wel",
+      "name": "Public Well 1",
+      "well_type": "puw",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -63.625402,
+          -31.329897
+        ]
+      },
+      "layers": [
+        0
+      ],
+      "sp_values": [
+        [
+          -5000
+        ]
+      ]
+    },
+    {
+      "type": "wel",
+      "name": "Public Well 2",
+      "well_type": "puw",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -63.623027,
+          -31.331184
+        ]
+      },
+      "layers": [
+        0
+      ],
+      "sp_values": [
+        [
+          -5000
+        ]
+      ]
+    }
+  ]
+}
