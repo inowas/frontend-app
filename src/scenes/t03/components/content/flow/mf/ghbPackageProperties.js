@@ -7,13 +7,6 @@ import {FlopyModflowMfghb} from 'core/model/flopy/packages/mf';
 import InfoPopup from '../../../../../shared/InfoPopup';
 import {documentation} from '../../../../defaults/flow';
 
-const styles = {
-    inputFix: {
-        padding: '0',
-        height: 'auto'
-    }
-};
-
 class GhbPackageProperties extends AbstractPackageProperties {
 
     render() {
@@ -25,29 +18,12 @@ class GhbPackageProperties extends AbstractPackageProperties {
 
         return (
             <Form>
-                <Form.Group>
-                    <Form.Field width={15}>
-                        <label>Model object</label>
-                        <Form.Dropdown
-                            placeholder='Select model'
-                            name='model'
-                            selection
-                            value={JSON.stringify(mfPackage.model)}
-                        />
-                    </Form.Field>
-                    <Form.Field width={1}>
-                        <label>&nbsp;</label>
-                        <InfoPopup description={documentation.model} title='Model' position='top right' iconOutside={true} />
-                    </Form.Field>
-                </Form.Group>
-
                 <Form.Group widths='equal'>
                     <Form.Field>
                         <label>Cell-by-cell budget data (ipakcb)</label>
                         <Input readOnly
                                name='ipakcb'
                                value={JSON.stringify(mfPackage.ipakcb)}
-                               style={styles.inputFix}
                                icon={this.renderInfoPopup(documentation.ipakcb, 'ipakcb')}
                         />
                     </Form.Field>
@@ -56,7 +32,6 @@ class GhbPackageProperties extends AbstractPackageProperties {
                         <Input readOnly
                                name='stress_period_data'
                                value={JSON.stringify(mfPackage.stress_period_data)}
-                               style={styles.inputFix}
                                icon={this.renderInfoPopup(documentation.stress_period_data, 'stress_period_data')}
                         />
                     </Form.Field>
@@ -67,14 +42,13 @@ class GhbPackageProperties extends AbstractPackageProperties {
                         <Input readOnly
                                name='dtype'
                                value={JSON.stringify(mfPackage.dtype)}
-                               style={styles.inputFix}
                                icon={this.renderInfoPopup(documentation.dtype, 'dtype')}
                         />
                     </Form.Field>
 
                 <Form.Group>
                     <Form.Field width={15}>
-                        <label style={styles.headerLabel}>Package Options</label>
+                        <label>Package Options</label>
                         <Select fluid
                                 name={'options'}
                                 value={mfPackage.options}
@@ -99,7 +73,6 @@ class GhbPackageProperties extends AbstractPackageProperties {
                         <Input readOnly
                                name='extension'
                                value={JSON.stringify(mfPackage.extension)}
-                               style={styles.inputFix}
                                icon={this.renderInfoPopup(documentation.extension, 'extension')}
                         />
                     </Form.Field>
@@ -108,7 +81,6 @@ class GhbPackageProperties extends AbstractPackageProperties {
                         <Input readOnly
                                name='unitnumber'
                                value={JSON.stringify(mfPackage.unitnumber)}
-                               style={styles.inputFix}
                                icon={this.renderInfoPopup(documentation.unitnumber, 'unitnumber')}
                         />
                     </Form.Field>
@@ -117,7 +89,6 @@ class GhbPackageProperties extends AbstractPackageProperties {
                         <Input readOnly
                                name='filenames'
                                value={JSON.stringify(mfPackage.filenames)}
-                               style={styles.inputFix}
                                icon={this.renderInfoPopup(documentation.filenames, 'filenames')}
                         />
                     </Form.Field>

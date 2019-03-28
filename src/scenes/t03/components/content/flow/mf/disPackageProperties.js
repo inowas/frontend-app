@@ -3,16 +3,9 @@ import React from 'react';
 import {Form, Input} from 'semantic-ui-react';
 
 import AbstractPackageProperties from './AbstractPackageProperties';
-import {documentation} from '../../../../defaults/flow';
 import {FlopyModflowMfdis} from 'core/model/flopy/packages/mf';
 import InfoPopup from '../../../../../shared/InfoPopup';
-
-const styles = {
-    inputFix: {
-        padding: '0',
-        height: 'auto'
-    }
-};
+import {documentation} from '../../../../defaults/flow';
 
 class DisPackageProperties extends AbstractPackageProperties {
 
@@ -29,6 +22,10 @@ class DisPackageProperties extends AbstractPackageProperties {
                         <Form.Field width={15}>
                             <label>Model object</label>
                             <Form.Dropdown
+                                options={[
+                                    {key: 0, value: 'model1', text: 'Model 01'},
+                                    {key: 1, value: 'model2', text: 'Model 02'},
+                                ]}
                                 placeholder='Select model'
                                 name='model'
                                 selection
@@ -48,7 +45,6 @@ class DisPackageProperties extends AbstractPackageProperties {
                                type={'number'}
                                name='nlay'
                                value={mfPackage.nlay}
-                               style={styles.inputFix}
                                icon={this.renderInfoPopup(documentation.nlay, 'nlay')}
                         />
                     </Form.Field>
@@ -58,7 +54,6 @@ class DisPackageProperties extends AbstractPackageProperties {
                                type={'number'}
                                name='nrow'
                                value={mfPackage.nrow}
-                               style={styles.inputFix}
                                icon={this.renderInfoPopup(documentation.nrow, 'nrow')}
                         />
                     </Form.Field>
@@ -68,7 +63,6 @@ class DisPackageProperties extends AbstractPackageProperties {
                                type={'number'}
                                name='ncol'
                                value={mfPackage.ncol}
-                               style={styles.inputFix}
                                icon={this.renderInfoPopup(documentation.ncol, 'ncol')}
                         />
                     </Form.Field>
@@ -78,19 +72,17 @@ class DisPackageProperties extends AbstractPackageProperties {
                                type={'number'}
                                name='nper'
                                value={mfPackage.nper}
-                               style={styles.inputFix}
                                icon={this.renderInfoPopup(documentation.nper, 'nper')}
                         />
                     </Form.Field>
                 </Form.Group>
 
-                <Form.Group>
+                <Form.Group widths='equal'>
                     <Form.Field>
                         <label>Row spacing (delr)</label>
                         <Input readOnly
                                name='delr'
                                value={JSON.stringify(mfPackage.delr)}
-                               style={styles.inputFix}
                                icon={this.renderInfoPopup(documentation.delr, 'delr')}
                         />
                     </Form.Field>
@@ -99,7 +91,6 @@ class DisPackageProperties extends AbstractPackageProperties {
                         <Input readOnly
                                name='delc'
                                value={JSON.stringify(mfPackage.delc)}
-                               style={styles.inputFix}
                                icon={this.renderInfoPopup(documentation.delc, 'delc')}
                         />
                     </Form.Field>
@@ -108,19 +99,17 @@ class DisPackageProperties extends AbstractPackageProperties {
                         <Input readOnly
                                name='laycbd'
                                value={JSON.stringify(mfPackage.laycbd)}
-                               style={styles.inputFix}
                                icon={this.renderInfoPopup(documentation.laycbd, 'laycbd')}
                         />
                     </Form.Field>
                 </Form.Group>
 
-                <Form.Group>
+                <Form.Group widths='equal'>
                     <Form.Field>
                         <label>Top elevation (top)</label>
                         <Input readOnly
                                name='top'
                                value={JSON.stringify(mfPackage.top)}
-                               style={styles.inputFix}
                                icon={this.renderInfoPopup(documentation.top, 'top')}
                         />
                     </Form.Field>
@@ -129,7 +118,6 @@ class DisPackageProperties extends AbstractPackageProperties {
                         <Input readOnly
                                name='botm'
                                value={JSON.stringify(mfPackage.botm)}
-                               style={styles.inputFix}
                                icon={this.renderInfoPopup(documentation.botm, 'botm')}
                         />
                     </Form.Field>
@@ -138,19 +126,17 @@ class DisPackageProperties extends AbstractPackageProperties {
                         <Input readOnly
                                name='perlen'
                                value={JSON.stringify(mfPackage.perlen)}
-                               style={styles.inputFix}
                                icon={this.renderInfoPopup(documentation.perlen, 'perlen')}
                         />
                     </Form.Field>
                 </Form.Group>
 
-                <Form.Group>
+                <Form.Group widths='equal'>
                     <Form.Field>
                         <label>Time steps in stress period (nstp)</label>
                         <Input readOnly
                                name='nstp'
                                value={JSON.stringify(mfPackage.nstp)}
-                               style={styles.inputFix}
                                icon={this.renderInfoPopup(documentation.nstp, 'nstp')}
                         />
                     </Form.Field>
@@ -159,7 +145,6 @@ class DisPackageProperties extends AbstractPackageProperties {
                         <Input readOnly
                                name='tsmult'
                                value={JSON.stringify(mfPackage.tsmult)}
-                               style={styles.inputFix}
                                icon={this.renderInfoPopup(documentation.tsmult, 'tsmult')}
                         />
                     </Form.Field>
@@ -168,20 +153,18 @@ class DisPackageProperties extends AbstractPackageProperties {
                         <Input readOnly
                                name='steady'
                                value={JSON.stringify(mfPackage.steady)}
-                               style={styles.inputFix}
                                icon={this.renderInfoPopup(documentation.steady, 'steady')}
                         />
                     </Form.Field>
                 </Form.Group>
 
-                <Form.Group>
+                <Form.Group widths='equal'>
                     <Form.Field>
                         <label>Time units (itmuni)</label>
                         <Input readOnly
                                type={'number'}
                                name='itmuni'
                                value={JSON.stringify(mfPackage.itmuni)}
-                               style={styles.inputFix}
                                icon={this.renderInfoPopup(documentation.itmuni, 'itmuni')}
                         />
                     </Form.Field>
@@ -191,19 +174,17 @@ class DisPackageProperties extends AbstractPackageProperties {
                                type={'number'}
                                name='lenuni'
                                value={JSON.stringify(mfPackage.lenuni)}
-                               style={styles.inputFix}
                                icon={this.renderInfoPopup(documentation.lenuni, 'lenuni')}
                         />
                     </Form.Field>
                 </Form.Group>
 
-                <Form.Group>
+                <Form.Group widths='equal'>
                     <Form.Field>
                         <label>Filename extension</label>
                         <Input readOnly
                                name='extension'
                                value={mfPackage.extension}
-                               style={styles.inputFix}
                                icon={this.renderInfoPopup(documentation.extension, 'extension')}
                         />
                     </Form.Field>
@@ -213,30 +194,26 @@ class DisPackageProperties extends AbstractPackageProperties {
                                type={'number'}
                                name='unitnumber'
                                value={JSON.stringify(mfPackage.unitnumber)}
-                               style={styles.inputFix}
                                icon={this.renderInfoPopup(documentation.unitnumber, 'unitnumber')}
+                        />
+                    </Form.Field>
+                    <Form.Field>
+                        <label>Filenames</label>
+                        <Input readOnly
+                               name='filenames'
+                               value={JSON.stringify(mfPackage.filenames)}
+                               icon={this.renderInfoPopup(documentation.filenames, 'filenames')}
                         />
                     </Form.Field>
                 </Form.Group>
 
-                <Form.Field>
-                    <label>Filenames</label>
-                    <Input readOnly
-                           name='filenames'
-                           value={JSON.stringify(mfPackage.filenames)}
-                           style={styles.inputFix}
-                           icon={this.renderInfoPopup(documentation.filenames, 'filenames')}
-                    />
-                </Form.Field>
-
-                <Form.Group>
+                <Form.Group widths='equal'>
                     <Form.Field>
                         <label>Upper left corner x coordinate (xul)</label>
                         <Input readOnly
                                type={'number'}
                                name='xul'
                                value={JSON.stringify(mfPackage.xul)}
-                               style={styles.inputFix}
                                icon={this.renderInfoPopup(documentation.xul, 'xul')}
                         />
                     </Form.Field>
@@ -246,7 +223,6 @@ class DisPackageProperties extends AbstractPackageProperties {
                                type={'number'}
                                name='yul'
                                value={JSON.stringify(mfPackage.yul)}
-                               style={styles.inputFix}
                                icon={this.renderInfoPopup(documentation.yul, 'yul')}
                         />
                     </Form.Field>
@@ -256,30 +232,30 @@ class DisPackageProperties extends AbstractPackageProperties {
                                type={'number'}
                                name='rotation'
                                value={JSON.stringify(mfPackage.rotation)}
-                               style={styles.inputFix}
                                icon={this.renderInfoPopup(documentation.rotation, 'rotation')}
                         />
                     </Form.Field>
                 </Form.Group>
-                <Form.Field>
-                    <label>proj4_str</label>
-                    <Input readOnly
-                           name='proj4_str'
-                           value={mfPackage.proj4_str}
-                           style={styles.inputFix}
-                           icon={this.renderInfoPopup(documentation.proj4_str, 'proj4_str')}
-                    />
-                </Form.Field>
-                <Form.Field>
-                    <label>Starting date time (start_dateteim)</label>
-                    <Input readOnly
-                           type={'date'}
-                           name='start_dateteim'
-                           value={JSON.stringify(mfPackage.start_dateteim)}
-                           style={styles.inputFix}
-                           icon={this.renderInfoPopup(documentation.start_dateteim, 'start_dateteim')}
-                    />
-                </Form.Field>
+
+                <Form.Group widths='equal'>
+                    <Form.Field widths='equal'>
+                        <label>Coordinate system (proj4_str)</label>
+                        <Input readOnly
+                               name='proj4_str'
+                               value={mfPackage.proj4_str}
+                               icon={this.renderInfoPopup(documentation.proj4_str, 'proj4_str')}
+                        />
+                    </Form.Field>
+                    <Form.Field>
+                        <label>Starting date time (start_dateteim)</label>
+                        <Input readOnly
+                               type={'date'}
+                               name='start_dateteim'
+                               value={JSON.stringify(mfPackage.start_dateteim)}
+                               icon={this.renderInfoPopup(documentation.start_dateteim, 'start_dateteim')}
+                        />
+                    </Form.Field>
+                </Form.Group>
             </Form>
         );
     }
