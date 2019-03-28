@@ -750,3 +750,10 @@
         User Overrides
 *******************************/
 
+.popupFix {
+  max-width: 350px !important;
+}
+.contentFix {
+  width: auto;
+  max-width: 350px;
+}

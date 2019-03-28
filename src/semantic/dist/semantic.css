@@ -600,7 +600,7 @@ body {
   margin: 0px;
   padding: 0px;
   overflow-x: hidden;
-  min-width: 320px;
+  min-width: 1280px;
   background: #EFF3F6;
   font-family: 'Oxygen', 'Helvetica Neue', Arial, Helvetica, sans-serif;
   font-size: 14px;
@@ -13832,6 +13832,17 @@ i.icon.youtube.square {
 /*******************************
          Site Overrides
 *******************************/
+
+.iconFix {
+  background-color: #FFFFFF;
+  width: 5px;
+  height: 5px;
+}
+
+i.icon.iconOutside {
+  margin-top: 4px;
+  margin-left: -4px;
+}
 /*!
  * # Semantic UI undefined - Image
  * http://github.com/semantic-org/semantic-ui/
@@ -35769,6 +35780,15 @@ a.ui.nag {
 /*******************************
         User Overrides
 *******************************/
+
+.popupFix {
+  max-width: 350px !important;
+}
+
+.contentFix {
+  width: auto;
+  max-width: 350px;
+}
 /*!
  * # Semantic UI undefined - Progress Bar
  * http://github.com/semantic-org/semantic-ui/

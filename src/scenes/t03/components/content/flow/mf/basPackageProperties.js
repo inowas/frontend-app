@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types';
 import React from 'react';
-import {Header, Form, Input} from 'semantic-ui-react';
+import {Form, Input} from 'semantic-ui-react';
 
 import AbstractPackageProperties from './AbstractPackageProperties';
 import {FlopyModflowMfbas} from 'core/model/flopy/packages/mf';
@@ -24,7 +24,6 @@ class BasPackageProperties extends AbstractPackageProperties {
 
         return (
             <Form>
-                <Header as={'h4'}>To be implemented</Header>
                 <Form.Field>
                     <label>Ibound array</label>
                     <Input readOnly
@@ -34,27 +33,27 @@ class BasPackageProperties extends AbstractPackageProperties {
                            icon={this.renderInfoPopup(documentation.ibound, 'ibound')}
                     />
                 </Form.Field>
-                <Form.Field>
-                    <label>Starting Heads</label>
-                    <Input readOnly
-                           name='strt'
-                           value={JSON.stringify(mfPackage.strt)}
-                           style={styles.inputFix}
-                           icon={this.renderInfoPopup(documentation.strt, 'strt')}
-                    />
-                </Form.Field>
-                <Form.Field>
-                    <label>Free format (ifrefm)</label>
-                    <Input readOnly
-                           name='ifrefm'
-                           value={JSON.stringify(mfPackage.ifrefm)}
-                           style={styles.inputFix}
-                           icon={this.renderInfoPopup(documentation.ifrefm, 'ifrefm')}
-                    />
-                </Form.Field>
-                <Form.Group>
+                <Form.Group widths='equal'>
                     <Form.Field>
-                        <label>ichflg</label>
+                        <label>Starting Head (strt)</label>
+                        <Input readOnly
+                               name='strt'
+                               value={JSON.stringify(mfPackage.strt)}
+                               icon={this.renderInfoPopup(documentation.strt, 'strt')}
+                        />
+                    </Form.Field>
+                    <Form.Field>
+                        <label>Free format (ifrefm)</label>
+                        <Input readOnly
+                               name='ifrefm'
+                               value={JSON.stringify(mfPackage.ifrefm)}
+                               icon={this.renderInfoPopup(documentation.ifrefm, 'ifrefm')}
+                        />
+                    </Form.Field>
+                </Form.Group>
+                <Form.Group widths='equal'>
+                    <Form.Field>
+                        <label>Flow between chd cells (ichflg)</label>
                         <Input readOnly
                                name='ichflg'
                                value={JSON.stringify(mfPackage.ichflg)}
@@ -63,7 +62,7 @@ class BasPackageProperties extends AbstractPackageProperties {
                         />
                     </Form.Field>
                     <Form.Field>
-                        <label>stoper</label>
+                        <label>Budget percent discrepancy (stoper)</label>
                         <Input readOnly
                                name='stoper'
                                value={JSON.stringify(mfPackage.stoper)}
