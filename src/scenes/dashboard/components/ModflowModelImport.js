@@ -2,7 +2,7 @@ import React from 'react';
 import {withRouter} from 'react-router-dom';
 
 import Uuid from 'uuid';
-import {Icon} from 'semantic-ui-react';
+import {Button} from 'semantic-ui-react';
 import {validate} from 'services/jsonSchemaValidator';
 import {JSON_SCHEMA_URL, sendCommand} from 'services/api';
 import ModflowModelCommand from '../../t03/commands/modflowModelCommand';
@@ -81,16 +81,22 @@ class ModflowModelImport extends React.Component {
     render() {
         console.warn(this.state.errors);
         return (
-            <span>
-                <label htmlFor={'inputField'}>
-                    <Icon name='file text'/> Import JSON
-                </label>
+            <div>
+                <Button primary
+                    as='label'
+                    htmlFor={'inputField'}
+                    icon='upload'
+                    content='Import JSON'
+                    labelPosition='left'
+                    />
+
                 <input
-                    type="file" id='inputField'
-                    style={{display: 'none'}}
+                    hidden
+                    type='file'
+                    id='inputField'
                     onChange={this.handleUploadJson}
                 />
-            </span>
+            </div>
         );
     }
 }

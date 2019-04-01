@@ -5309,6 +5309,13 @@ body .ui.inverted::-webkit-scrollbar-thumb:hover {
 /*******************************
          Site Overrides
 *******************************/
+
+.columnContainer {
+  background-color: #FFFFFF;
+  -webkit-box-shadow: 0 0 3px 0px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 0 3px 0px rgba(0, 0, 0, 0.3);
+  height: 100%;
+}
 /*!
  * # Semantic UI undefined - Divider
  * http://github.com/semantic-org/semantic-ui/
