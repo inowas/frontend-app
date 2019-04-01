@@ -46,7 +46,7 @@ export default class FlopyModflowMfrch extends FlopyModflowBoundary {
                 cells.forEach(cell => {
                     const row = cell[1];
                     const col = cell[0];
-                    spData[per][row][col] = spValues[per][0];
+                    spData[per][row][col] += spValues[per][0];
                 });
             });
         });
