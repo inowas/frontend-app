@@ -2,7 +2,7 @@ import React from 'react';
 import {withRouter} from 'react-router-dom';
 
 import Uuid from 'uuid';
-import {Button} from 'semantic-ui-react';
+import {Button, Dimmer, Grid, Header, Modal, List, Loader, Segment} from 'semantic-ui-react';
 import {validate} from 'services/jsonSchemaValidator';
 import {JSON_SCHEMA_URL, sendCommand} from 'services/api';
 import ModflowModelCommand from '../../t03/commands/modflowModelCommand';
@@ -14,7 +14,9 @@ class ModflowModelImport extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            errors: null
+            payload: null,
+            errors: null,
+            showJSONImportModal: false
         };
 
         this.fileReader = new FileReader();
@@ -65,10 +67,18 @@ class ModflowModelImport extends React.Component {
                 boundaries: BoundaryCollection.fromImport(data.boundaries, boundingBox, gridSize).toObject()
             };
 
-            sendCommand(ModflowModelCommand.importModflowModel(payload),
-                () => this.props.history.push('/tools/T03/' + id)
-            )
+           return this.setState({payload});
         })
+    };
+
+    sendImportCommand = () => {
+        const {payload} = this.state;
+
+        if (payload) {
+            sendCommand(ModflowModelCommand.importModflowModel(payload),
+                () => this.props.history.push('/tools/T03/' + payload.id)
+            )
+        }
     };
 
     handleUploadJson = (e) => {
@@ -78,24 +88,102 @@ class ModflowModelImport extends React.Component {
         }
     };
 
+    onClickUpload = () => this.setState({showJSONImportModal: true});
+
+    renderMetaData = () => (
+            <Segment color="blue">
+                <Header as="h3" style={{'textAlign': 'left'}}>Metadata</Header>
+            </Segment>
+        );
+
+    renderData = () => (
+            <Segment color="blue">
+                <Header as="h3" style={{'textAlign': 'left'}}>Data</Header>
+            </Segment>
+        );
+
+
+
+    renderJSONImportModal = () => (
+            <Modal open onClose={this.props.onCancel} dimmer={'blurring'}>
+                <Modal.Header>Import JSON File</Modal.Header>
+                <Modal.Content>
+                    <Grid divided={'vertically'}>
+                        <Grid.Row columns={2}>
+                            <Grid.Column>
+                                {this.state.isLoading &&
+                                <Dimmer active inverted>
+                                    <Loader>Uploading</Loader>
+                                </Dimmer>
+                                }
+                                {!this.state.isLoading &&
+                                <Segment color={'green'}>
+                                    <Header as="h3" style={{'textAlign': 'left'}}>File Requirements</Header>
+                                    <List bulleted>
+                                        <List.Item>The rasterfile should have the same bounds as the model
+                                            area.</List.Item>
+                                        <List.Item>The gridsize will interpolated automatically.</List.Item>
+                                    </List>
+                                    <Button
+                                        primary
+                                        fluid
+                                        as='label'
+                                        htmlFor={'inputField'}
+                                        icon='file alternate'
+                                        content='Select File'
+                                        labelPosition='left'
+                                    />
+                                    <input
+                                        hidden
+                                        type='file'
+                                        id='inputField'
+                                        onChange={this.handleUploadJson}
+                                    />
+                                </Segment>
+                                }
+                            </Grid.Column>
+                            <Grid.Column>
+                                {this.renderMetaData()}
+                            </Grid.Column>
+                        </Grid.Row>
+                        <Grid.Row columns={2}>
+                            <Grid.Column>
+                                {this.renderData()}
+                            </Grid.Column>
+                            <Grid.Column>
+                                <Segment color={'green'}>
+
+                                </Segment>
+                            </Grid.Column>
+                        </Grid.Row>
+                    </Grid>
+                </Modal.Content>
+                <Modal.Actions>
+                    <Button onClick={()=>this.setState({showJSONImportModal: false})}>Cancel</Button>
+                    <Button
+                        disabled={!this.state.payload}
+                        positive
+                        onClick={this.sendImportCommand}
+                    >
+                        Import
+                    </Button>
+                </Modal.Actions>
+            </Modal>
+        );
+
     render() {
+        const {showJSONImportModal} = this.state;
         console.warn(this.state.errors);
         return (
             <div>
-                <Button primary
-                    as='label'
-                    htmlFor={'inputField'}
+                <Button
+                    primary
                     icon='upload'
-                    content='Import JSON'
+                    content='Import'
                     labelPosition='left'
+                    onClick={this.onClickUpload}
                     />
-
-                <input
-                    hidden
-                    type='file'
-                    id='inputField'
-                    onChange={this.handleUploadJson}
-                />
+                {showJSONImportModal && this.renderJSONImportModal()}
             </div>
         );
     }
