@@ -45,8 +45,7 @@ class Login extends React.Component {
         return this.setState({loading: true},
             () => submitLoginCredentials({username, password},
                 response => {
-                    this.props.login(username, response.data.api_key);
-                    this.setState({loading: false})
+                    this.props.login(username, response.data.token);
                 },
                 (e) => {
                     this.props.loginError();
@@ -74,13 +73,13 @@ class Login extends React.Component {
                             </Header.Content>
                         </Header>
                         {this.state.error &&
-                        <Message negative><p>Wrong username or password. <br/>Please try again.</p></Message>
+                        <Message negative><p>Wrong username/email or password. <br/>Please try again.</p></Message>
                         }
                         <Form size={'small'} className="fluid segment">
                             <Form.Field>
                                 <input
                                     onChange={this.onUsernameChange}
-                                    placeholder="Username"
+                                    placeholder="Username or email"
                                 />
                             </Form.Field>
                             <Form.Field>

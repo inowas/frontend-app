@@ -7,11 +7,11 @@ import PapaParse from 'papaparse';
 import csvFile from '../data/database-2018-01-05.csv';
 
 import AppContainer from 'scenes/shared/AppContainer';
-import {Grid, Icon, Container, Header, Breadcrumb} from 'semantic-ui-react';
+import {Grid, Icon, Container, Breadcrumb} from 'semantic-ui-react';
 
 const navigation = [{
     name: 'Documentation',
-    path: 'https://inowas.hydro.tu-dresden.de/tools/t04a-database-for-gis-based-suitability-mapping/',
+    path: 'https://inowas.com/tools/t04a-database-for-gis-based-suitability-mapping/',
     icon: <Icon name="file"/>
 }];
 
@@ -41,9 +41,9 @@ class T04 extends React.Component {
 
     renderBreadcrumbs = () => (
         <Breadcrumb>
-            <Breadcrumb.Section link>Tools</Breadcrumb.Section>
-            <Breadcrumb.Divider icon='right angle'/>
-            <Breadcrumb.Section>T06. Database for GIS Based Site Suitability Mapping</Breadcrumb.Section>
+            <Breadcrumb.Section link onClick={() => this.props.history.push('/tools')}>Tools</Breadcrumb.Section>
+            <Breadcrumb.Divider icon='right chevron'/>
+            <Breadcrumb.Section active>T04. Database for GIS Based Site Suitability Mapping</Breadcrumb.Section>
         </Breadcrumb>
     );
 
@@ -56,10 +56,11 @@ class T04 extends React.Component {
         return (
             <AppContainer navbarItems={navigation}>
                 <div style={{width: '1250px', margin: '0 auto'}}>
-                <Header as={'h1'} size={'large'}>
-                    T04. Database for GIS Based Site Suitability Mapping
-                </Header>
-                {this.renderBreadcrumbs()}
+                    <Grid padded>
+                        <Grid.Column style={{paddingTop: '0.3em', paddingLeft: 0}}>
+                            {this.renderBreadcrumbs()}
+                        </Grid.Column>
+                    </Grid>
                 <Grid padded>
                     <Grid.Row>
                         <Container fluid className='tablewrap'>

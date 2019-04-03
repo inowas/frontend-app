@@ -1,17 +1,17 @@
 import {LOGIN, LOGIN_ERROR, LOGOUT, UNAUTHORIZED} from '../actions/actions';
 
 const initialState = () => ({
-    apiKey: localStorage.getItem('apiKey'),
+    token: localStorage.getItem('token'),
     error: false
 });
 
 export const session = (state = initialState(), action) => {
     switch (action.type) {
         case LOGIN: {
-            localStorage.setItem('apiKey', action.payload.apiKey);
+            localStorage.setItem('token', action.payload.token);
             return {
                 ...state,
-                apiKey: action.payload.apiKey,
+                token: action.payload.token,
                 error: false
             };
         }
@@ -25,7 +25,7 @@ export const session = (state = initialState(), action) => {
 
         case UNAUTHORIZED:
         case LOGOUT: {
-            localStorage.removeItem('apiKey');
+            localStorage.removeItem('token');
             return initialState();
         }
 
@@ -35,5 +35,5 @@ export const session = (state = initialState(), action) => {
     }
 };
 
-export const hasSessionKey = state => !!state.apiKey;
-export const getApiKey = state => state.apiKey;
+export const hasSessionKey = state => !!state.token;
+export const getApiKey = state => state.token;

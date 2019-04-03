@@ -16,15 +16,15 @@ const Info = ({parameters, settings}) => {
 
     if (Q >= qCrit) {
         return (
-            <Message icon>
+            <Message icon warning>
                 <Icon name='exclamation triangle' color='orange' />
                 <Message.Content>
                     <p>
                         With the chosen pumping rate of <strong>{Q.toFixed(0)} m³/d</strong>, seawater will intrude
-                        about <strong>{xT.toFixed(1)}</strong> m inland, which is
+                        about <strong>{xT.toFixed(1)} m</strong> inland, which is
                         higher than the distance from the well to the coast line.<br/>
                         Seawater will most likely intrude the well.<br/>
-                        The critical well discharge is <strong>{qCrit.toFixed(0)}</strong> m³/d.<br/>
+                        The critical well discharge is <strong>{qCrit.toFixed(0)} m³/d</strong>.<br/>
                         The pumping rate needs to be kept below that threshold so that seawater will not intrude the
                         well.
                     </p>
@@ -34,14 +34,14 @@ const Info = ({parameters, settings}) => {
     }
 
     return (
-        <Message icon>
+        <Message icon info>
             <Icon name='info circle' color='blue' />
             <Message.Content>
                 <p>
-                    With the chosen pumping rate of <strong>{Q.toFixed(0)}</strong> m³/d, seawater will intrude
-                    about <strong>{xT.toFixed(1)}</strong> m inland, which is lower than
+                    With the chosen pumping rate of <strong>{Q.toFixed(0)} m³/d</strong>, seawater will intrude
+                    about <strong>{xT.toFixed(1)} m</strong> inland, which is lower than
                     the distance from the well to the coast line and hence no seawater will intrude the well.<br/>
-                    The critical well discharge is <strong>{qCrit.toFixed(0)}</strong> m³/d.<br/>
+                    The critical well discharge is <strong>{qCrit.toFixed(0)} m³/d</strong>.<br/>
                     The pumping rate needs to be kept below that threshold so that seawater will not intrude the well.
                 </p>
             </Message.Content>

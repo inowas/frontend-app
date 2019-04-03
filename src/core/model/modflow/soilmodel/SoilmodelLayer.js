@@ -1,10 +1,10 @@
 import uuidv4 from 'uuid/v4';
-import {SoilmodelZone, ZonesCollection} from './index';
+import {ZonesCollection} from './index';
 import {GridSize} from '../index';
 import {cloneDeep} from 'lodash';
-import Geometry from '../Geometry';
-import ActiveCells from '../ActiveCells';
+import {Cells, Geometry} from 'core/model/geometry';
 import ModflowModel from '../ModflowModel';
+import DefaultZone from './DefaultZone';
 
 class SoilmodelLayer {
     _id = uuidv4();
@@ -25,21 +25,20 @@ class SoilmodelLayer {
     _ss = 0.00002;
     _sy = 0.15;
 
-    static fromDefault(geometry, activeCells) {
+    static fromDefault(geometry, cells) {
         if (!(geometry instanceof Geometry)) {
             throw new Error('GridSize needs to be instance of GridSize');
         }
-        if (!(activeCells instanceof ActiveCells)) {
-            throw new Error('GridSize needs to be instance of GridSize');
+
+        if (!(cells instanceof Cells)) {
+            throw new Error('Cells needs to be instance of Cells');
         }
 
         const layer = new SoilmodelLayer();
-        layer.name = 'Default Layer';
-        layer.number = 1;
+        layer.name = 'Top Layer';
+        layer.number = 0;
 
-        const defaultZone = SoilmodelZone.fromDefault();
-        defaultZone.geometry = geometry;
-        defaultZone.activeCells = activeCells;
+        const defaultZone = DefaultZone.fromDefault();
         layer.zonesCollection.add(defaultZone);
         return layer;
     }
@@ -63,6 +62,11 @@ class SoilmodelLayer {
             layer.ss = obj.ss;
             layer.sy = obj.sy;
             layer.zonesCollection = obj._meta && obj._meta.zones ? ZonesCollection.fromArray(obj._meta.zones, parseParameters) : new ZonesCollection();
+
+            if (layer.zonesCollection.length === 0) {
+                const defaultZone = DefaultZone.fromLayer(layer);
+                layer.zonesCollection.add(defaultZone);
+            }
         }
 
         return layer;
@@ -201,6 +205,11 @@ class SoilmodelLayer {
         this._meta._zones = value;
     }
 
+    clone(newId) {
+        this._id = newId;
+        return SoilmodelLayer.fromObject(this.toObject());
+    }
+
     toObject() {
         return {
             'id': this.id,
@@ -228,10 +237,10 @@ class SoilmodelLayer {
             throw new Error('Model needs to be instance of ModflowModel');
         }
 
-        const defaultZone = this.zonesCollection.findBy('priority', 0, true);
+        const defaultZone = this.zonesCollection.findBy('priority', 0, {first: true});
         if (defaultZone) {
             defaultZone.geometry = model.geometry;
-            defaultZone.activeCells = model.activeCells;
+            defaultZone.cells = model.cells;
             this.zonesCollection.update(defaultZone);
             this.resetParameters().zonesToParameters(model.gridSize);
         }
@@ -292,26 +301,24 @@ class SoilmodelLayer {
 
             parameters.forEach(parameter => {
                 // ... and check if the current zone has values for the parameter
-
                 const zoneParameter = zone[parameter];
 
                 if (zoneParameter.isActive) {
-                    // apply array with default values to parameter, if zone with parameter exists
-                    // x is number of columns, y number of rows (grid resolution of model)
-                    if (!Array.isArray(this[parameter])) {
-                        const paramValue = this[parameter];
-                        this[parameter] = new Array(gridSize.nY).fill(0).map(() => new Array(gridSize.nX).fill(paramValue)).slice(0);
+                    if (zone.priority === 0) {
+                        // default zone parameter value is a number:
+                        if (!zoneParameter.isArray()) {
+                            this[parameter] = new Array(gridSize.nY).fill(0).map(() => new Array(gridSize.nX).fill(zoneParameter.value));
+                        }
+                        // default zone parameter value is a raster:
+                        if (zoneParameter.isArray()) {
+                            this[parameter] = cloneDeep(zoneParameter.value);
+                        }
                     }
 
-                    // check if zone is default zone and has a raster uploaded
-                    if (zone.priority === 0 && zoneParameter.isArray()) {
-                        this[parameter] = cloneDeep(zoneParameter.value);
-                    }
-
-                    // ... if not:
-                    if (zone.priority > 0 || (zone.priority === 0 && !zoneParameter.isArray())) {
+                    // ... zone is not default:
+                    if (zone.priority > 0) {
                         // update the values for the parameter in the cells given by the zone
-                        zone.activeCells.cells.forEach(cell => {
+                        zone.cells.cells.forEach(cell => {
                             //console.log(`set ${parameter} at ${cell[1]} ${cell[0]} with value ${zone[parameter]}`);
                             this[parameter][cell[1]][cell[0]] = zoneParameter.value;
                         });

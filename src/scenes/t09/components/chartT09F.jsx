@@ -14,26 +14,21 @@ import {
 
 import * as calc from '../calculations/calculationT09F';
 import {exportChartData, exportChartImage, getParameterValues} from '../../shared/simpleTools/helpers';
-import {Button, Grid, Segment} from 'semantic-ui-react';
+import {Button, Grid, Icon, Segment} from 'semantic-ui-react';
 
 const styles = {
     chart: {
         top: 20,
-        right: 30,
+        right: 10,
         left: 30,
-        bottom: 20
+        bottom: 0
     },
     diagramLabel: {
         position: 'absolute',
-        top: '30px',
+        top: '24px',
         left: '55px',
         background: '#EFF3F6',
         opacity: 0.9
-    },
-    downloadButtons: {
-        position: 'absolute',
-        top: '5px',
-        right: '110px'
     }
 };
 
@@ -63,7 +58,7 @@ const Chart = ({parameters}) => {
         <div>
             <Grid>
                 <Grid.Column>
-                    <ResponsiveContainer width={'100%'} aspect={2}>
+                    <ResponsiveContainer width={'100%'} aspect={2.5}>
                         <LineChart
                             data={data}
                             margin={styles.chart}
@@ -75,10 +70,11 @@ const Chart = ({parameters}) => {
                                 domain={[Math.floor(newXt / 100) * 100, l]}
                             >
                                 <Label
-                                    value={'z0 [m]'}
+                                    value={'z₀ [m]'}
                                     offset={0}
                                     position="bottom"
                                     fill={'#4C4C4C'}
+                                    style={{fontSize: '13px'}}
                                 />
                             </XAxis>
                             <YAxis
@@ -91,7 +87,7 @@ const Chart = ({parameters}) => {
                                 <Label
                                     angle={90}
                                     position='right'
-                                    style={{textAnchor: 'center'}}
+                                    style={{textAnchor: 'center', fontSize: '13px'}}
                                     value={'x [m]'}
                                     fill={'#4C4C4C'}
                                 />
@@ -147,19 +143,19 @@ const Chart = ({parameters}) => {
                         <p>dx<sub>t</sub>&nbsp;=&nbsp;<strong>{dxt.toFixed(1)}</strong>&nbsp;m</p>
                     </Segment>
 
-                    <div style={styles.downloadButtons}>
-                        <Button
-                            size={'tiny'}
-                            color={'grey'}
-                            content='JPG'
-                            onClick={() => exportChartImage(currentChart)}
-                        />
-                        <Button
-                            size={'tiny'}
-                            color={'grey'}
-                            content='CSV'
-                            onClick={() => exportChartData(currentChart)}
-                        />
+                    <div className='downloadButtons'>
+                        <Button compact basic icon
+                                size={'small'}
+                                onClick={() => exportChartImage(currentChart)}
+                        >
+                            <Icon name='download' /> JPG
+                        </Button>
+                        <Button compact basic icon
+                                size={'small'}
+                                onClick={() => exportChartData(currentChart)}
+                        >
+                            <Icon name='download' /> CSV
+                        </Button>
                     </div>
                 </Grid.Column>
             </Grid>

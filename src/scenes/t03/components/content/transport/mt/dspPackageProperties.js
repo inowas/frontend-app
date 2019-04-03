@@ -3,7 +3,7 @@ import React from 'react';
 import {Form, Input} from 'semantic-ui-react';
 import AbstractPackageProperties from './AbstractPackageProperties';
 import {documentation} from '../../../../defaults/transport';
-import {DspPackage} from 'core/model/modflow/mt3d';
+import {DspPackage} from 'core/model/flopy/packages/mt';
 
 const styles = {
     inputFix: {

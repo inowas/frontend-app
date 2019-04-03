@@ -12,6 +12,7 @@ import {
 } from 'recharts';
 import {flatten, max, min} from 'lodash';
 import {GridSize} from '../../../core/model/modflow';
+import {Message} from 'semantic-ui-react';
 
 const cbPalette = [
     '#0A75A0' /* navy */,
@@ -23,6 +24,52 @@ const cbPalette = [
     '#FF5B4D' /* red */,
     '#999999' /* grey */
 ];
+
+const styles = {
+    chartTooltip: {
+        opacity: '0.8',
+        padding: '6px'
+    }
+};
+
+const renderTooltip = (e, show) => {
+    const data = e.payload && e.payload.length >= 1 ? e.payload[0].payload : {name: '', value: 0};
+    let name = 'Column';
+
+    if (show === 'row') {
+        name = 'Row';
+    }
+
+    return (
+        <Message size='tiny' color='black' style={styles.chartTooltip}>
+            <p>{name} {data.name}</p>
+            <Message.Header>{data.value.toFixed(2)}</Message.Header>
+        </Message>
+    );
+};
+
+const getXAxisLabel = show => {
+
+    if (show === 'row') {
+        return {value: 'Row', position: 'insideBottom', offset: -10, fill: '#4C4C4C', fontSize: '13px'};
+    }
+
+    return {value: 'Col', position: 'insideBottom', offset: -10, fill: '#4C4C4C', fontSize: '13px'};
+};
+
+const getYAxisLabel = type => {
+
+
+    if (type === 'head') {
+        return {value: 'Head (m asl)', position: 'insideLeft', angle: -90, fill: '#4C4C4C', fontSize: '13px'};
+    }
+
+    if (type === 'drawdown') {
+        return {value: 'Drawdown (m)', position: 'insideLeft', angle: -90, fill: '#4C4C4C', fontSize: '13px'};
+    }
+
+    return {};
+};
 
 const ResultsChart = ({data = null, selectedModels = null, globalMinMax = null, row, col, show}) => {
 
@@ -47,10 +94,19 @@ const ResultsChart = ({data = null, selectedModels = null, globalMinMax = null, 
         return (
             <ResponsiveContainer aspect={1.5}>
                 <AreaChart data={processedData}>
-                    <XAxis dataKey="name" domain={['dataMin', 'dataMax']}/>
-                    <YAxis domain={[minData, maxData]}/>
+                    <XAxis
+                        dataKey="name"
+                        domain={['dataMin', 'dataMax']}
+                        label={getXAxisLabel(show)}
+                    />
+                    <YAxis
+                        domain={[minData, maxData]}
+                        label={getYAxisLabel()}
+                    />
                     <CartesianGrid strokeDasharray="3 3"/>
-                    <Tooltip/>
+                    <Tooltip
+                        content={e => renderTooltip(e, show)}
+                    />
                     <ReferenceLine x={referenceTo} stroke="#000" strokeDasharray="3 3"/>
                     <Area type="linear" dataKey="value" stroke="#3ac6ff" fill="#3ac6ff"/>
                 </AreaChart>
@@ -59,7 +115,6 @@ const ResultsChart = ({data = null, selectedModels = null, globalMinMax = null, 
     }
 
     if (selectedModels) {
-
         if (!globalMinMax) {
             throw new Error('If more then one model in selectedModels, please provide a globalMinMax-Prop');
         }

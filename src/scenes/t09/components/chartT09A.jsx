@@ -5,11 +5,14 @@ import {pure} from 'recompose';
 import {
     Bar,
     BarChart,
+    CartesianGrid,
+    XAxis,
+    YAxis,
     Legend,
     ResponsiveContainer,
 } from 'recharts';
 
-import {Button, Grid, Segment} from 'semantic-ui-react';
+import {Button, Grid, Icon, Segment} from 'semantic-ui-react';
 import {exportChartData, exportChartImage, getParameterValues} from '../../shared/simpleTools/helpers';
 
 
@@ -24,22 +27,10 @@ const calculateDiagramData = (h, df, ds) => {
 
 const styles = {
     chart: {
-        top: 15,
-        right: 30,
+        top: 20,
+        right: 20,
         left: 20,
-        bottom: 15
-    },
-    diagramLabel: {
-        position: 'absolute',
-        top: '60px',
-        right: '75px',
-        background: '#EFF3F6',
-        opacity: 0.9
-    },
-    downloadButtons: {
-        position: 'absolute',
-        top: '5px',
-        right: '60px'
+        bottom: 0
     }
 };
 
@@ -57,34 +48,37 @@ const Chart = ({parameters}) => {
                     <ResponsiveContainer width="100%" aspect={2.5}>
                         <BarChart
                             data={data}
-                            barSize={50}
+                            barSize={100}
                             margin={styles.chart}
                             ref={(chart) => currentChart = chart}
                         >
-                            <Bar isAnimationActive={false} dataKey="h" stackId="a" fill="#1EB1ED"/>
-                            <Bar isAnimationActive={false} dataKey="z" stackId="a" fill="#DBF3FD"/>
-                            <Legend/>
+                            <CartesianGrid strokeDasharray="3 3" />
+                            <XAxis tick={false} orientation='top' />
+                            <YAxis reversed/>
+                            <Bar isAnimationActive={false} dataKey="h" stackId="a" name="Freshwater thickness above sea level, h" fill="#1EB1ED"/>
+                            <Bar isAnimationActive={false} dataKey="z" stackId="a" name="Freshwater thickness below sea level, z" fill="#DBF3FD"/>
+                            <Legend layout="vertical" height={28}/>
                         </BarChart>
                     </ResponsiveContainer>
 
-                    <Segment raised style={styles.diagramLabel}>
+                    <Segment raised className='diagramLabel bottomRight' style={{marginBottom: '0px'}}>
                         <p>h&nbsp;=&nbsp;<strong>{h.toFixed(1)}</strong>&nbsp;m</p>
                         <p>z&nbsp;=&nbsp;<strong>{z.toFixed(1)}</strong>&nbsp;m</p>
                     </Segment>
 
-                    <div style={styles.downloadButtons}>
-                        <Button
-                            size={'tiny'}
-                            color={'grey'}
-                            content='JPG'
-                            onClick={() => exportChartImage(currentChart)}
-                        />
-                        <Button
-                            size={'tiny'}
-                            color={'grey'}
-                            content='CSV'
-                            onClick={() => exportChartData(currentChart)}
-                        />
+                    <div className='downloadButtons'>
+                        <Button compact basic icon
+                                size={'small'}
+                                onClick={() => exportChartImage(currentChart)}
+                        >
+                            <Icon name='download' /> JPG
+                        </Button>
+                        <Button compact basic icon
+                                size={'small'}
+                                onClick={() => exportChartData(currentChart)}
+                        >
+                            <Icon name='download' /> CSV
+                        </Button>
                     </div>
                 </Grid.Column>
             </Grid>

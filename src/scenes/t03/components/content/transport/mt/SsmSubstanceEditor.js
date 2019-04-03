@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import {pure} from 'recompose';
 import {Form, Input} from 'semantic-ui-react';
 import SsmPackageDataTable from './SsmPackageDataTable';
-import {SsmBoundaryValues, SsmSubstance} from 'core/model/modflow/mt3d';
+import {SsmBoundaryValues, SsmSubstance} from 'core/model/flopy/packages/mt';
 import Boundary from 'core/model/modflow/boundaries/Boundary';
 import {Stressperiods} from 'core/model/modflow';
 
@@ -30,10 +30,10 @@ class SsmSubstanceEditor extends React.Component {
     }
 
     getSsmBoundaryValuesOrDefault() {
-        const {boundary, stressPeriods} = this.props;
+        const {boundary, stressperiods} = this.props;
         const substance = SsmSubstance.fromObject(this.state.substance);
         return substance.getBoundaryValuesByBoundaryId(this.props.boundary.id) ||
-            SsmBoundaryValues.create(boundary, stressPeriods.count);
+            SsmBoundaryValues.create(boundary, stressperiods.count);
     }
 
     handleChangeName = (e) => {
@@ -59,7 +59,7 @@ class SsmSubstanceEditor extends React.Component {
     render() {
         const substance = SsmSubstance.fromObject(this.state.substance);
         const ssmBoundaryValues = this.getSsmBoundaryValuesOrDefault();
-        const rows = this.props.stressPeriods.dateTimes.map((dt, key) => {
+        const rows = this.props.stressperiods.dateTimes.map((dt, key) => {
             return {
                 id: key,
                 date_time: dt,
@@ -97,7 +97,7 @@ SsmSubstanceEditor.propTypes = {
     boundary: PropTypes.instanceOf(Boundary),
     onChange: PropTypes.func.isRequired,
     readOnly: PropTypes.bool.isRequired,
-    stressPeriods: PropTypes.instanceOf(Stressperiods),
+    stressperiods: PropTypes.instanceOf(Stressperiods),
     substance: PropTypes.instanceOf(SsmSubstance),
 };
 

@@ -2,22 +2,30 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import {withRouter} from 'react-router-dom';
 import {includes} from 'lodash';
+import {Divider, Grid, Icon, Segment} from 'semantic-ui-react';
 
 import {fetchTool, sendCommand} from 'services/api';
+
+import {MCDA} from 'core/model/mcda';
+
+import {defaultsT05, getMenuItems} from '../defaults';
+import {heatMapColors} from '../defaults/gis';
+
 import Command from '../../shared/simpleTools/commands/command';
 import {deepMerge} from '../../shared/simpleTools/helpers';
-
-import {Divider, Grid, Icon, Segment} from 'semantic-ui-react';
 import AppContainer from '../../shared/AppContainer';
-import ToolMetaData from '../../shared/simpleTools/ToolMetaData';
-import {CriteriaEditor, ToolNavigation, WeightAssignmentEditor} from '../components';
-
-import {defaultsT05} from '../defaults';
-import getMenuItems from '../defaults/menuItems';
-
-import {MCDA} from 'core/mcda';
 import ContentToolBar from '../../shared/ContentToolbar';
-import {WeightAssignment, WeightAssignmentsCollection} from 'core/mcda/criteria';
+import ToolMetaData from '../../shared/simpleTools/ToolMetaData';
+import {
+    CriteriaEditor,
+    CriteriaDataEditor,
+    CriteriaNavigation,
+    CriteriaRasterMap,
+    ConstraintsEditor,
+    SuitabilityEditor,
+    ToolNavigation,
+    WeightAssignmentEditor
+} from '../components';
 
 const navigation = [{
     name: 'Documentation',
@@ -26,8 +34,8 @@ const navigation = [{
 }];
 
 class T05 extends React.Component {
-    constructor() {
-        super();
+    constructor(props) {
+        super(props);
 
         this.state = {
             isDirty: false,
@@ -41,13 +49,15 @@ class T05 extends React.Component {
         if (this.props.match.params.id) {
             this.setState({isLoading: true});
             fetchTool(
-                this.state.tool.type,
+                this.state.tool.tool,
                 this.props.match.params.id,
-                tool => this.setState({
-                    tool: deepMerge(this.state.tool, tool),
-                    isDirty: false,
-                    isLoading: false
-                }),
+                tool => {
+                    this.setState({
+                        tool: deepMerge(this.state.tool, tool),
+                        isDirty: false,
+                        isLoading: false
+                    });
+                },
                 error => {
                     console.log('ERROR', error);
                     this.setState({isError: true, isLoading: false})
@@ -58,43 +68,44 @@ class T05 extends React.Component {
         }
     }
 
-    buildPayload = (tool) => ({
-        id: tool.id,
-        name: tool.name,
-        description: tool.description,
-        public: tool.public,
-        type: tool.type,
-        data: {
-            mcda: MCDA.fromObject(this.state.tool.data.mcda).toObject()
-        }
-    });
+    buildPayload = tool => {
+        const data = MCDA.fromObject(this.state.tool.data);
 
-    handleChange = ({name, value}) => {
-        const mcda = MCDA.fromObject(this.state.tool.data.mcda);
-
-        if (name === 'criteria') {
-            mcda.updateCriteria(value);
-        }
-
-        if (name === 'weights') {
-            if (value instanceof WeightAssignmentsCollection) {
-                mcda.weightAssignmentsCollection = value;
-            }
-            if (value instanceof WeightAssignment) {
-                mcda.weightAssignmentsCollection.update(value);
-            }
-        }
-
-        return this.setState({
-            tool: {
-                ...this.state.tool,
-                data: {
-                    ...this.state.tool.data,
-                    mcda: mcda.toObject()
-                }
-            },
-            isDirty: true
+        return ({
+            id: tool.id,
+            name: tool.name,
+            description: tool.description,
+            public: tool.public,
+            tool: tool.tool,
+            data: data.toPayload()
         });
+    };
+
+    handleChange = mcda => this.setState(prevState => ({
+        isDirty: true,
+        tool: {
+            ...prevState.tool,
+            data: mcda.toObject()
+        }
+    }));
+
+    handleSaveMetadata = () => {
+        sendCommand(
+            Command.updateToolInstanceMetadata({
+                id: this.state.tool.id,
+                name: this.state.tool.name,
+                description: this.state.tool.description,
+                public: this.state.tool.public
+            }),
+            () => this.setState({
+                isDirty: false,
+                isLoading: false
+            }),
+            () => this.setState({
+                isError: true,
+                isLoading: false
+            })
+        );
     };
 
     handleSave = () => {
@@ -129,26 +140,41 @@ class T05 extends React.Component {
         );
     };
 
-    handleUpdateMetaData = (tool) => this.setState({
+    handleUpdateMetaData = tool => this.setState({
         tool: {
             ...tool
         }
     });
 
-    routeTo = (type = null) => {
+    handleClickCriteriaNavigation = (e, {name}) => this.routeTo(name);
+
+    handleClickCriteriaTool = (cid, name) => this.routeTo(cid, name);
+
+    handleClickSuitabilityTool = (name) => this.routeTo(name);
+
+    routeTo = (nCid = null, nTool = null) => {
         const {id, property} = this.props.match.params;
+        const cid = nCid || null;
+        const tool = nTool || this.props.match.params.tool || null;
         const path = this.props.match.path;
         const basePath = path.split(':')[0];
-        if (!!type) {
-            return this.props.history.push(basePath + id + '/' + property + '/' + type);
+        if (!!cid && !!tool) {
+            return this.props.history.push(basePath + id + '/' + property + '/' + cid + '/' + tool);
+        }
+        if (!!cid) {
+            if (property === 'cd') {
+                return this.props.history.push(basePath + id + '/' + property + '/' + cid + '/upload');
+            }
+            return this.props.history.push(basePath + id + '/' + property + '/' + cid);
         }
         return this.props.history.push(basePath + id + '/' + property);
     };
 
     renderContent() {
         const {id, property} = this.props.match.params;
-        const type = this.props.match.params.type ? this.props.match.params.type : null;
-        const mcda = MCDA.fromObject(this.state.tool.data.mcda);
+        const cid = this.props.match.params.cid || null;
+        const tool = this.props.match.params.tool || null;
+        const mcda = MCDA.fromObject(this.state.tool.data);
 
         const {permissions} = this.state.tool;
         const readOnly = !includes(permissions, 'w');
@@ -157,21 +183,59 @@ class T05 extends React.Component {
             case 'criteria':
                 return (
                     <CriteriaEditor
+                        toolName={this.state.tool.name}
                         readOnly={readOnly || mcda.weightAssignmentsCollection.length > 0}
+                        routeTo={() => {
+                            this.props.history.push('/tools/t04')
+                        }}
                         mcda={mcda}
-                        handleChange={this.handleChange}
-                    />)
-                    ;
+                        onChange={this.handleChange}
+                    />);
+            case 'cm':
+
+                if (mcda.criteriaCollection.length > 0 && !mcda.constraints.boundingBox) {
+                    mcda.constraints.boundingBox = mcda.criteriaCollection.getBoundingBox(mcda.withAhp);
+                }
+
+                return (
+                    <ConstraintsEditor
+                        readOnly={readOnly}
+                        mcda={mcda}
+                        onChange={this.handleChange}
+                    />
+                );
             case 'wa':
-                const weightAssignment = type ? mcda.weightAssignmentsCollection.findById(type) : null;
+                const weightAssignment = cid ? mcda.weightAssignmentsCollection.findById(cid) : null;
 
                 return (
                     <WeightAssignmentEditor
+                        toolName={this.state.tool.name}
                         readOnly={readOnly}
                         mcda={mcda}
                         selectedWeightAssignment={weightAssignment}
-                        handleChange={this.handleChange}
+                        onChange={this.handleChange}
                         routeTo={this.routeTo}
+                    />
+                );
+            case 'cd':
+                const criterion = cid ? mcda.criteriaCollection.findById(cid) : null;
+
+                return (
+                    <CriteriaDataEditor
+                        activeTool={tool}
+                        criterion={criterion}
+                        onChange={this.handleChange}
+                        mcda={mcda}
+                        onClickTool={this.handleClickCriteriaTool}
+                    />
+                );
+            case 'su':
+                return (
+                    <SuitabilityEditor
+                        activeTool={cid}
+                        onChange={this.handleChange}
+                        mcda={mcda}
+                        onClickTool={this.handleClickSuitabilityTool}
                     />
                 );
             default:
@@ -186,10 +250,11 @@ class T05 extends React.Component {
     }
 
     render() {
-        const mcda = MCDA.fromObject(this.state.tool.data.mcda);
-        const {tool, isDirty, isLoading} = this.state;
+        const mcda = MCDA.fromObject(this.state.tool.data);
 
-        const {type} = this.props.match.params;
+        const {tool, isDirty, isError, isLoading} = this.state;
+
+        const {cid, property} = this.props.match.params;
 
         const {permissions} = tool;
         const readOnly = !includes(permissions, 'w');
@@ -198,25 +263,52 @@ class T05 extends React.Component {
 
         return (
             <AppContainer navbarItems={navigation}>
+                <ToolMetaData
+                    tool={tool} readOnly={readOnly} onChange={this.handleUpdateMetaData}
+                    onSave={this.handleSaveMetadata}
+                    defaultButton={false}
+                    saveButton={false}
+                    isDirty={isDirty}
+                />
                 <Grid padded>
-                    <Grid.Row>
-                        <Grid.Column width={4}/>
-                        <Grid.Column width={12}>
-                            <ToolMetaData
-                                tool={tool} readOnly={readOnly} onChange={this.handleUpdateMetaData}
-                                onSave={this.handleSave}
-                                saveButton={false}
-                                isDirty={isDirty}/>
-                        </Grid.Column>
-                    </Grid.Row>
                     <Grid.Row>
                         <Grid.Column width={4}>
                             <ToolNavigation navigationItems={menuItems}/>
+                            {property === 'cd' &&
+                            <CriteriaNavigation
+                                activeCriterion={cid}
+                                mcda={mcda}
+                                onClick={this.handleClickCriteriaNavigation}
+                                handleChange={this.handleChange}
+                            />
+                            }
+                            {property === 'su' && (!cid || cid === 'weightAssignment' || cid === 'classes') && mcda.suitability && mcda.suitability.raster.data.length > 0 &&
+                            <Segment color='blue'>
+                                <p>Overview</p>
+                                <CriteriaRasterMap
+                                    raster={mcda.suitability.raster}
+                                    showBasicLayer={false}
+                                    showLegend={cid !== 'classes'}
+                                    legend={!cid || cid === 'weightAssignment' ?
+                                        mcda.suitability.raster.generateRainbow(heatMapColors.default, [0, 1])
+                                        :
+                                        mcda.suitability.generateLegend()
+                                    }
+                                    mapHeight='200px'
+                                />
+                            </Segment>
+                            }
                         </Grid.Column>
                         <Grid.Column width={12}>
                             <Segment color={'grey'} loading={isLoading}>
-                                <ContentToolBar backButton={!!type} onBack={this.routeTo} isDirty={isDirty} save
-                                                onSave={this.handleSave}/>
+                                <ContentToolBar
+                                    backButton={!!cid && property !== 'cd'}
+                                    onBack={this.routeTo}
+                                    onSave={this.handleSave}
+                                    isDirty={isDirty}
+                                    isError={isError}
+                                    saveButton
+                                />
                                 <Divider/>
                                 {this.renderContent()}
                             </Segment>
@@ -232,6 +324,7 @@ T05.propTypes = {
     history: PropTypes.object.isRequired,
     location: PropTypes.object.isRequired,
     match: PropTypes.object.isRequired,
+    mcda: PropTypes.object
 };
 
 export default withRouter(T05);

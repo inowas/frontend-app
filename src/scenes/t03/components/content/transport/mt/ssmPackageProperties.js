@@ -1,10 +1,10 @@
 import PropTypes from 'prop-types';
 import React from 'react';
 import AbstractPackageProperties from './AbstractPackageProperties';
-import {Button, Divider, Dropdown, Form, Grid, Icon, Message} from 'semantic-ui-react';
+import {Button, Header, Form, Grid, Message, Popup} from 'semantic-ui-react';
 import SsmSubstanceEditor from './SsmSubstanceEditor';
 import {Stressperiods} from 'core/model/modflow';
-import {SsmPackage, SsmSubstance} from 'core/model/modflow/mt3d';
+import {SsmPackage, SsmSubstance} from 'core/model/flopy/packages/mt';
 import {Boundary, BoundaryCollection, BoundaryFactory} from 'core/model/modflow/boundaries';
 import BoundarySelector from './BoundarySelector';
 
@@ -18,7 +18,7 @@ class SsmPackageProperties extends AbstractPackageProperties {
 
     handleSelectBoundary = boundaryId => {
         return this.setState({
-            selectedBoundary: this.props.boundaries.findById(boundaryId).toObject
+            selectedBoundary: this.props.boundaries.findById(boundaryId).toObject()
         });
     };
 
@@ -64,7 +64,7 @@ class SsmPackageProperties extends AbstractPackageProperties {
     };
 
     render() {
-        const {boundaries, readonly, stressPeriods} = this.props;
+        const {boundaries, readonly, stressperiods} = this.props;
 
         if (boundaries.length === 0) {
             return <Message warning>
@@ -78,49 +78,50 @@ class SsmPackageProperties extends AbstractPackageProperties {
 
         let selectedBoundary;
         if (this.state.selectedBoundary) {
-            selectedBoundary = BoundaryFactory.fromObjectData(boundaries.all.filter(b => b.id === this.state.selectedBoundary.id)[0]);
+            selectedBoundary = BoundaryFactory.fromObject(boundaries.all.filter(b => b.id === this.state.selectedBoundary.id)[0]);
         }
 
         return (
             <div>
                 <Grid>
-                    <Grid.Row columns={2}>
-                        <Grid.Column>
-                            <BoundarySelector
-                                boundaries={boundaries}
-                                onChange={this.handleSelectBoundary}
-                                selected={selectedBoundary}
-                            />
-                        </Grid.Column>
+                    <Grid.Row>
                         <Grid.Column>
                             <Form>
                                 <Form.Group>
-                                    <Dropdown
+                                    <BoundarySelector
+                                        boundaries={boundaries}
+                                        onChange={this.handleSelectBoundary}
+                                        selected={selectedBoundary}
+                                    />
+                                    <Form.Dropdown
                                         placeholder="Select Substance"
-                                        fluid
+                                        label='Select substance'
                                         search
                                         selection
                                         options={SsmPackageProperties.substanceOptions(substances)}
                                         onChange={this.handleSelectSubstance}
                                         value={this.state.selectedSubstance}
                                     />
-                                    <Button.Group>
-                                        <Button
-                                            icon
-                                            onClick={() => this.addSubstance('new substance')}
-                                            disabled={readonly}
-                                        >
-                                            <Icon name="add circle"/>
-                                        </Button>
-
-                                        <Button
-                                            icon
-                                            onClick={() => this.removeSubstance(this.state.selectedSubstance)}
-                                            disabled={readonly}
-                                        >
-                                            <Icon name="trash"/>
-                                        </Button>
-                                    </Button.Group>
+                                    <Button.Group style={{marginTop:'23px'}}>
+                                        <Popup
+                                            trigger={<Button icon='add circle'
+                                                             onClick={() => this.addSubstance('new substance')}
+                                                             disabled={readonly}
+                                            />}
+                                            content='Add substance'
+                                            position='top center'
+                                            size='mini'
+                                        />
+                                        <Popup
+                                            trigger={<Button icon='trash'
+                                                             onClick={() => this.removeSubstance(this.state.selectedSubstance)}
+                                                             disabled={readonly}
+                                            />}
+                                            content='Delete substance'
+                                            position='top center'
+                                            size='mini'
+                                        />
+                                </Button.Group>
                                 </Form.Group>
                             </Form>
                         </Grid.Column>
@@ -128,12 +129,12 @@ class SsmPackageProperties extends AbstractPackageProperties {
                 </Grid>
                 {(selectedSubstance instanceof SsmSubstance) && (selectedBoundary instanceof Boundary) &&
                 <div>
-                    <Divider horizontal>{selectedSubstance.name} at {selectedBoundary.name}</Divider>
+                    <Header as='h4' dividing>{selectedSubstance.name} at {selectedBoundary.name}</Header>
                     <SsmSubstanceEditor
                         boundary={selectedBoundary}
                         onChange={this.handleChangeSubstance}
                         readOnly={readonly}
-                        stressPeriods={stressPeriods}
+                        stressperiods={stressperiods}
                         substance={selectedSubstance}
                     />
                 </div>
@@ -145,7 +146,7 @@ class SsmPackageProperties extends AbstractPackageProperties {
 
 SsmPackageProperties.propTypes = {
     boundaries: PropTypes.instanceOf(BoundaryCollection).isRequired,
-    stressPeriods: PropTypes.instanceOf(Stressperiods).isRequired,
+    stressperiods: PropTypes.instanceOf(Stressperiods).isRequired,
     mtPackage: PropTypes.instanceOf(SsmPackage),
     onChange: PropTypes.func.isRequired,
     readonly: PropTypes.bool.isRequired,

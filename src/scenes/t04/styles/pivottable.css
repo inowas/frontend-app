@@ -79,9 +79,10 @@ table.pvtTable tbody tr td {
 }
 
 .pvtRenderers:before {
-    content: 'View as:';
-    display: inline-block;
+    content: 'View as';
+    display: block;
     font-size: 13px;
+    font-weight: 700;
     padding: 0 5px;
 }
 
@@ -139,15 +140,16 @@ table.pvtTable tbody tr td {
 }
 
 .pvtVals {
-    text-align: center;
+    text-align: left;
     white-space: nowrap;
     vertical-align: top;
 }
 
 .pvtVals:before {
-    content: 'Operators:';
-    display: inline-block;
+    content: 'Operators';
+    display: block;
     font-size: 13px;
+    font-weight: 700;
     padding: 0 5px;
 }
 
@@ -169,6 +171,7 @@ table.pvtTable tbody tr td {
     -moz-border-radius: 5px;
     border-radius: 5px;
     border: 1px dashed #a2b1c6;
+    height: 30px;
 }
 .pvtAxisContainer li.pvtPlaceholder span.pvtAttr {
     display: none;
@@ -201,12 +204,38 @@ table.pvtTable tbody tr td {
     vertical-align: top;
 }
 .pvtUnused.pvtVertList:before {
-    content: 'Filter Attributes:';
+    content: 'Database Attributes';
     padding: 0 5px;
     font-size: 13px;
     font-weight: 700;
 }
-
+.pvtRows.pvtVertList {
+    background-color: #E5F0F5;
+    box-shadow: 0 0 0 3px inset #FFFFFF;
+}
+.pvtRows.pvtVertList li,
+.pvtHorizList.pvtCols li {
+    background-color: #FFFFFF;
+    border: 1px dashed #D9D9D9;
+}
+.pvtRows.pvtVertList:before {
+    content: '\F064 Drag attributes into row field';
+    padding: 5px;
+    font-size: 13px;
+    font-family: Icons, sans-serif;
+}
+.pvtHorizList.pvtCols {
+    background-color: #E5F0F5;
+    width: 100%;
+    box-shadow: 0 0 0 3px inset #FFFFFF;
+}
+.pvtCols.pvtHorizList:before {
+    content: '\F064 Drag attributes into column field';
+    display: block;
+    padding: 5px;
+    font-size: 13px;
+    font-family: Icons, sans-serif;
+}
 .pvtFilteredAttribute {
     font-style: italic;
 }
@@ -321,7 +350,7 @@ table.pvtTable tbody tr td {
 }
 
 .pvtCheckContainer p.selected {
-    background: #ebf0f8;
+    background: #EFF3F6;
 }
 
 .pvtOnly {

@@ -7,12 +7,12 @@ export const defaults = () => {
         description: 'Simple tool description',
         permissions: 'rwx',
         public: false,
-        type: 'T13D',
+        tool: 'T13D',
         data: {
             parameters: [{
                 order: 0,
                 id: 'W',
-                name: 'Average infiltration rate, W [m/d]',
+                name: 'Average infiltration rate<br/>W [m/d]',
                 min: 0.001,
                 max: 0.01,
                 value: 0.00112,
@@ -22,7 +22,7 @@ export const defaults = () => {
             }, {
                 order: 1,
                 id: 'K',
-                name: 'Hydraulic conductivity, K [m/d]',
+                name: 'Hydraulic conductivity<br/>K [m/d]',
                 min: 0.1,
                 max: 1000,
                 value: 30.2,
@@ -32,7 +32,7 @@ export const defaults = () => {
             }, {
                 order: 2,
                 id: 'L',
-                name: 'Aquifer length, L [m]',
+                name: 'Aquifer length<br/>L [m]',
                 min: 0,
                 max: 1000,
                 value: 1000,
@@ -42,7 +42,7 @@ export const defaults = () => {
             }, {
                 order: 3,
                 id: 'hL',
-                name: 'Downstream head, h<sub>L</sub> [m]',
+                name: 'Downstream head<br/>h<sub>L</sub> [m]',
                 min: 0,
                 max: 10,
                 value: 2,
@@ -52,7 +52,7 @@ export const defaults = () => {
             }, {
                 order: 4,
                 id: 'h0',
-                name: 'Upstream head, h<sub>e</sub> [m]',
+                name: 'Upstream head<br/>h<sub>e</sub> [m]',
                 min: 0,
                 max: 10,
                 value: 5,

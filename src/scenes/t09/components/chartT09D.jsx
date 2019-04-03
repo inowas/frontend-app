@@ -4,15 +4,16 @@ import {pure} from 'recompose';
 
 import {
     ResponsiveContainer,
+    Label,
     LineChart,
     Line,
     XAxis,
     YAxis,
     CartesianGrid,
-    ReferenceLine, Label
+    ReferenceLine
 } from 'recharts';
 
-import {Button, Grid, Segment} from 'semantic-ui-react';
+import {Button, Grid, Icon, Segment} from 'semantic-ui-react';
 
 import {calcLambda, calcMu, calculateQCrit, calculateDiagramData} from '../calculations/calculationT09D';
 import {exportChartData, exportChartImage, getParameterValues} from '../../shared/simpleTools/helpers';
@@ -20,23 +21,24 @@ import {exportChartData, exportChartImage, getParameterValues} from '../../share
 export function resultDiv(rhof, rhos, lambda, qCrit) {
     if (rhof >= rhos) {
         return (
-            <Segment raised style={styles.diagramLabel}>
+            <Segment inverted color='orange' secondary className={'diagramLabel topLeft'}>
                 <p>Saltwater density is lower than the density of freshwater.</p>
             </Segment>
         );
     }
     if (lambda > 2) {
         return (
-            <Segment raised style={styles.diagramLabel}>
+            <Segment inverted color='orange' secondary className={'diagramLabel topLeft'}>
                 <p>
-                    The Stagnation point is located far from the coast. This will lead to the entrance of salt water
+                    The Stagnation point is located far from the coast.<br/>
+                    This will lead to the entrance of salt water<br/>
                     into the flow directly from the sea.
                 </p>
             </Segment>
         );
     }
     return (
-        <Segment raised style={styles.diagramLabel}>
+        <Segment raised className={'diagramLabel topLeft'}>
             <p>Q<sub>crit</sub>&nbsp;=&nbsp;<strong>{qCrit.toFixed(0)}</strong>&nbsp;m<sup>3</sup>/d</p>
         </Segment>
     );
@@ -45,21 +47,9 @@ export function resultDiv(rhof, rhos, lambda, qCrit) {
 const styles = {
     chart: {
         top: 20,
-        right: 30,
-        left: 30,
-        bottom: 20
-    },
-    diagramLabel: {
-        position: 'absolute',
-        top: '30px',
-        left: '110px',
-        background: '#EFF3F6',
-        opacity: 0.9
-    },
-    downloadButtons: {
-        position: 'absolute',
-        top: '45px',
-        right: '55px'
+        right: 20,
+        left: 20,
+        bottom: 0
     }
 };
 
@@ -76,7 +66,7 @@ const Chart = ({parameters}) => {
         <div>
             <Grid>
                 <Grid.Column>
-                    <ResponsiveContainer width={'100%'} aspect={2}>
+                    <ResponsiveContainer width={'100%'} aspect={2.5}>
                         <LineChart
                             data={data}
                             margin={styles.chart}
@@ -88,19 +78,20 @@ const Chart = ({parameters}) => {
                                     offset={0}
                                     position="bottom"
                                     fill={'#4C4C4C'}
+                                    style={{fontSize: '13px'}}
                                 />
                             </XAxis>
                             <YAxis
                                 type="number"
                                 allowDecimals={false}
                                 tickLine={false}
-                                tickFormatter={(x) => x.toFixed(1)}
+                                tickFormatter={(x) => parseFloat(x).toFixed(1)}
                             >
                                 <Label
                                     angle={270}
                                     position='left'
-                                    style={{textAnchor: 'center'}}
-                                    value={'Qcrit [m3/d]'}
+                                    style={{textAnchor: 'center', fontSize: '13px'}}
+                                    value={'Qcrit [m³/d]'}
                                     fill={'#4C4C4C'}
                                 />
                             </YAxis>
@@ -110,7 +101,7 @@ const Chart = ({parameters}) => {
                                 stroke="black"
                                 strokeWidth="1"
                                 strokeDasharray="3 3"
-                                label={{position: 'top', value: 'xw'}}
+                                label={{position: 'insideTopRight', value: 'xw'}}
                                 dot={false}
                             />
                             <Line
@@ -126,19 +117,19 @@ const Chart = ({parameters}) => {
 
                     {resultDiv(rhof, rhos, lambda, qCrit)}
 
-                    <div style={styles.downloadButtons}>
-                        <Button
-                            size={'tiny'}
-                            color={'orange'}
-                            content='JPG'
-                            onClick={() => exportChartImage(currentChart)}
-                        />
-                        <Button
-                            size={'tiny'}
-                            color={'orange'}
-                            content='CSV'
-                            onClick={() => exportChartData(currentChart)}
-                        />
+                    <div className='downloadButtons'>
+                        <Button compact basic icon
+                                size={'small'}
+                                onClick={() => exportChartImage(currentChart)}
+                        >
+                            <Icon name='download' /> JPG
+                        </Button>
+                        <Button compact basic icon
+                                size={'small'}
+                                onClick={() => exportChartData(currentChart)}
+                        >
+                            <Icon name='download' /> CSV
+                        </Button>
                     </div>
 
                 </Grid.Column>

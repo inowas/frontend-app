@@ -16,22 +16,32 @@ class ToolNavigation extends React.Component {
         const basePath = path.split(':')[0];
         const {navigationItems} = this.props;
 
-        const menuItems = navigationItems.map((i, idx) => (
-            <Menu.Item
-                disabled={!id}
-                key={idx}
-                name={i.name}
-                active={property === i.property}
-                route={basePath + id + '/' + i.property}
-                onClick={this.handleItemClick}
-                >
-                {i.icon}{i.name}
-            </Menu.Item>
-        ));
+        const menuItems = navigationItems.map((itemGroup, itemGroupIdx) => (
+
+                <Menu.Item key={itemGroupIdx} className="menuItemGroup">
+                    <Menu.Header as='h4' className="menuItemHeader">{itemGroup.header}</Menu.Header>
+                    <Menu.Menu>
+                        {itemGroup.items.map((i, idx) => (
+                            <Menu.Item
+                                disabled={!id || i.disabled}
+                                key={idx}
+                                name={i.name}
+                                active={property === i.property}
+                                route={basePath + id + '/' + i.property}
+                                onClick={this.handleItemClick}
+                            >
+                                {i.icon}{i.name}
+                            </Menu.Item>
+                        ))}
+                    </Menu.Menu>
+                </Menu.Item>
+            ));
+
+
         return (
-            <Segment color={'blue'} style={this.props.style}>
-                <Menu secondary vertical style={{width: '100%'}}>
-                    {menuItems}
+            <Segment color={'blue'} className="customMenuContainer">
+                <Menu vertical fluid className="customVertMenu">
+                        {menuItems}
                 </Menu>
             </Segment>
         )

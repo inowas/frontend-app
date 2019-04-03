@@ -51,6 +51,7 @@
 
 @red              : #FF5B4D;
 @brown            : #CC6C00;
+@green            : #4CAF53;
 
 
 /*---   Neutrals  ---*/
@@ -66,6 +67,7 @@
 
 @orangeHover    : #CC6C00;
 @blueHover      : #0A75A0;
+
 
 /*-------------------
     Emotive Colors
@@ -155,4 +157,3 @@
 /*-------------------
        Recharts
 --------------------*/
-

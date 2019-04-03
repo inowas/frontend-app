@@ -8,7 +8,9 @@ import {uniqueId} from 'lodash';
 import {BasicTileLayer} from 'services/geoTools/tileLayers';
 import {nearestPointOnLine} from '@turf/turf';
 import {lineString, point} from '@turf/helpers';
-import Geometry from 'core/model/modflow/Geometry';
+import {Boundary} from 'core/model/modflow';
+import {Geometry} from 'core/model/geometry';
+import {ObservationPoint} from 'core/model/modflow/boundaries';
 
 const styles = {
     map: {
@@ -52,9 +54,9 @@ class ObservationPointEditorMap extends React.Component {
 
     handleMouseClick = () => {
         this.setState({selectedPoint: this.state.temporaryPoint});
-        this.props.onChange(
-            {...this.props.observationPoint, geometry: this.state.temporaryPoint}
-        )
+        const op = ObservationPoint.fromObject(this.props.observationPoint.toObject());
+        op.geometry = this.state.temporaryPoint;
+        this.props.onChange(op);
     };
 
     renderClosestPoint = (point, temporary) => {
@@ -83,8 +85,8 @@ class ObservationPointEditorMap extends React.Component {
     };
 
     renderObservationPoints(b) {
-        if (b.observation_points && b.observation_points.length > 1) {
-            return b.observation_points.map(op => {
+        if (b.observationPoints && Array.isArray(b.observationPoints)) {
+            return b.observationPoints.map(op => {
                 if (this.props.observationPoint && op.id === this.props.observationPoint.id) {
                     return null;
                 }
@@ -109,8 +111,8 @@ class ObservationPointEditorMap extends React.Component {
     renderBoundary(boundary) {
         return (
             <GeoJSON
-                key={boundary.geometry.hash()}
-                data={boundary.geometry}
+                key={Geometry.fromObject(boundary.geometry).hash()}
+                data={Geometry.fromObject(boundary.geometry)}
                 style={getStyle(boundary.type)}
             />
         );
@@ -149,8 +151,8 @@ class ObservationPointEditorMap extends React.Component {
 
 ObservationPointEditorMap.propTypes = {
     area: PropTypes.object,
-    boundary: PropTypes.object,
-    observationPoint: PropTypes.object,
+    boundary: PropTypes.instanceOf(Boundary).isRequired,
+    observationPoint: PropTypes.instanceOf(ObservationPoint).isRequired,
     mapStyles: PropTypes.object,
     onChange: PropTypes.func
 };

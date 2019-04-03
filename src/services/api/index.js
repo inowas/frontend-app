@@ -1,11 +1,15 @@
 import axios from 'axios';
 import storeToCreate from 'store';
+import FlopyPackages from '../../core/model/flopy/packages/FlopyPackages';
 
-const BASE_URL = process.env.REACT_APP_API_URL + '/v2';
+const BASE_URL = process.env.REACT_APP_API_URL + '/v3';
+export const GEOPROCESSING_URL = 'https://geoprocessing.inowas.com';
+export const MODFLOW_CALCULATION_URL = 'https://modflow.inowas.com';
+export const JSON_SCHEMA_URL = process.env.REACT_APP_SCHEMA_URL || 'https://schema.inowas.com';
 
 const getToken = () => {
     const store = storeToCreate();
-    return store.getState().session.apiKey;
+    return store.getState().session.token;
 };
 
 const createApi = (token = null) => {
@@ -14,7 +18,7 @@ const createApi = (token = null) => {
     };
 
     if (token) {
-        headers['X-AUTH-TOKEN'] = token;
+        headers['Authorization'] = 'Bearer ' + token;
     }
 
     return axios.create({baseURL: BASE_URL, headers});
@@ -28,20 +32,132 @@ export const sendCommand = (command, onSuccess, onError) => {
         .catch(onError);
 };
 
-export const uploadRasterfile = (file, onSuccess, onError) => {
+export const uploadRasterfileToApi = (file, onSuccess, onError) => {
     const uploadData = new FormData();
     uploadData.append('file', file);
     const api = createApi(true);
     api.post('rasterfile', uploadData).then(response => response.data).then(onSuccess).catch(onError);
 };
 
-export const fetchRasterfile = (
-    {hash, width = null, height = null}, onSuccess, onError) => {
-    let url = 'rasterfile/' + hash;
-    if (width && height) {
-        url += '?width=' + width + '&height=' + height
+export const uploadRasterfile = (file, onSuccess, onError) => {
+    const uploadData = new FormData();
+    uploadData.append('file', file);
+    return axios({
+        method: 'POST',
+        url: GEOPROCESSING_URL,
+        data: uploadData,
+        mode: 'no-cors',
+        headers: {
+            'Access-Control-Allow-Origin': '*',
+            'Content-Type': 'application/json',
+        }
+    }).then(response => response.data).then(onSuccess).catch(onError);
+};
+
+export const sendCalculationRequest = (flopyPackages, onSuccess, onError) => {
+    if (!(flopyPackages instanceof FlopyPackages)) {
+        throw new Error('Expecting instance of FlopyPackages');
     }
-    return fetchUrl(url, onSuccess, onError);
+
+    flopyPackages.validate(true).then(
+        () => axios({
+            method: 'POST',
+            url: MODFLOW_CALCULATION_URL,
+            data: flopyPackages.toFlopyCalculation(),
+            mode: 'no-cors',
+            headers: {
+                'Access-Control-Allow-Origin': '*',
+                'Content-Type': 'application/json',
+            }
+        }).then(response => response.data).then(onSuccess).catch(onError),
+    ).catch(e => console.log(e));
+};
+
+export const fetchRasterData = (
+    {hash, width = null, height = null, method = 1}, onSuccess, onError) => {
+    let url = GEOPROCESSING_URL + '/' + hash + '/data';
+
+    if (width && height) {
+        url += '/' + width + '/' + height;
+
+        if (!isNaN(method)) {
+            url += '/' + method;
+        }
+    }
+
+    return axios({
+        method: 'GET',
+        url: url,
+        mode: 'no-cors',
+        headers: {
+            'Access-Control-Allow-Origin': '*',
+            'Content-Type': 'application/json'
+        },
+        data: {}
+    }).then(response => response.data).then(onSuccess).catch(onError);
+};
+
+export const fetchRasterMetaData = (
+    {hash}, onSuccess, onError) => {
+    const url = GEOPROCESSING_URL + '/' + hash;
+
+    return axios({
+        method: 'GET',
+        url: url,
+        mode: 'no-cors',
+        headers: {
+            'Access-Control-Allow-Origin': '*',
+            'Content-Type': 'application/json'
+        },
+        data: {}
+    }).then(response => response.data).then(onSuccess).catch(onError);
+};
+
+export const fetchCalculationDetails = (
+    calculation_id, onSuccess, onError) => {
+    const url = `${MODFLOW_CALCULATION_URL}/${calculation_id}`;
+
+    return axios({
+        method: 'GET',
+        url: url,
+        mode: 'no-cors',
+        headers: {
+            'Access-Control-Allow-Origin': '*',
+            'Content-Type': 'application/json'
+        },
+        data: {}
+    }).then(response => response.data).then(onSuccess).catch(onError);
+};
+
+export const fetchCalculationResults = ({calculationId, layer, totim, type}, onSuccess, onError) => {
+    const url = `${MODFLOW_CALCULATION_URL}/${calculationId}/results/types/${type}/layers/${layer}/totims/${totim}`;
+
+    return axios({
+        method: 'GET',
+        url: url,
+        mode: 'no-cors',
+        headers: {
+            'Access-Control-Allow-Origin': '*',
+            'Content-Type': 'application/json'
+        },
+        data: {}
+    }).then(response => response.data).then(onSuccess).catch(onError);
+};
+
+export const fetchModflowFile = (
+    calculation_id, file_name, onSuccess, onError) => {
+    const url = MODFLOW_CALCULATION_URL + '/' + calculation_id + '/files/' + file_name;
+
+    return axios({
+        method: 'GET',
+        url: url,
+        mode: 'no-cors',
+        headers: {
+            'Access-Control-Allow-Origin': '*',
+            'Content-Type': 'application/json'
+        },
+        data: {}
+    }).then(response => response.data).then(onSuccess).catch(onError);
 };
 
 export const fetchTool = (tool, id, onSuccess, onError) => {
@@ -60,10 +176,10 @@ export const fetchUrl = (url, onSuccess, onError) => {
         .catch(onError);
 };
 
-export const submitSignUpCredentials = ({name, username, email, password, redirectTo}, onSuccess, onError) => {
+export const submitSignUpCredentials = ({name, email, password}, onSuccess, onError) => {
     const api = createApi();
-    const payload = {name, username, email, password, redirectTo};
-    api.post('users/signup.json', payload)
+    const payload = {name, email, password};
+    api.post('register', payload)
         .then(onSuccess)
         .catch(onError);
 };
@@ -71,7 +187,19 @@ export const submitSignUpCredentials = ({name, username, email, password, redire
 export const submitLoginCredentials = ({username, password}, onSuccess, onError) => {
     const api = createApi();
     const payload = {username, password};
-    api.post('users/credentials.json', payload)
+    api.post('login_check', payload)
         .then(onSuccess)
         .catch(onError);
+};
+
+export const dropData = (data, onSuccess, onError) => {
+    const api = createApi(getToken());
+    api.post('datadropper', data)
+        .then(response => response.data)
+        .then(onSuccess)
+        .catch(onError);
+};
+
+export const retrieveDroppedData = (filename, onSuccess, onError) => {
+    return fetchUrl('datadropper/' + filename, onSuccess, onError);
 };

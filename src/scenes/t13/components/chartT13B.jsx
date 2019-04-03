@@ -14,7 +14,7 @@ import {
 import {SETTINGS_SELECTED_H0, SETTINGS_SELECTED_HL, SETTINGS_SELECTED_NOTHING} from '../defaults/T13B';
 import {calculateTravelTimeT13B, calculateXwd} from '../calculations';
 import {exportChartData, exportChartImage, getParameterValues} from '../../shared/simpleTools/helpers';
-import {Button, Grid, Segment} from 'semantic-ui-react';
+import {Button, Grid, Icon, Segment} from 'semantic-ui-react';
 
 export function calculateDiagramData(w, K, ne, L1, h1, xMin, xMax, dX) {
     const data = [];
@@ -37,44 +37,44 @@ let currentChart;
 const renderLabels = (xe, xi, L, data) => {
     if (xe < xi) {
         return (
-            <Segment raised style={styles.diagramErrorLabel}>
+            <Segment inverted color='orange' secondary style={styles.diagramErrorLabel}>
                 <p>Arrival location x<sub>e</sub> can not be smaller than initial position x<sub>i</sub>.</p>
             </Segment>
         );
     }
     if (xe > L) {
         return (
-            <Segment raised style={styles.diagramErrorLabel}>
-                <p>Arrival location x<sub>e</sub> can not be bigger than the Aquifer length, L<sup>'</sup>.</p>
+            <Segment inverted color='orange' secondary style={styles.diagramErrorLabel}>
+                <p>Arrival location x<sub>e</sub> can not be bigger than the aquifer's length, L<sup>'</sup>.</p>
             </Segment>
         );
     }
     if (xi > L) {
         return (
-            <Segment>
-                <p>Initial location x<sub>i</sub> can not be bigger than the Aquifer length, L<sup>'</sup>.</p>
+            <Segment inverted color='orange' secondary >
+                <p>Initial location x<sub>i</sub> can not be bigger than the aquifer's length, L<sup>'</sup>.</p>
             </Segment>
         );
     }
     return (
         <div>
-            <Segment raised style={styles.diagramLabel}>
+            <Segment raised className='diagramLabel topLeft'>
                 <p>t&nbsp;=&nbsp;<strong>{data[data.length - 1].t.toFixed(1)}</strong>&nbsp;d</p>
             </Segment>
 
-            <div style={styles.downloadButtons}>
-                <Button
-                    size={'tiny'}
-                    color={'grey'}
-                    content='JPG'
-                    onClick={() => exportChartImage(currentChart)}
-                />
-                <Button
-                    size={'tiny'}
-                    color={'grey'}
-                    content='CSV'
-                    onClick={() => exportChartData(currentChart)}
-                />
+            <div className='downloadButtons'>
+                <Button compact basic icon
+                        size={'small'}
+                        onClick={() => exportChartImage(currentChart)}
+                >
+                    <Icon name='download' /> JPG
+                </Button>
+                <Button compact basic icon
+                        size={'small'}
+                        onClick={() => exportChartData(currentChart)}
+                >
+                    <Icon name='download' /> CSV
+                </Button>
             </div>
         </div>
     );
@@ -83,28 +83,14 @@ const renderLabels = (xe, xi, L, data) => {
 const styles = {
     chart: {
         top: 20,
-        right: 30,
+        right: 20,
         left: 20,
-        bottom: 20
-    },
-    diagramLabel: {
-        position: 'absolute',
-        top: '90px',
-        right: '55px',
-        background: '#EFF3F6',
-        opacity: 0.9
+        bottom: 0
     },
     diagramErrorLabel: {
         position: 'absolute',
         top: '70px',
-        left: '200px',
-        background: '#EFF3F6',
-        opacity: 0.9
-    },
-    downloadButtons: {
-        position: 'absolute',
-        top: '0px',
-        right: '50px'
+        left: '200px'
     }
 };
 
@@ -129,7 +115,7 @@ const Chart = ({parameters, settings}) => {
         <div>
             <Grid>
                 <Grid.Column>
-                    <ResponsiveContainer width="100%" aspect={3}>
+                    <ResponsiveContainer width="100%" aspect={2.5}>
                         <LineChart
                             data={data}
                             margin={styles.chart}
@@ -141,6 +127,7 @@ const Chart = ({parameters, settings}) => {
                                     offset={0}
                                     position="bottom"
                                     fill={'#4C4C4C'}
+                                    style={{fontSize: '13px'}}
                                 />
                             </XAxis>
                             <YAxis
@@ -150,7 +137,7 @@ const Chart = ({parameters, settings}) => {
                                 <Label
                                     angle={270}
                                     position='left'
-                                    style={{textAnchor: 'center'}}
+                                    style={{textAnchor: 'center', fontSize: '13px'}}
                                     value={'t [d]'}
                                     fill={'#4C4C4C'}
                                 />

@@ -2,7 +2,7 @@ import React from 'react';
 import {pure} from 'recompose';
 import PropTypes from 'prop-types';
 import {mounding} from 'gwflowjs/lib/library';
-import {Grid, Header} from 'semantic-ui-react';
+import {Icon, Message} from 'semantic-ui-react';
 import {getParameterValues} from '../../shared/simpleTools/helpers';
 
 const Info = ({parameters}) => {
@@ -11,15 +11,15 @@ const Info = ({parameters}) => {
     const hMax = (hhi + hi);
 
     return (
-        <Grid>
-            <Grid.Row centered>
-                <Header as='h2'>Info</Header>
-            </Grid.Row>
-            <Grid.Row centered>
-                The resulting groundwater mound is&nbsp;<strong>{hhi.toFixed(2)}m </strong>
-                and the groundwater level will rise up to&nbsp;<strong>{hMax.toFixed(2)}m</strong>.
-            </Grid.Row>
-        </Grid>
+        <Message icon info>
+            <Icon name='info circle' color='blue' />
+            <Message.Content>
+                <p>
+                    The resulting groundwater mound is&nbsp;<strong>{hhi.toFixed(2)}&nbsp;m </strong>
+                    and the groundwater level will rise up to&nbsp;<strong>{hMax.toFixed(2)}&nbsp;m</strong>.
+                </p>
+            </Message.Content>
+        </Message>
     );
 };
 

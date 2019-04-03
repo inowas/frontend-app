@@ -38,7 +38,18 @@ class ResultsSelector extends React.Component {
     }
 
     sliderMarks = () => {
-        const {totalTimes} = this.props;
+        const maxNumberOfMarks = 10;
+        let {totalTimes} = this.props;
+
+        if (totalTimes.length > maxNumberOfMarks) {
+            const minTotim = totalTimes[0];
+            const maxTotim = totalTimes[totalTimes.length - 1];
+            const dTotim = Math.round((maxTotim - minTotim) / maxNumberOfMarks);
+
+            totalTimes = new Array(maxNumberOfMarks).fill(0).map((value, key) => (minTotim + key * dTotim));
+            totalTimes.push(maxTotim);
+        }
+
         let marks = {};
         totalTimes.forEach((value) => {
             marks[value] = value;
@@ -51,8 +62,8 @@ class ResultsSelector extends React.Component {
             return [];
         }
 
-        return this.props.soilmodel.layersCollection.all.map(l => (
-            {key: l.id, value: l.number, text: l.name}
+        return this.props.soilmodel.layersCollection.reorder().all.map((l, idx) => (
+            {key: l.id, value: idx, text: l.name}
         ))
     };
 
@@ -63,9 +74,8 @@ class ResultsSelector extends React.Component {
         }
 
         const types = uniq(flatten(layerValues));
-        return types.map((v, id) => (
-            {key: id, value: v, text: upperFirst(v)}
-        ))
+        return types.filter(t => t === 'head' || t === 'drawdown')
+            .map((v, id) => ({key: id, value: v, text: upperFirst(v)}))
     };
 
     formatTimestamp = (key) => {
@@ -109,41 +119,38 @@ class ResultsSelector extends React.Component {
         const {type, layer} = data;
 
         return (
-            <Grid>
-                <Grid.Row>
-                    <Grid.Column width={3}>
+            <Grid columns={2}>
+                <Grid.Row stretched>
+                    <Grid.Column width={6}>
                         <Segment color={'grey'}>
-                            <Header textAlign={'center'} as={'h4'}>Select type</Header>
-                            <Form.Dropdown
-                                style={{zIndex: 1000}}
-                                selection
-                                fluid
-                                options={this.typeOptions()}
-                                value={type}
-                                onChange={this.handleChangeType}
-                            />
-                        </Segment>
-                    </Grid.Column>
-                    <Grid.Column width={3}>
-                        <Segment color={'grey'}>
-                            <Header textAlign={'center'} as={'h4'}>Select layer</Header>
-                            <Form.Dropdown
-                                loading={!(this.props.soilmodel instanceof Soilmodel)}
-                                style={{zIndex: 1000}}
-                                selection
-                                fluid
-                                options={this.layerOptions()}
-                                value={layer}
-                                name={'affectedLayers'}
-                                onChange={this.handleChangeLayer}
-                            />
+                            <Form>
+                                <Form.Group inline>
+                                    <label>Select type</label>
+                                    <Form.Dropdown
+                                        selection
+                                        style={{zIndex: 1002, minWidth: '8em'}}
+                                        options={this.typeOptions()}
+                                        value={type}
+                                        onChange={this.handleChangeType}
+                                    />
+                                </Form.Group>
+                                <Form.Select
+                                    loading={!(this.props.soilmodel instanceof Soilmodel)}
+                                    style={{zIndex: 1001}}
+                                    fluid
+                                    options={this.layerOptions()}
+                                    value={layer}
+                                    name={'affectedLayers'}
+                                    onChange={this.handleChangeLayer}
+                                />
+                            </Form>
                         </Segment>
                     </Grid.Column>
                     <Grid.Column width={10}>
-                        <Segment color={'grey'} style={{paddingBottom: 40}}>
+                        <Segment color={'grey'}>
                             <Header textAlign={'center'} as={'h4'}>Select total time [days]</Header>
                             <SliderWithTooltip
-                                dots
+                                dots={totalTimes.length < 20}
                                 dotStyle={styles.dot}
                                 trackStyle={styles.track}
                                 defaultValue={temporaryTotim}

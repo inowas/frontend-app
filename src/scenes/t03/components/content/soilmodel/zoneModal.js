@@ -30,7 +30,7 @@ class ZoneModal extends React.Component {
         const zone = SoilmodelZone.fromObject(this.state.zone);
 
         zone.geometry = Geometry.fromGeoJson(polygon.toGeoJSON());
-        zone.activeCells = calculateActiveCells(zone.geometry, this.props.model.boundingBox, this.props.model.gridSize);
+        zone.cells = calculateActiveCells(zone.geometry, this.props.model.boundingBox, this.props.model.gridSize);
 
         return this.setState({
             isError: !zone.geometry,
@@ -45,7 +45,7 @@ class ZoneModal extends React.Component {
             const zone = SoilmodelZone.fromObject(this.state.zone);
 
             zone.geometry = Geometry.fromGeoJson(layer.toGeoJSON());
-            zone.activeCells = calculateActiveCells(zone.geometry, this.props.model.boundingBox, this.props.model.gridSize);
+            zone.cells = calculateActiveCells(zone.geometry, this.props.model.boundingBox, this.props.model.gridSize);
 
             return this.setState({
                 isError: !zone.geometry,

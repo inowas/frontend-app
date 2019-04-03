@@ -82,7 +82,7 @@ class OptimizationParametersComponent extends React.Component {
                         />
                     </Form.Field>
                     {(parameters.method === 'GA' &&
-                        <div>
+                        <Segment>
                             <Form.Group widths="equal">
                                 <Form.Field>
                                     <label>Number of generations of genetic algorithm</label>
@@ -132,6 +132,7 @@ class OptimizationParametersComponent extends React.Component {
                                     />
                                 </Form.Field>
                             </Form.Group>
+                            <Form.Group widths="equal">
                             <Form.Field>
                                 <label>ETA crowding factor</label>
                                 <Form.Input
@@ -154,52 +155,51 @@ class OptimizationParametersComponent extends React.Component {
                                     onChange={this.handleLocalChange}
                                 />
                             </Form.Field>
-                            <Segment>
+                            </Form.Group>
+                            <Form.Field>
+                                <label>Flag defining whether or not Diversity preserving module will be
+                                    included</label>
+                                <Form.Select
+                                    name="diversity_flg"
+                                    value={parameters.diversity_flg}
+                                    placeholder="diversity_flg ="
+                                    onChange={this.handleSelect}
+                                    options={boolOptions}
+                                />
+                            </Form.Field>
+                            <Form.Group widths="equal">
                                 <Form.Field>
-                                    <label>Flag defining whether or not Diversity preserving module will be
-                                        included</label>
-                                    <Form.Select
-                                        name="diversity_flg"
-                                        value={parameters.diversity_flg}
-                                        placeholder="diversity_flg ="
-                                        onChange={this.handleSelect}
-                                        options={boolOptions}
+                                    <label>Boundary value of the Q diversity index.</label>
+                                    <Form.Input
+                                        type="number"
+                                        name="qbound"
+                                        value={parameters.qbound}
+                                        placeholder="qbound ="
+                                        onBlur={this.handleChange}
+                                        onChange={this.handleLocalChange}
+                                        disabled={(parameters.diversity_flg === false)}
                                     />
                                 </Form.Field>
-                                <Form.Group widths="equal">
-                                    <Form.Field>
-                                        <label>Boundary value of the Q diversity index.</label>
-                                        <Form.Input
-                                            type="number"
-                                            name="qbound"
-                                            value={parameters.qbound}
-                                            placeholder="qbound ="
-                                            onBlur={this.handleChange}
-                                            onChange={this.handleLocalChange}
-                                            disabled={(parameters.diversity_flg === false)}
-                                        />
-                                    </Form.Field>
-                                    <Form.Field>
-                                        <label>Number of classes to be used in the clustering module.</label>
-                                        <Form.Input
-                                            type="number"
-                                            name="ncls"
-                                            value={parameters.ncls}
-                                            placeholder="ncls ="
-                                            onBlur={this.handleChange}
-                                            onChange={this.handleLocalChange}
-                                            disabled={(parameters.diversity_flg === false)}
-                                        />
-                                    </Form.Field>
-                                </Form.Group>
-                            </Segment>
-                        </div>
+                                <Form.Field>
+                                    <label>Number of classes to be used in the clustering module</label>
+                                    <Form.Input
+                                        type="number"
+                                        name="ncls"
+                                        value={parameters.ncls}
+                                        placeholder="ncls ="
+                                        onBlur={this.handleChange}
+                                        onChange={this.handleLocalChange}
+                                        disabled={(parameters.diversity_flg === false)}
+                                    />
+                                </Form.Field>
+                            </Form.Group>
+                        </Segment>
                     )}
                     {(parameters.method === 'Simplex' &&
-                        <div>
+                        <Segment>
                             <Form.Field>
                                 <label>Maximum number of function evaluations during the local
-                                    optimization.</label>
+                                    optimization</label>
                                 <Form.Input
                                     type="number"
                                     name="maxf"
@@ -236,8 +236,9 @@ class OptimizationParametersComponent extends React.Component {
                                     />
                                 </Form.Field>
                             </Form.Group>
-                        </div>
+                        </Segment>
                     )}
+                    <Segment>
                     <Form.Field>
                         <label>Report frequency</label>
                         <Form.Input
@@ -249,6 +250,7 @@ class OptimizationParametersComponent extends React.Component {
                             onChange={this.handleLocalChange}
                         />
                     </Form.Field>
+                    </Segment>
                 </Form>
             </div>
         );

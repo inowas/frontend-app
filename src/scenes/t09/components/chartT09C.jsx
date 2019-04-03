@@ -13,7 +13,7 @@ import {
     ReferenceLine
 } from 'recharts';
 
-import {Button, Grid, Segment} from 'semantic-ui-react';
+import {Button, Grid, Icon, Segment} from 'semantic-ui-react';
 import {exportChartData, exportChartImage, getParameterValues} from '../../shared/simpleTools/helpers';
 
 function range(start, stop, step) {
@@ -23,6 +23,22 @@ function range(start, stop, step) {
         a.push(b)
     }
     return a;
+}
+
+export function resultDiv(df, ds, z, qmax) {
+    if (df >= ds) {
+        return (
+            <Segment raised className={'diagramLabel topLeft'}>
+                <p>Saltwater density is lower than the density of freshwater.</p>
+            </Segment>
+        );
+    }
+    return (
+        <Segment raised className={'diagramLabel topRight'}>
+            <p>z&nbsp;=&nbsp;<strong>{z.toFixed(1)}</strong>&nbsp;m</p>
+            Q<sub>max</sub>&nbsp;=&nbsp;<strong>{qmax.toFixed(1)}</strong>&nbsp;m<sup>3</sup>/d
+        </Segment>
+    );
 }
 
 export function calculateDiagramData(q, k, d, df, ds, start, stop, step) {
@@ -75,22 +91,10 @@ export function calculateQ(k, d, df, ds) {
 
 const styles = {
     chart: {
-        top: 15,
-        right: 30,
+        top: 20,
+        right: 20,
         left: 20,
-        bottom: 15
-    },
-    diagramLabel: {
-        position: 'absolute',
-        top: '65px',
-        right: '60px',
-        background: '#EFF3F6',
-        opacity: 0.9
-    },
-    downloadButtons: {
-        position: 'absolute',
-        top: '40px',
-        right: '55px'
+        bottom: 0
     }
 };
 
@@ -108,7 +112,7 @@ const Chart = ({parameters}) => {
         <div>
             <Grid>
                 <Grid.Column>
-                    <ResponsiveContainer width={'100%'} aspect={2}>
+                    <ResponsiveContainer width={'100%'} aspect={2.5}>
                         <LineChart
                             data={data}
                             margin={styles.chart}
@@ -120,6 +124,7 @@ const Chart = ({parameters}) => {
                                     offset={0}
                                     position="bottom"
                                     fill={'#4C4C4C'}
+                                    style={{fontSize: '13px'}}
                                 />
                             </XAxis>
                             <YAxis
@@ -132,12 +137,13 @@ const Chart = ({parameters}) => {
                                 <Label
                                     angle={270}
                                     position='left'
-                                    style={{textAnchor: 'center'}}
+                                    style={{textAnchor: 'center', fontSize: '13px'}}
                                     value={'d [m]'}
                                     fill={'#4C4C4C'}
                                 />
                             </YAxis>
                             <CartesianGrid strokeDasharray="3 3"/>
+                            {df < ds &&
                             <Line
                                 isAnimationActive={false}
                                 type="basis"
@@ -145,29 +151,29 @@ const Chart = ({parameters}) => {
                                 stroke="#ED8D05"
                                 strokeWidth="5"
                                 dot={false}
-                            />
-                            <ReferenceLine y={zCrit} stroke="#ED8D05" strokeWidth="5" strokeDasharray="20 20"/>
+                            />}
+                            {df < ds &&
+                            <ReferenceLine y={zCrit} stroke='#ED8D05' strokeWidth='5' strokeDasharray='20 20'/>
+                            }
                         </LineChart>
                     </ResponsiveContainer>
 
-                    <Segment raised style={styles.diagramLabel}>
-                        <p>z&nbsp;=&nbsp;<strong>{z.toFixed(1)}</strong>&nbsp;m</p>
-                        Q<sub>max</sub>&nbsp;=&nbsp;<strong>{qmax.toFixed(1)}</strong>&nbsp;m<sup>3</sup>/d
-                    </Segment>
 
-                    <div style={styles.downloadButtons}>
-                        <Button
-                            size={'tiny'}
-                            color={'grey'}
-                            content='JPG'
-                            onClick={() => exportChartImage(currentChart)}
-                        />
-                        <Button
-                            size={'tiny'}
-                            color={'grey'}
-                            content='CSV'
-                            onClick={() => exportChartData(currentChart)}
-                        />
+                    {resultDiv(df, ds, z, qmax)}
+
+                    <div className='downloadButtons'>
+                        <Button compact basic icon
+                                size={'small'}
+                                onClick={() => exportChartImage(currentChart)}
+                        >
+                            <Icon name='download'/> JPG
+                        </Button>
+                        <Button compact basic icon
+                                size={'small'}
+                                onClick={() => exportChartData(currentChart)}
+                        >
+                            <Icon name='download'/> CSV
+                        </Button>
                     </div>
 
                 </Grid.Column>

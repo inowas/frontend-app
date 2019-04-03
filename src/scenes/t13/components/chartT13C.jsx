@@ -13,7 +13,7 @@ import {
     CartesianGrid
 } from 'recharts';
 
-import {Button, Grid, Segment} from 'semantic-ui-react';
+import {Button, Grid, Icon, Segment} from 'semantic-ui-react';
 import {exportChartData, exportChartImage, getParameterValues} from '../../shared/simpleTools/helpers';
 
 const calculateDiagramData = (w, K, ne, L, hL, xMin, xMax, dX) => {
@@ -37,21 +37,21 @@ let currentChart;
 const renderLabels = (xe, xi, L, data, xwd) => {
     if (xe < xi) {
         return (
-            <Segment raised style={styles.diagramErrorLabel}>
+            <Segment inverted color='orange' secondary style={styles.diagramErrorLabel}>
                 <p>Arrival location, x<sub>e</sub>, can not be smaller than initial position, x<sub>i</sub>.</p>
             </Segment>
         );
     }
     if (xe > L + Math.abs(xwd)) {
         return (
-            <Segment raised style={styles.diagramErrorLabel}>
+            <Segment inverted color='orange' secondary style={styles.diagramErrorLabel}>
                 <p>Arrival location, x<sub>e</sub>, can not be bigger than L<sup>'</sup>+|xwd|.</p>
             </Segment>
         );
     }
     if (xi > L) {
         return (
-            <Segment raised style={styles.diagramErrorLabel}>
+            <Segment inverted color='orange' secondary style={styles.diagramErrorLabel}>
                 <p>Initial location, x<sub>i</sub>, can not be bigger than the Aquifer length, L<sup>'</sup>.</p>
             </Segment>
         );
@@ -59,23 +59,23 @@ const renderLabels = (xe, xi, L, data, xwd) => {
     return (
 
         <div>
-            <Segment raised style={styles.diagramLabel}>
+            <Segment raised className='diagramLabel topLeft'>
                 t&nbsp;=&nbsp;<strong>{data[data.length - 1].t.toFixed(1)}</strong>&nbsp;d
             </Segment>
 
-            <div style={styles.downloadButtons}>
-                <Button
-                    size={'tiny'}
-                    color={'grey'}
-                    content='JPG'
-                    onClick={() => exportChartImage(currentChart)}
-                />
-                <Button
-                    size={'tiny'}
-                    color={'grey'}
-                    content='CSV'
-                    onClick={() => exportChartData(currentChart)}
-                />
+            <div className='downloadButtons'>
+                <Button compact basic icon
+                        size={'small'}
+                        onClick={() => exportChartImage(currentChart)}
+                >
+                    <Icon name='download' /> JPG
+                </Button>
+                <Button compact basic icon
+                        size={'small'}
+                        onClick={() => exportChartData(currentChart)}
+                >
+                    <Icon name='download' /> CSV
+                </Button>
             </div>
         </div>
     );
@@ -84,28 +84,14 @@ const renderLabels = (xe, xi, L, data, xwd) => {
 const styles = {
     chart: {
         top: 20,
-        right: 30,
+        right: 20,
         left: 20,
-        bottom: 20
-    },
-    diagramLabel: {
-        position: 'absolute',
-        top: '90px',
-        right: '55px',
-        background: '#EFF3F6',
-        opacity: 0.9
+        bottom: 0
     },
     diagramErrorLabel: {
         position: 'absolute',
         top: '60px',
-        left: '200px',
-        background: '#EFF3F6',
-        opacity: 0.9
-    },
-    downloadButtons: {
-        position: 'absolute',
-        top: '0px',
-        right: '50px'
+        left: '200px'
     }
 };
 
@@ -118,7 +104,7 @@ const Chart = ({parameters}) => {
         <div>
             <Grid>
                 <Grid.Column>
-                    <ResponsiveContainer width={'100%'} aspect={3}>
+                    <ResponsiveContainer width={'100%'} aspect={2.5}>
                         <LineChart
                             data={data}
                             margin={styles.chart}
@@ -131,6 +117,7 @@ const Chart = ({parameters}) => {
                                     offset={0}
                                     position="bottom"
                                     fill={'#4C4C4C'}
+                                    style={{fontSize: '13px'}}
                                 />
                             </XAxis>
                             <YAxis type="number" domain={[0, 'auto']} allowDecimals={false} tickLine={false}
@@ -138,7 +125,7 @@ const Chart = ({parameters}) => {
                                 <Label
                                     angle={270}
                                     position='left'
-                                    style={{textAnchor: 'center'}}
+                                    style={{textAnchor: 'center', fontSize: '13px'}}
                                     value={'t [d]'}
                                     fill={'#4C4C4C'}
                                 />

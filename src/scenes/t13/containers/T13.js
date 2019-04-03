@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import {withRouter} from 'react-router-dom';
-import {Grid, Header, Icon, Image, Segment} from 'semantic-ui-react';
+import {Button, Grid, Header, Icon, Image, Segment, Dimmer} from 'semantic-ui-react';
 
 import {AppContainer} from '../../shared';
 
@@ -20,27 +20,32 @@ export const navigation = [{
 const items = [
     {
         tool: 'T13A',
-        description: 'Aquifer system with one no-flow boundary and one fixed head boundary condition and constant groundwater recharge',
+        name: 'Aquifer system with one no-flow boundary and one fixed head boundary condition and constant groundwater recharge',
+        description: '',
         image: image13A
     },
     {
         tool: 'T13B',
-        description: 'Aquifer system with two fixed head boundary conditions, a flow divide within the system and constant groundwater recharge',
+        name: 'Aquifer system with two fixed head boundary conditions, a flow divide within the system and constant groundwater recharge',
+        description: '',
         image: image13B
     },
     {
         tool: 'T13C',
-        description: 'Aquifer system with two fixed head boundary conditions, a flow divide outside of the system and constant groundwater recharge',
+        name: 'Aquifer system with two fixed head boundary conditions, a flow divide outside of the system and constant groundwater recharge',
+        description: '',
         image: image13C
     },
     {
         tool: 'T13D',
-        description: 'Aquifer system with two fixed head boundary conditions, constant groundwater recharge but user is not sure whether the flow divide lies within the system',
+        name: 'Aquifer system with two fixed head boundary conditions, constant groundwater recharge but user is not sure whether the flow divide lies within the system',
+        description: '',
         image: image13D
     },
     {
         tool: 'T13E',
-        description: 'Aquifer system with one pumping well at constant rate, no groundwater recharge',
+        name: 'Aquifer system with one pumping well at constant rate, no groundwater recharge',
+        description: '',
         image: image13E
     }
 ];
@@ -51,17 +56,31 @@ class T13 extends React.Component {
         return this.props.history.push(`/tools/${tool}`)
     };
 
+    state = {
+        active: ''
+    };
+
+    handleShow = tool => this.setState({active: tool});
+    handleHide = () => this.setState({active: ''});
+
     render() {
+        const {active} = this.state;
+
         const columns = items.map(i => (
             <Grid.Column key={i.tool} onClick={() => this.redirectTo(i.tool)}>
-                <Segment color={'blue'} style={{cursor: 'pointer'}} padded>
+                <Dimmer.Dimmable as={Segment} color={'blue'} style={{cursor: 'pointer', marginBottom: '1em'}} padded
+                                 dimmed={active === i.tool}
+                                 onMouseEnter={() => this.handleShow(i.tool)}
+                                 onMouseLeave={this.handleHide}>
                     <Image src={i.image} size={'medium'} floated={'left'}/>
-                    <Header as={'h2'} color={'blue'}>{i.tool}</Header>
-                    <p>
-                        {i.description}
-                    </p>
-
-                </Segment>
+                    <Header as={'h2'} color={'blue'} style={{marginTop: 0}}>{i.tool}</Header>
+                    <p><strong>{i.name}</strong>&nbsp;{i.description}</p>
+                    <Dimmer inverted active={active === i.tool}>
+                        <Button icon primary size='large' labelPosition='left'>
+                            <Icon name='pin' />
+                            Select {i.tool}</Button>
+                    </Dimmer>
+                </Dimmer.Dimmable>
             </Grid.Column>
         ));
 

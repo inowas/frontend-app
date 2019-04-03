@@ -1,9 +1,7 @@
 import moment from 'moment/moment';
 import Stressperiod from './Stressperiod';
-import {orderBy} from 'lodash';
+import {cloneDeep, orderBy} from 'lodash';
 import {TimeUnit} from './index';
-
-const dateToString = (date) => moment.utc(date).format();
 
 class Stressperiods {
 
@@ -14,16 +12,18 @@ class Stressperiods {
 
     static create(startDate, endDate, timeUnit) {
         const stressPeriods = new Stressperiods();
-        stressPeriods.startDateTime = moment.utc(startDate);
-        stressPeriods.endDateTime = moment.utc(endDate);
+        stressPeriods.startDateTime = new moment.utc(startDate);
+        stressPeriods.endDateTime = new moment.utc(endDate);
         stressPeriods.timeUnit = (timeUnit instanceof TimeUnit) ? timeUnit.toInt() : timeUnit;
+
         stressPeriods.addStressPeriod(Stressperiod.fromObject({
-            totim_start: 0,
-            perlen: stressPeriods.totim,
+            start_date_time: startDate,
             nstp: 1,
             tsmult: 1,
             steady: true
-        }))
+        }));
+
+        return stressPeriods;
     }
 
     static fromDefaults() {
@@ -32,15 +32,51 @@ class Stressperiods {
 
     static fromObject(obj) {
         const stressPeriods = new Stressperiods();
-        stressPeriods.startDateTime = moment.utc(obj.start_date_time);
-        stressPeriods.endDateTime = moment.utc(obj.end_date_time);
-        stressPeriods.timeUnit = obj.time_unit;
+        const startDateTime = moment.utc(obj.start_date_time);
+        const endDateTime = moment.utc(obj.end_date_time);
+        const timeUnit = obj.time_unit;
 
-        obj.stress_periods.forEach(sp => {
-            stressPeriods.addStressPeriod(Stressperiod.fromObject(sp));
+        stressPeriods.startDateTime = startDateTime;
+        stressPeriods.endDateTime = endDateTime;
+        stressPeriods.timeUnit = timeUnit;
+
+        obj.stressperiods.forEach(sp => {
+            stressPeriods.addStressPeriod(Stressperiod.fromObject({
+                start_date_time: Stressperiods.dateTimeFromTotim(startDateTime, sp.totim_start, timeUnit),
+                nstp: sp.nstp,
+                tsmult: sp.tsmult,
+                steady: sp.steady
+            }));
         });
 
         return stressPeriods;
+    }
+
+    static fromImport(obj) {
+        const stressperiods = new Stressperiods();
+        const startDateTime = moment.utc(obj.start_date_time);
+        const endDateTime = moment.utc(obj.end_date_time);
+        const timeUnit = obj.time_unit;
+
+        stressperiods.startDateTime = startDateTime;
+        stressperiods.endDateTime = endDateTime;
+        stressperiods.timeUnit = timeUnit;
+
+        obj.stressperiods.forEach(sp => {
+            stressperiods.addStressPeriod(new Stressperiod(sp.start_date_time, sp.nstp, sp.tsmult, sp.steady));
+        });
+
+        return stressperiods;
+    }
+
+    static dateTimeFromTotim(startDateTime, totim, timeUnit) {
+        switch (timeUnit) {
+            case(4): {
+                return new moment.utc(startDateTime).add(totim, 'days').format();
+            }
+            default:
+                return new moment.utc(startDateTime).add(totim, 'days').format();
+        }
     }
 
     get startDateTime() {
@@ -71,34 +107,33 @@ class Stressperiods {
         return this._stressperiods;
     }
 
-    orderStressperiods() {
-        this._stressperiods = orderBy(this._stressperiods, [sp => sp.totimStart], ['asc']);
-    }
-
     getStressperiodByIdx(idx) {
         return this._stressperiods[idx];
     }
 
     last() {
-        return this.stressperiods[this.count-1];
+        return this.stressperiods[this.count - 1];
+    }
+
+    orderStressperiods() {
+        this._stressperiods = orderBy(this._stressperiods, [sp => sp.startDateTime], ['asc']);
     }
 
     updateStressperiodByIdx(idx, stressperiod) {
         this._stressperiods[idx] = stressperiod;
         this.stressperiods = this.recalculate(this.stressperiods);
-
     }
 
     get count() {
         return this._stressperiods.length;
     }
 
-    addStressPeriod(stressPeriod) {
-        if (!stressPeriod instanceof Stressperiod) {
-            throw new Error('Stressperiod ess expected to be instance of Stressperiod')
+    addStressPeriod(stressperiod) {
+        if (!stressperiod instanceof Stressperiod) {
+            throw new Error('Stressperiod expected to be instance of Stressperiod')
         }
 
-        this._stressperiods.push(stressPeriod);
+        this._stressperiods.push(stressperiod);
     }
 
     removeStressPeriod(id) {
@@ -113,15 +148,7 @@ class Stressperiods {
     }
 
     get dateTimes() {
-        return this.stressperiods.map(sp => {
-            switch (this.timeUnit) {
-                case(4): {
-                    return moment(this.startDateTime).utc().add(sp.totimStart, 'days').format();
-                }
-                default:
-                    return moment(this.startDateTime).utc().add(sp.totimStart, 'days').format();
-            }
-        });
+        return this.stressperiods.map(sp => sp.startDateTime);
     }
 
     get timeUnit() {
@@ -136,8 +163,33 @@ class Stressperiods {
         return this.endDateTime.diff(this.startDateTime, 'days') + 1;
     }
 
+    get perlens() {
+        const totims = [];
+        this.stressperiods.forEach(sp => {
+            totims.push(this.totimFromDate(sp.startDateTime))
+        });
+
+        totims.push(this.totimFromDate(this.endDateTime));
+
+        const perlens = [];
+        for (let i = 1; i < totims.length; i++) {
+            perlens.push(totims[i] - totims[i - 1]);
+        }
+
+        return perlens;
+    }
+
     totimFromDate(dateTime) {
-        return dateTime.diff(this.startDateTime, 'days') + 1;
+        if (!(dateTime instanceof moment)) {
+            dateTime = moment.utc(dateTime);
+        }
+        switch (this.timeUnit) {
+            case(4): {
+                return dateTime.diff(this.startDateTime, 'days');
+            }
+            default:
+                return dateTime.diff(this.startDateTime, 'days');
+        }
     }
 
     recalculate = (stressperiods) => {
@@ -159,11 +211,29 @@ class Stressperiods {
         this.stressperiods = stressperiods;
     };
 
-    toObject() {
+    toObject = () => {
+        const stressperiods = [];
+        let lastTotimStart = 0;
+
+        for (let i = 0; i < this.stressperiods.length; i++) {
+            const sp = this.stressperiods[i];
+            let currentTotimStart = this.totimFromDate(sp.startDateTime);
+
+            stressperiods.push({
+                totim_start: currentTotimStart,
+                perlen: currentTotimStart - lastTotimStart,
+                nstp: sp.nstp,
+                tsmult: sp.tsmult,
+                steady: sp.steady
+            });
+
+            lastTotimStart = cloneDeep(currentTotimStart);
+        }
+
         return {
-            start_date_time: dateToString(this.startDateTime),
-            end_date_time: dateToString(this.endDateTime),
-            stress_periods: this.stressperiods.map(sp => sp.toObject()),
+            start_date_time: this.startDateTime.toISOString(),
+            end_date_time: this.endDateTime.toISOString(),
+            stressperiods: stressperiods,
             time_unit: this.timeUnit
         };
     }

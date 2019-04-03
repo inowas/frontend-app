@@ -5,17 +5,17 @@ import {includes} from 'lodash';
 import {withRouter} from 'react-router-dom';
 
 import {AppContainer} from '../../shared';
-import {Background, ChartT13A as Chart, Parameters} from '../components';
+import {Background, ChartT13A as Chart, InfoT13A as Info, Parameters} from '../components';
 import {SliderParameter, ToolGrid, ToolMetaData} from '../../shared/simpleTools';
 import {navigation} from './T13';
 
 import SimpleToolsCommand from '../../shared/simpleTools/commands/SimpleToolsCommand';
 
-import image from '../images/T13A_bg.png';
+import image from '../images/T13A.png';
 import {defaults} from '../defaults/T13A';
 
 import {fetchTool, sendCommand} from 'services/api';
-import {buildPayload, deepMerge} from '../../shared/simpleTools/helpers';
+import {buildPayloadToolInstance, deepMerge} from '../../shared/simpleTools/helpers';
 
 class T13A extends React.Component {
     constructor(props) {
@@ -32,7 +32,7 @@ class T13A extends React.Component {
         if (this.props.match.params.id) {
             this.setState({isLoading: true});
             fetchTool(
-                this.state.tool.type,
+                this.state.tool.tool,
                 this.props.match.params.id,
                 tool => this.setState({
                     tool: deepMerge(this.state.tool, tool),
@@ -50,7 +50,7 @@ class T13A extends React.Component {
 
         if (id) {
             sendCommand(
-                SimpleToolsCommand.updateToolInstance(buildPayload(tool)),
+                SimpleToolsCommand.updateToolInstance(buildPayloadToolInstance(tool)),
                 () => this.setState({isDirty: false}),
                 () => this.setState({error: true})
             );
@@ -58,7 +58,7 @@ class T13A extends React.Component {
         }
 
         sendCommand(
-            SimpleToolsCommand.createToolInstance(buildPayload(tool)),
+            SimpleToolsCommand.createToolInstance(buildPayloadToolInstance(tool)),
             () => this.props.history.push(`${this.props.location.pathname}/${tool.id}`),
             () => this.setState({error: true})
         );
@@ -119,7 +119,7 @@ class T13A extends React.Component {
                         title='T13A. Travel time // Aquifer system with a no-flow boundary and fixed head boundary condition'
                     />
                     <Chart parameters={parameters}/>
-                    <div/>
+                    <Info parameters={parameters}/>
                     <Parameters
                         parameters={parameters.map(p => SliderParameter.fromObject(p))}
                         handleChange={this.handleChangeParameters}

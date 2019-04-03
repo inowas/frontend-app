@@ -12,12 +12,12 @@ export const defaults = () => {
         description: 'Simple tool description',
         permissions: 'rwx',
         public: false,
-        type: 'T08',
+        tool: 'T08',
         data: {
             parameters: [{
                 order: 0,
                 id: 'C0',
-                name: `Initial concentration of the solute, C<sub>0</sub> [mg/l]`,
+                name: 'Initial solute concentration<br/><em>C</em><sub>0</sub> [mg/l]',
                 min: 0.0,
                 max: 1000.0,
                 value: 100,
@@ -26,7 +26,7 @@ export const defaults = () => {
             }, {
                 order: 1,
                 id: 'x',
-                name: 'Distance from the injection point, x [m]',
+                name: 'Distance from injection point<br/><em>x</em> [m]',
                 min: 0,
                 max: 100,
                 value: 10,
@@ -35,7 +35,7 @@ export const defaults = () => {
             }, {
                 order: 2,
                 id: 't',
-                name: 'Time since injection, t [d]',
+                name: 'Time since injection<br/><em>t</em> [d]',
                 min: 0,
                 max: 500,
                 value: 365,
@@ -44,7 +44,7 @@ export const defaults = () => {
             }, {
                 order: 3,
                 id: 'K',
-                name: 'Hydraulic conductivity, K [m/d]',
+                name: 'Hydraulic conductivity<br/><em>K</em> [m/d]',
                 min: 1e-2,
                 max: 1e+2,
                 value: 2.592,
@@ -53,7 +53,7 @@ export const defaults = () => {
             }, {
                 order: 4,
                 id: 'I',
-                name: 'Hydraulic gradient, I [-]',
+                name: 'Hydraulic gradient<br/><em>I</em> [-]',
                 min: 0,
                 max: 0.01,
                 value: 0.002,
@@ -62,7 +62,7 @@ export const defaults = () => {
             }, {
                 order: 5,
                 id: 'ne',
-                name: 'Effective porosity, n [-]',
+                name: 'Effective porosity<br/><em>n</em> [-]',
                 min: 0,
                 max: 0.5,
                 value: 0.23,
@@ -71,7 +71,7 @@ export const defaults = () => {
             }, {
                 order: 6,
                 id: 'rhoS',
-                name: 'Particle density, ρ [g/cc]',
+                name: 'Particle density<br/><em>ρ</em> [g/cc]',
                 min: 0,
                 max: 3.00,
                 value: 2.65,
@@ -80,7 +80,7 @@ export const defaults = () => {
             }, {
                 order: 7,
                 id: 'alphaL',
-                name: 'Longitudinal dispersivity, α [m]',
+                name: 'Longitudinal dispersivity<br/><em>α</em> [m]',
                 min: 0.1,
                 max: 10,
                 value: 0.923,
@@ -89,7 +89,7 @@ export const defaults = () => {
             }, {
                 order: 8,
                 id: 'Kd',
-                name: 'Sorption partition coefficient, K<sub>d</sub> [l/g]',
+                name: 'Sorption partition coefficient<br/><em>K</em><sub>d</sub> [l/g]',
                 min: 0.0,
                 max: 0.1,
                 value: 0.0,
@@ -98,7 +98,7 @@ export const defaults = () => {
             }, {
                 order: 9,
                 id: 'tau',
-                name: 'Duration of infiltration,  τ  [d]',
+                name: 'Duration of infiltration<br/><em>τ</em> [d]',
                 min: 0,
                 max: 500,
                 value: 100,
@@ -107,7 +107,7 @@ export const defaults = () => {
             }, {
                 order: 10,
                 id: 'Corg',
-                name: 'Organic carbon content in the soil, C<sub>org</sub> [-]',
+                name: 'Soil organic carbon content<br/><em>C</em><sub>org</sub> [-]',
                 min: 0,
                 max: 0.1,
                 value: 0.001,
@@ -116,7 +116,7 @@ export const defaults = () => {
             }, {
                 order: 11,
                 id: 'Kow',
-                name: 'Logarithmus of octanol/water partition coefficient, log K<sub>ow</sub> [-]',
+                name: 'Octanol/water partition coefficient, log <em>K</em><sub>ow</sub> [-]',
                 min: 0,
                 max: 10,
                 value: 2.25,

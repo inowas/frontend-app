@@ -2,7 +2,7 @@ import {UPDATE_BOUNDARIES} from '../reducers/boundaries';
 import {UPDATE_CALCULATION} from '../reducers/calculation';
 import {CLEAR, UPDATE_MODEL, UPDATE_MT3DMS, UPDATE_STRESSPERIODS} from '../reducers/model';
 import {
-    ADD_SOILMODEL_LAYER,
+    ADD_SOILMODEL_LAYER, CLONE_SOILMODEL_LAYER,
     REMOVE_SOILMODEL_LAYER,
     UPDATE_SOILMODEL,
     UPDATE_SOILMODEL_LAYER
@@ -12,8 +12,10 @@ import {UPDATE_OPTIMIZATION} from '../reducers/optimization';
 import {Calculation, ModflowModel, Stressperiods} from 'core/model/modflow';
 import {BoundaryCollection} from 'core/model/modflow/boundaries';
 import {Soilmodel, SoilmodelLayer} from 'core/model/modflow/soilmodel';
-import {Mt3dms} from 'core/model/modflow/mt3d';
+import {Mt3dms} from 'core/model/flopy/packages/mt';
 import {Optimization} from 'core/model/modflow/optimization';
+import FlopyPackages from '../../../core/model/flopy/packages/FlopyPackages';
+import {UPDATE_PACKAGES} from '../reducers/packages';
 
 export function clear() {
     return {
@@ -65,6 +67,17 @@ export function updateCalculation(calculation) {
     };
 }
 
+export function updatePackages(packages) {
+    if (!(packages instanceof FlopyPackages)) {
+        throw new Error('Packages is expected to be instance of FlopyPackages');
+    }
+
+    return {
+        type: UPDATE_PACKAGES,
+        payload: packages.toObject()
+    };
+}
+
 export function updateMt3dms(mt3dms) {
     if (!mt3dms instanceof Mt3dms) {
         throw new Error('Mt3dms is expected to be instance of Mt3dms');
@@ -76,7 +89,7 @@ export function updateMt3dms(mt3dms) {
     };
 }
 
-export function addSoilmodelLayer(layer) {
+export function addLayer(layer) {
     if (!layer instanceof SoilmodelLayer) {
         throw new Error('Layer is expected to be instance of SoilmodelLayer');
     }
@@ -87,7 +100,14 @@ export function addSoilmodelLayer(layer) {
     };
 }
 
-export function removeSoilmodelLayer(layer_id) {
+export function cloneLayer(layer_id, new_layer_id) {
+    return {
+        type: CLONE_SOILMODEL_LAYER,
+        layer_id, new_layer_id
+    }
+}
+
+export function removeLayer(layer_id) {
     return {
         type: REMOVE_SOILMODEL_LAYER,
         layer_id: layer_id
@@ -116,7 +136,7 @@ export function updateSoilmodel(soilmodel) {
     };
 }
 
-export function updateSoilmodelLayer(layer) {
+export function updateLayer(layer) {
     if (!layer instanceof SoilmodelLayer) {
         throw new Error('Layer is expected to be instance of SoilmodelLayer');
     }

@@ -5,21 +5,22 @@ import {Button, Checkbox, Form, Icon, Popup, Table} from 'semantic-ui-react';
 import moment from 'moment/moment';
 
 class StressPeriodsDataTable extends React.Component {
+    constructor(props) {
+        super(props);
+        this.state = {
+            stressperiods: props.stressperiods.toObject()
+        }
+    }
+
+    componentWillReceiveProps(nextProps) {
+        this.setState({
+            stressperiods: nextProps.stressperiods.toObject()
+        });
+    }
+
     header = () => (
         <Table.Row>
             <Table.HeaderCell width={6}>Start Date</Table.HeaderCell>
-            <Popup
-                trigger={<Table.HeaderCell width={1}>tt</Table.HeaderCell>}
-                content='Total time'
-                hideOnScroll
-                size='tiny'
-            />
-            <Popup
-                trigger={<Table.HeaderCell width={1}>pl</Table.HeaderCell>}
-                content='Period length'
-                hideOnScroll
-                size='tiny'
-            />
             <Popup
                 trigger={<Table.HeaderCell width={2}>nstp</Table.HeaderCell>}
                 content='No. of time steps'
@@ -43,19 +44,21 @@ class StressPeriodsDataTable extends React.Component {
     );
 
     handleRemoveStressperiod = (idx) => {
-        const stressperiods = this.props.stressperiods;
-        stressperiods.removeStressPeriod(idx);
-        this.props.onChange(stressperiods);
+        const stressperiods = Stressperiods.fromObject(this.state.stressperiods);
+
+        if (stressperiods.count > 1) {
+            stressperiods.removeStressPeriod(idx);
+            this.props.onChange(stressperiods);
+        }
     };
 
     handleStressperiodChange = (e, props) => {
         const {value, name, idx, checked} = props;
-        const stressperiods = this.props.stressperiods;
+        const stressperiods = Stressperiods.fromObject(this.state.stressperiods);
         const stressperiod = stressperiods.getStressperiodByIdx(idx);
 
         if (name === 'startDateTime') {
-            const date = moment.utc(value);
-            stressperiod.totimStart = stressperiods.totimFromDate(date);
+            stressperiod.startDateTime = moment.utc(value);
         }
 
         if (name === 'steady') {
@@ -63,14 +66,27 @@ class StressPeriodsDataTable extends React.Component {
         }
 
         stressperiods.updateStressperiodByIdx(idx, stressperiod);
-        this.setState({stressperiods: stressperiods.toObject()});
-        this.props.onChange(stressperiods);
+        return this.setState({
+            stressperiods: stressperiods.toObject()
+        });
     };
 
-    addNewStressperiod = (numberOfDays) => {
-        const stressperiods = this.props.stressperiods;
+    handleChange = (e, props) => {
+        const {idx} = props;
+        const stressperiods = Stressperiods.fromObject(this.state.stressperiods);
+        if (moment(stressperiods.dateTimes[idx]) <= stressperiods.startDateTime) {
+            const edited = stressperiods.stressperiods[idx];
+            edited.startDateTime = moment.utc(stressperiods.startDateTime).add(1, 'days');
+            stressperiods.updateStressperiodByIdx(idx, edited);
+        }
+
+        return this.props.onChange(stressperiods);
+    };
+
+    addNewStressperiod = numberOfDays => {
+        const stressperiods = Stressperiods.fromObject(this.state.stressperiods);
         const newStressperiod = stressperiods.last().clone();
-        newStressperiod.totimStart = newStressperiod.totimStart + numberOfDays;
+        newStressperiod.startDateTime = moment.utc(stressperiods.last().startDateTime).add(numberOfDays, 'days');
         stressperiods.addStressPeriod(newStressperiod);
         stressperiods.recalculateStressperiods();
         this.props.onChange(stressperiods);
@@ -78,8 +94,7 @@ class StressPeriodsDataTable extends React.Component {
 
     render() {
         const {readOnly} = this.props.readOnly || false;
-        const stressperiods = this.props.stressperiods;
-        const startDateTime = stressperiods.startDateTime;
+        const stressperiods = Stressperiods.fromObject(this.state.stressperiods);
         const rows = stressperiods.stressperiods.map((sp, idx) => (
             <Table.Row key={idx + '-' + sp.totim}>
                 <Table.Cell>
@@ -88,12 +103,11 @@ class StressPeriodsDataTable extends React.Component {
                         type='date'
                         name={'startDateTime'}
                         idx={idx}
-                        value={moment(startDateTime).add(sp.totimStart, 'days').format('YYYY-MM-DD')}
+                        value={moment.utc(sp.startDateTime).format('YYYY-MM-DD')}
+                        onBlur={e => this.handleChange(e, {idx})}
                         onChange={this.handleStressperiodChange}
                     />
                 </Table.Cell>
-                <Table.Cell>{sp.totimStart}</Table.Cell>
-                <Table.Cell>{sp.perlen}</Table.Cell>
                 <Table.Cell>{sp.nstp}</Table.Cell>
                 <Table.Cell>{sp.tsmult}</Table.Cell>
                 <Table.Cell>
@@ -106,7 +120,7 @@ class StressPeriodsDataTable extends React.Component {
                     />
                 </Table.Cell>
                 <Table.Cell>
-                    {!readOnly && <Button basic
+                    {!readOnly && idx !== 0 && <Button basic
                         floated={'right'}
                         icon={'trash'}
                         onClick={() => this.handleRemoveStressperiod(idx)}

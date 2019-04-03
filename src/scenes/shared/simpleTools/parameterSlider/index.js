@@ -7,12 +7,6 @@ import 'rc-slider/assets/index.css';
 import SliderParameter from './SliderParameter';
 
 const styles = {
-    extraMini: {
-        backgroundColor: '#EEEEEE',
-        boxShadow: '0px 1px 2px 0px rgba(0,0,0,0.1) inset',
-        border: 'none',
-        padding: '3px'
-    },
     L: {
         width: '53px'
     },
@@ -62,7 +56,7 @@ class ParameterSlider extends React.Component {
 
         return this.setState({
             param: param.toObject
-        });
+        }, this.handleChange);
     };
 
     handleChange = () => this.props.handleChange(SliderParameter.fromObject(this.state.param));
@@ -73,21 +67,23 @@ class ParameterSlider extends React.Component {
         return (
             <Grid.Row columns={3} style={styles.row}>
                 <Grid.Column width={5} textAlign='right'>
-                    <div dangerouslySetInnerHTML={{__html: param.name}}/>
+                    <div dangerouslySetInnerHTML={{__html: param.name}} style={{minHeight: '55px'}}/>
                 </Grid.Column>
                 <Grid.Column width={8}>
                     <Grid columns={2}>
                         <Grid.Column width={4} floated='left'>
                             <input name='min'
                                    type='number'
-                                   style={{...styles.extraMini, ...styles.L}}
+                                   className='extraMini'
+                                   style={{...styles.L}}
                                    value={param.min} onBlur={this.handleChange} onChange={this.handleLocalChange}
                             />
                         </Grid.Column>
                         <Grid.Column width={4} floated='right'>
                             <input name='max'
                                    type='number'
-                                   style={{...styles.extraMini, ...styles.R}}
+                                   className='extraMini'
+                                   style={{...styles.R}}
                                    value={param.max} onBlur={this.handleChange} onChange={this.handleLocalChange}
                             />
                         </Grid.Column>
@@ -106,11 +102,12 @@ class ParameterSlider extends React.Component {
                         </Grid.Row>
                     </Grid>
                 </Grid.Column>
-                <Grid.Column width={3} style={{verticalAlign: 'top', height: '50px'}}>
+                <Grid.Column width={3} style={{verticalAlign: 'top', height: '55px'}}>
                     <input name='value'
                            type='number'
                            size='mini'
-                           style={{...styles.extraMini, ...styles.valueInput}}
+                           className='extraMini'
+                           style={{...styles.valueInput}}
                            value={param.value} onChange={this.handleLocalChange}
                            onBlur={this.handleChange}
                     />

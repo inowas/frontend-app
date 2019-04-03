@@ -122,3 +122,6 @@
          Site Overrides
 *******************************/
 
+.ui.breadcrumb .active.section {
+  font-size: 1.14285714rem;
+}

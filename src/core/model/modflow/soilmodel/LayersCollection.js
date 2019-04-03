@@ -1,4 +1,4 @@
-import AbstractCollection from '../../../AbstractCollection';
+import AbstractCollection from '../../collection/AbstractCollection';
 import SoilmodelLayer from './SoilmodelLayer';
 
 class LayersCollection extends AbstractCollection {
@@ -17,9 +17,10 @@ class LayersCollection extends AbstractCollection {
 
     reorder() {
         this.items = this.orderBy('number').all.map((layer, key) => {
-             layer.number = key + 1;
-             return layer;
+            layer.number = key;
+            return layer;
         });
+        return this;
     }
 }
 

@@ -1,21 +1,15 @@
 import AbstractCommand from 'core/model/command/AbstractCommand';
-
-import cloneScenarioAnalysisPayloadSchema from './cloneScenarioAnalysisPayloadSchema';
-import createScenarioAnalysisPayloadSchema from './createScenarioAnalysisPayloadSchema';
-import createScenarioPayloadSchema from './createScenarioPayloadSchema';
-import deleteScenarioAnalysisPayloadSchema from './deleteScenarioAnalysisPayloadSchema';
-import deleteScenarioPayloadSchema from './deleteScenarioPayloadSchema';
-import updateScenarioAnalysisPayloadSchema from './updateScenarioAnalysisPayloadSchema';
+import {JSON_SCHEMA_URL} from 'services/api';
 
 class ScenarioAnalysisCommand extends AbstractCommand {
 
-    static cloneScenarioAnalysis(scenarioanalysisId, newId) {
+    static cloneScenarioAnalysis({id, newId}) {
         return new ScenarioAnalysisCommand(
             'cloneScenarioAnalysis', {
-                id: scenarioanalysisId,
+                id,
                 new_id: newId
             },
-            cloneScenarioAnalysisPayloadSchema
+            JSON_SCHEMA_URL + '/commands/cloneScenarioAnalysis'
         );
     }
 
@@ -28,7 +22,7 @@ class ScenarioAnalysisCommand extends AbstractCommand {
                 description: description,
                 public: isPublic
             },
-            createScenarioAnalysisPayloadSchema
+            JSON_SCHEMA_URL + '/commands/createScenarioAnalysis'
         );
     }
 
@@ -39,26 +33,24 @@ class ScenarioAnalysisCommand extends AbstractCommand {
                 basemodel_id: modelToCloneId,
                 scenario_id: newId
             },
-            createScenarioPayloadSchema
-        );
-    }
-
-    static deleteScenarioAnalysis(scenarioanalysisId) {
-        return new ScenarioAnalysisCommand(
-            'deleteScenarioAnalysis', {
-                id: scenarioanalysisId
-            },
-            deleteScenarioAnalysisPayloadSchema
+            JSON_SCHEMA_URL + '/commands/createScenario'
         );
     }
 
     static deleteScenario(scenarioanalysisId, scenarioId) {
         return new ScenarioAnalysisCommand(
-            'deleteScenarioAnalysis', {
+            'deleteScenario', {
                 id: scenarioanalysisId,
                 scenario_id: scenarioId
             },
-            deleteScenarioPayloadSchema
+            JSON_SCHEMA_URL + '/commands/deleteScenario'
+        );
+    }
+
+    static deleteScenarioAnalysis(id) {
+        return new ScenarioAnalysisCommand(
+            'deleteScenarioAnalysis', {id},
+            JSON_SCHEMA_URL + '/commands/deleteScenarioAnalysis'
         );
     }
 
@@ -70,7 +62,7 @@ class ScenarioAnalysisCommand extends AbstractCommand {
                 description: description,
                 public: isPublic
             },
-            updateScenarioAnalysisPayloadSchema
+            JSON_SCHEMA_URL + '/commands/updateScenarioAnalysis'
         );
     }
 }

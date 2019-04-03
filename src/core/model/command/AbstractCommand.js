@@ -1,52 +1,49 @@
 import Ajv from 'ajv';
-import ajv0 from 'ajv/lib/refs/json-schema-draft-04';
+import jsrp from 'json-schema-ref-parser'
 import uuid from 'uuid';
-
 
 export default class AbstractCommand {
 
-    metadata = [];
+    metadata = {};
     uuid = uuid();
 
     constructor(name, payload, schema = null) {
         this.message_name = name;
         this.payload = payload;
         this.schema = schema;
-
-        const [isValid, errors] = this.validate();
-        if (!isValid) {
-            console.warn(
-                'Invalid payload sending ' + this.message_name,
-                JSON.stringify(errors)
-            );
-        }
+        this.validate();
     }
 
     validate() {
-        const ajv = new Ajv({schemaId: 'auto'});
+        return new Promise((resolve) => {
 
-        if (!this.schema) {
-            const message = 'No schema given for validation';
-            console.warn(message);
-            return [false, message];
-        }
+            if (!this.schema) {
+                const message = 'No schema given for validation';
+                console.warn(message);
+                resolve([false, message]);
+                return;
+            }
 
-        ajv.addMetaSchema(ajv0);
-        const val = ajv.compile(this.schema);
-        const isValid = val(this.payload);
-        const errors = val.errors;
+            const ajv = new Ajv({schemaId: 'auto'});
 
-        if (!isValid) {
-            console.warn('Invalid payload sending ' + this.message_name, JSON.stringify(errors));
-        }
+            jsrp.dereference({'$ref': this.schema})
+                .then(schema => {
+                    const val = ajv.compile(schema);
+                    const isValid = val(this.toObject());
+                    const errors = val.errors;
 
-        return [isValid, errors];
+                    if (!isValid) {
+                        console.warn('Invalid payload sending ' + this.message_name, this.toObject(), this.schema, JSON.stringify(errors));
+                    }
+
+                    resolve([isValid, errors]);
+                })
+                .catch(e => {
+                    console.log(e);
+                    resolve([false, e]);
+                });
+        });
     }
-
-    getPayload = () => {
-        this.validate();
-        return this.toObject()
-    };
 
     toObject = () => ({
         uuid: this.uuid,

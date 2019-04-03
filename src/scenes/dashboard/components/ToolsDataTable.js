@@ -5,14 +5,6 @@ import * as Formatter from 'services/formatter';
 import {withRouter} from 'react-router-dom';
 import NoContent from '../../shared/complexTools/noContent';
 
-const styles = {
-    actionWrapper: {
-        position: 'absolute',
-        right: 10,
-    }
-};
-
-
 class ToolsDataTable extends React.Component {
 
     state = {hoveredInstance: null};
@@ -54,11 +46,9 @@ class ToolsDataTable extends React.Component {
                     <Table.Cell>
                         {i.user_name}
                     </Table.Cell>
-                    <Table.Cell style={styles.actionWrapper}>
-                        {(() => {
-                            if (this.state.hoveredInstance === index) {
-                                return (
-                                    <Button.Group size='small'>
+                    <Table.Cell>
+                        <div className="tableDeleteButton">
+                        <Button.Group size='small' >
                                         <Popup
                                             trigger={
                                                 <Button
@@ -84,10 +74,8 @@ class ToolsDataTable extends React.Component {
                                         />
                                         }
                                     </Button.Group>
-                                );
-                            }
-                            return null;
-                        })()}
+                        </div>
+
                     </Table.Cell>
                 </Table.Row>
             );
@@ -95,7 +83,7 @@ class ToolsDataTable extends React.Component {
 
         return (
             <div>
-                <Table>
+                <Table selectable>
                     <Table.Header>
                         <Table.Row>
                             <Table.HeaderCell>No.</Table.HeaderCell>

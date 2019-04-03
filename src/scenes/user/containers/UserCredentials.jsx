@@ -2,16 +2,21 @@ import PropTypes from 'prop-types';
 import React from 'react';
 
 import {connect} from 'react-redux';
-import {withRouter} from 'react-router-dom';
 import {Button, Container, Form, Grid, Header, Image, Message} from 'semantic-ui-react';
 import NavBar from '../../shared/Navbar';
-import {changePassword} from '../actions/actions';
 import logo from '../images/favicon.png';
+import {sendCommand} from 'services/api';
+import UserCommand from '../commands/userCommand';
 
 const styles = {
     link: {cursor: 'pointer'},
     wrapper: {marginTop: 40},
-    form: {textAlign: 'left'}
+    form: {textAlign: 'left'},
+    credentials: {
+        position: 'relative',
+        top: '50%',
+        transform: 'translateY(60%)'
+    }
 };
 
 class UserCredentials extends React.Component {
@@ -21,20 +26,12 @@ class UserCredentials extends React.Component {
             oldPassword: '',
             newPassword: '',
             passwordConfirmation: '',
-            showErrorMessages: false
+            showErrorMessages: false,
+            success: false,
+            error: false,
+            dirty: false,
+            loading: false
         };
-    }
-
-    componentWillReceiveProps(nextProps) {
-        const {webData} = nextProps;
-        if (this.isSuccess(webData)) {
-            this.setState({
-                oldPassword: '',
-                newPassword: '',
-                passwordConfirmation: '',
-                showErrorMessages: false
-            });
-        }
     }
 
     onInputChange = (e) => {
@@ -69,20 +66,27 @@ class UserCredentials extends React.Component {
         const {oldPassword, newPassword} = this.state;
         const formValidation = this.validate();
         if (formValidation.isValid) {
-            this.props.changePassword({
-                oldPassword, newPassword
-            });
+            return this.setState({loading: true}, () =>
+                sendCommand(UserCommand.changeUserPassword(this.props.user.id, oldPassword, newPassword),
+                    () => this.setState({
+                        error: false,
+                        success: true,
+                        oldPassword: '',
+                        newPassword: '',
+                        passwordConfirmation: '',
+                        showErrorMessages: false,
+                        loading: false
+                    }),
+                    () => this.setState({error: true, showErrorMessages: true, loading: false})
+                )
+            )
         }
 
-        this.setState({
-            showErrorMessages: true
-        });
+        return this.setState({showErrorMessages: true})
     };
 
     renderMessage = () => {
-        // The request was successful
-        const {webData} = this.props;
-        if (this.isSuccess(webData)) {
+        if (this.state.success) {
             return (
                 <Message attached="top" success>
                     {'Your new password has been saved.'}
@@ -91,7 +95,7 @@ class UserCredentials extends React.Component {
         }
 
         // A request-Error was happening
-        if (this.isError()) {
+        if (this.state.error) {
             return (
                 <Message attached="top" error>
                     {'The current password seems to be wrong.'}
@@ -112,30 +116,12 @@ class UserCredentials extends React.Component {
         );
     };
 
-    isError = () => {
-        const request = this.props.webData['users/CHANGE_PASSWORD'];
-        return request && request.type === 'error';
-    };
-
-    isLoading = () => {
-        const request = this.props.webData['users/CHANGE_PASSWORD'];
-        return request && request.type === 'loading';
-    };
-
-    isSuccess = (webData) => {
-        if (!webData) {
-            return false;
-        }
-        const request = webData['users/CHANGE_PASSWORD'];
-        return request && request.type === 'success';
-    };
-
     render() {
         const {oldPassword, newPassword, passwordConfirmation} = this.state;
         return (
             <div>
                 <NavBar/>
-                <Container className={'profile'}>
+                <Container style={styles.credentials}>
                     <Grid textAlign="center">
                         <Grid.Column style={{maxWidth: 350}}>
                             <Header as="h2">
@@ -181,7 +167,7 @@ class UserCredentials extends React.Component {
                                 <Button
                                     color={'blue'}
                                     onClick={this.onSubmitClick}
-                                    loading={this.isLoading()}
+                                    loading={this.state.loading}
                                 >
                                     Save
                                 </Button>
@@ -196,18 +182,12 @@ class UserCredentials extends React.Component {
 
 const mapStateToProps = state => {
     return {
-        webData: state.webData
+        user: state.user
     };
 };
 
-const mapDispatchToProps = {
-    changePassword: changePassword
-};
-
 UserCredentials.propTypes = {
-    webData: PropTypes.object.isRequired,
-    changePassword: PropTypes.func.isRequired,
-    router: PropTypes.object.isRequired
+    user: PropTypes.object.isRequired
 };
 
-export default withRouter(connect(mapStateToProps, mapDispatchToProps)(UserCredentials));
+export default connect(mapStateToProps)(UserCredentials);

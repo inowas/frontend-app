@@ -22,7 +22,7 @@ class BoundaryList extends React.Component {
 
     list = () => {
         const {selectedType} = this.state;
-        let selectedBoundaries = this.props.boundaries.toObject();
+        let selectedBoundaries = this.props.boundaries.boundaries;
         if (selectedType !== 'all') {
             selectedBoundaries = selectedBoundaries.filter(b => b.type === selectedType);
         }
@@ -46,14 +46,12 @@ class BoundaryList extends React.Component {
                                         content='Clone'
                                         position='top center'
                                         size='mini'
-                                        inverted
                                     />
                                     <Popup
                                         trigger={<Button icon={'trash'} onClick={() => this.props.onRemove(b.id)}/>}
                                         content='Delete'
                                         position='top center'
                                         size='mini'
-                                        inverted
                                     />
                                     </Button.Group>
                                 </div>

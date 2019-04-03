@@ -1,6 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import {Breadcrumb, Button, Checkbox, Form, Grid, Header, Modal} from 'semantic-ui-react';
+import {Breadcrumb, Button, Checkbox, Form, Grid, Modal} from 'semantic-ui-react';
+import tools from '../../../dashboard/defaults/toolNames';
 import {withRouter} from 'react-router-dom';
 
 class ToolMetaData extends React.Component {
@@ -34,23 +35,31 @@ class ToolMetaData extends React.Component {
         this.setState({edit: false})
     };
 
-    renderBreadcrumbs = () => (
-        <Breadcrumb size='large'>
-            <Breadcrumb.Section
-                link
-                onClick={() => this.props.history.push('/tools')}
-            >
-                Tools
-            </Breadcrumb.Section>
-            <Breadcrumb.Divider icon='right angle'/>
-            <Breadcrumb.Section>{this.props.tool.type}</Breadcrumb.Section>
-            <Breadcrumb.Divider icon='right angle'/>
-            <Breadcrumb.Section>
-                {this.state.tool.name}
-                {!this.props.readOnly && <Button basic size={'small'} icon='pencil' onClick={this.handleButtonClick}/>}
-            </Breadcrumb.Section>
-        </Breadcrumb>
-    );
+    renderBreadcrumbs = () => {
+        let tool = {name: ''};
+        const filteredTools = tools.filter(tool => this.state.tool.tool === tool.slug);
+        if (filteredTools.length > 0) {
+            tool = filteredTools[0];
+        }
+
+        return (
+            <Breadcrumb>
+                <Breadcrumb.Section
+                    link
+                    onClick={() => this.props.history.push('/tools')}
+                >
+                    Tools
+                </Breadcrumb.Section>
+                <Breadcrumb.Divider icon='right chevron'/>
+                <Breadcrumb.Section>{this.state.tool.tool}. {tool.name}</Breadcrumb.Section>
+                <Breadcrumb.Divider icon='right arrow'/>
+                <Breadcrumb.Section active>
+                    {this.state.tool.name}
+                    {!this.props.readOnly && <Button basic size={'small'} icon='pencil' onClick={this.handleButtonClick}/>}
+                </Breadcrumb.Section>
+            </Breadcrumb>
+        );
+    };
 
     renderSaveButton = () => {
         const saveButton = typeof this.props.saveButton === 'boolean' ? this.props.saveButton : true;
@@ -76,7 +85,6 @@ class ToolMetaData extends React.Component {
             <div>
                 <Grid padded>
                     <Grid.Column style={{paddingTop: 0, paddingBottom: 0}}>
-                        <Header as={'h1'} size={'large'}>{this.state.tool.name}</Header>
                         {this.renderBreadcrumbs()}
                         {this.renderSaveButton()}
                     </Grid.Column>

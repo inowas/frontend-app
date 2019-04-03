@@ -5,7 +5,7 @@ import {withRouter} from 'react-router-dom';
 
 import {AppContainer} from '../../shared';
 import {BackgroundT13D as Background, Parameters} from '../components';
-import {SliderParameter, ToolGrid} from '../../shared/simpleTools';
+import {SliderParameter, ToolGrid, ToolMetaData} from '../../shared/simpleTools';
 import {navigation} from './T13';
 
 import SimpleToolsCommand from '../../shared/simpleTools/commands/SimpleToolsCommand';
@@ -14,7 +14,7 @@ import SimpleToolsCommand from '../../shared/simpleTools/commands/SimpleToolsCom
 import {defaults} from '../defaults/T13D';
 
 import {fetchTool, sendCommand} from 'services/api';
-import {buildPayload, deepMerge} from '../../shared/simpleTools/helpers';
+import {buildPayloadToolInstance, deepMerge} from '../../shared/simpleTools/helpers';
 
 
 class T13D extends React.Component {
@@ -32,7 +32,7 @@ class T13D extends React.Component {
         if (this.props.match.params.id) {
             this.setState({isLoading: true});
             fetchTool(
-                this.state.tool.type,
+                this.state.tool.tool,
                 this.props.match.params.id,
                 tool => this.setState({
                     tool: deepMerge(this.state.tool, tool),
@@ -50,7 +50,7 @@ class T13D extends React.Component {
 
         if (id) {
             sendCommand(
-                SimpleToolsCommand.updateToolInstance(buildPayload(tool)),
+                SimpleToolsCommand.updateToolInstance(buildPayloadToolInstance(tool)),
                 () => this.setState({isDirty: false}),
                 () => this.setState({error: true})
             );
@@ -58,7 +58,7 @@ class T13D extends React.Component {
         }
 
         sendCommand(
-            SimpleToolsCommand.createToolInstance(buildPayload(tool)),
+            SimpleToolsCommand.createToolInstance(buildPayloadToolInstance(tool)),
             () => this.props.history.push(`${this.props.location.pathname}/${tool.id}`),
             () => this.setState({error: true})
         );
@@ -105,6 +105,12 @@ class T13D extends React.Component {
 
         return (
             <AppContainer navbarItems={navigation}>
+                <ToolMetaData
+                    tool={tool}
+                    readOnly={false}
+                    saveButton={false}
+                    isDirty={false}
+                />
                 <ToolGrid rows={1}>
                     <Background parameters={parameters}/>
                     <Parameters

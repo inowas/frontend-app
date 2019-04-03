@@ -2,7 +2,7 @@ import React from 'react';
 import {connect} from 'react-redux';
 import PropTypes from 'prop-types';
 import {Form, Grid} from 'semantic-ui-react';
-import {ActiveCells, BoundingBox, Geometry, GridSize, ModflowModel} from 'core/model/modflow';
+import {Cells, BoundingBox, Geometry, GridSize, ModflowModel} from 'core/model/modflow';
 
 import {dxCell, dyCell} from 'services/geoTools/distance';
 import {sendCommand} from 'services/api';
@@ -17,7 +17,7 @@ class GridEditor extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            activeCells: props.model.activeCells.toArray(),
+            cells: props.model.cells.toArray(),
             boundingBox: props.model.boundingBox.toArray(),
             lengthUnit: props.model.lengthUnit,
             geometry: props.model.geometry.toObject(),
@@ -30,11 +30,19 @@ class GridEditor extends React.Component {
 
     onSave = () => {
         const model = this.props.model;
-        model.activeCells = ActiveCells.fromArray(this.state.activeCells);
+        model.cells = Cells.fromArray(this.state.cells);
         model.boundingBox = BoundingBox.fromArray(this.state.boundingBox);
         model.geometry = Geometry.fromObject(this.state.geometry);
         model.gridSize = GridSize.fromObject(this.state.gridSize);
-        const command = ModflowModelCommand.updateModflowModel(model.toObject());
+        const command = ModflowModelCommand.updateModflowModelDiscretization(
+            model.id,
+            model.geometry.toObject(),
+            model.boundingBox.toArray(),
+            model.gridSize.toObject(),
+            model.cells.toArray(),
+            model.stressperiods.toObject(),
+            model.lengthUnit, model.timeUnit
+        );
 
         return sendCommand(command,
             () => {
@@ -67,9 +75,9 @@ class GridEditor extends React.Component {
     validate = () => {
     };
 
-    handleMapChange = ({activeCells, boundingBox, geometry}) => {
+    handleMapChange = ({cells, boundingBox, geometry}) => {
         this.setState({
-            activeCells: activeCells.toArray(),
+            cells: cells.toArray(),
             boundingBox: boundingBox.toArray(),
             geometry: geometry.toObject(),
             isDirty: true
@@ -104,6 +112,7 @@ class GridEditor extends React.Component {
                                     onChange={this.handleGridSizeChange}
                                     onBlur={this.handleGridSizeChange}
                                     width={'6'}
+                                    readOnly
                                 />
                                 <Form.Input
                                     type='number'
@@ -113,18 +122,21 @@ class GridEditor extends React.Component {
                                     onChange={this.handleGridSizeChange}
                                     onBlur={this.handleGridSizeChange}
                                     width={'6'}
+                                    readOnly
                                 />
                                 <Form.Input
                                     type='number'
                                     label='Cell height'
                                     value={Math.round(dyCell(boundingBox, gridSize) * 10000) / 10}
                                     width={'6'}
+                                    readOnly
                                 />
                                 <Form.Input
                                     type='number'
                                     label='Cell width'
                                     value={Math.round(dxCell(boundingBox, gridSize) * 10000) / 10}
                                     width={'6'}
+                                    readOnly
                                 />
                                 <Form.Select compact
                                              label='Length unit'
@@ -139,7 +151,7 @@ class GridEditor extends React.Component {
                 <Grid.Row>
                     <Grid.Column>
                         <ModelDiscretizationMap
-                            activeCells={ActiveCells.fromArray(this.state.activeCells)}
+                            cells={Cells.fromArray(this.state.cells)}
                             boundingBox={BoundingBox.fromArray(this.state.boundingBox)}
                             geometry={Geometry.fromObject(this.state.geometry)}
                             gridSize={GridSize.fromObject(this.state.gridSize)}

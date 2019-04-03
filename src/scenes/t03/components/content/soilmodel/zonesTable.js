@@ -1,5 +1,5 @@
 import React from 'react';
-import {Button, Icon, Input, Table} from 'semantic-ui-react';
+import {Button, Icon, Input, Popup, Table} from 'semantic-ui-react';
 import PropTypes from 'prop-types';
 import {SoilmodelLayer} from 'core/model/modflow/soilmodel';
 import {pure} from 'recompose';
@@ -124,16 +124,25 @@ class ZonesTable extends React.Component {
                                 this.onChange();
                             }
                         }}
-                        icon={<Icon name={zoneParameter.isActive ? 'toggle off' : 'toggle on'} link
-                                    onClick={() => this.onToggleZone(zone.id)}/>}
+                        icon={<Popup
+                                trigger={<Icon name={zoneParameter.isActive ? 'toggle off' : 'toggle on'} link
+                                               onClick={() => this.onToggleZone(zone.id)}/>}
+                                content='Default'
+                                size='mini'
+                                />
+                        }
                     />
                     }
                 </Table.Cell>
                 <Table.Cell>
                     {zone.priority === 0 &&
                     <Button.Group floated='right' size='small'>
-                        <Button icon onClick={this.props.onClickUpload}>
-                            <Icon name="upload"/>
+                        <Button icon primary onClick={this.props.onClickUpload}>
+                            <Popup
+                                trigger={<Icon name="upload"/>}
+                                content='Upload Raster'
+                                size='mini'
+                                />
                         </Button>
                     </Button.Group>
                     }
@@ -144,21 +153,33 @@ class ZonesTable extends React.Component {
                             icon
                             onClick={() => onEdit(zone.id)}
                         >
-                            <Icon name="pencil"/>
+                            <Popup
+                                trigger={<Icon name="pencil"/>}
+                                content='Edit Zone'
+                                size='mini'
+                                />
                         </Button>
                         <Button
                             disabled={readOnly || !(zone.priority < this.state.layer._meta.zones.length - 1)}
                             icon
                             onClick={() => this.onReorder(zone.id, 'up')}
                         >
-                            <Icon name="arrow up"/>
+                            <Popup
+                                trigger={<Icon name="arrow up"/>}
+                                content='Move Up'
+                                size='mini'
+                            />
                         </Button>
                         <Button
                             disabled={readOnly || !(zone.priority > 1)}
                             icon
                             onClick={() => this.onReorder(zone.id, 'down')}
                         >
-                            <Icon name="arrow down"/>
+                            <Popup
+                                trigger={<Icon name="arrow down"/>}
+                                content='Move Down'
+                                size='mini'
+                            />
                         </Button>
                     </Button.Group>
                     }
@@ -177,10 +198,10 @@ class ZonesTable extends React.Component {
             <Table>
                 <Table.Header>
                     <Table.Row>
-                        <Table.HeaderCell>Zone</Table.HeaderCell>
-                        <Table.HeaderCell>Priority</Table.HeaderCell>
-                        <Table.HeaderCell>{parameter.description} [{parameter.unit}]</Table.HeaderCell>
-                        <Table.HeaderCell/>
+                        <Table.HeaderCell width={3}>Zone</Table.HeaderCell>
+                        <Table.HeaderCell width={2}>Priority</Table.HeaderCell>
+                        <Table.HeaderCell width={8}>{parameter.description} [{parameter.unit}]</Table.HeaderCell>
+                        <Table.HeaderCell width={3}/>
                     </Table.Row>
                 </Table.Header>
                 <Table.Body>
