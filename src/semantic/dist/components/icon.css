@@ -4804,3 +4804,12 @@ i.icon.youtube.square {
          Site Overrides
 *******************************/
 
+.iconFix {
+  background-color: #FFFFFF;
+  width: 5px;
+  height: 5px;
+}
+i.icon.iconOutside {
+  margin-top: 4px;
+  margin-left: -4px;
+}
