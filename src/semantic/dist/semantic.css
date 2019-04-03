@@ -26650,6 +26650,23 @@ Floated Menu / Item
 /*******************************
         Site Overrides
 *******************************/
+
+.ui.warning.message {
+  -webkit-box-shadow: 0 0 0 1px #e8d1b0 inset;
+  box-shadow: 0 0 0 1px #e8d1b0 inset;
+}
+
+.ui.icon.visible.message.thinMessage {
+  padding-top: 6.929px;
+  padding-bottom: 6.929px;
+  font-size: 1rem;
+  text-align: center;
+}
+
+.ui.icon.message > .icon.thinMessageIcon {
+  display: inline-block;
+  font-size: 1em;
+}
 /*!
  * # Semantic UI undefined - Table
  * http://github.com/semantic-org/semantic-ui/
