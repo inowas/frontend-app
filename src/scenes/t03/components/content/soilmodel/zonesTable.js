@@ -198,10 +198,10 @@ class ZonesTable extends React.Component {
             <Table>
                 <Table.Header>
                     <Table.Row>
-                        <Table.HeaderCell>Zone</Table.HeaderCell>
-                        <Table.HeaderCell>Priority</Table.HeaderCell>
-                        <Table.HeaderCell>{parameter.description} [{parameter.unit}]</Table.HeaderCell>
-                        <Table.HeaderCell/>
+                        <Table.HeaderCell width={3}>Zone</Table.HeaderCell>
+                        <Table.HeaderCell width={2}>Priority</Table.HeaderCell>
+                        <Table.HeaderCell width={8}>{parameter.description} [{parameter.unit}]</Table.HeaderCell>
+                        <Table.HeaderCell width={3}/>
                     </Table.Row>
                 </Table.Header>
                 <Table.Body>

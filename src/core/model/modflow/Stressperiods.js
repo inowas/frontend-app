@@ -21,7 +21,9 @@ class Stressperiods {
             nstp: 1,
             tsmult: 1,
             steady: true
-        }))
+        }));
+
+        return stressPeriods;
     }
 
     static fromDefaults() {
@@ -48,6 +50,23 @@ class Stressperiods {
         });
 
         return stressPeriods;
+    }
+
+    static fromImport(obj) {
+        const stressperiods = new Stressperiods();
+        const startDateTime = moment.utc(obj.start_date_time);
+        const endDateTime = moment.utc(obj.end_date_time);
+        const timeUnit = obj.time_unit;
+
+        stressperiods.startDateTime = startDateTime;
+        stressperiods.endDateTime = endDateTime;
+        stressperiods.timeUnit = timeUnit;
+
+        obj.stressperiods.forEach(sp => {
+            stressperiods.addStressPeriod(new Stressperiod(sp.start_date_time, sp.nstp, sp.tsmult, sp.steady));
+        });
+
+        return stressperiods;
     }
 
     static dateTimeFromTotim(startDateTime, totim, timeUnit) {
@@ -88,10 +107,6 @@ class Stressperiods {
         return this._stressperiods;
     }
 
-    orderStressperiods() {
-        this._stressperiods = orderBy(this._stressperiods, [sp => sp.totimStart], ['asc']);
-    }
-
     getStressperiodByIdx(idx) {
         return this._stressperiods[idx];
     }
@@ -100,22 +115,25 @@ class Stressperiods {
         return this.stressperiods[this.count - 1];
     }
 
+    orderStressperiods() {
+        this._stressperiods = orderBy(this._stressperiods, [sp => sp.startDateTime], ['asc']);
+    }
+
     updateStressperiodByIdx(idx, stressperiod) {
         this._stressperiods[idx] = stressperiod;
         this.stressperiods = this.recalculate(this.stressperiods);
-
     }
 
     get count() {
         return this._stressperiods.length;
     }
 
-    addStressPeriod(stressPeriod) {
-        if (!stressPeriod instanceof Stressperiod) {
-            throw new Error('Stressperiod ess expected to be instance of Stressperiod')
+    addStressPeriod(stressperiod) {
+        if (!stressperiod instanceof Stressperiod) {
+            throw new Error('Stressperiod expected to be instance of Stressperiod')
         }
 
-        this._stressperiods.push(stressPeriod);
+        this._stressperiods.push(stressperiod);
     }
 
     removeStressPeriod(id) {
@@ -143,6 +161,22 @@ class Stressperiods {
 
     get totim() {
         return this.endDateTime.diff(this.startDateTime, 'days') + 1;
+    }
+
+    get perlens() {
+        const totims = [];
+        this.stressperiods.forEach(sp => {
+            totims.push(this.totimFromDate(sp.startDateTime))
+        });
+
+        totims.push(this.totimFromDate(this.endDateTime));
+
+        const perlens = [];
+        for (let i = 1; i < totims.length; i++) {
+            perlens.push(totims[i] - totims[i - 1]);
+        }
+
+        return perlens;
     }
 
     totimFromDate(dateTime) {
@@ -178,7 +212,6 @@ class Stressperiods {
     };
 
     toObject = () => {
-
         const stressperiods = [];
         let lastTotimStart = 0;
 

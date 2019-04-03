@@ -1,6 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import {BoundaryCollection, ModflowModel} from 'core/model/modflow';
+import {BoundaryCollection, Geometry, ModflowModel} from 'core/model/modflow';
 import {CircleMarker, FeatureGroup, GeoJSON, LayersControl, Map, Rectangle} from 'react-leaflet';
 import {BasicTileLayer} from 'services/geoTools/tileLayers';
 import {getStyle} from 'services/geoTools/mapHelpers';
@@ -129,14 +129,14 @@ class ResultsMap extends React.Component {
                                     b.geometry.coordinates[1],
                                     b.geometry.coordinates[0]
                                 ]}
-                                {...getStyle(b.type, b.metadata.well_type)}
+                                {...getStyle(b.type, b.wellType)}
                             />
                         );
                     }
 
                     return (
                         <GeoJSON
-                            key={b.geometry.hash() + '-' + b.affectedLayers.join('-')}
+                            key={Geometry.fromGeoJson(b.geometry).hash() + '-' + b.layers.join('-')}
                             data={b.geometry}
                             style={getStyle(b.type)}
                         />
@@ -193,7 +193,7 @@ class ResultsMap extends React.Component {
                     <LayersControl.Overlay name="Model area" checked>
                         <GeoJSON
                             key={geometry.hash()}
-                            data={geometry.geoJson}
+                            data={geometry.toGeoJSON()}
                             style={getStyle('area')}
                         />
                     </LayersControl.Overlay>

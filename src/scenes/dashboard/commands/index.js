@@ -18,7 +18,7 @@ export const cloneToolInstance = (tool, id, newId) => {
         case 'T03':
             return (ModflowModelCommand.cloneModflowModel({id, newId, isTool: true}));
         case 'T07':
-            return (ScenarioAnalysisCommand.cloneScenarioAnalysis({id, newId}));
+            return ScenarioAnalysisCommand.cloneScenarioAnalysis({id, newId});
         default:
             return (SimpleToolCommand.cloneToolInstance({id, newId}));
     }
@@ -29,7 +29,7 @@ export const deleteToolInstance = (tool, id) => {
         case 'T03':
             return (ModflowModelCommand.deleteModflowModel({id}));
         case 'T07':
-            return (ScenarioAnalysisCommand.deleteScenarioAnalysis({id}));
+            return (ScenarioAnalysisCommand.deleteScenarioAnalysis(id));
         default:
             return (SimpleToolCommand.deleteToolInstance({id}));
     }

@@ -1,23 +1,58 @@
-import FlopyModflowPackage from './FlopyModflowPackage';
+import FlopyModflowBoundary from './FlopyModflowBoundary';
+import {RechargeBoundary} from '../../../modflow/boundaries';
 
 /*
 https://modflowpy.github.io/flopydoc/mfrch.html
 
-rech = {
+stress_period_data = {
     0: 0.001,
     1: 0.002,
     4: 0.004
 }
  */
-export default class FlopyModflowMfrch extends FlopyModflowPackage {
+export default class FlopyModflowMfrch extends FlopyModflowBoundary {
 
     _nrchop = 3;
     _ipakcb = null;
-    _rech = 0.001;
+    _stress_period_data = 0.001;
     _irch = 0;
     _extension = 'rch';
     _unitnumber = null;
     _filenames = null;
+
+    static calculateSpData = (boundaries, nper, nrow, ncol) => {
+
+        const rechargeBoundaries = boundaries.filter(rch => (rch instanceof RechargeBoundary));
+        if (rechargeBoundaries.length === 0) {
+            return null;
+        }
+
+        let spData = [];
+        for (let per = 0; per < nper; per++) {
+            spData[per] = [];
+            for (let row = 0; row < nrow; row++) {
+                spData[per][row] = [];
+                for (let col = 0; col < ncol; col++) {
+                    spData[per][row][col] = 0;
+                }
+            }
+        }
+
+        rechargeBoundaries.forEach(rch => {
+            const cells = rch.cells;
+            const spValues = rch.spValues;
+
+            spData.forEach((sp, per) => {
+                cells.forEach(cell => {
+                    const row = cell[1];
+                    const col = cell[0];
+                    spData[per][row][col] += spValues[per][0];
+                });
+            });
+        });
+
+        return FlopyModflowMfrch.arrayToObject(spData);
+    };
 
     get nrchop() {
         return this._nrchop;
@@ -35,12 +70,15 @@ export default class FlopyModflowMfrch extends FlopyModflowPackage {
         this._ipakcb = value;
     }
 
-    get rech() {
-        return this._rech;
+    get stress_period_data() {
+        return this._stress_period_data;
     }
 
-    set rech(value) {
-        this._rech = value;
+    set stress_period_data(value) {
+        if (Array.isArray(value)) {
+            value = FlopyModflowBoundary.arrayToObject(value);
+        }
+        this._stress_period_data = value;
     }
 
     get irch() {

@@ -1,11 +1,11 @@
-import FlopyModflowSerializable from './FlopyModflowSerializable';
-import FlopyModflowMf from './FlopyModflowMf';
+import FlopyModflowSerializable from '../FlopyModflowSerializable';
+import FlopyModflow from './FlopyModflow';
 
 export default class FlopyModflowPackage extends FlopyModflowSerializable {
 
     static create(model, obj = {}) {
         const self = this.fromObject(obj);
-        if (model instanceof FlopyModflowMf) {
+        if (model instanceof FlopyModflow) {
             model.setPackage(self)
         }
         return self;

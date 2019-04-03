@@ -79,8 +79,18 @@ class GisMap {
         }
     }
 
+    toPayload() {
+        return {
+            cells: this.cells.toArray(),
+            boundingBox: this.boundingBox ? this.boundingBox.toArray() : null,
+            areas: this.areasCollection.toArray(),
+            gridSize: this.gridSize.toObject(),
+            raster: this.raster ? this.raster.toPayload() : null
+        }
+    }
+
     calculateActiveCells() {
-        //const activeCells = new ActiveCells([]);
+        //const cells = new ActiveCells([]);
         const gridCells = getGridCells(this.boundingBox, this.gridSize);
         const raster = new Raster();
         raster.data = Array(this.gridSize.nY).fill(0).map(() => Array(this.gridSize.nX).fill(1));
@@ -106,13 +116,13 @@ class GisMap {
                     }
                 });
                 /*if (cellIsSuitable) {
-                    activeCells.addCell([cell.x, cell.y]);
+                    cells.addCell([cell.x, cell.y]);
                 }*/
                 raster.data[cell.y][cell.x] = cellIsSuitable ? 1 : 0;
             }
         });
 
-        //this.activeCells = activeCells;
+        //this.cells = cells;
         this.raster = raster;
     }
 }

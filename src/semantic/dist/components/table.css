@@ -1136,3 +1136,12 @@
          Site Overrides
 *******************************/
 
+.tableDeleteButton {
+  display: none !important;
+}
+.ui.selectable.table tbody tr:hover .tableDeleteButton {
+  display: inline-block !important;
+  position: relative;
+  left: -50px;
+  width: 0px;
+}

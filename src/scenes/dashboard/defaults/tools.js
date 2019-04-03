@@ -2,14 +2,14 @@ export const ROLE_USER = 'ROLE_USER';
 export const ROLE_NM_MF = 'ROLE_NM_MF';
 
 const availableTools = [
-    {
+    /*{
         slug: 'T01',
         name: 'SAT basin infiltration capacity reduction database',
         path: '/tools/',
         subPath: '',
         role: ROLE_USER,
         instances: []
-    },
+    },*/
     {
         slug: 'T02',
         name: 'Groundwater mounding (Hantush)',
@@ -19,7 +19,7 @@ const availableTools = [
         instances: []
     }, {
         slug: 'T03',
-        name: 'MODFLOW model setup and editor',
+        name: 'Numerical groundwater modelling and optimization',
         path: '/tools/',
         subPath: '',
         role: ROLE_NM_MF,
@@ -73,14 +73,16 @@ const availableTools = [
         subPath: '',
         role: ROLE_USER,
         instances: []
-    }, {
+    },
+    /*{
         slug: 'T12',
         name: 'Clogging estimation by MfiData-Index',
         path: '/tools/',
         subPath: '',
         role: ROLE_USER,
         instances: []
-    }, {
+    },*/
+    {
         slug: 'T13',
         name: 'Travel time through unconfined aquifer',
         path: '/tools/',

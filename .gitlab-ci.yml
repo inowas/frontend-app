@@ -4,7 +4,7 @@ stages:
   - deploy
 
 test:
-  image: node:11
+  image: node:10
   stage: test
 
   script:
@@ -12,7 +12,7 @@ test:
     - CI=true yarn test --all --colors
 
 build:dev:
-  image: node:11
+  image: node:10
   stage: build
   
   script: 
@@ -49,15 +49,55 @@ deploy:dev:
     name: development
     url: https://dev.inowas.com
   only:
-    - dev    
+    - dev
+
+build:training:
+  image: node:10
+  stage: build
+
+  script:
+    - yarn install
+    - REACT_APP_API_URL=https://api.training.inowas.com NODE_PATH=src yarn build
+    - VERSION=$(git describe --tags --always --dirty=+) && DATE=$(date +%Y-%m-%dT%H:%M:%S) && sed -i "s/@@__VERSION__@@/${VERSION}/g;s/@@__BUILT__@@/${DATE}/g" ./build/index.html
+
+  artifacts:
+    paths:
+      - build/
+
+  only:
+    - master
+
+deploy:training:
+  stage: deploy
+  dependencies:
+    - build:training
+
+  before_script:
+    - 'which ssh-agent || ( apt-get update -y && apt-get install openssh-client -y )'
+    - mkdir -p ~/.ssh
+    - eval $(ssh-agent -s)
+    - '[[ -f /.dockerenv ]] && echo -e "Host *\n\tStrictHostKeyChecking no\n\n" > ~/.ssh/config'
+    - ssh-add <(echo "$STAGING_PRIVATE_KEY")
+    - apt-get install rsync -y
+  script:
+    - ssh -p22 $SSH_CREDENTIALS_TRAINING_SERVER "mkdir -p $TRAINING_PATH.tmp/"
+    - rsync -rav -e ssh ./build/ $SSH_CREDENTIALS_TRAINING_SERVER:/$TRAINING_PATH.tmp/
+    - ssh -p22 $SSH_CREDENTIALS_TRAINING_SERVER "mv $TRAINING_PATH $TRAINING_PATH.old"
+    - ssh -p22 $SSH_CREDENTIALS_TRAINING_SERVER "mv $TRAINING_PATH.tmp $TRAINING_PATH"
+    - ssh -p22 $SSH_CREDENTIALS_TRAINING_SERVER "rm -rf $TRAINING_PATH.old"
+  environment:
+    name: training
+    url: https://training.inowas.com
+  only:
+    - master
 
 build:prod:
-  image: node:11
+  image: node:10
   stage: build
   
   script: 
     - yarn install
-    - REACT_APP_API_URL=https://api.dev.inowas.hydro.tu-dresden.de NODE_PATH=src yarn build
+    - REACT_APP_API_URL=https://api.dss.inowas.com NODE_PATH=src yarn build
     - VERSION=$(git describe --tags --always --dirty=+) && DATE=$(date +%Y-%m-%dT%H:%M:%S) && sed -i "s/@@__VERSION__@@/${VERSION}/g;s/@@__BUILT__@@/${DATE}/g" ./build/index.html
 
   artifacts:

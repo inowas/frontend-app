@@ -1,109 +1,91 @@
 import React from 'react';
+import Uuid from 'uuid';
 import {connect} from 'react-redux';
 import PropTypes from 'prop-types';
 
-import {Accordion, Grid, Header, Icon, Segment} from 'semantic-ui-react';
-import {BoundaryCollection, Calculation, CalculationResults, ModflowModel, Soilmodel} from 'core/model/modflow';
-import {fetchUrl} from 'services/api';
-import {last} from 'lodash';
+import {Accordion, Button, Grid, Header, Icon, Segment} from 'semantic-ui-react';
+import {BoundaryCollection, Calculation, ModflowModel, Soilmodel} from 'core/model/modflow';
 import ResultsMap from '../../maps/resultsMap';
 import ResultsChart from '../../../../shared/complexTools/ResultsChart';
 import ResultsSelector from '../../../../shared/complexTools/ResultsSelector';
+import {fetchCalculationResults, sendCommand} from 'services/api';
+import ScenarioAnalysisCommand from '../../../../t07/commands/scenarioAnalysisCommand';
+import {withRouter} from 'react-router-dom';
 
 class Results extends React.Component {
 
     constructor(props) {
         super(props);
+        const {model} = this.props;
+        const {gridSize} = model;
+
+
         this.state = {
             isLoading: false,
-
-            calculationId: null,
-            layerValues: null,
-            totalTimes: null,
-            selectedCol: 0,
             selectedLay: 0,
-            selectedRow: 0,
+            selectedRow: Math.floor(gridSize.nY / 2),
+            selectedCol: Math.floor(gridSize.nX / 2),
             selectedTotim: 0,
             selectedType: 'head',
-            data: null,
+            layerValues: null,
+            totalTimes: null,
             fetching: false,
             activeIndex: 0
+        };
+
+        if (props.calculation instanceof Calculation) {
+            const totalTimes = props.calculation.times.total_times;
+            this.state.layerValues = props.calculation.layer_values;
+            this.state.selectedTotim = totalTimes.slice(-1)[0];
+            this.state.totalTimes = totalTimes;
+        }
+    }
+
+    componentWillReceiveProps(nextProps, nextContext) {
+        if (!(nextProps.calculation instanceof Calculation)) {
+            return null;
+        }
+
+        if (!this.state.totalTimes) {
+            const {calculation} = nextProps;
+            const totalTimes = calculation.times.total_times;
+
+            return this.setState({
+                layerValues: calculation.layer_values,
+                selectedTotim: totalTimes.slice(-1)[0],
+                totalTimes
+            })
         }
     }
 
     componentDidMount() {
-        const {calculation} = this.props;
-        const {calculationId} = this.state;
-        if ((calculation instanceof Calculation) && !calculationId) {
-            this.fetchResults();
+        if (!(this.props.calculation instanceof Calculation)) {
+            return null;
         }
 
-        const {model} = this.props;
-        const {gridSize} = model;
-
-        return this.setState({
-            selectedCol: Math.floor(gridSize.nX / 2),
-            selectedRow: Math.floor(gridSize.nY / 2),
+        this.fetchData({
+            layer: this.state.selectedLay,
+            totim: this.state.selectedTotim,
+            type: this.state.selectedType,
         })
     }
 
-    componentWillReceiveProps(nextProps) {
-        const {calculation} = nextProps;
-        const {calculationId} = this.state;
-        if ((calculation instanceof Calculation) && !calculationId) {
-            this.fetchResults();
-        }
-    }
-
-    fetchResults() {
-        const {model} = this.props;
-        this.setState({isLoading: true},
-            () => fetchUrl(`modflowmodels/${model.id}/results`,
-                data => {
-                    const results = CalculationResults.fromQuery(data);
-                    const calculationId = results.calculationId;
-                    const totalTimes = results.totalTimes;
-                    const layerValues = results.layerValues;
-                    return this.setState({calculationId, layerValues, totalTimes, isLoading: false},
-                        () => this.onChangeTypeLayerOrTime({
-                            type: this.state.selectedType,
-                            totim: last(totalTimes),
-                            layer: this.state.selectedLay
-                        })
-                    );
-                },
-                (e) => this.setState({isError: e, isLoading: false}))
-        );
-    }
-
     fetchData({layer, totim, type}) {
-        const {calculationId} = this.state;
-        this.setState({fetching: true},
-            () => fetchUrl(`calculations/${calculationId}/results/types/${type}/layers/${layer}/totims/${totim}`,
-                data => this.setState({
-                    selectedLay: layer,
-                    selectedTotim: totim,
-                    selectedType: type,
-                    data,
-                    fetching: false
-                }),
+        const calculationId = this.props.calculation.id;
+
+        this.setState({fetching: true}, () =>
+            fetchCalculationResults({calculationId, layer, totim, type}, data =>
+                    this.setState({
+                        selectedLay: layer,
+                        selectedTotim: totim,
+                        selectedType: type,
+                        data,
+                        fetching: false
+                    }),
                 (e) => this.setState({isError: e})
             )
-        )
+        );
     }
-
-    onChangeTypeLayerOrTime = ({type = null, layer = null, totim = null}) => {
-        const {selectedLay, selectedType, selectedTotim} = this.state;
-        type = type || selectedType;
-        layer = layer || selectedLay;
-        totim = totim || selectedTotim;
-
-        if (totim === selectedTotim && type === selectedType && layer === selectedLay) {
-            return;
-        }
-
-        this.fetchData({layer, totim, type});
-    };
 
     handleClickAccordion = (e, titleProps) => {
         const {index} = titleProps;
@@ -115,14 +97,38 @@ class Results extends React.Component {
         });
     };
 
+    onCreateScenarioAnalysisClick = () => {
+        const scenarioAnalysisId = Uuid.v4();
+        sendCommand(ScenarioAnalysisCommand.createScenarioAnalysis(
+            scenarioAnalysisId,
+            this.props.model.id,
+            'New scenario analysis ' + this.props.model.name,
+            '',
+            this.props.model.isPublic
+            ),
+            () => this.props.history.push('/tools/T07/' + scenarioAnalysisId),
+            () => this.setState({error: true})
+        )
+    };
+
     render() {
-        const {calculationId, data, selectedCol, selectedRow, selectedType, selectedLay, selectedTotim, layerValues, totalTimes} = this.state;
+        const {calculation} = this.props;
+
+        if (!(calculation instanceof Calculation)) {
+            return (
+                <Segment color={'grey'} loading={this.state.isLoading}>
+                    <Header as={'h2'}>
+                        No result data found. <br/>
+                        Have you started the calculation?
+                    </Header>
+                </Segment>
+            )
+        }
+
+
+        const {data, selectedCol, selectedRow, selectedType, selectedLay, selectedTotim, layerValues, totalTimes} = this.state;
         const {model, boundaries, soilmodel} = this.props;
         const {activeIndex} = this.state;
-
-        if (!calculationId || !data) {
-            return null;
-        }
 
         return (
             <Segment color={'grey'} loading={this.state.isLoading}>
@@ -150,25 +156,26 @@ class Results extends React.Component {
 
                             <Segment color={'grey'} loading={this.state.fetching}>
                                 <Accordion>
-                                    <Accordion.Title active={activeIndex === 0} index={0} onClick={this.handleClickAccordion}>
+                                    <Accordion.Title active={activeIndex === 0} index={0}
+                                                     onClick={this.handleClickAccordion}>
                                         <Icon name='dropdown'/>
                                         Results Map
                                     </Accordion.Title>
                                     <Accordion.Content active={activeIndex === 0}>
-                                            {data &&
-                                            <ResultsMap
-                                                activeCell={[selectedCol, selectedRow]}
-                                                boundaries={boundaries}
-                                                data={data}
-                                                model={model}
-                                                onClick={colRow => {
-                                                    this.setState({
-                                                        selectedCol: colRow[0],
-                                                        selectedRow: colRow[1]
-                                                    })
-                                                }}
-                                            />
-                                            }
+                                        {data &&
+                                        <ResultsMap
+                                            activeCell={[selectedCol, selectedRow]}
+                                            boundaries={boundaries}
+                                            data={data}
+                                            model={model}
+                                            onClick={colRow => {
+                                                this.setState({
+                                                    selectedCol: colRow[0],
+                                                    selectedRow: colRow[1]
+                                                })
+                                            }}
+                                        />
+                                        }
                                     </Accordion.Content>
                                 </Accordion>
                             </Segment>
@@ -192,6 +199,19 @@ class Results extends React.Component {
                                     </Grid.Column>
                                 </Grid.Row>
                             </Grid>
+                            {!model.readOnly &&
+                            <Grid>
+                                <Grid.Row>
+                                    <Grid.Column>
+                                        <Button
+                                            onClick={this.onCreateScenarioAnalysisClick}
+                                        >
+                                            Create Scenario Analysis
+                                        </Button>
+                                    </Grid.Column>
+                                </Grid.Row>
+                            </Grid>
+                            }
                         </Grid.Column>
                     </Grid.Row>
                 </Grid>
@@ -203,18 +223,19 @@ class Results extends React.Component {
 
 const mapStateToProps = state => {
     return {
-        calculation: state.T03.calculation ? Calculation.fromObject(state.T03.calculation) : null,
         boundaries: BoundaryCollection.fromObject(state.T03.boundaries),
+        calculation: state.T03.calculation ? Calculation.fromObject(state.T03.calculation) : null,
         model: ModflowModel.fromObject(state.T03.model),
-        soilmodel: state.T03.soilmodel ? Soilmodel.fromObject(state.T03.soilmodel) : null
+        soilmodel: Soilmodel.fromObject(state.T03.soilmodel)
     };
 };
 
 Results.proptypes = {
+    history: PropTypes.object.isRequired,
     boundaries: PropTypes.instanceOf(BoundaryCollection).isRequired,
     calculation: PropTypes.instanceOf(Calculation).isRequired,
     model: PropTypes.instanceOf(ModflowModel).isRequired,
     soilmodel: PropTypes.instanceOf(Soilmodel).isRequired,
 };
 
-export default connect(mapStateToProps)(Results);
+export default withRouter(connect(mapStateToProps)(Results));

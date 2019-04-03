@@ -1,6 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import {Form, Grid, Tab} from 'semantic-ui-react';
+import {Form, Grid, Tab, Popup, Menu} from 'semantic-ui-react';
 import {ModflowModel} from 'core/model/modflow';
 import {SoilmodelLayer} from 'core/model/modflow/soilmodel';
 
@@ -141,12 +141,22 @@ class LayerDetails extends React.Component {
                 </Tab.Pane>
         }];
 
-        layerParameters.forEach(p => {
+        layerParameters.forEach((p, idx) => {
             if (p.name === 'top' && layer.number > 1) {
                 return;
             }
             panes.push({
-                menuItem: p.name,
+                menuItem: (
+                    <Menu.Item key={idx}>
+                        <Popup
+                            trigger={<span>{p.name}</span>}
+                            content={p.description}
+                            size='tiny'
+                        />
+
+                    </Menu.Item>
+                )
+                /*{content: p.name, 'data-tooltip': p.description, className: 'parameter'}*/,
                 render: () =>
                     <Tab.Pane>
                         <LayerParameter

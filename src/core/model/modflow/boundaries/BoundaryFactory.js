@@ -1,10 +1,13 @@
 /* eslint-disable camelcase */
+import Uuid from 'uuid';
 import ConstantHeadBoundary from './ConstantHeadBoundary';
 import GeneralHeadBoundary from './GeneralHeadBoundary';
 import HeadObservationWell from './HeadObservationWell';
 import RechargeBoundary from './RechargeBoundary';
 import RiverBoundary from './RiverBoundary';
 import WellBoundary from './WellBoundary';
+import {Geometry, LineBoundary} from '../index';
+import Cells from '../../geometry/Cells';
 
 export default class BoundaryFactory {
 
@@ -77,8 +80,43 @@ export default class BoundaryFactory {
             });
 
             if (type) {
-                return BoundaryFactory.createFromTypeAndObject(type,obj);
+                return BoundaryFactory.createFromTypeAndObject(type, obj);
             }
         }
+    };
+
+    static fromImport = (obj, boundingBox, gridSize) => {
+        if (!obj) {
+            return null;
+        }
+
+        const type = obj.type;
+
+        const boundary = BoundaryFactory.fromType(type);
+
+        boundary.id = Uuid.v4();
+        boundary.name = obj.name;
+        boundary.geometry = obj.geometry;
+        boundary.layers = obj.layers;
+        const cells = Cells.fromGeometry(Geometry.fromGeoJson(obj.geometry), boundingBox, gridSize);
+
+        if (boundary instanceof LineBoundary) {
+            cells.calculateValues(boundary, boundingBox, gridSize);
+            boundary.cells = cells.toArray();
+            obj.ops.forEach(op => {
+                boundary.addObservationPoint(op.name, op.geometry, op.sp_values);
+            });
+
+            return boundary;
+        }
+
+        if (boundary instanceof WellBoundary) {
+            boundary.wellType = obj.well_type;
+        }
+
+        boundary.cells = cells.toArray();
+        boundary.spValues = obj.sp_values;
+
+        return boundary;
     };
 }

@@ -62,34 +62,30 @@ class T09 extends React.Component {
         return this.props.history.push(`/tools/${tool}`)
     };
 
-    state = {};
+    state = {
+        active: ''
+    };
 
-    handleShow = () => this.setState({ active: true });
-    handleHide = () => this.setState({ active: false });
+    handleShow = tool => this.setState({active: tool});
+    handleHide = () => this.setState({active: ''});
 
     render() {
-        const { active } = this.state;
-        const content = (
-            <div>
-                <Header as='h2' inverted>
-                    Title
-                </Header>
-
-                <Button primary>Add</Button>
-                <Button>View</Button>
-            </div>
-        );
+        const {active} = this.state;
 
         const columns = items.map(i => (
             <Grid.Column key={i.tool} onClick={() => this.redirectTo(i.tool)}>
-                <Dimmer.Dimmable as={Segment} color={'blue'} style={{cursor:'pointer', marginBottom:'1em'}} padded
-                                 dimmed={active}
-                                 dimmer={{ active, content }}
-                                 onMouseEnter={this.handleShow}
+                <Dimmer.Dimmable as={Segment} color={'blue'} style={{cursor: 'pointer', marginBottom: '1em'}} padded
+                                 dimmed={active === i.tool}
+                                 onMouseEnter={() => this.handleShow(i.tool)}
                                  onMouseLeave={this.handleHide}>
-                    <Image src={i.image} size={'medium'} floated={'left'} />
+                    <Image src={i.image} size={'medium'} floated={'left'}/>
                     <Header as={'h2'} color={'blue'} style={{marginTop: 0}}>{i.tool}</Header>
                     <p><strong>{i.name}</strong>&nbsp;{i.description}</p>
+                    <Dimmer inverted active={active === i.tool}>
+                        <Button icon primary size='large' labelPosition='left'>
+                            <Icon name='pin' />
+                            Select {i.tool}</Button>
+                    </Dimmer>
                 </Dimmer.Dimmable>
             </Grid.Column>
         ));

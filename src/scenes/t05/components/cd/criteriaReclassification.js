@@ -56,12 +56,14 @@ class CriteriaReclassification extends React.Component {
         const criterion = this.props.criterion;
         criterion.rulesCollection.items = criterion.rulesCollection.all.filter(rule => rule.id !== id);
         criterion.calculateSuitability();
-        return this.saveRaster(criterion);
+        criterion.step = 2;
+        return this.props.onChange(criterion);
     };
 
     handleClickCalculate = () => {
         const criterion = this.props.criterion;
         criterion.calculateSuitability();
+        criterion.step = 3;
         return this.saveRaster(criterion);
     };
 
@@ -73,9 +75,9 @@ class CriteriaReclassification extends React.Component {
         rule.to = parseFloat(rule.to);
         const criterion = this.props.criterion;
         criterion.rulesCollection.update(rule);
-        criterion.calculateSuitability();
+        criterion.step = 2;
         this.handleCloseModal();
-        return this.saveRaster(criterion);
+        return this.props.onChange(criterion);
     };
 
     renderEditorContinuous() {

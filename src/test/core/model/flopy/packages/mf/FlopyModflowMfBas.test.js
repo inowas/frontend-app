@@ -1,11 +1,9 @@
-import FlopyModflowMf from 'core/model/flopy/packages/mf/FlopyModflowMf'
-import FlopyModflowMfbas from 'core/model/flopy/packages/mf/FlopyModflowMfbas'
+import {FlopyModflow, FlopyModflowMfbas} from 'core/model/flopy/packages/mf'
 
 test('It can instantiate FlopyModflowMfbas', () => {
-    const model = new FlopyModflowMf();
+    const model = new FlopyModflow();
     const mfBas = FlopyModflowMfbas.create(model);
     expect(mfBas).toBeInstanceOf(FlopyModflowMfbas);
-    expect(model.packages['bas']).toEqual(mfBas.toObject());
     expect(model.getPackage('bas')).toBeInstanceOf(FlopyModflowMfbas);
     expect(model.getPackage('bas').toObject()).toEqual(mfBas.toObject())
 });

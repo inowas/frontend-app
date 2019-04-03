@@ -1,6 +1,7 @@
-import {ModflowModel, Stressperiods} from 'core/model/modflow';
-import {Mt3dms} from 'core/model/modflow/mt3d';
+import {Calculation, ModflowModel, Stressperiods} from 'core/model/modflow';
+import {Mt3dms} from 'core/model/flopy/packages/mt';
 import {LOGOUT, UNAUTHORIZED} from '../../user/actions/actions';
+import {UPDATE_CALCULATION} from './calculation';
 
 export const CLEAR = 'T03_CLEAR';
 export const UPDATE_MODEL = 'T03_UPDATE_MODEL';
@@ -17,6 +18,14 @@ const model = (state = initialState, action) => {
         case UPDATE_MODEL:
             return {
                 ...state, ...action.model
+            };
+
+        case UPDATE_CALCULATION:
+            const model = ModflowModel.fromObject(state);
+            const calculation = Calculation.fromObject(action.payload);
+            model.calculationId = calculation.id;
+            return {
+                ...state, ...model.toObject()
             };
 
         case UPDATE_MT3DMS:

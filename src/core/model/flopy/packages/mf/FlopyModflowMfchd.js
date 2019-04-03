@@ -1,4 +1,6 @@
-import FlopyModflowPackage from './FlopyModflowPackage';
+import {ConstantHeadBoundary} from '../../../modflow/boundaries';
+import FlopyModflowLineBoundary from './FlopyModflowLineBoundary';
+import FlopyModflowBoundary from './FlopyModflowBoundary';
 
 /*
 https://modflowpy.github.io/flopydoc/mfchd.html
@@ -22,7 +24,7 @@ kper:
     ]
 }
  */
-export default class FlopyModflowMfchd extends FlopyModflowPackage {
+export default class FlopyModflowMfchd extends FlopyModflowLineBoundary {
 
     _stress_period_data = null;
     _dtype = null;
@@ -31,11 +33,24 @@ export default class FlopyModflowMfchd extends FlopyModflowPackage {
     _unitnumber = null;
     _filenames = null;
 
+    static calculateSpData = (boundaries, nper) => {
+
+        boundaries = boundaries.filter(boundary => (boundary instanceof ConstantHeadBoundary));
+        if (boundaries.length === 0) {
+            return null;
+        }
+
+        return FlopyModflowLineBoundary.calculateSpData(boundaries, nper);
+    };
+
     get stress_period_data() {
         return this._stress_period_data;
     }
 
     set stress_period_data(value) {
+        if (Array.isArray(value)) {
+            value = FlopyModflowBoundary.arrayToObject(value);
+        }
         this._stress_period_data = value;
     }
 

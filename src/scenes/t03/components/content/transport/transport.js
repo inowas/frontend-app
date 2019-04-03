@@ -2,13 +2,13 @@ import React from 'react';
 import {connect} from 'react-redux';
 import {withRouter} from 'react-router-dom';
 import PropTypes from 'prop-types';
-import {fetchUrl, sendCommand} from 'services/api';
+import {sendCommand} from 'services/api';
 import ModflowModelCommand from '../../../commands/modflowModelCommand';
 
 import {Grid, Menu, Segment} from 'semantic-ui-react';
 import {ModflowModel, Stressperiods} from 'core/model/modflow';
 import {BoundaryCollection} from 'core/model/modflow/boundaries';
-import {AbstractMt3dPackage, Mt3dms} from 'core/model/modflow/mt3d';
+import {AbstractMt3dPackage, Mt3dms} from 'core/model/flopy/packages/mt';
 import {
     AdvPackageProperties,
     BtnPackageProperties,
@@ -18,7 +18,8 @@ import {
     SsmPackageProperties
 } from './mt';
 import ContentToolBar from '../../../../shared/ContentToolbar';
-import {updateMt3dms} from '../../../actions/actions';
+import {updatePackages} from '../../../actions/actions';
+import FlopyPackages from 'core/model/flopy/packages/FlopyPackages';
 
 const sideBar = [
     {
@@ -52,46 +53,32 @@ class Transport extends React.Component {
         super(props);
 
         this.state = {
-            mt3dms: this.props.model.mt3dms.toObject(),
+            mt3dms: this.props.packages.mt.toObject(),
             isError: false,
             isDirty: false,
-            isLoading: true,
+            isLoading: false,
         }
     }
 
     componentWillReceiveProps(nextProps) {
-        if (nextProps.model.mt3dms) {
-            this.setState({
-                mt3dms: nextProps.model.mt3dms.toObject()
-            });
-        }
-    }
-
-    componentDidMount() {
-        fetchUrl(
-            `modflowmodels/${this.props.match.params.id}/boundaries`,
-            boundaries => this.setState({
-                boundaries,
-                isLoading: false
-            }),
-            error => this.setState({error, isLoading: false})
-        );
+        this.setState({
+            mt3dms: nextProps.packages.mt.toObject()
+        });
     }
 
     handleSave = () => {
         const mt3dms = Mt3dms.fromObject(this.state.mt3dms);
+        const packages = FlopyPackages.fromObject(this.props.packages.toObject());
+        packages.mt = mt3dms;
 
-        this.setState({loading: true});
-        return sendCommand(
-            ModflowModelCommand.updateMt3dms({
-                id: this.props.model.id,
-                mt3dms: mt3dms.toObject()
-            }), () => {
-                this.setState({
-                    isDirty: false,
-                    loading: false
-                })
-            }
+        this.setState({loading: true}, () =>
+            sendCommand(
+                ModflowModelCommand.updateFlopyPackages(this.props.model.id, packages),
+                () => {
+                    this.props.updatePackages(packages);
+                    return this.setState({isDirty: false, loading: false});
+                }
+            )
         );
     };
 
@@ -102,7 +89,7 @@ class Transport extends React.Component {
             return this.setState({
                 mt3dms: newMt3dms.toObject(),
                 isDirty: true
-            }, this.props.updateMt3dms(newMt3dms));
+            });
         }
 
         throw new Error('Package has to be instance of AbstractMt3dPackage');
@@ -114,7 +101,7 @@ class Transport extends React.Component {
         return this.setState({
             isDirty: true,
             mt3dms: changedMt3dms.toObject()
-        }, this.props.updateMt3dms(changedMt3dms));
+        });
     };
 
     onMenuClick = (type) => {
@@ -137,11 +124,11 @@ class Transport extends React.Component {
         const {boundaries} = this.props;
 
         const model = this.props.model.toObject();
-        if (!model.stress_periods) {
+        if (!model.stressperiods) {
             return null;
         }
 
-        const stressPeriods = Stressperiods.fromObject(model.stress_periods);
+        const stressperiods = Stressperiods.fromObject(model.stressperiods);
 
         if (!boundaries) {
             return null;
@@ -189,7 +176,7 @@ class Transport extends React.Component {
                     <SsmPackageProperties
                         mtPackage={mt3d.getPackage(type)}
                         boundaries={boundaries}
-                        stressPeriods={stressPeriods}
+                        stressperiods={stressperiods}
                         onChange={this.handleChangePackage}
                         readonly={readOnly}
                     />
@@ -244,12 +231,12 @@ class Transport extends React.Component {
                             </Grid.Column>
                         </Grid.Row>
                         <Grid.Row>
-                        <Grid.Column width={4}>
-                            {this.renderSidebar()}
-                        </Grid.Column>
-                        <Grid.Column width={12}>
-                            {this.renderProperties()}
-                        </Grid.Column>
+                            <Grid.Column width={4}>
+                                {this.renderSidebar()}
+                            </Grid.Column>
+                            <Grid.Column width={12}>
+                                {this.renderProperties()}
+                            </Grid.Column>
                         </Grid.Row>
                     </Grid>
                 </Segment>
@@ -259,19 +246,22 @@ class Transport extends React.Component {
 }
 
 const mapStateToProps = (state) => ({
+    boundaries: BoundaryCollection.fromObject(state.T03.boundaries),
     model: ModflowModel.fromObject(state.T03.model),
-    boundaries: BoundaryCollection.fromObject(state.T03.boundaries)
+    packages: FlopyPackages.fromObject(state.T03.packages),
 });
 
 const mapDispatchToProps = {
-    updateMt3dms
+    updatePackages
 };
 
 Transport.proptypes = {
     history: PropTypes.object.isRequired,
     match: PropTypes.object.isRequired,
     model: PropTypes.instanceOf(ModflowModel).isRequired,
-    boundaries: PropTypes.instanceOf(BoundaryCollection).isRequired
+    boundaries: PropTypes.instanceOf(BoundaryCollection).isRequired,
+    packages: PropTypes.instanceOf(FlopyPackages).isRequired,
+    updatePackages: PropTypes.func.isRequired
 };
 
 export default withRouter(connect(mapStateToProps, mapDispatchToProps)(Transport));

@@ -59,13 +59,13 @@ class BoundaryValuesDataTable extends React.Component {
         switch (numberOfCells) {
             case 2:
                 return {
-                    maxWidth: '90px',
+                    maxWidth: '130px',
                     padding: 0,
                     border: 0
                 };
             case 3:
                 return {
-                    maxWidth: '50px',
+                    maxWidth: '130px',
                     padding: 0,
                     border: 0
                 };
@@ -90,7 +90,7 @@ class BoundaryValuesDataTable extends React.Component {
 
         return spValues.map((spValue, spIdx) => (
             <Table.Row key={spIdx}>
-                <Table.Cell>
+                <Table.Cell width={4}>
                     <Input
                         style={this.getCellStyle()}
                         disabled={true}
@@ -101,7 +101,7 @@ class BoundaryValuesDataTable extends React.Component {
                     />
                 </Table.Cell>
                 {spValue.map((v, vIdx) => (
-                    <Table.Cell key={vIdx} width={10}>
+                    <Table.Cell key={vIdx}>
                         <Input
                             style={this.getCellStyle(spValue.length)}
                             disabled={this.props.readOnly}
@@ -191,8 +191,7 @@ class BoundaryValuesDataTable extends React.Component {
                         <Table.Row>
                             <Table.HeaderCell>Start Date</Table.HeaderCell>
                             {boundary.valueProperties.map((p, idx) => (
-                                <Table.HeaderCell key={idx}>{p.name}</Table.HeaderCell>))}
-                            <Table.HeaderCell/>
+                                <Table.HeaderCell key={idx}>{p.name} ({p.unit})</Table.HeaderCell>))}
                         </Table.Row>
                     </Table.Header>
                     <Table.Body>{spValues && this.body(spValues)}</Table.Body>

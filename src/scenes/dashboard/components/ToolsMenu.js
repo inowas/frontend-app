@@ -4,15 +4,9 @@ import {Icon, Menu} from 'semantic-ui-react';
 import {includes} from 'lodash';
 import {pure} from 'recompose';
 
-const styles = {
-    menu: {
-        width: '100%'
-    }
-};
-
 const ToolsMenu = ({activeTool, onClick, roles, tools}) => {
     return (
-        <Menu vertical style={styles.menu}>
+        <Menu fluid vertical>
             <Menu.Item header icon size='small'><Icon name="horizontal sliders"/>Tools</Menu.Item>
             {tools.filter(t => includes(roles, t.role))
                 .map((tool, key) => (

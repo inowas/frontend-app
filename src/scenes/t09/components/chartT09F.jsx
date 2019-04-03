@@ -25,7 +25,7 @@ const styles = {
     },
     diagramLabel: {
         position: 'absolute',
-        top: '30px',
+        top: '24px',
         left: '55px',
         background: '#EFF3F6',
         opacity: 0.9

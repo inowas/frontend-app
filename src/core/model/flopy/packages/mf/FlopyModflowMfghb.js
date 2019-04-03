@@ -1,4 +1,6 @@
-import FlopyModflowPackage from './FlopyModflowPackage';
+import {GeneralHeadBoundary} from '../../../modflow/boundaries';
+import FlopyModflowLineBoundary from './FlopyModflowLineBoundary';
+import FlopyModflowBoundary from './FlopyModflowBoundary';
 
 /*
 https://modflowpy.github.io/flopydoc/mfghb.html
@@ -23,7 +25,7 @@ kper:
 }
  */
 
-export default class FlopyModflowMfghb extends FlopyModflowPackage {
+export default class FlopyModflowMfghb extends FlopyModflowLineBoundary {
 
     _ipakcb = null;
     _stress_period_data = null;
@@ -33,6 +35,16 @@ export default class FlopyModflowMfghb extends FlopyModflowPackage {
     _extension = 'ghb';
     _unitnumber = null;
     _filenames = null;
+
+    static calculateSpData = (boundaries, nper) => {
+
+        boundaries = boundaries.filter(boundary => (boundary instanceof GeneralHeadBoundary));
+        if (boundaries.length === 0) {
+            return null;
+        }
+
+        return FlopyModflowLineBoundary.calculateSpData(boundaries, nper);
+    };
 
     get ipakcb() {
         return this._ipakcb;
@@ -47,6 +59,9 @@ export default class FlopyModflowMfghb extends FlopyModflowPackage {
     }
 
     set stress_period_data(value) {
+        if (Array.isArray(value)) {
+            value = FlopyModflowBoundary.arrayToObject(value);
+        }
         this._stress_period_data = value;
     }
 

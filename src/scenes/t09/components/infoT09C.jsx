@@ -29,7 +29,7 @@ const Info = ({parameters}) => {
     if (Number(z) > Number(zCrit)) {
         return (
             <Message icon warning>
-                <Icon name='exclamation triangle' color='orange' />
+                <Icon name='exclamation triangle' color='orange'/>
                 <Message.Content>
                     <p>The calculated upconing level of <strong>{z.toFixed(2)} m </strong>
                         is higher than the critical elevation of <strong>{zCrit.toFixed(1)} m</strong>.
@@ -41,9 +41,13 @@ const Info = ({parameters}) => {
         );
     }
 
+    if (df >= ds) {
+        return null;
+    }
+
     return (
         <Message icon info>
-            <Icon name='info circle' color='blue' />
+            <Icon name='info circle' color='blue'/>
             <Message.Content>
                 <p>
                     The calculated upconing level of <strong>{z.toFixed(2)} m </strong>

@@ -8,7 +8,7 @@ class SimpleToolsCommand extends AbstractCommand {
         return new SimpleToolsCommand(
             commandName,
             {base_id: id, id: newId},
-            JSON_SCHEMA_URL + 'commands/' + commandName
+            JSON_SCHEMA_URL + '/commands/' + commandName
         )
     }
 
@@ -17,7 +17,7 @@ class SimpleToolsCommand extends AbstractCommand {
         return new SimpleToolsCommand(
             commandName,
             payload,
-            JSON_SCHEMA_URL + 'commands/' + commandName
+            JSON_SCHEMA_URL + '/commands/' + commandName
         )
     }
 
@@ -26,7 +26,7 @@ class SimpleToolsCommand extends AbstractCommand {
         return new SimpleToolsCommand(
             commandName,
             {id},
-            JSON_SCHEMA_URL + 'commands/' + commandName
+            JSON_SCHEMA_URL + '/commands/' + commandName
         )
     }
 
@@ -35,16 +35,16 @@ class SimpleToolsCommand extends AbstractCommand {
         return new SimpleToolsCommand(
             commandName,
             payload,
-            JSON_SCHEMA_URL + 'commands/' + commandName
+            JSON_SCHEMA_URL + '/commands/' + commandName
         )
     }
 
-    static updateToolInstanceMetadata(id, name, description, isPubic) {
+    static updateToolInstanceMetadata(id, name, description, isPublic) {
         const commandName = 'updateToolInstanceMetadata';
         return new SimpleToolsCommand(
             commandName,
-            {id, name, description, public: isPubic},
-            JSON_SCHEMA_URL + 'commands/' + commandName
+            {id, name, description, public: isPublic},
+            JSON_SCHEMA_URL + '/commands/' + commandName
         );
     }
 
@@ -53,7 +53,7 @@ class SimpleToolsCommand extends AbstractCommand {
         return new SimpleToolsCommand(
             commandName,
             payload,
-            JSON_SCHEMA_URL + 'commands/' + commandName
+            JSON_SCHEMA_URL + '/commands/' + commandName
         );
     }
 }

@@ -5,7 +5,7 @@ import {withRouter} from 'react-router-dom';
 
 import {AppContainer} from '../../shared';
 import {BackgroundT13D as Background, Parameters} from '../components';
-import {SliderParameter, ToolGrid} from '../../shared/simpleTools';
+import {SliderParameter, ToolGrid, ToolMetaData} from '../../shared/simpleTools';
 import {navigation} from './T13';
 
 import SimpleToolsCommand from '../../shared/simpleTools/commands/SimpleToolsCommand';
@@ -105,6 +105,12 @@ class T13D extends React.Component {
 
         return (
             <AppContainer navbarItems={navigation}>
+                <ToolMetaData
+                    tool={tool}
+                    readOnly={false}
+                    saveButton={false}
+                    isDirty={false}
+                />
                 <ToolGrid rows={1}>
                     <Background parameters={parameters}/>
                     <Parameters

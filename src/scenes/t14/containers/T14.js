@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import {withRouter} from 'react-router-dom';
-import {Grid, Header, Icon, Image, Segment} from 'semantic-ui-react';
+import {Grid, Header, Icon, Image, Segment, Dimmer, Button} from 'semantic-ui-react';
 
 import image14A from '../images/T14A.png';
 import image14B from '../images/T14B.png';
@@ -12,7 +12,7 @@ import AppContainer from '../../shared/AppContainer';
 
 export const navigation = [{
     name: 'Documentation',
-    path: 'https://inowas.hydro.tu-dresden.de/tools/t14-pumping-induced-river-drawdown/',
+    path: 'https://inowas.com/tools/t14-pumping-induced-river-drawdown/',
     icon: <Icon name="file"/>
 }];
 
@@ -20,25 +20,25 @@ const items = [
     {
         tool: 'T14A',
         name: 'Fully penetrating stream with no streambed resistance.',
-        description: 'Pumping from wells besides streams lowers the groundwater level and reduces surface water flow within the stream. This tool helps to estimate the stream depletion rate induced by well pumping.',
+        description: '',
         image: image14A
     },
     {
         tool: 'T14B',
         name: 'Fully penetrating stream with semipervious layer.',
-        description: 'Pumping from wells besides streams lowers the groundwater level and reduces surface water flow within the stream. This tool helps to estimate the stream depletion rate induced by well pumping.',
+        description: '',
         image: image14B
     },
     {
         tool: 'T14C',
         name: 'Partially penetrating stream with streambed resistance.',
-        description: 'Pumping from wells besides streams lowers the groundwater level and reduces surface water flow within the stream. This tool helps to estimate the stream depletion rate induced by well pumping.',
+        description: '',
         image: image14C
     },
     {
         tool: 'T14D',
         name: 'Partially penetrating stream in an aquitard overlying a pumped aquifer.',
-        description: 'Pumping from wells besides streams lowers the groundwater level and reduces surface water flow within the stream. This tool helps to estimate the stream depletion rate induced by well pumping.',
+        description: '',
         image: image14D
     }
 ];
@@ -49,14 +49,31 @@ class T14 extends React.Component {
         return this.props.history.push(`/tools/${tool}`)
     };
 
+    state = {
+        active: ''
+    };
+
+    handleShow = tool => this.setState({active: tool});
+    handleHide = () => this.setState({active: ''});
+
     render() {
+        const {active} = this.state;
+
         const columns = items.map(i => (
             <Grid.Column key={i.tool} onClick={() => this.redirectTo(i.tool)}>
-                <Segment color={'blue'} style={{cursor: 'pointer'}} padded>
+                <Dimmer.Dimmable as={Segment} color={'blue'} style={{cursor: 'pointer', marginBottom: '1em'}} padded
+                                 dimmed={active === i.tool}
+                                 onMouseEnter={() => this.handleShow(i.tool)}
+                                 onMouseLeave={this.handleHide}>
                     <Image src={i.image} size={'medium'} floated={'left'}/>
                     <Header as={'h2'} color={'blue'} style={{marginTop: 0}}>{i.tool}</Header>
                     <p><strong>{i.name}</strong>&nbsp;{i.description}</p>
-                </Segment>
+                    <Dimmer inverted active={active === i.tool}>
+                        <Button icon primary size='large' labelPosition='left'>
+                            <Icon name='pin' />
+                            Select {i.tool}</Button>
+                    </Dimmer>
+                </Dimmer.Dimmable>
             </Grid.Column>
         ));
 

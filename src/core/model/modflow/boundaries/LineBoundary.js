@@ -1,6 +1,16 @@
 import Uuid from 'uuid';
 import Boundary from './Boundary';
 import ObservationPoint from './ObservationPoint';
+import * as turf from '@turf/helpers';
+import {lineDistance, lineSlice} from '@turf/turf';
+
+const distanceOnLine = (boundaryGeometry, opGeometry) => {
+    const start = turf.point(boundaryGeometry.coordinates[0]);
+    const end = turf.point(opGeometry.coordinates);
+    const linestring = turf.lineString(boundaryGeometry.coordinates);
+    const sliced = lineSlice(start, end, linestring);
+    return lineDistance(sliced);
+};
 
 export default class LineBoundary extends Boundary {
 
@@ -68,18 +78,9 @@ export default class LineBoundary extends Boundary {
     }
 
     addObservationPoint = (name, geometry, spValues) => {
-        const op = {
-            type: 'Feature',
-            id: Uuid.v4(),
-            geometry,
-            properties: {
-                type: 'op',
-                name,
-                sp_values: spValues
-            }
-        };
-
-        this._observationPoints.push(op)
+        const op = ObservationPoint.create(Uuid.v4(), geometry, name, spValues, distanceOnLine(this.geometry, geometry));
+        this._observationPoints.push(op.toObject());
+        this._observationPoints.sort((a, b) => ObservationPoint.fromObject(a).distance - ObservationPoint.fromObject(b).distance);
     };
 
     cloneObservationPoint = (id, newId) => {
@@ -89,22 +90,21 @@ export default class LineBoundary extends Boundary {
     };
 
     updateObservationPoint = (id, name, geometry, spValues) => {
-        this._observationPoints = this._observationPoints.map(exitingOp => {
-            if (id === exitingOp.id) {
-                return {
-                    type: 'Feature',
-                    id,
-                    geometry,
-                    properties: {
-                        type: 'op',
-                        name,
-                        sp_values: spValues
-                    }
-                };
+        let op = ObservationPoint.fromObject(this.findObservationPointById(id));
+        op.name = name;
+        op.geometry = geometry;
+        op.spValues = spValues;
+        op.distance = distanceOnLine(this.geometry, geometry);
+
+        this._observationPoints = this._observationPoints.map(existingOp => {
+            if (op.id === existingOp.id) {
+                return op.toObject()
             }
 
-            return exitingOp;
+            return existingOp;
         });
+
+        this._observationPoints.sort((a, b) => ObservationPoint.fromObject(a).distance - ObservationPoint.fromObject(b).distance);
     };
 
     removeObservationPoint = (opId) => {
@@ -125,7 +125,7 @@ export default class LineBoundary extends Boundary {
 
     findObservationPointById = id => {
         const filtered = this._observationPoints.filter(op => op.id === id);
-        
+
         if (filtered.length > 0) {
             return filtered[0];
         }

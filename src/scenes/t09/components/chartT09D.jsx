@@ -21,16 +21,17 @@ import {exportChartData, exportChartImage, getParameterValues} from '../../share
 export function resultDiv(rhof, rhos, lambda, qCrit) {
     if (rhof >= rhos) {
         return (
-            <Segment raised className={'diagramLabel topLeft'}>
+            <Segment inverted color='orange' secondary className={'diagramLabel topLeft'}>
                 <p>Saltwater density is lower than the density of freshwater.</p>
             </Segment>
         );
     }
     if (lambda > 2) {
         return (
-            <Segment raised className={'diagramLabel topLeft'}>
+            <Segment inverted color='orange' secondary className={'diagramLabel topLeft'}>
                 <p>
-                    The Stagnation point is located far from the coast. This will lead to the entrance of salt water
+                    The Stagnation point is located far from the coast.<br/>
+                    This will lead to the entrance of salt water<br/>
                     into the flow directly from the sea.
                 </p>
             </Segment>
@@ -84,13 +85,13 @@ const Chart = ({parameters}) => {
                                 type="number"
                                 allowDecimals={false}
                                 tickLine={false}
-                                // tickFormatter={(x) => x.toFixed(1)}
+                                tickFormatter={(x) => parseFloat(x).toFixed(1)}
                             >
                                 <Label
                                     angle={270}
                                     position='left'
                                     style={{textAnchor: 'center', fontSize: '13px'}}
-                                    value={'Qcrit [m3/d]'}
+                                    value={'Qcrit [m³/d]'}
                                     fill={'#4C4C4C'}
                                 />
                             </YAxis>

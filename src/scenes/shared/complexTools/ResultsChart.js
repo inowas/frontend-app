@@ -48,6 +48,29 @@ const renderTooltip = (e, show) => {
     );
 };
 
+const getXAxisLabel = show => {
+
+    if (show === 'row') {
+        return {value: 'Row', position: 'insideBottom', offset: -10, fill: '#4C4C4C', fontSize: '13px'};
+    }
+
+    return {value: 'Col', position: 'insideBottom', offset: -10, fill: '#4C4C4C', fontSize: '13px'};
+};
+
+const getYAxisLabel = type => {
+
+
+    if (type === 'head') {
+        return {value: 'Head (m asl)', position: 'insideLeft', angle: -90, fill: '#4C4C4C', fontSize: '13px'};
+    }
+
+    if (type === 'drawdown') {
+        return {value: 'Drawdown (m)', position: 'insideLeft', angle: -90, fill: '#4C4C4C', fontSize: '13px'};
+    }
+
+    return {};
+};
+
 const ResultsChart = ({data = null, selectedModels = null, globalMinMax = null, row, col, show}) => {
 
     if (data) {
@@ -71,8 +94,15 @@ const ResultsChart = ({data = null, selectedModels = null, globalMinMax = null, 
         return (
             <ResponsiveContainer aspect={1.5}>
                 <AreaChart data={processedData}>
-                    <XAxis dataKey="name" domain={['dataMin', 'dataMax']}/>
-                    <YAxis domain={[minData, maxData]}/>
+                    <XAxis
+                        dataKey="name"
+                        domain={['dataMin', 'dataMax']}
+                        label={getXAxisLabel(show)}
+                    />
+                    <YAxis
+                        domain={[minData, maxData]}
+                        label={getYAxisLabel()}
+                    />
                     <CartesianGrid strokeDasharray="3 3"/>
                     <Tooltip
                         content={e => renderTooltip(e, show)}
@@ -85,7 +115,6 @@ const ResultsChart = ({data = null, selectedModels = null, globalMinMax = null, 
     }
 
     if (selectedModels) {
-
         if (!globalMinMax) {
             throw new Error('If more then one model in selectedModels, please provide a globalMinMax-Prop');
         }

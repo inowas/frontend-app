@@ -781,14 +781,6 @@ body .ui.inverted::-webkit-scrollbar-thumb:hover {
 /*******************************
          Site Overrides
 *******************************/
-
-.ui.blue.segment:not(.inverted).modelitem {
-  border-top: none !important;
-}
-
-.ui.inverted.blue.segment.modelitem .ui.header {
-  color: #FFFFFF;
-}
 /*!
  * # Semantic UI undefined - Button
  * http://github.com/semantic-org/semantic-ui/
@@ -19373,6 +19365,10 @@ ol.ui.horizontal.list li:before,
          Site Overrides
 *******************************/
 
+/*-------------------
+  Recharts Elements
+ -------------------*/
+
 .diagramLabel {
   position: absolute !important;
   background-color: #EFF3F6 !important;
@@ -19385,18 +19381,44 @@ ol.ui.horizontal.list li:before,
 }
 
 .diagramLabel.bottomRight {
-  bottom: 70px;
+  bottom: 50px;
   right: 40px;
 }
 
 .diagramLabel.topLeft {
-  top: 40px;
+  top: 24px;
   left: 110px;
+  margin-top: 1rem !important;
 }
 
 .diagramLabel.bottomLeft {
   bottom: 40px;
   left: 40px;
+}
+
+.diagramLabel.diagramOverlay {
+  opacity: 1;
+}
+
+/*-------------------
+  Custom Menu in T03
+ -------------------*/
+
+.ui.blue.segment.customMenuContainer {
+  padding-top: 0.5em !important;
+  padding-bottom: 0.5em !important;
+}
+
+/*----------------------
+  Custom Segment in T07
+  ----------------------*/
+
+.ui.blue.segment:not(.inverted).modelitem {
+  border-top: none !important;
+}
+
+.ui.inverted.blue.segment.modelitem .ui.header {
+  color: #FFFFFF;
 }
 /*!
  * # Semantic UI undefined - Step
@@ -20220,8 +20242,8 @@ ol.ui.horizontal.list li:before,
          Site Overrides
 *******************************/
 
-.ui.large.breadcrumb a.section {
-  font-size: 1rem;
+.ui.breadcrumb .active.section {
+  font-size: 1.14285714rem;
 }
 /*!
  * # Semantic UI undefined - Form
@@ -20958,7 +20980,7 @@ ol.ui.horizontal.list li:before,
 .ui.form .required.field > .checkbox:after {
   margin: -0.2em 0em 0em 0.2em;
   content: '*';
-  color: #FF9800;
+  color: #ED8D05;
 }
 
 .ui.form .required.fields:not(.grouped) > .field > label:after,
@@ -24197,7 +24219,7 @@ input[readonly="readonly"]:focus {
 ---------------*/
 
 .ui.menu .active.item {
-  background: rgba(0, 0, 0, 0.05);
+  background: #E5F0F5;
   color: rgba(0, 0, 0, 0.95);
   font-weight: normal;
   -webkit-box-shadow: none;
@@ -24358,7 +24380,7 @@ Floated Menu / Item
 /* Vertical Active */
 
 .ui.vertical.menu .active.item {
-  background: rgba(0, 0, 0, 0.05);
+  background: #E5F0F5;
   border-radius: 0em;
   -webkit-box-shadow: none;
   box-shadow: none;
@@ -26021,6 +26043,25 @@ Floated Menu / Item
 /*******************************
          Site Overrides
 *******************************/
+
+/*------------------
+ Custom Menu in T03
+ ------------------*/
+
+.ui.vertical.menu.customVertMenu {
+  -webkit-box-shadow: none;
+  box-shadow: none;
+  border: none;
+}
+
+.ui.vertical.menu .item.menuItemGroup {
+  padding-left: 0.5em;
+  font-size: 1.07145em;
+}
+
+.menuItemHeader {
+  text-transform: uppercase;
+}
 /*!
  * # Semantic UI undefined - Message
  * http://github.com/semantic-org/semantic-ui/
@@ -26429,24 +26470,24 @@ Floated Menu / Item
 
 .ui.red.message {
   background-color: #FFE8E6;
-  color: #F44336;
-  -webkit-box-shadow: 0px 0px 0px 1px #F44336 inset, 0px 0px 0px 0px rgba(0, 0, 0, 0);
-  box-shadow: 0px 0px 0px 1px #F44336 inset, 0px 0px 0px 0px rgba(0, 0, 0, 0);
+  color: #FF5B4D;
+  -webkit-box-shadow: 0px 0px 0px 1px #FF5B4D inset, 0px 0px 0px 0px rgba(0, 0, 0, 0);
+  box-shadow: 0px 0px 0px 1px #FF5B4D inset, 0px 0px 0px 0px rgba(0, 0, 0, 0);
 }
 
 .ui.red.message .header {
-  color: #f32c1e;
+  color: #ff4433;
 }
 
 .ui.orange.message {
   background-color: #FFEDDE;
-  color: #FF9800;
-  -webkit-box-shadow: 0px 0px 0px 1px #FF9800 inset, 0px 0px 0px 0px rgba(0, 0, 0, 0);
-  box-shadow: 0px 0px 0px 1px #FF9800 inset, 0px 0px 0px 0px rgba(0, 0, 0, 0);
+  color: #ED8D05;
+  -webkit-box-shadow: 0px 0px 0px 1px #ED8D05 inset, 0px 0px 0px 0px rgba(0, 0, 0, 0);
+  box-shadow: 0px 0px 0px 1px #ED8D05 inset, 0px 0px 0px 0px rgba(0, 0, 0, 0);
 }
 
 .ui.orange.message .header {
-  color: #e68900;
+  color: #d47e04;
 }
 
 .ui.yellow.message {
@@ -26528,24 +26569,24 @@ Floated Menu / Item
 
 .ui.pink.message {
   background-color: #FFE3FB;
-  color: #E91E63;
-  -webkit-box-shadow: 0px 0px 0px 1px #E91E63 inset, 0px 0px 0px 0px rgba(0, 0, 0, 0);
-  box-shadow: 0px 0px 0px 1px #E91E63 inset, 0px 0px 0px 0px rgba(0, 0, 0, 0);
+  color: #E03997;
+  -webkit-box-shadow: 0px 0px 0px 1px #E03997 inset, 0px 0px 0px 0px rgba(0, 0, 0, 0);
+  box-shadow: 0px 0px 0px 1px #E03997 inset, 0px 0px 0px 0px rgba(0, 0, 0, 0);
 }
 
 .ui.pink.message .header {
-  color: #d81557;
+  color: #dd238b;
 }
 
 .ui.brown.message {
   background-color: #F1E2D3;
-  color: #795548;
-  -webkit-box-shadow: 0px 0px 0px 1px #795548 inset, 0px 0px 0px 0px rgba(0, 0, 0, 0);
-  box-shadow: 0px 0px 0px 1px #795548 inset, 0px 0px 0px 0px rgba(0, 0, 0, 0);
+  color: #CC6C00;
+  -webkit-box-shadow: 0px 0px 0px 1px #CC6C00 inset, 0px 0px 0px 0px rgba(0, 0, 0, 0);
+  box-shadow: 0px 0px 0px 1px #CC6C00 inset, 0px 0px 0px 0px rgba(0, 0, 0, 0);
 }
 
 .ui.brown.message .header {
-  color: #694a3e;
+  color: #b35f00;
 }
 
 /*--------------
@@ -27886,6 +27927,17 @@ Floated Menu / Item
 /*******************************
          Site Overrides
 *******************************/
+
+.tableDeleteButton {
+  display: none !important;
+}
+
+.ui.selectable.table tbody tr:hover .tableDeleteButton {
+  display: inline-block !important;
+  position: relative;
+  left: -50px;
+  width: 0px;
+}
 /*!
  * # Semantic UI undefined - Ad
  * http://github.com/semantic-org/semantic-ui/

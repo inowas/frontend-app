@@ -62,8 +62,8 @@ class ResultsSelector extends React.Component {
             return [];
         }
 
-        return this.props.soilmodel.layersCollection.all.map(l => (
-            {key: l.id, value: l.number, text: l.name}
+        return this.props.soilmodel.layersCollection.reorder().all.map((l, idx) => (
+            {key: l.id, value: idx, text: l.name}
         ))
     };
 
@@ -74,9 +74,8 @@ class ResultsSelector extends React.Component {
         }
 
         const types = uniq(flatten(layerValues));
-        return types.map((v, id) => (
-            {key: id, value: v, text: upperFirst(v)}
-        ))
+        return types.filter(t => t === 'head' || t === 'drawdown')
+            .map((v, id) => ({key: id, value: v, text: upperFirst(v)}))
     };
 
     formatTimestamp = (key) => {

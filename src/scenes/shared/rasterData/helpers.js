@@ -155,8 +155,8 @@ export function rainbowFactory(numberRange = {min: -50, max: 50}, spectrum = ['#
     }
 
     if (numberRange) {
-        const rMin = numberRange.min;
-        const rMax = numberRange.max;
+        const rMin = isFinite(numberRange.min) ? numberRange.min : -100;
+        const rMax = isFinite(numberRange.max) ? numberRange.max : 100;
 
         if (rMin === rMax) {
             if (rMin === 0) {
@@ -169,7 +169,7 @@ export function rainbowFactory(numberRange = {min: -50, max: 50}, spectrum = ['#
             return rainbow;
         }
 
-        rainbow.setNumberRange(numberRange.min, numberRange.max);
+        rainbow.setNumberRange(rMin, rMax);
         return rainbow;
     }
 

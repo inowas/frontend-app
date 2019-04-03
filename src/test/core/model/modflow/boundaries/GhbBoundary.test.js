@@ -1,7 +1,7 @@
 import Uuid from 'uuid';
 import {GeneralHeadBoundary} from 'core/model/modflow/boundaries';
-import {JSON_SCHEMA_URL} from '../../../../../services/api';
-import {validate} from '../../../../../services/jsonSchemaValidator';
+import {JSON_SCHEMA_URL} from 'services/api';
+import {validate} from 'services/jsonSchemaValidator';
 
 
 const createGeneralHeadBoundary = () => {
@@ -38,11 +38,11 @@ test('GeneralHeadBoundary create', () => {
 });
 
 test('GeneralHeadBoundary add ObservationPoint', () => {
-    const GeneralHeadBoundary = createGeneralHeadBoundary();
-    GeneralHeadBoundary.addObservationPoint('Op2', {type: 'Point', coordinates: [1, 2]}, [3, 2, 1]);
-    expect(GeneralHeadBoundary._observationPoints).toHaveLength(2);
+    const generalHeadBoundary = createGeneralHeadBoundary();
+    generalHeadBoundary.addObservationPoint('Op2', {type: 'Point', coordinates: [1, 2]}, [3, 2, 1]);
+    expect(generalHeadBoundary._observationPoints).toHaveLength(2);
 
-    const op2 = GeneralHeadBoundary.findObservationPointByName('Op2');
+    const op2 = generalHeadBoundary.findObservationPointByName('Op2');
     expect(op2).toBeTruthy();
     expect(op2.id).toBeTruthy();
     expect(op2.type).toEqual('Feature');
@@ -51,19 +51,19 @@ test('GeneralHeadBoundary add ObservationPoint', () => {
 });
 
 test('GeneralHeadBoundary update ObservationPoint', () => {
-    const GeneralHeadBoundary = createGeneralHeadBoundary();
-    GeneralHeadBoundary.addObservationPoint('Op2', {type: 'Point', coordinates: [1, 2]}, [3, 2, 1]);
-    expect(GeneralHeadBoundary._observationPoints).toHaveLength(2);
-    const op2 = GeneralHeadBoundary.findObservationPointByName('Op2');
+    const generalHeadBoundary = createGeneralHeadBoundary();
+    generalHeadBoundary.addObservationPoint('Op2', {type: 'Point', coordinates: [1, 2]}, [3, 2, 1]);
+    expect(generalHeadBoundary._observationPoints).toHaveLength(2);
+    const op2 = generalHeadBoundary.findObservationPointByName('Op2');
 
     const id = op2.id;
     const geometry = {type: 'Point', coordinates: [11, 12]};
     const name = 'op2_new';
     const spValues = [3, 3, 3];
 
-    GeneralHeadBoundary.updateObservationPoint(id, name, geometry, spValues);
+    generalHeadBoundary.updateObservationPoint(id, name, geometry, spValues);
 
-    const op2_new = GeneralHeadBoundary.findObservationPointByName('op2_new');
+    const op2_new = generalHeadBoundary.findObservationPointByName('op2_new');
     expect(op2_new).toBeTruthy();
     expect(op2_new.id).toEqual(id);
     expect(op2_new.type).toEqual('Feature');
@@ -73,12 +73,12 @@ test('GeneralHeadBoundary update ObservationPoint', () => {
 });
 
 test('GeneralHeadBoundary remove ObservationPoint', () => {
-    const GeneralHeadBoundary = createGeneralHeadBoundary();
-    GeneralHeadBoundary.addObservationPoint('Op2', {type: 'Point', coordinates: [1, 2]}, [3, 2, 1]);
-    expect(GeneralHeadBoundary._observationPoints).toHaveLength(2);
-    const op2 = GeneralHeadBoundary.findObservationPointByName('Op2');
-    GeneralHeadBoundary.removeObservationPoint(op2.id);
-    expect(GeneralHeadBoundary._observationPoints).toHaveLength(1);
+    const generalHeadBoundary = createGeneralHeadBoundary();
+    generalHeadBoundary.addObservationPoint('Op2', {type: 'Point', coordinates: [1, 2]}, [3, 2, 1]);
+    expect(generalHeadBoundary._observationPoints).toHaveLength(2);
+    const op2 = generalHeadBoundary.findObservationPointByName('Op2');
+    generalHeadBoundary.removeObservationPoint(op2.id);
+    expect(generalHeadBoundary._observationPoints).toHaveLength(1);
 
 });
 
@@ -90,6 +90,6 @@ test('GeneralHeadBoundary fromObject', () => {
 
 test('GeneralHeadBoundary schema validation', () => {
     const data = createGeneralHeadBoundary().toObject();
-    const schema = JSON_SCHEMA_URL + 'modflow/boundary/generalHeadBoundary';
+    const schema = JSON_SCHEMA_URL + '/modflow/boundary/generalHeadBoundary';
     return expect(validate(data, schema)).resolves.toEqual([true, null]);
 });
