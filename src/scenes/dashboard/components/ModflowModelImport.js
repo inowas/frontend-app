@@ -33,7 +33,6 @@ class ModflowModelImport extends React.Component {
         const data = JSON.parse(text);
         const schemaUrl = JSON_SCHEMA_URL + '/import/modflowModel.json';
         validate(data, schemaUrl).then(([isValid, errors]) => {
-            console.log(isValid, errors);
             if (!isValid) {
                 return this.setState({errors, payload: null});
             }
