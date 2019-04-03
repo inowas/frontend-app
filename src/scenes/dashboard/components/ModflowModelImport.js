@@ -3,24 +3,27 @@ import {withRouter} from 'react-router-dom';
 
 import Uuid from 'uuid';
 import {Button, Dimmer, Grid, Header, Modal, List, Loader, Segment} from 'semantic-ui-react';
-import {validate} from 'services/jsonSchemaValidator';
-import {JSON_SCHEMA_URL, sendCommand} from 'services/api';
 import ModflowModelCommand from '../../t03/commands/modflowModelCommand';
 import {BoundaryCollection, BoundingBox, Cells, Geometry, GridSize, Soilmodel, Stressperiods} from 'core/model/modflow';
 import PropTypes from 'prop-types';
+import ModelImportMap from './ModelImportMap';
+
+import {JSON_SCHEMA_URL, sendCommand} from 'services/api';
+import {dxGeometry, dyGeometry} from 'services/geoTools/distance';
+import {validate} from 'services/jsonSchemaValidator';
 
 class ModflowModelImport extends React.Component {
 
     constructor(props) {
         super(props);
         this.state = {
-            payload: null,
             errors: null,
+            payload: null,
+            isLoading: false,
             showJSONImportModal: false
         };
 
         this.fileReader = new FileReader();
-
         this.fileReader.onload = (event) => {
             this.parseFileContent(event.target.result);
         }
@@ -29,10 +32,10 @@ class ModflowModelImport extends React.Component {
     parseFileContent = (text) => {
         const data = JSON.parse(text);
         const schemaUrl = JSON_SCHEMA_URL + '/import/modflowModel.json';
-        console.log(JSON_SCHEMA_URL, schemaUrl);
         validate(data, schemaUrl).then(([isValid, errors]) => {
+            console.log(isValid, errors);
             if (!isValid) {
-                return this.setState({errors});
+                return this.setState({errors, payload: null});
             }
 
             const id = Uuid.v4();
@@ -67,7 +70,7 @@ class ModflowModelImport extends React.Component {
                 boundaries: BoundaryCollection.fromImport(data.boundaries, boundingBox, gridSize).toObject()
             };
 
-           return this.setState({payload});
+            return this.setState({payload, errors: null});
         })
     };
 
@@ -90,90 +93,155 @@ class ModflowModelImport extends React.Component {
 
     onClickUpload = () => this.setState({showJSONImportModal: true});
 
-    renderMetaData = () => (
+    renderMetaData = (payload) => {
+        const {name, description, discretization} = payload;
+        const {grid_size} = discretization;
+        const geometry = Geometry.fromObject(discretization.geometry);
+        const isPublic = payload.public;
+        return (
             <Segment color="blue">
                 <Header as="h3" style={{'textAlign': 'left'}}>Metadata</Header>
+                <List>
+                    <List.Item>
+                        <List.Icon name="file outline"/>
+                        <List.Content>{name}</List.Content>
+                    </List.Item>
+                    <List.Item>
+                        <List.Icon name="file alternate outline"/>
+                        <List.Content>{description}</List.Content>
+                    </List.Item>
+                    <List.Item>
+                        <List.Icon name="chess board"/>
+                        <List.Content>Cols: {grid_size.n_x}, Rows: {grid_size.n_y}</List.Content>
+                    </List.Item>
+                    <List.Item>
+                        <List.Icon name="eye"/>
+                        <List.Content>{(isPublic && 'public') || 'private'}</List.Content>
+                    </List.Item>
+                    <List.Item>
+                        <List.Icon name="arrows alternate horizontal"/>
+                        <List.Content>{dxGeometry(geometry) + ' m'}</List.Content>
+                    </List.Item>
+                    <List.Item>
+                        <List.Icon name="arrows alternate vertical"/>
+                        <List.Content>{dyGeometry(geometry) + ' m'}</List.Content>
+                    </List.Item>
+                </List>
             </Segment>
-        );
+        )
+    };
 
-    renderData = () => (
+    renderValidationErrors = (errors) => {
+
+        console.log(errors);
+        return (
+            <Segment color="red" inverted>
+                <Header as="h3" style={{'textAlign': 'left'}}>Validation Errors</Header>
+                <List>
+                    {errors.map((e, idx) => (
+                        <List.Item key={idx}>
+                            <List.Icon name="eye"/>
+                            <List.Content>{e.message}</List.Content>
+                        </List.Item>
+                    ))}
+                </List>
+            </Segment>
+        )
+    };
+
+    renderMap = (payload) => {
+        const {discretization} = payload;
+        const boundaries = BoundaryCollection.fromObject(payload.boundaries);
+        const boundingBox = BoundingBox.fromArray(discretization.bounding_box);
+        const geometry = Geometry.fromObject(discretization.geometry);
+
+        return (
             <Segment color="blue">
-                <Header as="h3" style={{'textAlign': 'left'}}>Data</Header>
+                <Header as="h3" style={{'textAlign': 'left'}}>Map</Header>
+                <ModelImportMap
+                    boundaries={boundaries}
+                    boundingBox={boundingBox}
+                    geometry={geometry}
+                />
             </Segment>
         );
-
-
+    };
 
     renderJSONImportModal = () => (
-            <Modal open onClose={this.props.onCancel} dimmer={'blurring'}>
-                <Modal.Header>Import JSON File</Modal.Header>
-                <Modal.Content>
-                    <Grid divided={'vertically'}>
-                        <Grid.Row columns={2}>
-                            <Grid.Column>
-                                {this.state.isLoading &&
-                                <Dimmer active inverted>
-                                    <Loader>Uploading</Loader>
-                                </Dimmer>
-                                }
-                                {!this.state.isLoading &&
-                                <Segment color={'green'}>
-                                    <Header as="h3" style={{'textAlign': 'left'}}>File Requirements</Header>
-                                    <List bulleted>
-                                        <List.Item>The rasterfile should have the same bounds as the model
-                                            area.</List.Item>
-                                        <List.Item>The gridsize will interpolated automatically.</List.Item>
-                                    </List>
-                                    <Button
-                                        primary
-                                        fluid
-                                        as='label'
-                                        htmlFor={'inputField'}
-                                        icon='file alternate'
-                                        content='Select File'
-                                        labelPosition='left'
-                                    />
-                                    <input
-                                        hidden
-                                        type='file'
-                                        id='inputField'
-                                        onChange={this.handleUploadJson}
-                                    />
-                                </Segment>
-                                }
-                            </Grid.Column>
-                            <Grid.Column>
-                                {this.renderMetaData()}
-                            </Grid.Column>
-                        </Grid.Row>
-                        <Grid.Row columns={2}>
-                            <Grid.Column>
-                                {this.renderData()}
-                            </Grid.Column>
-                            <Grid.Column>
-                                <Segment color={'green'}>
-
-                                </Segment>
-                            </Grid.Column>
-                        </Grid.Row>
-                    </Grid>
-                </Modal.Content>
-                <Modal.Actions>
-                    <Button onClick={()=>this.setState({showJSONImportModal: false})}>Cancel</Button>
-                    <Button
-                        disabled={!this.state.payload}
-                        positive
-                        onClick={this.sendImportCommand}
-                    >
-                        Import
-                    </Button>
-                </Modal.Actions>
-            </Modal>
-        );
+        <Modal open onClose={this.props.onCancel} dimmer={'blurring'}>
+            <Modal.Header>Import Model</Modal.Header>
+            <Modal.Content>
+                <Grid>
+                    <Grid.Row columns={2}>
+                        <Grid.Column>
+                            {this.state.isLoading &&
+                            <Dimmer active inverted>
+                                <Loader>Uploading</Loader>
+                            </Dimmer>
+                            }
+                            {!this.state.isLoading &&
+                            <Segment color={'green'}>
+                                <Header as="h3" style={{'textAlign': 'left'}}>File Requirements</Header>
+                                <List bulleted>
+                                    <List.Item>
+                                        The file has to be a json-file.
+                                    </List.Item>
+                                    <List.Item>
+                                        The file will be validated against <a
+                                        href='https://schema.inowas.com/import/modflowModel.json' target='_blank'
+                                        rel='noopener noreferrer'>this</a> json-schema.
+                                    </List.Item>
+                                    <List.Item>
+                                        Examples can be found <a
+                                        href='https://github.com/inowas/inowas-dss-cra/blob/master/imports'
+                                        target='_blank' rel='noopener noreferrer'>here</a>.
+                                    </List.Item>
+                                </List>
+                                <Button
+                                    primary
+                                    fluid
+                                    as='label'
+                                    htmlFor={'inputField'}
+                                    icon='file alternate'
+                                    content='Select File'
+                                    labelPosition='left'
+                                />
+                                <input
+                                    hidden
+                                    type='file'
+                                    id='inputField'
+                                    onChange={this.handleUploadJson}
+                                />
+                            </Segment>
+                            }
+                        </Grid.Column>
+                        <Grid.Column>
+                            {this.state.payload && this.renderMetaData(this.state.payload)}
+                            {this.state.errors && this.renderValidationErrors(this.state.errors)}
+                        </Grid.Column>
+                    </Grid.Row>
+                    <Grid.Row>
+                        <Grid.Column>
+                            {this.state.payload && this.renderMap(this.state.payload)}
+                        </Grid.Column>
+                    </Grid.Row>
+                </Grid>
+            </Modal.Content>
+            <Modal.Actions>
+                <Button onClick={() => this.setState({showJSONImportModal: false})}>Cancel</Button>
+                <Button
+                    disabled={!this.state.payload}
+                    positive
+                    onClick={this.sendImportCommand}
+                >
+                    Import
+                </Button>
+            </Modal.Actions>
+        </Modal>
+    );
 
     render() {
         const {showJSONImportModal} = this.state;
-        console.warn(this.state.errors);
         return (
             <div>
                 <Button
@@ -182,7 +250,7 @@ class ModflowModelImport extends React.Component {
                     content='Import'
                     labelPosition='left'
                     onClick={this.onClickUpload}
-                    />
+                />
                 {showJSONImportModal && this.renderJSONImportModal()}
             </div>
         );
