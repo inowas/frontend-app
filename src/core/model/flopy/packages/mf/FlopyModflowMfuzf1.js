@@ -1,6 +1,6 @@
-import FlopyModflowPackage from './FlopyModflowPackage';
+import FlopyModflowFlowPackage from './FlopyModflowFlowPackage';
 
-export default class FlopyModflowMfuzf1 extends FlopyModflowPackage {
+export default class FlopyModflowMfuzf1 extends FlopyModflowFlowPackage {
 
     _nuztop = 1;
     _iuzfopt = 0;
@@ -308,4 +308,9 @@ export default class FlopyModflowMfuzf1 extends FlopyModflowPackage {
     set filenames(value) {
         this._filenames = value;
     }
+
+    supportedModflowVersions = () => [
+        {name: 'MODFLOW-2005', executable: 'mf2005', default: true},
+        {name: 'MODFLOW-NWT', executable: 'mfnwt'},
+    ]
 }

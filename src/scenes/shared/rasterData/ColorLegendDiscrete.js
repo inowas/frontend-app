@@ -18,7 +18,8 @@ const styles = {
         float: 'left',
         width: '20px',
         height: '12px',
-        margin: '2px'
+        margin: '4px',
+        border: '1px solid grey'
     },
     vertical: {
         position: 'absolute',

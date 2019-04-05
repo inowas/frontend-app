@@ -57,12 +57,12 @@ class RasterDataImage extends React.Component {
             const lastGradient = gradients[gradients.length - 1];
             const legend = gradients.map(gradient => ({
                 color: '#' + gradient.getEndColour(),
-                value: Number(gradient.getMaxNum()).toFixed(2)
+                value: Number(gradient.getMaxNum()).toExponential()
             }));
 
             legend.push({
                 color: '#' + lastGradient.getStartColour(),
-                value: Number(lastGradient.getMinNum()).toFixed(2)
+                value: Number(lastGradient.getMinNum()).toExponential()
             });
 
             return <ColorLegend legend={legend} orientation={'horizontal'} unit={unit}/>;
@@ -71,7 +71,12 @@ class RasterDataImage extends React.Component {
     }
 
     render() {
-        const {data, gridSize, unit} = this.props;
+        const {data, gridSize, unit, border} = this.props;
+
+        let canvasStyle = styles.canvas;
+        if (border) {
+            canvasStyle = {...canvasStyle, border};
+        }
 
         const rainbowVis = this.props.legend || rainbowFactory({min: min(data), max: max(data)});
         const width = gridSize.nX;
@@ -81,11 +86,12 @@ class RasterDataImage extends React.Component {
             this.drawCanvas(data, width, height, rainbowVis);
         }
 
+        // noinspection HtmlUnknownBooleanAttribute
         return (
             <div>
                 <Image fluid>
                     <canvas
-                        style={styles.canvas}
+                        style={canvasStyle}
                         ref={(canvas) => {
                             this.canvas = canvas;
                         }}
@@ -104,7 +110,8 @@ RasterDataImage.propTypes = {
     data: PropTypes.oneOfType([PropTypes.array, PropTypes.number]).isRequired,
     gridSize: PropTypes.instanceOf(GridSize).isRequired,
     legend: PropTypes.oneOfType([PropTypes.array, PropTypes.instanceOf(Rainbow)]),
-    unit: PropTypes.string.isRequired
+    unit: PropTypes.string.isRequired,
+    border: PropTypes.string
 };
 
 export default RasterDataImage;

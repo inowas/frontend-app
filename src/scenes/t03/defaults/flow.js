@@ -7,6 +7,11 @@ export const documentation = {
     filenames: <div>Filenames to use for the package. If filenames=None the package name will be created using the model name and package extension. If a single string is passed the package will be set to the string. Default is None.</div>,
     options: <div>Package options. (default is None).</div>,
 
+    // MF
+    exe_name: <div>The name of the executable to use (the default is ‘mf2005’).</div>,
+    version: <div>Version of MODFLOW to use (the default is ‘mf2005’).</div>,
+    verbose: <div>Print additional information to the screen (default is False).</div>,
+
     // BAS
     ibound: <div>The ibound array (the default is 1).</div>,
     strt: <div>An array of starting heads (the default is 1.0).</div>,
@@ -52,7 +57,7 @@ export const documentation = {
     yul: <div>y coordinate of upper left corner of the grid, default is None</div>,
     rotation: <div>Clockwise rotation (in degrees) of the grid about the upper left corner. default is 0.0</div>,
     proj4_str: <div>PROJ4 string that defines the xul-yul coordinate system (.e.g. ‘+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs ‘). Can be an EPSG code (e.g. ‘EPSG:4326’). Default is ‘EPSG:4326’</div>,
-    start_dateteim: <div>Starting datetime of the simulation. default is ‘1/1/1970’</div>,
+    start_datetime: <div>Starting datetime of the simulation. default is ‘1/1/1970’</div>,
 
     // FHB
     nbdtim: <div>The number of times at which flow and head will be specified for all selected cells. (default is 1)</div>,

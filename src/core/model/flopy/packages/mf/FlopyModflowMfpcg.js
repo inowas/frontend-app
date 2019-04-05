@@ -1,6 +1,6 @@
-import FlopyModflowPackage from './FlopyModflowPackage';
+import FlopyModflowSolverPackage from './FlopyModflowSolverPackage';
 
-export default class FlopyModflowMfpcg extends FlopyModflowPackage {
+export default class FlopyModflowMfpcg extends FlopyModflowSolverPackage {
 
     _mxiter = 50;
     _iter1 = 30;

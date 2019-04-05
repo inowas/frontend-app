@@ -88,11 +88,27 @@ class Flow extends React.Component {
         if (p instanceof FlopyModflowPackage) {
             const mf = FlopyModflow.fromObject(this.state.mf);
             mf.setPackage(p);
-
             return this.setState({mf: mf.toObject(), isDirty: true});
         }
 
         throw new Error('Package has to be instance of FlopyModflowPackage');
+    };
+
+    handleChangeFlowPackageType = type => {
+        const mfPackages = FlopyModflow.fromObject(this.state.mf);
+        mfPackages.setFlowPackageType(type, this.props.soilmodel);
+
+        const flowPackage = mfPackages.getFlowPackage();
+        const mfPackage = mfPackages.getPackage('mf');
+        mfPackage.exe_name = flowPackage.supportedModflowVersions().filter(v => v.default === true)[0].executable;
+        mfPackage.version = flowPackage.supportedModflowVersions().filter(v => v.default === true)[0].version;
+        mfPackages.setPackage(mfPackage);
+
+        return this.setState({mf: mfPackages.toObject(), isDirty: true}, () => {
+            const packages = this.props.packages;
+            packages.mf = mfPackages;
+            this.props.updatePackages(packages);
+        });
     };
 
     onMenuClick = (type) => {
@@ -118,6 +134,7 @@ class Flow extends React.Component {
                 return (
                     <BasPackageProperties
                         mfPackage={mf.getPackage(type)}
+                        mfPackages={mf}
                         onChange={this.handleChangePackage}
                         readonly={readOnly}
                     />
@@ -141,8 +158,9 @@ class Flow extends React.Component {
             case 'flow':
                 return (
                     <FlowPackageProperties
-                        mfPackage={mf.getFlowPackage()}
+                        mfPackages={mf}
                         onChange={this.handleChangePackage}
+                        onChangeFlowPackageType={this.handleChangeFlowPackageType}
                         readonly={readOnly}
                     />
                 );
@@ -150,6 +168,7 @@ class Flow extends React.Component {
                 return (
                     <GhbPackageProperties
                         mfPackage={mf.getPackage(type)}
+                        mfPackages={mf}
                         onChange={this.handleChangePackage}
                         readonly={readOnly}
                     />
@@ -158,6 +177,7 @@ class Flow extends React.Component {
                 return (
                     <MfPackageProperties
                         mfPackage={mf.getPackage(type)}
+                        mfPackages={mf}
                         onChange={this.handleChangePackage}
                         readonly={readOnly}
                     />
@@ -174,6 +194,7 @@ class Flow extends React.Component {
                 return (
                     <RchPackageProperties
                         mfPackage={mf.getPackage(type)}
+                        mfPackages={mf}
                         onChange={this.handleChangePackage}
                         readonly={readOnly}
                     />
@@ -207,6 +228,7 @@ class Flow extends React.Component {
                 return (
                     <MfPackageProperties
                         mfPackage={mf.getPackage('mf')}
+                        mfPackages={mf}
                         onChange={this.handleChangePackage}
                         readonly={readOnly}
                     />

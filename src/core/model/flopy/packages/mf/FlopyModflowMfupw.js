@@ -1,6 +1,6 @@
-import FlopyModflowPackage from './FlopyModflowPackage';
+import FlopyModflowFlowPackage from './FlopyModflowFlowPackage';
 
-export default class FlopyModflowMfupw extends FlopyModflowPackage {
+export default class FlopyModflowMfupw extends FlopyModflowFlowPackage {
 
     _laytyp = 0;
     _layavg = 0;
@@ -164,4 +164,8 @@ export default class FlopyModflowMfupw extends FlopyModflowPackage {
     set filenames(value) {
         this._filenames = value;
     }
+
+    supportedModflowVersions = () => [
+        {name: 'MODFLOW-NWT', executable: 'mfnwt', version: 'mfnwt', default: true}
+    ]
 }

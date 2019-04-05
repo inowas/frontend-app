@@ -1,11 +1,12 @@
 import PropTypes from 'prop-types';
 import React from 'react';
-import {Form, Input} from 'semantic-ui-react';
+import {Form, Grid, Header, Input} from 'semantic-ui-react';
 
 import AbstractPackageProperties from './AbstractPackageProperties';
 import {FlopyModflowMfdis} from 'core/model/flopy/packages/mf';
-import InfoPopup from '../../../../../shared/InfoPopup';
 import {documentation} from '../../../../defaults/flow';
+import {RasterDataImage} from '../../../../../shared/rasterData';
+import {GridSize} from '../../../../../../core/model/modflow';
 
 class DisPackageProperties extends AbstractPackageProperties {
 
@@ -18,26 +19,6 @@ class DisPackageProperties extends AbstractPackageProperties {
 
         return (
             <Form>
-                <Form.Group>
-                        <Form.Field width={15}>
-                            <label>Model object</label>
-                            <Form.Dropdown
-                                options={[
-                                    {key: 0, value: 'model1', text: 'Model 01'},
-                                    {key: 1, value: 'model2', text: 'Model 02'},
-                                ]}
-                                placeholder='Select model'
-                                name='model'
-                                selection
-                                value={JSON.stringify(mfPackage.model)}
-                            />
-                        </Form.Field>
-                        <Form.Field width={1}>
-                            <label>&nbsp;</label>
-                            <InfoPopup description={documentation.model} title='Model' position='top right' iconOutside={true} />
-                        </Form.Field>
-                </Form.Group>
-
                 <Form.Group>
                     <Form.Field width={4}>
                         <label>Layers (nlay)</label>
@@ -104,35 +85,35 @@ class DisPackageProperties extends AbstractPackageProperties {
                     </Form.Field>
                 </Form.Group>
 
-                <Form.Group widths='equal'>
-                    <Form.Field>
-                        <label>Top elevation (top)</label>
-                        <Input readOnly
-                               name='top'
-                               value={JSON.stringify(mfPackage.top)}
-                               icon={this.renderInfoPopup(documentation.top, 'top')}
-                        />
-                    </Form.Field>
-                    <Form.Field>
-                        <label>Bottom elevation (botm)</label>
-                        <Input readOnly
-                               name='botm'
-                               value={JSON.stringify(mfPackage.botm)}
-                               icon={this.renderInfoPopup(documentation.botm, 'botm')}
-                        />
-                    </Form.Field>
-                    <Form.Field>
-                        <label>Stress period lengths (perlen)</label>
-                        <Input readOnly
-                               name='perlen'
-                               value={JSON.stringify(mfPackage.perlen)}
-                               icon={this.renderInfoPopup(documentation.perlen, 'perlen')}
-                        />
-                    </Form.Field>
-                </Form.Group>
+                <Grid divided={'vertically'}>
+                    <Grid.Row/>
+                    <Grid.Row columns={2}>
+                        <Grid.Column>
+                            <Header as={'p'}>Top Elevation</Header>
+                            <RasterDataImage
+                                data={mfPackage.top}
+                                gridSize={GridSize.fromData(mfPackage.top)}
+                                unit={'m'}
+                            />
+                        </Grid.Column>
+                    </Grid.Row>
+                    <Grid.Row columns={2}>
+                        {mfPackage.botm.map((layer, idx) => (
+                            <Grid.Column key={idx}>
+                                <Header as={'p'}>Bottom Elevation Layer {idx + 1}</Header>
+                                <RasterDataImage
+                                    data={layer}
+                                    gridSize={GridSize.fromData(layer)}
+                                    unit={'m'}
+                                />
+                            </Grid.Column>
+                        ))}
+                    </Grid.Row>
+                    <Grid.Row/>
+                </Grid>
 
                 <Form.Group widths='equal'>
-                    <Form.Field>
+                    <Form.Field width={4}>
                         <label>Time steps in stress period (nstp)</label>
                         <Input readOnly
                                name='nstp'
@@ -140,7 +121,7 @@ class DisPackageProperties extends AbstractPackageProperties {
                                icon={this.renderInfoPopup(documentation.nstp, 'nstp')}
                         />
                     </Form.Field>
-                    <Form.Field>
+                    <Form.Field width={4}>
                         <label>Time step multiplier (tsmult)</label>
                         <Input readOnly
                                name='tsmult'
@@ -148,12 +129,20 @@ class DisPackageProperties extends AbstractPackageProperties {
                                icon={this.renderInfoPopup(documentation.tsmult, 'tsmult')}
                         />
                     </Form.Field>
-                    <Form.Field>
+                    <Form.Field width={4}>
                         <label>State of stress period (steady)</label>
                         <Input readOnly
                                name='steady'
                                value={JSON.stringify(mfPackage.steady)}
                                icon={this.renderInfoPopup(documentation.steady, 'steady')}
+                        />
+                    </Form.Field>
+                    <Form.Field width={4}>
+                        <label>Stress period lengths (perlen)</label>
+                        <Input readOnly
+                               name='perlen'
+                               value={JSON.stringify(mfPackage.perlen)}
+                               icon={this.renderInfoPopup(documentation.perlen, 'perlen')}
                         />
                     </Form.Field>
                 </Form.Group>
@@ -251,8 +240,8 @@ class DisPackageProperties extends AbstractPackageProperties {
                         <Input readOnly
                                type={'date'}
                                name='start_dateteim'
-                               value={JSON.stringify(mfPackage.start_dateteim)}
-                               icon={this.renderInfoPopup(documentation.start_dateteim, 'start_dateteim')}
+                               value={mfPackage.start_datetime}
+                               icon={this.renderInfoPopup(documentation.start_datetime, 'start_datetime')}
                         />
                     </Form.Field>
                 </Form.Group>
