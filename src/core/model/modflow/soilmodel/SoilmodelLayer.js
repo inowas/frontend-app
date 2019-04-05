@@ -146,6 +146,45 @@ class SoilmodelLayer {
         this._hk = value;
     }
 
+    calculateTransmissivity(top) {
+
+        const hk = this._hk;
+        const botm = this._botm;
+
+        let gridSize = null;
+
+        if (Array.isArray(top)) {
+            gridSize = GridSize.fromData(top);
+        }
+
+        if (Array.isArray(hk)) {
+            gridSize = GridSize.fromData(hk);
+        }
+
+        if (Array.isArray(botm)) {
+            gridSize = GridSize.fromData(botm);
+        }
+
+        // We have scalar values;
+        if (null === gridSize) {
+            return (top - botm) * hk;
+        }
+
+        const result = [];
+        for (let row = 0; row < gridSize.nY; row++) {
+            result[row] = [];
+            for (let col = 0; col < gridSize.nX; col++) {
+                const hkCell = Array.isArray(hk) ? hk[row][col] : hk;
+                const topCell = Array.isArray(top) ? top[row][col] : top;
+                const botmCell = Array.isArray(botm) ? botm[row][col] : botm;
+                result[row][col] = (topCell - botmCell) * hkCell;
+            }
+        }
+
+        return result;
+
+    }
+
     get hani() {
         return this._hani;
     }

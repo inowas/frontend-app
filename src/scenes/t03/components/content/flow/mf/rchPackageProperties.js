@@ -1,11 +1,12 @@
 import PropTypes from 'prop-types';
 import React from 'react';
-import {Form, Input} from 'semantic-ui-react';
+import {Form, Grid, Header, Input} from 'semantic-ui-react';
 
 import AbstractPackageProperties from './AbstractPackageProperties';
-import {FlopyModflowMfrch} from 'core/model/flopy/packages/mf';
-import InfoPopup from '../../../../../shared/InfoPopup';
+import {FlopyModflow, FlopyModflowMfrch} from 'core/model/flopy/packages/mf';
 import {documentation} from '../../../../defaults/flow';
+import {RasterDataImage} from '../../../../../shared/rasterData';
+import {GridSize} from '../../../../../../core/model/modflow';
 
 class RchPackageProperties extends AbstractPackageProperties {
 
@@ -14,30 +15,28 @@ class RchPackageProperties extends AbstractPackageProperties {
             return null;
         }
 
-        const {mfPackage} = this.props;
+        const {mfPackage, mfPackages} = this.props;
+        const spData2D = Object.values(mfPackage.stress_period_data)[0];
+
+        const basPackage = mfPackages.getPackage('bas');
+        const {ibound} = basPackage;
 
         return (
             <Form>
-                <Form.Group>
-                    <Form.Field width={15}>
-                        <label>Recharge option (nrchop)</label>
-                        <Form.Dropdown
-                            options={[
-                                {key: 0, value: 'nrchop1', text: '1: Recharge to top grid layer only'},
-                                {key: 1, value: 'nrchop2', text: '2: Recharge to layer defined in irch'},
-                                {key: 2, value: 'nrchop3', text: '3: Recharge to highest active cell'}
-                            ]}
-                            placeholder='Recharge option'
-                            name='nrchop'
-                            selection
-                            value={JSON.stringify(mfPackage.nrchop)}
-                        />
-                    </Form.Field>
-                    <Form.Field width={1}>
-                        <label>&nbsp;</label>
-                        <InfoPopup description={documentation.nrchop} title='Model' position='top right' iconOutside={true} />
-                    </Form.Field>
-                </Form.Group>
+                <Grid divided={'vertically'}>
+                    <Header as={'h2'}>Recharge Boundaries</Header>
+                    <Grid.Row columns={2}>
+                        <Grid.Column>
+                            <Header as={'p'}>Stress period data (SP1)</Header>
+                            <RasterDataImage
+                                data={spData2D}
+                                gridSize={GridSize.fromData(ibound[0])}
+                                unit={''}
+                                border={'1px dotted black'}
+                            />
+                        </Grid.Column>
+                    </Grid.Row>
+                </Grid>
 
                 <Form.Group widths='equal'>
                     <Form.Field>
@@ -46,14 +45,6 @@ class RchPackageProperties extends AbstractPackageProperties {
                                name='ipakcb'
                                value={JSON.stringify(mfPackage.ipakcb)}
                                icon={this.renderInfoPopup(documentation.ipakcb, 'ipakcb')}
-                        />
-                    </Form.Field>
-                    <Form.Field>
-                        <label>Recharge flux (rech)</label>
-                        <Input readOnly
-                               name='rech'
-                               value={mfPackage.rech}
-                               icon={this.renderInfoPopup(documentation.rech, 'rech')}
                         />
                     </Form.Field>
                     <Form.Field>
@@ -100,6 +91,7 @@ class RchPackageProperties extends AbstractPackageProperties {
 
 RchPackageProperties.propTypes = {
     mfPackage: PropTypes.instanceOf(FlopyModflowMfrch),
+    mfPackages: PropTypes.instanceOf(FlopyModflow),
     onChange: PropTypes.func.isRequired,
     readonly: PropTypes.bool.isRequired
 };

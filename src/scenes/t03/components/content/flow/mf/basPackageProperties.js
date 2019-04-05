@@ -1,10 +1,12 @@
 import PropTypes from 'prop-types';
 import React from 'react';
-import {Form, Input} from 'semantic-ui-react';
+import {Form, Grid, Header, Input} from 'semantic-ui-react';
 
 import AbstractPackageProperties from './AbstractPackageProperties';
 import {FlopyModflowMfbas} from 'core/model/flopy/packages/mf';
 import {documentation} from '../../../../defaults/flow';
+import {RasterDataImage} from '../../../../../shared/rasterData';
+import {GridSize} from 'core/model/modflow';
 
 const styles = {
     inputFix: {
@@ -20,78 +22,100 @@ class BasPackageProperties extends AbstractPackageProperties {
             return null;
         }
 
-        const {mfPackage} = this.props;
+        const {readonly} = this.props;
+        const mfPackage = FlopyModflowMfbas.fromObject(this.state.mfPackage);
+        const {ibound, strt} = mfPackage;
 
         return (
-            <Form>
-                <Form.Field>
-                    <label>Ibound array</label>
-                    <Input readOnly
-                           name='ibound'
-                           value={JSON.stringify(mfPackage.ibound)}
-                           style={styles.inputFix}
-                           icon={this.renderInfoPopup(documentation.ibound, 'ibound')}
-                    />
-                </Form.Field>
-                <Form.Group widths='equal'>
-                    <Form.Field>
-                        <label>Starting Head (strt)</label>
-                        <Input readOnly
-                               name='strt'
-                               value={JSON.stringify(mfPackage.strt)}
-                               icon={this.renderInfoPopup(documentation.strt, 'strt')}
-                        />
-                    </Form.Field>
-                    <Form.Field>
-                        <label>Free format (ifrefm)</label>
-                        <Input readOnly
-                               name='ifrefm'
-                               value={JSON.stringify(mfPackage.ifrefm)}
-                               icon={this.renderInfoPopup(documentation.ifrefm, 'ifrefm')}
-                        />
-                    </Form.Field>
-                </Form.Group>
-                <Form.Group widths='equal'>
-                    <Form.Field>
-                        <label>Flow between chd cells (ichflg)</label>
-                        <Input readOnly
-                               name='ichflg'
-                               value={JSON.stringify(mfPackage.ichflg)}
-                               style={styles.inputFix}
-                               icon={this.renderInfoPopup(documentation.ichflg, 'ichflg')}
-                        />
-                    </Form.Field>
-                    <Form.Field>
-                        <label>Budget percent discrepancy (stoper)</label>
-                        <Input readOnly
-                               name='stoper'
-                               value={JSON.stringify(mfPackage.stoper)}
-                               style={styles.inputFix}
-                               icon={this.renderInfoPopup(documentation.stoper, 'stoper')}
-                        />
-                    </Form.Field>
-                    <Form.Field>
-                        <label>hnoflo</label>
-                        <Input readOnly
-                               type={'number'}
-                               name='hnoflo'
-                               value={JSON.stringify(mfPackage.hnoflo)}
-                               style={styles.inputFix}
-                               icon={this.renderInfoPopup(documentation.hnoflo, 'hnoflo')}
-                        />
-                    </Form.Field>
-                </Form.Group>
+            <Grid divided={'vertically'}>
+                <Header as={'h2'}>Ibound</Header>
+                <Grid.Row columns={2}>
+                    {ibound.map((layer, idx) => (
+                        <Grid.Column key={idx}>
+                            <Header as={'p'}>Layer {idx + 1}</Header>
+                            <RasterDataImage
+                                data={layer}
+                                gridSize={GridSize.fromData(layer)}
+                                unit={''}
+                                legend={[
+                                    {value: -1, color: 'red', label: 'constant'},
+                                    {value: 0, color: 'white', label: 'no flow'},
+                                    {value: 1, color: 'blue', label: 'flow'},
+                                ]}/>
+                        </Grid.Column>
+                    ))}
+                </Grid.Row>
 
-            </Form>
+                <Header as={'h2'}>Starting head</Header>
+                <Grid.Row columns={2}>
+                    {strt.map((layer, idx) => (
+                        <Grid.Column key={idx}>
+                            <Header as={'p'}>Layer {idx + 1}</Header>
+                            <RasterDataImage
+                                data={layer}
+                                gridSize={GridSize.fromData(layer)}
+                                unit={'m'}
+                            />
+                        </Grid.Column>
+                    ))}
+                </Grid.Row>
+
+                <Grid.Row>
+                    <Grid.Column>
+                        <Form>
+                            <Form.Group widths='equal'>
+                                <Form.Field>
+                                    <label>Flow between chd cells (ichflg)</label>
+                                    <Form.Dropdown
+                                        options={[
+                                            {key: 0, value: true, text: 'true'},
+                                            {key: 1, value: false, text: 'false'},
+                                        ]}
+                                        placeholder='Select ichflg'
+                                        name='ichflg'
+                                        selection
+                                        value={mfPackage.ichflg}
+                                        readOnly={readonly}
+                                        onChange={this.handleOnSelect}
+                                    />
+                                </Form.Field>
+                                <Form.Field>
+                                    <label>hnoflo</label>
+                                    <Form.Input
+                                        readOnly={readonly}
+                                        type={'number'}
+                                        name='hnoflo'
+                                        value={mfPackage.hnoflo}
+                                        style={styles.inputFix}
+                                        onChange={this.handleOnChange}
+                                        onBlur={this.handleOnBlur}
+                                        icon={this.renderInfoPopup(documentation.hnoflo, 'hnoflo')}
+                                    />
+                                </Form.Field>
+                                <Form.Field>
+                                    <label>Budget percent discrepancy (stoper)</label>
+                                    <Input
+                                        readOnly
+                                        name='stoper'
+                                        value={mfPackage.stoper || ''}
+                                        style={styles.inputFix}
+                                        icon={this.renderInfoPopup(documentation.stoper, 'stoper')}
+                                    />
+                                </Form.Field>
+                            </Form.Group>
+
+                        </Form>
+                    </Grid.Column>
+                </Grid.Row>
+            </Grid>
         );
     }
 }
 
 BasPackageProperties.propTypes = {
-    mfPackage: PropTypes.instanceOf(FlopyModflowMfbas),
+    mfPackage: PropTypes.instanceOf(FlopyModflowMfbas).isRequired,
     onChange: PropTypes.func.isRequired,
     readonly: PropTypes.bool.isRequired
 };
-
 
 export default BasPackageProperties;
