@@ -15,8 +15,7 @@ class GhbPackageProperties extends AbstractPackageProperties {
             return null;
         }
 
-        const {readonly} = this.props;
-        const {mfPackage, mfPackages} = this.props;
+        const {mfPackage, mfPackages, readonly} = this.props;
         const basPackage = mfPackages.getPackage('bas');
         const {ibound} = basPackage;
         const affectedCellsLayers = ibound.map(l => l.map(r => r.map(() => 0)));

@@ -41,7 +41,7 @@ class RivPackageProperties extends AbstractPackageProperties {
                         <label>Data type (dtype)</label>
                         <Input readOnly
                                name='dtype'
-                               value={JSON.stringify(mfPackage.dtype)}
+                               value={mfPackage.dtype || ''}
                                icon={this.renderInfoPopup(documentation.dtype, 'dtype')}
                         />
                     </Form.Field>
@@ -49,7 +49,7 @@ class RivPackageProperties extends AbstractPackageProperties {
                         <label>Package options (options)</label>
                         <Input readOnly
                                name='options'
-                               value={JSON.stringify(mfPackage.options)}
+                               value={mfPackage.options || ''}
                                icon={this.renderInfoPopup(documentation.options, 'options')}
                         />
                     </Form.Field>
@@ -60,7 +60,7 @@ class RivPackageProperties extends AbstractPackageProperties {
                         <label>Filename extension</label>
                         <Input readOnly
                                name='extension'
-                               value={JSON.stringify(mfPackage.extension)}
+                               value={mfPackage.extension || ''}
                                icon={this.renderInfoPopup(documentation.extension, 'extension')}
                         />
                     </Form.Field>
@@ -69,7 +69,7 @@ class RivPackageProperties extends AbstractPackageProperties {
                         <Input readOnly
                                type={'number'}
                                name='unitnumber'
-                               value={JSON.stringify(mfPackage.unitnumber)}
+                               value={mfPackage.unitnumber || ''}
                                icon={this.renderInfoPopup(documentation.unitnumber, 'unitnumber')}
                         />
                     </Form.Field>
@@ -77,7 +77,7 @@ class RivPackageProperties extends AbstractPackageProperties {
                         <label>Filenames</label>
                         <Input readOnly
                                name='filenames'
-                               value={JSON.stringify(mfPackage.filenames)}
+                               value={mfPackage.filenames || ''}
                                icon={this.renderInfoPopup(documentation.filenames, 'filenames')}
                         />
                     </Form.Field>
