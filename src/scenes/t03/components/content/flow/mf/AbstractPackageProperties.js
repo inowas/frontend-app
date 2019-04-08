@@ -80,7 +80,7 @@ class AbstractPackageProperties extends React.Component {
                 trigger={
                     <Icon
                         name='info'
-                        style={ iconOutside ? styles.iconOutside : styles.iconFix }
+                        style={iconOutside ? styles.iconOutside : styles.iconFix}
                         circular link
                     />
                 }

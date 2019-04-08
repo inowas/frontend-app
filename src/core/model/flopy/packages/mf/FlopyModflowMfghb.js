@@ -27,7 +27,7 @@ kper:
 
 export default class FlopyModflowMfghb extends FlopyModflowLineBoundary {
 
-    _ipakcb = null;
+    _ipakcb = 0;
     _stress_period_data = null;
     _dtype = null;
     _no_print = false;

@@ -116,7 +116,7 @@ export default class FlopyModflow {
             throw new Error('Expecting instance of Soilmodel')
         }
 
-        const mfDis = FlopyModflowMfdis.create(null, {});
+        const mfDis = this.hasPackage('dis') ? this.getPackage('dis') : FlopyModflowMfdis.create(null, {});
         mfDis.nlay = soilmodel.layersCollection.length;
         mfDis.nrow = model.gridSize.nY;
         mfDis.ncol = model.gridSize.nX;
@@ -147,7 +147,7 @@ export default class FlopyModflow {
 
         this.setPackage(mfDis);
 
-        const mfBas = FlopyModflowMfbas.create(null, {});
+        const mfBas = this.hasPackage('bas') ? this.getPackage('bas') : FlopyModflowMfbas.create(null, {});
         mfBas.ibound = model.cells.calculateIBound(mfDis.nlay, mfDis.nrow, mfDis.ncol);
         mfBas.strt = new Array(mfDis.nlay).fill(mfDis.top);
         this.setPackage(mfBas);
@@ -163,19 +163,17 @@ export default class FlopyModflow {
         const {nper, nrow, ncol} = mfDis;
 
         // CHDs
-        const mfChd = FlopyModflowMfchd.create();
+        const mfChd = this.hasPackage('chd') ? this.getPackage('chd') : FlopyModflowMfchd.create();
         this.removePackageIfExists(mfChd);
 
         let spData = FlopyModflowMfchd.calculateSpData(boundaries.all, nper);
         if (spData) {
-            const mfChd = FlopyModflowMfchd.create();
             mfChd.stress_period_data = spData;
             this.setPackage(mfChd);
         }
 
-
         // GHBs
-        const mfGhb = FlopyModflowMfghb.create();
+        const mfGhb = this.hasPackage('ghb') ? this.getPackage('ghb') : FlopyModflowMfghb.create();
         this.removePackageIfExists(mfGhb);
 
         spData = FlopyModflowMfghb.calculateSpData(boundaries.all, nper);
@@ -185,7 +183,7 @@ export default class FlopyModflow {
         }
 
         // RCHs
-        const mfRch = FlopyModflowMfrch.create();
+        const mfRch = this.hasPackage('rch') ? this.getPackage('rch') : FlopyModflowMfrch.create();
         this.removePackageIfExists(mfRch);
         spData = FlopyModflowMfrch.calculateSpData(boundaries.all, nper, nrow, ncol);
         if (spData) {
@@ -194,7 +192,7 @@ export default class FlopyModflow {
         }
 
         // RIV
-        const mfRiv = FlopyModflowMfriv.create();
+        const mfRiv = this.hasPackage('riv') ? this.getPackage('riv') : FlopyModflowMfriv.create();
         this.removePackageIfExists(mfRiv);
         spData = FlopyModflowMfriv.calculateSpData(boundaries.all, nper);
         if (spData) {
@@ -203,7 +201,7 @@ export default class FlopyModflow {
         }
 
         // WEL
-        const mfWel = FlopyModflowMfwel.create();
+        const mfWel = this.hasPackage('wel') ? this.getPackage('wel') :FlopyModflowMfwel.create();
         this.removePackageIfExists(mfWel);
         spData = FlopyModflowMfwel.calculateSpData(boundaries.all, nper);
         if (spData) {
@@ -235,7 +233,7 @@ export default class FlopyModflow {
                 if (idx === 0) {
                     return l.calculateTransmissivity(l.top);
                 }
-                return l.calculateTransmissivity(layers[idx-1].botm);
+                return l.calculateTransmissivity(layers[idx - 1].botm);
             });
             mfBcf.hy = layers.map(l => l.hk);
             mfBcf.vcont = layers.map(() => 1);
@@ -326,7 +324,7 @@ export default class FlopyModflow {
     setPackage(p) {
         if (p instanceof FlopyModflowFlowPackage) {
             this.availableFlowPackages.forEach(fp => {
-                this.removePackeByType(fp.type);
+                this.removePackageByType(fp.type);
             });
         }
 
@@ -338,6 +336,10 @@ export default class FlopyModflow {
         }
 
         throw new Error('Package ' + p.constructor.name + ' not found in PackageMap.')
+    }
+
+    hasPackage(name) {
+        return !!this._packages[name];
     }
 
     getPackage(name) {
@@ -361,7 +363,7 @@ export default class FlopyModflow {
         }
     }
 
-    removePackeByType(type) {
+    removePackageByType(type) {
         delete this._packages[type];
     }
 
