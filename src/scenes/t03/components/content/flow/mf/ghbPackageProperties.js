@@ -15,7 +15,7 @@ class GhbPackageProperties extends AbstractPackageProperties {
             return null;
         }
 
-        const {mfPackage, mfPackages} = this.props;
+        const {mfPackage, mfPackages, readonly} = this.props;
         const basPackage = mfPackages.getPackage('bas');
         const {ibound} = basPackage;
         const affectedCellsLayers = ibound.map(l => l.map(r => r.map(() => 0)));
@@ -49,28 +49,36 @@ class GhbPackageProperties extends AbstractPackageProperties {
                 <Form.Group widths='equal'>
                     <Form.Field>
                         <label>Cell-by-cell budget data (ipakcb)</label>
-                        <Input
-                            readOnly
+                        <Form.Dropdown
+                            options={[
+                                {key: 0, value: 0, text: 'false'},
+                                {key: 1, value: 1, text: 'true'},
+                            ]}
+                            placeholder='Select ipakcb'
                             name='ipakcb'
-                            value={JSON.stringify(mfPackage.ipakcb)}
-                            icon={this.renderInfoPopup(documentation.ipakcb, 'ipakcb')}
+                            selection
+                            value={mfPackage.ipakcb}
+                            readOnly={readonly}
+                            onChange={this.handleOnSelect}
                         />
                     </Form.Field>
+
                     <Form.Field>
                         <label>Package Options</label>
                         <Input
                             readOnly
-                            name='ipakcb'
-                            value={JSON.stringify(mfPackage.options)}
+                            name='options'
+                            value={mfPackage.options || ''}
                             icon={this.renderInfoPopup(documentation.options, 'options')}
                         />
                     </Form.Field>
                     <Form.Field>
                         <label>Data type (dtype)</label>
-                        <Input readOnly
-                               name='dtype'
-                               value={JSON.stringify(mfPackage.dtype)}
-                               icon={this.renderInfoPopup(documentation.dtype, 'dtype')}
+                        <Input
+                            readOnly
+                            name='dtype'
+                            value={mfPackage.dtype || ''}
+                            icon={this.renderInfoPopup(documentation.dtype, 'dtype')}
                         />
                     </Form.Field>
                 </Form.Group>
@@ -78,26 +86,29 @@ class GhbPackageProperties extends AbstractPackageProperties {
                 <Form.Group widths='equal'>
                     <Form.Field>
                         <label>Filename extension (extension)</label>
-                        <Input readOnly
-                               name='extension'
-                               value={JSON.stringify(mfPackage.extension)}
-                               icon={this.renderInfoPopup(documentation.extension, 'extension')}
+                        <Input
+                            readOnly
+                            name='extension'
+                            value={mfPackage.extension}
+                            icon={this.renderInfoPopup(documentation.extension, 'extension')}
                         />
                     </Form.Field>
                     <Form.Field>
                         <label>File unit number (unitnumber)</label>
-                        <Input readOnly
-                               name='unitnumber'
-                               value={JSON.stringify(mfPackage.unitnumber)}
-                               icon={this.renderInfoPopup(documentation.unitnumber, 'unitnumber')}
+                        <Input
+                            readOnly
+                            name='unitnumber'
+                            value={mfPackage.unitnumber || ''}
+                            icon={this.renderInfoPopup(documentation.unitnumber, 'unitnumber')}
                         />
                     </Form.Field>
                     <Form.Field>
                         <label>Filenames (filenames)</label>
-                        <Input readOnly
-                               name='filenames'
-                               value={JSON.stringify(mfPackage.filenames)}
-                               icon={this.renderInfoPopup(documentation.filenames, 'filenames')}
+                        <Input
+                            readOnly
+                            name='filenames'
+                            value={mfPackage.filenames || ''}
+                            icon={this.renderInfoPopup(documentation.filenames, 'filenames')}
                         />
                     </Form.Field>
                 </Form.Group>

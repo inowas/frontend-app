@@ -48,16 +48,18 @@ class BasPackageProperties extends AbstractPackageProperties {
 
                 <Header as={'h2'}>Starting head</Header>
                 <Grid.Row columns={2}>
-                    {strt.map((layer, idx) => (
-                        <Grid.Column key={idx}>
-                            <Header as={'p'}>Layer {idx + 1}</Header>
-                            <RasterDataImage
-                                data={layer}
-                                gridSize={GridSize.fromData(layer)}
-                                unit={'m'}
-                            />
-                        </Grid.Column>
-                    ))}
+                    {strt.map((layer, idx) => {
+                        return (
+                            <Grid.Column key={idx}>
+                                <Header as={'p'}>Layer {idx + 1}</Header>
+                                <RasterDataImage
+                                    data={layer}
+                                    gridSize={GridSize.fromData(ibound[0])}
+                                    unit={'m'}
+                                />
+                            </Grid.Column>
+                        );
+                    })}
                 </Grid.Row>
 
                 <Grid.Row>

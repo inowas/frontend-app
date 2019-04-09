@@ -13,7 +13,7 @@ stress_period_data = {
 export default class FlopyModflowMfrch extends FlopyModflowBoundary {
 
     _nrchop = 3;
-    _ipakcb = null;
+    _ipakcb = 0;
     _stress_period_data = 0.001;
     _irch = 0;
     _extension = 'rch';

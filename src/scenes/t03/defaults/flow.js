@@ -2,7 +2,7 @@ import React from 'react';
 
 export const documentation = {
     model: <div>The model object (of type flopy.modflow.Modflow) to which this package will be added.</div>,
-    extension: <div>Filename extension (default is ‘dis’)</div>,
+    extension: <div>Filename extension</div>,
     unitnumber: <div>File unit number (default is None).</div>,
     filenames: <div>Filenames to use for the package. If filenames=None the package name will be created using the model name and package extension. If a single string is passed the package will be set to the string. Default is None.</div>,
     options: <div>Package options. (default is None).</div>,
