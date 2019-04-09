@@ -1,4 +1,67 @@
 import {distance} from '@turf/turf';
+import {BoundingBox, Geometry} from 'core/model/modflow';
+
+export const dxGeometry = (geometry) => {
+
+    if (!(geometry instanceof Geometry)) {
+        throw new Error('Expecting instance of Geometry');
+    }
+
+    const boundingBox = BoundingBox.fromGeoJson(geometry.toGeoJSON());
+
+    const dxPoint1 = {
+        type: 'Feature',
+        properties: {},
+        geometry: {
+            type: 'Point',
+            coordinates: [boundingBox.xMin, boundingBox.yMin]
+        }
+    };
+
+    const dxPoint2 = {
+        type: 'Feature',
+        properties: {},
+        geometry: {
+            type: 'Point',
+            coordinates: [boundingBox.xMax, boundingBox.yMin]
+        }
+    };
+
+    const options = {units: 'kilometers'};
+
+    return Math.round(distance(dxPoint1, dxPoint2, options) * 1000);
+};
+
+export const dyGeometry = (geometry) => {
+
+    if (!(geometry instanceof Geometry)) {
+        throw new Error('Expecting instance of Geometry');
+    }
+
+    const boundingBox = BoundingBox.fromGeoJson(geometry.toGeoJSON());
+
+    const dyPoint1 = {
+        type: 'Feature',
+        properties: {},
+        geometry: {
+            type: 'Point',
+            coordinates: [boundingBox.xMin, boundingBox.yMin]
+        }
+    };
+
+    const dyPoint2 = {
+        type: 'Feature',
+        properties: {},
+        geometry: {
+            type: 'Point',
+            coordinates: [boundingBox.xMin, boundingBox.yMax]
+        }
+    };
+
+    const options = {units: 'kilometers'};
+    return Math.round(distance(dyPoint1, dyPoint2, options) * 1000);
+};
+
 
 export const dxCell = (boundingBox, gridSize) => {
     const point1 = {

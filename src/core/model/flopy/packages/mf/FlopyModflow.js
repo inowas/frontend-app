@@ -15,6 +15,8 @@ import FlopyModflowMfwel from './FlopyModflowMfwel';
 import {BoundaryCollection, ModflowModel, Soilmodel} from 'core/model/modflow';
 import {delc, delr} from 'services/geoTools/distance';
 import FlopyModflowMflmt from './FlopyModflowMflmt';
+import FlopyModflowMfupw from './FlopyModflowMfupw';
+import FlopyModflowFlowPackage from './FlopyModflowFlowPackage';
 
 
 const packagesMap = {
@@ -31,6 +33,7 @@ const packagesMap = {
     'pcg': FlopyModflowMfpcg,
     'rch': FlopyModflowMfrch,
     'riv': FlopyModflowMfriv,
+    'upw': FlopyModflowMfupw,
     'wel': FlopyModflowMfwel
 };
 
@@ -55,8 +58,8 @@ export default class FlopyModflow {
         const self = new this();
         self.setDiscretization(model, soilmodel);
         self.setBoundaries(boundaries);
-        self.setFlowPackage('lpf', soilmodel);
-        self.setSolver('pcg');
+        self.setFlowPackageType('lpf', soilmodel);
+        self.setSolverPackage('pcg');
         self.setDefaultOutputControl(model.stressperiods.count);
 
         return self;
@@ -91,7 +94,7 @@ export default class FlopyModflow {
 
         this.setDiscretization(model, soilmodel);
         this.setBoundaries(boundaries);
-        this.setFlowPackage('lpf', soilmodel);
+        this.setFlowPackageType(this.getPackageType(this.getFlowPackage()), soilmodel);
         this.setDefaultOutputControl(model.stressperiods.count)
     };
 
@@ -120,9 +123,9 @@ export default class FlopyModflow {
         mfDis.nper = model.stressperiods.count;
         mfDis.delr = delr(model.boundingBox, model.gridSize);
         mfDis.delc = delc(model.boundingBox, model.gridSize);
-        mfDis.laycbd = 0;
 
         const layers = soilmodel.layersCollection.orderBy('number').all;
+        mfDis.laycbd = layers.map(() => 0);
         mfDis.top = layers[0].top;
         mfDis.botm = layers.map(l => l.botm);
 
@@ -209,12 +212,38 @@ export default class FlopyModflow {
         }
     };
 
-    setFlowPackage = (type, soilmodel) => {
+    setFlowPackageType = (type, soilmodel) => {
 
         const layers = soilmodel.layersCollection.orderBy('number').all;
 
         if (!(soilmodel instanceof Soilmodel)) {
             throw new Error('Expecting instance of Soilmodel')
+        }
+
+        if (type === 'bcf') {
+            const mfBcf = FlopyModflowMfbcf.create();
+            mfBcf.ipakcb = layers.map(() => 53);
+            mfBcf.intercellt = layers.map(l => l.layavg);
+            mfBcf.laycon = layers.map(l => l.laytyp);
+            mfBcf.trpy = layers.map(l => l.hani);
+            mfBcf.hdry = layers.map(() => -1e+30);
+            mfBcf.iwdflg = layers.map(l => l.laywet);
+            mfBcf.wetfct = layers.map(() => 0.1);
+            mfBcf.iwetit = layers.map(() => 1);
+            mfBcf.ihdwet = layers.map(() => 0);
+            mfBcf.tran = layers.map((l, idx) => {
+                if (idx === 0) {
+                    return l.calculateTransmissivity(l.top);
+                }
+                return l.calculateTransmissivity(layers[idx-1].botm);
+            });
+            mfBcf.hy = layers.map(l => l.hk);
+            mfBcf.vcont = layers.map(() => 1);
+            mfBcf.sf1 = layers.map(l => l.ss);
+            mfBcf.sf2 = layers.map(l => l.sy);
+            mfBcf.wetdry = layers.map(() => -0.01);
+
+            return this.setPackage(mfBcf);
         }
 
         if (type === 'lpf') {
@@ -235,7 +264,33 @@ export default class FlopyModflow {
         throw new Error('FlowPackage from type ' + type + ' is not implemented.');
     };
 
-    setSolver = type => {
+    getFlowPackage() {
+        return Object.values(this.packages).filter(p => (p instanceof FlopyModflowFlowPackage))[0];
+    }
+
+    // noinspection JSMethodCanBeStatic
+    getPackageType(p) {
+        let type = null;
+        for (const name in packagesMap) {
+            if (p instanceof packagesMap[name]) {
+                type = name;
+            }
+        }
+
+        return type;
+    }
+
+    // noinspection JSMethodCanBeStatic
+    get availableFlowPackages() {
+        return [
+            {type: 'bcf', package: FlopyModflowMfbcf, name: 'Block-Centered Flow Package'},
+            {type: 'lpf', package: FlopyModflowMflpf, name: 'Layer-Property Flow Package'},
+            //{type: 'upw', package: FlopyModflowMfupw, name: 'Upstream Weighting Package'},
+        ];
+    }
+
+    setSolverPackage = type => {
+        // noinspection JSRedundantSwitchStatement
         switch (type) {
             case 'pcg':
                 return this.setPackage(FlopyModflowMfpcg.create());
@@ -269,6 +324,12 @@ export default class FlopyModflow {
     }
 
     setPackage(p) {
+        if (p instanceof FlopyModflowFlowPackage) {
+            this.availableFlowPackages.forEach(fp => {
+                this.removePackeByType(fp.type);
+            });
+        }
+
         for (const name in packagesMap) {
             if (p instanceof packagesMap[name]) {
                 this._packages[name] = p;
@@ -291,10 +352,6 @@ export default class FlopyModflow {
         return this._packages['pcg'];
     }
 
-    getFlowPackage() {
-        return this._packages['lpf'];
-    }
-
     removePackageIfExists(p) {
         for (const name in packagesMap) {
             if (p instanceof packagesMap[name]) {
@@ -302,6 +359,10 @@ export default class FlopyModflow {
                 return;
             }
         }
+    }
+
+    removePackeByType(type) {
+        delete this._packages[type];
     }
 
     toObject() {

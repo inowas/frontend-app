@@ -1,6 +1,6 @@
-import FlopyModflowPackage from './FlopyModflowPackage';
+import FlopyModflowFlowPackage from './FlopyModflowFlowPackage';
 
-export default class FlopyModflowMflpf extends FlopyModflowPackage {
+export default class FlopyModflowMflpf extends FlopyModflowFlowPackage {
 
     _laytyp = 0;
     _layavg = 0;
@@ -237,4 +237,8 @@ export default class FlopyModflowMflpf extends FlopyModflowPackage {
     set filenames(value) {
         this._filenames = value;
     }
+
+    supportedModflowVersions = () => [
+        {name: 'MODFLOW-2005', executable: 'mf2005', version: 'mf2005', default: true}
+    ]
 }

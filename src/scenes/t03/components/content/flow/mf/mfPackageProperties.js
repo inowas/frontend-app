@@ -1,10 +1,10 @@
 import PropTypes from 'prop-types';
 import React from 'react';
-import {Form, Input, Select} from 'semantic-ui-react';
+import {Form, Select} from 'semantic-ui-react';
 
 import AbstractPackageProperties from './AbstractPackageProperties';
-import {FlopyModflowMf} from 'core/model/flopy/packages/mf';
-
+import {FlopyModflow, FlopyModflowMf} from 'core/model/flopy/packages/mf';
+import {documentation} from '../../../../defaults/flow';
 
 class MfPackageProperties extends AbstractPackageProperties {
 
@@ -13,8 +13,12 @@ class MfPackageProperties extends AbstractPackageProperties {
             return null;
         }
 
-        const {readonly} = this.props;
+        const {mfPackages, readonly} = this.props;
         const {mfPackage} = this.state;
+
+        const executableOptions = mfPackages.getFlowPackage()
+            .supportedModflowVersions()
+            .map((mfVersion, idx) => ({key: idx, value: mfVersion.executable, text: mfVersion.name}));
 
         return (
             <Form>
@@ -22,10 +26,7 @@ class MfPackageProperties extends AbstractPackageProperties {
                     <Form.Field>
                         <label>Executable name</label>
                         <Select
-                            options={[
-                                {key: 0, value: 'mf2005', text: 'MF2005'},
-                                {key: 1, value: 'mfnwt', text: 'MFNWT'},
-                            ]}
+                            options={executableOptions}
                             onChange={this.handleOnSelect}
                             value={mfPackage.exe_name}
                             disabled={readonly}
@@ -34,15 +35,32 @@ class MfPackageProperties extends AbstractPackageProperties {
                     </Form.Field>
                     <Form.Field>
                         <label>&nbsp;</label>
-                        {this.renderInfoPopup('PLACEHOLDER', 'Method', 'top right', true)}
+                        {this.renderInfoPopup(documentation.exe_name, 'exe_name')}
+                    </Form.Field>
+                    <Form.Field  width={5}>
+                        <label>Version</label>
+                        <Form.Input
+                            value={mfPackage.version}
+                            readOnly
+                            icon={this.renderInfoPopup(documentation.version, 'version')}
+                        />
+                    </Form.Field>
+                    <Form.Field width={5}>
+                        <label>Verbose</label>
+                        <Form.Select
+                            options={[
+                                {key: 0, value: true, text: 'true'},
+                                {key: 1, value: false, text: 'false'},
+                            ]}
+                            onChange={this.handleOnSelect}
+                            value={mfPackage.verbose}
+                            disabled={readonly}
+                            name={'verbose'}
+                        />
                     </Form.Field>
                     <Form.Field>
-                        <label>Version</label>
-                        <Input value={mfPackage.version} readOnly/>
-                    </Form.Field>
-                    <Form.Field width={7}>
-                        <label>Verbose</label>
-                        <Input value={mfPackage.verbose} readOnly/>
+                        <label>&nbsp;</label>
+                        {this.renderInfoPopup(documentation.verbose, 'verbose')}
                     </Form.Field>
                 </Form.Group>
             </Form>
@@ -51,7 +69,8 @@ class MfPackageProperties extends AbstractPackageProperties {
 }
 
 MfPackageProperties.propTypes = {
-    mfPackage: PropTypes.instanceOf(FlopyModflowMf),
+    mfPackage: PropTypes.instanceOf(FlopyModflowMf).isRequired,
+    mfPackages: PropTypes.instanceOf(FlopyModflow).isRequired,
     onChange: PropTypes.func.isRequired,
     readonly: PropTypes.bool.isRequired
 };

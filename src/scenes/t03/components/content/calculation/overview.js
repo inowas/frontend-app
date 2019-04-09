@@ -46,7 +46,7 @@ class Overview extends React.Component {
         );
     };
 
-    renderCalculationButton = canBeCalculated => {
+    renderCalculationButton = (canBeCalculated, isCalculating) => {
         const {sending} = this.state;
 
         if (canBeCalculated) {
@@ -58,6 +58,18 @@ class Overview extends React.Component {
                     loading={sending}
                 >
                     Calculate
+                </Button>
+            )
+        }
+
+        if (isCalculating) {
+            return (
+                <Button
+                    positive
+                    disabled
+                    fluid
+                >
+                    Calculating
                 </Button>
             )
         }
@@ -137,9 +149,15 @@ class Overview extends React.Component {
         }
 
         let canBeCalculated = true;
+        let isCalculating = false;
+
         if (calculation instanceof Calculation) {
             if (calculation.state > 0 && calculation.state < 100) {
                 canBeCalculated = false;
+            }
+
+            if (calculation.state >= 0 && calculation.state < 100) {
+                isCalculating = true;
             }
         }
 
@@ -152,7 +170,7 @@ class Overview extends React.Component {
                 <Grid.Row>
                     <Grid.Column width={6}>
                         <Header as={'h3'}>Calculation</Header>
-                        {!model.readOnly && this.renderCalculationButton(canBeCalculated)}
+                        {!model.readOnly && this.renderCalculationButton(canBeCalculated, isCalculating)}
                         {!model.readOnly && this.renderCalculationProgress(calculation)}
 
                     </Grid.Column>
