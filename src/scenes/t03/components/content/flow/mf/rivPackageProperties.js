@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types';
 import React from 'react';
-import {Form, Grid, Header, Input} from 'semantic-ui-react';
+import {Accordion, Form, Grid, Header, Icon, Input} from 'semantic-ui-react';
 
 import AbstractPackageProperties from './AbstractPackageProperties';
 import {FlopyModflowMfriv} from 'core/model/flopy/packages/mf';
@@ -16,6 +16,7 @@ class RivPackageProperties extends AbstractPackageProperties {
         }
 
         const {mfPackage, mfPackages, readonly} = this.props;
+        const {activeIndex} = this.state;
         const basPackage = mfPackages.getPackage('bas');
         const {ibound} = basPackage;
         const affectedCellsLayers = ibound.map(l => l.map(r => r.map(() => 0)));
@@ -26,27 +27,35 @@ class RivPackageProperties extends AbstractPackageProperties {
 
         return (
             <Form>
-                <Grid divided={'vertically'}>
-                    <Header as={'h2'}>General Head Boundaries</Header>
-                    <Grid.Row columns={2}>
-                        {affectedCellsLayers.map((layer, idx) => (
-                            <Grid.Column key={idx}>
-                                <Header as={'p'}>Layer {idx + 1}</Header>
-                                <RasterDataImage
-                                    data={layer}
-                                    gridSize={GridSize.fromData(layer)}
-                                    unit={''}
-                                    legend={[
-                                        {value: 1, color: 'blue', label: 'RIV affected cells'},
-                                    ]}
-                                    border={'1px dotted black'}
-                                />
-                            </Grid.Column>
-                        ))}
-                    </Grid.Row>
-                </Grid>
-                <Form.Group widths='equal'>
-                    <Form.Field>
+                <Accordion styled fluid>
+                    <Accordion.Title active={activeIndex === 0} index={0} onClick={this.handleClickAccordion}>
+                        <Icon name='dropdown'/>
+                        River Boundaries (RIV)
+                    </Accordion.Title>
+                    <Accordion.Content active={activeIndex === 0}>
+                        <Grid divided={'vertically'}>
+                            <Grid.Row columns={2}>
+                                {affectedCellsLayers.map((layer, idx) => (
+                                    <Grid.Column key={idx}>
+                                        <Header size='small' as='label'>Layer {idx + 1}</Header>
+                                        <RasterDataImage
+                                            data={layer}
+                                            gridSize={GridSize.fromData(layer)}
+                                            unit={''}
+                                            legend={[
+                                                {value: 1, color: 'blue', label: 'RIV affected cells'},
+                                            ]}
+                                            border={'1px dotted black'}
+                                        />
+                                    </Grid.Column>
+                                ))}
+                            </Grid.Row>
+                        </Grid>
+                    </Accordion.Content>
+                </Accordion>
+
+                <Form.Group style={{marginTop: '20px'}}>
+                    <Form.Field width={5}>
                         <label>Cell-by-cell budget data (ipakcb)</label>
                         <Form.Dropdown
                             options={[
@@ -61,7 +70,11 @@ class RivPackageProperties extends AbstractPackageProperties {
                             onChange={this.handleOnSelect}
                         />
                     </Form.Field>
-                    <Form.Field>
+                    <Form.Field width={1}>
+                        <label>&nbsp;</label>
+                        {this.renderInfoPopup(documentation.ipakcb, 'ipakcb', 'top left', true)}
+                    </Form.Field>
+                    <Form.Field width={5}>
                         <label>Data type (dtype)</label>
                         <Input
                             readOnly
@@ -70,7 +83,7 @@ class RivPackageProperties extends AbstractPackageProperties {
                             icon={this.renderInfoPopup(documentation.dtype, 'dtype')}
                         />
                     </Form.Field>
-                    <Form.Field>
+                    <Form.Field width={5}>
                         <label>Package options (options)</label>
                         <Input
                             readOnly

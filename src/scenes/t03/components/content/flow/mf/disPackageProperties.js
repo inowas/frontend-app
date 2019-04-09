@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types';
 import React from 'react';
-import {Accordion, Form, Grid, Header, Icon, Input, Segment, Table} from 'semantic-ui-react';
+import {Accordion, Form, Grid, Header, Icon, Input, Popup, Segment, Table} from 'semantic-ui-react';
 
 import AbstractPackageProperties from './AbstractPackageProperties';
 import {FlopyModflowMfdis} from 'core/model/flopy/packages/mf';
@@ -147,10 +147,30 @@ class DisPackageProperties extends AbstractPackageProperties {
                                         <Table.Header>
                                             <Table.Row>
                                                 <Table.HeaderCell>#</Table.HeaderCell>
-                                                <Table.HeaderCell>Perlen</Table.HeaderCell>
-                                                <Table.HeaderCell>Nstp</Table.HeaderCell>
-                                                <Table.HeaderCell>Tsmult</Table.HeaderCell>
-                                                <Table.HeaderCell>Steady</Table.HeaderCell>
+                                                <Popup
+                                                    trigger={<Table.HeaderCell>perlen</Table.HeaderCell>}
+                                                    content='Stress period lengths'
+                                                    hideOnScroll
+                                                    size='tiny'
+                                                />
+                                                <Popup
+                                                    trigger={<Table.HeaderCell>nstp</Table.HeaderCell>}
+                                                    content='No. of time steps in stress period'
+                                                    hideOnScroll
+                                                    size='tiny'
+                                                />
+                                                <Popup
+                                                    trigger={<Table.HeaderCell>tsmult</Table.HeaderCell>}
+                                                    content='Time step multiplier'
+                                                    hideOnScroll
+                                                    size='tiny'
+                                                />
+                                                <Popup
+                                                    trigger={<Table.HeaderCell>steady</Table.HeaderCell>}
+                                                    content='State of stress period'
+                                                    hideOnScroll
+                                                    size='tiny'
+                                                />
                                             </Table.Row>
                                         </Table.Header>
                                         <Table.Body>

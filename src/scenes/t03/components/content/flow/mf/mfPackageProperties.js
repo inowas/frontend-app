@@ -37,7 +37,7 @@ class MfPackageProperties extends AbstractPackageProperties {
                         <label>&nbsp;</label>
                         {this.renderInfoPopup(documentation.exe_name, 'exe_name', 'top left', true)}
                     </Form.Field>
-                    <Form.Field  width={5}>
+                    <Form.Field width={5}>
                         <label>Version</label>
                         <Form.Input
                             value={mfPackage.version}
