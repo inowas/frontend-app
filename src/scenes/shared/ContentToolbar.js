@@ -2,19 +2,6 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import {Button, Dropdown, Grid, Icon, Message, Transition} from 'semantic-ui-react';
 
-const styles = {
-    thinMessage: {
-        paddingTop: '6.929px',
-        paddingBottom: '6.929px',
-        fontSize: '1rem',
-        textAlign: 'center'
-    },
-    thinMessageIcon: {
-        display: 'inline-block',
-        fontSize: '1em'
-    }
-};
-
 class ContentToolBar extends React.Component {
 
     constructor(props) {
@@ -69,14 +56,14 @@ class ContentToolBar extends React.Component {
                 return {
                     content: 'Changes not saved!',
                     warning: true,
-                    icon: <Icon name="exclamation triangle" style={styles.thinMessageIcon}/>
+                    icon: <Icon name="exclamation triangle" className='thinMessageIcon'/>
                 };
             }
             case 'error': {
                 return {
                     content: 'Error saving changes!',
                     warning: true,
-                    icon: <Icon name="exclamation triangle" style={styles.thinMessageIcon}/>
+                    icon: <Icon name="exclamation triangle" className='thinMessageIcon'/>
                 };
             }
 
@@ -84,7 +71,7 @@ class ContentToolBar extends React.Component {
                 return {
                     content: 'Changes saved!',
                     positive: true,
-                    icon: <Icon name="check circle" style={styles.thinMessageIcon}/>
+                    icon: <Icon name="check circle" className='thinMessageIcon'/>
                 };
             }
             default:
@@ -118,7 +105,7 @@ class ContentToolBar extends React.Component {
                             <Message icon
                                 positive={message.positive || false}
                                 warning={message.warning || false}
-                                style={styles.thinMessage}
+                                className='thinMessage'
                             >
                                 {message.icon}
                                 {message.content}

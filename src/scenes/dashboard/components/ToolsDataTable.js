@@ -15,7 +15,7 @@ class ToolsDataTable extends React.Component {
         const {path, subPath, slug} = activeTool;
 
         if (toolInstances.length === 0) {
-            return <NoContent message={'Create an new entry'}/>
+            return <NoContent message={'Create a new entry'}/>
         }
 
         const rows = toolInstances.map((i, index) => {
