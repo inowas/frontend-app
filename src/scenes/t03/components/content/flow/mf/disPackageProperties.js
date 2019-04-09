@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types';
 import React from 'react';
-import {Form, Grid, Header, Input} from 'semantic-ui-react';
+import {Accordion, Form, Grid, Header, Icon, Input, Segment} from 'semantic-ui-react';
 
 import AbstractPackageProperties from './AbstractPackageProperties';
 import {FlopyModflowMfdis} from 'core/model/flopy/packages/mf';
@@ -16,12 +16,14 @@ class DisPackageProperties extends AbstractPackageProperties {
         }
 
         const {mfPackage} = this.props;
+        const {activeIndex} = this.state;
 
         return (
             <Form>
+                <Segment>
                 <Form.Group>
                     <Form.Field width={4}>
-                        <label>Layers (nlay)</label>
+                        <label>No. of layers (nlay)</label>
                         <Input
                             readOnly
                             type={'number'}
@@ -31,7 +33,7 @@ class DisPackageProperties extends AbstractPackageProperties {
                         />
                     </Form.Field>
                     <Form.Field width={4}>
-                        <label>Rows (nrow)</label>
+                        <label>No. of rows (nrow)</label>
                         <Input
                             readOnly
                             type={'number'}
@@ -41,7 +43,7 @@ class DisPackageProperties extends AbstractPackageProperties {
                         />
                     </Form.Field>
                     <Form.Field width={4}>
-                        <label>Columns (ncol)</label>
+                        <label>No. of columns (ncol)</label>
                         <Input
                             readOnly
                             type={'number'}
@@ -91,34 +93,42 @@ class DisPackageProperties extends AbstractPackageProperties {
                         />
                     </Form.Field>
                 </Form.Group>
+                </Segment>
 
-                <Grid divided={'vertically'}>
-                    <Grid.Row/>
-                    <Grid.Row columns={2}>
-                        <Grid.Column>
-                            <Header as={'p'}>Top Elevation</Header>
-                            <RasterDataImage
-                                data={mfPackage.top}
-                                gridSize={GridSize.fromNxNy(mfPackage.ncol, mfPackage.nrow)}
-                                unit={'m'}
-                            />
-                        </Grid.Column>
-                    </Grid.Row>
-                    <Grid.Row columns={2}>
-                        {mfPackage.botm.map((layer, idx) => (
-                            <Grid.Column key={idx}>
-                                <Header as={'p'}>Bottom Elevation Layer {idx + 1}</Header>
-                                <RasterDataImage
-                                    data={layer}
-                                    gridSize={GridSize.fromNxNy(mfPackage.ncol, mfPackage.nrow)}
-                                    unit={'m'}
-                                />
-                            </Grid.Column>
-                        ))}
-                    </Grid.Row>
-                    <Grid.Row/>
-                </Grid>
+                <Accordion styled fluid>
+                    <Accordion.Title active={activeIndex === 1} index={1} onClick={this.handleClickAccordion}>
+                        <Icon name='dropdown'/>
+                        Layer Parameters
+                    </Accordion.Title>
+                    <Accordion.Content active={activeIndex === 1}>
+                        <Grid divided={'vertically'}>
+                            <Grid.Row columns={2}>
+                                <Grid.Column>
+                                    <Header size='small' as={'label'}>Top Elevation</Header>
+                                    <RasterDataImage
+                                        data={mfPackage.top}
+                                        gridSize={GridSize.fromNxNy(mfPackage.ncol, mfPackage.nrow)}
+                                        unit={'m'}
+                                    />
+                                </Grid.Column>
+                            </Grid.Row>
+                            <Grid.Row columns={2}>
+                                {mfPackage.botm.map((layer, idx) => (
+                                    <Grid.Column key={idx}>
+                                        <Header size='small' as={'label'}>Bottom Elevation Layer {idx + 1}</Header>
+                                        <RasterDataImage
+                                            data={layer}
+                                            gridSize={GridSize.fromNxNy(mfPackage.ncol, mfPackage.nrow)}
+                                            unit={'m'}
+                                        />
+                                    </Grid.Column>
+                                ))}
+                            </Grid.Row>
+                        </Grid>
+                    </Accordion.Content>
+                </Accordion>
 
+                <Segment>
                 <Form.Group widths='equal'>
                     <Form.Field width={4}>
                         <label>Time steps in stress period (nstp)</label>
@@ -252,6 +262,7 @@ class DisPackageProperties extends AbstractPackageProperties {
                         />
                     </Form.Field>
                 </Form.Group>
+                </Segment>
             </Form>
         );
     }

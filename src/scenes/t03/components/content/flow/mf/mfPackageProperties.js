@@ -35,14 +35,14 @@ class MfPackageProperties extends AbstractPackageProperties {
                     </Form.Field>
                     <Form.Field>
                         <label>&nbsp;</label>
-                        {this.renderInfoPopup(documentation.exe_name, 'exe_name')}
+                        {this.renderInfoPopup(documentation.exe_name, 'exe_name', 'top left', true)}
                     </Form.Field>
                     <Form.Field  width={5}>
                         <label>Version</label>
                         <Form.Input
                             value={mfPackage.version}
                             readOnly
-                            icon={this.renderInfoPopup(documentation.version, 'version')}
+                            icon={this.renderInfoPopup(documentation.version, 'version', 'top right')}
                         />
                     </Form.Field>
                     <Form.Field width={5}>
@@ -60,7 +60,7 @@ class MfPackageProperties extends AbstractPackageProperties {
                     </Form.Field>
                     <Form.Field>
                         <label>&nbsp;</label>
-                        {this.renderInfoPopup(documentation.verbose, 'verbose')}
+                        {this.renderInfoPopup(documentation.verbose, 'verbose', 'top right', true)}
                     </Form.Field>
                 </Form.Group>
             </Form>
