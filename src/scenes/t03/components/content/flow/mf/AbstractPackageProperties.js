@@ -4,26 +4,6 @@ import React from 'react';
 import {Icon, Popup} from 'semantic-ui-react';
 import {FlopyModflowPackage} from 'core/model/flopy/packages/mf';
 
-const styles = {
-    iconFix: {
-        width: '5px',
-        height: '5px',
-    },
-    iconOutside: {
-        marginTop: '4px',
-        marginLeft: '-4px',
-        width: '5px',
-        height: '5px'
-    },
-    popupFix: {
-        maxWidth: '350px'
-    },
-    contentFix: {
-        width: 'auto',
-        maxWidth: '350px'
-    }
-};
-
 class AbstractPackageProperties extends React.Component {
     constructor(props) {
         super(props);
@@ -76,22 +56,20 @@ class AbstractPackageProperties extends React.Component {
 
     renderInfoPopup = (description, title, position = 'top left', iconOutside = false) => {
         return (
-            <Popup
+            <Popup className='popupFix'
                 trigger={
-                    <Icon
+                    <Icon className={iconOutside ? 'iconOutside' : 'iconFix'}
                         name='info'
-                        style={iconOutside ? styles.iconOutside : styles.iconFix}
                         circular link
                     />
                 }
-                style={styles.popupFix}
                 data-html="true"
                 position={position}
             >
                 <Popup.Header>
                     {title}
                 </Popup.Header>
-                <Popup.Content style={styles.contentFix}>
+                <Popup.Content className='contentFix'>
                     {description}
                 </Popup.Content>
             </Popup>
