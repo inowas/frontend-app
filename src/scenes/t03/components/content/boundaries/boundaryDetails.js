@@ -45,6 +45,7 @@ class BoundaryDetails extends React.Component {
     }
 
     handleChange = (e, {name, value}) => {
+        console.log(value);
         const boundary = this.props.boundary;
         boundary[name] = value;
         this.props.onChange(boundary);
@@ -75,8 +76,8 @@ class BoundaryDetails extends React.Component {
             return [];
         }
 
-        return this.props.soilmodel.layersCollection.all.map(l => (
-            {key: l.id, value: l.number, text: l.name}
+        return this.props.soilmodel.layersCollection.all.map((l, idx) => (
+            {key: l.id, value: idx, text: l.name}
         ))
     };
 
@@ -109,7 +110,7 @@ class BoundaryDetails extends React.Component {
                             onChange={this.handleChange}
                         />
 
-                        <Form.Dropdown
+                        <Form.Select
                             loading={!(this.props.soilmodel instanceof Soilmodel)}
                             label={'Selected layers'}
                             style={{zIndex: 1000}}
@@ -117,7 +118,7 @@ class BoundaryDetails extends React.Component {
                             selection
                             options={this.layerOptions()}
                             value={multipleLayers ? boundary.layers : boundary.layers[0]}
-                            name={'affectedLayers'}
+                            name={'layers'}
                             onChange={this.handleChange}
                         />
 

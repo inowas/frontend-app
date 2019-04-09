@@ -203,6 +203,7 @@ class Flow extends React.Component {
                 return (
                     <RivPackageProperties
                         mfPackage={mf.getPackage(type)}
+                        mfPackages={mf}
                         onChange={this.handleChangePackage}
                         readonly={readOnly}
                     />
@@ -219,6 +220,7 @@ class Flow extends React.Component {
                 return (
                     <WelPackageProperties
                         mfPackage={mf.getPackage(type)}
+                        mfPackages={mf}
                         onChange={this.handleChangePackage}
                         readonly={readOnly}
                     />

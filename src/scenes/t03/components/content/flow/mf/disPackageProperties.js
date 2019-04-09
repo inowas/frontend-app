@@ -22,38 +22,42 @@ class DisPackageProperties extends AbstractPackageProperties {
                 <Form.Group>
                     <Form.Field width={4}>
                         <label>Layers (nlay)</label>
-                        <Input readOnly
-                               type={'number'}
-                               name='nlay'
-                               value={mfPackage.nlay}
-                               icon={this.renderInfoPopup(documentation.nlay, 'nlay')}
+                        <Input
+                            readOnly
+                            type={'number'}
+                            name='nlay'
+                            value={mfPackage.nlay}
+                            icon={this.renderInfoPopup(documentation.nlay, 'nlay')}
                         />
                     </Form.Field>
                     <Form.Field width={4}>
                         <label>Rows (nrow)</label>
-                        <Input readOnly
-                               type={'number'}
-                               name='nrow'
-                               value={mfPackage.nrow}
-                               icon={this.renderInfoPopup(documentation.nrow, 'nrow')}
+                        <Input
+                            readOnly
+                            type={'number'}
+                            name='nrow'
+                            value={mfPackage.nrow}
+                            icon={this.renderInfoPopup(documentation.nrow, 'nrow')}
                         />
                     </Form.Field>
                     <Form.Field width={4}>
                         <label>Columns (ncol)</label>
-                        <Input readOnly
-                               type={'number'}
-                               name='ncol'
-                               value={mfPackage.ncol}
-                               icon={this.renderInfoPopup(documentation.ncol, 'ncol')}
+                        <Input
+                            readOnly
+                            type={'number'}
+                            name='ncol'
+                            value={mfPackage.ncol}
+                            icon={this.renderInfoPopup(documentation.ncol, 'ncol')}
                         />
                     </Form.Field>
                     <Form.Field width={4}>
                         <label>Stress periods (nper)</label>
-                        <Input readOnly
-                               type={'number'}
-                               name='nper'
-                               value={mfPackage.nper}
-                               icon={this.renderInfoPopup(documentation.nper, 'nper')}
+                        <Input
+                            readOnly
+                            type={'number'}
+                            name='nper'
+                            value={mfPackage.nper}
+                            icon={this.renderInfoPopup(documentation.nper, 'nper')}
                         />
                     </Form.Field>
                 </Form.Group>
@@ -61,26 +65,29 @@ class DisPackageProperties extends AbstractPackageProperties {
                 <Form.Group widths='equal'>
                     <Form.Field>
                         <label>Row spacing (delr)</label>
-                        <Input readOnly
-                               name='delr'
-                               value={JSON.stringify(mfPackage.delr)}
-                               icon={this.renderInfoPopup(documentation.delr, 'delr')}
+                        <Input
+                            readOnly
+                            name='delr'
+                            value={JSON.stringify(mfPackage.delr)}
+                            icon={this.renderInfoPopup(documentation.delr, 'delr')}
                         />
                     </Form.Field>
                     <Form.Field>
                         <label>Column spacing (delc)</label>
-                        <Input readOnly
-                               name='delc'
-                               value={JSON.stringify(mfPackage.delc)}
-                               icon={this.renderInfoPopup(documentation.delc, 'delc')}
+                        <Input
+                            readOnly
+                            name='delc'
+                            value={JSON.stringify(mfPackage.delc)}
+                            icon={this.renderInfoPopup(documentation.delc, 'delc')}
                         />
                     </Form.Field>
                     <Form.Field>
                         <label>Confining bed (laycbd)</label>
-                        <Input readOnly
-                               name='laycbd'
-                               value={JSON.stringify(mfPackage.laycbd)}
-                               icon={this.renderInfoPopup(documentation.laycbd, 'laycbd')}
+                        <Input
+                            readOnly
+                            name='laycbd'
+                            value={JSON.stringify(mfPackage.laycbd)}
+                            icon={this.renderInfoPopup(documentation.laycbd, 'laycbd')}
                         />
                     </Form.Field>
                 </Form.Group>
@@ -92,7 +99,7 @@ class DisPackageProperties extends AbstractPackageProperties {
                             <Header as={'p'}>Top Elevation</Header>
                             <RasterDataImage
                                 data={mfPackage.top}
-                                gridSize={GridSize.fromData(mfPackage.top)}
+                                gridSize={GridSize.fromNxNy(mfPackage.ncol, mfPackage.nrow)}
                                 unit={'m'}
                             />
                         </Grid.Column>
@@ -103,7 +110,7 @@ class DisPackageProperties extends AbstractPackageProperties {
                                 <Header as={'p'}>Bottom Elevation Layer {idx + 1}</Header>
                                 <RasterDataImage
                                     data={layer}
-                                    gridSize={GridSize.fromData(layer)}
+                                    gridSize={GridSize.fromNxNy(mfPackage.ncol, mfPackage.nrow)}
                                     unit={'m'}
                                 />
                             </Grid.Column>
