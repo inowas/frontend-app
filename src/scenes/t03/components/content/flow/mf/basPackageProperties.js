@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types';
 import React from 'react';
-import {Accordion, Form, Grid, Header, Icon, Input} from 'semantic-ui-react';
+import {Accordion, Form, Grid, Header, Icon, Segment, Table} from 'semantic-ui-react';
 
 import AbstractPackageProperties from './AbstractPackageProperties';
 import {FlopyModflowMfbas} from 'core/model/flopy/packages/mf';
@@ -29,28 +29,28 @@ class BasPackageProperties extends AbstractPackageProperties {
                     </Accordion.Title>
                     <Accordion.Content active={activeIndex === 0}>
                         <Grid>
-                        <Grid.Row columns={2}>
-                            {ibound.map((layer, idx) => (
-                                <Grid.Column key={idx}>
-                                    <Header size='small' as='label'>Layer {idx + 1}</Header>
-                                    <RasterDataImage
-                                        data={layer}
-                                        gridSize={GridSize.fromData(layer)}
-                                        unit={''}
-                                        legend={[
-                                            {value: -1, color: 'red', label: 'constant'},
-                                            {value: 0, color: 'white', label: 'no flow'},
-                                            {value: 1, color: 'blue', label: 'flow'},
-                                        ]}/>
-                                </Grid.Column>
-                            ))}
-                        </Grid.Row>
+                            <Grid.Row columns={2}>
+                                {ibound.map((layer, idx) => (
+                                    <Grid.Column key={idx}>
+                                        <Header size='small' as='label'>Layer {idx + 1}</Header>
+                                        <RasterDataImage
+                                            data={layer}
+                                            gridSize={GridSize.fromData(layer)}
+                                            unit={''}
+                                            legend={[
+                                                {value: -1, color: 'red', label: 'constant'},
+                                                {value: 0, color: 'white', label: 'no flow'},
+                                                {value: 1, color: 'blue', label: 'flow'},
+                                            ]}/>
+                                    </Grid.Column>
+                                ))}
+                            </Grid.Row>
                         </Grid>
                     </Accordion.Content>
 
                     <Accordion.Title active={activeIndex === 1} index={1} onClick={this.handleClickAccordion}>
                         <Icon name='dropdown'/>
-                        Starting Head
+                        Starting Heads (strt)
                     </Accordion.Title>
                     <Accordion.Content active={activeIndex === 1}>
                         <Grid>
@@ -72,48 +72,54 @@ class BasPackageProperties extends AbstractPackageProperties {
                     </Accordion.Content>
                 </Accordion>
 
-                <Form.Group style={{marginTop: '20px'}}>
-                    <Form.Field width={5}>
-                        <label>Flow between chd cells (ichflg)</label>
-                        <Form.Dropdown
-                            options={[
-                                {key: 0, value: true, text: 'true'},
-                                {key: 1, value: false, text: 'false'},
-                            ]}
-                            placeholder='Select ichflg'
-                            name='ichflg'
-                            selection
-                            value={mfPackage.ichflg}
-                            readOnly={readonly}
-                            onChange={this.handleOnSelect}
-                        />
-                    </Form.Field>
-                    <Form.Field width={1}>
-                        <label>&nbsp;</label>
-                        {this.renderInfoPopup(documentation.ichflg, 'ichflg', 'top left', true)}
-                    </Form.Field>
-                    <Form.Field width={4}>
-                        <label>hnoflo</label>
-                        <Form.Input
-                            readOnly={readonly}
-                            type={'number'}
-                            name='hnoflo'
-                            value={mfPackage.hnoflo}
-                            onChange={this.handleOnChange}
-                            onBlur={this.handleOnBlur}
-                            icon={this.renderInfoPopup(documentation.hnoflo, 'hnoflo')}
-                        />
-                    </Form.Field>
-                    <Form.Field width={6}>
-                        <label>Budget percent discrepancy (stoper)</label>
-                        <Input
-                            readOnly
-                            name='stoper'
-                            value={mfPackage.stoper || ''}
-                            icon={this.renderInfoPopup(documentation.stoper, 'stoper')}
-                        />
-                    </Form.Field>
-                </Form.Group>
+                <Segment basic>
+                    <Grid>
+                        <Grid.Row>
+                            <Grid.Column width={7}>
+                                <Form.Group>
+                                    <Form.Field >
+                                        <label>Flow between chd cells (ichflg)</label>
+                                        <Form.Dropdown
+                                            options={[
+                                                {key: 0, value: true, text: 'true'},
+                                                {key: 1, value: false, text: 'false'},
+                                            ]}
+                                            placeholder='Select ichflg'
+                                            name='ichflg'
+                                            selection
+                                            value={mfPackage.ichflg}
+                                            readOnly={readonly}
+                                            onChange={this.handleOnSelect}
+                                        />
+                                    </Form.Field>
+                                    <Form.Field>
+                                        <label>&nbsp;</label>
+                                        {this.renderInfoPopup(documentation.ichflg, 'ichflg', 'top left', true)}
+                                    </Form.Field>
+                                </Form.Group>
+                            </Grid.Column>
+
+                            <Grid.Column width={9}>
+                                <Table basic='very'>
+                                    <Table.Body>
+                                        <Table.Row>
+                                            <Table.Cell collapsing>Head values for no-flow cells (hnoflo)</Table.Cell>
+                                            <Table.Cell>{this.renderInfoPopup(documentation.hnoflo, 'hnoflo', 'center left')}</Table.Cell>
+                                            <Table.Cell textAlign='right'>{mfPackage.hnoflo}</Table.Cell>
+                                        </Table.Row>
+
+                                        <Table.Row>
+                                            <Table.Cell collapsing>Percent discrepancy (stoper)</Table.Cell>
+                                            <Table.Cell>{this.renderInfoPopup(documentation.stoper, 'stoper', 'center left')}</Table.Cell>
+                                            <Table.Cell textAlign='right'>{mfPackage.stoper || ''}</Table.Cell>
+                                        </Table.Row>
+                                    </Table.Body>
+                                </Table>
+                            </Grid.Column>
+                        </Grid.Row>
+                    </Grid>
+                </Segment>
+
             </Form>
         );
     }

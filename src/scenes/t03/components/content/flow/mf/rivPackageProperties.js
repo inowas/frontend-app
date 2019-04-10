@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types';
 import React from 'react';
-import {Accordion, Form, Grid, Header, Icon, Input} from 'semantic-ui-react';
+import {Accordion, Form, Grid, Header, Icon, Segment, Table} from 'semantic-ui-react';
 
 import AbstractPackageProperties from './AbstractPackageProperties';
 import {FlopyModflowMfriv} from 'core/model/flopy/packages/mf';
@@ -54,76 +54,72 @@ class RivPackageProperties extends AbstractPackageProperties {
                     </Accordion.Content>
                 </Accordion>
 
-                <Form.Group style={{marginTop: '20px'}}>
-                    <Form.Field width={5}>
-                        <label>Cell-by-cell budget data (ipakcb)</label>
-                        <Form.Dropdown
-                            options={[
-                                {key: 0, value: 0, text: 'false'},
-                                {key: 1, value: 1, text: 'true'},
-                            ]}
-                            placeholder='Select ipakcb'
-                            name='ipakcb'
-                            selection
-                            value={mfPackage.ipakcb || 0}
-                            readOnly={readonly}
-                            onChange={this.handleOnSelect}
-                        />
-                    </Form.Field>
-                    <Form.Field width={1}>
-                        <label>&nbsp;</label>
-                        {this.renderInfoPopup(documentation.ipakcb, 'ipakcb', 'top left', true)}
-                    </Form.Field>
-                    <Form.Field width={5}>
-                        <label>Data type (dtype)</label>
-                        <Input
-                            readOnly
-                            name='dtype'
-                            value={mfPackage.dtype || ''}
-                            icon={this.renderInfoPopup(documentation.dtype, 'dtype')}
-                        />
-                    </Form.Field>
-                    <Form.Field width={5}>
-                        <label>Package options (options)</label>
-                        <Input
-                            readOnly
-                            name='options'
-                            value={mfPackage.options || ''}
-                            icon={this.renderInfoPopup(documentation.options, 'options')}
-                        />
-                    </Form.Field>
-                </Form.Group>
+                <Segment basic>
+                    <Grid>
+                        <Grid.Row columns={2}>
+                            <Grid.Column>
 
-                <Form.Group widths='equal'>
-                    <Form.Field>
-                        <label>Filename extension</label>
-                        <Input
-                            readOnly
-                            name='extension'
-                            value={mfPackage.extension || ''}
-                            icon={this.renderInfoPopup(documentation.extension, 'extension')}
-                        />
-                    </Form.Field>
-                    <Form.Field>
-                        <label>File unit number</label>
-                        <Input
-                            readOnly
-                            type={'number'}
-                            name='unitnumber'
-                            value={mfPackage.unitnumber || ''}
-                            icon={this.renderInfoPopup(documentation.unitnumber, 'unitnumber')}
-                        />
-                    </Form.Field>
-                    <Form.Field>
-                        <label>Filenames</label>
-                        <Input
-                            readOnly
-                            name='filenames'
-                            value={mfPackage.filenames || ''}
-                            icon={this.renderInfoPopup(documentation.filenames, 'filenames')}
-                        />
-                    </Form.Field>
-                </Form.Group>
+                                <Form.Group>
+                                    <Form.Field width={15}>
+                                        <label>Cell-by-cell budget data (ipakcb)</label>
+                                        <Form.Dropdown
+                                            options={[
+                                                {key: 0, value: 0, text: 'false'},
+                                                {key: 1, value: 1, text: 'true'},
+                                            ]}
+                                            placeholder='Select ipakcb'
+                                            name='ipakcb'
+                                            selection
+                                            value={mfPackage.ipakcb || 0}
+                                            readOnly={readonly}
+                                            onChange={this.handleOnSelect}
+                                        />
+                                    </Form.Field>
+                                    <Form.Field width={1}>
+                                        <label>&nbsp;</label>
+                                        {this.renderInfoPopup(documentation.ipakcb, 'ipakcb', 'top left', true)}
+                                    </Form.Field>
+                                </Form.Group>
+
+                            </Grid.Column>
+                            <Grid.Column>
+                                <Table basic='very'>
+                                    <Table.Body>
+                                        <Table.Row>
+                                            <Table.Cell collapsing>Package Options</Table.Cell>
+                                            <Table.Cell>{this.renderInfoPopup(documentation.options, 'options', 'left center')}</Table.Cell>
+                                            <Table.Cell textAlign='right'>{mfPackage.options || '-'}</Table.Cell>
+                                        </Table.Row>
+
+                                        <Table.Row>
+                                            <Table.Cell collapsing>Data type (dtype)</Table.Cell>
+                                            <Table.Cell>{this.renderInfoPopup(documentation.dtype, 'dtype', 'left center')}</Table.Cell>
+                                            <Table.Cell textAlign='right'>{mfPackage.dtype || ''}</Table.Cell>
+                                        </Table.Row>
+                                        <Table.Row>
+                                            <Table.Cell collapsing>Filename extension (extension)</Table.Cell>
+                                            <Table.Cell>{this.renderInfoPopup(documentation.extension, 'extension', 'left center')}</Table.Cell>
+                                            <Table.Cell textAlign='right'>{mfPackage.extension}</Table.Cell>
+                                        </Table.Row>
+
+                                        <Table.Row>
+                                            <Table.Cell collapsing>File unit number (unitnumber)</Table.Cell>
+                                            <Table.Cell>{this.renderInfoPopup(documentation.unitnumber, 'unitnumber', 'left center')}</Table.Cell>
+                                            <Table.Cell textAlign='right'>{mfPackage.unitnumber || ''}</Table.Cell>
+                                        </Table.Row>
+
+                                        <Table.Row>
+                                            <Table.Cell collapsing>Filenames (filenames)</Table.Cell>
+                                            <Table.Cell>{this.renderInfoPopup(documentation.filenames, 'filenames', 'left center')}</Table.Cell>
+                                            <Table.Cell textAlign='right'>{mfPackage.filenames || ''}</Table.Cell>
+                                        </Table.Row>
+                                    </Table.Body>
+                                </Table>
+                            </Grid.Column>
+                        </Grid.Row>
+                    </Grid>
+                </Segment>
+
             </Form>
         );
     }
