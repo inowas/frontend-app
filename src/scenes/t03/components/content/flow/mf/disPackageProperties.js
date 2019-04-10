@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types';
 import React from 'react';
-import {Accordion, Form, Grid, Header, Icon, Input, Popup, Segment, Table} from 'semantic-ui-react';
+import {Accordion, Form, Grid, Header, Icon, Popup, Segment, Table} from 'semantic-ui-react';
 
 import AbstractPackageProperties from './AbstractPackageProperties';
 import {FlopyModflowMfdis} from 'core/model/flopy/packages/mf';
@@ -9,10 +9,6 @@ import {RasterDataImage} from '../../../../../shared/rasterData';
 import {GridSize} from '../../../../../../core/model/modflow';
 
 class DisPackageProperties extends AbstractPackageProperties {
-
-    state = {
-        activeIndex: 0
-    };
 
     render() {
         if (!this.state.mfPackage) {
@@ -30,78 +26,62 @@ class DisPackageProperties extends AbstractPackageProperties {
                         Spatial Discretization
                     </Accordion.Title>
                     <Accordion.Content active={activeIndex === 0}>
-                        <Form.Group>
-                            <Form.Field width={4}>
-                                <label>No. of layers (nlay)</label>
-                                <Input
-                                    readOnly
-                                    type={'number'}
-                                    name='nlay'
-                                    value={mfPackage.nlay}
-                                    icon={this.renderInfoPopup(documentation.nlay, 'nlay')}
-                                />
-                            </Form.Field>
-                            <Form.Field width={4}>
-                                <label>No. of rows (nrow)</label>
-                                <Input
-                                    readOnly
-                                    type={'number'}
-                                    name='nrow'
-                                    value={mfPackage.nrow}
-                                    icon={this.renderInfoPopup(documentation.nrow, 'nrow')}
-                                />
-                            </Form.Field>
-                            <Form.Field width={4}>
-                                <label>No. of columns (ncol)</label>
-                                <Input
-                                    readOnly
-                                    type={'number'}
-                                    name='ncol'
-                                    value={mfPackage.ncol}
-                                    icon={this.renderInfoPopup(documentation.ncol, 'ncol')}
-                                />
-                            </Form.Field>
-                            <Form.Field width={4}>
-                                <label>Stress periods (nper)</label>
-                                <Input
-                                    readOnly
-                                    type={'number'}
-                                    name='nper'
-                                    value={mfPackage.nper}
-                                    icon={this.renderInfoPopup(documentation.nper, 'nper')}
-                                />
-                            </Form.Field>
-                        </Form.Group>
+                        <Grid>
+                            <Grid.Row columns={2}>
+                                <Grid.Column>
+                                    <Table basic='very'>
+                                        <Table.Body>
+                                            <Table.Row>
+                                                <Table.Cell collapsing>No. of layers (nlay)</Table.Cell>
+                                                <Table.Cell>{this.renderInfoPopup(documentation.nlay, 'nlay', 'left center')}</Table.Cell>
+                                                <Table.Cell textAlign='right'>{mfPackage.nlay}</Table.Cell>
+                                            </Table.Row>
 
-                        <Form.Group widths='equal'>
-                            <Form.Field>
-                                <label>Row spacing (delr)</label>
-                                <Input
-                                    readOnly
-                                    name='delr'
-                                    value={JSON.stringify(mfPackage.delr)}
-                                    icon={this.renderInfoPopup(documentation.delr, 'delr')}
-                                />
-                            </Form.Field>
-                            <Form.Field>
-                                <label>Column spacing (delc)</label>
-                                <Input
-                                    readOnly
-                                    name='delc'
-                                    value={JSON.stringify(mfPackage.delc)}
-                                    icon={this.renderInfoPopup(documentation.delc, 'delc')}
-                                />
-                            </Form.Field>
-                            <Form.Field>
-                                <label>Confining bed (laycbd)</label>
-                                <Input
-                                    readOnly
-                                    name='laycbd'
-                                    value={JSON.stringify(mfPackage.laycbd)}
-                                    icon={this.renderInfoPopup(documentation.laycbd, 'laycbd')}
-                                />
-                            </Form.Field>
-                        </Form.Group>
+                                            <Table.Row>
+                                                <Table.Cell collapsing>No. of rows (nrow)</Table.Cell>
+                                                <Table.Cell>{this.renderInfoPopup(documentation.nrow, 'nrow', 'left center')}</Table.Cell>
+                                                <Table.Cell textAlign='right'>{mfPackage.nrow}</Table.Cell>
+                                            </Table.Row>
+
+                                            <Table.Row>
+                                                <Table.Cell collapsing>No. of columns (ncol)</Table.Cell>
+                                                <Table.Cell>{this.renderInfoPopup(documentation.ncol, 'ncol', 'left center')}</Table.Cell>
+                                                <Table.Cell textAlign='right'>{mfPackage.ncol}</Table.Cell>
+                                            </Table.Row>
+
+                                            <Table.Row>
+                                                <Table.Cell collapsing>Stress periods (nper)</Table.Cell>
+                                                <Table.Cell>{this.renderInfoPopup(documentation.nper, 'nper', 'left center')}</Table.Cell>
+                                                <Table.Cell textAlign='right'>{mfPackage.nper}</Table.Cell>
+                                            </Table.Row>
+                                        </Table.Body>
+                                    </Table>
+                                </Grid.Column>
+                                <Grid.Column>
+                                    <Table basic='very'>
+                                        <Table.Body>
+                                            <Table.Row>
+                                                <Table.Cell collapsing>Row spacing (delr)</Table.Cell>
+                                                <Table.Cell>{this.renderInfoPopup(documentation.delr, 'delr', 'left center')}</Table.Cell>
+                                                <Table.Cell textAlign='right'>{JSON.stringify(mfPackage.delr)}</Table.Cell>
+                                            </Table.Row>
+
+                                            <Table.Row>
+                                                <Table.Cell collapsing>Column spacing (delc)</Table.Cell>
+                                                <Table.Cell>{this.renderInfoPopup(documentation.delc, 'delc', 'left center')}</Table.Cell>
+                                                <Table.Cell textAlign='right'>{JSON.stringify(mfPackage.delc)}</Table.Cell>
+                                            </Table.Row>
+
+                                            <Table.Row>
+                                                <Table.Cell collapsing>Confining bed (laycbd)</Table.Cell>
+                                                <Table.Cell>{this.renderInfoPopup(documentation.laycbd, 'laycbd', 'left center')}</Table.Cell>
+                                                <Table.Cell textAlign='right'>{JSON.stringify(mfPackage.laycbd)}</Table.Cell>
+                                            </Table.Row>
+                                        </Table.Body>
+                                    </Table>
+                                </Grid.Column>
+                            </Grid.Row>
+                        </Grid>
                     </Accordion.Content>
 
                     <Accordion.Title active={activeIndex === 1} index={1} onClick={this.handleClickAccordion}>
@@ -143,34 +123,66 @@ class DisPackageProperties extends AbstractPackageProperties {
                         <Grid>
                             <Grid.Row>
                                 <Grid.Column>
-                                    <Table basic>
+                                    <Table basic='very'>
                                         <Table.Header>
                                             <Table.Row>
                                                 <Table.HeaderCell>#</Table.HeaderCell>
-                                                <Popup
-                                                    trigger={<Table.HeaderCell>perlen</Table.HeaderCell>}
-                                                    content='Stress period lengths'
-                                                    hideOnScroll
-                                                    size='tiny'
-                                                />
-                                                <Popup
-                                                    trigger={<Table.HeaderCell>nstp</Table.HeaderCell>}
-                                                    content='No. of time steps in stress period'
-                                                    hideOnScroll
-                                                    size='tiny'
-                                                />
-                                                <Popup
-                                                    trigger={<Table.HeaderCell>tsmult</Table.HeaderCell>}
-                                                    content='Time step multiplier'
-                                                    hideOnScroll
-                                                    size='tiny'
-                                                />
-                                                <Popup
-                                                    trigger={<Table.HeaderCell>steady</Table.HeaderCell>}
-                                                    content='State of stress period'
-                                                    hideOnScroll
-                                                    size='tiny'
-                                                />
+                                                <Table.HeaderCell>
+                                                    <span>perlen </span>
+                                                    <Popup className='popupFix'
+                                                        trigger={
+                                                            <Icon className='iconFix'
+                                                              name='info'
+                                                              circular
+                                                              link
+                                                            />}
+                                                        content='Stress period lengths'
+                                                        hideOnScroll
+                                                        size='tiny'
+                                                    />
+                                                </Table.HeaderCell>
+                                                <Table.HeaderCell>
+                                                    <span>nstp </span>
+                                                    <Popup className='popupFix'
+                                                       trigger={
+                                                           <Icon className='iconFix'
+                                                                 name='info'
+                                                                 circular
+                                                                 link
+                                                           />}
+                                                        content='No. of time steps in stress period'
+                                                        hideOnScroll
+                                                        size='tiny'
+                                                    />
+                                                </Table.HeaderCell>
+                                                <Table.HeaderCell>
+                                                    <span>tsmult </span>
+                                                    <Popup className='popupFix'
+                                                       trigger={
+                                                           <Icon className='iconFix'
+                                                                 name='info'
+                                                                 circular
+                                                                 link
+                                                           />}
+                                                        content='Time step multiplier'
+                                                        hideOnScroll
+                                                        size='tiny'
+                                                    />
+                                                </Table.HeaderCell>
+                                                <Table.HeaderCell>
+                                                    <span>steady </span>
+                                                    <Popup className='popupFix'
+                                                       trigger={
+                                                           <Icon className='iconFix'
+                                                                 name='info'
+                                                                 circular
+                                                                 link
+                                                           />}
+                                                        content='State of stress period'
+                                                        hideOnScroll
+                                                        size='tiny'
+                                                    />
+                                                </Table.HeaderCell>
                                             </Table.Row>
                                         </Table.Header>
                                         <Table.Body>
@@ -180,117 +192,89 @@ class DisPackageProperties extends AbstractPackageProperties {
                                                     <Table.Cell>{perlen}</Table.Cell>
                                                     <Table.Cell>{mfPackage.nstp[idx]}</Table.Cell>
                                                     <Table.Cell>{mfPackage.tsmult[idx]}</Table.Cell>
-                                                    <Table.Cell>{mfPackage.steady[idx] ? 'true' : 'false'}</Table.Cell>
+                                                    <Table.Cell>{mfPackage.steady[idx] ? <Icon name='checkmark' /> : <Icon name='close' />}</Table.Cell>
                                                 </Table.Row>
                                             ))}
                                         </Table.Body>
                                     </Table>
                                 </Grid.Column>
                             </Grid.Row>
-                            <Grid.Row/>
                         </Grid>
                     </Accordion.Content>
                 </Accordion>
 
+                <Segment basic>
+                    <Grid>
+                        <Grid.Row>
+                            <Grid.Column width={7}>
+                                <Table basic='very'>
+                                    <Table.Body>
+                                        <Table.Row>
+                                            <Table.Cell collapsing>Time units (itmuni)</Table.Cell>
+                                            <Table.Cell>{this.renderInfoPopup(documentation.itmuni, 'itmuni', 'left center')}</Table.Cell>
+                                            <Table.Cell textAlign='right'>{mfPackage.itmuni}</Table.Cell>
+                                        </Table.Row>
 
-                <Segment>
-                    <Form.Group>
-                        <Form.Field width={4}>
-                            <label>Time units (itmuni)</label>
-                            <Input
-                                readOnly
-                                type={'number'}
-                                name='itmuni'
-                                value={mfPackage.itmuni}
-                                icon={this.renderInfoPopup(documentation.itmuni, 'itmuni')}
-                            />
-                        </Form.Field>
-                        <Form.Field width={4}>
-                            <label>Length units (lenuni)</label>
-                            <Input
-                                readOnly
-                                type={'number'}
-                                name='lenuni'
-                                value={mfPackage.lenuni}
-                                icon={this.renderInfoPopup(documentation.lenuni, 'lenuni')}
-                            />
-                        </Form.Field>
-                        <Form.Field width={4}>
-                            <label>Filename extension</label>
-                            <Input
-                                readOnly
-                                name='extension'
-                                value={mfPackage.extension || ''}
-                                icon={this.renderInfoPopup(documentation.extension, 'extension')}
-                            />
-                        </Form.Field>
-                        <Form.Field width={4}>
-                            <label>File unit number</label>
-                            <Input
-                                readOnly
-                                type={'number'}
-                                name='unitnumber'
-                                value={mfPackage.unitnumber || ''}
-                                icon={this.renderInfoPopup(documentation.unitnumber, 'unitnumber')}
-                            />
-                        </Form.Field>
-                    </Form.Group>
+                                        <Table.Row>
+                                            <Table.Cell collapsing>Length units (lenuni)</Table.Cell>
+                                            <Table.Cell>{this.renderInfoPopup(documentation.lenuni, 'lenuni', 'left center')}</Table.Cell>
+                                            <Table.Cell textAlign='right'>{mfPackage.lenuni}</Table.Cell>
+                                        </Table.Row>
 
-                    <Form.Group widths='equal'>
-                        <Form.Field>
-                            <label>Upper left corner x coordinate (xul)</label>
-                            <Input
-                                readOnly
-                                type={'number'}
-                                name='xul'
-                                value={mfPackage.xul || ''}
-                                icon={this.renderInfoPopup(documentation.xul, 'xul')}
-                            />
-                        </Form.Field>
-                        <Form.Field>
-                            <label>Upper left corner y coordinate (yul)</label>
-                            <Input
-                                readOnly
-                                type={'number'}
-                                name='yul'
-                                value={mfPackage.yul || ''}
-                                icon={this.renderInfoPopup(documentation.yul, 'yul')}
-                            />
-                        </Form.Field>
-                        <Form.Field>
-                            <label>Rotation</label>
-                            <Input
-                                readOnly
-                                type={'number'}
-                                name='rotation'
-                                value={mfPackage.rotation || 0}
-                                icon={this.renderInfoPopup(documentation.rotation, 'rotation')}
-                            />
-                        </Form.Field>
-                    </Form.Group>
+                                        <Table.Row>
+                                            <Table.Cell collapsing>Filename extension</Table.Cell>
+                                            <Table.Cell>{this.renderInfoPopup(documentation.extension, 'extension', 'left center')}</Table.Cell>
+                                            <Table.Cell textAlign='right'>{mfPackage.extension || ''}</Table.Cell>
+                                        </Table.Row>
 
-                    <Form.Group widths='equal'>
-                        <Form.Field widths='equal'>
-                            <label>Coordinate system (proj4_str)</label>
-                            <Input
-                                readOnly
-                                name='proj4_str'
-                                value={mfPackage.proj4_str || ''}
-                                icon={this.renderInfoPopup(documentation.proj4_str, 'proj4_str')}
-                            />
-                        </Form.Field>
-                        <Form.Field>
-                            <label>Starting date time (start_dateteim)</label>
-                            <Input
-                                readOnly
-                                type={'date'}
-                                name='start_dateteim'
-                                value={mfPackage.start_datetime || ''}
-                                icon={this.renderInfoPopup(documentation.start_datetime, 'start_datetime')}
-                            />
-                        </Form.Field>
-                    </Form.Group>
+                                        <Table.Row>
+                                            <Table.Cell collapsing>File unit number</Table.Cell>
+                                            <Table.Cell>{this.renderInfoPopup(documentation.unitnumber, 'unitnumber', 'left center')}</Table.Cell>
+                                            <Table.Cell textAlign='right'>{mfPackage.unitnumber || ''}</Table.Cell>
+                                        </Table.Row>
+                                    </Table.Body>
+                                </Table>
+                            </Grid.Column>
+                            <Grid.Column width={9}>
+                                <Table basic='very'>
+                                    <Table.Body>
+                                        <Table.Row>
+                                            <Table.Cell collapsing>Upper left corner x coordinate (xul)</Table.Cell>
+                                            <Table.Cell>{this.renderInfoPopup(documentation.xul, 'xul', 'left center')}</Table.Cell>
+                                            <Table.Cell textAlign='right'>{mfPackage.xul || ''}</Table.Cell>
+                                        </Table.Row>
+
+                                        <Table.Row>
+                                            <Table.Cell collapsing>Upper left corner y coordinate (yul)</Table.Cell>
+                                            <Table.Cell>{this.renderInfoPopup(documentation.yul, 'yul', 'left center')}</Table.Cell>
+                                            <Table.Cell textAlign='right'>{mfPackage.yul || ''}</Table.Cell>
+                                        </Table.Row>
+
+                                        <Table.Row>
+                                            <Table.Cell collapsing>Rotation</Table.Cell>
+                                            <Table.Cell>{this.renderInfoPopup(documentation.rotation, 'rotation', 'left center')}</Table.Cell>
+                                            <Table.Cell textAlign='right'>{mfPackage.rotation || 0}</Table.Cell>
+                                        </Table.Row>
+
+                                        <Table.Row>
+                                            <Table.Cell collapsing>Coordinate system (proj4_str)</Table.Cell>
+                                            <Table.Cell>{this.renderInfoPopup(documentation.proj4_str, 'proj4_str', 'left center')}</Table.Cell>
+                                            <Table.Cell textAlign='right'>{mfPackage.proj4_str || ''}</Table.Cell>
+                                        </Table.Row>
+
+                                        <Table.Row>
+                                            <Table.Cell collapsing>Starting date time (start_dateteim)</Table.Cell>
+                                            <Table.Cell>{this.renderInfoPopup(documentation.start_datetime, 'start_datetime', 'left center')}</Table.Cell>
+                                            <Table.Cell textAlign='right'>{mfPackage.start_datetime || ''}</Table.Cell>
+                                        </Table.Row>
+
+                                    </Table.Body>
+                                </Table>
+                            </Grid.Column>
+                        </Grid.Row>
+                    </Grid>
                 </Segment>
+
             </Form>
         );
     }
