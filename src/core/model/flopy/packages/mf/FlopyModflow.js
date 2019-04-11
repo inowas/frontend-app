@@ -220,15 +220,10 @@ export default class FlopyModflow {
 
         if (type === 'bcf') {
             const mfBcf = this.hasPackage('bcf') ? this.getPackage('bcf') : FlopyModflowMfbcf.create();
-            mfBcf.ipakcb = layers.map(() => 53);
             mfBcf.intercellt = layers.map(l => l.layavg);
             mfBcf.laycon = layers.map(l => l.laytyp);
             mfBcf.trpy = layers.map(l => l.hani);
-            mfBcf.hdry = layers.map(() => -1e+30);
             mfBcf.iwdflg = layers.map(l => l.laywet);
-            mfBcf.wetfct = layers.map(() => 0.1);
-            mfBcf.iwetit = layers.map(() => 1);
-            mfBcf.ihdwet = layers.map(() => 0);
             mfBcf.tran = layers.map((l, idx) => {
                 if (idx === 0) {
                     return l.calculateTransmissivity(l.top);
@@ -236,10 +231,8 @@ export default class FlopyModflow {
                 return l.calculateTransmissivity(layers[idx - 1].botm);
             });
             mfBcf.hy = layers.map(l => l.hk);
-            mfBcf.vcont = layers.map(() => 1);
             mfBcf.sf1 = layers.map(l => l.ss);
             mfBcf.sf2 = layers.map(l => l.sy);
-            mfBcf.wetdry = layers.map(() => -0.01);
 
             return this.setPackage(mfBcf);
         }
