@@ -142,7 +142,7 @@ export default class FlopyModflow {
 
         mfDis.xul = model.boundingBox.xMin;
         mfDis.yul = model.boundingBox.yMax;
-        mfDis.proj4_str = 'EPSG:3857';
+        mfDis.proj4_str = 'EPSG:4326';
         mfDis.start_datetime = stressperiods.startDateTime.format('YYYY-MM-DD');
 
         this.setPackage(mfDis);
@@ -201,7 +201,7 @@ export default class FlopyModflow {
         }
 
         // WEL
-        const mfWel = this.hasPackage('wel') ? this.getPackage('wel') :FlopyModflowMfwel.create();
+        const mfWel = this.hasPackage('wel') ? this.getPackage('wel') : FlopyModflowMfwel.create();
         this.removePackageIfExists(mfWel);
         spData = FlopyModflowMfwel.calculateSpData(boundaries.all, nper);
         if (spData) {
@@ -219,7 +219,7 @@ export default class FlopyModflow {
         }
 
         if (type === 'bcf') {
-            const mfBcf = FlopyModflowMfbcf.create();
+            const mfBcf = this.hasPackage('bcf') ? this.getPackage('bcf') : FlopyModflowMfbcf.create();
             mfBcf.ipakcb = layers.map(() => 53);
             mfBcf.intercellt = layers.map(l => l.layavg);
             mfBcf.laycon = layers.map(l => l.laytyp);
@@ -245,7 +245,7 @@ export default class FlopyModflow {
         }
 
         if (type === 'lpf') {
-            const mfLpf = FlopyModflowMflpf.create();
+            const mfLpf = this.hasPackage('lpf') ? this.getPackage('lpf') : FlopyModflowMflpf.create();
             mfLpf.laytyp = layers.map(l => l.laytyp);
             mfLpf.layavg = layers.map(l => l.layavg);
             mfLpf.chani = layers.map(() => 0);
