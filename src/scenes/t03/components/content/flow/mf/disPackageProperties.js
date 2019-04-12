@@ -6,13 +6,9 @@ import AbstractPackageProperties from './AbstractPackageProperties';
 import {FlopyModflowMfdis} from 'core/model/flopy/packages/mf';
 import {documentation} from '../../../../defaults/flow';
 import {RasterDataImage} from '../../../../../shared/rasterData';
-import {GridSize} from '../../../../../../core/model/modflow';
+import {GridSize} from 'core/model/modflow';
 
 class DisPackageProperties extends AbstractPackageProperties {
-
-    state = {
-        activeIndex: 0
-    };
 
     render() {
         if (!this.state.mfPackage) {
@@ -140,35 +136,28 @@ class DisPackageProperties extends AbstractPackageProperties {
                         Time Discretization
                     </Accordion.Title>
                     <Accordion.Content active={activeIndex === 2}>
-                        <Grid>
-                            <Grid.Row>
-                                <Grid.Column>
-                                    <Table basic>
-                                        <Table.Header>
-                                            <Table.Row>
-                                                <Table.HeaderCell>#</Table.HeaderCell>
-                                                <Table.HeaderCell>Perlen</Table.HeaderCell>
-                                                <Table.HeaderCell>Nstp</Table.HeaderCell>
-                                                <Table.HeaderCell>Tsmult</Table.HeaderCell>
-                                                <Table.HeaderCell>Steady</Table.HeaderCell>
-                                            </Table.Row>
-                                        </Table.Header>
-                                        <Table.Body>
-                                            {mfPackage.perlen.map((perlen, idx) => (
-                                                <Table.Row key={idx}>
-                                                    <Table.Cell>{idx + 1}</Table.Cell>
-                                                    <Table.Cell>{perlen}</Table.Cell>
-                                                    <Table.Cell>{mfPackage.nstp[idx]}</Table.Cell>
-                                                    <Table.Cell>{mfPackage.tsmult[idx]}</Table.Cell>
-                                                    <Table.Cell>{mfPackage.steady[idx] ? 'true' : 'false'}</Table.Cell>
-                                                </Table.Row>
-                                            ))}
-                                        </Table.Body>
-                                    </Table>
-                                </Grid.Column>
-                            </Grid.Row>
-                            <Grid.Row/>
-                        </Grid>
+                        <Table basic>
+                            <Table.Header>
+                                <Table.Row>
+                                    <Table.HeaderCell>#</Table.HeaderCell>
+                                    <Table.HeaderCell>Perlen</Table.HeaderCell>
+                                    <Table.HeaderCell>Nstp</Table.HeaderCell>
+                                    <Table.HeaderCell>Tsmult</Table.HeaderCell>
+                                    <Table.HeaderCell>Steady</Table.HeaderCell>
+                                </Table.Row>
+                            </Table.Header>
+                            <Table.Body>
+                                {mfPackage.perlen.map((perlen, idx) => (
+                                    <Table.Row key={idx}>
+                                        <Table.Cell>{idx + 1}</Table.Cell>
+                                        <Table.Cell>{perlen}</Table.Cell>
+                                        <Table.Cell>{mfPackage.nstp[idx]}</Table.Cell>
+                                        <Table.Cell>{mfPackage.tsmult[idx]}</Table.Cell>
+                                        <Table.Cell>{mfPackage.steady[idx] ? 'true' : 'false'}</Table.Cell>
+                                    </Table.Row>
+                                ))}
+                            </Table.Body>
+                        </Table>
                     </Accordion.Content>
                 </Accordion>
 

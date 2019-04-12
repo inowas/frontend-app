@@ -35,7 +35,7 @@ class AbstractPackageProperties extends React.Component {
         return this.setState({
             mfPackage: {
                 ...this.state.mfPackage,
-                [name]: value
+                ['_' + name]: value
             }
         });
     };
@@ -57,14 +57,14 @@ class AbstractPackageProperties extends React.Component {
     renderInfoPopup = (description, title, position = 'top left', iconOutside = false) => {
         return (
             <Popup className='popupFix'
-                trigger={
-                    <Icon className={iconOutside ? 'iconOutside' : 'iconFix'}
-                        name='info'
-                        circular link
-                    />
-                }
-                data-html="true"
-                position={position}
+                   trigger={
+                       <Icon className={iconOutside ? 'iconOutside' : 'iconFix'}
+                             name='info'
+                             circular link
+                       />
+                   }
+                   data-html="true"
+                   position={position}
             >
                 <Popup.Header>
                     {title}

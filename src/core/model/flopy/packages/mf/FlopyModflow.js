@@ -17,6 +17,10 @@ import {delc, delr} from 'services/geoTools/distance';
 import FlopyModflowMflmt from './FlopyModflowMflmt';
 import FlopyModflowMfupw from './FlopyModflowMfupw';
 import FlopyModflowFlowPackage from './FlopyModflowFlowPackage';
+import FlopyModflowMfde4 from './FlopyModflowMfde4';
+import FlopyModflowMfnwt from './FlopyModflowMfnwt';
+import FlopyModflowMfsip from './FlopyModflowMfsip';
+import FlopyModflowSolverPackage from './FlopyModflowSolverPackage';
 
 
 const packagesMap = {
@@ -30,11 +34,15 @@ const packagesMap = {
     'lpf': FlopyModflowMflpf,
     'lmt': FlopyModflowMflmt,
     'oc': FlopyModflowMfoc,
-    'pcg': FlopyModflowMfpcg,
     'rch': FlopyModflowMfrch,
     'riv': FlopyModflowMfriv,
     'upw': FlopyModflowMfupw,
-    'wel': FlopyModflowMfwel
+    'wel': FlopyModflowMfwel,
+
+    'de4': FlopyModflowMfde4,
+    'nwt': FlopyModflowMfnwt,
+    'pcg': FlopyModflowMfpcg,
+    'sip': FlopyModflowMfsip,
 };
 
 export default class FlopyModflow {
@@ -142,7 +150,7 @@ export default class FlopyModflow {
 
         mfDis.xul = model.boundingBox.xMin;
         mfDis.yul = model.boundingBox.yMax;
-        mfDis.proj4_str = 'EPSG:3857';
+        mfDis.proj4_str = 'EPSG:4326';
         mfDis.start_datetime = stressperiods.startDateTime.format('YYYY-MM-DD');
 
         this.setPackage(mfDis);
@@ -201,7 +209,7 @@ export default class FlopyModflow {
         }
 
         // WEL
-        const mfWel = this.hasPackage('wel') ? this.getPackage('wel') :FlopyModflowMfwel.create();
+        const mfWel = this.hasPackage('wel') ? this.getPackage('wel') : FlopyModflowMfwel.create();
         this.removePackageIfExists(mfWel);
         spData = FlopyModflowMfwel.calculateSpData(boundaries.all, nper);
         if (spData) {
@@ -219,16 +227,11 @@ export default class FlopyModflow {
         }
 
         if (type === 'bcf') {
-            const mfBcf = FlopyModflowMfbcf.create();
-            mfBcf.ipakcb = layers.map(() => 53);
+            const mfBcf = this.hasPackage('bcf') ? this.getPackage('bcf') : FlopyModflowMfbcf.create();
             mfBcf.intercellt = layers.map(l => l.layavg);
             mfBcf.laycon = layers.map(l => l.laytyp);
             mfBcf.trpy = layers.map(l => l.hani);
-            mfBcf.hdry = layers.map(() => -1e+30);
             mfBcf.iwdflg = layers.map(l => l.laywet);
-            mfBcf.wetfct = layers.map(() => 0.1);
-            mfBcf.iwetit = layers.map(() => 1);
-            mfBcf.ihdwet = layers.map(() => 0);
             mfBcf.tran = layers.map((l, idx) => {
                 if (idx === 0) {
                     return l.calculateTransmissivity(l.top);
@@ -236,16 +239,14 @@ export default class FlopyModflow {
                 return l.calculateTransmissivity(layers[idx - 1].botm);
             });
             mfBcf.hy = layers.map(l => l.hk);
-            mfBcf.vcont = layers.map(() => 1);
             mfBcf.sf1 = layers.map(l => l.ss);
             mfBcf.sf2 = layers.map(l => l.sy);
-            mfBcf.wetdry = layers.map(() => -0.01);
 
             return this.setPackage(mfBcf);
         }
 
         if (type === 'lpf') {
-            const mfLpf = FlopyModflowMflpf.create();
+            const mfLpf = this.hasPackage('lpf') ? this.getPackage('lpf') : FlopyModflowMflpf.create();
             mfLpf.laytyp = layers.map(l => l.laytyp);
             mfLpf.layavg = layers.map(l => l.layavg);
             mfLpf.chani = layers.map(() => 0);
@@ -266,6 +267,10 @@ export default class FlopyModflow {
         return Object.values(this.packages).filter(p => (p instanceof FlopyModflowFlowPackage))[0];
     }
 
+    getSolverPackage() {
+        return Object.values(this.packages).filter(p => (p instanceof FlopyModflowSolverPackage))[0];
+    }
+
     // noinspection JSMethodCanBeStatic
     getPackageType(p) {
         let type = null;
@@ -281,17 +286,28 @@ export default class FlopyModflow {
     // noinspection JSMethodCanBeStatic
     get availableFlowPackages() {
         return [
-            {type: 'bcf', package: FlopyModflowMfbcf, name: 'Block-Centered Flow Package'},
-            {type: 'lpf', package: FlopyModflowMflpf, name: 'Layer-Property Flow Package'},
-            //{type: 'upw', package: FlopyModflowMfupw, name: 'Upstream Weighting Package'},
+            {type: 'bcf', package: FlopyModflowMfbcf, name: 'Block-Centered Flow package (BCF6)'},
+            {type: 'lpf', package: FlopyModflowMflpf, name: 'Layer-Property Flow package (LPF)'},
+            //{type: 'upw', package: FlopyModflowMfupw, name: 'Upstream Weighting package'},
         ];
     }
+
+    // noinspection JSMethodCanBeStatic
+    get availableSolverPackages() {
+        return [
+            {type: 'de4', package: FlopyModflowMfde4, name: 'Direct Solver package (DE4)'},
+            //{type: 'nwt', package: FlopyModflowMfnwt, name: 'Newton solver Package (NWT)'},
+            {type: 'pcg', package: FlopyModflowMfpcg, name: 'Preconditioned Conjugate-Gradient package (PCG)'},
+            //{type: 'sip', package: FlopyModflowMfsip, name: 'Strongly Implicit Procedure package (SIP)'},
+        ]
+    };
 
     setSolverPackage = type => {
         // noinspection JSRedundantSwitchStatement
         switch (type) {
             case 'pcg':
                 return this.setPackage(FlopyModflowMfpcg.create());
+
             default:
                 throw new Error('Solver from type ' + type + 'is not implemented.');
         }
@@ -328,6 +344,19 @@ export default class FlopyModflow {
             });
         }
 
+        if (p instanceof FlopyModflowSolverPackage) {
+
+            for (const type in this.packages) {
+                if (!this.packages.hasOwnProperty(type)) {
+                    continue;
+                }
+
+                if (this.packages[type] instanceof FlopyModflowSolverPackage) {
+                    this.removePackageByType(type);
+                }
+            }
+        }
+
         for (const name in packagesMap) {
             if (p instanceof packagesMap[name]) {
                 this._packages[name] = p;
@@ -348,10 +377,6 @@ export default class FlopyModflow {
         }
 
         return this._packages[name];
-    }
-
-    getSolverPackage() {
-        return this._packages['pcg'];
     }
 
     removePackageIfExists(p) {

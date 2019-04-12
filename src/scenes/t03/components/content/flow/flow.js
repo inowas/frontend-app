@@ -211,7 +211,7 @@ class Flow extends React.Component {
             case 'solver':
                 return (
                     <SolverPackageProperties
-                        mfPackage={mf.getSolverPackage()}
+                        mfPackages={mf}
                         onChange={this.handleChangePackage}
                         readonly={readOnly}
                     />

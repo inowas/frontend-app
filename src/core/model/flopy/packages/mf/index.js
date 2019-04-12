@@ -3,6 +3,7 @@ import FlopyModflowMf from './FlopyModflowMf';
 import FlopyModflowMfbas from './FlopyModflowMfbas';
 import FlopyModflowMfbcf from './FlopyModflowMfbcf';
 import FlopyModflowMfchd from './FlopyModflowMfchd';
+import FlopyModflowMfde4 from './FlopyModflowMfde4';
 import FlopyModflowMfdis from './FlopyModflowMfdis';
 import FlopyModflowMfghb from './FlopyModflowMfghb';
 import FlopyModflowMfhob from './FlopyModflowMfhob';
@@ -21,6 +22,7 @@ export {
     FlopyModflowMfbas,
     FlopyModflowMfbcf,
     FlopyModflowMfchd,
+    FlopyModflowMfde4,
     FlopyModflowMfdis,
     FlopyModflowMfghb,
     FlopyModflowMfhob,
