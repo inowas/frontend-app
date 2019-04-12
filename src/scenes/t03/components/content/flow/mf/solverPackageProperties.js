@@ -1,142 +1,96 @@
 import PropTypes from 'prop-types';
 import React from 'react';
-import {Form, Input, Header} from 'semantic-ui-react';
+import {Form} from 'semantic-ui-react';
 
-import AbstractPackageProperties from './AbstractPackageProperties';
-import {FlopyModflowMfpcg} from 'core/model/flopy/packages/mf';
+import {FlopyModflow} from 'core/model/flopy/packages/mf';
 import {documentation} from '../../../../defaults/flow';
+import {De4PackageProperties, PcgPackageProperties} from './index';
+import InfoPopup from '../../../../../shared/InfoPopup';
 
-class SolverPackageProperties extends AbstractPackageProperties {
+class SolverPackageProperties extends React.Component {
+
+    handleSelectChange = (e, {value}) => {
+        const {mfPackages} = this.props;
+        const {availableSolverPackages} = mfPackages;
+        const selectedFlowPackageType = mfPackages.getPackageType(mfPackages.getSolverPackage());
+
+        if (selectedFlowPackageType !== value) {
+            const solverPackage = availableSolverPackages.filter(sp => sp.type === value)[0]['package'];
+            this.props.onChange(solverPackage.create());
+        }
+    };
+
+    renderPackageProperties(type) {
+        const readOnly = this.props.readonly;
+        const mf = this.props.mfPackages;
+
+        // noinspection JSRedundantSwitchStatement
+        switch (type) {
+            case 'de4':
+                return (
+                    <De4PackageProperties
+                        mfPackage={mf.getPackage(type)}
+                        onChange={this.props.onChange}
+                        readonly={readOnly}
+                    />
+                );
+            case 'pcg':
+                return (
+                    <PcgPackageProperties
+                        mfPackage={mf.getPackage(type)}
+                        onChange={this.props.onChange}
+                        readonly={readOnly}
+                    />
+                );
+
+            default:
+                return null;
+        }
+    }
+
 
     render() {
-        if (!this.state.mfPackage) {
-            return null;
-        }
+        const {mfPackages} = this.props;
+        const {availableSolverPackages} = mfPackages;
+        const {readonly} = this.props;
 
-        const {mfPackage} = this.props;
+        const selectedSolverPackagePackageType = mfPackages.getPackageType(mfPackages.getSolverPackage());
 
         return (
-            <Form>
-                <Header as={'h4'}>Direct Solver Package</Header>
-
-                <Form.Group>
-                    <Form.Field>
-                        <label>Maximum number of iterations (itmx)</label>
-                        <Input readOnly
-                               name='itmx'
-                               value={JSON.stringify(mfPackage.itmx)}
-                               icon={this.renderInfoPopup(documentation.itmx, 'itmx')}
-                        />
-                    </Form.Field>
-                    <Form.Field>
-                        <label>Maximum number of upper equations (mxup)</label>
-                        <Input readOnly
-                               name='mxup'
-                               value={JSON.stringify(mfPackage.mxup)}
-                               icon={this.renderInfoPopup(documentation.mxup, 'mxup')}
-                        />
-                    </Form.Field>
-                    <Form.Field>
-                        <label>Maximum number of lower equations (mxlow)</label>
-                        <Input readOnly
-                               name='mxlow'
-                               value={JSON.stringify(mfPackage.mxlow)}
-                               icon={this.renderInfoPopup(documentation.mxlow, 'mxlow')}
-                        />
-                    </Form.Field>
-                </Form.Group>
-
-                <Form.Group widths='equal'>
-                    <Form.Field>
-                        <label>Maximum bandwidth (mxbw)</label>
-                        <Input readOnly
-                               name='mxbw'
-                               value={JSON.stringify(mfPackage.mxbw)}
-                               icon={this.renderInfoPopup(documentation.mxbw, 'mxbw')}
-                        />
-                    </Form.Field>
-                    <Form.Field>
-                        <label>Frequency of change of coefficients (ifreq)</label>
-                        <Input readOnly
-                               name='ifreq'
-                               value={JSON.stringify(mfPackage.ifreq)}
-                               icon={this.renderInfoPopup(documentation.ifreq, 'ifreq')}
-                        />
-                    </Form.Field>
-                </Form.Group>
-
-                    <Form.Field>
-                        <label>Print flag for convergence information per time step (mutd4)</label>
-                        <Input readOnly
-                               name='mutd4'
-                               value={JSON.stringify(mfPackage.mutd4)}
-                               icon={this.renderInfoPopup(documentation.mutd4, 'mutd4')}
-                        />
-                    </Form.Field>
-
-                <Form.Group widths='equal'>
-                    <Form.Field width={12}>
-                        <label>Head change multiplier (accl)</label>
-                        <Input readOnly
-                               name='accl'
-                               value={JSON.stringify(mfPackage.accl)}
-                               icon={this.renderInfoPopup(documentation.accl, 'accl')}
-                        />
-                    </Form.Field>
-                    <Form.Field>
-                        <label>Head change closure criterion (hclose)</label>
-                        <Input readOnly
-                               name='hclose'
-                               value={JSON.stringify(mfPackage.hclose)}
-                               icon={this.renderInfoPopup(documentation.hclose, 'hclose')}
-                        />
-                    </Form.Field>
-                    <Form.Field>
-                        <label>Interval for time step printing (iprd4)</label>
-                        <Input readOnly
-                               name='iprd4'
-                               value={JSON.stringify(mfPackage.iprd4)}
-                               icon={this.renderInfoPopup(documentation.iprd4, 'iprd4')}
-                        />
-                    </Form.Field>
-                </Form.Group>
-
-                <Form.Group widths='equal'>
-                    <Form.Field>
-                        <label>Filename extension (extension)</label>
-                        <Input readOnly
-                               name='extension'
-                               value={JSON.stringify(mfPackage.extension)}
-                               icon={this.renderInfoPopup(documentation.extension, 'extension')}
-                        />
-                    </Form.Field>
-                    <Form.Field>
-                        <label>File unit number (unitnumber)</label>
-                        <Input readOnly
-                               name='unitnumber'
-                               value={JSON.stringify(mfPackage.unitnumber)}
-                               icon={this.renderInfoPopup(documentation.unitnumber, 'unitnumber')}
-                        />
-                    </Form.Field>
-                    <Form.Field>
-                        <label>Filenames (filenames)</label>
-                        <Input readOnly
-                               name='filenames'
-                               value={JSON.stringify(mfPackage.filenames)}
-                               icon={this.renderInfoPopup(documentation.filenames, 'filenames')}
-                        />
-                    </Form.Field>
-                </Form.Group>
-            </Form>
+            <div>
+                <Form>
+                    <Form.Group>
+                        <Form.Field width={15}>
+                            <label>Flow Packages</label>
+                            <Form.Dropdown
+                                options={availableSolverPackages.map(fp => ({
+                                    key: fp.type, value: fp.type, text: fp.name
+                                }))}
+                                placeholder='Select model'
+                                name='model'
+                                selection
+                                value={selectedSolverPackagePackageType}
+                                onChange={this.handleSelectChange}
+                                readOnly={readonly}
+                            />
+                        </Form.Field>
+                        <Form.Field width={1}>
+                            <label>&nbsp;</label>
+                            <InfoPopup description={documentation.model} title='Model' position='top right'
+                                       iconOutside={true}/>
+                        </Form.Field>
+                    </Form.Group>
+                </Form>
+                {this.renderPackageProperties(selectedSolverPackagePackageType)}
+            </div>
         );
     }
 }
 
 SolverPackageProperties.propTypes = {
-    mfPackage: PropTypes.instanceOf(FlopyModflowMfpcg),
+    mfPackages: PropTypes.instanceOf(FlopyModflow).isRequired,
     onChange: PropTypes.func.isRequired,
     readonly: PropTypes.bool.isRequired
 };
-
 
 export default SolverPackageProperties;

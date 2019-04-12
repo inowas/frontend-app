@@ -17,6 +17,10 @@ import {delc, delr} from 'services/geoTools/distance';
 import FlopyModflowMflmt from './FlopyModflowMflmt';
 import FlopyModflowMfupw from './FlopyModflowMfupw';
 import FlopyModflowFlowPackage from './FlopyModflowFlowPackage';
+import FlopyModflowMfde4 from './FlopyModflowMfde4';
+import FlopyModflowMfnwt from './FlopyModflowMfnwt';
+import FlopyModflowMfsip from './FlopyModflowMfsip';
+import FlopyModflowSolverPackage from './FlopyModflowSolverPackage';
 
 
 const packagesMap = {
@@ -30,11 +34,15 @@ const packagesMap = {
     'lpf': FlopyModflowMflpf,
     'lmt': FlopyModflowMflmt,
     'oc': FlopyModflowMfoc,
-    'pcg': FlopyModflowMfpcg,
     'rch': FlopyModflowMfrch,
     'riv': FlopyModflowMfriv,
     'upw': FlopyModflowMfupw,
-    'wel': FlopyModflowMfwel
+    'wel': FlopyModflowMfwel,
+
+    'de4': FlopyModflowMfde4,
+    'nwt': FlopyModflowMfnwt,
+    'pcg': FlopyModflowMfpcg,
+    'sip': FlopyModflowMfsip,
 };
 
 export default class FlopyModflow {
@@ -259,6 +267,10 @@ export default class FlopyModflow {
         return Object.values(this.packages).filter(p => (p instanceof FlopyModflowFlowPackage))[0];
     }
 
+    getSolverPackage() {
+        return Object.values(this.packages).filter(p => (p instanceof FlopyModflowSolverPackage))[0];
+    }
+
     // noinspection JSMethodCanBeStatic
     getPackageType(p) {
         let type = null;
@@ -274,17 +286,28 @@ export default class FlopyModflow {
     // noinspection JSMethodCanBeStatic
     get availableFlowPackages() {
         return [
-            {type: 'bcf', package: FlopyModflowMfbcf, name: 'Block-Centered Flow Package'},
-            {type: 'lpf', package: FlopyModflowMflpf, name: 'Layer-Property Flow Package'},
-            //{type: 'upw', package: FlopyModflowMfupw, name: 'Upstream Weighting Package'},
+            {type: 'bcf', package: FlopyModflowMfbcf, name: 'Block-Centered Flow package (BCF6)'},
+            {type: 'lpf', package: FlopyModflowMflpf, name: 'Layer-Property Flow package (LPF)'},
+            //{type: 'upw', package: FlopyModflowMfupw, name: 'Upstream Weighting package'},
         ];
     }
+
+    // noinspection JSMethodCanBeStatic
+    get availableSolverPackages() {
+        return [
+            {type: 'de4', package: FlopyModflowMfde4, name: 'Direct Solver package (DE4)'},
+            //{type: 'nwt', package: FlopyModflowMfnwt, name: 'Newton solver Package (NWT)'},
+            {type: 'pcg', package: FlopyModflowMfpcg, name: 'Preconditioned Conjugate-Gradient package (PCG)'},
+            //{type: 'sip', package: FlopyModflowMfsip, name: 'Strongly Implicit Procedure package (SIP)'},
+        ]
+    };
 
     setSolverPackage = type => {
         // noinspection JSRedundantSwitchStatement
         switch (type) {
             case 'pcg':
                 return this.setPackage(FlopyModflowMfpcg.create());
+
             default:
                 throw new Error('Solver from type ' + type + 'is not implemented.');
         }
@@ -321,6 +344,19 @@ export default class FlopyModflow {
             });
         }
 
+        if (p instanceof FlopyModflowSolverPackage) {
+
+            for (const type in this.packages) {
+                if (!this.packages.hasOwnProperty(type)) {
+                    continue;
+                }
+
+                if (this.packages[type] instanceof FlopyModflowSolverPackage) {
+                    this.removePackageByType(type);
+                }
+            }
+        }
+
         for (const name in packagesMap) {
             if (p instanceof packagesMap[name]) {
                 this._packages[name] = p;
@@ -341,10 +377,6 @@ export default class FlopyModflow {
         }
 
         return this._packages[name];
-    }
-
-    getSolverPackage() {
-        return this._packages['pcg'];
     }
 
     removePackageIfExists(p) {

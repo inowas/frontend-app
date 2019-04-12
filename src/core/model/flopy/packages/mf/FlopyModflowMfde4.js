@@ -1,6 +1,6 @@
-import FlopyModflowPackage from './FlopyModflowPackage';
+import FlopyModflowSolverPackage from './FlopyModflowSolverPackage';
 
-export default class FlopyModflowMfde4 extends FlopyModflowPackage {
+export default class FlopyModflowMfde4 extends FlopyModflowSolverPackage {
 
     _itmx = 50;
     _mxup = 0;
@@ -20,6 +20,7 @@ export default class FlopyModflowMfde4 extends FlopyModflowPackage {
     }
 
     set itmx(value) {
+        value = parseInt(value, 10);
         this._itmx = value;
     }
 
@@ -28,6 +29,7 @@ export default class FlopyModflowMfde4 extends FlopyModflowPackage {
     }
 
     set mxup(value) {
+        value = parseInt(value, 10);
         this._mxup = value;
     }
 
@@ -36,6 +38,7 @@ export default class FlopyModflowMfde4 extends FlopyModflowPackage {
     }
 
     set mxlow(value) {
+        value = parseInt(value, 10);
         this._mxlow = value;
     }
 
@@ -44,6 +47,7 @@ export default class FlopyModflowMfde4 extends FlopyModflowPackage {
     }
 
     set mxbw(value) {
+        value = parseInt(value, 10);
         this._mxbw = value;
     }
 
@@ -52,6 +56,7 @@ export default class FlopyModflowMfde4 extends FlopyModflowPackage {
     }
 
     set ifreq(value) {
+        value = parseInt(value, 10);
         this._ifreq = value;
     }
 
@@ -60,6 +65,7 @@ export default class FlopyModflowMfde4 extends FlopyModflowPackage {
     }
 
     set mutd4(value) {
+        value = parseInt(value, 10);
         this._mutd4 = value;
     }
 
@@ -68,6 +74,7 @@ export default class FlopyModflowMfde4 extends FlopyModflowPackage {
     }
 
     set accl(value) {
+        value = parseInt(value, 10);
         this._accl = value;
     }
 
@@ -76,6 +83,7 @@ export default class FlopyModflowMfde4 extends FlopyModflowPackage {
     }
 
     set hclose(value) {
+        value = parseFloat(value);
         this._hclose = value;
     }
 
@@ -84,6 +92,7 @@ export default class FlopyModflowMfde4 extends FlopyModflowPackage {
     }
 
     set iprd4(value) {
+        value = parseInt(value, 10);
         this._iprd4 = value;
     }
 
