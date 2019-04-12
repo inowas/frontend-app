@@ -186,6 +186,7 @@ class Flow extends React.Component {
                 return (
                     <OcPackageProperties
                         mfPackage={mf.getPackage(type)}
+                        mfPackages={mf}
                         onChange={this.handleChangePackage}
                         readonly={readOnly}
                     />
