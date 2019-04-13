@@ -54,7 +54,7 @@ class OptimizationObjectsComponent extends React.Component {
         }, this.handleChange);
     };
 
-    handleChangeLocation = (e, {name, value}) => this.setState({
+    handleChangeLocation = (e, {value}) => this.setState({
         selectedObject: {
             ...this.state.selectedObject,
             position: value
@@ -75,7 +75,7 @@ class OptimizationObjectsComponent extends React.Component {
 
     handleClickBack = () => this.setState({
         selectedObject: null,
-        selectedSubstance: null
+        selectedSubstanceId: null
     });
 
     handleClickDelete = (id) => {
@@ -84,7 +84,7 @@ class OptimizationObjectsComponent extends React.Component {
         this.props.onChange(input, true);
     };
 
-    handleClickNew = (e, {name, value}) => {
+    handleClickNew = (e, {value}) => {
         const newObject = new OptimizationObject();
         newObject.type = value;
         newObject.numberOfStressPeriods = this.props.model.stressperiods.count;

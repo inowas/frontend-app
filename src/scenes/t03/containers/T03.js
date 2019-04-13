@@ -222,12 +222,14 @@ class T03 extends React.Component {
                     return (<Content.CreateBoundary/>);
                 }
                 return (<Content.Boundaries/>);
-            case 'observations':
-                return (<Content.Observations/>);
-            case 'flow':
-                return (<Content.Flow/>);
             case 'transport':
                 return (<Content.Transport/>);
+            case 'observations':
+                return (<Content.Observations/>);
+            case 'modflow':
+                return (<Content.Modflow/>);
+            case 'mt3d':
+                return (<Content.Mt3d/>);
             case 'calculation':
                 return (<Content.Calculation/>);
             case 'results':

@@ -134,7 +134,7 @@ class T08 extends React.Component {
                     isDirty={isDirty}
                 />
                 <ToolGrid rows={2}>
-                    <Background image={image} title={'T08. 1D transport model (Ogata-Banks)'}/>
+                    <Background image={image} title={'T08. 1D mt3d model (Ogata-Banks)'}/>
                     <Chart settings={settings} parameters={parameters}/>
                     <div>
                         <Settings settings={settings} onChange={this.handleChangeSettings}/>

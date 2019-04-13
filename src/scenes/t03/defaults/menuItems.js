@@ -19,20 +19,29 @@ const menuItems = [
                 name: 'Boundaries',
                 property: 'boundaries',
                 icon: <Icon name="map marker alternate"/>
-            }]
-    }, {
-        header: 'Calculation',
-        items: [
-            {
-                name: 'Flow',
-                property: 'flow',
-                icon: <Icon name="retweet"/>
             },
             {
                 name: 'Transport',
                 property: 'transport',
-                icon: <Icon name="exchange"/>
+                icon: <Icon name="map marker alternate"/>
+            }]
+    }, {
+        header: 'Packages',
+        items: [
+            {
+                name: 'Modflow',
+                property: 'modflow',
+                icon: <Icon name="retweet"/>
             },
+            {
+                name: 'MT3D',
+                property: 'mt3d',
+                icon: <Icon name="exchange"/>
+            }
+        ]
+    }, {
+        header: 'Calculation',
+        items: [
             {
                 name: 'Calculation',
                 property: 'calculation',

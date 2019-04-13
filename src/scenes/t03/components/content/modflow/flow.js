@@ -116,10 +116,10 @@ class Flow extends React.Component {
         const basePath = path.split(':')[0];
 
         if (!type) {
-            return this.props.history.push(basePath + this.props.model.id + '/flow');
+            return this.props.history.push(basePath + this.props.model.id + '/modflow');
         }
 
-        return this.props.history.push(basePath + this.props.model.id + '/flow/' + type);
+        return this.props.history.push(basePath + this.props.model.id + '/modflow/' + type);
     };
 
     renderProperties() {

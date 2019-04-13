@@ -39,7 +39,7 @@ class BasPackageProperties extends AbstractPackageProperties {
                                             unit={''}
                                             legend={[
                                                 {value: -1, color: 'red', label: 'constant'},
-                                                {value: 0, color: 'white', label: 'no flow'},
+                                                {value: 0, color: 'white', label: 'no modflow'},
                                                 {value: 1, color: 'blue', label: 'flow'},
                                             ]}/>
                                     </Grid.Column>

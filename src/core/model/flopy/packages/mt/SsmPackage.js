@@ -130,7 +130,7 @@ class SsmPackage extends AbstractMt3dPackage {
 
     addSubstance(substance) {
         if (!(substance instanceof SsmSubstance)) {
-            throw new Error('Substance has too be instance of SsmSubstance');
+            throw new Error('Substance has too be instance of Substance');
         }
 
         const substances = this.substances;
@@ -142,7 +142,7 @@ class SsmPackage extends AbstractMt3dPackage {
 
     updateSubstance(substance) {
         if (!(substance instanceof SsmSubstance)) {
-            throw new Error('Substance has too be instance of SsmSubstance');
+            throw new Error('Substance has too be instance of Substance');
         }
 
         this.substances = this.substances.map(s => {

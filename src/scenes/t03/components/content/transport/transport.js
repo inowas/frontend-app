@@ -1,267 +1,119 @@
 import React from 'react';
-import {connect} from 'react-redux';
+import {BoundaryCollection, ModflowModel} from 'core/model/modflow';
+import {updateTransport} from '../../../actions/actions';
 import {withRouter} from 'react-router-dom';
+import {connect} from 'react-redux';
+import {Substance, Transport} from 'core/model/modflow/transport';
 import PropTypes from 'prop-types';
-import {sendCommand} from 'services/api';
-import ModflowModelCommand from '../../../commands/modflowModelCommand';
-
-import {Grid, Menu, Segment} from 'semantic-ui-react';
-import {ModflowModel, Stressperiods} from 'core/model/modflow';
-import {BoundaryCollection} from 'core/model/modflow/boundaries';
-import {AbstractMt3dPackage, Mt3dms} from 'core/model/flopy/packages/mt';
-import {
-    AdvPackageProperties,
-    BtnPackageProperties,
-    DspPackageProperties,
-    GcgPackageProperties,
-    MtPackageProperties,
-    SsmPackageProperties
-} from './mt';
+import {Grid, Segment} from 'semantic-ui-react';
+import SubstanceList from './SubstanceList';
 import ContentToolBar from '../../../../shared/ContentToolbar';
-import {updatePackages} from '../../../actions/actions';
-import FlopyPackages from 'core/model/flopy/packages/FlopyPackages';
+import SubstanceDetails from './SubstanceDetails';
 
-const sideBar = [
-    {
-        id: undefined,
-        name: 'Overview (MT-Package)'
-    },
-    {
-        id: 'btn',
-        name: 'Basic transport package'
-    },
-    {
-        id: 'adv',
-        name: 'Advection package'
-    },
-    {
-        id: 'dsp',
-        name: 'Dispersion package'
-    },
-    {
-        id: 'ssm',
-        name: 'Source/Sink Package'
-    },
-    {
-        id: 'gcg',
-        name: 'Matrix solver package'
-    }
-];
+class TransportUi extends React.Component {
 
-class Transport extends React.Component {
     constructor(props) {
         super(props);
-
         this.state = {
-            mt3dms: this.props.packages.mt.toObject(),
-            isError: false,
             isDirty: false,
+            isError: false,
             isLoading: false,
+            selectedSubstanceId: null
         }
     }
 
-    componentWillReceiveProps(nextProps) {
-        this.setState({
-            mt3dms: nextProps.packages.mt.toObject()
-        });
-    }
-
-    handleSave = () => {
-        const mt3dms = Mt3dms.fromObject(this.state.mt3dms);
-        const packages = FlopyPackages.fromObject(this.props.packages.toObject());
-        packages.mt = mt3dms;
-
-        this.setState({loading: true}, () =>
-            sendCommand(
-                ModflowModelCommand.updateFlopyPackages(this.props.model.id, packages),
-                () => {
-                    this.props.updatePackages(packages);
-                    return this.setState({isDirty: false, loading: false});
-                }
-            )
-        );
+    handleAddSubstance = () => {
+        const substance = Substance.create('new substance');
+        const transport = this.props.transport;
+        transport.addSubstance(substance);
+        this.props.updateTransport(transport);
+        return this.setState({selectedSubstanceId: substance.id});
     };
 
-    handleChangePackage = (p) => {
-        if (p instanceof AbstractMt3dPackage) {
-            const newMt3dms = Mt3dms.fromObject(this.state.mt3dms);
-            newMt3dms.addPackage(p);
-            return this.setState({
-                mt3dms: newMt3dms.toObject(),
-                isDirty: true
-            });
-        }
 
-        throw new Error('Package has to be instance of AbstractMt3dPackage');
+    handleSubstanceListClick = selectedSubstanceId => {
+        return this.setState({selectedSubstanceId: selectedSubstanceId})
     };
 
-    handleToggleEnabled = () => {
-        const changedMt3dms = Mt3dms.fromObject(this.state.mt3dms);
-        changedMt3dms.toggleEnabled();
-        return this.setState({
-            isDirty: true,
-            mt3dms: changedMt3dms.toObject()
-        });
+    handleRemoveSubstance = substanceId => {
+        const transport = this.props.transport;
+        transport.removeSubstanceById(substanceId);
+        this.props.updateTransport(transport);
+
+        if (transport.length === 0) {
+            return this.setState({selectedSubstanceId: null});
+        }
+
+        return this.setState({selectedSubstanceId: transport.first.id});
     };
 
-    onMenuClick = (type) => {
-        const path = this.props.match.path;
-        const basePath = path.split(':')[0];
-
-        if (!type) {
-            return this.props.history.push(basePath + this.props.model.id + '/transport');
-        }
-
-        return this.props.history.push(basePath + this.props.model.id + '/transport/' + type);
-    };
-
-    renderProperties() {
-        if (!this.state.mt3dms || !this.props.model) {
-            return null;
-        }
-
-        const mt3d = Mt3dms.fromObject(this.state.mt3dms);
-        const {boundaries} = this.props;
-
-        const model = this.props.model.toObject();
-        if (!model.stressperiods) {
-            return null;
-        }
-
-        const stressperiods = Stressperiods.fromObject(model.stressperiods);
-
-        if (!boundaries) {
-            return null;
-        }
-
-        // TODO:
-        const readOnly = this.props.model.readOnly;
-        const {type} = this.props.match.params;
-
-        switch (type) {
-            case 'adv':
-                return (
-                    <AdvPackageProperties
-                        mtPackage={mt3d.getPackage(type)}
-                        onChange={this.handleChangePackage}
-                        readonly={readOnly}
-                    />
-                );
-            case 'btn':
-                return (
-                    <BtnPackageProperties
-                        mtPackage={mt3d.getPackage(type)}
-                        onChange={this.handleChangePackage}
-                        readonly={readOnly}
-                    />
-                );
-            case 'dsp':
-                return (
-                    <DspPackageProperties
-                        mtPackage={mt3d.getPackage(type)}
-                        onChange={this.handleChangePackage}
-                        readonly={readOnly}
-                    />
-                );
-            case 'gcg':
-                return (
-                    <GcgPackageProperties
-                        mtPackage={mt3d.getPackage(type)}
-                        onChange={this.handleChangePackage}
-                        readonly={readOnly}
-                    />
-                );
-            case 'ssm':
-                return (
-                    <SsmPackageProperties
-                        mtPackage={mt3d.getPackage(type)}
-                        boundaries={boundaries}
-                        stressperiods={stressperiods}
-                        onChange={this.handleChangePackage}
-                        readonly={readOnly}
-                    />
-                );
-            default:
-                return (
-                    <MtPackageProperties
-                        mtPackage={mt3d.getPackage('mt')}
-                        onChange={this.handleChangePackage}
-                        enabled={mt3d.enabled}
-                        toggleEnabled={this.handleToggleEnabled}
-                        readonly={readOnly}
-                    />
-                );
-        }
-    }
-
-    renderSidebar = () => {
-        const {type} = this.props.match.params;
-
-        return (
-            <div>
-                <Menu fluid vertical tabular>
-                    {sideBar.map((item, key) => (
-                        <Menu.Item
-                            key={key}
-                            name={item.name}
-                            active={type === item.id}
-                            onClick={() => this.onMenuClick(item.id)}
-                        />
-                    ))}
-                </Menu>
-            </div>
-        );
+    handleChangeSubstance = substance => {
+        const transport = this.props.transport;
+        transport.update(substance, false);
+        this.props.updateTransport(transport);
+        return this.setState({selectedSubstanceId: substance.id, isDirty: true});
     };
 
     render() {
-        const {isDirty, isError, isLoading, mt3dms} = this.state;
+        const {boundaries, model} = this.props;
+        const {readOnly} = model;
 
-        if (!mt3dms) {
-            return null;
-        }
+        const {selectedSubstanceId, isDirty, isError} = this.state;
+        const selectedSubstance = this.props.transport.findById(selectedSubstanceId);
 
         return (
-            <div>
-                <Segment color={'grey'} loading={isLoading}>
-                    <Grid>
-                        <Grid.Row>
-                            <Grid.Column width={4}/>
-                            <Grid.Column width={12}>
-                                <ContentToolBar isDirty={isDirty} isError={isError} save onSave={this.handleSave}/>
-                            </Grid.Column>
-                        </Grid.Row>
-                        <Grid.Row>
-                            <Grid.Column width={4}>
-                                {this.renderSidebar()}
-                            </Grid.Column>
-                            <Grid.Column width={12}>
-                                {this.renderProperties()}
-                            </Grid.Column>
-                        </Grid.Row>
-                    </Grid>
-                </Segment>
-            </div>
-        );
+            <Segment color={'grey'}>
+                <Grid>
+                    <Grid.Row>
+                        <Grid.Column width={4}>
+                            <SubstanceList
+                                addSubstance={this.handleAddSubstance}
+                                onClick={this.handleSubstanceListClick}
+                                onRemove={this.handleRemoveSubstance}
+                                selected={this.state.selectedSubstanceId}
+                                transport={this.props.transport}
+                            />
+                        </Grid.Column>
+                        <Grid.Column width={12}>
+                            {selectedSubstance &&
+                            <div>
+                                <ContentToolBar isDirty={isDirty} isError={isError} save onSave={this.onSave}/>
+                                <SubstanceDetails
+                                    substance={selectedSubstance}
+                                    boundaries={boundaries}
+                                    onChange={this.handleChangeSubstance}
+                                    readOnly={readOnly}
+                                />
+                            </div>
+                            }
+                        </Grid.Column>
+                    </Grid.Row>
+                </Grid>
+            </Segment>
+        )
     }
 }
 
-const mapStateToProps = (state) => ({
-    boundaries: BoundaryCollection.fromObject(state.T03.boundaries),
-    model: ModflowModel.fromObject(state.T03.model),
-    packages: FlopyPackages.fromObject(state.T03.packages),
-});
+const mapStateToProps = state => {
+    return {
+        boundaries: BoundaryCollection.fromObject(state.T03.boundaries),
+        model: ModflowModel.fromObject(state.T03.model),
+        transport: Transport.fromObject(state.T03.transport),
+    };
+};
 
 const mapDispatchToProps = {
-    updatePackages
+    updateTransport
 };
 
 Transport.proptypes = {
+    boundaries: PropTypes.instanceOf(BoundaryCollection).isRequired,
     history: PropTypes.object.isRequired,
+    location: PropTypes.object.isRequired,
     match: PropTypes.object.isRequired,
     model: PropTypes.instanceOf(ModflowModel).isRequired,
-    boundaries: PropTypes.instanceOf(BoundaryCollection).isRequired,
-    packages: PropTypes.instanceOf(FlopyPackages).isRequired,
-    updatePackages: PropTypes.func.isRequired
+    transport: PropTypes.instanceOf(Transport).isRequired,
+    updateTransport: PropTypes.func.isRequired
 };
 
-export default withRouter(connect(mapStateToProps, mapDispatchToProps)(Transport));
+export default withRouter(connect(mapStateToProps, mapDispatchToProps)(TransportUi));

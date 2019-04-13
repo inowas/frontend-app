@@ -54,7 +54,7 @@ const availableTools = [
         instances: []
     }, {
         slug: 'T08',
-        name: '1D transport model (Ogata-Banks)',
+        name: '1D mt3d model (Ogata-Banks)',
         path: '/tools/',
         subPath: '',
         role: ROLE_USER,

@@ -20,25 +20,25 @@ export const navigation = [{
 const items = [
     {
         tool: 'T13A',
-        name: 'Aquifer system with one no-flow boundary and one fixed head boundary condition and constant groundwater recharge',
+        name: 'Aquifer system with one no-modflow boundary and one fixed head boundary condition and constant groundwater recharge',
         description: '',
         image: image13A
     },
     {
         tool: 'T13B',
-        name: 'Aquifer system with two fixed head boundary conditions, a flow divide within the system and constant groundwater recharge',
+        name: 'Aquifer system with two fixed head boundary conditions, a modflow divide within the system and constant groundwater recharge',
         description: '',
         image: image13B
     },
     {
         tool: 'T13C',
-        name: 'Aquifer system with two fixed head boundary conditions, a flow divide outside of the system and constant groundwater recharge',
+        name: 'Aquifer system with two fixed head boundary conditions, a modflow divide outside of the system and constant groundwater recharge',
         description: '',
         image: image13C
     },
     {
         tool: 'T13D',
-        name: 'Aquifer system with two fixed head boundary conditions, constant groundwater recharge but user is not sure whether the flow divide lies within the system',
+        name: 'Aquifer system with two fixed head boundary conditions, constant groundwater recharge but user is not sure whether the modflow divide lies within the system',
         description: '',
         image: image13D
     },

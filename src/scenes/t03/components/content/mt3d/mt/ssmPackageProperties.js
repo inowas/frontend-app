@@ -13,7 +13,7 @@ class SsmPackageProperties extends AbstractPackageProperties {
     constructor(props) {
         super(props);
         this.state.selectedBoundary = null;
-        this.state.selectedSubstance = null;
+        this.state.selectedSubstanceId = null;
     }
 
     handleSelectBoundary = boundaryId => {
@@ -23,7 +23,7 @@ class SsmPackageProperties extends AbstractPackageProperties {
     };
 
     handleSelectSubstance = (e, {value}) => {
-        this.setState({selectedSubstance: value});
+        this.setState({selectedSubstanceId: value});
     };
 
     static substanceOptions(substances) {
@@ -41,7 +41,7 @@ class SsmPackageProperties extends AbstractPackageProperties {
         this.props.onChange(ssmPackage);
         this.setState({
             mtPackage: ssmPackage.toObject(),
-            selectedSubstance: substance.id
+            selectedSubstanceId: substance.id
         });
     };
 
@@ -54,12 +54,12 @@ class SsmPackageProperties extends AbstractPackageProperties {
 
     removeSubstance = () => {
         const ssmPackage = SsmPackage.fromObject(this.state.mtPackage);
-        ssmPackage.removeSubstance(this.state.selectedSubstance);
+        ssmPackage.removeSubstance(this.state.selectedSubstanceId);
         //TODO: Remove substances from optimization?!
         this.props.onChange(ssmPackage);
         return this.setState({
             mtPackage: ssmPackage.toObject(),
-            selectedSubstance: 0
+            selectedSubstanceId: 0
         });
     };
 
@@ -74,7 +74,7 @@ class SsmPackageProperties extends AbstractPackageProperties {
 
         const ssmPackage = SsmPackage.fromObject(this.state.mtPackage);
         const substances = ssmPackage.substances;
-        const selectedSubstance = substances.filter(s => s.id === this.state.selectedSubstance)[0];
+        const selectedSubstance = substances.filter(s => s.id === this.state.selectedSubstanceId)[0];
 
         let selectedBoundary;
         if (this.state.selectedBoundary) {
@@ -100,7 +100,7 @@ class SsmPackageProperties extends AbstractPackageProperties {
                                         selection
                                         options={SsmPackageProperties.substanceOptions(substances)}
                                         onChange={this.handleSelectSubstance}
-                                        value={this.state.selectedSubstance}
+                                        value={this.state.selectedSubstanceId}
                                     />
                                     <Button.Group style={{marginTop:'23px'}}>
                                         <Popup
@@ -114,7 +114,7 @@ class SsmPackageProperties extends AbstractPackageProperties {
                                         />
                                         <Popup
                                             trigger={<Button icon='trash'
-                                                             onClick={() => this.removeSubstance(this.state.selectedSubstance)}
+                                                             onClick={() => this.removeSubstance(this.state.selectedSubstanceId)}
                                                              disabled={readonly}
                                             />}
                                             content='Delete substance'

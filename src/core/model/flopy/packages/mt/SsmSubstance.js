@@ -18,7 +18,7 @@ class SsmSubstance {
         const substance = new SsmSubstance();
         substance._id = obj.id;
         substance._name = obj.name;
-        substance._boundaryValuesList = obj.boundaryValues;
+        substance._boundaries = obj.boundaryValues;
         return substance;
     }
 

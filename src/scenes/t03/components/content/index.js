@@ -2,18 +2,20 @@ import CreateBoundary from './boundaries/createBoundary';
 import Boundaries from './boundaries/boundaries';
 import Discretization from './discretization/discretization';
 import Observations from './observations';
-import Flow from './flow/flow';
+import Modflow from './modflow/flow';
 import Optimization from './optimization/optimization.js';
 import Results from './results/results';
 import Calculation from './calculation/calculation';
-import Transport from './transport/transport.js';
+import Mt3d from './mt3d/transport.js';
 import SoilmodelEditor from './soilmodel/soilmodelEditor';
+import Transport from './transport/transport'
 
 export {
     CreateBoundary,
     Boundaries,
     Discretization,
-    Flow,
+    Modflow,
+    Mt3d,
     Observations,
     Optimization,
     Results,

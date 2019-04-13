@@ -21,7 +21,7 @@ const items = [
     {
         tool: 'T09A',
         name: 'Depth of saltwater – freshwater interface (Ghyben-Herzberg relation).',
-        description: 'The location of the interface between fresh and saltwater can be roughly approximated under static hydraulic conditions (no flow). By considering the densities of fresh water and sea water, the tool helps to estimate the total thickness of the freshwater lens based on the elevation of groundwater table above sea level.',
+        description: 'The location of the interface between fresh and saltwater can be roughly approximated under static hydraulic conditions (no modflow). By considering the densities of fresh water and sea water, the tool helps to estimate the total thickness of the freshwater lens based on the elevation of groundwater table above sea level.',
         image: image9A
     },
     {
