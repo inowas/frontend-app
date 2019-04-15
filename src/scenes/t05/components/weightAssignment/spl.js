@@ -101,7 +101,7 @@ class SimpleWeightAssignment extends React.Component {
                             />
                         </Form>
                         <Segment textAlign='center' inverted color='grey' secondary>
-                            Weight Assignment
+                             Resulting Weights
                         </Segment>
                         <Table>
                             <Table.Header>

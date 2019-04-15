@@ -149,6 +149,7 @@ class PairwiseComparison extends React.Component {
                                                 onAfterChange={this.handleAfterChange(relation.id)}
                                                 onChange={this.handleChangeSlider(relation.id)}
                                                 value={toSliderValue(relation.value)}
+                                                tipFormatter={value => value < 0 ? value - 1 : value + 1}
                                             />
                                         </Grid.Column>
                                         <Grid.Column width={5} textAlign='right'>
@@ -177,7 +178,7 @@ class PairwiseComparison extends React.Component {
                             </Form.Field>
                         </Form>
                         <Segment textAlign='center' inverted color='grey' secondary>
-                            Weight Assignment
+                            Resulting Weights
                         </Segment>
                         <Table>
                             <Table.Header>

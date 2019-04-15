@@ -179,10 +179,12 @@ class MultiInfluence extends React.Component {
             },
             nodes: styles.nodes,
             layout: {
+                improvedLayout: true,
                 hierarchical: false
             },
             edges: {
-                color: '#000000'
+                color: '#000000',
+                smooth: true
             }
         };
 
@@ -259,7 +261,7 @@ class MultiInfluence extends React.Component {
                             </Form.Field>
                         </Form>
                         <Segment textAlign='center' inverted color='grey' secondary>
-                            Weight Assignment
+                            Resulting Weights
                         </Segment>
                         <Table>
                             <Table.Header>

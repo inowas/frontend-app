@@ -139,7 +139,7 @@ class Ranking extends React.Component {
                             </Form.Group>
                         </Form>
                         <Segment textAlign='center' inverted color='grey' secondary>
-                            Weight Assignment
+                            Resulting Weights
                         </Segment>
                         <Table>
                             <Table.Header>

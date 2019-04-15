@@ -106,7 +106,6 @@ class RasterfileUploadModal extends React.Component {
     };
 
     handleUploadFile = e => {
-        const {discreteRescaling} = this.props;
         const files = e.target.files;
         const file = files[0];
 
