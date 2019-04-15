@@ -1,46 +1,54 @@
-import {sortBy} from 'lodash';
-import AbstractCollection from '../../collection/AbstractCollection';
-import Substance from './Substance';
+import SubstanceCollection from './SubstanceCollection';
 
-class Transport extends AbstractCollection {
+class Transport {
+
+    _enabled = false;
+    _substances = new SubstanceCollection();
 
     static fromQuery(query) {
         return Transport.fromObject(query)
     }
 
-    static fromObject(query) {
-        if (!Array.isArray(query)) {
-            throw new Error('Transport expected to be an Array.');
-        }
-
+    static fromObject(obj) {
         const transport = new Transport();
-        query.forEach(b => {
-            transport.addSubstance(Substance.fromObject(b));
-        });
+        transport.enabled = obj.enabled || false;
+        transport.substances = SubstanceCollection.fromArray(obj.substances || []);
         return transport;
     }
 
-    addSubstance(substance) {
-        if (!(substance instanceof Substance)) {
-            throw new Error('Substance expected to be instance of Substance.');
-        }
-        return this.add(substance);
+    get enabled() {
+        return this._enabled;
     }
 
-    removeSubstanceById(substanceId) {
-        return this.remove(substanceId);
+    set enabled(value) {
+        this._enabled = value;
     }
 
-    countByType(type) {
-        return this.boundaries.filter(b => b.type === type).length;
+    get substances() {
+        return this._substances;
     }
 
-    get boundaries() {
-        return sortBy(this._items, [(b) => b.name.toUpperCase()]);
+    set substances(value) {
+        this._substances = value;
     }
+
+    addSubstance = substance => {
+        this.substances.addSubstance(substance);
+    };
+
+    removeSubstanceById = substanceId => {
+        this.substances.removeSubstanceById(substanceId);
+    };
+
+    updateSubstance = substance => {
+        this.substances.update(substance, false);
+    };
 
     toObject = () => {
-        return this.boundaries.map(b => b.toObject())
+        return {
+            enabled: this.enabled,
+            substances: this.substances.toArray(),
+        }
     };
 }
 

@@ -19,7 +19,7 @@ import {
     updateModel,
     updateOptimization,
     updatePackages,
-    updateSoilmodel
+    updateSoilmodel, updateTransport
 } from '../actions/actions';
 
 import {
@@ -27,7 +27,7 @@ import {
     BoundaryFactory,
     Calculation,
     ModflowModel,
-    Soilmodel,
+    Soilmodel, Transport,
 } from 'core/model/modflow';
 import ModflowModelCommand from '../commands/modflowModelCommand';
 import CalculationProgressBar from '../components/content/calculation/calculationProgressBar';
@@ -133,6 +133,7 @@ class T03 extends React.Component {
                     this.fetchBoundaries(id);
                     this.fetchPackages(id);
                     this.fetchSoilmodel(id);
+                    this.fetchTransport(id);
 
                     if (modflowModel.calculationId) {
                         fetchCalculationDetails(modflowModel.calculationId,
@@ -177,6 +178,16 @@ class T03 extends React.Component {
     fetchSoilmodel(id) {
         fetchUrl(`modflowmodels/${id}/soilmodel`,
             data => this.props.updateSoilmodel(Soilmodel.fromObject(data)),
+            error => this.setState(
+                {error, isLoading: false},
+                () => this.handleError(error)
+            )
+        );
+    };
+
+    fetchTransport(id) {
+        fetchUrl(`modflowmodels/${id}/transport`,
+            data => this.props.updateTransport(Transport.fromQuery(data)),
             error => this.setState(
                 {error, isLoading: false},
                 () => this.handleError(error)
@@ -340,7 +351,7 @@ const mapStateToProps = state => ({
 });
 
 const mapDispatchToProps = {
-    clear, updateCalculation, updateBoundaries, updatePackages, updateModel, updateOptimization, updateSoilmodel
+    clear, updateCalculation, updateBoundaries, updatePackages, updateModel, updateOptimization, updateTransport, updateSoilmodel
 };
 
 

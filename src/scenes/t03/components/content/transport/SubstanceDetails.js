@@ -65,7 +65,7 @@ class SubstanceDetails extends React.Component {
     render() {
         const {boundaries, readOnly} = this.props;
         const substance = Substance.fromObject(this.state.substance);
-        const {boundaryIds, concentrations} = substance;
+        const {boundaryConcentrations} = substance;
 
         return (
             <Grid>
@@ -91,16 +91,16 @@ class SubstanceDetails extends React.Component {
 
 
                             <Table.Body>
-                                {boundaryIds.map(bid => {
+                                {boundaryConcentrations.map((bc, idx) => {
                                     return (
-                                        <Table.Row key={bid}>
-                                            <Table.Cell>{boundaries.findById(bid).name}</Table.Cell>
-                                            <Table.Cell>{concentrations.filter(c => c.id === bid)[0]['concentration']}</Table.Cell>
+                                        <Table.Row key={idx}>
+                                            <Table.Cell>{boundaries.findById(bc.id).name}</Table.Cell>
+                                            <Table.Cell>{bc.concentration}</Table.Cell>
                                             <Table.Cell>
                                                 <Button
                                                     disabled={readOnly}
                                                     primary
-                                                    onClick={() => this.removeBoundary(bid)}
+                                                    onClick={() => this.removeBoundary(bc.id)}
                                                 >
                                                     Delete
                                                 </Button>

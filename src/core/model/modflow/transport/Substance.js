@@ -4,8 +4,7 @@ class Substance {
 
     _id = '';
     _name = '';
-    _boundaryIds = [];
-    _concentrations = [];
+    _boundaryConcentrations = [];
 
     static create(name) {
         const substance = new Substance();
@@ -18,8 +17,7 @@ class Substance {
         const substance = new Substance();
         substance._id = obj.id;
         substance._name = obj.name;
-        substance._boundaryIds = obj.boundaryIds;
-        substance._concentrations = obj.concentrations;
+        substance._boundaryConcentrations = obj.boundaryConcentrations;
         return substance;
     }
 
@@ -39,40 +37,29 @@ class Substance {
         this._name = value;
     }
 
-    get boundaryIds() {
-        return this._boundaryIds;
+    get boundaryConcentrations() {
+        return this._boundaryConcentrations;
     }
 
-    set boundaryIds(values) {
-        this._boundaryIds = values
-    }
-
-    get concentrations() {
-        return this._concentrations;
-    }
-
-    set concentrations(value) {
-        this._concentrations = value;
+    set boundaryConcentrations(values) {
+        this._boundaryConcentrations = values
     }
 
     addBoundaryId = (id) => {
-        this._boundaryIds.push(id);
-        this._concentrations.push({id: id, concentration: 0})
+        this._boundaryConcentrations.push({id: id, concentration: 0});
     };
 
     removeBoundaryId = (id) => {
-        this._boundaryIds = this._boundaryIds.filter(bid => bid !== id);
-        this._concentrations = this._concentrations.filter(c => c.id !== id);
+        this._boundaryConcentrations = this._boundaryConcentrations.filter(bc => bc.id !== id);
     };
 
     updateConcentration = (boundaryId, concentration) => {
-        this._concentrations.map(c => {
-            if (c.id === boundaryId) {
-                c.concentration = concentration;
-                return c;
+        this._boundaryConcentrations.map(bc => {
+            if (bc.id === boundaryId) {
+                bc.concentration = concentration;
             }
 
-            return c;
+            return bc;
         });
     };
 
@@ -80,8 +67,7 @@ class Substance {
         return {
             id: this.id,
             name: this._name,
-            boundaryIds: this._boundaryIds,
-            concentrations: this._concentrations,
+            boundaryConcentrations: this._boundaryConcentrations,
         };
     }
 }

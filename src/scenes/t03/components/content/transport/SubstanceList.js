@@ -2,9 +2,16 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import {Button, Icon, Menu, Popup} from 'semantic-ui-react';
 import {pure} from 'recompose';
-import Transport from 'core/model/modflow/transport/Transport';
+import SubstanceCollection from 'core/model/modflow/transport/SubstanceCollection';
 
-const SubstanceList = ({addSubstance, transport, onClick, onRemove, selected}) => {
+
+const SubstanceList = ({addSubstance, substances, onClick, onRemove, selected}) => {
+
+    const onRemoveClick = (e, substanceId) => {
+        e.stopPropagation();
+        onRemove(substanceId);
+    };
+
     return (
         <div>
             <Button positive icon='plus' labelPosition='left'
@@ -13,7 +20,7 @@ const SubstanceList = ({addSubstance, transport, onClick, onRemove, selected}) =
             >
             </Button>
             <Menu fluid vertical tabular>
-                {transport.all.map((substance, idx) => (
+                {substances.all.map((substance, idx) => (
                     <Menu.Item
                         name={substance.name}
                         key={substance.id}
@@ -27,7 +34,7 @@ const SubstanceList = ({addSubstance, transport, onClick, onRemove, selected}) =
                                     <Button.Group size='small'>
                                         <Popup
                                             trigger={<Button icon={'trash'}
-                                                             onClick={() => onRemove(substance.id)}/>}
+                                                             onClick={(e) => onRemoveClick(e, substance.id)}/>}
                                             content='Delete'
                                             position='top center'
                                             size='mini'
@@ -48,7 +55,7 @@ const SubstanceList = ({addSubstance, transport, onClick, onRemove, selected}) =
 
 SubstanceList.propTypes = {
     addSubstance: PropTypes.func.isRequired,
-    transport: PropTypes.instanceOf(Transport).isRequired,
+    substances: PropTypes.instanceOf(SubstanceCollection).isRequired,
     onClick: PropTypes.func.isRequired,
     onRemove: PropTypes.func.isRequired,
     selected: PropTypes.string

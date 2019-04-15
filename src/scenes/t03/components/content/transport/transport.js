@@ -9,6 +9,8 @@ import {Grid, Segment} from 'semantic-ui-react';
 import SubstanceList from './SubstanceList';
 import ContentToolBar from '../../../../shared/ContentToolbar';
 import SubstanceDetails from './SubstanceDetails';
+import {sendCommand} from 'services/api';
+import Command from '../../../commands/modflowModelCommand';
 
 class TransportUi extends React.Component {
 
@@ -19,6 +21,16 @@ class TransportUi extends React.Component {
             isError: false,
             isLoading: false,
             selectedSubstanceId: null
+        };
+
+        if (!this.state.selectedSubstanceId && props.transport.substances.length > 0) {
+            this.handleSubstanceListClick(props.transport.substances.first.id);
+        }
+    }
+
+    componentWillReceiveProps(nextProps, nextContext) {
+        if (!this.state.selectedSubstanceId && nextProps.transport.substances.length > 0) {
+            this.handleSubstanceListClick(nextProps.transport.substances.first.id);
         }
     }
 
@@ -36,30 +48,54 @@ class TransportUi extends React.Component {
     };
 
     handleRemoveSubstance = substanceId => {
+        console.log('handleRemoveSubstance');
         const transport = this.props.transport;
         transport.removeSubstanceById(substanceId);
         this.props.updateTransport(transport);
 
-        if (transport.length === 0) {
+        if (transport.substances.length === 0) {
             return this.setState({selectedSubstanceId: null});
         }
 
-        return this.setState({selectedSubstanceId: transport.first.id});
+        return this.setState({selectedSubstanceId: transport.substances.first.id});
     };
 
     handleChangeSubstance = substance => {
         const transport = this.props.transport;
-        transport.update(substance, false);
+        transport.updateSubstance(substance);
         this.props.updateTransport(transport);
         return this.setState({selectedSubstanceId: substance.id, isDirty: true});
     };
 
+    onSave = () => {
+        const transport = this.props.transport;
+        this.setState({isLoading: true});
+        return sendCommand(
+            Command.updateTransport({
+                id: this.props.model.id,
+                transport: transport.toObject(),
+            }), () => {
+                this.props.updateTransport(transport);
+                this.setState({
+                    isDirty: false,
+                    isLoading: false
+                })
+            }
+        );
+    };
+
     render() {
-        const {boundaries, model} = this.props;
+        const {boundaries, model, transport} = this.props;
+
+        if (!(transport instanceof Transport)) {
+            return null;
+        }
+
+        const {substances} = transport;
         const {readOnly} = model;
 
         const {selectedSubstanceId, isDirty, isError} = this.state;
-        const selectedSubstance = this.props.transport.findById(selectedSubstanceId);
+        const selectedSubstance = substances.findById(selectedSubstanceId);
 
         return (
             <Segment color={'grey'}>
@@ -70,14 +106,15 @@ class TransportUi extends React.Component {
                                 addSubstance={this.handleAddSubstance}
                                 onClick={this.handleSubstanceListClick}
                                 onRemove={this.handleRemoveSubstance}
-                                selected={this.state.selectedSubstanceId}
-                                transport={this.props.transport}
+                                selected={selectedSubstanceId}
+                                substances={substances}
                             />
                         </Grid.Column>
                         <Grid.Column width={12}>
                             {selectedSubstance &&
                             <div>
-                                <ContentToolBar isDirty={isDirty} isError={isError} save onSave={this.onSave}/>
+                                <ContentToolBar isDirty={isDirty && selectedSubstance.boundaryConcentrations.length > 0}
+                                                isError={isError} save onSave={this.onSave}/>
                                 <SubstanceDetails
                                     substance={selectedSubstance}
                                     boundaries={boundaries}
