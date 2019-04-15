@@ -1,6 +1,6 @@
-import AbstractMt3dPackage from './AbstractMt3dPackage';
+import FlopyMt3dPackage from './FlopyMt3dPackage';
 
-class AdvPackage extends AbstractMt3dPackage {
+class FlopyMt3dMtadv extends FlopyMt3dPackage {
 
     _mixelm = 3;
     _percel = 0.75;
@@ -20,38 +20,6 @@ class AdvPackage extends AbstractMt3dPackage {
     _extension = 'adv';
     _unitnumber = null;
     _filenames = null;
-
-    static fromDefault() {
-        return new AdvPackage();
-    }
-
-    static fromObject(obj) {
-        const adv = new AdvPackage();
-        adv.metaDataFromObject(obj);
-        adv.mixelm = obj.mixelm;
-        adv.percel = obj.percel;
-        adv.mxpart = obj.mxpart;
-        adv.nadvfd = obj.nadvfd;
-        adv.itrack = obj.itrack;
-        adv.wd = obj.wd;
-        adv.dceps = obj.dceps;
-        adv.nplane = obj.nplane;
-        adv.npl = obj.npl;
-        adv.nph = obj.nph;
-        adv.npmin = obj.npmin;
-        adv.npmax = obj.npmax;
-        adv.nlsink = obj.nlsink;
-        adv.npsink = obj.npsink;
-        adv.dchmoc = obj.dchmoc;
-        adv.extension = obj.extension;
-        adv.unitnumber = obj.unitnumber;
-        adv.filenames = obj.filenames;
-        return adv;
-    }
-
-    constructor() {
-        super('adv');
-    }
 
     get mixelm() {
         return this._mixelm;
@@ -196,29 +164,6 @@ class AdvPackage extends AbstractMt3dPackage {
     set filenames(value) {
         this._filenames = value;
     }
-
-    toObject() {
-        const obj = super.toObject();
-        obj.mixelm = this.mixelm;
-        obj.percel = this.percel;
-        obj.mxpart = this.mxpart;
-        obj.nadvfd = this.nadvfd;
-        obj.itrack = this.itrack;
-        obj.wd = this.wd;
-        obj.dceps = this.dceps;
-        obj.nplane = this.nplane;
-        obj.npl = this.npl;
-        obj.nph = this.nph;
-        obj.npmin = this.npmin;
-        obj.npmax = this.npmax;
-        obj.nlsink = this.nlsink;
-        obj.npsink = this.npsink;
-        obj.dchmoc = this.dchmoc;
-        obj.extension = this.extension;
-        obj.unitnumber = this.unitnumber;
-        obj.filenames = this.filenames;
-        return obj;
-    }
 }
 
-export default AdvPackage;
+export default FlopyMt3dMtadv;

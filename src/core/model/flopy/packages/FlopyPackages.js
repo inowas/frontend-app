@@ -3,7 +3,7 @@ import jsrp from 'json-schema-ref-parser';
 
 import md5 from 'md5';
 import FlopyModflow from './mf/FlopyModflow';
-import FlopyMt3d from './mt/Mt3dms';
+import FlopyMt3d from './mt/FlopyMt3d';
 import {JSON_SCHEMA_URL} from 'services/api';
 
 export default class FlopyPackages {
@@ -111,6 +111,8 @@ export default class FlopyPackages {
             throw new Error('Mt has to be instance of FlopyMt3d')
         }
         this._mt = value;
+
+        console.log(value);
         this.mf.setTransportEnabled(value.enabled);
     }
 
@@ -118,10 +120,9 @@ export default class FlopyPackages {
         const data = {};
         data['mf'] = this.mf.toFlopyCalculation();
 
-        if (this._mt && this.mt.enabled) {
+        if (this.mt && this.mt.enabled) {
             data['mt'] = this.mt.toFlopyCalculation()
         }
-
         return data;
     };
 

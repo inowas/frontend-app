@@ -3,7 +3,7 @@ import React from 'react';
 import {Form, Input} from 'semantic-ui-react';
 import AbstractPackageProperties from './AbstractPackageProperties';
 import {documentation} from '../../../../defaults/transport';
-import {DspPackage} from 'core/model/flopy/packages/mt';
+import {FlopyMt3dMtdsp} from 'core/model/flopy/packages/mt';
 
 const styles = {
     inputFix: {
@@ -86,7 +86,7 @@ class DspPackageProperties extends AbstractPackageProperties {
 }
 
 DspPackageProperties.propTypes = {
-    mtPackage: PropTypes.instanceOf(DspPackage),
+    mtPackage: PropTypes.instanceOf(FlopyMt3dMtdsp),
     onChange: PropTypes.func.isRequired,
     readonly: PropTypes.bool.isRequired,
 };

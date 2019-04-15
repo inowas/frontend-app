@@ -110,6 +110,7 @@ class ModflowModelCommand extends AbstractCommand {
     }
 
     static updateFlopyPackages(id, packages) {
+        console.log(packages);
         if (!(packages instanceof FlopyPackages)) {
             throw new Error('Expecting instance of FlopyPackages');
         }

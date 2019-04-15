@@ -1,6 +1,6 @@
-import AbstractMt3dPackage from './AbstractMt3dPackage';
+import FlopyMt3dPackage from './FlopyMt3dPackage';
 
-class GcgPackage extends AbstractMt3dPackage {
+class FlopyMt3dMtgcg extends FlopyMt3dPackage {
 
     _mxiter = 1;
     _iter1 = 50;
@@ -12,30 +12,6 @@ class GcgPackage extends AbstractMt3dPackage {
     _extension = 'gcg';
     _unitnumber = null;
     _filenames = null;
-
-    static fromDefault() {
-        return new GcgPackage();
-    }
-
-    static fromObject(obj) {
-        const gcg = new GcgPackage();
-        gcg.metaDataFromObject(obj);
-        gcg.mxiter = obj.mxiter;
-        gcg.iter1 = obj.iter1;
-        gcg.isolve = obj.isolve;
-        gcg.ncrs = obj.ncrs;
-        gcg.accl = obj.accl;
-        gcg.cclose = obj.cclose;
-        gcg.iprgcg = obj.iprgcg;
-        gcg.extension = obj.extension;
-        gcg.unitnumber = obj.unitnumber;
-        gcg.filenames = obj.filenames;
-        return gcg;
-    }
-
-    constructor() {
-        super('gcg');
-    }
 
     get mxiter() {
         return this._mxiter;
@@ -116,21 +92,6 @@ class GcgPackage extends AbstractMt3dPackage {
     set filenames(value) {
         this._filenames = value;
     }
-
-    toObject() {
-        const obj = super.toObject();
-        obj.mxiter = this.mxiter;
-        obj.iter1 = this.iter1;
-        obj.isolve = this.isolve;
-        obj.ncrs = this.ncrs;
-        obj.accl = this.accl;
-        obj.cclose = this.cclose;
-        obj.iprgcg = this.iprgcg;
-        obj.extension = this.extension;
-        obj.unitnumber = this.unitnumber;
-        obj.filenames = this.filenames;
-        return obj;
-    }
 }
 
-export default GcgPackage;
+export default FlopyMt3dMtgcg;

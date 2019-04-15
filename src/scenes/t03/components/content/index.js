@@ -6,7 +6,7 @@ import Modflow from './modflow/flow';
 import Optimization from './optimization/optimization.js';
 import Results from './results/results';
 import Calculation from './calculation/calculation';
-import Mt3d from './mt3d/transport.js';
+import Mt3d from './mt3d/Mt3dProperties.js';
 import SoilmodelEditor from './soilmodel/soilmodelEditor';
 import Transport from './transport/transport'
 

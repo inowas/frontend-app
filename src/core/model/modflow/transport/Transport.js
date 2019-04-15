@@ -1,5 +1,10 @@
 import SubstanceCollection from './SubstanceCollection';
 
+// SET stress_period_data
+// ssm_data[0] = [
+//      [#lay, #row, #col, #value1, #itype, #value1, #value2)]
+//      [4, 4, 4, 1.0, itype['GHB'], 1.0, 100.0)]
+// ]
 class Transport {
 
     _enabled = false;

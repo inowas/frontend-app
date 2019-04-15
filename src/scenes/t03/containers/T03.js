@@ -35,7 +35,7 @@ import OptimizationProgressBar from '../components/content/optimization/optimiza
 import {CALCULATION_STATE_FINISHED} from '../components/content/calculation/CalculationStatus';
 import FlopyPackages from 'core/model/flopy/packages/FlopyPackages';
 import {FlopyModflow} from 'core/model/flopy/packages/mf';
-import {Mt3dms} from 'core/model/flopy/packages/mt';
+import {FlopyMt3d} from 'core/model/flopy/packages/mt';
 import {fetchCalculationDetails} from 'services/api';
 import {cloneDeep} from 'lodash';
 
@@ -199,7 +199,7 @@ class T03 extends React.Component {
         return new Promise((resolve, reject) => {
             this.setState({calculatePackages: 'calculation'});
             const mf = FlopyModflow.createFromModel(this.props.model, this.props.soilmodel, this.props.boundaries);
-            const mt = Mt3dms.fromDefaults();
+            const mt = FlopyMt3d.createFromTransport(this.props.transport, this.props.boundaries);
             const modelId = this.props.model.id;
 
             const flopyPackages = FlopyPackages.create(modelId, mf, mt);
@@ -277,7 +277,8 @@ class T03 extends React.Component {
 
         if (!(this.props.model instanceof ModflowModel) ||
             !(this.props.boundaries instanceof BoundaryCollection) ||
-            !(this.props.soilmodel instanceof Soilmodel)
+            !(this.props.soilmodel instanceof Soilmodel) ||
+            !(this.props.transport instanceof Transport)
         ) {
             return (
                 <AppContainer navbarItems={navigation}>
@@ -347,7 +348,8 @@ const mapStateToProps = state => ({
     boundaries: state.T03.boundaries ? BoundaryCollection.fromObject(state.T03.boundaries) : null,
     calculation: state.T03.calculation ? Calculation.fromObject(state.T03.calculation) : null,
     packages: state.T03.packages ? FlopyPackages.fromObject(state.T03.packages) : null,
-    soilmodel: state.T03.soilmodel ? Soilmodel.fromObject(state.T03.soilmodel) : null
+    soilmodel: state.T03.soilmodel ? Soilmodel.fromObject(state.T03.soilmodel) : null,
+    transport: state.T03.transport ? Transport.fromObject(state.T03.transport) : null
 });
 
 const mapDispatchToProps = {

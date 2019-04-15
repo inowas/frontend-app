@@ -12,6 +12,7 @@ import FlopyPackages from 'core/model/flopy/packages/FlopyPackages';
 import ModflowModelCommand from '../../../commands/modflowModelCommand';
 import {BoundaryCollection} from 'core/model/modflow/boundaries';
 import Terminal from '../../../../shared/complexTools/Terminal';
+import Transport from '../../../../../core/model/modflow/transport/Transport';
 
 class Overview extends React.Component {
 
@@ -28,9 +29,14 @@ class Overview extends React.Component {
     }
 
     componentDidMount() {
-        const {boundaries, model, soilmodel} = this.props;
+        const {boundaries, model, soilmodel, transport} = this.props;
         const packages = FlopyPackages.fromObject(this.props.packages.toObject());
         packages.mf.recalculate(model, soilmodel, boundaries);
+
+        if (transport.enabled) {
+            packages.mt.recalculate(transport, boundaries);
+        }
+
         this.props.updatePackages(packages);
     }
 
@@ -193,6 +199,7 @@ const mapStateToProps = state => ({
     model: ModflowModel.fromObject(state.T03.model),
     packages: FlopyPackages.fromObject(state.T03.packages),
     soilmodel: Soilmodel.fromObject(state.T03.soilmodel),
+    transport: Transport.fromObject(state.T03.transport),
 });
 
 const mapDispatchToProps = {
@@ -205,6 +212,7 @@ Overview.proptypes = {
     model: PropTypes.instanceOf(ModflowModel).isRequired,
     packages: PropTypes.instanceOf(FlopyPackages).isRequired,
     soilmodel: PropTypes.instanceOf(Soilmodel).isRequired,
+    transport: PropTypes.instanceOf(Transport).isRequired,
     updateCalculation: PropTypes.func.isRequired,
     updatePackages: PropTypes.func.isRequired,
 };

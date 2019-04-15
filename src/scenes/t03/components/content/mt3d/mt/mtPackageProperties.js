@@ -1,15 +1,15 @@
 import PropTypes from 'prop-types';
 import React from 'react';
-import {Checkbox, Form, Input, Select} from 'semantic-ui-react';
+import {Form, Input, Select} from 'semantic-ui-react';
 
 import AbstractPackageProperties from './AbstractPackageProperties';
-import {MtPackage} from 'core/model/flopy/packages/mt';
+import {FlopyMt3dMt} from 'core/model/flopy/packages/mt';
 
 
 class MtPackageProperties extends AbstractPackageProperties {
 
     handleSelectExecutable = (e, {value}) => {
-        const mtPackage = MtPackage.fromObject(this.state.mtPackage);
+        const mtPackage = FlopyMt3dMt.fromObject(this.state.mtPackage);
         mtPackage.exeName = value;
         this.props.onChange(mtPackage);
         this.setState({
@@ -22,15 +22,11 @@ class MtPackageProperties extends AbstractPackageProperties {
             return null;
         }
 
-        const {enabled, readonly, toggleEnabled} = this.props;
+        const {readonly} = this.props;
         const {mtPackage} = this.state;
 
         return (
             <Form>
-                <Form.Field>
-                    <label>Enabled</label>
-                    <Checkbox checked={enabled} onChange={toggleEnabled} disabled={readonly}/>
-                </Form.Field>
                 <Form.Group>
                     <Form.Field>
                         <label>Executable name</label>
@@ -60,18 +56,16 @@ class MtPackageProperties extends AbstractPackageProperties {
                         <label>Verbose</label>
                         <Input value={mtPackage.verbose} readOnly/>
                     </Form.Field>
-                    </Form.Group>
+                </Form.Group>
             </Form>
         );
     }
 }
 
 MtPackageProperties.propTypes = {
-    mtPackage: PropTypes.instanceOf(MtPackage),
+    mtPackage: PropTypes.instanceOf(FlopyMt3dMt),
     onChange: PropTypes.func.isRequired,
-    enabled: PropTypes.bool.isRequired,
     readonly: PropTypes.bool.isRequired,
-    toggleEnabled: PropTypes.func.isRequired,
 };
 
 

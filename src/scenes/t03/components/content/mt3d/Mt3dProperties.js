@@ -6,9 +6,9 @@ import {sendCommand} from 'services/api';
 import ModflowModelCommand from '../../../commands/modflowModelCommand';
 
 import {Grid, Menu, Segment} from 'semantic-ui-react';
-import {ModflowModel, Stressperiods} from 'core/model/modflow';
+import {ModflowModel, Transport} from 'core/model/modflow';
 import {BoundaryCollection} from 'core/model/modflow/boundaries';
-import {AbstractMt3dPackage, Mt3dms} from 'core/model/flopy/packages/mt';
+import {FlopyMt3d} from 'core/model/flopy/packages/mt';
 import {
     AdvPackageProperties,
     BtnPackageProperties,
@@ -20,56 +20,45 @@ import {
 import ContentToolBar from '../../../../shared/ContentToolbar';
 import {updatePackages} from '../../../actions/actions';
 import FlopyPackages from 'core/model/flopy/packages/FlopyPackages';
+import FlopyMt3dPackage from 'core/model/flopy/packages/mt/FlopyMt3dPackage';
 
 const sideBar = [
-    {
-        id: undefined,
-        name: 'Overview (MT-Package)'
-    },
-    {
-        id: 'btn',
-        name: 'Basic package'
-    },
-    {
-        id: 'adv',
-        name: 'Advection package'
-    },
-    {
-        id: 'dsp',
-        name: 'Dispersion package'
-    },
-    {
-        id: 'ssm',
-        name: 'Source/Sink Package'
-    },
-    {
-        id: 'gcg',
-        name: 'Matrix solver package'
-    }
+    {id: undefined, name: 'Overview (MT-Package)'},
+    {id: 'btn', name: 'Basic package'},
+    {id: 'adv', name: 'Advection package'},
+    {id: 'dsp', name: 'Dispersion package'},
+    {id: 'ssm', name: 'Source/Sink Package'},
+    {id: 'gcg', name: 'Matrix solver package'}
 ];
 
-class Transport extends React.Component {
+class Mt3dProperties extends React.Component {
     constructor(props) {
         super(props);
 
         this.state = {
-            mt3dms: this.props.packages.mt.toObject(),
+            mt: this.props.packages.mt.toObject(),
             isError: false,
             isDirty: false,
             isLoading: false,
         }
     }
 
+    componentDidMount() {
+        const {boundaries, transport} = this.props;
+        const packages = FlopyPackages.fromObject(this.props.packages.toObject());
+        packages.mt.recalculate(transport, boundaries);
+        this.props.updatePackages(packages);
+    }
+
     componentWillReceiveProps(nextProps) {
         this.setState({
-            mt3dms: nextProps.packages.mt.toObject()
+            mt: nextProps.packages.mt.toObject()
         });
     }
 
     handleSave = () => {
-        const mt3dms = Mt3dms.fromObject(this.state.mt3dms);
-        const packages = FlopyPackages.fromObject(this.props.packages.toObject());
-        packages.mt = mt3dms;
+        const packages = this.props.packages;
+        packages.mt = FlopyMt3d.fromObject(this.state.mt);
 
         this.setState({loading: true}, () =>
             sendCommand(
@@ -83,24 +72,24 @@ class Transport extends React.Component {
     };
 
     handleChangePackage = (p) => {
-        if (p instanceof AbstractMt3dPackage) {
-            const newMt3dms = Mt3dms.fromObject(this.state.mt3dms);
-            newMt3dms.addPackage(p);
+        if (p instanceof FlopyMt3dPackage) {
+            const mt = FlopyMt3d.fromObject(this.state.mt);
+            mt.setPackage(p);
             return this.setState({
-                mt3dms: newMt3dms.toObject(),
+                mt: mt.toObject(),
                 isDirty: true
             });
         }
 
-        throw new Error('Package has to be instance of AbstractMt3dPackage');
+        throw new Error('Package has to be instance of FlopyMt3dPackage');
     };
 
     handleToggleEnabled = () => {
-        const changedMt3dms = Mt3dms.fromObject(this.state.mt3dms);
+        const changedMt3dms = FlopyMt3d.fromObject(this.state.mt);
         changedMt3dms.toggleEnabled();
         return this.setState({
             isDirty: true,
-            mt3dms: changedMt3dms.toObject()
+            mt: changedMt3dms.toObject()
         });
     };
 
@@ -116,19 +105,17 @@ class Transport extends React.Component {
     };
 
     renderProperties() {
-        if (!this.state.mt3dms || !this.props.model) {
+        if (!this.state.mt || !this.props.model) {
             return null;
         }
 
-        const mt3d = Mt3dms.fromObject(this.state.mt3dms);
+        const mt3d = FlopyMt3d.fromObject(this.state.mt);
         const {boundaries} = this.props;
 
         const model = this.props.model.toObject();
         if (!model.stressperiods) {
             return null;
         }
-
-        const stressperiods = Stressperiods.fromObject(model.stressperiods);
 
         if (!boundaries) {
             return null;
@@ -174,8 +161,6 @@ class Transport extends React.Component {
                 return (
                     <SsmPackageProperties
                         mtPackage={mt3d.getPackage(type)}
-                        boundaries={boundaries}
-                        stressperiods={stressperiods}
                         onChange={this.handleChangePackage}
                         readonly={readOnly}
                     />
@@ -185,8 +170,6 @@ class Transport extends React.Component {
                     <MtPackageProperties
                         mtPackage={mt3d.getPackage('mt')}
                         onChange={this.handleChangePackage}
-                        enabled={mt3d.enabled}
-                        toggleEnabled={this.handleToggleEnabled}
                         readonly={readOnly}
                     />
                 );
@@ -213,9 +196,9 @@ class Transport extends React.Component {
     };
 
     render() {
-        const {isDirty, isError, isLoading, mt3dms} = this.state;
+        const {isDirty, isError, isLoading, mt} = this.state;
 
-        if (!mt3dms) {
+        if (!mt) {
             return null;
         }
 
@@ -248,19 +231,21 @@ const mapStateToProps = (state) => ({
     boundaries: BoundaryCollection.fromObject(state.T03.boundaries),
     model: ModflowModel.fromObject(state.T03.model),
     packages: FlopyPackages.fromObject(state.T03.packages),
+    transport: Transport.fromObject(state.T03.transport),
 });
 
 const mapDispatchToProps = {
     updatePackages
 };
 
-Transport.proptypes = {
+Mt3dProperties.proptypes = {
     history: PropTypes.object.isRequired,
     match: PropTypes.object.isRequired,
     model: PropTypes.instanceOf(ModflowModel).isRequired,
     boundaries: PropTypes.instanceOf(BoundaryCollection).isRequired,
     packages: PropTypes.instanceOf(FlopyPackages).isRequired,
+    transport: PropTypes.instanceOf(Mt3dProperties).isRequired,
     updatePackages: PropTypes.func.isRequired
 };
 
-export default withRouter(connect(mapStateToProps, mapDispatchToProps)(Transport));
+export default withRouter(connect(mapStateToProps, mapDispatchToProps)(Mt3dProperties));

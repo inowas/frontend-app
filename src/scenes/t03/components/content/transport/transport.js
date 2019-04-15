@@ -1,16 +1,17 @@
 import React from 'react';
 import {BoundaryCollection, ModflowModel} from 'core/model/modflow';
-import {updateTransport} from '../../../actions/actions';
+import {updatePackages, updateTransport} from '../../../actions/actions';
 import {withRouter} from 'react-router-dom';
 import {connect} from 'react-redux';
 import {Substance, Transport} from 'core/model/modflow/transport';
 import PropTypes from 'prop-types';
-import {Grid, Segment} from 'semantic-ui-react';
+import {Checkbox, Form, Grid, Segment} from 'semantic-ui-react';
 import SubstanceList from './SubstanceList';
 import ContentToolBar from '../../../../shared/ContentToolbar';
 import SubstanceDetails from './SubstanceDetails';
 import {sendCommand} from 'services/api';
 import Command from '../../../commands/modflowModelCommand';
+import FlopyPackages from '../../../../../core/model/flopy/packages/FlopyPackages';
 
 class TransportUi extends React.Component {
 
@@ -22,9 +23,11 @@ class TransportUi extends React.Component {
             isLoading: false,
             selectedSubstanceId: null
         };
+    }
 
-        if (!this.state.selectedSubstanceId && props.transport.substances.length > 0) {
-            this.handleSubstanceListClick(props.transport.substances.first.id);
+    componentDidMount() {
+        if (!this.state.selectedSubstanceId && this.props.transport.substances.length > 0) {
+            this.handleSubstanceListClick(this.props.transport.substances.first.id);
         }
     }
 
@@ -38,6 +41,7 @@ class TransportUi extends React.Component {
         const substance = Substance.create('new substance');
         const transport = this.props.transport;
         transport.addSubstance(substance);
+        transport.enabled = true;
         this.props.updateTransport(transport);
         return this.setState({selectedSubstanceId: substance.id});
     };
@@ -67,8 +71,15 @@ class TransportUi extends React.Component {
         return this.setState({selectedSubstanceId: substance.id, isDirty: true});
     };
 
-    onSave = () => {
+    handleToggleEnabled = () => {
         const transport = this.props.transport;
+        transport.enabled = !transport.enabled;
+        this.props.updateTransport(transport);
+        return this.setState({isDirty: true});
+    };
+
+    onSave = () => {
+        const {boundaries, packages, transport} = this.props;
         this.setState({isLoading: true});
         return sendCommand(
             Command.updateTransport({
@@ -79,7 +90,14 @@ class TransportUi extends React.Component {
                 this.setState({
                     isDirty: false,
                     isLoading: false
-                })
+                });
+
+                const mt = packages.mt;
+                mt.recalculate(transport, boundaries);
+                packages.mt = mt;
+
+                this.props.updatePackages(packages);
+                sendCommand(Command.updateFlopyPackages(this.props.model.id, packages))
             }
         );
     };
@@ -113,8 +131,19 @@ class TransportUi extends React.Component {
                         <Grid.Column width={12}>
                             {selectedSubstance &&
                             <div>
-                                <ContentToolBar isDirty={isDirty && selectedSubstance.boundaryConcentrations.length > 0}
-                                                isError={isError} save onSave={this.onSave}/>
+                                <ContentToolBar
+                                    isDirty={isDirty && selectedSubstance.boundaryConcentrations.length > 0}
+                                    isError={isError}
+                                    save
+                                    onSave={this.onSave}
+                                />
+                                <Form>
+                                    <Form.Field>
+                                        <label>Enabled</label>
+                                        <Checkbox checked={transport.enabled} onChange={this.handleToggleEnabled}
+                                                  disabled={readOnly}/>
+                                    </Form.Field>
+                                </Form>
                                 <SubstanceDetails
                                     substance={selectedSubstance}
                                     boundaries={boundaries}
@@ -135,11 +164,13 @@ const mapStateToProps = state => {
     return {
         boundaries: BoundaryCollection.fromObject(state.T03.boundaries),
         model: ModflowModel.fromObject(state.T03.model),
+        packages: FlopyPackages.fromObject(state.T03.packages),
         transport: Transport.fromObject(state.T03.transport),
     };
 };
 
 const mapDispatchToProps = {
+    updatePackages,
     updateTransport
 };
 
@@ -149,7 +180,9 @@ Transport.proptypes = {
     location: PropTypes.object.isRequired,
     match: PropTypes.object.isRequired,
     model: PropTypes.instanceOf(ModflowModel).isRequired,
+    packages: PropTypes.instanceOf(FlopyPackages).isRequired,
     transport: PropTypes.instanceOf(Transport).isRequired,
+    updatePackages: PropTypes.func.isRequired,
     updateTransport: PropTypes.func.isRequired
 };
 

@@ -1,6 +1,6 @@
-import AbstractMt3dPackage from './AbstractMt3dPackage';
+import FlopyMt3dPackage from './FlopyMt3dPackage';
 
-class DspPackage extends AbstractMt3dPackage {
+class FlopyMt3dMtdsp extends FlopyMt3dPackage {
 
     _al = 0.01;
     _trpt = 0.1;
@@ -10,28 +10,6 @@ class DspPackage extends AbstractMt3dPackage {
     _multiDiff = false;
     _unitnumber = null;
     _filenames = null;
-
-    static fromDefault() {
-        return new DspPackage();
-    }
-
-    static fromObject(obj) {
-        const dsp = new DspPackage();
-        dsp.metaDataFromObject(obj);
-        dsp.al = obj.al;
-        dsp.trpt = obj.trpt;
-        dsp.trpv = obj.trpv;
-        dsp.dmcoef = obj.dmcoef;
-        dsp.extension = obj.extension;
-        dsp.multiDiff = obj.multiDiff;
-        dsp.unitnumber = obj.unitnumber;
-        dsp.filenames = obj.filenames;
-        return dsp;
-    }
-
-    constructor() {
-        super('dsp');
-    }
 
     get al() {
         return this._al;
@@ -96,19 +74,6 @@ class DspPackage extends AbstractMt3dPackage {
     set filenames(value) {
         this._filenames = value;
     }
-
-    toObject() {
-        const obj = super.toObject();
-        obj.al = this.al;
-        obj.trpt = this.trpt;
-        obj.trpv = this.trpv;
-        obj.dmcoef = this.dmcoef;
-        obj.extension = this.extension;
-        obj.multiDiff = this.multiDiff;
-        obj.unitnumber = this.unitnumber;
-        obj.filenames = this.filenames;
-        return obj;
-    }
 }
 
-export default DspPackage;
+export default FlopyMt3dMtdsp;

@@ -1,29 +1,17 @@
-import AbstractMt3dPackage from './AbstractMt3dPackage';
-import AdvPackage from './AdvPackage';
-import BtnPackage from './BtnPackage';
-import DspPackage from './DspPackage';
-import GcgPackage from './GcgPackage';
-import Mt3dms from './Mt3dms';
-import Mt3dPackageFactory from './Mt3dPackageFactory';
-import Mt3dStressPeriodData from './Mt3dStressPeriodData';
-import Mt3dStressPeriodDataSet from './Mt3dStressPeriodDataSet';
-import MtPackage from './MtPackage';
-import SsmBoundaryValues from './SsmBoundaryValues';
-import SsmPackage from './SsmPackage';
-import SsmSubstance from './SsmSubstance';
+import FlopyMt3dMtadv from './FlopyMt3dMtadv';
+import FlopyMt3dMtbtn from './FlopyMt3dMtbtn';
+import FlopyMt3dMtdsp from './FlopyMt3dMtdsp';
+import FlopyMt3dMtgcg from './FlopyMt3dMtgcg';
+import FlopyMt3d from './FlopyMt3d';
+import FlopyMt3dMt from './FlopyMt3dMt';
+import FlopyMt3dMtssm from './FlopyMt3dMtssm';
 
 export {
-    AbstractMt3dPackage,
-    AdvPackage,
-    BtnPackage,
-    DspPackage,
-    GcgPackage,
-    Mt3dms,
-    Mt3dPackageFactory,
-    Mt3dStressPeriodData,
-    Mt3dStressPeriodDataSet,
-    MtPackage,
-    SsmBoundaryValues,
-    SsmPackage,
-    SsmSubstance
+    FlopyMt3dMtadv,
+    FlopyMt3dMtbtn,
+    FlopyMt3dMtdsp,
+    FlopyMt3dMtgcg,
+    FlopyMt3d,
+    FlopyMt3dMt,
+    FlopyMt3dMtssm,
 }

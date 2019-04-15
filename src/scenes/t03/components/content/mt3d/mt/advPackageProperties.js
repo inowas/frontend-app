@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types';
 import React from 'react';
 import AbstractPackageProperties from './AbstractPackageProperties';
-import {AdvPackage} from 'core/model/flopy/packages/mt';
+import {FlopyMt3dMtadv} from 'core/model/flopy/packages/mt';
 import {Accordion, Form, Icon, Input, Segment, Select} from 'semantic-ui-react';
 import {documentation} from '../../../../defaults/transport';
 import InfoPopup from '../../../../../shared/InfoPopup';
@@ -302,7 +302,7 @@ class AdvPackageProperties extends AbstractPackageProperties {
 }
 
 AdvPackageProperties.propTypes = {
-    mtPackage: PropTypes.instanceOf(AdvPackage),
+    mtPackage: PropTypes.instanceOf(FlopyMt3dMtadv),
     onChange: PropTypes.func.isRequired,
     readonly: PropTypes.bool.isRequired,
 };

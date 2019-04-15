@@ -2,27 +2,7 @@ import PropTypes from 'prop-types';
 import React from 'react';
 
 import {Icon, Popup} from 'semantic-ui-react';
-import {AbstractMt3dPackage, Mt3dPackageFactory} from 'core/model/flopy/packages/mt';
-
-const styles = {
-    iconFix: {
-        width: '5px',
-        height: '5px',
-    },
-    iconOutside: {
-        marginTop: '4px',
-        marginLeft: '-4px',
-        width: '5px',
-        height: '5px'
-    },
-    popupFix: {
-        maxWidth: '350px'
-    },
-    contentFix: {
-        width: 'auto',
-        maxWidth: '350px'
-    }
-};
+import FlopyMt3dPackage from 'core/model/flopy/packages/mt/FlopyMt3dPackage';
 
 class AbstractPackageProperties extends React.Component {
     constructor(props) {
@@ -55,44 +35,41 @@ class AbstractPackageProperties extends React.Component {
         return this.setState({
             mtPackage: {
                 ...this.state.mtPackage,
-                [name]: value
+                ['_' + name]: value
             }
         });
     };
 
     handleOnSelect = (e, {name, value}) => {
-        const mtPackage = {...this.state.mtPackage, [name]: value};
-        this.props.onChange(Mt3dPackageFactory.fromData(mtPackage));
+        const mtPackage = this.props.mtPackage;
+        mtPackage[name] = value;
+        this.props.onChange(mtPackage);
     };
 
-    handleOnBlur = (cast) => (e) => {
-        const {name} = e.target;
-        let value;
-
-        (typeof cast === 'function') ? value = cast(e.target.value) : value = e.target.value;
-        const mtPackage = {...this.state.mtPackage, [name]: value};
-        this.setState({mtPackage});
-        this.props.onChange(Mt3dPackageFactory.fromData(mtPackage));
+    handleOnBlur = (e) => {
+        const {name, value} = e.target;
+        this.setState({mtPackage: {...this.state.mtPackage, [name]: value}});
+        const mtPackage = this.props.mtPackage;
+        mtPackage[name] = value;
+        this.props.onChange(mtPackage);
     };
 
     renderInfoPopup = (description, title, position = 'top left', iconOutside = false) => {
         return (
-            <Popup
-                trigger={
-                    <Icon
-                        name='info'
-                        style={ iconOutside ? styles.iconOutside : styles.iconFix }
-                        circular link
-                    />
-                }
-                style={styles.popupFix}
-                data-html="true"
-                position={position}
+            <Popup className='popupFix'
+                   trigger={
+                       <Icon className={iconOutside ? 'iconOutside' : 'iconFix'}
+                             name='info'
+                             circular link
+                       />
+                   }
+                   data-html="true"
+                   position={position}
             >
                 <Popup.Header>
                     {title}
                 </Popup.Header>
-                <Popup.Content style={styles.contentFix}>
+                <Popup.Content className='contentFix'>
                     {description}
                 </Popup.Content>
             </Popup>
@@ -101,7 +78,7 @@ class AbstractPackageProperties extends React.Component {
 }
 
 AbstractPackageProperties.propTypes = {
-    mtPackage: PropTypes.instanceOf(AbstractMt3dPackage),
+    mtPackage: PropTypes.instanceOf(FlopyMt3dPackage),
     onChange: PropTypes.func.isRequired,
     readonly: PropTypes.bool.isRequired,
 };
