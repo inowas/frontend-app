@@ -9,7 +9,7 @@ import {Raster} from 'core/model/mcda/gis';
 import {min, max} from 'scenes/shared/rasterData/helpers';
 import {BoundingBox, GridSize} from 'core/model/geometry';
 import {dropData} from 'services/api';
-import UploadJsonModal from "./uploadJsonModal";
+import UploadJsonModal from './uploadJsonModal';
 
 class CriteriaRasterUpload extends React.Component {
     state = {
@@ -150,17 +150,19 @@ class CriteriaRasterUpload extends React.Component {
                                         <Icon name='upload'/>Upload Raster File
                                     </Button>
                                 </Form.Group>
-                                <Form.Group>
-                                    <Button
-                                        primary
-                                        icon
-                                        labelPosition='left'
-                                        fluid
-                                        onClick={this.handleUploadJSONClick}
-                                    >
-                                        <Icon name='file alternate'/>Upload GeoJSON
-                                    </Button>
-                                </Form.Group>
+                                {false &&
+                                    <Form.Group>
+                                        <Button
+                                            primary
+                                            icon
+                                            labelPosition='left'
+                                            fluid
+                                            onClick={this.handleUploadJSONClick}
+                                        >
+                                            <Icon name='file alternate'/>Upload GeoJSON
+                                        </Button>
+                                    </Form.Group>
+                                }
                                 <Form.Group>
                                     <Checkbox toggle label='Basic Tile Layer' onClick={this.onToggleBasicLayer}/>
                                 </Form.Group>
@@ -217,7 +219,7 @@ class CriteriaRasterUpload extends React.Component {
                     gridSize={this.props.gridSize}
                     onCancel={this.handleCancelModal}
                     onChange={this.handleUploadFile}
-                    parameter={{unit: 'm'}}
+                    parameter={{unit: this.props.criterion.unit}}
                     discreteRescaling={this.props.criterion.type === 'discrete'}
                 />
                 }
