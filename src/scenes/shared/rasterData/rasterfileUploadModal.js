@@ -119,7 +119,7 @@ class RasterfileUploadModal extends React.Component {
                     hash,
                     width: this.props.gridSize.nX,
                     height: this.props.gridSize.nY,
-                    method: discreteRescaling ? 0 : 1
+                    method: 0 //discreteRescaling ? 0 : 1
                 };
 
                 fetchRasterMetaData({hash}, response => {
