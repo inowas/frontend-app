@@ -3,7 +3,7 @@ import React from 'react';
 import {Button, Dimmer, Grid, Input, Header, List, Segment, Modal, Loader, Form} from 'semantic-ui-react';
 import {BoundingBox, GridSize} from 'core/model/geometry';
 import {Raster} from 'core/model/mcda/gis';
-import {booleanPointInPolygon} from '@turf/turf/index';
+import {booleanPointInPolygon} from '@turf/turf';
 
 const styles = {
     input: {
@@ -21,10 +21,6 @@ class UploadJsonModal extends React.Component {
         reclassification: {
             'Consolidated Sedimentary - F': 5
         }
-    };
-
-    findValueAtPoint = (x, y) => {
-
     };
 
     handleClickCalculate = () => {

@@ -111,8 +111,6 @@ export default class FlopyPackages {
             throw new Error('Mt has to be instance of FlopyMt3d')
         }
         this._mt = value;
-
-        console.log(value);
         this.mf.setTransportEnabled(value.enabled);
     }
 

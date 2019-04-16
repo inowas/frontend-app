@@ -77,7 +77,7 @@ test('It has a toFlopyCalculation-method', () => {
                 'dtype': null,
                 'extension': 'riv',
                 'filenames': null,
-                'ipakcb': null,
+                'ipakcb': 0,
                 'options': null,
                 'stress_period_data': {'0': [[1, 2, 3, 1, 2, 3], [1, 2, 4, 2, 3, 4], [1, 2, 5, 5, 6, 7]]},
                 'unitnumber': null

@@ -7,7 +7,7 @@ test('It can instantiate FlopyPackages', () => {
     const modelId = Uuid.v4();
 
     const mf = new FlopyModflow();
-    const mt = FlopyMt3d.fromDefaults();
+    const mt = new FlopyMt3d();
 
     const flopyPackages = FlopyPackages.create(modelId, mf, mt);
     expect(flopyPackages).toBeInstanceOf(FlopyPackages);
