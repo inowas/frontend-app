@@ -1,15 +1,12 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import {Form, Grid, Header, Segment} from 'semantic-ui-react';
-import {Soilmodel, Stressperiods} from 'core/model/modflow';
-
-import {flatten, uniq, upperFirst} from 'lodash';
+import {Soilmodel, Stressperiods, Transport} from 'core/model/modflow';
 
 import Moment from 'moment';
 import Slider from 'rc-slider';
 
 const SliderWithTooltip = Slider.createSliderWithTooltip(Slider);
-
 
 const styles = {
     dot: {
@@ -23,7 +20,7 @@ const styles = {
     }
 };
 
-class ResultsSelector extends React.Component {
+class ResultsSelectorTransport extends React.Component {
 
     state = {
         temporaryTotim: null
@@ -67,36 +64,30 @@ class ResultsSelector extends React.Component {
         ))
     };
 
-    typeOptions = () => {
-        const {layerValues} = this.props;
-        if (!layerValues) {
-            return [];
-        }
-
-        const types = uniq(flatten(layerValues));
-        return types.filter(t => t === 'head' || t === 'drawdown')
-            .map((v, id) => ({key: id, value: v, text: upperFirst(v)}))
+    substanceOptions = () => {
+        const {transport} = this.props;
+        return transport.substances.all.map((s, idx) => ({key: idx, value: idx, text: s.name}))
     };
 
     formatTimestamp = (key) => {
         return Moment.utc(this.props.stressperiods.dateTimes[key]).format('L');
     };
 
-    handleChangeType = (e, {value}) => {
+    handleChangeSubstance = (e, {value}) => {
         const {layer, totim} = this.props.data;
         return this.props.onChange({
+            substance: value,
             layer,
-            totim,
-            type: value
+            totim
         });
     };
 
     handleChangeLayer = (e, {value}) => {
-        const {totim, type} = this.props.data;
+        const {totim, substance} = this.props.data;
         return this.props.onChange({
+            substance,
             layer: value,
-            totim,
-            type
+            totim
         });
     };
 
@@ -108,15 +99,15 @@ class ResultsSelector extends React.Component {
     };
 
     handleAfterChangeSlider = () => {
-        const {layer, type} = this.props.data;
+        const {layer, substance} = this.props.data;
         const totim = this.state.temporaryTotim;
-        return this.props.onChange({layer, totim, type});
+        return this.props.onChange({substance, layer, totim});
     };
 
     render() {
         const {temporaryTotim} = this.state;
         const {data, totalTimes} = this.props;
-        const {type, layer} = data;
+        const {substance, layer} = data;
 
         return (
             <Grid columns={2}>
@@ -125,13 +116,13 @@ class ResultsSelector extends React.Component {
                         <Segment color={'grey'}>
                             <Form>
                                 <Form.Group inline>
-                                    <label>Select type</label>
+                                    <label>Select substance:</label>
                                     <Form.Dropdown
                                         selection
                                         style={{zIndex: 1002, minWidth: '8em'}}
-                                        options={this.typeOptions()}
-                                        value={type}
-                                        onChange={this.handleChangeType}
+                                        options={this.substanceOptions()}
+                                        value={substance}
+                                        onChange={this.handleChangeSubstance}
                                     />
                                 </Form.Group>
                                 <Form.Select
@@ -171,13 +162,14 @@ class ResultsSelector extends React.Component {
     }
 }
 
-ResultsSelector.proptypes = {
+ResultsSelectorTransport.proptypes = {
     data: PropTypes.object.isRequired,
     onChange: PropTypes.func.isRequired,
     layerValues: PropTypes.object.isRequired,
     totalTimes: PropTypes.object.isRequired,
     soilmodel: PropTypes.instanceOf(Soilmodel).isRequired,
-    stressperiods: PropTypes.instanceOf(Stressperiods).isRequired
+    stressperiods: PropTypes.instanceOf(Stressperiods).isRequired,
+    transport: PropTypes.instanceOf(Transport).isRequired
 };
 
-export default ResultsSelector;
+export default ResultsSelectorTransport;

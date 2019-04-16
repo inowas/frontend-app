@@ -26,31 +26,42 @@ const menuItems = [
                 icon: <Icon name="map marker alternate"/>
             }]
     }, {
-        header: 'Packages',
+        header: 'Calculation',
         items: [
             {
-                name: 'Modflow',
+                name: 'Mf packages',
                 property: 'modflow',
                 icon: <Icon name="retweet"/>
             },
             {
-                name: 'MT3D',
+                name: 'Mt packages',
                 property: 'mt3d',
                 icon: <Icon name="exchange"/>
+            },
+            {
+                name: 'Run calculation',
+                property: 'calculation',
+                icon: <Icon name="save outline"/>
             }
         ]
     }, {
-        header: 'Calculation',
+        header: 'Results',
         items: [
             {
-                name: 'Calculation',
-                property: 'calculation',
-                icon: <Icon name="save outline"/>
+                name: 'Flow',
+                property: 'flow',
+                icon: <Icon name="chart bar outline"/>,
             },
             {
-                name: 'Results',
-                property: 'results',
+                name: 'Budget',
+                property: 'budget',
                 icon: <Icon name="chart bar outline"/>,
+                disabled: true
+            },
+            {
+                name: 'Concentration',
+                property: 'concentration',
+                icon: <Icon name="chart bar outline"/>
             }
         ]
     }, {

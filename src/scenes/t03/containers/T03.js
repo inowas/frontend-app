@@ -243,8 +243,12 @@ class T03 extends React.Component {
                 return (<Content.Mt3d/>);
             case 'calculation':
                 return (<Content.Calculation/>);
-            case 'results':
-                return (<Content.Results/>);
+            case 'flow':
+                return (<Content.FlowResults/>);
+            case 'Budget':
+                return (<Content.FlowResults/>);
+            case 'concentration':
+                return (<Content.TransportResults/>);
             case 'optimization':
                 return (<Content.Optimization/>);
             default:

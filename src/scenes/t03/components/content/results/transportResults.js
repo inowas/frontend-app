@@ -4,21 +4,20 @@ import {connect} from 'react-redux';
 import PropTypes from 'prop-types';
 
 import {Accordion, Button, Grid, Header, Icon, Segment} from 'semantic-ui-react';
-import {BoundaryCollection, Calculation, ModflowModel, Soilmodel} from 'core/model/modflow';
+import {BoundaryCollection, Calculation, ModflowModel, Soilmodel, Transport} from 'core/model/modflow';
 import ResultsMap from '../../maps/resultsMap';
 import ResultsChart from '../../../../shared/complexTools/ResultsChart';
-import ResultsSelector from '../../../../shared/complexTools/ResultsSelector';
-import {fetchCalculationResults, sendCommand} from 'services/api';
+import {fetchCalculationResultsTransport, sendCommand} from 'services/api';
 import ScenarioAnalysisCommand from '../../../../t07/commands/scenarioAnalysisCommand';
 import {withRouter} from 'react-router-dom';
+import ResultsSelectorTransport from '../../../../shared/complexTools/ResultsSelectorTransport';
 
-class Results extends React.Component {
+class TransportResults extends React.Component {
 
     constructor(props) {
         super(props);
         const {model} = this.props;
         const {gridSize} = model;
-
 
         this.state = {
             isLoading: false,
@@ -26,7 +25,7 @@ class Results extends React.Component {
             selectedRow: Math.floor(gridSize.nY / 2),
             selectedCol: Math.floor(gridSize.nX / 2),
             selectedTotim: 0,
-            selectedType: 'head',
+            selectedSubstance: 0,
             layerValues: null,
             totalTimes: null,
             fetching: false,
@@ -64,26 +63,25 @@ class Results extends React.Component {
         }
 
         this.fetchData({
+            substance: this.state.selectedSubstance,
             layer: this.state.selectedLay,
             totim: this.state.selectedTotim,
-            type: this.state.selectedType,
         })
     }
 
-    fetchData({layer, totim, type}) {
+    fetchData({substance, layer, totim}) {
         const calculationId = this.props.calculation.id;
 
         this.setState({fetching: true}, () =>
-            fetchCalculationResults({calculationId, layer, totim, type}, data =>
-                    this.setState({
-                        selectedLay: layer,
-                        selectedTotim: totim,
-                        selectedType: type,
-                        data,
-                        fetching: false
-                    }),
-                (e) => this.setState({isError: e})
-            )
+            fetchCalculationResultsTransport({calculationId, substance, layer, totim}, data => {
+                return this.setState({
+                    selectedLay: layer,
+                    selectedTotim: totim,
+                    selectedSubstance: substance,
+                    data,
+                    fetching: false
+                });
+            }, (e) => this.setState({isError: e}))
         );
     }
 
@@ -125,9 +123,8 @@ class Results extends React.Component {
             )
         }
 
-
-        const {data, selectedCol, selectedRow, selectedType, selectedLay, selectedTotim, layerValues, totalTimes} = this.state;
-        const {model, boundaries, soilmodel} = this.props;
+        const {data, selectedCol, selectedRow, selectedSubstance, selectedLay, selectedTotim, layerValues, totalTimes} = this.state;
+        const {model, boundaries, soilmodel, transport} = this.props;
         const {activeIndex} = this.state;
 
         return (
@@ -135,23 +132,24 @@ class Results extends React.Component {
                 <Grid padded>
                     <Grid.Row>
                         <Grid.Column>
-                            <ResultsSelector
+                            <ResultsSelectorTransport
                                 data={{
-                                    type: selectedType,
+                                    substance: selectedSubstance,
                                     layer: selectedLay,
                                     totim: selectedTotim,
                                 }}
-                                onChange={({type, layer, totim}) => {
+                                onChange={({substance, layer, totim}) => {
                                     return this.setState({
-                                        selectedType: type,
+                                        selectedSubstance: substance,
                                         selectedLay: layer,
                                         selectedTotim: totim
-                                    }, () => this.fetchData({layer, totim, type}));
+                                    }, () => this.fetchData({substance, layer, totim}));
                                 }}
                                 layerValues={layerValues}
                                 soilmodel={soilmodel}
                                 stressperiods={model.stressperiods}
                                 totalTimes={totalTimes}
+                                transport={transport}
                             />
 
                             <Segment color={'grey'} loading={this.state.fetching}>
@@ -174,6 +172,8 @@ class Results extends React.Component {
                                                     selectedRow: colRow[1]
                                                 })
                                             }}
+                                            colors={['#0000F0', '#016CFD', '#5FFF97', '#FDCC01', '#E20000']}
+                                            opacity={0.75}
                                         />
                                         }
                                     </Accordion.Content>
@@ -226,11 +226,12 @@ const mapStateToProps = state => {
         boundaries: BoundaryCollection.fromObject(state.T03.boundaries),
         calculation: state.T03.calculation ? Calculation.fromObject(state.T03.calculation) : null,
         model: ModflowModel.fromObject(state.T03.model),
-        soilmodel: Soilmodel.fromObject(state.T03.soilmodel)
+        soilmodel: Soilmodel.fromObject(state.T03.soilmodel),
+        transport: Transport.fromObject(state.T03.transport)
     };
 };
 
-Results.proptypes = {
+TransportResults.proptypes = {
     history: PropTypes.object.isRequired,
     boundaries: PropTypes.instanceOf(BoundaryCollection).isRequired,
     calculation: PropTypes.instanceOf(Calculation).isRequired,
@@ -238,4 +239,4 @@ Results.proptypes = {
     soilmodel: PropTypes.instanceOf(Soilmodel).isRequired,
 };
 
-export default withRouter(connect(mapStateToProps)(Results));
+export default withRouter(connect(mapStateToProps)(TransportResults));
