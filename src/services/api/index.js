@@ -4,7 +4,8 @@ import FlopyPackages from '../../core/model/flopy/packages/FlopyPackages';
 
 const BASE_URL = process.env.REACT_APP_API_URL + '/v3';
 export const GEOPROCESSING_URL = 'https://geoprocessing.inowas.com';
-export const MODFLOW_CALCULATION_URL = 'https://modflow.inowas.com';
+//export const MODFLOW_CALCULATION_URL = 'https://modflow.inowas.com';
+export const MODFLOW_CALCULATION_URL =  'http://localhost:5000';
 export const JSON_SCHEMA_URL = process.env.REACT_APP_SCHEMA_URL || 'https://schema.inowas.com';
 
 const getToken = () => {

@@ -10,16 +10,32 @@ import {fetchModflowFile} from 'services/api';
 
 class Files extends React.Component {
 
-    state = {
-        isLoading: false,
-        isError: false,
-        selectedFile: 'mf.list',
-        file: null
-
-    };
+    constructor(props) {
+        super(props);
+        this.state = {
+            isLoading: false,
+            isError: false,
+            selectedFile: this.props.type === 'modflow' ? 'mf.list' : 'mt.list',
+            file: null
+        };
+    }
 
     componentDidMount() {
-        this.fetchFile();
+        if (!this.props.calculation) {
+            return;
+        }
+
+        switch (this.props.type) {
+            case 'mf':
+                this.setState({selectedFile: 'mf.list'}, this.fetchFile);
+                break;
+            case 'mt':
+                this.setState({selectedFile: 'mt.list'}, this.fetchFile);
+                break;
+            default:
+                this.setState({selectedFile: 'mf.list'}, this.fetchFile);
+                break;
+        }
     }
 
 
@@ -51,11 +67,22 @@ class Files extends React.Component {
     };
 
     render() {
+        if (!this.props.calculation) {
+            return null;
+        }
+
         const {calculation} = this.props;
         const {selectedFile} = this.state;
 
-        if (!calculation) {
-            return null;
+        let {files} = calculation;
+        if (this.props.type === 'mf') {
+            files = files.filter(f => !f.toLowerCase().startsWith('mt'))
+                .sort((a, b) => a.localeCompare(b, undefined, {sensitivity: 'base'}))
+        }
+
+        if (this.props.type === 'mt') {
+            files = files.filter(f => !f.toLowerCase().startsWith('mf'))
+                .sort((a, b) => a.localeCompare(b, undefined, {sensitivity: 'base'}))
         }
 
         return (
@@ -65,7 +92,7 @@ class Files extends React.Component {
                         <Header as={'h3'}>File list</Header>
                         <Segment color={'grey'}>
                             <List>
-                                {calculation.files.map((f, idx) => (
+                                {files.map((f, idx) => (
                                     <List.Item
                                         as={selectedFile === f ? '' : 'a'}
                                         key={idx}
@@ -97,7 +124,8 @@ const mapStateToProps = state => {
 };
 
 Files.proptypes = {
-    calculation: PropTypes.instanceOf(Calculation)
+    calculation: PropTypes.instanceOf(Calculation),
+    type: PropTypes.string.isRequired
 };
 
 export default connect(mapStateToProps)(Files);

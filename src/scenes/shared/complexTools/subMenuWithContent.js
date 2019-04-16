@@ -23,11 +23,10 @@ class SubMenuWithContent extends React.Component {
                                 <Menu.Item>&nbsp;</Menu.Item>
                                 {menuItems.map(i =>
                                     <Menu.Item
-                                        name={i.name}
                                         key={i.id}
                                         active={i.id === selected}
                                         onClick={() => this.setState({selected: i.id})}
-                                    />
+                                    >{i.name}</Menu.Item>
                                 )}
                                 <Menu.Item>&nbsp;</Menu.Item>
                             </Menu>
