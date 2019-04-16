@@ -12,7 +12,7 @@ export const defaults = () => {
             parameters: [{
                 order: 0,
                 id: 'Qw',
-                name: 'Constant pumped flow rate<br/>Q<sub>w [m3/d]',
+                name: 'Constant pumped modflow rate<br/>Q<sub>w [m3/d]',
                 min: 0,
                 max: 10000,
                 value: 1300,

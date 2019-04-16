@@ -4,11 +4,11 @@ import PropTypes from 'prop-types';
 import {Grid, Header, Segment} from 'semantic-ui-react';
 import {BoundaryCollection, Calculation, ModflowModel, Soilmodel} from 'core/model/modflow';
 import {ScenarioAnalysis} from 'core/model/scenarioAnalysis';
-import ResultsSelector from '../../shared/complexTools/ResultsSelector';
+import ResultsSelectorFlow from '../../shared/complexTools/ResultsSelectorFlow';
 import ResultsMap from '../../shared/complexTools/ResultsMap';
 import ResultsChart from '../../shared/complexTools/ResultsChart';
 import {chunk, compact, flatten} from 'lodash';
-import {fetchCalculationResults} from '../../../services/api';
+import {fetchCalculationResultsFlow} from '../../../services/api';
 
 class CrossSection extends React.Component {
 
@@ -105,7 +105,7 @@ class CrossSection extends React.Component {
         return this.setState({models, fetching: true},
             () => models.forEach(m => {
                 if (this.props.selected.indexOf(m.id) >= 0) {
-                    fetchCalculationResults({
+                    fetchCalculationResultsFlow({
                         calculationId: m.calculationId,
                         type: selectedType,
                         totim: selectedTotim,
@@ -226,7 +226,7 @@ class CrossSection extends React.Component {
         return (
             <div>
                 <Segment color={'grey'} loading={this.state.isLoading}>
-                    <ResultsSelector
+                    <ResultsSelectorFlow
                         data={{
                             type: selectedType,
                             layer: selectedLay,

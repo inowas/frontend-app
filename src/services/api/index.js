@@ -4,7 +4,8 @@ import FlopyPackages from '../../core/model/flopy/packages/FlopyPackages';
 
 const BASE_URL = process.env.REACT_APP_API_URL + '/v3';
 export const GEOPROCESSING_URL = 'https://geoprocessing.inowas.com';
-export const MODFLOW_CALCULATION_URL = 'https://modflow.inowas.com';
+//export const MODFLOW_CALCULATION_URL = 'https://modflow.inowas.com';
+export const MODFLOW_CALCULATION_URL =  'http://localhost:5000';
 export const JSON_SCHEMA_URL = process.env.REACT_APP_SCHEMA_URL || 'https://schema.inowas.com';
 
 const getToken = () => {
@@ -129,8 +130,23 @@ export const fetchCalculationDetails = (
     }).then(response => response.data).then(onSuccess).catch(onError);
 };
 
-export const fetchCalculationResults = ({calculationId, layer, totim, type}, onSuccess, onError) => {
+export const fetchCalculationResultsFlow = ({calculationId, layer, totim, type}, onSuccess, onError) => {
     const url = `${MODFLOW_CALCULATION_URL}/${calculationId}/results/types/${type}/layers/${layer}/totims/${totim}`;
+
+    return axios({
+        method: 'GET',
+        url: url,
+        mode: 'no-cors',
+        headers: {
+            'Access-Control-Allow-Origin': '*',
+            'Content-Type': 'application/json'
+        },
+        data: {}
+    }).then(response => response.data).then(onSuccess).catch(onError);
+};
+
+export const fetchCalculationResultsTransport = ({calculationId, substance, layer, totim}, onSuccess, onError) => {
+    const url = `${MODFLOW_CALCULATION_URL}/${calculationId}/results/types/concentration/substance/${substance}/layers/${layer}/totims/${totim}`;
 
     return axios({
         method: 'GET',

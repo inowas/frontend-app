@@ -15,6 +15,7 @@ import Soilmodel from './soilmodel/Soilmodel';
 import Stressperiod from './Stressperiod';
 import Stressperiods from './Stressperiods';
 import TimeUnit from './TimeUnit';
+import Transport from './transport/Transport';
 
 export {
     Cells,
@@ -33,5 +34,6 @@ export {
     Soilmodel,
     Stressperiod,
     Stressperiods,
-    TimeUnit
+    TimeUnit,
+    Transport
 }

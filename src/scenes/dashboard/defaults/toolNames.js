@@ -19,7 +19,7 @@ const toolNames = [
         name: 'MODFLOW model scenario manager',
     }, {
         slug: 'T08',
-        name: '1D transport model (Ogata-Banks)',
+        name: '1D mt3d model (Ogata-Banks)',
     }, {
         slug: 'T09A',
         name: 'Depth of saltwater interface',

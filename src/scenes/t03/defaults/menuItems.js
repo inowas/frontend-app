@@ -19,29 +19,49 @@ const menuItems = [
                 name: 'Boundaries',
                 property: 'boundaries',
                 icon: <Icon name="map marker alternate"/>
+            },
+            {
+                name: 'Transport',
+                property: 'transport',
+                icon: <Icon name="map marker alternate"/>
             }]
     }, {
         header: 'Calculation',
         items: [
             {
-                name: 'Flow',
-                property: 'flow',
+                name: 'Mf packages',
+                property: 'modflow',
                 icon: <Icon name="retweet"/>
             },
             {
-                name: 'Transport',
-                property: 'transport',
+                name: 'Mt packages',
+                property: 'mt3d',
                 icon: <Icon name="exchange"/>
             },
             {
-                name: 'Calculation',
+                name: 'Run calculation',
                 property: 'calculation',
                 icon: <Icon name="save outline"/>
+            }
+        ]
+    }, {
+        header: 'Results',
+        items: [
+            {
+                name: 'Flow',
+                property: 'flow',
+                icon: <Icon name="chart bar outline"/>,
             },
             {
-                name: 'Results',
-                property: 'results',
+                name: 'Budget',
+                property: 'budget',
                 icon: <Icon name="chart bar outline"/>,
+                disabled: true
+            },
+            {
+                name: 'Concentration',
+                property: 'concentration',
+                icon: <Icon name="chart bar outline"/>
             }
         ]
     }, {

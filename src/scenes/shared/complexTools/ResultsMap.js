@@ -174,7 +174,7 @@ class ResultsMap extends React.Component {
 
         const rainbowVis = rainbowFactory(
             {min: minData, max: maxData},
-            ['#800080', '#ff2200', '#fcff00', '#45ff8e', '#15d6ff', '#0000FF']
+            this.props.colors || ['#800080', '#ff2200', '#fcff00', '#45ff8e', '#15d6ff', '#0000FF']
         );
 
         return (
@@ -217,7 +217,7 @@ class ResultsMap extends React.Component {
                         rainbow={rainbowVis}
                         dataArray={createGridData(data, gridSize.nX, gridSize.nY)}
                         bounds={boundingBox.getBoundsLatLng()}
-                        opacity={0.5}
+                        opacity={this.props.opacity || 0.5}
                         model={model}
                     />}
                     {this.renderLegend(rainbowVis)}
@@ -237,6 +237,7 @@ ResultsMap.propTypes = {
     onClick: PropTypes.func,
     onViewPortChange: PropTypes.func,
     viewport: PropTypes.object,
+    colors: PropTypes.array
 };
 
 export default ResultsMap;

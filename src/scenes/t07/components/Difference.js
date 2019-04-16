@@ -6,7 +6,7 @@ import {Form, Grid, Header, Segment} from 'semantic-ui-react';
 import {BoundaryCollection, ModflowModel} from 'core/model/modflow';
 import {fetchUrl} from 'services/api';
 import {ScenarioAnalysis} from 'core/model/scenarioAnalysis';
-import ResultsSelector from '../../shared/complexTools/ResultsSelector';
+import ResultsSelectorFlow from '../../shared/complexTools/ResultsSelectorFlow';
 import ResultsMap from '../../shared/complexTools/ResultsMap';
 import ResultsChart from '../../shared/complexTools/ResultsChart';
 import {cloneDeep} from 'lodash';
@@ -164,7 +164,7 @@ class Difference extends React.Component {
         return (
             <div>
                 <Segment color={'grey'} loading={this.state.isLoading}>
-                    <ResultsSelector
+                    <ResultsSelectorFlow
                         data={{
                             type: selectedType,
                             layer: selectedLay,

@@ -19,7 +19,7 @@ import {
     updateModel,
     updateOptimization,
     updatePackages,
-    updateSoilmodel
+    updateSoilmodel, updateTransport
 } from '../actions/actions';
 
 import {
@@ -27,7 +27,7 @@ import {
     BoundaryFactory,
     Calculation,
     ModflowModel,
-    Soilmodel,
+    Soilmodel, Transport,
 } from 'core/model/modflow';
 import ModflowModelCommand from '../commands/modflowModelCommand';
 import CalculationProgressBar from '../components/content/calculation/calculationProgressBar';
@@ -35,7 +35,7 @@ import OptimizationProgressBar from '../components/content/optimization/optimiza
 import {CALCULATION_STATE_FINISHED} from '../components/content/calculation/CalculationStatus';
 import FlopyPackages from 'core/model/flopy/packages/FlopyPackages';
 import {FlopyModflow} from 'core/model/flopy/packages/mf';
-import {Mt3dms} from 'core/model/flopy/packages/mt';
+import {FlopyMt3d} from 'core/model/flopy/packages/mt';
 import {fetchCalculationDetails} from 'services/api';
 import {cloneDeep} from 'lodash';
 
@@ -133,6 +133,7 @@ class T03 extends React.Component {
                     this.fetchBoundaries(id);
                     this.fetchPackages(id);
                     this.fetchSoilmodel(id);
+                    this.fetchTransport(id);
 
                     if (modflowModel.calculationId) {
                         fetchCalculationDetails(modflowModel.calculationId,
@@ -184,11 +185,21 @@ class T03 extends React.Component {
         );
     };
 
+    fetchTransport(id) {
+        fetchUrl(`modflowmodels/${id}/transport`,
+            data => this.props.updateTransport(Transport.fromQuery(data)),
+            error => this.setState(
+                {error, isLoading: false},
+                () => this.handleError(error)
+            )
+        );
+    };
+
     calculatePackages = () => {
         return new Promise((resolve, reject) => {
             this.setState({calculatePackages: 'calculation'});
             const mf = FlopyModflow.createFromModel(this.props.model, this.props.soilmodel, this.props.boundaries);
-            const mt = Mt3dms.fromDefaults();
+            const mt = FlopyMt3d.createFromTransport(this.props.transport, this.props.boundaries);
             const modelId = this.props.model.id;
 
             const flopyPackages = FlopyPackages.create(modelId, mf, mt);
@@ -222,16 +233,22 @@ class T03 extends React.Component {
                     return (<Content.CreateBoundary/>);
                 }
                 return (<Content.Boundaries/>);
-            case 'observations':
-                return (<Content.Observations/>);
-            case 'flow':
-                return (<Content.Flow/>);
             case 'transport':
                 return (<Content.Transport/>);
+            case 'observations':
+                return (<Content.Observations/>);
+            case 'modflow':
+                return (<Content.Modflow/>);
+            case 'mt3d':
+                return (<Content.Mt3d/>);
             case 'calculation':
                 return (<Content.Calculation/>);
-            case 'results':
-                return (<Content.Results/>);
+            case 'flow':
+                return (<Content.FlowResults/>);
+            case 'Budget':
+                return (<Content.FlowResults/>);
+            case 'concentration':
+                return (<Content.TransportResults/>);
             case 'optimization':
                 return (<Content.Optimization/>);
             default:
@@ -264,7 +281,8 @@ class T03 extends React.Component {
 
         if (!(this.props.model instanceof ModflowModel) ||
             !(this.props.boundaries instanceof BoundaryCollection) ||
-            !(this.props.soilmodel instanceof Soilmodel)
+            !(this.props.soilmodel instanceof Soilmodel) ||
+            !(this.props.transport instanceof Transport)
         ) {
             return (
                 <AppContainer navbarItems={navigation}>
@@ -334,11 +352,12 @@ const mapStateToProps = state => ({
     boundaries: state.T03.boundaries ? BoundaryCollection.fromObject(state.T03.boundaries) : null,
     calculation: state.T03.calculation ? Calculation.fromObject(state.T03.calculation) : null,
     packages: state.T03.packages ? FlopyPackages.fromObject(state.T03.packages) : null,
-    soilmodel: state.T03.soilmodel ? Soilmodel.fromObject(state.T03.soilmodel) : null
+    soilmodel: state.T03.soilmodel ? Soilmodel.fromObject(state.T03.soilmodel) : null,
+    transport: state.T03.transport ? Transport.fromObject(state.T03.transport) : null
 });
 
 const mapDispatchToProps = {
-    clear, updateCalculation, updateBoundaries, updatePackages, updateModel, updateOptimization, updateSoilmodel
+    clear, updateCalculation, updateBoundaries, updatePackages, updateModel, updateOptimization, updateTransport, updateSoilmodel
 };
 
 

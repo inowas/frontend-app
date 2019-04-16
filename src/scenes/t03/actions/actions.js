@@ -9,13 +9,14 @@ import {
 } from '../reducers/soilmodel';
 import {UPDATE_OPTIMIZATION} from '../reducers/optimization';
 
-import {Calculation, ModflowModel, Stressperiods} from 'core/model/modflow';
+import {Calculation, ModflowModel, Stressperiods, Transport} from 'core/model/modflow';
 import {BoundaryCollection} from 'core/model/modflow/boundaries';
 import {Soilmodel, SoilmodelLayer} from 'core/model/modflow/soilmodel';
-import {Mt3dms} from 'core/model/flopy/packages/mt';
+import {FlopyMt3d} from 'core/model/flopy/packages/mt';
 import {Optimization} from 'core/model/modflow/optimization';
 import FlopyPackages from '../../../core/model/flopy/packages/FlopyPackages';
 import {UPDATE_PACKAGES} from '../reducers/packages';
+import {UPDATE_TRANSPORT} from '../reducers/transport';
 
 export function clear() {
     return {
@@ -56,6 +57,17 @@ export function updateBoundaries(boundaryCollection) {
     };
 }
 
+export function updateTransport(transport) {
+    if (!(transport instanceof Transport)) {
+        throw new Error('Transport is expected to be instance of Transport');
+    }
+
+    return {
+        type: UPDATE_TRANSPORT,
+        payload: transport.toObject()
+    };
+}
+
 export function updateCalculation(calculation) {
     if (!(calculation instanceof Calculation)) {
         throw new Error('Calculation is expected to be instance of Calculation');
@@ -79,8 +91,8 @@ export function updatePackages(packages) {
 }
 
 export function updateMt3dms(mt3dms) {
-    if (!mt3dms instanceof Mt3dms) {
-        throw new Error('Mt3dms is expected to be instance of Mt3dms');
+    if (!mt3dms instanceof FlopyMt3d) {
+        throw new Error('FlopyMt3d is expected to be instance of FlopyMt3d');
     }
 
     return {
