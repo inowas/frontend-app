@@ -17,6 +17,7 @@ class WeightAssignment {
     _meta = {};
     _method = 'rnk';
     _subMethod = '';
+    _subParam = 0;
     _name = 'New Weight Assignment';
     _weights = new WeightsCollection();
     _isActive = false;
@@ -69,6 +70,7 @@ class WeightAssignment {
         wa.meta = obj.meta || {};
         wa.method = obj.method;
         wa.subMethod = obj.subMethod;
+        wa.subParam = obj.subParam;
         wa.name = obj.name;
         wa.parent = obj.parent;
         wa.weightsCollection = WeightsCollection.fromArray(obj.weights);
@@ -118,6 +120,14 @@ class WeightAssignment {
         this._subMethod = value;
     }
 
+    get subParam() {
+        return this._subParam;
+    }
+
+    set subParam(value) {
+        this._subParam = value;
+    }
+
     get name() {
         return this._name;
     }
@@ -149,6 +159,7 @@ class WeightAssignment {
             isActive: this.isActive,
             method: this.method,
             subMethod: this.subMethod,
+            subParam: this.subParam,
             name: this.name,
             parent: this.parent,
             weights: this.weightsCollection.toArray()
@@ -185,6 +196,9 @@ class WeightAssignment {
                 if (this.subMethod === 'rec') {
                     return prev + cur.r;
                 }
+                if (this.subMethod === 'exp') {
+                    return prev + Math.pow(cur.n, this.subParam);
+                }
                 return prev + cur.n;
             }, 0);
 
@@ -194,6 +208,9 @@ class WeightAssignment {
                 }
                 if (this.subMethod === 'rec') {
                     weight.value = variables[key].r / sum;
+                }
+                if (this.subMethod === 'exp') {
+                    weight.value = Math.pow(variables[key].n, this.subParam) / sum;
                 }
                 this.weightsCollection.update(weight);
             });

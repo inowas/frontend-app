@@ -9,6 +9,7 @@ import {Raster} from 'core/model/mcda/gis';
 import {min, max} from 'scenes/shared/rasterData/helpers';
 import {BoundingBox, GridSize} from 'core/model/geometry';
 import {dropData} from 'services/api';
+import UploadJsonModal from './uploadJsonModal';
 
 class CriteriaRasterUpload extends React.Component {
     state = {
@@ -17,6 +18,7 @@ class CriteriaRasterUpload extends React.Component {
         selectedBand: 0,
         showInfo: true,
         showUploadModal: false,
+        showUploadJSON: false,
         errorFetching: false,
         errorUploading: false,
         showBasicLayer: false
@@ -26,7 +28,12 @@ class CriteriaRasterUpload extends React.Component {
 
     handleUploadClick = () => this.setState({showUploadModal: true});
 
-    handleCancelModal = () => this.setState({showUploadModal: false});
+    handleUploadJSONClick = () => this.setState({showUploadJSON: true});
+
+    handleCancelModal = () => this.setState({
+        showUploadJSON: false,
+        showUploadModal: false
+    });
 
     handleChangeRaster = raster => {
         if (!(raster instanceof Raster)) {
@@ -98,7 +105,7 @@ class CriteriaRasterUpload extends React.Component {
     onToggleBasicLayer = () => this.setState({showBasicLayer: !this.state.showBasicLayer});
 
     render() {
-        const {showInfo, showBasicLayer, showUploadModal} = this.state;
+        const {showInfo, showBasicLayer, showUploadJSON, showUploadModal} = this.state;
         const {raster} = this.props.criterion;
 
         return (
@@ -140,9 +147,22 @@ class CriteriaRasterUpload extends React.Component {
                                         fluid
                                         onClick={this.handleUploadClick}
                                     >
-                                        <Icon name='upload'/>Upload Raster Tile
+                                        <Icon name='upload'/>Upload Raster File
                                     </Button>
                                 </Form.Group>
+                                {false &&
+                                    <Form.Group>
+                                        <Button
+                                            primary
+                                            icon
+                                            labelPosition='left'
+                                            fluid
+                                            onClick={this.handleUploadJSONClick}
+                                        >
+                                            <Icon name='file alternate'/>Upload GeoJSON
+                                        </Button>
+                                    </Form.Group>
+                                }
                                 <Form.Group>
                                     <Checkbox toggle label='Basic Tile Layer' onClick={this.onToggleBasicLayer}/>
                                 </Form.Group>
@@ -187,12 +207,19 @@ class CriteriaRasterUpload extends React.Component {
                         }
                     </Grid.Column>
                 </Grid.Row>
+                {showUploadJSON &&
+                <UploadJsonModal
+                    boundingBox={raster.boundingBox}
+                    gridSize={this.props.gridSize}
+                    onCancel={this.handleCancelModal}
+                />
+                }
                 {showUploadModal &&
                 <RasterfileUploadModal
                     gridSize={this.props.gridSize}
                     onCancel={this.handleCancelModal}
                     onChange={this.handleUploadFile}
-                    parameter={{unit: 'm'}}
+                    parameter={{unit: this.props.criterion.unit}}
                     discreteRescaling={this.props.criterion.type === 'discrete'}
                 />
                 }

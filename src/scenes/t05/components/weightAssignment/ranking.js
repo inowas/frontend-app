@@ -29,7 +29,18 @@ class Ranking extends React.Component {
 
     handleChangeSubMethod = (e, {name, value}) => {
         const wa = WeightAssignment.fromObject(this.state.wa);
+
+        if (value === 'exp') {
+            wa.subParam = 2;
+        }
+
         wa[name] = value;
+        wa.calculateWeights();
+        this.props.handleChange(wa);
+    };
+
+    handleChangeSubParam = () => {
+        const wa = WeightAssignment.fromObject(this.state.wa);
         wa.calculateWeights();
         this.props.handleChange(wa);
     };
@@ -86,7 +97,8 @@ class Ranking extends React.Component {
                         choose between two methods:</p>
                     <p><b>Rank sum weight:</b> (n - rj + 1) / &Sigma;(n - rj + 1)</p>
                     <p><b>Reciprocal weight:</b> (1 / rj) / &Sigma;(1 / rj)</p>
-                    <p>... for n = number of criteria, j = 1...n, rj = rank of criteria j and &Sigma; sum from j to n</p>
+                    <p><b>Exponential weight:</b> (n - rj + 1) ^ z / &Sigma;(n - rj + 1) ^ z</p>
+                    <p>... for n = number of criteria, j = 1...n, rj = rank of criteria j and &Sigma; sum from j to n, exponent z</p>
                 </Message>
                 }
                 {weights.length > 0 &&
@@ -120,26 +132,36 @@ class Ranking extends React.Component {
                                     value={this.state.wa.name}
                                 />
                             </Form.Field>
-                            <Form.Group inline>
-                                <label>Method</label>
-                                <Form.Radio
-                                    label='Rank sum weight'
-                                    name='subMethod'
-                                    value='sum'
-                                    checked={this.state.wa.subMethod === 'sum'}
+                            <Form.Field>
+                                <Form.Select
+                                    fluid
+                                    label='Method'
                                     onChange={this.handleChangeSubMethod}
-                                />
-                                <Form.Radio
-                                    label='Rank reciprocal weight'
+                                    options={[
+                                        {key: 'sum', text: 'Rank sum weight', value: 'sum'},
+                                        {key: 'rec', text: 'Rank reciprocal weight', value: 'rec'},
+                                        {key: 'exp', text: 'Rank exponent', value: 'exp'}
+                                    ]}
                                     name='subMethod'
-                                    value='rec'
-                                    checked={this.state.wa.subMethod === 'rec'}
-                                    onChange={this.handleChangeSubMethod}
+                                    value={!this.state.wa.subMethod || this.state.wa.subMethod}
                                 />
-                            </Form.Group>
+                            </Form.Field>
+                            {this.state.wa.subMethod === 'exp' &&
+                                <Form.Field>
+                                    <Form.Input
+                                        fluid
+                                        onBlur={this.handleChangeSubParam}
+                                        onChange={this.handleLocalChange}
+                                        name='subParam'
+                                        type='number'
+                                        label='Exponent'
+                                        value={this.state.wa.subParam}
+                                    />
+                                </Form.Field>
+                            }
                         </Form>
                         <Segment textAlign='center' inverted color='grey' secondary>
-                            Weight Assignment
+                            Resulting Weights
                         </Segment>
                         <Table>
                             <Table.Header>

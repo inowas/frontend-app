@@ -49,7 +49,7 @@ class SuitabilityWeightAssignment extends React.Component {
     calculateSuitability(mcda) {
         const criteriaDataIsConsistent = mcda.criteria.filter(criterion => criterion.suitability.url !== '' && criterion.suitability.data.length === 0).length === 0;
         const criteriaConstraintsAreConsistent = mcda.criteria.filter(criterion => criterion.constraintRaster.url !== '' && criterion.constraintRaster.data.length === 0).length === 0;
-        const constraintsAreConsistent = mcda.constraints.raster.url !== '' && mcda.constraints.raster.data.length > 0;
+        const constraintsAreConsistent = !mcda.constraints.raster || (mcda.constraints.raster && mcda.constraints.raster.url !== '' && mcda.constraints.raster.data.length > 0);
 
         if (criteriaDataIsConsistent && constraintsAreConsistent && criteriaConstraintsAreConsistent) {
             this.setState(prevState => ({
@@ -140,7 +140,7 @@ class SuitabilityWeightAssignment extends React.Component {
         }
 
         if (criteria1.length === 0 && criteria2.length === 0) {
-            if (mcda.constraints.raster.url !== '' && mcda.constraints.raster.data.length === 0) {
+            if (mcda.constraints.raster && mcda.constraints.raster.url !== '' && mcda.constraints.raster.data.length === 0) {
                 this.setState(prevState => ({
                     calculationState: {
                         task: prevState.calculationState.task + 1,
@@ -168,12 +168,16 @@ class SuitabilityWeightAssignment extends React.Component {
         const mcda = this.props.mcda.toObject();
         const criteria1 = mcda.criteria.filter(criterion => criterion.suitability.url !== '' && criterion.suitability.data.length === 0);
         const criteria2 = mcda.criteria.filter(criterion => criterion.constraintRaster.url !== '' && criterion.constraintRaster.data.length === 0);
-        const globalCon = mcda.constraints.raster.url !== '' && mcda.constraints.raster.data.length === 0 ? 1 : 0;
+        const globalCon = mcda.constraints.raster && mcda.constraints.raster.url !== '' && mcda.constraints.raster.data.length === 0 ? 1 : 0;
         const numberOfTasks = criteria1.length + criteria2.length + globalCon + 1;
 
         this.setState({
             isRunning: true,
-            numberOfTasks: numberOfTasks
+            numberOfTasks: numberOfTasks,
+            calculationState: {
+                message: 'Starting Calculation',
+                task: 0
+            }
         });
 
         return this.getDataAndCalculate(mcda);

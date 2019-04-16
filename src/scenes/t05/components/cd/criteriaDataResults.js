@@ -3,7 +3,7 @@ import React from 'react';
 import {Criterion} from 'core/model/mcda/criteria';
 import CriteriaRasterMap from './criteriaRasterMap';
 import {heatMapColors} from '../../defaults/gis';
-import {Checkbox, Form, Grid, Radio, Segment} from 'semantic-ui-react';
+import {Button, Checkbox, Form, Grid, Icon, Radio, Segment} from 'semantic-ui-react';
 
 class CriteriaDataResults extends React.Component {
 
@@ -27,6 +27,33 @@ class CriteriaDataResults extends React.Component {
         return this.setState({
             [name]: value
         });
+    };
+
+    handleDownload = () => {
+        const {criterion} = this.props;
+        const suitability = criterion.suitability;
+
+        const cellSize = (suitability.boundingBox.yMax - suitability.boundingBox.yMin) / suitability.gridSize.nY;
+
+        let content = `NCOLS ${suitability.gridSize.nX}
+NROWS ${suitability.gridSize.nY}
+XLLCORNER ${suitability.boundingBox.xMin}
+YLLCORNER ${suitability.boundingBox.yMin}
+CELLSIZE ${cellSize}
+NODATA_VALUE -9999
+`;
+
+        suitability.data.forEach(row => {
+            content += row.join(' ');
+            content += '\n';
+
+        });
+
+        const file = new Blob([content], {type: 'text/plain'});
+        const element = document.createElement('a');
+        element.href = URL.createObjectURL(file);
+        element.download = `suitability_${criterion.name}.asc`;
+        element.click();
     };
 
     handleToggleBasicLayer = () => this.setState(prevState => ({showBasicLayer: !prevState.showBasicLayer}));
@@ -178,6 +205,19 @@ class CriteriaDataResults extends React.Component {
                             </Form.Field>
                         </Form>
                     </Segment>
+                    <Segment textAlign='center' inverted color='grey' secondary>
+                        Commands
+                    </Segment>
+                    <Button
+                        fluid
+                        primary
+                        icon
+                        labelPosition='left'
+                        onClick={this.handleDownload}
+                    >
+                        <Icon name='download'/>
+                        Download Suitability Raster
+                    </Button>
                 </Grid.Column>
                 <Grid.Column width={11}>
                 {criterion.suitability.data.length > 0 && !!legend &&
