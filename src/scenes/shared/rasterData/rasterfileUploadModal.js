@@ -1,6 +1,9 @@
 import PropTypes from 'prop-types';
 import React from 'react';
-import {Button, Dimmer, Form, Grid, Input, Radio, Header, List, Segment, Modal, Loader} from 'semantic-ui-react';
+import {
+    Button, Dimmer, Form, Grid, Input, Radio, Header, List, Segment, Modal, Loader,
+    Dropdown
+} from 'semantic-ui-react';
 import RasterDataImage from './rasterDataImage';
 import {GridSize} from 'core/model/geometry';
 import {fetchRasterMetaData, fetchRasterData, uploadRasterfile} from 'services/api';
@@ -18,6 +21,7 @@ class RasterfileUploadModal extends React.Component {
         hash: null,
         metadata: null,
         data: null,
+        interpolation: 0,
         isLoading: false,
         selectedBand: 0,
         errorFetching: false,
@@ -35,6 +39,9 @@ class RasterfileUploadModal extends React.Component {
         return null;
     };
 
+    handleChangeInterpolation = (e, {name, value}) => this.setState({
+        interpolation: value
+    });
 
     renderMetaData = () => {
         const {hash, metadata} = this.state;
@@ -118,7 +125,7 @@ class RasterfileUploadModal extends React.Component {
                     hash,
                     width: this.props.gridSize.nX,
                     height: this.props.gridSize.nY,
-                    method: 0 //discreteRescaling ? 0 : 1
+                    method: this.state.interpolation
                 };
 
                 fetchRasterMetaData({hash}, response => {
@@ -137,7 +144,7 @@ class RasterfileUploadModal extends React.Component {
     };
 
     render() {
-        const {data, metadata, selectedBand} = this.state;
+        const {data, interpolation, metadata, selectedBand} = this.state;
 
         return (
             <Modal size={'large'} open onClose={this.props.onCancel} dimmer={'blurring'}>
@@ -159,6 +166,23 @@ class RasterfileUploadModal extends React.Component {
                                             area.</List.Item>
                                         <List.Item>The gridsize will interpolated automatically.</List.Item>
                                     </List>
+                                    <Header as="h4" style={{'textAlign': 'left'}}>Interpolation method</Header>
+                                    <Dropdown
+                                        placeholder='Select interpolation method'
+                                        fluid
+                                        selection
+                                        name='interpolation'
+                                        options={[
+                                            {key: 0, text: 'Nearest-neighbor', value: 0},
+                                            {key: 1, text: 'Bi-linear', value: 1},
+                                            {key: 2, text: 'Bi-quadratic', value: 2},
+                                            {key: 3, text: 'Bi-cubic', value: 3},
+                                            {key: 4, text: 'Bi-quartic', value: 4},
+                                            {key: 5, text: 'Bi-quintic', value: 5},
+                                        ]}
+                                        value={interpolation}
+                                        onChange={this.handleChangeInterpolation}
+                                    /><br />
                                     <Input style={styles.input} type="file" onChange={this.handleUploadFile}/>
                                 </Segment>
                                 }

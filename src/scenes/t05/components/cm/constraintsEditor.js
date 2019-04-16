@@ -168,7 +168,6 @@ class ConstraintsEditor extends React.Component {
                             </Message>
                             <Button
                                 fluid positive
-                                disabled={readOnly || constraints.areas.length === 0}
                                 onClick={this.onCalculateActiveCells}
                             >
                                 Cut and Process
