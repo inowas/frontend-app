@@ -84,15 +84,6 @@ class Mt3dProperties extends React.Component {
         throw new Error('Package has to be instance of FlopyMt3dPackage');
     };
 
-    handleToggleEnabled = () => {
-        const changedMt3dms = FlopyMt3d.fromObject(this.state.mt);
-        changedMt3dms.toggleEnabled();
-        return this.setState({
-            isDirty: true,
-            mt: changedMt3dms.toObject()
-        });
-    };
-
     onMenuClick = (type) => {
         const path = this.props.match.path;
         const basePath = path.split(':')[0];
@@ -110,7 +101,7 @@ class Mt3dProperties extends React.Component {
         }
 
         const mt3d = FlopyMt3d.fromObject(this.state.mt);
-        const {boundaries} = this.props;
+        const {boundaries, packages} = this.props;
 
         const model = this.props.model.toObject();
         if (!model.stressperiods) {
@@ -161,6 +152,7 @@ class Mt3dProperties extends React.Component {
                 return (
                     <SsmPackageProperties
                         mtPackage={mt3d.getPackage(type)}
+                        mfPackages={packages.mf}
                         onChange={this.handleChangePackage}
                         readonly={readOnly}
                     />

@@ -111,7 +111,7 @@ class BtnPackageProperties extends AbstractPackageProperties {
                                     type={'number'}
                                     name={'cinact'}
                                     value={mtPackage.cinact}
-                                    disabled={readonly}
+                                    readOnly
                                     onBlur={this.handleOnBlur((value) => parseFloat(value).toExponential())}
                                     onChange={this.handleOnChange}
                                     style={styles.inputFix}

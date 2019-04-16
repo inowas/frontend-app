@@ -46,8 +46,11 @@ class AbstractPackageProperties extends React.Component {
         this.props.onChange(mtPackage);
     };
 
-    handleOnBlur = (e) => {
-        const {name, value} = e.target;
+    handleOnBlur = (cast) => (e) => {
+        const {name} = e.target;
+        let value;
+
+        (typeof cast === 'function') ? value = cast(e.target.value) : value = e.target.value;
         this.setState({mtPackage: {...this.state.mtPackage, [name]: value}});
         const mtPackage = this.props.mtPackage;
         mtPackage[name] = value;
