@@ -35,7 +35,7 @@ class AbstractPackageProperties extends React.Component {
         return this.setState({
             mfPackage: {
                 ...this.state.mfPackage,
-                ['_' + name]: value
+                [name]: value
             }
         });
     };

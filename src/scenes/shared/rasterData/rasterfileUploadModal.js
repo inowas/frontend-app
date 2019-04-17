@@ -205,7 +205,7 @@ class RasterfileUploadModal extends React.Component {
                                 {errorGridSize &&
                                 <Message negative>
                                     <Message.Header>Error</Message.Header>
-                                    <p>The grid size of the uploaded raster doesn't fit the models grid size. Use an
+                                    <p>The grid size of the uploaded raster does not fit the models grid size. Use an
                                         interpolation method or adjust the grid size of the input raster.</p>
                                 </Message>
                                 }
