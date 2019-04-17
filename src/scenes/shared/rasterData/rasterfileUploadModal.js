@@ -2,7 +2,7 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import {
     Button, Dimmer, Form, Grid, Input, Radio, Header, List, Segment, Modal, Loader,
-    Dropdown
+    Dropdown, Message
 } from 'semantic-ui-react';
 import RasterDataImage from './rasterDataImage';
 import {GridSize} from 'core/model/geometry';
@@ -26,6 +26,7 @@ class RasterfileUploadModal extends React.Component {
         selectedBand: 0,
         errorFetching: false,
         errorUploading: false,
+        errorGridSize: false
     };
 
     handleSave = () => {
@@ -91,7 +92,12 @@ class RasterfileUploadModal extends React.Component {
     };
 
     renderBands = () => {
-        const {data, selectedBand} = this.state;
+        const {data, errorGridSize, selectedBand} = this.state;
+
+        if (errorGridSize) {
+            return null;
+        }
+
         const bands = data.map((e, key) => (
             <Form.Field key={key}>
                 <Radio
@@ -113,13 +119,14 @@ class RasterfileUploadModal extends React.Component {
     };
 
     handleUploadFile = e => {
+        const {gridSize} = this.props;
         const files = e.target.files;
         const file = files[0];
 
         this.setState({isLoading: true});
 
         uploadRasterfile(file, ({hash}) => {
-                this.setState({fetching: true, hash: hash});
+                this.setState({data: null, fetching: true, hash: hash});
 
                 const fetchOptions = {
                     hash,
@@ -129,11 +136,15 @@ class RasterfileUploadModal extends React.Component {
                 };
 
                 fetchRasterMetaData({hash}, response => {
-                    this.setState({isLoading: false, metadata: response});
+                    this.setState({
+                        errorGridSize: this.state.interpolation === 11 && (response.rasterXSize !== gridSize.nX || response.rasterYSize !== gridSize.nY),
+                        isLoading: false,
+                        metadata: response
+                    });
                 }, (errorFetching) => this.setState({errorFetching}));
 
                 fetchRasterData(
-                    fetchOptions,
+                    this.state.interpolation === 11 ? {hash} : fetchOptions,
                     data => {
                         this.setState({isLoading: false, data: math.round(data, 3)})
                     },
@@ -144,7 +155,7 @@ class RasterfileUploadModal extends React.Component {
     };
 
     render() {
-        const {data, interpolation, metadata, selectedBand} = this.state;
+        const {data, errorGridSize, interpolation, metadata, selectedBand} = this.state;
 
         return (
             <Modal size={'large'} open onClose={this.props.onCancel} dimmer={'blurring'}>
@@ -164,7 +175,8 @@ class RasterfileUploadModal extends React.Component {
                                     <List bulleted>
                                         <List.Item>The rasterfile should have the same bounds as the model
                                             area.</List.Item>
-                                        <List.Item>The gridsize will interpolated automatically.</List.Item>
+                                        <List.Item>The grid size will be interpolated automatically, if an interpolation
+                                            method is selected.</List.Item>
                                     </List>
                                     <Header as="h4" style={{'textAlign': 'left'}}>Interpolation method</Header>
                                     <Dropdown
@@ -173,22 +185,30 @@ class RasterfileUploadModal extends React.Component {
                                         selection
                                         name='interpolation'
                                         options={[
-                                            {key: 0, text: 'Nearest-neighbor', value: 0},
+                                            {key: -1, text: 'No interpolation', value: 11},
+                                            {key: 0, text: 'Nearest-neighbor (default)', value: 0},
                                             {key: 1, text: 'Bi-linear', value: 1},
                                             {key: 2, text: 'Bi-quadratic', value: 2},
                                             {key: 3, text: 'Bi-cubic', value: 3},
                                             {key: 4, text: 'Bi-quartic', value: 4},
-                                            {key: 5, text: 'Bi-quintic', value: 5},
+                                            {key: 5, text: 'Bi-quintic', value: 5}
                                         ]}
                                         value={interpolation}
                                         onChange={this.handleChangeInterpolation}
-                                    /><br />
+                                    /><br/>
                                     <Input style={styles.input} type="file" onChange={this.handleUploadFile}/>
                                 </Segment>
                                 }
                             </Grid.Column>
                             <Grid.Column>
                                 {this.renderMetaData()}
+                                {errorGridSize &&
+                                <Message negative>
+                                    <Message.Header>Error</Message.Header>
+                                    <p>The grid size of the uploaded raster doesn't fit the models grid size. Use an
+                                        interpolation method or adjust the grid size of the input raster.</p>
+                                </Message>
+                                }
                             </Grid.Column>
                         </Grid.Row>
                         <Grid.Row columns={2}>
@@ -196,7 +216,7 @@ class RasterfileUploadModal extends React.Component {
                                 {data && this.renderBands()}
                             </Grid.Column>
                             <Grid.Column>
-                                {data &&
+                                {!errorGridSize && data &&
                                 <Segment color={'green'}>
                                     <RasterDataImage
                                         data={data[selectedBand]}
@@ -216,6 +236,7 @@ class RasterfileUploadModal extends React.Component {
                     >
                         Cancel
                     </Button>
+                    {!errorGridSize &&
                     <Button
                         positive
                         onClick={() => this.props.onChange({
@@ -225,6 +246,7 @@ class RasterfileUploadModal extends React.Component {
                     >
                         Apply
                     </Button>
+                    }
                 </Modal.Actions>
             </Modal>
         );
