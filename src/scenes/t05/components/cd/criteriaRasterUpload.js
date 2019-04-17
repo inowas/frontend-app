@@ -70,6 +70,8 @@ class CriteriaRasterUpload extends React.Component {
                 criterion.raster = raster;
                 criterion.step = 1;
 
+                criterion.suitability = new Raster();
+                criterion.constraintRaster = new Raster();
                 criterion.constraintRaster.boundingBox = boundingBox;
                 criterion.constraintRaster.gridSize = this.props.gridSize;
 
