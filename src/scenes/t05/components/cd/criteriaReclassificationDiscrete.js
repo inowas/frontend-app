@@ -68,22 +68,35 @@ class CriteriaReclassificationDiscrete extends React.Component {
 
     handleDismiss = () => this.setState({showInfo: false});
 
-    handleChange = () => this.props.onChange(Criterion.fromObject(this.state.criterion));
-
-    handleLocalChange = id => (e, {name, value}) => this.setState(prevState => ({
-        criterion: {
-            ...prevState.criterion,
-            rules: prevState.criterion.rules.map(rule => {
-                if (rule.id === id) {
-                    rule[name] = value;
-                }
-                return rule;
-            }),
-            step: 2
+    handleChange = () => {
+        if (this.props.readOnly) {
+            return;
         }
-    }));
+        return this.props.onChange(Criterion.fromObject(this.state.criterion));
+    };
+
+    handleLocalChange = id => (e, {name, value}) => {
+        if (this.props.readOnly) {
+            return;
+        }
+        return this.setState(prevState => ({
+            criterion: {
+                ...prevState.criterion,
+                rules: prevState.criterion.rules.map(rule => {
+                    if (rule.id === id) {
+                        rule[name] = value;
+                    }
+                    return rule;
+                }),
+                step: 2
+            }
+        }));
+    };
 
     handleChangeColor = color => {
+        if (this.props.readOnly) {
+            return;
+        }
         const rule = this.state.ruleToPickColorFor;
         return this.setState(prevState => ({
             criterion: {
@@ -100,6 +113,9 @@ class CriteriaReclassificationDiscrete extends React.Component {
     };
 
     handleClickCalculate = () => {
+        if (this.props.readOnly) {
+            return;
+        }
         const criterion = this.props.criterion;
         criterion.step = 3;
         criterion.calculateSuitability();
@@ -111,7 +127,7 @@ class CriteriaReclassificationDiscrete extends React.Component {
     };
 
     handleCsv = response => {
-        if (!response) {
+        if (!response || this.props.readOnly) {
             return;
         }
 
@@ -122,14 +138,14 @@ class CriteriaReclassificationDiscrete extends React.Component {
         const criterion = Criterion.fromObject(this.state.criterion);
 
         response.data.forEach(row => {
-             const rules = criterion.rulesCollection.findByValue(row[0]);
-             if (rules.length > 0) {
-                 const rule = rules[0];
-                 rule.color = row[1];
-                 rule.name = row[2];
-                 rule.value = row[3];
-                 criterion.rulesCollection.update(rule);
-             }
+            const rules = criterion.rulesCollection.findByValue(row[0]);
+            if (rules.length > 0) {
+                const rule = rules[0];
+                rule.color = row[1];
+                rule.name = row[2];
+                rule.value = row[3];
+                criterion.rulesCollection.update(rule);
+            }
         });
         return this.props.onChange(criterion);
     };
@@ -155,6 +171,7 @@ class CriteriaReclassificationDiscrete extends React.Component {
                         onClick={() => this.setState({ruleToPickColorFor: rule})}
                         fluid
                         style={{color: rule.color}}
+                        readOnly={this.props.readOnly}
                         icon='circle'
                     />
                 </Table.Cell>
@@ -164,6 +181,7 @@ class CriteriaReclassificationDiscrete extends React.Component {
                         onBlur={this.handleChange}
                         onChange={this.handleLocalChange(rule.id)}
                         type='text'
+                        readOnly={this.props.readOnly}
                         value={rule.name}
                     />
                 </Table.Cell>
@@ -172,8 +190,8 @@ class CriteriaReclassificationDiscrete extends React.Component {
                         name='value'
                         onBlur={this.handleChange}
                         onChange={this.handleLocalChange(rule.id)}
-                        readOnly={isConstraint}
                         type='number'
+                        readOnly={isConstraint || this.props.readOnly}
                         value={isConstraint ? 0 : rule.value}
                     />
                 </Table.Cell>
@@ -208,20 +226,23 @@ class CriteriaReclassificationDiscrete extends React.Component {
                             Commands
                         </Segment>
                         <Segment>
-                            <Button positive icon fluid labelPosition='left' onClick={this.handleClickCalculate}>
+                            <Button disabled={this.props.readOnly} positive icon fluid labelPosition='left'
+                                    onClick={this.handleClickCalculate}>
                                 <Icon name='calculator'/>
                                 Perform Reclassification
                             </Button>
-                            <br />
+                            <br/>
+                            {!this.props.readOnly &&
                             <CsvUpload
                                 baseClasses='ui icon button fluid left labeled'
                                 onUploaded={this.handleCsv}
                                 uploadState={uploadState}
                             />
+                            }
                         </Segment>
                     </Grid.Column>
                     <Grid.Column width={11}>
-                        {this.state.ruleToPickColorFor &&
+                        {!this.props.readOnly && this.state.ruleToPickColorFor &&
                         <div style={styles.popover}>
                             <div style={styles.cover} onClick={this.handleCloseColorPicker}/>
                             <SketchPicker
@@ -251,7 +272,8 @@ class CriteriaReclassificationDiscrete extends React.Component {
 
 CriteriaReclassificationDiscrete.propTypes = {
     criterion: PropTypes.instanceOf(Criterion).isRequired,
-    onChange: PropTypes.func.isRequired
+    onChange: PropTypes.func.isRequired,
+    readOnly: PropTypes.bool
 };
 
 export default CriteriaReclassificationDiscrete;

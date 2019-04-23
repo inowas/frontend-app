@@ -37,6 +37,9 @@ class CriteriaReclassification extends React.Component {
     handleDismiss = () => this.setState({showInfo: false});
 
     handleAddRule = () => {
+        if (this.props.readOnly) {
+            return null;
+        }
         const rule = new Rule();
         this.setState({
             selectedRule: rule.toObject()
@@ -44,6 +47,9 @@ class CriteriaReclassification extends React.Component {
     };
 
     handleEditRule = id => {
+        if (this.props.readOnly) {
+            return null;
+        }
         const rule = this.props.criterion.rulesCollection.findById(id);
         if (rule) {
             this.setState({
@@ -53,6 +59,9 @@ class CriteriaReclassification extends React.Component {
     };
 
     handleRemoveRule = id => {
+        if (this.props.readOnly) {
+            return null;
+        }
         const criterion = this.props.criterion;
         criterion.rulesCollection.items = criterion.rulesCollection.all.filter(rule => rule.id !== id);
         criterion.calculateSuitability();
@@ -61,6 +70,9 @@ class CriteriaReclassification extends React.Component {
     };
 
     handleClickCalculate = () => {
+        if (this.props.readOnly) {
+            return null;
+        }
         const criterion = this.props.criterion;
         criterion.calculateSuitability();
         criterion.step = 3;
@@ -68,6 +80,9 @@ class CriteriaReclassification extends React.Component {
     };
 
     handleChangeRule = rule => {
+        if (this.props.readOnly) {
+            return null;
+        }
         if (!(rule instanceof Rule)) {
             throw new Error('Rule expected to be instance of Rule.');
         }
@@ -82,7 +97,7 @@ class CriteriaReclassification extends React.Component {
 
     renderEditorContinuous() {
         const {showInfo} = this.state;
-        const criterion = this.props.criterion;
+        const {criterion, readOnly} = this.props;
         const raster = criterion.raster;
 
         if (!criterion.rulesCollection || criterion.rulesCollection.length === 0) {
@@ -143,20 +158,20 @@ class CriteriaReclassification extends React.Component {
                 }
                 <Grid.Row>
                     <Grid.Column width={5}>
-                        <Segment textAlign='center' inverted color='grey' secondary>
-                            Commands
-                        </Segment>
-                        <Segment>
-                            <Button primary icon fluid labelPosition='left' onClick={this.handleAddRule}>
-                                <Icon name='add'/>
-                                Add Class
-                            </Button>
-                            <br/>
-                            <Button positive icon fluid labelPosition='left' onClick={this.handleClickCalculate}>
-                                <Icon name='calculator'/>
-                                Calculate Suitability
-                            </Button>
-                        </Segment>
+                            <Segment textAlign='center' inverted color='grey' secondary>
+                                Commands
+                            </Segment>
+                            <Segment>
+                                <Button disabled={readOnly} primary icon fluid labelPosition='left' onClick={this.handleAddRule}>
+                                    <Icon name='add'/>
+                                    Add Class
+                                </Button>
+                                <br/>
+                                <Button disabled={readOnly} positive icon fluid labelPosition='left' onClick={this.handleClickCalculate}>
+                                    <Icon name='calculator'/>
+                                    Calculate Suitability
+                                </Button>
+                            </Segment>
                     </Grid.Column>
                     <Grid.Column width={11}>
                         <Table>
@@ -187,6 +202,7 @@ class CriteriaReclassification extends React.Component {
                                             {rule.type === 'calc' ? rule.expression : rule.value}
                                         </Table.Cell>
                                         <Table.Cell textAlign='right'>
+                                            {!readOnly &&
                                             <Button.Group>
                                                 {this.props.criterion.rulesCollection.isError(rule) &&
                                                 <Button negative icon='warning sign'/>
@@ -194,6 +210,7 @@ class CriteriaReclassification extends React.Component {
                                                 <Button onClick={() => this.handleEditRule(rule.id)} icon='edit'/>
                                                 <Button onClick={() => this.handleRemoveRule(rule.id)} icon='trash'/>
                                             </Button.Group>
+                                            }
                                         </Table.Cell>
                                     </Table.Row>
                                 )}
@@ -231,7 +248,7 @@ class CriteriaReclassification extends React.Component {
     }
 
     render() {
-        const {criterion} = this.props;
+        const {criterion, readOnly} = this.props;
         const rule = this.state.selectedRule;
 
         return (
@@ -248,8 +265,9 @@ class CriteriaReclassification extends React.Component {
                 }
                 {criterion.type === 'discrete' &&
                 <CriteriaReclassificationDiscrete
-                    criterion={this.props.criterion}
+                    criterion={criterion}
                     onChange={this.props.onChange}
+                    readOnly={readOnly}
                 />
                 }
             </div>
@@ -259,7 +277,8 @@ class CriteriaReclassification extends React.Component {
 
 CriteriaReclassification.propTypes = {
     criterion: PropTypes.instanceOf(Criterion).isRequired,
-    onChange: PropTypes.func.isRequired
+    onChange: PropTypes.func.isRequired,
+    readOnly: PropTypes.bool
 };
 
 export default CriteriaReclassification;

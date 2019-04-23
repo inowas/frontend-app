@@ -64,6 +64,9 @@ class PairwiseComparison extends React.Component {
     };
 
     handleAfterChange = id => value => {
+        if (this.props.readOnly) {
+            return;
+        }
         const weights = this.props.weightAssignment.weightsCollection;
         const newWeights = weights.all.map(weight => {
             weight.relations = weight.relations.map(relation => {
@@ -82,6 +85,9 @@ class PairwiseComparison extends React.Component {
     };
 
     handleChangeSlider = id => value => {
+        if (this.props.readOnly) {
+            return;
+        }
         this.setState({
             relations: this.state.relations.map(r => {
                 if (r.id === id) {
@@ -92,12 +98,17 @@ class PairwiseComparison extends React.Component {
         });
     };
 
-    handleLocalChange = (e, {name, value}) => this.setState(prevState => ({
-        wa: {
-            ...prevState.wa,
-            [name]: value
+    handleLocalChange = (e, {name, value}) => {
+        if (this.props.readOnly) {
+            return;
         }
-    }));
+        return this.setState(prevState => ({
+            wa: {
+                ...prevState.wa,
+                [name]: value
+            }
+        }));
+    };
 
     render() {
         const {readOnly, weightAssignment} = this.props;
@@ -173,6 +184,7 @@ class PairwiseComparison extends React.Component {
                                     name='name'
                                     type='text'
                                     label='Name'
+                                    readOnly={readOnly}
                                     value={this.state.wa.name}
                                 />
                             </Form.Field>

@@ -51,6 +51,9 @@ class CriteriaEditor extends React.Component {
     }
 
     handleAddCriteria = () => {
+        if (this.props.readOnly) {
+            return;
+        }
         const mcda = this.props.mcda;
         mcda.criteriaCollection.add(new Criterion());
         return this.props.onChange(mcda);
@@ -59,30 +62,45 @@ class CriteriaEditor extends React.Component {
     handleDismiss = () => this.setState({showInfo: false});
 
     handleAddSubCriterion = id => {
+        if (this.props.readOnly) {
+            return;
+        }
         const criterion = new Criterion();
         criterion.parentId = id;
         return this.handleChangeCriterion(criterion);
     };
 
     handleChangeCriterion = criterion => {
+        if (this.props.readOnly) {
+            return;
+        }
         const mcda = this.props.mcda;
         mcda.criteriaCollection.update(criterion);
         return this.props.onChange(mcda);
     };
 
     handleClickAhp = () => {
+        if (this.props.readOnly) {
+            return;
+        }
         const mcda = this.props.mcda;
         mcda.withAhp = !this.props.mcda.withAhp;
         return this.props.onChange(mcda);
     };
 
     handleRemoveCriterion = id => {
+        if (this.props.readOnly) {
+            return;
+        }
         const mcda = this.props.mcda;
         mcda.criteriaCollection.remove(id);
         return this.props.onChange(mcda);
     };
 
     handleSelectChange = id => (e, {name, value}) => {
+        if (this.props.readOnly) {
+            return;
+        }
         const criteriaCollection = CriteriaCollection.fromArray(this.state.criteria);
         const criterion = criteriaCollection.findById(id);
 
@@ -95,6 +113,9 @@ class CriteriaEditor extends React.Component {
     };
 
     handleLocalChange = (id, blur = false) => event => {
+        if (this.props.readOnly) {
+            return;
+        }
         const criteriaCollection = CriteriaCollection.fromArray(this.state.criteria);
         const criterion = criteriaCollection.findById(id);
 
@@ -186,6 +207,7 @@ class CriteriaEditor extends React.Component {
                                 checked={mcda.withAhp}
                                 onChange={this.handleClickAhp}
                                 toggle
+                                readOnly={readOnly}
                             />
                         </Segment>
                     </Grid.Column>

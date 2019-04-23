@@ -227,6 +227,7 @@ class T05 extends React.Component {
                         onChange={this.handleChange}
                         mcda={mcda}
                         onClickTool={this.handleClickCriteriaTool}
+                        readOnly={readOnly}
                     />
                 );
             case 'su':
@@ -236,6 +237,7 @@ class T05 extends React.Component {
                         onChange={this.handleChange}
                         mcda={mcda}
                         onClickTool={this.handleClickSuitabilityTool}
+                        readOnly={readOnly}
                     />
                 );
             default:
@@ -280,6 +282,7 @@ class T05 extends React.Component {
                                 mcda={mcda}
                                 onClick={this.handleClickCriteriaNavigation}
                                 handleChange={this.handleChange}
+                                readOnly={readOnly}
                             />
                             }
                             {property === 'su' && (!cid || cid === 'weightAssignment' || cid === 'classes') && mcda.suitability && mcda.suitability.raster.data.length > 0 &&

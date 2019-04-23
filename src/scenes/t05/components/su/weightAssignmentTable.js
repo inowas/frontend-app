@@ -42,8 +42,14 @@ class WeightAssignmentTable extends React.Component {
                     <Table.Body>
                         {mcda.weightAssignmentsCollection.all.map((wa, waKey) =>
                             <Table.Row key={waKey}>
-                                <Table.Cell><Radio name={wa.id} onChange={this.props.handleChange()}
-                                                   checked={wa.isActive}/></Table.Cell>
+                                <Table.Cell>
+                                    <Radio
+                                        name={wa.id}
+                                        onChange={this.props.handleChange()}
+                                        checked={wa.isActive}
+                                        readOnly={this.props.readOnly}
+                                    />
+                                </Table.Cell>
                                 <Table.Cell>{wa.name}</Table.Cell>
                                 {wa.weightsCollection.orderBy('criterion.id').all.map((w, wKey) =>
                                     <Table.Cell key={wKey}>{w.value.toFixed(3)}</Table.Cell>
@@ -91,8 +97,12 @@ class WeightAssignmentTable extends React.Component {
                             {mainCriteriaMethods.all.map((wa, cKey) =>
                                 <Table.Row key={cKey}>
                                     <Table.Cell>
-                                        <Radio name={wa.id} onChange={this.props.handleChange('main')}
-                                               checked={wa.isActive}/>
+                                        <Radio
+                                            name={wa.id}
+                                            onChange={this.props.handleChange('main')}
+                                            checked={wa.isActive}
+                                            readOnly={this.props.readOnly}
+                                        />
                                     </Table.Cell>
                                     <Table.Cell>{wa.name}</Table.Cell>
                                     {wa.weightsCollection.orderBy('criterion.id', 'asc').all.map((w, wKey) =>
@@ -122,8 +132,12 @@ class WeightAssignmentTable extends React.Component {
                                 {mcda.weightAssignmentsCollection.findBy('parent', mc.id).map((wa, cKey) =>
                                     <Table.Row key={cKey}>
                                         <Table.Cell>
-                                            <Radio name={wa.id} onChange={this.props.handleChange(mc.id)}
-                                                   checked={wa.isActive}/>
+                                            <Radio
+                                                name={wa.id}
+                                                onChange={this.props.handleChange(mc.id)}
+                                                checked={wa.isActive}
+                                                readOnly={this.props.readOnly}
+                                            />
                                         </Table.Cell>
                                         <Table.Cell>{wa.name}</Table.Cell>
                                         {wa.weightsCollection.orderBy('criterion.id').all.map((w, wKey) =>
@@ -144,6 +158,7 @@ class WeightAssignmentTable extends React.Component {
 WeightAssignmentTable.proptypes = {
     handleChange: PropTypes.func.isRequired,
     mcda: PropTypes.instanceOf(MCDA).isRequired,
+    readOnly: PropTypes.bool
 };
 
 export default WeightAssignmentTable;

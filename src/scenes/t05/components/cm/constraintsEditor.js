@@ -60,6 +60,9 @@ class ConstraintsEditor extends React.Component {
     handleDismiss = () => this.setState({showInfo: false});
 
     handleChange = constraints => {
+        if (this.props.readOnly) {
+            return;
+        }
         if (!(constraints instanceof GisMap)) {
             throw new Error('Constraints expected to be of type GisMap.');
         }
@@ -84,6 +87,9 @@ class ConstraintsEditor extends React.Component {
     };
 
     onBlur = () => {
+        if (this.props.readOnly) {
+            return;
+        }
         this.handleChange(GisMap.fromObject(this.state.constraints));
     };
 
@@ -169,6 +175,7 @@ class ConstraintsEditor extends React.Component {
                             <Button
                                 fluid positive
                                 onClick={this.onCalculateActiveCells}
+                                disabled={readOnly}
                             >
                                 Cut and Process
                             </Button>

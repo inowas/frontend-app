@@ -122,7 +122,7 @@ class WeightAssignmentEditor extends React.Component {
     }
 
     render() {
-        const {mcda} = this.props;
+        const {mcda, readOnly} = this.props;
         const mainCriteria = mcda.withAhp ? mcda.criteriaCollection.findBy('parentId', null, {returnCollection: true}) : mcda.criteriaCollection;
 
         if (this.props.selectedWeightAssignment) {
@@ -151,7 +151,7 @@ class WeightAssignmentEditor extends React.Component {
                 }
                 <Grid.Row>
                     <Grid.Column width={5}>
-                        {!mcda.withAhp &&
+                        {!mcda.withAhp && !readOnly &&
                         <Menu icon='labeled' fluid vertical>
                             <Menu.Item
                                 name='spl'
@@ -182,7 +182,7 @@ class WeightAssignmentEditor extends React.Component {
                             </Menu.Item>
                         </Menu>
                         }
-                        {mcda.withAhp &&
+                        {mcda.withAhp && !readOnly &&
                         <Menu fluid vertical>
                             {this.renderMethods('Main Criteria')}
                             {mainCriteria.all.map((c, key) =>
@@ -223,6 +223,7 @@ class WeightAssignmentEditor extends React.Component {
                                         </Table.Cell>
                                         }
                                         <Table.Cell width={2} textAlign='right'>
+                                            {!readOnly &&
                                             <Button
                                                 icon
                                                 negative
@@ -231,6 +232,7 @@ class WeightAssignmentEditor extends React.Component {
                                             >
                                                 <Icon name="trash"/>
                                             </Button>
+                                            }
                                         </Table.Cell>
                                     </Table.Row>
                                 ))}
