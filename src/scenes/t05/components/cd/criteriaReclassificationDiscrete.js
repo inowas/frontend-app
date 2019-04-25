@@ -1,11 +1,13 @@
 import PropTypes from 'prop-types';
 import React from 'react';
 import {Criterion} from 'core/model/mcda/criteria';
-import {Button, Grid, Icon, Input, Message, Segment, Table} from 'semantic-ui-react';
+import {Button, Dropdown, Grid, Icon, Input, Message, Segment, Table} from 'semantic-ui-react';
 import {SketchPicker} from 'react-color';
 import {dropData} from 'services/api';
 import CsvUpload from '../../../shared/simpleTools/upload/CsvUpload';
 import uuidv4 from 'uuid/v4';
+import {heatMapColors} from '../../defaults/gis';
+import {rainbowFactory} from '../../../shared/rasterData/helpers';
 
 const styles = {
     popover: {
@@ -150,6 +152,22 @@ class CriteriaReclassificationDiscrete extends React.Component {
         return this.props.onChange(criterion);
     };
 
+    handleSelectScale = value => e => {
+        const scale = heatMapColors[value];
+        const rainbow = rainbowFactory({
+            min: this.state.criterion.raster.min,
+            max: this.state.criterion.raster.max
+        }, scale);
+
+        const criterion = this.state.criterion;
+        criterion.rules = criterion.rules.map(rule => {
+             rule.color = `#${rainbow.colorAt(rule.from)}`;
+             return rule;
+        });
+
+        return this.props.onChange(Criterion.fromObject(criterion));
+    };
+
     renderTableRow(rule, key) {
         let isConstraint = false;
         const criterion = this.state.criterion;
@@ -199,9 +217,56 @@ class CriteriaReclassificationDiscrete extends React.Component {
         );
     }
 
+    renderLegend(rainbow, name) {
+        const gradients = rainbow.getGradients().slice().reverse();
+        const lastGradient = gradients[gradients.length - 1];
+        const legend = gradients.map(gradient => ({
+            color: '#' + gradient.getEndColour(),
+            value: Number(gradient.getMaxNum()).toFixed(2)
+        }));
+
+        legend.push({
+            color: '#' + lastGradient.getStartColour(),
+            value: Number(lastGradient.getMinNum()).toFixed(2)
+        });
+
+        let gradient = 'linear-gradient(to right';
+        legend.forEach((l, index) => {
+            gradient += ', ' + l.color + ' ' + ((index + 1) / legend.length * 100) + '%';
+        });
+        gradient += ')';
+
+        return (
+            <div>
+                <div style={{display: 'flex'}}>
+                    <div style={{
+                        backgroundImage: gradient,
+                        height: '20px',
+                        width: '50px'
+                    }}
+                    />
+                    <div style={{
+                        height: '20px',
+                        display: 'flex',
+                        alignItems: 'center',
+                        marginLeft: '20px'
+                    }}>
+                        {name}
+                    </div>
+                </div>
+            </div>
+        );
+    };
+
     render() {
         const {criterion, showInfo, uploadState} = this.state;
         const rules = criterion.rules;
+
+        const colors = [
+            {value: 'discrete', scale: heatMapColors.discrete, name: 'Discrete'},
+            {value: 'default', scale: heatMapColors.default, name: 'Heatmap'},
+            {value: 'colorBlind', scale: heatMapColors.colorBlind, name: 'Heatmap (barrier free)'}
+        ];
 
         return (
             <Grid>
@@ -233,11 +298,38 @@ class CriteriaReclassificationDiscrete extends React.Component {
                             </Button>
                             <br/>
                             {!this.props.readOnly &&
-                            <CsvUpload
-                                baseClasses='ui icon button fluid left labeled'
-                                onUploaded={this.handleCsv}
-                                uploadState={uploadState}
-                            />
+                            <div>
+                                <CsvUpload
+                                    baseClasses='ui icon button fluid left labeled'
+                                    onUploaded={this.handleCsv}
+                                    uploadState={uploadState}
+                                />
+                                <br/>
+                                <Dropdown
+                                    placeholder='Select predefined colors'
+                                    fluid
+                                    className='selection'
+                                >
+                                    <Dropdown.Menu>
+                                        {colors.map((option, key) =>
+                                            <Dropdown.Item
+                                                key={key}
+                                                onClick={this.handleSelectScale(option.value)}
+                                                value={option.value}
+                                            >
+                                                {
+                                                    this.renderLegend(
+                                                        rainbowFactory({
+                                                            min: 0,
+                                                            max: 100
+                                                        }, option.scale)
+                                                    , option.name)
+                                                }
+                                            </Dropdown.Item>
+                                        )}
+                                    </Dropdown.Menu>
+                                </Dropdown>
+                            </div>
                             }
                         </Segment>
                     </Grid.Column>
