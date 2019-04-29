@@ -3,6 +3,14 @@ const getRandomIndex = n => {
     return indices[n - 1];
 };
 
+/**
+ * Calculates the weight of all criteria depending of the relations between each other.
+ *
+ * @param {array} criteria   Array of criteria ids.
+ * @param {array} relations  Array of relations between criteria.
+ *
+ * @return {object} results   Object with properties ci, cv, lambda.
+ */
 export const calculatePwcWeights = (criteria, relations) => {
     const results = {
         lambda: 0,

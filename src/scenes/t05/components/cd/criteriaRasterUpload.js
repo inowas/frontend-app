@@ -36,6 +36,9 @@ class CriteriaRasterUpload extends React.Component {
     });
 
     handleChangeRaster = raster => {
+        if (this.props.readOnly) {
+            return null;
+        }
         if (!(raster instanceof Raster)) {
             throw new Error('Raster expected to be instance of Raster.');
         }
@@ -46,6 +49,9 @@ class CriteriaRasterUpload extends React.Component {
     };
 
     handleUploadFile = result => {
+        if (this.props.readOnly) {
+            return null;
+        }
         const {data, metadata} = result;
 
         const criterion = this.props.criterion;
@@ -136,23 +142,25 @@ class CriteriaRasterUpload extends React.Component {
                 }
                 <Grid.Row>
                     <Grid.Column width={5}>
-                        <Segment textAlign='center' inverted color='grey' secondary>
-                            Upload
-                        </Segment>
-                        <Segment>
-                            <Form>
-                                <Form.Group>
-                                    <Button
-                                        primary
-                                        icon
-                                        labelPosition='left'
-                                        fluid
-                                        onClick={this.handleUploadClick}
-                                    >
-                                        <Icon name='upload'/>Upload Raster File
-                                    </Button>
-                                </Form.Group>
-                                {false &&
+                        {!this.props.readOnly &&
+                        <div>
+                            <Segment textAlign='center' inverted color='grey' secondary>
+                                Upload
+                            </Segment>
+                            <Segment>
+                                <Form>
+                                    <Form.Group>
+                                        <Button
+                                            primary
+                                            icon
+                                            labelPosition='left'
+                                            fluid
+                                            onClick={this.handleUploadClick}
+                                        >
+                                            <Icon name='upload'/>Upload Raster File
+                                        </Button>
+                                    </Form.Group>
+                                    {false &&
                                     <Form.Group>
                                         <Button
                                             primary
@@ -164,12 +172,14 @@ class CriteriaRasterUpload extends React.Component {
                                             <Icon name='file alternate'/>Upload GeoJSON
                                         </Button>
                                     </Form.Group>
-                                }
-                                <Form.Group>
-                                    <Checkbox toggle label='Basic Tile Layer' onClick={this.onToggleBasicLayer}/>
-                                </Form.Group>
-                            </Form>
-                        </Segment>
+                                    }
+                                    <Form.Group>
+                                        <Checkbox toggle label='Basic Tile Layer' onClick={this.onToggleBasicLayer}/>
+                                    </Form.Group>
+                                </Form>
+                            </Segment>
+                        </div>
+                        }
                         <Segment textAlign='center' inverted color='grey' secondary>
                             Bounding Box
                         </Segment>
@@ -233,7 +243,8 @@ class CriteriaRasterUpload extends React.Component {
 CriteriaRasterUpload.proptypes = {
     criterion: PropTypes.instanceOf(Criterion).isRequired,
     gridSize: PropTypes.instanceOf(GridSize).isRequired,
-    onChange: PropTypes.func.isRequired
+    onChange: PropTypes.func.isRequired,
+    readOnly: PropTypes.bool
 };
 
 export default CriteriaRasterUpload;

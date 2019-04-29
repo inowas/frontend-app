@@ -20,6 +20,9 @@ class SuitabilityClasses extends React.Component {
     handleDismiss = () => this.setState({showInfo: false});
 
     handleAddRule = () => {
+        if (this.props.readOnly) {
+            return;
+        }
         const rule = new Rule();
         this.setState({
             selectedRule: rule.toObject()
@@ -27,6 +30,9 @@ class SuitabilityClasses extends React.Component {
     };
 
     handleEditRule = id => {
+        if (this.props.readOnly) {
+            return;
+        }
         const rule = this.props.mcda.suitability.rulesCollection.findById(id);
 
         if (rule) {
@@ -37,6 +43,9 @@ class SuitabilityClasses extends React.Component {
     };
 
     handleChangeRule = rule => {
+        if (this.props.readOnly) {
+            return;
+        }
         if (!(rule instanceof Rule)) {
             throw new Error('Rule expected to be instance of Rule.');
         }
@@ -49,13 +58,16 @@ class SuitabilityClasses extends React.Component {
     };
 
     handleRemoveRule = id => {
+        if (this.props.readOnly) {
+            return;
+        }
         const mcda = this.props.mcda;
         mcda.suitability.rulesCollection.remove(id);
         return this.props.handleChange(mcda);
     };
 
     render() {
-        const {mcda} = this.props;
+        const {mcda, readOnly} = this.props;
         const {selectedRule, showInfo} = this.state;
         const rules = mcda.suitability.rulesCollection;
 
@@ -67,7 +79,7 @@ class SuitabilityClasses extends React.Component {
                     <p>...</p>
                 </Message>
                 }
-                {selectedRule &&
+                {!readOnly && selectedRule &&
                 <CriteriaReclassificationModal
                     onSave={this.handleChangeRule}
                     onClose={this.handleCloseModal}
@@ -81,7 +93,7 @@ class SuitabilityClasses extends React.Component {
                             Commands
                         </Segment>
                         <Segment>
-                            <Button primary icon fluid labelPosition='left' onClick={this.handleAddRule}>
+                            <Button disabled={readOnly} primary icon fluid labelPosition='left' onClick={this.handleAddRule}>
                                 <Icon name='add'/>
                                 Add Rule
                             </Button>
@@ -112,6 +124,7 @@ class SuitabilityClasses extends React.Component {
                                             {rule.toOperator} {rule.to}
                                         </Table.Cell>
                                         <Table.Cell textAlign='right'>
+                                            {!readOnly &&
                                             <Button.Group>
                                                 {rules.isError(rule) &&
                                                 <Button negative icon='warning sign'/>
@@ -119,6 +132,7 @@ class SuitabilityClasses extends React.Component {
                                                 <Button onClick={() => this.handleEditRule(rule.id)} icon='edit'/>
                                                 <Button onClick={() => this.handleRemoveRule(rule.id)} icon='trash'/>
                                             </Button.Group>
+                                            }
                                         </Table.Cell>
                                     </Table.Row>
                                 )}
@@ -134,6 +148,7 @@ class SuitabilityClasses extends React.Component {
 SuitabilityClasses.proptypes = {
     handleChange: PropTypes.func.isRequired,
     mcda: PropTypes.instanceOf(MCDA).isRequired,
+    readOnly: PropTypes.bool
 };
 
 export default SuitabilityClasses;

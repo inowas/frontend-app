@@ -17,20 +17,31 @@ class SimpleWeightAssignment extends React.Component {
 
     handleDismiss = () => this.setState({showInfo: false});
 
-    onLocalChange = (e, {name, value}) => this.setState(prevState => ({
-        wa: {
-            ...prevState.wa,
-            [name]: value
+    onLocalChange = (e, {name, value}) => {
+        if (this.props.readOnly) {
+            return;
         }
-    }));
+        return this.setState(prevState => ({
+            wa: {
+                ...prevState.wa,
+                [name]: value
+            }
+        }));
+    };
 
     onBlurValue = () => {
+        if (this.props.readOnly) {
+            return;
+        }
         const wa = WeightAssignment.fromObject(this.state.wa);
         wa.calculateWeights();
         return this.props.handleChange(wa);
     };
 
     onChangeValue = (e, {name, value}) => {
+        if (this.props.readOnly) {
+            return;
+        }
         const wa = this.state.wa;
         wa.weights = wa.weights.map(weight => {
             if (name === weight.id) {
@@ -73,7 +84,7 @@ class SimpleWeightAssignment extends React.Component {
                                         <Grid.Column width={11}>
                                             <Input
                                                 type='number'
-                                                disabled={readOnly}
+                                                readOnly={readOnly}
                                                 name={weight.id}
                                                 onBlur={this.onBlurValue}
                                                 onChange={this.onChangeValue}
@@ -97,6 +108,7 @@ class SimpleWeightAssignment extends React.Component {
                                 name='name'
                                 type='text'
                                 label='Name'
+                                readOnly={readOnly}
                                 value={wa.name}
                             />
                         </Form>

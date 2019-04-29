@@ -28,6 +28,9 @@ class Ranking extends React.Component {
     handleChangeState = () => this.props.handleChange(WeightAssignment.fromObject(this.state.wa));
 
     handleChangeSubMethod = (e, {name, value}) => {
+        if (this.props.readOnly) {
+            return;
+        }
         const wa = WeightAssignment.fromObject(this.state.wa);
 
         if (value === 'exp') {
@@ -40,19 +43,30 @@ class Ranking extends React.Component {
     };
 
     handleChangeSubParam = () => {
+        if (this.props.readOnly) {
+            return;
+        }
         const wa = WeightAssignment.fromObject(this.state.wa);
         wa.calculateWeights();
         this.props.handleChange(wa);
     };
 
-    handleLocalChange = (e, {name, value}) => this.setState(prevState => ({
-        wa: {
-            ...prevState.wa,
-            [name]: value
+    handleLocalChange = (e, {name, value}) => {
+        if (this.props.readOnly) {
+            return;
         }
-    }));
+        return this.setState(prevState => ({
+            wa: {
+                ...prevState.wa,
+                [name]: value
+            }
+        }));
+    };
 
     handleChange = weights => {
+        if (this.props.readOnly) {
+            return;
+        }
         const weightAssignment = WeightAssignment.fromObject(this.state.wa);
         weightAssignment.weightsCollection = WeightsCollection.fromArray(weights);
         weightAssignment.calculateWeights();
@@ -61,6 +75,9 @@ class Ranking extends React.Component {
     };
 
     handleChangeOrder = (items) => {
+        if (this.props.readOnly) {
+            return;
+        }
         const newWeights = [];
 
         items.all.forEach(item => {
@@ -129,6 +146,7 @@ class Ranking extends React.Component {
                                     name='name'
                                     type='text'
                                     label='Name'
+                                    readOnly={readOnly}
                                     value={this.state.wa.name}
                                 />
                             </Form.Field>
@@ -143,6 +161,7 @@ class Ranking extends React.Component {
                                         {key: 'exp', text: 'Rank exponent', value: 'exp'}
                                     ]}
                                     name='subMethod'
+                                    readOnly={readOnly}
                                     value={!this.state.wa.subMethod || this.state.wa.subMethod}
                                 />
                             </Form.Field>
@@ -155,6 +174,7 @@ class Ranking extends React.Component {
                                         name='subParam'
                                         type='number'
                                         label='Exponent'
+                                        readOnly={readOnly}
                                         value={this.state.wa.subParam}
                                     />
                                 </Form.Field>

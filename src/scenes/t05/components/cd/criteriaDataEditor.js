@@ -104,6 +104,7 @@ class CriteriaDataEditor extends React.Component {
                     <CriteriaReclassification
                         criterion={criterion}
                         onChange={this.handleChange}
+                        readOnly={this.props.readOnly}
                     />
                 );
             case 'constraints':
@@ -111,6 +112,7 @@ class CriteriaDataEditor extends React.Component {
                     <CriteriaDataConstraints
                         criterion={criterion}
                         onChange={this.handleChange}
+                        readOnly={this.props.readOnly}
                     />
                 );
             case 'results':
@@ -126,6 +128,7 @@ class CriteriaDataEditor extends React.Component {
                         criterion={criterion}
                         gridSize={this.props.mcda.constraints.gridSize}
                         onChange={this.handleChange}
+                        readOnly={this.props.readOnly}
                     />
                 );
         }
@@ -202,7 +205,8 @@ CriteriaDataEditor.proptypes = {
     criterion: PropTypes.instanceOf(Criterion).isRequired,
     onChange: PropTypes.func.isRequired,
     mcda: PropTypes.instanceOf(MCDA).isRequired,
-    onClickTool: PropTypes.func.isRequired
+    onClickTool: PropTypes.func.isRequired,
+    readOnly: PropTypes.bool
 };
 
 export default withRouter(CriteriaDataEditor);

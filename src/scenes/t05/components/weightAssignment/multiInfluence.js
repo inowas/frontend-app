@@ -142,12 +142,17 @@ class MultiInfluence extends React.Component {
         return this.props.handleChange(weightAssignment);
     };
 
-    handleLocalChange = (e, {name, value}) => this.setState(prevState => ({
-        wa: {
-            ...prevState.wa,
-            [name]: value
+    handleLocalChange = (e, {name, value}) => {
+        if (this.props.readOnly) {
+            return;
         }
-    }));
+        this.setState(prevState => ({
+            wa: {
+                ...prevState.wa,
+                [name]: value
+            }
+        }));
+    };
 
     setNetworkInstance = nw => this.setState({
         network: nw
@@ -256,6 +261,7 @@ class MultiInfluence extends React.Component {
                                     name='name'
                                     type='text'
                                     label='Name'
+                                    readOnly={readOnly}
                                     value={this.state.wa.name}
                                 />
                             </Form.Field>

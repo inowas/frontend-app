@@ -35,15 +35,20 @@ class CriteriaNavigation extends React.Component {
         return this.props.handleChange(mcda);
     };
 
-    onChangeGridSize = (e, {name, value}) => this.setState(prevState => ({
-        constraints: {
-            ...prevState.constraints,
-            gridSize: {
-                ...prevState.constraints.gridSize,
-                [name]: value
-            }
+    onChangeGridSize = (e, {name, value}) => {
+        if (this.props.readOnly) {
+            return;
         }
-    }));
+        return this.setState(prevState => ({
+            constraints: {
+                ...prevState.constraints,
+                gridSize: {
+                    ...prevState.constraints.gridSize,
+                    [name]: value
+                }
+            }
+        }));
+    };
 
     onSearchCriterion = (e, {name, value}) => this.setState({
         searchTerm: value
@@ -90,7 +95,7 @@ class CriteriaNavigation extends React.Component {
                             <Form.Group widths='equal'>
                                 <Form.Input
                                     fluid
-                                    disabled={!gridSizeEditable}
+                                    disabled={!gridSizeEditable || this.props.readOnly}
                                     type='number'
                                     label='Columns'
                                     name='n_x'
@@ -100,7 +105,7 @@ class CriteriaNavigation extends React.Component {
                                 />
                                 <Form.Input
                                     fluid
-                                    disabled={!gridSizeEditable}
+                                    disabled={!gridSizeEditable || this.props.readOnly}
                                     type='number'
                                     label='Rows'
                                     name='n_y'
@@ -130,7 +135,8 @@ CriteriaNavigation.proptypes = {
     activeCriterion: PropTypes.string,
     onClick: PropTypes.func.isRequired,
     mcda: PropTypes.instanceOf(MCDA).isRequired,
-    handleChange: PropTypes.func.isRequired
+    handleChange: PropTypes.func.isRequired,
+    readOnly: PropTypes.bool
 };
 
 export default withRouter(CriteriaNavigation);

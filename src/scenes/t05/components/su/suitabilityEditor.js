@@ -67,6 +67,7 @@ class SuitabilityEditor extends React.Component {
                     <SuitabilityClasses
                         mcda={mcda}
                         handleChange={this.props.onChange}
+                        readOnly={this.props.readOnly}
                     />
                 );
             default:
@@ -74,6 +75,7 @@ class SuitabilityEditor extends React.Component {
                     <SuitabilityWeightAssignment
                         mcda={mcda}
                         handleChange={this.props.onChange}
+                        readOnly={this.props.readOnly}
                     />
                 );
         }
@@ -120,7 +122,8 @@ SuitabilityEditor.proptypes = {
     activeTool: PropTypes.string,
     onChange: PropTypes.func.isRequired,
     onClickTool: PropTypes.func.isRequired,
-    mcda: PropTypes.instanceOf(MCDA).isRequired
+    mcda: PropTypes.instanceOf(MCDA).isRequired,
+    readOnly: PropTypes.bool
 };
 
 export default withRouter(SuitabilityEditor);

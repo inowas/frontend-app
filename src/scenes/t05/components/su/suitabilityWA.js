@@ -25,6 +25,9 @@ class SuitabilityWeightAssignment extends React.Component {
     handleDismiss = () => this.setState({showInfo: false});
 
     handleChangeWA = (parentId = null) => (e, {name}) => {
+        if (this.props.readOnly) {
+            return;
+        }
         const {mcda} = this.props;
 
         const wac = mcda.weightAssignmentsCollection.toArray().map(wa => {
@@ -47,6 +50,9 @@ class SuitabilityWeightAssignment extends React.Component {
     };
 
     calculateSuitability(mcda) {
+        if (this.props.readOnly) {
+            return;
+        }
         const criteriaDataIsConsistent = mcda.criteria.filter(criterion => criterion.suitability.url !== '' && criterion.suitability.data.length === 0).length === 0;
         const criteriaConstraintsAreConsistent = mcda.criteria.filter(criterion => criterion.constraintRaster.url !== '' && criterion.constraintRaster.data.length === 0).length === 0;
         const constraintsAreConsistent = !mcda.constraints.raster || (mcda.constraints.raster && mcda.constraints.raster.url !== '' && mcda.constraints.raster.data.length > 0);
@@ -80,6 +86,9 @@ class SuitabilityWeightAssignment extends React.Component {
     }
 
     getDataAndCalculate(mcda) {
+        if (this.props.readOnly) {
+            return;
+        }
         const criteria1 = mcda.criteria.filter(criterion => criterion.suitability.url !== '' && criterion.suitability.data.length === 0);
         const criteria2 = mcda.criteria.filter(criterion => criterion.constraintRaster.url !== '' && criterion.constraintRaster.data.length === 0);
 
@@ -165,6 +174,9 @@ class SuitabilityWeightAssignment extends React.Component {
     }
 
     handleClickCalculation = () => {
+        if (this.props.readOnly) {
+            return;
+        }
         const mcda = this.props.mcda.toObject();
         const criteria1 = mcda.criteria.filter(criterion => criterion.suitability.url !== '' && criterion.suitability.data.length === 0);
         const criteria2 = mcda.criteria.filter(criterion => criterion.constraintRaster.url !== '' && criterion.constraintRaster.data.length === 0);
@@ -211,9 +223,10 @@ class SuitabilityWeightAssignment extends React.Component {
                 <WeightAssignmentTable
                     handleChange={this.handleChangeWA}
                     mcda={this.props.mcda}
+                    readOnly={this.props.readOnly}
                 />
                 <Button
-                    disabled={mcda.weightAssignmentsCollection.findBy('isActive', true).length < 1}
+                    disabled={this.props.readOnly || mcda.weightAssignmentsCollection.findBy('isActive', true).length < 1}
                     onClick={this.handleClickCalculation}
                     primary
                     fluid
@@ -229,6 +242,7 @@ class SuitabilityWeightAssignment extends React.Component {
 SuitabilityWeightAssignment.proptypes = {
     handleChange: PropTypes.func.isRequired,
     mcda: PropTypes.instanceOf(MCDA).isRequired,
+    readOnly: PropTypes.bool
 };
 
 export default SuitabilityWeightAssignment;

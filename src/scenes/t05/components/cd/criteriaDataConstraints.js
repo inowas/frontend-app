@@ -40,6 +40,7 @@ class CriteriaDataConstraints extends React.Component {
     handleDismiss = () => this.setState({showInfo: false});
 
     handleAddConstraint = () => {
+        if (this.props.readOnly) { return null; }
         const rule = new Rule();
         rule.value = 0;
         const criterion = Criterion.fromObject(this.state.criterion);
@@ -50,6 +51,7 @@ class CriteriaDataConstraints extends React.Component {
     };
 
     handleLocalChange = id => (e, {name, value}) => {
+        if (this.props.readOnly) { return null; }
         const criterion = Criterion.fromObject(this.state.criterion);
         criterion.constraintRules.items = criterion.constraintRules.all.map(c => {
             if (c.id === id) {
@@ -64,6 +66,7 @@ class CriteriaDataConstraints extends React.Component {
     };
 
     handleChangeSelect = id => (e, {name, value}) => {
+        if (this.props.readOnly) { return null; }
         const criterion = Criterion.fromObject(this.state.criterion);
         criterion.constraintRules.items = criterion.constraintRules.all.map(c => {
             if (c.id === id) {
@@ -77,6 +80,7 @@ class CriteriaDataConstraints extends React.Component {
     };
 
     handleChange = () => {
+        if (this.props.readOnly) { return null; }
         const criterion = Criterion.fromObject(this.state.criterion);
         criterion.raster.calculateMinMax(criterion.constraintRules);
         criterion.step = 1;
@@ -84,6 +88,7 @@ class CriteriaDataConstraints extends React.Component {
     };
 
     handleClickRecalculate = () => {
+        if (this.props.readOnly) { return null; }
         const criterion = Criterion.fromObject(this.state.criterion);
         criterion.calculateConstraints();
         criterion.raster.calculateMinMax(criterion.constraintRules);
@@ -92,6 +97,7 @@ class CriteriaDataConstraints extends React.Component {
     };
 
     handleRemoveRule = id => {
+        if (this.props.readOnly) { return null; }
         const criterion = Criterion.fromObject(this.state.criterion);
         criterion.raster.calculateMinMax(criterion.constraintRules);
         criterion.constraintRules.remove(id);
@@ -99,6 +105,7 @@ class CriteriaDataConstraints extends React.Component {
     };
 
     handleToggleRule = rule => {
+        if (this.props.readOnly) { return null; }
         if (!(rule instanceof Rule)) {
             throw new Error('Rule expected to be instance of Rule.');
         }
@@ -111,7 +118,7 @@ class CriteriaDataConstraints extends React.Component {
     };
 
     renderEditorDiscrete() {
-        const criterion = this.props.criterion;
+        const {criterion, readOnly} = this.props;
         const constraints = criterion.constraintRules.orderBy('from', 'asc');
         const legend = rainbowFactory({min: 0, max: 1}, heatMapColors.default);
 
@@ -130,8 +137,12 @@ class CriteriaDataConstraints extends React.Component {
                                 <Table.Row key={key}>
                                     <Table.Cell textAlign='right'>{rule.from}</Table.Cell>
                                     <Table.Cell textAlign='center'>
-                                        <Radio checked={rule.value === 1} onChange={() => this.handleToggleRule(rule)}
-                                               toggle/>
+                                        <Radio
+                                            checked={rule.value === 1}
+                                            onChange={() => this.handleToggleRule(rule)}
+                                            readOnly={readOnly}
+                                            toggle
+                                        />
                                     </Table.Cell>
                                 </Table.Row>
                             )}
@@ -181,6 +192,7 @@ class CriteriaDataConstraints extends React.Component {
                                                     placeholder='Operator'
                                                     name={'fromOperator'}
                                                     onChange={this.handleChangeSelect(rule.id)}
+                                                    readOnly={this.props.readOnly}
                                                     value={rule.fromOperator}
                                                 />
                                                 <Form.Input
@@ -189,6 +201,7 @@ class CriteriaDataConstraints extends React.Component {
                                                     onBlur={this.handleChange}
                                                     onChange={this.handleLocalChange(rule.id)}
                                                     type='number'
+                                                    readOnly={this.props.readOnly}
                                                     value={rule.from}
                                                 />
                                             </Form.Group>
@@ -206,6 +219,7 @@ class CriteriaDataConstraints extends React.Component {
                                                     placeholder='Operator'
                                                     name='toOperator'
                                                     onChange={this.handleChangeSelect(rule.id)}
+                                                    readOnly={this.props.readOnly}
                                                     value={rule.toOperator}
                                                 />
                                                 <Form.Input
@@ -214,25 +228,30 @@ class CriteriaDataConstraints extends React.Component {
                                                     onBlur={this.handleChange}
                                                     onChange={this.handleLocalChange(rule.id)}
                                                     name='to'
+                                                    readOnly={this.props.readOnly}
                                                     value={rule.to}
                                                 />
                                             </Form.Group>
                                         </Form>
                                     </Table.Cell>
                                     <Table.Cell textAlign='right'>
+                                        {!this.props.readOnly &&
                                         <Button.Group>
                                             <Button onClick={() => this.handleRemoveRule(rule.id)} icon='trash'/>
                                         </Button.Group>
+                                        }
                                     </Table.Cell>
                                 </Table.Row>
                             )}
                         </Table.Body>
                     </Table>
                     }
+                    {!this.props.readOnly &&
                     <Button primary icon fluid labelPosition='left' onClick={this.handleAddConstraint}>
                         <Icon name='add'/>
                         Add Rule
                     </Button>
+                    }
                 </Grid.Column>
                 <Grid.Column width={8}>
                     {criterion.constraintRaster && criterion.constraintRaster.data.length > 0 && criterion.step > 1 &&
@@ -242,7 +261,7 @@ class CriteriaDataConstraints extends React.Component {
                         showBasicLayer={false}
                     />
                     }
-                    {criterion.step < 2 &&
+                    {!this.props.readOnly && criterion.step < 2 &&
                     <Button
                         primary
                         icon
@@ -295,7 +314,8 @@ class CriteriaDataConstraints extends React.Component {
 
 CriteriaDataConstraints.propTypes = {
     criterion: PropTypes.instanceOf(Criterion).isRequired,
-    onChange: PropTypes.func.isRequired
+    onChange: PropTypes.func.isRequired,
+    readOnly: PropTypes.bool
 };
 
 export default CriteriaDataConstraints;

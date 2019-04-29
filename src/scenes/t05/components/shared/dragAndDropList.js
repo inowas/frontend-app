@@ -31,6 +31,9 @@ const styles = {
 
 class DragAndDropList extends React.Component {
     onArrowClick = (source, destination) => {
+        if (this.props.readOnly) {
+            return;
+        }
         const items = this.props.items.all;
         const movedItem = items[source];
 
@@ -48,6 +51,9 @@ class DragAndDropList extends React.Component {
     };
 
     onDragEnd = (e) => {
+        if (this.props.readOnly) {
+            return;
+        }
         const {destination, source, draggableId} = e;
 
         if (!destination) {
@@ -97,7 +103,7 @@ class DragAndDropList extends React.Component {
                             {...provided.droppableProps}
                         >
                             {items.all.map((item, key) =>
-                                <Draggable draggableId={item.rank} index={key} key={key}>
+                                <Draggable draggableId={item.rank} isDragDisabled={this.props.readOnly} index={key} key={key}>
                                     {(provided, snapshot) => (
                                         <div
                                             ref={provided.innerRef}
@@ -114,16 +120,18 @@ class DragAndDropList extends React.Component {
                                                 <div
                                                     style={styles.columnRight}
                                                 >
+                                                    {!this.props.readOnly &&
                                                     <Button.Group size='mini'>
                                                         {key !== 0 &&
                                                         <Button icon='arrow up'
-                                                                onClick={() => this.onArrowClick(key, key-1)}/>
+                                                                onClick={() => this.onArrowClick(key, key - 1)}/>
                                                         }
                                                         {key !== this.props.items.length - 1 &&
                                                         <Button icon='arrow down'
-                                                                onClick={() => this.onArrowClick(key, key+1)}/>
+                                                                onClick={() => this.onArrowClick(key, key + 1)}/>
                                                         }
                                                     </Button.Group>
+                                                    }
                                                 </div>
                                             </Segment>
                                         </div>
