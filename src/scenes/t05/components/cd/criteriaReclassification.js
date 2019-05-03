@@ -169,7 +169,7 @@ class CriteriaReclassification extends React.Component {
                                 <br/>
                                 <Button disabled={readOnly} positive icon fluid labelPosition='left' onClick={this.handleClickCalculate}>
                                     <Icon name='calculator'/>
-                                    Calculate Suitability
+                                    Perform reclassification
                                 </Button>
                             </Segment>
                     </Grid.Column>
