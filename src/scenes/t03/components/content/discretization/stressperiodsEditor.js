@@ -12,6 +12,7 @@ import StressPeriodsDataTable from './stressperiodsDatatable';
 import moment from 'moment';
 import ContentToolBar from 'scenes/shared/ContentToolbar';
 import ModflowModelCommand from '../../../commands/modflowModelCommand';
+import StressperiodsImport from './stressperiodsImport';
 
 class StressperiodsEditor extends React.Component {
     constructor(props) {
@@ -117,6 +118,10 @@ class StressperiodsEditor extends React.Component {
                     </Grid.Column>
                     <Grid.Column width={11}>
                         <StressPeriodsDataTable stressperiods={stressperiods} onChange={this.handleChange}/>
+                        <StressperiodsImport
+                            onChange={this.handleChange}
+                            timeunit={this.props.timeunit}
+                        />
                     </Grid.Column>
                 </Grid.Row>
             </Grid>
@@ -127,7 +132,8 @@ class StressperiodsEditor extends React.Component {
 const mapStateToProps = state => {
     return {
         id: ModflowModel.fromObject(state.T03.model).id,
-        stressperiods: ModflowModel.fromObject(state.T03.model).stressperiods
+        stressperiods: ModflowModel.fromObject(state.T03.model).stressperiods,
+        timeunit: ModflowModel.fromObject(state.T03.model).timeUnit
     };
 };
 
@@ -137,6 +143,7 @@ const mapDispatchToProps = {
 
 StressperiodsEditor.proptypes = {
     stressperiods: PropTypes.instanceOf(Stressperiods).isRequired,
+    timeunit: PropTypes.number,
     onChange: PropTypes.func
 };
 
