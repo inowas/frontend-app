@@ -74,7 +74,7 @@ class CriteriaRasterUpload extends React.Component {
                 }
                 raster.boundingBox = boundingBox;
                 criterion.raster = raster;
-                criterion.step = 1;
+                criterion.step = 2;
 
                 criterion.suitability = new Raster();
                 criterion.constraintRaster = new Raster();
@@ -174,7 +174,11 @@ class CriteriaRasterUpload extends React.Component {
                                     </Form.Group>
                                     }
                                     <Form.Group>
-                                        <Checkbox toggle label='Basic Tile Layer' onClick={this.onToggleBasicLayer}/>
+                                        <Checkbox
+                                            toggle
+                                            label={`Turn ${showBasicLayer ? 'off' : 'on'} base map`}
+                                            onClick={this.onToggleBasicLayer}
+                                        />
                                     </Form.Group>
                                 </Form>
                             </Segment>

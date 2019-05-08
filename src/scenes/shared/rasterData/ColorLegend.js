@@ -80,7 +80,8 @@ class ColorLegend extends React.Component {
                     <div style={{
                         ...styles.stripe,
                         backgroundImage: gradient,
-                        height: (legend.length - 1) * 20
+                        height: (legend.length - 1) * 20,
+                        lineHeight: '20px'
                     }}
                     />
                     <div style={styles.labels}>
