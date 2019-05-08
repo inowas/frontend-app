@@ -89,9 +89,6 @@ class UploadJsonModal extends React.Component {
     };
 
     render() {
-        console.log(this.state);
-
-
         return (
             <Modal size={'large'} open onClose={this.props.onCancel} dimmer={'blurring'}>
                 <Modal.Header>Upload GeoJson file</Modal.Header>

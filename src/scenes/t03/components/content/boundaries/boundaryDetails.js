@@ -45,7 +45,10 @@ class BoundaryDetails extends React.Component {
     }
 
     handleChange = (e, {name, value}) => {
-        console.log(value);
+        if (name === 'layers' && typeof value === 'number') {
+            value = [value]
+        }
+
         const boundary = this.props.boundary;
         boundary[name] = value;
         this.props.onChange(boundary);
@@ -111,6 +114,7 @@ class BoundaryDetails extends React.Component {
                         />
 
                         <Form.Select
+                            disabled={['rch', 'riv'].includes(boundary.type)}
                             loading={!(this.props.soilmodel instanceof Soilmodel)}
                             label={'Selected layers'}
                             style={{zIndex: 1000}}
