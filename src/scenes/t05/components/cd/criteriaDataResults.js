@@ -197,7 +197,7 @@ NODATA_VALUE -9999
                             <Form.Field>
                                 <Radio
                                     checked={showBasicLayer}
-                                    label='OSM'
+                                    label={`Turn ${showBasicLayer ? 'off' : 'on'} base map`}
                                     name='showBasicLayer'
                                     onChange={this.handleToggleBasicLayer}
                                     toggle

@@ -45,7 +45,6 @@ class CriteriaDataConstraints extends React.Component {
         rule.value = 0;
         const criterion = Criterion.fromObject(this.state.criterion);
         criterion.constraintRules.add(rule);
-        criterion.step = 1;
         criterion.raster.calculateMinMax(criterion.constraintRules);
         this.props.onChange(criterion);
     };
@@ -59,7 +58,6 @@ class CriteriaDataConstraints extends React.Component {
             }
             return c;
         });
-        criterion.step = 1;
         return this.setState({
             criterion: criterion.toObject()
         });
@@ -75,7 +73,6 @@ class CriteriaDataConstraints extends React.Component {
             return c;
         });
         criterion.raster.calculateMinMax(criterion.constraintRules);
-        criterion.step = 1;
         this.props.onChange(criterion);
     };
 
@@ -83,7 +80,6 @@ class CriteriaDataConstraints extends React.Component {
         if (this.props.readOnly) { return null; }
         const criterion = Criterion.fromObject(this.state.criterion);
         criterion.raster.calculateMinMax(criterion.constraintRules);
-        criterion.step = 1;
         this.props.onChange(criterion);
     };
 
@@ -92,7 +88,6 @@ class CriteriaDataConstraints extends React.Component {
         const criterion = Criterion.fromObject(this.state.criterion);
         criterion.calculateConstraints();
         criterion.raster.calculateMinMax(criterion.constraintRules);
-        criterion.step = 2;
         this.saveRaster(criterion);
     };
 
@@ -113,7 +108,6 @@ class CriteriaDataConstraints extends React.Component {
         const criterion = this.props.criterion;
         criterion.constraintRules.update(rule);
         criterion.calculateConstraints();
-        criterion.step = 2;
         this.saveRaster(criterion);
     };
 

@@ -27,6 +27,7 @@ const styles = {
         zIndex: 1000,
         bottom: 0,
         left: 0,
+        lineHeight: '20px',
         marginLeft: '0.5em'
     }
 };
