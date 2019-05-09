@@ -239,7 +239,7 @@ class SuitabilityWeightAssignment extends React.Component {
     }
 }
 
-SuitabilityWeightAssignment.proptypes = {
+SuitabilityWeightAssignment.propTypes = {
     handleChange: PropTypes.func.isRequired,
     mcda: PropTypes.instanceOf(MCDA).isRequired,
     readOnly: PropTypes.bool

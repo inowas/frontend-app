@@ -250,7 +250,7 @@ class CreateModel extends React.Component {
     }
 }
 
-CreateModel.proptypes = {
+CreateModel.propTypes = {
     history: PropTypes.object.isRequired,
     location: PropTypes.object.isRequired,
     match: PropTypes.object.isRequired

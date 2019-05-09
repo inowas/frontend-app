@@ -117,7 +117,7 @@ const mapDispatchToProps = {
     updateCalculation
 };
 
-OptimizationProgressBar.proptypes = {
+OptimizationProgressBar.propTypes = {
     model: PropTypes.instanceOf(ModflowModel)
 };
 

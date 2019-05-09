@@ -361,7 +361,7 @@ const mapDispatchToProps = {
 };
 
 
-T03.proptypes = {
+T03.propTypes = {
     history: PropTypes.object.isRequired,
     location: PropTypes.object.isRequired,
     match: PropTypes.object.isRequired,

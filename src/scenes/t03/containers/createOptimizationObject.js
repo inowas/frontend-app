@@ -273,7 +273,7 @@ const mapDispatchToProps = {
     clear, updateBoundaries, updateOptimization, updateModel
 };
 
-CreateOptimizationObject.proptypes = {
+CreateOptimizationObject.propTypes = {
     history: PropTypes.object.isRequired,
     location: PropTypes.object.isRequired,
     match: PropTypes.object.isRequired,

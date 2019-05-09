@@ -118,7 +118,7 @@ class SuitabilityEditor extends React.Component {
     }
 }
 
-SuitabilityEditor.proptypes = {
+SuitabilityEditor.propTypes = {
     activeTool: PropTypes.string,
     onChange: PropTypes.func.isRequired,
     onClickTool: PropTypes.func.isRequired,

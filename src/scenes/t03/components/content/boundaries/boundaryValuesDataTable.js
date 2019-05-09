@@ -201,7 +201,7 @@ class BoundaryValuesDataTable extends React.Component {
     }
 }
 
-BoundaryValuesDataTable.proptypes = {
+BoundaryValuesDataTable.propTypes = {
     boundary: PropTypes.instanceOf(Boundary).isRequired,
     onChange: PropTypes.func.isRequired,
     readOnly: PropTypes.bool.isRequired,

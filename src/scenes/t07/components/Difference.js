@@ -276,7 +276,7 @@ const mapStateToProps = state => {
     };
 };
 
-Difference.proptypes = {
+Difference.propTypes = {
     models: PropTypes.array.isRequired,
     scenarioAnalysis: PropTypes.instanceOf(ScenarioAnalysis).isRequired,
 };

@@ -171,7 +171,7 @@ class ResultsSelectorFlow extends React.Component {
     }
 }
 
-ResultsSelectorFlow.proptypes = {
+ResultsSelectorFlow.propTypes = {
     data: PropTypes.object.isRequired,
     onChange: PropTypes.func.isRequired,
     layerValues: PropTypes.object.isRequired,

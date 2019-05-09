@@ -162,7 +162,7 @@ class ResultsSelectorTransport extends React.Component {
     }
 }
 
-ResultsSelectorTransport.proptypes = {
+ResultsSelectorTransport.propTypes = {
     data: PropTypes.object.isRequired,
     onChange: PropTypes.func.isRequired,
     layerValues: PropTypes.object.isRequired,

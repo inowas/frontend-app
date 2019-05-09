@@ -423,7 +423,7 @@ const mapStateToProps = state => {
 
 const mapDispatchToProps = {clear, updateModel, updateBoundaries, updateScenarioAnalysis};
 
-T07.proptypes = {
+T07.propTypes = {
     history: PropTypes.object.isRequired,
     location: PropTypes.object.isRequired,
     match: PropTypes.object.isRequired,

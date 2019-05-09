@@ -468,7 +468,7 @@ const mapDispatchToProps = {
     updateOptimization
 };
 
-OptimizationContainer.proptypes = {
+OptimizationContainer.propTypes = {
     history: PropTypes.object.isRequired,
     match: PropTypes.object.isRequired,
     model: PropTypes.instanceOf(ModflowModel).isRequired,

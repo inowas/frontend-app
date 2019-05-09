@@ -61,7 +61,7 @@ class AppContainer extends Component {
     }
 }
 
-AppContainer.proptypes = {
+AppContainer.propTypes = {
     loading: PropTypes.bool,
     navbarItems: PropTypes.array.isRequired
 };

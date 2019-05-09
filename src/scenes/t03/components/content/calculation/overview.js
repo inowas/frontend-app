@@ -206,7 +206,7 @@ const mapDispatchToProps = {
     updateCalculation, updatePackages
 };
 
-Overview.proptypes = {
+Overview.propTypes = {
     boundaries: PropTypes.instanceOf(BoundaryCollection).isRequired,
     calculation: PropTypes.instanceOf(Calculation),
     model: PropTypes.instanceOf(ModflowModel).isRequired,

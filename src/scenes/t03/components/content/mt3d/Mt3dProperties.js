@@ -230,7 +230,7 @@ const mapDispatchToProps = {
     updatePackages
 };
 
-Mt3dProperties.proptypes = {
+Mt3dProperties.propTypes = {
     history: PropTypes.object.isRequired,
     match: PropTypes.object.isRequired,
     model: PropTypes.instanceOf(ModflowModel).isRequired,

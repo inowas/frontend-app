@@ -124,6 +124,6 @@ const mapDispatchToProps = {
     updateCalculation
 };
 
-CalculationProgressBar.proptypes = {};
+CalculationProgressBar.propTypes = {};
 
 export default connect(mapStateToProps, mapDispatchToProps)(CalculationProgressBar);

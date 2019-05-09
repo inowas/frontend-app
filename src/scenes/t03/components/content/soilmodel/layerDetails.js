@@ -179,7 +179,7 @@ class LayerDetails extends React.Component {
     }
 }
 
-LayerDetails.proptypes = {
+LayerDetails.propTypes = {
     activeIndex: PropTypes.number,
     layer: PropTypes.instanceOf(SoilmodelLayer).isRequired,
     model: PropTypes.instanceOf(ModflowModel).isRequired,

@@ -32,7 +32,7 @@ const mapStateToProps = state => {
     };
 };
 
-Log.proptypes = {
+Log.propTypes = {
     calculation: PropTypes.instanceOf(Calculation),
 };
 

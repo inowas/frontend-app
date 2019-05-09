@@ -174,7 +174,7 @@ const mapDispatchToProps = {
     updateTransport
 };
 
-Transport.proptypes = {
+Transport.propTypes = {
     boundaries: PropTypes.instanceOf(BoundaryCollection).isRequired,
     history: PropTypes.object.isRequired,
     location: PropTypes.object.isRequired,

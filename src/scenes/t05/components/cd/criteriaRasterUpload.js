@@ -244,7 +244,7 @@ class CriteriaRasterUpload extends React.Component {
     }
 }
 
-CriteriaRasterUpload.proptypes = {
+CriteriaRasterUpload.propTypes = {
     criterion: PropTypes.instanceOf(Criterion).isRequired,
     gridSize: PropTypes.instanceOf(GridSize).isRequired,
     onChange: PropTypes.func.isRequired,

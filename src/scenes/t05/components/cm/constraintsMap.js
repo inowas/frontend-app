@@ -177,7 +177,7 @@ class ConstraintsMap extends React.Component {
     }
 }
 
-ConstraintsMap.proptypes = {
+ConstraintsMap.propTypes = {
     map: PropTypes.instanceOf(GisMap).isRequired,
     onChange: PropTypes.func.isRequired,
     mode: PropTypes.string.isRequired,

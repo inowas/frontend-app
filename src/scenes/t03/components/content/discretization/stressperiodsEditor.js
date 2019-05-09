@@ -135,7 +135,7 @@ const mapDispatchToProps = {
     onChange: updateStressperiods
 };
 
-StressperiodsEditor.proptypes = {
+StressperiodsEditor.propTypes = {
     stressperiods: PropTypes.instanceOf(Stressperiods).isRequired,
     onChange: PropTypes.func
 };

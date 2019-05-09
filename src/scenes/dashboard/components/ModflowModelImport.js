@@ -256,7 +256,7 @@ class ModflowModelImport extends React.Component {
     }
 }
 
-ModflowModelImport.proptypes = {
+ModflowModelImport.propTypes = {
     history: PropTypes.object.isRequired,
     location: PropTypes.object.isRequired,
     match: PropTypes.object.isRequired

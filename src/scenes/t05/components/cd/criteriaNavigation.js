@@ -131,7 +131,7 @@ class CriteriaNavigation extends React.Component {
     }
 }
 
-CriteriaNavigation.proptypes = {
+CriteriaNavigation.propTypes = {
     activeCriterion: PropTypes.string,
     onClick: PropTypes.func.isRequired,
     mcda: PropTypes.instanceOf(MCDA).isRequired,

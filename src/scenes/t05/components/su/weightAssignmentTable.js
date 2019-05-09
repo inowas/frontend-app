@@ -155,7 +155,7 @@ class WeightAssignmentTable extends React.Component {
     }
 }
 
-WeightAssignmentTable.proptypes = {
+WeightAssignmentTable.propTypes = {
     handleChange: PropTypes.func.isRequired,
     mcda: PropTypes.instanceOf(MCDA).isRequired,
     readOnly: PropTypes.bool

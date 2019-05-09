@@ -145,7 +145,7 @@ class SuitabilityClasses extends React.Component {
     }
 }
 
-SuitabilityClasses.proptypes = {
+SuitabilityClasses.propTypes = {
     handleChange: PropTypes.func.isRequired,
     mcda: PropTypes.instanceOf(MCDA).isRequired,
     readOnly: PropTypes.bool

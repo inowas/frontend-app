@@ -155,7 +155,7 @@ class SubstanceDetails extends React.Component {
     }
 }
 
-SubstanceDetails.proptypes = {
+SubstanceDetails.propTypes = {
     boundaries: PropTypes.instanceOf(BoundaryCollection).isRequired,
     onChange: PropTypes.func.isRequired,
     readOnly: PropTypes.bool,

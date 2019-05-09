@@ -192,7 +192,7 @@ class ModelDiscretizationMap extends React.Component {
     }
 }
 
-ModelDiscretizationMap.proptypes = {
+ModelDiscretizationMap.propTypes = {
     cells: PropTypes.instanceOf(Cells),
     boundingBox: PropTypes.instanceOf(BoundingBox),
     geometry: PropTypes.instanceOf(Geometry),

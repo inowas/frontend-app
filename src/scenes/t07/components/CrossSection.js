@@ -279,7 +279,7 @@ class CrossSection extends React.Component {
     }
 }
 
-CrossSection.proptypes = {
+CrossSection.propTypes = {
     basemodel: PropTypes.instanceOf(ModflowModel).isRequired,
     basemodelCalculation: PropTypes.instanceOf(Calculation).isRequired,
     basemodelSoilmodel: PropTypes.instanceOf(Soilmodel).isRequired,

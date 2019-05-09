@@ -179,7 +179,7 @@ const mapDispatchToProps = {
     onChange: updateModel
 };
 
-GridEditor.proptypes = {
+GridEditor.propTypes = {
     model: PropTypes.instanceOf(ModflowModel).isRequired,
     onChange: PropTypes.func.isRequired
 };

@@ -230,7 +230,7 @@ class BoundaryDetails extends React.Component {
     }
 }
 
-BoundaryDetails.proptypes = {
+BoundaryDetails.propTypes = {
     boundary: PropTypes.instanceOf(Boundary).isRequired,
     boundaries: PropTypes.instanceOf(BoundaryCollection).isRequired,
     model: PropTypes.instanceOf(ModflowModel).isRequired,

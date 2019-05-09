@@ -200,7 +200,7 @@ class CriteriaDataEditor extends React.Component {
     }
 }
 
-CriteriaDataEditor.proptypes = {
+CriteriaDataEditor.propTypes = {
     activeTool: PropTypes.string,
     criterion: PropTypes.instanceOf(Criterion).isRequired,
     onChange: PropTypes.func.isRequired,

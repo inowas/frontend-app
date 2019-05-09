@@ -50,7 +50,7 @@ class ToolNavigation extends React.Component {
     }
 }
 
-ToolNavigation.proptypes = {
+ToolNavigation.propTypes = {
     history: PropTypes.object.isRequired,
     location: PropTypes.object.isRequired,
     match: PropTypes.object.isRequired,

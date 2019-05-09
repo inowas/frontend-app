@@ -42,7 +42,7 @@ class SubMenuWithContent extends React.Component {
     }
 }
 
-SubMenuWithContent.proptypes = {
+SubMenuWithContent.propTypes = {
     menuItems: PropTypes.array.isRequired
 };
 

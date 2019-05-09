@@ -206,7 +206,7 @@ class CreateModelMap extends React.Component {
     }
 }
 
-CreateModelMap.proptypes = {
+CreateModelMap.propTypes = {
     gridSize: PropTypes.instanceOf(GridSize).isRequired,
     styles: PropTypes.object.isRequired,
     onChange: PropTypes.func.isRequired

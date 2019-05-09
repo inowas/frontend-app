@@ -220,7 +220,7 @@ class BoundaryDiscretizationMap extends React.Component {
     }
 }
 
-BoundaryDiscretizationMap.proptypes = {
+BoundaryDiscretizationMap.propTypes = {
     model: PropTypes.instanceOf(ModflowModel).isRequired,
     boundary: PropTypes.instanceOf(Boundary).isRequired,
     boundaries: PropTypes.instanceOf(BoundaryCollection).isRequired,

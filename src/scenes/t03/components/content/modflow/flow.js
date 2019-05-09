@@ -303,7 +303,7 @@ const mapStateToProps = (state) => ({
 
 const mapDispatchToProps = {updatePackages};
 
-Flow.proptypes = {
+Flow.propTypes = {
     boundaries: PropTypes.instanceOf(BoundaryCollection).isRequired,
     history: PropTypes.object.isRequired,
     match: PropTypes.object.isRequired,

@@ -123,7 +123,7 @@ const mapStateToProps = state => {
     };
 };
 
-Files.proptypes = {
+Files.propTypes = {
     calculation: PropTypes.instanceOf(Calculation),
     type: PropTypes.string.isRequired
 };

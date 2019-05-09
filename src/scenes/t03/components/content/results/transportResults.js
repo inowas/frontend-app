@@ -231,7 +231,7 @@ const mapStateToProps = state => {
     };
 };
 
-TransportResults.proptypes = {
+TransportResults.propTypes = {
     history: PropTypes.object.isRequired,
     boundaries: PropTypes.instanceOf(BoundaryCollection).isRequired,
     calculation: PropTypes.instanceOf(Calculation).isRequired,

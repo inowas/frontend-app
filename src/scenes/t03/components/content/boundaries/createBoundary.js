@@ -156,7 +156,7 @@ const mapDispatchToProps = {
 };
 
 
-CreateBoundary.proptypes = {
+CreateBoundary.propTypes = {
     history: PropTypes.object.isRequired,
     location: PropTypes.object.isRequired,
     match: PropTypes.object.isRequired,
