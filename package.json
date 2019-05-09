@@ -49,6 +49,10 @@
         "vis-react": "^0.4.3"
     },
     "devDependencies": {
+        "@types/jest": "^24.0.12",
+        "@types/node": "^12.0.0",
+        "@types/react": "^16.8.17",
+        "@types/react-dom": "^16.8.4",
         "babel-eslint": "9.0.0",
         "better-console": "^1.0.1",
         "eslint": "5.6.0",
@@ -81,6 +85,7 @@
         "replace-ext": "^1.0.0",
         "require-dot-file": "^0.4.0",
         "run-sequence": "^2.2.1",
+        "typescript": "^3.4.5",
         "yamljs": "^0.3.0"
     },
     "jest": {
