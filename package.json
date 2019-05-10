@@ -89,6 +89,8 @@
         "replace-ext": "^1.0.0",
         "require-dot-file": "^0.4.0",
         "run-sequence": "^2.2.1",
+        "tslint": "5.16.0",
+        "tslint-react": "4.0.0",
         "typescript": "^3.4.5",
         "yamljs": "^0.3.0"
     },
