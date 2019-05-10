@@ -1,5 +1,5 @@
 import {distance} from '@turf/turf';
-import {BoundingBox, Geometry} from 'core/model/modflow';
+import {BoundingBox, Geometry} from '../../core/model/modflow';
 
 export const dxGeometry = (geometry) => {
 

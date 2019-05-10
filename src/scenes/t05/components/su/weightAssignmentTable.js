@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import {Message, Radio, Segment, Table} from 'semantic-ui-react';
-import {MCDA} from 'core/model/mcda';
+import {MCDA} from '../../../../core/model/mcda';
 
 const styles = {
     noMargin: {

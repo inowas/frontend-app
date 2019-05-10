@@ -2,10 +2,10 @@ import React from 'react';
 import {connect} from 'react-redux';
 import PropTypes from 'prop-types';
 import {Form, Grid} from 'semantic-ui-react';
-import {Cells, BoundingBox, Geometry, GridSize, ModflowModel} from 'core/model/modflow';
+import {Cells, BoundingBox, Geometry, GridSize, ModflowModel} from '../../../../../core/model/modflow';
 
-import {dxCell, dyCell} from 'services/geoTools/distance';
-import {sendCommand} from 'services/api';
+import {dxCell, dyCell} from '../../../../../services/geoTools/distance';
+import {sendCommand} from '../../../../../services/api';
 
 import ContentToolBar from '../../../../shared/ContentToolbar';
 import ModflowModelCommand from '../../../commands/modflowModelCommand';

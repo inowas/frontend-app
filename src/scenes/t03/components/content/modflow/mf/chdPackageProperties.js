@@ -3,7 +3,7 @@ import React from 'react';
 import {Header, Form} from 'semantic-ui-react';
 
 import AbstractPackageProperties from './AbstractPackageProperties';
-import {FlopyModflowMfchd} from 'core/model/flopy/packages/mf';
+import {FlopyModflowMfchd} from '../../../../../../core/model/flopy/packages/mf';
 
 class ChdPackageProperties extends AbstractPackageProperties {
 

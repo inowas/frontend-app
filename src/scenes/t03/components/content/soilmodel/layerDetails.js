@@ -1,8 +1,8 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import {Form, Grid, Tab, Popup, Menu} from 'semantic-ui-react';
-import {ModflowModel} from 'core/model/modflow';
-import {SoilmodelLayer} from 'core/model/modflow/soilmodel';
+import {ModflowModel} from '../../../../../core/model/modflow';
+import {SoilmodelLayer} from '../../../../../core/model/modflow/soilmodel';
 
 import {layerParameters} from '../../../defaults/soilmodel';
 import LayerParameter from './layerParameter';

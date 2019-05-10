@@ -4,7 +4,7 @@ import jsrp from 'json-schema-ref-parser';
 import md5 from 'md5';
 import FlopyModflow from './mf/FlopyModflow';
 import FlopyMt3d from './mt/FlopyMt3d';
-import {JSON_SCHEMA_URL} from 'services/api';
+import {JSON_SCHEMA_URL} from '../../../../services/api';
 
 export default class FlopyPackages {
 

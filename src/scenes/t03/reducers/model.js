@@ -1,5 +1,5 @@
-import {Calculation, ModflowModel, Stressperiods} from 'core/model/modflow';
-import {FlopyMt3d} from 'core/model/flopy/packages/mt';
+import {Calculation, ModflowModel, Stressperiods} from '../../../core/model/modflow';
+import {FlopyMt3d} from '../../../core/model/flopy/packages/mt';
 import {LOGOUT, UNAUTHORIZED} from '../../user/actions/actions';
 import {UPDATE_CALCULATION} from './calculation';
 

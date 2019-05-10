@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import {Form, Grid, Input, Message, Segment, Table} from 'semantic-ui-react';
-import {WeightAssignment} from 'core/model/mcda/criteria';
+import {WeightAssignment} from '../../../../core/model/mcda/criteria';
 
 class SimpleWeightAssignment extends React.Component {
 

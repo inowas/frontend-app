@@ -1,7 +1,7 @@
 import Uuid from 'uuid';
-import {WellBoundary} from 'core/model/modflow/boundaries';
-import {Stressperiod, Stressperiods} from 'core/model/modflow';
-import {FlopyModflow, FlopyModflowMfwel} from 'core/model/flopy/packages/mf';
+import {WellBoundary} from '../../../core/model/modflow/boundaries';
+import {Stressperiod, Stressperiods} from '../../../core/model/modflow';
+import {FlopyModflow, FlopyModflowMfwel} from '../../../core/model/flopy/packages/mf';
 
 const createStressperiods = () => {
     const stressperiods = Stressperiods.fromDefaults();

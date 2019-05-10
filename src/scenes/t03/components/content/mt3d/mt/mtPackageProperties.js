@@ -3,7 +3,7 @@ import React from 'react';
 import {Form, Input, Select} from 'semantic-ui-react';
 
 import AbstractPackageProperties from './AbstractPackageProperties';
-import {FlopyMt3dMt} from 'core/model/flopy/packages/mt';
+import {FlopyMt3dMt} from '../../../../../../core/model/flopy/packages/mt';
 
 
 class MtPackageProperties extends AbstractPackageProperties {

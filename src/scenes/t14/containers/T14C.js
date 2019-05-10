@@ -14,7 +14,7 @@ import SimpleToolsCommand from '../../shared/simpleTools/commands/SimpleToolsCom
 import image from '../images/T14C.png';
 import {defaults} from '../defaults/T14C';
 
-import {fetchTool, sendCommand} from 'services/api';
+import {fetchTool, sendCommand} from '../../../services/api';
 import {buildPayloadToolInstance, deepMerge} from '../../shared/simpleTools/helpers';
 
 class T14C extends React.Component {

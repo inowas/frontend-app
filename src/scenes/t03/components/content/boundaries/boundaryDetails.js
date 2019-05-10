@@ -5,7 +5,7 @@ import uuid from 'uuid';
 import {Button, Dropdown, Form, Header, List, Popup} from 'semantic-ui-react';
 
 import BoundaryMap from '../../maps/boundaryMap';
-import {Boundary, BoundaryCollection, LineBoundary, ModflowModel, Soilmodel} from 'core/model/modflow';
+import {Boundary, BoundaryCollection, LineBoundary, ModflowModel, Soilmodel} from '../../../../../core/model/modflow';
 import BoundaryValuesDataTable from './boundaryValuesDataTable';
 import BoundaryGeometryEditor from './boundaryGeometryEditor';
 import ObservationPointEditor from './observationPointEditor';

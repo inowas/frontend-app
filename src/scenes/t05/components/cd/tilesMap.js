@@ -1,8 +1,8 @@
 import PropTypes from 'prop-types';
 import React from 'react';
-import {BasicTileLayer} from 'services/geoTools/tileLayers';
+import {BasicTileLayer} from '../../../../services/geoTools/tileLayers';
 import {Map, Rectangle} from 'react-leaflet';
-import {Tile, TilesCollection} from 'core/model/mcda/gis';
+import {Tile, TilesCollection} from '../../../../core/model/mcda/gis';
 
 const styles = {
     map: {

@@ -2,7 +2,7 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import {Form} from 'semantic-ui-react';
 
-import {FlopyModflow} from 'core/model/flopy/packages/mf';
+import {FlopyModflow} from '../../../../../../core/model/flopy/packages/mf';
 import {documentation} from '../../../../defaults/flow';
 import {De4PackageProperties, PcgPackageProperties} from './index';
 import InfoPopup from '../../../../../shared/InfoPopup';

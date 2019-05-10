@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types';
 import React from 'react';
-import {submitSignUpCredentials} from 'services/api';
+import {submitSignUpCredentials} from '../../../services/api';
 
 import {connect} from 'react-redux';
 import {hasSessionKey} from '../reducers/index';

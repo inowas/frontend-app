@@ -2,9 +2,9 @@ import React from 'react';
 import {Button, Form, Modal, Segment} from 'semantic-ui-react';
 import ZonesMap from '../../maps/zonesMap';
 import PropTypes from 'prop-types';
-import {SoilmodelLayer, SoilmodelZone} from 'core/model/modflow/soilmodel';
-import {Geometry, ModflowModel} from 'core/model/modflow';
-import {calculateActiveCells} from 'services/geoTools';
+import {SoilmodelLayer, SoilmodelZone} from '../../../../../core/model/modflow/soilmodel';
+import {Geometry, ModflowModel} from '../../../../../core/model/modflow';
+import {calculateActiveCells} from '../../../../../services/geoTools';
 
 class ZoneModal extends React.Component {
 

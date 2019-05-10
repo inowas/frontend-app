@@ -3,9 +3,9 @@ import PropTypes from 'prop-types';
 import {Button, Form, Grid, Icon, Message, Segment, Table} from 'semantic-ui-react';
 import Slider from 'rc-slider';
 import {createSliderWithTooltip} from 'rc-slider';
-import {OptimizationLocation, OptimizationInput, OptimizationObjective} from 'core/model/modflow/optimization';
+import {OptimizationLocation, OptimizationInput, OptimizationObjective} from '../../../../../core/model/modflow/optimization';
 import {OptimizationMap} from './shared';
-import {ModflowModel} from 'core/model/modflow';
+import {ModflowModel} from '../../../../../core/model/modflow';
 import ContentToolBar from '../../../../shared/ContentToolbar';
 
 const Range = createSliderWithTooltip(Slider.Range);

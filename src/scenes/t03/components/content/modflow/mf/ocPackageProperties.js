@@ -3,7 +3,7 @@ import React from 'react';
 import {Checkbox, Form, Input, Table} from 'semantic-ui-react';
 
 import AbstractPackageProperties from './AbstractPackageProperties';
-import {FlopyModflow, FlopyModflowMfoc} from 'core/model/flopy/packages/mf';
+import {FlopyModflow, FlopyModflowMfoc} from '../../../../../../core/model/flopy/packages/mf';
 import {documentation} from '../../../../defaults/flow';
 
 const formats = [

@@ -1,8 +1,8 @@
 import Uuid from 'uuid';
-import {RiverBoundary} from 'core/model/modflow/boundaries';
-import {validate} from 'services/jsonSchemaValidator';
-import {JSON_SCHEMA_URL} from 'services/api';
-import {BoundingBox, Cells, GridSize, Geometry} from 'core/model/geometry';
+import {RiverBoundary} from '../../../../../core/model/modflow/boundaries';
+import {validate} from '../../../../../services/jsonSchemaValidator';
+import {JSON_SCHEMA_URL} from '../../../../../services/api';
+import {BoundingBox, Cells, GridSize, Geometry} from '../../../../../core/model/geometry';
 
 const createRiverBoundary = () => {
     const id = Uuid.v4();

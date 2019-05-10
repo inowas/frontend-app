@@ -4,7 +4,7 @@ import {
     FlopyModflowMfdis,
     FlopyModflowMfriv,
     FlopyModflowMfwel
-} from 'core/model/flopy/packages/mf';
+} from '../../../core/model/flopy/packages/mf';
 
 test('It can instantiate FlopyModflow', () => {
     const model = new FlopyModflow();

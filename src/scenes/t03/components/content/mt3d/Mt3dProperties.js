@@ -2,13 +2,13 @@ import React from 'react';
 import {connect} from 'react-redux';
 import {withRouter} from 'react-router-dom';
 import PropTypes from 'prop-types';
-import {sendCommand} from 'services/api';
+import {sendCommand} from '../../../../../services/api';
 import ModflowModelCommand from '../../../commands/modflowModelCommand';
 
 import {Grid, Menu, Segment} from 'semantic-ui-react';
-import {ModflowModel, Transport} from 'core/model/modflow';
-import {BoundaryCollection} from 'core/model/modflow/boundaries';
-import {FlopyMt3d} from 'core/model/flopy/packages/mt';
+import {ModflowModel, Transport} from '../../../../../core/model/modflow';
+import {BoundaryCollection} from '../../../../../core/model/modflow/boundaries';
+import {FlopyMt3d} from '../../../../../core/model/flopy/packages/mt';
 import {
     AdvPackageProperties,
     BtnPackageProperties,
@@ -19,8 +19,8 @@ import {
 } from './mt';
 import ContentToolBar from '../../../../shared/ContentToolbar';
 import {updatePackages} from '../../../actions/actions';
-import FlopyPackages from 'core/model/flopy/packages/FlopyPackages';
-import FlopyMt3dPackage from 'core/model/flopy/packages/mt/FlopyMt3dPackage';
+import FlopyPackages from '../../../../../core/model/flopy/packages/FlopyPackages';
+import FlopyMt3dPackage from '../../../../../core/model/flopy/packages/mt/FlopyMt3dPackage';
 
 const sideBar = [
     {id: undefined, name: 'Overview (MT-Package)'},

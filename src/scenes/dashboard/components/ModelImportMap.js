@@ -1,9 +1,9 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import {BoundaryCollection, BoundingBox, Geometry} from 'core/model/modflow';
+import {BoundaryCollection, BoundingBox, Geometry} from '../../../core/model/modflow';
 import {CircleMarker, FeatureGroup, GeoJSON, LayersControl, Map} from 'react-leaflet';
-import {BasicTileLayer} from 'services/geoTools/tileLayers';
-import {getStyle} from 'services/geoTools/mapHelpers';
+import {BasicTileLayer} from '../../../services/geoTools/tileLayers';
+import {getStyle} from '../../../services/geoTools/mapHelpers';
 
 const style = {
     map: {

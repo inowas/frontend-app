@@ -1,7 +1,7 @@
 import React from 'react';
 import {Button, Icon, Input, Popup, Table} from 'semantic-ui-react';
 import PropTypes from 'prop-types';
-import {SoilmodelLayer} from 'core/model/modflow/soilmodel';
+import {SoilmodelLayer} from '../../../../../core/model/modflow/soilmodel';
 import {pure} from 'recompose';
 
 const styles = {

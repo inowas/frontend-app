@@ -1,4 +1,4 @@
-import {LayersCollection, SoilmodelLayer} from 'core/model/modflow/soilmodel';
+import {LayersCollection, SoilmodelLayer} from '../../../core/model/modflow/soilmodel';
 import {CLEAR} from './model';
 import {LOGOUT, UNAUTHORIZED} from '../../user/actions/actions';
 

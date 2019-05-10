@@ -1,12 +1,12 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import {withRouter} from 'react-router-dom';
-import {MCDA} from 'core/model/mcda';
+import {MCDA} from '../../../../core/model/mcda';
 import {Step} from 'semantic-ui-react';
 import SuitabilityWeightAssignment from './suitabilityWA';
 import SuitabilityClasses from './suitabilityClasses';
 import SuitabilityResults from './suitabilityResults';
-import {retrieveRasters} from 'services/api/rasterHelper';
+import {retrieveRasters} from '../../../../services/api/rasterHelper';
 
 class SuitabilityEditor extends React.Component {
     constructor(props) {

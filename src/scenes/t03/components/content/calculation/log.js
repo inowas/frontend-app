@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import {connect} from 'react-redux';
 
-import {Calculation} from 'core/model/modflow';
+import {Calculation} from '../../../../../core/model/modflow';
 import {Grid, Header, Segment} from 'semantic-ui-react';
 import Terminal from '../../../../shared/complexTools/Terminal';
 

@@ -1,8 +1,8 @@
 import React from 'react';
 import {Route, Switch} from 'react-router-dom';
 
-import * as Scenes from 'scenes';
-import PrivateRoute from 'services/router/PrivateRoute';
+import * as Scenes from './scenes';
+import PrivateRoute from './services/router/PrivateRoute';
 
 const routes = (
     <Switch>

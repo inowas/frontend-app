@@ -6,10 +6,10 @@ import md5 from 'md5';
 import uuidv4 from 'uuid/v4';
 import {pure} from 'recompose';
 import {Button, Popup} from 'semantic-ui-react';
-import ActiveCellsLayer from 'services/geoTools/activeCellsLayer';
-import {BasicTileLayer} from 'services/geoTools/tileLayers';
-import {Geometry} from 'core/model/geometry';
-import {GisArea, GisAreasCollection, GisMap} from 'core/model/mcda/gis';
+import ActiveCellsLayer from '../../../../services/geoTools/activeCellsLayer';
+import {BasicTileLayer} from '../../../../services/geoTools/tileLayers';
+import {Geometry} from '../../../../core/model/geometry';
+import {GisArea, GisAreasCollection, GisMap} from '../../../../core/model/mcda/gis';
 import CriteriaRasterMap from '../cd/criteriaRasterMap';
 import {heatMapColors} from '../../defaults/gis';
 

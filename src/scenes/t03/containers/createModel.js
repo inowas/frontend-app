@@ -1,15 +1,15 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import {withRouter} from 'react-router-dom';
-import {sendCommand} from 'services/api';
+import {sendCommand} from '../../../services/api';
 import {Button, Checkbox, Form, Grid, Icon, Segment} from 'semantic-ui-react';
 import {CreateModelMap} from '../components/maps';
-import {Cells, Geometry, GridSize, ModflowModel, Stressperiods} from 'core/model/modflow';
+import {Cells, Geometry, GridSize, ModflowModel, Stressperiods} from '../../../core/model/modflow';
 import ModflowModelCommand from '../commands/modflowModelCommand';
 import defaults from '../defaults/createModel';
 import moment from 'moment/moment';
 import AppContainer from '../../shared/AppContainer';
-import {SoilmodelLayer} from 'core/model/modflow/soilmodel';
+import {SoilmodelLayer} from '../../../core/model/modflow/soilmodel';
 
 const navigation = [{
     name: 'Documentation',

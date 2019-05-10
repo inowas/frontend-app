@@ -1,12 +1,12 @@
 import PropTypes from 'prop-types';
 import React from 'react';
-import {Criterion, Rule} from 'core/model/mcda/criteria';
+import {Criterion, Rule} from '../../../../core/model/mcda/criteria';
 import {Button, Grid, Icon, Message, Segment, Table} from 'semantic-ui-react';
 import CriteriaReclassificationModal from './criteriaReclassificationModal';
 import {CartesianGrid, Scatter, ScatterChart, XAxis, YAxis} from 'recharts';
 import * as math from 'mathjs'
 import CriteriaReclassificationDiscrete from './criteriaReclassificationDiscrete';
-import {dropData} from 'services/api';
+import {dropData} from '../../../../services/api';
 
 class CriteriaReclassification extends React.Component {
 

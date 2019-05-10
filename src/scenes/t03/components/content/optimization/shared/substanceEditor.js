@@ -2,8 +2,8 @@ import React from 'react';
 import {Button, Divider, Dropdown, Form, Icon, List, Modal} from 'semantic-ui-react';
 import PropTypes from 'prop-types';
 import FluxDataTable from './fluxDataTable';
-import {ModflowModel} from 'core/model/modflow';
-import {OptimizationObject} from 'core/model/modflow/optimization';
+import {ModflowModel} from '../../../../../../core/model/modflow';
+import {OptimizationObject} from '../../../../../../core/model/modflow/optimization';
 
 class SubstanceEditor extends React.Component {
 

@@ -1,5 +1,5 @@
 import React from 'react';
-import SubMenuWithContent from 'scenes/shared/complexTools/subMenuWithContent'
+import SubMenuWithContent from '../../../../../scenes/shared/complexTools/subMenuWithContent'
 import Overview from './overview';
 import Log from './log';
 import Files from './files';

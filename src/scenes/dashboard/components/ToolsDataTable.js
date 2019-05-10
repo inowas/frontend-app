@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import {Button, Icon, Loader, Popup, Table} from 'semantic-ui-react';
-import * as Formatter from 'services/formatter';
+import * as Formatter from '../../../services/formatter';
 import {withRouter} from 'react-router-dom';
 import NoContent from '../../shared/complexTools/noContent';
 

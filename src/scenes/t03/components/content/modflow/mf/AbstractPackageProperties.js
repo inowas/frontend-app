@@ -2,7 +2,7 @@ import PropTypes from 'prop-types';
 import React from 'react';
 
 import {Icon, Popup} from 'semantic-ui-react';
-import {FlopyModflowPackage} from 'core/model/flopy/packages/mf';
+import {FlopyModflowPackage} from '../../../../../../core/model/flopy/packages/mf';
 
 class AbstractPackageProperties extends React.Component {
     constructor(props) {

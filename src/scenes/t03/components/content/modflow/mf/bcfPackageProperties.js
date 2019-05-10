@@ -3,11 +3,11 @@ import React from 'react';
 import {Form, Input, Header, Table, Grid} from 'semantic-ui-react';
 
 import AbstractPackageProperties from './AbstractPackageProperties';
-import {FlopyModflowMfbcf} from 'core/model/flopy/packages/mf';
+import {FlopyModflowMfbcf} from '../../../../../../core/model/flopy/packages/mf';
 import InfoPopup from '../../../../../shared/InfoPopup';
 import {documentation} from '../../../../defaults/flow';
 import {RasterDataImage} from '../../../../../shared/rasterData';
-import {GridSize} from 'core/model/modflow';
+import {GridSize} from '../../../../../../core/model/modflow';
 
 class BcfPackageProperties extends AbstractPackageProperties {
 

@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import {MCDA} from '../../../../core/model/mcda';
 import {Button, Grid, Icon, Message, Segment, Table} from 'semantic-ui-react';
-import {Rule} from 'core/model/mcda/criteria';
+import {Rule} from '../../../../core/model/mcda/criteria';
 import CriteriaReclassificationModal from '../cd/criteriaReclassificationModal';
 
 class SuitabilityClasses extends React.Component {

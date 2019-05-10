@@ -1,11 +1,11 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import {connect} from 'react-redux';
-import {ModflowModel, Calculation} from 'core/model/modflow';
+import {ModflowModel, Calculation} from '../../../../../core/model/modflow';
 import {updateCalculation} from '../../../actions/actions';
-import {fetchUrl} from 'services/api';
+import {fetchUrl} from '../../../../../services/api';
 import {Message} from 'semantic-ui-react';
-import {Optimization} from 'core/model/modflow/optimization';
+import {Optimization} from '../../../../../core/model/modflow/optimization';
 import {OPTIMIZATION_STATE_FINISHED, OPTIMIZATION_STATE_STARTED} from '../../../defaults/optimization';
 import OptimizationStatus from './optimizationStatus';
 

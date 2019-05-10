@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import {Button, Icon, Menu, Popup} from 'semantic-ui-react';
 import {pure} from 'recompose';
-import {Soilmodel} from 'core/model/modflow/soilmodel';
+import {Soilmodel} from '../../../../../core/model/modflow/soilmodel';
 
 const LayersList = ({addLayer, soilmodel, onClick, onClone, onRemove, selected}) => {
     return (

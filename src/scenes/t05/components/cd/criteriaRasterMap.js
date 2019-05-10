@@ -1,15 +1,15 @@
 import PropTypes from 'prop-types';
 import React from 'react';
 import {createGridData} from '../../../shared/rasterData/helpers';
-import {BasicTileLayer} from 'services/geoTools/tileLayers';
+import {BasicTileLayer} from '../../../../services/geoTools/tileLayers';
 import {Map, Rectangle, FeatureGroup} from 'react-leaflet';
-import {Raster} from 'core/model/mcda/gis';
+import {Raster} from '../../../../core/model/mcda/gis';
 import CanvasHeatMapOverlay from '../../../shared/rasterData/ReactLeafletHeatMapCanvasOverlay';
 import ColorLegend from '../../../shared/rasterData/ColorLegend';
 import ColorLegendDiscrete from '../../../shared/rasterData/ColorLegendDiscrete';
 import {EditControl} from 'react-leaflet-draw';
 import {getStyle} from '../../../t03/components/maps';
-import {BoundingBox} from 'core/model/geometry';
+import {BoundingBox} from '../../../../core/model/geometry';
 import Rainbow from '../../../../../node_modules/rainbowvis.js/rainbowvis';
 import RasterDataImage from '../../../shared/rasterData/rasterDataImage';
 import {Button, Icon} from 'semantic-ui-react';

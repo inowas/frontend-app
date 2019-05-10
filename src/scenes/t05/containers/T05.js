@@ -4,9 +4,9 @@ import {withRouter} from 'react-router-dom';
 import {includes} from 'lodash';
 import {Divider, Grid, Icon, Segment} from 'semantic-ui-react';
 
-import {fetchTool, sendCommand} from 'services/api';
+import {fetchTool, sendCommand} from '../../../services/api';
 
-import {MCDA} from 'core/model/mcda';
+import {MCDA} from '../../../core/model/mcda';
 
 import {defaultsT05, getMenuItems} from '../defaults';
 import {heatMapColors} from '../defaults/gis';

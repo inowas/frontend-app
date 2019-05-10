@@ -3,7 +3,7 @@ import React from 'react';
 import {Form, Input, Select} from 'semantic-ui-react';
 import AbstractPackageProperties from './AbstractPackageProperties';
 import {documentation} from '../../../../defaults/transport';
-import {FlopyMt3dMtgcg} from 'core/model/flopy/packages/mt';
+import {FlopyMt3dMtgcg} from '../../../../../../core/model/flopy/packages/mt';
 
 const styles = {
     accordionFix: {

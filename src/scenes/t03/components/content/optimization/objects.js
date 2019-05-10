@@ -2,9 +2,9 @@ import React from 'react';
 import {Button, Form, Grid, Icon, Table, Accordion, Message} from 'semantic-ui-react';
 import PropTypes from 'prop-types';
 import {FluxDataTable, SubstanceEditor} from './shared';
-import {OptimizationInput, OptimizationObject} from 'core/model/modflow/optimization';
+import {OptimizationInput, OptimizationObject} from '../../../../../core/model/modflow/optimization';
 import OptimizationMap from './shared/map';
-import {ModflowModel} from 'core/model/modflow';
+import {ModflowModel} from '../../../../../core/model/modflow';
 import ContentToolBar from '../../../../shared/ContentToolbar';
 
 const styles = {

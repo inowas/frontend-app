@@ -1,10 +1,10 @@
 import React from 'react';
 import {connect} from 'react-redux';
-import {ModflowModel, Calculation} from 'core/model/modflow';
+import {ModflowModel, Calculation} from '../../../../../core/model/modflow';
 import {updateCalculation} from '../../../actions/actions';
 import CalculationStatus, {CALCULATION_STATE_NEW, CALCULATION_STATE_FINISHED} from './CalculationStatus';
 import {Message} from 'semantic-ui-react';
-import {fetchCalculationDetails} from 'services/api';
+import {fetchCalculationDetails} from '../../../../../services/api';
 
 class CalculationProgressBar extends React.Component {
 

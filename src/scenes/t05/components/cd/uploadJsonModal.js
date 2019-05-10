@@ -1,8 +1,8 @@
 import PropTypes from 'prop-types';
 import React from 'react';
 import {Button, Dimmer, Grid, Input, Header, List, Segment, Modal, Loader, Form} from 'semantic-ui-react';
-import {BoundingBox, GridSize} from 'core/model/geometry';
-import {Raster} from 'core/model/mcda/gis';
+import {BoundingBox, GridSize} from '../../../../core/model/geometry';
+import {Raster} from '../../../../core/model/mcda/gis';
 import {booleanPointInPolygon} from '@turf/turf';
 
 const styles = {

@@ -4,7 +4,7 @@ import {Form} from 'semantic-ui-react';
 
 import InfoPopup from '../../../../../shared/InfoPopup';
 import {documentation} from '../../../../defaults/flow';
-import {FlopyModflow} from 'core/model/flopy/packages/mf';
+import {FlopyModflow} from '../../../../../../core/model/flopy/packages/mf';
 import LpfPackageProperties from './lpfPackageProperties';
 import BcfPackageProperties from './bcfPackageProperties';
 

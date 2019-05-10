@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import {Form, Grid, Header, Segment} from 'semantic-ui-react';
-import {Soilmodel, Stressperiods} from 'core/model/modflow';
+import {Soilmodel, Stressperiods} from '../../../core/model/modflow';
 
 import {flatten, uniq, upperFirst} from 'lodash';
 

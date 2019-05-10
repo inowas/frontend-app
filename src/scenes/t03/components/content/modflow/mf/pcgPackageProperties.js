@@ -2,7 +2,7 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import {Form, Input} from 'semantic-ui-react';
 
-import {FlopyModflowMfpcg} from 'core/model/flopy/packages/mf';
+import {FlopyModflowMfpcg} from '../../../../../../core/model/flopy/packages/mf';
 import {documentation} from '../../../../defaults/flow';
 import {AbstractPackageProperties} from './index';
 

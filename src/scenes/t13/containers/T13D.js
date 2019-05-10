@@ -13,7 +13,7 @@ import SimpleToolsCommand from '../../shared/simpleTools/commands/SimpleToolsCom
 
 import {defaults} from '../defaults/T13D';
 
-import {fetchTool, sendCommand} from 'services/api';
+import {fetchTool, sendCommand} from '../../../services/api';
 import {buildPayloadToolInstance, deepMerge} from '../../shared/simpleTools/helpers';
 
 

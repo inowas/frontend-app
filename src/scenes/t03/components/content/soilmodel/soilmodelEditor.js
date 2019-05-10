@@ -3,18 +3,18 @@ import PropTypes from 'prop-types';
 import Uuid from 'uuid';
 import {connect} from 'react-redux';
 import {Redirect, withRouter} from 'react-router-dom';
-import {fetchUrl} from 'services/api';
+import {fetchUrl} from '../../../../../services/api';
 import {Grid, Segment} from 'semantic-ui-react';
 
-import {ModflowModel} from 'core/model/modflow';
-import {DefaultZone, Soilmodel, SoilmodelLayer} from 'core/model/modflow/soilmodel';
+import {ModflowModel} from '../../../../../core/model/modflow';
+import {DefaultZone, Soilmodel, SoilmodelLayer} from '../../../../../core/model/modflow/soilmodel';
 
 import LayerDetails from './layerDetails';
 import LayersList from './layersList';
 import {addLayer, cloneLayer, removeLayer, updateSoilmodel, updateLayer} from '../../../actions/actions';
 import Command from '../../../commands/modflowModelCommand';
 import ContentToolBar from '../../../../shared/ContentToolbar';
-import {sendCommand} from 'services/api';
+import {sendCommand} from '../../../../../services/api';
 
 const baseUrl = '/tools/T03';
 

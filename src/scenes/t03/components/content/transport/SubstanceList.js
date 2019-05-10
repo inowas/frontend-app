@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import {Button, Icon, Menu, Popup} from 'semantic-ui-react';
 import {pure} from 'recompose';
-import SubstanceCollection from 'core/model/modflow/transport/SubstanceCollection';
+import SubstanceCollection from '../../../../../core/model/modflow/transport/SubstanceCollection';
 
 
 const SubstanceList = ({addSubstance, substances, onClick, onRemove, selected}) => {

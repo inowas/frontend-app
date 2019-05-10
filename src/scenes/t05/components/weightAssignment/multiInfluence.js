@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import {Button, Form, Grid, Message, Segment, Table} from 'semantic-ui-react';
 import Graph from 'vis-react';
-import {CriteriaCollection, Weight, WeightAssignment} from 'core/model/mcda/criteria';
+import {CriteriaCollection, Weight, WeightAssignment} from '../../../../core/model/mcda/criteria';
 
 const styles = {
     graph: {

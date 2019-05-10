@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import {Map, GeoJSON} from 'react-leaflet';
-import {ModflowModel} from 'core/model/modflow';
+import {ModflowModel} from '../../../core/model/modflow';
 import {
     min,
     max,
@@ -12,7 +12,7 @@ import {
 } from './helpers';
 import ColorLegend from './ColorLegend';
 import CanvasHeatMapOverlay from './ReactLeafletHeatMapCanvasOverlay';
-import {BasicTileLayer} from 'services/geoTools/tileLayers';
+import {BasicTileLayer} from '../../../services/geoTools/tileLayers';
 
 const styles = {
     map: {

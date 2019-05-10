@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import {Form, Grid, Message, Segment, Table} from 'semantic-ui-react';
 import Slider from 'rc-slider';
-import {CriteriaCollection, WeightAssignment, WeightsCollection} from 'core/model/mcda/criteria';
+import {CriteriaCollection, WeightAssignment, WeightsCollection} from '../../../../core/model/mcda/criteria';
 
 const styles = {
     dot: {

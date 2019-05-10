@@ -2,8 +2,8 @@ import React from 'react';
 import PropTypes from 'prop-types';
 
 import {Grid, Header, Segment} from 'semantic-ui-react';
-import {BoundaryCollection, Calculation, ModflowModel, Soilmodel} from 'core/model/modflow';
-import {ScenarioAnalysis} from 'core/model/scenarioAnalysis';
+import {BoundaryCollection, Calculation, ModflowModel, Soilmodel} from '../../../core/model/modflow';
+import {ScenarioAnalysis} from '../../../core/model/scenarioAnalysis';
 import ResultsSelectorFlow from '../../shared/complexTools/ResultsSelectorFlow';
 import ResultsMap from '../../shared/complexTools/ResultsMap';
 import ResultsChart from '../../shared/complexTools/ResultsChart';

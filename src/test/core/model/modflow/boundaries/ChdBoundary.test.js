@@ -1,7 +1,7 @@
 import Uuid from 'uuid';
-import {ConstantHeadBoundary} from 'core/model/modflow/boundaries';
-import {JSON_SCHEMA_URL} from 'services/api';
-import {validate} from 'services/jsonSchemaValidator';
+import {ConstantHeadBoundary} from '../../../../../core/model/modflow/boundaries';
+import {JSON_SCHEMA_URL} from '../../../../../services/api';
+import {validate} from '../../../../../services/jsonSchemaValidator';
 
 
 const createConstantHeadBoundary = () => {

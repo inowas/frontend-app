@@ -1,11 +1,11 @@
 import PropTypes from 'prop-types';
 import React from 'react';
-import {Criterion, Rule} from 'core/model/mcda/criteria';
+import {Criterion, Rule} from '../../../../core/model/mcda/criteria';
 import {Button, Form, Grid, Icon, Message, Radio, Table} from 'semantic-ui-react';
 import CriteriaRasterMap from './criteriaRasterMap';
 import {rainbowFactory} from '../../../shared/rasterData/helpers';
 import {heatMapColors} from '../../defaults/gis';
-import {dropData} from 'services/api';
+import {dropData} from '../../../../services/api';
 
 class CriteriaDataConstraints extends React.Component {
 
