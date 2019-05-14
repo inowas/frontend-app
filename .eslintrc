@@ -1,8 +1,0 @@
-{
-  "extends": "react-app",
-  "rules": {
-    "quotes": [
-      1, "single", "avoid-escape"    // http://eslint.org/docs/rules/quotes
-    ]
-  }
-}
