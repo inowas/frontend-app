@@ -103,6 +103,7 @@
     "scripts": {
         "start": "react-scripts start",
         "build": "react-scripts build",
+        "lint": "tslint --project . --fix",
         "test": "react-scripts test",
         "test:wc": "CI=true react-scripts test --coverage --coverageReporters=lcov",
         "eject": "react-scripts eject"

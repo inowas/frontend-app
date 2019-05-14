@@ -6,7 +6,9 @@
     ],
     "jsRules": true,
     "rules": {
-        "quotemark": [true, "single"]
+        "object-literal-sort-keys": false,
+        "quotemark": [true, "single", "avoid-escape", "jsx-double"],
+        "trailing-comma": false
     },
     "rulesDirectory": []
 }
