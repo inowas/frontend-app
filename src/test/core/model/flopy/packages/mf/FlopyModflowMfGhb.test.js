@@ -1,7 +1,7 @@
 import Uuid from 'uuid';
-import {GeneralHeadBoundary} from '../../../core/model/modflow/boundaries';
-import {BoundingBox, Cells, Geometry, GridSize} from '../../../core/model/geometry';
-import {FlopyModflow, FlopyModflowMfghb} from '../../../core/model/flopy/packages/mf';
+import {GeneralHeadBoundary} from '../../../../../../core/model/modflow/boundaries';
+import {BoundingBox, Cells, Geometry, GridSize} from '../../../../../../core/model/geometry';
+import {FlopyModflow, FlopyModflowMfghb} from '../../../../../../core/model/flopy/packages/mf';
 
 const createGeneralHeadBoundary = () => {
     const id = Uuid.v4();

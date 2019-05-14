@@ -1,7 +1,7 @@
 import Uuid from 'uuid';
-import {RiverBoundary} from '../../../core/model/modflow/boundaries';
-import {BoundingBox, Cells, Geometry, GridSize} from '../../../core/model/geometry';
-import {FlopyModflow, FlopyModflowMfriv} from '../../../core/model/flopy/packages/mf';
+import {RiverBoundary} from '../../../../../../core/model/modflow/boundaries';
+import {BoundingBox, Cells, Geometry, GridSize} from '../../../../../../core/model/geometry';
+import {FlopyModflow, FlopyModflowMfriv} from '../../../../../../core/model/flopy/packages/mf';
 
 const createRiverBoundary = () => {
     const id = Uuid.v4();
