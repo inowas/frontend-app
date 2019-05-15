@@ -150,7 +150,7 @@ class CriteriaReclassificationModal extends React.Component {
                             {rule.type === 'fixed' ?
                                 <Form.Input
                                     fluid
-                                    label='Suitability'
+                                    label='Standardized value'
                                     icon='pencil'
                                     iconPosition='left'
                                     onChange={this.handleLocalChange}
@@ -160,7 +160,7 @@ class CriteriaReclassificationModal extends React.Component {
                                 /> :
                                 <Form.Input
                                     fluid
-                                    label='Suitability'
+                                    label='Standardization function'
                                     icon='calculator'
                                     iconPosition='left'
                                     onChange={this.handleLocalChange}

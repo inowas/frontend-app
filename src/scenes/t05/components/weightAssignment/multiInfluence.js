@@ -190,7 +190,8 @@ class MultiInfluence extends React.Component {
             edges: {
                 color: '#000000',
                 smooth: true
-            }
+            },
+            physics: false
         };
 
         const events = {

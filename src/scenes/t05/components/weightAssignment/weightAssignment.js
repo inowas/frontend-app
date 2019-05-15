@@ -109,7 +109,7 @@ class WeightAssignmentEditor extends React.Component {
             <Dropdown item text={`${name} (${subCriteria.length})`} key={key}>
                 <Dropdown.Menu>
                     <Dropdown.Item name='spl' icon='write' onClick={this.handleClickNew(subCriteria)}
-                                   text='Free Input'/>
+                                   text='Rating'/>
                     <Dropdown.Item name='rnk' icon='ordered list' onClick={this.handleClickNew(subCriteria)}
                                    text='Ranking'/>
                     <Dropdown.Item name='mif' icon='fork' onClick={this.handleClickNew(subCriteria)}
@@ -157,7 +157,7 @@ class WeightAssignmentEditor extends React.Component {
                                 name='spl'
                                 onClick={this.handleClickNew(mainCriteria)}>
                                 <Icon name='write'/>
-                                Free Input
+                                Rating
                             </Menu.Item>
                             <Menu.Item
                                 name='rnk'
