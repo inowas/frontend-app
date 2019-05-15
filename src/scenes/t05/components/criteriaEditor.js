@@ -94,6 +94,9 @@ class CriteriaEditor extends React.Component {
         }
         const mcda = this.props.mcda;
         mcda.criteriaCollection.remove(id);
+        mcda.criteriaCollection.getSubCriteria(id).forEach(c => {
+            mcda.criteriaCollection.remove(c.id);
+        });
         return this.props.onChange(mcda);
     };
 
@@ -276,10 +279,14 @@ class CriteriaEditor extends React.Component {
                                             <Button.Group>
                                                 {mcda.withAhp &&
                                                 <Button
+                                                    icon
+                                                    labelPosition='left'
                                                     positive
-                                                    icon='add'
                                                     onClick={() => this.handleAddSubCriterion(c.id)}
-                                                />
+                                                >
+                                                    <Icon name='plus' />
+                                                    Add sub criterion
+                                                </Button>
                                                 }
                                                 <Button
                                                     negative

@@ -121,6 +121,7 @@ class MCDA {
         // STEP 2: multiply with constraints
         this.criteriaCollection.all.forEach(c => {
             if (c.constraintRaster && c.constraintRaster.data.length > 0) {
+                // todo: constraints should have value NULL and not 0
                 rasterData.data = math.dotMultiply(rasterData.data, c.constraintRaster.data);
             }
         });

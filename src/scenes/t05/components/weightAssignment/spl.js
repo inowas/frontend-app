@@ -62,7 +62,7 @@ class SimpleWeightAssignment extends React.Component {
             <div>
                 {this.state.showInfo &&
                 <Message onDismiss={this.handleDismiss}>
-                    <Message.Header>Weight Assignment: Free Input</Message.Header>
+                    <Message.Header>Weight Assignment: Rating</Message.Header>
                     <p>Assign values to each criterion completely free by filling the input fields. The given values are
                         then normalized and calculated to weights between 0 and 1 in relation to the other values.</p>
                 </Message>

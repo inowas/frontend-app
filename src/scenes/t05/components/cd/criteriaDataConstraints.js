@@ -248,14 +248,7 @@ class CriteriaDataConstraints extends React.Component {
                     }
                 </Grid.Column>
                 <Grid.Column width={8}>
-                    {criterion.constraintRaster && criterion.constraintRaster.data.length > 0 && criterion.step > 1 &&
-                    <CriteriaRasterMap
-                        legend={legend}
-                        raster={criterion.constraintRaster}
-                        showBasicLayer={false}
-                    />
-                    }
-                    {!this.props.readOnly && criterion.step < 2 &&
+                    {!this.props.readOnly &&
                     <Button
                         primary
                         icon
@@ -265,6 +258,13 @@ class CriteriaDataConstraints extends React.Component {
                         <Icon name='calculator'/>
                         Recalculate Raster
                     </Button>
+                    }
+                    {criterion.constraintRaster && criterion.constraintRaster.data.length > 0 && criterion.step > 1 &&
+                    <CriteriaRasterMap
+                        legend={legend}
+                        raster={criterion.constraintRaster}
+                        showBasicLayer={true}
+                    />
                     }
                 </Grid.Column>
             </Grid.Row>

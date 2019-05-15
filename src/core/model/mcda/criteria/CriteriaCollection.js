@@ -45,6 +45,10 @@ class CriteriaCollection extends AbstractCollection {
         });
         return BoundingBox.fromArray([[xMin, yMin], [xMax, yMax]]);
     }
+
+    getSubCriteria(id) {
+        return this.all.filter(item => item.parentId === id);
+    }
 }
 
 export default CriteriaCollection;
