@@ -93,7 +93,7 @@ class StressPeriodsDataTable extends React.Component {
     };
 
     render() {
-        const {readOnly} = this.props.readOnly || false;
+        const readOnly = this.props.readOnly || false;
         const stressperiods = Stressperiods.fromObject(this.state.stressperiods);
         const rows = stressperiods.stressperiods.map((sp, idx) => (
             <Table.Row key={idx + '-' + sp.totim}>
@@ -120,11 +120,13 @@ class StressPeriodsDataTable extends React.Component {
                     />
                 </Table.Cell>
                 <Table.Cell>
-                    {!readOnly && idx !== 0 && <Button basic
-                        floated={'right'}
-                        icon={'trash'}
-                        onClick={() => this.handleRemoveStressperiod(idx)}
-                    />}
+                    {!readOnly && idx !== 0 &&
+                    <Button basic
+                            floated={'right'}
+                            icon={'trash'}
+                            onClick={() => this.handleRemoveStressperiod(idx)}
+                    />
+                    }
                 </Table.Cell>
             </Table.Row>
         ));
@@ -137,14 +139,16 @@ class StressPeriodsDataTable extends React.Component {
                         {rows}
                     </Table.Body>
                 </Table>
+                {!readOnly &&
                 <Button.Group size={'small'}>
                     <Button icon onClick={() => this.addNewStressperiod(1)}>
-                        <Icon name='add circle' /> 1 Day</Button>
+                        <Icon name='add circle'/> 1 Day</Button>
                     <Button icon onClick={() => this.addNewStressperiod(30)}>
-                        <Icon name='add circle' /> 1 Month</Button>
+                        <Icon name='add circle'/> 1 Month</Button>
                     <Button icon onClick={() => this.addNewStressperiod(365)}>
-                        <Icon name='add circle' /> 1 Year</Button>
+                        <Icon name='add circle'/> 1 Year</Button>
                 </Button.Group>
+                }
             </div>
         )
     }
