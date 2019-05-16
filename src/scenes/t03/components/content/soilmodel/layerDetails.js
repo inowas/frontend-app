@@ -1,8 +1,8 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import {Form, Grid, Tab, Popup, Menu} from 'semantic-ui-react';
-import {ModflowModel} from 'core/model/modflow';
-import {SoilmodelLayer} from 'core/model/modflow/soilmodel';
+import {ModflowModel} from '../../../../../core/model/modflow';
+import {SoilmodelLayer} from '../../../../../core/model/modflow/soilmodel';
 
 import {layerParameters} from '../../../defaults/soilmodel';
 import LayerParameter from './layerParameter';
@@ -179,7 +179,7 @@ class LayerDetails extends React.Component {
     }
 }
 
-LayerDetails.proptypes = {
+LayerDetails.propTypes = {
     activeIndex: PropTypes.number,
     layer: PropTypes.instanceOf(SoilmodelLayer).isRequired,
     model: PropTypes.instanceOf(ModflowModel).isRequired,

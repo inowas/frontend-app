@@ -1,9 +1,9 @@
 import {BoundingBox, GridSize} from '../../geometry';
 import {cloneDeep} from 'lodash';
-import {distanceBetweenCoordinates} from 'services/geoTools/distance';
+import {distanceBetweenCoordinates} from '../../../../services/geoTools/distance';
 import uuidv4 from 'uuid/v4';
-import {max, min, rainbowFactory} from 'scenes/shared/rasterData/helpers';
-import {heatMapColors} from 'scenes/t05/defaults/gis';
+import {max, min, rainbowFactory} from '../../../../scenes/shared/rasterData/helpers';
+import {heatMapColors} from '../../../../scenes/t05/defaults/gis';
 import {RulesCollection} from '../criteria';
 
 class Raster {

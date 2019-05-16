@@ -1,5 +1,5 @@
-import SimpleToolCommand from 'scenes/shared/simpleTools/commands/SimpleToolsCommand';
-import ModflowModelCommand from 'scenes/t03/commands/modflowModelCommand';
+import SimpleToolCommand from '../../../scenes/shared/simpleTools/commands/SimpleToolsCommand';
+import ModflowModelCommand from '../../../scenes/t03/commands/modflowModelCommand';
 import ScenarioAnalysisCommand from '../../t07/commands/scenarioAnalysisCommand';
 
 export const createToolInstance = (tool, payload) => {

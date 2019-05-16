@@ -3,15 +3,15 @@ import Uuid from 'uuid';
 import {connect} from 'react-redux';
 import PropTypes from 'prop-types';
 import {withRouter} from 'react-router-dom';
-import {sendCommand} from 'services/api';
+import {sendCommand} from '../../../../../services/api';
 import {Form, Grid, Header, Segment} from 'semantic-ui-react';
-import {ModflowModel, Soilmodel, Stressperiods} from 'core/model/modflow';
+import {ModflowModel, Soilmodel, Stressperiods} from '../../../../../core/model/modflow';
 import {updateBoundaries} from '../../../actions/actions';
-import {BoundaryCollection, BoundaryFactory} from 'core/model/modflow/boundaries';
-import ContentToolBar from 'scenes/shared/ContentToolbar';
+import {BoundaryCollection, BoundaryFactory} from '../../../../../core/model/modflow/boundaries';
+import ContentToolBar from '../../../../../scenes/shared/ContentToolbar';
 import ModflowModelCommand from '../../../commands/modflowModelCommand';
 import {CreateBoundaryMap} from '../../maps';
-import {calculateActiveCells} from 'services/geoTools';
+import {calculateActiveCells} from '../../../../../services/geoTools';
 
 const baseUrl = '/tools/T03';
 
@@ -156,7 +156,7 @@ const mapDispatchToProps = {
 };
 
 
-CreateBoundary.proptypes = {
+CreateBoundary.propTypes = {
     history: PropTypes.object.isRequired,
     location: PropTypes.object.isRequired,
     match: PropTypes.object.isRequired,

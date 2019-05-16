@@ -7,7 +7,7 @@ import PropTypes from 'prop-types';
 import AppContainer from '../../shared/AppContainer';
 import {Button, Grid, Header, Icon, Message, Popup, Segment} from 'semantic-ui-react';
 import ToolMetaData from '../../shared/simpleTools/ToolMetaData';
-import {fetchCalculationDetails, fetchUrl, sendCommand} from 'services/api';
+import {fetchCalculationDetails, fetchUrl, sendCommand} from '../../../services/api';
 
 import * as Content from '../components';
 
@@ -15,8 +15,8 @@ import {
     clear, updateModel, updateBoundaries, updateScenarioAnalysis
 } from '../actions/actions';
 
-import {ScenarioAnalysis} from 'core/model/scenarioAnalysis';
-import {BoundaryCollection, Calculation, ModflowModel, Soilmodel} from 'core/model/modflow';
+import {ScenarioAnalysis} from '../../../core/model/scenarioAnalysis';
+import {BoundaryCollection, Calculation, ModflowModel, Soilmodel} from '../../../core/model/modflow';
 import ToolNavigation from '../../shared/complexTools/toolNavigation';
 import {cloneDeep} from 'lodash';
 import SimpleToolsCommand from '../../shared/simpleTools/commands/SimpleToolsCommand';
@@ -423,7 +423,7 @@ const mapStateToProps = state => {
 
 const mapDispatchToProps = {clear, updateModel, updateBoundaries, updateScenarioAnalysis};
 
-T07.proptypes = {
+T07.propTypes = {
     history: PropTypes.object.isRequired,
     location: PropTypes.object.isRequired,
     match: PropTypes.object.isRequired,

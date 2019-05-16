@@ -1,16 +1,16 @@
+import {Feature} from 'geojson';
+import {LatLng, LatLngBoundsExpression} from 'leaflet';
+import md5 from 'md5';
 import React from 'react';
-import PropTypes from 'prop-types';
 import {FeatureGroup, GeoJSON, Map} from 'react-leaflet';
 import {EditControl} from 'react-leaflet-draw';
-import {calculateActiveCells} from 'services/geoTools';
-import md5 from 'md5';
-
-import ActiveCellsLayer from 'services/geoTools/activeCellsLayer';
-import {BasicTileLayer} from 'services/geoTools/tileLayers';
-import {Icon, Message} from 'semantic-ui-react';
-import {Cells, BoundingBox, Geometry, GridSize} from 'core/model/geometry';
-import {getStyle} from './index';
 import {pure} from 'recompose';
+import {Icon, Message} from 'semantic-ui-react';
+import {BoundingBox, Cells, Geometry, GridSize} from '../../../../core/model/geometry';
+import {GeoJson} from '../../../../core/model/geometry/Geometry';
+import {calculateActiveCells} from '../../../../services/geoTools';
+import {BasicTileLayer} from '../../../../services/geoTools/tileLayers';
+import {getStyle} from './index';
 
 const style = {
     map: {
@@ -19,35 +19,48 @@ const style = {
     }
 };
 
-class CreateModelMap extends React.Component {
-    constructor(props) {
+interface ICreateModelMapProps {
+    gridSize: GridSize;
+    onChange: (args: { cells: Cells, boundingBox: BoundingBox, geometry: Geometry }) => {};
+}
+
+interface ICreateModelMapState {
+    boundingBox: Array<[number, number]> | null;
+    calculating: boolean;
+    cells: number[][] | null;
+    geometry: GeoJson | null;
+    gridSize: { n_x: number, n_y: number };
+}
+
+class CreateModelMap extends React.Component<ICreateModelMapProps, ICreateModelMapState> {
+    constructor(props: ICreateModelMapProps) {
         super(props);
         this.state = {
-            cells: null,
+            cells: [],
             boundingBox: null,
             geometry: null,
             gridSize: props.gridSize.toObject(),
             calculating: false
-        }
+        };
     }
 
-    componentWillReceiveProps(nextProps) {
+    public componentWillReceiveProps(nextProps: ICreateModelMapProps) {
         const {gridSize} = nextProps;
         if (!nextProps.gridSize.sameAs(GridSize.fromObject(this.state.gridSize))) {
             this.setState(() => ({gridSize: gridSize.toObject()}), () => this.recalculate());
         }
     }
 
-    calculate = (geometry, boundingBox, gridSize) => {
-        return new Promise(resolve => {
+    public calculate = (geometry: Geometry, boundingBox: BoundingBox, gridSize: GridSize) => {
+        return new Promise<Cells>((resolve) => {
             const activeCells = calculateActiveCells(geometry, boundingBox, gridSize);
             resolve(activeCells);
             this.forceUpdate();
-        })
+        });
     };
 
-    recalculate = () => {
-        if (!this.state.geometry) {
+    public recalculate = () => {
+        if (!this.state.geometry || !this.state.boundingBox) {
             return null;
         }
 
@@ -57,19 +70,19 @@ class CreateModelMap extends React.Component {
 
         this.setState({calculating: true});
         this.calculate(geometry, boundingBox, gridSize)
-            .then(cells => this.setState({
+            .then((cells) => this.setState({
                     cells: cells.toArray(),
                     gridSize: gridSize.toObject(),
                     calculating: false
-                }, this.handleChange({cells: cells, boundingBox, geometry})
+                }, () => this.handleChange({cells, boundingBox, geometry})
             ));
     };
 
-    handleChange = ({cells, boundingBox, geometry}) => {
-        return this.props.onChange({cells, boundingBox, geometry});
+    public handleChange = (args: { cells: Cells, boundingBox: BoundingBox, geometry: Geometry }) => {
+        return this.props.onChange(args);
     };
 
-    onCreated = e => {
+    public onCreated = (e: any) => {
         const polygon = e.layer;
         const geometry = Geometry.fromGeoJson(polygon.toGeoJSON());
         const boundingBox = BoundingBox.fromGeoJson(polygon.toGeoJSON());
@@ -77,23 +90,23 @@ class CreateModelMap extends React.Component {
 
         this.setState({calculating: true});
         this.calculate(geometry, boundingBox, gridSize).then(
-            cells => {
+            (cells) => {
                 return this.setState({
                         cells: cells.toArray(),
-                        boundingBox: boundingBox.toArray(),
+                        boundingBox: boundingBox.toArray() as Array<[number, number]>,
                         geometry: geometry.toObject(),
                         calculating: false
                     },
-                    this.handleChange({cells, boundingBox, geometry})
-                )
+                    () => this.handleChange({cells, boundingBox, geometry})
+                );
             }
-        )
+        );
     };
 
-    editControl = () => (
+    public editControl = () => (
         <FeatureGroup>
             <EditControl
-                position='topright'
+                position={'topright'}
                 draw={{
                     circle: false,
                     circlemarker: false,
@@ -111,73 +124,68 @@ class CreateModelMap extends React.Component {
         </FeatureGroup>
     );
 
-    areaLayer = () => {
+    public areaLayer = () => {
         return (
             <GeoJSON
                 key={md5(JSON.stringify(this.state.geometry))}
-                data={this.state.geometry}
+                data={this.state.geometry!}
                 style={getStyle('area')}
             />
-        )
+        );
     };
 
-    boundingBoxLayer = () => {
-        const boundingBox = BoundingBox.fromArray(this.state.boundingBox);
+    public boundingBoxLayer = () => {
+        const boundingBox = BoundingBox.fromArray(this.state.boundingBox!);
         return (
             <GeoJSON
                 key={md5(JSON.stringify(boundingBox.toArray()))}
-                data={boundingBox.geoJson}
+                data={boundingBox.geoJson as Feature}
                 style={getStyle('bounding_box')}
             />
-        )
+        );
     };
 
-    cellsLayer = () => {
-        return (
-            <ActiveCellsLayer
-                boundingBox={BoundingBox.fromArray(this.state.boundingBox)}
-                gridSize={GridSize.fromObject(this.state.gridSize)}
-                activeCells={Cells.fromArray(this.state.cells)}
-                styles={getStyle('active_cells')}
-            />
-        )
-    };
-
-    renderCalculationMessage = () => {
+    public renderCalculationMessage = () => {
         if (!this.state.calculating) {
             return null;
         }
 
         return (
-            <Message key={Math.random()} icon style={{
-                zIndex: 1000000,
-                width: '50%',
-                marginLeft: '25%',
-                marginTop: '150px',
-            }}>
-                <Icon name='circle notched' loading/>
+            <Message
+                key={Math.random()}
+                icon={true}
+                style={{
+                    zIndex: 1000000,
+                    width: '50%',
+                    marginLeft: '25%',
+                    marginTop: '150px',
+                }}
+            >
+                <Icon name="circle notched" loading={true}/>
                 <Message.Content>
                     <Message.Header>Just one second</Message.Header>
                     We are calculating the active cells for you.
                 </Message.Content>
             </Message>
-        )
+        );
     };
 
-    getBoundsLatLng = () => {
+    public getBoundsLatLng = () => {
         if (this.state.boundingBox) {
-            return BoundingBox.fromArray(this.state.boundingBox).getBoundsLatLng();
+            return BoundingBox.fromArray(this.state.boundingBox).getBoundsLatLng() as LatLngBoundsExpression;
         }
 
-        return [[60, 10], [45, 30]];
+        return [[60, 10], [45, 30]] as LatLngBoundsExpression;
     };
 
-    handleClickOnMap = ({latlng}) => {
-        if (!this.state.cells) {
+    public handleClickOnMap = (arg: { latlng: LatLng }) => {
+        if (!this.state.cells || !this.state.boundingBox) {
             return null;
         }
 
-        const activeCells = Cells.fromArray(this.state.cells);
+        const {latlng} = arg;
+
+        const activeCells = Cells.fromArray(this.state.cells as Array<[number, number]>);
         const boundingBox = BoundingBox.fromArray(this.state.boundingBox);
         const gridSize = GridSize.fromObject(this.state.gridSize);
         const x = latlng.lng;
@@ -185,10 +193,10 @@ class CreateModelMap extends React.Component {
 
         this.setState({
             cells: activeCells.toggle([x, y], boundingBox, gridSize).toArray()
-        })
+        });
     };
 
-    render() {
+    public render() {
         return (
             <Map
                 style={style.map}
@@ -199,17 +207,10 @@ class CreateModelMap extends React.Component {
                 {!this.state.geometry && this.editControl()}
                 {this.state.geometry && this.areaLayer()}
                 {this.state.boundingBox && this.boundingBoxLayer()}
-                {this.state.cells && this.cellsLayer()}
                 {this.renderCalculationMessage()}
             </Map>
-        )
+        );
     }
 }
-
-CreateModelMap.proptypes = {
-    gridSize: PropTypes.instanceOf(GridSize).isRequired,
-    styles: PropTypes.object.isRequired,
-    onChange: PropTypes.func.isRequired
-};
 
 export default pure(CreateModelMap);

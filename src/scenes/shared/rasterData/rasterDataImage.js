@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import {createGridData, min, max, rainbowFactory} from './helpers';
 import ColorLegend from './ColorLegend';
-import {GridSize} from 'core/model/geometry';
+import {GridSize} from '../../../core/model/geometry';
 import Rainbow from 'rainbowvis.js';
 import ColorLegendDiscrete from './ColorLegendDiscrete';
 

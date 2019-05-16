@@ -2,7 +2,7 @@ import uuidv4 from 'uuid/v4';
 import {ZonesCollection} from './index';
 import {GridSize} from '../index';
 import {cloneDeep} from 'lodash';
-import {Cells, Geometry} from 'core/model/geometry';
+import {Cells, Geometry} from '../../../../core/model/geometry';
 import ModflowModel from '../ModflowModel';
 import DefaultZone from './DefaultZone';
 

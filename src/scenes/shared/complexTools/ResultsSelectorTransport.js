@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import {Form, Grid, Header, Segment} from 'semantic-ui-react';
-import {Soilmodel, Stressperiods, Transport} from 'core/model/modflow';
+import {Soilmodel, Stressperiods, Transport} from '../../../core/model/modflow';
 
 import Moment from 'moment';
 import Slider from 'rc-slider';
@@ -162,7 +162,7 @@ class ResultsSelectorTransport extends React.Component {
     }
 }
 
-ResultsSelectorTransport.proptypes = {
+ResultsSelectorTransport.propTypes = {
     data: PropTypes.object.isRequired,
     onChange: PropTypes.func.isRequired,
     layerValues: PropTypes.object.isRequired,

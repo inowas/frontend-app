@@ -1,7 +1,7 @@
 import GisAreasCollection from './GisAreasCollection';
 import {Cells, BoundingBox, GridSize} from '../../geometry';
 import {booleanContains, booleanOverlap} from '@turf/turf';
-import {getGridCells} from 'services/geoTools';
+import {getGridCells} from '../../../../services/geoTools';
 import Raster from './Raster';
 
 class GisMap {

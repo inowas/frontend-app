@@ -3,8 +3,8 @@ import PropTypes from 'prop-types';
 import {MCDA} from '../../../../core/model/mcda';
 import {Button, Dimmer, Header, Message, Progress} from 'semantic-ui-react';
 import WeightAssignmentTable from './weightAssignmentTable';
-import {WeightAssignmentsCollection} from 'core/model/mcda/criteria';
-import {dropData, retrieveDroppedData} from 'services/api';
+import {WeightAssignmentsCollection} from '../../../../core/model/mcda/criteria';
+import {dropData, retrieveDroppedData} from '../../../../services/api';
 
 class SuitabilityWeightAssignment extends React.Component {
     constructor(props) {
@@ -239,7 +239,7 @@ class SuitabilityWeightAssignment extends React.Component {
     }
 }
 
-SuitabilityWeightAssignment.proptypes = {
+SuitabilityWeightAssignment.propTypes = {
     handleChange: PropTypes.func.isRequired,
     mcda: PropTypes.instanceOf(MCDA).isRequired,
     readOnly: PropTypes.bool

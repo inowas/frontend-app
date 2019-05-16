@@ -2,7 +2,7 @@ import uuidv4 from 'uuid/v4';
 import Geometry from '../../geometry/Geometry';
 import Cells from '../../geometry/Cells';
 import SoilmodelParameter from './SoilmodelParameter';
-import {defaultParameters} from 'scenes/t03/defaults/soilmodel';
+import {defaultParameters} from '../../../../scenes/t03/defaults/soilmodel';
 
 class SoilmodelZone {
     _id = uuidv4();

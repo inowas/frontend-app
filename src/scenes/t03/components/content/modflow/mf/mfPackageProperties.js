@@ -3,7 +3,7 @@ import React from 'react';
 import {Form, Select} from 'semantic-ui-react';
 
 import AbstractPackageProperties from './AbstractPackageProperties';
-import {FlopyModflow, FlopyModflowMf} from 'core/model/flopy/packages/mf';
+import {FlopyModflow, FlopyModflowMf} from '../../../../../../core/model/flopy/packages/mf';
 import {documentation} from '../../../../defaults/flow';
 
 class MfPackageProperties extends AbstractPackageProperties {

@@ -1,8 +1,8 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import {Button, Form, Grid, Header, Table} from 'semantic-ui-react';
-import {Substance} from 'core/model/modflow/transport';
-import {BoundaryCollection} from 'core/model/modflow';
+import {Substance} from '../../../../../core/model/modflow/transport';
+import {BoundaryCollection} from '../../../../../core/model/modflow';
 
 
 class SubstanceDetails extends React.Component {
@@ -155,7 +155,7 @@ class SubstanceDetails extends React.Component {
     }
 }
 
-SubstanceDetails.proptypes = {
+SubstanceDetails.propTypes = {
     boundaries: PropTypes.instanceOf(BoundaryCollection).isRequired,
     onChange: PropTypes.func.isRequired,
     readOnly: PropTypes.bool,

@@ -1,11 +1,11 @@
 import PropTypes from 'prop-types';
 import React from 'react';
 import AbstractPackageProperties from './AbstractPackageProperties';
-import {FlopyMt3dMtssm} from 'core/model/flopy/packages/mt';
+import {FlopyMt3dMtssm} from '../../../../../../core/model/flopy/packages/mt';
 import {FlopyModflow} from '../../../../../../core/model/flopy/packages/mf';
 import {Form, Grid, Header, Input} from 'semantic-ui-react';
 import {RasterDataImage} from '../../../../../shared/rasterData';
-import {GridSize} from 'core/model/modflow';
+import {GridSize} from '../../../../../../core/model/modflow';
 import {documentation} from '../../../../defaults/flow';
 
 class SsmPackageProperties extends AbstractPackageProperties {

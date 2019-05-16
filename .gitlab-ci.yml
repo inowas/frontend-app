@@ -14,22 +14,22 @@ test:
 build:dev:
   image: node:10
   stage: build
-  
-  script: 
+
+  script:
     - yarn install
-    - REACT_APP_API_URL=https://api.dev.inowas.com NODE_PATH=src yarn build
+    - REACT_APP_API_URL=https://api.dev.inowas.com yarn build
     - VERSION=$(git describe --tags --always --dirty=+) && DATE=$(date +%Y-%m-%dT%H:%M:%S) && sed -i "s/@@__VERSION__@@/${VERSION}/g;s/@@__BUILT__@@/${DATE}/g" ./build/index.html
 
   artifacts:
     paths:
       - build/
-      
+
   only:
     - dev
-    
+
 deploy:dev:
   stage: deploy
-  dependencies: 
+  dependencies:
     - build:dev
 
   before_script:
@@ -57,7 +57,7 @@ build:training:
 
   script:
     - yarn install
-    - REACT_APP_API_URL=https://api.training.inowas.com NODE_PATH=src yarn build
+    - REACT_APP_API_URL=https://api.training.inowas.com yarn build
     - VERSION=$(git describe --tags --always --dirty=+) && DATE=$(date +%Y-%m-%dT%H:%M:%S) && sed -i "s/@@__VERSION__@@/${VERSION}/g;s/@@__BUILT__@@/${DATE}/g" ./build/index.html
 
   artifacts:
@@ -94,22 +94,22 @@ deploy:training:
 build:prod:
   image: node:10
   stage: build
-  
-  script: 
+
+  script:
     - yarn install
-    - REACT_APP_API_URL=https://api.dss.inowas.com NODE_PATH=src yarn build
+    - REACT_APP_API_URL=https://api.dss.inowas.com yarn build
     - VERSION=$(git describe --tags --always --dirty=+) && DATE=$(date +%Y-%m-%dT%H:%M:%S) && sed -i "s/@@__VERSION__@@/${VERSION}/g;s/@@__BUILT__@@/${DATE}/g" ./build/index.html
 
   artifacts:
     paths:
       - build/
-      
+
   only:
     - master
 
 deploy:prod:staging:
   stage: deploy
-  dependencies: 
+  dependencies:
     - build:prod
 
   before_script:
@@ -133,7 +133,7 @@ deploy:prod:staging:
 
 deploy:prod:production:
   stage: deploy
-  dependencies: 
+  dependencies:
     - build:prod
 
   before_script:
@@ -152,6 +152,6 @@ deploy:prod:production:
   environment:
     name: production
     url: https://dss.inowas.com
-  when: manual    
+  when: manual
   only:
     - master    

@@ -2,12 +2,12 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import {FeatureGroup, GeoJSON, Map, Polygon} from 'react-leaflet';
 import {EditControl} from 'react-leaflet-draw';
-import {calculateActiveCells} from 'services/geoTools';
+import {calculateActiveCells} from '../../../../services/geoTools';
 import md5 from 'md5';
 
-import ActiveCellsLayer from 'services/geoTools/activeCellsLayer';
-import {BasicTileLayer} from 'services/geoTools/tileLayers';
-import {Cells, BoundingBox, Geometry, GridSize} from 'core/model/geometry';
+import ActiveCellsLayer from '../../../../services/geoTools/activeCellsLayer';
+import {BasicTileLayer} from '../../../../services/geoTools/tileLayers';
+import {Cells, BoundingBox, Geometry, GridSize} from '../../../../core/model/geometry';
 import {getStyle} from './index';
 import {pure} from 'recompose';
 import {uniqueId} from 'lodash';
@@ -192,7 +192,7 @@ class ModelDiscretizationMap extends React.Component {
     }
 }
 
-ModelDiscretizationMap.proptypes = {
+ModelDiscretizationMap.propTypes = {
     cells: PropTypes.instanceOf(Cells),
     boundingBox: PropTypes.instanceOf(BoundingBox),
     geometry: PropTypes.instanceOf(Geometry),

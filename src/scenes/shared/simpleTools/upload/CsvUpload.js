@@ -93,7 +93,7 @@ class CsvUpload extends React.Component {
     }
 }
 
-CsvUpload.proptypes = {
+CsvUpload.propTypes = {
     baseClasses: PropTypes.string,
     onUploaded: PropTypes.func.isRequired,
     uploadState: PropTypes.object

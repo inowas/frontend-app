@@ -1,7 +1,7 @@
 import SoilmodelLayer from './SoilmodelLayer';
 import SoilmodelParameter from './SoilmodelParameter';
 import SoilmodelZone from './SoilmodelZone';
-import {defaultParameters} from 'scenes/t03/defaults/soilmodel';
+import {defaultParameters} from '../../../../scenes/t03/defaults/soilmodel';
 
 class DefaultZone extends SoilmodelZone {
     _name = 'Default';

@@ -4,7 +4,7 @@ import moment from 'moment';
 import uuidv4 from 'uuid/v4';
 
 import {Input, Table} from 'semantic-ui-react';
-import {Boundary, Stressperiods} from 'core/model/modflow';
+import {Boundary, Stressperiods} from '../../../../../core/model/modflow';
 // import CsvUpload from '../../../../shared/simpleTools/upload/CsvUpload';
 
 class BoundaryValuesDataTable extends React.Component {
@@ -201,7 +201,7 @@ class BoundaryValuesDataTable extends React.Component {
     }
 }
 
-BoundaryValuesDataTable.proptypes = {
+BoundaryValuesDataTable.propTypes = {
     boundary: PropTypes.instanceOf(Boundary).isRequired,
     onChange: PropTypes.func.isRequired,
     readOnly: PropTypes.bool.isRequired,

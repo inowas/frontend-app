@@ -1,6 +1,6 @@
 import Uuid from 'uuid';
-import {RechargeBoundary} from 'core/model/modflow/boundaries';
-import {FlopyModflow, FlopyModflowMfrch} from 'core/model/flopy/packages/mf';
+import {RechargeBoundary} from '../../../../../../core/model/modflow/boundaries';
+import {FlopyModflow, FlopyModflowMfrch} from '../../../../../../core/model/flopy/packages/mf';
 
 const createRechargeBoundary = () => {
     const id = Uuid.v4();

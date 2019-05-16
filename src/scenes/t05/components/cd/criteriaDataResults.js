@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types';
 import React from 'react';
-import {Criterion} from 'core/model/mcda/criteria';
+import {Criterion} from '../../../../core/model/mcda/criteria';
 import CriteriaRasterMap from './criteriaRasterMap';
 import {heatMapColors} from '../../defaults/gis';
 import {Button, Checkbox, Form, Grid, Icon, Radio, Segment} from 'semantic-ui-react';

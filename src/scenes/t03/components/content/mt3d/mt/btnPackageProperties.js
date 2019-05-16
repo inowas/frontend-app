@@ -3,7 +3,7 @@ import React from 'react';
 import {Accordion, Form, Icon, Input} from 'semantic-ui-react';
 import AbstractPackageProperties from './AbstractPackageProperties';
 import {documentation} from '../../../../defaults/transport';
-import {FlopyMt3dMtbtn} from 'core/model/flopy/packages/mt';
+import {FlopyMt3dMtbtn} from '../../../../../../core/model/flopy/packages/mt';
 
 const styles = {
     inputFix: {

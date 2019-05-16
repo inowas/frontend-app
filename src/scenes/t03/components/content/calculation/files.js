@@ -2,11 +2,11 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import {connect} from 'react-redux';
 
-import {Calculation} from 'core/model/modflow';
+import {Calculation} from '../../../../../core/model/modflow';
 import {Grid, Header, List, Segment} from 'semantic-ui-react';
 import Terminal from '../../../../shared/complexTools/Terminal';
 
-import {fetchModflowFile} from 'services/api';
+import {fetchModflowFile} from '../../../../../services/api';
 
 class Files extends React.Component {
 
@@ -123,7 +123,7 @@ const mapStateToProps = state => {
     };
 };
 
-Files.proptypes = {
+Files.propTypes = {
     calculation: PropTypes.instanceOf(Calculation),
     type: PropTypes.string.isRequired
 };

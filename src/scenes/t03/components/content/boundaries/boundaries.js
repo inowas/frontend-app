@@ -3,15 +3,15 @@ import {connect} from 'react-redux';
 import PropTypes from 'prop-types';
 import {Redirect, withRouter} from 'react-router-dom';
 
-import {fetchUrl, sendCommand} from 'services/api';
+import {fetchUrl, sendCommand} from '../../../../../services/api';
 
 import {Grid, Segment} from 'semantic-ui-react';
 import BoundaryList from './boundaryList';
 import BoundaryDetails from './boundaryDetails';
-import {BoundaryCollection, ModflowModel, Soilmodel} from 'core/model/modflow';
+import {BoundaryCollection, ModflowModel, Soilmodel} from '../../../../../core/model/modflow';
 import {updateBoundaries, updateModel} from '../../../actions/actions';
-import {BoundaryFactory} from 'core/model/modflow/boundaries';
-import ContentToolBar from 'scenes/shared/ContentToolbar';
+import {BoundaryFactory} from '../../../../../core/model/modflow/boundaries';
+import ContentToolBar from '../../../../../scenes/shared/ContentToolbar';
 import ModflowModelCommand from '../../../commands/modflowModelCommand';
 
 const baseUrl = '/tools/T03';
@@ -181,7 +181,7 @@ const mapDispatchToProps = {
 };
 
 
-Boundaries.proptypes = {
+Boundaries.propTypes = {
     history: PropTypes.object.isRequired,
     location: PropTypes.object.isRequired,
     match: PropTypes.object.isRequired,

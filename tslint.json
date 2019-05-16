@@ -1,0 +1,17 @@
+{
+    "defaultSeverity": "warning",
+    "extends": [
+        "tslint:recommended",
+        "tslint-react"
+    ],
+    "jsRules": true,
+    "rules": {
+        "jsx-no-multiline-js": false,
+        "object-literal-sort-keys": false,
+        "quotemark": [true, "single", "avoid-escape", "jsx-double"],
+        "trailing-comma": false,
+        "variable-name": [true, "check-format", "ban-keywords", "allow-leading-underscore"],
+        "semicolon": [true, "always", "strict-bound-class-methods"]
+    },
+    "rulesDirectory": []
+}

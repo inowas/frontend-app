@@ -3,8 +3,8 @@ import React from 'react';
 import {Form, Grid, Header, Input} from 'semantic-ui-react';
 
 import AbstractPackageProperties from './AbstractPackageProperties';
-import {FlopyModflowMfriv} from 'core/model/flopy/packages/mf';
-import {GridSize} from 'core/model/modflow';
+import {FlopyModflowMfriv} from '../../../../../../core/model/flopy/packages/mf';
+import {GridSize} from '../../../../../../core/model/modflow';
 import {documentation} from '../../../../defaults/flow';
 import {RasterDataImage} from '../../../../../shared/rasterData';
 

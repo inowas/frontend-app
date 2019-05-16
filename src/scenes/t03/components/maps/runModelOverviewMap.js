@@ -3,8 +3,8 @@ import PropTypes from 'prop-types';
 import {GeoJSON, Map, Rectangle} from 'react-leaflet';
 import {disableMap, getStyle, invalidateSize} from './index';
 
-import ActiveCellsLayer from 'services/geoTools/activeCellsLayer';
-import {BasicTileLayer} from 'services/geoTools/tileLayers';
+import ActiveCellsLayer from '../../../../services/geoTools/activeCellsLayer';
+import {BasicTileLayer} from '../../../../services/geoTools/tileLayers';
 
 const styles = {
     map: {

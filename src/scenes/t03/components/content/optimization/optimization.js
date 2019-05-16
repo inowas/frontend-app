@@ -1,8 +1,8 @@
 import React from 'react';
 import {withRouter} from 'react-router-dom';
 import PropTypes from 'prop-types';
-import {sendCommand} from 'services/api';
-import {ModflowModel} from 'core/model/modflow';
+import {sendCommand} from '../../../../../services/api';
+import {ModflowModel} from '../../../../../core/model/modflow';
 import {connect} from 'react-redux';
 import {updateOptimization} from '../../../actions/actions';
 
@@ -13,8 +13,8 @@ import {
     OPTIMIZATION_STATE_FINISHED, OPTIMIZATION_STATE_STARTED
 } from '../../../defaults/optimization';
 
-import {BoundaryCollection} from 'core/model/modflow/boundaries';
-import {Optimization} from 'core/model/modflow/optimization';
+import {BoundaryCollection} from '../../../../../core/model/modflow/boundaries';
+import {Optimization} from '../../../../../core/model/modflow/optimization';
 import {
     OptimizationParametersComponent,
     OptimizationObjectsComponent,
@@ -23,7 +23,7 @@ import {
     OptimizationResultsComponent
 } from './index';
 import Command from '../../../commands/modflowModelCommand';
-import {fetchUrl} from 'services/api';
+import {fetchUrl} from '../../../../../services/api';
 
 class OptimizationContainer extends React.Component {
     constructor(props) {
@@ -468,7 +468,7 @@ const mapDispatchToProps = {
     updateOptimization
 };
 
-OptimizationContainer.proptypes = {
+OptimizationContainer.propTypes = {
     history: PropTypes.object.isRequired,
     match: PropTypes.object.isRequired,
     model: PropTypes.instanceOf(ModflowModel).isRequired,

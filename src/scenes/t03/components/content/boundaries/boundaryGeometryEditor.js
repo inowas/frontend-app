@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import {Button, Form, Modal, Segment, Menu, Icon} from 'semantic-ui-react';
-import {Boundary, BoundaryCollection, BoundaryFactory, ModflowModel} from 'core/model/modflow';
+import {Boundary, BoundaryCollection, BoundaryFactory, ModflowModel} from '../../../../../core/model/modflow';
 import BoundaryDiscretizationMap from '../../maps/boundaryDiscretizationMap';
 
 class BoundaryGeometryEditor extends React.Component {

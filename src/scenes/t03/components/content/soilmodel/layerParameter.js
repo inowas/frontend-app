@@ -1,11 +1,11 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import {SoilmodelLayer, SoilmodelZone} from 'core/model/modflow/soilmodel';
+import {SoilmodelLayer, SoilmodelZone} from '../../../../../core/model/modflow/soilmodel';
 import {Accordion, Button, Form, Grid, Header, Icon} from 'semantic-ui-react';
-import {ModflowModel} from 'core/model/modflow';
+import {ModflowModel} from '../../../../../core/model/modflow';
 import ZoneModal from './zoneModal';
 import ZonesTable from './zonesTable';
-import {RasterDataMap, RasterfileUploadModal} from 'scenes/shared/rasterData';
+import {RasterDataMap, RasterfileUploadModal} from '../../../../../scenes/shared/rasterData';
 import {cloneDeep} from 'lodash';
 
 class LayerParameter extends React.Component {

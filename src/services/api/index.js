@@ -1,5 +1,5 @@
 import axios from 'axios';
-import storeToCreate from 'store';
+import storeToCreate from '../../store';
 import FlopyPackages from '../../core/model/flopy/packages/FlopyPackages';
 
 const BASE_URL = process.env.REACT_APP_API_URL + '/v3';

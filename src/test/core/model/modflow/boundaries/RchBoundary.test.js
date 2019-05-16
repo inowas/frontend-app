@@ -1,7 +1,7 @@
 import Uuid from 'uuid';
-import {RechargeBoundary} from 'core/model/modflow/boundaries';
-import {validate} from 'services/jsonSchemaValidator';
-import {JSON_SCHEMA_URL} from 'services/api';
+import {RechargeBoundary} from '../../../../../core/model/modflow/boundaries';
+import {validate} from '../../../../../services/jsonSchemaValidator';
+import {JSON_SCHEMA_URL} from '../../../../../services/api';
 
 
 const createRechargeBoundary = () => {

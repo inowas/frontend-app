@@ -2,8 +2,8 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import {withRouter} from 'react-router-dom';
 import {Form, Icon, Input, Menu, Segment} from 'semantic-ui-react';
-import {MCDA} from 'core/model/mcda';
-import {GisMap} from 'core/model/mcda/gis';
+import {MCDA} from '../../../../core/model/mcda';
+import {GisMap} from '../../../../core/model/mcda/gis';
 
 const styles = {
     noPaddingBottom: {
@@ -131,7 +131,7 @@ class CriteriaNavigation extends React.Component {
     }
 }
 
-CriteriaNavigation.proptypes = {
+CriteriaNavigation.propTypes = {
     activeCriterion: PropTypes.string,
     onClick: PropTypes.func.isRequired,
     mcda: PropTypes.instanceOf(MCDA).isRequired,

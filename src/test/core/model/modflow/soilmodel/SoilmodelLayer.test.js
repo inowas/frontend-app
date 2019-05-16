@@ -1,4 +1,4 @@
-import {SoilmodelLayer} from 'core/model/modflow/soilmodel';
+import {SoilmodelLayer} from '../../../../../core/model/modflow/soilmodel';
 
 const layerWithoutZones = {
     'id': '123-abc-456-def',

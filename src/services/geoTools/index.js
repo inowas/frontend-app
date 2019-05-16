@@ -1,6 +1,6 @@
 import {booleanCrosses, booleanContains, booleanOverlap, envelope, lineString} from '@turf/turf';
 import {floor} from 'lodash';
-import {Cells, BoundingBox, Geometry, GridSize} from 'core/model/modflow';
+import {Cells, BoundingBox, Geometry, GridSize} from '../../core/model/modflow';
 
 /* Calculate GridCells
 Structure:

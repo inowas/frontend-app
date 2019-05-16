@@ -1,16 +1,16 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-import {Calculation, ModflowModel, Soilmodel} from 'core/model/modflow';
+import {Calculation, ModflowModel, Soilmodel} from '../../../../../core/model/modflow';
 import {Button, Grid, Header, Segment} from 'semantic-ui-react';
 import RunModelOverviewMap from '../../maps/runModelOverviewMap';
 import {connect} from 'react-redux';
 import CalculationStatus, {CALCULATION_STATE_NEW} from './CalculationStatus';
-import {sendCalculationRequest, sendCommand} from 'services/api';
+import {sendCalculationRequest, sendCommand} from '../../../../../services/api';
 import {updateCalculation, updatePackages} from '../../../actions/actions';
-import FlopyPackages from 'core/model/flopy/packages/FlopyPackages';
+import FlopyPackages from '../../../../../core/model/flopy/packages/FlopyPackages';
 import ModflowModelCommand from '../../../commands/modflowModelCommand';
-import {BoundaryCollection} from 'core/model/modflow/boundaries';
+import {BoundaryCollection} from '../../../../../core/model/modflow/boundaries';
 import Terminal from '../../../../shared/complexTools/Terminal';
 import Transport from '../../../../../core/model/modflow/transport/Transport';
 
@@ -206,7 +206,7 @@ const mapDispatchToProps = {
     updateCalculation, updatePackages
 };
 
-Overview.proptypes = {
+Overview.propTypes = {
     boundaries: PropTypes.instanceOf(BoundaryCollection).isRequired,
     calculation: PropTypes.instanceOf(Calculation),
     model: PropTypes.instanceOf(ModflowModel).isRequired,

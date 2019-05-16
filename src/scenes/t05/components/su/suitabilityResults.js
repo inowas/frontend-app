@@ -2,7 +2,7 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import {heatMapColors} from '../../defaults/gis';
 import {Button, Checkbox, Form, Grid, Icon, Radio, Segment} from 'semantic-ui-react';
-import {MCDA} from 'core/model/mcda';
+import {MCDA} from '../../../../core/model/mcda';
 import CriteriaRasterMap from '../cd/criteriaRasterMap';
 
 class SuitabilityResults extends React.Component {

@@ -1,6 +1,6 @@
 import {Raster} from './gis';
 import RulesCollection from './criteria/RulesCollection';
-import {suitabilityRules} from 'scenes/t05/defaults/gis';
+import {suitabilityRules} from '../../../scenes/t05/defaults/gis';
 
 class Suitability {
     _raster = new Raster();

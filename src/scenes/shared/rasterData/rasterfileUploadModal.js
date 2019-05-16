@@ -5,8 +5,8 @@ import {
     Dropdown, Message
 } from 'semantic-ui-react';
 import RasterDataImage from './rasterDataImage';
-import {GridSize} from 'core/model/geometry';
-import {fetchRasterMetaData, fetchRasterData, uploadRasterfile} from 'services/api';
+import {GridSize} from '../../../core/model/geometry';
+import {fetchRasterMetaData, fetchRasterData, uploadRasterfile} from '../../../services/api';
 import math from 'mathjs';
 
 const styles = {

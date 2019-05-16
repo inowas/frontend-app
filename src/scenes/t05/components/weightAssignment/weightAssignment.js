@@ -1,14 +1,14 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import {MCDA} from 'core/model/mcda';
+import {MCDA} from '../../../../core/model/mcda';
 import {pure} from 'recompose';
 import {Button, Dropdown, Grid, Icon, Menu, Message, Table} from 'semantic-ui-react';
-import {WeightAssignment} from 'core/model/mcda/criteria';
+import {WeightAssignment} from '../../../../core/model/mcda/criteria';
 import Ranking from './ranking';
 import MultiInfluence from './multiInfluence';
 import PairwiseComparison from './pairwise';
 import SimpleWeightAssignment from './spl';
-import AbstractCollection from 'core/model/collection/AbstractCollection';
+import AbstractCollection from '../../../../core/model/collection/AbstractCollection';
 
 class WeightAssignmentEditor extends React.Component {
 

@@ -3,10 +3,10 @@ import React from 'react';
 import {Form, Grid, Header, Input} from 'semantic-ui-react';
 
 import AbstractPackageProperties from './AbstractPackageProperties';
-import {FlopyModflow, FlopyModflowMfrch} from 'core/model/flopy/packages/mf';
+import {FlopyModflow, FlopyModflowMfrch} from '../../../../../../core/model/flopy/packages/mf';
 import {documentation} from '../../../../defaults/flow';
 import {RasterDataImage} from '../../../../../shared/rasterData';
-import {GridSize} from 'core/model/modflow';
+import {GridSize} from '../../../../../../core/model/modflow';
 
 class RchPackageProperties extends AbstractPackageProperties {
 

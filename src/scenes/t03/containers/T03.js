@@ -10,7 +10,7 @@ import ToolNavigation from '../../shared/complexTools/toolNavigation';
 import menuItems from '../defaults/menuItems';
 import * as Content from '../components/content/index';
 import ToolMetaData from '../../shared/simpleTools/ToolMetaData';
-import {fetchUrl, sendCommand} from 'services/api';
+import {fetchUrl, sendCommand} from '../../../services/api';
 
 import {
     clear,
@@ -28,15 +28,15 @@ import {
     Calculation,
     ModflowModel,
     Soilmodel, Transport,
-} from 'core/model/modflow';
+} from '../../../core/model/modflow';
 import ModflowModelCommand from '../commands/modflowModelCommand';
 import CalculationProgressBar from '../components/content/calculation/calculationProgressBar';
 import OptimizationProgressBar from '../components/content/optimization/optimizationProgressBar';
 import {CALCULATION_STATE_FINISHED} from '../components/content/calculation/CalculationStatus';
-import FlopyPackages from 'core/model/flopy/packages/FlopyPackages';
-import {FlopyModflow} from 'core/model/flopy/packages/mf';
-import {FlopyMt3d} from 'core/model/flopy/packages/mt';
-import {fetchCalculationDetails} from 'services/api';
+import FlopyPackages from '../../../core/model/flopy/packages/FlopyPackages';
+import {FlopyModflow} from '../../../core/model/flopy/packages/mf';
+import {FlopyMt3d} from '../../../core/model/flopy/packages/mt';
+import {fetchCalculationDetails} from '../../../services/api';
 import {cloneDeep} from 'lodash';
 
 const navigation = [{
@@ -361,7 +361,7 @@ const mapDispatchToProps = {
 };
 
 
-T03.proptypes = {
+T03.propTypes = {
     history: PropTypes.object.isRequired,
     location: PropTypes.object.isRequired,
     match: PropTypes.object.isRequired,

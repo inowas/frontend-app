@@ -4,14 +4,14 @@ import {withRouter} from 'react-router-dom';
 import PropTypes from 'prop-types';
 
 import {Grid, Menu, Segment} from 'semantic-ui-react';
-import {ModflowModel, Soilmodel} from 'core/model/modflow';
-import {BoundaryCollection} from 'core/model/modflow/boundaries';
+import {ModflowModel, Soilmodel} from '../../../../../core/model/modflow';
+import {BoundaryCollection} from '../../../../../core/model/modflow/boundaries';
 
 import ContentToolBar from '../../../../shared/ContentToolbar';
 import {updatePackages} from '../../../actions/actions';
 
-import {FlopyModflow, FlopyModflowPackage} from 'core/model/flopy/packages/mf';
-import FlopyPackages from 'core/model/flopy/packages/FlopyPackages';
+import {FlopyModflow, FlopyModflowPackage} from '../../../../../core/model/flopy/packages/mf';
+import FlopyPackages from '../../../../../core/model/flopy/packages/FlopyPackages';
 
 import {
     BasPackageProperties,
@@ -26,7 +26,7 @@ import {
     SolverPackageProperties,
     WelPackageProperties
 } from './mf';
-import {sendCommand} from 'services/api';
+import {sendCommand} from '../../../../../services/api';
 import ModflowModelCommand from '../../../commands/modflowModelCommand';
 
 const sideBar = (boundaries) => ([
@@ -303,7 +303,7 @@ const mapStateToProps = (state) => ({
 
 const mapDispatchToProps = {updatePackages};
 
-Flow.proptypes = {
+Flow.propTypes = {
     boundaries: PropTypes.instanceOf(BoundaryCollection).isRequired,
     history: PropTypes.object.isRequired,
     match: PropTypes.object.isRequired,

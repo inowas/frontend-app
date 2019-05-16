@@ -1,5 +1,5 @@
 import uuid from 'uuid';
-import {GridSize, Stressperiods, TimeUnit} from 'core/model/modflow';
+import {GridSize, Stressperiods, TimeUnit} from '../../../core/model/modflow';
 
 const createModelDefaults = {
     id: uuid(),

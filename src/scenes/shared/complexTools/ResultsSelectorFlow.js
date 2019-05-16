@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import {Form, Grid, Header, Segment} from 'semantic-ui-react';
-import {Soilmodel, Stressperiods} from 'core/model/modflow';
+import {Soilmodel, Stressperiods} from '../../../core/model/modflow';
 
 import {flatten, uniq, upperFirst} from 'lodash';
 
@@ -171,7 +171,7 @@ class ResultsSelectorFlow extends React.Component {
     }
 }
 
-ResultsSelectorFlow.proptypes = {
+ResultsSelectorFlow.propTypes = {
     data: PropTypes.object.isRequired,
     onChange: PropTypes.func.isRequired,
     layerValues: PropTypes.object.isRequired,

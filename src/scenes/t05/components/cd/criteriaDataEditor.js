@@ -1,14 +1,14 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import {withRouter} from 'react-router-dom';
-import {MCDA} from 'core/model/mcda';
-import {Criterion} from 'core/model/mcda/criteria';
+import {MCDA} from '../../../../core/model/mcda';
+import {Criterion} from '../../../../core/model/mcda/criteria';
 import {Dimmer, Loader, Message, Step} from 'semantic-ui-react';
 
 import {CriteriaReclassification, CriteriaRasterUpload} from './index';
 import CriteriaDataResults from './criteriaDataResults';
 import CriteriaDataConstraints from './criteriaDataConstraints';
-import {retrieveRasters} from 'services/api/rasterHelper';
+import {retrieveRasters} from '../../../../services/api/rasterHelper';
 
 class CriteriaDataEditor extends React.Component {
     constructor(props) {
@@ -200,7 +200,7 @@ class CriteriaDataEditor extends React.Component {
     }
 }
 
-CriteriaDataEditor.proptypes = {
+CriteriaDataEditor.propTypes = {
     activeTool: PropTypes.string,
     criterion: PropTypes.instanceOf(Criterion).isRequired,
     onChange: PropTypes.func.isRequired,

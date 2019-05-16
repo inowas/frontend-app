@@ -12,7 +12,7 @@ import AppContainer from '../../shared/AppContainer';
 import tools from '../defaults/tools';
 import ToolsMenu from '../components/ToolsMenu';
 import ToolsDataTable from '../components/ToolsDataTable';
-import {fetchUrl, sendCommand} from 'services/api';
+import {fetchUrl, sendCommand} from '../../../services/api';
 
 import uuid from 'uuid';
 import ModflowModelImport from '../components/ModflowModelImport';

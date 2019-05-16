@@ -1,11 +1,11 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import {Button, Dimmer, Form, Grid, Loader, Message, Radio, Segment} from 'semantic-ui-react';
-import {GisMap} from 'core/model/mcda/gis';
+import {GisMap} from '../../../../core/model/mcda/gis';
 import ConstraintsMap from './constraintsMap';
-import {dropData} from 'services/api';
-import {MCDA} from 'core/model/mcda';
-import {retrieveRasters} from 'services/api/rasterHelper';
+import {dropData} from '../../../../services/api';
+import {MCDA} from '../../../../core/model/mcda';
+import {retrieveRasters} from '../../../../services/api/rasterHelper';
 
 class ConstraintsEditor extends React.Component {
     constructor(props) {

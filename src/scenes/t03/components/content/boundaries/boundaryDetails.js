@@ -5,7 +5,7 @@ import uuid from 'uuid';
 import {Button, Dropdown, Form, Header, List, Popup} from 'semantic-ui-react';
 
 import BoundaryMap from '../../maps/boundaryMap';
-import {Boundary, BoundaryCollection, LineBoundary, ModflowModel, Soilmodel} from 'core/model/modflow';
+import {Boundary, BoundaryCollection, LineBoundary, ModflowModel, Soilmodel} from '../../../../../core/model/modflow';
 import BoundaryValuesDataTable from './boundaryValuesDataTable';
 import BoundaryGeometryEditor from './boundaryGeometryEditor';
 import ObservationPointEditor from './observationPointEditor';
@@ -230,7 +230,7 @@ class BoundaryDetails extends React.Component {
     }
 }
 
-BoundaryDetails.proptypes = {
+BoundaryDetails.propTypes = {
     boundary: PropTypes.instanceOf(Boundary).isRequired,
     boundaries: PropTypes.instanceOf(BoundaryCollection).isRequired,
     model: PropTypes.instanceOf(ModflowModel).isRequired,

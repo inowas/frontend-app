@@ -1,5 +1,5 @@
 import React from 'react';
-import SubMenuWithContent from 'scenes/shared/complexTools/subMenuWithContent'
+import SubMenuWithContent from '../../../../../scenes/shared/complexTools/subMenuWithContent'
 import StressperiodsEditor from './stressperiodsEditor';
 import GridEditor from './gridEditor';
 

@@ -4,13 +4,13 @@ import {withRouter} from 'react-router-dom';
 import Uuid from 'uuid';
 import {Button, Dimmer, Grid, Header, Modal, List, Loader, Segment} from 'semantic-ui-react';
 import ModflowModelCommand from '../../t03/commands/modflowModelCommand';
-import {BoundaryCollection, BoundingBox, Cells, Geometry, GridSize, Soilmodel, Stressperiods} from 'core/model/modflow';
+import {BoundaryCollection, BoundingBox, Cells, Geometry, GridSize, Soilmodel, Stressperiods} from '../../../core/model/modflow';
 import PropTypes from 'prop-types';
 import ModelImportMap from './ModelImportMap';
 
-import {JSON_SCHEMA_URL, sendCommand} from 'services/api';
-import {dxGeometry, dyGeometry} from 'services/geoTools/distance';
-import {validate} from 'services/jsonSchemaValidator';
+import {JSON_SCHEMA_URL, sendCommand} from '../../../services/api';
+import {dxGeometry, dyGeometry} from '../../../services/geoTools/distance';
+import {validate} from '../../../services/jsonSchemaValidator';
 
 class ModflowModelImport extends React.Component {
 
@@ -256,7 +256,7 @@ class ModflowModelImport extends React.Component {
     }
 }
 
-ModflowModelImport.proptypes = {
+ModflowModelImport.propTypes = {
     history: PropTypes.object.isRequired,
     location: PropTypes.object.isRequired,
     match: PropTypes.object.isRequired

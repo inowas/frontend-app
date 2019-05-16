@@ -1,14 +1,14 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import {Criterion} from 'core/model/mcda/criteria';
+import {Criterion} from '../../../../core/model/mcda/criteria';
 import {Grid, Button, Icon, Message, Form, Segment, Checkbox} from 'semantic-ui-react';
 import RasterfileUploadModal from '../../../shared/rasterData/rasterfileUploadModal';
 import CriteriaRasterMap from './criteriaRasterMap';
-import {Rule, RulesCollection} from 'core/model/mcda/criteria';
-import {Raster} from 'core/model/mcda/gis';
-import {min, max} from 'scenes/shared/rasterData/helpers';
-import {BoundingBox, GridSize} from 'core/model/geometry';
-import {dropData} from 'services/api';
+import {Rule, RulesCollection} from '../../../../core/model/mcda/criteria';
+import {Raster} from '../../../../core/model/mcda/gis';
+import {min, max} from '../../../../scenes/shared/rasterData/helpers';
+import {BoundingBox, GridSize} from '../../../../core/model/geometry';
+import {dropData} from '../../../../services/api';
 import UploadJsonModal from './uploadJsonModal';
 
 class CriteriaRasterUpload extends React.Component {
@@ -244,7 +244,7 @@ class CriteriaRasterUpload extends React.Component {
     }
 }
 
-CriteriaRasterUpload.proptypes = {
+CriteriaRasterUpload.propTypes = {
     criterion: PropTypes.instanceOf(Criterion).isRequired,
     gridSize: PropTypes.instanceOf(GridSize).isRequired,
     onChange: PropTypes.func.isRequired,

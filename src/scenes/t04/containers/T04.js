@@ -6,7 +6,7 @@ import '../styles/pivottable.css';
 import PapaParse from 'papaparse';
 import csvFile from '../data/database-2018-01-05.csv';
 
-import AppContainer from 'scenes/shared/AppContainer';
+import AppContainer from '../../../scenes/shared/AppContainer';
 import {Grid, Icon, Container, Breadcrumb} from 'semantic-ui-react';
 
 const navigation = [{

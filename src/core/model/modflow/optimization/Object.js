@@ -2,7 +2,7 @@ import WellPosition from './WellPosition';
 import uuidv4 from 'uuid/v4';
 import moment from 'moment/moment';
 import BoundaryFactory from '../boundaries/BoundaryFactory';
-import {calculateActiveCells} from 'services/geoTools';
+import {calculateActiveCells} from '../../../../services/geoTools';
 
 class OptimizationObject {
     _id = uuidv4();

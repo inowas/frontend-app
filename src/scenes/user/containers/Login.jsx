@@ -7,7 +7,7 @@ import {hasSessionKey} from '../reducers/index';
 import {withRouter, Link, Redirect} from 'react-router-dom';
 import {Button, Container, Form, Grid, Header, Image, Message} from 'semantic-ui-react';
 import logo from '../images/favicon.png';
-import {submitLoginCredentials} from 'services/api';
+import {submitLoginCredentials} from '../../../services/api';
 
 const styles = {
     login: {

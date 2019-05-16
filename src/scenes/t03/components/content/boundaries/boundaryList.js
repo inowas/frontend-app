@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import {Button, Dropdown, Form, Grid, Icon, Menu, Popup} from 'semantic-ui-react';
-import BoundaryCollection from 'core/model/modflow/boundaries/BoundaryCollection';
+import BoundaryCollection from '../../../../../core/model/modflow/boundaries/BoundaryCollection';
 
 class BoundaryList extends React.Component {
     constructor(props) {

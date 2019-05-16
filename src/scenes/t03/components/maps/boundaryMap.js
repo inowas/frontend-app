@@ -2,8 +2,8 @@ import React, {Component} from 'react';
 import PropTypes from 'prop-types';
 import {uniqueId} from 'lodash';
 import {GeoJSON, Map, CircleMarker, Polyline, Polygon} from 'react-leaflet';
-import {Boundary, BoundaryCollection, Geometry, LineBoundary} from 'core/model/modflow';
-import {BasicTileLayer} from 'services/geoTools/tileLayers';
+import {Boundary, BoundaryCollection, Geometry, LineBoundary} from '../../../../core/model/modflow';
+import {BasicTileLayer} from '../../../../services/geoTools/tileLayers';
 
 import {getStyle} from './index';
 

@@ -5,7 +5,7 @@ import {connect} from 'react-redux';
 import {Button, Container, Form, Grid, Header, Image, Message} from 'semantic-ui-react';
 import NavBar from '../../shared/Navbar';
 import logo from '../images/favicon.png';
-import {sendCommand} from 'services/api';
+import {sendCommand} from '../../../services/api';
 import UserCommand from '../commands/userCommand';
 
 const styles = {

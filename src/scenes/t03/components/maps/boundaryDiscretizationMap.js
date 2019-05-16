@@ -4,8 +4,8 @@ import PropTypes from 'prop-types';
 import {CircleMarker, FeatureGroup, GeoJSON, Map, Polygon, Polyline} from 'react-leaflet';
 import {EditControl} from 'react-leaflet-draw';
 
-import ActiveCellsLayer from 'services/geoTools/activeCellsLayer';
-import {BasicTileLayer} from 'services/geoTools/tileLayers';
+import ActiveCellsLayer from '../../../../services/geoTools/activeCellsLayer';
+import {BasicTileLayer} from '../../../../services/geoTools/tileLayers';
 import {uniqueId} from 'lodash';
 import {getStyle} from './index';
 
@@ -14,9 +14,9 @@ import {
     BoundaryCollection,
     Geometry, LineBoundary,
     ModflowModel
-} from 'core/model/modflow';
+} from '../../../../core/model/modflow';
 
-import Cells from 'core/model/geometry/Cells';
+import Cells from '../../../../core/model/geometry/Cells';
 
 const style = {
     map: {
@@ -220,7 +220,7 @@ class BoundaryDiscretizationMap extends React.Component {
     }
 }
 
-BoundaryDiscretizationMap.proptypes = {
+BoundaryDiscretizationMap.propTypes = {
     model: PropTypes.instanceOf(ModflowModel).isRequired,
     boundary: PropTypes.instanceOf(Boundary).isRequired,
     boundaries: PropTypes.instanceOf(BoundaryCollection).isRequired,

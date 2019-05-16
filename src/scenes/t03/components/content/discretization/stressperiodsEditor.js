@@ -4,13 +4,13 @@ import PropTypes from 'prop-types';
 
 import {Form, Grid, Message} from 'semantic-ui-react';
 
-import {ModflowModel, Stressperiods} from 'core/model/modflow';
+import {ModflowModel, Stressperiods} from '../../../../../core/model/modflow';
 import {updateStressperiods} from '../../../actions/actions';
 
-import {sendCommand} from 'services/api';
+import {sendCommand} from '../../../../../services/api';
 import StressPeriodsDataTable from './stressperiodsDatatable';
 import moment from 'moment';
-import ContentToolBar from 'scenes/shared/ContentToolbar';
+import ContentToolBar from '../../../../../scenes/shared/ContentToolbar';
 import ModflowModelCommand from '../../../commands/modflowModelCommand';
 
 class StressperiodsEditor extends React.Component {
@@ -135,7 +135,7 @@ const mapDispatchToProps = {
     onChange: updateStressperiods
 };
 
-StressperiodsEditor.proptypes = {
+StressperiodsEditor.propTypes = {
     stressperiods: PropTypes.instanceOf(Stressperiods).isRequired,
     onChange: PropTypes.func
 };

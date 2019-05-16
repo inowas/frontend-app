@@ -2,8 +2,8 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import {GeoJSON, Map, CircleMarker, FeatureGroup} from 'react-leaflet';
 import {EditControl} from 'react-leaflet-draw';
-import {BoundaryFactory, Geometry} from 'core/model/modflow';
-import {BasicTileLayer} from 'services/geoTools/tileLayers';
+import {BoundaryFactory, Geometry} from '../../../../core/model/modflow';
+import {BasicTileLayer} from '../../../../services/geoTools/tileLayers';
 import {getStyle} from './index';
 import CenterControl from '../../../shared/leaflet/CenterControl';
 

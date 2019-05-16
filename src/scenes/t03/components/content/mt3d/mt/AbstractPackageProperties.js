@@ -2,7 +2,7 @@ import PropTypes from 'prop-types';
 import React from 'react';
 
 import {Icon, Popup} from 'semantic-ui-react';
-import FlopyMt3dPackage from 'core/model/flopy/packages/mt/FlopyMt3dPackage';
+import FlopyMt3dPackage from '../../../../../../core/model/flopy/packages/mt/FlopyMt3dPackage';
 
 class AbstractPackageProperties extends React.Component {
     constructor(props) {

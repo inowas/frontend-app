@@ -1,15 +1,15 @@
 import React from 'react';
-import {BoundaryCollection, ModflowModel} from 'core/model/modflow';
+import {BoundaryCollection, ModflowModel} from '../../../../../core/model/modflow';
 import {updatePackages, updateTransport} from '../../../actions/actions';
 import {withRouter} from 'react-router-dom';
 import {connect} from 'react-redux';
-import {Substance, Transport} from 'core/model/modflow/transport';
+import {Substance, Transport} from '../../../../../core/model/modflow/transport';
 import PropTypes from 'prop-types';
 import {Checkbox, Form, Grid, Segment} from 'semantic-ui-react';
 import SubstanceList from './SubstanceList';
 import ContentToolBar from '../../../../shared/ContentToolbar';
 import SubstanceDetails from './SubstanceDetails';
-import {sendCommand} from 'services/api';
+import {sendCommand} from '../../../../../services/api';
 import Command from '../../../commands/modflowModelCommand';
 import FlopyPackages from '../../../../../core/model/flopy/packages/FlopyPackages';
 
@@ -174,7 +174,7 @@ const mapDispatchToProps = {
     updateTransport
 };
 
-Transport.proptypes = {
+Transport.propTypes = {
     boundaries: PropTypes.instanceOf(BoundaryCollection).isRequired,
     history: PropTypes.object.isRequired,
     location: PropTypes.object.isRequired,

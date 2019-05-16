@@ -1,4 +1,4 @@
-import {FlopyModflow, FlopyModflowMfbas} from 'core/model/flopy/packages/mf'
+import {FlopyModflow, FlopyModflowMfbas} from '../../../../../../core/model/flopy/packages/mf';
 
 test('It can instantiate FlopyModflowMfbas', () => {
     const model = new FlopyModflow();

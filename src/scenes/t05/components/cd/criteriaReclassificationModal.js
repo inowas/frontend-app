@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types';
 import React from 'react';
-import {Rule} from 'core/model/mcda/criteria';
+import {Rule} from '../../../../core/model/mcda/criteria';
 import {Button, Form, List, Message, Modal} from 'semantic-ui-react';
 import {SketchPicker} from 'react-color';
 

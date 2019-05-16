@@ -1,6 +1,6 @@
 import React from 'react';
 import Proptypes from 'prop-types';
-import {Stressperiods} from 'core/model/modflow';
+import {Stressperiods} from '../../../../../core/model/modflow';
 import {Button, Checkbox, Form, Icon, Popup, Table} from 'semantic-ui-react';
 import moment from 'moment/moment';
 
