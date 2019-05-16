@@ -3,7 +3,7 @@ import React from 'react';
 import {Button, Dimmer, Grid, Header, Modal, List, Loader, Segment} from 'semantic-ui-react';
 
 import PapaParse from 'papaparse';
-import {Stressperiod, Stressperiods} from 'core/model/modflow';
+import {Stressperiod, Stressperiods} from '../../../../../core/model/modflow';
 import Proptypes from 'prop-types';
 import StressPeriodsDataTable from './stressperiodsDatatable';
 

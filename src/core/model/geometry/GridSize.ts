@@ -26,7 +26,7 @@ class GridSize {
             throw new Error('Data expected to have at least one row and one column.');
         }
 
-        return new GridSize(data.length, data[0].length);
+        return new GridSize(data[0].length, data.length);
     }
 
     constructor(private _nX: number, private _nY: number) {
