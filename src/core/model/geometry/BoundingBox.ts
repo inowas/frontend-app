@@ -1,25 +1,28 @@
-import {isEqual} from 'lodash';
+import {AllGeoJSON} from '@turf/helpers';
 import {envelope} from '@turf/turf';
+import {isEqual} from 'lodash';
 import md5 from 'md5';
 
+type Point = [number, number];
+type Points = Point[];
+
 class BoundingBox {
-
-    _xMin = null;
-    _xMax = null;
-    _yMin = null;
-    _yMax = null;
-
-    static fromPoints([[xMin, yMin], [xMax, yMax]]) {
+    public static fromPoints([[xMin, yMin], [xMax, yMax]]: Points) {
         return new BoundingBox(xMin, xMax, yMin, yMax);
     }
 
-    static fromGeoJson(geoJson) {
+    public static fromGeoJson(geoJson: AllGeoJSON) {
         const polygon = envelope(geoJson);
+
+        if (!polygon.geometry) {
+            throw new Error('No geometry');
+        }
+
         const coordinates = polygon.geometry.coordinates[0];
         let [xMin, yMin] = coordinates[0];
         let [xMax, yMax] = coordinates[0];
 
-        coordinates.forEach(c => {
+        coordinates.forEach((c) => {
             if (c[0] < xMin) {
                 xMin = c[0];
             }
@@ -43,15 +46,15 @@ class BoundingBox {
         ]);
     }
 
-    static fromArray([[xMin, yMin], [xMax, yMax]]) {
+    public static fromArray([[xMin, yMin], [xMax, yMax]]: Points) {
         return new BoundingBox(xMin, xMax, yMin, yMax);
     }
 
-    constructor(xMin, xMax, yMin, yMax) {
-        this._xMin = xMin;
-        this._xMax = xMax;
-        this._yMin = yMin;
-        this._yMax = yMax;
+    constructor(
+        private readonly _xMin: number,
+        private readonly _xMax: number,
+        private readonly _yMin: number,
+        private readonly _yMax: number) {
     }
 
     get xMin() {
@@ -78,7 +81,7 @@ class BoundingBox {
         return this._yMax - this._yMin;
     }
 
-    hash = () => (md5(JSON.stringify(this.geoJson)));
+    public hash = () => (md5(JSON.stringify(this.geoJson)));
 
     get geoJson() {
         return {
@@ -86,47 +89,47 @@ class BoundingBox {
             properties: {},
             geometry: {
                 coordinates: [[
-                    [this.xMin, this.yMin],
-                    [this.xMin, this.yMax],
-                    [this.xMax, this.yMax],
-                    [this.xMax, this.yMin],
-                    [this.xMin, this.yMin],
+                    [this._xMin, this._yMin],
+                    [this._xMin, this._yMax],
+                    [this._xMax, this._yMax],
+                    [this._xMax, this._yMin],
+                    [this._xMin, this._yMin],
                 ]],
                 type: 'Polygon'
             }
-        }
+        };
     }
 
-    isValid = () => !(!this.xMin || !this.xMax || !this.yMin || !this.yMax);
+    public isValid = () => !(!this._xMin || !this._xMax || !this._yMin || !this._yMax);
 
-    toArray = () => ([
+    public toArray = () => ([
         [this._xMin, this._yMin],
         [this._xMax, this._yMax]
     ]);
 
-    northEast = () => {
+    get northEast() {
         return {
-            lat: this._yMax,
-            lon: this._xMax
+            lat: this.yMax,
+            lon: this.xMax
         };
-    };
+    }
 
-    southWest = () => {
+    get southWest() {
         return {
-            lat: this._yMin,
-            lon: this._xMin
+            lat: this.yMin,
+            lon: this.xMin
         };
-    };
+    }
 
-    getBoundsLatLng = () => {
+    public getBoundsLatLng = () => {
         return [
-            [this.yMin, this.xMin],
-            [this.yMax, this.xMax]
+            [this._yMin, this._xMin],
+            [this._yMax, this._xMax]
         ];
     };
 
-    sameAs = (obj) => {
-        return isEqual(obj.toArray(), this.toArray())
+    public sameAs = (obj: BoundingBox) => {
+        return isEqual(obj.toArray(), this.toArray());
     };
 }
 

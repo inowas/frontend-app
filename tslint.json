@@ -8,7 +8,9 @@
     "rules": {
         "object-literal-sort-keys": false,
         "quotemark": [true, "single", "avoid-escape", "jsx-double"],
-        "trailing-comma": false
+        "trailing-comma": false,
+        "variable-name": [true, "check-format", "ban-keywords", "allow-leading-underscore"],
+        "semicolon": [true, "always", "strict-bound-class-methods"]
     },
     "rulesDirectory": []
 }

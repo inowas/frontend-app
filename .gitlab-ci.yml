@@ -29,7 +29,7 @@ build:dev:
     
 deploy:dev:
   stage: deploy
-  dependencies: 
+   dependencies:
     - build:dev
 
   before_script:
