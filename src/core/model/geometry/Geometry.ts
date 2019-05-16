@@ -2,7 +2,7 @@ import {bbox} from '@turf/turf';
 import {LineString, MultiPolygon, Point, Polygon} from 'geojson';
 import md5 from 'md5';
 
-type GeoJson = Point | LineString | Polygon | MultiPolygon;
+export type GeoJson = Point | LineString | Polygon | MultiPolygon;
 
 class Geometry {
 

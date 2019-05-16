@@ -14,7 +14,7 @@ import {Feature, LineString} from 'geojson';
 import {floor, isEqual} from 'lodash';
 import {BoundingBox, Geometry, GridSize, LineBoundary} from '../modflow/index';
 
-const getActiveCellFromCoordinate = (coordinate: number[], boundingBox: BoundingBox, gridSize: GridSize) => {
+const getActiveCellFromCoordinate = (coordinate: Point, boundingBox: BoundingBox, gridSize: GridSize) => {
 
     const dx = boundingBox.dX / gridSize.nX;
     const dy = boundingBox.dY / gridSize.nY;
@@ -51,7 +51,7 @@ const getGridCells = (boundingBox: BoundingBox, gridSize: GridSize) => {
     return cells;
 };
 
-export const getPointFromCell = (cell: ICell, boundingBox: BoundingBox, gridSize: GridSize) => {
+export const getPointFromCell = (cell: Cell, boundingBox: BoundingBox, gridSize: GridSize) => {
 
     const x = cell[0];
     const y = cell[1];
@@ -69,17 +69,16 @@ const distanceOnLine = (ls: Feature<LineString>, point: NearestPointOnLine) => {
     return lineDistance(sliced);
 };
 
-interface ICell {
-    [index: number]: number;
-}
+type Cell = [number, number] | [number, number, number];
+type Point = [number, number];
 
 class Cells {
 
-    public static create(cells: ICell[] = []) {
+    public static create(cells: Cell[] = []) {
         return new this(cells);
     }
 
-    public static fromArray(cells: ICell[]) {
+    public static fromArray(cells: Cell[]) {
         return new this(cells);
     }
 
@@ -88,7 +87,7 @@ class Cells {
         const cells = new this();
 
         if (geometry.type === 'Point') {
-            cells.addCell(getActiveCellFromCoordinate(geometry.coordinates as number[], boundingBox, gridSize));
+            cells.addCell(getActiveCellFromCoordinate(geometry.coordinates as Point, boundingBox, gridSize) as Cell);
         }
 
         if (geometry.fromType('linestring')) {
@@ -112,7 +111,7 @@ class Cells {
         return cells;
     }
 
-    constructor(private _cells: ICell[] = []) {
+    constructor(private _cells: Cell[] = []) {
     }
 
     public calculateValues = (boundary: any, boundingBox: BoundingBox, gridSize: GridSize) => {
@@ -171,7 +170,7 @@ class Cells {
             return c;
         });
 
-        this._cells = cellObjs.map((li) => ([li.x, li.y, li.value]));
+        this._cells = cellObjs.map((li) => ([li.x, li.y, li.value]) as Cell);
     };
 
     public toggle = ([x, y]: number[], boundingBox: BoundingBox, gridSize: GridSize) => {
@@ -198,11 +197,11 @@ class Cells {
             cells.push(clickedCell);
         }
 
-        this._cells = cells;
+        this._cells = cells as Cell[];
         return this;
     };
 
-    public addCell = (cell: ICell) => {
+    public addCell = (cell: Cell) => {
         this._cells.push(cell);
     };
 

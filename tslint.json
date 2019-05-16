@@ -6,6 +6,7 @@
     ],
     "jsRules": true,
     "rules": {
+        "jsx-no-multiline-js": false,
         "object-literal-sort-keys": false,
         "quotemark": [true, "single", "avoid-escape", "jsx-double"],
         "trailing-comma": false,
