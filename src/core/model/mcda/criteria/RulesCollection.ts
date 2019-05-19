@@ -26,6 +26,10 @@ class RulesCollection extends Collection<Rule> {
             (rule.to < r.to && rule.from > r.from)
         )).length > 0;
     }
+
+    public toArray() {
+        return this.all.map((item) => item.toObject());
+    }
 }
 
 export default RulesCollection;
