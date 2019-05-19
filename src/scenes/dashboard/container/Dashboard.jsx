@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-import {setActiveTool, setPublic} from '../actions';
+import {setPublic} from '../actions';
 import {cloneToolInstance, deleteToolInstance} from '../commands';
 
 import {connect} from 'react-redux';
@@ -22,11 +22,6 @@ const navigation = [
         name: 'Documentation',
         path: 'https://inowas.hydro.tu-dresden.de/',
         icon: <Icon name="file alternate"/>
-    },
-    {
-        name: 'Datasets',
-        path: 'https://kb.inowas.hydro.tu-dresden.de',
-        icon: <Icon name="database"/>
     }
 ];
 
@@ -199,7 +194,7 @@ const mapStateToProps = state => {
 };
 
 const mapDispatchToProps = {
-    setActiveTool, setPublic
+    setPublic
 };
 
 Dashboard.propTypes = {
