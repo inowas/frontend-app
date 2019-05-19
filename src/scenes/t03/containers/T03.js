@@ -99,8 +99,21 @@ class T03 extends React.Component {
             const calculationState = nextProps.calculation.state;
             const mappedMenuItems = menuItems.map(mi => {
                 mi.items = mi.items.map(i => {
-                    if (i.property === 'results') {
+                    if (i.property === 'flow') {
                         i.disabled = calculationState !== CALCULATION_STATE_FINISHED;
+                        return i;
+                    }
+
+                    if (i.property === 'concentration') {
+                        if (nextProps.transport &&
+                            nextProps.transport.enabled &&
+                            calculationState === CALCULATION_STATE_FINISHED
+                        ) {
+                            i.disabled = false;
+                            return i;
+                        }
+
+                        i.disabled = true;
                         return i;
                     }
 
@@ -318,7 +331,8 @@ class T03 extends React.Component {
             <AppContainer navbarItems={navigation}>
                 <ToolMetaData
                     isDirty={false}
-                    onChange={() => {}}
+                    onChange={() => {
+                    }}
                     readOnly={false}
                     tool={{
                         tool: 'T03',
@@ -357,7 +371,14 @@ const mapStateToProps = state => ({
 });
 
 const mapDispatchToProps = {
-    clear, updateCalculation, updateBoundaries, updatePackages, updateModel, updateOptimization, updateTransport, updateSoilmodel
+    clear,
+    updateCalculation,
+    updateBoundaries,
+    updatePackages,
+    updateModel,
+    updateOptimization,
+    updateTransport,
+    updateSoilmodel
 };
 
 
@@ -365,11 +386,11 @@ T03.propTypes = {
     history: PropTypes.object.isRequired,
     location: PropTypes.object.isRequired,
     match: PropTypes.object.isRequired,
-    boundaries: PropTypes.instanceOf(BoundaryCollection).isRequired,
-    calculation: PropTypes.instanceOf(Calculation).isRequired,
-    packages: PropTypes.instanceOf(FlopyPackages).isRequired,
-    model: PropTypes.instanceOf(ModflowModel).isRequired,
-    soilmodel: PropTypes.instanceOf(Soilmodel).isRequired,
+    boundaries: PropTypes.instanceOf(BoundaryCollection),
+    calculation: PropTypes.instanceOf(Calculation),
+    packages: PropTypes.instanceOf(FlopyPackages),
+    model: PropTypes.instanceOf(ModflowModel),
+    soilmodel: PropTypes.instanceOf(Soilmodel),
     clear: PropTypes.func.isRequired,
     updateModel: PropTypes.func.isRequired,
     updatePackages: PropTypes.func.isRequired,

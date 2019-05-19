@@ -174,8 +174,8 @@ class ResultsSelectorFlow extends React.Component {
 ResultsSelectorFlow.propTypes = {
     data: PropTypes.object.isRequired,
     onChange: PropTypes.func.isRequired,
-    layerValues: PropTypes.object.isRequired,
-    totalTimes: PropTypes.object.isRequired,
+    layerValues: PropTypes.array.isRequired,
+    totalTimes: PropTypes.array.isRequired,
     soilmodel: PropTypes.instanceOf(Soilmodel).isRequired,
     stressperiods: PropTypes.instanceOf(Stressperiods).isRequired
 };

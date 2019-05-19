@@ -236,7 +236,7 @@ Mt3dProperties.propTypes = {
     model: PropTypes.instanceOf(ModflowModel).isRequired,
     boundaries: PropTypes.instanceOf(BoundaryCollection).isRequired,
     packages: PropTypes.instanceOf(FlopyPackages).isRequired,
-    transport: PropTypes.instanceOf(Mt3dProperties).isRequired,
+    transport: PropTypes.instanceOf(Transport).isRequired,
     updatePackages: PropTypes.func.isRequired
 };
 
