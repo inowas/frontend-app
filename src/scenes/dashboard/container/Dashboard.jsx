@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-import {setPublic} from '../actions';
+import {setActiveTool, setPublic} from '../actions';
 import {cloneToolInstance, deleteToolInstance} from '../commands';
 
 import {connect} from 'react-redux';
@@ -194,13 +194,14 @@ const mapStateToProps = state => {
 };
 
 const mapDispatchToProps = {
-    setPublic
+    setActiveTool, setPublic
 };
 
 Dashboard.propTypes = {
     activeTool: PropTypes.object.isRequired,
     roles: PropTypes.array.isRequired,
     setActiveTool: PropTypes.func.isRequired,
+    setPublic: PropTypes.func.isRequired,
     showPublicInstances: PropTypes.bool.isRequired,
     history: PropTypes.object.isRequired
 };

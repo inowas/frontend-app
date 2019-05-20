@@ -35,7 +35,7 @@ const soilmodel = (state = initialState, action) => {
         case REMOVE_SOILMODEL_LAYER:
             return {
                 ...state,
-                layers: LayersCollection.fromArray(state.layers).remove(action.layer_id).toArray()
+                layers: LayersCollection.fromArray(state.layers).removeById(action.layer_id).toArray()
             };
 
         case UPDATE_SOILMODEL:

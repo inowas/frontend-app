@@ -142,7 +142,7 @@ class LayerDetails extends React.Component {
         }];
 
         layerParameters.forEach((p, idx) => {
-            if (p.name === 'top' && layer.number > 1) {
+            if (p.name === 'top' && layer.number > 0) {
                 return;
             }
             panes.push({
