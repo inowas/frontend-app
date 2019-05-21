@@ -1,5 +1,4 @@
 export const ROLE_USER = 'ROLE_USER';
-export const ROLE_NM_MF = 'ROLE_NM_MF';
 
 const availableTools = [
     /*{
@@ -22,7 +21,7 @@ const availableTools = [
         name: 'Numerical groundwater modelling and optimization',
         path: '/tools/',
         subPath: '',
-        role: ROLE_NM_MF,
+        role: ROLE_USER,
         instances: []
     }, {
         slug: 'T04',
@@ -50,7 +49,7 @@ const availableTools = [
         name: 'MODFLOW model scenario manager',
         path: '/tools/',
         subPath: '',
-        role: ROLE_NM_MF,
+        role: ROLE_USER,
         instances: []
     }, {
         slug: 'T08',
