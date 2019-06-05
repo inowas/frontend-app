@@ -70,8 +70,23 @@ class RasterDataImage extends React.Component {
         return <ColorLegendDiscrete legend={rainbowVis} horizontal unit={''}/>;
     }
 
+    handleClickCell = (e) => {
+        const canvas = this.canvas;
+        const rect = canvas.getBoundingClientRect();
+
+        const scaleX = canvas.width / rect.width;
+        const scaleY = canvas.height / rect.height;
+
+        const x = Math.floor((e.clientX - rect.left) * scaleX);
+        const y = Math.floor((e.clientY - rect.top) * scaleY);
+
+        return this.props.onClickCell({x, y});
+    };
+
     render() {
         const {data, gridSize, unit, border} = this.props;
+
+        console.log('RERENDER');
 
         let canvasStyle = styles.canvas;
         if (border) {
@@ -86,10 +101,11 @@ class RasterDataImage extends React.Component {
             this.drawCanvas(data, width, height, rainbowVis);
         }
 
-        // noinspection HtmlUnknownBooleanAttribute
         return (
             <div>
-                <Image fluid>
+                <Image
+                    fluid
+                >
                     <canvas
                         style={canvasStyle}
                         ref={(canvas) => {
@@ -98,6 +114,7 @@ class RasterDataImage extends React.Component {
                         width={width}
                         height={height}
                         data-paper-resize
+                        onClick={this.handleClickCell}
                     />
                 </Image>
                 {this.drawLegend(rainbowVis, unit)}
@@ -107,6 +124,7 @@ class RasterDataImage extends React.Component {
 }
 
 RasterDataImage.propTypes = {
+    onClickCell: PropTypes.func,
     data: PropTypes.oneOfType([PropTypes.array, PropTypes.number]).isRequired,
     gridSize: PropTypes.instanceOf(GridSize).isRequired,
     legend: PropTypes.oneOfType([PropTypes.array, PropTypes.instanceOf(Rainbow)]),

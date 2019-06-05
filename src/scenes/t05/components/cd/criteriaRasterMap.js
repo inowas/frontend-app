@@ -13,6 +13,7 @@ import {BoundingBox} from '../../../../core/model/geometry';
 import Rainbow from '../../../../../node_modules/rainbowvis.js/rainbowvis';
 import RasterDataImage from '../../../shared/rasterData/rasterDataImage';
 import {Button, Icon} from 'semantic-ui-react';
+import {getActiveCellFromCoordinate} from "../../../../services/geoTools";
 
 const options = {
     edit: {
@@ -47,6 +48,25 @@ class CriteriaRasterMap extends React.Component {
             showMap: nextProps.showBasicLayer === true || nextProps.raster.gridSize.nX * nextProps.raster.gridSize.nY <= maximumGridCells
         });
     }
+
+    onClickMap = e => {
+        const latlng = e.latlng;
+        if (latlng) {
+            const raster = this.props.raster;
+
+            const cell = getActiveCellFromCoordinate(
+                [latlng.lng, latlng.lat],
+                raster.boundingBox,
+                raster.gridSize
+            );
+
+            if (cell[0] < 0 || cell[1] < 0 || cell[0] > raster.gridSize.nX || cell[1] > raster.gridSize.nY) {
+                return;
+            }
+
+            return this.props.onClickCell({x: cell[0], y: cell[1]});
+        }
+    };
 
     onEditPath = e => {
         const layers = e.layers;
@@ -100,6 +120,7 @@ class CriteriaRasterMap extends React.Component {
                     </Button>
                     }
                     <RasterDataImage
+                        onClickCell={e => this.props.onClickCell(e)}
                         data={raster.data}
                         legend={this.props.legend}
                         unit=''
@@ -128,6 +149,7 @@ class CriteriaRasterMap extends React.Component {
                         height: this.props.mapHeight || '600px'
                     }}
                     bounds={boundingBox.getBoundsLatLng()}
+                    onClick={this.onClickMap}
                 >
                     {this.props.showBasicLayer &&
                     <BasicTileLayer/>
@@ -167,6 +189,7 @@ class CriteriaRasterMap extends React.Component {
 
 CriteriaRasterMap.propTypes = {
     onChange: PropTypes.func,
+    onClickCell: PropTypes.func,
     raster: PropTypes.instanceOf(Raster).isRequired,
     showBasicLayer: PropTypes.bool.isRequired,
     showButton: PropTypes.bool,
