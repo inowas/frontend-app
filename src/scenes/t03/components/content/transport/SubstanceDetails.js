@@ -1,6 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import {Button, Form, Grid, Header, Table} from 'semantic-ui-react';
+import {Button, Form, Grid, Header, Icon, Popup, Table} from 'semantic-ui-react';
 import {Substance} from '../../../../../core/model/modflow/transport';
 import {BoundaryCollection} from '../../../../../core/model/modflow';
 
@@ -71,21 +71,23 @@ class SubstanceDetails extends React.Component {
             <Grid>
                 <Grid.Row>
                     <Grid.Column>
-                        <Form.Input
-                            disabled={readOnly}
-                            name='name'
-                            value={substance.name}
-                            label={'Substance name'}
-                            onBlur={this.handleChange}
-                            onChange={this.handleLocalChange}
-                        />
-                        <Header as={'h2'}>Selected Boundaries</Header>
+                        <Form>
+                            <Form.Input
+                                disabled={readOnly}
+                                name='name'
+                                value={substance.name}
+                                label={'Substance name'}
+                                onBlur={this.handleChange}
+                                onChange={this.handleLocalChange}
+                            />
+                        </Form>
+                        <Header as={'h4'}>Selected Boundaries</Header>
                         <Table basic>
                             <Table.Header>
                                 <Table.Row>
                                     <Table.HeaderCell>Boundary</Table.HeaderCell>
                                     <Table.HeaderCell>Concentration</Table.HeaderCell>
-                                    <Table.HeaderCell>#</Table.HeaderCell>
+                                    <Table.HeaderCell width={1}>#</Table.HeaderCell>
                                 </Table.Row>
                             </Table.Header>
 
@@ -97,13 +99,18 @@ class SubstanceDetails extends React.Component {
                                             <Table.Cell>{boundaries.findById(bc.id).name}</Table.Cell>
                                             <Table.Cell>{bc.concentration}</Table.Cell>
                                             <Table.Cell>
-                                                <Button
-                                                    disabled={readOnly}
-                                                    primary
-                                                    onClick={() => this.removeBoundary(bc.id)}
-                                                >
-                                                    Delete
-                                                </Button>
+                                                <Popup
+                                                    trigger={
+                                                        <Button
+                                                            disabled={readOnly}
+                                                            onClick={() => this.removeBoundary(bc.id)}
+                                                            icon
+                                                        >
+                                                            <Icon name='trash'/>
+                                                        </Button>
+                                                    }
+                                                    content='Delete'
+                                                />
                                             </Table.Cell>
                                         </Table.Row>
                                     )
@@ -112,42 +119,35 @@ class SubstanceDetails extends React.Component {
                             </Table.Body>
                         </Table>
 
-                        <Header as={'h2'}>Add Boundary</Header>
-                        <Table basic>
-                            <Table.Body>
-                                <Table.Row>
-                                    <Table.Cell>
-                                        <Form.Select
-                                            disabled={readOnly}
-                                            name='boundaries'
-                                            onChange={this.handleSelectBoundary}
-                                            options={boundaries.all.map(b => ({
-                                                value: b.id,
-                                                text: b.name
-                                            }))}
-                                            value={this.state.newBoundaryId}
-                                        />
-                                    </Table.Cell>
-                                    <Table.Cell>
-                                        <Form.Input
-                                            type={'number'}
-                                            disabled={readOnly}
-                                            value={this.state.newBoundaryConcentration}
-                                            onChange={this.handleChangeConcentration}
-                                        />
-                                    </Table.Cell>
-                                    <Table.Cell>
-                                        <Button
-                                            disabled={this.state.newBoundaryId === null}
-                                            primary
-                                            onClick={this.addBoundary}
-                                        >
-                                            Add
-                                        </Button>
-                                    </Table.Cell>
-                                </Table.Row>
-                            </Table.Body>
-                        </Table>
+                        <Form>
+                            <Form.Group>
+                                <Form.Select
+                                    disabled={readOnly}
+                                    name='boundaries'
+                                    placeholder='Add boundary'
+                                    onChange={this.handleSelectBoundary}
+                                    options={boundaries.all.map(b => ({
+                                        value: b.id,
+                                        text: b.name
+                                    }))}
+                                    value={this.state.newBoundaryId}
+                                />
+                                <Form.Input
+                                    type={'number'}
+                                    disabled={readOnly}
+                                    value={this.state.newBoundaryConcentration}
+                                    onChange={this.handleChangeConcentration}
+                                />
+                                <Button
+                                    icon
+                                    disabled={this.state.newBoundaryId === null}
+                                    primary
+                                    onClick={this.addBoundary}
+                                >
+                                    <Icon name='add circle'/>
+                                </Button>
+                            </Form.Group>
+                        </Form>
                     </Grid.Column>
                 </Grid.Row>
             </Grid>

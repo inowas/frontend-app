@@ -5,7 +5,7 @@ import {withRouter} from 'react-router-dom';
 import {connect} from 'react-redux';
 import {Substance, Transport} from '../../../../../core/model/modflow/transport';
 import PropTypes from 'prop-types';
-import {Checkbox, Form, Grid, Segment} from 'semantic-ui-react';
+import {Form, Grid, Segment} from 'semantic-ui-react';
 import SubstanceList from './SubstanceList';
 import ContentToolBar from '../../../../shared/ContentToolbar';
 import SubstanceDetails from './SubstanceDetails';
@@ -137,13 +137,20 @@ class TransportUi extends React.Component {
                                     save
                                     onSave={this.onSave}
                                 />
-                                <Form>
-                                    <Form.Field>
-                                        <label>Enabled</label>
-                                        <Checkbox checked={transport.enabled} onChange={this.handleToggleEnabled}
-                                                  disabled={readOnly}/>
-                                    </Form.Field>
-                                </Form>
+                                <Grid>
+                                    <Grid.Row>
+                                        <Grid.Column>
+                                            <Form>
+                                                <Form.Checkbox
+                                                    label='Enable MT Packages'
+                                                    checked={transport.enabled}
+                                                    onChange={this.handleToggleEnabled}
+                                                    disabled={readOnly}
+                                                />
+                                            </Form>
+                                        </Grid.Column>
+                                    </Grid.Row>
+                                </Grid>
                                 <SubstanceDetails
                                     substance={selectedSubstance}
                                     boundaries={boundaries}
