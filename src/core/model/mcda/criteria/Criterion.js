@@ -172,19 +172,16 @@ class Criterion {
         newRaster.data = _cloneDeep(raster.data).map(row => {
             return row.map(cell => {
                 const rules = rulesCollection.findByValue(cell);
-                if (rules.length === 0) {
-                    return 1;
-                }
                 if (rules.length === 1) {
                     const rule = rules[0];
                     if (rule.type === 'fixed') {
-                        return parseFloat(rule.value);
+                        return rule.value || NaN;
                     }
                     if (rule.type === 'calc') {
                         return math.eval(rule.expression, {min: raster.min, max: raster.max, x: cell});
                     }
                 }
-                return -1;
+                return 1;
             });
         });
 
@@ -198,6 +195,8 @@ class Criterion {
                 });
             });
         }
+
+        console.log('NEW', newRaster);
 
         newRaster.calculateMinMax();
         return newRaster;

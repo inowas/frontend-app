@@ -36,7 +36,11 @@ class RasterDataImage extends React.Component {
 
         gridData.forEach(d => {
             if (rainbowVis instanceof Rainbow) {
-                ctx.fillStyle = '#' + rainbowVis.colourAt(d.value);
+                if (isNaN(d.value)) {
+                    ctx.fillStyle = 'rgba(255,255,255,0)';
+                } else {
+                    ctx.fillStyle = '#' + rainbowVis.colourAt(d.value);
+                }
             } else {
                 const data = rainbowVis[0].isContinuous ?
                     rainbowVis.filter(row => (row.fromOperator === '>' ? d.value > row.from : d.value >= row.from) && (row.toOperator === '<' ? d.value < row.to : d.value <= row.to)) :
@@ -85,8 +89,6 @@ class RasterDataImage extends React.Component {
 
     render() {
         const {data, gridSize, unit, border} = this.props;
-
-        console.log('RERENDER');
 
         let canvasStyle = styles.canvas;
         if (border) {

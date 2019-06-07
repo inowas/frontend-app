@@ -120,7 +120,7 @@ class CriteriaRasterMap extends React.Component {
                     </Button>
                     }
                     <RasterDataImage
-                        onClickCell={e => this.props.onClickCell(e)}
+                        onClickCell={!!this.props.onClickCell ? e => this.props.onClickCell(e) : null}
                         data={raster.data}
                         legend={this.props.legend}
                         unit=''
@@ -149,7 +149,7 @@ class CriteriaRasterMap extends React.Component {
                         height: this.props.mapHeight || '600px'
                     }}
                     bounds={boundingBox.getBoundsLatLng()}
-                    onClick={this.onClickMap}
+                    onClick={!!this.props.onClickCell ? this.onClickMap : null}
                 >
                     {this.props.showBasicLayer &&
                     <BasicTileLayer/>

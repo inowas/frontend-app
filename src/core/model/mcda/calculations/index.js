@@ -3,6 +3,36 @@ const getRandomIndex = n => {
     return indices[n - 1];
 };
 
+export const multiplyElementWise = (m1, m2) => {
+    const dimCol = m1[0].length === m2[0].length ? m1[0].length : null;
+    const dimRow = m1.length === m2.length ? m1.length : null;
+    const m3 = new Array(dimRow).fill(0).map(() => new Array(dimCol).fill(0));
+
+    if (!dimCol || !dimRow) {
+        console.log({
+            m1,
+            m1Row: m1.length,
+            m1Col: m1[0].length,
+            m2,
+            m2Row: m2.length,
+            m2Col: m2[0].length
+        });
+        throw new Error('Matrices m1 and m2 need to have the same dimensions.');
+    }
+
+    for (let row = 0; row <= dimRow - 1; row++) {
+        for (let col = 0; col <= dimCol - 1; col++) {
+            if (isNaN(m1[row][col]) || isNaN(m2[row][col])) {
+                m3[row][col] = NaN;
+            } else {
+                m3[row][col] = m1[row][col] * m2[row][col];
+            }
+        }
+    }
+
+    return m3;
+};
+
 /**
  * Calculates the weight of all criteria depending of the relations between each other.
  *

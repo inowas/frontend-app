@@ -13,7 +13,7 @@ export function isRaster(data) {
         return false;
     }
 
-    return !isNaN(data[0][0]);
+    return data[0][0] !== null;
 }
 
 export function isValid(data) {
@@ -108,7 +108,7 @@ export function createGridData(value, nx, ny) {
     if (isRaster(value) && getGridSize(value).x === nx && getGridSize(value).y === ny) {
         for (let y = 0; y < ny; y++) {
             for (let x = 0; x < nx; x++) {
-                if (!isNaN(value[y][x]) && value[y][x] !== null) {
+                if (value[y][x] !== null) {
                     data.push({
                         x: x,
                         y: y,

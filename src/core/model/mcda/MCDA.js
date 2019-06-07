@@ -3,6 +3,7 @@ import {GisMap} from './gis';
 import math from 'mathjs';
 import Suitability from './Suitability';
 import {cloneDeep as _cloneDeep} from 'lodash';
+import {multiplyElementWise} from "./calculations";
 
 class MCDA {
     _criteria = new CriteriaCollection();
@@ -122,13 +123,13 @@ class MCDA {
         this.criteriaCollection.all.forEach(c => {
             if (c.constraintRaster && c.constraintRaster.data.length > 0) {
                 // todo: constraints should have value NULL and not 0
-                rasterData.data = math.dotMultiply(rasterData.data, c.constraintRaster.data);
+                rasterData.data = multiplyElementWise(rasterData.data, c.constraintRaster.data);
             }
         });
 
         // STEP 3: multiply global constraints
         if (this.constraints.raster && this.constraints.raster.data.length > 0) {
-            rasterData.data = math.dotMultiply(rasterData.data, this.constraints.raster.data);
+            rasterData.data = multiplyElementWise(rasterData.data, this.constraints.raster.data);
         }
 
         this.suitability.raster = rasterData.calculateMinMax();
