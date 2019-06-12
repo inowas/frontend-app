@@ -10,7 +10,6 @@ import Slider from 'rc-slider';
 
 const SliderWithTooltip = Slider.createSliderWithTooltip(Slider);
 
-
 const styles = {
     dot: {
         border: '1px solid #e9e9e9',

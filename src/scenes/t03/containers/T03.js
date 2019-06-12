@@ -258,8 +258,8 @@ class T03 extends React.Component {
                 return (<Content.Calculation/>);
             case 'flow':
                 return (<Content.FlowResults/>);
-            case 'Budget':
-                return (<Content.FlowResults/>);
+            case 'budget':
+                return (<Content.BudgetResults/>);
             case 'concentration':
                 return (<Content.TransportResults/>);
             case 'optimization':

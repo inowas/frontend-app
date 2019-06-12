@@ -130,6 +130,21 @@ export const fetchCalculationDetails = (
     }).then(response => response.data).then(onSuccess).catch(onError);
 };
 
+export const fetchCalculationResultsBudget = ({calculationId, layer, totim, type}, onSuccess, onError) => {
+    const url = `${MODFLOW_CALCULATION_URL}/${calculationId}/results/types/${type}/layers/${layer}/totims/${totim}`;
+
+    return axios({
+        method: 'GET',
+        url: url,
+        mode: 'no-cors',
+        headers: {
+            'Access-Control-Allow-Origin': '*',
+            'Content-Type': 'application/json'
+        },
+        data: {}
+    }).then(response => response.data).then(onSuccess).catch(onError);
+};
+
 export const fetchCalculationResultsFlow = ({calculationId, layer, totim, type}, onSuccess, onError) => {
     const url = `${MODFLOW_CALCULATION_URL}/${calculationId}/results/types/${type}/layers/${layer}/totims/${totim}`;
 
