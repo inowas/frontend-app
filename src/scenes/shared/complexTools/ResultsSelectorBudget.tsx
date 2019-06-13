@@ -42,13 +42,14 @@ class ResultsSelectorBudget extends React.Component<IResultsSelectorBudgetProps,
 
     public typeOptions = () => {
         return [
-            {key: 0, value: 'volume', text: 'Cumulative Volumes'},
-            {key: 1, value: 'rates', text: 'Rates'}
+            {key: 0, value: 'cumulative', text: 'Cumulative Volumes'},
+            {key: 1, value: 'incremental', text: 'Rates'}
         ];
     };
 
     public handleChangeType = (e: React.SyntheticEvent<HTMLElement, Event>, props: DropdownProps) => {
         return this.props.onChange({
+            totim: this.state.temporaryTotim,
             type: props.value
         });
     };
@@ -68,9 +69,9 @@ class ResultsSelectorBudget extends React.Component<IResultsSelectorBudgetProps,
     };
 
     public handleAfterChangeSlider = () => {
-        const {layer, type} = this.props.data;
+        const {type} = this.props.data;
         const totim = this.state.temporaryTotim;
-        return this.props.onChange({layer, totim, type});
+        return this.props.onChange({totim, type});
     };
 
     public render() {

@@ -130,8 +130,8 @@ export const fetchCalculationDetails = (
     }).then(response => response.data).then(onSuccess).catch(onError);
 };
 
-export const fetchCalculationResultsBudget = ({calculationId, layer, totim, type}, onSuccess, onError) => {
-    const url = `${MODFLOW_CALCULATION_URL}/${calculationId}/results/types/${type}/layers/${layer}/totims/${totim}`;
+export const fetchCalculationResultsBudget = ({calculationId, totim}, onSuccess, onError) => {
+    const url = `${MODFLOW_CALCULATION_URL}/${calculationId}/results/types/budget/totims/${totim}`;
 
     return axios({
         method: 'GET',
