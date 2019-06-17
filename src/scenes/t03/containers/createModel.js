@@ -80,7 +80,7 @@ class CreateModel extends React.Component {
 
         if (type === 'change') {
             const gridSize = GridSize.fromObject(this.state.gridSizeLocal);
-            gridSize[name] = value;
+            gridSize[name] = parseFloat(value);
             this.setState({gridSizeLocal: gridSize.toObject()});
         }
 
