@@ -66,9 +66,7 @@ class StressPeriodsDataTable extends React.Component {
         }
 
         stressperiods.updateStressperiodByIdx(idx, stressperiod);
-        return this.setState({
-            stressperiods: stressperiods.toObject()
-        });
+        return this.props.onChange(stressperiods);
     };
 
     handleChange = (e, props) => {

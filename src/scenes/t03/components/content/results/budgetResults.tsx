@@ -1,10 +1,11 @@
 import React from 'react';
 import {connect} from 'react-redux';
-import {Bar, BarChart, CartesianGrid, Tooltip, XAxis, YAxis} from 'recharts';
-import {Checkbox, CheckboxProps, Grid, Header, List, Segment} from 'semantic-ui-react';
+import {Bar, BarChart, CartesianGrid, Cell, Tooltip, XAxis, YAxis} from 'recharts';
+import {Checkbox, CheckboxProps, Grid, Header, Icon, List, Segment} from 'semantic-ui-react';
 import {Calculation, ModflowModel} from '../../../../../core/model/modflow';
 import {fetchCalculationResultsBudget} from '../../../../../services/api';
 import ResultsSelectorBudget from '../../../../shared/complexTools/ResultsSelectorBudget';
+import * as colors from '../../../defaults/colorScales';
 
 type budgetType = 'cumulative' | 'incremental';
 
@@ -16,7 +17,7 @@ interface IBudgetResultsProps {
 }
 
 interface IBudgetResultsState {
-    data: Array<{ name: string, value: number, active: boolean }> | null;
+    data: Array<{ name: string, value: number, active: boolean, position: number }> | null;
     fetching: boolean;
     isError: string | null;
     isLoading: boolean;
@@ -65,17 +66,25 @@ class BudgetResults extends React.Component<IBudgetResultsProps, IBudgetResultsS
 
         const calculationId = this.props.calculation.id;
         fetchCalculationResultsBudget({calculationId, totim},
-            (data: IBudgetData) => this.setState({
-                selectedTotim: totim,
-                selectedType: type,
-                data: Object.entries(data[type]).map((arr) => {
-                    return {
-                        name: arr[0],
-                        value: arr[1],
-                        active: true
-                    };
-                }),
-                fetching: false
+            (data: IBudgetData) => this.setState((prevState: IBudgetResultsState) => {
+                return {
+                    selectedTotim: totim,
+                    selectedType: type,
+                    data: Object.entries(data[type]).map((arr, key) => {
+                        let wasActive = true;
+                        if (prevState.data) {
+                            wasActive = prevState.data.filter((c) => c.name === arr[0]).length === 1 &&
+                                prevState.data.filter((c) => c.name === arr[0])[0].active;
+                        }
+                        return {
+                            name: arr[0],
+                            value: arr[1],
+                            active: wasActive,
+                            position: key
+                        };
+                    }),
+                    fetching: false
+                };
             }),
             (e: string) => this.setState({isError: e})
         );
@@ -141,13 +150,18 @@ class BudgetResults extends React.Component<IBudgetResultsProps, IBudgetResultsS
                                                 <CartesianGrid strokeDasharray="3 3"/>
                                                 <XAxis
                                                     dataKey="name"
-                                                    textAnchor="end"
-                                                    tick={{angle: 270}}
+                                                    hide={true}
                                                     interval={0}
                                                 />
                                                 <YAxis/>
                                                 <Tooltip/>
-                                                <Bar dataKey="value" fill="#8884d8"/>
+                                                <Bar dataKey="value" fill="#8884d8">
+                                                    {data.filter((c) => c.active).map((c, index) => {
+                                                        const color = c.position < colors.misc.length
+                                                            ? colors.misc[c.position] : '#000000';
+                                                        return <Cell key={index} fill={color}/>;
+                                                    })}
+                                                </Bar>
                                             </BarChart>
                                             }
                                         </Segment>
@@ -164,7 +178,20 @@ class BudgetResults extends React.Component<IBudgetResultsProps, IBudgetResultsS
                                                     >
                                                         <Checkbox
                                                             checked={c.active}
-                                                            label={c.name}
+                                                            label={{
+                                                                children:
+                                                                    <div>
+                                                                        <Icon
+                                                                            style={{
+                                                                                color: c.position < colors.misc.length
+                                                                                    ? colors.misc[c.position]
+                                                                                    : '#000000'
+                                                                            }}
+                                                                            name="circle"
+                                                                        />
+                                                                        {c.name}
+                                                                    </div>
+                                                            }}
                                                             onChange={this.handleChangeCheckbox}
                                                             value={c.name}
                                                         />
