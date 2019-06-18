@@ -197,7 +197,7 @@ ModelDiscretizationMap.propTypes = {
     boundingBox: PropTypes.instanceOf(BoundingBox),
     geometry: PropTypes.instanceOf(Geometry),
     gridSize: PropTypes.instanceOf(GridSize).isRequired,
-    styles: PropTypes.object.isRequired,
+    styles: PropTypes.object,
     onChange: PropTypes.func.isRequired
 };
 

@@ -55,8 +55,7 @@ const menuItems = [
             {
                 name: 'Budget',
                 property: 'budget',
-                icon: <Icon name="chart bar outline"/>,
-                disabled: true
+                icon: <Icon name="chart bar outline"/>
             },
             {
                 name: 'Concentration',

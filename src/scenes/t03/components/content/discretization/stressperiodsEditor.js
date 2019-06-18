@@ -74,6 +74,10 @@ class StressperiodsEditor extends React.Component {
     render() {
         const stressperiods = Stressperiods.fromObject(this.state.stressperiods);
         stressperiods.orderStressperiods();
+
+        const datesInvalid = moment.utc(this.state.endDateTime)
+            .diff(moment.utc(stressperiods.last().startDateTime)) <= 0;
+
         return (
             <Grid>
                 <Grid.Row>
@@ -99,6 +103,7 @@ class StressperiodsEditor extends React.Component {
                                 onChange={this.handleDateTimeChange}
                             />
                             <Form.Input
+                                error={datesInvalid}
                                 type='date'
                                 label='End Date'
                                 name={'endDateTime'}
@@ -116,6 +121,11 @@ class StressperiodsEditor extends React.Component {
                         <Message color={'blue'}>
                             <strong>Total time: </strong>{stressperiods.totim} days
                         </Message>
+                        {datesInvalid &&
+                        <Message color={'red'}>
+                            <strong>Error: </strong>Start date of last stress period is greater than end date.
+                        </Message>
+                        }
                     </Grid.Column>
                     <Grid.Column width={11}>
                         <StressPeriodsDataTable stressperiods={stressperiods} onChange={this.handleChange}/>

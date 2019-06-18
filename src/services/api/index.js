@@ -2,11 +2,9 @@ import axios from 'axios';
 import storeToCreate from '../../store';
 import FlopyPackages from '../../core/model/flopy/packages/FlopyPackages';
 
-const BASE_URL = process.env.REACT_APP_API_URL + '/v3';
-export const DATADROPPER_URL = 'https://datadropper.inowas.com';
-export const GEOPROCESSING_URL = 'https://geoprocessing.inowas.com';
-export const MODFLOW_CALCULATION_URL = 'https://modflow.inowas.com';
-export const JSON_SCHEMA_URL = process.env.REACT_APP_SCHEMA_URL || 'https://schema.inowas.com';
+import getConfig from '../../config.default.js';
+
+export const {BASE_URL, DATADROPPER_URL, GEOPROCESSING_URL, MODFLOW_CALCULATION_URL, JSON_SCHEMA_URL} = getConfig();
 
 const getToken = () => {
     const store = storeToCreate();
@@ -117,6 +115,21 @@ export const fetchRasterMetaData = (
 export const fetchCalculationDetails = (
     calculation_id, onSuccess, onError) => {
     const url = `${MODFLOW_CALCULATION_URL}/${calculation_id}`;
+
+    return axios({
+        method: 'GET',
+        url: url,
+        mode: 'no-cors',
+        headers: {
+            'Access-Control-Allow-Origin': '*',
+            'Content-Type': 'application/json'
+        },
+        data: {}
+    }).then(response => response.data).then(onSuccess).catch(onError);
+};
+
+export const fetchCalculationResultsBudget = ({calculationId, totim}, onSuccess, onError) => {
+    const url = `${MODFLOW_CALCULATION_URL}/${calculationId}/results/types/budget/totims/${totim}`;
 
     return axios({
         method: 'GET',
