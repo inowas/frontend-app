@@ -12,7 +12,7 @@ import {SliderParameter, ToolGrid, ToolMetaData} from '../../shared/simpleTools'
 import SimpleToolsCommand from '../../shared/simpleTools/commands/SimpleToolsCommand';
 
 import image from '../images/T12.png';
-import {defaults} from '../defaults/T12';
+import {defaultsWithSession} from '../defaults/T12';
 
 import {fetchTool, sendCommand} from '../../../services/api';
 import {buildPayloadToolInstance, deepMerge} from '../../shared/simpleTools/helpers';
@@ -23,7 +23,7 @@ class T12 extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            tool: defaults(),
+            tool: defaultsWithSession(props.session),
             isLoading: false,
             isDirty: false,
             error: false
@@ -111,7 +111,7 @@ class T12 extends React.Component {
 
     handleReset = () => {
         this.setState({
-            tool: defaults(),
+            tool: defaultsWithSession(this.props.session),
             isLoading: false,
             isDirty: false
         });
@@ -123,7 +123,7 @@ class T12 extends React.Component {
         const {tool, isLoading} = this.state;
         if (isLoading) {
             return (
-                <AppContainer navBarItems={navigation} loader/>
+                <AppContainer navbarItems={navigation} loader/>
             );
         }
 

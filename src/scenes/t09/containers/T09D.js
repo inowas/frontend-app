@@ -12,7 +12,7 @@ import {navigation} from './T09';
 import SimpleToolsCommand from '../../shared/simpleTools/commands/SimpleToolsCommand';
 
 import image from '../images/T09D.png';
-import {defaults} from '../defaults/T09D';
+import {defaultsWithSession} from '../defaults/T09D';
 
 import {fetchTool, sendCommand} from '../../../services/api';
 import {buildPayloadToolInstance, deepMerge} from '../../shared/simpleTools/helpers';
@@ -21,7 +21,7 @@ class T09D extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            tool: defaults(),
+            tool: defaultsWithSession(props.session),
             isDirty: true,
             isLoading: false,
             error: false
@@ -96,7 +96,7 @@ class T09D extends React.Component {
     handleReset = () => {
         this.setState(prevState => {
             return {
-                tool: {...prevState.tool, data: defaults().data},
+                tool: {...prevState.tool, data: defaultsWithSession(this.props.session).data},
                 isLoading: false,
                 isDirty: true
             }
@@ -108,7 +108,7 @@ class T09D extends React.Component {
     render() {
         if (this.state.isLoading) {
             return (
-                <AppContainer navBarItems={navigation} loader/>
+                <AppContainer navbarItems={navigation} loader/>
             );
         }
 

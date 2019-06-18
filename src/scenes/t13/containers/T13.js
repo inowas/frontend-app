@@ -85,7 +85,7 @@ class T13 extends React.Component {
         ));
 
         return (
-            <AppContainer navBarItems={navigation}>
+            <AppContainer navbarItems={navigation}>
                 <Header as={'h3'}>
                     Please select the set of boundary conditions that apply to your problem:
                 </Header>

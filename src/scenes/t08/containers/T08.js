@@ -12,10 +12,11 @@ import {SliderParameter, ToolGrid, ToolMetaData} from '../../shared/simpleTools'
 import SimpleToolsCommand from '../../shared/simpleTools/commands/SimpleToolsCommand';
 
 import image from '../images/T08.png';
-import {T08 as defaults} from '../defaults';
+import {T08DefaultsWithSession} from '../defaults';
 
 import {fetchTool, sendCommand} from '../../../services/api';
 import {buildPayloadToolInstance, deepMerge} from '../../shared/simpleTools/helpers';
+import withSession from '../../../services/router/withSession';
 
 const navigation = [{
     name: 'Documentation',
@@ -27,7 +28,7 @@ class T08 extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            tool: defaults(),
+            tool: T08DefaultsWithSession(props.session),
             isDirty: true,
             isLoading: false,
             error: false
@@ -102,7 +103,7 @@ class T08 extends React.Component {
     handleReset = () => {
         this.setState(prevState => {
             return {
-                tool: {...prevState.tool, data: defaults().data},
+                tool: {...prevState.tool, data: T08DefaultsWithSession(this.props.session).data},
                 isLoading: false,
                 isDirty: true
             }
@@ -115,7 +116,7 @@ class T08 extends React.Component {
     render() {
         if (this.state.isLoading) {
             return (
-                <AppContainer navBarItems={navigation} loader/>
+                <AppContainer navbarItems={navigation} loader/>
             );
         }
 
@@ -134,7 +135,7 @@ class T08 extends React.Component {
                     isDirty={isDirty}
                 />
                 <ToolGrid rows={2}>
-                    <Background image={image} title={'T08. 1D mt3d model (Ogata-Banks)'}/>
+                    <Background image={image} title={'T08. 1D transport equation (Ogata-Banks)'}/>
                     <Chart settings={settings} parameters={parameters}/>
                     <div>
                         <Settings settings={settings} onChange={this.handleChangeSettings}/>
@@ -155,6 +156,7 @@ T08.propTypes = {
     history: PropTypes.object.isRequired,
     location: PropTypes.object.isRequired,
     match: PropTypes.object.isRequired,
+    session: PropTypes.object.isRequired,
 };
 
-export default withRouter(T08);
+export default withSession(withRouter(T08));
