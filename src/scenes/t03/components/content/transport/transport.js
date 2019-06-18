@@ -129,7 +129,6 @@ class TransportUi extends React.Component {
                             />
                         </Grid.Column>
                         <Grid.Column width={12}>
-                            {selectedSubstance &&
                             <div>
                                 <ContentToolBar
                                     isDirty={isDirty && selectedSubstance.boundaryConcentrations.length > 0}
@@ -137,7 +136,7 @@ class TransportUi extends React.Component {
                                     save
                                     onSave={this.onSave}
                                 />
-                                <Form>
+                                <Form style={{marginTop:'1rem'}}>
                                     <Form.Field>
                                         <label>Enabled</label>
                                         <Checkbox checked={transport.enabled} onChange={this.handleToggleEnabled}
@@ -151,7 +150,6 @@ class TransportUi extends React.Component {
                                     readOnly={readOnly}
                                 />
                             </div>
-                            }
                         </Grid.Column>
                     </Grid.Row>
                 </Grid>

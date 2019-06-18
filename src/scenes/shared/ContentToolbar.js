@@ -98,6 +98,12 @@ class ContentToolBar extends React.Component {
                             Back
                         </Button>
                         }
+                        {this.props.importButton &&
+                        <Button primary icon onClick={() => this.props.onClick()} labelPosition="left">
+                            <Icon name="download"/>
+                            Import
+                        </Button>
+                        }
                     </Grid.Column>
                     <Grid.Column>
                         {message &&
@@ -141,6 +147,7 @@ class ContentToolBar extends React.Component {
 ContentToolBar.propTypes = {
     backButton: PropTypes.bool,
     onBack: PropTypes.func,
+    importButton: PropTypes.bool,
     saveButton: PropTypes.bool,
     onSave: PropTypes.func,
     dropdown: PropTypes.object,

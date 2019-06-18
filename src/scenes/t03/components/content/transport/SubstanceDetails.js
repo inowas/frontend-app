@@ -3,13 +3,14 @@ import PropTypes from 'prop-types';
 import {Button, Form, Grid, Header, Table} from 'semantic-ui-react';
 import {Substance} from '../../../../../core/model/modflow/transport';
 import {BoundaryCollection} from '../../../../../core/model/modflow';
+import NoContent from '../../../../shared/complexTools/noContent';
 
 
 class SubstanceDetails extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            substance: props.substance.toObject(),
+            substance: props.substance && props.substance.toObject(),
             newBoundaryId: null,
             newBoundaryConcentration: 0
         };
@@ -17,7 +18,7 @@ class SubstanceDetails extends React.Component {
 
     componentWillReceiveProps(nextProps) {
         this.setState({
-            substance: nextProps.substance.toObject()
+            substance: nextProps.substance && nextProps.substance.toObject()
         });
     }
 
@@ -64,6 +65,11 @@ class SubstanceDetails extends React.Component {
 
     render() {
         const {boundaries, readOnly} = this.props;
+
+        if (!this.state.substance) {
+            return <NoContent message={'No substances defined.'}/>;
+        }
+
         const substance = Substance.fromObject(this.state.substance);
         const {boundaryConcentrations} = substance;
 
@@ -71,6 +77,7 @@ class SubstanceDetails extends React.Component {
             <Grid>
                 <Grid.Row>
                     <Grid.Column>
+                        <Form>
                         <Form.Input
                             disabled={readOnly}
                             name='name'
@@ -78,8 +85,10 @@ class SubstanceDetails extends React.Component {
                             label={'Substance name'}
                             onBlur={this.handleChange}
                             onChange={this.handleLocalChange}
+                            width={'8'}
                         />
-                        <Header as={'h2'}>Selected Boundaries</Header>
+                        </Form>
+                        <Header as={'h4'}>Selected Boundaries</Header>
                         <Table basic>
                             <Table.Header>
                                 <Table.Row>
@@ -99,7 +108,7 @@ class SubstanceDetails extends React.Component {
                                             <Table.Cell>
                                                 <Button
                                                     disabled={readOnly}
-                                                    primary
+                                                    negative
                                                     onClick={() => this.removeBoundary(bc.id)}
                                                 >
                                                     Delete
@@ -112,7 +121,7 @@ class SubstanceDetails extends React.Component {
                             </Table.Body>
                         </Table>
 
-                        <Header as={'h2'}>Add Boundary</Header>
+                        <Header as={'h4'}>Add Boundary</Header>
                         <Table basic>
                             <Table.Body>
                                 <Table.Row>
@@ -159,7 +168,7 @@ SubstanceDetails.propTypes = {
     boundaries: PropTypes.instanceOf(BoundaryCollection).isRequired,
     onChange: PropTypes.func.isRequired,
     readOnly: PropTypes.bool,
-    substance: PropTypes.instanceOf(Substance).isRequired
+    substance: PropTypes.instanceOf(Substance)
 };
 
 export default SubstanceDetails;

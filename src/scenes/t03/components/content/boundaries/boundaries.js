@@ -149,6 +149,7 @@ class Boundaries extends React.Component {
                                 isDirty={isDirty}
                                 isError={error}
                                 saveButton={!readOnly}
+                                importButton={!readOnly}
                             />
                             {!isLoading &&
                             <BoundaryDetails

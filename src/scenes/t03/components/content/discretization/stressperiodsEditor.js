@@ -83,6 +83,7 @@ class StressperiodsEditor extends React.Component {
                             isError={this.state.isError}
                             saveButton
                             onSave={this.onSave}
+                            importButton
                         />
                     </Grid.Column>
                 </Grid.Row>

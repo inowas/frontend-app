@@ -88,6 +88,8 @@ class GridEditor extends React.Component {
         const gridSize = GridSize.fromObject(this.state.gridSize);
         const gridSizeLocal = GridSize.fromObject(this.state.gridSizeLocal);
         const boundingBox = BoundingBox.fromArray(this.state.boundingBox);
+        const {model} = this.props;
+        const readOnly = model.readOnly;
         return (
             <Grid>
                 <Grid.Row>
@@ -97,6 +99,7 @@ class GridEditor extends React.Component {
                             isError={this.state.isError}
                             saveButton
                             onSave={this.onSave}
+                            importButton={!readOnly}
                         />
                     </Grid.Column>
                 </Grid.Row>

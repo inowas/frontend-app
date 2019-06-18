@@ -171,7 +171,7 @@ class LayerDetails extends React.Component {
         });
 
         return (
-            <Form>
+            <Form style={{marginTop:'1rem'}}>
                 <Tab menu={{secondary: true, pointing: true}} activeIndex={this.props.activeIndex || 0}
                      onTabChange={this.props.onChangeTab} panes={panes}/>
             </Form>
