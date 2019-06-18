@@ -16,6 +16,7 @@ import {defaults} from '../defaults';
 
 import {fetchTool, sendCommand} from '../../../services/api';
 import {buildPayloadToolInstance, deepMerge} from '../../shared/simpleTools/helpers';
+import withSession from '../../../services/router/withSession';
 
 const navigation = [{
     name: 'Documentation',
@@ -32,6 +33,8 @@ class T02 extends React.Component {
             isLoading: false,
             error: false
         };
+
+        console.log(props);
     }
 
     componentDidMount() {
@@ -115,7 +118,7 @@ class T02 extends React.Component {
     render() {
         if (this.state.isLoading) {
             return (
-                <AppContainer navBarItems={navigation} loader/>
+                <AppContainer navbarItems={navigation} loader/>
             );
         }
 
@@ -155,6 +158,9 @@ T02.propTypes = {
     history: PropTypes.object.isRequired,
     location: PropTypes.object.isRequired,
     match: PropTypes.object.isRequired,
+    session: PropTypes.object.isRequired,
 };
 
-export default withRouter(T02);
+
+
+export default withSession(withRouter(T02));
