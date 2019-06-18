@@ -12,16 +12,17 @@ import {navigation} from './T09';
 import SimpleToolsCommand from '../../shared/simpleTools/commands/SimpleToolsCommand';
 
 import image from '../images/T09C.png';
-import {defaults} from '../defaults/T09C';
+import {defaultsWithSession} from '../defaults/T09C';
 
 import {fetchTool, sendCommand} from '../../../services/api';
 import {buildPayloadToolInstance, deepMerge} from '../../shared/simpleTools/helpers';
+import withSession from '../../../services/router/withSession';
 
 class T09C extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            tool: defaults(),
+            tool: defaultsWithSession(props.session),
             isDirty: true,
             isLoading: false,
             error: false
@@ -83,7 +84,7 @@ class T09C extends React.Component {
     handleReset = () => {
         this.setState(prevState => {
             return {
-                tool: {...prevState.tool, data: defaults().data},
+                tool: {...prevState.tool, data: defaultsWithSession(this.props.session).data},
                 isLoading: false,
                 isDirty: true
             }
@@ -96,7 +97,7 @@ class T09C extends React.Component {
     render() {
         if (this.state.isLoading) {
             return (
-                <AppContainer navBarItems={navigation} loader/>
+                <AppContainer navbarItems={navigation} loader/>
             );
         }
 
@@ -136,6 +137,7 @@ T09C.propTypes = {
     history: PropTypes.object.isRequired,
     location: PropTypes.object.isRequired,
     match: PropTypes.object.isRequired,
+    session: PropTypes.object.isRequired,
 };
 
-export default withRouter(T09C);
+export default withSession(withRouter(T09C));

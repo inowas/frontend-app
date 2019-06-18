@@ -12,7 +12,7 @@ import {SliderParameter, ToolGrid, ToolMetaData} from '../../shared/simpleTools'
 import SimpleToolsCommand from '../../shared/simpleTools/commands/SimpleToolsCommand';
 
 import image from '../images/T02.png';
-import {defaults} from '../defaults';
+import {defaultsWithSession} from '../defaults';
 
 import {fetchTool, sendCommand} from '../../../services/api';
 import {buildPayloadToolInstance, deepMerge} from '../../shared/simpleTools/helpers';
@@ -28,13 +28,11 @@ class T02 extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            tool: defaults(),
+            tool: defaultsWithSession(props.session),
             isDirty: true,
             isLoading: false,
             error: false
         };
-
-        console.log(props);
     }
 
     componentDidMount() {
@@ -105,7 +103,7 @@ class T02 extends React.Component {
     handleReset = () => {
         this.setState(prevState => {
             return {
-                tool: {...prevState.tool, data: defaults().data},
+                tool: {...prevState.tool, data: defaultsWithSession(this.props.session).data},
                 isLoading: false,
                 isDirty: true
             }
@@ -160,7 +158,6 @@ T02.propTypes = {
     match: PropTypes.object.isRequired,
     session: PropTypes.object.isRequired,
 };
-
 
 
 export default withSession(withRouter(T02));
