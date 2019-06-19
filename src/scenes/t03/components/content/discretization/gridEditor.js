@@ -12,6 +12,7 @@ import ModflowModelCommand from '../../../commands/modflowModelCommand';
 import {ModelDiscretizationMap} from '../../maps';
 
 import {updateModel} from '../../../actions/actions';
+import GridImport from './gridImport';
 
 class GridEditor extends React.Component {
     constructor(props) {
@@ -88,8 +89,8 @@ class GridEditor extends React.Component {
         const gridSize = GridSize.fromObject(this.state.gridSize);
         const gridSizeLocal = GridSize.fromObject(this.state.gridSizeLocal);
         const boundingBox = BoundingBox.fromArray(this.state.boundingBox);
-        const {model} = this.props;
-        const readOnly = model.readOnly;
+        const {readOnly} = this.props.model;
+
         return (
             <Grid>
                 <Grid.Row>
@@ -97,9 +98,14 @@ class GridEditor extends React.Component {
                         <ContentToolBar
                             isDirty={this.state.isDirty}
                             isError={this.state.isError}
+                            visible={!readOnly}
                             saveButton
                             onSave={this.onSave}
-                            importButton={!readOnly}
+                            importButton={
+                                <GridImport
+                                    onChange={this.handleChange}
+                                />
+                            }
                         />
                     </Grid.Column>
                 </Grid.Row>
@@ -174,6 +180,7 @@ class GridEditor extends React.Component {
 
 const mapStateToProps = state => {
     return {
+        readOnly: ModflowModel.fromObject(state.T03.model).readOnly,
         model: ModflowModel.fromObject(state.T03.model)
     };
 };

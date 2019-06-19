@@ -13,6 +13,7 @@ import {updateBoundaries, updateModel} from '../../../actions/actions';
 import {BoundaryFactory} from '../../../../../core/model/modflow/boundaries';
 import ContentToolBar from '../../../../../scenes/shared/ContentToolbar';
 import ModflowModelCommand from '../../../commands/modflowModelCommand';
+import BoundariesImport from './boundaryImport';
 
 const baseUrl = '/tools/T03';
 
@@ -144,23 +145,33 @@ class Boundaries extends React.Component {
                             />
                         </Grid.Column>
                         <Grid.Column width={12}>
-                            <ContentToolBar
-                                onSave={this.onUpdate}
-                                isDirty={isDirty}
-                                isError={error}
-                                saveButton={!readOnly}
-                                importButton={!readOnly}
-                            />
-                            {!isLoading &&
-                            <BoundaryDetails
-                                boundary={boundary}
-                                boundaries={boundaries}
-                                model={model}
-                                soilmodel={soilmodel}
-                                onClick={this.handleBoundaryClick}
-                                onChange={this.onChangeBoundary}
-                                readOnly={readOnly}
-                            />}
+                            <Grid>
+                                <Grid.Row>
+                                    <Grid.Column width={16}>
+                                        <ContentToolBar
+                                            onSave={this.onUpdate}
+                                            isDirty={isDirty}
+                                            isError={error}
+                                            saveButton={!readOnly}
+                                            importButton={this.props.readOnly ||
+                                                <BoundariesImport
+                                                    onChange={this.handleChange}
+                                                />
+                                            }
+                                        />
+                                        {!isLoading &&
+                                        <BoundaryDetails
+                                            boundary={boundary}
+                                            boundaries={boundaries}
+                                            model={model}
+                                            soilmodel={soilmodel}
+                                            onClick={this.handleBoundaryClick}
+                                            onChange={this.onChangeBoundary}
+                                            readOnly={readOnly}
+                                        />}
+                                    </Grid.Column>
+                                </Grid.Row>
+                            </Grid>
                         </Grid.Column>
                     </Grid.Row>
                 </Grid>
@@ -171,6 +182,7 @@ class Boundaries extends React.Component {
 
 const mapStateToProps = state => {
     return {
+        readOnly: ModflowModel.fromObject(state.T03.model).readOnly,
         boundaries: BoundaryCollection.fromObject(state.T03.boundaries),
         model: ModflowModel.fromObject(state.T03.model),
         soilmodel: Soilmodel.fromObject(state.T03.soilmodel)
@@ -183,6 +195,7 @@ const mapDispatchToProps = {
 
 
 Boundaries.propTypes = {
+    readOnly: PropTypes.bool.isRequired,
     history: PropTypes.object.isRequired,
     location: PropTypes.object.isRequired,
     match: PropTypes.object.isRequired,

@@ -133,14 +133,18 @@ class TransportUi extends React.Component {
                                 <ContentToolBar
                                     isDirty={isDirty && selectedSubstance.boundaryConcentrations.length > 0}
                                     isError={isError}
+                                    visible={!readOnly}
                                     save
                                     onSave={this.onSave}
                                 />
                                 <Form style={{marginTop:'1rem'}}>
                                     <Form.Field>
                                         <label>Enabled</label>
-                                        <Checkbox checked={transport.enabled} onChange={this.handleToggleEnabled}
-                                                  disabled={readOnly}/>
+                                        <Checkbox
+                                            checked={transport.enabled}
+                                            onChange={this.handleToggleEnabled}
+                                            disabled={readOnly}
+                                        />
                                     </Form.Field>
                                 </Form>
                                 <SubstanceDetails

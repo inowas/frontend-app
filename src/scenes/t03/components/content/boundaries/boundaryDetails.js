@@ -111,6 +111,7 @@ class BoundaryDetails extends React.Component {
                             name={'name'}
                             value={boundary.name}
                             onChange={this.handleChange}
+                            readOnly={this.props.readOnly}
                         />
 
                         <Form.Select
