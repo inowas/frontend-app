@@ -59,7 +59,7 @@ class LayerDetails extends React.Component {
                         <Grid.Row>
                             <Grid.Column width={10}>
                                 <Form.Input
-                                    disabled={readOnly}
+                                    readOnly={this.props.readOnly}
                                     name='name'
                                     value={layer.name}
                                     label={'Layer name'}
@@ -67,7 +67,7 @@ class LayerDetails extends React.Component {
                                     onChange={this.handleLocalChange}
                                 />
                                 <Form.TextArea
-                                    disabled={readOnly}
+                                    readOnly={this.props.readOnly}
                                     name='description'
                                     value={layer.description}
                                     label={'Layer description'}
@@ -77,7 +77,7 @@ class LayerDetails extends React.Component {
                             </Grid.Column>
                             <Grid.Column width={6}>
                                 <Form.Select
-                                    disabled={readOnly}
+                                    disabled={this.props.readOnly}
                                     label={'Layer type'}
                                     value={layer.laytyp}
                                     name='laytyp'
@@ -98,7 +98,7 @@ class LayerDetails extends React.Component {
                                     ]}
                                 />
                                 <Form.Select
-                                    disabled={readOnly}
+                                    disabled={this.props.readOnly}
                                     label={'Layer average calculation'}
                                     value={layer.layavg}
                                     name='layavg'
@@ -119,7 +119,7 @@ class LayerDetails extends React.Component {
                                     ]}
                                 />
                                 <Form.Select
-                                    disabled={readOnly}
+                                    disabled={this.props.readOnly}
                                     label={'Rewetting capability'}
                                     value={layer.laywet}
                                     name='laywet'
@@ -171,7 +171,7 @@ class LayerDetails extends React.Component {
         });
 
         return (
-            <Form>
+            <Form style={{marginTop:'1rem'}}>
                 <Tab menu={{secondary: true, pointing: true}} activeIndex={this.props.activeIndex || 0}
                      onTabChange={this.props.onChangeTab} panes={panes}/>
             </Form>
