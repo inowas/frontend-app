@@ -91,6 +91,7 @@ class ZonesTable extends React.Component {
                             disabled={isArray}
                             onBlur={this.onChange}
                             onChange={this.onLocalChange(zone.id)}
+                            readOnly={this.props.readOnly}
                             style={styles.input}
                             type={isArray ? 'text' : 'number'}
                             value={isArray ? 'Raster' : zoneParameter.value}
@@ -115,6 +116,7 @@ class ZonesTable extends React.Component {
                         disabled={!zoneParameter.isActive}
                         onBlur={this.onChange}
                         onChange={this.onLocalChange(zone.id)}
+                        readOnly={this.props.readOnly}
                         style={styles.input}
                         type={zoneParameter.isActive ? 'number' : 'text'}
                         value={zoneParameter.isActive ? zoneParameter.value : 'Default'}
@@ -137,7 +139,10 @@ class ZonesTable extends React.Component {
                 <Table.Cell>
                     {zone.priority === 0 &&
                     <Button.Group floated='right' size='small'>
-                        <Button icon primary onClick={this.props.onClickUpload}>
+                        <Button icon primary
+                                onClick={this.props.onClickUpload}
+                                disabled={this.props.readOnly}
+                        >
                             <Popup
                                 trigger={<Icon name="upload"/>}
                                 content='Upload Raster'

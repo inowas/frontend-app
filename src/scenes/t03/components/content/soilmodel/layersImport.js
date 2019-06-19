@@ -5,17 +5,15 @@ import {Button, Dimmer, Grid, Header, Modal, List, Loader, Segment} from 'semant
 import PapaParse from 'papaparse';
 import {Stressperiod, Stressperiods} from '../../../../../core/model/modflow';
 import Proptypes from 'prop-types';
-import StressPeriodsDataTable from './stressperiodsDatatable';
 
-class StressperiodsImport extends React.Component {
+class LayersImport extends React.Component {
 
     constructor(props) {
         super(props);
         this.state = {
             errors: null,
             isLoading: false,
-            showImportModal: false,
-            stressPeriods: null
+            showImportModal: false
         };
 
         this.fileReader = new FileReader();
@@ -89,19 +87,6 @@ class StressperiodsImport extends React.Component {
 
     onClickUpload = () => this.setState({showImportModal: true});
 
-    renderStressPeriods() {
-        const stressPeriods = Stressperiods.fromObject(this.state.stressPeriods);
-
-        return (
-            <StressPeriodsDataTable
-                readOnly
-                onChange={() => {
-                }}
-                stressperiods={stressPeriods}
-            />
-        );
-    };
-
     renderValidationErrors = errors => {
         console.log(errors);
         return (
@@ -121,7 +106,7 @@ class StressperiodsImport extends React.Component {
 
     renderImportModal = () => (
         <Modal open onClose={this.props.onCancel} dimmer={'blurring'}>
-            <Modal.Header>Import Stressperiods</Modal.Header>
+            <Modal.Header>Import Layers</Modal.Header>
             <Modal.Content>
                 <Grid>
                     <Grid.Row columns={2}>
@@ -195,7 +180,7 @@ class StressperiodsImport extends React.Component {
                     primary
                     fluid
                     icon='download'
-                    content='Import Stressperiods'
+                    content='Import Layers'
                     labelPosition='left'
                     onClick={this.onClickUpload}
                 />
@@ -205,9 +190,9 @@ class StressperiodsImport extends React.Component {
     }
 }
 
-StressperiodsImport.prototypes = {
+LayersImport.prototypes = {
     onChange: Proptypes.func.isRequired,
     timeunit: Proptypes.number
 };
 
-export default StressperiodsImport;
+export default LayersImport;

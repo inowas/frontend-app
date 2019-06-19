@@ -71,7 +71,7 @@ class BoundaryList extends React.Component {
 
         return (
             <Grid padded>
-                <Grid.Row>
+                <Grid.Row className='noPaddingTop'>
                     <Form.Group>
                         <Button as='div' labelPosition='left'>
                             <Dropdown

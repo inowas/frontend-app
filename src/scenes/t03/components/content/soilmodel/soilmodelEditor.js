@@ -15,6 +15,7 @@ import {addLayer, cloneLayer, removeLayer, updateSoilmodel, updateLayer} from '.
 import Command from '../../../commands/modflowModelCommand';
 import ContentToolBar from '../../../../shared/ContentToolbar';
 import {sendCommand} from '../../../../../services/api';
+import LayersImport from './layersImport';
 
 const baseUrl = '/tools/T03';
 
@@ -172,6 +173,8 @@ class SoilmodelEditor extends React.Component {
             return <Redirect to={`${baseUrl}/${id}/${property}`}/>;
         }
 
+        const {readOnly} = this.props.model;
+
         return (
             <Segment color={'grey'} loading={isLoading}>
                 <Grid>
@@ -189,7 +192,18 @@ class SoilmodelEditor extends React.Component {
                         <Grid.Column width={12}>
                             {!isLoading && selectedLayer &&
                             <div>
-                                <ContentToolBar isDirty={isDirty} isError={isError} save onSave={this.onSave}/>
+                                <ContentToolBar
+                                    isDirty={isDirty}
+                                    isError={isError}
+                                    visible={!readOnly}
+                                    save
+                                    onSave={this.onSave}
+                                    importButton={this.props.readOnly ||
+                                        <LayersImport
+                                            onChange={this.handleChange}
+                                        />
+                                    }
+                                />
                                 <LayerDetails
                                     activeIndex={this.state.activeTab}
                                     layer={SoilmodelLayer.fromObject(selectedLayer)}
@@ -210,6 +224,7 @@ class SoilmodelEditor extends React.Component {
 
 const mapStateToProps = state => {
     return {
+        readOnly: ModflowModel.fromObject(state.T03.model).readOnly,
         model: ModflowModel.fromObject(state.T03.model),
         soilmodel: state.T03.soilmodel ? Soilmodel.fromObject(state.T03.soilmodel) : null
     };
@@ -222,6 +237,7 @@ const mapDispatchToProps = {
 
 SoilmodelEditor.propTypes = {
     history: PropTypes.object.isRequired,
+    readOnly: PropTypes.bool.isRequired,
     location: PropTypes.object.isRequired,
     match: PropTypes.object.isRequired,
     model: PropTypes.instanceOf(ModflowModel).isRequired,

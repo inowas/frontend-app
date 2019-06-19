@@ -154,6 +154,7 @@ class LayerParameter extends React.Component {
                                             placeholder="cycles="
                                             onChange={this.onChangeSmoothParams}
                                             width={5}
+                                            readOnly={this.props.readOnly}
                                         />
                                         <Form.Input
                                             label='Distance'
@@ -163,6 +164,7 @@ class LayerParameter extends React.Component {
                                             placeholder="distance ="
                                             onChange={this.onChangeSmoothParams}
                                             width={5}
+                                            readOnly={this.props.readOnly}
                                         />
                                         <Form.Button fluid
                                                      icon='tint'
@@ -171,6 +173,7 @@ class LayerParameter extends React.Component {
                                                      content={'Start Smoothing'}
                                                      width={8}
                                                      style={{marginTop: '23px'}}
+                                                     disabled={this.props.readOnly}
                                         />
                                         <Form.Button fluid
                                                      icon='trash'
@@ -179,6 +182,7 @@ class LayerParameter extends React.Component {
                                                      content={'Remove Smoothing'}
                                                      width={8}
                                                      style={{marginTop: '23px'}}
+                                                     disabled={this.props.readOnly}
                                         />
                                     </Form.Group>
                                 </Accordion.Content>
@@ -189,6 +193,7 @@ class LayerParameter extends React.Component {
                         <Grid.Column>
                             <Button icon primary
                                     onClick={this.onAddZone}
+                                    disabled={this.props.readOnly}
                             >
                                 <Icon name="add"/> Add Zone
                             </Button>
