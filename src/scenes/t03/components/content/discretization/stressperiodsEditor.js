@@ -77,7 +77,6 @@ class StressperiodsEditor extends React.Component {
 
         const datesInvalid = moment.utc(this.state.endDateTime)
             .diff(moment.utc(stressperiods.last().startDateTime)) <= 0;
-        const {readOnly} = this.props.stressperiods;
 
         return (
             <Grid>
