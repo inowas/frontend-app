@@ -11,7 +11,7 @@ import Cells from '../../geometry/Cells';
 
 export default class BoundaryFactory {
 
-    static availableTypes = ['chd', 'ghb', 'rch', 'riv', 'wel'];
+    static availableTypes = ['chd', 'ghb', 'hob', 'rch', 'riv', 'wel'];
 
     static fromType = (type) => {
         switch (type) {

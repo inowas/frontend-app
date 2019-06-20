@@ -85,7 +85,7 @@ class T03 extends React.Component {
         )
     };
 
-    componentWillReceiveProps(nextProps, nextContext) {
+    componentWillReceiveProps(nextProps) {
         const {id} = nextProps.match.params;
         if (!this.props.model || this.props.model.id !== id) {
             if (!this.state.isLoading) {
@@ -245,7 +245,12 @@ class T03 extends React.Component {
                 if (BoundaryFactory.availableTypes.indexOf(type) > -1) {
                     return (<Content.CreateBoundary/>);
                 }
-                return (<Content.Boundaries/>);
+                return (<Content.Boundaries types={['chd', 'ghb', 'rch', 'riv', 'wel']}/>);
+            case 'hobs':
+                if (type === 'hob') {
+                    return (<Content.CreateBoundary/>);
+                }
+                return (<Content.Boundaries types={['hob']}/>);
             case 'transport':
                 return (<Content.Transport/>);
             case 'observations':

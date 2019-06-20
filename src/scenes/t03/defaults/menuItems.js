@@ -21,9 +21,14 @@ const menuItems = [
                 icon: <Icon name="map marker alternate"/>
             },
             {
+                name: 'Head Observations',
+                property: 'hobs',
+                icon: <Icon name="eye"/>
+            },
+            {
                 name: 'Transport',
                 property: 'transport',
-                icon: <Icon name="map marker alternate"/>
+                icon: <Icon name="cube"/>
             }]
     }, {
         header: 'Calculation',

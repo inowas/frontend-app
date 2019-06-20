@@ -98,7 +98,9 @@ class CreateBoundary extends React.Component {
                 <Grid padded>
                     <Grid.Row>
                         <Grid.Column width={4}>
-                            <Header as={'h2'}>Create Boundary</Header>
+                            <Header as={'h2'}>
+                                {type === 'hob' ? 'Create HOB' : 'Create Boundary'}
+                            </Header>
                             <Form>
                                 <Form.Input
                                     label={'Name'}

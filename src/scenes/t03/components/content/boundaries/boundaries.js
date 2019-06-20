@@ -1,10 +1,8 @@
 import React from 'react';
 import {connect} from 'react-redux';
 import PropTypes from 'prop-types';
-import {Redirect, withRouter} from 'react-router-dom';
-
+import {withRouter} from 'react-router-dom';
 import {fetchUrl, sendCommand} from '../../../../../services/api';
-
 import {Grid, Segment} from 'semantic-ui-react';
 import BoundaryList from './boundaryList';
 import BoundaryDetails from './boundaryDetails';
@@ -21,7 +19,7 @@ class Boundaries extends React.Component {
         super(props);
         this.state = {
             selectedBoundary: null,
-            isLoading: false,
+            isLoading: true,
             isDirty: false,
             error: false,
             state: null
@@ -31,19 +29,35 @@ class Boundaries extends React.Component {
     componentDidMount() {
         const {id, pid} = this.props.match.params;
         if (pid) {
-            this.fetchBoundary(id, pid);
+            return this.fetchBoundary(id, pid);
         }
     }
 
-    componentWillReceiveProps(nextProps, nextContext) {
-        const {id, pid} = nextProps.match.params;
+    componentWillReceiveProps(nextProps) {
+        const {id, pid, property} = nextProps.match.params;
+
+        if (!pid && nextProps.boundaries.length > 0) {
+            const boundaries = nextProps.types ? new BoundaryCollection() : nextProps.boundaries;
+            if (nextProps.types) {
+                boundaries.items = nextProps.boundaries.all.filter(b => nextProps.types.includes(b.type));
+            }
+
+            const bid = boundaries.first.id;
+            return this.props.history.push(`${baseUrl}/${id}/${property}/!/${bid}`);
+        }
+
         if ((this.props.match.params.id !== id) || (this.props.match.params.pid !== pid)) {
-            this.fetchBoundary(id, pid);
+            return this.setState({
+                isLoading: true
+            }, () => this.fetchBoundary(id, pid));
         }
     }
 
     fetchBoundary = (modelId, boundaryId) => fetchUrl(`modflowmodels/${modelId}/boundaries/${boundaryId}`,
-        (boundary) => this.setState({selectedBoundary: boundary})
+        (boundary) => this.setState({
+            isLoading: false,
+            selectedBoundary: boundary
+        })
     );
 
     onChangeBoundary = boundary => {
@@ -105,8 +119,9 @@ class Boundaries extends React.Component {
         const boundary = BoundaryFactory.fromObject(this.state.selectedBoundary);
         return sendCommand(ModflowModelCommand.updateBoundary(model.id, boundary),
             () => {
-                this.setState({isDirty: false});
-                this.fetchBoundary(model.id, boundary.id);
+                this.setState({
+                    isDirty: false
+                });
 
                 const boundaries = this.props.boundaries;
                 boundaries.update(boundary);
@@ -117,18 +132,18 @@ class Boundaries extends React.Component {
     };
 
     render() {
-        const {boundaries, model, soilmodel} = this.props;
+        const {model, soilmodel, types} = this.props;
         const readOnly = model.readOnly;
         const {error, isDirty, isLoading, selectedBoundary} = this.state;
-        const {id, pid, property} = this.props.match.params;
+        const {pid} = this.props.match.params;
 
-        // If no boundary is selected, redirect to the first.
-        if (!pid && boundaries.length > 0) {
-            const bid = boundaries.first.id;
-            return <Redirect to={`${baseUrl}/${id}/${property}/${'!'}/${bid}`}/>
+        const boundaries = types ? new BoundaryCollection() : this.props.boundaries;
+        if (types) {
+            boundaries.items = this.props.boundaries.all.filter(b => types.includes(b.type));
         }
 
         const boundary = BoundaryFactory.fromObject(selectedBoundary);
+
         return (
             <Segment color={'grey'} loading={isLoading}>
                 <Grid>
@@ -141,6 +156,7 @@ class Boundaries extends React.Component {
                                 onClone={this.onClone}
                                 onRemove={this.onRemove}
                                 selected={pid}
+                                types={types}
                             />
                         </Grid.Column>
                         <Grid.Column width={12}>
@@ -159,7 +175,8 @@ class Boundaries extends React.Component {
                                 onClick={this.handleBoundaryClick}
                                 onChange={this.onChangeBoundary}
                                 readOnly={readOnly}
-                            />}
+                            />
+                            }
                         </Grid.Column>
                     </Grid.Row>
                 </Grid>
@@ -180,7 +197,6 @@ const mapDispatchToProps = {
     updateBoundaries, updateModel
 };
 
-
 Boundaries.propTypes = {
     history: PropTypes.object.isRequired,
     location: PropTypes.object.isRequired,
@@ -188,6 +204,7 @@ Boundaries.propTypes = {
     boundaries: PropTypes.instanceOf(BoundaryCollection).isRequired,
     model: PropTypes.instanceOf(ModflowModel).isRequired,
     soilmodel: PropTypes.instanceOf(Soilmodel).isRequired,
+    types: PropTypes.arrayOf(String),
     updateBoundaries: PropTypes.func.isRequired,
     updateModel: PropTypes.func.isRequired
 };
