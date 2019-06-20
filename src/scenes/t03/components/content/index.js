@@ -2,7 +2,6 @@ import CreateBoundary from './boundaries/createBoundary';
 import Boundaries from './boundaries/boundaries';
 import Discretization from './discretization/discretization';
 import Observations from './observations';
-import HeadObservations from './boundaries/headObservations';
 import Modflow from './modflow/flow';
 import Optimization from './optimization/optimization.js';
 import {BudgetResults, FlowResults, TransportResults} from './results';
@@ -18,7 +17,6 @@ export {
     CreateBoundary,
     Discretization,
     FlowResults,
-    HeadObservations,
     Modflow,
     Mt3d,
     Observations,
