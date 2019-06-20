@@ -18,7 +18,8 @@ class BoundaryDetails extends React.Component {
         this.state = {
             showBoundaryEditor: false,
             showObservationPointEditor: false,
-            observationPointId: null
+            observationPointId: props.boundary instanceof LineBoundary ?
+                props.boundary.observationPoints[0].id : null
         };
     }
 
@@ -90,7 +91,7 @@ class BoundaryDetails extends React.Component {
         const {observationPointId} = this.state;
 
         if (!boundary || !geometry) {
-            return <NoContent message={'No boundaries.'}/>;
+            return <NoContent message={'No objects.'}/>;
         }
 
         const multipleLayers = ['chd', 'ghb'].includes(boundary.type);
@@ -239,8 +240,6 @@ BoundaryDetails.propTypes = {
     onChange: PropTypes.func.isRequired,
     onClick: PropTypes.func.isRequired,
     readOnly: PropTypes.bool.isRequired,
-
-
 };
 
 export default BoundaryDetails;

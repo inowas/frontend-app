@@ -15,7 +15,7 @@ class ContentToolBar extends React.Component {
         }
     };
 
-    componentWillReceiveProps(nextProps, nextContext) {
+    componentWillReceiveProps(nextProps) {
 
         const isValid = typeof this.props.isValid === 'boolean' ? this.props.isValid : true;
         const hasBeenSaved = this.props.isDirty === true && nextProps.isDirty === false;
@@ -160,7 +160,7 @@ ContentToolBar.propTypes = {
     visible: PropTypes.bool,
     backButton: PropTypes.bool,
     onBack: PropTypes.func,
-    importButton: PropTypes.bool,
+    importButton: PropTypes.oneOfType([PropTypes.bool, PropTypes.node]),
     saveButton: PropTypes.bool,
     onSave: PropTypes.func,
     dropdown: PropTypes.object,
