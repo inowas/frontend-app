@@ -1,11 +1,21 @@
 import {LOGIN, LOGIN_ERROR, LOGOUT, UNAUTHORIZED} from '../actions/actions';
 
-const initialState = () => ({
+interface ISessionReducer {
+    token: string | null;
+    error: boolean;
+}
+
+interface ISessionReducerAction {
+    type: string;
+    payload?: any;
+}
+
+const initialState = (): ISessionReducer => ({
     token: localStorage.getItem('token'),
     error: false
 });
 
-export const session = (state = initialState(), action) => {
+export const session = (state = initialState(), action: ISessionReducerAction) => {
     switch (action.type) {
         case LOGIN: {
             localStorage.setItem('token', action.payload.token);
@@ -35,5 +45,5 @@ export const session = (state = initialState(), action) => {
     }
 };
 
-export const hasSessionKey = state => !!state.token;
-export const getApiKey = state => state.token;
+export const hasSessionKey = (state: ISessionReducer) => !!state.token;
+export const getApiKey = (state: ISessionReducer) => state.token;

@@ -16,7 +16,7 @@ class SubMenuWithContent extends React.Component {
         const {selected} = this.state;
         return (
             <Segment color={'grey'}>
-                <Grid padded>
+                <Grid>
                     <Grid.Row>
                         <Grid.Column width={3}>
                             <Menu fluid vertical tabular>

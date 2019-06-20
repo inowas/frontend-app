@@ -153,8 +153,8 @@ class StressPeriodsDataTable extends React.Component {
 }
 
 StressPeriodsDataTable.prototypes = {
-    readOnly: Proptypes.bool,
     onChange: Proptypes.func.isRequired,
+    readOnly: Proptypes.bool.isRequired,
     stressperiods: Proptypes.instanceOf(Stressperiods).isRequired
 };
 

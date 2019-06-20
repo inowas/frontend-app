@@ -91,6 +91,47 @@ deploy:training:
   only:
     - master
 
+build:smart-control:
+  image: node:10
+  stage: build
+
+  script:
+    - yarn install
+    - REACT_APP_API_URL=https://api.dss.smart-control.inowas.com REACT_APP_USERS_CAN_REGISTER=0 yarn build
+    - VERSION=$(git describe --tags --always --dirty=+) && DATE=$(date +%Y-%m-%dT%H:%M:%S) && sed -i "s/@@__VERSION__@@/${VERSION}/g;s/@@__BUILT__@@/${DATE}/g" ./build/index.html
+
+  artifacts:
+    paths:
+      - build/
+
+  only:
+    - master
+
+deploy:smart-control:
+  stage: deploy
+  dependencies:
+    - build:smart-control
+
+  before_script:
+    - 'which ssh-agent || ( apt-get update -y && apt-get install openssh-client -y )'
+    - mkdir -p ~/.ssh
+    - eval $(ssh-agent -s)
+    - '[[ -f /.dockerenv ]] && echo -e "Host *\n\tStrictHostKeyChecking no\n\n" > ~/.ssh/config'
+    - ssh-add <(echo "$STAGING_PRIVATE_KEY")
+    - apt-get install rsync -y
+  script:
+    - ssh -p22 $SSH_CREDENTIALS_SMART_CONTROL_SERVER "mkdir -p $SMART_CONTROL_PATH.tmp/"
+    - rsync -rav -e ssh ./build/ $SSH_CREDENTIALS_SMART_CONTROL_SERVER:/$SMART_CONTROL_PATH.tmp/
+    - ssh -p22 $SSH_CREDENTIALS_SMART_CONTROL_SERVER "mv $SMART_CONTROL_PATH $SMART_CONTROL_PATH.old"
+    - ssh -p22 $SSH_CREDENTIALS_SMART_CONTROL_SERVER "mv $SMART_CONTROL_PATH.tmp $SMART_CONTROL_PATH"
+    - ssh -p22 $SSH_CREDENTIALS_SMART_CONTROL_SERVER "rm -rf $SMART_CONTROL_PATH.old"
+  environment:
+    name: smart-control
+    url: https://dss.smart-control.inowas.com
+  only:
+    - master
+
+
 build:prod:
   image: node:10
   stage: build

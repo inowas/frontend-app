@@ -91,7 +91,7 @@ class T09 extends React.Component {
         ));
 
         return (
-            <AppContainer navBarItems={navigation}>
+            <AppContainer navbarItems={navigation}>
                 <Grid columns={2} stretched>
                     {columns}
                 </Grid>

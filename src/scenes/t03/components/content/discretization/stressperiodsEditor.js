@@ -43,7 +43,7 @@ class StressperiodsEditor extends React.Component {
     };
 
     handleDateTimeChange = (e) => {
-        const  {name, value} = e.target;
+        const {name, value} = e.target;
         if (e.type === 'change') {
             this.setState({[name]: value})
         }
@@ -85,8 +85,15 @@ class StressperiodsEditor extends React.Component {
                         <ContentToolBar
                             isDirty={this.state.isDirty}
                             isError={this.state.isError}
+                            visible={!this.props.readOnly}
                             saveButton
                             onSave={this.onSave}
+                            importButton={
+                                <StressperiodsImport
+                                    onChange={this.handleChange}
+                                    timeunit={this.props.timeunit}
+                                />
+                            }
                         />
                     </Grid.Column>
                 </Grid.Row>
@@ -100,6 +107,7 @@ class StressperiodsEditor extends React.Component {
                                 value={this.state.startDateTime}
                                 onBlur={this.handleDateTimeChange}
                                 onChange={this.handleDateTimeChange}
+                                readOnly={this.props.readOnly}
                             />
                             <Form.Input
                                 error={datesInvalid}
@@ -109,12 +117,14 @@ class StressperiodsEditor extends React.Component {
                                 value={this.state.endDateTime}
                                 onBlur={this.handleDateTimeChange}
                                 onChange={this.handleDateTimeChange}
+                                readOnly={this.props.readOnly}
                             />
                             <Form.Select
                                 label='Time unit'
                                 options={[{key: 4, text: 'days', value: 4}]}
                                 value={4}
                                 width={16}
+                                disabled={this.props.readOnly}
                             />
                         </Form>
                         <Message color={'blue'}>
@@ -127,10 +137,10 @@ class StressperiodsEditor extends React.Component {
                         }
                     </Grid.Column>
                     <Grid.Column width={11}>
-                        <StressPeriodsDataTable stressperiods={stressperiods} onChange={this.handleChange}/>
-                        <StressperiodsImport
+                        <StressPeriodsDataTable
+                            readOnly={this.props.readOnly}
+                            stressperiods={stressperiods}
                             onChange={this.handleChange}
-                            timeunit={this.props.timeunit}
                         />
                     </Grid.Column>
                 </Grid.Row>
@@ -139,22 +149,22 @@ class StressperiodsEditor extends React.Component {
     }
 }
 
-const mapStateToProps = state => {
-    return {
-        id: ModflowModel.fromObject(state.T03.model).id,
-        stressperiods: ModflowModel.fromObject(state.T03.model).stressperiods,
-        timeunit: ModflowModel.fromObject(state.T03.model).timeUnit
-    };
-};
+const mapStateToProps = state => ({
+    id: ModflowModel.fromObject(state.T03.model).id,
+    readOnly: ModflowModel.fromObject(state.T03.model).readOnly,
+    stressperiods: ModflowModel.fromObject(state.T03.model).stressperiods,
+    timeunit: ModflowModel.fromObject(state.T03.model).timeUnit
+});
 
 const mapDispatchToProps = {
     onChange: updateStressperiods
 };
 
 StressperiodsEditor.propTypes = {
+    readOnly: PropTypes.bool.isRequired,
     stressperiods: PropTypes.instanceOf(Stressperiods).isRequired,
-    timeunit: PropTypes.number,
-    onChange: PropTypes.func
+    timeunit: PropTypes.number.isRequired,
+    onChange: PropTypes.func.isRequired
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(StressperiodsEditor);

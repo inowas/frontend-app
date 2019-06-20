@@ -98,7 +98,7 @@ class BoundaryDetails extends React.Component {
 
         return (
             <div>
-                <Form>
+                <Form style={{marginTop:'1rem'}}>
                     <Form.Group widths='equal'>
                         <Form.Input
                             value={boundary.type.toUpperCase()}
@@ -112,6 +112,7 @@ class BoundaryDetails extends React.Component {
                             name={'name'}
                             value={boundary.name}
                             onChange={this.handleChange}
+                            readOnly={this.props.readOnly}
                         />
 
                         <Form.Select

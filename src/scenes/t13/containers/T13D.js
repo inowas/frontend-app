@@ -11,17 +11,18 @@ import {navigation} from './T13';
 import SimpleToolsCommand from '../../shared/simpleTools/commands/SimpleToolsCommand';
 
 
-import {defaults} from '../defaults/T13D';
+import {defaultsWithSession} from '../defaults/T13D';
 
 import {fetchTool, sendCommand} from '../../../services/api';
 import {buildPayloadToolInstance, deepMerge} from '../../shared/simpleTools/helpers';
+import withSession from '../../../services/router/withSession';
 
 
 class T13D extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            tool: defaults(),
+            tool: defaultsWithSession(props.session),
             isDirty: true,
             isLoading: false,
             error: false
@@ -83,7 +84,7 @@ class T13D extends React.Component {
     handleReset = () => {
         this.setState(prevState => {
             return {
-                tool: {...prevState.tool, data: defaults().data},
+                tool: {...prevState.tool, data: defaultsWithSession(this.props.session).data},
                 isLoading: false,
                 isDirty: true
             }
@@ -96,7 +97,7 @@ class T13D extends React.Component {
         const {tool, isLoading} = this.state;
         if (isLoading) {
             return (
-                <AppContainer navBarItems={navigation} loader/>
+                <AppContainer navbarItems={navigation} loader/>
             );
         }
 
@@ -128,6 +129,7 @@ T13D.propTypes = {
     history: PropTypes.object.isRequired,
     location: PropTypes.object.isRequired,
     match: PropTypes.object.isRequired,
+    session: PropTypes.object.isRequired,
 };
 
-export default withRouter(T13D);
+export default withSession(withRouter(T13D));
