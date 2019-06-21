@@ -110,6 +110,13 @@ export const documentation = {
     nacthfb: <div>The number of active horizontal-flow barrier parameters (default is 0).</div>,
     no_print: <div>When True or 1, a list of horizontal flow barriers will not be written to the Listing File (default is False)</div>,
 
+    // HOB
+
+    iuhobsv: <div>Unit number where output is saved. If iuhobsv is None, a unit number will be assigned (default is None).</div>,
+    hobdry: <div>Value of the simulated equivalent written to the observation output file when the observation is omitted because a cell is dry (default is 0).</div>,
+    tomulth: <div>Time step multiplier for head observations. The product of tomulth and toffset must produce a time value in units consistent with other model input. tomulth can be dimensionless or can be used to convert the units of toffset to the time unit used in the simulation (default is 1).</div>,
+    obs_data: <div>A single HeadObservation instance or a list of HeadObservation instances containing all of the data for each observation. If obs_data is None a default HeadObservation with an observation in layer, row, column (0, 0, 0) and a head value of 0 at totim 0 will be created (default is None).</div>,
+
     // OC
 
     ihedfm: <div>is a code for the format in which heads will be printed. (default is 0).</div>,

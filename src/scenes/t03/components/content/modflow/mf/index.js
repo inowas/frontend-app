@@ -5,6 +5,7 @@ import De4PackageProperties from './de4PackageProperties';
 import DisPackageProperties from './disPackageProperties';
 import FlowPackageProperties from './flowPackageProperties';
 import GhbPackageProperties from './ghbPackageProperties';
+import HobPackageProperties from './hobPackageProperties';
 import MfPackageProperties from './mfPackageProperties';
 import OcPackageProperties from './ocPackageProperties';
 import PcgPackageProperties from './pcgPackageProperties';
@@ -21,6 +22,7 @@ export {
     DisPackageProperties,
     FlowPackageProperties,
     GhbPackageProperties,
+    HobPackageProperties,
     MfPackageProperties,
     OcPackageProperties,
     PcgPackageProperties,
