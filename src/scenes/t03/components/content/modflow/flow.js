@@ -19,6 +19,7 @@ import {
     DisPackageProperties,
     FlowPackageProperties,
     GhbPackageProperties,
+    HobPackageProperties,
     MfPackageProperties,
     OcPackageProperties,
     RchPackageProperties,
@@ -48,24 +49,38 @@ class Flow extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            mf: props.packages.mf.toObject(),
+            mf: props.packages.mf ? props.packages.mf.toObject() : null,
             isError: false,
             isDirty: false,
-            isLoading: false
+            isLoading: true
         }
     }
 
     componentDidMount() {
-        const {boundaries, model, soilmodel} = this.props;
-        const packages = FlopyPackages.fromObject(this.props.packages.toObject());
-        packages.mf.recalculate(model, soilmodel, boundaries);
-        this.props.updatePackages(packages);
+        this.recalculate(this.props);
     }
 
-    componentWillReceiveProps(nextProps, nextContext) {
-        this.setState({
+    componentWillReceiveProps(nextProps) {
+        if (!nextProps.packages) {
+            return this.recalculate(nextProps);
+        }
+        return this.setState({
             mf: nextProps.packages.mf.toObject()
         })
+    }
+
+    recalculate(props) {
+        const {boundaries, model, soilmodel} = props;
+
+        if (!boundaries || !model || !soilmodel) {
+            return;
+        }
+
+        const packages = FlopyPackages.fromObject(this.props.packages.toObject());
+        packages.mf.recalculate(model, soilmodel, boundaries);
+        this.setState({
+            isLoading: false
+        }, this.props.updatePackages(packages));
     }
 
     handleSave = () => {
@@ -173,6 +188,15 @@ class Flow extends React.Component {
                         readonly={readOnly}
                     />
                 );
+            case 'hob':
+                return (
+                    <HobPackageProperties
+                        mfPackage={mf.getPackage(type)}
+                        mfPackages={mf}
+                        onChange={this.handleChangePackage}
+                        readonly={readOnly}
+                    />
+                );
             case 'mf':
                 return (
                     <MfPackageProperties
@@ -264,8 +288,7 @@ class Flow extends React.Component {
 
     render() {
         const {isDirty, isError, isLoading, mf} = this.state;
-
-        if (!mf) {
+        if (!mf || isLoading) {
             return null;
         }
 
@@ -295,10 +318,10 @@ class Flow extends React.Component {
 }
 
 const mapStateToProps = (state) => ({
-    boundaries: BoundaryCollection.fromObject(state.T03.boundaries),
-    model: ModflowModel.fromObject(state.T03.model),
-    packages: FlopyPackages.fromObject(state.T03.packages),
-    soilmodel: Soilmodel.fromObject(state.T03.soilmodel),
+    boundaries: state.T03.boundaries ? BoundaryCollection.fromObject(state.T03.boundaries) : null,
+    model: state.T03.model ? ModflowModel.fromObject(state.T03.model) : null,
+    packages: state.T03.packages ? FlopyPackages.fromObject(state.T03.packages) : null,
+    soilmodel: state.T03.soilmodel ? Soilmodel.fromObject(state.T03.soilmodel) : null,
 });
 
 const mapDispatchToProps = {updatePackages};

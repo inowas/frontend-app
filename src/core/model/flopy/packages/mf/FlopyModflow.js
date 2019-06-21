@@ -190,6 +190,16 @@ export default class FlopyModflow {
             this.setPackage(mfGhb);
         }
 
+        // HOB
+        const mfHob = this.hasPackage('hob') ? this.getPackage('hob') : FlopyModflowMfhob.create();
+        this.removePackageIfExists(mfHob);
+
+        const obsData = FlopyModflowMfhob.calculateObsData(boundaries.all, nper);
+        if (obsData) {
+            mfHob.obs_data = obsData;
+            this.setPackage(mfHob);
+        }
+
         // RCHs
         const mfRch = this.hasPackage('rch') ? this.getPackage('rch') : FlopyModflowMfrch.create();
         this.removePackageIfExists(mfRch);
@@ -338,6 +348,7 @@ export default class FlopyModflow {
     }
 
     setPackage(p) {
+
         if (p instanceof FlopyModflowFlowPackage) {
             this.availableFlowPackages.forEach(fp => {
                 this.removePackageByType(fp.type);
@@ -345,7 +356,6 @@ export default class FlopyModflow {
         }
 
         if (p instanceof FlopyModflowSolverPackage) {
-
             for (const type in this.packages) {
                 if (!this.packages.hasOwnProperty(type)) {
                     continue;
