@@ -8,39 +8,22 @@ export default class FlopyModflowMfhob extends FlopyModflowBoundary {
     _tomulth = 1;
     _obs_data = null;
 
-    static calculateObsData = (boundaries, nper) => {
+    static calculateObsData = (boundaries) => {
         const wells = boundaries.filter(well => (well instanceof HeadObservationWell));
         if (wells.length === 0) {
             return null;
         }
 
-        let obs_data = [];
-        for (let per = 0; per < nper; per++) {
-            obs_data[per] = [];
-        }
-
-        obs_data.forEach((sp, idx) => {
-            wells.forEach(well => {
-                const layer = well.layers[0];
-                const cell = well.cells[0];
-                const data = [layer, cell[1], cell[0]].concat(well.spValues[idx]);
-
-                let push = true;
-                obs_data[idx] = obs_data[idx].map(spd => {
-                    if (spd[0] === data[0] && spd[1] === data[1] && spd[2] === data[2]) {
-                        push = false;
-                        spd[3] = spd[3] + data[3];
-                    }
-                    return spd;
-                });
-
-                if (push) {
-                    obs_data[idx].push(data);
-                }
-            })
+        return wells.map(well => {
+            const layer = well.layers[0];
+            const cell = well.cells[0];
+            return {
+                layer,
+                row: cell[1],
+                column: cell[0],
+                time_series_data: [].concat(...well.spValues)
+            };
         });
-
-        return obs_data;
     };
 
     get iuhobsv() {
