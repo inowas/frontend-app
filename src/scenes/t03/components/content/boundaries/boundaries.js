@@ -29,6 +29,13 @@ class Boundaries extends React.Component {
 
     componentDidMount() {
         const {id, pid} = this.props.match.params;
+
+        if (this.props.boundaries.length === 0) {
+            return this.setState({
+                isLoading: false
+            })
+        }
+
         if (!pid && this.props.boundaries.length > 0) {
             return this.redirectToFirstBoundary(this.props);
         }
@@ -54,19 +61,13 @@ class Boundaries extends React.Component {
 
     redirectToFirstBoundary = (props) => {
         const {id, property} = props.match.params;
-        const boundaries = props.types ? new BoundaryCollection() : props.boundaries;
-        if (props.types) {
-            boundaries.items = props.boundaries.all.filter(b => props.types.includes(b.type));
-        }
 
-        if (boundaries.length > 0) {
-            const bid = boundaries.first.id;
+        if (props.boundaries.length > 0) {
+            const bid = props.boundaries.first.id;
             return this.props.history.push(`${baseUrl}/${id}/${property}/!/${bid}`);
         }
 
-        return this.setState({
-            selectedBoundary: null
-        });
+        return this.props.history.push(`${baseUrl}/${id}/${property}`);
     };
 
     fetchBoundary = (modelId, boundaryId) => fetchUrl(`modflowmodels/${modelId}/boundaries/${boundaryId}`,
@@ -124,7 +125,7 @@ class Boundaries extends React.Component {
                 const boundaries = this.props.boundaries;
                 boundaries.removeById(boundaryId);
                 this.props.updateBoundaries(boundaries);
-                this.handleBoundaryClick(boundaries.first.id);
+                this.redirectToFirstBoundary(this.props);
             },
             () => this.setState({error: true})
         )
@@ -211,12 +212,19 @@ class Boundaries extends React.Component {
     }
 }
 
-const mapStateToProps = state => ({
-    readOnly: ModflowModel.fromObject(state.T03.model).readOnly,
-    boundaries: BoundaryCollection.fromObject(state.T03.boundaries),
-    model: ModflowModel.fromObject(state.T03.model),
-    soilmodel: Soilmodel.fromObject(state.T03.soilmodel)
-});
+const mapStateToProps = (state, props) => {
+    const boundaries = BoundaryCollection.fromObject(state.T03.boundaries);
+    if (props.types && boundaries.length > 0) {
+        boundaries.items = boundaries.all.filter(b => props.types.includes(b.type));
+    }
+
+    return ({
+        readOnly: ModflowModel.fromObject(state.T03.model).readOnly,
+        boundaries: boundaries,
+        model: ModflowModel.fromObject(state.T03.model),
+        soilmodel: Soilmodel.fromObject(state.T03.soilmodel)
+    })
+};
 
 const mapDispatchToProps = {
     updateBoundaries, updateModel
