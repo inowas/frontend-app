@@ -28,53 +28,21 @@ class Boundaries extends React.Component {
     }
 
     componentDidMount() {
-        const {id, pid, property} = this.props.match.params;
+        const {id, pid} = this.props.match.params;
+        if (!pid && this.props.boundaries.length > 0) {
+            return this.redirectToFirstBoundary(this.props);
+        }
+
         if (pid) {
             return this.fetchBoundary(id, pid);
-        }
-
-        const {types} = this.props;
-        const boundaries = types ? new BoundaryCollection() : this.props.boundaries;
-        if (types) {
-            boundaries.items = this.props.boundaries.all.filter(b => types.includes(b.type));
-        }
-
-        if (!pid) {
-            if (boundaries.length > 0) {
-                const bid = boundaries.first.id;
-                return this.props.history.push(`${baseUrl}/${id}/${property}/!/${bid}`);
-            }
-
-            return this.setState({
-                isLoading: false
-            })
-        }
-
-        if ((this.props.match.params.id !== id) || (this.props.match.params.pid !== pid)) {
-            return this.setState({
-                isLoading: true
-            }, () => this.fetchBoundary(id, pid));
         }
     }
 
     componentWillReceiveProps(nextProps) {
-        const {id, pid, property} = nextProps.match.params;
-        const {types} = nextProps;
+        const {id, pid} = nextProps.match.params;
 
-        const boundaries = types ? new BoundaryCollection() : this.props.boundaries;
-        if (types) {
-            boundaries.items = this.props.boundaries.all.filter(b => types.includes(b.type));
-        }
-
-        if (!pid) {
-            if (boundaries.length > 0) {
-                const bid = boundaries.first.id;
-                return this.props.history.push(`${baseUrl}/${id}/${property}/!/${bid}`);
-            }
-
-            return this.setState({
-                isLoading: false
-            })
+        if (!pid && nextProps.boundaries.length > 0) {
+            return this.redirectToFirstBoundary(nextProps);
         }
 
         if ((this.props.match.params.id !== id) || (this.props.match.params.pid !== pid)) {
@@ -83,6 +51,23 @@ class Boundaries extends React.Component {
             }, () => this.fetchBoundary(id, pid));
         }
     }
+
+    redirectToFirstBoundary = (props) => {
+        const {id, property} = props.match.params;
+        const boundaries = props.types ? new BoundaryCollection() : props.boundaries;
+        if (props.types) {
+            boundaries.items = props.boundaries.all.filter(b => props.types.includes(b.type));
+        }
+
+        if (boundaries.length > 0) {
+            const bid = boundaries.first.id;
+            return this.props.history.push(`${baseUrl}/${id}/${property}/!/${bid}`);
+        }
+
+        return this.setState({
+            selectedBoundary: null
+        });
+    };
 
     fetchBoundary = (modelId, boundaryId) => fetchUrl(`modflowmodels/${modelId}/boundaries/${boundaryId}`,
         (boundary) => this.setState({

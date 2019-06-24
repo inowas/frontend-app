@@ -1,13 +1,16 @@
 import React from 'react';
 import {connect} from 'react-redux';
 import {Bar, BarChart, CartesianGrid, Cell, Tooltip, XAxis, YAxis} from 'recharts';
-import {Checkbox, CheckboxProps, Grid, Header, Icon, List, Segment} from 'semantic-ui-react';
+import {Button, Checkbox, CheckboxProps, Grid, Header, Icon, List, Segment} from 'semantic-ui-react';
 import {Calculation, ModflowModel} from '../../../../../core/model/modflow';
 import {fetchCalculationResultsBudget} from '../../../../../services/api';
 import ResultsSelectorBudget from '../../../../shared/complexTools/ResultsSelectorBudget';
+import {exportChartData, exportChartImage} from '../../../../shared/simpleTools/helpers';
 import * as colors from '../../../defaults/colorScales';
 
 type budgetType = 'cumulative' | 'incremental';
+
+type budgetData = Array<{ name: string, value: number, active: boolean, position: number }> | null;
 
 type IBudgetData = {[key in budgetType]: { [key: string]: number }};
 
@@ -17,7 +20,7 @@ interface IBudgetResultsProps {
 }
 
 interface IBudgetResultsState {
-    data: Array<{ name: string, value: number, active: boolean, position: number }> | null;
+    data: budgetData;
     fetching: boolean;
     isError: string | null;
     isLoading: boolean;
@@ -27,6 +30,9 @@ interface IBudgetResultsState {
 }
 
 class BudgetResults extends React.Component<IBudgetResultsProps, IBudgetResultsState> {
+
+    private chartRef = React.createRef<BarChart>();
+
     constructor(props: IBudgetResultsProps) {
         super(props);
         let selectedTotim = 0;
@@ -118,6 +124,14 @@ class BudgetResults extends React.Component<IBudgetResultsProps, IBudgetResultsS
         const {model} = this.props;
         const {data, selectedTotim, selectedType, totalTimes} = this.state;
 
+        let dataFiltered: budgetData = [];
+        let percentDiscrepancy: budgetData = [];
+
+        if (data) {
+            dataFiltered = data.filter((c) => c.active && c.name !== 'PERCENT_DISCREPANCY');
+            percentDiscrepancy = data.filter((c) => c.name === 'PERCENT_DISCREPANCY');
+        }
+
         return (
             <Segment color={'grey'} loading={this.state.isLoading}>
                 <Grid padded={true}>
@@ -141,11 +155,12 @@ class BudgetResults extends React.Component<IBudgetResultsProps, IBudgetResultsS
                                     >
                                         <Segment loading={this.state.fetching} color={'blue'}>
                                             <Header textAlign={'center'} as={'h4'}>Budget overview</Header>
-                                            {data &&
+                                            {data && dataFiltered &&
                                             <BarChart
                                                 width={500}
                                                 height={250}
-                                                data={data.filter((c) => c.active)}
+                                                data={dataFiltered}
+                                                ref={this.chartRef}
                                             >
                                                 <CartesianGrid strokeDasharray="3 3"/>
                                                 <XAxis
@@ -153,10 +168,12 @@ class BudgetResults extends React.Component<IBudgetResultsProps, IBudgetResultsS
                                                     hide={true}
                                                     interval={0}
                                                 />
-                                                <YAxis/>
+                                                <YAxis
+                                                    tickFormatter={this.yTickFormatter}
+                                                />
                                                 <Tooltip/>
                                                 <Bar dataKey="value" fill="#8884d8">
-                                                    {data.filter((c) => c.active).map((c, index) => {
+                                                    {dataFiltered.map((c, index) => {
                                                         const color = c.position < colors.misc.length
                                                             ? colors.misc[c.position] : '#000000';
                                                         return <Cell key={index} fill={color}/>;
@@ -165,6 +182,28 @@ class BudgetResults extends React.Component<IBudgetResultsProps, IBudgetResultsS
                                             </BarChart>
                                             }
                                         </Segment>
+                                        {this.chartRef &&
+                                        <div className="downloadButtons">
+                                            <Button
+                                                compact={true}
+                                                basic={true}
+                                                icon={true}
+                                                size={'small'}
+                                                onClick={this.exportImage}
+                                            >
+                                                <Icon name="download"/> JPG
+                                            </Button>
+                                            <Button
+                                                compact={true}
+                                                basic={true}
+                                                icon={true}
+                                                size={'small'}
+                                                onClick={this.exportData}
+                                            >
+                                                <Icon name="download"/> CSV
+                                            </Button>
+                                        </div>
+                                        }
                                     </Grid.Column>
                                     <Grid.Column
                                         width={6}
@@ -172,7 +211,7 @@ class BudgetResults extends React.Component<IBudgetResultsProps, IBudgetResultsS
                                         <Segment loading={this.state.fetching} color={'blue'}>
                                             {data &&
                                             <List>
-                                                {data.map((c, key) =>
+                                                {data.filter((c) => c.name !== 'PERCENT_DISCREPANCY').map((c, key) =>
                                                     <List.Item
                                                         key={key}
                                                     >
@@ -197,6 +236,15 @@ class BudgetResults extends React.Component<IBudgetResultsProps, IBudgetResultsS
                                                         />
                                                     </List.Item>
                                                 )}
+                                                <List.Item className="ui divider"/>
+                                                <List.Item>
+                                                    <List.Content floated="right">
+                                                        {percentDiscrepancy.length > 0 ?
+                                                            percentDiscrepancy[0].value.toFixed(4) + ' %' :
+                                                            'NO VALUE'}
+                                                    </List.Content>
+                                                    <List.Content>Discrepancy:</List.Content>
+                                                </List.Item>
                                             </List>
                                             }
                                         </Segment>
@@ -209,6 +257,18 @@ class BudgetResults extends React.Component<IBudgetResultsProps, IBudgetResultsS
             </Segment>
         );
     }
+
+    private exportData = () => {
+        return exportChartData(this.chartRef.current);
+    };
+
+    private exportImage = () => {
+        return exportChartImage(this.chartRef.current);
+    };
+
+    private yTickFormatter = (value: number) => {
+        return value.toExponential(2);
+    };
 }
 
 const mapStateToProps = (state: any) => {
