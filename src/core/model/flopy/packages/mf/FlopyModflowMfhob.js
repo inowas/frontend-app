@@ -4,7 +4,7 @@ import {BoundaryCollection, Stressperiods} from '../../../modflow';
 
 export default class FlopyModflowMfhob extends FlopyModflowBoundary {
 
-    _iuhobsv = null;
+    _iuhobsv = 1051;
     _hobdry = 0;
     _tomulth = 1;
     _obs_data = null;
@@ -26,7 +26,7 @@ export default class FlopyModflowMfhob extends FlopyModflowBoundary {
             return null;
         }
 
-        const ret = hobs.map(well => {
+        return hobs.map(well => {
             const layer = well.layers[0];
             const cell = well.cells[0];
             const time_series_data = well.spValues.map((spValue, idx) => ([
@@ -40,9 +40,6 @@ export default class FlopyModflowMfhob extends FlopyModflowBoundary {
                 time_series_data
             };
         });
-
-        console.log(ret);
-        return ret;
     };
 
     get iuhobsv() {
@@ -50,6 +47,7 @@ export default class FlopyModflowMfhob extends FlopyModflowBoundary {
     }
 
     set iuhobsv(value) {
+        value = parseInt(value);
         this._iuhobsv = value;
     }
 
@@ -58,6 +56,7 @@ export default class FlopyModflowMfhob extends FlopyModflowBoundary {
     }
 
     set hobdry(value) {
+        value = parseInt(value);
         this._hobdry = value;
     }
 
@@ -66,6 +65,7 @@ export default class FlopyModflowMfhob extends FlopyModflowBoundary {
     }
 
     set tomulth(value) {
+        value = parseFloat(value);
         this._tomulth = value;
     }
 
