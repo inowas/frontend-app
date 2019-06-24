@@ -75,7 +75,6 @@ const menuItems = [
                 name: 'Observations',
                 property: 'observations',
                 icon: <Icon name="clipboard outline"/>,
-                disabled: true
             },
             {
                 name: 'Calibration',
