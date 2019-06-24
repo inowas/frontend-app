@@ -246,7 +246,7 @@ class T03 extends React.Component {
                     return (<Content.CreateBoundary/>);
                 }
                 return (<Content.Boundaries types={['chd', 'ghb', 'rch', 'riv', 'wel']}/>);
-            case 'hobs':
+            case 'head_observations':
                 if (type === 'hob') {
                     return (<Content.CreateBoundary/>);
                 }

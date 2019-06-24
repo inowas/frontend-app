@@ -65,7 +65,7 @@ export default class FlopyModflow {
 
         const self = new this();
         self.setDiscretization(model, soilmodel);
-        self.setBoundaries(boundaries);
+        self.setBoundaries(model, boundaries);
         self.setFlowPackageType('lpf', soilmodel);
         self.setSolverPackage('pcg');
         self.setDefaultOutputControl(model.stressperiods.count);
@@ -101,18 +101,22 @@ export default class FlopyModflow {
         }
 
         this.setDiscretization(model, soilmodel);
-        this.setBoundaries(boundaries);
+        this.setBoundaries(model, boundaries);
         this.setFlowPackageType(this.getPackageType(this.getFlowPackage()), soilmodel);
         this.setDefaultOutputControl(model.stressperiods.count)
     };
 
-    updateBoundaries = boundaries => {
+    updateBoundaries = (model, boundaries) => {
 
         if (!(boundaries instanceof BoundaryCollection)) {
             throw new Error('Expecting instance of BoundaryCollection')
         }
 
-        this.setBoundaries(boundaries);
+        if (!(model instanceof ModflowModel)) {
+            throw new Error('Expecting instance of ModflowModel')
+        }
+
+        this.setBoundaries(model, boundaries);
     };
 
     setDiscretization(model, soilmodel) {
@@ -161,7 +165,11 @@ export default class FlopyModflow {
         this.setPackage(mfBas);
     }
 
-    setBoundaries = (boundaries) => {
+    setBoundaries = (model, boundaries) => {
+
+        if (!(model instanceof ModflowModel)) {
+            throw new Error('Expecting instance of ModflowModel')
+        }
 
         if (!(boundaries instanceof BoundaryCollection)) {
             throw new Error('Expecting instance of BoundaryCollection')
@@ -194,7 +202,7 @@ export default class FlopyModflow {
         const mfHob = this.hasPackage('hob') ? this.getPackage('hob') : FlopyModflowMfhob.create();
         this.removePackageIfExists(mfHob);
 
-        const obsData = FlopyModflowMfhob.calculateObsData(boundaries.all, nper);
+        const obsData = FlopyModflowMfhob.calculateObsData(boundaries, model.stressperiods);
         if (obsData) {
             mfHob.obs_data = obsData;
             this.setPackage(mfHob);

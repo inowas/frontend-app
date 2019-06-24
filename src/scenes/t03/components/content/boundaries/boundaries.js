@@ -28,23 +28,53 @@ class Boundaries extends React.Component {
     }
 
     componentDidMount() {
-        const {id, pid} = this.props.match.params;
+        const {id, pid, property} = this.props.match.params;
         if (pid) {
             return this.fetchBoundary(id, pid);
+        }
+
+        const {types} = this.props;
+        const boundaries = types ? new BoundaryCollection() : this.props.boundaries;
+        if (types) {
+            boundaries.items = this.props.boundaries.all.filter(b => types.includes(b.type));
+        }
+
+        if (!pid) {
+            if (boundaries.length > 0) {
+                const bid = boundaries.first.id;
+                return this.props.history.push(`${baseUrl}/${id}/${property}/!/${bid}`);
+            }
+
+            return this.setState({
+                isLoading: false
+            })
+        }
+
+        if ((this.props.match.params.id !== id) || (this.props.match.params.pid !== pid)) {
+            return this.setState({
+                isLoading: true
+            }, () => this.fetchBoundary(id, pid));
         }
     }
 
     componentWillReceiveProps(nextProps) {
         const {id, pid, property} = nextProps.match.params;
+        const {types} = nextProps;
 
-        if (!pid && nextProps.boundaries.length > 0) {
-            const boundaries = nextProps.types ? new BoundaryCollection() : nextProps.boundaries;
-            if (nextProps.types) {
-                boundaries.items = nextProps.boundaries.all.filter(b => nextProps.types.includes(b.type));
+        const boundaries = types ? new BoundaryCollection() : this.props.boundaries;
+        if (types) {
+            boundaries.items = this.props.boundaries.all.filter(b => types.includes(b.type));
+        }
+
+        if (!pid) {
+            if (boundaries.length > 0) {
+                const bid = boundaries.first.id;
+                return this.props.history.push(`${baseUrl}/${id}/${property}/!/${bid}`);
             }
 
-            const bid = boundaries.first.id;
-            return this.props.history.push(`${baseUrl}/${id}/${property}/!/${bid}`);
+            return this.setState({
+                isLoading: false
+            })
         }
 
         if ((this.props.match.params.id !== id) || (this.props.match.params.pid !== pid)) {
@@ -170,9 +200,9 @@ class Boundaries extends React.Component {
                                             isError={error}
                                             saveButton={!readOnly}
                                             importButton={this.props.readOnly ||
-                                                <BoundariesImport
-                                                    onChange={this.handleChange}
-                                                />
+                                            <BoundariesImport
+                                                onChange={this.handleChange}
+                                            />
                                             }
                                         />
                                         {!isLoading &&
@@ -196,14 +226,12 @@ class Boundaries extends React.Component {
     }
 }
 
-const mapStateToProps = state => {
-    return {
-        readOnly: ModflowModel.fromObject(state.T03.model).readOnly,
-        boundaries: BoundaryCollection.fromObject(state.T03.boundaries),
-        model: ModflowModel.fromObject(state.T03.model),
-        soilmodel: Soilmodel.fromObject(state.T03.soilmodel)
-    };
-};
+const mapStateToProps = state => ({
+    readOnly: ModflowModel.fromObject(state.T03.model).readOnly,
+    boundaries: BoundaryCollection.fromObject(state.T03.boundaries),
+    model: ModflowModel.fromObject(state.T03.model),
+    soilmodel: Soilmodel.fromObject(state.T03.soilmodel)
+});
 
 const mapDispatchToProps = {
     updateBoundaries, updateModel
