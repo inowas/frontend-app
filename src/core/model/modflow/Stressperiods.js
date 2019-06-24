@@ -179,6 +179,17 @@ class Stressperiods {
         return perlens;
     }
 
+    get totims() {
+        const totims = [];
+        this.stressperiods.forEach(sp => {
+            totims.push(this.totimFromDate(sp.startDateTime))
+        });
+
+        totims.push(this.totimFromDate(this.endDateTime));
+
+        return totims;
+    }
+
     totimFromDate(dateTime) {
         if (!(dateTime instanceof moment)) {
             dateTime = moment.utc(dateTime);

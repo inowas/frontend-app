@@ -22,7 +22,7 @@ const menuItems = [
             },
             {
                 name: 'Head Observations',
-                property: 'hobs',
+                property: 'head_observations',
                 icon: <Icon name="eye"/>
             },
             {

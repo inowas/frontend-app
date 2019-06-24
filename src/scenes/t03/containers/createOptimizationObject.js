@@ -70,7 +70,7 @@ class CreateOptimizationObject extends React.Component {
 
     fetchBoundaries(id) {
         fetchUrl(`modflowmodels/${id}/boundaries`,
-            data => this.props.updateBoundaries(BoundaryCollection.fromQuery(data)),
+            data => this.props.updateBoundaries(this.props.model, BoundaryCollection.fromQuery(data)),
             error => this.setState(
                 {error, isLoading: false},
                 () => this.handleError(error)

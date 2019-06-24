@@ -20,7 +20,7 @@ class Boundaries extends React.Component {
         super(props);
         this.state = {
             selectedBoundary: null,
-            isLoading: false,
+            isLoading: true,
             isDirty: false,
             error: false,
             state: null
@@ -211,14 +211,12 @@ class Boundaries extends React.Component {
     }
 }
 
-const mapStateToProps = state => {
-    return {
-        readOnly: ModflowModel.fromObject(state.T03.model).readOnly,
-        boundaries: BoundaryCollection.fromObject(state.T03.boundaries),
-        model: ModflowModel.fromObject(state.T03.model),
-        soilmodel: Soilmodel.fromObject(state.T03.soilmodel)
-    };
-};
+const mapStateToProps = state => ({
+    readOnly: ModflowModel.fromObject(state.T03.model).readOnly,
+    boundaries: BoundaryCollection.fromObject(state.T03.boundaries),
+    model: ModflowModel.fromObject(state.T03.model),
+    soilmodel: Soilmodel.fromObject(state.T03.soilmodel)
+});
 
 const mapDispatchToProps = {
     updateBoundaries, updateModel
