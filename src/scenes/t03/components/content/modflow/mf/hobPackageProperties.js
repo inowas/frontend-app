@@ -49,6 +49,7 @@ class HobPackageProperties extends AbstractPackageProperties {
                         <Input
                             readOnly={readonly}
                             name='iuhobsv'
+                            type='number'
                             value={mfPackage.iuhobsv || ''}
                             icon={this.renderInfoPopup(documentation.iuhobsv, 'iuhobsv')}
                             onBlur={this.handleOnBlur}
@@ -60,6 +61,7 @@ class HobPackageProperties extends AbstractPackageProperties {
                         <Input
                             readOnly={readonly}
                             name='hobdry'
+                            type='number'
                             value={mfPackage.hobdry || ''}
                             icon={this.renderInfoPopup(documentation.hobdry, 'hobdry')}
                             onBlur={this.handleOnBlur}
@@ -71,6 +73,7 @@ class HobPackageProperties extends AbstractPackageProperties {
                         <Input
                             readOnly={readonly}
                             name='tomulth'
+                            type='number'
                             value={mfPackage.tomulth || ''}
                             icon={this.renderInfoPopup(documentation.tomulth, 'tomulth')}
                             onBlur={this.handleOnBlur}

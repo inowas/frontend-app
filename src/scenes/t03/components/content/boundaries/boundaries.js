@@ -20,7 +20,7 @@ class Boundaries extends React.Component {
         super(props);
         this.state = {
             selectedBoundary: null,
-            isLoading: true,
+            isLoading: false,
             isDirty: false,
             error: false,
             state: null
@@ -29,22 +29,20 @@ class Boundaries extends React.Component {
 
     componentDidMount() {
         const {id, pid} = this.props.match.params;
+        if (!pid && this.props.boundaries.length > 0) {
+            return this.redirectToFirstBoundary(this.props);
+        }
+
         if (pid) {
             return this.fetchBoundary(id, pid);
         }
     }
 
     componentWillReceiveProps(nextProps) {
-        const {id, pid, property} = nextProps.match.params;
+        const {id, pid} = nextProps.match.params;
 
         if (!pid && nextProps.boundaries.length > 0) {
-            const boundaries = nextProps.types ? new BoundaryCollection() : nextProps.boundaries;
-            if (nextProps.types) {
-                boundaries.items = nextProps.boundaries.all.filter(b => nextProps.types.includes(b.type));
-            }
-
-            const bid = boundaries.first.id;
-            return this.props.history.push(`${baseUrl}/${id}/${property}/!/${bid}`);
+            return this.redirectToFirstBoundary(nextProps);
         }
 
         if ((this.props.match.params.id !== id) || (this.props.match.params.pid !== pid)) {
@@ -53,6 +51,23 @@ class Boundaries extends React.Component {
             }, () => this.fetchBoundary(id, pid));
         }
     }
+
+    redirectToFirstBoundary = (props) => {
+        const {id, property} = props.match.params;
+        const boundaries = props.types ? new BoundaryCollection() : props.boundaries;
+        if (props.types) {
+            boundaries.items = props.boundaries.all.filter(b => props.types.includes(b.type));
+        }
+
+        if (boundaries.length > 0) {
+            const bid = boundaries.first.id;
+            return this.props.history.push(`${baseUrl}/${id}/${property}/!/${bid}`);
+        }
+
+        return this.setState({
+            selectedBoundary: null
+        });
+    };
 
     fetchBoundary = (modelId, boundaryId) => fetchUrl(`modflowmodels/${modelId}/boundaries/${boundaryId}`,
         (boundary) => this.setState({
@@ -170,9 +185,9 @@ class Boundaries extends React.Component {
                                             isError={error}
                                             saveButton={!readOnly}
                                             importButton={this.props.readOnly ||
-                                                <BoundariesImport
-                                                    onChange={this.handleChange}
-                                                />
+                                            <BoundariesImport
+                                                onChange={this.handleChange}
+                                            />
                                             }
                                         />
                                         {!isLoading &&

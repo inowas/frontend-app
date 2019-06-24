@@ -43,7 +43,7 @@ class BoundaryList extends React.Component<IBoundaryListProps, IBoundaryListStat
 
         return (
             <Grid padded={true}>
-                <Grid.Row>
+                <Grid.Row style={{paddingTop: 0}}>
                     {types && types.length === 1 ?
                         <Button
                             className="blue"
