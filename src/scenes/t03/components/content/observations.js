@@ -78,10 +78,24 @@ class Observations extends React.Component {
         return (
             <Segment raised>
                 <ResponsiveContainer width={'100%'} aspect={2.0}>
-                    <ScatterChart>
+                    <ScatterChart
+                        margin={{top: 20, right: 20, bottom: 20, left: 20}}
+                    >
                         <CartesianGrid/>
-                        <XAxis dataKey={'x'} type="number" name={'observed'} domain={[min, max]}/>
-                        <YAxis dataKey={'y'} type="number" name={'simulated'} domain={['auto', 'auto']}/>
+                        <XAxis
+                            dataKey={'x'}
+                            type="number"
+                            name={'observed'}
+                            domain={[min, max]}
+                            label={{value: 'Observed Head [m]', angle: 0, position: 'bottom'}}
+                        />
+                        <YAxis
+                            dataKey={'y'}
+                            type="number"
+                            name={'simulated'}
+                            domain={['auto', 'auto']}
+                            label={{value: 'Simulated Head [m]', angle: -90, position: 'left'}}
+                        />
                         <Scatter name={'Observed vs. calculated Heads'} data={data} fill={'#8884d8'}/>
                         <Scatter data={line} line={{stroke: 'black', strokeWidth: 2}} shape={() => null}/>
                         <Scatter data={linePlusDelta} line={{stroke: 'red', strokeWidth: 2}} shape={() => null}/>
@@ -107,10 +121,24 @@ class Observations extends React.Component {
         return (
             <Segment raised>
                 <ResponsiveContainer width={'100%'} aspect={2.0}>
-                    <ScatterChart>
+                    <ScatterChart
+                        margin={{top: 20, right: 20, bottom: 20, left: 20}}
+                    >
                         <CartesianGrid/>
-                        <XAxis dataKey={'x'} type="number" name={'simulated'} domain={[xMin, xMax]}/>
-                        <YAxis dataKey={'y'} type="number" name={'weighted'} domain={[-domainY, domainY]}/>
+                        <XAxis
+                            dataKey={'x'}
+                            type="number"
+                            name={'simulated'}
+                            domain={[xMin, xMax]}
+                            label={{value: 'Simulated Head [m a.s.l.]', angle: 0, position: 'bottom'}}
+                        />
+                        <YAxis
+                            dataKey={'y'}
+                            type="number"
+                            name={'weighted'}
+                            domain={[-domainY, domainY]}
+                            label={{value: 'Residual', angle: -90, position: 'left'}}
+                        />
                         <Scatter name={'Weighted residuals vs. simulated heads'} data={data} fill={'black'}/>
                         <Scatter data={line} line={{stroke: 'red', strokeWidth: 2}} shape={() => null}/>
                         <ReferenceLine y={0} stroke="blue" strokeWidth={2}/>
@@ -147,10 +175,23 @@ class Observations extends React.Component {
         return (
             <Segment raised>
                 <ResponsiveContainer width={'100%'} aspect={2.0}>
-                    <ScatterChart>
+                    <ScatterChart
+                        margin={{top: 20, right: 20, bottom: 20, left: 20}}
+                    >
                         <CartesianGrid/>
-                        <XAxis dataKey={'x'} type="number" name={'npf'} domain={xDomain}/>
-                        <YAxis dataKey={'y'} type="number" name={'ranked residuals'} domain={yDomain}/>
+                        <XAxis
+                            dataKey={'x'}
+                            type="number"
+                            name={'npf'} domain={xDomain}
+                            label={{value: 'Residual', angle: 0, position: 'bottom'}}
+                        />
+                        <YAxis
+                            dataKey={'y'}
+                            type="number"
+                            name={'ranked residuals'}
+                            domain={yDomain}
+                            label={{value: 'Normal Probability Function', angle: -90, position: 'left'}}
+                        />
                         <Scatter name={'NPF vs. ranked residuals'} data={data} fill={'black'}/>
                         <Scatter data={line} line={{stroke: 'red', strokeWidth: 2}} shape={() => null}/>
                         <Tooltip cursor={{strokeDasharray: '3 3'}}/>
@@ -185,53 +226,63 @@ class Observations extends React.Component {
                                 <Table.Body style={{overflowY: 'auto'}}>
                                     <Table.Row>
                                         <Table.Cell>Number of data points</Table.Cell>
-                                        <Table.Cell>n</Table.Cell>
+                                        <Table.Cell>n [-]</Table.Cell>
                                         <Table.Cell>{calibrationData.n}</Table.Cell>
+                                        <Table.Cell>-</Table.Cell>
                                     </Table.Row>
                                     <Table.Row>
                                         <Table.Cell>Maximum Absolute Residual</Table.Cell>
-                                        <Table.Cell>R<sub>MAX</sub></Table.Cell>
-                                        <Table.Cell>{calibrationData.rMax}</Table.Cell>
+                                        <Table.Cell>R<sub>MAX</sub> </Table.Cell>
+                                        <Table.Cell>{(calibrationData.rMax).toFixed(3)}</Table.Cell>
+                                        <Table.Cell>m</Table.Cell>
                                     </Table.Row>
                                     <Table.Row>
                                         <Table.Cell>Minimum Absolute Residual</Table.Cell>
                                         <Table.Cell>R<sub>MIN</sub></Table.Cell>
-                                        <Table.Cell>{calibrationData.rMin}</Table.Cell>
+                                        <Table.Cell>{(calibrationData.rMin).toFixed(3)}</Table.Cell>
+                                        <Table.Cell>m</Table.Cell>
                                     </Table.Row>
                                     <Table.Row>
                                         <Table.Cell>Residual Mean</Table.Cell>
                                         <Table.Cell>R<sub>MEAN</sub></Table.Cell>
-                                        <Table.Cell>{calibrationData.rMean}</Table.Cell>
+                                        <Table.Cell>{(calibrationData.rMean).toFixed(3)}</Table.Cell>
+                                        <Table.Cell>m</Table.Cell>
                                     </Table.Row>
                                     <Table.Row>
                                         <Table.Cell>Absolute residual Mean</Table.Cell>
                                         <Table.Cell>|R<sub>MEAN</sub>|</Table.Cell>
-                                        <Table.Cell>{calibrationData.absRMean}</Table.Cell>
+                                        <Table.Cell>{(calibrationData.absRMean).toFixed(3)}</Table.Cell>
+                                        <Table.Cell>m</Table.Cell>
                                     </Table.Row>
                                     <Table.Row>
                                         <Table.Cell>Standard error of estimation</Table.Cell>
                                         <Table.Cell>SSE</Table.Cell>
-                                        <Table.Cell>{calibrationData.sse}</Table.Cell>
+                                        <Table.Cell>{(calibrationData.sse).toFixed(3)}</Table.Cell>
+                                        <Table.Cell>-</Table.Cell>
                                     </Table.Row>
                                     <Table.Row>
                                         <Table.Cell>Root Mean Squared Error</Table.Cell>
                                         <Table.Cell>RMSE</Table.Cell>
-                                        <Table.Cell>{calibrationData.rmse}</Table.Cell>
+                                        <Table.Cell>{(calibrationData.rmse).toFixed(3)}</Table.Cell>
+                                        <Table.Cell>m</Table.Cell>
                                     </Table.Row>
                                     <Table.Row>
                                         <Table.Cell>Normalized Root Mean Squared Error</Table.Cell>
                                         <Table.Cell>NRMSE</Table.Cell>
-                                        <Table.Cell>{calibrationData.nrmse}</Table.Cell>
+                                        <Table.Cell>{(calibrationData.nrmse).toFixed(3)}</Table.Cell>
+                                        <Table.Cell>-</Table.Cell>
                                     </Table.Row>
                                     <Table.Row>
                                         <Table.Cell>Correlation Coefficient Pearson R</Table.Cell>
                                         <Table.Cell>R</Table.Cell>
-                                        <Table.Cell>{calibrationData.R}</Table.Cell>
+                                        <Table.Cell>{(calibrationData.R).toFixed(3)}</Table.Cell>
+                                        <Table.Cell>-</Table.Cell>
                                     </Table.Row>
                                     <Table.Row>
                                         <Table.Cell>Coefficient of determination</Table.Cell>
                                         <Table.Cell>R<sup>2</sup></Table.Cell>
-                                        <Table.Cell>{calibrationData.R2}</Table.Cell>
+                                        <Table.Cell>{(calibrationData.R2).toFixed(3)}</Table.Cell>
+                                        <Table.Cell>-</Table.Cell>
                                     </Table.Row>
                                 </Table.Body>
                             </Table>
