@@ -9,19 +9,17 @@ const routes = (
         <PrivateRoute exact path="/" component={Scenes.LandingPage} forRoles={['ROLE_USER']}/>
         <PrivateRoute exact path="/tools" component={Scenes.Dashboard} forRoles={['ROLE_USER']}/>
         <PrivateRoute exact path="/tools/T03/" component={Scenes.T03.CreateModel} forRoles={['ROLE_USER']}/>
-        <PrivateRoute exact path="/tools/T03/:id?/:property?/:type?/:pid?" component={Scenes.T03.EditModel}
-                      forRoles={['ROLE_USER']}/>
-        <PrivateRoute exact path="/tools/T05/:id?/:property?/:cid?/:tool?" component={Scenes.T05}
-                      forRoles={['ROLE_USER']}/>
-        <PrivateRoute exact path="/tools/T07/:id?/:property?/:type?/:pid?" component={Scenes.T07}
-                      forRoles={['ROLE_USER']}/>
         <PrivateRoute path="/credentials" component={Scenes.UserCredentials} forRoles={['ROLE_USER']}/>
         <PrivateRoute path="/profile" component={Scenes.UserProfile} forRoles={['ROLE_USER']}/>
 
+
         <Route exact path="/tools/T01" component={Scenes.T01}/>
         <Route exact path="/tools/T02/:id?" component={Scenes.T02}/>
+        <Route exact path="/tools/T03/:id?/:property?/:type?/:pid?" component={Scenes.T03.EditModel}/>
         <Route exact path="/tools/T04" component={Scenes.T04}/>
+        <Route exact path="/tools/T05/:id?/:property?/:cid?/:tool?" component={Scenes.T05}/>
         <Route exact path="/tools/T06" component={Scenes.T06}/>
+        <Route exact path="/tools/T07/:id?/:property?/:type?/:pid?" component={Scenes.T07}/>
         <Route exact path="/tools/T08/:id?" component={Scenes.T08}/>
         <Route exact path="/tools/T09" component={Scenes.T09}/>
         <Route exact path="/tools/T09A/:id?" component={Scenes.T09A}/>
