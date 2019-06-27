@@ -6,13 +6,11 @@ type SpValues = [number[]];
 
 export default abstract class Boundary {
 
-    private _id = Uuid.v4();
-
     abstract get type(): string;
 
-    get id(): string {
-        return this._id;
-    }
+    abstract get id(): string;
+
+    abstract set id(name: string);
 
     abstract get geometry(): Geometry;
 
@@ -40,9 +38,9 @@ export default abstract class Boundary {
 
     public abstract toObject(): object;
 
-    public clone() {
-        this._id = Uuid.v4();
-        this.name = this.name + ' (clone)';
+    public clone(): Boundary {
+        this.id = Uuid.v4();
+        this.name = this.name + '(clone)';
         return this;
     }
 }
