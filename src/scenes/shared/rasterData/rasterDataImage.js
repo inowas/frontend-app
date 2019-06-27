@@ -36,7 +36,11 @@ class RasterDataImage extends React.Component {
 
         gridData.forEach(d => {
             if (rainbowVis instanceof Rainbow) {
-                ctx.fillStyle = '#' + rainbowVis.colourAt(d.value);
+                if (isNaN(d.value)) {
+                    ctx.fillStyle = 'rgba(255,255,255,0)';
+                } else {
+                    ctx.fillStyle = '#' + rainbowVis.colourAt(d.value);
+                }
             } else {
                 const data = rainbowVis[0].isContinuous ?
                     rainbowVis.filter(row => (row.fromOperator === '>' ? d.value > row.from : d.value >= row.from) && (row.toOperator === '<' ? d.value < row.to : d.value <= row.to)) :
@@ -70,6 +74,19 @@ class RasterDataImage extends React.Component {
         return <ColorLegendDiscrete legend={rainbowVis} horizontal unit={''}/>;
     }
 
+    handleClickCell = (e) => {
+        const canvas = this.canvas;
+        const rect = canvas.getBoundingClientRect();
+
+        const scaleX = canvas.width / rect.width;
+        const scaleY = canvas.height / rect.height;
+
+        const x = Math.floor((e.clientX - rect.left) * scaleX);
+        const y = Math.floor((e.clientY - rect.top) * scaleY);
+
+        return this.props.onClickCell({x, y});
+    };
+
     render() {
         const {data, gridSize, unit, border} = this.props;
 
@@ -86,10 +103,11 @@ class RasterDataImage extends React.Component {
             this.drawCanvas(data, width, height, rainbowVis);
         }
 
-        // noinspection HtmlUnknownBooleanAttribute
         return (
             <div>
-                <Image fluid>
+                <Image
+                    fluid
+                >
                     <canvas
                         style={canvasStyle}
                         ref={(canvas) => {
@@ -98,6 +116,7 @@ class RasterDataImage extends React.Component {
                         width={width}
                         height={height}
                         data-paper-resize
+                        onClick={this.handleClickCell}
                     />
                 </Image>
                 {this.drawLegend(rainbowVis, unit)}
@@ -107,6 +126,7 @@ class RasterDataImage extends React.Component {
 }
 
 RasterDataImage.propTypes = {
+    onClickCell: PropTypes.func,
     data: PropTypes.oneOfType([PropTypes.array, PropTypes.number]).isRequired,
     gridSize: PropTypes.instanceOf(GridSize).isRequired,
     legend: PropTypes.oneOfType([PropTypes.array, PropTypes.instanceOf(Rainbow)]),

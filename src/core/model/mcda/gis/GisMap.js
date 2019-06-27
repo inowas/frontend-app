@@ -118,7 +118,7 @@ class GisMap {
                 /*if (cellIsSuitable) {
                     cells.addCell([cell.x, cell.y]);
                 }*/
-                raster.data[cell.y][cell.x] = cellIsSuitable ? 1 : 0;
+                raster.data[cell.y][cell.x] = cellIsSuitable ? 1 : NaN;
             }
         });
 

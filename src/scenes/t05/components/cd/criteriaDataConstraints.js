@@ -3,9 +3,16 @@ import React from 'react';
 import {Criterion, Rule} from '../../../../core/model/mcda/criteria';
 import {Button, Form, Grid, Icon, Message, Radio, Table} from 'semantic-ui-react';
 import CriteriaRasterMap from './criteriaRasterMap';
-import {rainbowFactory} from '../../../shared/rasterData/helpers';
-import {heatMapColors} from '../../defaults/gis';
 import {dropData} from '../../../../services/api';
+
+const legend = [
+    {
+        color: 'green',
+        isContinuous: false,
+        label: 'Suitable',
+        value: 1
+    }
+];
 
 class CriteriaDataConstraints extends React.Component {
 
@@ -40,9 +47,11 @@ class CriteriaDataConstraints extends React.Component {
     handleDismiss = () => this.setState({showInfo: false});
 
     handleAddConstraint = () => {
-        if (this.props.readOnly) { return null; }
+        if (this.props.readOnly) {
+            return null;
+        }
         const rule = new Rule();
-        rule.value = 0;
+        rule.value = NaN;
         const criterion = Criterion.fromObject(this.state.criterion);
         criterion.constraintRules.add(rule);
         criterion.raster.calculateMinMax(criterion.constraintRules);
@@ -50,11 +59,13 @@ class CriteriaDataConstraints extends React.Component {
     };
 
     handleLocalChange = id => (e, {name, value}) => {
-        if (this.props.readOnly) { return null; }
+        if (this.props.readOnly) {
+            return null;
+        }
         const criterion = Criterion.fromObject(this.state.criterion);
         criterion.constraintRules.items = criterion.constraintRules.all.map(c => {
             if (c.id === id) {
-                c[name] = value;
+                c[name] = value || NaN;
             }
             return c;
         });
@@ -64,11 +75,13 @@ class CriteriaDataConstraints extends React.Component {
     };
 
     handleChangeSelect = id => (e, {name, value}) => {
-        if (this.props.readOnly) { return null; }
+        if (this.props.readOnly) {
+            return null;
+        }
         const criterion = Criterion.fromObject(this.state.criterion);
         criterion.constraintRules.items = criterion.constraintRules.all.map(c => {
             if (c.id === id) {
-                c[name] = value;
+                c[name] = value || NaN;
             }
             return c;
         });
@@ -77,14 +90,18 @@ class CriteriaDataConstraints extends React.Component {
     };
 
     handleChange = () => {
-        if (this.props.readOnly) { return null; }
+        if (this.props.readOnly) {
+            return null;
+        }
         const criterion = Criterion.fromObject(this.state.criterion);
         criterion.raster.calculateMinMax(criterion.constraintRules);
         this.props.onChange(criterion);
     };
 
     handleClickRecalculate = () => {
-        if (this.props.readOnly) { return null; }
+        if (this.props.readOnly) {
+            return null;
+        }
         const criterion = Criterion.fromObject(this.state.criterion);
         criterion.calculateConstraints();
         criterion.raster.calculateMinMax(criterion.constraintRules);
@@ -92,19 +109,23 @@ class CriteriaDataConstraints extends React.Component {
     };
 
     handleRemoveRule = id => {
-        if (this.props.readOnly) { return null; }
+        if (this.props.readOnly) {
+            return null;
+        }
         const criterion = Criterion.fromObject(this.state.criterion);
         criterion.raster.calculateMinMax(criterion.constraintRules);
-        criterion.constraintRules.remove(id);
+        criterion.constraintRules.removeById(id);
         this.props.onChange(criterion);
     };
 
     handleToggleRule = rule => {
-        if (this.props.readOnly) { return null; }
+        if (this.props.readOnly) {
+            return null;
+        }
         if (!(rule instanceof Rule)) {
             throw new Error('Rule expected to be instance of Rule.');
         }
-        rule.value = rule.value === 1 ? 0 : 1;
+        rule.value = rule.value === 1 ? NaN : 1;
         const criterion = this.props.criterion;
         criterion.constraintRules.update(rule);
         criterion.calculateConstraints();
@@ -114,7 +135,6 @@ class CriteriaDataConstraints extends React.Component {
     renderEditorDiscrete() {
         const {criterion, readOnly} = this.props;
         const constraints = criterion.constraintRules.orderBy('from', 'asc');
-        const legend = rainbowFactory({min: 0, max: 1}, heatMapColors.default);
 
         return (
             <Grid.Row>
@@ -157,7 +177,6 @@ class CriteriaDataConstraints extends React.Component {
     renderEditorContinuous() {
         const criterion = Criterion.fromObject(this.state.criterion);
         const constraints = criterion.constraintRules.orderBy('from', 'asc');
-        const legend = rainbowFactory({min: 0, max: 1}, heatMapColors.default);
 
         return (
             <Grid.Row>
@@ -274,6 +293,8 @@ class CriteriaDataConstraints extends React.Component {
     render() {
         const {criterion} = this.props;
         const raster = criterion.raster;
+
+        console.log(criterion.toObject());
 
         return (
             <div>

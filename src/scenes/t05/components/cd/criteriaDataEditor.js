@@ -33,7 +33,7 @@ class CriteriaDataEditor extends React.Component {
             ));
 
         if (fetchRasters) {
-            return this.getRasterData(prevCriterion ? prevCriterion.toObject() : null, criterion.toObject());
+            return this.getRasterData(prevCriterion ? prevCriterion : null, criterion);
         }
 
         if (criterion && !fetchRasters) {
@@ -81,7 +81,7 @@ class CriteriaDataEditor extends React.Component {
 
         retrieveRasters(tasks, () => {
             this.setState({
-                criterion: criterion,
+                criterion: criterion.toObject(),
                 isFetching: false
             });
         });
@@ -202,7 +202,7 @@ class CriteriaDataEditor extends React.Component {
 
 CriteriaDataEditor.propTypes = {
     activeTool: PropTypes.string,
-    criterion: PropTypes.instanceOf(Criterion).isRequired,
+    criterion: PropTypes.instanceOf(Criterion),
     onChange: PropTypes.func.isRequired,
     mcda: PropTypes.instanceOf(MCDA).isRequired,
     onClickTool: PropTypes.func.isRequired,

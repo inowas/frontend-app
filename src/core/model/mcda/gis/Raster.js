@@ -26,7 +26,7 @@ class Raster {
         raster.min = obj.min;
         raster.max = obj.max;
         raster.url = obj.url;
-        return raster;
+        return raster.clean();
     }
 
     get id() {
@@ -147,6 +147,24 @@ class Raster {
 
         this.max = max(data);
         this.min = min(data);
+        return this;
+    }
+
+    clean() {
+        if(!this.data || !this.data[0]) {
+            return this;
+        }
+        const dimCol = this.data[0].length;
+        const dimRow = this.data.length;
+
+        for (let row = 0; row <= dimRow - 1; row++) {
+            for (let col = 0; col <= dimCol - 1; col++) {
+                if (!this.data[row][col]) {
+                    this.data[row][col] = NaN;
+                }
+            }
+        }
+
         return this;
     }
 
