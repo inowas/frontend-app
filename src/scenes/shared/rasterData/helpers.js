@@ -13,7 +13,7 @@ export function isRaster(data) {
         return false;
     }
 
-    return data[0][0] !== null;
+    return data[0].length > 0;
 }
 
 export function isValid(data) {
