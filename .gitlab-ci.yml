@@ -57,7 +57,7 @@ build:smart-control:
 
   script:
     - yarn install
-    - REACT_APP_API_URL=https://api.dss.smart-control.inowas.com REACT_APP_USERS_CAN_REGISTER=false yarn build
+    - REACT_APP_API_URL=https://api.dss.smart-control.inowas.com REACT_APP_USERS_CAN_REGISTER=false REACT_APP_PUBLIC_PROJECTS_ACCESS=false yarn build
     - VERSION=$(git describe --tags --always --dirty=+) && DATE=$(date +%Y-%m-%dT%H:%M:%S) && sed -i "s/@@__VERSION__@@/${VERSION}/g;s/@@__BUILT__@@/${DATE}/g" ./build/index.html
 
   artifacts:
