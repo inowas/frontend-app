@@ -137,6 +137,11 @@ class ModflowModelCommand extends AbstractCommand {
         const name = 'updateStressperiods';
         return new ModflowModelCommand(name, payload, JSON_SCHEMA_URL + '/commands/' + name);
     }
+
+    static updateVariableDensity(payload) {
+        const name = 'updateVariableDensity';
+        return new ModflowModelCommand(name, payload, JSON_SCHEMA_URL + '/commands/' + name);
+    }
 }
 
 export default ModflowModelCommand;

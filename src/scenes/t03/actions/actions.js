@@ -17,6 +17,8 @@ import {Optimization} from '../../../core/model/modflow/optimization';
 import FlopyPackages from '../../../core/model/flopy/packages/FlopyPackages';
 import {UPDATE_PACKAGES} from '../reducers/packages';
 import {UPDATE_TRANSPORT} from '../reducers/transport';
+import {UPDATE_VARIABLE_DENSITY} from '../reducers/variableDensity';
+import VariableDensity from "../components/content/variableDensity/VariableDensity";
 
 export function clear() {
     return {
@@ -65,6 +67,17 @@ export function updateTransport(transport) {
     return {
         type: UPDATE_TRANSPORT,
         payload: transport.toObject()
+    };
+}
+
+export function updateVariableDensity(variableDensity) {
+    if (!(variableDensity instanceof VariableDensity)) {
+        throw new Error('VariableDensity is expected to be instance of VariableDensity');
+    }
+
+    return {
+        type: UPDATE_VARIABLE_DENSITY,
+        payload: variableDensity.toObject()
     };
 }
 

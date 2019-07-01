@@ -16,6 +16,7 @@ import Stressperiod from './Stressperiod';
 import Stressperiods from './Stressperiods';
 import TimeUnit from './TimeUnit';
 import Transport from './transport/Transport';
+import VariableDensity from './variableDensity/VariableDensity.ts';
 
 export {
     Cells,
@@ -35,5 +36,6 @@ export {
     Stressperiod,
     Stressperiods,
     TimeUnit,
-    Transport
+    Transport,
+    VariableDensity
 }
