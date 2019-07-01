@@ -8,7 +8,7 @@ import {JSON_SCHEMA_URL} from '../../../../services/api';
 
 export default class FlopyPackages {
 
-    _version = '3.2.10';
+    _version = '3.2.12';
 
     _author = '';
     _project = '';
