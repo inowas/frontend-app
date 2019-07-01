@@ -29,6 +29,11 @@ const menuItems = [
                 name: 'Transport',
                 property: 'transport',
                 icon: <Icon name="cube"/>
+            },
+            {
+                name: 'Variable Density',
+                property: 'variable_density',
+                icon: <Icon name="gem"/>
             }]
     }, {
         header: 'Calculation',
@@ -42,6 +47,11 @@ const menuItems = [
                 name: 'Mt packages',
                 property: 'mt3d',
                 icon: <Icon name="exchange"/>
+            },
+            {
+                name: 'Swt package',
+                property: 'seawat',
+                icon: <Icon name="eyedropper"/>
             },
             {
                 name: 'Run calculation',

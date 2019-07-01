@@ -7,8 +7,10 @@ import Optimization from './optimization/optimization.js';
 import {BudgetResults, FlowResults, TransportResults} from './results';
 import Calculation from './calculation/calculation';
 import Mt3d from './mt3d/Mt3dProperties.js';
+import Seawat from './seawat/SeawatProperties';
 import SoilmodelEditor from './soilmodel/soilmodelEditor';
 import Transport from './transport/transport'
+import VariableDensityProperties from './variableDensity/VariableDensity';
 
 export {
     Boundaries,
@@ -21,7 +23,9 @@ export {
     Mt3d,
     Observations,
     Optimization,
+    Seawat,
     Transport,
     TransportResults,
-    SoilmodelEditor
+    SoilmodelEditor,
+    VariableDensityProperties
 }
