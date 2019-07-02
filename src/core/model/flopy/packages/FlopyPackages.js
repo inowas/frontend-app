@@ -55,7 +55,7 @@ export default class FlopyPackages {
     static fromObject(obj) {
         const mf = FlopyModflow.fromObject(obj.mf);
         const mt = FlopyMt3d.fromObject(obj.mt);
-        const swt = FlopySeawat.fromObject(obj.swt);
+        const swt = obj.swt ? FlopySeawat.fromObject(obj.swt) : new FlopySeawat();
         const modelId = obj.model_id;
 
         const self = new this();

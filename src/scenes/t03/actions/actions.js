@@ -9,7 +9,7 @@ import {
 } from '../reducers/soilmodel';
 import {UPDATE_OPTIMIZATION} from '../reducers/optimization';
 
-import {Calculation, ModflowModel, Stressperiods, Transport} from '../../../core/model/modflow';
+import {Calculation, ModflowModel, Stressperiods, Transport, VariableDensity} from '../../../core/model/modflow';
 import {BoundaryCollection} from '../../../core/model/modflow/boundaries';
 import {Soilmodel, SoilmodelLayer} from '../../../core/model/modflow/soilmodel';
 import {FlopyMt3d} from '../../../core/model/flopy/packages/mt';
@@ -18,7 +18,6 @@ import FlopyPackages from '../../../core/model/flopy/packages/FlopyPackages';
 import {UPDATE_PACKAGES} from '../reducers/packages';
 import {UPDATE_TRANSPORT} from '../reducers/transport';
 import {UPDATE_VARIABLE_DENSITY} from '../reducers/variableDensity';
-import VariableDensity from "../components/content/variableDensity/VariableDensity";
 
 export function clear() {
     return {

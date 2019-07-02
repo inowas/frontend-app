@@ -11,6 +11,7 @@ class FlopySeawatSwtvdf extends FlopySeawatPackage {
     _dnscrit = 0.01;
     _denseref = 1.0;
     _denseslp = 0.025;
+    _drhodc = 0;
     _crhoref = 0;
     _firstdt = 0.001;
     _indense = 1;
@@ -102,6 +103,15 @@ class FlopySeawatSwtvdf extends FlopySeawatPackage {
     set denseslp(value) {
         value = parseFloat(value);
         this._denseslp = value;
+    }
+
+    get drhodc() {
+        return this._drhodc;
+    }
+
+    set drhodc(value) {
+        value = parseFloat(value);
+        this._drhodc = value;
     }
 
     get crhoref() {

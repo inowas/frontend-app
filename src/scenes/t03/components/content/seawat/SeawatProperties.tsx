@@ -1,8 +1,7 @@
 import React from 'react';
 import {connect} from 'react-redux';
 import {withRouter} from 'react-router-dom';
-import {FlopyMt3d} from '../../../../../core/model/flopy/packages/mt';
-import {FlopySeawat} from '../../../../../core/model/flopy/packages/swt';
+import {FlopySeawat, FlopySeawatPackage} from '../../../../../core/model/flopy/packages/swt';
 import {sendCommand} from '../../../../../services/api';
 import ModflowModelCommand from '../../../commands/modflowModelCommand';
 
@@ -14,20 +13,29 @@ import ContentToolBar from '../../../../shared/ContentToolbar';
 import {updatePackages} from '../../../actions/actions';
 import {SeawatPackageProperties, VdfPackageProperties, VscPackageProperties} from './packages';
 
-interface ISeawatPropertiesProps {
+interface IOwnProps {
     history: any;
     location: any;
     match: any;
-    model: ModflowModel;
+    readOnly: boolean;
+}
+
+interface IStateProps {
     boundaries: BoundaryCollection;
+    model: ModflowModel;
     packages: FlopyPackages;
     transport: Transport;
     variableDensity: VariableDensity;
+}
+
+interface IDispatchProps {
     updatePackages: (packages: FlopyPackages) => any;
 }
 
+type Props = IStateProps & IDispatchProps & IOwnProps;
+
 interface ISeawatPropertiesState {
-    seawat: object;
+    swt: object;
     isError: boolean;
     isDirty: boolean;
     isLoading: boolean;
@@ -43,12 +51,12 @@ const sideBar: sideBarItems = [
     {id: 'vsc', name: 'Viscosity package'}
 ];
 
-class SeawatProperties extends React.Component<ISeawatPropertiesProps, ISeawatPropertiesState> {
-    constructor(props: ISeawatPropertiesProps) {
+class SeawatProperties extends React.Component<Props, ISeawatPropertiesState> {
+    constructor(props: Props) {
         super(props);
 
         this.state = {
-            seawat: {},
+            swt: this.props.packages.swt.toObject(),
             isError: false,
             isDirty: false,
             isLoading: false,
@@ -62,14 +70,15 @@ class SeawatProperties extends React.Component<ISeawatPropertiesProps, ISeawatPr
         this.props.updatePackages(packages);
     }
 
-    public componentWillReceiveProps(nextProps: ISeawatPropertiesProps) {
+    public componentWillReceiveProps(nextProps: Props) {
         return this.setState({
-            seawat: {}
+            swt: nextProps.packages.swt.toObject()
         });
     }
 
     public handleSave = () => {
         const packages = this.props.packages;
+        packages.swt = FlopySeawat.fromObject(this.state.swt);
 
         this.setState({isLoading: true}, () =>
             sendCommand(
@@ -82,9 +91,12 @@ class SeawatProperties extends React.Component<ISeawatPropertiesProps, ISeawatPr
         );
     };
 
-    public handleChangePackage = () => {
+    public handleChangePackage = (p: FlopySeawatPackage | { [index: string]: any }) => {
+        const swt = FlopySeawat.fromObject(this.state.swt);
+        swt.setPackage(p);
+
         return this.setState({
-            seawat: {},
+            swt: swt.toObject(),
             isDirty: true
         });
     };
@@ -94,30 +106,19 @@ class SeawatProperties extends React.Component<ISeawatPropertiesProps, ISeawatPr
         const basePath = path.split(':')[0];
 
         if (!type) {
-            return this.props.history.push(basePath + this.props.model.id + '/mt3d');
+            return this.props.history.push(basePath + this.props.model.id + '/seawat');
         }
 
-        return this.props.history.push(basePath + this.props.model.id + '/mt3d/' + type);
+        return this.props.history.push(basePath + this.props.model.id + '/seawat/' + type);
     };
 
     public renderProperties() {
-        if (!this.state.seawat || !this.props.model) {
+        if (!this.state.swt || !this.props.model || !this.props.transport) {
             return null;
         }
 
-        const seawat = FlopySeawat.fromObject(this.state.seawat);
-        const {boundaries, packages} = this.props;
-
-        const model = this.props.model.toObject();
-        if (!model.stressperiods) {
-            return null;
-        }
-
-        if (!boundaries) {
-            return null;
-        }
-
-        const readOnly = this.props.model.readOnly;
+        const seawat = FlopySeawat.fromObject(this.state.swt);
+        const readOnly = this.props.model.readOnly || false;
         const {type} = this.props.match.params;
 
         switch (type) {
@@ -127,6 +128,7 @@ class SeawatProperties extends React.Component<ISeawatPropertiesProps, ISeawatPr
                         onChange={this.handleChangePackage}
                         readOnly={readOnly}
                         swtPackage={seawat.getPackage('vdf')}
+                        transport={this.props.transport}
                     />
                 );
             case 'vsc':
@@ -135,6 +137,7 @@ class SeawatProperties extends React.Component<ISeawatPropertiesProps, ISeawatPr
                         onChange={this.handleChangePackage}
                         readOnly={readOnly}
                         swtPackage={seawat.getPackage('vsc')}
+                        transport={this.props.transport}
                     />
                 );
             default:
@@ -143,6 +146,7 @@ class SeawatProperties extends React.Component<ISeawatPropertiesProps, ISeawatPr
                         onChange={this.handleChangePackage}
                         readOnly={readOnly}
                         swtPackage={seawat.getPackage('swt')}
+                        transport={this.props.transport}
                     />
                 );
         }
@@ -168,9 +172,9 @@ class SeawatProperties extends React.Component<ISeawatPropertiesProps, ISeawatPr
     };
 
     public render() {
-        const {isDirty, isError, isLoading, seawat} = this.state;
+        const {isDirty, isError, isLoading, swt} = this.state;
 
-        if (!seawat) {
+        if (!swt) {
             return null;
         }
 
@@ -212,8 +216,11 @@ const mapStateToProps = (state: any) => ({
     variableDensity: VariableDensity.fromObject(state.T03.variableDensity)
 });
 
-const mapDispatchToProps = {
-    updatePackages
-};
+const mapDispatchToProps = (dispatch: any): IDispatchProps => ({
+    updatePackages: (packages: FlopyPackages) => dispatch(updatePackages(packages))
+});
 
-export default withRouter(connect(mapStateToProps, mapDispatchToProps)(SeawatProperties));
+export default withRouter(connect<IStateProps, IDispatchProps, IOwnProps>(
+    mapStateToProps,
+    mapDispatchToProps)
+(SeawatProperties));

@@ -1,15 +1,21 @@
-import React, {ChangeEvent, MouseEvent, SyntheticEvent} from 'react';
-import {AccordionTitleProps, DropdownProps, Icon, InputOnChangeData, InputProps, Popup} from 'semantic-ui-react';
-import {FlopyModflowPackage} from '../../../../../../core/model/flopy/packages/mf';
+import React, {ChangeEvent, FocusEvent, MouseEvent, SyntheticEvent} from 'react';
+import {AccordionTitleProps, DropdownProps, Icon, InputOnChangeData, Popup} from 'semantic-ui-react';
+import {FlopySeawatPackage} from '../../../../../../core/model/flopy/packages/swt';
+import {Transport} from '../../../../../../core/model/modflow';
+
+interface IIndexObject {
+    [index: string]: any;
+}
 
 interface IProps {
-    swtPackage: FlopyModflowPackage;
-    onChange: (data: FlopyModflowPackage) => any;
-    readonly: boolean;
+    swtPackage: FlopySeawatPackage;
+    onChange: (data: FlopySeawatPackage | IIndexObject) => any;
+    readOnly: boolean;
+    transport: Transport;
 }
 
 interface IState {
-    swtPackage: any;
+    swtPackage: {[index: string]: any};
     activeIndex: number;
 }
 
@@ -40,11 +46,15 @@ class AbstractPackageProperties extends React.Component<IProps, IState> {
     }
 
     public handleClickAccordion = (e: MouseEvent<HTMLDivElement, MouseEvent>, titleProps: AccordionTitleProps) => {
-        const {index} = titleProps;
-        const {activeIndex} = this.state;
-        const newIndex = index && activeIndex === index ? -1 : parseInt(index, 10);
+        if (!titleProps.index) {
+            return;
+        }
 
-        this.setState({
+        const index = typeof titleProps.index === 'number' ? titleProps.index : parseFloat(titleProps.index);
+        const {activeIndex} = this.state;
+        const newIndex = index && activeIndex === index ? -1 : index;
+
+        return this.setState({
             activeIndex: newIndex
         });
     };
@@ -61,20 +71,21 @@ class AbstractPackageProperties extends React.Component<IProps, IState> {
     };
 
     public handleOnSelect = (e: SyntheticEvent<HTMLElement, Event>, data: DropdownProps) => {
-        const swtPackage = this.props.swtPackage;
+        const swtPackage: IIndexObject = this.props.swtPackage;
         swtPackage[data.name] = data.value;
         this.props.onChange(swtPackage);
     };
 
-    public handleOnBlur = (e: SyntheticEvent<HTMLElement, Event>, data: InputProps) => {
-        const {name, value} = data;
+    public handleOnBlur = (e: FocusEvent<HTMLInputElement>) => {
+        const {name, value} = e.currentTarget;
+
         this.setState({swtPackage: {...this.state.swtPackage, [name]: value}});
-        const swtPackage = this.props.swtPackage;
+        const swtPackage: IIndexObject = this.props.swtPackage;
         swtPackage[name] = value;
         this.props.onChange(swtPackage);
     };
 
-    public renderInfoPopup = (description: string | Node, title: string, position: positionType = 'top left',
+    public renderInfoPopup = (description: JSX.Element, title: string, position: positionType = 'top left',
                               iconOutside = false) => {
         return (
             <Popup

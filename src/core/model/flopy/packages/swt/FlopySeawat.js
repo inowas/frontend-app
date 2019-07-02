@@ -61,11 +61,10 @@ class FlopySeawat {
         if (variableDensity.vdfEnabled) {
             const swtVdf = this.hasPackage('vdf') ? this.getPackage('vdf') : FlopySeawatSwtvdf.create(null, {});
             this.setPackage(swtVdf);
-
-            if (variableDensity.vscEnabled) {
-                const swtVsc = this.hasPackage('vsc') ? this.getPackage('vsc') : FlopySeawatSwtvsc.create(null, {});
-                this.setPackage(swtVsc);
-            }
+        }
+        if (variableDensity.vscEnabled) {
+            const swtVsc = this.hasPackage('vsc') ? this.getPackage('vsc') : FlopySeawatSwtvsc.create(null, {});
+            this.setPackage(swtVsc);
         }
     };
 

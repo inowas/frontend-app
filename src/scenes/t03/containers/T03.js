@@ -269,7 +269,7 @@ class T03 extends React.Component {
             case 'transport':
                 return (<Content.Transport/>);
             case 'variable_density':
-                return (<Content.VariableDensity/>);
+                return (<Content.VariableDensityProperties/>);
             case 'observations':
                 return (<Content.Observations/>);
             case 'modflow':
@@ -319,7 +319,8 @@ class T03 extends React.Component {
         if (!(this.props.model instanceof ModflowModel) ||
             !(this.props.boundaries instanceof BoundaryCollection) ||
             !(this.props.soilmodel instanceof Soilmodel) ||
-            !(this.props.transport instanceof Transport)
+            !(this.props.transport instanceof Transport) ||
+            !(this.props.variableDensity instanceof VariableDensity)
         ) {
             return (
                 <AppContainer navbarItems={navigation}>
@@ -417,6 +418,7 @@ T03.propTypes = {
     packages: PropTypes.instanceOf(FlopyPackages),
     model: PropTypes.instanceOf(ModflowModel),
     soilmodel: PropTypes.instanceOf(Soilmodel),
+    variableDensity: PropTypes.instanceOf(VariableDensity),
     clear: PropTypes.func.isRequired,
     updateModel: PropTypes.func.isRequired,
     updatePackages: PropTypes.func.isRequired,

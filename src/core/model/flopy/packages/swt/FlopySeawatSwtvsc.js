@@ -71,6 +71,22 @@ class FlopySeawatSwtvsc extends FlopySeawatPackage {
 
     set mutempopt(value) {
         value = parseInt(value);
+
+        switch (value) {
+            case 1:
+                this._amucoeff = [0, 0, 0, 0];
+                break;
+            case 2:
+                this._amucoeff = [0, 0, 0, 0, 0];
+                break;
+            case 3:
+                this._amucoeff = [0, 0];
+                break;
+            default:
+                this._amucoeff = null;
+                break;
+        }
+
         this._mutempopt = value;
     }
 

@@ -8,15 +8,23 @@ import ContentToolBar from '../../../../shared/ContentToolbar';
 import {updatePackages, updateVariableDensity} from '../../../actions/actions';
 import Command from '../../../commands/modflowModelCommand';
 
-interface IVariableDensityProps {
+interface IOwnProps {
+    readOnly: boolean;
+}
+
+interface IStateProps {
     model: ModflowModel;
     packages: FlopyPackages;
-    readOnly: boolean;
     transport: Transport;
-    updatePackages: (packages: FlopyPackages) => any;
-    updateVariableDensity: (vd: VariableDensity) => any;
     variableDensity: VariableDensity;
 }
+
+interface IDispatchProps {
+    updatePackages: (packages: FlopyPackages) => any;
+    updateVariableDensity: (variableDensity: VariableDensity) => any;
+}
+
+type Props = IStateProps & IDispatchProps & IOwnProps;
 
 interface IVariableDensityState {
     isDirty: boolean;
@@ -24,9 +32,9 @@ interface IVariableDensityState {
     isLoading: boolean;
 }
 
-class VariableDensityProperties extends React.Component<IVariableDensityProps, IVariableDensityState> {
+class VariableDensityProperties extends React.Component<Props, IVariableDensityState> {
 
-    constructor(props: IVariableDensityProps) {
+    constructor(props: Props) {
         super(props);
         this.state = {
             isDirty: false,
@@ -43,7 +51,7 @@ class VariableDensityProperties extends React.Component<IVariableDensityProps, I
     }
 
     public onSave = () => {
-        const {variableDensity} = this.props;
+        const {packages, variableDensity} = this.props;
         this.setState({isLoading: true});
         return sendCommand(
             Command.updateVariableDensity({
@@ -55,6 +63,13 @@ class VariableDensityProperties extends React.Component<IVariableDensityProps, I
                     isDirty: false,
                     isLoading: false
                 });
+
+                const swt = packages.swt;
+                swt.recalculate(variableDensity);
+                packages.swt = swt;
+
+                this.props.updatePackages(packages);
+                sendCommand(Command.updateFlopyPackages(this.props.model.id, packages));
             }
         );
     };
@@ -128,17 +143,19 @@ class VariableDensityProperties extends React.Component<IVariableDensityProps, I
     }
 }
 
-const mapDispatchToProps = {
-    updatePackages, updateVariableDensity
-};
+const mapDispatchToProps = (dispatch: any): IDispatchProps => ({
+    updatePackages: (packages: FlopyPackages) => dispatch(updatePackages(packages)),
+    updateVariableDensity: (variableDensity: VariableDensity) => dispatch(updateVariableDensity(variableDensity)),
+});
 
 const mapStateToProps = (state: any) => ({
     model: ModflowModel.fromObject(state.T03.model),
     packages: FlopyPackages.fromObject(state.T03.packages),
     transport: Transport.fromObject(state.T03.transport),
-    variableDensity: VariableDensity.fromObject(state.t03.variableDensity)
+    variableDensity: VariableDensity.fromObject(state.T03.variableDensity)
 });
 
-// Todo!
-// @ts-ignore
-export default connect(mapStateToProps, mapDispatchToProps)(VariableDensityProperties);
+export default connect<IStateProps, IDispatchProps, IOwnProps>(
+    mapStateToProps,
+    mapDispatchToProps)
+(VariableDensityProperties);

@@ -26,11 +26,17 @@ class VariableDensity {
         this._vscEnabled = value;
     }
 
-    public static fromObject(obj: IVariableDensity) {
+    public static fromObject(obj: IVariableDensity | []) {
         const variableDensity = new VariableDensity();
-        variableDensity.vdfEnabled = obj.vdfEnabled || false;
-        variableDensity.vscEnabled = obj.vscEnabled || false;
+        if (obj as IVariableDensity) {
+            variableDensity.vdfEnabled = (obj as IVariableDensity).vdfEnabled || false;
+            variableDensity.vscEnabled = (obj as IVariableDensity).vscEnabled || false;
+        }
         return variableDensity;
+    }
+
+    public static fromQuery(obj: IVariableDensity | []) {
+        return VariableDensity.fromObject(obj);
     }
 
     private _vdfEnabled: boolean = false;
