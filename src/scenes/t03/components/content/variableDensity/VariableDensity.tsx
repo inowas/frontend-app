@@ -2,20 +2,20 @@ import * as React from 'react';
 import {connect} from 'react-redux';
 import {Checkbox, CheckboxProps, Form, Grid, Message, Segment} from 'semantic-ui-react';
 import FlopyPackages from '../../../../../core/model/flopy/packages/FlopyPackages';
-import {BoundaryCollection, ModflowModel} from '../../../../../core/model/modflow';
-import {Transport} from '../../../../../core/model/modflow/transport';
-import {VariableDensity} from '../../../../../core/model/modflow/variableDensity';
+import {ModflowModel, Transport, VariableDensity} from '../../../../../core/model/modflow';
 import {sendCommand} from '../../../../../services/api';
 import ContentToolBar from '../../../../shared/ContentToolbar';
+import {updatePackages, updateVariableDensity} from '../../../actions/actions';
 import Command from '../../../commands/modflowModelCommand';
 
 interface IVariableDensityProps {
     model: ModflowModel;
     packages: FlopyPackages;
     readOnly: boolean;
+    transport: Transport;
+    updatePackages: (packages: FlopyPackages) => any;
     updateVariableDensity: (vd: VariableDensity) => any;
     variableDensity: VariableDensity;
-    transport: Transport;
 }
 
 interface IVariableDensityState {
@@ -33,6 +33,13 @@ class VariableDensityProperties extends React.Component<IVariableDensityProps, I
             isError: false,
             isLoading: false
         };
+    }
+
+    public componentDidMount(): void {
+        const {variableDensity} = this.props;
+        const packages = FlopyPackages.fromObject(this.props.packages.toObject());
+        packages.swt.recalculate(variableDensity);
+        this.props.updatePackages(packages);
     }
 
     public onSave = () => {
@@ -64,7 +71,7 @@ class VariableDensityProperties extends React.Component<IVariableDensityProps, I
         const {isDirty, isError, isLoading} = this.state;
 
         return (
-            <Segment color={'grey'}>
+            <Segment color={'grey'} loading={isLoading}>
                 <Grid>
                     <Grid.Row>
                         <Grid.Column width={4}/>
@@ -121,13 +128,17 @@ class VariableDensityProperties extends React.Component<IVariableDensityProps, I
     }
 }
 
-const mapStateToProps = (state: any) => {
-    return {
-        model: ModflowModel.fromObject(state.T03.model),
-        packages: FlopyPackages.fromObject(state.T03.packages),
-        transport: Transport.fromObject(state.T03.transport),
-        variableDensity: VariableDensity.fromObject(state.t03.variableDensity)
-    };
+const mapDispatchToProps = {
+    updatePackages, updateVariableDensity
 };
 
-export default connect(mapStateToProps)(VariableDensityProperties);
+const mapStateToProps = (state: any) => ({
+    model: ModflowModel.fromObject(state.T03.model),
+    packages: FlopyPackages.fromObject(state.T03.packages),
+    transport: Transport.fromObject(state.T03.transport),
+    variableDensity: VariableDensity.fromObject(state.t03.variableDensity)
+});
+
+// Todo!
+// @ts-ignore
+export default connect(mapStateToProps, mapDispatchToProps)(VariableDensityProperties);

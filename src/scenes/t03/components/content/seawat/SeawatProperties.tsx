@@ -1,6 +1,8 @@
 import React from 'react';
 import {connect} from 'react-redux';
 import {withRouter} from 'react-router-dom';
+import {FlopyMt3d} from '../../../../../core/model/flopy/packages/mt';
+import {FlopySeawat} from '../../../../../core/model/flopy/packages/swt';
 import {sendCommand} from '../../../../../services/api';
 import ModflowModelCommand from '../../../commands/modflowModelCommand';
 
@@ -20,6 +22,7 @@ interface ISeawatPropertiesProps {
     boundaries: BoundaryCollection;
     packages: FlopyPackages;
     transport: Transport;
+    variableDensity: VariableDensity;
     updatePackages: (packages: FlopyPackages) => any;
 }
 
@@ -32,7 +35,7 @@ interface ISeawatPropertiesState {
 
 type packageTypes = 'vdf' | 'vsc' | undefined;
 
-type sideBarItems = Array<{id: packageTypes, name: string}>;
+type sideBarItems = Array<{ id: packageTypes, name: string }>;
 
 const sideBar: sideBarItems = [
     {id: undefined, name: 'Overview (SEAWAT)'},
@@ -53,8 +56,9 @@ class SeawatProperties extends React.Component<ISeawatPropertiesProps, ISeawatPr
     }
 
     public componentDidMount() {
-        const {boundaries, transport} = this.props;
+        const {variableDensity} = this.props;
         const packages = FlopyPackages.fromObject(this.props.packages.toObject());
+        packages.swt.recalculate(variableDensity);
         this.props.updatePackages(packages);
     }
 
@@ -101,6 +105,7 @@ class SeawatProperties extends React.Component<ISeawatPropertiesProps, ISeawatPr
             return null;
         }
 
+        const seawat = FlopySeawat.fromObject(this.state.seawat);
         const {boundaries, packages} = this.props;
 
         const model = this.props.model.toObject();
@@ -121,7 +126,7 @@ class SeawatProperties extends React.Component<ISeawatPropertiesProps, ISeawatPr
                     <VdfPackageProperties
                         onChange={this.handleChangePackage}
                         readOnly={readOnly}
-                        swtPackage={}
+                        swtPackage={seawat.getPackage('vdf')}
                     />
                 );
             case 'vsc':
@@ -129,7 +134,7 @@ class SeawatProperties extends React.Component<ISeawatPropertiesProps, ISeawatPr
                     <VscPackageProperties
                         onChange={this.handleChangePackage}
                         readOnly={readOnly}
-                        swtPackage={}
+                        swtPackage={seawat.getPackage('vsc')}
                     />
                 );
             default:
@@ -137,7 +142,7 @@ class SeawatProperties extends React.Component<ISeawatPropertiesProps, ISeawatPr
                     <SeawatPackageProperties
                         onChange={this.handleChangePackage}
                         readOnly={readOnly}
-                        swtPackage={}
+                        swtPackage={seawat.getPackage('swt')}
                     />
                 );
         }

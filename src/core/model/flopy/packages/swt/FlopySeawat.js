@@ -1,9 +1,10 @@
-import {BoundaryCollection, Transport} from '../../../modflow';
-import {FlopySeawatSwt, FlopySeawatSwtvdf} from './index';
+import {VariableDensity} from '../../../modflow';
+import {FlopySeawatSwt, FlopySeawatSwtvdf, FlopySeawatSwtvsc} from './index';
 
 const packagesMap = {
     'swt': FlopySeawatSwt,
     'vdf': FlopySeawatSwtvdf,
+    'vsc': FlopySeawatSwtvsc,
 };
 
 class FlopySeawat {
@@ -12,31 +13,25 @@ class FlopySeawat {
 
     _packages = {};
 
-    static createFromTransport(transport, boundaries) {
+    static createFromVariableDensity(variableDensity) {
 
-        if (!(transport instanceof Transport)) {
-            throw new Error('Expecting instance of Transport')
+        if (!(variableDensity instanceof VariableDensity)) {
+            throw new Error('Expecting instance of VariableDensity')
         }
 
-        if (!(boundaries instanceof BoundaryCollection)) {
-            throw new Error('Expecting instance of BoundaryCollection')
+        const swt = new this();
+        swt.enabled = variableDensity.enabled;
+
+        if (variableDensity.vdfEnabled) {
+            FlopySeawatSwtvdf.create(swt, {});
+
+            if (variableDensity.vscEnabled) {
+                FlopySeawatSwtvsc.create(swt, {});
+            }
         }
 
-        const mt = new this();
-
-        mt.enabled = transport.enabled;
-
-        FlopyMt3dMtbtn.create(mt, {});
-        FlopyMt3dMtadv.create(mt, {});
-        FlopyMt3dMtdsp.create(mt, {});
-        FlopyMt3dMtgcg.create(mt, {});
-
-        const mtSsm = FlopyMt3dMtssm.create(null, {});
-        mtSsm.stress_period_data = FlopyMt3dMtssm.calculateSpData(transport.substances, boundaries);
-        mt.setPackage(mtSsm);
-        return mt;
+        return swt;
     }
-
 
     static fromObject(obj) {
         const self = new this();
@@ -52,36 +47,33 @@ class FlopySeawat {
     }
 
     constructor() {
-        this.setPackage(FlopyMt3dMt.create());
+        this.setPackage(FlopySeawatSwt.create());
     }
 
-    recalculate = (transport, boundaries) => {
+    recalculate = (variableDensity) => {
 
-        if (!(transport instanceof Transport)) {
-            throw new Error('Expecting instance of Transport')
+        if (!(variableDensity instanceof VariableDensity)) {
+            throw new Error('Expecting instance of VariableDensity')
         }
 
-        if (!(boundaries instanceof BoundaryCollection)) {
-            throw new Error('Expecting instance of BoundaryCollection')
+        this.enabled = variableDensity.enabled;
+
+        if (variableDensity.vdfEnabled) {
+            const swtVdf = this.hasPackage('vdf') ? this.getPackage('vdf') : FlopySeawatSwtvdf.create(null, {});
+            this.setPackage(swtVdf);
+
+            if (variableDensity.vscEnabled) {
+                const swtVsc = this.hasPackage('vsc') ? this.getPackage('vsc') : FlopySeawatSwtvsc.create(null, {});
+                this.setPackage(swtVsc);
+            }
         }
-
-        this.enabled = transport.enabled;
-
-        const mtBtn = this.hasPackage('btn') ? this.getPackage('btn') : FlopyMt3dMtbtn.create(null, {});
-        mtBtn.ncomp = transport.substances.length;
-        mtBtn.mcomp = transport.substances.length;
-        mtBtn.species_names = transport.substances.all.map(s => s.name);
-        this.setPackage(mtBtn);
-
-        const mtSsm = this.hasPackage('ssm') ? this.getPackage('ssm') : FlopyMt3dMtssm.create(null, {});
-        mtSsm.stress_period_data = FlopyMt3dMtssm.calculateSpData(transport.substances, boundaries);
-        this.setPackage(mtSsm);
     };
 
     get enabled() {
         return this._enabled;
     }
 
+    // noinspection JSUnusedGlobalSymbols
     toggleEnabled() {
         this._enabled = !this._enabled;
     }

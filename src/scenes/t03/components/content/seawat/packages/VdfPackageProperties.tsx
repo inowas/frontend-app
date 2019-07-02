@@ -1,10 +1,6 @@
 import React from 'react';
 import {Form, Input} from 'semantic-ui-react';
-
-import {FlopyModflowMfriv} from '../../../../../../core/model/flopy/packages/mf';
-import {GridSize} from '../../../../../../core/model/modflow';
 import InfoPopup from '../../../../../shared/InfoPopup';
-import {RasterDataImage} from '../../../../../shared/rasterData';
 import {documentation} from '../../../../defaults/flow';
 import AbstractPackageProperties from './AbstractPackageProperties';
 

@@ -1,6 +1,11 @@
 import {IVariableDensity} from './VariableDensity.type';
 
 class VariableDensity {
+
+    get enabled() {
+        return this._vdfEnabled;
+    }
+
     get vdfEnabled() {
         return this._vdfEnabled;
     }
@@ -23,8 +28,8 @@ class VariableDensity {
 
     public static fromObject(obj: IVariableDensity) {
         const variableDensity = new VariableDensity();
-        variableDensity.vdfEnabled = obj.vdfEnabled;
-        variableDensity.vscEnabled = obj.vscEnabled;
+        variableDensity.vdfEnabled = obj.vdfEnabled || false;
+        variableDensity.vscEnabled = obj.vscEnabled || false;
         return variableDensity;
     }
 
@@ -39,4 +44,4 @@ class VariableDensity {
     };
 }
 
-export default Transport;
+export default VariableDensity;
