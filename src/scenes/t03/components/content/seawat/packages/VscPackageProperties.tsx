@@ -71,7 +71,7 @@ class VscPackageProperties extends AbstractPackageProperties {
                             disabled={readOnly}
                             onBlur={this.handleOnBlur}
                             onChange={this.handleOnChange}
-                            icon={renderInfoPopup(documentation.viscmin, 'viscmin')}
+                            icon={renderInfoPopup(documentation.viscmin, 'viscmin', 'bottom left')}
                             type="number"
                         />
                     </Form.Field>
@@ -83,7 +83,7 @@ class VscPackageProperties extends AbstractPackageProperties {
                             disabled={readOnly}
                             onBlur={this.handleOnBlur}
                             onChange={this.handleOnChange}
-                            icon={renderInfoPopup(documentation.viscmax, 'viscmax')}
+                            icon={renderInfoPopup(documentation.viscmax, 'viscmax', 'bottom right')}
                             type="number"
                         />
                     </Form.Field>
@@ -97,7 +97,7 @@ class VscPackageProperties extends AbstractPackageProperties {
                             disabled={readOnly}
                             onBlur={this.handleOnBlur}
                             onChange={this.handleOnChange}
-                            icon={renderInfoPopup(documentation.viscref, 'viscref')}
+                            icon={renderInfoPopup(documentation.viscref, 'viscref', 'bottom right')}
                             type="number"
                         />
                     </Form.Field>
@@ -111,7 +111,7 @@ class VscPackageProperties extends AbstractPackageProperties {
                             disabled={readOnly}
                             onBlur={this.handleOnBlur}
                             onChange={this.handleOnChange}
-                            icon={renderInfoPopup(documentation.dmudc, 'dmudc')}
+                            icon={renderInfoPopup(documentation.dmudc, 'dmudc', 'bottom right')}
                             type="number"
                         />
                     </Form.Field>
@@ -125,7 +125,7 @@ class VscPackageProperties extends AbstractPackageProperties {
                             disabled={readOnly}
                             onBlur={this.handleOnBlur}
                             onChange={this.handleOnChange}
-                            icon={renderInfoPopup(documentation.cmuref, 'cmuref')}
+                            icon={renderInfoPopup(documentation.cmuref, 'cmuref', 'top right')}
                             type="number"
                         />
                     </Form.Field>
@@ -153,7 +153,7 @@ class VscPackageProperties extends AbstractPackageProperties {
                         <InfoPopup
                             description={documentation.mutempopt}
                             title="MUTEMPOPT"
-                            position="bottom right"
+                            position="top right"
                             iconOutside={true}
                         />
                     </Form.Field>
@@ -229,7 +229,7 @@ class VscPackageProperties extends AbstractPackageProperties {
                     <InfoPopup
                         description={documentation.amucoeff}
                         title="AMUCOEFF"
-                        position="bottom right"
+                        position="top right"
                         iconOutside={true}
                     />
                 </Form.Field>
