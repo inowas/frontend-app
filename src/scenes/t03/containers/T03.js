@@ -19,7 +19,9 @@ import {
     updateModel,
     updateOptimization,
     updatePackages,
-    updateSoilmodel, updateTransport
+    updateSoilmodel,
+    updateTransport,
+    updateVariableDensity
 } from '../actions/actions';
 
 import {
@@ -27,7 +29,9 @@ import {
     BoundaryFactory,
     Calculation,
     ModflowModel,
-    Soilmodel, Transport,
+    Soilmodel,
+    Transport,
+    VariableDensity
 } from '../../../core/model/modflow';
 import ModflowModelCommand from '../commands/modflowModelCommand';
 import CalculationProgressBar from '../components/content/calculation/calculationProgressBar';
@@ -147,6 +151,7 @@ class T03 extends React.Component {
                     this.fetchPackages(id);
                     this.fetchSoilmodel(id);
                     this.fetchTransport(id);
+                    this.fetchVariableDensity(id);
 
                     if (modflowModel.calculationId) {
                         fetchCalculationDetails(modflowModel.calculationId,
@@ -208,6 +213,16 @@ class T03 extends React.Component {
         );
     };
 
+    fetchVariableDensity(id) {
+        fetchUrl(`modflowmodels/${id}/variableDensity`,
+            data => this.props.updateVariableDensity(VariableDensity.fromQuery(data)),
+            error => this.setState(
+                {error, isLoading: false},
+                () => this.handleError(error)
+            )
+        );
+    }
+
     calculatePackages = () => {
         return new Promise((resolve, reject) => {
             this.setState({calculatePackages: 'calculation'});
@@ -253,12 +268,16 @@ class T03 extends React.Component {
                 return (<Content.Boundaries types={['hob']}/>);
             case 'transport':
                 return (<Content.Transport/>);
+            case 'variable_density':
+                return (<Content.VariableDensityProperties/>);
             case 'observations':
                 return (<Content.Observations/>);
             case 'modflow':
                 return (<Content.Modflow/>);
             case 'mt3d':
                 return (<Content.Mt3d/>);
+            case 'seawat':
+                return (<Content.Seawat/>);
             case 'calculation':
                 return (<Content.Calculation/>);
             case 'flow':
@@ -300,7 +319,8 @@ class T03 extends React.Component {
         if (!(this.props.model instanceof ModflowModel) ||
             !(this.props.boundaries instanceof BoundaryCollection) ||
             !(this.props.soilmodel instanceof Soilmodel) ||
-            !(this.props.transport instanceof Transport)
+            !(this.props.transport instanceof Transport) ||
+            !(this.props.variableDensity instanceof VariableDensity)
         ) {
             return (
                 <AppContainer navbarItems={navigation}>
@@ -372,7 +392,8 @@ const mapStateToProps = state => ({
     calculation: state.T03.calculation ? Calculation.fromObject(state.T03.calculation) : null,
     packages: state.T03.packages ? FlopyPackages.fromObject(state.T03.packages) : null,
     soilmodel: state.T03.soilmodel ? Soilmodel.fromObject(state.T03.soilmodel) : null,
-    transport: state.T03.transport ? Transport.fromObject(state.T03.transport) : null
+    transport: state.T03.transport ? Transport.fromObject(state.T03.transport) : null,
+    variableDensity: state.T03.variableDensity ? VariableDensity.fromObject(state.T03.variableDensity) : null
 });
 
 const mapDispatchToProps = {
@@ -383,7 +404,8 @@ const mapDispatchToProps = {
     updateModel,
     updateOptimization,
     updateTransport,
-    updateSoilmodel
+    updateSoilmodel,
+    updateVariableDensity
 };
 
 
@@ -396,12 +418,14 @@ T03.propTypes = {
     packages: PropTypes.instanceOf(FlopyPackages),
     model: PropTypes.instanceOf(ModflowModel),
     soilmodel: PropTypes.instanceOf(Soilmodel),
+    variableDensity: PropTypes.instanceOf(VariableDensity),
     clear: PropTypes.func.isRequired,
     updateModel: PropTypes.func.isRequired,
     updatePackages: PropTypes.func.isRequired,
     updateBoundaries: PropTypes.func.isRequired,
     updateOptimization: PropTypes.func.isRequired,
     updateSoilmodel: PropTypes.func.isRequired,
+    updateVariableDensity: PropTypes.func.isRequired
 };
 
 export default withRouter(connect(mapStateToProps, mapDispatchToProps)(T03));

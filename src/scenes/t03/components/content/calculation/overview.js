@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-import {Calculation, ModflowModel, Soilmodel} from '../../../../../core/model/modflow';
+import {Calculation, ModflowModel, Soilmodel, VariableDensity} from '../../../../../core/model/modflow';
 import {Button, Grid, Header, Segment} from 'semantic-ui-react';
 import RunModelOverviewMap from '../../maps/runModelOverviewMap';
 import {connect} from 'react-redux';
@@ -29,12 +29,16 @@ class Overview extends React.Component {
     }
 
     componentDidMount() {
-        const {boundaries, model, soilmodel, transport} = this.props;
+        const {boundaries, model, soilmodel, transport, variableDensity} = this.props;
         const packages = FlopyPackages.fromObject(this.props.packages.toObject());
         packages.mf.recalculate(model, soilmodel, boundaries);
 
         if (transport.enabled) {
             packages.mt.recalculate(transport, boundaries);
+        }
+
+        if (variableDensity.enabled) {
+            packages.swt.recalculate(variableDensity);
         }
 
         this.props.updatePackages(packages);
@@ -200,6 +204,7 @@ const mapStateToProps = state => ({
     packages: FlopyPackages.fromObject(state.T03.packages),
     soilmodel: Soilmodel.fromObject(state.T03.soilmodel),
     transport: Transport.fromObject(state.T03.transport),
+    variableDensity: VariableDensity.fromObject(state.T03.variableDensity)
 });
 
 const mapDispatchToProps = {
@@ -213,6 +218,7 @@ Overview.propTypes = {
     packages: PropTypes.instanceOf(FlopyPackages).isRequired,
     soilmodel: PropTypes.instanceOf(Soilmodel).isRequired,
     transport: PropTypes.instanceOf(Transport).isRequired,
+    variableDensity: PropTypes.instanceOf(VariableDensity).isRequired,
     updateCalculation: PropTypes.func.isRequired,
     updatePackages: PropTypes.func.isRequired,
 };

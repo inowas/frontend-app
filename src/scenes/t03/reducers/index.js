@@ -6,6 +6,7 @@ import optimization from './optimization';
 import packages from './packages';
 import soilmodel from './soilmodel';
 import transport from './transport';
+import variableDensity from './variableDensity';
 
 const T03 = combineReducers({
     boundaries,
@@ -14,7 +15,8 @@ const T03 = combineReducers({
     optimization,
     packages,
     soilmodel,
-    transport
+    transport,
+    variableDensity
 });
 
 export default T03;
