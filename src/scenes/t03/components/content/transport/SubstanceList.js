@@ -14,41 +14,42 @@ const SubstanceList = ({addSubstance, substances, onClick, onRemove, selected}) 
 
     return (
         <div>
-            <Button positive icon='plus' labelPosition='left'
-                    onClick={addSubstance}
-                    content={'Add Substance'}
-            >
-            </Button>
-            <Menu fluid vertical tabular>
-                {substances.all.map((substance, idx) => (
-                    <Menu.Item
-                        name={substance.name}
-                        key={substance.id}
-                        active={substance.id === selected}
-                        onClick={() => onClick(substance.id)}
-                    >
-                        <Popup
-                            trigger={<Icon name='ellipsis horizontal'/>}
-                            content={
-                                <div>
-                                    <Button.Group size='small'>
-                                        <Popup
-                                            trigger={<Button icon={'trash'}
-                                                             onClick={(e) => onRemoveClick(e, substance.id)}/>}
-                                            content='Delete'
-                                            position='top center'
-                                            size='mini'
-                                        />
-                                    </Button.Group>
-                                </div>
-                            }
-                            on={'click'}
-                            position={'right center'}
-                        />
-                        {idx}: {substance.name}
-                    </Menu.Item>
-                ))}
-            </Menu>
+            <Menu.Item>
+                <Button positive icon='plus' labelPosition='left'
+                        onClick={addSubstance}
+                        content={'Add Substance'}
+                        style={{marginLeft: '-20px', width: '200px'}}
+                >
+                </Button>
+            </Menu.Item>
+            {substances.all.map((substance, idx) => (
+                <Menu.Item
+                    name={substance.name}
+                    key={substance.id}
+                    active={substance.id === selected}
+                    onClick={() => onClick(substance.id)}
+                >
+                    <Popup
+                        trigger={<Icon name='ellipsis horizontal'/>}
+                        content={
+                            <div>
+                                <Button.Group size='small'>
+                                    <Popup
+                                        trigger={<Button icon={'trash'}
+                                                         onClick={(e) => onRemoveClick(e, substance.id)}/>}
+                                        content='Delete'
+                                        position='top center'
+                                        size='mini'
+                                    />
+                                </Button.Group>
+                            </div>
+                        }
+                        on={'click'}
+                        position={'right center'}
+                    />
+                    {idx}: {substance.name}
+                </Menu.Item>
+            ))}
         </div>
     );
 };

@@ -42,21 +42,26 @@ class Substance {
     }
 
     set boundaryConcentrations(values) {
-        this._boundaryConcentrations = values
+        this._boundaryConcentrations = values.map(v => (
+            {
+                id: v.id,
+                concentrations: v.concentrations.map(n => n ? parseFloat(n) : 0)
+            }
+        ))
     }
 
     addBoundaryId = (id) => {
-        this._boundaryConcentrations.push({id: id, concentration: 0});
+        this._boundaryConcentrations.push({id: id, concentrations: []});
     };
 
     removeBoundaryId = (id) => {
         this._boundaryConcentrations = this._boundaryConcentrations.filter(bc => bc.id !== id);
     };
 
-    updateConcentration = (boundaryId, concentration) => {
+    updateConcentrations = (boundaryId, concentrations) => {
         this._boundaryConcentrations.map(bc => {
             if (bc.id === boundaryId) {
-                bc.concentration = concentration;
+                bc.concentrations = concentrations;
             }
 
             return bc;
