@@ -112,7 +112,6 @@ class FlopySeawat {
         return type;
     }
 
-
     getPackage(name) {
         if (!this._packages[name]) {
             throw new Error('Package not found');

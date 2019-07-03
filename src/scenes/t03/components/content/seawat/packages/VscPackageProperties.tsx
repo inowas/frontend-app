@@ -41,13 +41,13 @@ class VscPackageProperties extends AbstractPackageProperties {
             <Form>
                 <Form.Group>
                     <Form.Field width={15}>
-                        <label>Select substance to compute fluid viscosity (mt3dmuflg or mt3drhoflg)</label>
+                        <label>Select substance to compute fluid viscosity (mtmuspec)</label>
                         <Form.Dropdown
                             options={options}
-                            placeholder="Select mt3dmuflg"
-                            name="mt3dmuflg"
+                            placeholder="Select mtmuspec"
+                            name="mtmuspec"
                             selection={true}
-                            value={swtPackage.mt3dmuflg || -1}
+                            value={swtPackage.mtmuspec || 0}
                             readOnly={readOnly}
                             onChange={this.handleOnSelect}
                         />
@@ -55,8 +55,8 @@ class VscPackageProperties extends AbstractPackageProperties {
                     <Form.Field width={1}>
                         <label>&nbsp;</label>
                         <InfoPopup
-                            description={documentation.mt3drhoflg}
-                            title="MT3DRHOFLG"
+                            description={documentation.mtmuspec}
+                            title="MTMUSPEC"
                             position="bottom right"
                             iconOutside={true}
                         />

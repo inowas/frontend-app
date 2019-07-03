@@ -37,7 +37,7 @@ class Overview extends React.Component {
             packages.mt.recalculate(transport, boundaries);
         }
 
-        if (variableDensity.enabled()) {
+        if (variableDensity.enabled) {
             packages.swt.recalculate(variableDensity);
         }
 
