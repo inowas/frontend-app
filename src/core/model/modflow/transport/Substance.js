@@ -45,7 +45,7 @@ class Substance {
         this._boundaryConcentrations = values.map(v => (
             {
                 id: v.id,
-                concentrations: v.concentrations.map(n => parseFloat(n))
+                concentrations: v.concentrations.map(n => n ? parseFloat(n) : 0)
             }
         ))
     }
