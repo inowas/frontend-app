@@ -45,6 +45,10 @@ class ContentToolBar extends React.Component {
             message = null;
         }
 
+        if (nextProps.message) {
+            message = nextProps.message;
+        }
+
         if (hasBeenSaved || error || notSaved) {
             this.setState({
                 visible: true,
@@ -94,10 +98,11 @@ class ContentToolBar extends React.Component {
         const visible = typeof this.props.visible === 'boolean' ? this.props.visible : true;
         const saveButton = typeof this.props.saveButton === 'boolean' ? this.props.saveButton : true;
         const isValid = typeof this.props.isValid === 'boolean' ? this.props.isValid : true;
+        const isError = typeof this.props.isError === 'boolean' ? this.props.isError : true;
         const message = this.state.message;
         const {isDirty} = this.props;
 
-        const canBeSaved = isDirty && isValid;
+        const canBeSaved = isDirty && isValid && !isError;
 
         if (visible) {
             return (
@@ -120,7 +125,6 @@ class ContentToolBar extends React.Component {
                                          warning={message.warning || false}
                                          className='thinMessage'
                                 >
-                                    {message.icon}
                                     {message.content}
                                 </Message>
                             </Transition>

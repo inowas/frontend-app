@@ -66,7 +66,7 @@ class FlopyMt3dMtssm extends FlopyMt3dPackage {
 
             substance.boundaryConcentrations.forEach(bc => {
                 const boundaryId = bc.id;
-                let concentration = bc.concentration;
+                let concentration = bc.concentrations;
                 if (!Array.isArray(concentration)) {
                     concentration = [concentration];
                 }

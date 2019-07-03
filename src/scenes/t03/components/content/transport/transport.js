@@ -5,7 +5,7 @@ import {withRouter} from 'react-router-dom';
 import {connect} from 'react-redux';
 import {Substance, Transport} from '../../../../../core/model/modflow/transport';
 import PropTypes from 'prop-types';
-import {Checkbox, Form, Grid, Segment} from 'semantic-ui-react';
+import {Button, Grid, Menu, Segment} from 'semantic-ui-react';
 import SubstanceList from './SubstanceList';
 import ContentToolBar from '../../../../shared/ContentToolbar';
 import SubstanceDetails from './SubstanceDetails';
@@ -31,7 +31,7 @@ class TransportUi extends React.Component {
         }
     }
 
-    componentWillReceiveProps(nextProps, nextContext) {
+    componentWillReceiveProps(nextProps) {
         if (!this.state.selectedSubstanceId && nextProps.transport.substances.length > 0) {
             this.handleSubstanceListClick(nextProps.transport.substances.first.id);
         }
@@ -120,38 +120,44 @@ class TransportUi extends React.Component {
                 <Grid>
                     <Grid.Row>
                         <Grid.Column width={4}>
-                            <SubstanceList
-                                addSubstance={this.handleAddSubstance}
-                                onClick={this.handleSubstanceListClick}
-                                onRemove={this.handleRemoveSubstance}
-                                selected={selectedSubstanceId}
-                                substances={substances}
-                            />
+                            <Menu fluid vertical tabular>
+                                <Menu.Item>
+                                    <Button
+                                        negative={!transport.enabled}
+                                        positive={transport.enabled}
+                                        icon={transport.enabled ? 'toggle on' : 'toggle off'}
+                                        labelPosition='left'
+                                        onClick={this.handleToggleEnabled}
+                                        content={transport.enabled ? 'Enabled' : 'Disabled'}
+                                        style={{marginLeft: '-20px', width: '200px'}}
+                                    />
+                                </Menu.Item>
+                                <SubstanceList
+                                    addSubstance={this.handleAddSubstance}
+                                    onClick={this.handleSubstanceListClick}
+                                    onRemove={this.handleRemoveSubstance}
+                                    selected={selectedSubstanceId}
+                                    substances={substances}
+                                />
+                            </Menu>
                         </Grid.Column>
                         <Grid.Column width={12}>
                             <div>
                                 <ContentToolBar
-                                    isDirty={isDirty && selectedSubstance.boundaryConcentrations.length > 0}
-                                    isError={isError}
+                                    isDirty={isDirty}
+                                    isError={isError || (selectedSubstance && selectedSubstance.boundaryConcentrations.length === 0)}
                                     visible={!readOnly}
+                                    message={(selectedSubstance && selectedSubstance.boundaryConcentrations.length === 0) ?
+                                            {warning: true, content: 'No Boundary'} : null}
                                     save
                                     onSave={this.onSave}
                                 />
-                                <Form style={{marginTop:'1rem'}}>
-                                    <Form.Field>
-                                        <label>Enabled</label>
-                                        <Checkbox
-                                            checked={transport.enabled}
-                                            onChange={this.handleToggleEnabled}
-                                            disabled={readOnly}
-                                        />
-                                    </Form.Field>
-                                </Form>
                                 <SubstanceDetails
                                     substance={selectedSubstance}
                                     boundaries={boundaries}
                                     onChange={this.handleChangeSubstance}
                                     readOnly={readOnly}
+                                    stressperiods={model.stressperiods}
                                 />
                             </div>
                         </Grid.Column>
