@@ -8,7 +8,7 @@ class FlopySeawatSwt extends FlopySeawatPackage {
     _mt3dmodel = null;
     _version = 'seawat';
     _exe_name = 'swtv4';
-    _structures = true;
+    _structured = true;
     _listunit = 2;
     _model_ws = '.';
     _external_path = null;
@@ -64,12 +64,12 @@ class FlopySeawatSwt extends FlopySeawatPackage {
         this._exe_name = value;
     }
 
-    get structures() {
-        return this._structures;
+    get structured() {
+        return this._structured;
     }
 
-    set structures(value) {
-        this._structures = value;
+    set structured(value) {
+        this._structured = value;
     }
 
     get listunit() {
