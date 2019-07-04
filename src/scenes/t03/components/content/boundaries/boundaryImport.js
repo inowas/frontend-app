@@ -190,7 +190,7 @@ class BoundariesImport extends React.Component {
     }
 }
 
-BoundariesImport.prototypes = {
+BoundariesImport.propTypes = {
     onChange: Proptypes.func.isRequired,
     timeunit: Proptypes.number
 };

@@ -33,7 +33,10 @@ class Observations extends React.Component {
             return;
         }
 
-        this.fetchFile('mf.hob.stat');
+        const filteredFiles = this.props.calculation.files.filter(f => f.endsWith('.hob.stat'));
+        if (filteredFiles.length > 0) {
+            this.fetchFile(filteredFiles[0]);
+        }
     }
 
     fetchFile = (file) => {
@@ -50,8 +53,10 @@ class Observations extends React.Component {
         this.setState({isLoading: true}, () =>
             fetchModflowFile(calculationId, file,
                 fileData => {
-                    const {content} = fileData;
-                    const calibrationData = JSON.parse(content.replace(/\bNaN\b/g, 'null'));
+                    let {content} = fileData;
+                    content = content.replace(/\bNaN\b/g, 'null');
+                    content = content.replace(/\bInfinity\b/g, 'null');
+                    const calibrationData = JSON.parse(content);
                     if (!calibrationData.hasOwnProperty('error')) {
                         this.setState({
                             calibrationData,

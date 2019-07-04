@@ -1,4 +1,4 @@
-import {REMOVE_BOUNDARY, UPDATE_BOUNDARIES} from '../reducers/boundaries';
+import {UPDATE_BOUNDARIES} from '../reducers/boundaries';
 import {UPDATE_CALCULATION} from '../reducers/calculation';
 import {CLEAR, UPDATE_MODEL, UPDATE_MT3DMS, UPDATE_STRESSPERIODS} from '../reducers/model';
 import {

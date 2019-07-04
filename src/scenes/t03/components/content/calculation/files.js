@@ -2,11 +2,11 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import {connect} from 'react-redux';
 
-import {Calculation} from '../../../../../core/model/modflow';
+import {Calculation, ModflowModel} from '../../../../../core/model/modflow';
 import {Grid, Header, List, Segment} from 'semantic-ui-react';
 import Terminal from '../../../../shared/complexTools/Terminal';
 
-import {fetchModflowFile} from '../../../../../services/api';
+import {fetchModflowFile, MODFLOW_CALCULATION_URL} from '../../../../../services/api';
 
 class Files extends React.Component {
 
@@ -15,27 +15,22 @@ class Files extends React.Component {
         this.state = {
             isLoading: false,
             isError: false,
-            selectedFile: this.props.type === 'modflow' ? 'mf.list' : 'mt.list',
+            selectedFile: null,
             file: null
         };
     }
 
     componentDidMount() {
+
         if (!this.props.calculation) {
             return;
         }
 
-        switch (this.props.type) {
-            case 'mf':
-                this.setState({selectedFile: 'mf.list'}, this.fetchFile);
-                break;
-            case 'mt':
-                this.setState({selectedFile: 'mt.list'}, this.fetchFile);
-                break;
-            default:
-                this.setState({selectedFile: 'mf.list'}, this.fetchFile);
-                break;
-        }
+        this.props.calculation.files.forEach(f => {
+            if (f.endsWith('.list')) {
+                this.setState({selectedFile: f}, this.fetchFile);
+            }
+        });
     }
 
 
@@ -75,15 +70,9 @@ class Files extends React.Component {
         const {selectedFile} = this.state;
 
         let {files} = calculation;
-        if (this.props.type === 'mf') {
-            files = files.filter(f => !f.toLowerCase().startsWith('mt'))
-                .sort((a, b) => a.localeCompare(b, undefined, {sensitivity: 'base'}))
-        }
 
-        if (this.props.type === 'mt') {
-            files = files.filter(f => !f.toLowerCase().startsWith('mf'))
-                .sort((a, b) => a.localeCompare(b, undefined, {sensitivity: 'base'}))
-        }
+        files = files.filter(f => !f.toLowerCase().startsWith('mt'))
+            .sort((a, b) => a.localeCompare(b, undefined, {sensitivity: 'base'}));
 
         return (
             <Grid>
@@ -104,6 +93,12 @@ class Files extends React.Component {
 
                             </List>
                         </Segment>
+                        {!this.props.readOnly &&
+                        <a className="ui button positive fluid" href={`${MODFLOW_CALCULATION_URL}/${calculation.id}/download`} target="_blank"
+                           rel="noopener noreferrer">
+                            Download
+                        </a>
+                        }
                     </Grid.Column>
                     <Grid.Column width={12}>
                         <Header as={'h3'}>Content file: {this.state.selectedFile}</Header>
@@ -117,15 +112,14 @@ class Files extends React.Component {
     }
 }
 
-const mapStateToProps = state => {
-    return {
-        calculation: state.T03.calculation ? Calculation.fromObject(state.T03.calculation) : null
-    };
-};
+const mapStateToProps = state => ({
+    calculation: state.T03.calculation ? Calculation.fromObject(state.T03.calculation) : null,
+    readOnly: state.T03.model ? ModflowModel.fromObject(state.T03.model).readOnly : false
+});
 
 Files.propTypes = {
     calculation: PropTypes.instanceOf(Calculation),
-    type: PropTypes.string.isRequired
+    readOnly: PropTypes.bool,
 };
 
 export default connect(mapStateToProps)(Files);
