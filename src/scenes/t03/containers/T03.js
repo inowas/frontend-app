@@ -122,6 +122,19 @@ class T03 extends React.Component {
                         return i;
                     }
 
+                    if (i.property === 'observations') {
+                        if (nextProps.boundaries.countByType('hob') > 0 &&
+                            calculationState === CALCULATION_STATE_FINISHED
+                            // TODO: case if calculation is finished and hobs created afterwards
+                        ) {
+                            i.disabled = false;
+                            return i;
+                        }
+
+                        i.disabled = true;
+                        return i;
+                    }
+
                     return i;
                 });
 
