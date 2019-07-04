@@ -15,6 +15,7 @@ import {
     DspPackageProperties,
     GcgPackageProperties,
     MtPackageProperties,
+    RctPackageProperties,
     SsmPackageProperties
 } from './mt';
 import ContentToolBar from '../../../../shared/ContentToolbar';
@@ -27,6 +28,7 @@ const sideBar = [
     {id: 'btn', name: 'Basic package'},
     {id: 'adv', name: 'Advection package'},
     {id: 'dsp', name: 'Dispersion package'},
+    {id: 'rct', name: 'Reaction package'},
     {id: 'ssm', name: 'Source/Sink Package'},
     {id: 'gcg', name: 'Matrix solver package'}
 ];
@@ -146,6 +148,14 @@ class Mt3dProperties extends React.Component {
                         mtPackage={mt3d.getPackage(type)}
                         onChange={this.handleChangePackage}
                         readonly={readOnly}
+                    />
+                );
+            case 'rct':
+                return (
+                    <RctPackageProperties
+                        mtPackage={mt3d.getPackage(type)}
+                        onChange={this.handleChangePackage}
+                        readOnly={readOnly}
                     />
                 );
             case 'ssm':
