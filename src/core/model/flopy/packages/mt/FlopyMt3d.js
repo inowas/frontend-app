@@ -3,6 +3,7 @@ import FlopyMt3dMtbtn from './FlopyMt3dMtbtn';
 import FlopyMt3dMtdsp from './FlopyMt3dMtdsp';
 import FlopyMt3dMtgcg from './FlopyMt3dMtgcg';
 import FlopyMt3dMt from './FlopyMt3dMt';
+import FlopyMt3dMtrct from "./FlopyMt3dMtrct";
 import FlopyMt3dMtssm from './FlopyMt3dMtssm';
 
 import {BoundaryCollection, Transport} from '../../../modflow';
@@ -13,6 +14,7 @@ const packagesMap = {
     'btn': FlopyMt3dMtbtn,
     'dsp': FlopyMt3dMtdsp,
     'gcg': FlopyMt3dMtgcg,
+    'rct': FlopyMt3dMtrct,
     'ssm': FlopyMt3dMtssm
 };
 
@@ -40,6 +42,7 @@ class FlopyMt3d {
         FlopyMt3dMtadv.create(mt, {});
         FlopyMt3dMtdsp.create(mt, {});
         FlopyMt3dMtgcg.create(mt, {});
+        FlopyMt3dMtrct.create(mt, {});
 
         const mtSsm = FlopyMt3dMtssm.create(null, {});
         mtSsm.stress_period_data = FlopyMt3dMtssm.calculateSpData(transport.substances, boundaries);
@@ -82,6 +85,10 @@ class FlopyMt3d {
         mtBtn.mcomp = transport.substances.length;
         mtBtn.species_names = transport.substances.all.map(s => s.name);
         this.setPackage(mtBtn);
+
+        if (!this.hasPackage('rct')) {
+            this.setPackage(FlopyMt3dMtrct.create(this, {}));
+        }
 
         const mtSsm = this.hasPackage('ssm') ? this.getPackage('ssm') : FlopyMt3dMtssm.create(null, {});
         mtSsm.stress_period_data = FlopyMt3dMtssm.calculateSpData(transport.substances, boundaries);
