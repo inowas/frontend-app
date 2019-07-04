@@ -47,13 +47,6 @@ export function updateStressperiods(stressperiods) {
     };
 }
 
-export function removeBoundary(id) {
-    return {
-        type: REMOVE_BOUNDARY,
-        payload: id
-    };
-}
-
 export function updateBoundaries(boundaryCollection) {
     if (!(boundaryCollection instanceof BoundaryCollection)) {
         throw new Error('BoundaryCollection is expected to be instance of BoundaryCollection');

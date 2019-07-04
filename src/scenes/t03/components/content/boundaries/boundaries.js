@@ -7,7 +7,7 @@ import {Grid, Segment} from 'semantic-ui-react';
 import BoundaryList from './boundaryList';
 import BoundaryDetails from './boundaryDetails';
 import {BoundaryCollection, ModflowModel, Soilmodel} from '../../../../../core/model/modflow';
-import {removeBoundary, updateBoundaries, updateModel} from '../../../actions/actions';
+import {updateBoundaries, updateModel} from '../../../actions/actions';
 import {BoundaryFactory} from '../../../../../core/model/modflow/boundaries';
 import ContentToolBar from '../../../../../scenes/shared/ContentToolbar';
 import ModflowModelCommand from '../../../commands/modflowModelCommand';
@@ -122,7 +122,8 @@ class Boundaries extends React.Component {
         const model = this.props.model;
         return sendCommand(ModflowModelCommand.removeBoundary(model.id, boundaryId),
             () => {
-                this.props.removeBoundary(boundaryId);
+                const boundaries = this.props.boundaries.removeById(boundaryId);
+                this.props.updateBoundaries(boundaries);
                 this.redirectToFirstBoundary(this.props);
             },
             () => this.setState({error: true})
@@ -225,7 +226,7 @@ const mapStateToProps = (state, props) => {
 };
 
 const mapDispatchToProps = {
-    removeBoundary, updateBoundaries, updateModel
+    updateBoundaries, updateModel
 };
 
 Boundaries.propTypes = {
