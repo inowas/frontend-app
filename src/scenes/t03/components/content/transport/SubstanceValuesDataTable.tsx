@@ -3,12 +3,8 @@ import React, {ChangeEvent} from 'react';
 import {Input, InputOnChangeData, Table} from 'semantic-ui-react';
 import {Boundary, Stressperiods} from '../../../../../core/model/modflow';
 import {Substance} from '../../../../../core/model/modflow/transport';
+import {IBoundaryConcentration} from '../../../../../core/model/modflow/transport/Substance.type';
 import NoContent from '../../../../shared/complexTools/noContent';
-
-interface IBoundaryConcentration {
-    id: string;
-    concentrations: number[];
-}
 
 interface IProps {
     selectedBoundaryId: string;
@@ -22,7 +18,7 @@ interface IState {
     spValues: Array<number | string>;
 }
 
-export class SubstanceValuesDataTable extends React.Component<IProps, IState> {
+export default class SubstanceValuesDataTable extends React.Component<IProps, IState> {
 
     constructor(props: IProps) {
         super(props);
@@ -65,7 +61,15 @@ export class SubstanceValuesDataTable extends React.Component<IProps, IState> {
             if (bc.id === this.props.selectedBoundaryId) {
                 return {
                     id: bc.id,
-                    concentrations: this.state.spValues
+                    concentrations: this.state.spValues.map((v: string | number) => {
+                        if (!v || v === '') {
+                            return 0;
+                        }
+                        if (typeof v === 'string') {
+                            return parseFloat(v);
+                        }
+                        return v;
+                    })
                 };
             }
             return bc;

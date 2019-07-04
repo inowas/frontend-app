@@ -42,6 +42,7 @@ import {FlopyModflow} from '../../../core/model/flopy/packages/mf';
 import {FlopyMt3d} from '../../../core/model/flopy/packages/mt';
 import {fetchCalculationDetails} from '../../../services/api';
 import {cloneDeep} from 'lodash';
+import FlopySeawat from "../../../core/model/flopy/packages/swt/FlopySeawat";
 
 const navigation = [{
     name: 'Documentation',
@@ -228,9 +229,10 @@ class T03 extends React.Component {
             this.setState({calculatePackages: 'calculation'});
             const mf = FlopyModflow.createFromModel(this.props.model, this.props.soilmodel, this.props.boundaries);
             const mt = FlopyMt3d.createFromTransport(this.props.transport, this.props.boundaries);
+            const swt = FlopySeawat.createFromVariableDensity(this.props.variableDensity);
             const modelId = this.props.model.id;
 
-            const flopyPackages = FlopyPackages.create(modelId, mf, mt);
+            const flopyPackages = FlopyPackages.create(modelId, mf, mt, swt);
             if (flopyPackages instanceof FlopyPackages) {
                 this.setState({calculatePackages: false});
                 resolve(flopyPackages);

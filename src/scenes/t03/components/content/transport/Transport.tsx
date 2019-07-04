@@ -1,21 +1,48 @@
 import React from 'react';
-import {BoundaryCollection, ModflowModel} from '../../../../../core/model/modflow';
-import {updatePackages, updateTransport} from '../../../actions/actions';
-import {withRouter} from 'react-router-dom';
 import {connect} from 'react-redux';
-import {Substance, Transport} from '../../../../../core/model/modflow/transport';
-import PropTypes from 'prop-types';
+import {withRouter} from 'react-router-dom';
 import {Button, Grid, Menu, Segment} from 'semantic-ui-react';
-import SubstanceList from './SubstanceList';
-import ContentToolBar from '../../../../shared/ContentToolbar';
-import SubstanceDetails from './SubstanceDetails';
-import {sendCommand} from '../../../../../services/api';
-import Command from '../../../commands/modflowModelCommand';
 import FlopyPackages from '../../../../../core/model/flopy/packages/FlopyPackages';
+import {BoundaryCollection, ModflowModel} from '../../../../../core/model/modflow';
+import {Substance, Transport} from '../../../../../core/model/modflow/transport';
+import {sendCommand} from '../../../../../services/api';
+import ContentToolBar from '../../../../shared/ContentToolbar';
+import {updatePackages, updateTransport} from '../../../actions/actions';
+import Command from '../../../commands/modflowModelCommand';
+import SubstanceDetails from './SubstanceDetails';
+import SubstanceList from './SubstanceList';
 
-class TransportUi extends React.Component {
+interface IOwnProps {
+    history: any;
+    location: any;
+    match: any;
+    readOnly?: boolean;
+}
 
-    constructor(props) {
+interface IDispatchProps {
+    updatePackages: (packages: FlopyPackages) => any;
+    updateTransport: (transport: Transport) => any;
+}
+
+interface IStateProps {
+    boundaries: BoundaryCollection;
+    model: ModflowModel;
+    packages: FlopyPackages;
+    transport: Transport;
+}
+
+type Props = IStateProps & IDispatchProps & IOwnProps;
+
+interface IState {
+    isDirty: boolean;
+    isError: boolean;
+    isLoading: boolean;
+    selectedSubstanceId: string | null;
+}
+
+class TransportUi extends React.Component<Props, IState> {
+
+    constructor(props: Props) {
         super(props);
         this.state = {
             isDirty: false,
@@ -25,19 +52,19 @@ class TransportUi extends React.Component {
         };
     }
 
-    componentDidMount() {
+    public componentDidMount() {
         if (!this.state.selectedSubstanceId && this.props.transport.substances.length > 0) {
             this.handleSubstanceListClick(this.props.transport.substances.first.id);
         }
     }
 
-    componentWillReceiveProps(nextProps) {
+    public componentWillReceiveProps(nextProps: Props) {
         if (!this.state.selectedSubstanceId && nextProps.transport.substances.length > 0) {
             this.handleSubstanceListClick(nextProps.transport.substances.first.id);
         }
     }
 
-    handleAddSubstance = () => {
+    public handleAddSubstance = () => {
         const substance = Substance.create('new substance');
         const transport = this.props.transport;
         transport.addSubstance(substance);
@@ -46,13 +73,11 @@ class TransportUi extends React.Component {
         return this.setState({selectedSubstanceId: substance.id});
     };
 
-
-    handleSubstanceListClick = selectedSubstanceId => {
-        return this.setState({selectedSubstanceId: selectedSubstanceId})
+    public handleSubstanceListClick = (selectedSubstanceId: string) => {
+        return this.setState({selectedSubstanceId});
     };
 
-    handleRemoveSubstance = substanceId => {
-        console.log('handleRemoveSubstance');
+    public handleRemoveSubstance = (substanceId: string) => {
         const transport = this.props.transport;
         transport.removeSubstanceById(substanceId);
         this.props.updateTransport(transport);
@@ -64,21 +89,21 @@ class TransportUi extends React.Component {
         return this.setState({selectedSubstanceId: transport.substances.first.id});
     };
 
-    handleChangeSubstance = substance => {
+    public handleChangeSubstance = (substance: Substance) => {
         const transport = this.props.transport;
         transport.updateSubstance(substance);
         this.props.updateTransport(transport);
         return this.setState({selectedSubstanceId: substance.id, isDirty: true});
     };
 
-    handleToggleEnabled = () => {
+    public handleToggleEnabled = () => {
         const transport = this.props.transport;
         transport.enabled = !transport.enabled;
         this.props.updateTransport(transport);
         return this.setState({isDirty: true});
     };
 
-    onSave = () => {
+    public onSave = () => {
         const {boundaries, packages, transport} = this.props;
         this.setState({isLoading: true});
         return sendCommand(
@@ -97,12 +122,12 @@ class TransportUi extends React.Component {
                 packages.mt = mt;
 
                 this.props.updatePackages(packages);
-                sendCommand(Command.updateFlopyPackages(this.props.model.id, packages))
+                sendCommand(Command.updateFlopyPackages(this.props.model.id, packages));
             }
         );
     };
 
-    render() {
+    public render() {
         const {boundaries, model, transport} = this.props;
 
         if (!(transport instanceof Transport)) {
@@ -113,20 +138,22 @@ class TransportUi extends React.Component {
         const {readOnly} = model;
 
         const {selectedSubstanceId, isDirty, isError} = this.state;
-        const selectedSubstance = substances.findById(selectedSubstanceId);
+        const selectedSubstance = selectedSubstanceId ?
+            substances.findById(selectedSubstanceId) || undefined : undefined;
+        const noBoundaryError = substances.all.filter((s) => s.boundaryConcentrations.length === 0).length > 0;
 
         return (
             <Segment color={'grey'}>
                 <Grid>
                     <Grid.Row>
                         <Grid.Column width={4}>
-                            <Menu fluid vertical tabular>
+                            <Menu fluid={true} vertical={true} tabular={true}>
                                 <Menu.Item>
                                     <Button
                                         negative={!transport.enabled}
                                         positive={transport.enabled}
                                         icon={transport.enabled ? 'toggle on' : 'toggle off'}
-                                        labelPosition='left'
+                                        labelPosition="left"
                                         onClick={this.handleToggleEnabled}
                                         content={transport.enabled ? 'Enabled' : 'Disabled'}
                                         style={{marginLeft: '-20px', width: '200px'}}
@@ -136,7 +163,7 @@ class TransportUi extends React.Component {
                                     addSubstance={this.handleAddSubstance}
                                     onClick={this.handleSubstanceListClick}
                                     onRemove={this.handleRemoveSubstance}
-                                    selected={selectedSubstanceId}
+                                    selected={selectedSubstanceId || undefined}
                                     substances={substances}
                                 />
                             </Menu>
@@ -145,11 +172,10 @@ class TransportUi extends React.Component {
                             <div>
                                 <ContentToolBar
                                     isDirty={isDirty}
-                                    isError={isError || (selectedSubstance && selectedSubstance.boundaryConcentrations.length === 0)}
+                                    isError={isError || noBoundaryError}
                                     visible={!readOnly}
-                                    message={(selectedSubstance && selectedSubstance.boundaryConcentrations.length === 0) ?
-                                            {warning: true, content: 'No Boundary'} : null}
-                                    save
+                                    message={noBoundaryError ? {warning: true, content: 'No Boundary'} : null}
+                                    save={true}
                                     onSave={this.onSave}
                                 />
                                 <SubstanceDetails
@@ -164,11 +190,11 @@ class TransportUi extends React.Component {
                     </Grid.Row>
                 </Grid>
             </Segment>
-        )
+        );
     }
 }
 
-const mapStateToProps = state => {
+const mapStateToProps = (state: any) => {
     return {
         boundaries: BoundaryCollection.fromObject(state.T03.boundaries),
         model: ModflowModel.fromObject(state.T03.model),
@@ -177,21 +203,12 @@ const mapStateToProps = state => {
     };
 };
 
-const mapDispatchToProps = {
-    updatePackages,
-    updateTransport
-};
+const mapDispatchToProps = (dispatch: any): IDispatchProps => ({
+    updatePackages: (packages: FlopyPackages) => dispatch(updatePackages(packages)),
+    updateTransport: (transport: Transport) => dispatch(updateTransport(transport))
+});
 
-Transport.propTypes = {
-    boundaries: PropTypes.instanceOf(BoundaryCollection).isRequired,
-    history: PropTypes.object.isRequired,
-    location: PropTypes.object.isRequired,
-    match: PropTypes.object.isRequired,
-    model: PropTypes.instanceOf(ModflowModel).isRequired,
-    packages: PropTypes.instanceOf(FlopyPackages).isRequired,
-    transport: PropTypes.instanceOf(Transport).isRequired,
-    updatePackages: PropTypes.func.isRequired,
-    updateTransport: PropTypes.func.isRequired
-};
-
-export default withRouter(connect(mapStateToProps, mapDispatchToProps)(TransportUi));
+export default withRouter(connect<IStateProps, IDispatchProps, IOwnProps>(
+    mapStateToProps,
+    mapDispatchToProps)
+(TransportUi));
