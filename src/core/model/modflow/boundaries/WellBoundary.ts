@@ -1,42 +1,11 @@
+import {Point} from 'geojson';
+import uuidv4 from 'uuid/v4';
+import Cells from '../../geometry/Cells';
 import Boundary from './Boundary';
+import {SpValues, WellType} from './types';
+import {IWellBoundary} from './WellBoundary.type';
 
 export default class WellBoundary extends Boundary {
-
-    _type = 'wel';
-    _id;
-    _geometry;
-    _name;
-    _layers;
-    _cells;
-    _wellType;
-    _spValues;
-
-    static create(id, geometry, name, layers, cells, spValues) {
-        const boundary = new this();
-        boundary.id = id;
-        boundary.geometry = geometry;
-        boundary.name = name;
-        boundary.layers = layers;
-        boundary.cells = cells;
-        boundary.wellType = boundary.wellTypes.default;
-        boundary.spValues = spValues;
-        return boundary;
-    }
-
-    static fromObject(obj) {
-        const wellBoundary = this.create(
-            obj.id,
-            obj.geometry,
-            obj.properties.name,
-            obj.properties.layers,
-            obj.properties.cells,
-            obj.properties.sp_values,
-        );
-
-        wellBoundary.wellType = obj.properties.well_type;
-        return wellBoundary;
-    }
-
     get type() {
         return this._type;
     }
@@ -97,35 +66,11 @@ export default class WellBoundary extends Boundary {
         this._spValues = value;
     }
 
-    getSpValues() {
-        return this._spValues;
-    }
-
-    setSpValues(spValues, opId = null) {
-        this._spValues = spValues;
-    }
-
-    toObject() {
-        return {
-            'type': 'Feature',
-            'id': this.id,
-            'geometry': this.geometry,
-            'properties': {
-                'name': this.name,
-                'type': this.type,
-                'layers': this.layers,
-                'cells': this.cells,
-                'well_type': this.wellType,
-                'sp_values': this.spValues
-            }
-        }
-    }
-
     get geometryType() {
         return 'Point';
     }
 
-    get wellTypes() {
+    static get wellTypes() {
         return {
             default: 'puw',
             types: [
@@ -150,7 +95,7 @@ export default class WellBoundary extends Boundary {
                     value: 'opw'
                 }
             ]
-        }
+        };
     }
 
     get valueProperties() {
@@ -162,6 +107,66 @@ export default class WellBoundary extends Boundary {
                 decimals: 1,
                 default: 0
             },
-        ]
+        ];
+    }
+
+    public static create(id: string, geometry?: Point, name?: string, layers?: number[], cells?: Cells,
+                         spValues?: SpValues) {
+        const boundary = new this();
+        boundary.id = id;
+        boundary.geometry = geometry;
+        boundary.name = name;
+        boundary.layers = layers;
+        boundary.cells = cells;
+        boundary.wellType = WellBoundary.wellTypes.default as WellType;
+        boundary.spValues = spValues;
+        return boundary;
+    }
+
+    public static fromObject(obj: IWellBoundary) {
+        const wellBoundary = this.create(
+            obj.id,
+            obj.geometry,
+            obj.properties.name,
+            obj.properties.layers,
+            obj.properties.cells,
+            obj.properties.sp_values,
+        );
+
+        wellBoundary.wellType = obj.properties.well_type;
+        return wellBoundary;
+    }
+
+    public _type = 'wel';
+    public _id: string = uuidv4();
+    public _geometry?: Point;
+    public _name?: string;
+    public _layers?: number[];
+    public _cells?: Cells;
+    public _wellType?: WellType;
+    public _spValues?: SpValues;
+
+    public getSpValues() {
+        return this._spValues;
+    }
+
+    public setSpValues(spValues: SpValues, opId?: string) {
+        this._spValues = spValues;
+    }
+
+    public toObject() {
+        return {
+            type: 'Feature',
+            id: this.id,
+            geometry: this.geometry,
+            properties: {
+                name: this.name,
+                type: this.type,
+                layers: this.layers,
+                cells: this.cells,
+                well_type: this.wellType,
+                sp_values: this.spValues
+            }
+        };
     }
 }

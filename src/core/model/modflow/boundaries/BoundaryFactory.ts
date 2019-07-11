@@ -1,22 +1,43 @@
 /* eslint-disable camelcase */
+import {LineString, Point, Polygon} from 'geojson';
 import Uuid from 'uuid';
+import BoundingBox from '../../geometry/BoundingBox';
+import Cells from '../../geometry/Cells';
+import {GeoJson} from '../../geometry/Geometry';
+import GridSize from '../../geometry/GridSize';
+import {Geometry, LineBoundary} from '../index';
 import ConstantHeadBoundary from './ConstantHeadBoundary';
+import DrainageBoundary from './DrainageBoundary';
+import EvapotranspirationBoundary from './EvapotranspirationBoundary';
+import {IEvapotranspirationBoundary} from './EvapotranspirationBoundary.type';
 import GeneralHeadBoundary from './GeneralHeadBoundary';
 import HeadObservationWell from './HeadObservationWell';
+import {IHeadObservationWell} from './HeadObservationWell.type';
+import {ILineBoundary} from './LineBoundary.type';
+import {IObservationPoint} from './ObservationPoint.type';
 import RechargeBoundary from './RechargeBoundary';
+import {IRechargeBoundary} from './RechargeBoundary.type';
 import RiverBoundary from './RiverBoundary';
+import {BoundaryInstance, BoundaryType, IBoundaryImport, IObservationPointImport, SpValues} from './types';
 import WellBoundary from './WellBoundary';
-import {Geometry, LineBoundary} from '../index';
-import Cells from '../../geometry/Cells';
+import {IWellBoundary} from './WellBoundary.type';
+
+type boundaryType = (IEvapotranspirationBoundary & IHeadObservationWell & ILineBoundary & IObservationPoint &
+    IRechargeBoundary & IWellBoundary);
+type geometryType = (Polygon & Point & LineString) | undefined;
 
 export default class BoundaryFactory {
 
-    static availableTypes = ['chd', 'ghb', 'hob', 'rch', 'riv', 'wel'];
+    public static availableTypes = ['chd', 'drn', 'evt', 'ghb', 'hob', 'rch', 'riv', 'wel'];
 
-    static fromType = (type) => {
+    public static fromType = (type: BoundaryType) => {
         switch (type) {
             case 'chd':
                 return new ConstantHeadBoundary();
+            case 'drn':
+                return new DrainageBoundary();
+            case 'evt':
+                return new EvapotranspirationBoundary();
             case 'ghb':
                 return new GeneralHeadBoundary();
             case 'hob':
@@ -32,10 +53,14 @@ export default class BoundaryFactory {
         }
     };
 
-    static getClassName = (type) => {
+    public static getClassName = (type: BoundaryType) => {
         switch (type) {
             case 'chd':
                 return ConstantHeadBoundary;
+            case 'drn':
+                return DrainageBoundary;
+            case 'evt':
+                return EvapotranspirationBoundary;
             case 'ghb':
                 return GeneralHeadBoundary;
             case 'hob':
@@ -51,29 +76,31 @@ export default class BoundaryFactory {
         }
     };
 
-    static createNewFromProps(type, id, geometry, name, layers, cells, spValues) {
+    public static createNewFromProps(type: BoundaryType, id: string, geometry: GeoJson, name: string, layers: number[],
+                                     cells: Cells, spValues: SpValues) {
         const className = BoundaryFactory.getClassName(type);
-        return className.create(id, geometry, name, layers, cells, spValues);
+        return className.create(id, geometry as geometryType, name, layers, cells,
+            spValues);
     }
 
-    static createFromTypeAndObject(type, obj) {
+    public static createFromTypeAndObject(type: BoundaryType, obj: BoundaryInstance) {
         const className = BoundaryFactory.getClassName(type);
-        return className.fromObject(obj);
+        return className.fromObject(obj as boundaryType);
     }
 
-    static fromObject = (obj) => {
+    public static fromObject = (obj: BoundaryInstance) => {
         if (!obj) {
             return null;
         }
 
-        if (obj.type === 'Feature') {
+        if (obj.type === 'Feature' && obj.properties.type !== '') {
             const type = obj.properties.type;
             return BoundaryFactory.createFromTypeAndObject(type, obj);
         }
 
         if (obj.type === 'FeatureCollection') {
             let type = null;
-            obj.features.forEach(feature => {
+            obj.features.forEach((feature) => {
                 if (BoundaryFactory.availableTypes.indexOf(feature.properties.type) >= 0) {
                     type = feature.properties.type;
                 }
@@ -85,25 +112,20 @@ export default class BoundaryFactory {
         }
     };
 
-    static fromImport = (obj, boundingBox, gridSize) => {
-        if (!obj) {
-            return null;
-        }
-
+    public static fromImport = (obj: IBoundaryImport, boundingBox: BoundingBox, gridSize: GridSize) => {
         const type = obj.type;
-
         const boundary = BoundaryFactory.fromType(type);
 
         boundary.id = Uuid.v4();
         boundary.name = obj.name;
-        boundary.geometry = obj.geometry;
+        boundary.geometry = obj.geometry as geometryType;
         boundary.layers = obj.layers;
         const cells = Cells.fromGeometry(Geometry.fromGeoJson(obj.geometry), boundingBox, gridSize);
 
-        if (boundary instanceof LineBoundary) {
+        if (boundary instanceof LineBoundary && obj.ops) {
             cells.calculateValues(boundary, boundingBox, gridSize);
-            boundary.cells = cells.toArray();
-            obj.ops.forEach(op => {
+            boundary.cells = cells;
+            obj.ops.forEach((op: IObservationPointImport) => {
                 boundary.addObservationPoint(op.name, op.geometry, op.sp_values);
             });
 
@@ -114,8 +136,11 @@ export default class BoundaryFactory {
             boundary.wellType = obj.well_type;
         }
 
-        boundary.cells = cells.toArray();
-        boundary.spValues = obj.sp_values;
+        boundary.cells = cells;
+
+        if (!(boundary instanceof LineBoundary)) {
+            boundary.spValues = obj.sp_values;
+        }
 
         return boundary;
     };

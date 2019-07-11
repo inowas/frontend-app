@@ -10,7 +10,7 @@ export default class ConstantHeadBoundary extends LineBoundary {
         return [
             {
                 name: 'SHead',
-                description:'Head at the start of the stress period',
+                description: 'Head at the start of the stress period',
                 unit: 'm',
                 decimals: 1,
                 default: 0
@@ -22,6 +22,6 @@ export default class ConstantHeadBoundary extends LineBoundary {
                 decimals: 1,
                 default: 0
             }
-        ]
+        ];
     }
 }

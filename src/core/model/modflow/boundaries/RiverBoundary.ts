@@ -29,6 +29,6 @@ export default class RiverBoundary extends LineBoundary {
                 decimals: 1,
                 default: 0
             }
-        ]
+        ];
     }
 }

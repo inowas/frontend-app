@@ -1,27 +1,27 @@
 import LineBoundary from './LineBoundary';
 
-export default class GeneralHeadBoundary extends LineBoundary {
+export default class DrainageBoundary extends LineBoundary {
 
     constructor() {
-        super('ghb');
+        super('drn');
     }
 
     get valueProperties() {
         return [
             {
-                name: 'Head',
-                description:'Groundwater Head',
+                name: 'Stage',
+                description: 'River stage in m above sea level',
                 unit: 'm',
-                decimals: 2,
+                decimals: 1,
                 default: 0
             },
             {
                 name: 'Conductance',
-                description: 'Hydraulic conductance',
+                description: 'Riverbed conductance',
                 unit: 'm/day',
-                decimals: 2,
+                decimals: 1,
                 default: 0
             }
-        ]
+        ];
     }
 }

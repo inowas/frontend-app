@@ -114,11 +114,7 @@ class Cells {
     constructor(private _cells: Cell[] = []) {
     }
 
-    public calculateValues = (boundary: any, boundingBox: BoundingBox, gridSize: GridSize) => {
-        if (!(boundary instanceof LineBoundary)) {
-            throw new Error('Boundary needs to be instance of LineBoundary');
-        }
-
+    public calculateValues = (boundary: LineBoundary, boundingBox: BoundingBox, gridSize: GridSize) => {
         this._cells = this._cells.map((c) => {
             c[2] = 0;
             return c;
@@ -126,7 +122,7 @@ class Cells {
 
         const {observationPoints} = boundary;
 
-        if (observationPoints.length <= 1) {
+        if (observationPoints.length <= 1 || !boundary.geometry) {
             return;
         }
 

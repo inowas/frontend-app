@@ -6,6 +6,7 @@ import {Button, Dropdown, Form, Header, List, Popup} from 'semantic-ui-react';
 
 import BoundaryMap from '../../maps/boundaryMap';
 import {Boundary, BoundaryCollection, LineBoundary, ModflowModel, Soilmodel} from '../../../../../core/model/modflow';
+import {WellBoundary} from "../../../../../core/model/modflow/boundaries";
 import BoundaryValuesDataTable from './boundaryValuesDataTable';
 import BoundaryGeometryEditor from './boundaryGeometryEditor';
 import ObservationPointEditor from './observationPointEditor';
@@ -133,7 +134,7 @@ class BoundaryDetails extends React.Component {
                             label={'Well type'}
                             style={{zIndex: 1000}}
                             selection
-                            options={boundary.wellTypes.types.map(t => (
+                            options={WellBoundary.wellTypes.types.map(t => (
                                 {key: t.value, value: t.value, text: t.name}
                             ))}
                             value={boundary.wellType}
