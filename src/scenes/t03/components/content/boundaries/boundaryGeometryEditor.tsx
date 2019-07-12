@@ -1,12 +1,32 @@
-import React from 'react';
-import PropTypes from 'prop-types';
-import {Button, Form, Modal, Segment, Menu, Icon} from 'semantic-ui-react';
+import React, {ChangeEvent, MouseEvent} from 'react';
+import {Button, Form, Icon, InputOnChangeData, Menu, MenuItemProps, Modal, Segment} from 'semantic-ui-react';
 import {Boundary, BoundaryCollection, BoundaryFactory, ModflowModel} from '../../../../../core/model/modflow';
 import BoundaryDiscretizationMap from '../../maps/boundaryDiscretizationMap';
+import {IBoundaryFeature} from '../../../../../core/model/modflow/boundaries/types';
 
-class BoundaryGeometryEditor extends React.Component {
+type ActiveItemType = 'geometry' | 'affected cells';
 
-    constructor(props) {
+interface IProps {
+    boundary: Boundary;
+    boundaries: BoundaryCollection;
+    model: ModflowModel;
+    onCancel: () => any;
+    onChange: (boundary: Boundary) => any;
+    readOnly: boolean;
+}
+
+interface IState {
+    activeItem: ActiveItemType;
+    boundary: IBoundaryFeature;
+    buttonsDisabled: boolean;
+}
+
+function isActiveItemType(value: any): value is ActiveItemType {
+    return true;
+}
+
+class BoundaryGeometryEditor extends React.Component<IProps, IState> {
+    constructor(props: IProps) {
         super(props);
         this.state = {
             activeItem: 'geometry',
@@ -15,37 +35,48 @@ class BoundaryGeometryEditor extends React.Component {
         };
     }
 
-    componentWillReceiveProps(nextProps, nextContext) {
-        this.setState({boundary: nextProps.boundary.toObject()})
+    public componentWillReceiveProps(nextProps: IProps) {
+        this.setState({boundary: nextProps.boundary.toObject()});
     }
 
-    handleChange = (e) => {
-        const target = e.target;
-        const {name, value} = target;
+    public handleChange = (e: ChangeEvent<HTMLInputElement>) => {
+        const {name, value} = e.target;
         const boundary = BoundaryFactory.fromObject(this.state.boundary);
-        boundary[name] = value;
-        this.setState({
-            boundary: boundary.toObject(),
-            buttonsDisabled: false
-        })
+        if (boundary) {
+            boundary[name] = value;
+            this.setState({
+                boundary: boundary.toObject(),
+                buttonsDisabled: false
+            });
+        }
     };
 
-    onChangeGeometry = boundary => {
+    public onChangeGeometry = (boundary: Boundary) => {
         this.setState({
             boundary: boundary.toObject(),
             buttonsDisabled: false
         }, () => this.props.onChange(boundary));
     };
 
-    handleItemClick = (e, {name}) => this.setState({activeItem: name});
+    public handleItemClick = (e: MouseEvent<HTMLAnchorElement, Event>, data: MenuItemProps) => {
+        if (isActiveItemType(data.name)) {
+            return this.setState({
+                activeItem: data.name
+            });
+        }
+    };
 
-    render() {
-        const {boundaries, model, onCancel, onChange, readOnly} = this.props;
+    public render() {
+        const {boundaries, model, onCancel, readOnly} = this.props;
         const {activeItem, buttonsDisabled} = this.state;
         const boundary = BoundaryFactory.fromObject(this.state.boundary);
 
+        if (!boundary) {
+            return;
+        }
+
         return (
-            <Modal size={'large'} open onClose={onCancel} dimmer={'inverted'}>
+            <Modal size={'large'} open={true} onClose={onCancel} dimmer={'inverted'}>
                 <Modal.Header>Edit boundary properties</Modal.Header>
                 <Modal.Content>
                     <Form>
@@ -60,7 +91,7 @@ class BoundaryGeometryEditor extends React.Component {
                         </Form.Field>
                     </Form>
 
-                    <Menu attached="top" tabular>
+                    <Menu attached="top" tabular={true}>
                         <Menu.Item
                             name="geometry"
                             active={activeItem === 'geometry'}
@@ -104,17 +135,14 @@ class BoundaryGeometryEditor extends React.Component {
                 </Modal.Content>
                 <Modal.Actions>
                     <Button
-                        negative
+                        negative={true}
                         onClick={onCancel}
                     >
                         Cancel
                     </Button>
                     <Button
-                        positive
-                        onClick={() => {
-                            onChange(boundary);
-                            onCancel();
-                        }}
+                        positive={true}
+                        onClick={this.handleOnClickApply}
                         disabled={buttonsDisabled}
                     >
                         Apply
@@ -123,15 +151,14 @@ class BoundaryGeometryEditor extends React.Component {
             </Modal>
         );
     }
-}
 
-BoundaryGeometryEditor.propTypes = {
-    boundary: PropTypes.instanceOf(Boundary).isRequired,
-    boundaries: PropTypes.instanceOf(BoundaryCollection).isRequired,
-    model: PropTypes.instanceOf(ModflowModel).isRequired,
-    onCancel: PropTypes.func.isRequired,
-    onChange: PropTypes.func.isRequired,
-    readOnly: PropTypes.bool.isRequired,
-};
+    private handleOnClickApply = () => {
+        const boundary = BoundaryFactory.fromObject(this.state.boundary);
+        if (boundary) {
+            this.props.onChange(boundary);
+        }
+        return this.props.onCancel();
+    };
+}
 
 export default BoundaryGeometryEditor;

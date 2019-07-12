@@ -1,37 +1,57 @@
-import React from 'react';
-import PropTypes from 'prop-types';
 import moment from 'moment';
-import uuidv4 from 'uuid/v4';
-
+import React, {ChangeEvent} from 'react';
 import {Input, Table} from 'semantic-ui-react';
+import uuidv4 from 'uuid/v4';
 import {Boundary, Stressperiods} from '../../../../../core/model/modflow';
+import {SpValues} from '../../../../../core/model/modflow/boundaries/types';
+
 // import CsvUpload from '../../../../shared/simpleTools/upload/CsvUpload';
 
-class BoundaryValuesDataTable extends React.Component {
+interface IActiveInput {
+    col: number;
+    name: string;
+    row: number;
+    value: number;
+}
 
-    constructor(props) {
+interface IProps {
+    boundary: Boundary;
+    onChange: (boundary: Boundary) => any;
+    readOnly: boolean;
+    selectedOP?: string;
+    stressperiods: Stressperiods;
+}
+
+interface IState {
+    activeInput: IActiveInput | null;
+    error: boolean;
+    errorMsg: string[];
+    id: string;
+    success: boolean;
+}
+
+class BoundaryValuesDataTable extends React.Component<IProps, IState> {
+    constructor(props: IProps) {
         super(props);
         this.state = {
-            uploadState: {
-                activeInput: null,
-                error: false,
-                errorMsg: [],
-                id: uuidv4(),
-                success: false
-            }
+            activeInput: null,
+            error: false,
+            errorMsg: [],
+            id: uuidv4(),
+            success: false
         };
     }
 
-    handleLocalChange = (row, col) => e => this.setState({
+    public handleLocalChange = (row: number, col: number) => (e: ChangeEvent<HTMLInputElement>) => this.setState({
         activeInput: {
             col,
             name: e.target.name,
             row,
-            value: e.target.value
+            value: parseFloat(e.target.value)
         }
     });
 
-    handleSpValuesChange = () => {
+    public handleSpValuesChange = () => {
         if (!this.state.activeInput) {
             return;
         }
@@ -43,19 +63,20 @@ class BoundaryValuesDataTable extends React.Component {
         const {boundary, selectedOP} = this.props;
         const spValues = boundary.getSpValues(selectedOP);
 
-        const updatedSpValues = spValues.map((spv, spvIdx) => {
-            if (row === spvIdx) {
-                spv[col] = parseFloat(value) || 0;
+        if (spValues) {
+            const updatedSpValues = spValues.map((spv, spvIdx) => {
+                if (row === spvIdx) {
+                    spv[col] = value || 0;
+                    return spv;
+                }
                 return spv;
-            }
-            return spv;
-        });
-
-        boundary.setSpValues(updatedSpValues, selectedOP);
-        this.props.onChange(boundary)
+            });
+            boundary.setSpValues(updatedSpValues, selectedOP);
+        }
+        this.props.onChange(boundary);
     };
 
-    getCellStyle = (numberOfCells) => {
+    public getCellStyle = (numberOfCells: number) => {
         switch (numberOfCells) {
             case 2:
                 return {
@@ -78,21 +99,25 @@ class BoundaryValuesDataTable extends React.Component {
         }
     };
 
-    body = (spValues) => {
+    public body = (spValues: SpValues) => {
         const {activeInput} = this.state;
         const {stressperiods} = this.props;
 
         const dateTimes = stressperiods.dateTimes;
 
-        if (dateTimes.length !== spValues.length) {
-            // do something;
+        if (!spValues || dateTimes.length !== spValues.length) {
+            return (
+                <Table.Row>
+                    <Table.Cell>Something went wrong!</Table.Cell>
+                </Table.Row>
+            );
         }
 
         return spValues.map((spValue, spIdx) => (
             <Table.Row key={spIdx}>
                 <Table.Cell width={4}>
                     <Input
-                        style={this.getCellStyle()}
+                        style={this.getCellStyle(1)}
                         disabled={true}
                         id={spIdx}
                         name={'dateTime'}
@@ -111,7 +136,8 @@ class BoundaryValuesDataTable extends React.Component {
                             onBlur={this.handleSpValuesChange}
                             onChange={this.handleLocalChange(spIdx, vIdx)}
                             type={'number'}
-                            value={activeInput && activeInput.col === vIdx && activeInput.row === spIdx ? activeInput.value : v}
+                            value={activeInput && activeInput.col === vIdx && activeInput.row === spIdx ?
+                                activeInput.value : v}
                         />
                     </Table.Cell>
                 ))}
@@ -119,9 +145,9 @@ class BoundaryValuesDataTable extends React.Component {
         ));
     };
 
-    handleCSV = (e) => {
+    public handleCSV = (e: any) => { // todo: type of e
         let hasError = false;
-        const errorMessages = [];
+        const errorMessages: string[] = [];
         const dateTimeValues = [];
 
         const dateCodes = ['years', 'months', 'days', 'hours', 'minutes', 'seconds', 'milliseconds'];
@@ -129,17 +155,15 @@ class BoundaryValuesDataTable extends React.Component {
 
         if (!firstLine.isValid()) {
             return this.setState({
-                uploadState: {
-                    error: true,
-                    errorMsg: [`Invalid date_time at line 1 at ${dateCodes[firstLine.invalidAt()]}.`],
-                    id: uuidv4(),
-                    success: false
-                }
+                error: true,
+                errorMsg: [`Invalid date_time at line 1 at ${dateCodes[firstLine.invalidAt()]}.`],
+                id: uuidv4(),
+                success: false
             });
         }
 
-        e.data.forEach((row, rKey) => {
-            const values = this.props.boundary.defaultValues.map((v, vKey) => {
+        e.data.forEach((row: number[], rKey: number) => {
+            const values = this.props.boundary.defaultValues.map((v: number, vKey: number) => {
                 if (row[vKey + 1] && isNaN(row[vKey + 1])) {
                     hasError = true;
                     errorMessages.push(`Invalid value at line ${rKey + 1}, column ${vKey + 1}: value is not a number.`);
@@ -147,17 +171,17 @@ class BoundaryValuesDataTable extends React.Component {
 
                 return row[vKey + 1] || v;
             });
-            const date_time = moment.utc(row[0]);
+            const dateTime = moment.utc(row[0]);
 
-            if (!date_time.isValid()) {
+            if (!dateTime.isValid()) {
                 hasError = true;
                 errorMessages.push(`Invalid date_time at line ${rKey + 1} at ${dateCodes[firstLine.invalidAt()]}.`);
                 return;
             }
 
             const dateTimeValue = {
-                date_time: date_time.toISOString(),
-                values: values
+                date_time: dateTime.toISOString(),
+                values
             };
             dateTimeValues.push(dateTimeValue);
         });
@@ -169,24 +193,22 @@ class BoundaryValuesDataTable extends React.Component {
         }
 
         return this.setState({
-            uploadState: {
-                ...this.state.uploadState,
-                error: hasError,
-                errorMsg: errorMessages,
-                id: uuidv4(),
-                success: !hasError
-            }
+            ...this.state,
+            error: hasError,
+            errorMsg: errorMessages,
+            id: uuidv4(),
+            success: !hasError
         });
     };
 
-    render() {
+    public render() {
         const {boundary, selectedOP} = this.props;
         const spValues = boundary.getSpValues(selectedOP);
 
         return (
             <div>
                 {/*<CsvUpload uploadState={this.state.uploadState} onUploaded={this.handleCSV}/>*/}
-                <Table size={'small'} singleLine>
+                <Table size={'small'} singleLine={true}>
                     <Table.Header>
                         <Table.Row>
                             <Table.HeaderCell>Start Date</Table.HeaderCell>
@@ -197,16 +219,8 @@ class BoundaryValuesDataTable extends React.Component {
                     <Table.Body>{spValues && this.body(spValues)}</Table.Body>
                 </Table>
             </div>
-        )
+        );
     }
 }
-
-BoundaryValuesDataTable.propTypes = {
-    boundary: PropTypes.instanceOf(Boundary).isRequired,
-    onChange: PropTypes.func.isRequired,
-    readOnly: PropTypes.bool.isRequired,
-    selectedOP: PropTypes.string,
-    stressperiods: PropTypes.instanceOf(Stressperiods).isRequired
-};
 
 export default BoundaryValuesDataTable;

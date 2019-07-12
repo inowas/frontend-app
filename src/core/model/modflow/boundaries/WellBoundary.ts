@@ -137,7 +137,7 @@ export default class WellBoundary extends Boundary {
         return wellBoundary;
     }
 
-    public _type = 'wel';
+    public _type: 'wel' = 'wel';
     public _id: string = uuidv4();
     public _geometry?: Point;
     public _name?: string;
@@ -154,7 +154,7 @@ export default class WellBoundary extends Boundary {
         this._spValues = spValues;
     }
 
-    public toObject() {
+    public toObject(): IWellBoundary {
         return {
             type: 'Feature',
             id: this.id,

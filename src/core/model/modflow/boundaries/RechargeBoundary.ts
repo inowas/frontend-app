@@ -114,7 +114,7 @@ export default class RechargeBoundary extends Boundary {
         this._spValues = spValues;
     }
 
-    public toObject() {
+    public toObject(): IRechargeBoundary {
         return {
             type: 'Feature',
             id: this.id,

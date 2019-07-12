@@ -18,9 +18,14 @@ import {IObservationPoint} from './ObservationPoint.type';
 import RechargeBoundary from './RechargeBoundary';
 import {IRechargeBoundary} from './RechargeBoundary.type';
 import RiverBoundary from './RiverBoundary';
-import {BoundaryInstance, BoundaryType, IBoundaryImport, IObservationPointImport, SpValues} from './types';
+import {
+    BoundaryInstance, BoundaryType, IBoundaryFeature, IBoundaryFeatureCollection, IBoundaryImport,
+    IObservationPointImport,
+    SpValues
+} from './types';
 import WellBoundary from './WellBoundary';
 import {IWellBoundary} from './WellBoundary.type';
+import Boundary from './Boundary';
 
 type boundaryType = (IEvapotranspirationBoundary & IHeadObservationWell & ILineBoundary & IObservationPoint &
     IRechargeBoundary & IWellBoundary);
@@ -83,12 +88,12 @@ export default class BoundaryFactory {
             spValues);
     }
 
-    public static createFromTypeAndObject(type: BoundaryType, obj: BoundaryInstance) {
+    public static createFromTypeAndObject(type: BoundaryType, obj: BoundaryInstance): Boundary {
         const className = BoundaryFactory.getClassName(type);
         return className.fromObject(obj as boundaryType);
     }
 
-    public static fromObject = (obj: BoundaryInstance) => {
+    public static fromObject = (obj: BoundaryInstance | IBoundaryFeatureCollection): Boundary | null => {
         if (!obj) {
             return null;
         }
@@ -110,6 +115,7 @@ export default class BoundaryFactory {
                 return BoundaryFactory.createFromTypeAndObject(type, obj);
             }
         }
+        return null;
     };
 
     public static fromImport = (obj: IBoundaryImport, boundingBox: BoundingBox, gridSize: GridSize) => {

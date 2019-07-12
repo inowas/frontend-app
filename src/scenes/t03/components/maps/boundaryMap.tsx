@@ -1,12 +1,18 @@
-import React, {Component} from 'react';
-import PropTypes from 'prop-types';
 import {uniqueId} from 'lodash';
-import {GeoJSON, Map, CircleMarker, Polyline, Polygon} from 'react-leaflet';
+import React, {Component} from 'react';
+import {CircleMarker, GeoJSON, Map, Polygon, Polyline} from 'react-leaflet';
+import {GeoJson} from '../../../../core/model/geometry/Geometry';
 import {Boundary, BoundaryCollection, Geometry, LineBoundary} from '../../../../core/model/modflow';
 import {BasicTileLayer} from '../../../../services/geoTools/tileLayers';
-
 import {getStyle} from './index';
 
+interface IProps {
+    boundary: Boundary;
+    boundaries: BoundaryCollection;
+    geometry: Geometry;
+    selectedObservationPointId?: string;
+    onClick?: () => any;
+}
 
 const style = {
     map: {
@@ -14,9 +20,9 @@ const style = {
     }
 };
 
-class BoundaryMap extends Component {
+class BoundaryMap extends Component<IProps> {
 
-    renderObservationPoints(b) {
+    public renderObservationPoints(b: Boundary) {
         if (!(b instanceof LineBoundary)) {
             return null;
         }
@@ -26,31 +32,33 @@ class BoundaryMap extends Component {
         }
 
         const observationPoints = b.observationPoints;
-        return observationPoints.map(op => {
-            const selected = (op.id === this.props.selectedObservationPointId) ? '_selected' : '';
-            return (
-                <CircleMarker
-                    key={uniqueId(op.id)}
-                    center={[
-                        op.geometry.coordinates[1],
-                        op.geometry.coordinates[0]
-                    ]}
-                    {...getStyle('op' + selected)}
-                />
-            );
+        return observationPoints.map((op) => {
+            if (op.geometry) {
+                const selected = (op.id === this.props.selectedObservationPointId) ? '_selected' : '';
+                return (
+                    <CircleMarker
+                        key={uniqueId(op.id)}
+                        center={[
+                            op.geometry.coordinates[1],
+                            op.geometry.coordinates[0]
+                        ]}
+                        {...getStyle('op' + selected)}
+                    />
+                );
+            }
         });
     }
 
     // noinspection JSMethodCanBeStatic
-    renderBoundaryGeometry(b, underlay = false) {
-        const geometryType = b.geometryType;
+    public renderBoundaryGeometry(b: Boundary, underlay = false) {
+        const geometryType: GeoJson = b.geometryType;
 
-        if (underlay) {
+        if (underlay && geometryType) {
             switch (geometryType.toLowerCase()) {
                 case 'point':
                     return (
                         <CircleMarker
-                            key={uniqueId(Geometry.fromObject(b.geometry).hash())}
+                            key={uniqueId(Geometry.fromObject(geometryType).hash())}
                             center={[
                                 b.geometry.coordinates[1],
                                 b.geometry.coordinates[0]
@@ -104,13 +112,13 @@ class BoundaryMap extends Component {
         }
     }
 
-    renderOtherBoundaries(boundaries) {
+    public renderOtherBoundaries(boundaries) {
         return boundaries.boundaries
-            .filter(b => b.id !== this.props.boundary.id)
-            .map(b => this.renderBoundaryGeometry(b, true));
+            .filter((b: Boundary) => b.id !== this.props.boundary.id)
+            .map((b: Boundary) => this.renderBoundaryGeometry(b, true));
     }
 
-    render() {
+    public render() {
         const {geometry, boundary, boundaries} = this.props;
 
         return (
@@ -132,13 +140,5 @@ class BoundaryMap extends Component {
         );
     }
 }
-
-BoundaryMap.propTypes = {
-    boundary: PropTypes.instanceOf(Boundary).isRequired,
-    boundaries: PropTypes.instanceOf(BoundaryCollection).isRequired,
-    geometry: PropTypes.instanceOf(Geometry).isRequired,
-    selectedObservationPointId: PropTypes.string,
-    onClick: PropTypes.func
-};
 
 export default BoundaryMap;

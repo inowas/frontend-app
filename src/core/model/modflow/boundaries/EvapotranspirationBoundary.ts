@@ -125,7 +125,7 @@ export default class EvapotranspirationBoundary extends Boundary {
         this._spValues = spValues;
     }
 
-    public toObject() {
+    public toObject(): IEvapotranspirationBoundary {
         return {
             type: 'Feature',
             id: this.id,

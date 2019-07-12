@@ -11,7 +11,7 @@ export interface IWellBoundary extends IBoundaryFeature {
         type: 'wel';
         layers?: number[];
         cells?: Cells;
-        well_type: WellType;
+        well_type?: WellType;
         sp_values?: SpValues;
     };
 }

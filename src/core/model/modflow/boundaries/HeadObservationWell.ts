@@ -98,7 +98,7 @@ export default class HeadObservationWell extends Boundary {
         );
     }
 
-    public _type = 'hob';
+    public _type: 'hob' = 'hob';
     public _id: string = uuidv4();
     public _geometry?: Point;
     public _name?: string;
@@ -114,7 +114,7 @@ export default class HeadObservationWell extends Boundary {
         this._spValues = spValues;
     }
 
-    public toObject() {
+    public toObject(): IHeadObservationWell {
         return {
             type: 'Feature',
             id: this.id,

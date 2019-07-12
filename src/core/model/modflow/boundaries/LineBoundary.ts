@@ -221,7 +221,7 @@ export default class LineBoundary extends Boundary {
         this.updateObservationPoint(opId, op.properties.name, op.geometry, spValues);
     }
 
-    public toObject() {
+    public toObject(): ILineBoundary {
         const obj: ILineBoundary = {
             type: 'FeatureCollection',
             features: []

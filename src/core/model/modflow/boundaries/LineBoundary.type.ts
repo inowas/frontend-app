@@ -12,7 +12,7 @@ export interface ILineBoundaryFeature extends IBoundaryFeature {
     properties: {
         name?: string;
         layers?: number[];
-        type: LineBoundaryType | 'op' | '';
+        type: LineBoundaryType | 'op';
         cells?: Cells;
     };
 }
