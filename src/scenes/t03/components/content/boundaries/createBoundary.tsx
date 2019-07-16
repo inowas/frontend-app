@@ -3,11 +3,12 @@ import {connect} from 'react-redux';
 import {withRouter} from 'react-router-dom';
 import {DropdownProps, Form, Grid, Header, InputOnChangeData, Segment} from 'semantic-ui-react';
 import Uuid from 'uuid';
+import Cells from '../../../../../core/model/geometry/Cells';
 import {default as Geometry, GeoJson} from '../../../../../core/model/geometry/Geometry';
 import {Cell} from '../../../../../core/model/geometry/types';
 import {ModflowModel, Soilmodel, Stressperiods} from '../../../../../core/model/modflow';
 import {BoundaryCollection, BoundaryFactory} from '../../../../../core/model/modflow/boundaries';
-import {BoundaryType} from '../../../../../core/model/modflow/boundaries/types';
+import {BoundaryType, SpValues} from '../../../../../core/model/modflow/boundaries/types';
 import ContentToolBar from '../../../../../scenes/shared/ContentToolbar';
 import {sendCommand} from '../../../../../services/api';
 import {calculateActiveCells} from '../../../../../services/geoTools';
@@ -103,14 +104,18 @@ class CreateBoundary extends React.Component<Props, IState> {
         const valueProperties = BoundaryFactory.fromType(type).valueProperties;
         const values = valueProperties.map((vp) => vp.default);
 
+        if (!geometry || !cells) {
+            return null;
+        }
+
         const boundary = BoundaryFactory.createNewFromProps(
             type,
             Uuid.v4(),
             geometry,
             name,
             layers,
-            cells,
-            new Array(stressperiods.count).fill(values)
+            Cells.fromArray(cells),
+            new Array(stressperiods.count).fill(values) as SpValues
         );
 
         return sendCommand(ModflowModelCommand.addBoundary(model.id, boundary),

@@ -10,22 +10,15 @@ import Boundary from './Boundary';
 import ConstantHeadBoundary from './ConstantHeadBoundary';
 import DrainageBoundary from './DrainageBoundary';
 import EvapotranspirationBoundary from './EvapotranspirationBoundary';
-import {IEvapotranspirationBoundary} from './EvapotranspirationBoundary.type';
 import GeneralHeadBoundary from './GeneralHeadBoundary';
 import HeadObservationWell from './HeadObservationWell';
-import {IHeadObservationWell} from './HeadObservationWell.type';
-import {ILineBoundary} from './LineBoundary.type';
-import ObservationPoint from './ObservationPoint';
-import {IObservationPoint} from './ObservationPoint.type';
 import RechargeBoundary from './RechargeBoundary';
-import {IRechargeBoundary} from './RechargeBoundary.type';
 import RiverBoundary from './RiverBoundary';
 import {
     BoundaryInstance, BoundaryType, IBoundaryImport, IObservationPointImport,
     SpValues
 } from './types';
 import WellBoundary from './WellBoundary';
-import {IWellBoundary} from './WellBoundary.type';
 
 interface IIndexedBoundary extends Boundary {
     [name: string]: any;
@@ -58,52 +51,33 @@ export default class BoundaryFactory {
         }
     };
 
-    public static getClassName = (type: BoundaryType) => {
+    public static createNewFromProps(type: BoundaryType, id: string, geometry: GeoJson, name: string,
+                                     layers: number[], cells: Cells, spValues: SpValues) {
         switch (type) {
             case 'chd':
-                return ConstantHeadBoundary;
+                return ConstantHeadBoundary.create(id, type, geometry as LineString, name, layers, cells, spValues);
             case 'drn':
-                return DrainageBoundary;
+                return DrainageBoundary.create(id, type, geometry as LineString, name, layers, cells, spValues);
             case 'evt':
-                return EvapotranspirationBoundary;
+                return EvapotranspirationBoundary.create(id, type, geometry as Polygon | MultiPolygon, name, layers,
+                    cells, spValues);
             case 'ghb':
-                return GeneralHeadBoundary;
+                return GeneralHeadBoundary.create(id, type, geometry as LineString, name, layers, cells, spValues);
             case 'hob':
-                return HeadObservationWell;
+                return HeadObservationWell.create(id, type, geometry as Point, name, layers, cells, spValues);
             case 'rch':
-                return RechargeBoundary;
+                return RechargeBoundary.create(id, type, geometry as Polygon | MultiPolygon, name, layers, cells,
+                    spValues);
             case 'riv':
-                return RiverBoundary;
+                return RiverBoundary.create(id, type, geometry as LineString, name, layers, cells, spValues);
             case 'wel':
-                return WellBoundary;
+                return WellBoundary.create(id, type, geometry as Point, name, layers, cells, spValues);
             default:
                 throw new Error('BoundaryType ' + type + ' not implemented yet.');
         }
-    };
-
-    public static createNewFromProps(type: 'chd', id: string, geometry: LineString, name: string, layers: number[], cells: Cells, spValues: SpValues): ConstantHeadBoundary;
-    public static createNewFromProps(type: 'drn', id: string, geometry: LineString, name: string, layers: number[], cells: Cells, spValues: SpValues): DrainageBoundary;
-    public static createNewFromProps(type: 'evt', id: string, geometry: Polygon | MultiPolygon, name: string, layers: number[], cells: Cells, spValues: SpValues): EvapotranspirationBoundary;
-    public static createNewFromProps(type: 'ghb', id: string, geometry: LineString, name: string, layers: number[], cells: Cells, spValues: SpValues): GeneralHeadBoundary;
-    public static createNewFromProps(type: 'hob', id: string, geometry: Point, name: string, layers: number[], cells: Cells, spValues: SpValues): HeadObservationWell;
-    public static createNewFromProps(type: 'rch', id: string, geometry: Polygon | MultiPolygon, name: string, layers: number[], cells: Cells, spValues: SpValues): RechargeBoundary;
-    public static createNewFromProps(type: 'riv', id: string, geometry: LineString, name: string, layers: number[], cells: Cells, spValues: SpValues): RiverBoundary;
-    public static createNewFromProps(type: 'wel', id: string, geometry: Point, name: string, layers: number[], cells: Cells, spValues: SpValues): WellBoundary;
-    public static createNewFromProps(type: any, id: string, geometry: GeoJson, name: string, layers: number[], cells: Cells, spValues: SpValues) {
-        const className = BoundaryFactory.getClassName(type);
-        return className.create(id, type, geometry, name, layers, cells, spValues);
     }
 
-    public static createFromTypeAndObject(type: 'chd', obj: ILineBoundary): ConstantHeadBoundary;
-    public static createFromTypeAndObject(type: 'drn', obj: ILineBoundary): DrainageBoundary;
-    public static createFromTypeAndObject(type: 'evt', obj: IEvapotranspirationBoundary): EvapotranspirationBoundary;
-    public static createFromTypeAndObject(type: 'ghb', obj: ILineBoundary): GeneralHeadBoundary;
-    public static createFromTypeAndObject(type: 'hob', obj: IHeadObservationWell): HeadObservationWell;
-    public static createFromTypeAndObject(type: 'op', obj: IObservationPoint): ObservationPoint;
-    public static createFromTypeAndObject(type: 'rch', obj: IRechargeBoundary): RechargeBoundary;
-    public static createFromTypeAndObject(type: 'riv', obj: ILineBoundary): RiverBoundary;
-    public static createFromTypeAndObject(type: 'wel', obj: IWellBoundary): WellBoundary;
-    public static createFromTypeAndObject(type: any, obj: any) {
+    public static createFromTypeAndObject(type: BoundaryType, obj: any) {
         switch (type) {
             case 'chd':
                 return ConstantHeadBoundary.fromObject(obj);
@@ -115,8 +89,6 @@ export default class BoundaryFactory {
                 return GeneralHeadBoundary.fromObject(obj);
             case 'hob':
                 return HeadObservationWell.fromObject(obj);
-            case 'op':
-                return ObservationPoint.fromObject(obj);
             case 'rch':
                 return RechargeBoundary.fromObject(obj);
             case 'riv':
