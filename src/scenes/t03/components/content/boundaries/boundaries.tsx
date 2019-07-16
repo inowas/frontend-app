@@ -38,7 +38,7 @@ interface IDispatchProps {
 type Props = IStateProps & IDispatchProps & IOwnProps;
 
 interface IState {
-    selectedBoundary: IBoundaryFeature | null;
+    selectedBoundary: BoundaryInstance | null;
     isLoading: boolean;
     isDirty: boolean;
     error: boolean;
@@ -122,7 +122,7 @@ class Boundaries extends React.Component<Props, IState> {
 
     public onAdd = (type: BoundaryType) => {
         const {id, property} = this.props.match.params;
-        if (type !== '!' && BoundaryFactory.availableTypes.indexOf(type) >= 0) {
+        if (BoundaryFactory.availableTypes.indexOf(type) >= 0) {
             const newBoundary = BoundaryFactory.fromType(type);
             newBoundary.name = `New ${type}-Boundary`;
 
@@ -184,8 +184,9 @@ class Boundaries extends React.Component<Props, IState> {
         );
     };
 
-    public handleChange = (e: Event, data: any) => {
-        console.log('HANDLE CHANGE IMPORT', e);
+    public handleChange = () => {
+        // TODO: import
+        return;
     };
 
     public render() {
@@ -199,11 +200,10 @@ class Boundaries extends React.Component<Props, IState> {
             boundaries.items = this.props.boundaries.all.filter((b) => types.includes(b.type));
         }
 
-        if (!selectedBoundary) {
-            return null;
+        let boundary = null;
+        if (selectedBoundary) {
+            boundary = BoundaryFactory.fromObject(selectedBoundary);
         }
-
-        const boundary = BoundaryFactory.fromObject(selectedBoundary);
 
         return (
             <Segment color={'grey'} loading={isLoading}>
@@ -235,7 +235,7 @@ class Boundaries extends React.Component<Props, IState> {
                                             />
                                             }
                                         />
-                                        {!isLoading &&
+                                        {!isLoading && boundary &&
                                         <BoundaryDetails
                                             boundary={boundary}
                                             boundaries={boundaries}

@@ -1,6 +1,7 @@
-import {booleanCrosses, booleanContains, booleanOverlap, envelope, lineString} from '@turf/turf';
+import {booleanContains, booleanCrosses, booleanOverlap, envelope, lineString} from '@turf/turf';
 import {floor} from 'lodash';
-import {Cells, BoundingBox, Geometry, GridSize} from '../../core/model/modflow';
+import {Cell} from '../../core/model/geometry/types';
+import {BoundingBox, Cells, Geometry, GridSize} from '../../core/model/modflow';
 
 /* Calculate GridCells
 Structure:
@@ -11,16 +12,7 @@ const cells = [
 {x:1, y:5, geometry: geometry},
 ]
 */
-export const getGridCells = (boundingBox, gridSize) => {
-
-    if (!boundingBox instanceof BoundingBox) {
-        throw new Error('Geometry needs to be instance of BoundingBox');
-    }
-
-    if (!gridSize instanceof GridSize) {
-        throw new Error('GridSize needs to be instance of GridSize');
-    }
-
+export const getGridCells = (boundingBox: BoundingBox, gridSize: GridSize) => {
     const dx = boundingBox.dX / gridSize.nX;
     const dy = boundingBox.dY / gridSize.nY;
 
@@ -28,7 +20,7 @@ export const getGridCells = (boundingBox, gridSize) => {
     for (let y = 0; y < gridSize.nY; y++) {
         for (let x = 0; x < gridSize.nX; x++) {
             cells.push({
-                x: x,
+                x,
                 y: gridSize.nY - y - 1,
                 geometry: envelope(lineString([
                     [boundingBox.xMin + x * dx, boundingBox.yMax - (gridSize.nY - y) * dy],
@@ -41,16 +33,8 @@ export const getGridCells = (boundingBox, gridSize) => {
     return cells;
 };
 
-export const getActiveCellFromCoordinate = (coordinate, boundingBox, gridSize) => {
-
-    if (!boundingBox instanceof BoundingBox) {
-        throw new Error('Geometry needs to be instance of BoundingBox');
-    }
-
-    if (!gridSize instanceof GridSize) {
-        throw new Error('GridSize needs to be instance of GridSize');
-    }
-
+export const getActiveCellFromCoordinate = (coordinate: number[], boundingBox: BoundingBox,
+                                            gridSize: GridSize): Cell => {
     const dx = boundingBox.dX / gridSize.nX;
     const dy = boundingBox.dY / gridSize.nY;
     const x = coordinate[0];
@@ -62,30 +46,17 @@ export const getActiveCellFromCoordinate = (coordinate, boundingBox, gridSize) =
     ];
 };
 
-export const calculateActiveCells = (geometry, boundingBox, gridSize) => {
-
-    if (!geometry instanceof Geometry) {
-        throw new Error('Geometry needs to be instance of Geometry');
-    }
-
-    if (!boundingBox instanceof BoundingBox) {
-        throw new Error('Geometry needs to be instance of BoundingBox');
-    }
-
-    if (!gridSize instanceof GridSize) {
-        throw new Error('GridSize needs to be instance of GridSize');
-    }
-
+export const calculateActiveCells = (geometry: Geometry, boundingBox: BoundingBox, gridSize: GridSize) => {
     const activeCells = new Cells([]);
 
     if (geometry.fromType('point')) {
         const coordinate = geometry.coordinates;
-        activeCells.addCell(getActiveCellFromCoordinate(coordinate, boundingBox, gridSize));
+        activeCells.addCell(getActiveCellFromCoordinate(coordinate as number[], boundingBox, gridSize));
     }
 
     if (geometry.fromType('linestring')) {
         const gridCells = getGridCells(boundingBox, gridSize);
-        gridCells.forEach(cell => {
+        gridCells.forEach((cell) => {
             if (booleanCrosses(geometry, cell.geometry)) {
                 activeCells.addCell([cell.x, cell.y]);
             }
@@ -94,7 +65,7 @@ export const calculateActiveCells = (geometry, boundingBox, gridSize) => {
 
     if (geometry.fromType('polygon')) {
         const gridCells = getGridCells(boundingBox, gridSize);
-        gridCells.forEach(cell => {
+        gridCells.forEach((cell) => {
             if (booleanContains(geometry, cell.geometry) || booleanOverlap(geometry, cell.geometry)) {
                 activeCells.addCell([cell.x, cell.y]);
             }

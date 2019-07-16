@@ -6,12 +6,21 @@ import ObservationPoint from '../../../../../core/model/modflow/boundaries/Obser
 import {IObservationPoint} from '../../../../../core/model/modflow/boundaries/ObservationPoint.type';
 import ObservationPointMap from '../../maps/observationPointEditorMap';
 
+interface IIndexedBoundary extends Boundary {
+    [name: string]: any;
+}
+
+interface IIndexedObservationPoint extends ObservationPoint {
+    [name: string]: any;
+}
+
 interface IProps {
     model: ModflowModel;
-    boundary: LineBoundary;
+    boundary: IIndexedBoundary;
     observationPointId?: string;
     onCancel: () => any;
     onChange: (boundary: Boundary) => any;
+    readOnly: boolean;
 }
 
 interface IState {
@@ -55,7 +64,7 @@ class ObservationPointEditor extends React.Component<IProps, IState> {
         if (!this.state.observationPoint) {
             return;
         }
-        const observationPoint = ObservationPoint.fromObject(this.state.observationPoint);
+        const observationPoint: IIndexedObservationPoint = ObservationPoint.fromObject(this.state.observationPoint);
         observationPoint[e.target.name] = e.target.value;
         this.setState({
             observationPoint: observationPoint.toObject()

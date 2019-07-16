@@ -53,7 +53,8 @@ export default class ObservationPoint {
         return 'Point';
     }
 
-    public static create(id: string, geometry?: Point, name?: string, spValues?: SpValues, distance: number = 0) {
+    public static create(id: string, type: 'op', geometry?: Point, name?: string, spValues?: SpValues,
+                         distance: number = 0) {
         const op = new this();
         op.id = id;
         op.geometry = geometry;
@@ -66,6 +67,7 @@ export default class ObservationPoint {
     public static fromObject(obj: IObservationPoint) {
         return this.create(
             obj.id,
+            obj.properties.type,
             obj.geometry,
             obj.properties.name,
             obj.properties.sp_values,

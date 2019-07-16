@@ -3,8 +3,8 @@ import {connect} from 'react-redux';
 import {withRouter} from 'react-router-dom';
 import {DropdownProps, Form, Grid, Header, InputOnChangeData, Segment} from 'semantic-ui-react';
 import Uuid from 'uuid';
-import Cells from '../../../../../core/model/geometry/Cells';
-import {GeoJson} from '../../../../../core/model/geometry/Geometry';
+import {default as Geometry, GeoJson} from '../../../../../core/model/geometry/Geometry';
+import {Cell} from '../../../../../core/model/geometry/types';
 import {ModflowModel, Soilmodel, Stressperiods} from '../../../../../core/model/modflow';
 import {BoundaryCollection, BoundaryFactory} from '../../../../../core/model/modflow/boundaries';
 import {BoundaryType} from '../../../../../core/model/modflow/boundaries/types';
@@ -41,7 +41,7 @@ type Props = IStateProps & IDispatchProps & IOwnProps;
 interface IState {
     name: string;
     geometry: GeoJson | null;
-    cells: Cells | null;
+    cells: Cell[] | null;
     layers: number[];
     isLoading: boolean;
     isDirty: boolean;
@@ -60,7 +60,6 @@ class CreateBoundary extends React.Component<Props, IState> {
             geometry: null,
             cells: null,
             layers: [0],
-
             isLoading: false,
             isDirty: false,
             isEditing: false,
@@ -69,11 +68,12 @@ class CreateBoundary extends React.Component<Props, IState> {
         };
     }
 
-    public onChangeGeometry = (geometry) => {
-        const cells = calculateActiveCells(geometry, this.props.model.boundingBox, this.props.model.gridSize);
+    public onChangeGeometry = (geometry: Geometry) => {
+        const cells = calculateActiveCells(geometry, this.props.model.boundingBox,
+            this.props.model.gridSize);
         this.setState({
             cells: cells.toArray(),
-            geometry: geometry.toObject(),
+            geometry: geometry.toGeoJSON(),
             isDirty: true
         });
     };
@@ -92,7 +92,7 @@ class CreateBoundary extends React.Component<Props, IState> {
         return this.setState({
             [name]: value,
             isDirty: true
-        });
+        } as Pick<IState, keyof IState>);
     };
 
     public onSave = () => {

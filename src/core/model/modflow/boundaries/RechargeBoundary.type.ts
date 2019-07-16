@@ -1,10 +1,10 @@
-import {Polygon} from 'geojson';
+import {MultiPolygon, Polygon} from 'geojson';
 import Cells from '../../geometry/Cells';
 import {IBoundaryFeature, SpValues} from './types';
 
 export interface IRechargeBoundary extends IBoundaryFeature {
     id: string;
-    geometry?: Polygon;
+    geometry?: Polygon | MultiPolygon;
     properties: {
         name?: string;
         layers?: number[];

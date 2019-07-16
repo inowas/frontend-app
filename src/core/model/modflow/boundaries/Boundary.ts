@@ -1,9 +1,7 @@
 import Uuid from 'uuid';
 import Cells from '../../geometry/Cells';
 import {GeoJson} from '../../geometry/Geometry';
-import {BoundaryType, IBoundaryFeature} from './types';
-
-type SpValues = [number[]];
+import {BoundaryInstance, BoundaryType, SpValues} from './types';
 
 export default abstract class Boundary {
 
@@ -23,7 +21,7 @@ export default abstract class Boundary {
 
     abstract get layers(): number[] | undefined;
 
-    abstract get geometryType(): string | undefined;
+    abstract get geometryType(): string;
 
     abstract get valueProperties(): Array<{
         name: string,
@@ -37,7 +35,7 @@ export default abstract class Boundary {
 
     public abstract setSpValues(spValues: SpValues, opId?: string): void;
 
-    public abstract toObject(): IBoundaryFeature;
+    public abstract toObject(): BoundaryInstance;
 
     public clone(): Boundary {
         this.id = Uuid.v4();

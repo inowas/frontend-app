@@ -1,8 +1,9 @@
+import {LatLngExpression} from 'leaflet';
 import {uniqueId} from 'lodash';
 import React, {Component} from 'react';
 import {CircleMarker, GeoJSON, Map, Polygon, Polyline} from 'react-leaflet';
-import {GeoJson} from '../../../../core/model/geometry/Geometry';
 import {Boundary, BoundaryCollection, Geometry, LineBoundary} from '../../../../core/model/modflow';
+import WellBoundary from '../../../../core/model/modflow/boundaries/WellBoundary';
 import {BasicTileLayer} from '../../../../services/geoTools/tileLayers';
 import {getStyle} from './index';
 
@@ -11,7 +12,7 @@ interface IProps {
     boundaries: BoundaryCollection;
     geometry: Geometry;
     selectedObservationPointId?: string;
-    onClick?: () => any;
+    onClick?: (bid: string) => any;
 }
 
 const style = {
@@ -51,29 +52,33 @@ class BoundaryMap extends Component<IProps> {
 
     // noinspection JSMethodCanBeStatic
     public renderBoundaryGeometry(b: Boundary, underlay = false) {
-        const geometryType: GeoJson = b.geometryType;
+        const geometry = b.geometry;
 
-        if (underlay && geometryType) {
-            switch (geometryType.toLowerCase()) {
+        if (!geometry) {
+            return;
+        }
+
+        if (underlay) {
+            switch (geometry.type.toLowerCase()) {
                 case 'point':
                     return (
                         <CircleMarker
-                            key={uniqueId(Geometry.fromObject(geometryType).hash())}
+                            key={uniqueId(Geometry.fromObject(geometry).hash())}
                             center={[
-                                b.geometry.coordinates[1],
-                                b.geometry.coordinates[0]
+                                geometry.coordinates[1],
+                                geometry.coordinates[0]
                             ]}
                             {...getStyle('underlay')}
-                            onClick={() => this.props.onClick(b.id)}
+                            onClick={this.props.onClick ? this.props.onClick(b.id) : null}
                         />
                     );
-                case 'linestring':
+                case 'lineString':
                     return (
                         <Polyline
-                            key={uniqueId(Geometry.fromObject(b.geometry).hash())}
-                            positions={Geometry.fromObject(b.geometry).coordinatesLatLng}
+                            key={uniqueId(Geometry.fromObject(geometry).hash())}
+                            positions={Geometry.fromObject(geometry).coordinatesLatLng}
                             {...getStyle('underlay')}
-                            onClick={() => this.props.onClick(b.id)}
+                            onClick={this.props.onClick ? this.props.onClick(b.id) : null}
                         />
                     );
                 default:
@@ -81,30 +86,30 @@ class BoundaryMap extends Component<IProps> {
             }
         }
 
-        switch (geometryType.toLowerCase()) {
+        switch (geometry.type.toLowerCase()) {
             case 'point':
-                return (
+                return b instanceof WellBoundary ? (
                     <CircleMarker
-                        key={uniqueId(Geometry.fromObject(b.geometry).hash())}
+                        key={uniqueId(Geometry.fromObject(geometry).hash())}
                         center={[
-                            b.geometry.coordinates[1],
-                            b.geometry.coordinates[0]
+                            geometry.coordinates[1],
+                            geometry.coordinates[0]
                         ]}
                         {...getStyle(b.type, b.wellType)}
                     />
-                );
+                ) : null;
             case 'linestring':
                 return (
                     <Polyline
-                        key={uniqueId(Geometry.fromObject(b.geometry).hash())}
-                        positions={Geometry.fromObject(b.geometry).coordinatesLatLng}
+                        key={uniqueId(Geometry.fromObject(geometry).hash())}
+                        positions={Geometry.fromObject(geometry).coordinatesLatLng as LatLngExpression[]}
                     />
                 );
             case 'polygon':
                 return (
                     <Polygon
-                        key={uniqueId(Geometry.fromObject(b.geometry).hash())}
-                        positions={Geometry.fromObject(b.geometry).coordinatesLatLng}
+                        key={uniqueId(Geometry.fromObject(geometry).hash())}
+                        positions={Geometry.fromObject(geometry).coordinatesLatLng as LatLngExpression[]}
                     />
                 );
             default:
@@ -112,7 +117,7 @@ class BoundaryMap extends Component<IProps> {
         }
     }
 
-    public renderOtherBoundaries(boundaries) {
+    public renderOtherBoundaries(boundaries: BoundaryCollection) {
         return boundaries.boundaries
             .filter((b: Boundary) => b.id !== this.props.boundary.id)
             .map((b: Boundary) => this.renderBoundaryGeometry(b, true));

@@ -1,8 +1,12 @@
 import {Point} from 'geojson';
 import {GeoJson} from '../../geometry/Geometry';
-import {ILineBoundaryFeature} from './LineBoundary.type';
+import {ILineBoundary} from './LineBoundary.type';
 
-export type BoundaryType = '!' | 'all' | 'chd' | 'drn' | 'evt' | 'ghb' | 'rch' | 'riv' | 'wel' | 'hob' | 'op';
+export type LineBoundaryType = 'chd' | 'ghb' | 'riv' | 'drn';
+
+export type BoundaryType = 'evt' | 'rch' | 'wel' | 'hob' | LineBoundaryType;
+
+export type BoundarySelection = 'all' | BoundaryType;
 
 export type WellType = 'puw' | 'inw' | 'iw' | 'irw' | 'opw';
 
@@ -13,7 +17,7 @@ export interface IBoundaryFeature {
     id: string;
     geometry?: GeoJson;
     properties: {
-        type: BoundaryType | '';
+        type: BoundaryType | 'op' | '';
     };
 }
 
@@ -22,7 +26,7 @@ export interface IBoundaryFeatureCollection {
     features: IBoundaryFeature[];
 }
 
-export type BoundaryInstance = IBoundaryFeature | ILineBoundaryFeature;
+export type BoundaryInstance = IBoundaryFeature | ILineBoundary;
 
 export interface IObservationPointImport {
     name: string;

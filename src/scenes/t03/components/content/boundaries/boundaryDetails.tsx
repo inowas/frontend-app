@@ -9,13 +9,17 @@ import BoundaryGeometryEditor from './boundaryGeometryEditor';
 import BoundaryValuesDataTable from './boundaryValuesDataTable';
 import ObservationPointEditor from './observationPointEditor';
 
+interface IIndexedBoundary extends Boundary {
+    [name: string]: any;
+}
+
 interface IProps {
-    boundary: Boundary;
+    boundary: IIndexedBoundary;
     boundaries: BoundaryCollection;
     model: ModflowModel;
     soilmodel: Soilmodel;
     onChange: (boundary: Boundary) => any;
-    onClick: () => any;
+    onClick: (bid: string) => any;
     readOnly: boolean;
 }
 
@@ -65,10 +69,9 @@ class BoundaryDetails extends React.Component<IProps, IState> {
         if (name === 'layers' && data.value && typeof data.value === 'number') {
             value = [data.value];
         }
-
         const boundary = this.props.boundary;
         boundary[name] = value;
-        this.props.onChange(boundary);
+        return this.props.onChange(boundary);
     };
 
     public handleCloneClick = () => {
@@ -112,6 +115,10 @@ class BoundaryDetails extends React.Component<IProps, IState> {
 
         if (!boundary || !geometry) {
             return <NoContent message={'No objects.'}/>;
+        }
+
+        if (!boundary.layers || boundary.layers.length === 0) {
+            return <NoContent message={'No layers.'}/>;
         }
 
         const multipleLayers = ['chd', 'drn', 'evt', 'ghb'].includes(boundary.type);
@@ -167,7 +174,7 @@ class BoundaryDetails extends React.Component<IProps, IState> {
                 <List horizontal={true}>
                     <List.Item
                         as="a"
-                        onClick={() => this.setState({showBoundaryEditor: true})}
+                        onClick={this.handleClickShowBoundaryEditor}
                     >
                         Edit boundary on map
                     </List.Item>
@@ -236,7 +243,6 @@ class BoundaryDetails extends React.Component<IProps, IState> {
                 <Header as={'h4'}>Time dependent boundary values at observation point</Header>
                 <BoundaryValuesDataTable
                     boundary={boundary}
-                    boundaries={boundaries}
                     onChange={this.props.onChange}
                     readOnly={this.props.readOnly}
                     selectedOP={observationPointId}
@@ -248,7 +254,7 @@ class BoundaryDetails extends React.Component<IProps, IState> {
                     boundary={boundary}
                     boundaries={boundaries}
                     model={model}
-                    onCancel={() => this.setState({showBoundaryEditor: false})}
+                    onCancel={this.handleCancelGeometryEditor}
                     onChange={this.props.onChange}
                     readOnly={this.props.readOnly}
                 />
@@ -258,7 +264,7 @@ class BoundaryDetails extends React.Component<IProps, IState> {
                     boundary={boundary}
                     model={model}
                     observationPointId={this.state.observationPointId}
-                    onCancel={() => this.setState({showObservationPointEditor: false})}
+                    onCancel={this.handleCancleObservationPointEditor}
                     onChange={this.props.onChange}
                     readOnly={this.props.readOnly}
                 />
@@ -267,11 +273,17 @@ class BoundaryDetails extends React.Component<IProps, IState> {
         );
     }
 
+    private handleCancelGeometryEditor = () => this.setState({showBoundaryEditor: false});
+    private handleCancleObservationPointEditor = () => this.setState({showObservationPointEditor: false});
+    private handleClickShowBoundaryEditor = () => this.setState({showBoundaryEditor: true});
     private handleEditPoint = () => this.setState({showObservationPointEditor: true});
-    private handleSelectObservationPoint = (e: SyntheticEvent<HTMLElement, Event>, data: DropdownProps) =>
-        this.setState({
-            observationPointId: data.value
-        });
+    private handleSelectObservationPoint = (e: SyntheticEvent<HTMLElement, Event>, data: DropdownProps) => {
+        if (data.value && typeof data.value === 'string') {
+            return this.setState({
+                observationPointId: data.value
+            });
+        }
+    };
 }
 
 export default BoundaryDetails;

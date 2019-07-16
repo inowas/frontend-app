@@ -13,6 +13,7 @@ import {NearestPointOnLine} from '@turf/nearest-point-on-line';
 import {Feature, LineString} from 'geojson';
 import {floor, isEqual} from 'lodash';
 import {BoundingBox, Geometry, GridSize, LineBoundary} from '../modflow/index';
+import {Cell, Point} from './types';
 
 const getActiveCellFromCoordinate = (coordinate: Point, boundingBox: BoundingBox, gridSize: GridSize) => {
 
@@ -68,9 +69,6 @@ const distanceOnLine = (ls: Feature<LineString>, point: NearestPointOnLine) => {
     const sliced = lineSlice(start, end, linestring);
     return lineDistance(sliced);
 };
-
-type Cell = [number, number] | [number, number, number];
-type Point = [number, number];
 
 class Cells {
 

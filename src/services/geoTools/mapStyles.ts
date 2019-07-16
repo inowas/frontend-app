@@ -1,4 +1,8 @@
-const styles = {
+interface IMapStyles {
+    [name: string]: any;
+}
+
+const styles: IMapStyles = {
     active_cells: {
         line: {
             color: '#4C4C4C',

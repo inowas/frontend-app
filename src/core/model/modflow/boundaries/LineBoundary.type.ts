@@ -1,9 +1,7 @@
 import {LineString} from 'geojson';
 import Cells from '../../geometry/Cells';
 import {IObservationPoint} from './ObservationPoint.type';
-import {IBoundaryFeature, IBoundaryFeatureCollection} from './types';
-
-export type LineBoundaryType = 'chd' | 'ghb' | 'riv' | 'drn';
+import {IBoundaryFeature, IBoundaryFeatureCollection, LineBoundaryType} from './types';
 
 export interface ILineBoundaryFeature extends IBoundaryFeature {
     type: 'Feature';

@@ -1,4 +1,4 @@
-import {Polygon} from 'geojson';
+import {MultiPolygon, Polygon} from 'geojson';
 import uuidv4 from 'uuid/v4';
 import Cells from '../../geometry/Cells';
 import Boundary from './Boundary';
@@ -83,8 +83,8 @@ export default class EvapotranspirationBoundary extends Boundary {
         ];
     }
 
-    public static create(id: string, geometry?: Polygon, name?: string, layers?: number[], cells?: Cells,
-                         spValues?: SpValues, nevtop?: number) {
+    public static create(id: string, type: 'evt', geometry?: Polygon | MultiPolygon, name?: string, layers?: number[],
+                         cells?: Cells, spValues?: SpValues, nevtop?: number) {
         const boundary = new this();
         boundary._id = id;
         boundary._geometry = geometry;
@@ -99,6 +99,7 @@ export default class EvapotranspirationBoundary extends Boundary {
     public static fromObject(obj: IEvapotranspirationBoundary) {
         return this.create(
             obj.id,
+            obj.properties.type,
             obj.geometry,
             obj.properties.name,
             obj.properties.layers,
@@ -110,7 +111,7 @@ export default class EvapotranspirationBoundary extends Boundary {
 
     private _type: 'evt' = 'evt';
     private _id: string = uuidv4();
-    private _geometry?: Polygon;
+    private _geometry?: Polygon | MultiPolygon;
     private _name?: string;
     private _layers?: number[];
     private _cells?: Cells;

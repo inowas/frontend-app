@@ -75,7 +75,7 @@ export default class HeadObservationWell extends Boundary {
         ];
     }
 
-    public static create(id: string, geometry?: Point, name?: string, layers?: number[], cells?: Cells,
+    public static create(id: string, type: 'hob', geometry?: Point, name?: string, layers?: number[], cells?: Cells,
                          spValues?: SpValues) {
         const boundary = new this();
         boundary._id = id;
@@ -90,6 +90,7 @@ export default class HeadObservationWell extends Boundary {
     public static fromObject(obj: IHeadObservationWell) {
         return this.create(
             obj.id,
+            obj.properties.type,
             obj.geometry,
             obj.properties.name,
             obj.properties.layers,

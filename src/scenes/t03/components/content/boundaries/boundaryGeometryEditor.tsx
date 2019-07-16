@@ -1,8 +1,8 @@
 import React, {ChangeEvent, MouseEvent} from 'react';
-import {Button, Form, Icon, InputOnChangeData, Menu, MenuItemProps, Modal, Segment} from 'semantic-ui-react';
+import {Button, Form, Icon, Menu, MenuItemProps, Modal, Segment} from 'semantic-ui-react';
 import {Boundary, BoundaryCollection, BoundaryFactory, ModflowModel} from '../../../../../core/model/modflow';
+import {BoundaryInstance} from '../../../../../core/model/modflow/boundaries/types';
 import BoundaryDiscretizationMap from '../../maps/boundaryDiscretizationMap';
-import {IBoundaryFeature} from '../../../../../core/model/modflow/boundaries/types';
 
 type ActiveItemType = 'geometry' | 'affected cells';
 
@@ -17,7 +17,7 @@ interface IProps {
 
 interface IState {
     activeItem: ActiveItemType;
-    boundary: IBoundaryFeature;
+    boundary: BoundaryInstance;
     buttonsDisabled: boolean;
 }
 

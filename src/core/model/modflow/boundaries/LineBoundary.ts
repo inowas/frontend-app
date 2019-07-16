@@ -5,10 +5,10 @@ import Uuid from 'uuid';
 import uuidv4 from 'uuid/v4';
 import Cells from '../../geometry/Cells';
 import Boundary from './Boundary';
-import {ILineBoundary, ILineBoundaryFeature, LineBoundaryType} from './LineBoundary.type';
+import {ILineBoundary, ILineBoundaryFeature} from './LineBoundary.type';
 import ObservationPoint from './ObservationPoint';
 import {IObservationPoint} from './ObservationPoint.type';
-import {SpValues} from './types';
+import {LineBoundaryType, SpValues} from './types';
 
 interface IValueProperty {
     name: string;
@@ -88,9 +88,9 @@ export default class LineBoundary extends Boundary {
         return [];
     }
 
-    public static create(id: string, geometry?: LineString, name?: string, layers?: number[],
+    public static create(id: string, type: LineBoundaryType, geometry?: LineString, name?: string, layers?: number[],
                          cells?: Cells, spValues?: SpValues) {
-        const boundary = new this('');
+        const boundary = new this(type);
         boundary._main.id = id;
         boundary._main.geometry = geometry;
         boundary._main.properties.name = name;
@@ -117,6 +117,7 @@ export default class LineBoundary extends Boundary {
 
         const boundary = this.create(
             main.id,
+            main.properties.type,
             main.geometry,
             main.properties.name,
             main.properties.layers,
@@ -129,6 +130,7 @@ export default class LineBoundary extends Boundary {
         return boundary;
     }
 
+    // Todo: default boundary type
     private _main: ILineBoundaryFeature = {
         type: 'Feature',
         id: uuidv4(),
@@ -137,7 +139,7 @@ export default class LineBoundary extends Boundary {
             coordinates: [],
         },
         properties: {
-            type: '',
+            type: 'chd',
             name: '',
             layers: [],
             cells: new Cells()
@@ -146,7 +148,7 @@ export default class LineBoundary extends Boundary {
 
     private _observationPoints: IObservationPoint[] = [];
 
-    constructor(type: LineBoundaryType | '') {
+    constructor(type: LineBoundaryType) {
         super();
         this._main.properties.type = type;
     }

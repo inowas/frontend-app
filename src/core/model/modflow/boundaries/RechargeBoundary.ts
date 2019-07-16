@@ -1,4 +1,4 @@
-import {Polygon} from 'geojson';
+import {MultiPolygon, Polygon} from 'geojson';
 import uuidv4 from 'uuid/v4';
 import Cells from '../../geometry/Cells';
 import Boundary from './Boundary';
@@ -75,7 +75,7 @@ export default class RechargeBoundary extends Boundary {
         ];
     }
 
-    public static create(id: string, geometry?: Polygon, name?: string, layers?: number[], cells?: Cells,
+    public static create(id: string, type: 'rch', geometry?: Polygon | MultiPolygon, name?: string, layers?: number[], cells?: Cells,
                          spValues?: SpValues) {
         const boundary = new this();
         boundary._id = id;
@@ -90,6 +90,7 @@ export default class RechargeBoundary extends Boundary {
     public static fromObject(obj: IRechargeBoundary) {
         return this.create(
             obj.id,
+            obj.properties.type,
             obj.geometry,
             obj.properties.name,
             obj.properties.layers,
@@ -100,7 +101,7 @@ export default class RechargeBoundary extends Boundary {
 
     public _type: 'rch' = 'rch';
     public _id: string = uuidv4();
-    public _geometry?: Polygon;
+    public _geometry?: Polygon | MultiPolygon;
     public _name?: string;
     public _layers?: number[];
     public _cells?: Cells;

@@ -71,7 +71,7 @@ class BoundaryValuesDataTable extends React.Component<IProps, IState> {
                 }
                 return spv;
             });
-            boundary.setSpValues(updatedSpValues, selectedOP);
+            boundary.setSpValues(updatedSpValues as SpValues, selectedOP);
         }
         this.props.onChange(boundary);
     };
@@ -145,7 +145,7 @@ class BoundaryValuesDataTable extends React.Component<IProps, IState> {
         ));
     };
 
-    public handleCSV = (e: any) => { // todo: type of e
+    /*public handleCSV = (e: any) => { // todo: handle csv and type of e
         let hasError = false;
         const errorMessages: string[] = [];
         const dateTimeValues = [];
@@ -199,7 +199,7 @@ class BoundaryValuesDataTable extends React.Component<IProps, IState> {
             id: uuidv4(),
             success: !hasError
         });
-    };
+    };*/
 
     public render() {
         const {boundary, selectedOP} = this.props;

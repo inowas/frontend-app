@@ -1,12 +1,22 @@
 import React from 'react';
-import PropTypes from 'prop-types';
-import {GeoJSON, Map, CircleMarker, FeatureGroup} from 'react-leaflet';
+import {CircleMarker, FeatureGroup, GeoJSON, Map} from 'react-leaflet';
 import {EditControl} from 'react-leaflet-draw';
 import {BoundaryFactory, Geometry} from '../../../../core/model/modflow';
+import {BoundaryType} from '../../../../core/model/modflow/boundaries/types';
 import {BasicTileLayer} from '../../../../services/geoTools/tileLayers';
-import {getStyle} from './index';
 import CenterControl from '../../../shared/leaflet/CenterControl';
+import {getStyle} from './index';
 
+interface IProps {
+    geometry: Geometry;
+    onChangeGeometry: (geometry: Geometry) => any;
+    onToggleEditMode?: () => any;
+    type: BoundaryType;
+}
+
+interface IState {
+    geometry: any;
+}
 
 const style = {
     map: {
@@ -15,39 +25,45 @@ const style = {
     }
 };
 
-class CreateBoundaryMap extends React.Component {
+class CreateBoundaryMap extends React.Component<IProps, IState> {
+    private map: any;
+    private mapInstance: any;
 
-    constructor(props) {
+    constructor(props: IProps) {
         super(props);
         this.state = {
             geometry: null
-        }
+        };
     }
 
-    componentDidMount() {
-        this.map = this.mapInstance.leafletElement
+    public componentDidMount() {
+        this.map = this.mapInstance.leafletElement;
     }
 
-    onCreated = e => {
+    public onCreated = (e: any) => {
         const geometry = Geometry.fromGeoJson(e.layer.toGeoJSON());
         this.props.onChangeGeometry(geometry);
-        this.setState({geometry});
+        this.setState({
+            geometry
+        });
     };
 
-    onEdited = e => {
-        e.layers.eachLayer(layer => {
+    public onEdited = (e: any) => {
+        e.layers.eachLayer((layer: any) => {
             const geometry = Geometry.fromGeoJson(layer.toGeoJSON());
-            this.setState({geometry});
+            this.setState({
+                geometry
+            });
             this.props.onChangeGeometry(geometry);
         });
     };
 
-    editControl = () => {
-        const geometryType = BoundaryFactory.fromType(this.props.type).geometryType;
+    public editControl = () => {
+        const geometryType = BoundaryFactory.fromType(this.props.type).geometryType.toLowerCase();
         return (
             <FeatureGroup>
                 <EditControl
-                    position='topright'
+                    position="topright"
                     draw={{
                         circle: false,
                         circlemarker: geometryType.toLowerCase() === 'point' && !this.state.geometry,
@@ -71,8 +87,13 @@ class CreateBoundaryMap extends React.Component {
         );
     };
 
-    renderGeometry(geometry) {
-        const gType = BoundaryFactory.fromType(this.props.type).geometryType.toLowerCase();
+    public renderGeometry(geometry: any) {
+        const boundary = BoundaryFactory.fromType(this.props.type);
+        if (!boundary) {
+            return;
+        }
+        const gType = boundary.geometryType.toLowerCase();
+
         if (gType === 'point') {
             return (
                 <CircleMarker
@@ -92,16 +113,21 @@ class CreateBoundaryMap extends React.Component {
         );
     }
 
-    render() {
+    public render() {
         const {geometry} = this.props;
 
         return (
             <Map
                 style={style.map}
                 bounds={geometry.getBoundsLatLng()}
-                ref={e => { this.mapInstance = e }}
+                ref={(e) => {
+                    this.mapInstance = e;
+                }}
             >
-                <CenterControl map={this.map} bounds={geometry.getBoundsLatLng()}/>
+                <CenterControl
+                    map={this.map}
+                    bounds={geometry.getBoundsLatLng()}
+                />
                 <BasicTileLayer/>
                 {this.editControl()}
                 <GeoJSON
@@ -113,12 +139,5 @@ class CreateBoundaryMap extends React.Component {
         );
     }
 }
-
-CreateBoundaryMap.propTypes = {
-    geometry: PropTypes.instanceOf(Geometry).isRequired,
-    onChangeGeometry: PropTypes.func.isRequired,
-    onToggleEditMode: PropTypes.func,
-    type: PropTypes.string.isRequired
-};
 
 export default CreateBoundaryMap;
