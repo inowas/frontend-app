@@ -81,13 +81,13 @@ class CreateBoundaryMap extends React.Component<IProps, IState> {
                     onEditStart={this.props.onToggleEditMode}
                     onEditStop={this.props.onToggleEditMode}
                 >
-                    {this.state.geometry && this.renderGeometry(this.state.geometry)}
+                    {this.state.geometry && this.renderGeometry(Geometry.fromGeoJson(this.state.geometry))}
                 </EditControl>
             </FeatureGroup>
         );
     };
 
-    public renderGeometry(geometry: any) {
+    public renderGeometry(geometry: Geometry) {
         const boundary = BoundaryFactory.fromType(this.props.type);
         if (!boundary) {
             return;

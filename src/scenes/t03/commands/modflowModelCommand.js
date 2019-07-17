@@ -6,7 +6,6 @@ class ModflowModelCommand extends AbstractCommand {
 
     static addBoundary(modelId, boundary) {
         const name = 'addBoundary';
-        console.log(boundary.toObject());
         return new ModflowModelCommand(
             name,
             {id: modelId, boundary: boundary.toObject()},

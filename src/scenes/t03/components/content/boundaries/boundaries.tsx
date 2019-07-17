@@ -5,7 +5,7 @@ import {Grid, Segment} from 'semantic-ui-react';
 import {BoundaryCollection, ModflowModel, Soilmodel} from '../../../../../core/model/modflow';
 import {BoundaryFactory} from '../../../../../core/model/modflow/boundaries';
 import Boundary from '../../../../../core/model/modflow/boundaries/Boundary';
-import {BoundaryInstance, BoundaryType, IBoundaryFeature} from '../../../../../core/model/modflow/boundaries/types';
+import {BoundaryInstance, BoundaryType} from '../../../../../core/model/modflow/boundaries/types';
 import ContentToolBar from '../../../../../scenes/shared/ContentToolbar';
 import {fetchUrl, sendCommand} from '../../../../../services/api';
 import {updateBoundaries, updateModel} from '../../../actions/actions';
@@ -102,10 +102,12 @@ class Boundaries extends React.Component<Props, IState> {
 
     public fetchBoundary = (modelId: string, boundaryId: string) =>
         fetchUrl(`modflowmodels/${modelId}/boundaries/${boundaryId}`,
-            (boundary: IBoundaryFeature) => this.setState({
-                isLoading: false,
-                selectedBoundary: boundary
-            })
+            (boundary: BoundaryInstance) => {
+                return this.setState({
+                    isLoading: false,
+                    selectedBoundary: boundary
+                });
+            }
         );
 
     public onChangeBoundary = (boundary: Boundary) => {

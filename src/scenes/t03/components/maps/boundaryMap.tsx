@@ -69,7 +69,7 @@ class BoundaryMap extends Component<IProps> {
                                 geometry.coordinates[0]
                             ]}
                             {...getStyle('underlay')}
-                            onClick={this.props.onClick ? this.props.onClick(b.id) : null}
+                            onClick={this.handleClickBoundary(b.id)}
                         />
                     );
                 case 'lineString':
@@ -78,7 +78,7 @@ class BoundaryMap extends Component<IProps> {
                             key={uniqueId(Geometry.fromObject(geometry).hash())}
                             positions={Geometry.fromObject(geometry).coordinatesLatLng}
                             {...getStyle('underlay')}
-                            onClick={this.props.onClick ? this.props.onClick(b.id) : null}
+                            onClick={this.handleClickBoundary(b.id)}
                         />
                     );
                 default:
@@ -144,6 +144,12 @@ class BoundaryMap extends Component<IProps> {
             </Map>
         );
     }
+
+    private handleClickBoundary = (bid: string) => () => {
+        if (!!this.props.onClick) {
+            return this.props.onClick(bid);
+        }
+    };
 }
 
 export default BoundaryMap;

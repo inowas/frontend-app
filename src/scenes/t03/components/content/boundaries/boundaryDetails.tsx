@@ -184,7 +184,7 @@ class BoundaryDetails extends React.Component<IProps, IState> {
                     boundary={boundary}
                     boundaries={boundaries}
                     selectedObservationPointId={observationPointId}
-                    onClick={this.props.onClick}
+                    onClick={this.handleClickBoundary}
                 />
                 {(boundary instanceof LineBoundary) &&
                 <div>
@@ -275,6 +275,7 @@ class BoundaryDetails extends React.Component<IProps, IState> {
 
     private handleCancelGeometryEditor = () => this.setState({showBoundaryEditor: false});
     private handleCancleObservationPointEditor = () => this.setState({showObservationPointEditor: false});
+    private handleClickBoundary = (id: string) => this.props.onClick(id);
     private handleClickShowBoundaryEditor = () => this.setState({showBoundaryEditor: true});
     private handleEditPoint = () => this.setState({showObservationPointEditor: true});
     private handleSelectObservationPoint = (e: SyntheticEvent<HTMLElement, Event>, data: DropdownProps) => {
