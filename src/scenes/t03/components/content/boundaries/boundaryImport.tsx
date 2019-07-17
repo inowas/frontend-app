@@ -1,35 +1,50 @@
-import React from 'react';
-
-import {Button, Dimmer, Grid, Header, Modal, List, Loader, Segment} from 'semantic-ui-react';
-
 import PapaParse from 'papaparse';
+import React, {ChangeEvent} from 'react';
+import {Button, Dimmer, Grid, Header, List, Loader, Modal, Segment} from 'semantic-ui-react';
 import {Stressperiod, Stressperiods} from '../../../../../core/model/modflow';
-import Proptypes from 'prop-types';
+import {IStressPeriods} from '../../../../../core/model/modflow/Stressperiods.type';
 
-class BoundariesImport extends React.Component {
+interface IProps {
+    onCancel: () => any;
+    onChange: (stressperiods: Stressperiods) => any;
+    timeunit?: number;
+}
 
-    constructor(props) {
+interface IState {
+    errors: null;
+    isLoading: boolean;
+    showImportModal: boolean;
+    stressPeriods: IStressPeriods | null;
+    payload: any;
+}
+
+class BoundariesImport extends React.Component<IProps, IState> {
+    private fileReader: FileReader;
+
+    constructor(props: IProps) {
         super(props);
         this.state = {
             errors: null,
             isLoading: false,
-            showImportModal: false
+            showImportModal: false,
+            stressPeriods: null,
+            payload: null
         };
 
         this.fileReader = new FileReader();
-        this.fileReader.onload = event => {
-            this.parseFileContent(event.target.result);
-        }
+        this.fileReader.onload = () => {
+            this.parseFileContent(this.fileReader.result);
+        };
     }
 
-    sendImportCommand = () => {
+    public sendImportCommand = () => {
         this.setState({
             showImportModal: false
         });
         return this.props.onChange(Stressperiods.fromObject(this.state.stressPeriods));
     };
 
-    handleJSON = response => {
+    public handleJSON = (response: any) => {
         const stressPeriods = Stressperiods.fromImport({
             start_date_time: response.data[0].Date,
             end_date_time: response.data[response.data.length - 1].Date,
@@ -48,14 +63,14 @@ class BoundariesImport extends React.Component {
 
         return this.setState({
             stressPeriods: stressPeriods.toObject()
-        })
+        });
     };
 
-    isValidCSV = text => {
+    public isValidCSV = (text: string) => {
         return true;
     };
 
-    isValidJson = text => {
+    public isValidJson = (text: string) => {
         try {
             JSON.parse(text);
         } catch (e) {
@@ -64,7 +79,11 @@ class BoundariesImport extends React.Component {
         return true;
     };
 
-    parseFileContent = text => {
+    public parseFileContent = (text: string | ArrayBuffer | null) => {
+        if (!(typeof text === 'string')) {
+            return;
+        }
+
         if (this.isValidJson(text)) {
             return this.handleJSON(JSON.parse(text));
         }
@@ -77,23 +96,30 @@ class BoundariesImport extends React.Component {
         }
     };
 
-    handleUpload = e => {
+    public handleUpload = (e: ChangeEvent<HTMLInputElement>) => {
         const files = e.target.files;
 
-        if (files.length > 0) {
+        if (files && files.length > 0) {
             this.fileReader.readAsText(files[0]);
         }
     };
 
-    onClickUpload = () => this.setState({showImportModal: true});
+    public onClickUpload = () => this.setState({showImportModal: true});
 
-    renderValidationErrors = errors => {
-        console.log(errors);
+    public renderMetaData = () => {
+        return null;
+    };
+
+    public renderStressPeriods = () => {
+        return null;
+    };
+
+    public renderValidationErrors = (errors: any) => {
         return (
-            <Segment color="red" inverted>
-                <Header as="h3" style={{'textAlign': 'left'}}>Validation Errors</Header>
+            <Segment color="red" inverted={true}>
+                <Header as="h3" style={{textAlign: 'left'}}>Validation Errors</Header>
                 <List>
-                    {errors.map((e, idx) => (
+                    {errors.map((e: any, idx: number) => (
                         <List.Item key={idx}>
                             <List.Icon name="eye"/>
                             <List.Content>{e.message}</List.Content>
@@ -101,54 +127,59 @@ class BoundariesImport extends React.Component {
                     ))}
                 </List>
             </Segment>
-        )
+        );
     };
 
-    renderImportModal = () => (
-        <Modal open onClose={this.props.onCancel} dimmer={'blurring'}>
+    public renderImportModal = () => (
+        <Modal open={true} onClose={this.props.onCancel} dimmer={'blurring'}>
             <Modal.Header>Import Boundaries</Modal.Header>
             <Modal.Content>
                 <Grid>
                     <Grid.Row columns={2}>
                         <Grid.Column>
                             {this.state.isLoading &&
-                            <Dimmer active inverted>
+                            <Dimmer active={true} inverted={true}>
                                 <Loader>Uploading</Loader>
                             </Dimmer>
                             }
                             {!this.state.isLoading &&
                             <Segment color={'green'}>
-                                <Header as="h3" style={{'textAlign': 'left'}}>File Requirements</Header>
-                                <List bulleted>
+                                <Header as="h3" style={{textAlign: 'left'}}>File Requirements</Header>
+                                <List bulleted={true}>
                                     <List.Item>
                                         The file has to be a csv or json-file.
                                     </List.Item>
                                     <List.Item>
-                                        Examples can be found <a
-                                        href='https://github.com/inowas/inowas-dss-cra/blob/master/imports'
-                                        target='_blank' rel='noopener noreferrer'>here</a>.
+                                        Examples can be found
+                                        <a
+                                            href="https://github.com/inowas/inowas-dss-cra/blob/master/imports"
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                        >
+                                            here
+                                        </a>.
                                     </List.Item>
                                 </List>
                                 <Button
-                                    primary
-                                    fluid
-                                    as='label'
+                                    primary={true}
+                                    fluid={true}
+                                    as="label"
                                     htmlFor={'inputField'}
-                                    icon='file alternate'
-                                    content='Select File'
-                                    labelPosition='left'
+                                    icon="file alternate"
+                                    content="Select File"
+                                    labelPosition="left"
                                 />
                                 <input
-                                    hidden
-                                    type='file'
-                                    id='inputField'
+                                    hidden={true}
+                                    type="file"
+                                    id="inputField"
                                     onChange={this.handleUpload}
                                 />
                             </Segment>
                             }
                         </Grid.Column>
                         <Grid.Column>
-                            {this.state.payload && this.renderMetaData(this.state.payload)}
+                            {this.state.payload && this.renderMetaData()}
                             {this.state.errors && this.renderValidationErrors(this.state.errors)}
                         </Grid.Column>
                     </Grid.Row>
@@ -160,10 +191,10 @@ class BoundariesImport extends React.Component {
                 </Grid>
             </Modal.Content>
             <Modal.Actions>
-                <Button onClick={() => this.setState({showImportModal: false})}>Cancel</Button>
+                <Button onClick={this.handleClickCancel}>Cancel</Button>
                 <Button
                     disabled={!this.state.stressPeriods}
-                    positive
+                    positive={true}
                     onClick={this.sendImportCommand}
                 >
                     Import
@@ -172,27 +203,24 @@ class BoundariesImport extends React.Component {
         </Modal>
     );
 
-    render() {
+    public render() {
         const {showImportModal} = this.state;
         return (
             <div>
                 <Button
-                    primary
-                    fluid
-                    icon='download'
-                    content='Import Boundaries'
-                    labelPosition='left'
+                    primary={true}
+                    fluid={true}
+                    icon="download"
+                    content="Import Boundaries"
+                    labelPosition="left"
                     onClick={this.onClickUpload}
                 />
                 {showImportModal && this.renderImportModal()}
             </div>
         );
     }
-}
 
-BoundariesImport.prototypes = {
-    onChange: Proptypes.func.isRequired,
-    timeunit: Proptypes.number
-};
+    private handleClickCancel = () => this.setState({showImportModal: false});
+}
 
 export default BoundariesImport;

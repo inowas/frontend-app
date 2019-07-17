@@ -5,6 +5,7 @@ import BoundingBox from '../../geometry/BoundingBox';
 import Cells from '../../geometry/Cells';
 import {GeoJson} from '../../geometry/Geometry';
 import GridSize from '../../geometry/GridSize';
+import {Cell} from '../../geometry/types';
 import {Geometry, LineBoundary} from '../index';
 import Boundary from './Boundary';
 import ConstantHeadBoundary from './ConstantHeadBoundary';
@@ -12,6 +13,7 @@ import DrainageBoundary from './DrainageBoundary';
 import EvapotranspirationBoundary from './EvapotranspirationBoundary';
 import GeneralHeadBoundary from './GeneralHeadBoundary';
 import HeadObservationWell from './HeadObservationWell';
+import ObservationPoint from './ObservationPoint';
 import RechargeBoundary from './RechargeBoundary';
 import RiverBoundary from './RiverBoundary';
 import {
@@ -19,10 +21,6 @@ import {
     SpValues
 } from './types';
 import WellBoundary from './WellBoundary';
-
-interface IIndexedBoundary extends Boundary {
-    [name: string]: any;
-}
 
 export default class BoundaryFactory {
 
@@ -51,8 +49,8 @@ export default class BoundaryFactory {
         }
     };
 
-    public static createNewFromProps(type: BoundaryType, id: string, geometry: GeoJson, name: string,
-                                     layers: number[], cells: Cells, spValues: SpValues) {
+    public static createNewFromProps(type: BoundaryType | 'op', id: string, geometry: GeoJson, name: string,
+                                     layers: number[], cells: Cell[], spValues: SpValues) {
         switch (type) {
             case 'chd':
                 return ConstantHeadBoundary.create(id, type, geometry as LineString, name, layers, cells, spValues);
@@ -65,6 +63,8 @@ export default class BoundaryFactory {
                 return GeneralHeadBoundary.create(id, type, geometry as LineString, name, layers, cells, spValues);
             case 'hob':
                 return HeadObservationWell.create(id, type, geometry as Point, name, layers, cells, spValues);
+            case 'op':
+                return ObservationPoint.create(id, type, geometry as Point, name, spValues);
             case 'rch':
                 return RechargeBoundary.create(id, type, geometry as Polygon | MultiPolygon, name, layers, cells,
                     spValues);
@@ -77,7 +77,7 @@ export default class BoundaryFactory {
         }
     }
 
-    public static createFromTypeAndObject(type: BoundaryType, obj: any) {
+    public static createFromTypeAndObject(type: BoundaryType | 'op', obj: any): Boundary {
         switch (type) {
             case 'chd':
                 return ConstantHeadBoundary.fromObject(obj);
@@ -100,7 +100,7 @@ export default class BoundaryFactory {
         }
     }
 
-    public static fromObject = (obj: BoundaryInstance): IIndexedBoundary | null => {
+    public static fromObject = (obj: BoundaryInstance): Boundary | null => {
         if (!obj) {
             return null;
         }
@@ -138,7 +138,7 @@ export default class BoundaryFactory {
 
         if (boundary instanceof LineBoundary && obj.ops) {
             cells.calculateValues(boundary, boundingBox, gridSize);
-            boundary.cells = cells;
+            boundary.cells = cells.toArray();
             obj.ops.forEach((op: IObservationPointImport) => {
                 boundary.addObservationPoint(op.name, op.geometry, op.sp_values);
             });
@@ -150,7 +150,7 @@ export default class BoundaryFactory {
             boundary.wellType = obj.well_type;
         }
 
-        boundary.cells = cells;
+        boundary.cells = cells.toArray();
 
         if (!(boundary instanceof LineBoundary)) {
             boundary.spValues = obj.sp_values;

@@ -4,6 +4,10 @@ import {Boundary, BoundaryCollection, BoundaryFactory, ModflowModel} from '../..
 import {BoundaryInstance} from '../../../../../core/model/modflow/boundaries/types';
 import BoundaryDiscretizationMap from '../../maps/boundaryDiscretizationMap';
 
+interface IIndexedBoundary {
+    [name: string]: any;
+}
+
 type ActiveItemType = 'geometry' | 'affected cells';
 
 interface IProps {
@@ -41,7 +45,7 @@ class BoundaryGeometryEditor extends React.Component<IProps, IState> {
 
     public handleChange = (e: ChangeEvent<HTMLInputElement>) => {
         const {name, value} = e.target;
-        const boundary = BoundaryFactory.fromObject(this.state.boundary);
+        const boundary: IIndexedBoundary | null = BoundaryFactory.fromObject(this.state.boundary);
         if (boundary) {
             boundary[name] = value;
             this.setState({

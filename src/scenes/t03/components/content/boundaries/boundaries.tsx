@@ -184,7 +184,11 @@ class Boundaries extends React.Component<Props, IState> {
         );
     };
 
-    public handleChange = () => {
+    public handleCancelImport = () => {
+        return;
+    };
+
+    public handleChangeImport = () => {
         // TODO: import
         return;
     };
@@ -231,7 +235,8 @@ class Boundaries extends React.Component<Props, IState> {
                                             saveButton={!readOnly}
                                             importButton={this.props.readOnly ||
                                             <BoundariesImport
-                                                onChange={this.handleChange}
+                                                onCancel={this.handleCancelImport}
+                                                onChange={this.handleChangeImport}
                                             />
                                             }
                                         />

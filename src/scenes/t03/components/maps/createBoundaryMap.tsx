@@ -44,7 +44,7 @@ class CreateBoundaryMap extends React.Component<IProps, IState> {
         const geometry = Geometry.fromGeoJson(e.layer.toGeoJSON());
         this.props.onChangeGeometry(geometry);
         this.setState({
-            geometry
+            geometry: geometry.toObject()
         });
     };
 

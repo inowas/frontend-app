@@ -3,7 +3,7 @@ import {lineDistance, lineSlice} from '@turf/turf';
 import {FeatureCollection, LineString, Point} from 'geojson';
 import Uuid from 'uuid';
 import uuidv4 from 'uuid/v4';
-import Cells from '../../geometry/Cells';
+import {Cell} from '../../geometry/types';
 import Boundary from './Boundary';
 import {ILineBoundary, ILineBoundaryFeature} from './LineBoundary.type';
 import ObservationPoint from './ObservationPoint';
@@ -89,7 +89,7 @@ export default class LineBoundary extends Boundary {
     }
 
     public static create(id: string, type: LineBoundaryType, geometry?: LineString, name?: string, layers?: number[],
-                         cells?: Cells, spValues?: SpValues) {
+                         cells?: Cell[], spValues?: SpValues) {
         const boundary = new this(type);
         boundary._main.id = id;
         boundary._main.geometry = geometry;
@@ -142,7 +142,7 @@ export default class LineBoundary extends Boundary {
             type: 'chd',
             name: '',
             layers: [],
-            cells: new Cells()
+            cells: []
         }
     };
 
@@ -154,7 +154,7 @@ export default class LineBoundary extends Boundary {
     }
 
     public addObservationPoint = (name: string, geometry: Point, spValues: SpValues) => {
-        const op = ObservationPoint.create(Uuid.v4(), geometry, name, spValues,
+        const op = ObservationPoint.create(Uuid.v4(), 'op', geometry, name, spValues,
             this.geometry ? distanceOnLine(this.geometry, geometry) : 0);
         this._observationPoints.push(op.toObject());
         this._observationPoints.sort((a, b) => {

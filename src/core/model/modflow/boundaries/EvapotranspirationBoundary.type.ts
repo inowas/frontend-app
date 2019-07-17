@@ -1,5 +1,5 @@
 import {MultiPolygon, Polygon} from 'geojson';
-import Cells from '../../geometry/Cells';
+import {Cell} from '../../geometry/types';
 import {IBoundaryFeature, SpValues} from './types';
 
 export interface IEvapotranspirationBoundary extends IBoundaryFeature {
@@ -10,7 +10,7 @@ export interface IEvapotranspirationBoundary extends IBoundaryFeature {
         name?: string;
         type: 'evt';
         layers?: number[];
-        cells?: Cells;
+        cells?: Cell[];
         nevtop?: number;
         sp_values?: SpValues;
     };

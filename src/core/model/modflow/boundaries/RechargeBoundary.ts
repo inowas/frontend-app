@@ -1,6 +1,6 @@
 import {MultiPolygon, Polygon} from 'geojson';
 import uuidv4 from 'uuid/v4';
-import Cells from '../../geometry/Cells';
+import {Cell} from '../../geometry/types';
 import Boundary from './Boundary';
 import {IRechargeBoundary} from './RechargeBoundary.type';
 import {SpValues} from './types';
@@ -75,8 +75,8 @@ export default class RechargeBoundary extends Boundary {
         ];
     }
 
-    public static create(id: string, type: 'rch', geometry?: Polygon | MultiPolygon, name?: string, layers?: number[], cells?: Cells,
-                         spValues?: SpValues) {
+    public static create(id: string, type: 'rch', geometry?: Polygon | MultiPolygon, name?: string, layers?: number[],
+                         cells?: Cell[], spValues?: SpValues) {
         const boundary = new this();
         boundary._id = id;
         boundary._geometry = geometry;
@@ -104,7 +104,7 @@ export default class RechargeBoundary extends Boundary {
     public _geometry?: Polygon | MultiPolygon;
     public _name?: string;
     public _layers?: number[];
-    public _cells?: Cells;
+    public _cells?: Cell[];
     public _spValues?: SpValues;
 
     public getSpValues() {

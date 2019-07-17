@@ -19,10 +19,6 @@ class CenterControl extends React.Component {
     render() {
         const {bounds, map} = this.props;
 
-        if (!map) {
-            return;
-        }
-
         return (
             <Control position="topleft">
                 <button

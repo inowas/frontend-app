@@ -3,11 +3,11 @@ import {connect} from 'react-redux';
 import {withRouter} from 'react-router-dom';
 import {DropdownProps, Form, Grid, Header, InputOnChangeData, Segment} from 'semantic-ui-react';
 import Uuid from 'uuid';
-import Cells from '../../../../../core/model/geometry/Cells';
 import {default as Geometry, GeoJson} from '../../../../../core/model/geometry/Geometry';
 import {Cell} from '../../../../../core/model/geometry/types';
 import {ModflowModel, Soilmodel, Stressperiods} from '../../../../../core/model/modflow';
 import {BoundaryCollection, BoundaryFactory} from '../../../../../core/model/modflow/boundaries';
+import Boundary from '../../../../../core/model/modflow/boundaries/Boundary';
 import {BoundaryType, SpValues} from '../../../../../core/model/modflow/boundaries/types';
 import ContentToolBar from '../../../../../scenes/shared/ContentToolbar';
 import {sendCommand} from '../../../../../services/api';
@@ -85,13 +85,13 @@ class CreateBoundary extends React.Component<Props, IState> {
 
     public handleChange = (e: SyntheticEvent<HTMLElement, Event> | ChangeEvent<HTMLInputElement>,
                            data: DropdownProps | InputOnChangeData) => {
-        let value: any = data.value;
-        if (data.name === 'layers') {
+        let value = data.value;
+        if (data.name === 'layers' && typeof value === 'number') {
             value = [value];
         }
 
         return this.setState({
-            [name]: value,
+            [data.name]: value,
             isDirty: true
         } as Pick<IState, keyof IState>);
     };
@@ -114,14 +114,14 @@ class CreateBoundary extends React.Component<Props, IState> {
             geometry,
             name,
             layers,
-            Cells.fromArray(cells),
+            cells,
             new Array(stressperiods.count).fill(values) as SpValues
         );
 
         return sendCommand(ModflowModelCommand.addBoundary(model.id, boundary),
             () => {
                 const boundaries = this.props.boundaries;
-                boundaries.addBoundary(boundary);
+                boundaries.addBoundary(boundary as Boundary);
                 this.props.updateBoundaries(boundaries);
                 this.props.history.push(`${baseUrl}/${id}/${property}/${'!'}/${boundary.id}`);
             },

@@ -1,6 +1,6 @@
 import {Point} from 'geojson';
 import uuidv4 from 'uuid/v4';
-import Cells from '../../geometry/Cells';
+import {Cell} from '../../geometry/types';
 import Boundary from './Boundary';
 import {SpValues, WellType} from './types';
 import {IWellBoundary} from './WellBoundary.type';
@@ -24,6 +24,10 @@ export default class WellBoundary extends Boundary {
 
     set geometry(value) {
         this._geometry = value;
+    }
+
+    get geometryType() {
+        return 'Point';
     }
 
     get name() {
@@ -106,7 +110,7 @@ export default class WellBoundary extends Boundary {
         ];
     }
 
-    public static create(id: string, type: 'wel', geometry?: Point, name?: string, layers?: number[], cells?: Cells,
+    public static create(id: string, type: 'wel', geometry?: Point, name?: string, layers?: number[], cells?: Cell[],
                          spValues?: SpValues) {
         const boundary = new this();
         boundary.id = id;
@@ -139,7 +143,7 @@ export default class WellBoundary extends Boundary {
     public _geometry?: Point;
     public _name?: string;
     public _layers?: number[];
-    public _cells?: Cells;
+    public _cells?: Cell[];
     public _wellType?: WellType;
     public _spValues?: SpValues;
 

@@ -1,6 +1,6 @@
 import {MultiPolygon, Polygon} from 'geojson';
 import uuidv4 from 'uuid/v4';
-import Cells from '../../geometry/Cells';
+import {Cell} from '../../geometry/types';
 import Boundary from './Boundary';
 import {IEvapotranspirationBoundary} from './EvapotranspirationBoundary.type';
 import {SpValues} from './types';
@@ -84,7 +84,7 @@ export default class EvapotranspirationBoundary extends Boundary {
     }
 
     public static create(id: string, type: 'evt', geometry?: Polygon | MultiPolygon, name?: string, layers?: number[],
-                         cells?: Cells, spValues?: SpValues, nevtop?: number) {
+                         cells?: Cell[], spValues?: SpValues, nevtop?: number) {
         const boundary = new this();
         boundary._id = id;
         boundary._geometry = geometry;
@@ -114,7 +114,7 @@ export default class EvapotranspirationBoundary extends Boundary {
     private _geometry?: Polygon | MultiPolygon;
     private _name?: string;
     private _layers?: number[];
-    private _cells?: Cells;
+    private _cells?: Cell[];
     private _nevtop?: number;
     private _spValues?: SpValues;
 
