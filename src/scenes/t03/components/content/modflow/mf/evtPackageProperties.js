@@ -3,12 +3,12 @@ import React from 'react';
 import {Form, Grid, Header, Input} from 'semantic-ui-react';
 
 import AbstractPackageProperties from './AbstractPackageProperties';
-import {FlopyModflowMfwel} from '../../../../../../core/model/flopy/packages/mf';
+import {FlopyModflow, FlopyModflowMfevt} from '../../../../../../core/model/flopy/packages/mf';
 import {documentation} from '../../../../defaults/flow';
 import {RasterDataImage} from '../../../../../shared/rasterData';
 import {GridSize} from '../../../../../../core/model/modflow';
 
-class WelPackageProperties extends AbstractPackageProperties {
+class EvtPackageProperties extends AbstractPackageProperties {
 
     render() {
         if (!this.state.mfPackage) {
@@ -16,33 +16,28 @@ class WelPackageProperties extends AbstractPackageProperties {
         }
 
         const {mfPackage, mfPackages, readonly} = this.props;
+        const spData2D = Object.values(mfPackage.stress_period_data)[0];
+
         const basPackage = mfPackages.getPackage('bas');
         const {ibound} = basPackage;
-        const affectedCellsLayers = ibound.map(l => l.map(r => r.map(() => 0)));
-        Object.values(mfPackage.stress_period_data)[0].forEach(spv => {
-            const [lay, row, col] = spv;
-            affectedCellsLayers[lay][row][col] = 1;
-        });
+
+        const disPackage = mfPackages.getPackage('dis');
+        const {nlay} = disPackage;
 
         return (
             <Form>
                 <Grid divided={'vertically'}>
-                    <Header as={'h2'}>Well Boundaries</Header>
+                    <Header as={'h2'}>Evapotranspiration Boundaries</Header>
                     <Grid.Row columns={2}>
-                        {affectedCellsLayers.map((layer, idx) => (
-                            <Grid.Column key={idx}>
-                                <Header as={'p'}>Layer {idx + 1}</Header>
-                                <RasterDataImage
-                                    data={layer}
-                                    gridSize={GridSize.fromData(layer)}
-                                    unit={''}
-                                    legend={[
-                                        {value: 1, color: 'blue', label: 'WEL affected cells'},
-                                    ]}
-                                    border={'1px dotted black'}
-                                />
-                            </Grid.Column>
-                        ))}
+                        <Grid.Column>
+                            <Header as={'p'}>Stress period data (SP1)</Header>
+                            <RasterDataImage
+                                data={spData2D}
+                                gridSize={GridSize.fromData(ibound[0])}
+                                unit={''}
+                                border={'1px dotted black'}
+                            />
+                        </Grid.Column>
                     </Grid.Row>
                 </Grid>
 
@@ -57,34 +52,45 @@ class WelPackageProperties extends AbstractPackageProperties {
                             placeholder='Select ipakcb'
                             name='ipakcb'
                             selection
-                            value={mfPackage.ipakcb || 0}
+                            value={mfPackage.ipakcb}
                             readOnly={readonly}
                             onChange={this.handleOnSelect}
                         />
                     </Form.Field>
                     <Form.Field>
-                        <label>Data type (dtype)</label>
-                        <Input
-                            readOnly
-                            name='dtype'
-                            value={mfPackage.dtype || ''}
-                            icon={this.renderInfoPopup(documentation.dtype, 'dtype')}
+                        <label>Evapotranspiration option (nevtop)</label>
+                        <Form.Dropdown
+                            options={[
+                                {key: 0, value: 1, text: '1'},
+                                {key: 1, value: 2, text: '2'},
+                                {key: 2, value: 3, text: '3'},
+                            ]}
+                            placeholder='Select nevtop'
+                            name='nevtop'
+                            selection
+                            value={mfPackage.nevtop}
+                            readOnly={readonly}
+                            onChange={this.handleOnSelect}
                         />
                     </Form.Field>
                     <Form.Field>
-                        <label>Package options (options)</label>
-                        <Input
-                            readOnly
-                            name='options'
-                            value={mfPackage.options || ''}
-                            icon={this.renderInfoPopup(documentation.options, 'options')}
+                        <label>Evapotranspiration layer (ievt)</label>
+                        <Form.Dropdown
+                            options={new Array(nlay).fill(0).map((l, idx) => ({key: idx, value: idx, text: idx}))}
+                            placeholder='Select ievt'
+                            name='ievt'
+                            selection
+                            value={mfPackage.ievt}
+                            readOnly={readonly}
+                            onChange={this.handleOnSelect}
+                            disabled={mfPackage.ievt !== 2}
                         />
                     </Form.Field>
                 </Form.Group>
 
                 <Form.Group widths='equal'>
                     <Form.Field>
-                        <label>Filename extension (extension)</label>
+                        <label>Filename extension</label>
                         <Input
                             readOnly
                             name='extension'
@@ -93,16 +99,17 @@ class WelPackageProperties extends AbstractPackageProperties {
                         />
                     </Form.Field>
                     <Form.Field>
-                        <label>File unit number (unitnumber)</label>
+                        <label>File unit number</label>
                         <Input
                             readOnly
+                            type={'number'}
                             name='unitnumber'
                             value={mfPackage.unitnumber || ''}
                             icon={this.renderInfoPopup(documentation.unitnumber, 'unitnumber')}
                         />
                     </Form.Field>
                     <Form.Field>
-                        <label>Filename (filenames)</label>
+                        <label>Filenames</label>
                         <Input
                             readOnly
                             name='filenames'
@@ -116,11 +123,12 @@ class WelPackageProperties extends AbstractPackageProperties {
     }
 }
 
-WelPackageProperties.propTypes = {
-    mfPackage: PropTypes.instanceOf(FlopyModflowMfwel),
+EvtPackageProperties.propTypes = {
+    mfPackage: PropTypes.instanceOf(FlopyModflowMfevt),
+    mfPackages: PropTypes.instanceOf(FlopyModflow),
     onChange: PropTypes.func.isRequired,
     readonly: PropTypes.bool.isRequired
 };
 
 
-export default WelPackageProperties;
+export default EvtPackageProperties;

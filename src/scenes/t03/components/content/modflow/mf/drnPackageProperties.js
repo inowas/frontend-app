@@ -3,12 +3,12 @@ import React from 'react';
 import {Form, Grid, Header, Input} from 'semantic-ui-react';
 
 import AbstractPackageProperties from './AbstractPackageProperties';
-import {FlopyModflowMfwel} from '../../../../../../core/model/flopy/packages/mf';
+import {FlopyModflowMfdrn} from '../../../../../../core/model/flopy/packages/mf';
+import {GridSize} from '../../../../../../core/model/modflow';
 import {documentation} from '../../../../defaults/flow';
 import {RasterDataImage} from '../../../../../shared/rasterData';
-import {GridSize} from '../../../../../../core/model/modflow';
 
-class WelPackageProperties extends AbstractPackageProperties {
+class DrnPackageProperties extends AbstractPackageProperties {
 
     render() {
         if (!this.state.mfPackage) {
@@ -27,7 +27,7 @@ class WelPackageProperties extends AbstractPackageProperties {
         return (
             <Form>
                 <Grid divided={'vertically'}>
-                    <Header as={'h2'}>Well Boundaries</Header>
+                    <Header as={'h2'}>Drainage Boundaries</Header>
                     <Grid.Row columns={2}>
                         {affectedCellsLayers.map((layer, idx) => (
                             <Grid.Column key={idx}>
@@ -37,7 +37,7 @@ class WelPackageProperties extends AbstractPackageProperties {
                                     gridSize={GridSize.fromData(layer)}
                                     unit={''}
                                     legend={[
-                                        {value: 1, color: 'blue', label: 'WEL affected cells'},
+                                        {value: 1, color: 'blue', label: 'DRN affected cells'},
                                     ]}
                                     border={'1px dotted black'}
                                 />
@@ -45,7 +45,6 @@ class WelPackageProperties extends AbstractPackageProperties {
                         ))}
                     </Grid.Row>
                 </Grid>
-
                 <Form.Group widths='equal'>
                     <Form.Field>
                         <label>Cell-by-cell budget data (ipakcb)</label>
@@ -84,7 +83,7 @@ class WelPackageProperties extends AbstractPackageProperties {
 
                 <Form.Group widths='equal'>
                     <Form.Field>
-                        <label>Filename extension (extension)</label>
+                        <label>Filename extension</label>
                         <Input
                             readOnly
                             name='extension'
@@ -93,16 +92,17 @@ class WelPackageProperties extends AbstractPackageProperties {
                         />
                     </Form.Field>
                     <Form.Field>
-                        <label>File unit number (unitnumber)</label>
+                        <label>File unit number</label>
                         <Input
                             readOnly
+                            type={'number'}
                             name='unitnumber'
                             value={mfPackage.unitnumber || ''}
                             icon={this.renderInfoPopup(documentation.unitnumber, 'unitnumber')}
                         />
                     </Form.Field>
                     <Form.Field>
-                        <label>Filename (filenames)</label>
+                        <label>Filenames</label>
                         <Input
                             readOnly
                             name='filenames'
@@ -116,11 +116,11 @@ class WelPackageProperties extends AbstractPackageProperties {
     }
 }
 
-WelPackageProperties.propTypes = {
-    mfPackage: PropTypes.instanceOf(FlopyModflowMfwel),
+DrnPackageProperties.propTypes = {
+    mfPackage: PropTypes.instanceOf(FlopyModflowMfdrn),
     onChange: PropTypes.func.isRequired,
     readonly: PropTypes.bool.isRequired
 };
 
 
-export default WelPackageProperties;
+export default DrnPackageProperties;
