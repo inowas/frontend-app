@@ -1,17 +1,49 @@
-import FlopyModflowPackage from './FlopyModflowPackage';
+import EvapotranspirationBoundary from "../../../modflow/boundaries/EvapotranspirationBoundary";
+import FlopyModflowBoundary from "./FlopyModflowBoundary";
 
-export default class FlopyModflowMfevt extends FlopyModflowPackage {
+export default class FlopyModflowMfevt extends FlopyModflowBoundary {
 
     _nevtop = 3;
-    _ipakcb = null;
-    _surf = 0.0;
-    _evtr = 0.001;
-    _exdp = 1.0;
-    _ievt = 1;
-    _extension = 'evt';
+    _ipakcb = 0;
+    _stress_period_data = 0.001;
+    _irch = 0;
+    _extension = 'rch';
     _unitnumber = null;
     _filenames = null;
-    _external = true;
+
+    static calculateSpData = (boundaries, nper, nrow, ncol) => {
+
+        const evapotranspirationBoundaries = boundaries.filter(rch => (rch instanceof EvapotranspirationBoundary));
+        if (evapotranspirationBoundaries.length === 0) {
+            return null;
+        }
+
+        let spData = [];
+        for (let per = 0; per < nper; per++) {
+            spData[per] = [];
+            for (let row = 0; row < nrow; row++) {
+                spData[per][row] = [];
+                for (let col = 0; col < ncol; col++) {
+                    spData[per][row][col] = 0;
+                }
+            }
+        }
+
+        evapotranspirationBoundaries.forEach(rch => {
+            const cells = rch.cells;
+            const spValues = rch.spValues;
+
+            spData.forEach((sp, per) => {
+                cells.forEach(cell => {
+                    const row = cell[1];
+                    const col = cell[0];
+                    spData[per][row][col] += spValues[per][0];
+                });
+            });
+        });
+
+        return FlopyModflowMfevt.arrayToObject(spData);
+    };
 
     get nevtop() {
         return this._nevtop;
@@ -29,36 +61,23 @@ export default class FlopyModflowMfevt extends FlopyModflowPackage {
         this._ipakcb = value;
     }
 
-    get surf() {
-        return this._surf;
+    get stress_period_data() {
+        return this._stress_period_data;
     }
 
-    set surf(value) {
-        this._surf = value;
+    set stress_period_data(value) {
+        if (Array.isArray(value)) {
+            value = FlopyModflowBoundary.arrayToObject(value);
+        }
+        this._stress_period_data = value;
     }
 
-    get evtr() {
-        return this._evtr;
+    get irch() {
+        return this._irch;
     }
 
-    set evtr(value) {
-        this._evtr = value;
-    }
-
-    get exdp() {
-        return this._exdp;
-    }
-
-    set exdp(value) {
-        this._exdp = value;
-    }
-
-    get ievt() {
-        return this._ievt;
-    }
-
-    set ievt(value) {
-        this._ievt = value;
+    set irch(value) {
+        this._irch = value;
     }
 
     get extension() {
@@ -83,13 +102,5 @@ export default class FlopyModflowMfevt extends FlopyModflowPackage {
 
     set filenames(value) {
         this._filenames = value;
-    }
-
-    get external() {
-        return this._external;
-    }
-
-    set external(value) {
-        this._external = value;
     }
 }

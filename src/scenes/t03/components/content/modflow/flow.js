@@ -37,7 +37,7 @@ const sideBar = (boundaries) => ([
     {id: 'dis', name: 'Discretization package', enabled: true},
     {id: 'bas', name: 'Basic package', enabled: true},
     {id: 'chd', name: 'Constant head package', enabled: boundaries.countByType('chd') > 0},
-    {id: 'drn', name: 'Drainage package', endabled: boundaries.countByType('drn') > 0},
+    {id: 'drn', name: 'Drainage package', enabled: boundaries.countByType('drn') > 0},
     {id: 'evt', name: 'Evapotranspiration package', enabled: boundaries.countByType('evt') > 0},
     {id: 'ghb', name: 'General head package', enabled: boundaries.countByType('ghb') > 0},
     {id: 'rch', name: 'Recharge package', enabled: boundaries.countByType('rch') > 0},
@@ -178,6 +178,7 @@ class Flow extends React.Component {
                 return (
                     <DrnPackageProperties
                         mfPackage={mf.getPackage(type)}
+                        mfPackages={mf}
                         onChange={this.handleChangePackage}
                         readonly={readOnly}
                     />
@@ -186,6 +187,7 @@ class Flow extends React.Component {
                 return (
                     <EvtPackageProperties
                         mfPackage={mf.getPackage(type)}
+                        mfPackages={mf}
                         onChange={this.handleChangePackage}
                         readonly={readOnly}
                     />

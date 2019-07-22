@@ -21,6 +21,8 @@ import FlopyModflowMfde4 from './FlopyModflowMfde4';
 import FlopyModflowMfnwt from './FlopyModflowMfnwt';
 import FlopyModflowMfsip from './FlopyModflowMfsip';
 import FlopyModflowSolverPackage from './FlopyModflowSolverPackage';
+import FlopyModflowMfdrn from "./FlopyModflowMfdrn";
+import FlopyModflowMfevt from "./FlopyModflowMfevt";
 
 
 const packagesMap = {
@@ -29,6 +31,8 @@ const packagesMap = {
     'bcf': FlopyModflowMfbcf,
     'chd': FlopyModflowMfchd,
     'dis': FlopyModflowMfdis,
+    'drn': FlopyModflowMfdrn,
+    'evt': FlopyModflowMfevt,
     'ghb': FlopyModflowMfghb,
     'hob': FlopyModflowMfhob,
     'lpf': FlopyModflowMflpf,
@@ -196,6 +200,24 @@ export default class FlopyModflow {
         if (spData) {
             mfGhb.stress_period_data = spData;
             this.setPackage(mfGhb);
+        }
+
+        // DRN
+        const mfDrn = this.hasPackage('drn') ? this.getPackage('drn') : FlopyModflowMfdrn.create();
+        this.removePackageIfExists(mfDrn);
+        spData = FlopyModflowMfdrn.calculateSpData(boundaries.all, nper);
+        if (spData) {
+            mfDrn.stress_period_data = spData;
+            this.setPackage(mfDrn);
+        }
+
+        // EVT
+        const mfEvt = this.hasPackage('evt') ? this.getPackage('evt') : FlopyModflowMfevt.create();
+        this.removePackageIfExists(mfEvt);
+        spData = FlopyModflowMfevt.calculateSpData(boundaries.all, nper, nrow, ncol);
+        if (spData) {
+            mfEvt.stress_period_data = spData;
+            this.setPackage(mfEvt);
         }
 
         // HOB

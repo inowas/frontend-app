@@ -72,7 +72,7 @@ class BoundaryMap extends Component<IProps> {
                             onClick={this.handleClickBoundary(b.id)}
                         />
                     );
-                case 'lineString':
+                case 'linestring':
                     return (
                         <Polyline
                             key={uniqueId(Geometry.fromObject(geometry).hash())}
