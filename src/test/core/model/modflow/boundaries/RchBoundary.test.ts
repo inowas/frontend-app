@@ -1,32 +1,33 @@
+import {Polygon} from 'geojson';
 import Uuid from 'uuid';
+import {Cell} from '../../../../../core/model/geometry/types';
 import {RechargeBoundary} from '../../../../../core/model/modflow/boundaries';
-import {validate} from '../../../../../services/jsonSchemaValidator';
 import {JSON_SCHEMA_URL} from '../../../../../services/api';
-
+import {validate} from '../../../../../services/jsonSchemaValidator';
 
 const createRechargeBoundary = () => {
     const id = Uuid.v4();
     const name = 'NameOfRecharge';
-    const geometry = {type: 'Polygon', coordinates: [[[3, 4], [3, 5], [4, 5], [4, 3], [3, 4]]]};
+    const geometry: Polygon = {type: 'Polygon', coordinates: [[[3, 4], [3, 5], [4, 5], [4, 3], [3, 4]]]};
     const layers = [1];
-    const cells = [[1, 2], [2, 3]];
+    const cells: Cell[] = [[1, 2], [2, 3]];
     const spValues = [[1], [1], [1]];
 
     return RechargeBoundary.create(
-        id, geometry, name, layers, cells, spValues
+        id, 'rch', geometry, name, layers, cells, spValues
     );
 };
 
 test('RechargeBoundary create', () => {
     const id = Uuid.v4();
     const name = 'NameOfRecharge';
-    const geometry = {type: 'Polygon', coordinates: [[[3, 4], [3, 5], [4, 5], [4, 3], [3, 4]]]};
+    const geometry: Polygon = {type: 'Polygon', coordinates: [[[3, 4], [3, 5], [4, 5], [4, 3], [3, 4]]]};
     const layers = [1];
-    const cells = [[1, 2], [2, 3]];
+    const cells: Cell[] = [[1, 2], [2, 3]];
     const spValues = [[1], [1], [1]];
 
     const rechargeBoundary = RechargeBoundary.create(
-        id, geometry, name, layers, cells, spValues
+        id, 'rch', geometry, name, layers, cells, spValues
     );
 
     expect(rechargeBoundary).toBeInstanceOf(RechargeBoundary);
@@ -37,7 +38,6 @@ test('RechargeBoundary create', () => {
     expect(rechargeBoundary.cells).toEqual(cells);
     expect(rechargeBoundary.spValues).toEqual(spValues);
 });
-
 
 test('RechargeBoundary fromObject', () => {
     const obj = createRechargeBoundary().toObject();

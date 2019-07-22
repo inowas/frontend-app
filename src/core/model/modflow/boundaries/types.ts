@@ -10,7 +10,7 @@ export type BoundarySelection = 'all' | BoundaryType;
 
 export type WellType = 'puw' | 'inw' | 'iw' | 'irw' | 'opw';
 
-export type SpValues = [number[]] | null;
+export type SpValues = number[][] | null;
 
 export interface IBoundaryFeature {
     type: 'Feature';

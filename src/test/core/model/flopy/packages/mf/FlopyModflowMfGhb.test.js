@@ -17,7 +17,7 @@ const createGeneralHeadBoundary = () => {
     const gridSize = new GridSize(10, 5);
 
     const cells = Cells.fromGeometry(geometry, boundingBox, gridSize);
-    const boundary = GeneralHeadBoundary.create(id, geometry, name, layers, cells, spValues);
+    const boundary = GeneralHeadBoundary.create(id, 'ghb', geometry, name, layers, cells, spValues);
 
     const op1 = boundary.observationPoints[0];
     boundary.updateObservationPoint(op1.id, 'OP1', {'type': 'Point', coordinates: [3, -4]}, [[10, 20], [11, 22]]);

@@ -11,7 +11,7 @@ const createRechargeBoundary = () => {
     const spValues = [[1], [2], [3]];
 
     return RechargeBoundary.create(
-        id, geometry, name, layers, cells, spValues
+        id, 'rch', geometry, name, layers, cells, spValues
     );
 };
 
@@ -24,7 +24,7 @@ const createRechargeBoundary_2 = () => {
     const spValues = [[2], [3], [4]];
 
     return RechargeBoundary.create(
-        id, geometry, name, layers, cells, spValues
+        id, 'rch', geometry, name, layers, cells, spValues
     );
 };
 

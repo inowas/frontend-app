@@ -58,7 +58,7 @@ class RchPackageProperties extends AbstractPackageProperties {
                         />
                     </Form.Field>
                     <Form.Field>
-                        <label>The recharge option code (nrchop)</label>
+                        <label>Recharge option (nrchop)</label>
                         <Form.Dropdown
                             options={[
                                 {key: 0, value: 1, text: '1'},

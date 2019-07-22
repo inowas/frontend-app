@@ -1,19 +1,20 @@
+import {Point} from 'geojson';
 import Uuid from 'uuid';
+import {Cell} from '../../../../../core/model/geometry/types';
 import {WellBoundary} from '../../../../../core/model/modflow/boundaries';
-import {validate} from '../../../../../services/jsonSchemaValidator'
 import {JSON_SCHEMA_URL} from '../../../../../services/api';
-
+import {validate} from '../../../../../services/jsonSchemaValidator';
 
 const createWellBoundary = () => {
     const id = Uuid.v4();
     const name = 'NameOfWell';
-    const geometry = {type: 'Point', coordinates: [3, 4]};
+    const geometry: Point = {type: 'Point', coordinates: [3, 4]};
     const layers = [1];
-    const cells = [[1, 2]];
+    const cells: Cell[] = [[1, 2]];
     const spValues = [[1], [2], [3]];
 
     const wb = WellBoundary.create(
-        id, geometry, name, layers, cells, spValues
+        id, 'wel', geometry, name, layers, cells, spValues
     );
 
     wb.wellType = 'irw';
@@ -23,13 +24,13 @@ const createWellBoundary = () => {
 test('WellBoundary create', () => {
     const id = Uuid.v4();
     const name = 'NameOfWell';
-    const geometry = {type: 'Point', coordinates: [[3, 4]]};
+    const geometry: Point = {type: 'Point', coordinates: [3, 4]};
     const layers = [1];
-    const cells = [[1, 2]];
+    const cells: Cell[] = [[1, 2]];
     const spValues = [[1], [2], [3]];
 
     const wellBoundary = WellBoundary.create(
-        id, geometry, name, layers, cells, spValues
+        id, 'wel', geometry, name, layers, cells, spValues
     );
 
     expect(wellBoundary).toBeInstanceOf(WellBoundary);
@@ -44,10 +45,9 @@ test('WellBoundary create', () => {
 
 test('WellBoundary getter and setter', () => {
     const boundary = new WellBoundary();
-    boundary.id = 1;
-    expect(boundary.id).toEqual(1);
+    boundary.id = '1';
+    expect(boundary.id).toEqual('1');
 });
-
 
 test('WellBoundary fromObject', () => {
     const obj = createWellBoundary().toObject();

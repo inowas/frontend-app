@@ -273,7 +273,7 @@ class T03 extends React.Component {
                 return (<Content.SoilmodelEditor/>);
             case 'boundaries':
                 if (BoundaryFactory.availableTypes.indexOf(type) > -1) {
-                    return (<Content.CreateBoundary/>);
+                    return (<Content.CreateBoundary type={type}/>);
                 }
                 return (<Content.Boundaries types={['chd', 'drn', 'evt', 'ghb', 'rch', 'riv', 'wel']}/>);
             case 'head_observations':

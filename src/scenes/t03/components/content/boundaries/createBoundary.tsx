@@ -23,7 +23,7 @@ interface IOwnProps {
     location: any;
     match: any;
     readOnly: boolean;
-    types: BoundaryType[];
+    type: BoundaryType;
 }
 
 interface IStateProps {
@@ -129,10 +129,60 @@ class CreateBoundary extends React.Component<Props, IState> {
         );
     };
 
+    public renderDropdown() {
+        const {type} = this.props;
+        const {layers} = this.state;
+        let label = '';
+        let name = '';
+
+        switch (type) {
+            case 'evt':
+                label = 'Evapotranspiration option';
+                name = 'nevtop';
+                break;
+            case 'rch':
+                label = 'Recharge option';
+                name = 'nrchop';
+                break;
+            default:
+                break;
+        }
+
+        if (['evt', 'rch'].includes(type)) {
+            return (
+                <Form.Dropdown
+                    label={label}
+                    selection={true}
+                    fluid={true}
+                    options={this.props.soilmodel.layersCollection.all.map((l, key) => (
+                        {key: l.id, value: key, text: l.name}
+                    ))}
+                    value={1}
+                    name={name}
+                    onChange={this.handleChange}
+                />
+            );
+        }
+
+        return (
+            <Form.Dropdown
+                label={'Selected layers'}
+                selection={true}
+                fluid={true}
+                options={this.props.soilmodel.layersCollection.all.map((l, key) => (
+                    {key: l.id, value: key, text: l.name}
+                ))}
+                value={layers[0]}
+                name={'layers'}
+                onChange={this.handleChange}
+            />
+        );
+    }
+
     public render() {
         const {model} = this.props;
         const readOnly = model.readOnly;
-        const {isError, isDirty, cells, geometry, name, layers} = this.state;
+        const {isError, isDirty, cells, geometry, name} = this.state;
         const {type} = this.props.match.params;
 
         return (
@@ -150,18 +200,7 @@ class CreateBoundary extends React.Component<Props, IState> {
                                     value={name}
                                     onChange={this.handleChange}
                                 />
-
-                                <Form.Dropdown
-                                    label={'Selected layers'}
-                                    selection={true}
-                                    fluid={true}
-                                    options={this.props.soilmodel.layersCollection.all.map((l, key) => (
-                                        {key: l.id, value: key, text: l.name}
-                                    ))}
-                                    value={layers[0]}
-                                    name={'layers'}
-                                    onChange={this.handleChange}
-                                />
+                                {this.renderDropdown()}
                             </Form>
                         </Grid.Column>
                         <Grid.Column width={12}>
