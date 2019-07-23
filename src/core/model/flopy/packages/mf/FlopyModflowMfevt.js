@@ -1,6 +1,7 @@
-import FlopyModflowPackage from './FlopyModflowPackage';
+import EvapotranspirationBoundary from "../../../modflow/boundaries/EvapotranspirationBoundary";
+import FlopyModflowBoundary from "./FlopyModflowBoundary";
 
-export default class FlopyModflowMfevt extends FlopyModflowPackage {
+export default class FlopyModflowMfevt extends FlopyModflowBoundary {
 
     _nevtop = 3;
     _ipakcb = null;
@@ -11,7 +12,69 @@ export default class FlopyModflowMfevt extends FlopyModflowPackage {
     _extension = 'evt';
     _unitnumber = null;
     _filenames = null;
-    _external = true;
+
+    static calculateSpData = (boundaries, nper, nrow, ncol) => {
+
+        const evapotranspirationBoundaries = boundaries.filter(evt => (evt instanceof EvapotranspirationBoundary));
+        if (evapotranspirationBoundaries.length === 0) {
+            return null;
+        }
+
+        let evtrData = [];
+        for (let per = 0; per < nper; per++) {
+            evtrData[per] = [];
+            for (let row = 0; row < nrow; row++) {
+                evtrData[per][row] = [];
+                for (let col = 0; col < ncol; col++) {
+                    evtrData[per][row][col] = 0;
+                }
+            }
+        }
+
+        let surfData = [];
+        for (let per = 0; per < nper; per++) {
+            surfData[per] = [];
+            for (let row = 0; row < nrow; row++) {
+                surfData[per][row] = [];
+                for (let col = 0; col < ncol; col++) {
+                    surfData[per][row][col] = 0;
+                }
+            }
+        }
+
+        let exdpData = [];
+        for (let per = 0; per < nper; per++) {
+            exdpData[per] = [];
+            for (let row = 0; row < nrow; row++) {
+                exdpData[per][row] = [];
+                for (let col = 0; col < ncol; col++) {
+                    exdpData[per][row][col] = 0;
+                }
+            }
+        }
+
+        evapotranspirationBoundaries.forEach(evtBoundary => {
+            const cells = evtBoundary.cells;
+            const spValues = evtBoundary.spValues;
+
+            for (let per = 0; per < nper; per++) {
+                const [evtr, surf, exdp] = spValues[per];
+                cells.forEach(cell => {
+                    const row = cell[1];
+                    const col = cell[0];
+                    evtrData[per][row][col] += evtr;
+                    surfData[per][row][col] += surf;
+                    exdpData[per][row][col] += exdp;
+                });
+            }
+        });
+
+        return {
+            evtr: FlopyModflowMfevt.arrayToObject(evtrData),
+            surf: FlopyModflowMfevt.arrayToObject(surfData),
+            exdp: FlopyModflowMfevt.arrayToObject(exdpData)
+        };
+    };
 
     get nevtop() {
         return this._nevtop;
@@ -29,12 +92,23 @@ export default class FlopyModflowMfevt extends FlopyModflowPackage {
         this._ipakcb = value;
     }
 
-    get surf() {
-        return this._surf;
+    get stress_period_data() {
+        return this._evtr;
     }
 
-    set surf(value) {
-        this._surf = value;
+    set stress_period_data(value) {
+        if (Array.isArray(value)) {
+            value = FlopyModflowBoundary.arrayToObject(value);
+        }
+        this._evtr = value;
+    }
+
+    get ievt() {
+        return this._ievt;
+    }
+
+    set ievt(value) {
+        this._ievt = value;
     }
 
     get evtr() {
@@ -53,12 +127,12 @@ export default class FlopyModflowMfevt extends FlopyModflowPackage {
         this._exdp = value;
     }
 
-    get ievt() {
-        return this._ievt;
+    get surf() {
+        return this._surf;
     }
 
-    set ievt(value) {
-        this._ievt = value;
+    set surf(value) {
+        this._surf = value;
     }
 
     get extension() {
@@ -83,13 +157,5 @@ export default class FlopyModflowMfevt extends FlopyModflowPackage {
 
     set filenames(value) {
         this._filenames = value;
-    }
-
-    get external() {
-        return this._external;
-    }
-
-    set external(value) {
-        this._external = value;
     }
 }

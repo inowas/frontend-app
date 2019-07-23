@@ -2,7 +2,6 @@ import * as _ from 'lodash';
 
 interface IItem {
     id: string;
-
     [key: string]: any;
 }
 

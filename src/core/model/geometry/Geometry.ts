@@ -41,10 +41,8 @@ class Geometry {
                 return (this.getLatLngFromXY(this._geometry.coordinates[0]));
             case 'LineString':
                 return (this.getLatLngFromXY(this._geometry.coordinates));
-            case 'Point':
-                return ([this._geometry.coordinates[1], this._geometry.coordinates[0]]);
             default:
-                return null;
+                return ([this._geometry.coordinates[1], this._geometry.coordinates[0]]);
         }
     }
 
@@ -61,7 +59,7 @@ class Geometry {
         return [[minX, minY], [maxX, maxY]];
     };
 
-    public getBoundsLatLng = () => {
+    public getBoundsLatLng = (): Array<[number, number]> => {
         const [minX, minY, maxX, maxY] = bbox(this._geometry);
         return [[minY, minX], [maxY, maxX]];
     };

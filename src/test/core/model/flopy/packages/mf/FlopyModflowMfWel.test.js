@@ -29,7 +29,7 @@ test('It can calculate spData with one well', () => {
     const spValues = [[5000], [4000], [0]];
 
     const wellBoundary = WellBoundary.create(
-        id, geometry, name, layers, cells, spValues
+        id, 'wel', geometry, name, layers, cells, spValues
     );
 
     const spData = FlopyModflowMfwel.calculateSpData([wellBoundary], createStressperiods().count);
@@ -49,7 +49,7 @@ test('It can calculate spData with two wells at the same cell', () => {
     let spValues = [[5000], [4000], [0]];
 
     const wellBoundary_1 = WellBoundary.create(
-        id, geometry, name, layers, cells, spValues
+        id, 'wel', geometry, name, layers, cells, spValues
     );
 
     id = Uuid.v4();
@@ -60,7 +60,7 @@ test('It can calculate spData with two wells at the same cell', () => {
     spValues = [[5000], [4000], [0]];
 
     const wellBoundary_2 = WellBoundary.create(
-        id, geometry, name, layers, cells, spValues
+        id, 'wel', geometry, name, layers, cells, spValues
     );
 
     const spData = FlopyModflowMfwel.calculateSpData([wellBoundary_1, wellBoundary_2], createStressperiods().count);
@@ -81,7 +81,7 @@ test('It can calculate spData with two wells at the different cells', () => {
     let spValues = [[5000], [4000], [0]];
 
     const wellBoundary_1 = WellBoundary.create(
-        id, geometry, name, layers, cells, spValues
+        id, 'wel', geometry, name, layers, cells, spValues
     );
 
     id = Uuid.v4();
@@ -92,7 +92,7 @@ test('It can calculate spData with two wells at the different cells', () => {
     spValues = [[5000], [4000], [0]];
 
     const wellBoundary_2 = WellBoundary.create(
-        id, geometry, name, layers, cells, spValues
+        id, 'wel', geometry, name, layers, cells, spValues
     );
 
     const spData = FlopyModflowMfwel.calculateSpData([wellBoundary_1, wellBoundary_2], createStressperiods().count);

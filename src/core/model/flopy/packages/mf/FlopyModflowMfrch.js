@@ -14,7 +14,7 @@ export default class FlopyModflowMfrch extends FlopyModflowBoundary {
 
     _nrchop = 3;
     _ipakcb = 0;
-    _stress_period_data = 0.001;
+    _rech = 0.001;
     _irch = 0;
     _extension = 'rch';
     _unitnumber = null;
@@ -71,14 +71,22 @@ export default class FlopyModflowMfrch extends FlopyModflowBoundary {
     }
 
     get stress_period_data() {
-        return this._stress_period_data;
+        return this._rech;
     }
 
     set stress_period_data(value) {
         if (Array.isArray(value)) {
             value = FlopyModflowBoundary.arrayToObject(value);
         }
-        this._stress_period_data = value;
+        this._rech = value;
+    }
+
+    get rech() {
+        return this._rech;
+    }
+
+    set rech(value) {
+        this._rech = value;
     }
 
     get irch() {

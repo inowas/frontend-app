@@ -2,26 +2,26 @@ import React from 'react';
 import {Button, Dropdown, DropdownProps, Form, Grid, Icon, Menu, Popup} from 'semantic-ui-react';
 import Boundary from '../../../../../core/model/modflow/boundaries/Boundary';
 import BoundaryCollection from '../../../../../core/model/modflow/boundaries/BoundaryCollection';
-import {boundaryType} from '../../../../../core/model/modflow/boundaries/BoundaryType.type';
+import {BoundarySelection, BoundaryType} from '../../../../../core/model/modflow/boundaries/types';
 
 interface IBoundaryTypeObject {
-    key: boundaryType;
+    key: BoundarySelection;
     text: string;
-    value: boundaryType;
+    value: BoundarySelection;
 }
 
 interface IBoundaryListProps {
     boundaries: BoundaryCollection;
-    onAdd: (type: boundaryType) => any;
+    onAdd: (type: BoundaryType) => any;
     onClick: (id: string) => any;
     onClone: (id: string) => any;
     onRemove: (id: string) => any;
     selected?: string;
-    types?: boundaryType[];
+    types?: BoundaryType[];
 }
 
 interface IBoundaryListState {
-    selectedType: boundaryType;
+    selectedType: BoundarySelection;
 }
 
 class BoundaryList extends React.Component<IBoundaryListProps, IBoundaryListState> {
@@ -108,15 +108,17 @@ class BoundaryList extends React.Component<IBoundaryListProps, IBoundaryListStat
     private boundaryTypes = (): IBoundaryTypeObject[] => {
         if (this.props.types) {
             const types = this.props.types.length > 1 ?
-                [{key: 'all' as boundaryType, value: 'all' as boundaryType, text: 'All'}] : [];
-            return types.concat(this.props.types.map((type: boundaryType) => {
-                return {key: type as boundaryType, value: type as boundaryType, text: type.toUpperCase()};
+                [{key: 'all' as BoundarySelection, value: 'all' as BoundarySelection, text: 'All'}] : [];
+            return types.concat(this.props.types.map((type: BoundarySelection) => {
+                return {key: type as BoundarySelection, value: type as BoundarySelection, text: type.toUpperCase()};
             }));
         }
 
         return [
             {key: 'all', value: 'all', text: 'All'},
             {key: 'chd', value: 'chd', text: 'CHD'},
+            {key: 'drn', value: 'drn', text: 'DRN'},
+            {key: 'evt', value: 'evt', text: 'EVT'},
             {key: 'ghb', value: 'ghb', text: 'GHB'},
             {key: 'rch', value: 'rch', text: 'RCH'},
             {key: 'riv', value: 'riv', text: 'RIV'},
@@ -175,10 +177,14 @@ class BoundaryList extends React.Component<IBoundaryListProps, IBoundaryListStat
     };
 
     private handleLocalChange = (e: React.SyntheticEvent<HTMLElement>, data: DropdownProps) => this.setState({
-        selectedType: data.value as boundaryType
+        selectedType: data.value as BoundarySelection
     });
 
-    private handleAdd = (type: boundaryType) => () => this.props.onAdd(type);
+    private handleAdd = (type: BoundarySelection) => () => {
+        if (type !== 'all') {
+            this.props.onAdd(type);
+        }
+    };
     private handleClick = (id: string) => () => this.props.onClick(id);
     private handleClone = (id: string) => () => this.props.onClone(id);
     private handleRemove = (id: string) => () => this.props.onRemove(id);

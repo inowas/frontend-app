@@ -13,6 +13,7 @@ import {NearestPointOnLine} from '@turf/nearest-point-on-line';
 import {Feature, LineString} from 'geojson';
 import {floor, isEqual} from 'lodash';
 import {BoundingBox, Geometry, GridSize, LineBoundary} from '../modflow/index';
+import {Cell, Point} from './types';
 
 const getActiveCellFromCoordinate = (coordinate: Point, boundingBox: BoundingBox, gridSize: GridSize) => {
 
@@ -69,9 +70,6 @@ const distanceOnLine = (ls: Feature<LineString>, point: NearestPointOnLine) => {
     return lineDistance(sliced);
 };
 
-type Cell = [number, number] | [number, number, number];
-type Point = [number, number];
-
 class Cells {
 
     public static create(cells: Cell[] = []) {
@@ -114,11 +112,7 @@ class Cells {
     constructor(private _cells: Cell[] = []) {
     }
 
-    public calculateValues = (boundary: any, boundingBox: BoundingBox, gridSize: GridSize) => {
-        if (!(boundary instanceof LineBoundary)) {
-            throw new Error('Boundary needs to be instance of LineBoundary');
-        }
-
+    public calculateValues = (boundary: LineBoundary, boundingBox: BoundingBox, gridSize: GridSize) => {
         this._cells = this._cells.map((c) => {
             c[2] = 0;
             return c;
@@ -126,7 +120,7 @@ class Cells {
 
         const {observationPoints} = boundary;
 
-        if (observationPoints.length <= 1) {
+        if (observationPoints.length <= 1 || !boundary.geometry) {
             return;
         }
 
