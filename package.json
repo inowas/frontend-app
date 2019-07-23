@@ -26,7 +26,7 @@
         "prop-types": "15.6.2",
         "rainbowvis.js": "https://github.com/inowas/RainbowVis-JS.git#master",
         "rc-slider": "8.6.3",
-        "react": "16.6.0",
+        "react": "16.8.6",
         "react-beautiful-dnd": "10.0.2",
         "react-color": "2.17.0",
         "react-dom": "16.6.0",

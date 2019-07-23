@@ -74,12 +74,26 @@ export default class EvapotranspirationBoundary extends Boundary {
     get valueProperties() {
         return [
             {
-                name: 'Recharge rate',
-                description: 'Recharge rate into layer',
+                name: 'Max Evt',
+                description: 'Maximum Evapotranspiration on flux',
                 unit: 'm/day',
                 decimals: 5,
                 default: 0
             },
+            {
+                name: 'Surface',
+                description: 'Evapotranspiration of surface',
+                unit: 'm/day',
+                decimals: 5,
+                default: 0
+            },
+            {
+                name: 'Depth',
+                description: 'Evapotranspiration on depth',
+                unit: 'm/day',
+                decimals: 5,
+                default: 0
+            }
         ];
     }
 

@@ -130,39 +130,7 @@ class CreateBoundary extends React.Component<Props, IState> {
     };
 
     public renderDropdown() {
-        const {type} = this.props;
         const {layers} = this.state;
-        let label = '';
-        let name = '';
-
-        switch (type) {
-            case 'evt':
-                label = 'Evapotranspiration option';
-                name = 'nevtop';
-                break;
-            case 'rch':
-                label = 'Recharge option';
-                name = 'nrchop';
-                break;
-            default:
-                break;
-        }
-
-        if (['evt', 'rch'].includes(type)) {
-            return (
-                <Form.Dropdown
-                    label={label}
-                    selection={true}
-                    fluid={true}
-                    options={this.props.soilmodel.layersCollection.all.map((l, key) => (
-                        {key: l.id, value: key, text: l.name}
-                    ))}
-                    value={1}
-                    name={name}
-                    onChange={this.handleChange}
-                />
-            );
-        }
 
         return (
             <Form.Dropdown
