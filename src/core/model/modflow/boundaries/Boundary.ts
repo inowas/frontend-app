@@ -1,26 +1,25 @@
 import Uuid from 'uuid';
-import {Geometry} from '../../geometry';
-import Cells from '../../geometry/Cells';
-
-type SpValues = [number[]];
+import {GeoJson} from '../../geometry/Geometry';
+import {Cell} from '../../geometry/types';
+import {BoundaryInstance, BoundaryType, SpValues} from './types';
 
 export default abstract class Boundary {
 
-    abstract get type(): string;
+    abstract get type(): BoundaryType;
 
     abstract get id(): string;
 
-    abstract set id(name: string);
+    abstract set id(id: string);
 
-    abstract get geometry(): Geometry;
+    abstract get geometry(): GeoJson | undefined;
 
-    abstract get name(): string;
+    abstract get name(): string | undefined;
 
-    abstract set name(name: string);
+    abstract set name(name: string | undefined);
 
-    abstract get cells(): Cells;
+    abstract get cells(): Cell[] | undefined;
 
-    abstract get layers(): number[];
+    abstract get layers(): number[] | undefined;
 
     abstract get geometryType(): string;
 
@@ -32,11 +31,11 @@ export default abstract class Boundary {
         default: number
     }>;
 
-    public abstract getSpValues(opId?: number): SpValues;
+    public abstract getSpValues(opId?: string): SpValues | undefined | null;
 
-    public abstract setSpValues(spValues: SpValues, opId?: number): void;
+    public abstract setSpValues(spValues: SpValues, opId?: string): void;
 
-    public abstract toObject(): object;
+    public abstract toObject(): BoundaryInstance;
 
     public clone(): Boundary {
         this.id = Uuid.v4();

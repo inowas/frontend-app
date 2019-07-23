@@ -15,15 +15,22 @@ const styles = {
     }
 };
 
-const CenterControl = ({bounds, map}) => !!map &&
-    <Control position="topleft">
-        <button
-            onClick={() => map.flyToBounds(bounds)}
-            style={styles.button}
-        >
-            <Icon name='crosshairs'/>
-        </button>
-    </Control>;
+class CenterControl extends React.Component {
+    render() {
+        const {bounds, map} = this.props;
+
+        return (
+            <Control position="topleft">
+                <button
+                    onClick={() => map.flyToBounds(bounds)}
+                    style={styles.button}
+                >
+                    <Icon name='crosshairs'/>
+                </button>
+            </Control>
+        );
+    }
+}
 
 CenterControl.propTypes = {
     bounds: PropTypes.array.isRequired,

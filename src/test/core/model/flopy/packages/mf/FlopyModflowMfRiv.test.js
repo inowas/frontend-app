@@ -17,7 +17,7 @@ const createRiverBoundary = () => {
     const gridSize = new GridSize(10, 5);
 
     const cells = Cells.fromGeometry(geometry, boundingBox, gridSize);
-    const riverBoundary = RiverBoundary.create(id, geometry, name, layers, cells, spValues);
+    const riverBoundary = RiverBoundary.create(id, 'riv', geometry, name, layers, cells, spValues);
 
     const op1 = riverBoundary.observationPoints[0];
     riverBoundary.updateObservationPoint(op1.id, 'OP1', {
