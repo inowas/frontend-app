@@ -10,6 +10,7 @@ export interface IRechargeBoundary extends IBoundaryFeature {
         layers?: number[];
         cells?: Cell[];
         sp_values?: SpValues;
+        nrchop: number;
         type: 'rch';
     };
 }

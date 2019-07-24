@@ -130,8 +130,17 @@ class CreateBoundary extends React.Component<Props, IState> {
     };
 
     public renderDropdown() {
-        const {layers} = this.state;
+        const {type} = this.props.match.params;
 
+        // Add boundary types, which doesn't need layer selection:
+        if (['evt', 'rch', 'riv'].includes(type)) {
+            return null;
+        }
+
+        // Add boundary types, for which multiple layers may be selected:
+        const multipleLayers = ['chd', 'ghb'].includes(type);
+
+        const {layers} = this.state;
         return (
             <Form.Dropdown
                 label={'Selected layers'}
@@ -140,10 +149,12 @@ class CreateBoundary extends React.Component<Props, IState> {
                 options={this.props.soilmodel.layersCollection.all.map((l, key) => (
                     {key: l.id, value: key, text: l.name}
                 ))}
-                value={layers[0]}
+                value={multipleLayers ? layers : layers[0]}
+                multiple={multipleLayers}
                 name={'layers'}
                 onChange={this.handleChange}
             />
+
         );
     }
 

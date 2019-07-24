@@ -216,7 +216,8 @@ export default class FlopyModflow {
         this.removePackageIfExists(mfEvt);
         const evtPackage = FlopyModflowMfevt.calculateSpData(boundaries.all, nper, nrow, ncol);
         if (evtPackage) {
-            const {evtr, surf, exdp} = evtPackage;
+            const {ievt, evtr, surf, exdp} = evtPackage;
+            mfEvt.ievt = ievt;
             mfEvt.evtr = evtr;
             mfEvt.surf = surf;
             mfEvt.exdp = exdp;
@@ -236,9 +237,10 @@ export default class FlopyModflow {
         // RCHs
         const mfRch = this.hasPackage('rch') ? this.getPackage('rch') : FlopyModflowMfrch.create();
         this.removePackageIfExists(mfRch);
-        spData = FlopyModflowMfrch.calculateSpData(boundaries.all, nper, nrow, ncol);
-        if (spData) {
-            mfRch.stress_period_data = spData;
+        const rchPackage = FlopyModflowMfrch.calculateSpData(boundaries.all, nper, nrow, ncol);
+        if (rchPackage) {
+            mfRch.irch = rchPackage.irch;
+            mfRch.stress_period_data = rchPackage.spData;
             this.setPackage(mfRch);
         }
 
