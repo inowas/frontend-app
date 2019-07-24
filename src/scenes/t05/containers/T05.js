@@ -29,7 +29,7 @@ import {
 
 const navigation = [{
     name: 'Documentation',
-    path: 'https://inowas.hydro.tu-dresden.de/tools/t05-mar-mcda/',
+    path: 'https://inowas.com/tools/t05-gis-mcda/',
     icon: <Icon name="file"/>
 }];
 

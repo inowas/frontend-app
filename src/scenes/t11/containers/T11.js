@@ -13,7 +13,7 @@ const styles = {
 
 const navigation = [{
     name: 'Documentation',
-    path: 'https://inowas.hydro.tu-dresden.de/tools/t11-mar-model-selection/',
+    path: 'https://inowas.com/tools/t11-mar-model-selection/',
     icon: <Icon name="file"/>
 }];
 

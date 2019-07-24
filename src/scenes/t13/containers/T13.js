@@ -13,7 +13,7 @@ import image13E from '../images/T13E.png';
 
 export const navigation = [{
     name: 'Documentation',
-    path: 'https://inowas.hydro.tu-dresden.de/tools/t13-travel-time-through-unconfined-aquifer/',
+    path: 'https://inowas.com/tools/t13-travel-time-through-unconfined-aquifer/',
     icon: <Icon name="file"/>
 }];
 

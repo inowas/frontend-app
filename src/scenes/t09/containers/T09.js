@@ -13,7 +13,7 @@ import AppContainer from '../../shared/AppContainer';
 
 export const navigation = [{
     name: 'Documentation',
-    path: 'https://inowas.hydro.tu-dresden.de/tools/t09-simple-saltwater-intrusion-equations/',
+    path: 'https://inowas.com/tools/t09-simple-saltwater-intrusion-equations/',
     icon: <Icon name="file"/>
 }];
 

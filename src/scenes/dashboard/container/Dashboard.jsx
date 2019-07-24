@@ -20,7 +20,7 @@ import ModflowModelImport from '../components/ModflowModelImport';
 const navigation = [
     {
         name: 'Documentation',
-        path: 'https://inowas.hydro.tu-dresden.de/',
+        path: 'https://inowas.com/tools',
         icon: <Icon name="file alternate"/>
     }
 ];
@@ -197,7 +197,7 @@ const mapDispatchToProps = {
     setActiveTool, setPublic
 };
 
-Dashboard.propTypes = {
+Dashboard.proptypes = {
     activeTool: PropTypes.object.isRequired,
     roles: PropTypes.array.isRequired,
     setActiveTool: PropTypes.func.isRequired,

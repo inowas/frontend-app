@@ -20,7 +20,7 @@ import withSession from '../../../services/router/withSession';
 
 const navigation = [{
     name: 'Documentation',
-    path: 'https://inowas.hydro.tu-dresden.de/tools/t18-sat-basin-design/',
+    path: 'https://inowas.com/tools/t18-sat-basin-design/',
     icon: <Icon name="file"/>
 }];
 
