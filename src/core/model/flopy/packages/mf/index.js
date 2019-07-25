@@ -16,7 +16,7 @@ import FlopyModflowMfrch from './FlopyModflowMfrch';
 import FlopyModflowMfriv from './FlopyModflowMfriv';
 import FlopyModflowMfwel from './FlopyModflowMfwel';
 import FlopyModflowPackage from './FlopyModflowPackage';
-import FlopyModflowSerializable from '../FlopyModflowSerializable';
+import FlopyModflowSerializable from '../FlopySerializable';
 
 export {
     FlopyModflow,

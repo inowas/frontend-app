@@ -1,6 +1,4 @@
-interface IPropertyValueObject {
-    [name: string]: any;
-}
+import {IPropertyValueObject} from '../../types';
 
 export default class FlopyModflowSerializable {
 
@@ -14,7 +12,7 @@ export default class FlopyModflowSerializable {
         return self;
     }
 
-    public toObject() {
+    public toObject(): IPropertyValueObject {
         const obj: IPropertyValueObject = {};
         for (const prop in this) {
             if (this.hasOwnProperty(prop) && prop.startsWith('_')) {
