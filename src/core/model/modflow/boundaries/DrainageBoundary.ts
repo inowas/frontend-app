@@ -18,7 +18,7 @@ export default class DrainageBoundary extends LineBoundary {
             {
                 name: 'Conductance',
                 description: 'Riverbed conductance',
-                unit: 'm/day',
+                unit: 'm^2/day',
                 decimals: 1,
                 default: 0
             }

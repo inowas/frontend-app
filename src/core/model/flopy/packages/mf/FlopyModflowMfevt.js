@@ -20,6 +20,8 @@ export default class FlopyModflowMfevt extends FlopyModflowBoundary {
             return null;
         }
 
+        let layers = [...new Set( evapotranspirationBoundaries.map(obj => obj.layers[0]))];
+
         let evtrData = [];
         for (let per = 0; per < nper; per++) {
             evtrData[per] = [];
@@ -52,7 +54,6 @@ export default class FlopyModflowMfevt extends FlopyModflowBoundary {
                 }
             }
         }
-
         evapotranspirationBoundaries.forEach(evtBoundary => {
             const cells = evtBoundary.cells;
             const spValues = evtBoundary.spValues;
@@ -70,6 +71,7 @@ export default class FlopyModflowMfevt extends FlopyModflowBoundary {
         });
 
         return {
+            ievt: layers.length > 1 ? layers : layers[0],
             evtr: FlopyModflowMfevt.arrayToObject(evtrData),
             surf: FlopyModflowMfevt.arrayToObject(surfData),
             exdp: FlopyModflowMfevt.arrayToObject(exdpData)

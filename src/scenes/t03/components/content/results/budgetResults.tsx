@@ -108,6 +108,17 @@ class BudgetResults extends React.Component<IBudgetResultsProps, IBudgetResultsS
                 return ({data: null});
             }
 
+            if (data.name === '_all') {
+                const setToTrue = prevState.data.filter((c) => !c.active).length > 0;
+
+                return ({
+                    data: prevState.data.map((c) => {
+                        c.active = setToTrue;
+                        return c;
+                    })
+                });
+            }
+
             return ({
                 data: prevState.data.map((c) => {
                     if (c.name === data.value) {
@@ -236,6 +247,15 @@ class BudgetResults extends React.Component<IBudgetResultsProps, IBudgetResultsS
                                                         />
                                                     </List.Item>
                                                 )}
+                                                <List.Item className="ui divider"/>
+                                                <List.Item>
+                                                    <Checkbox
+                                                        checked={data.filter((c) => !c.active).length === 0}
+                                                        label="Toggle all"
+                                                        onChange={this.handleChangeCheckbox}
+                                                        name="_all"
+                                                    />
+                                                </List.Item>
                                                 <List.Item className="ui divider"/>
                                                 <List.Item>
                                                     <List.Content floated="right">

@@ -1,6 +1,6 @@
 import * as React from 'react';
 import {connect} from 'react-redux';
-import {Checkbox, CheckboxProps, Form, Grid, Message, Segment} from 'semantic-ui-react';
+import {Button, Checkbox, CheckboxProps, Form, Grid, Menu, Message, Segment} from 'semantic-ui-react';
 import FlopyPackages from '../../../../../core/model/flopy/packages/FlopyPackages';
 import {ModflowModel, Transport, VariableDensity} from '../../../../../core/model/modflow';
 import {sendCommand} from '../../../../../services/api';
@@ -81,6 +81,13 @@ class VariableDensityProperties extends React.Component<Props, IVariableDensityS
         return this.setState({isDirty: true});
     };
 
+    public handleToggleEnabled = () => {
+        const variableDensity = this.props.variableDensity;
+        variableDensity.vdfEnabled = !variableDensity.vdfEnabled;
+        this.props.updateVariableDensity(variableDensity);
+        return this.setState({isDirty: true});
+    };
+
     public render() {
         const {packages, readOnly, transport, variableDensity} = this.props;
         const {isDirty, isError, isLoading} = this.state;
@@ -89,7 +96,22 @@ class VariableDensityProperties extends React.Component<Props, IVariableDensityS
             <Segment color={'grey'} loading={isLoading}>
                 <Grid>
                     <Grid.Row>
-                        <Grid.Column width={4}/>
+                        <Grid.Column width={4}>
+                            <Menu fluid={true} vertical={true} tabular={true}>
+                                <Menu.Item>
+                                    <Button
+                                        disabled={readOnly || !transport.enabled}
+                                        negative={!variableDensity.vdfEnabled}
+                                        positive={variableDensity.vdfEnabled}
+                                        icon={variableDensity.vdfEnabled ? 'toggle on' : 'toggle off'}
+                                        labelPosition="left"
+                                        onClick={this.handleToggleEnabled}
+                                        content={variableDensity.vdfEnabled ? 'Enabled' : 'Disabled'}
+                                        style={{marginLeft: '-20px', width: '200px'}}
+                                    />
+                                </Menu.Item>
+                            </Menu>
+                        </Grid.Column>
                         <Grid.Column width={12}>
                             <div>
                                 <ContentToolBar
@@ -100,15 +122,6 @@ class VariableDensityProperties extends React.Component<Props, IVariableDensityS
                                     onSave={this.onSave}
                                 />
                                 <Form style={{marginTop: '1rem'}}>
-                                    <Form.Field>
-                                        <label>Variable density flow (SEAWAT)</label>
-                                        <Checkbox
-                                            checked={variableDensity.vdfEnabled}
-                                            onChange={this.handleChange}
-                                            name="vdfEnabled"
-                                            disabled={readOnly || !transport.enabled}
-                                        />
-                                    </Form.Field>
                                     {!transport.enabled &&
                                     <Message negative={true}>
                                         <Message.Header>Transport has to be active, to activate SEAWAT.</Message.Header>
@@ -122,7 +135,8 @@ class VariableDensityProperties extends React.Component<Props, IVariableDensityS
                                             checked={variableDensity.vscEnabled}
                                             onChange={this.handleChange}
                                             name="vscEnabled"
-                                            disabled={readOnly || !packages.mf.packages.lpf || !transport.enabled}
+                                            disabled={readOnly || !packages.mf.packages.lpf || !transport.enabled ||
+                                            !variableDensity.vdfEnabled}
                                         />
                                     </Form.Field>
                                     {!packages.mf.packages.lpf &&

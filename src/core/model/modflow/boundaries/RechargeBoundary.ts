@@ -63,6 +63,14 @@ export default class RechargeBoundary extends Boundary {
         return 'Polygon';
     }
 
+    get nrchop(): number {
+        return this._nrchop;
+    }
+
+    set nrchop(value: number) {
+        this._nrchop = value;
+    }
+
     get valueProperties() {
         return [
             {
@@ -76,7 +84,7 @@ export default class RechargeBoundary extends Boundary {
     }
 
     public static create(id: string, type: 'rch', geometry?: Polygon | MultiPolygon, name?: string, layers?: number[],
-                         cells?: Cell[], spValues?: SpValues) {
+                         cells?: Cell[], spValues?: SpValues, nrchop?: number) {
         const boundary = new this();
         boundary._id = id;
         boundary._geometry = geometry;
@@ -84,6 +92,7 @@ export default class RechargeBoundary extends Boundary {
         boundary._layers = layers;
         boundary._cells = cells;
         boundary._spValues = spValues;
+        boundary._nrchop = nrchop || 1;
         return boundary;
     }
 
@@ -96,6 +105,7 @@ export default class RechargeBoundary extends Boundary {
             obj.properties.layers,
             obj.properties.cells,
             obj.properties.sp_values,
+            obj.properties.nrchop
         );
     }
 
@@ -106,6 +116,7 @@ export default class RechargeBoundary extends Boundary {
     public _layers?: number[];
     public _cells?: Cell[];
     public _spValues?: SpValues;
+    public _nrchop: number = 1;
 
     public getSpValues() {
         return this._spValues;
@@ -125,6 +136,7 @@ export default class RechargeBoundary extends Boundary {
                 type: this.type,
                 layers: this.layers,
                 cells: this.cells,
+                nrchop: this.nrchop,
                 sp_values: this.spValues
             }
         };

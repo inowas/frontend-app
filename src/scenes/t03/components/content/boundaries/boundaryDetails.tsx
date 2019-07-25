@@ -108,6 +108,61 @@ class BoundaryDetails extends React.Component<IProps, IState> {
         ));
     };
 
+    public renderLayerSelection = () => {
+        const {boundary} = this.props;
+        const multipleLayers = ['chd', 'ghb'].includes(boundary.type);
+
+        let options = {enabled: false, label: '', name: ''};
+
+        switch (boundary.type) {
+            case 'rch':
+                options = {enabled: true, label: 'Recharge option', name: 'nrchop'};
+                break;
+            case 'evt':
+                options = {enabled: true, label: 'Evapotranspiration option', name: 'nevtop'};
+                break;
+            default:
+                options = {enabled: false, label: '', name: ''};
+                break;
+        }
+
+        if (!boundary.layers || ['riv'].includes(boundary.type)) {
+            return null;
+        }
+
+        return (
+            <React.Fragment>
+                {options.enabled &&
+                <Form.Dropdown
+                    label={options.label}
+                    style={{zIndex: 1000}}
+                    selection={true}
+                    options={[
+                        {key: 0, value: 1, text: '1: Top grid layer'},
+                        {key: 1, value: 2, text: '2: Specified layer'},
+                        {key: 2, value: 3, text: '3: Highest active cell'}
+                    ]}
+                    value={boundary[options.name]}
+                    name={options.name}
+                    onChange={this.handleChange}
+                />
+                }
+                <Form.Select
+                    disabled={options.enabled && boundary[options.name] !== 2}
+                    loading={!(this.props.soilmodel instanceof Soilmodel)}
+                    label={multipleLayers ? 'Selected layers' : 'Selected layer'}
+                    style={{zIndex: 1000}}
+                    multiple={multipleLayers}
+                    selection={true}
+                    options={this.layerOptions()}
+                    value={multipleLayers ? boundary.layers : boundary.layers[0]}
+                    name={'layers'}
+                    onChange={this.handleChange}
+                />
+            </React.Fragment>
+        );
+    };
+
     public render() {
         const {boundary, boundaries, model} = this.props;
         const {geometry, stressperiods} = model;
@@ -120,8 +175,6 @@ class BoundaryDetails extends React.Component<IProps, IState> {
         if (!boundary.layers || boundary.layers.length === 0) {
             return <NoContent message={'No layers.'}/>;
         }
-
-        const multipleLayers = ['chd', 'drn', 'evt', 'ghb'].includes(boundary.type);
 
         return (
             <div>
@@ -142,18 +195,7 @@ class BoundaryDetails extends React.Component<IProps, IState> {
                             readOnly={this.props.readOnly}
                         />
 
-                        <Form.Select
-                            disabled={['rch', 'riv'].includes(boundary.type)}
-                            loading={!(this.props.soilmodel instanceof Soilmodel)}
-                            label={'Selected layers'}
-                            style={{zIndex: 1000}}
-                            multiple={multipleLayers}
-                            selection={true}
-                            options={this.layerOptions()}
-                            value={multipleLayers ? boundary.layers : boundary.layers[0]}
-                            name={'layers'}
-                            onChange={this.handleChange}
-                        />
+                        {this.renderLayerSelection()}
 
                         {boundary.type === 'wel' && boundary instanceof WellBoundary &&
                         <Form.Dropdown

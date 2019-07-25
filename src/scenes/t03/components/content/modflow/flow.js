@@ -162,6 +162,7 @@ class Flow extends React.Component {
                 return (
                     <ChdPackageProperties
                         mfPackage={mf.getPackage(type)}
+                        mfPackages={mf}
                         onChange={this.handleChangePackage}
                         readonly={readOnly}
                     />

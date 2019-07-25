@@ -104,6 +104,11 @@ class T03 extends React.Component {
             const calculationState = nextProps.calculation.state;
             const mappedMenuItems = menuItems.map(mi => {
                 mi.items = mi.items.map(i => {
+                    if (i.property === 'seawat') {
+                        i.disabled = !nextProps.transport.enabled || !nextProps.variableDensity.vdfEnabled;
+                        return i;
+                    }
+
                     if (i.property === 'flow') {
                         i.disabled = calculationState !== CALCULATION_STATE_FINISHED;
                         return i;

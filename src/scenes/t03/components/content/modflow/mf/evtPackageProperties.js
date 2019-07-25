@@ -21,9 +21,6 @@ class EvtPackageProperties extends AbstractPackageProperties {
         const basPackage = mfPackages.getPackage('bas');
         const {ibound} = basPackage;
 
-        const disPackage = mfPackages.getPackage('dis');
-        const {nlay} = disPackage;
-
         return (
             <Form>
                 <Grid divided={'vertically'}>
@@ -55,35 +52,6 @@ class EvtPackageProperties extends AbstractPackageProperties {
                             value={mfPackage.ipakcb}
                             readOnly={readonly}
                             onChange={this.handleOnSelect}
-                        />
-                    </Form.Field>
-                    <Form.Field>
-                        <label>Evapotranspiration option (nevtop)</label>
-                        <Form.Dropdown
-                            options={[
-                                {key: 0, value: 1, text: '1'},
-                                {key: 1, value: 2, text: '2'},
-                                {key: 2, value: 3, text: '3'},
-                            ]}
-                            placeholder='Select nevtop'
-                            name='nevtop'
-                            selection
-                            value={mfPackage.nevtop}
-                            readOnly={readonly}
-                            onChange={this.handleOnSelect}
-                        />
-                    </Form.Field>
-                    <Form.Field>
-                        <label>Evapotranspiration layer (ievt)</label>
-                        <Form.Dropdown
-                            options={new Array(nlay).fill(0).map((l, idx) => ({key: idx, value: idx, text: idx}))}
-                            placeholder='Select ievt'
-                            name='ievt'
-                            selection
-                            value={mfPackage.ievt}
-                            readOnly={readonly}
-                            onChange={this.handleOnSelect}
-                            disabled={mfPackage.ievt !== 2}
                         />
                     </Form.Field>
                 </Form.Group>
