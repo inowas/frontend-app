@@ -118,6 +118,8 @@ class Observations extends React.Component {
         const domainY = Math.ceil(Math.max(yMax, yMin));
         const line = [{x: xMin, y: yMin}, {x: xMax, y: yMax}];
 
+        console.log(linRegressSW);
+
         return (
             <Segment raised>
                 <ResponsiveContainer width={'100%'} aspect={2.0}>
@@ -147,7 +149,11 @@ class Observations extends React.Component {
                 </ResponsiveContainer>
                 <div className="diagram-labels-right">
                     <div className="diagram-label" style={{color: 'red'}}>
-                        <p>f(x) = {linRegressSW[0].toFixed(3)}x + {linRegressSW[1].toFixed(3)}</p>
+                        {linRegressSW && linRegressSW[0] && linRegressSW[1] ?
+                            <p>f(x) = {linRegressSW[0].toFixed(3)}x + {linRegressSW[1].toFixed(3)}</p>
+                            :
+                            <p>Equation Error</p>
+                        }
                     </div>
                 </div>
             </Segment>
@@ -212,7 +218,7 @@ class Observations extends React.Component {
 
         if (!calibrationData) {
             return (
-                <p>loading...</p>
+                <p>No observations defined.</p>
             );
         }
 
@@ -233,55 +239,55 @@ class Observations extends React.Component {
                                     <Table.Row>
                                         <Table.Cell>Maximum Absolute Residual</Table.Cell>
                                         <Table.Cell>R<sub>MAX</sub> </Table.Cell>
-                                        <Table.Cell>{(calibrationData.rMax).toFixed(3)}</Table.Cell>
+                                        <Table.Cell>{calibrationData.rMax ? (calibrationData.rMax).toFixed(3) : 'No Value'}</Table.Cell>
                                         <Table.Cell>m</Table.Cell>
                                     </Table.Row>
                                     <Table.Row>
                                         <Table.Cell>Minimum Absolute Residual</Table.Cell>
                                         <Table.Cell>R<sub>MIN</sub></Table.Cell>
-                                        <Table.Cell>{(calibrationData.rMin).toFixed(3)}</Table.Cell>
+                                        <Table.Cell>{calibrationData.rMin ? (calibrationData.rMin).toFixed(3) : 'No Value'}</Table.Cell>
                                         <Table.Cell>m</Table.Cell>
                                     </Table.Row>
                                     <Table.Row>
                                         <Table.Cell>Residual Mean</Table.Cell>
                                         <Table.Cell>R<sub>MEAN</sub></Table.Cell>
-                                        <Table.Cell>{(calibrationData.rMean).toFixed(3)}</Table.Cell>
+                                        <Table.Cell>{calibrationData.rMean ? (calibrationData.rMean).toFixed(3) : 'No Value'}</Table.Cell>
                                         <Table.Cell>m</Table.Cell>
                                     </Table.Row>
                                     <Table.Row>
                                         <Table.Cell>Absolute residual Mean</Table.Cell>
                                         <Table.Cell>|R<sub>MEAN</sub>|</Table.Cell>
-                                        <Table.Cell>{(calibrationData.absRMean).toFixed(3)}</Table.Cell>
+                                        <Table.Cell>{calibrationData.absRMean ? (calibrationData.absRMean).toFixed(3) : 'No Value'}</Table.Cell>
                                         <Table.Cell>m</Table.Cell>
                                     </Table.Row>
                                     <Table.Row>
                                         <Table.Cell>Standard error of estimation</Table.Cell>
                                         <Table.Cell>SSE</Table.Cell>
-                                        <Table.Cell>{(calibrationData.sse).toFixed(3)}</Table.Cell>
+                                        <Table.Cell>{calibrationData.sse ? (calibrationData.sse).toFixed(3) : 'No Value'}</Table.Cell>
                                         <Table.Cell>-</Table.Cell>
                                     </Table.Row>
                                     <Table.Row>
                                         <Table.Cell>Root Mean Squared Error</Table.Cell>
                                         <Table.Cell>RMSE</Table.Cell>
-                                        <Table.Cell>{(calibrationData.rmse).toFixed(3)}</Table.Cell>
+                                        <Table.Cell>{calibrationData.rmse ? (calibrationData.rmse).toFixed(3) : 'No Value'}</Table.Cell>
                                         <Table.Cell>m</Table.Cell>
                                     </Table.Row>
                                     <Table.Row>
                                         <Table.Cell>Normalized Root Mean Squared Error</Table.Cell>
                                         <Table.Cell>NRMSE</Table.Cell>
-                                        <Table.Cell>{(calibrationData.nrmse).toFixed(3)}</Table.Cell>
+                                        <Table.Cell>{calibrationData.nrmse ? (calibrationData.nrmse).toFixed(3) : 'No Value'}</Table.Cell>
                                         <Table.Cell>-</Table.Cell>
                                     </Table.Row>
                                     <Table.Row>
                                         <Table.Cell>Correlation Coefficient Pearson R</Table.Cell>
                                         <Table.Cell>R</Table.Cell>
-                                        <Table.Cell>{(calibrationData.R).toFixed(3)}</Table.Cell>
+                                        <Table.Cell>{calibrationData.R ? (calibrationData.R).toFixed(3) : 'No Value'}</Table.Cell>
                                         <Table.Cell>-</Table.Cell>
                                     </Table.Row>
                                     <Table.Row>
                                         <Table.Cell>Coefficient of determination</Table.Cell>
                                         <Table.Cell>R<sup>2</sup></Table.Cell>
-                                        <Table.Cell>{(calibrationData.R2).toFixed(3)}</Table.Cell>
+                                        <Table.Cell>{calibrationData.R2 ? (calibrationData.R2).toFixed(3) : 'No Value'}</Table.Cell>
                                         <Table.Cell>-</Table.Cell>
                                     </Table.Row>
                                 </Table.Body>

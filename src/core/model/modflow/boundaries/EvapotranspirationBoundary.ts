@@ -88,7 +88,7 @@ export default class EvapotranspirationBoundary extends Boundary {
                 default: 0
             },
             {
-                name: 'EVT Depth',
+                name: 'Extinction Depth',
                 description: 'Evapotranspiration on depth',
                 unit: 'm',
                 decimals: 5,
