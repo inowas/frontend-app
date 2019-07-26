@@ -96,6 +96,8 @@ export function updatePackages(packages) {
         throw new Error('Packages is expected to be instance of FlopyPackages');
     }
 
+    console.log(packages);
+
     return {
         type: UPDATE_PACKAGES,
         payload: packages.toObject()

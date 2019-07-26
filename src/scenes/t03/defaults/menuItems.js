@@ -97,6 +97,12 @@ const menuItems = [
         header: 'Computation',
         items: [
             {
+                name: 'Modpath',
+                property: 'modpath',
+                icon: <Icon name='code branch'/>,
+                disabled: false
+            },
+            {
                 name: 'Optimization',
                 property: 'optimization',
                 icon: <Icon name="sliders horizontal"/>,

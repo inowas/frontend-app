@@ -99,6 +99,24 @@ class FlopyModpath {
 
         return obj;
     }
+
+    public toCalculation = () => {
+        if (!this.enabled) {
+            return null;
+        }
+
+        const obj: IPropertyValueObject = {
+            packages: Object.keys(this.packages)
+        };
+
+        for (const prop in this.packages) {
+            if (this.packages.hasOwnProperty(prop)) {
+                obj[prop] = this.packages[prop].toObject();
+            }
+        }
+
+        return obj;
+    };
 }
 
 export default FlopyModpath;
