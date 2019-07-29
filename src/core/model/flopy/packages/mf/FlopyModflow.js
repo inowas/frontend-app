@@ -237,10 +237,10 @@ export default class FlopyModflow {
         // RCHs
         const mfRch = this.hasPackage('rch') ? this.getPackage('rch') : FlopyModflowMfrch.create();
         this.removePackageIfExists(mfRch);
-        const rchPackage = FlopyModflowMfrch.calculateSpData(boundaries.all, nper, nrow, ncol);
-        if (rchPackage) {
-            mfRch.irch = rchPackage.irch;
-            mfRch.stress_period_data = rchPackage.spData;
+        const rchData = FlopyModflowMfrch.calculateSpData(boundaries.all, nper, nrow, ncol);
+        if (rchData) {
+            mfRch.irch = rchData.irch;
+            mfRch.stress_period_data = rchData.spData;
             this.setPackage(mfRch);
         }
 
