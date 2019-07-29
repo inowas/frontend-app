@@ -283,9 +283,9 @@ CrossSection.propTypes = {
     basemodel: PropTypes.instanceOf(ModflowModel).isRequired,
     basemodelCalculation: PropTypes.instanceOf(Calculation).isRequired,
     basemodelSoilmodel: PropTypes.instanceOf(Soilmodel).isRequired,
-    models: PropTypes.array.isRequired,
-    boundaries: PropTypes.array.isRequired,
-    calculations: PropTypes.array.isRequired,
+    models: PropTypes.object.isRequired,
+    boundaries: PropTypes.object.isRequired,
+    calculations: PropTypes.object.isRequired,
     scenarioAnalysis: PropTypes.instanceOf(ScenarioAnalysis).isRequired,
     selected: PropTypes.array.isRequired,
 };

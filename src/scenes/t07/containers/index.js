@@ -1,5 +1,7 @@
-import T07 from './T07';
+import CreateScenarioAnalysis from './createScenarioAnalysis';
+import EditScenarioAnalysis from './T07';
 
 export {
-    T07
+    CreateScenarioAnalysis,
+    EditScenarioAnalysis
 };
