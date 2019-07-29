@@ -74,23 +74,23 @@ export default class EvapotranspirationBoundary extends Boundary {
     get valueProperties() {
         return [
             {
-                name: 'Max Evt',
+                name: 'Max EVT',
                 description: 'Maximum Evapotranspiration on flux',
                 unit: 'm/day',
                 decimals: 5,
                 default: 0
             },
             {
-                name: 'Surface',
+                name: 'EVT Surface',
                 description: 'Evapotranspiration of surface',
-                unit: 'm/day',
+                unit: 'm',
                 decimals: 5,
                 default: 0
             },
             {
-                name: 'Depth',
+                name: 'Extinction Depth',
                 description: 'Evapotranspiration on depth',
-                unit: 'm/day',
+                unit: 'm',
                 decimals: 5,
                 default: 0
             }
@@ -106,7 +106,7 @@ export default class EvapotranspirationBoundary extends Boundary {
         boundary._layers = layers;
         boundary._cells = cells;
         boundary._spValues = spValues;
-        boundary._nevtop = nevtop;
+        boundary._nevtop = nevtop || 1;
         return boundary;
     }
 
@@ -129,7 +129,7 @@ export default class EvapotranspirationBoundary extends Boundary {
     private _name?: string;
     private _layers?: number[];
     private _cells?: Cell[];
-    private _nevtop?: number;
+    private _nevtop: number = 1;
     private _spValues?: SpValues;
 
     public getSpValues() {

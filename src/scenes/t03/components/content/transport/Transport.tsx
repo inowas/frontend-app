@@ -199,7 +199,7 @@ const mapStateToProps = (state: any) => {
         boundaries: BoundaryCollection.fromObject(state.T03.boundaries),
         model: ModflowModel.fromObject(state.T03.model),
         packages: FlopyPackages.fromObject(state.T03.packages),
-        transport: Transport.fromObject(state.T03.transport),
+        transport: Transport.fromObject(state.T03.transport)
     };
 };
 

@@ -162,6 +162,7 @@ class SeawatProperties extends React.Component<Props, ISeawatPropertiesState> {
                         <Menu.Item
                             key={key}
                             name={item.name}
+                            disabled={item.id === 'vsc' && !this.props.variableDensity.vscEnabled}
                             active={type === item.id}
                             onClick={this.onMenuClick(item.id)}
                         />

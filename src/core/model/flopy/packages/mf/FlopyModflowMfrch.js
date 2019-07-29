@@ -27,6 +27,8 @@ export default class FlopyModflowMfrch extends FlopyModflowBoundary {
             return null;
         }
 
+        let layers = [...new Set( rechargeBoundaries.map(obj => obj.layers[0]))];
+
         let spData = [];
         for (let per = 0; per < nper; per++) {
             spData[per] = [];
@@ -51,7 +53,10 @@ export default class FlopyModflowMfrch extends FlopyModflowBoundary {
             });
         });
 
-        return FlopyModflowMfrch.arrayToObject(spData);
+        return {
+            spData: FlopyModflowMfrch.arrayToObject(spData),
+            irch: layers.length > 1 ? layers : layers[0]
+        };
     };
 
     get nrchop() {

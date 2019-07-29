@@ -136,9 +136,9 @@ class VscPackageProperties extends AbstractPackageProperties {
                         <Form.Dropdown
                             options={[
                                 {key: 0, value: 0, text: 'None'},
-                                {key: 1, value: 1, text: 'Equation 18'},
-                                {key: 2, value: 2, text: 'Equation 19'},
-                                {key: 3, value: 3, text: 'Equation 20'}
+                                {key: 1, value: 1, text: 'Equation 18 (Langevin et al., 2008)'},
+                                {key: 2, value: 2, text: 'Equation 19 (Langevin et al., 2008)'},
+                                {key: 3, value: 3, text: 'Equation 20 (Langevin et al., 2008)'}
                             ]}
                             placeholder="Select mutempopt"
                             name="mutempopt"
