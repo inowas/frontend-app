@@ -1,6 +1,6 @@
 import {ITimeUnit} from './TimeUnit.type';
 
-class TimeUnit {
+export default class TimeUnit {
 
     public static seconds() {
         return TimeUnit.fromInt(ITimeUnit.seconds);
@@ -34,13 +34,7 @@ class TimeUnit {
 
     public toInt = () => (this._value);
 
-    public sameAs = (obj: TimeUnit | ITimeUnit) => {
-        if (obj instanceof TimeUnit) {
-            return obj.toInt() === this.toInt();
-        }
-
-        return (obj === this.toInt());
+    public sameAs = (obj: TimeUnit) => {
+        return obj.toInt() === this.toInt();
     };
 }
-
-export default TimeUnit;

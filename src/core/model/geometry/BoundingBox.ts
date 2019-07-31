@@ -107,6 +107,10 @@ class BoundingBox {
         [this._xMax, this._yMax]
     ]);
 
+    public toObject = () => (
+        [this._xMin, this._xMax, this._yMin, this._yMax]
+    );
+
     get northEast() {
         return {
             lat: this.yMax,
