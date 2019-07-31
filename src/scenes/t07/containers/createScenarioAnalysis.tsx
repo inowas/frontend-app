@@ -4,13 +4,13 @@ import {Breadcrumb, Button, Checkbox, Form, Grid, Icon, Segment} from 'semantic-
 import Uuid from 'uuid';
 import {Geometry, ModflowModel} from '../../../core/model/modflow';
 import BoundaryCollection from '../../../core/model/modflow/boundaries/BoundaryCollection';
-import {IMetaData} from '../../../core/model/types';
+import {IMetaData, IPropertyValueObject} from '../../../core/model/types';
 import {fetchUrl, sendCommand} from '../../../services/api';
 import AppContainer from '../../shared/AppContainer';
 import {ModelMap} from '../../t03/components/maps';
 import ScenarioAnalysisCommand from '../commands/scenarioAnalysisCommand';
 
-interface IState {
+interface IState extends IPropertyValueObject {
     fetchingModels: boolean;
     fetchingModel: boolean;
     fetchingError: boolean;
@@ -98,13 +98,7 @@ class CreateScenarioAnalysis extends React.Component<IProps, IState> {
             this.changeModelId(data.value);
         }
 
-        if (name === 'name') {
-            this.setState({
-                [name]: data.value
-            });
-        }
-
-        if (name === 'description') {
+        if (name === 'name' || name === 'description') {
             this.setState({
                 [name]: data.value
             });
