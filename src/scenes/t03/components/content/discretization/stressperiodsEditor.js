@@ -56,7 +56,6 @@ class StressperiodsEditor extends React.Component {
         if (e.type === 'blur') {
             const stressperiods = Stressperiods.fromObject(this.state.stressperiods);
             stressperiods[name] = date;
-            stressperiods.recalculateStressperiods();
             this.setState({
                 stressperiods: stressperiods.toObject(),
                 isDirty: true
@@ -73,7 +72,6 @@ class StressperiodsEditor extends React.Component {
 
     render() {
         const stressperiods = Stressperiods.fromObject(this.state.stressperiods);
-        stressperiods.orderStressperiods();
 
         const datesInvalid = moment.utc(this.state.endDateTime)
             .diff(moment.utc(stressperiods.last().startDateTime)) <= 0;

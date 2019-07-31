@@ -26,7 +26,7 @@ class TimeUnit {
         return new TimeUnit(value);
     }
 
-    private readonly _value: ITimeUnit | null;
+    private readonly _value: ITimeUnit;
 
     constructor(value: ITimeUnit) {
         this._value = value;
