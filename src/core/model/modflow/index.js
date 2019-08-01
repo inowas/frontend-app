@@ -10,7 +10,6 @@ import GridSize from '../geometry/GridSize';
 import LengthUnit from './LengthUnit';
 import ModflowModel from './ModflowModel';
 import Optimization from './optimization/Optimization';
-import CalculationResults from './CalculationResults';
 import Soilmodel from './soilmodel/Soilmodel';
 import Stressperiod from './Stressperiod';
 import Stressperiods from './Stressperiods';
@@ -31,7 +30,6 @@ export {
     LineBoundary,
     ModflowModel,
     Optimization,
-    CalculationResults,
     Soilmodel,
     Stressperiod,
     Stressperiods,
