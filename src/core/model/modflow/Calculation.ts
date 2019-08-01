@@ -70,8 +70,8 @@ export default class Calculation {
         state: 0,
         message: '',
         times: null,
-        layer_values: null,
-        files: null
+        layer_values: [],
+        files: []
     };
 
     public constructor(props?: ICalculation) {

@@ -4,3 +4,11 @@ export interface IStressPeriod {
     tsmult: number;
     steady: boolean;
 }
+
+export interface IStressPeriodWithTotim {
+    totim_start: number;
+    perlen: number;
+    nstp: number;
+    tsmult: number;
+    steady: boolean;
+}

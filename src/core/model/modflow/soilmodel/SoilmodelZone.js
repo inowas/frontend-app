@@ -24,7 +24,7 @@ class SoilmodelZone {
             zone.id = obj.id;
             zone.name = obj.name;
             zone.geometry = obj.geometry ? Geometry.fromObject(obj.geometry) : null;
-            zone.cells = obj.cells ? Cells.fromArray(obj.cells) : null;
+            zone.cells = obj.cells ? Cells.fromObject(obj.cells) : null;
             zone.priority = obj.priority;
             zone.top = this.refactorParameter(obj.top, parseParameters);
             zone.botm = this.refactorParameter(obj.botm, parseParameters);
@@ -147,7 +147,7 @@ class SoilmodelZone {
             'id': this.id,
             'name': this.name,
             'geometry': this.geometry ? this.geometry.toObject() : null,
-            'cells': this.cells ? this.cells.toArray() : [],
+            'cells': this.cells ? this.cells.toObject() : [],
             'priority': this.priority,
             'top': this.top.toObject(),
             'botm': this.botm.toObject(),

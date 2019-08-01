@@ -86,7 +86,6 @@ class StressPeriodsDataTable extends React.Component {
         const newStressperiod = stressperiods.last().clone();
         newStressperiod.startDateTime = moment.utc(stressperiods.last().startDateTime).add(numberOfDays, 'days');
         stressperiods.addStressPeriod(newStressperiod);
-        stressperiods.recalculateStressperiods();
         this.props.onChange(stressperiods);
     };
 

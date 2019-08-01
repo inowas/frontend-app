@@ -2,6 +2,7 @@ import {orderBy} from 'lodash';
 import moment, {Moment} from 'moment/moment';
 import {TimeUnit} from './index';
 import Stressperiod from './Stressperiod';
+import {IStressPeriod, IStressPeriodWithTotim} from './Stressperiod.type';
 import {IStressPeriods} from './Stressperiods.type';
 import {ITimeUnit} from './TimeUnit.type';
 
@@ -108,6 +109,26 @@ class Stressperiods {
     }
 
     public static fromObject(obj: IStressPeriods) {
+        // UpCasting from IStressPeriodWithTotim
+        let stressperiods: any = obj.stressperiods;
+        stressperiods = stressperiods.map((sp: IStressPeriod | IStressPeriodWithTotim) => {
+            if ('start_date_time' in sp) {
+                return sp;
+            }
+
+            if ('totim_start' in sp) {
+                return ({
+                    start_date_time: Stressperiods.dateTimeFromTotim(
+                        moment(obj.start_date_time), sp.totim_start, TimeUnit.fromInt(obj.time_unit)
+                    ),
+                    nstp: sp.nstp,
+                    tsmult: sp.tsmult,
+                    steady: sp.steady
+                });
+            }
+        });
+
+        obj.stressperiods = stressperiods;
         return new Stressperiods(obj);
     }
 

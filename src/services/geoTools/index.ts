@@ -1,6 +1,6 @@
 import {booleanContains, booleanCrosses, booleanOverlap, envelope, lineString} from '@turf/turf';
 import {floor} from 'lodash';
-import {Cell} from '../../core/model/geometry/types';
+import {ICell} from '../../core/model/geometry/Cells.type';
 import {BoundingBox, Cells, Geometry, GridSize} from '../../core/model/modflow';
 
 /* Calculate GridCells
@@ -34,7 +34,7 @@ export const getGridCells = (boundingBox: BoundingBox, gridSize: GridSize) => {
 };
 
 export const getActiveCellFromCoordinate = (coordinate: number[], boundingBox: BoundingBox,
-                                            gridSize: GridSize): Cell => {
+                                            gridSize: GridSize): ICell => {
     const dx = boundingBox.dX / gridSize.nX;
     const dy = boundingBox.dY / gridSize.nY;
     const x = coordinate[0];

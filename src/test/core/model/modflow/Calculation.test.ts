@@ -11,8 +11,8 @@ test('Calculation static fromCalculationIdAndState', () => {
     expect(calculation.state).toEqual(state);
     expect(calculation.message).toEqual('');
     expect(calculation.times).toBeNull();
-    expect(calculation.layer_values).toBeNull();
-    expect(calculation.files).toBeNull();
+    expect(calculation.layer_values).toEqual([]);
+    expect(calculation.files).toEqual([]);
 });
 
 test('Calculation static fromQuery', () => {

@@ -151,8 +151,8 @@ export default class FlopyModflow {
         mfDis.tsmult = stressperiods.stressperiods.map(sp => sp.tsmult);
         mfDis.steady = stressperiods.stressperiods.map(sp => sp.steady);
 
-        mfDis.itmuni = model.timeUnit;
-        mfDis.lenuni = model.lengthUnit;
+        mfDis.itmuni = model.timeUnit.toInt();
+        mfDis.lenuni = model.lengthUnit.toInt();
 
         mfDis.xul = model.boundingBox.xMin;
         mfDis.yul = model.boundingBox.yMax;

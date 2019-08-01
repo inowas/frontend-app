@@ -10,12 +10,11 @@ const createModelDefaults = {
     timeUnit: 4,
     isPublic: true,
     stressperiods: Stressperiods.fromObject({
-        start_date_time: '2000-01-01',
-        end_date_time: '2019-12-31',
+        start_date_time: '2000-01-01T00:00:00.000Z',
+        end_date_time: '2019-12-31T00:00:00.000Z',
         time_unit: TimeUnit.days().toInt(),
         stressperiods: [{
-            totim_start: 0,
-            perlen: 3650,
+            start_date_time: '2000-01-01T00:00:00.000Z',
             nstp: 1,
             tsmult: 1,
             steady: true

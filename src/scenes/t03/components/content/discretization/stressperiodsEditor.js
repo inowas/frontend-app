@@ -89,7 +89,7 @@ class StressperiodsEditor extends React.Component {
                             importButton={
                                 <StressperiodsImport
                                     onChange={this.handleChange}
-                                    timeunit={this.props.timeunit}
+                                    timeunit={this.props.timeunit.toInt()}
                                 />
                             }
                         />
@@ -161,7 +161,7 @@ const mapDispatchToProps = {
 StressperiodsEditor.propTypes = {
     readOnly: PropTypes.bool.isRequired,
     stressperiods: PropTypes.instanceOf(Stressperiods).isRequired,
-    timeunit: PropTypes.number.isRequired,
+    timeunit: PropTypes.object.isRequired,
     onChange: PropTypes.func.isRequired
 };
 

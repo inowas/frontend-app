@@ -133,7 +133,7 @@ class ConstraintsMap extends React.Component {
     };
 
     boundingBoxLayer = () => <GeoJSON
-        key={md5(JSON.stringify(this.props.map.boundingBox.toArray()))}
+        key={md5(JSON.stringify(this.props.map.boundingBox.toObject()))}
         data={this.props.map.boundingBox.geoJson}
         color='grey'
     />;

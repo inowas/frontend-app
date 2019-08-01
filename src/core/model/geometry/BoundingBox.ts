@@ -1,14 +1,65 @@
 import {AllGeoJSON} from '@turf/helpers';
 import {envelope} from '@turf/turf';
+import {GeoJSON} from 'geojson';
 import {isEqual} from 'lodash';
 import md5 from 'md5';
-
-type Point = [number, number];
-type Points = Point[];
+import {IBoundingBox} from './BoundingBox.type';
 
 class BoundingBox {
-    public static fromPoints([[xMin, yMin], [xMax, yMax]]: Points) {
-        return new BoundingBox(xMin, xMax, yMin, yMax);
+
+    get xMin() {
+        return this._props[0][0] < this._props[1][0] ? this._props[0][0] : this._props[1][0];
+    }
+
+    get xMax() {
+        return this._props[0][0] > this._props[1][0] ? this._props[0][0] : this._props[1][0];
+    }
+
+    get yMin() {
+        return this._props[0][1] < this._props[1][1] ? this._props[0][1] : this._props[1][1];
+    }
+
+    get yMax() {
+        return this._props[0][1] > this._props[1][1] ? this._props[0][1] : this._props[1][1];
+    }
+
+    get dX() {
+        return this.xMax - this.xMin;
+    }
+
+    get dY() {
+        return this.yMax - this.yMin;
+    }
+
+    get geoJson(): GeoJSON {
+        return {
+            type: 'Feature',
+            properties: {},
+            geometry: {
+                coordinates: [[
+                    [this.xMin, this.yMin],
+                    [this.xMin, this.yMax],
+                    [this.xMax, this.yMax],
+                    [this.xMax, this.yMin],
+                    [this.xMin, this.yMin],
+                ]],
+                type: 'Polygon'
+            }
+        };
+    }
+
+    get northEast() {
+        return {
+            lat: this.yMax,
+            lon: this.xMax
+        };
+    }
+
+    get southWest() {
+        return {
+            lat: this.yMin,
+            lon: this.xMin
+        };
     }
 
     public static fromGeoJson(geoJson: AllGeoJSON) {
@@ -40,100 +91,37 @@ class BoundingBox {
             }
         });
 
-        return BoundingBox.fromPoints([
+        return BoundingBox.fromObject([
             [xMin, yMin],
             [xMax, yMax]
         ]);
     }
 
-    public static fromArray([[xMin, yMin], [xMax, yMax]]: Points) {
-        return new BoundingBox(xMin, xMax, yMin, yMax);
+    public static fromObject(obj: IBoundingBox) {
+        return new BoundingBox(obj);
     }
 
-    constructor(
-        private readonly _xMin: number,
-        private readonly _xMax: number,
-        private readonly _yMin: number,
-        private readonly _yMax: number) {
-    }
+    private readonly _props: IBoundingBox;
 
-    get xMin() {
-        return this._xMin;
-    }
-
-    get xMax() {
-        return this._xMax;
-    }
-
-    get yMin() {
-        return this._yMin;
-    }
-
-    get yMax() {
-        return this._yMax;
-    }
-
-    get dX() {
-        return this._xMax - this._xMin;
-    }
-
-    get dY() {
-        return this._yMax - this._yMin;
+    constructor([[xMin, yMin], [xMax, yMax]]: IBoundingBox) {
+        this._props = [[xMin, yMin], [xMax, yMax]];
     }
 
     public hash = () => (md5(JSON.stringify(this.geoJson)));
 
-    get geoJson() {
-        return {
-            type: 'Feature',
-            properties: {},
-            geometry: {
-                coordinates: [[
-                    [this._xMin, this._yMin],
-                    [this._xMin, this._yMax],
-                    [this._xMax, this._yMax],
-                    [this._xMax, this._yMin],
-                    [this._xMin, this._yMin],
-                ]],
-                type: 'Polygon'
-            }
-        };
-    }
+    public isValid = () => !(!this.xMin || !this.xMax || !this.yMin || !this.yMax);
 
-    public isValid = () => !(!this._xMin || !this._xMax || !this._yMin || !this._yMax);
+    public toObject = (): IBoundingBox => this._props;
 
-    public toArray = () => ([
-        [this._xMin, this._yMin],
-        [this._xMax, this._yMax]
-    ]);
-
-    public toObject = () => (
-        [this._xMin, this._xMax, this._yMin, this._yMax]
-    );
-
-    get northEast() {
-        return {
-            lat: this.yMax,
-            lon: this.xMax
-        };
-    }
-
-    get southWest() {
-        return {
-            lat: this.yMin,
-            lon: this.xMin
-        };
-    }
-
-    public getBoundsLatLng = () => {
+    public getBoundsLatLng = (): Array<[number, number]> => {
         return [
-            [this._yMin, this._xMin],
-            [this._yMax, this._xMax]
+            [this.yMin, this.xMin],
+            [this.yMax, this.xMax]
         ];
     };
 
     public sameAs = (obj: BoundingBox) => {
-        return isEqual(obj.toArray(), this.toArray());
+        return isEqual(obj.toObject(), this.toObject());
     };
 }
 

@@ -7,7 +7,7 @@ import {heatMapColors} from '../../../../scenes/t05/defaults/gis';
 import {RulesCollection} from '../criteria';
 
 class Raster {
-    _boundingBox = new BoundingBox(0, 0, 0, 0);
+    _boundingBox = new BoundingBox([[0, 0], [0, 0]]);
     _gridSize = new GridSize(10, 10);
     _data = [];
     _id = uuidv4();
@@ -19,7 +19,7 @@ class Raster {
     static fromObject(obj) {
         const raster = new Raster();
         raster.id = obj.id || uuidv4();
-        raster.boundingBox = BoundingBox.fromArray(obj.boundingBox);
+        raster.boundingBox = BoundingBox.fromObject(obj.boundingBox);
         raster.data = obj.data || [];
         raster.gridSize = GridSize.fromObject(obj.gridSize);
         raster.isFetching = !!obj.isFetching;
@@ -95,7 +95,7 @@ class Raster {
 
     toObject() {
         return {
-            boundingBox: this.boundingBox.toArray(),
+            boundingBox: this.boundingBox.toObject(),
             data: this.data,
             isFetching: this.isFetching,
             gridSize: this.gridSize.toObject(),
@@ -108,7 +108,7 @@ class Raster {
 
     toPayload() {
         return {
-            boundingBox: this.boundingBox.toArray(),
+            boundingBox: this.boundingBox.toObject(),
             gridSize: this.gridSize.toObject(),
             id: this.id,
             max: this.max,
@@ -151,7 +151,7 @@ class Raster {
     }
 
     clean() {
-        if(!this.data || !this.data[0]) {
+        if (!this.data || !this.data[0]) {
             return this;
         }
         const dimCol = this.data[0].length;
@@ -315,7 +315,7 @@ class Raster {
         newGridSize.n_x = sliced[0].length;
 
         this.data = sliced;
-        this.boundingBox = boundingBox.fromArray(bounds);
+        this.boundingBox = boundingBox.fromObject(bounds);
         this.gridSize = GridSize.fromObject(newGridSize);
     }
 

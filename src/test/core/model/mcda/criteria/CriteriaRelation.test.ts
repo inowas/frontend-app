@@ -1,7 +1,5 @@
 import CriteriaRelation from '../../../../../core/model/mcda/criteria/CriteriaRelation';
 
-export default {};
-
 test('toObject, fromObject', () => {
     const relation = {
         id: 'c1',

@@ -2,7 +2,7 @@ import React from 'react';
 import {RouteComponentProps, withRouter} from 'react-router-dom';
 import {Breadcrumb, Button, Checkbox, Form, Grid, Icon, Segment} from 'semantic-ui-react';
 import Uuid from 'uuid';
-import {Geometry, ModflowModel} from '../../../core/model/modflow';
+import {ModflowModel} from '../../../core/model/modflow';
 import BoundaryCollection from '../../../core/model/modflow/boundaries/BoundaryCollection';
 import {IMetaData, IPropertyValueObject} from '../../../core/model/types';
 import {fetchUrl, sendCommand} from '../../../services/api';
@@ -117,7 +117,7 @@ class CreateScenarioAnalysis extends React.Component<IProps, IState> {
         }
 
         const modflowModel = ModflowModel.fromObject(model);
-        const geometry = Geometry.fromObject(modflowModel.geometry);
+        const geometry = modflowModel.geometry;
         const boundaries = modelBoundaries ? BoundaryCollection.fromQuery(modelBoundaries) : null;
 
         return (

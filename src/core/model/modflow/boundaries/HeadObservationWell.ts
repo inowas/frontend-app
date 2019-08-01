@@ -1,6 +1,6 @@
 import {Point} from 'geojson';
 import uuidv4 from 'uuid/v4';
-import {Cell} from '../../geometry/types';
+import {ICells} from '../../geometry/Cells.type';
 import Boundary from './Boundary';
 import {IHeadObservationWell} from './HeadObservationWell.type';
 import {SpValues} from './types';
@@ -75,7 +75,7 @@ export default class HeadObservationWell extends Boundary {
         ];
     }
 
-    public static create(id: string, type: 'hob', geometry?: Point, name?: string, layers?: number[], cells?: Cell[],
+    public static create(id: string, type: 'hob', geometry?: Point, name?: string, layers?: number[], cells?: ICells,
                          spValues?: SpValues) {
         const boundary = new this();
         boundary._id = id;
@@ -104,7 +104,7 @@ export default class HeadObservationWell extends Boundary {
     public _geometry?: Point;
     public _name?: string;
     public _layers?: number[];
-    public _cells?: Cell[];
+    public _cells?: ICells;
     public _spValues?: SpValues;
 
     public getSpValues() {
