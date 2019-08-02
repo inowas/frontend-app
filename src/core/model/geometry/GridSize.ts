@@ -1,12 +1,8 @@
 import {isEqual} from 'lodash';
 import {Array2D} from './Array2D.type';
+import {IGridSize} from './GridSize.type';
 
 type Point = [number, number];
-
-interface IPointObject {
-    n_x: number;
-    n_y: number;
-}
 
 class GridSize {
     public static fromNxNy(nX: number, nY: number) {
@@ -17,11 +13,11 @@ class GridSize {
         return new GridSize(nX, nY);
     }
 
-    public static fromObject({n_x, n_y}: IPointObject) {
+    public static fromObject({n_x, n_y}: IGridSize) {
         return new GridSize(n_x, n_y);
     }
 
-    public static fromData(data: Array2D) {
+    public static fromData(data: Array2D<number>) {
         if (data.length === 0) {
             throw new Error('Data expected to have at least one row and one column.');
         }
@@ -48,7 +44,7 @@ class GridSize {
         this._nY = value || 0;
     }
 
-    public toObject = () => ({
+    public toObject = (): IGridSize => ({
         n_x: this._nX,
         n_y: this._nY
     });

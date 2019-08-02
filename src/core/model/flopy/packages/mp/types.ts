@@ -24,3 +24,11 @@ export type ModpathPackage =
     | FlopyModpathMp7particledata
     | FlopyModpathMp7particlegroup
     | FlopyModpathMp7sim;
+
+export enum ModPathPackageType {
+    MP7= 'mp7',
+    MP7BAS = 'mp7bas',
+    MP7PARTICLEDATA = 'mp7particledata',
+    MP7PARTICLEGROUP = 'mp7particlegroup',
+    MP7SIM = 'mp7sim'
+}

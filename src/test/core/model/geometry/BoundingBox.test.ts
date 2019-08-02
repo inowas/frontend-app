@@ -3,7 +3,7 @@ import BoundingBox from '../../../../core/model/geometry/BoundingBox';
 export default {};
 
 test('bounding box works', () => {
-    const box = BoundingBox.fromPoints([[1, 1], [3, 3]]);
+    const box = BoundingBox.fromObject([[1, 1], [3, 3]]);
 
     expect(box.isValid()).toBe(true);
     expect(box.dX).toEqual(2);

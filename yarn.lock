@@ -1927,6 +1927,12 @@
   dependencies:
     "@types/jest-diff" "*"
 
+"@types/leaflet-draw@^0.4.14":
+  version "0.4.14"
+  resolved "https://registry.yarnpkg.com/@types/leaflet-draw/-/leaflet-draw-0.4.14.tgz#81458e1fa782f73d1c5629714e08e7b49d36c633"
+  dependencies:
+    "@types/leaflet" "*"
+
 "@types/leaflet@*":
   version "1.4.4"
   resolved "https://registry.yarnpkg.com/@types/leaflet/-/leaflet-1.4.4.tgz#4a3d9815fe6c32a04ac3a230fe23772be8e0de83"

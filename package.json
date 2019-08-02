@@ -6,6 +6,7 @@
         "@turf/helpers": "6.1.4",
         "@turf/nearest-point": "6.0.1",
         "@turf/turf": "5.1.6",
+        "@types/leaflet-draw": "^0.4.14",
         "@types/rc-slider": "^8.6.4",
         "@types/react-redux": "^7.1.0",
         "@types/recharts": "^1.1.16",

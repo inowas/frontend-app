@@ -1,18 +1,8 @@
 import React from 'react';
 import {Icon, Popup} from 'semantic-ui-react';
+import {PopupPosition} from '../../types';
 
-type positionType =
-    'top left'
-    | 'top right'
-    | 'bottom right'
-    | 'bottom left'
-    | 'right center'
-    | 'left center'
-    | 'bottom center'
-    | 'top center'
-    | undefined;
-
-const renderInfoPopup = (description: JSX.Element, title: string, position: positionType = 'top left',
+const renderInfoPopup = (description: JSX.Element, title: string, position: PopupPosition = PopupPosition.TOP_LEFT,
                          iconOutside = false) => {
     return (
         <Popup

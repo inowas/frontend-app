@@ -1,10 +1,11 @@
+import {Array2D} from '../../../geometry/Array2D.type';
 import {IPropertyValueObject} from '../../../types';
 import FlopyModpathMp7 from './FlopyModpathMp7';
 import FlopyModpathPackage from './FlopyModpathPackage';
 
 export default class FlopyModpathMp7bas extends FlopyModpathPackage {
     private _model: FlopyModpathMp7 | null = null;
-    private _porosity: number | number[] = 0.30;
+    private _porosity: number | Array2D<number> | string = 0.30;
     private _defaultiface: IPropertyValueObject | null = null;
     private _extension: string = 'mpbas';
 
@@ -16,12 +17,12 @@ export default class FlopyModpathMp7bas extends FlopyModpathPackage {
         this._model = value;
     }
 
-    get porosity(): number | number[] {
+    get porosity(): number | Array2D<number> | string {
         return this._porosity;
     }
 
-    set porosity(value: number | number[]) {
-        this._porosity = value;
+    set porosity(value: number | Array2D<number> | string) {
+        this._porosity = typeof value === 'string' ? parseFloat(value) : value;
     }
 
     get defaultiface(): IPropertyValueObject | null {

@@ -1,8 +1,9 @@
 import React from 'react';
 import {Form, Input} from 'semantic-ui-react';
-import {FlopySeawatPackage} from '../../../../../../core/model/flopy/packages/swt';
 import {Substance} from '../../../../../../core/model/modflow/transport';
+import renderInfoPopup from '../../../../../shared/complexTools/InfoPopup';
 import InfoPopup from '../../../../../shared/InfoPopup';
+import {PopupPosition} from '../../../../../types';
 import {documentation} from '../../../../defaults/flow';
 import AbstractPackageProperties from './AbstractPackageProperties';
 
@@ -53,7 +54,7 @@ class VdfPackageProperties extends AbstractPackageProperties {
                             disabled={readOnly}
                             onBlur={this.handleOnBlur}
                             onChange={this.handleOnChange}
-                            icon={this.renderInfoPopup(documentation.denseref, 'denseref', 'bottom right')}
+                            icon={renderInfoPopup(documentation.denseref, 'denseref', PopupPosition.BOTTOM_RIGHT)}
                             type="number"
                         />
                     </Form.Field>
@@ -67,7 +68,7 @@ class VdfPackageProperties extends AbstractPackageProperties {
                             value={swtPackage.drhodc}
                             onBlur={this.handleOnBlur}
                             onChange={this.handleOnChange}
-                            icon={this.renderInfoPopup(documentation.drhodc, 'drhodc', 'bottom right')}
+                            icon={renderInfoPopup(documentation.drhodc, 'drhodc', PopupPosition.BOTTOM_RIGHT)}
                             type="number"
                         />
                     </Form.Field>
@@ -135,7 +136,7 @@ class VdfPackageProperties extends AbstractPackageProperties {
                             value={swtPackage.nswtcpl || ''}
                             onBlur={this.handleOnBlur}
                             onChange={this.handleOnChange}
-                            icon={this.renderInfoPopup(documentation.nswtcpl, 'nswtcpl')}
+                            icon={renderInfoPopup(documentation.nswtcpl, 'nswtcpl')}
                             type="number"
                         />
                     </Form.Field>
@@ -147,7 +148,7 @@ class VdfPackageProperties extends AbstractPackageProperties {
                             value={swtPackage.dnscrit || ''}
                             onBlur={this.handleOnBlur}
                             onChange={this.handleOnChange}
-                            icon={this.renderInfoPopup(documentation.dnscrit, 'dnscrit', 'top right')}
+                            icon={renderInfoPopup(documentation.dnscrit, 'dnscrit', PopupPosition.TOP_RIGHT)}
                             type="number"
                         />
                     </Form.Field>
@@ -163,7 +164,7 @@ class VdfPackageProperties extends AbstractPackageProperties {
                             value={swtPackage.dnscrit || ''}
                             onBlur={this.handleOnBlur}
                             onChange={this.handleOnChange}
-                            icon={this.renderInfoPopup(documentation.dnscrit, 'dnscrit', 'top right')}
+                            icon={renderInfoPopup(documentation.dnscrit, 'dnscrit', PopupPosition.TOP_RIGHT)}
                             type="number"
                         />
                     </Form.Field>
@@ -178,7 +179,7 @@ class VdfPackageProperties extends AbstractPackageProperties {
                             value={swtPackage.densemin || 0}
                             onBlur={this.handleOnBlur}
                             onChange={this.handleOnChange}
-                            icon={this.renderInfoPopup(documentation.densemin, 'densemin')}
+                            icon={renderInfoPopup(documentation.densemin, 'densemin')}
                             type="number"
                         />
                     </Form.Field>
@@ -190,7 +191,7 @@ class VdfPackageProperties extends AbstractPackageProperties {
                             value={swtPackage.densemax || 0}
                             onBlur={this.handleOnBlur}
                             onChange={this.handleOnChange}
-                            icon={this.renderInfoPopup(documentation.densemax, 'densemax', 'top right')}
+                            icon={renderInfoPopup(documentation.densemax, 'densemax', PopupPosition.TOP_RIGHT)}
                             type="number"
                         />
                     </Form.Field>
