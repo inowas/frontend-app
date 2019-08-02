@@ -14,7 +14,7 @@ const createConstantHeadBoundary = () => {
     const spValues = [[30, 40], [33, 44]];
 
     const boundingBox = new BoundingBox([[0, -5], [20, 5]]);
-    const gridSize = new GridSize(10, 5);
+    const gridSize = GridSize.fromArray([10, 5]);
 
     const cells = Cells.fromGeometry(geometry, boundingBox, gridSize);
     const boundary = ConstantHeadBoundary.create(id, 'chd', geometry, name, layers, cells, spValues);

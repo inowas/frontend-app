@@ -118,7 +118,7 @@ test('RiverBoundary adding ObservationPoint, orders by OPs by distance', () => {
     const spValues = [[1, 2, 3]];
 
     const boundingBox = new BoundingBox([[0, -5], [20, 5]]);
-    const gridSize = new GridSize(10, 5);
+    const gridSize = GridSize.fromArray([10, 5]);
 
     const cells = Cells.fromGeometry(geometry, boundingBox, gridSize);
     expect(cells.cells.length).toBe(10);
@@ -156,7 +156,7 @@ test('RiverBoundary cells calculation', () => {
     const spValues = [[1, 2, 3]];
 
     const boundingBox = new BoundingBox([[0, -5], [20, 5]]);
-    const gridSize = new GridSize(10, 5);
+    const gridSize = GridSize.fromArray([10, 5]);
 
     const cells = Cells.fromGeometry(geometry, boundingBox, gridSize);
     expect(cells.cells.length).toBe(17);

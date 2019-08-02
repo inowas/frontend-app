@@ -14,7 +14,7 @@ const createRiverBoundary = () => {
     const spValues = [[30, 40, 50], [33, 44, 55]];
 
     const boundingBox = new BoundingBox([[0, -5], [20, 5]]);
-    const gridSize = new GridSize(10, 5);
+    const gridSize = GridSize.fromArray([10, 5]);
 
     const cells = Cells.fromGeometry(geometry, boundingBox, gridSize);
     const riverBoundary = RiverBoundary.create(id, 'riv', geometry, name, layers, cells, spValues);
