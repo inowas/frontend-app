@@ -18,9 +18,9 @@ class GridEditor extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            cells: props.model.cells.toArray(),
-            boundingBox: props.model.boundingBox.toArray(),
-            lengthUnit: props.model.lengthUnit,
+            cells: props.model.cells.toObject(),
+            boundingBox: props.model.boundingBox.toObject(),
+            lengthUnit: props.model.lengthUnit.toInt(),
             geometry: props.model.geometry.toObject(),
             gridSize: props.model.gridSize.toObject(),
             gridSizeLocal: props.model.gridSize.toObject(),
@@ -31,18 +31,19 @@ class GridEditor extends React.Component {
 
     onSave = () => {
         const model = this.props.model;
-        model.cells = Cells.fromArray(this.state.cells);
-        model.boundingBox = BoundingBox.fromArray(this.state.boundingBox);
+        model.cells = Cells.fromObject(this.state.cells);
+        model.boundingBox = BoundingBox.fromObject(this.state.boundingBox);
         model.geometry = Geometry.fromObject(this.state.geometry);
         model.gridSize = GridSize.fromObject(this.state.gridSize);
         const command = ModflowModelCommand.updateModflowModelDiscretization(
             model.id,
             model.geometry.toObject(),
-            model.boundingBox.toArray(),
+            model.boundingBox.toObject(),
             model.gridSize.toObject(),
-            model.cells.toArray(),
+            model.cells.toObject(),
             model.stressperiods.toObject(),
-            model.lengthUnit, model.timeUnit
+            model.lengthUnit.toInt(),
+            model.timeUnit.toInt()
         );
 
         return sendCommand(command,
@@ -78,8 +79,8 @@ class GridEditor extends React.Component {
 
     handleMapChange = ({cells, boundingBox, geometry}) => {
         this.setState({
-            cells: cells.toArray(),
-            boundingBox: boundingBox.toArray(),
+            cells: cells.toObject(),
+            boundingBox: boundingBox.toObject(),
             geometry: geometry.toObject(),
             isDirty: true
         })
@@ -88,7 +89,7 @@ class GridEditor extends React.Component {
     render() {
         const gridSize = GridSize.fromObject(this.state.gridSize);
         const gridSizeLocal = GridSize.fromObject(this.state.gridSizeLocal);
-        const boundingBox = BoundingBox.fromArray(this.state.boundingBox);
+        const boundingBox = BoundingBox.fromObject(this.state.boundingBox);
         const {readOnly} = this.props.model;
 
         return (
@@ -160,8 +161,8 @@ class GridEditor extends React.Component {
                 <Grid.Row>
                     <Grid.Column>
                         <ModelDiscretizationMap
-                            cells={Cells.fromArray(this.state.cells)}
-                            boundingBox={BoundingBox.fromArray(this.state.boundingBox)}
+                            cells={Cells.fromObject(this.state.cells)}
+                            boundingBox={BoundingBox.fromObject(this.state.boundingBox)}
                             geometry={Geometry.fromObject(this.state.geometry)}
                             gridSize={GridSize.fromObject(this.state.gridSize)}
                             onChange={this.handleMapChange}

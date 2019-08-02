@@ -3,8 +3,10 @@ import {connect} from 'react-redux';
 import {withRouter} from 'react-router-dom';
 import {DropdownProps, Form, Grid, Header, InputOnChangeData, Segment} from 'semantic-ui-react';
 import Uuid from 'uuid';
-import {default as Geometry, GeoJson} from '../../../../../core/model/geometry/Geometry';
-import {Cell} from '../../../../../core/model/geometry/types';
+import {ICells} from '../../../../../core/model/geometry/Cells.type';
+import {default as Geometry} from '../../../../../core/model/geometry/Geometry';
+import {GeoJson} from '../../../../../core/model/geometry/Geometry.type';
+
 import {ModflowModel, Soilmodel, Stressperiods} from '../../../../../core/model/modflow';
 import {BoundaryCollection, BoundaryFactory} from '../../../../../core/model/modflow/boundaries';
 import Boundary from '../../../../../core/model/modflow/boundaries/Boundary';
@@ -42,7 +44,7 @@ type Props = IStateProps & IDispatchProps & IOwnProps;
 interface IState {
     name: string;
     geometry: GeoJson | null;
-    cells: Cell[] | null;
+    cells: ICells | null;
     layers: number[];
     isLoading: boolean;
     isDirty: boolean;
@@ -73,8 +75,8 @@ class CreateBoundary extends React.Component<Props, IState> {
         const cells = calculateActiveCells(geometry, this.props.model.boundingBox,
             this.props.model.gridSize);
         this.setState({
-            cells: cells.toArray(),
-            geometry: geometry.toGeoJSON(),
+            cells: cells.toObject(),
+            geometry: geometry.toObject(),
             isDirty: true
         });
     };

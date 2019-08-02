@@ -43,7 +43,7 @@ class CriteriaCollection extends AbstractCollection {
             yMin = bb.yMin < yMin ? bb.yMin : yMin;
             yMax = bb.yMax > yMax ? bb.yMax : yMax;
         });
-        return BoundingBox.fromArray([[xMin, yMin], [xMax, yMax]]);
+        return BoundingBox.fromObject([[xMin, yMin], [xMax, yMax]]);
     }
 
     getSubCriteria(id) {

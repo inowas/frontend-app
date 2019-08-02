@@ -13,9 +13,9 @@ import {NearestPointOnLine} from '@turf/nearest-point-on-line';
 import {Feature, LineString} from 'geojson';
 import {floor, isEqual} from 'lodash';
 import {BoundingBox, Geometry, GridSize, LineBoundary} from '../modflow/index';
-import {Cell, Point} from './types';
+import {ICell, ICells, Point} from './Cells.type';
 
-const getActiveCellFromCoordinate = (coordinate: Point, boundingBox: BoundingBox, gridSize: GridSize) => {
+const getActiveCellFromCoordinate = (coordinate: Point, boundingBox: BoundingBox, gridSize: GridSize): ICell => {
 
     const dx = boundingBox.dX / gridSize.nX;
     const dy = boundingBox.dY / gridSize.nY;
@@ -36,13 +36,12 @@ const getGridCells = (boundingBox: BoundingBox, gridSize: GridSize) => {
     const cells = [];
     for (let y = 0; y < gridSize.nY; y++) {
         for (let x = 0; x < gridSize.nX; x++) {
-            const point = getPointFromCell([x, y, 0], boundingBox, gridSize);
-            const coordinates = point.geometry.coordinates;
-            const geometry = envelope(turf.lineString([
+            const point = Geometry.fromGeoJson(getPointFromCell([x, y, 0], boundingBox, gridSize));
+            const coordinates: number[] = point.coordinates as number[];
+            const geometry = Geometry.fromGeoJson(envelope(turf.lineString([
                 [coordinates[0] - dx / 2, coordinates[1] - dy / 2],
                 [coordinates[0] + dx / 2, coordinates[1] + dy / 2],
-            ]));
-
+            ]))).toObject();
             cells.push({
                 x, y, geometry
             });
@@ -52,7 +51,7 @@ const getGridCells = (boundingBox: BoundingBox, gridSize: GridSize) => {
     return cells;
 };
 
-export const getPointFromCell = (cell: Cell, boundingBox: BoundingBox, gridSize: GridSize) => {
+export const getPointFromCell = (cell: ICell, boundingBox: BoundingBox, gridSize: GridSize) => {
 
     const x = cell[0];
     const y = cell[1];
@@ -70,28 +69,32 @@ const distanceOnLine = (ls: Feature<LineString>, point: NearestPointOnLine) => {
     return lineDistance(sliced);
 };
 
-class Cells {
+export default class Cells {
 
-    public static create(cells: Cell[] = []) {
+    public static create(cells: ICells = []) {
         return new this(cells);
     }
 
-    public static fromArray(cells: Cell[]) {
+    public static fromArray(cells: ICells) {
+        return new this(cells);
+    }
+
+    public static fromObject(cells: ICells) {
         return new this(cells);
     }
 
     public static fromGeometry(geometry: Geometry, boundingBox: BoundingBox, gridSize: GridSize) {
 
-        const cells = new this();
+        const cells = new Cells([]);
 
-        if (geometry.type === 'Point') {
-            cells.addCell(getActiveCellFromCoordinate(geometry.coordinates as Point, boundingBox, gridSize) as Cell);
+        if (geometry.fromType('point')) {
+            cells.addCell(getActiveCellFromCoordinate(geometry.coordinates as Point, boundingBox, gridSize));
         }
 
         if (geometry.fromType('linestring')) {
             const gridCells = getGridCells(boundingBox, gridSize);
             gridCells.forEach((cell) => {
-                if (booleanCrosses(geometry, cell.geometry)) {
+                if (booleanCrosses(geometry.toObject(), cell.geometry)) {
                     cells.addCell([cell.x, cell.y, 0]);
                 }
             });
@@ -109,7 +112,7 @@ class Cells {
         return cells;
     }
 
-    constructor(private _cells: Cell[] = []) {
+    constructor(private _cells: ICells = []) {
     }
 
     public calculateValues = (boundary: LineBoundary, boundingBox: BoundingBox, gridSize: GridSize) => {
@@ -164,7 +167,7 @@ class Cells {
             return c;
         });
 
-        this._cells = cellObjs.map((li) => ([li.x, li.y, li.value]) as Cell);
+        this._cells = cellObjs.map((li) => ([li.x, li.y, li.value]) as ICell);
     };
 
     public toggle = ([x, y]: number[], boundingBox: BoundingBox, gridSize: GridSize) => {
@@ -191,11 +194,11 @@ class Cells {
             cells.push(clickedCell);
         }
 
-        this._cells = cells as Cell[];
+        this._cells = cells as ICells;
         return this;
     };
 
-    public addCell = (cell: Cell) => {
+    public addCell = (cell: ICell) => {
         this._cells.push(cell);
     };
 
@@ -227,9 +230,11 @@ class Cells {
         return this._cells;
     }
 
+    public toObject() {
+        return this._cells;
+    }
+
     public sameAs = (obj: Cells) => {
         return isEqual(obj.cells, this.cells);
     };
 }
-
-export default Cells;

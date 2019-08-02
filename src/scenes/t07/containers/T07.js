@@ -12,7 +12,7 @@ import {fetchCalculationDetails, fetchUrl, sendCommand} from '../../../services/
 import * as Content from '../components';
 
 import {
-    clear, updateModel, updateBoundaries, updateScenarioAnalysis
+    clear
 } from '../actions/actions';
 
 import {ScenarioAnalysis} from '../../../core/model/scenarioAnalysis';
@@ -272,7 +272,7 @@ class T07 extends React.Component {
         })
     };
 
-    renderModelListItem = ({id, name, description, canBeDeleted = true}) => {
+    renderModelListItem = ({id, name, canBeDeleted = true}) => {
         return (
             <Grid.Column key={id}>
                 <Segment
@@ -421,21 +421,15 @@ const mapStateToProps = state => {
     }
 };
 
-const mapDispatchToProps = {clear, updateModel, updateBoundaries, updateScenarioAnalysis};
+const mapDispatchToProps = {clear};
 
 T07.propTypes = {
     history: PropTypes.object.isRequired,
     location: PropTypes.object.isRequired,
     match: PropTypes.object.isRequired,
-    scenarioAnalysis: PropTypes.instanceOf(ScenarioAnalysis).isRequired,
+    scenarioAnalysis: PropTypes.instanceOf(ScenarioAnalysis),
 
-    clear: PropTypes.func.isRequired,
-    updateModel: PropTypes.func.isRequired,
-    updateBoundaries: PropTypes.func.isRequired,
-    updateSoilmodel: PropTypes.func.isRequired,
-    updateCalculation: PropTypes.func.isRequired,
-    updateResults: PropTypes.func.isRequired,
-    updateScenarioAnalysis: PropTypes.func.isRequired,
+    clear: PropTypes.func.isRequired
 };
 
 export default withRouter(connect(mapStateToProps, mapDispatchToProps)(T07));

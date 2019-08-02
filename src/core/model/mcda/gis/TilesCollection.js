@@ -20,7 +20,7 @@ class TilesCollection extends AbstractCollection {
             yMin = tile.boundingBox.yMin < yMin ? tile.boundingBox.yMin : yMin;
             yMax = tile.boundingBox.yMax > yMax ? tile.boundingBox.yMax : yMax;
         });
-        return BoundingBox.fromArray([[xMin, yMin], [xMax, yMax]]);
+        return BoundingBox.fromObject([[xMin, yMin], [xMax, yMax]]);
     }
 
     get uniqueValues() {

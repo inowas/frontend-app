@@ -1,8 +1,7 @@
 import {bbox} from '@turf/turf';
-import {LineString, MultiPolygon, Point, Polygon} from 'geojson';
+import {LineString, MultiPolygon, Polygon} from 'geojson';
 import md5 from 'md5';
-
-export type GeoJson = Point | LineString | Polygon | MultiPolygon;
+import {GeoJson} from './Geometry.type';
 
 class Geometry {
 

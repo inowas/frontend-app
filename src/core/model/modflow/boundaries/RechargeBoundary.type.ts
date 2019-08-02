@@ -1,5 +1,5 @@
 import {MultiPolygon, Polygon} from 'geojson';
-import {Cell} from '../../geometry/types';
+import {ICells} from '../../geometry/Cells.type';
 import {IBoundaryFeature, SpValues} from './types';
 
 export interface IRechargeBoundary extends IBoundaryFeature {
@@ -8,7 +8,7 @@ export interface IRechargeBoundary extends IBoundaryFeature {
     properties: {
         name?: string;
         layers?: number[];
-        cells?: Cell[];
+        cells?: ICells;
         sp_values?: SpValues;
         nrchop: number;
         type: 'rch';

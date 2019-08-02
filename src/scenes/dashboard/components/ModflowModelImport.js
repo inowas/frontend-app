@@ -56,9 +56,9 @@ class ModflowModelImport extends React.Component {
                 public: data.public,
                 discretization: {
                     geometry: geometry.toObject(),
-                    bounding_box: boundingBox.toArray(),
+                    bounding_box: boundingBox.toObject(),
                     grid_size: gridSize.toObject(),
-                    cells: Cells.fromGeometry(geometry, boundingBox, gridSize).toArray(),
+                    cells: Cells.fromGeometry(geometry, boundingBox, gridSize).toObject(),
                     stressperiods: stressperiods.toObject(),
                     length_unit: data.discretization.length_unit,
                     time_unit: data.discretization.time_unit,
@@ -151,7 +151,7 @@ class ModflowModelImport extends React.Component {
     renderMap = (payload) => {
         const {discretization} = payload;
         const boundaries = BoundaryCollection.fromObject(payload.boundaries);
-        const boundingBox = BoundingBox.fromArray(discretization.bounding_box);
+        const boundingBox = BoundingBox.fromObject(discretization.bounding_box);
         const geometry = Geometry.fromObject(discretization.geometry);
 
         return (

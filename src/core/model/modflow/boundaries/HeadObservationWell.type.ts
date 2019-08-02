@@ -1,5 +1,5 @@
 import {Point} from 'geojson';
-import {Cell} from '../../geometry/types';
+import {ICells} from '../../geometry/Cells.type';
 import {IBoundaryFeature, SpValues} from './types';
 
 export interface IHeadObservationWell extends IBoundaryFeature {
@@ -9,7 +9,7 @@ export interface IHeadObservationWell extends IBoundaryFeature {
         type: 'hob';
         name?: string;
         layers?: number[];
-        cells?: Cell[];
+        cells?: ICells;
         sp_values?: SpValues;
     };
 }

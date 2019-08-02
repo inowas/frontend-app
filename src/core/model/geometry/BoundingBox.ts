@@ -8,11 +8,11 @@ import {IBoundingBox} from './BoundingBox.type';
 class BoundingBox {
 
     get xMin() {
-        return this._props[0][0] < this._props[1][0] ? this._props[0][0] : this._props[0][1];
+        return this._props[0][0] < this._props[1][0] ? this._props[0][0] : this._props[1][0];
     }
 
     get xMax() {
-        return this._props[0][0] > this._props[1][0] ? this._props[0][0] : this._props[0][1];
+        return this._props[0][0] > this._props[1][0] ? this._props[0][0] : this._props[1][0];
     }
 
     get yMin() {
@@ -97,25 +97,21 @@ class BoundingBox {
         ]);
     }
 
-    public static fromArray(obj: IBoundingBox) {
-        return new BoundingBox(obj);
-    }
-
     public static fromObject(obj: IBoundingBox) {
         return new BoundingBox(obj);
     }
 
     private readonly _props: IBoundingBox;
 
-    constructor(props: IBoundingBox) {
-        this._props = props;
+    constructor([[xMin, yMin], [xMax, yMax]]: IBoundingBox) {
+        this._props = [[xMin, yMin], [xMax, yMax]];
     }
 
     public hash = () => (md5(JSON.stringify(this.geoJson)));
 
     public isValid = () => !(!this.xMin || !this.xMax || !this.yMin || !this.yMax);
 
-    public toArray = (): IBoundingBox => this._props;
+    public toObject = (): IBoundingBox => this._props;
 
     public getBoundsLatLng = (): Array<[number, number]> => {
         return [
@@ -125,7 +121,7 @@ class BoundingBox {
     };
 
     public sameAs = (obj: BoundingBox) => {
-        return isEqual(obj.toArray(), this.toArray());
+        return isEqual(obj.toObject(), this.toObject());
     };
 }
 

@@ -1,22 +1,21 @@
-import Cells from '../geometry/Cells';
 import BoundingBox from '../geometry/BoundingBox';
-import Boundary from './boundaries/Boundary';
-import LineBoundary from './boundaries/LineBoundary';
-import Calculation from './Calculation';
-import BoundaryCollection from './boundaries/BoundaryCollection';
-import BoundaryFactory from './boundaries/BoundaryFactory';
+import Cells from '../geometry/Cells';
 import Geometry from '../geometry/Geometry';
 import GridSize from '../geometry/GridSize';
+import Boundary from './boundaries/Boundary';
+import BoundaryCollection from './boundaries/BoundaryCollection';
+import BoundaryFactory from './boundaries/BoundaryFactory';
+import LineBoundary from './boundaries/LineBoundary';
+import Calculation from './Calculation';
 import LengthUnit from './LengthUnit';
 import ModflowModel from './ModflowModel';
 import Optimization from './optimization/Optimization';
-import CalculationResults from './CalculationResults';
 import Soilmodel from './soilmodel/Soilmodel';
 import Stressperiod from './Stressperiod';
 import Stressperiods from './Stressperiods';
 import TimeUnit from './TimeUnit';
 import Transport from './transport/Transport';
-import VariableDensity from './variableDensity/VariableDensity.ts';
+import VariableDensity from './variableDensity';
 
 export {
     Cells,
@@ -31,11 +30,10 @@ export {
     LineBoundary,
     ModflowModel,
     Optimization,
-    CalculationResults,
     Soilmodel,
     Stressperiod,
     Stressperiods,
     TimeUnit,
     Transport,
     VariableDensity
-}
+};

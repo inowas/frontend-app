@@ -39,7 +39,7 @@ class BudgetResults extends React.Component<IBudgetResultsProps, IBudgetResultsS
         let totalTimes = null;
 
         if (props.calculation instanceof Calculation) {
-            totalTimes = props.calculation.times.total_times;
+            totalTimes = props.calculation.times ? props.calculation.times.total_times : [];
             selectedTotim = totalTimes.slice(-1)[0];
         }
 

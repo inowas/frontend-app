@@ -12,7 +12,7 @@ import * as T03 from './t03/containers';
 import {T04} from './t04/containers';
 import {T05} from './t05/containers';
 import {T06} from './t06/containers';
-import {T07} from './t07/containers';
+import * as T07 from './t07/containers';
 import {T08} from './t08/containers';
 import {T09, T09A, T09B, T09C, T09D, T09E, T09F} from './t09/containers';
 import {T11} from './t11/containers';

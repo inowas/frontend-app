@@ -14,9 +14,9 @@ class GisMap {
     static fromObject(obj) {
         const cm = new GisMap();
         if (obj && obj.cells) {
-            cm.cells = Cells.fromArray(obj.cells);
+            cm.cells = Cells.fromObject(obj.cells);
         }
-        cm.boundingBox = obj.boundingBox ? BoundingBox.fromArray(obj.boundingBox) : null;
+        cm.boundingBox = obj.boundingBox ? BoundingBox.fromObject(obj.boundingBox) : null;
         if (obj && obj.areas) {
             cm.areasCollection = GisAreasCollection.fromArray(obj.areas);
         }
@@ -71,8 +71,8 @@ class GisMap {
 
     toObject() {
         return {
-            cells: this.cells.toArray(),
-            boundingBox: this.boundingBox ? this.boundingBox.toArray() : null,
+            cells: this.cells.toObject(),
+            boundingBox: this.boundingBox ? this.boundingBox.toObject() : null,
             areas: this.areasCollection.toArray(),
             gridSize: this.gridSize.toObject(),
             raster: this.raster ? this.raster.toObject() : null
@@ -81,8 +81,8 @@ class GisMap {
 
     toPayload() {
         return {
-            cells: this.cells.toArray(),
-            boundingBox: this.boundingBox ? this.boundingBox.toArray() : null,
+            cells: this.cells.toObject(),
+            boundingBox: this.boundingBox ? this.boundingBox.toObject() : null,
             areas: this.areasCollection.toArray(),
             gridSize: this.gridSize.toObject(),
             raster: this.raster ? this.raster.toPayload() : null

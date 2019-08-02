@@ -146,15 +146,13 @@ export default class FlopyModflow {
         mfDis.botm = layers.map(l => l.botm);
 
         const stressperiods = model.stressperiods;
-        stressperiods.recalculateStressperiods();
-
         mfDis.perlen = stressperiods.perlens;
         mfDis.nstp = stressperiods.stressperiods.map(sp => sp.nstp);
         mfDis.tsmult = stressperiods.stressperiods.map(sp => sp.tsmult);
         mfDis.steady = stressperiods.stressperiods.map(sp => sp.steady);
 
-        mfDis.itmuni = model.timeUnit;
-        mfDis.lenuni = model.lengthUnit;
+        mfDis.itmuni = model.timeUnit.toInt();
+        mfDis.lenuni = model.lengthUnit.toInt();
 
         mfDis.xul = model.boundingBox.xMin;
         mfDis.yul = model.boundingBox.yMax;
@@ -237,10 +235,10 @@ export default class FlopyModflow {
         // RCHs
         const mfRch = this.hasPackage('rch') ? this.getPackage('rch') : FlopyModflowMfrch.create();
         this.removePackageIfExists(mfRch);
-        const rchPackage = FlopyModflowMfrch.calculateSpData(boundaries.all, nper, nrow, ncol);
-        if (rchPackage) {
-            mfRch.irch = rchPackage.irch;
-            mfRch.stress_period_data = rchPackage.spData;
+        const rchData = FlopyModflowMfrch.calculateSpData(boundaries.all, nper, nrow, ncol);
+        if (rchData) {
+            mfRch.irch = rchData.irch;
+            mfRch.stress_period_data = rchData.spData;
             this.setPackage(mfRch);
         }
 

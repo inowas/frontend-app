@@ -3,7 +3,7 @@ import {lineDistance, lineSlice} from '@turf/turf';
 import {FeatureCollection, LineString, Point} from 'geojson';
 import Uuid from 'uuid';
 import uuidv4 from 'uuid/v4';
-import {Cell} from '../../geometry/types';
+import {ICells} from '../../geometry/Cells.type';
 import Boundary from './Boundary';
 import {ILineBoundary, ILineBoundaryFeature} from './LineBoundary.type';
 import ObservationPoint from './ObservationPoint';
@@ -89,7 +89,7 @@ export default class LineBoundary extends Boundary {
     }
 
     public static create(id: string, type: LineBoundaryType, geometry?: LineString, name?: string, layers?: number[],
-                         cells?: Cell[], spValues?: SpValues) {
+                         cells?: ICells, spValues?: SpValues) {
         const boundary = new this(type);
         boundary._main.id = id;
         boundary._main.geometry = geometry;

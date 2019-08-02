@@ -13,7 +13,7 @@ const createGeneralHeadBoundary = () => {
     const layers = [0, 2];
     const spValues = [[30, 40], [33, 44]];
 
-    const boundingBox = new BoundingBox(0, 20, -5, 5);
+    const boundingBox = new BoundingBox([[0, -5], [20, 5]]);
     const gridSize = new GridSize(10, 5);
 
     const cells = Cells.fromGeometry(geometry, boundingBox, gridSize);
