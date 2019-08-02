@@ -101,11 +101,11 @@ export default class ModflowModel {
     }
 
     get calculationId() {
-        return this._props.calculationId;
+        return this._props.calculation_id;
     }
 
     set calculationId(value) {
-        this._props.calculationId = value;
+        this._props.calculation_id = value;
     }
 
     get readOnly() {
@@ -147,7 +147,7 @@ export default class ModflowModel {
                 stressperiods: stressperiods.toObject(),
                 time_unit: timeUnit.toInt(),
             },
-            calculationId: ''
+            calculation_id: ''
         });
     }
 

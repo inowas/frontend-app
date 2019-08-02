@@ -42,7 +42,7 @@ import {FlopyModflow} from '../../../core/model/flopy/packages/mf';
 import {FlopyMt3d} from '../../../core/model/flopy/packages/mt';
 import {fetchCalculationDetails} from '../../../services/api';
 import {cloneDeep} from 'lodash';
-import FlopySeawat from "../../../core/model/flopy/packages/swt/FlopySeawat";
+import FlopySeawat from '../../../core/model/flopy/packages/swt/FlopySeawat';
 
 const navigation = [{
     name: 'Documentation',
@@ -104,17 +104,12 @@ class T03 extends React.Component {
             const calculationState = nextProps.calculation.state;
             const mappedMenuItems = menuItems.map(mi => {
                 mi.items = mi.items.map(i => {
-                    if (i.property === 'seawat') {
-                        i.disabled = !nextProps.transport.enabled || !nextProps.variableDensity.vdfEnabled;
-                        return i;
-                    }
-
-                    if (i.property === 'flow') {
+                    if (i.property === 'flow' || i.property === 'budget') {
                         i.disabled = calculationState !== CALCULATION_STATE_FINISHED;
                         return i;
                     }
 
-                    if (i.property === 'concentration') {
+                    if (i.property === 'mt3d' || i.property === 'concentration') {
                         if (nextProps.transport &&
                             nextProps.transport.enabled &&
                             calculationState === CALCULATION_STATE_FINISHED
@@ -127,8 +122,13 @@ class T03 extends React.Component {
                         return i;
                     }
 
+                    if (i.property === 'seawat') {
+                        i.disabled = !nextProps.transport.enabled || !nextProps.variableDensity.vdfEnabled;
+                        return i;
+                    }
+
                     if (i.property === 'observations') {
-                        if (nextProps.calculation.files.filter(f => f.endsWith('.hob.stat').length > 0)) {
+                        if (nextProps.calculation.files.filter(f => f.endsWith('.hob.stat')).length > 0) {
                             i.disabled = false;
                             return i;
                         }

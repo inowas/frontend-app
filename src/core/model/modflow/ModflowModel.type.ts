@@ -21,5 +21,5 @@ export interface IModflowModel {
         length_unit: ILengthUnit;
         time_unit: ITimeUnit;
     };
-    calculationId: string;
+    calculation_id: string;
 }
