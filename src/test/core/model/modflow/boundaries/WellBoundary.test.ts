@@ -1,6 +1,6 @@
 import {Point} from 'geojson';
 import Uuid from 'uuid';
-import {Cell} from '../../../../../core/model/geometry/types';
+import {ICells} from '../../../../../core/model/geometry/Cells.type';
 import {WellBoundary} from '../../../../../core/model/modflow/boundaries';
 import {JSON_SCHEMA_URL} from '../../../../../services/api';
 import {validate} from '../../../../../services/jsonSchemaValidator';
@@ -10,7 +10,7 @@ const createWellBoundary = () => {
     const name = 'NameOfWell';
     const geometry: Point = {type: 'Point', coordinates: [3, 4]};
     const layers = [1];
-    const cells: Cell[] = [[1, 2]];
+    const cells: ICells = [[1, 2]];
     const spValues = [[1], [2], [3]];
 
     const wb = WellBoundary.create(
@@ -26,7 +26,7 @@ test('WellBoundary create', () => {
     const name = 'NameOfWell';
     const geometry: Point = {type: 'Point', coordinates: [3, 4]};
     const layers = [1];
-    const cells: Cell[] = [[1, 2]];
+    const cells: ICells = [[1, 2]];
     const spValues = [[1], [2], [3]];
 
     const wellBoundary = WellBoundary.create(

@@ -7,7 +7,7 @@ import {EditControl} from 'react-leaflet-draw';
 import {pure} from 'recompose';
 import {Icon, Message} from 'semantic-ui-react';
 import {BoundingBox, Cells, Geometry, GridSize} from '../../../../core/model/geometry';
-import {GeoJson} from '../../../../core/model/geometry/Geometry';
+import {GeoJson} from '../../../../core/model/geometry/Geometry.type';
 import {calculateActiveCells} from '../../../../services/geoTools';
 import {BasicTileLayer} from '../../../../services/geoTools/tileLayers';
 import {getStyle} from './index';
@@ -64,7 +64,7 @@ class CreateModelMap extends React.Component<ICreateModelMapProps, ICreateModelM
             return null;
         }
 
-        const boundingBox = BoundingBox.fromArray(this.state.boundingBox);
+        const boundingBox = BoundingBox.fromObject(this.state.boundingBox);
         const geometry = Geometry.fromObject(this.state.geometry);
         const gridSize = GridSize.fromObject(this.state.gridSize);
 
@@ -93,7 +93,7 @@ class CreateModelMap extends React.Component<ICreateModelMapProps, ICreateModelM
             (cells) => {
                 return this.setState({
                         cells: cells.toArray(),
-                        boundingBox: boundingBox.toArray() as Array<[number, number]>,
+                        boundingBox: boundingBox.toObject() as Array<[number, number]>,
                         geometry: geometry.toObject(),
                         calculating: false
                     },
@@ -135,10 +135,10 @@ class CreateModelMap extends React.Component<ICreateModelMapProps, ICreateModelM
     };
 
     public boundingBoxLayer = () => {
-        const boundingBox = BoundingBox.fromArray(this.state.boundingBox!);
+        const boundingBox = BoundingBox.fromObject(this.state.boundingBox!);
         return (
             <GeoJSON
-                key={md5(JSON.stringify(boundingBox.toArray()))}
+                key={md5(JSON.stringify(boundingBox.toObject()))}
                 data={boundingBox.geoJson as Feature}
                 style={getStyle('bounding_box')}
             />
@@ -172,7 +172,7 @@ class CreateModelMap extends React.Component<ICreateModelMapProps, ICreateModelM
 
     public getBoundsLatLng = () => {
         if (this.state.boundingBox) {
-            return BoundingBox.fromArray(this.state.boundingBox).getBoundsLatLng() as LatLngBoundsExpression;
+            return BoundingBox.fromObject(this.state.boundingBox).getBoundsLatLng() as LatLngBoundsExpression;
         }
 
         return [[60, 10], [45, 30]] as LatLngBoundsExpression;
@@ -185,9 +185,9 @@ class CreateModelMap extends React.Component<ICreateModelMapProps, ICreateModelM
 
         const {latlng} = arg;
 
-        const activeCells = Cells.fromArray(this.state.cells as Array<[number, number]>);
-        const boundingBox = BoundingBox.fromArray(this.state.boundingBox);
-        const gridSize = GridSize.fromObject(this.state.gridSize);
+        const activeCells: Cells = Cells.fromObject(this.state.cells as Array<[number, number]>);
+        const boundingBox: BoundingBox = BoundingBox.fromObject(this.state.boundingBox);
+        const gridSize: GridSize = GridSize.fromObject(this.state.gridSize);
         const x = latlng.lng;
         const y = latlng.lat;
 

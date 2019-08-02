@@ -1,4 +1,4 @@
-import {Point} from '../geometry/types';
+import {Point} from '../geometry/Cells.type';
 
 export interface ISensor {
     id: string;

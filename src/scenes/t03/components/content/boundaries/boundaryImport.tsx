@@ -1,20 +1,22 @@
+import moment from 'moment';
 import PapaParse from 'papaparse';
 import React, {ChangeEvent} from 'react';
 import {Button, Dimmer, Grid, Header, List, Loader, Modal, Segment} from 'semantic-ui-react';
 import {Stressperiod, Stressperiods} from '../../../../../core/model/modflow';
 import {IStressPeriods} from '../../../../../core/model/modflow/Stressperiods.type';
+import {ITimeUnit} from '../../../../../core/model/modflow/TimeUnit.type';
 
 interface IProps {
     onCancel: () => any;
     onChange: (stressperiods: Stressperiods) => any;
-    timeunit?: number;
+    timeUnit: ITimeUnit;
 }
 
 interface IState {
     errors: null;
     isLoading: boolean;
     showImportModal: boolean;
-    stressPeriods: IStressPeriods | null;
+    stressPeriods: IStressPeriods;
     payload: any;
 }
 
@@ -27,7 +29,7 @@ class BoundariesImport extends React.Component<IProps, IState> {
             errors: null,
             isLoading: false,
             showImportModal: false,
-            stressPeriods: null,
+            stressPeriods: Stressperiods.fromDefaults().toObject(),
             payload: null
         };
 
@@ -49,15 +51,16 @@ class BoundariesImport extends React.Component<IProps, IState> {
             start_date_time: response.data[0].Date,
             end_date_time: response.data[response.data.length - 1].Date,
             stressperiods: [],
-            time_unit: this.props.timeunit
+            time_unit: this.props.timeUnit
         });
 
         for (let i = 0; i < response.data.length - 1; i++) {
-            const sp = new Stressperiod();
-            sp.startDateTime = response.data[i].Date;
-            sp.nstp = response.data[i].nstp || 1;
-            sp.tsmult = response.data[i].tsmult || 1;
-            sp.steady = response.data[i].steady === 1;
+            const sp = new Stressperiod({
+                start_date_time: moment(response.data[i].Date).toISOString(),
+                nstp: response.data[i].nstp || 1,
+                tsmult: response.data[i].nstp || 1,
+                steady: response.data[i].steady === 1
+            });
             stressPeriods.addStressPeriod(sp);
         }
 
@@ -66,6 +69,7 @@ class BoundariesImport extends React.Component<IProps, IState> {
         });
     };
 
+    // ToDo
     public isValidCSV = (text: string) => {
         return true;
     };

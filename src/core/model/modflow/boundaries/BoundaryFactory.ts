@@ -3,9 +3,9 @@ import {LineString, MultiPolygon, Point, Polygon} from 'geojson';
 import Uuid from 'uuid';
 import BoundingBox from '../../geometry/BoundingBox';
 import Cells from '../../geometry/Cells';
-import {GeoJson} from '../../geometry/Geometry';
+import {ICells} from '../../geometry/Cells.type';
+import {GeoJson} from '../../geometry/Geometry.type';
 import GridSize from '../../geometry/GridSize';
-import {Cell} from '../../geometry/types';
 import {Geometry, LineBoundary} from '../index';
 import Boundary from './Boundary';
 import ConstantHeadBoundary from './ConstantHeadBoundary';
@@ -50,7 +50,7 @@ export default class BoundaryFactory {
     };
 
     public static createNewFromProps(type: BoundaryType | 'op', id: string, geometry: GeoJson, name: string,
-                                     layers: number[], cells: Cell[], spValues: SpValues) {
+                                     layers: number[], cells: ICells, spValues: SpValues) {
         switch (type) {
             case 'chd':
                 return ConstantHeadBoundary.create(id, type, geometry as LineString, name, layers, cells, spValues);

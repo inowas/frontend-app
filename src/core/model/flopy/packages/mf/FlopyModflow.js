@@ -146,15 +146,13 @@ export default class FlopyModflow {
         mfDis.botm = layers.map(l => l.botm);
 
         const stressperiods = model.stressperiods;
-        stressperiods.recalculateStressperiods();
-
         mfDis.perlen = stressperiods.perlens;
         mfDis.nstp = stressperiods.stressperiods.map(sp => sp.nstp);
         mfDis.tsmult = stressperiods.stressperiods.map(sp => sp.tsmult);
         mfDis.steady = stressperiods.stressperiods.map(sp => sp.steady);
 
-        mfDis.itmuni = model.timeUnit;
-        mfDis.lenuni = model.lengthUnit;
+        mfDis.itmuni = model.timeUnit.toInt();
+        mfDis.lenuni = model.lengthUnit.toInt();
 
         mfDis.xul = model.boundingBox.xMin;
         mfDis.yul = model.boundingBox.yMax;

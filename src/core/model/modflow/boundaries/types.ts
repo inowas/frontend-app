@@ -1,5 +1,5 @@
 import {Point} from 'geojson';
-import {GeoJson} from '../../geometry/Geometry';
+import {GeoJson} from '../../geometry/Geometry.type';
 import {ILineBoundary} from './LineBoundary.type';
 
 export type LineBoundaryType = 'chd' | 'ghb' | 'riv' | 'drn';

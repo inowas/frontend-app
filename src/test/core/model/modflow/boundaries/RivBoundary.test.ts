@@ -1,7 +1,7 @@
 import {LineString, Point} from 'geojson';
 import Uuid from 'uuid';
 import {BoundingBox, Cells, Geometry, GridSize} from '../../../../../core/model/geometry';
-import {Cell} from '../../../../../core/model/geometry/types';
+import {ICells} from '../../../../../core/model/geometry/Cells.type';
 import {RiverBoundary} from '../../../../../core/model/modflow/boundaries';
 import {JSON_SCHEMA_URL} from '../../../../../services/api';
 import {validate} from '../../../../../services/jsonSchemaValidator';
@@ -11,7 +11,7 @@ const createRiverBoundary = () => {
     const name = 'NameOfRRiver';
     const geometry: LineString = {type: 'LineString', coordinates: [[3, 4], [3, 5], [4, 5], [4, 3], [3, 4]]};
     const layers = [1];
-    const cells: Cell[] = [[1, 2], [2, 3]];
+    const cells: ICells = [[1, 2], [2, 3]];
     const spValues = [[1, 2, 3], [1, 2, 3], [1, 2, 3]];
 
     return RiverBoundary.create(
@@ -24,7 +24,7 @@ test('RiverBoundary create', () => {
     const name = 'NameOfRRiver';
     const geometry: LineString = {type: 'LineString', coordinates: [[3, 4], [3, 5], [4, 5], [4, 3], [3, 4]]};
     const layers = [1];
-    const cells: Cell[] = [[1, 2], [2, 3]];
+    const cells: ICells = [[1, 2], [2, 3]];
     const spValues = [[1, 2, 3], [1, 2, 3], [1, 2, 3]];
 
     const riverBoundary = RiverBoundary.create(
@@ -112,18 +112,18 @@ test('RiverBoundary adding ObservationPoint, orders by OPs by distance', () => {
     const name = 'NameOfRRiver';
     const geometry = Geometry.fromGeoJson({
         type: 'LineString',
-        coordinates: [[0, -4], [3, -4], [11, 0], [11, 4], [15, 2], [19, 2], [19, -2]]
+        coordinates: [[0, 5], [20, 5]]
     });
     const layers = [0];
     const spValues = [[1, 2, 3]];
 
-    const boundingBox = new BoundingBox(0, 20, -5, 5);
+    const boundingBox = new BoundingBox([[0, -5], [20, 5]]);
     const gridSize = new GridSize(10, 5);
 
     const cells = Cells.fromGeometry(geometry, boundingBox, gridSize);
-    expect(cells.cells.length).toBe(17);
+    expect(cells.cells.length).toBe(10);
 
-    const riverBoundary = RiverBoundary.create(id, 'riv', geometry as LineString, name, layers, cells.toArray(),
+    const riverBoundary = RiverBoundary.create(id, 'riv', geometry as LineString, name, layers, cells.toObject(),
         spValues);
 
     const op1 = riverBoundary.observationPoints[0];
@@ -132,16 +132,16 @@ test('RiverBoundary adding ObservationPoint, orders by OPs by distance', () => {
     riverBoundary.addObservationPoint('OP2', {type: 'Point', coordinates: [11, 0]}, [[20, 30, 40]]);
 
     expect(riverBoundary.observationPoints.length).toBe(3);
-    expect(riverBoundary.observationPoints[0].name).toEqual('OP1');
-    expect(riverBoundary.observationPoints[1].name).toEqual('OP2');
-    expect(riverBoundary.observationPoints[2].name).toEqual('OP3');
+    expect(riverBoundary.observationPoints.filter((op) => op.name === 'OP1')).toHaveLength(1);
+    expect(riverBoundary.observationPoints.filter((op) => op.name === 'OP2')).toHaveLength(1);
+    expect(riverBoundary.observationPoints.filter((op) => op.name === 'OP3')).toHaveLength(1);
 
     riverBoundary.updateObservationPoint(op1.id, 'OP1', {type: 'Point', coordinates: [19, 1]}, [[10, 20, 30]]);
 
     expect(riverBoundary.observationPoints.length).toBe(3);
-    expect(riverBoundary.observationPoints[0].name).toEqual('OP2');
-    expect(riverBoundary.observationPoints[1].name).toEqual('OP3');
-    expect(riverBoundary.observationPoints[2].name).toEqual('OP1');
+    expect(riverBoundary.observationPoints.filter((op) => op.name === 'OP1')).toHaveLength(1);
+    expect(riverBoundary.observationPoints.filter((op) => op.name === 'OP2')).toHaveLength(1);
+    expect(riverBoundary.observationPoints.filter((op) => op.name === 'OP3')).toHaveLength(1);
 
 });
 
@@ -155,13 +155,13 @@ test('RiverBoundary cells calculation', () => {
     const layers = [0];
     const spValues = [[1, 2, 3]];
 
-    const boundingBox = new BoundingBox(0, 20, -5, 5);
+    const boundingBox = new BoundingBox([[0, -5], [20, 5]]);
     const gridSize = new GridSize(10, 5);
 
     const cells = Cells.fromGeometry(geometry, boundingBox, gridSize);
     expect(cells.cells.length).toBe(17);
 
-    const riverBoundary = RiverBoundary.create(id, 'riv', geometry as LineString, name, layers, cells.toArray(),
+    const riverBoundary = RiverBoundary.create(id, 'riv', geometry as LineString, name, layers, cells.toObject(),
         spValues);
 
     const op1 = riverBoundary.observationPoints[0];

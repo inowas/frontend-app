@@ -239,6 +239,7 @@ class Boundaries extends React.Component<Props, IState> {
                                             <BoundariesImport
                                                 onCancel={this.handleCancelImport}
                                                 onChange={this.handleChangeImport}
+                                                timeUnit={model.timeUnit.toInt()}
                                             />
                                             }
                                         />

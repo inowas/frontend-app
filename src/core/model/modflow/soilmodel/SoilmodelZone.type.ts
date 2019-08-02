@@ -1,12 +1,12 @@
-import {GeoJson} from '../../geometry/Geometry';
-import {Cell} from '../../geometry/types';
+import {ICells} from '../../geometry/Cells.type';
+import {GeoJson} from '../../geometry/Geometry.type';
 import {ISoilmodelParameter} from './SoilmodelParameter.type';
 
 export interface ISoilmodelZone {
     id: string;
     name: string;
     geometry: GeoJson | null;
-    cells: Cell[] | [];
+    cells: ICells | [];
     priority: number;
     top: ISoilmodelParameter;
     botm: ISoilmodelParameter;

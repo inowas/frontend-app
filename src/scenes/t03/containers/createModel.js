@@ -10,6 +10,9 @@ import defaults from '../defaults/createModel';
 import moment from 'moment/moment';
 import AppContainer from '../../shared/AppContainer';
 import {SoilmodelLayer} from '../../../core/model/modflow/soilmodel';
+import BoundingBox from '../../../core/model/geometry/BoundingBox';
+import LengthUnit from '../../../core/model/modflow/LengthUnit';
+import TimeUnit from '../../../core/model/modflow/TimeUnit';
 
 const navigation = [{
     name: 'Documentation',
@@ -47,21 +50,21 @@ class CreateModel extends React.Component {
         this.state.id,
         this.state.name,
         this.state.description,
-        this.state.geometry,
-        this.state.boundingBox,
-        this.state.gridSize,
-        this.state.cells,
-        this.state.lengthUnit,
-        this.state.timeUnit,
-        this.state.stressperiods,
+        Geometry.fromObject(this.state.geometry),
+        BoundingBox.fromObject(this.state.boundingBox),
+        GridSize.fromObject(this.state.gridSize),
+        Cells.fromObject(this.state.cells),
+        LengthUnit.fromInt(this.state.lengthUnit),
+        TimeUnit.fromInt(this.state.timeUnit),
+        Stressperiods.fromObject(this.state.stressperiods),
         this.state.isPublic
-    )).toPayload();
+    )).toCreatePayload();
 
     handleSave = () => {
         return sendCommand(
             ModflowModelCommand.createModflowModel(this.getPayload()),
             () => sendCommand(ModflowModelCommand.addLayer(this.state.id,
-                SoilmodelLayer.fromDefault(Geometry.fromObject(this.state.geometry), Cells.fromArray(this.state.cells))),
+                SoilmodelLayer.fromDefault(Geometry.fromObject(this.state.geometry), Cells.fromObject(this.state.cells))),
                 () => this.props.history.push('T03/' + this.state.id),
                 (e) => this.setState({error: e})),
             (e) => this.setState({error: e})
@@ -112,8 +115,8 @@ class CreateModel extends React.Component {
 
     handleMapInputChange = ({cells, boundingBox, geometry}) => {
         return this.setState({
-            cells: cells.toArray(),
-            boundingBox: boundingBox.toArray(),
+            cells: cells.toObject(),
+            boundingBox: boundingBox.toObject(),
             geometry: geometry.toObject()
         }, () => this.validate())
     };

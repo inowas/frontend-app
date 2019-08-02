@@ -1,6 +1,6 @@
 import Uuid from 'uuid';
-import {GeoJson} from '../../geometry/Geometry';
-import {Cell} from '../../geometry/types';
+import {ICells} from '../../geometry/Cells.type';
+import {GeoJson} from '../../geometry/Geometry.type';
 import {BoundaryInstance, BoundaryType, SpValues} from './types';
 
 export default abstract class Boundary {
@@ -17,7 +17,7 @@ export default abstract class Boundary {
 
     abstract set name(name: string | undefined);
 
-    abstract get cells(): Cell[] | undefined;
+    abstract get cells(): ICells | undefined;
 
     abstract get layers(): number[] | undefined;
 

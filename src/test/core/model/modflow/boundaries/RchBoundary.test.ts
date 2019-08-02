@@ -1,6 +1,6 @@
 import {Polygon} from 'geojson';
 import Uuid from 'uuid';
-import {Cell} from '../../../../../core/model/geometry/types';
+import {ICells} from '../../../../../core/model/geometry/Cells.type';
 import {RechargeBoundary} from '../../../../../core/model/modflow/boundaries';
 import {JSON_SCHEMA_URL} from '../../../../../services/api';
 import {validate} from '../../../../../services/jsonSchemaValidator';
@@ -10,7 +10,7 @@ const createRechargeBoundary = () => {
     const name = 'NameOfRecharge';
     const geometry: Polygon = {type: 'Polygon', coordinates: [[[3, 4], [3, 5], [4, 5], [4, 3], [3, 4]]]};
     const layers = [1];
-    const cells: Cell[] = [[1, 2], [2, 3]];
+    const cells: ICells = [[1, 2], [2, 3]];
     const spValues = [[1], [1], [1]];
 
     return RechargeBoundary.create(
@@ -23,7 +23,7 @@ test('RechargeBoundary create', () => {
     const name = 'NameOfRecharge';
     const geometry: Polygon = {type: 'Polygon', coordinates: [[[3, 4], [3, 5], [4, 5], [4, 3], [3, 4]]]};
     const layers = [1];
-    const cells: Cell[] = [[1, 2], [2, 3]];
+    const cells: ICells = [[1, 2], [2, 3]];
     const spValues = [[1], [1], [1]];
 
     const rechargeBoundary = RechargeBoundary.create(

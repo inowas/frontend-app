@@ -1,6 +1,6 @@
 import {LineString, Point} from 'geojson';
 import Uuid from 'uuid';
-import {Cell} from '../../../../../core/model/geometry/types';
+import {ICells} from '../../../../../core/model/geometry/Cells.type';
 import {GeneralHeadBoundary} from '../../../../../core/model/modflow/boundaries';
 import {JSON_SCHEMA_URL} from '../../../../../services/api';
 import {validate} from '../../../../../services/jsonSchemaValidator';
@@ -10,7 +10,7 @@ const createGeneralHeadBoundary = () => {
     const name = 'NameOfGeneralHead';
     const geometry: LineString = {type: 'LineString', coordinates: [[3, 4], [3, 5], [4, 5], [4, 3], [3, 4]]};
     const layers = [1, 2];
-    const cells: Cell[] = [[1, 2], [2, 3], [4, 5]];
+    const cells: ICells = [[1, 2], [2, 3], [4, 5]];
     const spValues = [[1, 2], [1, 2], [1, 2]];
 
     return GeneralHeadBoundary.create(
@@ -23,7 +23,7 @@ test('GeneralHeadBoundary create', () => {
     const name = 'NameOfGeneralHead';
     const geometry: LineString = {type: 'LineString', coordinates: [[3, 4], [3, 5], [4, 5], [4, 3], [3, 4]]};
     const layers = [1, 2];
-    const cells: Cell[] = [[1, 2], [2, 3], [4, 5]];
+    const cells: ICells = [[1, 2], [2, 3], [4, 5]];
     const spValues = [[1, 2], [1, 2], [1, 2]];
 
     const generalHeadBoundary = GeneralHeadBoundary.create(

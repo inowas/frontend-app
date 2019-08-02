@@ -74,11 +74,14 @@ class VariableDensityProperties extends React.Component<Props, IVariableDensityS
         );
     };
 
-    public handleChange = (e: React.FormEvent<HTMLInputElement>, data: CheckboxProps) => {
-        const variableDensity = this.props.variableDensity;
-        variableDensity[data.name] = !variableDensity[data.name];
-        this.props.updateVariableDensity(variableDensity);
-        return this.setState({isDirty: true});
+    public handleChange = (e: React.FormEvent<HTMLInputElement>, {name, value}: CheckboxProps) => {
+        const variableDensityObj = this.props.variableDensity.toObject();
+
+        if (name && value) {
+            const variableDensity = VariableDensity.fromObject({...variableDensityObj, [name]: value});
+            this.props.updateVariableDensity(variableDensity);
+            return this.setState({isDirty: true});
+        }
     };
 
     public handleToggleEnabled = () => {
