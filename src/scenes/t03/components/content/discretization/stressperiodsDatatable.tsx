@@ -1,59 +1,71 @@
-import React from 'react';
-import Proptypes from 'prop-types';
-import {Stressperiods} from '../../../../../core/model/modflow';
-import {Button, Checkbox, Form, Icon, Popup, Table} from 'semantic-ui-react';
+import {DurationInputArg1, DurationInputArg2} from 'moment';
 import moment from 'moment/moment';
+import React, {ChangeEvent, MouseEvent} from 'react';
+import {Button, Checkbox, CheckboxProps, Form, Icon, InputOnChangeData, Popup, Table} from 'semantic-ui-react';
+import {Stressperiods} from '../../../../../core/model/modflow';
+import {IStressPeriods} from '../../../../../core/model/modflow/Stressperiods.type';
 
-class StressPeriodsDataTable extends React.Component {
-    constructor(props) {
+interface IProps {
+    stressperiods: Stressperiods;
+    readOnly: boolean;
+    onChange: (stressperiods: Stressperiods) => void;
+}
+
+interface IState {
+    stressperiods: IStressPeriods;
+}
+
+class StressPeriodsDataTable extends React.Component<IProps, IState> {
+    constructor(props: IProps) {
         super(props);
         this.state = {
             stressperiods: props.stressperiods.toObject()
-        }
+        };
     }
 
-    componentWillReceiveProps(nextProps) {
+    public componentWillReceiveProps(nextProps: IProps) {
         this.setState({
             stressperiods: nextProps.stressperiods.toObject()
         });
     }
 
-    header = () => (
+    public header = () => (
         <Table.Row>
             <Table.HeaderCell width={6}>Start Date</Table.HeaderCell>
             <Popup
                 trigger={<Table.HeaderCell width={2}>nstp</Table.HeaderCell>}
-                content='No. of time steps'
-                hideOnScroll
-                size='tiny'
+                content="No. of time steps"
+                hideOnScroll={true}
+                size="tiny"
             />
             <Popup
                 trigger={<Table.HeaderCell width={2}>tsmult</Table.HeaderCell>}
-                content='Time step multiplier'
-                hideOnScroll
-                size='tiny'
+                content="Time step multiplier"
+                hideOnScroll={true}
+                size="tiny"
             />
             <Popup
                 trigger={<Table.HeaderCell width={2}>steady</Table.HeaderCell>}
-                content='State of stress period'
-                hideOnScroll
-                size='tiny'
+                content="State of stress period"
+                hideOnScroll={true}
+                size="tiny"
             />
             <Table.HeaderCell width={2}/>
         </Table.Row>
     );
 
-    handleRemoveStressperiod = (idx) => {
+    public handleRemoveStressperiod = (idx: number) => () => {
         const stressperiods = Stressperiods.fromObject(this.state.stressperiods);
-
         if (stressperiods.count > 1) {
             stressperiods.removeStressPeriod(idx);
             this.props.onChange(stressperiods);
         }
     };
 
-    handleStressperiodChange = (e, props) => {
-        const {value, name, idx, checked} = props;
+    public handleStressperiodChange = (
+        e: ChangeEvent<HTMLInputElement> | MouseEvent<HTMLInputElement>,
+        {value, name, idx, checked}: InputOnChangeData | CheckboxProps
+    ) => {
         const stressperiods = Stressperiods.fromObject(this.state.stressperiods);
         const stressperiod = stressperiods.getStressperiodByIdx(idx);
 
@@ -62,15 +74,14 @@ class StressPeriodsDataTable extends React.Component {
         }
 
         if (name === 'steady') {
-            stressperiod[name] = checked;
+            stressperiod.steady = checked;
         }
 
         stressperiods.updateStressperiodByIdx(idx, stressperiod);
         return this.props.onChange(stressperiods);
     };
 
-    handleChange = (e, props) => {
-        const {idx} = props;
+    public handleChange = (idx: number) => () => {
         const stressperiods = Stressperiods.fromObject(this.state.stressperiods);
         if (moment(stressperiods.dateTimes[idx]) <= stressperiods.startDateTime) {
             const edited = stressperiods.stressperiods[idx];
@@ -81,27 +92,27 @@ class StressPeriodsDataTable extends React.Component {
         return this.props.onChange(stressperiods);
     };
 
-    addNewStressperiod = (number, unit) => {
+    public addNewStressperiod = (value: DurationInputArg1, unit: DurationInputArg2) => () => {
         const stressperiods = Stressperiods.fromObject(this.state.stressperiods);
         const newStressperiod = stressperiods.last().clone();
-        newStressperiod.startDateTime = moment.utc(stressperiods.last().startDateTime).add(number, unit);
+        newStressperiod.startDateTime = moment.utc(stressperiods.last().startDateTime).add(value, unit);
         stressperiods.addStressPeriod(newStressperiod);
         this.props.onChange(stressperiods);
     };
 
-    render() {
+    public render() {
         const readOnly = this.props.readOnly || false;
         const stressperiods = Stressperiods.fromObject(this.state.stressperiods);
         const rows = stressperiods.stressperiods.map((sp, idx) => (
-            <Table.Row key={idx + '-' + sp.totim}>
+            <Table.Row key={idx + '-' + sp.startDateTime.unix()}>
                 <Table.Cell>
                     <Form.Input
                         disabled={readOnly || idx === 0}
-                        type='date'
+                        type="date"
                         name={'startDateTime'}
                         idx={idx}
                         value={moment.utc(sp.startDateTime).format('YYYY-MM-DD')}
-                        onBlur={e => this.handleChange(e, {idx})}
+                        onBlur={this.handleChange(idx)}
                         onChange={this.handleStressperiodChange}
                     />
                 </Table.Cell>
@@ -118,10 +129,11 @@ class StressPeriodsDataTable extends React.Component {
                 </Table.Cell>
                 <Table.Cell>
                     {!readOnly && idx !== 0 &&
-                    <Button basic
-                            floated={'right'}
-                            icon={'trash'}
-                            onClick={() => this.handleRemoveStressperiod(idx)}
+                    <Button
+                        basic={true}
+                        floated={'right'}
+                        icon={'trash'}
+                        onClick={this.handleRemoveStressperiod(idx)}
                     />
                     }
                 </Table.Cell>
@@ -138,23 +150,17 @@ class StressPeriodsDataTable extends React.Component {
                 </Table>
                 {!readOnly &&
                 <Button.Group size={'small'}>
-                    <Button icon onClick={() => this.addNewStressperiod(1, 'days')}>
-                        <Icon name='add circle'/> 1 Day</Button>
-                    <Button icon onClick={() => this.addNewStressperiod(1, 'months')}>
-                        <Icon name='add circle'/> 1 Month</Button>
-                    <Button icon onClick={() => this.addNewStressperiod(1, 'years')}>
-                        <Icon name='add circle'/> 1 Year</Button>
+                    <Button icon={true} onClick={this.addNewStressperiod(1, 'days')}>
+                        <Icon name="add circle"/> 1 Day</Button>
+                    <Button icon={true} onClick={this.addNewStressperiod(1, 'months')}>
+                        <Icon name="add circle"/> 1 Month</Button>
+                    <Button icon={true} onClick={this.addNewStressperiod(1, 'years')}>
+                        <Icon name="add circle"/> 1 Year</Button>
                 </Button.Group>
                 }
             </div>
-        )
+        );
     }
 }
-
-StressPeriodsDataTable.prototypes = {
-    onChange: Proptypes.func.isRequired,
-    readOnly: Proptypes.bool.isRequired,
-    stressperiods: Proptypes.instanceOf(Stressperiods).isRequired
-};
 
 export default StressPeriodsDataTable;
