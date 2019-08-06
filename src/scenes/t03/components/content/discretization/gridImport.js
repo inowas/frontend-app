@@ -119,10 +119,10 @@ class GridImport extends React.Component {
     };
 
     renderImportModal = () => (
-        <Modal open onClose={this.props.onCancel} dimmer={'blurring'}>
+        <Modal open onClose={this.props.onCancel} dimmer={'blurring'} size={'small'}>
             <Modal.Header>Import Spacial Grid</Modal.Header>
             <Modal.Content>
-                <Grid>
+                <Grid stackable>
                     <Grid.Row columns={2}>
                         <Grid.Column>
                             {this.state.isLoading &&
@@ -131,21 +131,9 @@ class GridImport extends React.Component {
                             </Dimmer>
                             }
                             {!this.state.isLoading &&
-                            <Segment color={'green'}>
-                                <Header as="h3" style={{'textAlign': 'left'}}>File Requirements</Header>
-                                <List bulleted>
-                                    <List.Item>
-                                        The file has to be a csv or json-file.
-                                    </List.Item>
-                                    <List.Item>
-                                        Examples can be found <a
-                                        href='https://github.com/inowas/inowas-dss-cra/blob/master/imports'
-                                        target='_blank' rel='noopener noreferrer'>here</a>.
-                                    </List.Item>
-                                </List>
+                            <Segment basic>
                                 <Button
-                                    primary
-                                    fluid
+                                    color={'grey'}
                                     as='label'
                                     htmlFor={'inputField'}
                                     icon='file alternate'
@@ -158,6 +146,16 @@ class GridImport extends React.Component {
                                     id='inputField'
                                     onChange={this.handleUpload}
                                 />
+                                <List bulleted>
+                                    <List.Item>
+                                        The file has to be a csv or json-file.
+                                    </List.Item>
+                                    <List.Item>
+                                        Examples can be found <a
+                                        href='https://github.com/inowas/inowas-dss-cra/blob/master/imports'
+                                        target='_blank' rel='noopener noreferrer'>here</a>.
+                                    </List.Item>
+                                </List>
                             </Segment>
                             }
                         </Grid.Column>
@@ -174,7 +172,7 @@ class GridImport extends React.Component {
                 </Grid>
             </Modal.Content>
             <Modal.Actions>
-                <Button onClick={() => this.setState({showImportModal: false})}>Cancel</Button>
+                <Button negative onClick={() => this.setState({showImportModal: false})}>Cancel</Button>
                 <Button
                     disabled={!this.state.stressPeriods}
                     positive

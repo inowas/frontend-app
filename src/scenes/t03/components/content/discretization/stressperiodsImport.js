@@ -120,8 +120,8 @@ class StressperiodsImport extends React.Component {
     };
 
     renderImportModal = () => (
-        <Modal open onClose={this.props.onCancel} dimmer={'blurring'}>
-            <Modal.Header>Import Stressperiods</Modal.Header>
+        <Modal open onClose={this.props.onCancel} dimmer={'blurring'} size={'small'}>
+            <Modal.Header>Import Stress Periods</Modal.Header>
             <Modal.Content>
                 <Grid>
                     <Grid.Row columns={2}>
@@ -132,21 +132,9 @@ class StressperiodsImport extends React.Component {
                             </Dimmer>
                             }
                             {!this.state.isLoading &&
-                            <Segment color={'green'}>
-                                <Header as="h3" style={{'textAlign': 'left'}}>File Requirements</Header>
-                                <List bulleted>
-                                    <List.Item>
-                                        The file has to be a csv or json-file.
-                                    </List.Item>
-                                    <List.Item>
-                                        Examples can be found <a
-                                        href='https://github.com/inowas/inowas-dss-cra/blob/master/imports'
-                                        target='_blank' rel='noopener noreferrer'>here</a>.
-                                    </List.Item>
-                                </List>
+                            <Segment basic>
                                 <Button
-                                    primary
-                                    fluid
+                                    color={'grey'}
                                     as='label'
                                     htmlFor={'inputField'}
                                     icon='file alternate'
@@ -159,23 +147,40 @@ class StressperiodsImport extends React.Component {
                                     id='inputField'
                                     onChange={this.handleUpload}
                                 />
+                                <List bulleted>
+                                    <List.Item>
+                                        The file has to be a csv or json-file.
+                                    </List.Item>
+                                    <List.Item>
+                                        Examples can be found <a
+                                        href='https://github.com/inowas/inowas-dss-cra/blob/master/imports'
+                                        target='_blank' rel='noopener noreferrer'>here</a>.
+                                    </List.Item>
+                                </List>
                             </Segment>
                             }
                         </Grid.Column>
                         <Grid.Column>
+                            <p>Placeholder</p>
                             {this.state.payload && this.renderMetaData(this.state.payload)}
                             {this.state.errors && this.renderValidationErrors(this.state.errors)}
                         </Grid.Column>
                     </Grid.Row>
                     <Grid.Row>
                         <Grid.Column>
+                            <p>Placeholder</p>
                             {this.state.stressPeriods && this.renderStressPeriods()}
                         </Grid.Column>
                     </Grid.Row>
                 </Grid>
             </Modal.Content>
             <Modal.Actions>
-                <Button onClick={() => this.setState({showImportModal: false})}>Cancel</Button>
+                <Button
+                    negative
+                    onClick={() => this.setState({showImportModal: false})}
+                >
+                    Cancel
+                </Button>
                 <Button
                     disabled={!this.state.stressPeriods}
                     positive
@@ -195,7 +200,7 @@ class StressperiodsImport extends React.Component {
                     primary
                     fluid
                     icon='download'
-                    content='Import Stressperiods'
+                    content='Import Stress Periods'
                     labelPosition='left'
                     onClick={this.onClickUpload}
                 />
