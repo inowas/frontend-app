@@ -81,10 +81,10 @@ class StressPeriodsDataTable extends React.Component {
         return this.props.onChange(stressperiods);
     };
 
-    addNewStressperiod = numberOfDays => {
+    addNewStressperiod = (number, unit) => {
         const stressperiods = Stressperiods.fromObject(this.state.stressperiods);
         const newStressperiod = stressperiods.last().clone();
-        newStressperiod.startDateTime = moment.utc(stressperiods.last().startDateTime).add(numberOfDays, 'days');
+        newStressperiod.startDateTime = moment.utc(stressperiods.last().startDateTime).add(number, unit);
         stressperiods.addStressPeriod(newStressperiod);
         this.props.onChange(stressperiods);
     };
@@ -138,11 +138,11 @@ class StressPeriodsDataTable extends React.Component {
                 </Table>
                 {!readOnly &&
                 <Button.Group size={'small'}>
-                    <Button icon onClick={() => this.addNewStressperiod(1)}>
+                    <Button icon onClick={() => this.addNewStressperiod(1, 'days')}>
                         <Icon name='add circle'/> 1 Day</Button>
-                    <Button icon onClick={() => this.addNewStressperiod(30)}>
+                    <Button icon onClick={() => this.addNewStressperiod(1, 'months')}>
                         <Icon name='add circle'/> 1 Month</Button>
-                    <Button icon onClick={() => this.addNewStressperiod(365)}>
+                    <Button icon onClick={() => this.addNewStressperiod(1, 'years')}>
                         <Icon name='add circle'/> 1 Year</Button>
                 </Button.Group>
                 }
