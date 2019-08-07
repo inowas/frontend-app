@@ -1,6 +1,6 @@
 import React from 'react';
 
-import {Button, Dimmer, Grid, Header, Modal, List, Loader, Segment} from 'semantic-ui-react';
+import {Button, Dimmer, Grid, Header, Modal, List, Loader, Segment, Tab} from 'semantic-ui-react';
 
 import PapaParse from 'papaparse';
 import {Stressperiod, Stressperiods} from '../../../../../core/model/modflow';
@@ -118,18 +118,14 @@ class GridImport extends React.Component {
         )
     };
 
-    renderImportModal = () => (
-        <Modal open onClose={this.props.onCancel} dimmer={'blurring'} size={'small'}>
-            <Modal.Header>Import Spacial Grid</Modal.Header>
-            <Modal.Content>
-                <Grid stackable>
-                    <Grid.Row columns={2}>
-                        <Grid.Column>
-                            {this.state.isLoading &&
-                            <Dimmer active inverted>
-                                <Loader>Uploading</Loader>
-                            </Dimmer>
-                            }
+    renderImportModal = () => {
+        const panes = [
+            {
+                menuItem: 'Import',
+                pane: {
+                    key: 'tab1',
+                    content: (
+                        <div>
                             {!this.state.isLoading &&
                             <Segment basic>
                                 <Button
@@ -158,31 +154,89 @@ class GridImport extends React.Component {
                                 </List>
                             </Segment>
                             }
-                        </Grid.Column>
-                        <Grid.Column>
-                            {this.state.payload && this.renderMetaData(this.state.payload)}
-                            {this.state.errors && this.renderValidationErrors(this.state.errors)}
-                        </Grid.Column>
-                    </Grid.Row>
-                    <Grid.Row>
-                        <Grid.Column>
-                            {this.state.stressPeriods && this.renderStressPeriods()}
-                        </Grid.Column>
-                    </Grid.Row>
-                </Grid>
-            </Modal.Content>
-            <Modal.Actions>
-                <Button negative onClick={() => this.setState({showImportModal: false})}>Cancel</Button>
-                <Button
-                    disabled={!this.state.stressPeriods}
-                    positive
-                    onClick={this.sendImportCommand}
-                >
-                    Import
-                </Button>
-            </Modal.Actions>
-        </Modal>
-    );
+                        </div>
+                    )
+                }
+            },
+            {
+                menuItem: 'Export',
+                pane: (
+                    <Tab.Pane key='tab2'>
+                        <p>Test</p>
+                    </Tab.Pane>
+                )
+            }
+
+    ];
+        return (
+            <Modal open onClose={this.props.onCancel} dimmer={'blurring'} size={'small'}>
+                <Modal.Header>Configure Spacial Grid</Modal.Header>
+                <Modal.Content>
+                    <Tab menu={{secondary: true, widths: 2}} renderActiveOnly={false} panes={panes}/>
+                    <Grid stackable>
+                        <Grid.Row>
+                            <Grid.Column>
+                                {this.state.isLoading &&
+                                <Dimmer active inverted>
+                                    <Loader>Uploading</Loader>
+                                </Dimmer>
+                                }
+                                {!this.state.isLoading &&
+                                <Segment basic>
+                                    <Button
+                                        color={'grey'}
+                                        as='label'
+                                        htmlFor={'inputField'}
+                                        icon='file alternate'
+                                        content='Select File'
+                                        labelPosition='left'
+                                    />
+                                    <input
+                                        hidden
+                                        type='file'
+                                        id='inputField'
+                                        onChange={this.handleUpload}
+                                    />
+                                    <List bulleted>
+                                        <List.Item>
+                                            The file has to be a csv or json-file.
+                                        </List.Item>
+                                        <List.Item>
+                                            Examples can be found <a
+                                            href='https://github.com/inowas/inowas-dss-cra/blob/master/imports'
+                                            target='_blank' rel='noopener noreferrer'>here</a>.
+                                        </List.Item>
+                                    </List>
+                                </Segment>
+                                }
+                            </Grid.Column>
+                        </Grid.Row>
+                        <Grid.Row>
+                            <Grid.Column>
+                                {this.state.payload && this.renderMetaData(this.state.payload)}
+                                {this.state.errors && this.renderValidationErrors(this.state.errors)}
+                            </Grid.Column>
+                        </Grid.Row>
+                        <Grid.Row>
+                            <Grid.Column>
+                                {this.state.stressPeriods && this.renderStressPeriods()}
+                            </Grid.Column>
+                        </Grid.Row>
+                    </Grid>
+                </Modal.Content>
+                <Modal.Actions>
+                    <Button
+                        disabled={!this.state.stressPeriods}
+                        positive
+                        onClick={this.sendImportCommand}
+                    >
+                        Import
+                    </Button>
+                    <Button onClick={() => this.setState({showImportModal: false})}>Cancel</Button>
+                </Modal.Actions>
+            </Modal>
+        );
+    }
 
     render() {
         const {showImportModal} = this.state;
@@ -191,8 +245,8 @@ class GridImport extends React.Component {
                 <Button
                     primary
                     fluid
-                    icon='download'
-                    content='Import Grid'
+                    icon='file'
+                    content='Configuration File'
                     labelPosition='left'
                     onClick={this.onClickUpload}
                 />
@@ -203,7 +257,8 @@ class GridImport extends React.Component {
 }
 
 GridImport.prototypes = {
-    onChange: Proptypes.func.isRequired
+    onChange: Proptypes.func.isRequired,
+    onChangeTab: Proptypes.func.isRequired
 };
 
 export default GridImport;

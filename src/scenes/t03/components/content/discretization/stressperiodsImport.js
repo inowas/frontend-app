@@ -200,7 +200,7 @@ class StressperiodsImport extends React.Component {
                     primary
                     fluid
                     icon='download'
-                    content='Import Stress Periods'
+                    content='Import'
                     labelPosition='left'
                     onClick={this.onClickUpload}
                 />
