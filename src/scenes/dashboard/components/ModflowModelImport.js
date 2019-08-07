@@ -4,7 +4,15 @@ import {withRouter} from 'react-router-dom';
 import Uuid from 'uuid';
 import {Button, Dimmer, Grid, Header, Modal, List, Loader, Segment} from 'semantic-ui-react';
 import ModflowModelCommand from '../../t03/commands/modflowModelCommand';
-import {BoundaryCollection, BoundingBox, Cells, Geometry, GridSize, Soilmodel, Stressperiods} from '../../../core/model/modflow';
+import {
+    BoundaryCollection,
+    BoundingBox,
+    Cells,
+    Geometry,
+    GridSize,
+    Soilmodel,
+    Stressperiods
+} from '../../../core/model/modflow';
 import PropTypes from 'prop-types';
 import ModelImportMap from './ModelImportMap';
 

@@ -1,6 +1,6 @@
-import {includes} from 'lodash';
+import {cloneDeep, includes} from 'lodash';
 import {BoundingBox, Cells, Geometry, GridSize, LengthUnit, Stressperiods, TimeUnit} from './index';
-import {IModflowModel} from './ModflowModel.type';
+import {IDiscretization, IModflowModel} from './ModflowModel.type';
 
 export default class ModflowModel {
 
@@ -108,6 +108,10 @@ export default class ModflowModel {
         this._props.calculation_id = value;
     }
 
+    get discretization(): IDiscretization {
+        return this._props.discretization;
+    }
+
     get readOnly() {
         return !includes(this.permissions, 'w');
     }
@@ -154,7 +158,7 @@ export default class ModflowModel {
     private readonly _props: IModflowModel;
 
     constructor(props: IModflowModel) {
-        this._props = props;
+        this._props = cloneDeep(props);
     }
 
     public toObject = () => (this._props);
