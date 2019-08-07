@@ -11,8 +11,8 @@ import moment from 'moment';
 import ContentToolBar from '../../../../../scenes/shared/ContentToolbar';
 import {sendCommand} from '../../../../../services/api';
 import ModflowModelCommand from '../../../commands/modflowModelCommand';
+import DiscretizationImport from './discretizationImport';
 import StressPeriodsDataTable from './stressperiodsDatatable';
-import StressperiodsImport from './stressperiodsImport';
 
 interface IState {
     stressperiods: IStressPeriods;
@@ -92,9 +92,16 @@ class StressperiodsEditor extends React.Component<IProps, IState> {
         }
     };
 
-    public handleChange = (stressperiods: Stressperiods) => {
-        this.setState({
-            stressperiods: stressperiods.toObject(),
+    public handleChange = (data: ModflowModel | Stressperiods) => {
+        if (data instanceof ModflowModel) {
+            return this.setState({
+                stressperiods: data.stressperiods.toObject(),
+                isDirty: true
+            });
+        }
+
+        return this.setState({
+            stressperiods: data.toObject(),
             isDirty: true
         });
     };
@@ -116,9 +123,9 @@ class StressperiodsEditor extends React.Component<IProps, IState> {
                             saveButton={true}
                             onSave={this.onSave}
                             importButton={
-                                <StressperiodsImport
+                                <DiscretizationImport
                                     onChange={this.handleChange}
-                                    timeunit={this.props.model.timeUnit.toInt()}
+                                    model={this.props.model}
                                 />
                             }
                         />

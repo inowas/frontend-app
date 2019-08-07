@@ -8,7 +8,7 @@ import {IStressPeriods} from '../../../../../core/model/modflow/Stressperiods.ty
 interface IProps {
     stressperiods: Stressperiods;
     readOnly: boolean;
-    onChange: (stressperiods: Stressperiods) => void;
+    onChange?: (stressperiods: Stressperiods) => void;
 }
 
 interface IState {
@@ -58,7 +58,9 @@ class StressPeriodsDataTable extends React.Component<IProps, IState> {
         const stressperiods = Stressperiods.fromObject(this.state.stressperiods);
         if (stressperiods.count > 1) {
             stressperiods.removeStressPeriod(idx);
-            this.props.onChange(stressperiods);
+            if (this.props.onChange) {
+                this.props.onChange(stressperiods);
+            }
         }
     };
 
@@ -78,7 +80,9 @@ class StressPeriodsDataTable extends React.Component<IProps, IState> {
         }
 
         stressperiods.updateStressperiodByIdx(idx, stressperiod);
-        return this.props.onChange(stressperiods);
+        if (this.props.onChange) {
+            return this.props.onChange(stressperiods);
+        }
     };
 
     public handleChange = (idx: number) => () => {
@@ -89,7 +93,9 @@ class StressPeriodsDataTable extends React.Component<IProps, IState> {
             stressperiods.updateStressperiodByIdx(idx, edited);
         }
 
-        return this.props.onChange(stressperiods);
+        if (this.props.onChange) {
+            return this.props.onChange(stressperiods);
+        }
     };
 
     public addNewStressperiod = (value: DurationInputArg1, unit: DurationInputArg2) => () => {
@@ -97,7 +103,9 @@ class StressPeriodsDataTable extends React.Component<IProps, IState> {
         const newStressperiod = stressperiods.last().clone();
         newStressperiod.startDateTime = moment.utc(stressperiods.last().startDateTime).add(value, unit);
         stressperiods.addStressPeriod(newStressperiod);
-        this.props.onChange(stressperiods);
+        if (this.props.onChange) {
+            this.props.onChange(stressperiods);
+        }
     };
 
     public render() {
