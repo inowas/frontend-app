@@ -17,8 +17,7 @@ import ObservationPoint from './ObservationPoint';
 import RechargeBoundary from './RechargeBoundary';
 import RiverBoundary from './RiverBoundary';
 import {
-    BoundaryInstance, BoundaryType, IBoundaryImport, IObservationPointImport,
-    SpValues
+    BoundaryType, IBoundary, IBoundaryImport, IObservationPointImport, SpValues
 } from './types';
 import WellBoundary from './WellBoundary';
 
@@ -100,7 +99,7 @@ export default class BoundaryFactory {
         }
     }
 
-    public static fromObject = (obj: BoundaryInstance): Boundary | null => {
+    public static fromObject = (obj: IBoundary): Boundary | null => {
         if (!obj) {
             return null;
         }

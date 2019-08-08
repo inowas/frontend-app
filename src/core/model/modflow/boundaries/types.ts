@@ -26,7 +26,7 @@ export interface IBoundaryFeatureCollection {
     features: IBoundaryFeature[];
 }
 
-export type BoundaryInstance = IBoundaryFeature | ILineBoundary;
+export type IBoundary = IBoundaryFeature | ILineBoundary;
 
 export interface IObservationPointImport {
     name: string;

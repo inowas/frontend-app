@@ -3,11 +3,11 @@ import {Collection} from '../../collection/Collection';
 import BoundingBox from '../../geometry/BoundingBox';
 import GridSize from '../../geometry/GridSize';
 import {Boundary, BoundaryFactory} from './index';
-import {BoundaryInstance, BoundaryType, IBoundaryImport} from './types';
+import {BoundaryType, IBoundary, IBoundaryImport} from './types';
 
 class BoundaryCollection extends Collection<Boundary> {
 
-    public static fromQuery(query: BoundaryInstance[]) {
+    public static fromQuery(query: IBoundary[]) {
         const bc = new BoundaryCollection();
         query.forEach((b) => {
             const boundary = BoundaryFactory.fromObject(b);
@@ -18,7 +18,7 @@ class BoundaryCollection extends Collection<Boundary> {
         return bc;
     }
 
-    public static fromObject(query: BoundaryInstance[]) {
+    public static fromObject(query: IBoundary[]) {
         const bc = new BoundaryCollection();
         query.forEach((b) => {
             const boundary = BoundaryFactory.fromObject(b);
@@ -49,6 +49,10 @@ class BoundaryCollection extends Collection<Boundary> {
 
     public toObject = () => {
         return this.boundaries.map((b) => b.toObject());
+    };
+
+    public toImport = (): IBoundaryImport[] => {
+        return [];
     };
 }
 

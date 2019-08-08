@@ -2,11 +2,18 @@ import React from 'react';
 import {connect} from 'react-redux';
 import {withRouter} from 'react-router-dom';
 import {Grid, Segment} from 'semantic-ui-react';
-import {BoundaryCollection, ModflowModel, Soilmodel} from '../../../../../core/model/modflow';
-import {BoundaryFactory} from '../../../../../core/model/modflow/boundaries';
-import Boundary from '../../../../../core/model/modflow/boundaries/Boundary';
-import {BoundaryInstance, BoundaryType} from '../../../../../core/model/modflow/boundaries/types';
+
+import {
+    Boundary,
+    BoundaryCollection,
+    BoundaryFactory,
+    ModflowModel,
+    Soilmodel
+} from '../../../../../core/model/modflow';
+
+import {BoundaryType, IBoundary} from '../../../../../core/model/modflow/boundaries/types';
 import ContentToolBar from '../../../../../scenes/shared/ContentToolbar';
+
 import {fetchUrl, sendCommand} from '../../../../../services/api';
 import {updateBoundaries, updateModel} from '../../../actions/actions';
 import ModflowModelCommand from '../../../commands/modflowModelCommand';
@@ -38,7 +45,7 @@ interface IDispatchProps {
 type Props = IStateProps & IDispatchProps & IOwnProps;
 
 interface IState {
-    selectedBoundary: BoundaryInstance | null;
+    selectedBoundary: IBoundary | null;
     isLoading: boolean;
     isDirty: boolean;
     error: boolean;
@@ -102,7 +109,7 @@ class Boundaries extends React.Component<Props, IState> {
 
     public fetchBoundary = (modelId: string, boundaryId: string) =>
         fetchUrl(`modflowmodels/${modelId}/boundaries/${boundaryId}`,
-            (boundary: BoundaryInstance) => {
+            (boundary: IBoundary) => {
                 return this.setState({
                     isLoading: false,
                     selectedBoundary: boundary
@@ -135,7 +142,7 @@ class Boundaries extends React.Component<Props, IState> {
     public onClone = (boundaryId: string) => {
         const model = this.props.model;
         fetchUrl(`modflowmodels/${model.id}/boundaries/${boundaryId}`,
-            (boundary: BoundaryInstance) => {
+            (boundary: IBoundary) => {
                 const b = BoundaryFactory.fromObject(boundary);
                 if (b) {
                     const clonedBoundary = b.clone();
@@ -186,13 +193,8 @@ class Boundaries extends React.Component<Props, IState> {
         );
     };
 
-    public handleCancelImport = () => {
-        return;
-    };
-
-    public handleChangeImport = () => {
-        // TODO: import
-        return;
+    public handleChangeImport = (boundaries: BoundaryCollection) => {
+        return this.props.updateBoundaries(boundaries);
     };
 
     public render() {
@@ -237,9 +239,9 @@ class Boundaries extends React.Component<Props, IState> {
                                             saveButton={!readOnly}
                                             importButton={this.props.readOnly ||
                                             <BoundariesImport
-                                                onCancel={this.handleCancelImport}
+                                                model={this.props.model}
+                                                boundaries={this.props.boundaries}
                                                 onChange={this.handleChangeImport}
-                                                timeUnit={model.timeUnit.toInt()}
                                             />
                                             }
                                         />
