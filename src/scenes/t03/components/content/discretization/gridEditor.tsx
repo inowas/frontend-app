@@ -15,15 +15,15 @@ import ModflowModelCommand from '../../../commands/modflowModelCommand';
 import {ModelDiscretizationMap} from '../../maps';
 
 import {updateModel} from '../../../actions/actions';
-import GridImport from './gridImport';
+import DiscretizationImport from './discretizationImport';
 
 interface IState {
-    cells: ICells;
     boundingBox: IBoundingBox;
-    lengthUnit: ILengthUnit;
     geometry: IGeometry;
     gridSize: IGridSize;
     gridSizeLocal: IGridSize;
+    cells: ICells;
+    lengthUnit: ILengthUnit;
     isDirty: boolean;
     isError: boolean;
 }
@@ -70,8 +70,9 @@ class GridEditor extends React.Component<IProps, IState> {
                             saveButton={true}
                             onSave={this.onSave}
                             importButton={
-                                <GridImport
-                                    onChange={this.handleGridImport}
+                                <DiscretizationImport
+                                    onChange={this.handleImport}
+                                    model={this.props.model}
                                 />
                             }
                         />
@@ -145,6 +146,17 @@ class GridEditor extends React.Component<IProps, IState> {
         );
     }
 
+    private handleImport = (model: ModflowModel) =>
+        this.setState({
+            boundingBox: model.boundingBox.toObject(),
+            geometry: model.geometry.toObject(),
+            gridSize: model.gridSize.toObject(),
+            gridSizeLocal: model.gridSize.toObject(),
+            cells: model.cells.toObject(),
+            lengthUnit: model.lengthUnit.toInt(),
+            isDirty: true
+        });
+
     private onSave = () => {
         const model = this.props.model;
         model.cells = Cells.fromObject(this.state.cells);
@@ -188,8 +200,6 @@ class GridEditor extends React.Component<IProps, IState> {
             });
         }
     };
-
-    private handleGridImport = () => ({});
 
     private handleMapChange = (
         {cells, boundingBox, geometry}: { cells: Cells, boundingBox: BoundingBox, geometry: Geometry }
