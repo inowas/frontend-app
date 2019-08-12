@@ -29,8 +29,8 @@ export default class FlopyModflowMfhob extends FlopyModflowBoundary {
 
         return hobs.map(well => {
             const layer = well.layers[0];
-            const cell = well.cells[0];
-            const time_series_data = well.spValues.map((spValue, idx) => ([
+            const cell = well.cells.toObject()[0];
+            const time_series_data = well.getSpValues().map((spValue, idx) => ([
                 totims[idx], spValue[0]
             ]));
 

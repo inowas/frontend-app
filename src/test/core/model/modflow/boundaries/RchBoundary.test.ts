@@ -13,9 +13,7 @@ const createRechargeBoundary = () => {
     const cells: ICells = [[1, 2], [2, 3]];
     const spValues = [[1], [1], [1]];
 
-    return RechargeBoundary.create(
-        id, 'rch', geometry, name, layers, cells, spValues
-    );
+    return RechargeBoundary.create(id, geometry, name, layers, cells, spValues, 1);
 };
 
 test('RechargeBoundary create', () => {
@@ -26,17 +24,15 @@ test('RechargeBoundary create', () => {
     const cells: ICells = [[1, 2], [2, 3]];
     const spValues = [[1], [1], [1]];
 
-    const rechargeBoundary = RechargeBoundary.create(
-        id, 'rch', geometry, name, layers, cells, spValues
-    );
+    const rechargeBoundary = RechargeBoundary.create(id, geometry, name, layers, cells, spValues, 1);
 
     expect(rechargeBoundary).toBeInstanceOf(RechargeBoundary);
     expect(rechargeBoundary.id).toEqual(id);
     expect(rechargeBoundary.name).toEqual(name);
-    expect(rechargeBoundary.geometry).toEqual(geometry);
+    expect(rechargeBoundary.geometry.toObject()).toEqual(geometry);
     expect(rechargeBoundary.layers).toEqual(layers);
-    expect(rechargeBoundary.cells).toEqual(cells);
-    expect(rechargeBoundary.spValues).toEqual(spValues);
+    expect(rechargeBoundary.cells.toObject()).toEqual(cells);
+    expect(rechargeBoundary.getSpValues()).toEqual(spValues);
 });
 
 test('RechargeBoundary fromObject', () => {

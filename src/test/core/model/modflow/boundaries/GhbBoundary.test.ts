@@ -1,5 +1,6 @@
 import {LineString, Point} from 'geojson';
 import Uuid from 'uuid';
+import {Geometry} from '../../../../../core/model/geometry';
 import {ICells} from '../../../../../core/model/geometry/Cells.type';
 import {GeneralHeadBoundary} from '../../../../../core/model/modflow/boundaries';
 import {JSON_SCHEMA_URL} from '../../../../../services/api';
@@ -29,9 +30,10 @@ test('GeneralHeadBoundary create', () => {
     expect(generalHeadBoundary).toBeInstanceOf(GeneralHeadBoundary);
     expect(generalHeadBoundary.id).toEqual(id);
     expect(generalHeadBoundary.name).toEqual(name);
-    expect(generalHeadBoundary.geometry).toEqual(geometry);
+    expect(generalHeadBoundary.geometry).toBeInstanceOf(Geometry);
+    expect(generalHeadBoundary.geometry.toObject()).toEqual(geometry);
     expect(generalHeadBoundary.layers).toEqual(layers);
-    expect(generalHeadBoundary.cells).toEqual(cells);
+    expect(generalHeadBoundary.cells.toObject()).toEqual(cells);
 });
 
 test('GeneralHeadBoundary add ObservationPoint', () => {
@@ -42,7 +44,7 @@ test('GeneralHeadBoundary add ObservationPoint', () => {
     const op2 = generalHeadBoundary.findObservationPointByName('Op2');
     expect(op2).toBeTruthy();
     expect(op2.id).toBeTruthy();
-    expect(op2.type).toEqual('Feature');
+    expect(op2.type).toEqual('op');
     expect(op2.name).toEqual('Op2');
     expect(op2.geometry).toEqual({type: 'Point', coordinates: [1, 2]});
 });
@@ -63,7 +65,7 @@ test('GeneralHeadBoundary update ObservationPoint', () => {
     const op2New = generalHeadBoundary.findObservationPointByName('op2_new');
     expect(op2New).toBeTruthy();
     expect(op2New.id).toEqual(id);
-    expect(op2New.type).toEqual('Feature');
+    expect(op2New.type).toEqual('op');
     expect(op2New.name).toEqual(name);
     expect(op2New.geometry).toEqual(geometry);
     expect(op2New.spValues).toEqual(spValues);

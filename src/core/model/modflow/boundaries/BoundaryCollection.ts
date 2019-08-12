@@ -2,7 +2,7 @@ import {sortBy} from 'lodash';
 import {Collection} from '../../collection/Collection';
 import BoundingBox from '../../geometry/BoundingBox';
 import GridSize from '../../geometry/GridSize';
-import {BoundaryType, IBoundary, IBoundaryImportData} from './Boundary.type';
+import {BoundaryType, IBoundary, IBoundaryImport} from './Boundary.type';
 import {Boundary, BoundaryFactory} from './index';
 
 class BoundaryCollection extends Collection<Boundary> {
@@ -23,7 +23,7 @@ class BoundaryCollection extends Collection<Boundary> {
         return bc;
     }
 
-    public static fromImport(i: IBoundaryImportData[], boundingBox: BoundingBox, gridSize: GridSize) {
+    public static fromImport(i: IBoundaryImport[], boundingBox: BoundingBox, gridSize: GridSize) {
         const bc = new BoundaryCollection();
         i.forEach((b) => bc.addBoundary(BoundaryFactory.fromImport(b, boundingBox, gridSize)));
         return bc;
@@ -54,8 +54,13 @@ class BoundaryCollection extends Collection<Boundary> {
         return this.boundaries.map((b) => b.toObject());
     };
 
-    public toImport = (): IBoundaryImportData[] => {
-        return [];
+    public toImport = () => {
+        return this.all.map((b) => b.toImport());
+    };
+
+    public filter = (callable: (b: any) => boolean) => {
+        this.items = this.all.filter(callable);
+        return this;
     };
 }
 

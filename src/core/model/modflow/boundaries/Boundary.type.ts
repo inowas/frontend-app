@@ -1,14 +1,24 @@
 import {Point} from 'geojson';
-import {GeoJson} from '../../geometry/Geometry.type';
-import {IConstantHeadBoundary, IConstantHeadBoundaryFeature} from './ConstantHeadBoundary.type';
-import {IDrainageBoundary, IDrainageBoundaryFeature} from './DrainageBoundary.type';
-import {IEvapotranspirationBoundary, INevtop} from './EvapotranspirationBoundary.type';
-import {IGeneralHeadBoundary, IGeneralHeadBoundaryFeature} from './GeneralHeadBoundary.type';
-import {IHeadObservationWell} from './HeadObservationWell.type';
+import {
+    IConstantHeadBoundary,
+    IConstantHeadBoundaryFeature,
+    IConstantHeadBoundaryImport
+} from './ConstantHeadBoundary.type';
+import {IDrainageBoundary, IDrainageBoundaryFeature, IDrainageBoundaryImport} from './DrainageBoundary.type';
+import {
+    IEvapotranspirationBoundary,
+    IEvapotranspirationBoundaryImport,
+} from './EvapotranspirationBoundary.type';
+import {
+    IGeneralHeadBoundary,
+    IGeneralHeadBoundaryFeature,
+    IGeneralHeadBoundaryImport
+} from './GeneralHeadBoundary.type';
+import {IHeadObservationWell, IHeadObservationWellImport} from './HeadObservationWell.type';
 import {IObservationPoint} from './ObservationPoint.type';
-import {INrchop, IRechargeBoundary} from './RechargeBoundary.type';
-import {IRiverBoundary, IRiverBoundaryFeature} from './RiverBoundary.type';
-import {IWellBoundary, IWellType} from './WellBoundary.type';
+import {IRechargeBoundary, IRechargeBoundaryImport} from './RechargeBoundary.type';
+import {IRiverBoundary, IRiverBoundaryFeature, IRiverBoundaryImport} from './RiverBoundary.type';
+import {IWellBoundary, IWellBoundaryImport} from './WellBoundary.type';
 
 export type LineBoundaryType = 'chd' | 'ghb' | 'riv' | 'drn';
 export type BoundaryType = 'evt' | 'rch' | 'wel' | 'hob' | LineBoundaryType;
@@ -16,20 +26,21 @@ export type BoundaryType = 'evt' | 'rch' | 'wel' | 'hob' | LineBoundaryType;
 export type IBoundary = IConstantHeadBoundary | IGeneralHeadBoundary | IDrainageBoundary |
     IEvapotranspirationBoundary | IHeadObservationWell | IRechargeBoundary | IRiverBoundary | IWellBoundary;
 
-export type IBoundaryFeature = IConstantHeadBoundaryFeature | IGeneralHeadBoundaryFeature | IDrainageBoundaryFeature |
-    IRiverBoundaryFeature;
+export type IBoundaryFeature =
+    IConstantHeadBoundaryFeature
+    | IDrainageBoundaryFeature
+    | IGeneralHeadBoundaryFeature
+    | IRiverBoundaryFeature;
 
-export interface IBoundaryImportData {
-    type: BoundaryType;
-    name: string;
-    geometry: GeoJson;
-    layers: number[];
-    sp_values: ISpValues;
-    ops: IObservationPointImportData[];
-    well_type?: IWellType;
-    nevtop?: INevtop;
-    nrchop?: INrchop;
-}
+export type IBoundaryImport =
+    IConstantHeadBoundaryImport
+    | IDrainageBoundaryImport
+    | IGeneralHeadBoundaryImport
+    | IRiverBoundaryImport
+    | IEvapotranspirationBoundaryImport
+    | IHeadObservationWellImport
+    | IRechargeBoundaryImport
+    | IWellBoundaryImport;
 
 export type BoundarySelection = 'all' | BoundaryType;
 

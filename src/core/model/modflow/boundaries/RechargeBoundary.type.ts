@@ -18,11 +18,11 @@ export interface IRechargeBoundary {
     };
 }
 
-export interface IRechargeBoundaryImportData {
+export interface IRechargeBoundaryImport {
     type: 'rch';
     name: string;
     geometry: Polygon;
     layers: number[];
-    nrchop: INrchop;
     sp_values: ISpValues;
+    nrchop: INrchop;
 }

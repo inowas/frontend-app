@@ -1,16 +1,15 @@
 import {Polygon} from 'geojson';
 import {cloneDeep} from 'lodash';
+import Uuid from 'uuid';
+import BoundingBox from '../../geometry/BoundingBox';
 import {ICells} from '../../geometry/Cells.type';
-import {Geometry} from '../index';
+import GridSize from '../../geometry/GridSize';
+import {Cells, Geometry} from '../index';
 import {ISpValues, IValueProperty} from './Boundary.type';
 import {Boundary} from './index';
-import {INrchop, IRechargeBoundary} from './RechargeBoundary.type';
+import {INrchop, IRechargeBoundary, IRechargeBoundaryImport} from './RechargeBoundary.type';
 
 export default class RechargeBoundary extends Boundary {
-
-    public static geometryType() {
-        return 'Polygon';
-    }
 
     get type() {
         return this._props.properties.type;
@@ -49,11 +48,11 @@ export default class RechargeBoundary extends Boundary {
     }
 
     get cells() {
-        return this._props.properties.cells;
+        return Cells.fromObject(this._props.properties.cells);
     }
 
     set cells(value) {
-        this._props.properties.cells = value;
+        this._props.properties.cells = value.toObject();
     }
 
     get geometryType() {
@@ -76,6 +75,26 @@ export default class RechargeBoundary extends Boundary {
         this._props.properties.nrchop = value;
     }
 
+    public static geometryType() {
+        return 'Polygon';
+    }
+
+    public static fromImport(obj: IRechargeBoundaryImport, boundingBox: BoundingBox, gridSize: GridSize) {
+        return this.create(
+            Uuid.v4(),
+            obj.geometry,
+            obj.name,
+            obj.layers,
+            Cells.fromGeometry(Geometry.fromGeoJson(obj.geometry), boundingBox, gridSize).toObject(),
+            obj.sp_values,
+            obj.nrchop
+        );
+    }
+
+    public static fromObject(obj: IRechargeBoundary) {
+        return new this(obj);
+    }
+
     public static valueProperties(): IValueProperty[] {
         return [
             {
@@ -91,7 +110,7 @@ export default class RechargeBoundary extends Boundary {
     public static create(id: string, geometry: Polygon, name: string,
                          layers: number[], cells: ICells, spValues: ISpValues, nrchop: INrchop) {
 
-        return new RechargeBoundary({
+        return new this({
             id,
             type: 'Feature',
             geometry,
@@ -118,6 +137,15 @@ export default class RechargeBoundary extends Boundary {
     public setSpValues(spValues: ISpValues, opId?: string) {
         this._props.properties.sp_values = spValues;
     }
+
+    public toImport = (): IRechargeBoundaryImport => ({
+        type: this.type,
+        name: this.name,
+        geometry: this.geometry.toObject() as Polygon,
+        layers: this.layers,
+        nrchop: this.nrchop,
+        sp_values: this.getSpValues()
+    });
 
     public toObject(): IRechargeBoundary {
         return this._props;

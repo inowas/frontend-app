@@ -1,35 +1,32 @@
 import {LineString, Point, Polygon} from 'geojson';
-import Uuid from 'uuid';
 import BoundingBox from '../../geometry/BoundingBox';
 import {ICells} from '../../geometry/Cells.type';
 import {GeoJson} from '../../geometry/Geometry.type';
 import GridSize from '../../geometry/GridSize';
-import {Cells, Geometry} from '../index';
 import {
     BoundaryType,
     IBoundary,
-    IBoundaryFeature,
-    IBoundaryImportData, IObservationPointImportData,
+    IBoundaryFeature, IBoundaryImport,
     ISpValues
 } from './Boundary.type';
 import ConstantHeadBoundary from './ConstantHeadBoundary';
-import {IConstantHeadBoundary} from './ConstantHeadBoundary.type';
+import {IConstantHeadBoundary, IConstantHeadBoundaryImport} from './ConstantHeadBoundary.type';
 import DrainageBoundary from './DrainageBoundary';
-import {IDrainageBoundary} from './DrainageBoundary.type';
+import {IDrainageBoundary, IDrainageBoundaryImport} from './DrainageBoundary.type';
 import EvapotranspirationBoundary from './EvapotranspirationBoundary';
-import {IEvapotranspirationBoundary} from './EvapotranspirationBoundary.type';
+import {IEvapotranspirationBoundary, IEvapotranspirationBoundaryImport} from './EvapotranspirationBoundary.type';
 import GeneralHeadBoundary from './GeneralHeadBoundary';
-import {IGeneralHeadBoundary} from './GeneralHeadBoundary.type';
+import {IGeneralHeadBoundary, IGeneralHeadBoundaryImport} from './GeneralHeadBoundary.type';
 import HeadObservationWell from './HeadObservationWell';
-import {IHeadObservationWell} from './HeadObservationWell.type';
-import {Boundary, LineBoundary} from './index';
+import {IHeadObservationWell, IHeadObservationWellImport} from './HeadObservationWell.type';
+import {Boundary} from './index';
 import {IObservationPoint} from './ObservationPoint.type';
 import RechargeBoundary from './RechargeBoundary';
-import {IRechargeBoundary} from './RechargeBoundary.type';
+import {IRechargeBoundary, IRechargeBoundaryImport} from './RechargeBoundary.type';
 import RiverBoundary from './RiverBoundary';
-import {IRiverBoundary} from './RiverBoundary.type';
+import {IRiverBoundary, IRiverBoundaryImport} from './RiverBoundary.type';
 import WellBoundary from './WellBoundary';
-import {IWellBoundary} from './WellBoundary.type';
+import {IWellBoundary, IWellBoundaryImport} from './WellBoundary.type';
 
 export default abstract class BoundaryFactory {
 
@@ -49,66 +46,52 @@ export default abstract class BoundaryFactory {
             });
         }
 
-        if (type) {
-            switch (type) {
-                case 'chd':
-                    return new ConstantHeadBoundary(obj as IConstantHeadBoundary);
-                case 'drn':
-                    return new DrainageBoundary(obj as IDrainageBoundary);
-                case 'evt':
-                    return new EvapotranspirationBoundary(obj as IEvapotranspirationBoundary);
-                case 'ghb':
-                    return new GeneralHeadBoundary(obj as IGeneralHeadBoundary);
-                case 'hob':
-                    return new HeadObservationWell(obj as IHeadObservationWell);
-                case 'rch':
-                    return new RechargeBoundary(obj as IRechargeBoundary);
-                case 'riv':
-                    return new RiverBoundary(obj as IRiverBoundary);
-                case 'wel':
-                    return new WellBoundary(obj as IWellBoundary);
-                default:
-                    throw new Error('BoundaryType ' + type + ' not implemented yet.');
-            }
+        switch (type) {
+            case 'chd':
+                return new ConstantHeadBoundary(obj as IConstantHeadBoundary);
+            case 'drn':
+                return new DrainageBoundary(obj as IDrainageBoundary);
+            case 'evt':
+                return new EvapotranspirationBoundary(obj as IEvapotranspirationBoundary);
+            case 'ghb':
+                return new GeneralHeadBoundary(obj as IGeneralHeadBoundary);
+            case 'hob':
+                return new HeadObservationWell(obj as IHeadObservationWell);
+            case 'rch':
+                return new RechargeBoundary(obj as IRechargeBoundary);
+            case 'riv':
+                return new RiverBoundary(obj as IRiverBoundary);
+            case 'wel':
+                return new WellBoundary(obj as IWellBoundary);
+            default:
+                throw new Error('BoundaryType ' + type + ' not implemented yet.');
         }
-
-        throw new Error('BoundaryType ' + type + ' not implemented yet.');
     };
 
-    public static fromImport = (obj: IBoundaryImportData, boundingBox: BoundingBox, gridSize: GridSize) => {
+    public static fromImport = (obj: IBoundaryImport, boundingBox: BoundingBox, gridSize: GridSize) => {
         const type = obj.type;
-
-        const id = Uuid.v4();
-        const name = obj.name;
-        const geometry = obj.geometry;
-        const layers = obj.layers;
-        const spValues = obj.sp_values;
-        const cells = Cells.fromGeometry(Geometry.fromGeoJson(obj.geometry), boundingBox, gridSize).toObject();
-
-        const boundary = BoundaryFactory.createNewFromProps(type, id, geometry, name, layers, cells, spValues);
-
-        if (boundary instanceof LineBoundary && obj.ops) {
-            boundary.cells.calculateValues(boundary, boundingBox, gridSize);
-            obj.ops.forEach((op: IObservationPointImportData) => {
-                boundary.addObservationPoint(Uuid.v4(), op.name, op.geometry, op.sp_values);
-            });
-
-            return boundary;
+        switch (type) {
+            case 'chd':
+                return ConstantHeadBoundary.fromImport(obj as IConstantHeadBoundaryImport, boundingBox, gridSize);
+            case 'drn':
+                return DrainageBoundary.fromImport(obj as IDrainageBoundaryImport, boundingBox, gridSize);
+            case 'evt':
+                return EvapotranspirationBoundary.fromImport(
+                    obj as IEvapotranspirationBoundaryImport, boundingBox, gridSize
+                );
+            case 'ghb':
+                return GeneralHeadBoundary.fromImport(obj as IGeneralHeadBoundaryImport, boundingBox, gridSize);
+            case 'hob':
+                return HeadObservationWell.fromImport(obj as IHeadObservationWellImport, boundingBox, gridSize);
+            case 'rch':
+                return RechargeBoundary.fromImport(obj as IRechargeBoundaryImport, boundingBox, gridSize);
+            case 'riv':
+                return RiverBoundary.fromImport(obj as IRiverBoundaryImport, boundingBox, gridSize);
+            case 'wel':
+                return WellBoundary.fromImport(obj as IWellBoundaryImport, boundingBox, gridSize);
+            default:
+                throw new Error('BoundaryType ' + type + ' not implemented yet.');
         }
-
-        if (boundary instanceof WellBoundary) {
-            boundary.wellType = obj.well_type;
-        }
-
-        if (boundary instanceof EvapotranspirationBoundary && obj.nevtop) {
-            boundary.nevtop = obj.nevtop;
-        }
-
-        if (boundary instanceof RechargeBoundary && obj.nrchop) {
-            boundary.nrchop = obj.nrchop;
-        }
-
-        return boundary;
     };
 
     public static createNewFromProps(type: BoundaryType, id: string, geometry: GeoJson, name: string,

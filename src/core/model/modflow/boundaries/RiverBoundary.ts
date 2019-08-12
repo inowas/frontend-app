@@ -1,10 +1,13 @@
 import {LineString} from 'geojson';
 import {cloneDeep} from 'lodash';
 import Uuid from 'uuid';
+import BoundingBox from '../../geometry/BoundingBox';
 import {ICells} from '../../geometry/Cells.type';
+import GridSize from '../../geometry/GridSize';
+import {Cells, Geometry} from '../index';
 import {ISpValues, IValueProperty} from './Boundary.type';
 import LineBoundary from './LineBoundary';
-import {IRiverBoundary} from './RiverBoundary.type';
+import {IRiverBoundary, IRiverBoundaryImport} from './RiverBoundary.type';
 
 export default class RiverBoundary extends LineBoundary {
 
@@ -16,11 +19,11 @@ export default class RiverBoundary extends LineBoundary {
         cells: ICells,
         spValues: ISpValues
     ) {
-        return new RiverBoundary({
+        return new this({
             type: 'FeatureCollection',
             features: [
                 {
-                    id: Uuid.v4(),
+                    id,
                     type: 'Feature',
                     geometry,
                     properties: {
@@ -46,6 +49,29 @@ export default class RiverBoundary extends LineBoundary {
                 }
             ],
         });
+    }
+
+    public static fromImport(obj: IRiverBoundaryImport, boundingBox: BoundingBox, gridSize: GridSize) {
+        const boundary = this.create(
+            Uuid.v4(),
+            obj.geometry,
+            obj.name,
+            obj.layers,
+            Cells.fromGeometry(Geometry.fromGeoJson(obj.geometry), boundingBox, gridSize).toObject(),
+            []
+        );
+
+        const opIdToRemove = boundary.observationPoints[0].id;
+        obj.ops.forEach((op) => {
+            boundary.addObservationPoint(Uuid.v4(), op.name, op.geometry, op.sp_values);
+        });
+
+        boundary.removeObservationPoint(opIdToRemove);
+        return boundary;
+    }
+
+    public static fromObject(obj: IRiverBoundary) {
+        return new this(obj);
     }
 
     public static valueProperties(): IValueProperty[] {
@@ -79,6 +105,21 @@ export default class RiverBoundary extends LineBoundary {
     public constructor(obj: IRiverBoundary) {
         super();
         this._props = cloneDeep(obj);
+    }
+
+    public toImport(): IRiverBoundaryImport {
+        return {
+            type: this.type,
+            name: this.name,
+            geometry: this.geometry.toObject() as LineString,
+            layers: this.layers,
+            ops: this.observationPoints.map((op) => ({
+                    name: op.name,
+                    geometry: op.geometry,
+                    sp_values: op.spValues
+                }
+            ))
+        };
     }
 
     public toObject(): IRiverBoundary {

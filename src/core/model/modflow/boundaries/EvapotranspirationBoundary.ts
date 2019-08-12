@@ -1,16 +1,19 @@
 import {Polygon} from 'geojson';
 import {cloneDeep} from 'lodash';
+import Uuid from 'uuid';
+import BoundingBox from '../../geometry/BoundingBox';
 import {ICells} from '../../geometry/Cells.type';
-import {Geometry} from '../index';
+import GridSize from '../../geometry/GridSize';
+import {Cells, Geometry} from '../index';
 import Boundary from './Boundary';
 import {ISpValues, IValueProperty} from './Boundary.type';
-import {IEvapotranspirationBoundary, INevtop} from './EvapotranspirationBoundary.type';
+import {
+    IEvapotranspirationBoundary,
+    IEvapotranspirationBoundaryImport,
+    INevtop
+} from './EvapotranspirationBoundary.type';
 
 export default class EvapotranspirationBoundary extends Boundary {
-
-    public static geometryType() {
-        return 'Polygon';
-    }
 
     get type() {
         return this._props.properties.type;
@@ -76,6 +79,44 @@ export default class EvapotranspirationBoundary extends Boundary {
         this.nevtop = value;
     }
 
+    public static create(id: string, geometry: Polygon, name: string, layers: number[],
+                         cells: ICells, spValues: ISpValues, nevtop: number) {
+
+        return new this({
+            id,
+            type: 'Feature',
+            geometry,
+            properties: {
+                type: 'evt',
+                name,
+                cells,
+                layers,
+                sp_values: spValues,
+                nevtop,
+            }
+        });
+    }
+
+    public static fromImport(obj: IEvapotranspirationBoundaryImport, boundingBox: BoundingBox, gridSize: GridSize) {
+        return this.create(
+            Uuid.v4(),
+            obj.geometry,
+            obj.name,
+            obj.layers,
+            Cells.fromGeometry(Geometry.fromGeoJson(obj.geometry), boundingBox, gridSize).toObject(),
+            obj.sp_values,
+            obj.nevtop
+        );
+    }
+
+    public static fromObject(obj: IEvapotranspirationBoundary) {
+        return new this(obj);
+    }
+
+    public static geometryType() {
+        return 'Polygon';
+    }
+
     public static valueProperties() {
         return [
             {
@@ -102,24 +143,6 @@ export default class EvapotranspirationBoundary extends Boundary {
         ];
     }
 
-    public static create(id: string, geometry: Polygon, name: string, layers: number[],
-                         cells: ICells, spValues: ISpValues, nevtop: number) {
-
-        return new EvapotranspirationBoundary({
-            id,
-            type: 'Feature',
-            geometry,
-            properties: {
-                type: 'evt',
-                name,
-                cells,
-                layers,
-                sp_values: spValues,
-                nevtop,
-            }
-        });
-    }
-
     constructor(props: IEvapotranspirationBoundary) {
         super();
         this._props = cloneDeep(props);
@@ -132,6 +155,15 @@ export default class EvapotranspirationBoundary extends Boundary {
     public setSpValues(spValues: ISpValues, opId?: string) {
         this._props.properties.sp_values = spValues;
     }
+
+    public toImport = (): IEvapotranspirationBoundaryImport => ({
+        type: this.type,
+        name: this.name,
+        geometry: this.geometry.toObject() as Polygon,
+        layers: this.layers,
+        nevtop: this.nevtop,
+        sp_values: this.getSpValues()
+    });
 
     public toObject(): IEvapotranspirationBoundary {
         return this._props;

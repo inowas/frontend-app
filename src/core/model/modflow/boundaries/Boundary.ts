@@ -3,7 +3,7 @@ import Uuid from 'uuid';
 import {Cells, Geometry} from '../index';
 import {
     BoundaryType,
-    IBoundary,
+    IBoundary, IBoundaryImport,
     ISpValues,
     IValueProperty
 } from './Boundary.type';
@@ -35,6 +35,8 @@ export default abstract class Boundary {
     public abstract getSpValues(opId?: string): ISpValues;
 
     public abstract setSpValues(spValues: ISpValues, opId?: string): void;
+
+    public abstract toImport(): IBoundaryImport;
 
     public abstract toObject(): IBoundary;
 

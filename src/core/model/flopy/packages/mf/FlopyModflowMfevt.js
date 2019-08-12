@@ -55,8 +55,8 @@ export default class FlopyModflowMfevt extends FlopyModflowBoundary {
             }
         }
         evapotranspirationBoundaries.forEach(evtBoundary => {
-            const cells = evtBoundary.cells;
-            const spValues = evtBoundary.spValues;
+            const cells = evtBoundary.cells.toObject();
+            const spValues = evtBoundary.getSpValues();
 
             for (let per = 0; per < nper; per++) {
                 const [evtr, surf, exdp] = spValues[per];

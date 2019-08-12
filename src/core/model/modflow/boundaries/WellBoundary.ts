@@ -1,16 +1,15 @@
 import {Point} from 'geojson';
 import {cloneDeep} from 'lodash';
+import Uuid from 'uuid';
+import BoundingBox from '../../geometry/BoundingBox';
 import {ICells} from '../../geometry/Cells.type';
+import GridSize from '../../geometry/GridSize';
 import {Cells, Geometry} from '../index';
 import Boundary from './Boundary';
 import {ISpValues, IValueProperty} from './Boundary.type';
-import {IWellBoundary, IWellType} from './WellBoundary.type';
+import {IWellBoundary, IWellBoundaryImport, IWellType} from './WellBoundary.type';
 
 export default class WellBoundary extends Boundary {
-
-    public static geometryType() {
-        return 'Point';
-    }
 
     get type() {
         return this._props.properties.type;
@@ -68,6 +67,57 @@ export default class WellBoundary extends Boundary {
         this._props.properties.well_type = value;
     }
 
+    public static create(id: string, geometry: Point, name: string, layers: number[], cells: ICells,
+                         spValues: ISpValues) {
+        return new this({
+            id,
+            type: 'Feature',
+            geometry,
+            properties: {
+                type: 'wel',
+                name,
+                cells,
+                layers,
+                well_type: WellBoundary.wellTypes.default as IWellType,
+                sp_values: spValues
+            }
+        });
+    }
+
+    public static fromImport(obj: IWellBoundaryImport, boundingBox: BoundingBox, gridSize: GridSize) {
+        const boundary = this.create(
+            Uuid.v4(),
+            obj.geometry,
+            obj.name,
+            obj.layers,
+            Cells.fromGeometry(Geometry.fromGeoJson(obj.geometry), boundingBox, gridSize).toObject(),
+            obj.sp_values
+        );
+
+        boundary.wellType = obj.well_type;
+        return boundary;
+    }
+
+    public static fromObject(obj: IWellBoundary) {
+        return new this(obj);
+    }
+
+    public static geometryType() {
+        return 'Point';
+    }
+
+    public static valueProperties(): IValueProperty[] {
+        return [
+            {
+                name: 'Pumping rate',
+                description: 'Pumping rate of the well, positive values = infiltration',
+                unit: 'm³/day',
+                decimals: 1,
+                default: 0
+            },
+        ];
+    }
+
     static get wellTypes() {
         return {
             default: 'puw',
@@ -96,35 +146,6 @@ export default class WellBoundary extends Boundary {
         };
     }
 
-    public static valueProperties(): IValueProperty[] {
-        return [
-            {
-                name: 'Pumping rate',
-                description: 'Pumping rate of the well, positive values = infiltration',
-                unit: 'm³/day',
-                decimals: 1,
-                default: 0
-            },
-        ];
-    }
-
-    public static create(id: string, geometry: Point, name: string, layers: number[], cells: ICells,
-                         spValues: ISpValues) {
-        return new WellBoundary({
-            id,
-            type: 'Feature',
-            geometry,
-            properties: {
-                type: 'wel',
-                name,
-                cells,
-                layers,
-                well_type: WellBoundary.wellTypes.default as IWellType,
-                sp_values: spValues
-            }
-        });
-    }
-
     constructor(props: IWellBoundary) {
         super();
         this._props = cloneDeep(props);
@@ -137,6 +158,15 @@ export default class WellBoundary extends Boundary {
     public setSpValues(spValues: ISpValues, opId?: string) {
         this._props.properties.sp_values = spValues;
     }
+
+    public toImport = (): IWellBoundaryImport => ({
+        type: this.type,
+        name: this.name,
+        geometry: this.geometry.toObject() as Point,
+        layers: this.layers,
+        well_type: this.wellType,
+        sp_values: this.getSpValues()
+    });
 
     public toObject(): IWellBoundary {
         return this._props;

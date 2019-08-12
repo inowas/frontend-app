@@ -15,7 +15,7 @@ export interface IHeadObservationWell {
     };
 }
 
-export interface IHeadObservationWellImportData {
+export interface IHeadObservationWellImport {
     type: 'hob';
     name: string;
     geometry: Point;

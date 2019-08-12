@@ -1,6 +1,8 @@
 import {LineString, Point} from 'geojson';
 import Uuid from 'uuid';
+import {Geometry} from '../../../../../core/model/geometry';
 import {ICells} from '../../../../../core/model/geometry/Cells.type';
+import {Cells} from '../../../../../core/model/modflow';
 import {ConstantHeadBoundary} from '../../../../../core/model/modflow/boundaries';
 import {JSON_SCHEMA_URL} from '../../../../../services/api';
 import {validate} from '../../../../../services/jsonSchemaValidator';
@@ -28,9 +30,11 @@ test('ConstantHeadBoundary create', () => {
     expect(constantHeadBoundary).toBeInstanceOf(ConstantHeadBoundary);
     expect(constantHeadBoundary.id).toEqual(id);
     expect(constantHeadBoundary.name).toEqual(name);
-    expect(constantHeadBoundary.geometry).toEqual(geometry);
+    expect(constantHeadBoundary.geometry).toBeInstanceOf(Geometry);
+    expect(constantHeadBoundary.geometry.toObject()).toEqual(geometry);
     expect(constantHeadBoundary.layers).toEqual(layers);
-    expect(constantHeadBoundary.cells).toEqual(cells);
+    expect(constantHeadBoundary.cells).toBeInstanceOf(Cells);
+    expect(constantHeadBoundary.cells.toObject()).toEqual(cells);
 });
 
 test('ConstantHeadBoundary add ObservationPoint', () => {
@@ -41,7 +45,7 @@ test('ConstantHeadBoundary add ObservationPoint', () => {
     const op2 = constantHeadBoundary.findObservationPointByName('Op2');
     expect(op2).toBeTruthy();
     expect(op2.id).toBeTruthy();
-    expect(op2.type).toEqual('Feature');
+    expect(op2.type).toEqual('op');
     expect(op2.name).toEqual('Op2');
     expect(op2.geometry).toEqual({type: 'Point', coordinates: [1, 2]});
 });
@@ -62,7 +66,7 @@ test('ConstantHeadBoundary update ObservationPoint', () => {
     const op2New = constantHeadBoundary.findObservationPointByName('op2_new');
     expect(op2New).toBeTruthy();
     expect(op2New.id).toEqual(id);
-    expect(op2New.type).toEqual('Feature');
+    expect(op2New.type).toEqual('op');
     expect(op2New.name).toEqual(name);
     expect(op2New.geometry).toEqual(geometry);
     expect(op2New.spValues).toEqual(spValues);

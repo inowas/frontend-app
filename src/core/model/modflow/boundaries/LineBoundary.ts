@@ -167,12 +167,13 @@ export default abstract class LineBoundary extends Boundary {
         const b = this._props.features.filter(
             (f: IObservationPoint | IConstantHeadBoundaryFeature) =>
                 (f.properties.type !== 'op')) as IConstantHeadBoundaryFeature[];
-        this._props.features = [];
-        this._props.features.concat(b);
+
+        let features: any = [];
+        features = features.concat(b);
         ops.sort((o1, o2) => {
             return (o1.distance - o2.distance);
         });
-        this._props.features.concat(ops.map((op) => op.toObject()));
+        this._props.features = features.concat(ops.map((op) => op.toObject()));
     }
 
     public getSpValues(opId: string): ISpValues {

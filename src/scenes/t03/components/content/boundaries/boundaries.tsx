@@ -61,7 +61,6 @@ class Boundaries extends React.Component<Props, IState> {
 
     public componentDidMount() {
         const {id, pid} = this.props.match.params;
-
         if (this.props.boundaries.length === 0) {
             return this.setState({
                 isLoading: false
@@ -78,15 +77,24 @@ class Boundaries extends React.Component<Props, IState> {
     }
 
     public componentWillReceiveProps(nextProps: Props) {
-        const {id, pid} = nextProps.match.params;
+        const {id, pid, property} = nextProps.match.params;
 
         if (!pid && nextProps.boundaries.length > 0) {
             return this.redirectToFirstBoundary(nextProps);
         }
 
-        if ((this.props.match.params.id !== id) || (this.props.match.params.pid !== pid)) {
+        if ((this.props.match.params.id !== id)
+            || (this.props.match.params.pid !== pid)
+            || (this.props.match.params.property !== property)
+        ) {
+            if (nextProps.boundaries.length === 0) {
+                return this.setState({
+                    selectedBoundary: null
+                });
+            }
+
             return this.setState({
-                isLoading: true
+                isLoading: true,
             }, () => this.fetchBoundary(id, pid));
         }
     }
@@ -259,14 +267,9 @@ class Boundaries extends React.Component<Props, IState> {
 }
 
 const mapStateToProps = (state: any, props: any) => {
-    const boundaries = BoundaryCollection.fromObject(state.T03.boundaries);
-    if (props.types && boundaries.length > 0) {
-        boundaries.items = boundaries.all.filter((b) => props.types.includes(b.type));
-    }
-
     return ({
         readOnly: ModflowModel.fromObject(state.T03.model).readOnly,
-        boundaries,
+        boundaries: BoundaryCollection.fromObject(state.T03.boundaries).filter((b) => props.types.includes(b.type)),
         model: ModflowModel.fromObject(state.T03.model),
         soilmodel: Soilmodel.fromObject(state.T03.soilmodel)
     });

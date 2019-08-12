@@ -18,7 +18,7 @@ export interface IWellBoundary {
     };
 }
 
-export interface IWellBoundaryImportData {
+export interface IWellBoundaryImport {
     type: 'wel';
     name: string;
     geometry: Point;
