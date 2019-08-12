@@ -1,7 +1,7 @@
 import moment from 'moment';
 import React, {ChangeEvent} from 'react';
 import {Input, InputOnChangeData, Table} from 'semantic-ui-react';
-import {Boundary, Stressperiods} from '../../../../../core/model/modflow';
+import {Stressperiods} from '../../../../../core/model/modflow';
 import {Substance} from '../../../../../core/model/modflow/transport';
 import {IBoundaryConcentration} from '../../../../../core/model/modflow/transport/Substance.type';
 import NoContent from '../../../../shared/complexTools/noContent';

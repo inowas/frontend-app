@@ -1,8 +1,10 @@
+import * as GeoJson from 'geojson';
 import {LatLngExpression} from 'leaflet';
 import {uniqueId} from 'lodash';
 import React, {Component} from 'react';
 import {CircleMarker, GeoJSON, Map, Polygon, Polyline} from 'react-leaflet';
-import {Boundary, BoundaryCollection, Geometry, LineBoundary} from '../../../../core/model/modflow';
+import {Geometry} from '../../../../core/model/modflow';
+import {Boundary, BoundaryCollection, LineBoundary} from '../../../../core/model/modflow/boundaries';
 import WellBoundary from '../../../../core/model/modflow/boundaries/WellBoundary';
 import {BasicTileLayer} from '../../../../services/geoTools/tileLayers';
 import {getStyle} from './index';
@@ -63,7 +65,7 @@ class BoundaryMap extends Component<IProps> {
                 case 'point':
                     return (
                         <CircleMarker
-                            key={uniqueId(Geometry.fromObject(geometry).hash())}
+                            key={uniqueId(Geometry.fromObject(geometry as GeoJson.Point).hash())}
                             center={[
                                 geometry.coordinates[1],
                                 geometry.coordinates[0]
@@ -75,8 +77,8 @@ class BoundaryMap extends Component<IProps> {
                 case 'linestring':
                     return (
                         <Polyline
-                            key={uniqueId(Geometry.fromObject(geometry).hash())}
-                            positions={Geometry.fromObject(geometry).coordinatesLatLng}
+                            key={uniqueId(Geometry.fromObject(geometry as GeoJson.LineString).hash())}
+                            positions={Geometry.fromObject(geometry as GeoJson.LineString).coordinatesLatLng}
                             {...getStyle('underlay')}
                             onClick={this.handleClickBoundary(b.id)}
                         />
@@ -90,7 +92,7 @@ class BoundaryMap extends Component<IProps> {
             case 'point':
                 return b instanceof WellBoundary ? (
                     <CircleMarker
-                        key={uniqueId(Geometry.fromObject(geometry).hash())}
+                        key={uniqueId(Geometry.fromObject(geometry as GeoJson.Point).hash())}
                         center={[
                             geometry.coordinates[1],
                             geometry.coordinates[0]
@@ -101,15 +103,19 @@ class BoundaryMap extends Component<IProps> {
             case 'linestring':
                 return (
                     <Polyline
-                        key={uniqueId(Geometry.fromObject(geometry).hash())}
-                        positions={Geometry.fromObject(geometry).coordinatesLatLng as LatLngExpression[]}
+                        key={uniqueId(Geometry.fromObject(geometry as GeoJson.LineString).hash())}
+                        positions={
+                            Geometry.fromObject(geometry as GeoJson.LineString).coordinatesLatLng as LatLngExpression[]
+                        }
                     />
                 );
             case 'polygon':
                 return (
                     <Polygon
-                        key={uniqueId(Geometry.fromObject(geometry).hash())}
-                        positions={Geometry.fromObject(geometry).coordinatesLatLng as LatLngExpression[]}
+                        key={uniqueId(Geometry.fromObject(geometry as GeoJson.Polygon).hash())}
+                        positions={
+                            Geometry.fromObject(geometry as GeoJson.Polygon).coordinatesLatLng as LatLngExpression[]
+                        }
                     />
                 );
             default:

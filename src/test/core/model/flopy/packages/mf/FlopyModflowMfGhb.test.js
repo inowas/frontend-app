@@ -21,8 +21,8 @@ const createGeneralHeadBoundary = () => {
 
     const op1 = boundary.observationPoints[0];
     boundary.updateObservationPoint(op1.id, 'OP1', {'type': 'Point', coordinates: [3, -4]}, [[10, 20], [11, 22]]);
-    boundary.addObservationPoint('OP3', {'type': 'Point', coordinates: [19, 2]}, [[30, 40], [33, 44]]);
-    boundary.addObservationPoint('OP2', {'type': 'Point', coordinates: [11, 0]}, [[20, 30], [22, 33]]);
+    boundary.addObservationPoint(Uuid.v4(), 'OP3', {'type': 'Point', coordinates: [19, 2]}, [[30, 40], [33, 44]]);
+    boundary.addObservationPoint(Uuid.v4(), 'OP2', {'type': 'Point', coordinates: [11, 0]}, [[20, 30], [22, 33]]);
 
     cells.calculateValues(boundary, boundingBox, gridSize);
     boundary.cells = cells.cells;

@@ -2,6 +2,7 @@ import Uuid from 'uuid';
 import {ConstantHeadBoundary} from '../../../../../../core/model/modflow/boundaries';
 import {BoundingBox, Cells, Geometry, GridSize} from '../../../../../../core/model/geometry';
 import {FlopyModflow, FlopyModflowMfchd} from '../../../../../../core/model/flopy/packages/mf';
+import {LineString} from '@turf/helpers';
 
 const createConstantHeadBoundary = () => {
     const id = Uuid.v4();
@@ -17,12 +18,12 @@ const createConstantHeadBoundary = () => {
     const gridSize = GridSize.fromArray([10, 5]);
 
     const cells = Cells.fromGeometry(geometry, boundingBox, gridSize);
-    const boundary = ConstantHeadBoundary.create(id, 'chd', geometry, name, layers, cells, spValues);
+    const boundary = ConstantHeadBoundary.create(id, geometry.toObject(), name, layers, cells, spValues);
 
     const op1 = boundary.observationPoints[0];
     boundary.updateObservationPoint(op1.id, 'OP1', {'type': 'Point', coordinates: [3, -4]}, [[10, 20], [11, 22]]);
-    boundary.addObservationPoint('OP3', {'type': 'Point', coordinates: [19, 2]}, [[30, 40], [33, 44]]);
-    boundary.addObservationPoint('OP2', {'type': 'Point', coordinates: [11, 0]}, [[20, 30], [22, 33]]);
+    boundary.addObservationPoint(Uuid.v4(), 'OP3', {'type': 'Point', coordinates: [19, 2]}, [[30, 40], [33, 44]]);
+    boundary.addObservationPoint(Uuid.v4(), 'OP2', {'type': 'Point', coordinates: [11, 0]}, [[20, 30], [22, 33]]);
 
     cells.calculateValues(boundary, boundingBox, gridSize);
     boundary.cells = cells.cells;

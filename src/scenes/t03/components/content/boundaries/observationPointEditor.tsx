@@ -1,22 +1,13 @@
 import React, {ChangeEvent} from 'react';
 import {Button, Form, Modal} from 'semantic-ui-react';
-import {LineBoundary, ModflowModel} from '../../../../../core/model/modflow';
-import Boundary from '../../../../../core/model/modflow/boundaries/Boundary';
-import ObservationPoint from '../../../../../core/model/modflow/boundaries/ObservationPoint';
+import {ModflowModel} from '../../../../../core/model/modflow';
+import {Boundary, LineBoundary, ObservationPoint} from '../../../../../core/model/modflow/boundaries';
 import {IObservationPoint} from '../../../../../core/model/modflow/boundaries/ObservationPoint.type';
 import ObservationPointMap from '../../maps/observationPointEditorMap';
 
-interface IIndexedBoundary extends Boundary {
-    [name: string]: any;
-}
-
-interface IIndexedObservationPoint extends ObservationPoint {
-    [name: string]: any;
-}
-
 interface IProps {
     model: ModflowModel;
-    boundary: IIndexedBoundary;
+    boundary: LineBoundary;
     observationPointId?: string;
     onCancel: () => any;
     onChange: (boundary: Boundary) => any;
@@ -38,25 +29,25 @@ class ObservationPointEditor extends React.Component<IProps, IState> {
 
     public componentWillMount() {
         const {boundary, observationPointId} = this.props;
-        if (!observationPointId || !(boundary instanceof LineBoundary)) {
+        if (!observationPointId) {
             return null;
         }
 
         const observationPoint = boundary.findObservationPointById(observationPointId);
         if (observationPoint) {
-            return this.setState({observationPoint});
+            return this.setState({observationPoint: observationPoint.toObject()});
         }
     }
 
     public componentWillReceiveProps(nextProps: IProps) {
         const {boundary, observationPointId} = nextProps;
-        if (!observationPointId || !(boundary instanceof LineBoundary)) {
+        if (!observationPointId) {
             return null;
         }
 
         const observationPoint = boundary.findObservationPointById(observationPointId);
         if (observationPoint) {
-            return this.setState({observationPoint});
+            return this.setState({observationPoint: observationPoint.toObject()});
         }
     }
 
@@ -64,8 +55,14 @@ class ObservationPointEditor extends React.Component<IProps, IState> {
         if (!this.state.observationPoint) {
             return;
         }
-        const observationPoint: IIndexedObservationPoint = ObservationPoint.fromObject(this.state.observationPoint);
-        observationPoint[e.target.name] = e.target.value;
+        const observationPoint: ObservationPoint = ObservationPoint.fromObject(this.state.observationPoint);
+
+        const {name, value} = e.target;
+
+        if (name === 'name') {
+            observationPoint[name] = value;
+        }
+
         this.setState({
             observationPoint: observationPoint.toObject()
         });

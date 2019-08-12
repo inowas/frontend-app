@@ -12,7 +12,8 @@ import FlopyModflowMfrch from './FlopyModflowMfrch';
 import FlopyModflowMfriv from './FlopyModflowMfriv';
 import FlopyModflowMfwel from './FlopyModflowMfwel';
 
-import {BoundaryCollection, ModflowModel, Soilmodel} from '../../../../../core/model/modflow';
+import {ModflowModel, Soilmodel} from '../../../../../core/model/modflow';
+
 import {delc, delr} from '../../../../../services/geoTools/distance';
 import FlopyModflowMflmt from './FlopyModflowMflmt';
 import FlopyModflowMfupw from './FlopyModflowMfupw';
@@ -21,8 +22,9 @@ import FlopyModflowMfde4 from './FlopyModflowMfde4';
 import FlopyModflowMfnwt from './FlopyModflowMfnwt';
 import FlopyModflowMfsip from './FlopyModflowMfsip';
 import FlopyModflowSolverPackage from './FlopyModflowSolverPackage';
-import FlopyModflowMfdrn from "./FlopyModflowMfdrn";
-import FlopyModflowMfevt from "./FlopyModflowMfevt";
+import FlopyModflowMfdrn from './FlopyModflowMfdrn';
+import FlopyModflowMfevt from './FlopyModflowMfevt';
+import {BoundaryCollection} from '../../../modflow/boundaries';
 
 
 const packagesMap = {

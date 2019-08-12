@@ -2,10 +2,9 @@ import moment from 'moment';
 import React, {ChangeEvent} from 'react';
 import {Input, Table} from 'semantic-ui-react';
 import uuidv4 from 'uuid/v4';
-import {Boundary, Stressperiods} from '../../../../../core/model/modflow';
-import {SpValues} from '../../../../../core/model/modflow/boundaries/types';
-
-// import CsvUpload from '../../../../shared/simpleTools/upload/CsvUpload';
+import {Stressperiods} from '../../../../../core/model/modflow';
+import {Boundary} from '../../../../../core/model/modflow/boundaries';
+import {ISpValues} from '../../../../../core/model/modflow/boundaries/Boundary.type';
 
 interface IActiveInput {
     col: number;
@@ -71,7 +70,7 @@ class BoundaryValuesDataTable extends React.Component<IProps, IState> {
                 }
                 return spv;
             });
-            boundary.setSpValues(updatedSpValues as SpValues, selectedOP);
+            boundary.setSpValues(updatedSpValues as ISpValues, selectedOP);
         }
         this.props.onChange(boundary);
     };
@@ -99,7 +98,7 @@ class BoundaryValuesDataTable extends React.Component<IProps, IState> {
         }
     };
 
-    public body = (spValues: SpValues) => {
+    public body = (spValues: ISpValues) => {
         const {activeInput} = this.state;
         const {stressperiods} = this.props;
 

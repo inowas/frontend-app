@@ -1,7 +1,8 @@
 import React, {ChangeEvent, MouseEvent} from 'react';
 import {Button, Form, Icon, Menu, MenuItemProps, Modal, Segment} from 'semantic-ui-react';
-import {Boundary, BoundaryCollection, BoundaryFactory, ModflowModel} from '../../../../../core/model/modflow';
-import {IBoundary} from '../../../../../core/model/modflow/boundaries/types';
+import {ModflowModel} from '../../../../../core/model/modflow';
+import {Boundary, BoundaryCollection, BoundaryFactory} from '../../../../../core/model/modflow/boundaries';
+import {IBoundary} from '../../../../../core/model/modflow/boundaries/Boundary.type';
 import BoundaryDiscretizationMap from '../../maps/boundaryDiscretizationMap';
 
 interface IIndexedBoundary {

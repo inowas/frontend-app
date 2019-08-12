@@ -2,18 +2,15 @@ import {sortBy} from 'lodash';
 import {Collection} from '../../collection/Collection';
 import BoundingBox from '../../geometry/BoundingBox';
 import GridSize from '../../geometry/GridSize';
+import {BoundaryType, IBoundary, IBoundaryImportData} from './Boundary.type';
 import {Boundary, BoundaryFactory} from './index';
-import {BoundaryType, IBoundary, IBoundaryImport} from './types';
 
 class BoundaryCollection extends Collection<Boundary> {
 
     public static fromQuery(query: IBoundary[]) {
         const bc = new BoundaryCollection();
         query.forEach((b) => {
-            const boundary = BoundaryFactory.fromObject(b);
-            if (boundary) {
-                bc.addBoundary(boundary);
-            }
+            bc.addBoundary(BoundaryFactory.fromObject(b));
         });
         return bc;
     }
@@ -21,18 +18,19 @@ class BoundaryCollection extends Collection<Boundary> {
     public static fromObject(query: IBoundary[]) {
         const bc = new BoundaryCollection();
         query.forEach((b) => {
-            const boundary = BoundaryFactory.fromObject(b);
-            if (boundary) {
-                bc.addBoundary(boundary);
-            }
+            bc.addBoundary(BoundaryFactory.fromObject(b));
         });
         return bc;
     }
 
-    public static fromImport(i: IBoundaryImport[], boundingBox: BoundingBox, gridSize: GridSize) {
+    public static fromImport(i: IBoundaryImportData[], boundingBox: BoundingBox, gridSize: GridSize) {
         const bc = new BoundaryCollection();
         i.forEach((b) => bc.addBoundary(BoundaryFactory.fromImport(b, boundingBox, gridSize)));
         return bc;
+    }
+
+    public findById(value: string) {
+        return this.findFirstBy('id', value, true);
     }
 
     public addBoundary(boundary: Boundary) {
@@ -43,6 +41,11 @@ class BoundaryCollection extends Collection<Boundary> {
         return this.boundaries.filter((b) => b.type === type).length;
     }
 
+    public removeById(id: string) {
+        this.removeBy('id', id);
+        return this;
+    }
+
     get boundaries() {
         return sortBy(this.all, [(b) => b.name && b.name.toUpperCase()]);
     }
@@ -51,7 +54,7 @@ class BoundaryCollection extends Collection<Boundary> {
         return this.boundaries.map((b) => b.toObject());
     };
 
-    public toImport = (): IBoundaryImport[] => {
+    public toImport = (): IBoundaryImportData[] => {
         return [];
     };
 }

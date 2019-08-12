@@ -1,6 +1,7 @@
 import FlopyModflowBoundary from './FlopyModflowBoundary';
 import HeadObservationWell from '../../../modflow/boundaries/HeadObservationWell';
-import {BoundaryCollection, Stressperiods} from '../../../modflow';
+import {Stressperiods} from '../../../modflow';
+import {BoundaryCollection} from '../../../modflow/boundaries';
 
 export default class FlopyModflowMfhob extends FlopyModflowBoundary {
 

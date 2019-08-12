@@ -3,7 +3,8 @@ import {connect} from 'react-redux';
 import {withRouter} from 'react-router-dom';
 import {Button, Grid, Menu, Segment} from 'semantic-ui-react';
 import FlopyPackages from '../../../../../core/model/flopy/packages/FlopyPackages';
-import {BoundaryCollection, ModflowModel} from '../../../../../core/model/modflow';
+import {ModflowModel} from '../../../../../core/model/modflow';
+import {BoundaryCollection} from '../../../../../core/model/modflow/boundaries';
 import {Substance, Transport} from '../../../../../core/model/modflow/transport';
 import {sendCommand} from '../../../../../services/api';
 import ContentToolBar from '../../../../shared/ContentToolbar';
@@ -129,11 +130,6 @@ class TransportUi extends React.Component<Props, IState> {
 
     public render() {
         const {boundaries, model, transport} = this.props;
-
-        if (!(transport instanceof Transport)) {
-            return null;
-        }
-
         const {substances} = transport;
         const {readOnly} = model;
 

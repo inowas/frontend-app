@@ -12,10 +12,7 @@ const createConstantHeadBoundary = () => {
     const layers = [1, 2];
     const cells: ICells = [[1, 2], [2, 3], [4, 5]];
     const spValues = [[1, 2], [1, 2], [1, 2]];
-
-    return ConstantHeadBoundary.create(
-        id, 'chd', geometry, name, layers, cells, spValues
-    );
+    return ConstantHeadBoundary.create(id, geometry, name, layers, cells, spValues);
 };
 
 test('ConstantHeadBoundary create', () => {
@@ -26,9 +23,7 @@ test('ConstantHeadBoundary create', () => {
     const cells: ICells = [[1, 2], [2, 3], [4, 5]];
     const spValues = [[1, 2], [1, 2], [1, 2]];
 
-    const constantHeadBoundary = ConstantHeadBoundary.create(
-        id, 'chd', geometry, name, layers, cells, spValues
-    );
+    const constantHeadBoundary = ConstantHeadBoundary.create(id, geometry, name, layers, cells, spValues);
 
     expect(constantHeadBoundary).toBeInstanceOf(ConstantHeadBoundary);
     expect(constantHeadBoundary.id).toEqual(id);
@@ -40,20 +35,20 @@ test('ConstantHeadBoundary create', () => {
 
 test('ConstantHeadBoundary add ObservationPoint', () => {
     const constantHeadBoundary = createConstantHeadBoundary();
-    constantHeadBoundary.addObservationPoint('Op2', {type: 'Point', coordinates: [1, 2]}, [[3], [2], [1]]);
+    constantHeadBoundary.addObservationPoint(Uuid.v4(), 'Op2', {type: 'Point', coordinates: [1, 2]}, [[3], [2], [1]]);
     expect(constantHeadBoundary.observationPoints).toHaveLength(2);
 
     const op2 = constantHeadBoundary.findObservationPointByName('Op2');
     expect(op2).toBeTruthy();
     expect(op2.id).toBeTruthy();
     expect(op2.type).toEqual('Feature');
-    expect(op2.properties.name).toEqual('Op2');
+    expect(op2.name).toEqual('Op2');
     expect(op2.geometry).toEqual({type: 'Point', coordinates: [1, 2]});
 });
 
 test('ConstantHeadBoundary update ObservationPoint', () => {
     const constantHeadBoundary = createConstantHeadBoundary();
-    constantHeadBoundary.addObservationPoint('Op2', {type: 'Point', coordinates: [1, 2]}, [[3], [2], [1]]);
+    constantHeadBoundary.addObservationPoint(Uuid.v4(), 'Op2', {type: 'Point', coordinates: [1, 2]}, [[3], [2], [1]]);
     expect(constantHeadBoundary.observationPoints).toHaveLength(2);
     const op2 = constantHeadBoundary.findObservationPointByName('Op2');
 
@@ -68,14 +63,14 @@ test('ConstantHeadBoundary update ObservationPoint', () => {
     expect(op2New).toBeTruthy();
     expect(op2New.id).toEqual(id);
     expect(op2New.type).toEqual('Feature');
-    expect(op2New.properties.name).toEqual(name);
+    expect(op2New.name).toEqual(name);
     expect(op2New.geometry).toEqual(geometry);
-    expect(op2New.properties.sp_values).toEqual(spValues);
+    expect(op2New.spValues).toEqual(spValues);
 });
 
 test('ConstantHeadBoundary remove ObservationPoint', () => {
     const constantHeadBoundary = createConstantHeadBoundary();
-    constantHeadBoundary.addObservationPoint('Op2', {type: 'Point', coordinates: [1, 2]}, [[3], [2], [1]]);
+    constantHeadBoundary.addObservationPoint(Uuid.v4(), 'Op2', {type: 'Point', coordinates: [1, 2]}, [[3], [2], [1]]);
     expect(constantHeadBoundary.observationPoints).toHaveLength(2);
     const op2 = constantHeadBoundary.findObservationPointByName('Op2');
     constantHeadBoundary.removeObservationPoint(op2.id);

@@ -12,7 +12,8 @@ import {
 import {NearestPointOnLine} from '@turf/nearest-point-on-line';
 import {Feature, LineString} from 'geojson';
 import {floor, isEqual} from 'lodash';
-import {BoundingBox, Geometry, GridSize, LineBoundary} from '../modflow/index';
+import {LineBoundary} from '../modflow/boundaries';
+import {BoundingBox, Geometry, GridSize} from '../modflow/index';
 import {ICell, ICells, Point} from './Cells.type';
 
 const getActiveCellFromCoordinate = (coordinate: Point, boundingBox: BoundingBox, gridSize: GridSize): ICell => {
@@ -127,7 +128,7 @@ export default class Cells {
             return;
         }
 
-        const linestring = turf.lineString(boundary.geometry.coordinates);
+        const linestring = turf.lineString(boundary.geometry.coordinates as number[][]);
 
         // order the observationPoints on the line by distance from root
         observationPoints.sort((op1, op2) => {

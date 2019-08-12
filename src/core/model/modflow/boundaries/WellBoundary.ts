@@ -1,73 +1,71 @@
 import {Point} from 'geojson';
-import uuidv4 from 'uuid/v4';
+import {cloneDeep} from 'lodash';
 import {ICells} from '../../geometry/Cells.type';
+import {Cells, Geometry} from '../index';
 import Boundary from './Boundary';
-import {SpValues, WellType} from './types';
-import {IWellBoundary} from './WellBoundary.type';
+import {ISpValues, IValueProperty} from './Boundary.type';
+import {IWellBoundary, IWellType} from './WellBoundary.type';
 
 export default class WellBoundary extends Boundary {
-    get type() {
-        return this._type;
-    }
 
-    get id() {
-        return this._id;
-    }
-
-    set id(value) {
-        this._id = value;
-    }
-
-    get geometry() {
-        return this._geometry;
-    }
-
-    set geometry(value) {
-        this._geometry = value;
-    }
-
-    get geometryType() {
+    public static geometryType() {
         return 'Point';
     }
 
+    get type() {
+        return this._props.properties.type;
+    }
+
+    get id() {
+        return this._props.id;
+    }
+
+    set id(value) {
+        this._props.id = value;
+    }
+
+    get geometry() {
+        return Geometry.fromObject(this._props.geometry);
+    }
+
+    set geometry(value) {
+        this._props.geometry = value.toObject();
+    }
+
+    get geometryType() {
+        return WellBoundary.geometryType();
+    }
+
     get name() {
-        return this._name;
+        return this._props.properties.name;
     }
 
     set name(value) {
-        this._name = value;
+        this._props.properties.name = value;
     }
 
     get layers() {
-        return this._layers;
+        return this._props.properties.layers;
     }
 
     set layers(value) {
-        this._layers = value;
+        this._props.properties.layers = value;
     }
 
     get cells() {
-        return this._cells;
+        return Cells.fromObject(this._props.properties.cells);
     }
 
     set cells(value) {
-        this._cells = value;
+        this._props.properties.cells = value.toObject;
     }
 
     get wellType() {
-        return this._wellType;
+        return this._props.properties.well_type;
     }
 
     set wellType(value) {
-        this._wellType = value;
-    }
-
-    get spValues() {
-        return this._spValues;
-    }
-
-    set spValues(value) {
-        this._spValues = value;
+        this._props.properties.well_type = value;
     }
 
     static get wellTypes() {
@@ -98,7 +96,7 @@ export default class WellBoundary extends Boundary {
         };
     }
 
-    get valueProperties() {
+    public static valueProperties(): IValueProperty[] {
         return [
             {
                 name: 'Pumping rate',
@@ -110,64 +108,41 @@ export default class WellBoundary extends Boundary {
         ];
     }
 
-    public static create(id: string, type: 'wel', geometry?: Point, name?: string, layers?: number[], cells?: ICells,
-                         spValues?: SpValues) {
-        const boundary = new this();
-        boundary.id = id;
-        boundary.geometry = geometry;
-        boundary.name = name;
-        boundary.layers = layers;
-        boundary.cells = cells;
-        boundary.wellType = WellBoundary.wellTypes.default as WellType;
-        boundary.spValues = spValues;
-        return boundary;
+    public static create(id: string, geometry: Point, name: string, layers: number[], cells: ICells,
+                         spValues: ISpValues) {
+        return new WellBoundary({
+            id,
+            type: 'Feature',
+            geometry,
+            properties: {
+                type: 'wel',
+                name,
+                cells,
+                layers,
+                well_type: WellBoundary.wellTypes.default as IWellType,
+                sp_values: spValues
+            }
+        });
     }
 
-    public static fromObject(obj: IWellBoundary) {
-        const wellBoundary = this.create(
-            obj.id,
-            obj.properties.type,
-            obj.geometry,
-            obj.properties.name,
-            obj.properties.layers,
-            obj.properties.cells,
-            obj.properties.sp_values,
-        );
-
-        wellBoundary.wellType = obj.properties.well_type;
-        return wellBoundary;
+    constructor(props: IWellBoundary) {
+        super();
+        this._props = cloneDeep(props);
     }
-
-    public _type: 'wel' = 'wel';
-    public _id: string = uuidv4();
-    public _geometry?: Point;
-    public _name?: string;
-    public _layers?: number[];
-    public _cells?: ICells;
-    public _wellType?: WellType;
-    public _spValues?: SpValues;
 
     public getSpValues() {
-        return this._spValues;
+        return this._props.properties.sp_values;
     }
 
-    public setSpValues(spValues: SpValues, opId?: string) {
-        this._spValues = spValues;
+    public setSpValues(spValues: ISpValues, opId?: string) {
+        this._props.properties.sp_values = spValues;
     }
 
     public toObject(): IWellBoundary {
-        return {
-            type: 'Feature',
-            id: this.id,
-            geometry: this.geometry,
-            properties: {
-                name: this.name,
-                type: this.type,
-                layers: this.layers,
-                cells: this.cells,
-                well_type: this.wellType,
-                sp_values: this.spValues
-            }
-        };
+        return this._props;
+    }
+
+    public get valueProperties(): IValueProperty[] {
+        return WellBoundary.valueProperties();
     }
 }

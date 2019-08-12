@@ -3,15 +3,10 @@ import {connect} from 'react-redux';
 import {withRouter} from 'react-router-dom';
 import {Grid, Segment} from 'semantic-ui-react';
 
-import {
-    Boundary,
-    BoundaryCollection,
-    BoundaryFactory,
-    ModflowModel,
-    Soilmodel
-} from '../../../../../core/model/modflow';
+import {ModflowModel, Soilmodel} from '../../../../../core/model/modflow';
+import {Boundary, BoundaryCollection, BoundaryFactory} from '../../../../../core/model/modflow/boundaries';
 
-import {BoundaryType, IBoundary} from '../../../../../core/model/modflow/boundaries/types';
+import {BoundaryType, IBoundary} from '../../../../../core/model/modflow/boundaries/Boundary.type';
 import ContentToolBar from '../../../../../scenes/shared/ContentToolbar';
 
 import {fetchUrl, sendCommand} from '../../../../../services/api';
@@ -132,9 +127,6 @@ class Boundaries extends React.Component<Props, IState> {
     public onAdd = (type: BoundaryType) => {
         const {id, property} = this.props.match.params;
         if (BoundaryFactory.availableTypes.indexOf(type) >= 0) {
-            const newBoundary = BoundaryFactory.fromType(type);
-            newBoundary.name = `New ${type}-Boundary`;
-
             this.props.history.push(`${baseUrl}/${id}/${property}/${type}`);
         }
     };

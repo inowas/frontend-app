@@ -24,8 +24,8 @@ const createRiverBoundary = () => {
         'type': 'Point',
         coordinates: [3, -4]
     }, [[10, 20, 30], [11, 22, 33]]);
-    riverBoundary.addObservationPoint('OP3', {'type': 'Point', coordinates: [19, 2]}, [[30, 40, 50], [33, 44, 55]]);
-    riverBoundary.addObservationPoint('OP2', {'type': 'Point', coordinates: [11, 0]}, [[20, 30, 40], [22, 33, 44]]);
+    riverBoundary.addObservationPoint(Uuid.v4(), 'OP3', {'type': 'Point', coordinates: [19, 2]}, [[30, 40, 50], [33, 44, 55]]);
+    riverBoundary.addObservationPoint(Uuid.v4(), 'OP2', {'type': 'Point', coordinates: [11, 0]}, [[20, 30, 40], [22, 33, 44]]);
 
     cells.calculateValues(riverBoundary, boundingBox, gridSize);
 

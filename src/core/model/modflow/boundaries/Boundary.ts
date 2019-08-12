@@ -1,9 +1,16 @@
+import {cloneDeep} from 'lodash';
 import Uuid from 'uuid';
-import {ICells} from '../../geometry/Cells.type';
-import {GeoJson} from '../../geometry/Geometry.type';
-import {BoundaryType, IBoundary, SpValues} from './types';
+import {Cells, Geometry} from '../index';
+import {
+    BoundaryType,
+    IBoundary,
+    ISpValues,
+    IValueProperty
+} from './Boundary.type';
 
 export default abstract class Boundary {
+
+    protected _props: any;
 
     abstract get type(): BoundaryType;
 
@@ -11,33 +18,28 @@ export default abstract class Boundary {
 
     abstract set id(id: string);
 
-    abstract get geometry(): GeoJson | undefined;
+    abstract get geometry(): Geometry;
 
-    abstract get name(): string | undefined;
+    abstract get name(): string;
 
-    abstract set name(name: string | undefined);
+    abstract set name(name: string);
 
-    abstract get cells(): ICells | undefined;
+    abstract get cells(): Cells;
 
-    abstract get layers(): number[] | undefined;
+    abstract get layers(): number[];
 
     abstract get geometryType(): string;
 
-    abstract get valueProperties(): Array<{
-        name: string,
-        description: string,
-        unit: string,
-        decimals: number,
-        default: number
-    }>;
+    abstract get valueProperties(): IValueProperty[];
 
-    public abstract getSpValues(opId?: string): SpValues | undefined | null;
+    public abstract getSpValues(opId?: string): ISpValues;
 
-    public abstract setSpValues(spValues: SpValues, opId?: string): void;
+    public abstract setSpValues(spValues: ISpValues, opId?: string): void;
 
     public abstract toObject(): IBoundary;
 
     public clone(): Boundary {
+        this._props = cloneDeep(this._props);
         this.id = Uuid.v4();
         this.name = this.name + '(clone)';
         return this;
