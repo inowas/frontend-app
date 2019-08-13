@@ -162,14 +162,29 @@ class GridImport extends React.Component {
                 menuItem: 'Export',
                 pane: (
                     <Tab.Pane key='tab2'>
-                        <p>Test</p>
+                        <Segment basic>
+                            <Button
+                                color={'grey'}
+                                as='label'
+                                htmlFor={'inputField'}
+                                icon='file alternate'
+                                content='Export JSON File'
+                                labelPosition='left'
+                            />
+                            <input
+                                hidden
+                                type='file'
+                                id='inputField'
+                                onChange={this.handleUpload}
+                            />
+                        </Segment>
                     </Tab.Pane>
                 )
             }
 
     ];
         return (
-            <Modal open onClose={this.props.onCancel} dimmer={'blurring'} size={'small'}>
+            <Modal open onClose={this.props.onCancel} dimmer={'blurring'} size={'small'} style={{minHeight: '400px'}}>
                 <Modal.Header>Configure Spacial Grid</Modal.Header>
                 <Modal.Content>
                     <Tab menu={{secondary: true, widths: 2}} renderActiveOnly={false} panes={panes}/>
@@ -180,34 +195,6 @@ class GridImport extends React.Component {
                                 <Dimmer active inverted>
                                     <Loader>Uploading</Loader>
                                 </Dimmer>
-                                }
-                                {!this.state.isLoading &&
-                                <Segment basic>
-                                    <Button
-                                        color={'grey'}
-                                        as='label'
-                                        htmlFor={'inputField'}
-                                        icon='file alternate'
-                                        content='Select File'
-                                        labelPosition='left'
-                                    />
-                                    <input
-                                        hidden
-                                        type='file'
-                                        id='inputField'
-                                        onChange={this.handleUpload}
-                                    />
-                                    <List bulleted>
-                                        <List.Item>
-                                            The file has to be a csv or json-file.
-                                        </List.Item>
-                                        <List.Item>
-                                            Examples can be found <a
-                                            href='https://github.com/inowas/inowas-dss-cra/blob/master/imports'
-                                            target='_blank' rel='noopener noreferrer'>here</a>.
-                                        </List.Item>
-                                    </List>
-                                </Segment>
                                 }
                             </Grid.Column>
                         </Grid.Row>
@@ -236,7 +223,7 @@ class GridImport extends React.Component {
                 </Modal.Actions>
             </Modal>
         );
-    }
+    };
 
     render() {
         const {showImportModal} = this.state;

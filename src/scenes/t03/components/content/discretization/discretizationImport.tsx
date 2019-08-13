@@ -1,6 +1,6 @@
 import React from 'react';
 
-import {Button, Dimmer, Grid, Header, List, Loader, Modal, Segment} from 'semantic-ui-react';
+import {Button, Dimmer, Divider, Grid, Header, List, Loader, Modal, Segment} from 'semantic-ui-react';
 import {IBoundingBox} from '../../../../../core/model/geometry/BoundingBox.type';
 import {ICells} from '../../../../../core/model/geometry/Cells.type';
 import {GeoJson} from '../../../../../core/model/geometry/Geometry.type';
@@ -279,7 +279,7 @@ class DiscretizationImport extends React.Component<IProps, IState> {
             <Modal.Header>Import Discretization</Modal.Header>
             <Modal.Content>
                 <Grid stackable={true}>
-                    <Grid.Row columns={2}>
+                    <Grid.Row>
                         <Grid.Column>
                             {this.state.isLoading &&
                             <Dimmer active={true} inverted={true}>
@@ -287,35 +287,87 @@ class DiscretizationImport extends React.Component<IProps, IState> {
                             </Dimmer>
                             }
                             {!this.state.isLoading &&
-                            <Segment basic={true}>
+
+                            <Segment basic={true} placeholder={true}>
+                                <Grid columns={2} stackable={true} textAlign="center">
+                                    <Divider vertical={true} />
+
+                                    <Grid.Row verticalAlign="top">
+                                        <Grid.Column>
+                                            <Header>
+                                                Upload discretization file
+                                            </Header>
+                                            <Button
+                                                color={'grey'}
+                                                as={'label'}
+                                                htmlFor={'inputField'}
+                                                icon={'upload'}
+                                                content={'Select File'}
+                                                labelPosition={'left'}
+                                            />
+                                            <input
+                                                hidden={true}
+                                                type={'file'}
+                                                id={'inputField'}
+                                                onChange={this.handleUpload}
+                                            />
+
+                                            The file has to be a csv or json-file.
+                                        </Grid.Column>
+
+                                        <Grid.Column>
+                                            {!this.state.errors &&
+                                                <div>
+                                            <Header>
+                                                Or download actual discretization
+                                            </Header>
+                                            <Button
+                                                color={'grey'}
+                                                htmlFor={'inputField'}
+                                                icon={'download'}
+                                                content={'Get JSON File'}
+                                                labelPosition={'left'}
+                                                onClick={this.download}
+                                            />
+                                                </div>
+                                            }
+                                            {this.state.errors && this.renderValidationErrors(this.state.errors)}
+                                        </Grid.Column>
+                                    </Grid.Row>
+                                </Grid>
+                            </Segment>
+
+                            /*<Segment basic={true}>
+                                <Header icon={true}>
+                                <Icon name={'search'} />
+                                Upload discretization file
+                                </Header>
                                 <List bulleted={true}>
-                                    <List.Item>The file has to be a csv or json-file.</List.Item>
-                                    <List.Item
-                                        as={'a'}
-                                        onClick={this.download}
-                                    >
-                                        Download the actual discretization.
-                                    </List.Item>
+                                <List.Item>The file has to be a csv or json-file.</List.Item>
+                                <List.Item
+                                as={'a'}
+                                onClick={this.download}
+                                >
+                                Download the actual discretization.
+                                </List.Item>
                                 </List>
                                 <Button
-                                    color={'grey'}
-                                    as={'label'}
-                                    htmlFor={'inputField'}
-                                    icon={'file alternate'}
-                                    content={'Select File'}
-                                    labelPosition={'left'}
+                                color={'grey'}
+                                as={'label'}
+                                htmlFor={'inputField'}
+                                icon={'upload'}
+                                content={'Select File'}
+                                labelPosition={'left'}
                                 />
                                 <input
-                                    hidden={true}
-                                    type={'file'}
-                                    id={'inputField'}
-                                    onChange={this.handleUpload}
+                                hidden={true}
+                                type={'file'}
+                                id={'inputField'}
+                                onChange={this.handleUpload}
                                 />
-                            </Segment>
+                                </Segment>*/
+
                             }
-                        </Grid.Column>
-                        <Grid.Column>
-                            {this.state.errors && this.renderValidationErrors(this.state.errors)}
                         </Grid.Column>
                     </Grid.Row>
                     <Grid.Row>
