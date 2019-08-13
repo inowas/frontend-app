@@ -53,7 +53,7 @@ export default class DrainageBoundary extends LineBoundary {
 
     public static fromImport(obj: IDrainageBoundaryImport, boundingBox: BoundingBox, gridSize: GridSize) {
         const boundary = this.create(
-            Uuid.v4(),
+            obj.id ? obj.id : Uuid.v4(),
             obj.geometry,
             obj.name,
             obj.layers,
@@ -63,7 +63,12 @@ export default class DrainageBoundary extends LineBoundary {
 
         const opIdToRemove = boundary.observationPoints[0].id;
         obj.ops.forEach((op) => {
-            boundary.addObservationPoint(Uuid.v4(), op.name, op.geometry, op.sp_values);
+            boundary.addObservationPoint(
+                op.id ? op.id : Uuid.v4(),
+                op.name,
+                op.geometry,
+                op.sp_values
+            );
         });
 
         boundary.removeObservationPoint(opIdToRemove);
@@ -102,6 +107,7 @@ export default class DrainageBoundary extends LineBoundary {
 
     public toImport(): IDrainageBoundaryImport {
         return {
+            id: this.id,
             type: this.type,
             name: this.name,
             geometry: this.geometry.toObject() as LineString,

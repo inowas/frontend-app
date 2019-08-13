@@ -20,6 +20,7 @@ export interface IEvapotranspirationBoundary {
 
 export interface IEvapotranspirationBoundaryImport {
     type: 'evt';
+    id?: string;
     name: string;
     geometry: Polygon;
     layers: number[];

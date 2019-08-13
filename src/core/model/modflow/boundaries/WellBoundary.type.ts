@@ -20,6 +20,7 @@ export interface IWellBoundary {
 
 export interface IWellBoundaryImport {
     type: 'wel';
+    id?: string;
     name: string;
     geometry: Point;
     layers: number[];

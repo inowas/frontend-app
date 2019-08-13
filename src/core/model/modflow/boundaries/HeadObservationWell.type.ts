@@ -17,6 +17,7 @@ export interface IHeadObservationWell {
 
 export interface IHeadObservationWellImport {
     type: 'hob';
+    id?: string;
     name: string;
     geometry: Point;
     layers: number[];

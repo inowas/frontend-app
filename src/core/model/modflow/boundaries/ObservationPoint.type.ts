@@ -12,3 +12,10 @@ export interface IObservationPoint {
         distance: number;
     };
 }
+
+export interface IObservationPointImportData {
+    id?: string;
+    name: string;
+    geometry: Point;
+    sp_values: ISpValues;
+}

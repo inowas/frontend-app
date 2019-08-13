@@ -86,7 +86,7 @@ export default class WellBoundary extends Boundary {
 
     public static fromImport(obj: IWellBoundaryImport, boundingBox: BoundingBox, gridSize: GridSize) {
         const boundary = this.create(
-            Uuid.v4(),
+            obj.id ? obj.id : Uuid.v4(),
             obj.geometry,
             obj.name,
             obj.layers,
@@ -160,6 +160,7 @@ export default class WellBoundary extends Boundary {
     }
 
     public toImport = (): IWellBoundaryImport => ({
+        id: this.id,
         type: this.type,
         name: this.name,
         geometry: this.geometry.toObject() as Point,

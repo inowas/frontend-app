@@ -20,6 +20,7 @@ export interface IRechargeBoundary {
 
 export interface IRechargeBoundaryImport {
     type: 'rch';
+    id?: string;
     name: string;
     geometry: Polygon;
     layers: number[];

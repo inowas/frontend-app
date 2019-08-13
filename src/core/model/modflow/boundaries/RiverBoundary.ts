@@ -53,7 +53,7 @@ export default class RiverBoundary extends LineBoundary {
 
     public static fromImport(obj: IRiverBoundaryImport, boundingBox: BoundingBox, gridSize: GridSize) {
         const boundary = this.create(
-            Uuid.v4(),
+            obj.id ? obj.id : Uuid.v4(),
             obj.geometry,
             obj.name,
             obj.layers,
@@ -63,7 +63,12 @@ export default class RiverBoundary extends LineBoundary {
 
         const opIdToRemove = boundary.observationPoints[0].id;
         obj.ops.forEach((op) => {
-            boundary.addObservationPoint(Uuid.v4(), op.name, op.geometry, op.sp_values);
+            boundary.addObservationPoint(
+                op.id ? op.id : Uuid.v4(),
+                op.name,
+                op.geometry,
+                op.sp_values
+            );
         });
 
         boundary.removeObservationPoint(opIdToRemove);
@@ -107,20 +112,19 @@ export default class RiverBoundary extends LineBoundary {
         this._props = cloneDeep(obj);
     }
 
-    public toImport(): IRiverBoundaryImport {
-        return {
-            type: this.type,
-            name: this.name,
-            geometry: this.geometry.toObject() as LineString,
-            layers: this.layers,
-            ops: this.observationPoints.map((op) => ({
-                    name: op.name,
-                    geometry: op.geometry,
-                    sp_values: op.spValues
-                }
-            ))
-        };
-    }
+    public toImport = (): IRiverBoundaryImport => ({
+        id: this.id,
+        type: this.type,
+        name: this.name,
+        geometry: this.geometry.toObject() as LineString,
+        layers: this.layers,
+        ops: this.observationPoints.map((op) => ({
+                name: op.name,
+                geometry: op.geometry,
+                sp_values: op.spValues
+            }
+        ))
+    });
 
     public toObject(): IRiverBoundary {
         return this._props;

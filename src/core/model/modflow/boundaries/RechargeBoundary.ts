@@ -81,7 +81,7 @@ export default class RechargeBoundary extends Boundary {
 
     public static fromImport(obj: IRechargeBoundaryImport, boundingBox: BoundingBox, gridSize: GridSize) {
         return this.create(
-            Uuid.v4(),
+            obj.id ? obj.id : Uuid.v4(),
             obj.geometry,
             obj.name,
             obj.layers,
@@ -139,6 +139,7 @@ export default class RechargeBoundary extends Boundary {
     }
 
     public toImport = (): IRechargeBoundaryImport => ({
+        id: this.id,
         type: this.type,
         name: this.name,
         geometry: this.geometry.toObject() as Polygon,

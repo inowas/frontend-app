@@ -1,4 +1,3 @@
-import {Point} from 'geojson';
 import {
     IConstantHeadBoundary,
     IConstantHeadBoundaryFeature,
@@ -49,12 +48,6 @@ export type ISpValues = number[][] | null;
 export interface IBoundaryFeatureCollection {
     type: 'FeatureCollection';
     features: Array<IBoundaryFeature | IObservationPoint>;
-}
-
-export interface IObservationPointImportData {
-    name: string;
-    geometry: Point;
-    sp_values: ISpValues;
 }
 
 export interface IValueProperty {

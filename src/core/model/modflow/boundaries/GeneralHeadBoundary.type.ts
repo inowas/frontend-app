@@ -1,7 +1,7 @@
 import {LineString} from 'geojson';
 import {ICells} from '../../geometry/Cells.type';
-import {IBoundaryFeatureCollection, IObservationPointImportData} from './Boundary.type';
-import {IObservationPoint} from './ObservationPoint.type';
+import {IBoundaryFeatureCollection} from './Boundary.type';
+import {IObservationPoint, IObservationPointImportData} from './ObservationPoint.type';
 
 export interface IGeneralHeadBoundary extends IBoundaryFeatureCollection {
     type: 'FeatureCollection';
@@ -22,6 +22,7 @@ export interface IGeneralHeadBoundaryFeature {
 
 export interface IGeneralHeadBoundaryImport {
     type: 'ghb';
+    id?: string;
     name: string;
     geometry: LineString;
     layers: number[];
