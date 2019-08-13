@@ -3,10 +3,11 @@ import PropTypes from 'prop-types';
 import {connect} from 'react-redux';
 
 import {Calculation, ModflowModel} from '../../../../../core/model/modflow';
-import {Grid, Header, List, Segment} from 'semantic-ui-react';
+import {Grid, Header, Icon, List, Popup, Segment} from 'semantic-ui-react';
 import Terminal from '../../../../shared/complexTools/Terminal';
 
 import {fetchModflowFile, MODFLOW_CALCULATION_URL} from '../../../../../services/api';
+import Button from 'semantic-ui-react/dist/commonjs/elements/Button';
 
 class Files extends React.Component {
 
@@ -16,6 +17,7 @@ class Files extends React.Component {
             isLoading: false,
             isError: false,
             selectedFile: null,
+            copyToClipBoardSuccessful: false,
             file: null
         };
     }
@@ -58,7 +60,25 @@ class Files extends React.Component {
     };
 
     onClickFile = (file) => {
-        this.setState({selectedFile: file}, () => this.fetchFile());
+        this.setState({
+            selectedFile: file,
+            copyToClipBoardSuccessful: false
+        }, () => this.fetchFile());
+    };
+
+    onCopyToClipboard = () => {
+        const {content} = this.state.file;
+        const dummy = document.createElement('textarea');
+        // to avoid breaking orgain page when copying more words
+        // cant copy when adding below this code
+        // dummy.style.display = 'none'
+        document.body.appendChild(dummy);
+        //Be careful if you use texarea. setAttribute('value', value), which works with "input" does not work with "textarea". – Eduard
+        dummy.value = content;
+        dummy.select();
+        document.execCommand('copy');
+        document.body.removeChild(dummy);
+        this.setState({copyToClipBoardSuccessful: true})
     };
 
     render() {
@@ -94,14 +114,24 @@ class Files extends React.Component {
                             </List>
                         </Segment>
                         {!this.props.readOnly &&
-                        <a className="ui button positive fluid" href={`${MODFLOW_CALCULATION_URL}/${calculation.id}/download`} target="_blank"
+                        <a className="ui button positive fluid"
+                           href={`${MODFLOW_CALCULATION_URL}/${calculation.id}/download`} target="_blank"
                            rel="noopener noreferrer">
                             Download
                         </a>
                         }
                     </Grid.Column>
                     <Grid.Column width={12}>
-                        <Header as={'h3'}>Content file: {this.state.selectedFile}</Header>
+                        <Header as={'h3'}>
+                            File content for {this.state.selectedFile} &nbsp;
+                            <Button icon basic={true} onClick={this.onCopyToClipboard}>
+                                <Popup content={'Copy top clipboard'} position={'right center'} trigger={
+                                    <Icon
+                                        name={this.state.copyToClipBoardSuccessful ? 'clipboard check' : 'clipboard outline'}
+                                        size={'small'}/>
+                                }/>
+                            </Button>
+                        </Header>
                         <Segment color={'grey'} loading={this.state.isLoading}>
                             {this.state.file && <Terminal content={this.state.file.content}/>}
                         </Segment>
