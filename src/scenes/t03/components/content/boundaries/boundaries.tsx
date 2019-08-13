@@ -2,11 +2,13 @@ import React from 'react';
 import {connect} from 'react-redux';
 import {withRouter} from 'react-router-dom';
 import {Grid, Segment} from 'semantic-ui-react';
-import {BoundaryCollection, ModflowModel, Soilmodel} from '../../../../../core/model/modflow';
-import {BoundaryFactory} from '../../../../../core/model/modflow/boundaries';
-import Boundary from '../../../../../core/model/modflow/boundaries/Boundary';
-import {BoundaryInstance, BoundaryType} from '../../../../../core/model/modflow/boundaries/types';
+
+import {ModflowModel, Soilmodel} from '../../../../../core/model/modflow';
+import {Boundary, BoundaryCollection, BoundaryFactory} from '../../../../../core/model/modflow/boundaries';
+
+import {BoundaryType, IBoundary} from '../../../../../core/model/modflow/boundaries/Boundary.type';
 import ContentToolBar from '../../../../../scenes/shared/ContentToolbar';
+
 import {fetchUrl, sendCommand} from '../../../../../services/api';
 import {updateBoundaries, updateModel} from '../../../actions/actions';
 import ModflowModelCommand from '../../../commands/modflowModelCommand';
@@ -38,7 +40,7 @@ interface IDispatchProps {
 type Props = IStateProps & IDispatchProps & IOwnProps;
 
 interface IState {
-    selectedBoundary: BoundaryInstance | null;
+    selectedBoundary: IBoundary | null;
     isLoading: boolean;
     isDirty: boolean;
     error: boolean;
@@ -59,7 +61,6 @@ class Boundaries extends React.Component<Props, IState> {
 
     public componentDidMount() {
         const {id, pid} = this.props.match.params;
-
         if (this.props.boundaries.length === 0) {
             return this.setState({
                 isLoading: false
@@ -76,15 +77,24 @@ class Boundaries extends React.Component<Props, IState> {
     }
 
     public componentWillReceiveProps(nextProps: Props) {
-        const {id, pid} = nextProps.match.params;
+        const {id, pid, property} = nextProps.match.params;
 
         if (!pid && nextProps.boundaries.length > 0) {
             return this.redirectToFirstBoundary(nextProps);
         }
 
-        if ((this.props.match.params.id !== id) || (this.props.match.params.pid !== pid)) {
+        if ((this.props.match.params.id !== id)
+            || (this.props.match.params.pid !== pid)
+            || (this.props.match.params.property !== property)
+        ) {
+            if (nextProps.boundaries.length === 0) {
+                return this.setState({
+                    selectedBoundary: null
+                });
+            }
+
             return this.setState({
-                isLoading: true
+                isLoading: true,
             }, () => this.fetchBoundary(id, pid));
         }
     }
@@ -102,7 +112,7 @@ class Boundaries extends React.Component<Props, IState> {
 
     public fetchBoundary = (modelId: string, boundaryId: string) =>
         fetchUrl(`modflowmodels/${modelId}/boundaries/${boundaryId}`,
-            (boundary: BoundaryInstance) => {
+            (boundary: IBoundary) => {
                 return this.setState({
                     isLoading: false,
                     selectedBoundary: boundary
@@ -125,9 +135,6 @@ class Boundaries extends React.Component<Props, IState> {
     public onAdd = (type: BoundaryType) => {
         const {id, property} = this.props.match.params;
         if (BoundaryFactory.availableTypes.indexOf(type) >= 0) {
-            const newBoundary = BoundaryFactory.fromType(type);
-            newBoundary.name = `New ${type}-Boundary`;
-
             this.props.history.push(`${baseUrl}/${id}/${property}/${type}`);
         }
     };
@@ -135,7 +142,7 @@ class Boundaries extends React.Component<Props, IState> {
     public onClone = (boundaryId: string) => {
         const model = this.props.model;
         fetchUrl(`modflowmodels/${model.id}/boundaries/${boundaryId}`,
-            (boundary: BoundaryInstance) => {
+            (boundary: IBoundary) => {
                 const b = BoundaryFactory.fromObject(boundary);
                 if (b) {
                     const clonedBoundary = b.clone();
@@ -186,13 +193,8 @@ class Boundaries extends React.Component<Props, IState> {
         );
     };
 
-    public handleCancelImport = () => {
-        return;
-    };
-
-    public handleChangeImport = () => {
-        // TODO: import
-        return;
+    public handleChangeImport = (boundaries: BoundaryCollection) => {
+        return this.props.updateBoundaries(boundaries);
     };
 
     public render() {
@@ -237,9 +239,9 @@ class Boundaries extends React.Component<Props, IState> {
                                             saveButton={!readOnly}
                                             importButton={this.props.readOnly ||
                                             <BoundariesImport
-                                                onCancel={this.handleCancelImport}
+                                                model={this.props.model}
+                                                boundaries={this.props.boundaries}
                                                 onChange={this.handleChangeImport}
-                                                timeUnit={model.timeUnit.toInt()}
                                             />
                                             }
                                         />
@@ -265,14 +267,9 @@ class Boundaries extends React.Component<Props, IState> {
 }
 
 const mapStateToProps = (state: any, props: any) => {
-    const boundaries = BoundaryCollection.fromObject(state.T03.boundaries);
-    if (props.types && boundaries.length > 0) {
-        boundaries.items = boundaries.all.filter((b) => props.types.includes(b.type));
-    }
-
     return ({
         readOnly: ModflowModel.fromObject(state.T03.model).readOnly,
-        boundaries,
+        boundaries: BoundaryCollection.fromObject(state.T03.boundaries).filter((b) => props.types.includes(b.type)),
         model: ModflowModel.fromObject(state.T03.model),
         soilmodel: Soilmodel.fromObject(state.T03.soilmodel)
     });

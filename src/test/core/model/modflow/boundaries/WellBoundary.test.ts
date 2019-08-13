@@ -13,9 +13,7 @@ const createWellBoundary = () => {
     const cells: ICells = [[1, 2]];
     const spValues = [[1], [2], [3]];
 
-    const wb = WellBoundary.create(
-        id, 'wel', geometry, name, layers, cells, spValues
-    );
+    const wb = WellBoundary.create(id, geometry, name, layers, cells, spValues);
 
     wb.wellType = 'irw';
     return wb;
@@ -30,23 +28,17 @@ test('WellBoundary create', () => {
     const spValues = [[1], [2], [3]];
 
     const wellBoundary = WellBoundary.create(
-        id, 'wel', geometry, name, layers, cells, spValues
+        id, geometry, name, layers, cells, spValues
     );
 
     expect(wellBoundary).toBeInstanceOf(WellBoundary);
     expect(wellBoundary.id).toEqual(id);
     expect(wellBoundary.name).toEqual(name);
-    expect(wellBoundary.geometry).toEqual(geometry);
+    expect(wellBoundary.geometry.toObject()).toEqual(geometry);
     expect(wellBoundary.layers).toEqual(layers);
-    expect(wellBoundary.cells).toEqual(cells);
-    expect(wellBoundary.spValues).toEqual(spValues);
+    expect(wellBoundary.cells.toObject()).toEqual(cells);
+    expect(wellBoundary.getSpValues()).toEqual(spValues);
     expect(wellBoundary.wellType).toEqual('puw');
-});
-
-test('WellBoundary getter and setter', () => {
-    const boundary = new WellBoundary();
-    boundary.id = '1';
-    expect(boundary.id).toEqual('1');
 });
 
 test('WellBoundary fromObject', () => {

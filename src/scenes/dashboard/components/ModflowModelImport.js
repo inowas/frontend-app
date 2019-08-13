@@ -5,7 +5,6 @@ import Uuid from 'uuid';
 import {Button, Dimmer, Grid, Header, Modal, List, Loader, Segment} from 'semantic-ui-react';
 import ModflowModelCommand from '../../t03/commands/modflowModelCommand';
 import {
-    BoundaryCollection,
     BoundingBox,
     Cells,
     Geometry,
@@ -19,6 +18,7 @@ import ModelImportMap from './ModelImportMap';
 import {JSON_SCHEMA_URL, sendCommand} from '../../../services/api';
 import {dxGeometry, dyGeometry} from '../../../services/geoTools/distance';
 import {validate} from '../../../services/jsonSchemaValidator';
+import {BoundaryCollection} from '../../../core/model/modflow/boundaries';
 
 class ModflowModelImport extends React.Component {
 

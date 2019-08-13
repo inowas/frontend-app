@@ -1,6 +1,6 @@
 import FlopyMt3dPackage from './FlopyMt3dPackage';
 import SubstanceCollection from '../../../modflow/transport/SubstanceCollection';
-import {Boundary, BoundaryCollection} from '../../../modflow';
+import {Boundary, BoundaryCollection} from '../../../modflow/boundaries';
 
 const itypes = {
     'CHD': 1,

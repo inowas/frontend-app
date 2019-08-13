@@ -2,13 +2,14 @@ import React from 'react';
 import PropTypes from 'prop-types';
 
 import {Grid, Header, Segment} from 'semantic-ui-react';
-import {BoundaryCollection, Calculation, ModflowModel, Soilmodel} from '../../../core/model/modflow';
+import {Calculation, ModflowModel, Soilmodel} from '../../../core/model/modflow';
 import {ScenarioAnalysis} from '../../../core/model/scenarioAnalysis';
 import ResultsSelectorFlow from '../../shared/complexTools/ResultsSelectorFlow';
 import ResultsMap from '../../shared/complexTools/ResultsMap';
 import ResultsChart from '../../shared/complexTools/ResultsChart';
 import {chunk, compact, flatten} from 'lodash';
 import {fetchCalculationResultsFlow} from '../../../services/api';
+import {BoundaryCollection} from '../../../core/model/modflow/boundaries';
 
 class CrossSection extends React.Component {
 

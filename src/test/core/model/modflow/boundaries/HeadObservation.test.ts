@@ -1,6 +1,8 @@
 import {Point} from 'geojson';
 import Uuid from 'uuid';
+import {Geometry} from '../../../../../core/model/geometry';
 import {ICells} from '../../../../../core/model/geometry/Cells.type';
+import {Cells} from '../../../../../core/model/modflow';
 import {HeadObservationWell} from '../../../../../core/model/modflow/boundaries';
 import {JSON_SCHEMA_URL} from '../../../../../services/api';
 import {validate} from '../../../../../services/jsonSchemaValidator';
@@ -13,9 +15,7 @@ const createHeadObservationWell = () => {
     const cells: ICells = [[1, 2]];
     const spValues = [[1], [2], [3]];
 
-    return HeadObservationWell.create(
-        id, 'hob', geometry, name, layers, cells, spValues
-    );
+    return HeadObservationWell.create(id, geometry, name, layers, cells, spValues);
 };
 
 test('HeadObservationWell create', () => {
@@ -26,17 +26,17 @@ test('HeadObservationWell create', () => {
     const cells: ICells = [[1, 2]];
     const spValues = [[1], [2], [3]];
 
-    const headObservationWell = HeadObservationWell.create(
-        id, 'hob', geometry, name, layers, cells, spValues
-    );
+    const headObservationWell = HeadObservationWell.create(id, geometry, name, layers, cells, spValues);
 
     expect(headObservationWell).toBeInstanceOf(HeadObservationWell);
     expect(headObservationWell.id).toEqual(id);
     expect(headObservationWell.name).toEqual(name);
-    expect(headObservationWell.geometry).toEqual(geometry);
+    expect(headObservationWell.geometry).toBeInstanceOf(Geometry);
+    expect(headObservationWell.geometry.toObject()).toEqual(geometry);
     expect(headObservationWell.layers).toEqual(layers);
-    expect(headObservationWell.cells).toEqual(cells);
-    expect(headObservationWell.spValues).toEqual(spValues);
+    expect(headObservationWell.cells).toBeInstanceOf(Cells);
+    expect(headObservationWell.cells.toObject()).toEqual(cells);
+    expect(headObservationWell.getSpValues()).toEqual(spValues);
 });
 
 test('HeadObservationWell fromObject', () => {

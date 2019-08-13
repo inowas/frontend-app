@@ -1,8 +1,7 @@
 import React from 'react';
 import {Button, Dropdown, DropdownProps, Form, Grid, Icon, Menu, Popup} from 'semantic-ui-react';
-import Boundary from '../../../../../core/model/modflow/boundaries/Boundary';
-import BoundaryCollection from '../../../../../core/model/modflow/boundaries/BoundaryCollection';
-import {BoundarySelection, BoundaryType} from '../../../../../core/model/modflow/boundaries/types';
+import {Boundary, BoundaryCollection} from '../../../../../core/model/modflow/boundaries';
+import {BoundarySelection, BoundaryType} from '../../../../../core/model/modflow/boundaries/Boundary.type';
 
 interface IBoundaryTypeObject {
     key: BoundarySelection;

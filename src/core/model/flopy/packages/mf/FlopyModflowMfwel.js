@@ -44,8 +44,8 @@ export default class FlopyModflowMfwel extends FlopyModflowBoundary {
         spData.forEach((sp, idx) => {
             wells.forEach(well => {
                 const layer = well.layers[0];
-                const cell = well.cells[0];
-                const data = [layer, cell[1], cell[0]].concat(well.spValues[idx]);
+                const cell = well.cells.toObject()[0];
+                const data = [layer, cell[1], cell[0]].concat(well.getSpValues()[idx]);
 
                 let push = true;
                 spData[idx] = spData[idx].map(spd => {

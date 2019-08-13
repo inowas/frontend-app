@@ -1,14 +1,21 @@
 import {Point} from 'geojson';
-import {IBoundaryFeature, SpValues} from './types';
+import {ISpValues} from './Boundary.type';
 
-export interface IObservationPoint extends IBoundaryFeature {
+export interface IObservationPoint {
     type: 'Feature';
     id: string;
-    geometry?: Point;
+    geometry: Point;
     properties: {
-        name?: string
-        sp_values?: SpValues;
+        name: string
+        sp_values: ISpValues;
         type: 'op';
-        distance?: number;
+        distance: number;
     };
+}
+
+export interface IObservationPointImportData {
+    id?: string;
+    name: string;
+    geometry: Point;
+    sp_values: ISpValues;
 }
