@@ -9,14 +9,13 @@ import {BasicTileLayer} from '../../../../services/geoTools/tileLayers';
 import {uniqueId} from 'lodash';
 import {getStyle} from './index';
 
+import {Cells, ModflowModel, Geometry} from '../../../../core/model/modflow';
+
 import {
     Boundary,
     BoundaryCollection,
-    Geometry, LineBoundary,
-    ModflowModel
-} from '../../../../core/model/modflow';
-
-import Cells from '../../../../core/model/geometry/Cells';
+    LineBoundary,
+} from '../../../../core/model/modflow/boundaries';
 
 const style = {
     map: {

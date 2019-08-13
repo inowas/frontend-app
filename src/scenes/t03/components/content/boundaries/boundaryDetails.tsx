@@ -1,20 +1,18 @@
 import React, {ChangeEvent, SyntheticEvent} from 'react';
 import {Button, Dropdown, DropdownProps, Form, Header, InputOnChangeData, List, Popup} from 'semantic-ui-react';
 import uuid from 'uuid';
-import {Boundary, BoundaryCollection, LineBoundary, ModflowModel, Soilmodel} from '../../../../../core/model/modflow';
-import {WellBoundary} from '../../../../../core/model/modflow/boundaries';
+import {ModflowModel, Soilmodel} from '../../../../../core/model/modflow';
+import {Boundary, BoundaryCollection, LineBoundary} from '../../../../../core/model/modflow/boundaries';
+import {RechargeBoundary, WellBoundary} from '../../../../../core/model/modflow/boundaries';
+import EvapotranspirationBoundary from '../../../../../core/model/modflow/boundaries/EvapotranspirationBoundary';
 import NoContent from '../../../../shared/complexTools/noContent';
 import BoundaryMap from '../../maps/boundaryMap';
 import BoundaryGeometryEditor from './boundaryGeometryEditor';
 import BoundaryValuesDataTable from './boundaryValuesDataTable';
 import ObservationPointEditor from './observationPointEditor';
 
-interface IIndexedBoundary extends Boundary {
-    [name: string]: any;
-}
-
 interface IProps {
-    boundary: IIndexedBoundary;
+    boundary: Boundary;
     boundaries: BoundaryCollection;
     model: ModflowModel;
     soilmodel: Soilmodel;
@@ -70,6 +68,7 @@ class BoundaryDetails extends React.Component<IProps, IState> {
             value = [data.value];
         }
         const boundary = this.props.boundary;
+        // @ts-ignore
         boundary[name] = value;
         return this.props.onChange(boundary);
     };
@@ -132,9 +131,9 @@ class BoundaryDetails extends React.Component<IProps, IState> {
 
         return (
             <React.Fragment>
-                {options.enabled &&
+                {(boundary instanceof RechargeBoundary || boundary instanceof EvapotranspirationBoundary) &&
                 <Form.Dropdown
-                    label={options.label}
+                    label={boundary.type === 'rch' ? 'Recharge option' : 'Evapotranspiration option'}
                     style={{zIndex: 1000}}
                     selection={true}
                     options={[
@@ -142,13 +141,14 @@ class BoundaryDetails extends React.Component<IProps, IState> {
                         {key: 1, value: 2, text: '2: Specified layer'},
                         {key: 2, value: 3, text: '3: Highest active cell'}
                     ]}
-                    value={boundary[options.name]}
-                    name={options.name}
+                    value={boundary.optionCode}
+                    name={'optionCode'}
                     onChange={this.handleChange}
                 />
                 }
                 <Form.Select
-                    disabled={options.enabled && boundary[options.name] !== 2}
+                    disabled={(boundary instanceof RechargeBoundary ||
+                        boundary instanceof EvapotranspirationBoundary) && boundary.optionCode !== 2}
                     loading={!(this.props.soilmodel instanceof Soilmodel)}
                     label={multipleLayers ? 'Selected layers' : 'Selected layer'}
                     style={{zIndex: 1000}}
@@ -301,7 +301,7 @@ class BoundaryDetails extends React.Component<IProps, IState> {
                     readOnly={this.props.readOnly}
                 />
                 }
-                {this.state.showObservationPointEditor &&
+                {(this.state.showObservationPointEditor && boundary instanceof LineBoundary) &&
                 <ObservationPointEditor
                     boundary={boundary}
                     model={model}

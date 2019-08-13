@@ -16,11 +16,12 @@ import {
 } from '../actions/actions';
 
 import {ScenarioAnalysis} from '../../../core/model/scenarioAnalysis';
-import {BoundaryCollection, Calculation, ModflowModel, Soilmodel} from '../../../core/model/modflow';
+import {Calculation, ModflowModel, Soilmodel} from '../../../core/model/modflow';
 import ToolNavigation from '../../shared/complexTools/toolNavigation';
 import {cloneDeep} from 'lodash';
 import SimpleToolsCommand from '../../shared/simpleTools/commands/SimpleToolsCommand';
 import ScenarioAnalysisCommand from '../commands/scenarioAnalysisCommand';
+import {BoundaryCollection} from '../../../core/model/modflow/boundaries';
 
 const styles = {
     modelitem: {

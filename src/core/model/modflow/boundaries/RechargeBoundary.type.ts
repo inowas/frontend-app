@@ -1,16 +1,29 @@
-import {MultiPolygon, Polygon} from 'geojson';
+import {Polygon} from 'geojson';
 import {ICells} from '../../geometry/Cells.type';
-import {IBoundaryFeature, SpValues} from './types';
+import {ISpValues} from './Boundary.type';
 
-export interface IRechargeBoundary extends IBoundaryFeature {
+export type INrchop = 1 | 2 | 3;
+
+export interface IRechargeBoundary {
     id: string;
-    geometry?: Polygon | MultiPolygon;
+    type: 'Feature';
+    geometry: Polygon;
     properties: {
-        name?: string;
-        layers?: number[];
-        cells?: ICells;
-        sp_values?: SpValues;
-        nrchop: number;
         type: 'rch';
+        name: string;
+        cells: ICells;
+        layers: number[];
+        nrchop: INrchop;
+        sp_values: ISpValues;
     };
+}
+
+export interface IRechargeBoundaryImport {
+    type: 'rch';
+    id?: string;
+    name: string;
+    geometry: Polygon;
+    layers: number[];
+    sp_values: ISpValues;
+    nrchop: INrchop;
 }

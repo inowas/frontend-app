@@ -1,7 +1,7 @@
-import {WellType} from '../../core/model/modflow/boundaries/types';
+import {IWellType} from '../../core/model/modflow/boundaries/WellBoundary.type';
 import mapStyles from './mapStyles';
 
-export const getStyle = (type: string, subtype?: string | WellType) => {
+export const getStyle = (type: string, subtype?: string | IWellType) => {
     if (!(type in mapStyles)) {
         return mapStyles.default;
     }

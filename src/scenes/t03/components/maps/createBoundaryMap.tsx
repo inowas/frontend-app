@@ -1,8 +1,9 @@
 import React from 'react';
 import {CircleMarker, FeatureGroup, GeoJSON, Map} from 'react-leaflet';
 import {EditControl} from 'react-leaflet-draw';
-import {BoundaryFactory, Geometry} from '../../../../core/model/modflow';
-import {BoundaryType} from '../../../../core/model/modflow/boundaries/types';
+import {Geometry} from '../../../../core/model/modflow';
+import {BoundaryFactory} from '../../../../core/model/modflow/boundaries';
+import {BoundaryType} from '../../../../core/model/modflow/boundaries/Boundary.type';
 import {BasicTileLayer} from '../../../../services/geoTools/tileLayers';
 import CenterControl from '../../../shared/leaflet/CenterControl';
 import {getStyle} from './index';
@@ -59,7 +60,7 @@ class CreateBoundaryMap extends React.Component<IProps, IState> {
     };
 
     public editControl = () => {
-        const geometryType = BoundaryFactory.fromType(this.props.type).geometryType.toLowerCase();
+        const geometryType = BoundaryFactory.geometryTypeByType(this.props.type).toLowerCase();
         return (
             <FeatureGroup>
                 <EditControl
@@ -88,12 +89,7 @@ class CreateBoundaryMap extends React.Component<IProps, IState> {
     };
 
     public renderGeometry(geometry: Geometry) {
-        const boundary = BoundaryFactory.fromType(this.props.type);
-        if (!boundary) {
-            return;
-        }
-        const gType = boundary.geometryType.toLowerCase();
-
+        const gType = BoundaryFactory.geometryTypeByType(this.props.type).toLowerCase();
         if (gType === 'point') {
             return (
                 <CircleMarker

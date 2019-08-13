@@ -1,51 +1,50 @@
 import {Point} from 'geojson';
-import uuidv4 from 'uuid/v4';
+import {ISpValues} from './Boundary.type';
 import {IObservationPoint} from './ObservationPoint.type';
-import {SpValues} from './types';
 
 export default class ObservationPoint {
     get type() {
-        return this._type;
+        return this._props.properties.type;
     }
 
     get id() {
-        return this._id;
+        return this._props.id;
     }
 
     set id(value) {
-        this._id = value;
+        this._props.id = value;
     }
 
     get distance() {
-        return this._distance;
+        return this._props.properties.distance;
     }
 
     set distance(value) {
-        this._distance = value;
+        this._props.properties.distance = value;
     }
 
     get geometry() {
-        return this._geometry;
+        return this._props.geometry;
     }
 
     set geometry(value) {
-        this._geometry = value;
+        this._props.geometry = value;
     }
 
     get name() {
-        return this._name;
+        return this._props.properties.name;
     }
 
     set name(value) {
-        this._name = value;
+        this._props.properties.name = value;
     }
 
     get spValues() {
-        return this._spValues;
+        return this._props.properties.sp_values;
     }
 
     set spValues(value) {
-        this._spValues = value;
+        this._props.properties.sp_values = value;
     }
 
     // noinspection JSMethodCanBeStatic
@@ -53,15 +52,19 @@ export default class ObservationPoint {
         return 'Point';
     }
 
-    public static create(id: string, type: 'op', geometry?: Point, name?: string, spValues?: SpValues,
+    public static create(id: string, type: 'op', geometry: Point, name: string, spValues: ISpValues,
                          distance: number = 0) {
-        const op = new this();
-        op.id = id;
-        op.geometry = geometry;
-        op.name = name;
-        op.spValues = spValues;
-        op.distance = distance;
-        return op;
+        return new ObservationPoint({
+            type: 'Feature',
+            id,
+            geometry,
+            properties: {
+                name,
+                type: 'op',
+                sp_values: spValues,
+                distance
+            }
+        });
     }
 
     public static fromObject(obj: IObservationPoint) {
@@ -75,19 +78,18 @@ export default class ObservationPoint {
         );
     }
 
-    private _type: 'op' = 'op';
-    private _id: string = uuidv4();
-    private _name?: string;
-    private _geometry?: Point;
-    private _distance: number = 0;
-    private _spValues?: SpValues;
+    private _props: IObservationPoint;
 
-    public getSpValues() {
-        return this._spValues;
+    public constructor(props: IObservationPoint) {
+        this._props = props;
     }
 
-    public setSpValues(spValues: SpValues) {
-        this._spValues = spValues;
+    public getSpValues() {
+        return this._props.properties.sp_values;
+    }
+
+    public setSpValues(spValues: ISpValues) {
+        this._props.properties.sp_values = spValues;
     }
 
     public toObject(): IObservationPoint {

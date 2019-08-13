@@ -1,5 +1,6 @@
 import {LineString, Point} from 'geojson';
 import Uuid from 'uuid';
+import {Geometry} from '../../../../../core/model/geometry';
 import {ICells} from '../../../../../core/model/geometry/Cells.type';
 import {GeneralHeadBoundary} from '../../../../../core/model/modflow/boundaries';
 import {JSON_SCHEMA_URL} from '../../../../../services/api';
@@ -13,9 +14,7 @@ const createGeneralHeadBoundary = () => {
     const cells: ICells = [[1, 2], [2, 3], [4, 5]];
     const spValues = [[1, 2], [1, 2], [1, 2]];
 
-    return GeneralHeadBoundary.create(
-        id, 'ghb', geometry, name, layers, cells, spValues
-    );
+    return GeneralHeadBoundary.create(id, geometry, name, layers, cells, spValues);
 };
 
 test('GeneralHeadBoundary create', () => {
@@ -26,34 +25,33 @@ test('GeneralHeadBoundary create', () => {
     const cells: ICells = [[1, 2], [2, 3], [4, 5]];
     const spValues = [[1, 2], [1, 2], [1, 2]];
 
-    const generalHeadBoundary = GeneralHeadBoundary.create(
-        id, 'ghb', geometry, name, layers, cells, spValues
-    );
+    const generalHeadBoundary = GeneralHeadBoundary.create(id, geometry, name, layers, cells, spValues);
 
     expect(generalHeadBoundary).toBeInstanceOf(GeneralHeadBoundary);
     expect(generalHeadBoundary.id).toEqual(id);
     expect(generalHeadBoundary.name).toEqual(name);
-    expect(generalHeadBoundary.geometry).toEqual(geometry);
+    expect(generalHeadBoundary.geometry).toBeInstanceOf(Geometry);
+    expect(generalHeadBoundary.geometry.toObject()).toEqual(geometry);
     expect(generalHeadBoundary.layers).toEqual(layers);
-    expect(generalHeadBoundary.cells).toEqual(cells);
+    expect(generalHeadBoundary.cells.toObject()).toEqual(cells);
 });
 
 test('GeneralHeadBoundary add ObservationPoint', () => {
     const generalHeadBoundary = createGeneralHeadBoundary();
-    generalHeadBoundary.addObservationPoint('Op2', {type: 'Point', coordinates: [1, 2]}, [[3], [2], [1]]);
+    generalHeadBoundary.addObservationPoint(Uuid.v4(), 'Op2', {type: 'Point', coordinates: [1, 2]}, [[3], [2], [1]]);
     expect(generalHeadBoundary.observationPoints).toHaveLength(2);
 
     const op2 = generalHeadBoundary.findObservationPointByName('Op2');
     expect(op2).toBeTruthy();
     expect(op2.id).toBeTruthy();
-    expect(op2.type).toEqual('Feature');
-    expect(op2.properties.name).toEqual('Op2');
+    expect(op2.type).toEqual('op');
+    expect(op2.name).toEqual('Op2');
     expect(op2.geometry).toEqual({type: 'Point', coordinates: [1, 2]});
 });
 
 test('GeneralHeadBoundary update ObservationPoint', () => {
     const generalHeadBoundary = createGeneralHeadBoundary();
-    generalHeadBoundary.addObservationPoint('Op2', {type: 'Point', coordinates: [1, 2]}, [[3], [2], [1]]);
+    generalHeadBoundary.addObservationPoint(Uuid.v4(), 'Op2', {type: 'Point', coordinates: [1, 2]}, [[3], [2], [1]]);
     expect(generalHeadBoundary.observationPoints).toHaveLength(2);
     const op2 = generalHeadBoundary.findObservationPointByName('Op2');
 
@@ -67,15 +65,15 @@ test('GeneralHeadBoundary update ObservationPoint', () => {
     const op2New = generalHeadBoundary.findObservationPointByName('op2_new');
     expect(op2New).toBeTruthy();
     expect(op2New.id).toEqual(id);
-    expect(op2New.type).toEqual('Feature');
-    expect(op2New.properties.name).toEqual(name);
+    expect(op2New.type).toEqual('op');
+    expect(op2New.name).toEqual(name);
     expect(op2New.geometry).toEqual(geometry);
-    expect(op2New.properties.sp_values).toEqual(spValues);
+    expect(op2New.spValues).toEqual(spValues);
 });
 
 test('GeneralHeadBoundary remove ObservationPoint', () => {
     const generalHeadBoundary = createGeneralHeadBoundary();
-    generalHeadBoundary.addObservationPoint('Op2', {type: 'Point', coordinates: [1, 2]}, [[3], [2], [1]]);
+    generalHeadBoundary.addObservationPoint(Uuid.v4(), 'Op2', {type: 'Point', coordinates: [1, 2]}, [[3], [2], [1]]);
     expect(generalHeadBoundary.observationPoints).toHaveLength(2);
     const op2 = generalHeadBoundary.findObservationPointByName('Op2');
     generalHeadBoundary.removeObservationPoint(op2.id);

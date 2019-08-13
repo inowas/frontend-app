@@ -10,7 +10,7 @@ import {GeoJson} from '../../../../../core/model/geometry/Geometry.type';
 import {ModflowModel, Soilmodel, Stressperiods} from '../../../../../core/model/modflow';
 import {BoundaryCollection, BoundaryFactory} from '../../../../../core/model/modflow/boundaries';
 import Boundary from '../../../../../core/model/modflow/boundaries/Boundary';
-import {BoundaryType, SpValues} from '../../../../../core/model/modflow/boundaries/types';
+import {BoundaryType, ISpValues, IValueProperty} from '../../../../../core/model/modflow/boundaries/Boundary.type';
 import ContentToolBar from '../../../../../scenes/shared/ContentToolbar';
 import {sendCommand} from '../../../../../services/api';
 import {calculateActiveCells} from '../../../../../services/geoTools';
@@ -103,8 +103,8 @@ class CreateBoundary extends React.Component<Props, IState> {
         const {model, stressperiods} = this.props;
         const {name, geometry, cells, layers} = this.state;
 
-        const valueProperties = BoundaryFactory.fromType(type).valueProperties;
-        const values = valueProperties.map((vp) => vp.default);
+        const valueProperties = BoundaryFactory.valuePropertiesByType(type);
+        const values = valueProperties.map((vp: IValueProperty) => vp.default);
 
         if (!geometry || !cells) {
             return null;
@@ -117,7 +117,7 @@ class CreateBoundary extends React.Component<Props, IState> {
             name,
             layers,
             cells,
-            new Array(stressperiods.count).fill(values) as SpValues
+            new Array(stressperiods.count).fill(values) as ISpValues
         );
 
         return sendCommand(ModflowModelCommand.addBoundary(model.id, boundary),
@@ -125,7 +125,7 @@ class CreateBoundary extends React.Component<Props, IState> {
                 const boundaries = this.props.boundaries;
                 boundaries.addBoundary(boundary as Boundary);
                 this.props.updateBoundaries(boundaries);
-                this.props.history.push(`${baseUrl}/${id}/${property}/${'!'}/${boundary.id}`);
+                this.props.history.push(`${baseUrl}/${id}/${property}/!/${boundary.id}`);
             },
             () => this.setState({isError: true})
         );

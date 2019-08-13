@@ -2,7 +2,8 @@ import {UPDATE_MODEL_BOUNDARIES} from '../reducers/boundaries';
 import {UPDATE_MODEL} from '../reducers/models';
 import {CLEAR, UPDATE_SCENARIOANALYSIS} from '../reducers/scenarioAnalysis';
 import {ScenarioAnalysis} from '../../../core/model/scenarioAnalysis';
-import {BoundaryCollection, ModflowModel} from '../../../core/model/modflow';
+import {ModflowModel} from '../../../core/model/modflow';
+import {BoundaryCollection} from '../../../core/model/modflow/boundaries';
 
 export function clear() {
     return {
