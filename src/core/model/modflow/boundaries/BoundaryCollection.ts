@@ -1,23 +1,31 @@
-import {sortBy} from 'lodash';
+import {cloneDeep, each, isArray, isEqual, isObject, sortBy} from 'lodash';
 import {Collection} from '../../collection/Collection';
 import BoundingBox from '../../geometry/BoundingBox';
 import GridSize from '../../geometry/GridSize';
 import {BoundaryType, IBoundary, IBoundaryImport} from './Boundary.type';
 import {Boundary, BoundaryFactory} from './index';
 
+export interface IBoundaryComparisonItem {
+    id: string;
+    state: string | null;
+    diff: object | null;
+    type: BoundaryType;
+    name: string;
+}
+
 class BoundaryCollection extends Collection<Boundary> {
 
-    public static fromQuery(query: IBoundary[]) {
-        const bc = new BoundaryCollection();
-        query.forEach((b) => {
-            bc.addBoundary(BoundaryFactory.fromObject(b));
-        });
-        return bc;
+    get boundaries() {
+        return sortBy(this.all, [(b) => b.name && b.name.toUpperCase()]);
     }
 
-    public static fromObject(query: IBoundary[]) {
+    public static fromQuery(query: IBoundary[]) {
+        return BoundaryCollection.fromObject(query);
+    }
+
+    public static fromObject(obj: IBoundary[]) {
         const bc = new BoundaryCollection();
-        query.forEach((b) => {
+        obj.forEach((b) => {
             bc.addBoundary(BoundaryFactory.fromObject(b));
         });
         return bc;
@@ -46,10 +54,6 @@ class BoundaryCollection extends Collection<Boundary> {
         return this;
     }
 
-    get boundaries() {
-        return sortBy(this.all, [(b) => b.name && b.name.toUpperCase()]);
-    }
-
     public toObject = () => {
         return this.boundaries.map((b) => b.toObject());
     };
@@ -59,8 +63,80 @@ class BoundaryCollection extends Collection<Boundary> {
     };
 
     public filter = (callable: (b: any) => boolean) => {
-        this.items = this.all.filter(callable);
-        return this;
+        return BoundaryCollection.fromObject(this.all.filter(callable).map((b) => b.toObject()));
+    };
+
+    public compareWith = (nbc: BoundaryCollection): IBoundaryComparisonItem[] => {
+        const currentBoundaries = BoundaryCollection.fromObject(cloneDeep(this.toObject()));
+        const newBoundaries = nbc;
+
+        let items: IBoundaryComparisonItem[] = currentBoundaries.all.map((b) => (
+            {id: b.id, state: null, type: b.type, diff: null, name: b.name})
+        );
+
+        // DELETE
+        items = items.map((i) => {
+            if (newBoundaries.filter((b) => b.id === i.id).length === 0) {
+                return {...i, state: 'delete', diff: {}};
+            }
+            return i;
+        });
+
+        // UPDATE
+        newBoundaries.all.forEach((b) => {
+            if (items.filter((i) => i.id === b.id).length === 0) {
+                items.push({id: b.id, state: 'add', type: b.type, diff: {}, name: b.name});
+                return;
+            }
+
+            const currentBoundary = currentBoundaries.findById(b.id);
+            const newBoundary = newBoundaries.findById(b.id);
+
+            if (!newBoundary || !currentBoundary) {
+                return;
+            }
+
+            const diff = this.diff(newBoundary.toObject(), currentBoundary.toObject());
+            const state = (isEqual(diff, {})) ? 'noUpdate' : 'update';
+
+            items = items.map((i) => {
+                if (i.id === b.id) {
+                    return {...i, state, diff, name: b.name};
+                }
+                return i;
+            });
+        });
+
+        return items;
+    };
+
+    protected diff = (newObj: any, currObj: any) => {
+        const r: any = {};
+        each(newObj, (v, k) => {
+            if (currObj[k] === v) {
+                return;
+            }
+
+            if (isArray(currObj[k]) && isArray(v)) {
+                if (isEqual(currObj[k], v)) {
+                    return;
+                }
+
+                r[k] = v;
+            } else if (isObject(v)) {
+                r[k] = this.diff(v, currObj[k]);
+            } else {
+                r[k] = v;
+            }
+        });
+
+        for (const prop in r) {
+            if (r.hasOwnProperty(prop) && isEqual(r[prop], {})) {
+                delete r[prop];
+            }
+        }
+
+        return r;
     };
 }
 

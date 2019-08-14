@@ -8,9 +8,11 @@ import BoundaryCollection from '../../../../../core/model/modflow/boundaries/Bou
 import {IBoundary, IBoundaryImport} from '../../../../../core/model/modflow/boundaries/Boundary.type';
 import {JSON_SCHEMA_URL} from '../../../../../services/api';
 import {validate} from '../../../../../services/jsonSchemaValidator';
+import BoundaryComparison from './boundaryComparison';
 
 interface IState {
-    boundaries: IBoundary[] | null;
+    importedBoundaries: IBoundary[] | null;
+    selectedBoundary: string | null;
     errors: any[] | null;
     isLoading: boolean;
     showImportModal: boolean;
@@ -28,9 +30,10 @@ class BoundariesImport extends React.Component<IProps, IState> {
     constructor(props: IProps) {
         super(props);
         this.state = {
-            boundaries: props.boundaries ? props.boundaries.toObject() : null,
+            importedBoundaries: null,
             errors: null,
             isLoading: false,
+            selectedBoundary: null,
             showImportModal: false
         };
 
@@ -42,14 +45,9 @@ class BoundariesImport extends React.Component<IProps, IState> {
         };
     }
 
-    public componentWillReceiveProps(nextProps: Readonly<IProps>, nextContext: any): void {
-        this.setState({
-            boundaries: nextProps.boundaries.toObject(),
-        });
-    }
-
     public render() {
         const {showImportModal} = this.state;
+
         return (
             <div>
                 <Button
@@ -70,9 +68,15 @@ class BoundariesImport extends React.Component<IProps, IState> {
             showImportModal: false
         });
 
-        if (this.state.boundaries) {
-            this.props.onChange(BoundaryCollection.fromObject(this.state.boundaries));
+        if (this.state.importedBoundaries) {
+            // console.log(BoundaryCollection.fromObject(this.state.importedBoundaries));
         }
+    };
+
+    private onBoundaryClick = (id: string) => {
+        this.setState({
+            selectedBoundary: id
+        });
     };
 
     private onCancel = () => {
@@ -89,7 +93,10 @@ class BoundariesImport extends React.Component<IProps, IState> {
         );
 
         if (boundaries) {
-            this.setState({boundaries: boundaries.toObject()});
+            this.setState({
+                importedBoundaries: boundaries.toObject(),
+                selectedBoundary: boundaries.first && boundaries.first.id
+            });
         }
     };
 
@@ -105,7 +112,7 @@ class BoundariesImport extends React.Component<IProps, IState> {
     private parseFileContent = (text: string) => {
 
         this.setState({
-            boundaries: null,
+            importedBoundaries: null,
             errors: null,
         });
 
@@ -165,7 +172,17 @@ class BoundariesImport extends React.Component<IProps, IState> {
     );
 
     private renderBoundaries = () => {
-        return null;
+        if (this.state.importedBoundaries) {
+            return (
+                <BoundaryComparison
+                    currentBoundaries={this.props.boundaries}
+                    newBoundaries={BoundaryCollection.fromObject(this.state.importedBoundaries)}
+                    onChange={this.onImportClick}
+                    onBoundaryClick={this.onBoundaryClick}
+                    selectedBoundary={this.state.selectedBoundary}
+                />
+            );
+        }
     };
 
     private renderImportModal = () => (
@@ -173,7 +190,7 @@ class BoundariesImport extends React.Component<IProps, IState> {
             open={true}
             onClose={this.onCancel}
             dimmer={'blurring'}
-            size={'small'}
+            size={'large'}
         >
             <Modal.Header>Import Boundaries</Modal.Header>
             <Modal.Content>
