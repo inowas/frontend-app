@@ -1,5 +1,5 @@
 import React from 'react';
-import {Button, Dimmer, Grid, Header, List, Loader, Modal, Segment} from 'semantic-ui-react';
+import {Button, Grid, Header, List, Modal, Segment} from 'semantic-ui-react';
 import {
     ModflowModel,
 } from '../../../../../core/model/modflow';
@@ -95,7 +95,8 @@ class BoundariesImport extends React.Component<IProps, IState> {
         if (boundaries) {
             this.setState({
                 importedBoundaries: boundaries.toObject(),
-                selectedBoundary: boundaries.first && boundaries.first.id
+                selectedBoundary: boundaries.first && boundaries.first.id,
+                isLoading: false
             });
         }
     };
@@ -127,7 +128,10 @@ class BoundariesImport extends React.Component<IProps, IState> {
 
         validate(data, schemaUrl).then(([isValid, errors]) => {
             if (!isValid) {
-                return this.setState({errors});
+                return this.setState({
+                    isLoading: false,
+                    errors
+                });
             }
 
             return this.handleFileData(data);
@@ -151,6 +155,7 @@ class BoundariesImport extends React.Component<IProps, IState> {
     private handleUpload = (e: any) => {
         const files = e.target.files;
         if (files.length > 0) {
+            this.setState({isLoading: true});
             this.fileReader.readAsText(files[0]);
         }
     };
@@ -170,6 +175,12 @@ class BoundariesImport extends React.Component<IProps, IState> {
             </List>
         </Segment>
     );
+
+    private onFileUploadClick = () => {
+        this.setState({
+            importedBoundaries: null
+        });
+    };
 
     private renderBoundaries = () => {
         if (this.state.importedBoundaries) {
@@ -197,15 +208,9 @@ class BoundariesImport extends React.Component<IProps, IState> {
                 <Grid stackable={true}>
                     <Grid.Row columns={2}>
                         <Grid.Column>
-                            {this.state.isLoading &&
-                            <Dimmer active={true} inverted={true}>
-                                <Loader>Uploading</Loader>
-                            </Dimmer>
-                            }
-                            {!this.state.isLoading &&
                             <Segment basic={true}>
                                 <List bulleted={true}>
-                                    <List.Item>The file has to be a csv or json-file.</List.Item>
+                                    <List.Item>The file has to be a valid json-file.</List.Item>
                                     <List.Item
                                         as={'a'}
                                         onClick={this.download}
@@ -220,15 +225,17 @@ class BoundariesImport extends React.Component<IProps, IState> {
                                     icon={'file alternate'}
                                     content={'Select File'}
                                     labelPosition={'left'}
+                                    loading={this.state.isLoading}
                                 />
                                 <input
                                     hidden={true}
                                     type={'file'}
                                     id={'inputField'}
                                     onChange={this.handleUpload}
+                                    onClick={this.onFileUploadClick}
+                                    value={''}
                                 />
                             </Segment>
-                            }
                         </Grid.Column>
                         <Grid.Column>
                             {this.state.errors && this.renderValidationErrors(this.state.errors)}
