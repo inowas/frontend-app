@@ -39,6 +39,19 @@ test('WellBoundary create', () => {
     expect(wellBoundary.cells.toObject()).toEqual(cells);
     expect(wellBoundary.getSpValues()).toEqual(spValues);
     expect(wellBoundary.wellType).toEqual('puw');
+
+    expect(wellBoundary.toExport()).toEqual(
+        {
+            cells: [[1, 2]],
+            geometry: {coordinates: [3, 4], type: 'Point'},
+            id: wellBoundary.id,
+            layers: [1],
+            name: 'NameOfWell',
+            sp_values: [[1], [2], [3]],
+            type: 'wel',
+            well_type: 'puw'
+        }
+    );
 });
 
 test('WellBoundary fromObject', () => {

@@ -1,9 +1,11 @@
-import {cloneDeep, each, isArray, isEqual, isObject, sortBy} from 'lodash';
+import {cloneDeep, isEqual, sortBy} from 'lodash';
 import {Collection} from '../../collection/Collection';
 import BoundingBox from '../../geometry/BoundingBox';
 import GridSize from '../../geometry/GridSize';
-import {BoundaryType, IBoundary, IBoundaryImport} from './Boundary.type';
+import {BoundaryType, IBoundary, IBoundaryExport} from './Boundary.type';
 import {Boundary, BoundaryFactory} from './index';
+
+import simpleDiff from '../../../../services/diffTools/simpleDiff';
 
 export interface IBoundaryComparisonItem {
     id: string;
@@ -31,9 +33,9 @@ class BoundaryCollection extends Collection<Boundary> {
         return bc;
     }
 
-    public static fromImport(i: IBoundaryImport[], boundingBox: BoundingBox, gridSize: GridSize) {
+    public static fromExport(i: IBoundaryExport[], boundingBox: BoundingBox, gridSize: GridSize) {
         const bc = new BoundaryCollection();
-        i.forEach((b) => bc.addBoundary(BoundaryFactory.fromImport(b, boundingBox, gridSize)));
+        i.forEach((b) => bc.addBoundary(BoundaryFactory.fromExport(b, boundingBox, gridSize)));
         return bc;
     }
 
@@ -58,8 +60,8 @@ class BoundaryCollection extends Collection<Boundary> {
         return this.boundaries.map((b) => b.toObject());
     };
 
-    public toImport = () => {
-        return this.all.map((b) => b.toImport());
+    public toExport = () => {
+        return this.all.map((b) => b.toExport());
     };
 
     public filter = (callable: (b: any) => boolean) => {
@@ -82,6 +84,7 @@ class BoundaryCollection extends Collection<Boundary> {
             return i;
         });
 
+        // ADD
         // UPDATE
         newBoundaries.all.forEach((b) => {
             if (items.filter((i) => i.id === b.id).length === 0) {
@@ -96,7 +99,7 @@ class BoundaryCollection extends Collection<Boundary> {
                 return;
             }
 
-            const diff = this.diff(newBoundary.toObject(), currentBoundary.toObject());
+            const diff = simpleDiff(newBoundary.toExport(), currentBoundary.toExport());
             const state = (isEqual(diff, {})) ? 'noUpdate' : 'update';
 
             items = items.map((i) => {
@@ -108,35 +111,6 @@ class BoundaryCollection extends Collection<Boundary> {
         });
 
         return items;
-    };
-
-    protected diff = (newObj: any, currObj: any) => {
-        const r: any = {};
-        each(newObj, (v, k) => {
-            if (currObj[k] === v) {
-                return;
-            }
-
-            if (isArray(currObj[k]) && isArray(v)) {
-                if (isEqual(currObj[k], v)) {
-                    return;
-                }
-
-                r[k] = v;
-            } else if (isObject(v)) {
-                r[k] = this.diff(v, currObj[k]);
-            } else {
-                r[k] = v;
-            }
-        });
-
-        for (const prop in r) {
-            if (r.hasOwnProperty(prop) && isEqual(r[prop], {})) {
-                delete r[prop];
-            }
-        }
-
-        return r;
     };
 }
 

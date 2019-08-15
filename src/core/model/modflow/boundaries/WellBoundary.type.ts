@@ -1,6 +1,7 @@
 import {Point} from 'geojson';
 import {ICells} from '../../geometry/Cells.type';
 import {ISpValues} from './Boundary.type';
+import {IPointBoundaryExport} from './PointBoundary.type';
 
 export type IWellType = 'puw' | 'inw' | 'iw' | 'irw' | 'opw';
 
@@ -18,12 +19,7 @@ export interface IWellBoundary {
     };
 }
 
-export interface IWellBoundaryImport {
+export interface IWellBoundaryExport extends IPointBoundaryExport {
     type: 'wel';
-    id?: string;
-    name: string;
-    geometry: Point;
-    layers: number[];
-    sp_values: ISpValues;
     well_type: IWellType;
 }

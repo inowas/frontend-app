@@ -5,58 +5,14 @@ import BoundingBox from '../../geometry/BoundingBox';
 import {ICells} from '../../geometry/Cells.type';
 import GridSize from '../../geometry/GridSize';
 import {Cells, Geometry} from '../index';
-import Boundary from './Boundary';
 import {ISpValues, IValueProperty} from './Boundary.type';
-import {IHeadObservationWell, IHeadObservationWellImport} from './HeadObservationWell.type';
+import {IHeadObservationWell, IHeadObservationWellExport} from './HeadObservationWell.type';
+import PointBoundary from './PointBoundary';
 
-export default class HeadObservationWell extends Boundary {
-
-    get type() {
-        return this._props.properties.type;
-    }
-
-    get id() {
-        return this._props.id;
-    }
-
-    set id(value) {
-        this._props.id = value;
-    }
-
-    get geometry() {
-        return Geometry.fromObject(this._props.geometry);
-    }
-
-    set geometry(value) {
-        this._props.geometry = value.toObject();
-    }
+export default class HeadObservationWell extends PointBoundary {
 
     get geometryType() {
-        return HeadObservationWell.geometryType();
-    }
-
-    get name() {
-        return this._props.properties.name;
-    }
-
-    set name(value) {
-        this._props.properties.name = value;
-    }
-
-    get layers() {
-        return this._props.properties.layers;
-    }
-
-    set layers(value) {
-        this._props.properties.layers = value;
-    }
-
-    get cells() {
-        return Cells.fromObject(this._props.properties.cells);
-    }
-
-    set cells(value) {
-        this._props.properties.cells = value.toObject;
+        return this._class.geometryType();
     }
 
     public static geometryType() {
@@ -95,7 +51,7 @@ export default class HeadObservationWell extends Boundary {
         });
     }
 
-    public static fromImport(obj: IHeadObservationWellImport, boundingBox: BoundingBox, gridSize: GridSize) {
+    public static fromExport(obj: IHeadObservationWellExport, boundingBox: BoundingBox, gridSize: GridSize) {
         return this.create(
             obj.id ? obj.id : Uuid.v4(),
             obj.geometry,
@@ -109,17 +65,10 @@ export default class HeadObservationWell extends Boundary {
     constructor(props: IHeadObservationWell) {
         super();
         this._props = cloneDeep(props);
+        this._class = HeadObservationWell;
     }
 
-    public getSpValues() {
-        return this._props.properties.sp_values;
-    }
-
-    public setSpValues(spValues: ISpValues, opId?: string) {
-        this._props.properties.sp_values = spValues;
-    }
-
-    public toImport = (): IHeadObservationWellImport => ({
+    public toExport = (): IHeadObservationWellExport => ({
         id: this.id,
         type: this.type,
         name: this.name,
@@ -133,6 +82,6 @@ export default class HeadObservationWell extends Boundary {
     }
 
     public get valueProperties(): IValueProperty[] {
-        return HeadObservationWell.valueProperties();
+        return this._class.valueProperties();
     }
 }

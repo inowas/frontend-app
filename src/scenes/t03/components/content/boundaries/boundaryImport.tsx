@@ -5,7 +5,7 @@ import {
 } from '../../../../../core/model/modflow';
 import BoundaryCollection from '../../../../../core/model/modflow/boundaries/BoundaryCollection';
 
-import {IBoundary, IBoundaryImport} from '../../../../../core/model/modflow/boundaries/Boundary.type';
+import {IBoundary, IBoundaryExport} from '../../../../../core/model/modflow/boundaries/Boundary.type';
 import {JSON_SCHEMA_URL} from '../../../../../services/api';
 import {validate} from '../../../../../services/jsonSchemaValidator';
 import BoundaryComparison from './boundaryComparison';
@@ -85,8 +85,8 @@ class BoundariesImport extends React.Component<IProps, IState> {
         });
     };
 
-    private handleFileData = (response: IBoundaryImport[]) => {
-        const boundaries = BoundaryCollection.fromImport(
+    private handleFileData = (response: IBoundaryExport[]) => {
+        const boundaries = BoundaryCollection.fromExport(
             response,
             this.props.model.boundingBox,
             this.props.model.gridSize,
@@ -136,7 +136,7 @@ class BoundariesImport extends React.Component<IProps, IState> {
 
     private download = () => {
         const filename = 'boundaries.json';
-        const boundaries: IBoundaryImport[] = this.props.boundaries.toImport();
+        const boundaries: IBoundaryExport[] = this.props.boundaries.toExport();
         const text = JSON.stringify(boundaries, null, 2);
 
         const element: HTMLAnchorElement = document.createElement('a');

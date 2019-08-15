@@ -7,7 +7,7 @@ import GridSize from '../../geometry/GridSize';
 import {Cells, Geometry} from '../index';
 import {ISpValues, IValueProperty} from './Boundary.type';
 import {Boundary} from './index';
-import {INrchop, IRechargeBoundary, IRechargeBoundaryImport} from './RechargeBoundary.type';
+import {INrchop, IRechargeBoundary, IRechargeBoundaryExport} from './RechargeBoundary.type';
 
 export default class RechargeBoundary extends Boundary {
 
@@ -79,7 +79,7 @@ export default class RechargeBoundary extends Boundary {
         return 'Polygon';
     }
 
-    public static fromImport(obj: IRechargeBoundaryImport, boundingBox: BoundingBox, gridSize: GridSize) {
+    public static fromExport(obj: IRechargeBoundaryExport, boundingBox: BoundingBox, gridSize: GridSize) {
         return this.create(
             obj.id ? obj.id : Uuid.v4(),
             obj.geometry,
@@ -128,6 +128,7 @@ export default class RechargeBoundary extends Boundary {
     constructor(props: IRechargeBoundary) {
         super();
         this._props = cloneDeep(props);
+        this._class = RechargeBoundary;
     }
 
     public getSpValues() {
@@ -138,7 +139,7 @@ export default class RechargeBoundary extends Boundary {
         this._props.properties.sp_values = spValues;
     }
 
-    public toImport = (): IRechargeBoundaryImport => ({
+    public toExport = (): IRechargeBoundaryExport => ({
         id: this.id,
         type: this.type,
         name: this.name,

@@ -15,11 +15,12 @@ export interface IHeadObservationWell {
     };
 }
 
-export interface IHeadObservationWellImport {
+export interface IHeadObservationWellExport {
     type: 'hob';
     id?: string;
     name: string;
     geometry: Point;
     layers: number[];
+    cells?: ICells;
     sp_values: ISpValues;
 }

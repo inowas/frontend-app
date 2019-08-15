@@ -13,7 +13,7 @@ export interface IObservationPoint {
     };
 }
 
-export interface IObservationPointImportData {
+export interface IObservationPointExport {
     id?: string;
     name: string;
     geometry: Point;

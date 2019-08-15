@@ -6,7 +6,7 @@ import {ICells} from '../../geometry/Cells.type';
 import GridSize from '../../geometry/GridSize';
 import {Cells, Geometry} from '../index';
 import {ISpValues, IValueProperty} from './Boundary.type';
-import {IConstantHeadBoundary, IConstantHeadBoundaryImport} from './ConstantHeadBoundary.type';
+import {IConstantHeadBoundary, IConstantHeadBoundaryExport} from './ConstantHeadBoundary.type';
 import LineBoundary from './LineBoundary';
 
 export default class ConstantHeadBoundary extends LineBoundary {
@@ -51,7 +51,7 @@ export default class ConstantHeadBoundary extends LineBoundary {
         });
     }
 
-    public static fromImport(obj: IConstantHeadBoundaryImport, boundingBox: BoundingBox, gridSize: GridSize) {
+    public static fromExport(obj: IConstantHeadBoundaryExport, boundingBox: BoundingBox, gridSize: GridSize) {
         const boundary = this.create(
             obj.id ? obj.id : Uuid.v4(),
             obj.geometry,
@@ -103,15 +103,17 @@ export default class ConstantHeadBoundary extends LineBoundary {
     public constructor(obj: IConstantHeadBoundary) {
         super();
         this._props = cloneDeep(obj);
+        this._class = ConstantHeadBoundary;
     }
 
-    public toImport(): IConstantHeadBoundaryImport {
+    public toExport(): IConstantHeadBoundaryExport {
         return {
             id: this.id,
             type: this.type,
             name: this.name,
             geometry: this.geometry.toObject() as LineString,
             layers: this.layers,
+            cells: this.cells.toObject(),
             ops: this.observationPoints.map((op) => ({
                     name: op.name,
                     geometry: op.geometry,

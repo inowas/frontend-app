@@ -9,7 +9,7 @@ import Boundary from './Boundary';
 import {ISpValues, IValueProperty} from './Boundary.type';
 import {
     IEvapotranspirationBoundary,
-    IEvapotranspirationBoundaryImport,
+    IEvapotranspirationBoundaryExport,
     INevtop
 } from './EvapotranspirationBoundary.type';
 
@@ -97,7 +97,7 @@ export default class EvapotranspirationBoundary extends Boundary {
         });
     }
 
-    public static fromImport(obj: IEvapotranspirationBoundaryImport, boundingBox: BoundingBox, gridSize: GridSize) {
+    public static fromExport(obj: IEvapotranspirationBoundaryExport, boundingBox: BoundingBox, gridSize: GridSize) {
         return this.create(
             obj.id ? obj.id : Uuid.v4(),
             obj.geometry,
@@ -146,6 +146,7 @@ export default class EvapotranspirationBoundary extends Boundary {
     constructor(props: IEvapotranspirationBoundary) {
         super();
         this._props = cloneDeep(props);
+        this._class = EvapotranspirationBoundary;
     }
 
     public getSpValues() {
@@ -156,7 +157,7 @@ export default class EvapotranspirationBoundary extends Boundary {
         this._props.properties.sp_values = spValues;
     }
 
-    public toImport = (): IEvapotranspirationBoundaryImport => ({
+    public toExport = (): IEvapotranspirationBoundaryExport => ({
         id: this.id,
         type: this.type,
         name: this.name,

@@ -1,4 +1,9 @@
-import {BoundaryCollection, WellBoundary} from '../../../../../core/model/modflow/boundaries';
+/* tslint:disable:quotemark object-literal-key-quotes */
+import {LineString} from 'geojson';
+import Uuid from 'uuid';
+import {ICells} from '../../../../../core/model/geometry/Cells.type';
+import {Geometry} from '../../../../../core/model/modflow';
+import {BoundaryCollection, ConstantHeadBoundary, WellBoundary} from '../../../../../core/model/modflow/boundaries';
 import {IBoundary} from '../../../../../core/model/modflow/boundaries/Boundary.type';
 
 test('BoundaryCollectionFromQuery', () => {
@@ -37,7 +42,7 @@ test('BoundaryCollection fromObject', () => {
     expect(boundaryCollection.boundaries[0].toObject()).toEqual(WellBoundary.fromObject(wellObj).toObject());
 });
 
-test('BoundaryCollection compareWith', () => {
+test('BoundaryCollection compareWith well', () => {
 
     const bc1: IBoundary[] = [{
         type: 'Feature',
@@ -85,7 +90,7 @@ test('BoundaryCollection compareWith', () => {
         properties: {
             type: 'wel',
             name: 'Well Boundary new',
-            cells: [[7, 4]],
+            cells: [[7, 5]],
             layers: [1],
             well_type: 'iw',
             sp_values: [[1, 1, 1, 1]]
@@ -93,18 +98,17 @@ test('BoundaryCollection compareWith', () => {
     }];
 
     result = BoundaryCollection.fromObject(bc1).compareWith(BoundaryCollection.fromObject(bc3));
+
     expect(result).toEqual([{
         diff: {
             geometry: {
                 coordinates: [8.8220, 50.316]
             },
-            properties: {
-                name: 'Well Boundary new',
-                cells: [[7, 4]],
-                layers: [1],
-                well_type: 'iw',
-                sp_values: [[1, 1, 1, 1]]
-            }
+            name: 'Well Boundary new',
+            cells: [[7, 5]],
+            layers: [1],
+            well_type: 'iw',
+            sp_values: [[1, 1, 1, 1]]
         },
         id: 'b21336c6-f814-412f-a476-a033ca6ca570',
         name: 'Well Boundary new',
@@ -165,4 +169,60 @@ test('BoundaryCollection compareWith', () => {
             type: 'wel'
         }
     ]);
+});
+
+test('BoundaryCollection compareWith LineBoundary', () => {
+    const id = Uuid.v4();
+    const name = 'NameOfConstantHead';
+    const geometry: LineString = {type: 'LineString', coordinates: [[3, 4], [3, 5], [4, 5], [4, 3], [3, 4]]};
+    const layers = [1, 2];
+    const cells: ICells = [[1, 2], [2, 3], [4, 5]];
+    const spValues = [[1, 2], [1, 2], [1, 2]];
+    const chb1 = ConstantHeadBoundary.create(id, geometry, name, layers, cells, spValues);
+
+    const bc1 = new BoundaryCollection([chb1]);
+    const bc2 = new BoundaryCollection([chb1]);
+
+    expect(bc1.compareWith(bc2)).toEqual([{
+        diff: {},
+        id,
+        name: "NameOfConstantHead",
+        state: "noUpdate",
+        type: "chd"
+    }]);
+
+    const bc3 = new BoundaryCollection();
+    expect(bc1.compareWith(bc3)).toEqual([{
+        diff: {},
+        id,
+        name: "NameOfConstantHead",
+        state: "delete",
+        type: "chd"
+    }]);
+
+    expect(bc3.compareWith(bc1)).toEqual([{
+        diff: {},
+        id,
+        name: "NameOfConstantHead",
+        state: "add",
+        type: "chd"
+    }]);
+
+    const chb2: ConstantHeadBoundary = ConstantHeadBoundary.fromObject(chb1.toObject());
+    chb2.name = 'Updated';
+    chb2.geometry = Geometry.fromObject({type: 'LineString', coordinates: [[3, 4], [3, 5], [4, 5], [5, 3], [3, 4]]});
+
+    const bc5 = new BoundaryCollection([chb2]);
+
+    expect(bc1.compareWith(bc5)).toEqual([{
+        diff: {
+            geometry: {coordinates: [[3, 4], [3, 5], [4, 5], [5, 3], [3, 4]]},
+            name: 'Updated'
+        },
+        id,
+        name: 'Updated',
+        state: 'update',
+        type: "chd"
+    }]);
+
 });
