@@ -1,10 +1,10 @@
-import {DrawEvents} from 'leaflet';
+import {DrawEvents, LatLngExpression} from 'leaflet';
+import {uniqueId} from 'lodash';
 import React, {useRef} from 'react';
-import {FeatureGroup, GeoJSON, Map, MapProps, Polygon} from 'react-leaflet';
+import {FeatureGroup, GeoJSON, Map, Polygon} from 'react-leaflet';
 import {EditControl} from 'react-leaflet-draw';
-import {IBoundingBox} from '../../../core/model/geometry/BoundingBox.type';
-import {BoundingBox} from '../../../core/model/modflow';
-import {IZone} from '../../../core/model/zones/Zone.type';
+import {Zone, ZonesCollection} from '../../../core/model/gis';
+import {BoundingBox, Geometry} from '../../../core/model/modflow';
 import {getStyle} from '../../../services/geoTools/mapHelpers';
 import {BasicTileLayer} from '../../../services/geoTools/tileLayers';
 
@@ -16,24 +16,26 @@ const styles = {
 };
 
 interface IProps {
-    boundingBox: IBoundingBox;
-    zone: IZone;
-    zones: IZone[];
+    boundingBox: BoundingBox;
+    geometry?: Geometry;
+    zone?: Zone;
+    zones: ZonesCollection;
     onCreatePath: (e: DrawEvents.Created) => any;
     onEditPath: (e: DrawEvents.Edited) => any;
-    readOnly: boolean;
+    readOnly?: boolean;
 }
 
 const zonesMap = (props: IProps) => {
-    const {readOnly, zone, zones} = props;
-    const boundingBox = BoundingBox.fromObject(props.boundingBox);
+    const mapRef = useRef(null);
+    const {boundingBox, geometry, readOnly, zone, zones} = props;
+
     const options = {
         edit: {
             remove: false
         },
         draw: {
             polyline: false,
-            polygon: !zone.geometry,
+            polygon: !(zone && zone.geometry) && !geometry,
             rectangle: false,
             circle: false,
             circlemarker: false,
@@ -44,12 +46,18 @@ const zonesMap = (props: IProps) => {
         }
     };
 
-    const bgZones = zones.filter((z) => z.id !== zone.id && z.priority !== 0);
-
-    let mapRef = null;
-    const createMapRef = (map: Map<MapProps>) => {
-        mapRef = useRef(map);
+    const getGeometry = () => {
+        if (zone && zone.geometry) {
+            return Geometry.fromGeoJson(zone.geometry);
+        }
+        if (geometry) {
+            Geometry.fromGeoJson(geometry);
+        }
+        return null;
     };
+
+    const bgZones = zone ? zones.findBy('id', zone.id, false) : zones.all;
+    const iGeometry = getGeometry();
 
     return (
         <Map
@@ -60,7 +68,7 @@ const zonesMap = (props: IProps) => {
             doubleClickZoom={!readOnly}
             scrollWheelZoom={!readOnly}
             bounds={boundingBox.getBoundsLatLng()}
-            ref={createMapRef}
+            ref={mapRef}
             style={styles.map}
         >
             <BasicTileLayer/>
@@ -77,7 +85,7 @@ const zonesMap = (props: IProps) => {
                                 <Polygon
                                     key={z.id}
                                     id={z.id}
-                                    positions={z.geometry}
+                                    positions={Geometry.fromGeoJson(z.geometry).coordinatesLatLng as LatLngExpression[]}
                                     color="grey"
                                     weight={1}
                                     fillOpacity={0.3}
@@ -96,11 +104,11 @@ const zonesMap = (props: IProps) => {
                     onEdited={props.onEditPath}
                     {...options}
                 />
-                {zone.geometry &&
+                {iGeometry &&
                 <Polygon
-                    key={zone.id}
-                    id={zone.id}
-                    positions={zone.geometry}
+                    key={uniqueId(iGeometry.hash())}
+                    id={-1}
+                    positions={iGeometry.coordinatesLatLng as LatLngExpression[]}
                     color="#7C4DFF"
                 />
                 }

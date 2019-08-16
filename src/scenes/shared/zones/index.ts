@@ -1,9 +1,9 @@
-import zoneModal from './zoneModal';
-import zonesMap from './zonesMap';
-import zonesTable from './zonesTable';
+import CreateZoneModal from './createZoneModal';
+import ZoneDetails from './zoneDetails';
+import ZonesMap from './zonesMap';
 
 export {
-    zoneModal as ZoneModal,
-    zonesMap as ZonesMap,
-    zonesTable as ZonesTable
+    CreateZoneModal,
+    ZoneDetails,
+    ZonesMap
 };

@@ -50,6 +50,7 @@
   "devDependencies": {
     "@types/geojson": "7946.0.7",
     "@types/jest": "24.0.12",
+    "@types/leaflet-draw": "^0.4.14",
     "@types/lodash": "4.14.125",
     "@types/mathjs": "5.0.1",
     "@types/md5": "2.1.33",

@@ -17,7 +17,7 @@ class ModflowModelCommand extends AbstractCommand {
         const name = 'addLayer';
         return new ModflowModelCommand(
             name,
-            {id: modelId, layer: layer.toObject()},
+            {id: modelId, layer: layer},
             JSON_SCHEMA_URL + '/commands/' + name
         );
     }
@@ -130,6 +130,11 @@ class ModflowModelCommand extends AbstractCommand {
 
     static updateTransport(payload) {
         const name = 'updateTransport';
+        return new ModflowModelCommand(name, payload, JSON_SCHEMA_URL + '/commands/' + name);
+    }
+
+    static updateSoilmodelProperties(payload) {
+        const name = 'updateSoilmodelProperties';
         return new ModflowModelCommand(name, payload, JSON_SCHEMA_URL + '/commands/' + name);
     }
 

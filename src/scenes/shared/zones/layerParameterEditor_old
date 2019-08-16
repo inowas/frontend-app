@@ -1,0 +1,14 @@
+import React from 'react';
+import LayersCollection from '../../../core/model/gis/LayersCollection';
+
+interface IProps {
+    layers: LayersCollection;
+}
+
+const layerParameterEditor = (props: IProps) => {
+    return (
+      <div>Test</div>
+    );
+};
+
+export default(layerParameterEditor);

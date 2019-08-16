@@ -104,7 +104,8 @@ const modpath: React.FC<Props> = (props: Props) => {
                     props.updatePackages(packages);
                     setIsLoading(false);
                     setIsDirty(false);
-                }
+                },
+                () => setIsError(true)
             );
         }
     };
@@ -117,6 +118,7 @@ const modpath: React.FC<Props> = (props: Props) => {
         cPackages.mp = cMpPackage;
 
         props.updatePackages(cPackages);
+        setIsDirty(true);
     };
 
     const renderProperties = () => {

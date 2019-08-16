@@ -212,7 +212,7 @@ class T03 extends React.Component {
 
     fetchSoilmodel(id) {
         fetchUrl(`modflowmodels/${id}/soilmodel`,
-            data => this.props.updateSoilmodel(Soilmodel.fromObject(data)),
+            data => this.props.updateSoilmodel(Soilmodel.fromQuery(data)),
             error => this.setState(
                 {error, isLoading: false},
                 () => this.handleError(error)

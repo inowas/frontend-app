@@ -1,9 +1,13 @@
-import React, {ChangeEvent, useEffect, useState} from 'react';
-import {Button, Icon, Input, InputOnChangeData, Popup, Table} from 'semantic-ui-react';
-import {IRasterParameter} from '../../../core/model/zones/RasterParameter.type';
-import {ZonesOrderChange} from '../../../core/model/zones/types';
-import {IZone} from '../../../core/model/zones/Zone.type';
-import ZonesCollection from '../../../core/model/zones/ZonesCollection';
+import React, {ChangeEvent, MouseEvent, useState} from 'react';
+import {
+    Button,
+    ButtonProps, Icon, Input, InputOnChangeData, Label, LabelProps, Popup, Segment, Table
+} from 'semantic-ui-react';
+import uuidv4 from 'uuid/v4';
+import {ILayerParameterZone} from '../../../core/model/gis/LayerParameterZone.type';
+import LayerParameterZonesCollection from '../../../core/model/gis/LayerParameterZonesCollection';
+import RasterParameter from '../../../core/model/gis/RasterParameter';
+import ZonesCollection from '../../../core/model/gis/ZonesCollection';
 
 const styles = {
     input: {
@@ -13,78 +17,56 @@ const styles = {
 };
 
 interface IProps {
+    onAddRelation: (relation: ILayerParameterZone) => any;
+    onChange: (relations: LayerParameterZonesCollection) => any;
     onClickUpload: () => any;
-    onChange: (zones: IZone[]) => any;
-    onEdit: (id: string) => any;
-    parameter: IRasterParameter;
-    readOnly?: boolean;
-    zones: IZone[];
+    onRemoveRelation: (relation: ILayerParameterZone) => any;
+    parameter: RasterParameter;
+    readOnly: boolean;
+    relations: LayerParameterZonesCollection;
+    zones: ZonesCollection;
 }
 
 const zonesTable = (props: IProps) => {
-    const [zones, setZones] = useState(props.zones);
+    const [activeRow, setActiveRow] = useState<string | null>(null);
+    const [activeValue, setActiveValue] = useState<string>('');
+    const relations = props.relations.all;
 
-    useEffect(() => {
-        setZones(props.zones);
-    }, [props.zones]);
-
-    const handleChange = () => props.onChange(zones);
-
-    const handleLocalChange = (id: string) => (e: ChangeEvent<HTMLInputElement>, {value}: InputOnChangeData) => {
-        const cZones = ZonesCollection.fromArray(zones);
-        const zone = cZones.findById(id);
-        if (zone && zone.parameters) {
-            zone.parameters = zone.parameters.map((p: IRasterParameter) => {
-                if (p.name === props.parameter.name) {
-                    p.value = parseFloat(value);
-                }
-                return p;
-            });
-            cZones.update(zone);
-            return setZones(cZones.toArray());
+    const handleChange = () => {
+        if (activeValue && activeRow) {
+            const relation = props.relations.findById(activeRow);
+            if (relation) {
+                relation.value = parseFloat(activeValue);
+                props.onChange(LayerParameterZonesCollection.fromObject(relations).update(relation));
+            }
         }
+        setActiveRow(null);
+        return setActiveValue('');
     };
 
-    const handleReorder = (id: string, order: ZonesOrderChange) => {
-        const cZones = ZonesCollection.fromArray(zones);
-        const zone = cZones.findById(id);
-        if (zone) {
-            cZones.changeOrder(zone, order);
-            return props.onChange(cZones.toArray());
+    const handleClickUpload = () => null;
+
+    const handleEdit = (id: string) => () => null;
+
+    const handleLocalChange = (e: ChangeEvent<HTMLInputElement>, {name, value}: InputOnChangeData) => {
+        setActiveRow(name);
+        setActiveValue(value);
+    };
+
+    const handleReorder = (e: MouseEvent, {order, relation}: ButtonProps) => {
+        const reordered = props.relations.changeOrder(relation, order);
+        if (reordered) {
+            return props.onChange(reordered);
         }
     };
 
     const handleToggleDefault = (id: string) => {
-        const cZones = ZonesCollection.fromArray(zones);
-        const zone = cZones.findById(id);
-        if (zone) {
-            const fParam = zone.parameters.filter((p) => p.name === props.parameter.name);
-            if (fParam.length > 0 && fParam[0].value instanceof Array) {
-                zone.parameters = zone.parameters.map((p: IRasterParameter) => {
-                    if (p.name === props.parameter.name) {
-                        p.value = p.defaultValue || 0;
-                    }
-                    return p;
-                });
-                cZones.update(zone);
-                return props.onChange(cZones.toArray());
-            }
-        }
-    };
-
-    const handleToggleZone = (id: string) => {
-        const cZones = ZonesCollection.fromArray(zones);
-        const zone = cZones.findById(id);
-
-        if (zone) {
-            zone.parameters = zone.parameters.map((p: IRasterParameter) => {
-                if (p.name === props.parameter.name) {
-                    p.isActive = !p.isActive;
-                }
-                return p;
-            });
-            cZones.update(zone);
-            return props.onChange(cZones.toArray());
+        const relation = LayerParameterZonesCollection.fromObject(relations).findById(id);
+        if (relation) {
+            relation.value = props.parameter.defaultValue || 0;
+            return props.onChange(
+                LayerParameterZonesCollection.fromObject(relations).update(relation)
+            );
         }
     };
 
@@ -95,74 +77,97 @@ const zonesTable = (props: IProps) => {
         }
     };
 
-    const renderRow = (zone: IZone, key: number) => {
-        const {onChange, onClickUpload, onEdit, parameter, readOnly} = props;
-        const zoneParameters = zone.parameters.filter((p) => p.name === parameter.name);
+    const handleAddRelation = (relation: ILayerParameterZone) => {
+        return props.onAddRelation(relation);
+    };
 
-        if (zoneParameters.length > 0) {
-            const zoneParameter = zoneParameters[0];
-            const isArray = zoneParameter.value instanceof Array;
+    const handleRemoveRelation = (relation: ILayerParameterZone) => {
+        return props.onRemoveRelation(relation);
+    };
 
+    const handleToggleZone = (e: MouseEvent<HTMLElement>, data: LabelProps) => {
+        const relationExists = props.relations.findFirstBy('zoneId', data.value);
+
+        if (relationExists && relationExists.priority === 0) {
+            return null;
+        }
+
+        if (relationExists) {
+            return handleRemoveRelation(relationExists);
+        }
+
+        const relation: ILayerParameterZone = {
+            id: uuidv4(),
+            layerId: relations[0].layerId,
+            zoneId: data.value,
+            parameter: props.parameter.id,
+            value: props.parameter.defaultValue,
+            priority: relations.length
+        };
+
+        return handleAddRelation(relation);
+    };
+
+    const renderDefaultInput = (relation: ILayerParameterZone) => {
+        const isArray = relation.value instanceof Array;
+        let value = relation.id === activeRow ? activeValue : relation.value;
+        if (isArray) {
+            value = 'Raster';
+        }
+
+        return (
+            <Input
+                disabled={isArray}
+                name={relation.id}
+                onBlur={handleChange}
+                onChange={handleLocalChange}
+                readOnly={props.readOnly}
+                style={styles.input}
+                type={isArray ? 'text' : 'number'}
+                value={value}
+                onKeyPress={handlePressEnter}
+                icon={
+                    <Icon
+                        name={isArray ? 'map' : 'map pin'}
+                        link={isArray}
+                        onClick={isArray ? () => handleToggleDefault(relation.id) : null}
+                    />
+                }
+            />
+        );
+    };
+
+    const renderRow = (relation: ILayerParameterZone, key: number) => {
+        const zone = props.zones.findById(relation.zoneId);
+
+        if (zone) {
             return (
                 <Table.Row key={key}>
                     <Table.Cell>{zone.name}</Table.Cell>
-                    <Table.Cell>{zone.priority}</Table.Cell>
+                    <Table.Cell>{relation.priority}</Table.Cell>
                     <Table.Cell>
-                        {zone.priority === 0 &&
-                        <div>
-                            <Input
-                                disabled={isArray}
-                                onBlur={onChange}
-                                onChange={handleLocalChange(zone.id)}
-                                readOnly={readOnly}
-                                style={styles.input}
-                                type={isArray ? 'text' : 'number'}
-                                value={isArray ? 'Raster' : zoneParameter.value}
-                                onKeyPress={handlePressEnter}
-                                icon={
-                                    <Icon
-                                        name={isArray ? 'map' : 'map pin'}
-                                        link={isArray}
-                                        onClick={isArray ? () => handleToggleDefault(zone.id) : null}
-                                    />
-                                }
-                            />
-                        </div>
-                        }
-                        {zone.priority > 0 &&
+                        {relation.priority === 0 && renderDefaultInput(relation)}
+                        {relation.priority > 0 &&
                         <Input
-                            disabled={!zoneParameter.isActive}
-                            onBlur={onChange}
-                            onChange={handleLocalChange(zone.id)}
-                            readOnly={readOnly}
+                            name={relation.id}
+                            onBlur={handleChange}
+                            onChange={handleLocalChange}
+                            readOnly={props.readOnly}
                             style={styles.input}
-                            type={zoneParameter.isActive ? 'number' : 'text'}
-                            value={zoneParameter.isActive ? zoneParameter.value : 'Default'}
+                            type={'number'}
+                            value={relation.id === activeRow ? activeValue : relation.value}
                             onKeyPress={handlePressEnter}
-                            icon={
-                                <Popup
-                                    trigger={
-                                        <Icon
-                                            name={zoneParameter.isActive ? 'toggle off' : 'toggle on'}
-                                            link={true}
-                                            onClick={handleToggleZone(zone.id)}
-                                        />
-                                    }
-                                    content="Default"
-                                    size="mini"
-                                />
-                            }
                         />
                         }
                     </Table.Cell>
                     <Table.Cell>
-                        {zone.priority === 0 &&
+                        {relation.priority === 0 &&
                         <Button.Group floated="right" size="small">
                             <Button
                                 icon={true}
                                 primary={true}
-                                onClick={onClickUpload}
-                                disabled={readOnly}
+                                onClick={handleClickUpload}
+                                disabled={props.readOnly}
                             >
                                 <Popup
                                     trigger={<Icon name="upload"/>}
@@ -172,23 +177,14 @@ const zonesTable = (props: IProps) => {
                             </Button>
                         </Button.Group>
                         }
-                        {!readOnly && zone.priority > 0 &&
+                        {!props.readOnly && relation.priority > 0 &&
                         <Button.Group floated="right" size="small">
                             <Button
-                                disabled={readOnly}
+                                disabled={props.readOnly || !(relation.priority < props.zones.length - 1)}
                                 icon={true}
-                                onClick={onEdit(zone.id)}
-                            >
-                                <Popup
-                                    trigger={<Icon name="pencil"/>}
-                                    content="Edit Zone"
-                                    size="mini"
-                                />
-                            </Button>
-                            <Button
-                                disabled={readOnly || !(zone.priority < zones.length - 1)}
-                                icon={true}
-                                onClick={handleReorder(zone.id, 'up')}
+                                relation={relation}
+                                order="up"
+                                onClick={handleReorder}
                             >
                                 <Popup
                                     trigger={<Icon name="arrow up"/>}
@@ -197,9 +193,11 @@ const zonesTable = (props: IProps) => {
                                 />
                             </Button>
                             <Button
-                                disabled={readOnly || !(zone.priority > 1)}
+                                disabled={props.readOnly || !(relation.priority > 1)}
                                 icon={true}
-                                onClick={handleReorder(zone.id, 'down')}
+                                relation={relation}
+                                order="down"
+                                onClick={handleReorder}
                             >
                                 <Popup
                                     trigger={<Icon name="arrow down"/>}
@@ -216,19 +214,40 @@ const zonesTable = (props: IProps) => {
     };
 
     return (
-        <Table>
-            <Table.Header>
-                <Table.Row>
-                    <Table.HeaderCell width={3}>Zone</Table.HeaderCell>
-                    <Table.HeaderCell width={2}>Priority</Table.HeaderCell>
-                    <Table.HeaderCell width={8}>{props.parameter.title} [{props.parameter.unit}]</Table.HeaderCell>
-                    <Table.HeaderCell width={3}/>
-                </Table.Row>
-            </Table.Header>
-            <Table.Body>
-                {zones.map((zone, key) => renderRow(zone, key))}
-            </Table.Body>
-        </Table>
+        <React.Fragment>
+            <Segment>
+                {props.zones.all.map((zone, key) => {
+                    const relation = props.relations.findFirstBy('zoneId', zone.id);
+
+                    if (!relation || (relation.priority !== 0)) {
+                        return (
+                            <Label
+                                as="a"
+                                color={relation ? 'blue' : 'grey'}
+                                value={zone.id}
+                                onClick={handleToggleZone}
+                                key={key}
+                            >
+                                {zone.name}
+                            </Label>
+                        );
+                    }
+                })}
+            </Segment>
+            <Table>
+                <Table.Header>
+                    <Table.Row>
+                        <Table.HeaderCell width={3}>Zone</Table.HeaderCell>
+                        <Table.HeaderCell width={2}>Priority</Table.HeaderCell>
+                        <Table.HeaderCell width={8}>{props.parameter.title} [{props.parameter.unit}]</Table.HeaderCell>
+                        <Table.HeaderCell width={3}/>
+                    </Table.Row>
+                </Table.Header>
+                <Table.Body>
+                    {props.relations.orderBy('priority', 'desc').all.map((relation, key) => renderRow(relation, key))}
+                </Table.Body>
+            </Table>
+        </React.Fragment>
     );
 };
 

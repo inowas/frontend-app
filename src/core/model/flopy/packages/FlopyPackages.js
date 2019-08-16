@@ -161,7 +161,7 @@ export default class FlopyPackages {
         const data = {};
         data['mf'] = this.mf.toFlopyCalculation();
 
-        if (this.mp) {
+        if (this.mp && this.mp.enabled) {
             data['mp'] = this.mp.toCalculation();
         }
 

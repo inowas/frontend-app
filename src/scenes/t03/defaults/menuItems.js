@@ -13,6 +13,7 @@ const menuItems = [
             {
                 name: 'Soil Layers',
                 property: 'soilmodel',
+                type: 'layers',
                 icon: <Icon name="expand"/>
             },
             {

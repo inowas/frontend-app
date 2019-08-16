@@ -1,17 +1,13 @@
 import * as _ from 'lodash';
+import {cloneDeep} from 'lodash';
 
 interface IItem {
     id: string;
+
     [key: string]: any;
 }
 
 export abstract class Collection<T extends IItem> {
-
-    private _items: T[] = [];
-
-    public constructor(array: T[] = []) {
-        this.items = array;
-    }
 
     set items(value: T[]) {
         this._items = value;
@@ -27,6 +23,16 @@ export abstract class Collection<T extends IItem> {
 
     get length() {
         return this._items.length;
+    }
+
+    private _items: T[] = [];
+
+    public constructor(array: T[] = []) {
+        this.items = cloneDeep(array);
+    }
+
+    public toObject() {
+        return this.all;
     }
 
     public add(item: T) {

@@ -46,10 +46,6 @@ class BoundaryCollection extends Collection<Boundary> {
     get boundaries() {
         return sortBy(this.all, [(b) => b.name && b.name.toUpperCase()]);
     }
-
-    public toObject = () => {
-        return this.boundaries.map((b) => b.toObject());
-    };
 }
 
 export default BoundaryCollection;

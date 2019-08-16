@@ -1,4 +1,5 @@
 import React from 'react';
+import uuidv4 from 'uuid/v4';
 import PropTypes from 'prop-types';
 import {withRouter} from 'react-router-dom';
 import {sendCommand} from '../../../services/api';
@@ -9,10 +10,10 @@ import ModflowModelCommand from '../commands/modflowModelCommand';
 import defaults from '../defaults/createModel';
 import moment from 'moment/moment';
 import AppContainer from '../../shared/AppContainer';
-import {SoilmodelLayer} from '../../../core/model/modflow/soilmodel';
 import BoundingBox from '../../../core/model/geometry/BoundingBox';
 import LengthUnit from '../../../core/model/modflow/LengthUnit';
 import TimeUnit from '../../../core/model/modflow/TimeUnit';
+import Soilmodel from "../../../core/model/modflow/soilmodel/Soilmodel";
 
 const navigation = [{
     name: 'Documentation',
@@ -47,7 +48,7 @@ class CreateModel extends React.Component {
     }
 
     getPayload = () => (ModflowModel.createFromParameters(
-        this.state.id,
+        uuidv4(),
         this.state.name,
         this.state.description,
         Geometry.fromObject(this.state.geometry),
@@ -61,12 +62,29 @@ class CreateModel extends React.Component {
     )).toCreatePayload();
 
     handleSave = () => {
+        const soilmodel = Soilmodel.fromDefaults(
+            Geometry.fromObject(this.state.geometry), Cells.fromObject(this.state.cells)
+        );
+
+        const createModelPayload = this.getPayload();
+
         return sendCommand(
-            ModflowModelCommand.createModflowModel(this.getPayload()),
-            () => sendCommand(ModflowModelCommand.addLayer(this.state.id,
-                SoilmodelLayer.fromDefault(Geometry.fromObject(this.state.geometry), Cells.fromObject(this.state.cells))),
-                () => this.props.history.push('T03/' + this.state.id),
-                (e) => this.setState({error: e})),
+            ModflowModelCommand.createModflowModel(createModelPayload),
+            () => sendCommand(
+                ModflowModelCommand.addLayer(
+                    createModelPayload.id,
+                    soilmodel.layersCollection.first
+                ),
+                () => sendCommand(
+                    ModflowModelCommand.updateSoilmodelProperties({
+                        id: createModelPayload.id,
+                        properties: soilmodel.toObject().properties
+                    }),
+                    () => this.props.history.push('T03/' + createModelPayload.id),
+                    (e) => this.setState({error: e})
+                ),
+                (e) => this.setState({error: e})
+            ),
             (e) => this.setState({error: e})
         );
     };
@@ -122,6 +140,10 @@ class CreateModel extends React.Component {
     };
 
     validate = () => {
+        if (!this.state.boundingBox || !this.state.geometry) {
+            return false;
+        }
+
         const command = ModflowModelCommand.createModflowModel(this.getPayload());
         command.validate().then(
             validation => this.setState({validation})

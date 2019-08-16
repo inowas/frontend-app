@@ -8,3 +8,6 @@ export enum PopupPosition {
     RIGHT_CENTER = 'right center',
     LEFT_CENTER = 'left center'
 }
+
+export type CallbackFunction<Response, Return> = (response: Response) => Return;
+export type ErrorCallbackFunction = CallbackFunction<string, void>;

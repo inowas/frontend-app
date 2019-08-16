@@ -1,5 +1,5 @@
 import {IPropertyValueObject} from '../../../types';
-import ZonesCollection from '../../../zones/ZonesCollection';
+import ZonesCollection from '../../../gis/ZonesCollection';
 import FlopyModpathPackage from './FlopyModpathPackage';
 import {
     FlopyModpathMp7,

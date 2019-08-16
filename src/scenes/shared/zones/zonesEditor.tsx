@@ -1,21 +1,34 @@
-import {cloneDeep} from 'lodash';
-import React, {useEffect, useState} from 'react';
-import {Accordion, Button, Form, Grid, Header, Icon} from 'semantic-ui-react';
-import {SoilmodelLayer, SoilmodelZone} from '../../../../../core/model/modflow/soilmodel';
-import {RasterDataMap, RasterfileUploadModal} from '../../../../../scenes/shared/rasterData';
-import {IGridSize} from '../../../core/model/geometry/GridSize.type';
-import {ILayer} from '../../../core/model/zones/Layer.type';
-import {IRasterParameter} from '../../../core/model/zones/RasterParameter.type';
-import ZoneModal from './zoneModal';
+import React, {ChangeEvent, MouseEvent, useState} from 'react';
+import {Accordion, AccordionTitleProps, Form, Grid, Header, Icon, InputOnChangeData} from 'semantic-ui-react';
+import {Array2D} from '../../../core/model/geometry/Array2D.type';
+import BoundingBox from '../../../core/model/geometry/BoundingBox';
+import GridSize from '../../../core/model/geometry/GridSize';
+import {Zone, ZonesCollection} from '../../../core/model/gis';
+import Layer from '../../../core/model/gis/Layer';
+import {ILayerParameterZone} from '../../../core/model/gis/LayerParameterZone.type';
+import LayerParameterZonesCollection from '../../../core/model/gis/LayerParameterZonesCollection';
+import RasterParameter from '../../../core/model/gis/RasterParameter';
+import {IRasterFileMetadata} from '../../../services/api/types';
+import {RasterDataMap} from '../rasterData';
+import RasterfileUploadModal from '../rasterData/rasterfileUploadModal';
 import ZonesTable from './zonesTable';
-import {IZone} from '../../../core/model/zones/Zone.type';
+
+interface IUploadData {
+    data: Array2D<number>;
+    metadata: IRasterFileMetadata | null;
+}
 
 interface IProps {
-    layer: ILayer;
-    gridSize: IGridSize;
-    onChange: (layer: ILayer) => any;
-    parameter: IRasterParameter;
-    readOnly?: boolean;
+    boundingBox: BoundingBox;
+    layer: Layer;
+    gridSize: GridSize;
+    onAddRelation: (relation: ILayerParameterZone) => any;
+    onChange: (relations: LayerParameterZonesCollection) => any;
+    onRemoveRelation: (relation: ILayerParameterZone) => any;
+    parameter: RasterParameter;
+    relations: LayerParameterZonesCollection;
+    readOnly: boolean;
+    zones: ZonesCollection;
 }
 
 interface ISmoothParameters {
@@ -25,120 +38,96 @@ interface ISmoothParameters {
 
 const zonesEditor = (props: IProps) => {
     const [activeIndex, setActiveIndex] = useState<number>(0);
-    const [layer, setLayer] = useState<ILayer>(props.layer);
-    const [selectedZone, setSelectedZone] = useState<IZone | null>(null);
     const [smoothParams, setSmoothParams] = useState<ISmoothParameters>({cycles: 1, distance: 1});
-    const [parameter, setParameter] = useState<IRasterParameter>(props.parameter);
     const [rasterUploadModal, setRasterUploadModal] = useState<boolean>(false);
 
-    useEffect(() => {
-        setLayer(props.layer);
-        setParameter(props.parameter);
-    }, [props.layer, props.parameter]);
-
     const recalculateMap = () => {
-        const layer = SoilmodelLayer.fromObject(this.state.layer);
-        layer.zonesToParameters(this.props.model.gridSize, this.state.parameter.name);
-        return props.onChange(layer);
+        /*const cLayer = Layer.fromObject(layer);
+        cLayer.zonesToParameters(props.gridSize.toObject(), props.parameter);
+        return props.onChange(cLayer);*/
     };
 
     const smoothMap = () => {
-        const layer = SoilmodelLayer.fromObject(this.state.layer);
-        layer.smoothParameter(this.props.model.gridSize, this.state.parameter.name, this.state.smoothParams.cycles, this.state.smoothParams.distance);
-        return this.props.onChange(layer);
+        /*const cLayer = Layer.fromObject(layer);
+        cLayer.smoothParameter(props.gridSize.toObject(), parameter, smoothParams.cycles, smoothParams.distance);
+        return props.onChange(cLayer);*/
     };
 
-    const handleAddZone = () => {
-        const layer = SoilmodelLayer.fromObject(this.state.layer);
-        const zone = new SoilmodelZone();
-        zone.priority = layer.zonesCollection.length;
-        this.setState({
-            selectedZone: zone.toObject()
-        });
+    const handleAddRelation = (relation: ILayerParameterZone) => props.onAddRelation(relation);
+
+    const handleChangeRelation = (relations: LayerParameterZonesCollection) => props.onChange(relations);
+
+    const handleChangeSmoothParams = (e: ChangeEvent<HTMLInputElement>, {name, value}: InputOnChangeData) => {
+        const cSmoothParams = {
+            ...smoothParams,
+            [name]: parseInt(value, 10)
+        };
+
+        return setSmoothParams(cSmoothParams);
     };
 
-    const handleChange = (layer) => {
-        layer.zonesToParameters(this.props.model.gridSize, this.state.parameter.name);
-        return this.props.onChange(layer);
+    const handleRemoveRelation = (relation: ILayerParameterZone) => props.onRemoveRelation(relation);
+
+    const handleSaveModal = (zone: Zone) => {
+        /*const cLayer = Layer.fromObject(layer);
+        cLayer.zones = cLayer.zones.update(zone.toObject());
+        cLayer.zonesToParameters(props.gridSize.toObject(), parameter);
+        props.onChange(cLayer);
+        return setSelectedZone(null);*/
     };
 
-    const handleChangeSmoothParams = (e, {name, value}) => {
-        return this.setState({
-            smoothParams: {
-                ...this.state.smoothParams,
-                [name]: parseInt(value, 10)
+    const handleUploadRaster = (result: IUploadData) => {
+        /*const cLayer = Layer.fromObject(layer);
+        const base = cLayer.zones.findFirstBy('priority', 0);
+        if (base) {
+            const cBase = Zone.fromObject(base);
+            const parametersCollection = RasterParametersCollection.fromObject(base.parameters);
+            const cParameter = parametersCollection.findFirstBy('name', parameter.name);
+            if (cParameter) {
+                cParameter.value = cloneDeep(result.data);
+                cBase.updateParameter(cParameter);
+                cLayer.zones.update(cBase.toObject());
+                cLayer.zonesToParameters(props.gridSize.toObject(), parameter);
+                setRasterUploadModal(false);
+                return props.onChange(cLayer);
             }
-        });
+        }*/
     };
 
-    const handleEditZone = (id) => {
-        const layer = SoilmodelLayer.fromObject(this.state.layer);
-        const zone = layer.zonesCollection.findById(id);
+    const handleCancelUploadModal = () => setRasterUploadModal(false);
 
-        this.setState({
-            selectedZone: zone.toObject()
-        });
-    };
+    const handleClickUpload = () => setRasterUploadModal(true);
 
-    const handleRemoveZone = (zone) => {
-        const layer = SoilmodelLayer.fromObject(this.state.layer);
-        layer.zonesCollection.remove(zone.id);
-
-        this.props.onChange(layer);
-        return this.setState({
-            selectedZone: null
-        });
-    };
-
-    const handleSaveModal = (zone) => {
-        const layer = SoilmodelLayer.fromObject(this.state.layer);
-        layer.zonesCollection = layer.zonesCollection.update(zone);
-        layer.zonesToParameters(this.props.model.gridSize);
-        this.props.onChange(layer);
-
-        return this.setState({
-            selectedZone: null
-        });
-    };
-
-    const handleUploadRaster = (result) => {
-        const {parameter} = this.state;
-        const layer = SoilmodelLayer.fromObject(this.state.layer);
-        const base = layer.zonesCollection.findBy('priority', 0, {first: true});
-        base[parameter.name].value = cloneDeep(result.data);
-        layer.zonesCollection.update(base);
-        layer.zonesToParameters(this.props.model.gridSize, parameter.name);
-        this.setState({showRasterUploadModal: false});
-        return this.props.onChange(layer);
-    };
-
-    const handleClickUpload = () => this.setState({showRasterUploadModal: true});
-
-    const handleClick = (e, titleProps) => {
+    const handleClick = (e: MouseEvent, titleProps: AccordionTitleProps) => {
         const {index} = titleProps;
-        const {activeIndex} = this.state;
-        const newIndex = activeIndex === index ? -1 : index;
-
-        this.setState({activeIndex: newIndex});
+        if (index) {
+            const newIndex = activeIndex === index ? -1 : index;
+            return setActiveIndex(typeof newIndex === 'string' ? parseInt(newIndex, 10) : newIndex);
+        }
     };
+
+    const rParameter = props.layer.parameters.filter((p) => p.id === props.parameter.id);
 
     return (
         <div>
             <Grid>
                 <Grid.Row>
                     <Grid.Column>
-                        <Header as="h4">{parameter.description}, {parameter.name} [{parameter.unit}]</Header>
-                        <RasterDataMap
-                            data={layer[parameter.name]}
-                            model={model}
-                            unit={parameter.unit}
-                        />
+                        <Header as="h4">{props.parameter.title}, {props.parameter.id} [{props.parameter.unit}]</Header>
+                        {rParameter.length > 0 &&
+                            <RasterDataMap
+                                boundingBox={props.boundingBox}
+                                data={rParameter[0].value}
+                                gridSize={props.gridSize}
+                                unit={props.parameter.unit}
+                            />
+                        }
                     </Grid.Column>
                 </Grid.Row>
                 <Grid.Row>
                     <Grid.Column>
                         <Accordion>
-                            <Accordion.Title active={activeIndex === 1} index={1} onClick={this.handleClick}>
+                            <Accordion.Title active={activeIndex === 1} index={1} onClick={handleClick}>
                                 <Icon name="dropdown"/>
                                 <label>Smoothing</label>
                             </Accordion.Title>
@@ -148,39 +137,41 @@ const zonesEditor = (props: IProps) => {
                                         label="Cycles"
                                         type="number"
                                         name="cycles"
-                                        value={this.state.smoothParams.cycles}
+                                        value={smoothParams.cycles}
                                         placeholder="cycles="
-                                        onChange={this.onChangeSmoothParams}
+                                        onChange={handleChangeSmoothParams}
                                         width={5}
-                                        readOnly={this.props.readOnly}
+                                        readOnly={props.readOnly}
                                     />
                                     <Form.Input
                                         label="Distance"
                                         type="number"
                                         name="distance"
-                                        value={this.state.smoothParams.distance}
+                                        value={smoothParams.distance}
                                         placeholder="distance ="
-                                        onChange={this.onChangeSmoothParams}
+                                        onChange={handleChangeSmoothParams}
                                         width={5}
-                                        readOnly={this.props.readOnly}
+                                        readOnly={props.readOnly}
                                     />
-                                    <Form.Button fluid={true}
-                                                 icon="tint"
-                                                 labelPosition="left"
-                                                 onClick={this.smoothMap}
-                                                 content={'Start Smoothing'}
-                                                 width={8}
-                                                 style={{marginTop: '23px'}}
-                                                 disabled={this.props.readOnly}
+                                    <Form.Button
+                                        fluid={true}
+                                        icon="tint"
+                                        labelPosition="left"
+                                        onClick={smoothMap}
+                                        content={'Start Smoothing'}
+                                        width={8}
+                                        style={{marginTop: '23px'}}
+                                        disabled={props.readOnly}
                                     />
-                                    <Form.Button fluid={true}
-                                                 icon="trash"
-                                                 labelPosition="left"
-                                                 onClick={this.recalculateMap}
-                                                 content={'Remove Smoothing'}
-                                                 width={8}
-                                                 style={{marginTop: '23px'}}
-                                                 disabled={this.props.readOnly}
+                                    <Form.Button
+                                        fluid={true}
+                                        icon="trash"
+                                        labelPosition="left"
+                                        onClick={recalculateMap}
+                                        content={'Remove Smoothing'}
+                                        width={8}
+                                        style={{marginTop: '23px'}}
+                                        disabled={props.readOnly}
                                     />
                                 </Form.Group>
                             </Accordion.Content>
@@ -189,43 +180,27 @@ const zonesEditor = (props: IProps) => {
                 </Grid.Row>
                 <Grid.Row>
                     <Grid.Column>
-                        <Button icon={true} primary={true}
-                                onClick={this.onAddZone}
-                                disabled={this.props.readOnly}
-                        >
-                            <Icon name="add"/> Add Zone
-                        </Button>
                         <ZonesTable
-                            onClickUpload={this.onClickUpload}
-                            onChange={this.onChange}
-                            onEdit={this.onEditZone}
-                            parameter={parameter}
-                            readOnly={readOnly}
-                            layer={SoilmodelLayer.fromObject(layer)}
+                            onAddRelation={handleAddRelation}
+                            onClickUpload={handleClickUpload}
+                            onChange={handleChangeRelation}
+                            onRemoveRelation={handleRemoveRelation}
+                            parameter={props.parameter}
+                            readOnly={props.readOnly}
+                            zones={props.zones}
+                            relations={props.relations}
                         />
-
-                        {selectedZone &&
-                        <ZoneModal
-                            onCancel={() => this.setState({selectedZone: null})}
-                            onRemove={this.onRemoveZone}
-                            onSave={this.onSaveModal}
-                            zone={SoilmodelZone.fromObject(selectedZone)}
-                            layer={SoilmodelLayer.fromObject(layer)}
-                            model={model}
-                            readOnly={readOnly}
-                        />}
-                        {showRasterUploadModal &&
-                        <RasterfileUploadModal
-                            gridSize={model.gridSize}
-                            parameter={parameter}
-                            onCancel={() => this.setState({showRasterUploadModal: false})}
-                            onChange={this.onUploadRaster}
-                        />
-                        }
                     </Grid.Column>
                 </Grid.Row>
             </Grid>
-
+            {rasterUploadModal &&
+            <RasterfileUploadModal
+                gridSize={props.gridSize}
+                parameter={props.parameter}
+                onCancel={handleCancelUploadModal}
+                onChange={handleUploadRaster}
+            />
+            }
         </div>
     );
 };

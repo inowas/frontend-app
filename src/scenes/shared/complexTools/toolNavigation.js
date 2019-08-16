@@ -27,7 +27,7 @@ class ToolNavigation extends React.Component {
                                 key={idx}
                                 name={i.name}
                                 active={property === i.property}
-                                route={basePath + id + '/' + i.property}
+                                route={basePath + id + '/' + i.property + (i.type ? `/${i.type}` : '')}
                                 onClick={this.handleItemClick}
                             >
                                 {i.icon}{i.name}

@@ -83,10 +83,10 @@ class TransportUi extends React.Component<Props, IState> {
         this.props.updateTransport(transport);
 
         if (transport.substances.length === 0) {
-            return this.setState({selectedSubstanceId: null});
+            return this.setState({selectedSubstanceId: null, isDirty: true});
         }
 
-        return this.setState({selectedSubstanceId: transport.substances.first.id});
+        return this.setState({selectedSubstanceId: transport.substances.first.id, isDirty: true});
     };
 
     public handleChangeSubstance = (substance: Substance) => {
@@ -122,15 +122,17 @@ class TransportUi extends React.Component<Props, IState> {
                 packages.mt = mt;
 
                 this.props.updatePackages(packages);
-                sendCommand(Command.updateFlopyPackages(this.props.model.id, packages));
-            }
+                sendCommand(
+                    Command.updateFlopyPackages(this.props.model.id, packages)
+                );
+            }, () => this.setState({isError: true})
         );
     };
 
     public render() {
         const {boundaries, model, transport} = this.props;
 
-        if (!(transport instanceof Transport)) {
+        if (!transport) {
             return null;
         }
 
