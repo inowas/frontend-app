@@ -240,6 +240,7 @@ class Boundaries extends React.Component<Props, IState> {
                                             importButton={this.props.readOnly ||
                                             <BoundariesImport
                                                 model={this.props.model}
+                                                soilmodel={this.props.soilmodel}
                                                 boundaries={this.props.boundaries}
                                                 onChange={this.handleChangeImport}
                                             />

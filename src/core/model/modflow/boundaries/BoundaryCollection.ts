@@ -39,7 +39,7 @@ class BoundaryCollection extends Collection<Boundary> {
         return bc;
     }
 
-    public findById(value: string) {
+    public findById(value: string): Boundary | null {
         return this.findFirstBy('id', value, true);
     }
 

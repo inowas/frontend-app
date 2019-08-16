@@ -190,6 +190,32 @@ const styles: IMapStyles = {
         fillColor: '#ede5ec',
         fillOpacity: 0
     },
+    update: {
+        radius: 5,
+        weight: 2,
+        opacity: 1,
+        color: '#1f2878',
+        dashArray: '1',
+        fillColor: '#2950ed',
+    },
+    add: {
+        radius: 5,
+        weight: 2,
+        opacity: 1,
+        color: '#167810',
+        dashArray: '1',
+        fillColor: '#20ed2b',
+        fillOpacity: 0
+    },
+    delete: {
+        radius: 5,
+        weight: 2,
+        opacity: 1,
+        color: '#780913',
+        dashArray: '1',
+        fillColor: '#ed350c',
+        fillOpacity: 0
+    },
     default: {
         radius: 5,
         weight: 2,

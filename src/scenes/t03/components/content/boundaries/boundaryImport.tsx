@@ -6,9 +6,10 @@ import {
 import BoundaryCollection from '../../../../../core/model/modflow/boundaries/BoundaryCollection';
 
 import {IBoundary, IBoundaryExport} from '../../../../../core/model/modflow/boundaries/Boundary.type';
+import Soilmodel from '../../../../../core/model/modflow/soilmodel/Soilmodel';
 import {JSON_SCHEMA_URL} from '../../../../../services/api';
 import {validate} from '../../../../../services/jsonSchemaValidator';
-import BoundaryComparison from './boundaryComparison';
+import BoundaryComparator from './boundaryComparator';
 
 interface IState {
     importedBoundaries: IBoundary[] | null;
@@ -20,6 +21,7 @@ interface IState {
 
 interface IProps {
     model: ModflowModel;
+    soilmodel: Soilmodel;
     boundaries: BoundaryCollection;
     onChange: (boundaries: BoundaryCollection) => void;
 }
@@ -185,12 +187,14 @@ class BoundariesImport extends React.Component<IProps, IState> {
     private renderBoundaries = () => {
         if (this.state.importedBoundaries) {
             return (
-                <BoundaryComparison
+                <BoundaryComparator
                     currentBoundaries={this.props.boundaries}
+                    soilmodel={this.props.soilmodel}
                     newBoundaries={BoundaryCollection.fromObject(this.state.importedBoundaries)}
-                    onChange={this.onImportClick}
-                    onBoundaryClick={this.onBoundaryClick}
+                    model={this.props.model}
                     selectedBoundary={this.state.selectedBoundary}
+                    onBoundaryClick={this.onBoundaryClick}
+                    onChange={this.onImportClick}
                 />
             );
         }
