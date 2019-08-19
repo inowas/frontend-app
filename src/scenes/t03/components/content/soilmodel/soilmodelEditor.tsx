@@ -3,7 +3,7 @@ import {connect} from 'react-redux';
 import {Redirect, withRouter} from 'react-router-dom';
 import {Button, Grid, Menu, MenuItemProps, Segment} from 'semantic-ui-react';
 import Uuid from 'uuid';
-import {Zone} from '../../../../../core/model/gis';
+import {Zone, ZonesCollection} from '../../../../../core/model/gis';
 import {ILayerParameterZone} from '../../../../../core/model/gis/LayerParameterZone.type';
 import LayerParameterZonesCollection from '../../../../../core/model/gis/LayerParameterZonesCollection';
 import {IZone} from '../../../../../core/model/gis/Zone.type';
@@ -76,6 +76,15 @@ const soilmodelEditor = (props: IProps) => {
 
     const {soilmodel} = props;
     const {id, pid, property, type} = props.match.params;
+
+    const defaultRelation = props.soilmodel.relationsCollection.findFirstBy('priority', 0);
+
+    if (!defaultRelation) {
+        throw new Error('There is no default relation.');
+    }
+
+    const fZones = props.soilmodel.zonesCollection.all.filter((z) => z.id !== defaultRelation.zoneId);
+    const firstZone = soilmodel.zonesCollection.findFirstBy('id', defaultRelation.zoneId, false);
 
     useEffect(() => {
         if (pid) {
@@ -192,7 +201,7 @@ const soilmodelEditor = (props: IProps) => {
 
     const handleChangeLayer = (layer: SoilmodelLayer) => {
         setIsDirty(true);
-        setSelectedLayer(layer.toObject());
+        return setSelectedLayer(layer.toObject());
     };
 
     const handleChangeRelations = (iRelations: LayerParameterZonesCollection) => {
@@ -226,7 +235,7 @@ const soilmodelEditor = (props: IProps) => {
         }
         if (value === nav.ZONES) {
             if (soilmodel.zonesCollection.length > 0) {
-                lid = soilmodel.zonesCollection.first.id;
+                lid = firstZone ? firstZone.id : soilmodel.zonesCollection.first.id;
                 return props.history.push(`${baseUrl}/${id}/${property}/zones/${lid}`);
             }
             return props.history.push(`${baseUrl}/${id}/${property}/zones`);
@@ -320,7 +329,7 @@ const soilmodelEditor = (props: IProps) => {
             }
             // ... existing zone:
             if (type === nav.ZONES && soilmodel.zonesCollection.length > 0) {
-                lid = soilmodel.zonesCollection.first.id;
+                lid = firstZone ? firstZone.id : soilmodel.zonesCollection.first.id;
                 return <Redirect to={`${baseUrl}/${id}/${property}/zones/${lid}`}/>;
             }
 
@@ -336,7 +345,7 @@ const soilmodelEditor = (props: IProps) => {
             if (type === nav.ZONES && !soilmodel.zonesCollection.findFirstBy('id', pid)) {
                 // ... if there is one:
                 if (soilmodel.zonesCollection.length > 0) {
-                    lid = soilmodel.zonesCollection.first.id;
+                    lid = firstZone ? firstZone.id : soilmodel.zonesCollection.first.id;
                     return <Redirect to={`${baseUrl}/${id}/${property}/${type}/${lid}`}/>;
                 }
             }
@@ -406,7 +415,8 @@ const soilmodelEditor = (props: IProps) => {
                             onClick={handleClickItem}
                             onClone={handleCloneItem}
                             onRemove={handleRemoveItem}
-                            zones={props.soilmodel.zonesCollection}
+                            zones={ZonesCollection.fromObject(fZones)}
+                            readOnly={readOnly}
                             selected={pid}
                         />
                         }

@@ -1,14 +1,13 @@
+import {cloneDeep} from 'lodash';
 import uuidv4 from 'uuid/v4';
+import {GridSize} from '../geometry';
+import {Array2D} from '../geometry/Array2D.type';
+import {ICell} from '../geometry/Cells.type';
 import {IGridSize} from '../geometry/GridSize.type';
 import {ILayer} from './Layer.type';
 import {ILayerParameter} from './LayerParameter.type';
-import {IRasterParameter} from './RasterParameter.type';
-import { cloneDeep } from 'lodash';
-import ZonesCollection from './ZonesCollection';
 import LayerParameterZonesCollection from './LayerParameterZonesCollection';
-import { Array2D } from '../geometry/Array2D.type';
-import {ICell} from '../geometry/Cells.type';
-import { GridSize } from '../geometry';
+import ZonesCollection from './ZonesCollection';
 
 class Layer {
     public static fromObject(obj: ILayer) {
@@ -18,7 +17,7 @@ class Layer {
     protected _props: ILayer;
 
     constructor(props: ILayer) {
-        this._props = props;
+        this._props = cloneDeep(props);
     }
 
     public clone() {
@@ -59,34 +58,46 @@ class Layer {
         this._props.parameters = value;
     }
 
-    public smoothParameter(gridSize: IGridSize, parameter: string, cycles: number = 1, distance: number = 1) {
-        /*if (isTypeOf<Array2D<number>>(parameter)) {
-            const cValue = cloneDeep(parameter);
+    public smoothParameter(gridSize: GridSize, parameter: string, cycles: number = 1, distance: number = 1) {
+        const lParameters = this.parameters.filter((p) => p.id === parameter);
 
-            for (let cyc = 1; cyc <= cycles; cyc++) {
-                for (let row = 0; row < gridSize.n_x; row++) {
-                    for (let col = 0; col < gridSize.n_x; col++) {
-                        let avg = parameter.value[row][col];
-                        let div = 1;
+        if (lParameters.length > 0) {
+            const lParameter = lParameters[0];
+            if (Array.isArray(lParameter.value)) {
+                const cValue: Array2D<number> = cloneDeep(lParameter.value);
+                for (let cyc = 1; cyc <= cycles; cyc++) {
+                    for (let row = 0; row < gridSize.nX; row++) {
+                        for (let col = 0; col < gridSize.nY; col++) {
+                            let avg = lParameter.value[row][col];
+                            let div = 1;
 
-                        parameter.value.forEach((r: number[], rowKey: number) => {
-                            if (rowKey >= row - distance && rowKey <= row + distance &&
-                                isTypeOf<Array2D<number>>(parameter.value)) {
-                                parameter.value[rowKey].forEach((c: number, colKey: number) => {
-                                    if (colKey >= col - distance && colKey <= col + distance &&
-                                        isTypeOf<Array2D<number>>(parameter.value) && parameter.value[rowKey][colKey]) {
-                                        avg += parameter.value[rowKey][colKey];
-                                        div++;
-                                    }
-                                });
-                            }
-                        });
-                        cValue[row][col] = avg / div;
+                            lParameter.value.forEach((r: number[], rowKey: number) => {
+                                if (rowKey >= row - distance && rowKey <= row + distance &&
+                                    Array.isArray(lParameter.value)) {
+                                    lParameter.value[rowKey].forEach((c: number, colKey: number) => {
+                                        if (colKey >= col - distance && colKey <= col + distance &&
+                                            Array.isArray(lParameter.value) &&
+                                            !isNaN(lParameter.value[rowKey][colKey])) {
+                                            avg += lParameter.value[rowKey][colKey];
+                                            div++;
+                                        }
+                                    });
+                                }
+                            });
+                            cValue[row][col] = avg / div;
+                        }
                     }
                 }
+                const cParameters = this.parameters.map((p) => {
+                    if (p.id === lParameter.id) {
+                        p.value = cValue;
+                    }
+                    return p;
+                });
+                this.parameters = cloneDeep(cParameters);
             }
-        }*/
-        return null;
+        }
+        return this;
     }
 
     public zonesToParameters(gridSize: GridSize, relations: LayerParameterZonesCollection, zones: ZonesCollection) {
@@ -109,7 +120,7 @@ class Layer {
                     const zone = zones.findById(relation.zoneId);
                     if (zone) {
                         zone.cells.forEach((cell: ICell) => {
-                            if (Array.isArray(lParameter.value) && lParameter.value[cell[1]][cell[0]]) {
+                            if (Array.isArray(lParameter.value) && !isNaN(lParameter.value[cell[1]][cell[0]])) {
                                 lParameter.value[cell[1]][cell[0]] = relation.value as number;
                             }
                         });

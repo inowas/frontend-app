@@ -31,6 +31,12 @@ interface IProps {
     soilmodel: Soilmodel;
 }
 
+interface ISmoothParameters {
+    cycles: number;
+    distance: number;
+    parameterId: string;
+}
+
 const layerDetails = (props: IProps) => {
     const [layer, setLayer] = useState<ISoilmodelLayer>(props.layer.toObject());
 
@@ -41,12 +47,16 @@ const layerDetails = (props: IProps) => {
     const handleAddRelation = (relation: ILayerParameterZone) => {
         const relations = props.relations;
         relations.add(relation).reorderPriority(relation.layerId, relation.parameter);
+        const cLayer = SoilmodelLayer.fromObject(layer).zonesToParameters(
+            props.model.gridSize,
+            relations,
+            props.soilmodel.zonesCollection
+        );
+        props.onChange(cLayer);
         return props.onChangeRelations(relations);
     };
 
-    const handleChange = () => {
-        props.onChange(SoilmodelLayer.fromObject(layer));
-    };
+    const handleChange = () => props.onChange(SoilmodelLayer.fromObject(layer));
 
     const handleChangeRelations = (relations: LayerParameterZonesCollection) => {
         const cLayer = SoilmodelLayer.fromObject(layer).zonesToParameters(
@@ -54,8 +64,8 @@ const layerDetails = (props: IProps) => {
             relations,
             props.soilmodel.zonesCollection
         );
-        setLayer(cLayer.toObject());
-        props.onChangeRelations(relations);
+        props.onChange(cLayer);
+        return props.onChangeRelations(relations);
     };
 
     const handleLocalChange = (
@@ -68,6 +78,12 @@ const layerDetails = (props: IProps) => {
     const handleRemoveRelation = (relation: ILayerParameterZone) => {
         const relations = LayerParameterZonesCollection.fromObject(props.relations.toObject());
         relations.removeById(relation.id).reorderPriority(relation.layerId, relation.parameter);
+        const cLayer = SoilmodelLayer.fromObject(layer).zonesToParameters(
+            props.model.gridSize,
+            relations,
+            props.soilmodel.zonesCollection
+        );
+        props.onChange(cLayer);
         return props.onChangeRelations(relations);
     };
 
@@ -77,7 +93,13 @@ const layerDetails = (props: IProps) => {
             [name]: value
         };
 
-        props.onChange(SoilmodelLayer.fromObject(cLayer));
+        return props.onChange(SoilmodelLayer.fromObject(cLayer));
+    };
+
+    const handleSmoothLayer = (params: ISmoothParameters) => {
+        const cLayer = SoilmodelLayer.fromObject(layer);
+        cLayer.smoothParameter(props.model.gridSize, params.parameterId, params.cycles, params.distance);
+        return props.onChange(cLayer);
     };
 
     const renderPanes = () => {
@@ -209,6 +231,7 @@ const layerDetails = (props: IProps) => {
                                 onAddRelation={handleAddRelation}
                                 onChange={handleChangeRelations}
                                 onRemoveRelation={handleRemoveRelation}
+                                onSmoothLayer={handleSmoothLayer}
                                 parameter={RasterParameter.fromObject(parameter)}
                                 relations={LayerParameterZonesCollection.fromObject(iRelations)}
                                 readOnly={readOnly}

@@ -1,3 +1,4 @@
+import {cloneDeep} from 'lodash';
 import uuidv4 from 'uuid/v4';
 import {defaultSoilmodelLayerParameters} from '../../../../scenes/t03/defaults/soilmodel';
 import {Array2D} from '../../geometry/Array2D.type';
@@ -28,7 +29,7 @@ class SoilmodelLayer extends Layer {
 
     constructor(props: ISoilmodelLayer) {
         super(props);
-        this._props = props;
+        this._props = cloneDeep(props);
     }
 
     public toObject(): ISoilmodelLayer {

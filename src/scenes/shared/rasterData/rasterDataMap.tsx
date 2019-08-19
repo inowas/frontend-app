@@ -62,7 +62,7 @@ const rasterDataMap = (props: IProps) => {
         dataArray: createGridData(data, gridSize.nX, gridSize.nY),
         bounds: boundingBox.getBoundsLatLng(),
         opacity: 0.75,
-        sharpening: 1,
+        sharpening: 10,
         zIndex: 1
     } as MapLayerProps;
 

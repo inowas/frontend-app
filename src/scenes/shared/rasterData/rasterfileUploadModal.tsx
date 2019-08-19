@@ -187,6 +187,8 @@ const rasterFileUploadModal = (props: IProps) => {
         }
     };
 
+    console.log('MODAL');
+
     return (
         <Modal size={'large'} open={true} onClose={props.onCancel} dimmer={'blurring'}>
             <Modal.Header>Upload Rasterfile</Modal.Header>

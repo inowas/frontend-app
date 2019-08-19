@@ -44,7 +44,7 @@ const zonesTable = (props: IProps) => {
         return setActiveValue('');
     };
 
-    const handleClickUpload = () => null;
+    const handleClickUpload = () => props.onClickUpload();
 
     const handleEdit = (id: string) => () => null;
 

@@ -3,7 +3,7 @@ import {Accordion, AccordionTitleProps, Form, Grid, Header, Icon, InputOnChangeD
 import {Array2D} from '../../../core/model/geometry/Array2D.type';
 import BoundingBox from '../../../core/model/geometry/BoundingBox';
 import GridSize from '../../../core/model/geometry/GridSize';
-import {Zone, ZonesCollection} from '../../../core/model/gis';
+import {ZonesCollection} from '../../../core/model/gis';
 import Layer from '../../../core/model/gis/Layer';
 import {ILayerParameterZone} from '../../../core/model/gis/LayerParameterZone.type';
 import LayerParameterZonesCollection from '../../../core/model/gis/LayerParameterZonesCollection';
@@ -25,6 +25,7 @@ interface IProps {
     onAddRelation: (relation: ILayerParameterZone) => any;
     onChange: (relations: LayerParameterZonesCollection) => any;
     onRemoveRelation: (relation: ILayerParameterZone) => any;
+    onSmoothLayer: (params: ISmoothParametersWithId) => any;
     parameter: RasterParameter;
     relations: LayerParameterZonesCollection;
     readOnly: boolean;
@@ -36,22 +37,23 @@ interface ISmoothParameters {
     distance: number;
 }
 
+interface ISmoothParametersWithId {
+    cycles: number;
+    distance: number;
+    parameterId: string;
+}
+
 const zonesEditor = (props: IProps) => {
     const [activeIndex, setActiveIndex] = useState<number>(0);
     const [smoothParams, setSmoothParams] = useState<ISmoothParameters>({cycles: 1, distance: 1});
     const [rasterUploadModal, setRasterUploadModal] = useState<boolean>(false);
 
-    const recalculateMap = () => {
-        /*const cLayer = Layer.fromObject(layer);
-        cLayer.zonesToParameters(props.gridSize.toObject(), props.parameter);
-        return props.onChange(cLayer);*/
-    };
+    const recalculateMap = () => props.onChange(props.relations);
 
-    const smoothMap = () => {
-        /*const cLayer = Layer.fromObject(layer);
-        cLayer.smoothParameter(props.gridSize.toObject(), parameter, smoothParams.cycles, smoothParams.distance);
-        return props.onChange(cLayer);*/
-    };
+    const smoothMap = () => props.onSmoothLayer({
+        ...smoothParams,
+        parameterId: props.parameter.id
+    });
 
     const handleAddRelation = (relation: ILayerParameterZone) => props.onAddRelation(relation);
 
@@ -68,30 +70,15 @@ const zonesEditor = (props: IProps) => {
 
     const handleRemoveRelation = (relation: ILayerParameterZone) => props.onRemoveRelation(relation);
 
-    const handleSaveModal = (zone: Zone) => {
-        /*const cLayer = Layer.fromObject(layer);
-        cLayer.zones = cLayer.zones.update(zone.toObject());
-        cLayer.zonesToParameters(props.gridSize.toObject(), parameter);
-        props.onChange(cLayer);
-        return setSelectedZone(null);*/
-    };
-
     const handleUploadRaster = (result: IUploadData) => {
-        /*const cLayer = Layer.fromObject(layer);
-        const base = cLayer.zones.findFirstBy('priority', 0);
-        if (base) {
-            const cBase = Zone.fromObject(base);
-            const parametersCollection = RasterParametersCollection.fromObject(base.parameters);
-            const cParameter = parametersCollection.findFirstBy('name', parameter.name);
-            if (cParameter) {
-                cParameter.value = cloneDeep(result.data);
-                cBase.updateParameter(cParameter);
-                cLayer.zones.update(cBase.toObject());
-                cLayer.zonesToParameters(props.gridSize.toObject(), parameter);
-                setRasterUploadModal(false);
-                return props.onChange(cLayer);
+        const cRelations = props.relations.all.map((r) => {
+            if (r.priority === 0) {
+                r.value = result.data;
             }
-        }*/
+            return r;
+        });
+        setRasterUploadModal(false);
+        props.onChange(LayerParameterZonesCollection.fromObject(cRelations));
     };
 
     const handleCancelUploadModal = () => setRasterUploadModal(false);

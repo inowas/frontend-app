@@ -10,10 +10,11 @@ interface IProps {
     onClick: (zoneId: string) => any;
     onClone: (zone: Zone) => any;
     onRemove: (zoneId: string) => any;
+    readOnly: boolean;
     selected?: string;
 }
 
-const zonesList = ({zones, onClick, onClone, onRemove, selected}: IProps) => {
+const zonesList = ({zones, onClick, onClone, onRemove, readOnly, selected}: IProps) => {
 
     const handleClick = (id: string) => {
         return () => onClick(id);
@@ -37,6 +38,7 @@ const zonesList = ({zones, onClick, onClone, onRemove, selected}: IProps) => {
                         active={zone.id === selected}
                         onClick={handleClick(zone.id)}
                     >
+                        {!readOnly &&
                         <Popup
                             trigger={<Icon name="ellipsis horizontal"/>}
                             content={
@@ -70,6 +72,7 @@ const zonesList = ({zones, onClick, onClone, onRemove, selected}: IProps) => {
                             on={'click'}
                             position={'right center'}
                         />
+                        }
                         {zone.name}
                     </Menu.Item>
                 ))}
