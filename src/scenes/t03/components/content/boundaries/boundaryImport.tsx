@@ -1,16 +1,19 @@
 import React from 'react';
-import {Button, Dimmer, Grid, Header, List, Loader, Modal, Segment} from 'semantic-ui-react';
+import {Button, Grid, Header, List, Modal, Segment} from 'semantic-ui-react';
 import {
     ModflowModel,
 } from '../../../../../core/model/modflow';
 import BoundaryCollection from '../../../../../core/model/modflow/boundaries/BoundaryCollection';
 
-import {IBoundary, IBoundaryImport} from '../../../../../core/model/modflow/boundaries/Boundary.type';
+import {IBoundary, IBoundaryExport} from '../../../../../core/model/modflow/boundaries/Boundary.type';
+import Soilmodel from '../../../../../core/model/modflow/soilmodel/Soilmodel';
 import {JSON_SCHEMA_URL} from '../../../../../services/api';
 import {validate} from '../../../../../services/jsonSchemaValidator';
+import BoundaryComparator from './boundaryComparator';
 
 interface IState {
-    boundaries: IBoundary[] | null;
+    importedBoundaries: IBoundary[] | null;
+    selectedBoundary: string | null;
     errors: any[] | null;
     isLoading: boolean;
     showImportModal: boolean;
@@ -18,6 +21,7 @@ interface IState {
 
 interface IProps {
     model: ModflowModel;
+    soilmodel: Soilmodel;
     boundaries: BoundaryCollection;
     onChange: (boundaries: BoundaryCollection) => void;
 }
@@ -28,9 +32,10 @@ class BoundariesImport extends React.Component<IProps, IState> {
     constructor(props: IProps) {
         super(props);
         this.state = {
-            boundaries: props.boundaries ? props.boundaries.toObject() : null,
+            importedBoundaries: null,
             errors: null,
             isLoading: false,
+            selectedBoundary: null,
             showImportModal: false
         };
 
@@ -42,14 +47,9 @@ class BoundariesImport extends React.Component<IProps, IState> {
         };
     }
 
-    public componentWillReceiveProps(nextProps: Readonly<IProps>, nextContext: any): void {
-        this.setState({
-            boundaries: nextProps.boundaries.toObject(),
-        });
-    }
-
     public render() {
         const {showImportModal} = this.state;
+
         return (
             <div>
                 <Button
@@ -70,9 +70,15 @@ class BoundariesImport extends React.Component<IProps, IState> {
             showImportModal: false
         });
 
-        if (this.state.boundaries) {
-            this.props.onChange(BoundaryCollection.fromObject(this.state.boundaries));
+        if (this.state.importedBoundaries) {
+            // console.log(BoundaryCollection.fromObject(this.state.importedBoundaries));
         }
+    };
+
+    private onBoundaryClick = (id: string) => {
+        this.setState({
+            selectedBoundary: id
+        });
     };
 
     private onCancel = () => {
@@ -81,15 +87,19 @@ class BoundariesImport extends React.Component<IProps, IState> {
         });
     };
 
-    private handleFileData = (response: IBoundaryImport[]) => {
-        const boundaries = BoundaryCollection.fromImport(
+    private handleFileData = (response: IBoundaryExport[]) => {
+        const boundaries = BoundaryCollection.fromExport(
             response,
             this.props.model.boundingBox,
             this.props.model.gridSize,
         );
 
         if (boundaries) {
-            this.setState({boundaries: boundaries.toObject()});
+            this.setState({
+                importedBoundaries: boundaries.toObject(),
+                selectedBoundary: boundaries.first && boundaries.first.id,
+                isLoading: false
+            });
         }
     };
 
@@ -105,7 +115,7 @@ class BoundariesImport extends React.Component<IProps, IState> {
     private parseFileContent = (text: string) => {
 
         this.setState({
-            boundaries: null,
+            importedBoundaries: null,
             errors: null,
         });
 
@@ -120,7 +130,10 @@ class BoundariesImport extends React.Component<IProps, IState> {
 
         validate(data, schemaUrl).then(([isValid, errors]) => {
             if (!isValid) {
-                return this.setState({errors});
+                return this.setState({
+                    isLoading: false,
+                    errors
+                });
             }
 
             return this.handleFileData(data);
@@ -129,7 +142,7 @@ class BoundariesImport extends React.Component<IProps, IState> {
 
     private download = () => {
         const filename = 'boundaries.json';
-        const boundaries: IBoundaryImport[] = this.props.boundaries.toImport();
+        const boundaries: IBoundaryExport[] = this.props.boundaries.toExport();
         const text = JSON.stringify(boundaries, null, 2);
 
         const element: HTMLAnchorElement = document.createElement('a');
@@ -144,6 +157,7 @@ class BoundariesImport extends React.Component<IProps, IState> {
     private handleUpload = (e: any) => {
         const files = e.target.files;
         if (files.length > 0) {
+            this.setState({isLoading: true});
             this.fileReader.readAsText(files[0]);
         }
     };
@@ -164,8 +178,26 @@ class BoundariesImport extends React.Component<IProps, IState> {
         </Segment>
     );
 
+    private onFileUploadClick = () => {
+        this.setState({
+            importedBoundaries: null
+        });
+    };
+
     private renderBoundaries = () => {
-        return null;
+        if (this.state.importedBoundaries) {
+            return (
+                <BoundaryComparator
+                    currentBoundaries={this.props.boundaries}
+                    soilmodel={this.props.soilmodel}
+                    newBoundaries={BoundaryCollection.fromObject(this.state.importedBoundaries)}
+                    model={this.props.model}
+                    selectedBoundary={this.state.selectedBoundary}
+                    onBoundaryClick={this.onBoundaryClick}
+                    onChange={this.onImportClick}
+                />
+            );
+        }
     };
 
     private renderImportModal = () => (
@@ -173,22 +205,16 @@ class BoundariesImport extends React.Component<IProps, IState> {
             open={true}
             onClose={this.onCancel}
             dimmer={'blurring'}
-            size={'small'}
+            size={'large'}
         >
             <Modal.Header>Import Boundaries</Modal.Header>
             <Modal.Content>
                 <Grid stackable={true}>
                     <Grid.Row columns={2}>
                         <Grid.Column>
-                            {this.state.isLoading &&
-                            <Dimmer active={true} inverted={true}>
-                                <Loader>Uploading</Loader>
-                            </Dimmer>
-                            }
-                            {!this.state.isLoading &&
                             <Segment basic={true}>
                                 <List bulleted={true}>
-                                    <List.Item>The file has to be a csv or json-file.</List.Item>
+                                    <List.Item>The file has to be a valid json-file.</List.Item>
                                     <List.Item
                                         as={'a'}
                                         onClick={this.download}
@@ -203,15 +229,17 @@ class BoundariesImport extends React.Component<IProps, IState> {
                                     icon={'file alternate'}
                                     content={'Select File'}
                                     labelPosition={'left'}
+                                    loading={this.state.isLoading}
                                 />
                                 <input
                                     hidden={true}
                                     type={'file'}
                                     id={'inputField'}
                                     onChange={this.handleUpload}
+                                    onClick={this.onFileUploadClick}
+                                    value={''}
                                 />
                             </Segment>
-                            }
                         </Grid.Column>
                         <Grid.Column>
                             {this.state.errors && this.renderValidationErrors(this.state.errors)}
@@ -226,17 +254,9 @@ class BoundariesImport extends React.Component<IProps, IState> {
             </Modal.Content>
             <Modal.Actions>
                 <Button
-                    negative={true}
                     onClick={this.onCancel}
                 >
-                    Cancel
-                </Button>
-                <Button
-                    disabled={!!this.state.errors}
-                    onClick={this.onImportClick}
-                    positive={true}
-                >
-                    Import
+                    Close
                 </Button>
             </Modal.Actions>
         </Modal>

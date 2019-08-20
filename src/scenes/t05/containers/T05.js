@@ -33,7 +33,7 @@ const navigation = [{
     icon: <Icon name="file"/>
 }];
 
-class T05 extends React.Component {
+class  T05 extends React.Component {
     constructor(props) {
         super(props);
 

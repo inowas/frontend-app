@@ -1,25 +1,13 @@
-import {Point} from 'geojson';
-import {ICells} from '../../geometry/Cells.type';
-import {ISpValues} from './Boundary.type';
+import {IPointBoundary, IPointBoundaryExport, IPointBoundaryProperties} from './PointBoundary.type';
 
-export interface IHeadObservationWell {
-    id: string;
-    type: 'Feature';
-    geometry: Point;
-    properties: {
-        type: 'hob';
-        name: string;
-        layers: number[];
-        cells: ICells;
-        sp_values: ISpValues;
-    };
+export interface IHeadObservationWell extends IPointBoundary {
+    properties: IHeadObservationWellProperties;
 }
 
-export interface IHeadObservationWellImport {
+export interface IHeadObservationWellProperties extends IPointBoundaryProperties {
     type: 'hob';
-    id?: string;
-    name: string;
-    geometry: Point;
-    layers: number[];
-    sp_values: ISpValues;
+}
+
+export interface IHeadObservationWellExport extends IPointBoundaryExport {
+    type: 'hob';
 }

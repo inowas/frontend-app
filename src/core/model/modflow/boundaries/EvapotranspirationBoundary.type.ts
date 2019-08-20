@@ -18,12 +18,13 @@ export interface IEvapotranspirationBoundary {
     };
 }
 
-export interface IEvapotranspirationBoundaryImport {
+export interface IEvapotranspirationBoundaryExport {
     type: 'evt';
     id?: string;
     name: string;
     geometry: Polygon;
     layers: number[];
+    cells?: ICells;
     sp_values: ISpValues;
     nevtop: INevtop;
 }

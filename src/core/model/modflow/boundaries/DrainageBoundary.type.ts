@@ -1,30 +1,24 @@
-import {LineString} from 'geojson';
-import {ICells} from '../../geometry/Cells.type';
-import {IBoundaryFeatureCollection} from './Boundary.type';
-import {IObservationPoint, IObservationPointImportData} from './ObservationPoint.type';
+import {
+    ILineBoundaryExport,
+    ILineBoundaryFeature,
+    ILineBoundaryFeatureCollection,
+    ILineBoundaryFeatureProperties
+} from './LineBoundary.type';
+import {IObservationPoint} from './ObservationPoint.type';
 
-export interface IDrainageBoundary extends IBoundaryFeatureCollection {
+export interface IDrainageBoundary extends ILineBoundaryFeatureCollection {
     type: 'FeatureCollection';
     features: Array<IObservationPoint | IDrainageBoundaryFeature>;
 }
 
-export interface IDrainageBoundaryFeature {
-    type: 'Feature';
-    id: string;
-    geometry: LineString;
-    properties: {
-        type: 'drn';
-        name: string;
-        layers: number[];
-        cells: ICells;
-    };
+export interface IDrainageBoundaryFeature extends ILineBoundaryFeature {
+    properties: IDrainageBoundaryFeatureProperties;
 }
 
-export interface IDrainageBoundaryImport {
+export interface IDrainageBoundaryFeatureProperties extends ILineBoundaryFeatureProperties {
     type: 'drn';
-    id?: string;
-    name: string;
-    geometry: LineString;
-    layers: number[];
-    ops: IObservationPointImportData[];
+}
+
+export interface IDrainageBoundaryExport extends ILineBoundaryExport {
+    type: 'drn';
 }

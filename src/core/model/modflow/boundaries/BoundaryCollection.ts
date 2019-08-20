@@ -1,35 +1,45 @@
-import {sortBy} from 'lodash';
+import {cloneDeep, isEqual, sortBy} from 'lodash';
 import {Collection} from '../../collection/Collection';
 import BoundingBox from '../../geometry/BoundingBox';
 import GridSize from '../../geometry/GridSize';
-import {BoundaryType, IBoundary, IBoundaryImport} from './Boundary.type';
+import {BoundaryType, IBoundary, IBoundaryExport} from './Boundary.type';
 import {Boundary, BoundaryFactory} from './index';
+
+import simpleDiff from '../../../../services/diffTools/simpleDiff';
+
+export interface IBoundaryComparisonItem {
+    id: string;
+    state: string | null;
+    diff: object | null;
+    type: BoundaryType;
+    name: string;
+}
 
 class BoundaryCollection extends Collection<Boundary> {
 
+    get boundaries() {
+        return sortBy(this.all, [(b) => b.name && b.name.toUpperCase()]);
+    }
+
     public static fromQuery(query: IBoundary[]) {
+        return BoundaryCollection.fromObject(query);
+    }
+
+    public static fromObject(obj: IBoundary[]) {
         const bc = new BoundaryCollection();
-        query.forEach((b) => {
+        obj.forEach((b) => {
             bc.addBoundary(BoundaryFactory.fromObject(b));
         });
         return bc;
     }
 
-    public static fromObject(query: IBoundary[]) {
+    public static fromExport(i: IBoundaryExport[], boundingBox: BoundingBox, gridSize: GridSize) {
         const bc = new BoundaryCollection();
-        query.forEach((b) => {
-            bc.addBoundary(BoundaryFactory.fromObject(b));
-        });
+        i.forEach((b) => bc.addBoundary(BoundaryFactory.fromExport(b, boundingBox, gridSize)));
         return bc;
     }
 
-    public static fromImport(i: IBoundaryImport[], boundingBox: BoundingBox, gridSize: GridSize) {
-        const bc = new BoundaryCollection();
-        i.forEach((b) => bc.addBoundary(BoundaryFactory.fromImport(b, boundingBox, gridSize)));
-        return bc;
-    }
-
-    public findById(value: string) {
+    public findById(value: string): Boundary | null {
         return this.findFirstBy('id', value, true);
     }
 
@@ -46,21 +56,61 @@ class BoundaryCollection extends Collection<Boundary> {
         return this;
     }
 
-    get boundaries() {
-        return sortBy(this.all, [(b) => b.name && b.name.toUpperCase()]);
-    }
-
     public toObject = () => {
         return this.boundaries.map((b) => b.toObject());
     };
 
-    public toImport = () => {
-        return this.all.map((b) => b.toImport());
+    public toExport = () => {
+        return this.all.map((b) => b.toExport());
     };
 
     public filter = (callable: (b: any) => boolean) => {
-        this.items = this.all.filter(callable);
-        return this;
+        return BoundaryCollection.fromObject(this.all.filter(callable).map((b) => b.toObject()));
+    };
+
+    public compareWith = (nbc: BoundaryCollection): IBoundaryComparisonItem[] => {
+        const currentBoundaries = BoundaryCollection.fromObject(cloneDeep(this.toObject()));
+        const newBoundaries = nbc;
+
+        let items: IBoundaryComparisonItem[] = currentBoundaries.all.map((b) => (
+            {id: b.id, state: null, type: b.type, diff: null, name: b.name})
+        );
+
+        // DELETE
+        items = items.map((i) => {
+            if (newBoundaries.filter((b) => b.id === i.id).length === 0) {
+                return {...i, state: 'delete', diff: {}};
+            }
+            return i;
+        });
+
+        // ADD
+        // UPDATE
+        newBoundaries.all.forEach((b) => {
+            if (items.filter((i) => i.id === b.id).length === 0) {
+                items.push({id: b.id, state: 'add', type: b.type, diff: {}, name: b.name});
+                return;
+            }
+
+            const currentBoundary = currentBoundaries.findById(b.id);
+            const newBoundary = newBoundaries.findById(b.id);
+
+            if (!newBoundary || !currentBoundary) {
+                return;
+            }
+
+            const diff = simpleDiff(newBoundary.toExport(), currentBoundary.toExport());
+            const state = (isEqual(diff, {})) ? 'noUpdate' : 'update';
+
+            items = items.map((i) => {
+                if (i.id === b.id) {
+                    return {...i, state, diff, name: b.name};
+                }
+                return i;
+            });
+        });
+
+        return items;
     };
 }
 

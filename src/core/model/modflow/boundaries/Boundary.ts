@@ -1,9 +1,11 @@
-import {cloneDeep} from 'lodash';
+import {isEqual} from 'lodash';
 import Uuid from 'uuid';
+import simpleDiff from '../../../../services/diffTools/simpleDiff';
 import {Cells, Geometry} from '../index';
 import {
     BoundaryType,
-    IBoundary, IBoundaryImport,
+    IBoundary,
+    IBoundaryExport,
     ISpValues,
     IValueProperty
 } from './Boundary.type';
@@ -11,6 +13,8 @@ import {
 export default abstract class Boundary {
 
     protected _props: any;
+
+    protected _class: any;
 
     abstract get type(): BoundaryType;
 
@@ -28,7 +32,9 @@ export default abstract class Boundary {
 
     abstract get layers(): number[];
 
-    abstract get geometryType(): string;
+    get geometryType() {
+        return this._class.geometryType();
+    }
 
     abstract get valueProperties(): IValueProperty[];
 
@@ -36,14 +42,18 @@ export default abstract class Boundary {
 
     public abstract setSpValues(spValues: ISpValues, opId?: string): void;
 
-    public abstract toImport(): IBoundaryImport;
+    public abstract toExport(): IBoundaryExport;
 
     public abstract toObject(): IBoundary;
 
-    public clone(): Boundary {
-        this._props = cloneDeep(this._props);
-        this.id = Uuid.v4();
-        this.name = this.name + '(clone)';
-        return this;
+    public sameAs(b: Boundary): boolean {
+        return isEqual(simpleDiff(this.toExport(), b.toExport()), {});
+    }
+
+    public clone() {
+        const b = this._class.fromObject(this._props);
+        b.id = Uuid.v4();
+        b.name = this.name + ' (clone)';
+        return b;
     }
 }

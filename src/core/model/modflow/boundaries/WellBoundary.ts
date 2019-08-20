@@ -5,59 +5,11 @@ import BoundingBox from '../../geometry/BoundingBox';
 import {ICells} from '../../geometry/Cells.type';
 import GridSize from '../../geometry/GridSize';
 import {Cells, Geometry} from '../index';
-import Boundary from './Boundary';
 import {ISpValues, IValueProperty} from './Boundary.type';
-import {IWellBoundary, IWellBoundaryImport, IWellType} from './WellBoundary.type';
+import PointBoundary from './PointBoundary';
+import {IWellBoundary, IWellBoundaryExport, IWellType} from './WellBoundary.type';
 
-export default class WellBoundary extends Boundary {
-
-    get type() {
-        return this._props.properties.type;
-    }
-
-    get id() {
-        return this._props.id;
-    }
-
-    set id(value) {
-        this._props.id = value;
-    }
-
-    get geometry() {
-        return Geometry.fromObject(this._props.geometry);
-    }
-
-    set geometry(value) {
-        this._props.geometry = value.toObject();
-    }
-
-    get geometryType() {
-        return WellBoundary.geometryType();
-    }
-
-    get name() {
-        return this._props.properties.name;
-    }
-
-    set name(value) {
-        this._props.properties.name = value;
-    }
-
-    get layers() {
-        return this._props.properties.layers;
-    }
-
-    set layers(value) {
-        this._props.properties.layers = value;
-    }
-
-    get cells() {
-        return Cells.fromObject(this._props.properties.cells);
-    }
-
-    set cells(value) {
-        this._props.properties.cells = value.toObject;
-    }
+export default class WellBoundary extends PointBoundary {
 
     get wellType() {
         return this._props.properties.well_type;
@@ -65,6 +17,10 @@ export default class WellBoundary extends Boundary {
 
     set wellType(value) {
         this._props.properties.well_type = value;
+    }
+
+    public static geometryType() {
+        return 'Point';
     }
 
     public static create(id: string, geometry: Point, name: string, layers: number[], cells: ICells,
@@ -84,7 +40,7 @@ export default class WellBoundary extends Boundary {
         });
     }
 
-    public static fromImport(obj: IWellBoundaryImport, boundingBox: BoundingBox, gridSize: GridSize) {
+    public static fromExport(obj: IWellBoundaryExport, boundingBox: BoundingBox, gridSize: GridSize) {
         const boundary = this.create(
             obj.id ? obj.id : Uuid.v4(),
             obj.geometry,
@@ -100,10 +56,6 @@ export default class WellBoundary extends Boundary {
 
     public static fromObject(obj: IWellBoundary) {
         return new this(obj);
-    }
-
-    public static geometryType() {
-        return 'Point';
     }
 
     public static valueProperties(): IValueProperty[] {
@@ -149,31 +101,27 @@ export default class WellBoundary extends Boundary {
     constructor(props: IWellBoundary) {
         super();
         this._props = cloneDeep(props);
+        this._class = WellBoundary;
     }
 
-    public getSpValues() {
-        return this._props.properties.sp_values;
-    }
-
-    public setSpValues(spValues: ISpValues, opId?: string) {
-        this._props.properties.sp_values = spValues;
-    }
-
-    public toImport = (): IWellBoundaryImport => ({
-        id: this.id,
-        type: this.type,
-        name: this.name,
-        geometry: this.geometry.toObject() as Point,
-        layers: this.layers,
-        well_type: this.wellType,
-        sp_values: this.getSpValues()
-    });
+    public toExport = (): IWellBoundaryExport => {
+        return {
+            id: this.id,
+            type: this.type,
+            name: this.name,
+            cells: this.cells.toObject(),
+            geometry: this.geometry.toObject() as Point,
+            layers: this.layers,
+            well_type: this.wellType,
+            sp_values: this.getSpValues()
+        };
+    };
 
     public toObject(): IWellBoundary {
         return this._props;
     }
 
     public get valueProperties(): IValueProperty[] {
-        return WellBoundary.valueProperties();
+        return this._class.valueProperties();
     }
 }

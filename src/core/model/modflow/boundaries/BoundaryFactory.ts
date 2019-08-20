@@ -6,27 +6,28 @@ import GridSize from '../../geometry/GridSize';
 import {
     BoundaryType,
     IBoundary,
-    IBoundaryFeature, IBoundaryImport,
+    IBoundaryExport,
+    IBoundaryFeature,
     ISpValues
 } from './Boundary.type';
 import ConstantHeadBoundary from './ConstantHeadBoundary';
-import {IConstantHeadBoundary, IConstantHeadBoundaryImport} from './ConstantHeadBoundary.type';
+import {IConstantHeadBoundary, IConstantHeadBoundaryExport} from './ConstantHeadBoundary.type';
 import DrainageBoundary from './DrainageBoundary';
-import {IDrainageBoundary, IDrainageBoundaryImport} from './DrainageBoundary.type';
+import {IDrainageBoundary, IDrainageBoundaryExport} from './DrainageBoundary.type';
 import EvapotranspirationBoundary from './EvapotranspirationBoundary';
-import {IEvapotranspirationBoundary, IEvapotranspirationBoundaryImport} from './EvapotranspirationBoundary.type';
+import {IEvapotranspirationBoundary, IEvapotranspirationBoundaryExport} from './EvapotranspirationBoundary.type';
 import GeneralHeadBoundary from './GeneralHeadBoundary';
-import {IGeneralHeadBoundary, IGeneralHeadBoundaryImport} from './GeneralHeadBoundary.type';
+import {IGeneralHeadBoundary, IGeneralHeadBoundaryExport} from './GeneralHeadBoundary.type';
 import HeadObservationWell from './HeadObservationWell';
-import {IHeadObservationWell, IHeadObservationWellImport} from './HeadObservationWell.type';
+import {IHeadObservationWell, IHeadObservationWellExport} from './HeadObservationWell.type';
 import {Boundary} from './index';
 import {IObservationPoint} from './ObservationPoint.type';
 import RechargeBoundary from './RechargeBoundary';
-import {IRechargeBoundary, IRechargeBoundaryImport} from './RechargeBoundary.type';
+import {IRechargeBoundary, IRechargeBoundaryExport} from './RechargeBoundary.type';
 import RiverBoundary from './RiverBoundary';
-import {IRiverBoundary, IRiverBoundaryImport} from './RiverBoundary.type';
+import {IRiverBoundary, IRiverBoundaryExport} from './RiverBoundary.type';
 import WellBoundary from './WellBoundary';
-import {IWellBoundary, IWellBoundaryImport} from './WellBoundary.type';
+import {IWellBoundary, IWellBoundaryExport} from './WellBoundary.type';
 
 export default abstract class BoundaryFactory {
 
@@ -68,27 +69,27 @@ export default abstract class BoundaryFactory {
         }
     };
 
-    public static fromImport = (obj: IBoundaryImport, boundingBox: BoundingBox, gridSize: GridSize) => {
+    public static fromExport = (obj: IBoundaryExport, boundingBox: BoundingBox, gridSize: GridSize) => {
         const type = obj.type;
         switch (type) {
             case 'chd':
-                return ConstantHeadBoundary.fromImport(obj as IConstantHeadBoundaryImport, boundingBox, gridSize);
+                return ConstantHeadBoundary.fromExport(obj as IConstantHeadBoundaryExport, boundingBox, gridSize);
             case 'drn':
-                return DrainageBoundary.fromImport(obj as IDrainageBoundaryImport, boundingBox, gridSize);
+                return DrainageBoundary.fromExport(obj as IDrainageBoundaryExport, boundingBox, gridSize);
             case 'evt':
-                return EvapotranspirationBoundary.fromImport(
-                    obj as IEvapotranspirationBoundaryImport, boundingBox, gridSize
+                return EvapotranspirationBoundary.fromExport(
+                    obj as IEvapotranspirationBoundaryExport, boundingBox, gridSize
                 );
             case 'ghb':
-                return GeneralHeadBoundary.fromImport(obj as IGeneralHeadBoundaryImport, boundingBox, gridSize);
+                return GeneralHeadBoundary.fromExport(obj as IGeneralHeadBoundaryExport, boundingBox, gridSize);
             case 'hob':
-                return HeadObservationWell.fromImport(obj as IHeadObservationWellImport, boundingBox, gridSize);
+                return HeadObservationWell.fromExport(obj as IHeadObservationWellExport, boundingBox, gridSize);
             case 'rch':
-                return RechargeBoundary.fromImport(obj as IRechargeBoundaryImport, boundingBox, gridSize);
+                return RechargeBoundary.fromExport(obj as IRechargeBoundaryExport, boundingBox, gridSize);
             case 'riv':
-                return RiverBoundary.fromImport(obj as IRiverBoundaryImport, boundingBox, gridSize);
+                return RiverBoundary.fromExport(obj as IRiverBoundaryExport, boundingBox, gridSize);
             case 'wel':
-                return WellBoundary.fromImport(obj as IWellBoundaryImport, boundingBox, gridSize);
+                return WellBoundary.fromExport(obj as IWellBoundaryExport, boundingBox, gridSize);
             default:
                 throw new Error('BoundaryType ' + type + ' not implemented yet.');
         }

@@ -6,7 +6,7 @@ import {ICells} from '../../geometry/Cells.type';
 import GridSize from '../../geometry/GridSize';
 import {Cells, Geometry} from '../index';
 import {ISpValues, IValueProperty} from './Boundary.type';
-import {IGeneralHeadBoundary, IGeneralHeadBoundaryImport} from './GeneralHeadBoundary.type';
+import {IGeneralHeadBoundary, IGeneralHeadBoundaryExport} from './GeneralHeadBoundary.type';
 import LineBoundary from './LineBoundary';
 
 export default class GeneralHeadBoundary extends LineBoundary {
@@ -51,7 +51,7 @@ export default class GeneralHeadBoundary extends LineBoundary {
         });
     }
 
-    public static fromImport(obj: IGeneralHeadBoundaryImport, boundingBox: BoundingBox, gridSize: GridSize) {
+    public static fromExport(obj: IGeneralHeadBoundaryExport, boundingBox: BoundingBox, gridSize: GridSize) {
         const boundary = this.create(
             obj.id ? obj.id : Uuid.v4(),
             obj.geometry,
@@ -103,13 +103,14 @@ export default class GeneralHeadBoundary extends LineBoundary {
     public constructor(obj: IGeneralHeadBoundary) {
         super();
         this._props = cloneDeep(obj);
+        this._class = GeneralHeadBoundary;
     }
 
     public get valueProperties(): IValueProperty[] {
         return GeneralHeadBoundary.valueProperties();
     }
 
-    public toImport(): IGeneralHeadBoundaryImport {
+    public toExport(): IGeneralHeadBoundaryExport {
         return {
             id: this.id,
             type: this.type,

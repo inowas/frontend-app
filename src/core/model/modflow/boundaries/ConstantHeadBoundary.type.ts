@@ -1,30 +1,24 @@
-import {LineString} from 'geojson';
-import {ICells} from '../../geometry/Cells.type';
-import {IBoundaryFeatureCollection} from './Boundary.type';
-import {IObservationPoint, IObservationPointImportData} from './ObservationPoint.type';
+import {
+    ILineBoundaryExport,
+    ILineBoundaryFeature,
+    ILineBoundaryFeatureCollection,
+    ILineBoundaryFeatureProperties
+} from './LineBoundary.type';
+import {IObservationPoint} from './ObservationPoint.type';
 
-export interface IConstantHeadBoundary extends IBoundaryFeatureCollection {
+export interface IConstantHeadBoundary extends ILineBoundaryFeatureCollection {
     type: 'FeatureCollection';
     features: Array<IObservationPoint | IConstantHeadBoundaryFeature>;
 }
 
-export interface IConstantHeadBoundaryFeature {
-    type: 'Feature';
-    id: string;
-    geometry: LineString;
-    properties: {
-        type: 'chd';
-        name: string;
-        layers: number[];
-        cells: ICells;
-    };
+export interface IConstantHeadBoundaryFeature extends ILineBoundaryFeature {
+    properties: IConstantHeadBoundaryFeatureProperties;
 }
 
-export interface IConstantHeadBoundaryImport {
+export interface IConstantHeadBoundaryFeatureProperties extends ILineBoundaryFeatureProperties {
     type: 'chd';
-    id?: string;
-    name: string;
-    geometry: LineString;
-    layers: number[];
-    ops: IObservationPointImportData[];
+}
+
+export interface IConstantHeadBoundaryExport extends ILineBoundaryExport {
+    type: 'chd';
 }

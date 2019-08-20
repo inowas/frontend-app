@@ -7,7 +7,7 @@ import GridSize from '../../geometry/GridSize';
 import {Cells, Geometry} from '../index';
 import {ISpValues, IValueProperty} from './Boundary.type';
 import LineBoundary from './LineBoundary';
-import {IRiverBoundary, IRiverBoundaryImport} from './RiverBoundary.type';
+import {IRiverBoundary, IRiverBoundaryExport} from './RiverBoundary.type';
 
 export default class RiverBoundary extends LineBoundary {
 
@@ -51,7 +51,7 @@ export default class RiverBoundary extends LineBoundary {
         });
     }
 
-    public static fromImport(obj: IRiverBoundaryImport, boundingBox: BoundingBox, gridSize: GridSize) {
+    public static fromExport(obj: IRiverBoundaryExport, boundingBox: BoundingBox, gridSize: GridSize) {
         const boundary = this.create(
             obj.id ? obj.id : Uuid.v4(),
             obj.geometry,
@@ -110,9 +110,10 @@ export default class RiverBoundary extends LineBoundary {
     public constructor(obj: IRiverBoundary) {
         super();
         this._props = cloneDeep(obj);
+        this._class = RiverBoundary;
     }
 
-    public toImport = (): IRiverBoundaryImport => ({
+    public toExport = (): IRiverBoundaryExport => ({
         id: this.id,
         type: this.type,
         name: this.name,

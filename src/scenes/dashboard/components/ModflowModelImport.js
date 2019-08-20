@@ -74,7 +74,7 @@ class ModflowModelImport extends React.Component {
                 soilmodel: {
                     layers: Soilmodel.fromObject(soilmodel).toObject().layers
                 },
-                boundaries: BoundaryCollection.fromImport(data.boundaries, boundingBox, gridSize).toObject()
+                boundaries: BoundaryCollection.fromExport(data.boundaries, boundingBox, gridSize).toObject()
             };
 
             return this.setState({payload, errors: null});
