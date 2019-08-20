@@ -1,5 +1,6 @@
+import {cloneDeep} from 'lodash';
 import React from 'react';
-import {Button} from 'semantic-ui-react';
+import {Button, Progress} from 'semantic-ui-react';
 import {ModflowModel} from '../../../../../core/model/modflow';
 import {Boundary, BoundaryCollection} from '../../../../../core/model/modflow/boundaries';
 import {IBoundaryComparisonItem} from '../../../../../core/model/modflow/boundaries/BoundaryCollection';
@@ -14,47 +15,64 @@ interface IProps {
 }
 
 interface IState {
+    commands: ModflowModelCommand[];
     boundaryList: IBoundaryComparisonItem[];
+    showProgress: boolean;
     synchronizing: boolean;
     commandsSuccessfullySent: number;
     commandsErrorSent: number;
-    commandsTotal: number;
 }
 
 class BoundarySynchronizer extends React.Component<IProps, IState> {
     public constructor(props: IProps) {
         super(props);
+        const boundaryList: IBoundaryComparisonItem[] = props.currentBoundaries.compareWith(props.newBoundaries);
         this.state = {
-            boundaryList: props.currentBoundaries.compareWith(props.newBoundaries),
-            synchronizing: false,
+            boundaryList,
+            commands: this.calculateCommands(boundaryList),
             commandsSuccessfullySent: 0,
             commandsErrorSent: 0,
-            commandsTotal: 0
+            showProgress: false,
+            synchronizing: false
         };
     }
 
     public componentWillReceiveProps(nextProps: IProps) {
+        const boundaryList = nextProps.currentBoundaries.compareWith(nextProps.newBoundaries);
         this.setState({
-            boundaryList: nextProps.currentBoundaries.compareWith(nextProps.newBoundaries)
+            boundaryList,
+            commands: this.calculateCommands(boundaryList),
         });
     }
 
     public render() {
+        const {commands, commandsErrorSent, commandsSuccessfullySent, showProgress, synchronizing} = this.state;
+
+        if (showProgress) {
+            const percent = commandsSuccessfullySent / commands.length * 100;
+            return (
+                <Progress percent={percent} autoSuccess={true}>
+                    {percent > 99 ? 'The progress was successful' : 'Synchronizing'}
+                </Progress>
+            );
+        }
+
         return (
             <Button
                 fluid={true}
                 positive={true}
                 onClick={this.synchronize}
-                loading={this.state.synchronizing}
+                loading={synchronizing}
+                disabled={commands.length === commandsErrorSent + commandsSuccessfullySent}
             >
                 Synchronize
             </Button>
         );
     }
 
-    private synchronize = () => {
+    private calculateCommands = (boundaryList: IBoundaryComparisonItem[]) => {
         const commands: ModflowModelCommand[] = [];
-        this.state.boundaryList.forEach((item) => {
+        boundaryList.forEach((item) => {
             if (item.state === 'noUpdate') {
                 return;
             }
@@ -82,29 +100,40 @@ class BoundarySynchronizer extends React.Component<IProps, IState> {
             }
         });
 
+        return commands;
+    };
+
+    private onSendCommandSuccess = () => {
+        this.setState((state) => {
+            const {commands, commandsSuccessfullySent, commandsErrorSent} = state;
+
+            return {
+                commandsSuccessfullySent: commandsSuccessfullySent + 1,
+                synchronizing: (commandsSuccessfullySent + 1 + commandsErrorSent) < commands.length,
+            };
+        });
+    };
+
+    private onSendCommandError = () => {
+        this.setState((state) => {
+            const {commands, commandsSuccessfullySent, commandsErrorSent} = state;
+            return {
+                commandsErrorSent: commandsErrorSent + 1,
+                synchronizing: (commandsSuccessfullySent + 1 + commandsErrorSent) < commands.length
+            };
+        });
+    };
+
+    private synchronize = () => {
+        const {commands} = this.state;
         this.setState({
-                synchronizing: commands.length > 0,
+                synchronizing: true,
+                showProgress: true,
                 commandsSuccessfullySent: 0,
                 commandsErrorSent: 0,
-                commandsTotal: commands.length
             },
-            () => sendCommands(commands,
-                () => {
-                    this.setState({
-                            commandsSuccessfullySent: this.state.commandsSuccessfullySent + 1,
-                            synchronizing: (this.state.commandsSuccessfullySent + 1 + this.state.commandsErrorSent)
-                                < this.state.commandsTotal
-                        }
-                    );
-                },
-                () => {
-                    this.setState({
-                        commandsErrorSent: this.state.commandsErrorSent + 1,
-                        synchronizing: (this.state.commandsSuccessfullySent + 1 + this.state.commandsErrorSent)
-                            < this.state.commandsTotal
-                    });
-                }
-            ));
+            () => sendCommands(cloneDeep(commands), this.onSendCommandSuccess, this.onSendCommandError)
+        );
     };
 }
 

@@ -254,17 +254,9 @@ class BoundariesImport extends React.Component<IProps, IState> {
             </Modal.Content>
             <Modal.Actions>
                 <Button
-                    negative={true}
                     onClick={this.onCancel}
                 >
-                    Cancel
-                </Button>
-                <Button
-                    disabled={!!this.state.errors}
-                    onClick={this.onImportClick}
-                    positive={true}
-                >
-                    Import
+                    Close
                 </Button>
             </Modal.Actions>
         </Modal>
