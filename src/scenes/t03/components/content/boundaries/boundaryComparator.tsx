@@ -53,9 +53,9 @@ class BoundaryComparator extends React.Component<IProps, IState> {
             return null;
         }
 
-        const newBoundary = this.props.newBoundaries.findById(selectedBoundary);
-        if (!newBoundary) {
-            return;
+        let boundary = this.props.newBoundaries.findById(selectedBoundary);
+        if (!boundary) {
+            boundary = this.props.currentBoundaries.findById(selectedBoundary);
         }
 
         return (
@@ -111,15 +111,15 @@ class BoundaryComparator extends React.Component<IProps, IState> {
                                 </Grid>
                             </Grid.Column>
                             <Grid.Column width={12}>
-                                <BoundaryDetails
-                                    boundary={newBoundary}
+                                {boundary && <BoundaryDetails
+                                    boundary={boundary}
                                     boundaries={this.props.newBoundaries}
                                     model={this.props.model}
                                     soilmodel={this.props.soilmodel}
                                     onChange={this.noHandle}
                                     onClick={this.noHandle}
                                     readOnly={true}
-                                />
+                                />}
                             </Grid.Column>
                         </Grid.Row>
                     </Grid>
