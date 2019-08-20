@@ -41,8 +41,8 @@ export default class FlopyModflowMfrch extends FlopyModflowBoundary {
         }
 
         rechargeBoundaries.forEach(rch => {
-            const cells = rch.cells;
-            const spValues = rch.spValues;
+            const cells = rch.cells.toObject();
+            const spValues = rch.getSpValues();
 
             spData.forEach((sp, per) => {
                 cells.forEach(cell => {

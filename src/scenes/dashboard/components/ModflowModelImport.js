@@ -4,13 +4,21 @@ import {withRouter} from 'react-router-dom';
 import Uuid from 'uuid';
 import {Button, Dimmer, Grid, Header, Modal, List, Loader, Segment} from 'semantic-ui-react';
 import ModflowModelCommand from '../../t03/commands/modflowModelCommand';
-import {BoundaryCollection, BoundingBox, Cells, Geometry, GridSize, Soilmodel, Stressperiods} from '../../../core/model/modflow';
+import {
+    BoundingBox,
+    Cells,
+    Geometry,
+    GridSize,
+    Soilmodel,
+    Stressperiods
+} from '../../../core/model/modflow';
 import PropTypes from 'prop-types';
 import ModelImportMap from './ModelImportMap';
 
 import {JSON_SCHEMA_URL, sendCommand} from '../../../services/api';
 import {dxGeometry, dyGeometry} from '../../../services/geoTools/distance';
 import {validate} from '../../../services/jsonSchemaValidator';
+import {BoundaryCollection} from '../../../core/model/modflow/boundaries';
 
 class ModflowModelImport extends React.Component {
 
@@ -40,7 +48,7 @@ class ModflowModelImport extends React.Component {
             const id = Uuid.v4();
             const geometry = Geometry.fromGeoJson(data.discretization.geometry);
             const boundingBox = BoundingBox.fromGeoJson(data.discretization.geometry);
-            const gridSize = Array.isArray(data.discretization.grid_size) ? GridSize.fromArray(data.discretization.grid_size) : GridSize.fromObject(data.discretization.grid_size);
+            const gridSize = Array.isArray(data.discretization.grid_size) ? GridSize.fromObject(data.discretization.grid_size) : GridSize.fromObject(data.discretization.grid_size);
             const stressperiods = Stressperiods.fromImport(data.discretization.stressperiods);
             const soilmodel = data.soilmodel;
 
@@ -66,7 +74,7 @@ class ModflowModelImport extends React.Component {
                 soilmodel: {
                     layers: Soilmodel.fromObject(soilmodel).toObject().layers
                 },
-                boundaries: BoundaryCollection.fromImport(data.boundaries, boundingBox, gridSize).toObject()
+                boundaries: BoundaryCollection.fromExport(data.boundaries, boundingBox, gridSize).toObject()
             };
 
             return this.setState({payload, errors: null});

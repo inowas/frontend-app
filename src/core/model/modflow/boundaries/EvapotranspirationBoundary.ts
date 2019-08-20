@@ -1,77 +1,123 @@
-import {MultiPolygon, Polygon} from 'geojson';
-import uuidv4 from 'uuid/v4';
+import {Polygon} from 'geojson';
+import {cloneDeep} from 'lodash';
+import Uuid from 'uuid';
+import BoundingBox from '../../geometry/BoundingBox';
 import {ICells} from '../../geometry/Cells.type';
+import GridSize from '../../geometry/GridSize';
+import {Cells, Geometry} from '../index';
 import Boundary from './Boundary';
-import {IEvapotranspirationBoundary} from './EvapotranspirationBoundary.type';
-import {SpValues} from './types';
+import {ISpValues, IValueProperty} from './Boundary.type';
+import {
+    IEvapotranspirationBoundary,
+    IEvapotranspirationBoundaryExport,
+    INevtop
+} from './EvapotranspirationBoundary.type';
 
 export default class EvapotranspirationBoundary extends Boundary {
 
     get type() {
-        return this._type;
+        return this._props.properties.type;
     }
 
     get id() {
-        return this._id;
+        return this._props.id;
     }
 
     set id(value) {
-        this._id = value;
+        this._props.id = value;
     }
 
     get geometry() {
-        return this._geometry;
+        return Geometry.fromObject(this._props.geometry);
     }
 
     set geometry(value) {
-        this._geometry = value;
+        this._props.geometry = value.toObject() as Polygon;
     }
 
     get name() {
-        return this._name;
+        return this._props.properties.name;
     }
 
     set name(value) {
-        this._name = value;
+        this._props.properties.name = value;
     }
 
     get layers() {
-        return this._layers;
+        return this._props.properties.layers;
     }
 
     set layers(value) {
-        this._layers = value;
+        this._props.properties.layers = value;
     }
 
     get cells() {
-        return this._cells;
+        return this._props.properties.cells;
     }
 
     set cells(value) {
-        this._cells = value;
-    }
-
-    get spValues() {
-        return this._spValues;
-    }
-
-    set spValues(value) {
-        this._spValues = value;
-    }
-
-    get nevtop() {
-        return this._nevtop;
-    }
-
-    set nevtop(value) {
-        this._nevtop = value;
+        this._props.properties.cells = value;
     }
 
     get geometryType() {
+        return EvapotranspirationBoundary.geometryType();
+    }
+
+    get nevtop() {
+        return this._props.properties.nevtop;
+    }
+
+    set nevtop(value) {
+        this._props.properties.nevtop = value;
+    }
+
+    get optionCode(): INevtop {
+        return this.nevtop;
+    }
+
+    set optionCode(value: INevtop) {
+        this.nevtop = value;
+    }
+
+    public static create(id: string, geometry: Polygon, name: string, layers: number[],
+                         cells: ICells, spValues: ISpValues, nevtop: number) {
+
+        return new this({
+            id,
+            type: 'Feature',
+            geometry,
+            properties: {
+                type: 'evt',
+                name,
+                cells,
+                layers,
+                sp_values: spValues,
+                nevtop,
+            }
+        });
+    }
+
+    public static fromExport(obj: IEvapotranspirationBoundaryExport, boundingBox: BoundingBox, gridSize: GridSize) {
+        return this.create(
+            obj.id ? obj.id : Uuid.v4(),
+            obj.geometry,
+            obj.name,
+            obj.layers,
+            Cells.fromGeometry(Geometry.fromGeoJson(obj.geometry), boundingBox, gridSize).toObject(),
+            obj.sp_values,
+            obj.nevtop
+        );
+    }
+
+    public static fromObject(obj: IEvapotranspirationBoundary) {
+        return new this(obj);
+    }
+
+    public static geometryType() {
         return 'Polygon';
     }
 
-    get valueProperties() {
+    public static valueProperties() {
         return [
             {
                 name: 'Max EVT',
@@ -97,62 +143,35 @@ export default class EvapotranspirationBoundary extends Boundary {
         ];
     }
 
-    public static create(id: string, type: 'evt', geometry?: Polygon | MultiPolygon, name?: string, layers?: number[],
-                         cells?: ICells, spValues?: SpValues, nevtop?: number) {
-        const boundary = new this();
-        boundary._id = id;
-        boundary._geometry = geometry;
-        boundary._name = name;
-        boundary._layers = layers;
-        boundary._cells = cells;
-        boundary._spValues = spValues;
-        boundary._nevtop = nevtop || 1;
-        return boundary;
+    constructor(props: IEvapotranspirationBoundary) {
+        super();
+        this._props = cloneDeep(props);
+        this._class = EvapotranspirationBoundary;
     }
-
-    public static fromObject(obj: IEvapotranspirationBoundary) {
-        return this.create(
-            obj.id,
-            obj.properties.type,
-            obj.geometry,
-            obj.properties.name,
-            obj.properties.layers,
-            obj.properties.cells,
-            obj.properties.sp_values,
-            obj.properties.nevtop
-        );
-    }
-
-    private _type: 'evt' = 'evt';
-    private _id: string = uuidv4();
-    private _geometry?: Polygon | MultiPolygon;
-    private _name?: string;
-    private _layers?: number[];
-    private _cells?: ICells;
-    private _nevtop: number = 1;
-    private _spValues?: SpValues;
 
     public getSpValues() {
-        return this._spValues;
+        return this._props.properties.sp_values;
     }
 
-    public setSpValues(spValues: SpValues, opId?: string) {
-        this._spValues = spValues;
+    public setSpValues(spValues: ISpValues, opId?: string) {
+        this._props.properties.sp_values = spValues;
     }
+
+    public toExport = (): IEvapotranspirationBoundaryExport => ({
+        id: this.id,
+        type: this.type,
+        name: this.name,
+        geometry: this.geometry.toObject() as Polygon,
+        layers: this.layers,
+        nevtop: this.nevtop,
+        sp_values: this.getSpValues()
+    });
 
     public toObject(): IEvapotranspirationBoundary {
-        return {
-            type: 'Feature',
-            id: this.id,
-            geometry: this.geometry,
-            properties: {
-                name: this.name,
-                type: this.type,
-                layers: this.layers,
-                cells: this.cells,
-                nevtop: this.nevtop,
-                sp_values: this.spValues
-            }
-        };
+        return this._props;
+    }
+
+    public get valueProperties(): IValueProperty[] {
+        return EvapotranspirationBoundary.valueProperties();
     }
 }

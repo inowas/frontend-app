@@ -1,17 +1,30 @@
-import {MultiPolygon, Polygon} from 'geojson';
+import {Polygon} from 'geojson';
 import {ICells} from '../../geometry/Cells.type';
-import {IBoundaryFeature, SpValues} from './types';
+import {ISpValues} from './Boundary.type';
 
-export interface IEvapotranspirationBoundary extends IBoundaryFeature {
-    type: 'Feature';
+export type INevtop = number;
+
+export interface IEvapotranspirationBoundary {
     id: string;
-    geometry?: Polygon | MultiPolygon;
+    type: 'Feature';
+    geometry: Polygon;
     properties: {
-        name?: string;
         type: 'evt';
-        layers?: number[];
-        cells?: ICells;
-        nevtop?: number;
-        sp_values?: SpValues;
+        name: string;
+        cells: ICells;
+        layers: number[];
+        nevtop: INevtop;
+        sp_values: ISpValues;
     };
+}
+
+export interface IEvapotranspirationBoundaryExport {
+    type: 'evt';
+    id?: string;
+    name: string;
+    geometry: Polygon;
+    layers: number[];
+    cells?: ICells;
+    sp_values: ISpValues;
+    nevtop: INevtop;
 }

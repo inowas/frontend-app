@@ -25,14 +25,13 @@ import {
 } from '../actions/actions';
 
 import {
-    BoundaryCollection,
-    BoundaryFactory,
     Calculation,
     ModflowModel,
     Soilmodel,
     Transport,
     VariableDensity
 } from '../../../core/model/modflow';
+
 import ModflowModelCommand from '../commands/modflowModelCommand';
 import CalculationProgressBar from '../components/content/calculation/calculationProgressBar';
 import OptimizationProgressBar from '../components/content/optimization/optimizationProgressBar';
@@ -44,6 +43,7 @@ import {fetchCalculationDetails} from '../../../services/api';
 import {cloneDeep} from 'lodash';
 import FlopyModpath from '../../../core/model/flopy/packages/mp/FlopyModpath';
 import FlopySeawat from '../../../core/model/flopy/packages/swt/FlopySeawat';
+import {BoundaryCollection, BoundaryFactory} from '../../../core/model/modflow/boundaries';
 
 const navigation = [{
     name: 'Documentation',

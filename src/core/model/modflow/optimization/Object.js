@@ -1,8 +1,8 @@
 import WellPosition from './WellPosition';
 import uuidv4 from 'uuid/v4';
 import moment from 'moment/moment';
-import BoundaryFactory from '../boundaries/BoundaryFactory';
 import {calculateActiveCells} from '../../../../services/geoTools';
+import {BoundaryFactory} from '../boundaries';
 
 class OptimizationObject {
     _id = uuidv4();
@@ -181,7 +181,7 @@ class OptimizationObject {
             utcIsoStartDateTime: stressPeriods.dateTimes[0]
         };
 
-        const boundary = BoundaryFactory.createByTypeAndStartDate(args);
+        const boundary = BoundaryFactory.fromObject(args);
         boundary.wellType = 'opw';
         boundary.setDateTimeValues(flux);
         boundary.activeCells = calculateActiveCells(args.geometry, bbox, gridSize);

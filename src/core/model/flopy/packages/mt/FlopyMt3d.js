@@ -6,7 +6,8 @@ import FlopyMt3dMt from './FlopyMt3dMt';
 import FlopyMt3dMtrct from "./FlopyMt3dMtrct";
 import FlopyMt3dMtssm from './FlopyMt3dMtssm';
 
-import {BoundaryCollection, Transport} from '../../../modflow';
+import {Transport} from '../../../modflow';
+import {BoundaryCollection} from '../../../modflow/boundaries';
 
 const packagesMap = {
     'mt': FlopyMt3dMt,

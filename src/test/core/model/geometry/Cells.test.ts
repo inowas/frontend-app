@@ -30,7 +30,7 @@ test('Create cells from geometry', () => {
     });
 
     const boundingBox = new BoundingBox([[0, 0], [10, 10]]);
-    const gridSize = new GridSize(10, 10);
+    const gridSize = GridSize.fromArray([10, 10]);
 
     const cells = Cells.fromGeometry(geometry, boundingBox, gridSize);
 

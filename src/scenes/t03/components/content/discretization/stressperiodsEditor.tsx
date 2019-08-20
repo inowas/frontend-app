@@ -1,35 +1,53 @@
-import React from 'react';
+import React, {ChangeEvent} from 'react';
 import {connect} from 'react-redux';
-import PropTypes from 'prop-types';
 
 import {Form, Grid, Message} from 'semantic-ui-react';
 
 import {ModflowModel, Stressperiods} from '../../../../../core/model/modflow';
+import {IStressPeriods} from '../../../../../core/model/modflow/Stressperiods.type';
 import {updateStressperiods} from '../../../actions/actions';
 
-import {sendCommand} from '../../../../../services/api';
-import StressPeriodsDataTable from './stressperiodsDatatable';
 import moment from 'moment';
 import ContentToolBar from '../../../../../scenes/shared/ContentToolbar';
+import {sendCommand} from '../../../../../services/api';
 import ModflowModelCommand from '../../../commands/modflowModelCommand';
-import StressperiodsImport from './stressperiodsImport';
+import DiscretizationImport from './discretizationImport';
+import StressPeriodsDataTable from './stressperiodsDatatable';
 
-class StressperiodsEditor extends React.Component {
-    constructor(props) {
+interface IState {
+    stressperiods: IStressPeriods;
+    startDateTime: string;
+    endDateTime: string;
+    isDirty: boolean;
+    isError: boolean;
+}
+
+interface IStateProps {
+    model: ModflowModel;
+}
+
+interface IDispatchProps {
+    onChange: (stressperiods: Stressperiods) => void;
+}
+
+type IProps = IStateProps & IDispatchProps;
+
+class StressperiodsEditor extends React.Component<IProps, IState> {
+    constructor(props: IProps) {
         super(props);
         this.state = {
-            stressperiods: props.stressperiods.toObject(),
-            startDateTime: props.stressperiods.startDateTime.format('YYYY-MM-DD'),
-            endDateTime: props.stressperiods.endDateTime.format('YYYY-MM-DD'),
+            stressperiods: props.model.stressperiods.toObject(),
+            startDateTime: props.model.stressperiods.startDateTime.format('YYYY-MM-DD'),
+            endDateTime: props.model.stressperiods.endDateTime.format('YYYY-MM-DD'),
             isDirty: false,
             isError: false
-        }
+        };
     }
 
-    onSave = () => {
+    public onSave = () => {
         const stressperiods = Stressperiods.fromObject(this.state.stressperiods);
         const command = ModflowModelCommand.updateStressperiods({
-            id: this.props.id,
+            id: this.props.model.id,
             stressperiods: stressperiods.toObject()
         });
 
@@ -38,14 +56,21 @@ class StressperiodsEditor extends React.Component {
                 this.setState({isDirty: false});
                 this.props.onChange(stressperiods);
             },
-            () => this.setState({error: true})
-        )
+            () => this.setState({isError: true})
+        );
     };
 
-    handleDateTimeChange = (e) => {
+    public handleDateTimeChange = (e: ChangeEvent<HTMLInputElement>) => {
         const {name, value} = e.target;
         if (e.type === 'change') {
-            this.setState({[name]: value})
+
+            if (name === 'startDateTime') {
+                this.setState({[name]: value});
+            }
+
+            if (name === 'endDateTime') {
+                this.setState({[name]: value});
+            }
         }
 
         const date = moment.utc(value);
@@ -55,22 +80,33 @@ class StressperiodsEditor extends React.Component {
 
         if (e.type === 'blur') {
             const stressperiods = Stressperiods.fromObject(this.state.stressperiods);
-            stressperiods[name] = date;
+
+            if (name === 'startDateTime' || name === 'endDateTime') {
+                stressperiods[name] = date;
+            }
+
             this.setState({
                 stressperiods: stressperiods.toObject(),
                 isDirty: true
-            })
+            });
         }
     };
 
-    handleChange = stressperiods => {
-        this.setState({
-            stressperiods: stressperiods.toObject(),
+    public handleChange = (data: ModflowModel | Stressperiods) => {
+        if (data instanceof ModflowModel) {
+            return this.setState({
+                stressperiods: data.stressperiods.toObject(),
+                isDirty: true
+            });
+        }
+
+        return this.setState({
+            stressperiods: data.toObject(),
             isDirty: true
         });
     };
 
-    render() {
+    public render() {
         const stressperiods = Stressperiods.fromObject(this.state.stressperiods);
 
         const datesInvalid = moment.utc(this.state.endDateTime)
@@ -83,13 +119,13 @@ class StressperiodsEditor extends React.Component {
                         <ContentToolBar
                             isDirty={this.state.isDirty}
                             isError={this.state.isError}
-                            visible={!this.props.readOnly}
-                            saveButton
+                            visible={!this.props.model.readOnly}
+                            saveButton={true}
                             onSave={this.onSave}
                             importButton={
-                                <StressperiodsImport
+                                <DiscretizationImport
                                     onChange={this.handleChange}
-                                    timeunit={this.props.timeunit.toInt()}
+                                    model={this.props.model}
                                 />
                             }
                         />
@@ -99,30 +135,30 @@ class StressperiodsEditor extends React.Component {
                     <Grid.Column width={5}>
                         <Form color={'grey'}>
                             <Form.Input
-                                type='date'
-                                label='Start Date'
+                                type="date"
+                                label="Start Date"
                                 name={'startDateTime'}
                                 value={this.state.startDateTime}
                                 onBlur={this.handleDateTimeChange}
                                 onChange={this.handleDateTimeChange}
-                                readOnly={this.props.readOnly}
+                                readOnly={this.props.model.readOnly}
                             />
                             <Form.Input
                                 error={datesInvalid}
-                                type='date'
-                                label='End Date'
+                                type="date"
+                                label="End Date"
                                 name={'endDateTime'}
                                 value={this.state.endDateTime}
                                 onBlur={this.handleDateTimeChange}
                                 onChange={this.handleDateTimeChange}
-                                readOnly={this.props.readOnly}
+                                readOnly={this.props.model.readOnly}
                             />
                             <Form.Select
-                                label='Time unit'
+                                label="Time unit"
                                 options={[{key: 4, text: 'days', value: 4}]}
                                 value={4}
                                 width={16}
-                                disabled={this.props.readOnly}
+                                disabled={this.props.model.readOnly}
                             />
                         </Form>
                         <Message color={'blue'}>
@@ -136,33 +172,23 @@ class StressperiodsEditor extends React.Component {
                     </Grid.Column>
                     <Grid.Column width={11}>
                         <StressPeriodsDataTable
-                            readOnly={this.props.readOnly}
+                            readOnly={this.props.model.readOnly}
                             stressperiods={stressperiods}
                             onChange={this.handleChange}
                         />
                     </Grid.Column>
                 </Grid.Row>
             </Grid>
-        )
+        );
     }
 }
 
-const mapStateToProps = state => ({
-    id: ModflowModel.fromObject(state.T03.model).id,
-    readOnly: ModflowModel.fromObject(state.T03.model).readOnly,
-    stressperiods: ModflowModel.fromObject(state.T03.model).stressperiods,
-    timeunit: ModflowModel.fromObject(state.T03.model).timeUnit
+const mapStateToProps = (state: any) => ({
+    model: ModflowModel.fromObject(state.T03.model)
 });
 
-const mapDispatchToProps = {
-    onChange: updateStressperiods
-};
-
-StressperiodsEditor.propTypes = {
-    readOnly: PropTypes.bool.isRequired,
-    stressperiods: PropTypes.instanceOf(Stressperiods).isRequired,
-    timeunit: PropTypes.object.isRequired,
-    onChange: PropTypes.func.isRequired
-};
+const mapDispatchToProps = (dispatch: any) => ({
+    onChange: (stressperiods: Stressperiods) => dispatch(updateStressperiods(stressperiods))
+});
 
 export default connect(mapStateToProps, mapDispatchToProps)(StressperiodsEditor);

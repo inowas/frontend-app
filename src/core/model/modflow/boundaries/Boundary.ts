@@ -1,9 +1,20 @@
+import {isEqual} from 'lodash';
 import Uuid from 'uuid';
-import {ICells} from '../../geometry/Cells.type';
-import {GeoJson} from '../../geometry/Geometry.type';
-import {BoundaryInstance, BoundaryType, SpValues} from './types';
+import simpleDiff from '../../../../services/diffTools/simpleDiff';
+import {Cells, Geometry} from '../index';
+import {
+    BoundaryType,
+    IBoundary,
+    IBoundaryExport,
+    ISpValues,
+    IValueProperty
+} from './Boundary.type';
 
 export default abstract class Boundary {
+
+    protected _props: any;
+
+    protected _class: any;
 
     abstract get type(): BoundaryType;
 
@@ -11,35 +22,38 @@ export default abstract class Boundary {
 
     abstract set id(id: string);
 
-    abstract get geometry(): GeoJson | undefined;
+    abstract get geometry(): Geometry;
 
-    abstract get name(): string | undefined;
+    abstract get name(): string;
 
-    abstract set name(name: string | undefined);
+    abstract set name(name: string);
 
-    abstract get cells(): ICells | undefined;
+    abstract get cells(): Cells;
 
-    abstract get layers(): number[] | undefined;
+    abstract get layers(): number[];
 
-    abstract get geometryType(): string;
+    get geometryType() {
+        return this._class.geometryType();
+    }
 
-    abstract get valueProperties(): Array<{
-        name: string,
-        description: string,
-        unit: string,
-        decimals: number,
-        default: number
-    }>;
+    abstract get valueProperties(): IValueProperty[];
 
-    public abstract getSpValues(opId?: string): SpValues | undefined | null;
+    public abstract getSpValues(opId?: string): ISpValues;
 
-    public abstract setSpValues(spValues: SpValues, opId?: string): void;
+    public abstract setSpValues(spValues: ISpValues, opId?: string): void;
 
-    public abstract toObject(): BoundaryInstance;
+    public abstract toExport(): IBoundaryExport;
 
-    public clone(): Boundary {
-        this.id = Uuid.v4();
-        this.name = this.name + '(clone)';
-        return this;
+    public abstract toObject(): IBoundary;
+
+    public sameAs(b: Boundary): boolean {
+        return isEqual(simpleDiff(this.toExport(), b.toExport()), {});
+    }
+
+    public clone() {
+        const b = this._class.fromObject(this._props);
+        b.id = Uuid.v4();
+        b.name = this.name + ' (clone)';
+        return b;
     }
 }

@@ -1,23 +1,29 @@
-import moment from 'moment';
-import PapaParse from 'papaparse';
-import React, {ChangeEvent} from 'react';
-import {Button, Dimmer, Grid, Header, List, Loader, Modal, Segment} from 'semantic-ui-react';
-import {Stressperiod, Stressperiods} from '../../../../../core/model/modflow';
-import {IStressPeriods} from '../../../../../core/model/modflow/Stressperiods.type';
-import {ITimeUnit} from '../../../../../core/model/modflow/TimeUnit.type';
+import React from 'react';
+import {Button, Grid, Header, List, Modal, Segment} from 'semantic-ui-react';
+import {
+    ModflowModel,
+} from '../../../../../core/model/modflow';
+import BoundaryCollection from '../../../../../core/model/modflow/boundaries/BoundaryCollection';
 
-interface IProps {
-    onCancel: () => any;
-    onChange: (stressperiods: Stressperiods) => any;
-    timeUnit: ITimeUnit;
-}
+import {IBoundary, IBoundaryExport} from '../../../../../core/model/modflow/boundaries/Boundary.type';
+import Soilmodel from '../../../../../core/model/modflow/soilmodel/Soilmodel';
+import {JSON_SCHEMA_URL} from '../../../../../services/api';
+import {validate} from '../../../../../services/jsonSchemaValidator';
+import BoundaryComparator from './boundaryComparator';
 
 interface IState {
-    errors: null;
+    importedBoundaries: IBoundary[] | null;
+    selectedBoundary: string | null;
+    errors: any[] | null;
     isLoading: boolean;
     showImportModal: boolean;
-    stressPeriods: IStressPeriods;
-    payload: any;
+}
+
+interface IProps {
+    model: ModflowModel;
+    soilmodel: Soilmodel;
+    boundaries: BoundaryCollection;
+    onChange: (boundaries: BoundaryCollection) => void;
 }
 
 class BoundariesImport extends React.Component<IProps, IState> {
@@ -26,189 +32,24 @@ class BoundariesImport extends React.Component<IProps, IState> {
     constructor(props: IProps) {
         super(props);
         this.state = {
+            importedBoundaries: null,
             errors: null,
             isLoading: false,
-            showImportModal: false,
-            stressPeriods: Stressperiods.fromDefaults().toObject(),
-            payload: null
+            selectedBoundary: null,
+            showImportModal: false
         };
 
         this.fileReader = new FileReader();
-        this.fileReader.onload = () => {
-            this.parseFileContent(this.fileReader.result);
+        this.fileReader.onload = (event: any) => {
+            if (event && event.target && event.target.result) {
+                this.parseFileContent(event.target.result);
+            }
         };
     }
 
-    public sendImportCommand = () => {
-        this.setState({
-            showImportModal: false
-        });
-        return this.props.onChange(Stressperiods.fromObject(this.state.stressPeriods));
-    };
-
-    public handleJSON = (response: any) => {
-        const stressPeriods = Stressperiods.fromImport({
-            start_date_time: response.data[0].Date,
-            end_date_time: response.data[response.data.length - 1].Date,
-            stressperiods: [],
-            time_unit: this.props.timeUnit
-        });
-
-        for (let i = 0; i < response.data.length - 1; i++) {
-            const sp = new Stressperiod({
-                start_date_time: moment(response.data[i].Date).toISOString(),
-                nstp: response.data[i].nstp || 1,
-                tsmult: response.data[i].nstp || 1,
-                steady: response.data[i].steady === 1
-            });
-            stressPeriods.addStressPeriod(sp);
-        }
-
-        return this.setState({
-            stressPeriods: stressPeriods.toObject()
-        });
-    };
-
-    // ToDo
-    public isValidCSV = (text: string) => {
-        return true;
-    };
-
-    public isValidJson = (text: string) => {
-        try {
-            JSON.parse(text);
-        } catch (e) {
-            return false;
-        }
-        return true;
-    };
-
-    public parseFileContent = (text: string | ArrayBuffer | null) => {
-        if (!(typeof text === 'string')) {
-            return;
-        }
-
-        if (this.isValidJson(text)) {
-            return this.handleJSON(JSON.parse(text));
-        }
-        if (this.isValidCSV(text)) {
-            return PapaParse.parse(text, {
-                complete: this.handleJSON,
-                header: true,
-                dynamicTyping: true
-            });
-        }
-    };
-
-    public handleUpload = (e: ChangeEvent<HTMLInputElement>) => {
-        const files = e.target.files;
-
-        if (files && files.length > 0) {
-            this.fileReader.readAsText(files[0]);
-        }
-    };
-
-    public onClickUpload = () => this.setState({showImportModal: true});
-
-    public renderMetaData = () => {
-        return null;
-    };
-
-    public renderStressPeriods = () => {
-        return null;
-    };
-
-    public renderValidationErrors = (errors: any) => {
-        return (
-            <Segment color="red" inverted={true}>
-                <Header as="h3" style={{textAlign: 'left'}}>Validation Errors</Header>
-                <List>
-                    {errors.map((e: any, idx: number) => (
-                        <List.Item key={idx}>
-                            <List.Icon name="eye"/>
-                            <List.Content>{e.message}</List.Content>
-                        </List.Item>
-                    ))}
-                </List>
-            </Segment>
-        );
-    };
-
-    public renderImportModal = () => (
-        <Modal open={true} onClose={this.props.onCancel} dimmer={'blurring'}>
-            <Modal.Header>Import Boundaries</Modal.Header>
-            <Modal.Content>
-                <Grid>
-                    <Grid.Row columns={2}>
-                        <Grid.Column>
-                            {this.state.isLoading &&
-                            <Dimmer active={true} inverted={true}>
-                                <Loader>Uploading</Loader>
-                            </Dimmer>
-                            }
-                            {!this.state.isLoading &&
-                            <Segment color={'green'}>
-                                <Header as="h3" style={{textAlign: 'left'}}>File Requirements</Header>
-                                <List bulleted={true}>
-                                    <List.Item>
-                                        The file has to be a csv or json-file.
-                                    </List.Item>
-                                    <List.Item>
-                                        Examples can be found
-                                        <a
-                                            href="https://github.com/inowas/inowas-dss-cra/blob/master/imports"
-                                            target="_blank"
-                                            rel="noopener noreferrer"
-                                        >
-                                            here
-                                        </a>.
-                                    </List.Item>
-                                </List>
-                                <Button
-                                    primary={true}
-                                    fluid={true}
-                                    as="label"
-                                    htmlFor={'inputField'}
-                                    icon="file alternate"
-                                    content="Select File"
-                                    labelPosition="left"
-                                />
-                                <input
-                                    hidden={true}
-                                    type="file"
-                                    id="inputField"
-                                    onChange={this.handleUpload}
-                                />
-                            </Segment>
-                            }
-                        </Grid.Column>
-                        <Grid.Column>
-                            {this.state.payload && this.renderMetaData()}
-                            {this.state.errors && this.renderValidationErrors(this.state.errors)}
-                        </Grid.Column>
-                    </Grid.Row>
-                    <Grid.Row>
-                        <Grid.Column>
-                            {this.state.stressPeriods && this.renderStressPeriods()}
-                        </Grid.Column>
-                    </Grid.Row>
-                </Grid>
-            </Modal.Content>
-            <Modal.Actions>
-                <Button onClick={this.handleClickCancel}>Cancel</Button>
-                <Button
-                    disabled={!this.state.stressPeriods}
-                    positive={true}
-                    onClick={this.sendImportCommand}
-                >
-                    Import
-                </Button>
-            </Modal.Actions>
-        </Modal>
-    );
-
     public render() {
         const {showImportModal} = this.state;
+
         return (
             <div>
                 <Button
@@ -224,7 +65,202 @@ class BoundariesImport extends React.Component<IProps, IState> {
         );
     }
 
-    private handleClickCancel = () => this.setState({showImportModal: false});
+    private onImportClick = () => {
+        this.setState({
+            showImportModal: false
+        });
+
+        if (this.state.importedBoundaries) {
+            // console.log(BoundaryCollection.fromObject(this.state.importedBoundaries));
+        }
+    };
+
+    private onBoundaryClick = (id: string) => {
+        this.setState({
+            selectedBoundary: id
+        });
+    };
+
+    private onCancel = () => {
+        this.setState({
+            showImportModal: false
+        });
+    };
+
+    private handleFileData = (response: IBoundaryExport[]) => {
+        const boundaries = BoundaryCollection.fromExport(
+            response,
+            this.props.model.boundingBox,
+            this.props.model.gridSize,
+        );
+
+        if (boundaries) {
+            this.setState({
+                importedBoundaries: boundaries.toObject(),
+                selectedBoundary: boundaries.first && boundaries.first.id,
+                isLoading: false
+            });
+        }
+    };
+
+    private isValidJson = (text: string) => {
+        try {
+            JSON.parse(text);
+        } catch (e) {
+            return false;
+        }
+        return true;
+    };
+
+    private parseFileContent = (text: string) => {
+
+        this.setState({
+            importedBoundaries: null,
+            errors: null,
+        });
+
+        if (!this.isValidJson(text)) {
+            return this.setState({
+                errors: [['Invalid JSON']]
+            });
+        }
+
+        const data = JSON.parse(text);
+        const schemaUrl = JSON_SCHEMA_URL + '/import/boundaries.json';
+
+        validate(data, schemaUrl).then(([isValid, errors]) => {
+            if (!isValid) {
+                return this.setState({
+                    isLoading: false,
+                    errors
+                });
+            }
+
+            return this.handleFileData(data);
+        });
+    };
+
+    private download = () => {
+        const filename = 'boundaries.json';
+        const boundaries: IBoundaryExport[] = this.props.boundaries.toExport();
+        const text = JSON.stringify(boundaries, null, 2);
+
+        const element: HTMLAnchorElement = document.createElement('a');
+        element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(text));
+        element.setAttribute('download', filename);
+        element.style.display = 'none';
+        document.body.appendChild(element);
+        element.click();
+        document.body.removeChild(element);
+    };
+
+    private handleUpload = (e: any) => {
+        const files = e.target.files;
+        if (files.length > 0) {
+            this.setState({isLoading: true});
+            this.fileReader.readAsText(files[0]);
+        }
+    };
+
+    private onClickUpload = () => this.setState({showImportModal: true});
+
+    private renderValidationErrors = (errors: Array<{ message: string }>) => (
+        <Segment color="red" inverted={true}>
+            <Header as="h3" style={{textAlign: 'left'}}>Validation Errors</Header>
+            <List>
+                {errors.map((e, idx) => (
+                    <List.Item key={idx}>
+                        <List.Icon name="eye"/>
+                        <List.Content>{e.message}</List.Content>
+                    </List.Item>
+                ))}
+            </List>
+        </Segment>
+    );
+
+    private onFileUploadClick = () => {
+        this.setState({
+            importedBoundaries: null
+        });
+    };
+
+    private renderBoundaries = () => {
+        if (this.state.importedBoundaries) {
+            return (
+                <BoundaryComparator
+                    currentBoundaries={this.props.boundaries}
+                    soilmodel={this.props.soilmodel}
+                    newBoundaries={BoundaryCollection.fromObject(this.state.importedBoundaries)}
+                    model={this.props.model}
+                    selectedBoundary={this.state.selectedBoundary}
+                    onBoundaryClick={this.onBoundaryClick}
+                    onChange={this.onImportClick}
+                />
+            );
+        }
+    };
+
+    private renderImportModal = () => (
+        <Modal
+            open={true}
+            onClose={this.onCancel}
+            dimmer={'blurring'}
+            size={'large'}
+        >
+            <Modal.Header>Import Boundaries</Modal.Header>
+            <Modal.Content>
+                <Grid stackable={true}>
+                    <Grid.Row columns={2}>
+                        <Grid.Column>
+                            <Segment basic={true}>
+                                <List bulleted={true}>
+                                    <List.Item>The file has to be a valid json-file.</List.Item>
+                                    <List.Item
+                                        as={'a'}
+                                        onClick={this.download}
+                                    >
+                                        Download the list of boundaries.
+                                    </List.Item>
+                                </List>
+                                <Button
+                                    color={'grey'}
+                                    as={'label'}
+                                    htmlFor={'inputField'}
+                                    icon={'file alternate'}
+                                    content={'Select File'}
+                                    labelPosition={'left'}
+                                    loading={this.state.isLoading}
+                                />
+                                <input
+                                    hidden={true}
+                                    type={'file'}
+                                    id={'inputField'}
+                                    onChange={this.handleUpload}
+                                    onClick={this.onFileUploadClick}
+                                    value={''}
+                                />
+                            </Segment>
+                        </Grid.Column>
+                        <Grid.Column>
+                            {this.state.errors && this.renderValidationErrors(this.state.errors)}
+                        </Grid.Column>
+                    </Grid.Row>
+                    <Grid.Row>
+                        <Grid.Column>
+                            {this.renderBoundaries()}
+                        </Grid.Column>
+                    </Grid.Row>
+                </Grid>
+            </Modal.Content>
+            <Modal.Actions>
+                <Button
+                    onClick={this.onCancel}
+                >
+                    Close
+                </Button>
+            </Modal.Actions>
+        </Modal>
+    );
 }
 
 export default BoundariesImport;

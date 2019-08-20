@@ -13,12 +13,27 @@ const style = {
     paddingLeft: 15
 };
 
+const isJSON = (str) => {
+    try {
+        return (JSON.parse(str) && !!str);
+    } catch (e) {
+        return false;
+    }
+};
+
+
 const Terminal = ({content, styles = null}) => {
-    return (
-        <div style={{...style, ...styles}}>
-            <pre>{content}</pre>
-        </div>
-    );
+    if (isJSON(content)) {
+        content = JSON.parse(content);
+        content = JSON.stringify(content, null, 2);
+    }
+
+    if (content)
+        return (
+            <div style={{...style, ...styles}}>
+                <pre>{content}</pre>
+            </div>
+        );
 };
 
 Terminal.propTypes = {

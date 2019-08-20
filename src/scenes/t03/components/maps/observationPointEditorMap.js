@@ -8,9 +8,8 @@ import {uniqueId} from 'lodash';
 import {BasicTileLayer} from '../../../../services/geoTools/tileLayers';
 import {nearestPointOnLine} from '@turf/turf';
 import {lineString, point} from '@turf/helpers';
-import {Boundary} from '../../../../core/model/modflow';
+import {Boundary, ObservationPoint} from '../../../../core/model/modflow/boundaries';
 import {Geometry} from '../../../../core/model/geometry';
-import {ObservationPoint} from '../../../../core/model/modflow/boundaries';
 
 const styles = {
     map: {

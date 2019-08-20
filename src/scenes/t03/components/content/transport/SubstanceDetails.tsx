@@ -1,6 +1,7 @@
 import React, {ChangeEvent, SyntheticEvent} from 'react';
 import {Button, Dropdown, DropdownProps, Form, Grid, Icon, InputOnChangeData, Label, Segment} from 'semantic-ui-react';
-import {BoundaryCollection, Stressperiods} from '../../../../../core/model/modflow';
+import {Stressperiods} from '../../../../../core/model/modflow';
+import {BoundaryCollection} from '../../../../../core/model/modflow/boundaries';
 import {Substance} from '../../../../../core/model/modflow/transport';
 import {ISubstance} from '../../../../../core/model/modflow/transport/Substance.type';
 import NoContent from '../../../../shared/complexTools/noContent';

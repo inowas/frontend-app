@@ -4,13 +4,14 @@ import {connect} from 'react-redux';
 import PropTypes from 'prop-types';
 
 import {Accordion, Button, Grid, Header, Icon, Segment} from 'semantic-ui-react';
-import {BoundaryCollection, Calculation, ModflowModel, Soilmodel, Transport} from '../../../../../core/model/modflow';
+import {Calculation, ModflowModel, Soilmodel, Transport} from '../../../../../core/model/modflow';
 import ResultsMap from '../../maps/resultsMap';
 import ResultsChart from '../../../../shared/complexTools/ResultsChart';
 import {fetchCalculationResultsTransport, sendCommand} from '../../../../../services/api';
 import ScenarioAnalysisCommand from '../../../../t07/commands/scenarioAnalysisCommand';
 import {withRouter} from 'react-router-dom';
 import ResultsSelectorTransport from '../../../../shared/complexTools/ResultsSelectorTransport';
+import {BoundaryCollection} from '../../../../../core/model/modflow/boundaries';
 
 class TransportResults extends React.Component {
 
