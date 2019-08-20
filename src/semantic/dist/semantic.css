@@ -38208,15 +38208,6 @@ body.pushable > .pusher {
 /*******************************
         User Overrides
 *******************************/
-
-.ui.secondary.menu .item {
-  background-color: #E0E1E2;
-}
-
-.ui.secondary.menu .active.item {
-  background-color: #1EB1ED;
-  color: #FFFFFF;
-}
 /*!
  * # Semantic UI undefined - Transition
  * http://github.com/semantic-org/semantic-ui/

@@ -1,10 +1,11 @@
 import React from 'react';
-import {Button, Dropdown, DropdownProps, Form, Grid, Icon, Menu, Segment} from 'semantic-ui-react';
+import {Button, Divider, Dropdown, DropdownProps, Form, Grid, Header, Icon, Menu, Segment} from 'semantic-ui-react';
 import {ModflowModel, Soilmodel} from '../../../../../core/model/modflow';
 import {BoundaryCollection} from '../../../../../core/model/modflow/boundaries';
 import {BoundarySelection, BoundaryType} from '../../../../../core/model/modflow/boundaries/Boundary.type';
 import {IBoundaryComparisonItem} from '../../../../../core/model/modflow/boundaries/BoundaryCollection';
 import BoundaryDetails from './boundaryDetails';
+import BoundaryDetailsImport from './boundaryDetailsImport';
 import BoundarySynchronizer from './boundarySychronizer';
 
 interface IBoundaryTypeObject {
@@ -60,8 +61,14 @@ class BoundaryComparator extends React.Component<IProps, IState> {
 
         return (
             <div>
-                <Segment color={'grey'}>
-                    <Grid>
+                <Divider horizontal={true}>
+                    <Header as="h4">
+                        <Icon name="eye" />
+                        Preview Changes
+                    </Header>
+                </Divider>
+
+                    <Grid stackable={true}>
                         <Grid.Row>
                             <Grid.Column width={4}>
                                 <Grid padded={true}>
@@ -111,7 +118,7 @@ class BoundaryComparator extends React.Component<IProps, IState> {
                                 </Grid>
                             </Grid.Column>
                             <Grid.Column width={12}>
-                                {boundary && <BoundaryDetails
+                                {boundary && <BoundaryDetailsImport
                                     boundary={boundary}
                                     boundaries={this.props.newBoundaries}
                                     model={this.props.model}
@@ -123,7 +130,6 @@ class BoundaryComparator extends React.Component<IProps, IState> {
                             </Grid.Column>
                         </Grid.Row>
                     </Grid>
-                </Segment>
                 <BoundarySynchronizer
                     currentBoundaries={this.props.currentBoundaries}
                     newBoundaries={this.props.newBoundaries}

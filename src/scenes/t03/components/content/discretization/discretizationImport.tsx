@@ -288,10 +288,9 @@ class DiscretizationImport extends React.Component<IProps, IState> {
                             }
                             {!this.state.isLoading &&
 
-                            <Segment basic={true} placeholder={true}>
+                            <Segment basic={true} placeholder={true} style={{minHeight: '10rem'}}>
                                 <Grid columns={2} stackable={true} textAlign="center">
                                     <Divider vertical={true} />
-
                                     <Grid.Row verticalAlign="top">
                                         <Grid.Column>
                                             <Header>
@@ -304,6 +303,8 @@ class DiscretizationImport extends React.Component<IProps, IState> {
                                                 icon={'upload'}
                                                 content={'Select File'}
                                                 labelPosition={'left'}
+                                                loading={this.state.isLoading}
+                                                size={'large'}
                                             />
                                             <input
                                                 hidden={true}
@@ -311,8 +312,7 @@ class DiscretizationImport extends React.Component<IProps, IState> {
                                                 id={'inputField'}
                                                 onChange={this.handleUpload}
                                             />
-
-                                            The file has to be a csv or json-file.
+                                            <p>The file has to be a csv or json-file.</p>
                                         </Grid.Column>
 
                                         <Grid.Column>
@@ -322,7 +322,6 @@ class DiscretizationImport extends React.Component<IProps, IState> {
                                                 Or download actual discretization
                                             </Header>
                                             <Button
-                                                color={'grey'}
                                                 htmlFor={'inputField'}
                                                 icon={'download'}
                                                 content={'Get JSON File'}
@@ -336,37 +335,6 @@ class DiscretizationImport extends React.Component<IProps, IState> {
                                     </Grid.Row>
                                 </Grid>
                             </Segment>
-
-                            /*<Segment basic={true}>
-                                <Header icon={true}>
-                                <Icon name={'search'} />
-                                Upload discretization file
-                                </Header>
-                                <List bulleted={true}>
-                                <List.Item>The file has to be a csv or json-file.</List.Item>
-                                <List.Item
-                                as={'a'}
-                                onClick={this.download}
-                                >
-                                Download the actual discretization.
-                                </List.Item>
-                                </List>
-                                <Button
-                                color={'grey'}
-                                as={'label'}
-                                htmlFor={'inputField'}
-                                icon={'upload'}
-                                content={'Select File'}
-                                labelPosition={'left'}
-                                />
-                                <input
-                                hidden={true}
-                                type={'file'}
-                                id={'inputField'}
-                                onChange={this.handleUpload}
-                                />
-                                </Segment>*/
-
                             }
                         </Grid.Column>
                     </Grid.Row>
@@ -379,7 +347,6 @@ class DiscretizationImport extends React.Component<IProps, IState> {
             </Modal.Content>
             <Modal.Actions>
                 <Button
-                    negative={true}
                     onClick={this.onCancel}
                 >
                     Cancel
