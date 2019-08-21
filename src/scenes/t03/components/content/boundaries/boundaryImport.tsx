@@ -202,10 +202,11 @@ class BoundariesImport extends React.Component<IProps, IState> {
 
     private renderImportModal = () => (
         <Modal
+            trigger={<Button>Show Modal</Button>}
+            closeIcon={true}
             open={true}
             onClose={this.onCancel}
             dimmer={'blurring'}
-            size={'large'}
         >
             <Modal.Header>Import Boundaries</Modal.Header>
             <Modal.Content>
@@ -219,7 +220,7 @@ class BoundariesImport extends React.Component<IProps, IState> {
                                         <Grid.Column>
                                             {!this.state.errors &&
                                             <div>
-                                                <Header>
+                                                <Header as={'h3'}>
                                                     Download the list of boundaries.
                                                 </Header>
                                                 <Button
@@ -233,7 +234,7 @@ class BoundariesImport extends React.Component<IProps, IState> {
                                         </Grid.Column>
 
                                         <Grid.Column>
-                                            <Header>
+                                            <Header as={'h3'}>
                                                 Upload Boundaries
                                             </Header>
                                             <Button

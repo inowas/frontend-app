@@ -1,6 +1,5 @@
 import React, {ChangeEvent, SyntheticEvent} from 'react';
-import {Button, Dropdown, DropdownProps, Form, Header, InputOnChangeData, Popup} from 'semantic-ui-react';
-import uuid from 'uuid';
+import {DropdownProps, Header, InputOnChangeData, Label, Segment} from 'semantic-ui-react';
 import {ModflowModel, Soilmodel} from '../../../../../core/model/modflow';
 import {Boundary, BoundaryCollection, LineBoundary} from '../../../../../core/model/modflow/boundaries';
 import {RechargeBoundary, WellBoundary} from '../../../../../core/model/modflow/boundaries';
@@ -26,6 +25,12 @@ interface IState {
     showObservationPointEditor: boolean;
     observationPointId?: string;
 }
+
+const rechargeOptions = [
+    {key: 0, value: 1, text: '1: Top grid layer'},
+    {key: 1, value: 2, text: '2: Specified layer'},
+    {key: 2, value: 3, text: '3: Highest active cell'}
+];
 
 class BoundaryDetailsImport extends React.Component<IProps, IState> {
     constructor(props: IProps) {
@@ -73,30 +78,6 @@ class BoundaryDetailsImport extends React.Component<IProps, IState> {
         return this.props.onChange(boundary);
     };
 
-    public handleCloneClick = () => {
-        if (this.props.boundary instanceof LineBoundary && this.state.observationPointId) {
-            const boundary = this.props.boundary;
-            const newOpId = uuid.v4();
-            boundary.cloneObservationPoint(this.state.observationPointId, newOpId);
-            this.setState({
-                observationPointId: newOpId,
-                showObservationPointEditor: true
-            });
-            this.props.onChange(boundary);
-        }
-    };
-
-    public handleRemoveClick = () => {
-        if (this.props.boundary instanceof LineBoundary && this.state.observationPointId) {
-            const boundary = this.props.boundary;
-            boundary.removeObservationPoint(this.state.observationPointId);
-            this.setState({
-                observationPointId: boundary.observationPoints[0].id
-            });
-            this.props.onChange(boundary);
-        }
-    };
-
     public layerOptions = () => {
         if (!(this.props.soilmodel instanceof Soilmodel)) {
             return [];
@@ -132,33 +113,15 @@ class BoundaryDetailsImport extends React.Component<IProps, IState> {
         return (
             <React.Fragment>
                 {(boundary instanceof RechargeBoundary || boundary instanceof EvapotranspirationBoundary) &&
-                <Form.Dropdown
-                    label={boundary.type === 'rch' ? 'Recharge option' : 'Evapotranspiration option'}
-                    style={{zIndex: 1000}}
-                    selection={true}
-                    options={[
-                        {key: 0, value: 1, text: '1: Top grid layer'},
-                        {key: 1, value: 2, text: '2: Specified layer'},
-                        {key: 2, value: 3, text: '3: Highest active cell'}
-                    ]}
-                    value={boundary.optionCode}
-                    name={'optionCode'}
-                    onChange={this.handleChange}
-                />
+                <Label basic={true} horizontal={true}>
+                    {rechargeOptions.filter((o) => o.value === boundary.optionCode)[0].text}
+                </Label>
                 }
-                <Form.Select
-                    disabled={(boundary instanceof RechargeBoundary ||
-                        boundary instanceof EvapotranspirationBoundary) && boundary.optionCode !== 2}
-                    loading={!(this.props.soilmodel instanceof Soilmodel)}
-                    label={multipleLayers ? 'Selected layers' : 'Selected layer'}
-                    style={{zIndex: 1000}}
-                    multiple={multipleLayers}
-                    selection={true}
-                    options={this.layerOptions()}
-                    value={multipleLayers ? boundary.layers : boundary.layers[0]}
-                    name={'layers'}
-                    onChange={this.handleChange}
-                />
+                <Label basic={true} horizontal={true}>
+                    {boundary.layers.map(
+                        (l: number) => (this.props.soilmodel.layersCollection.toArray()[l].name)
+                    ).join(',')}
+                </Label>
             </React.Fragment>
         );
     };
@@ -178,103 +141,37 @@ class BoundaryDetailsImport extends React.Component<IProps, IState> {
 
         return (
             <div>
-                <Form style={{marginTop: '1rem'}}>
-                    <Form.Group widths="equal">
-                        <Form.Input
-                            value={boundary.type.toUpperCase()}
-                            label="Type"
-                            readOnly={true}
-                            width={5}
-                        />
+                <Segment basic={true}>
+                    <Label basic={true} horizontal={true}>
+                        {boundary.type.toUpperCase()}
+                    </Label>
 
-                        <Form.Input
-                            label={'Name'}
-                            name={'name'}
-                            value={boundary.name}
-                            onChange={this.handleChange}
-                            readOnly={this.props.readOnly}
-                        />
+                    <Label basic={true} horizontal={true}>
+                        {boundary.name}
+                    </Label>
 
-                        {this.renderLayerSelection()}
+                    {boundary.type === 'wel' && boundary instanceof WellBoundary &&
+                    <Label basic={true} horizontal={true}>
+                        Well type:
+                        <Label.Detail>
+                            {WellBoundary.wellTypes.types
+                                .filter((wt) => wt.value === boundary.wellType)[0].name}
+                        </Label.Detail>
+                    </Label>
+                    }
 
-                        {boundary.type === 'wel' && boundary instanceof WellBoundary &&
-                        <Form.Dropdown
-                            label={'Well type'}
-                            style={{zIndex: 1000}}
-                            selection={true}
-                            options={WellBoundary.wellTypes.types.map((t) => (
-                                {key: t.value, value: t.value, text: t.name}
-                            ))}
-                            value={boundary.wellType}
-                            name={'wellType'}
-                            onChange={this.handleChange}
-                        />
-                        }
-                    </Form.Group>
-                </Form>
+                    {this.renderLayerSelection()}
+                </Segment>
 
                 <BoundaryMap
                     geometry={geometry}
                     boundary={boundary}
                     boundaries={boundaries}
                     selectedObservationPointId={observationPointId}
-                    onClick={this.handleClickBoundary}
                 />
-                {(boundary instanceof LineBoundary) &&
-                <div>
-                    <Button as={'div'} labelPosition={'left'} fluid={true}>
-                        <Popup
-                            trigger={
-                                <Dropdown
-                                    fluid={true}
-                                    selection={true}
-                                    value={this.state.observationPointId}
-                                    options={boundary.observationPoints.map((op) => (
-                                        {key: op.id, value: op.id, text: op.name})
-                                    )}
-                                    onChange={this.handleSelectObservationPoint}
-                                />
-                            }
-                            size="mini"
-                            content="Select Observation Point"
-                        />
-                        <Popup
-                            trigger={
-                                <Button
-                                    icon={'edit'}
-                                    onClick={this.handleEditPoint}
-                                />
-                            }
-                            size="mini"
-                            content="Edit point"
-                        />
-                        <Popup
-                            trigger={
-                                <Button
-                                    icon={'clone'}
-                                    onClick={this.handleCloneClick}
-                                />
-                            }
-                            size="mini"
-                            content="Clone point"
-                        />
-                        {boundary instanceof LineBoundary &&
-                        <Popup
-                            trigger={
-                                <Button
-                                    icon="trash"
-                                    onClick={this.handleRemoveClick}
-                                    disabled={boundary.observationPoints.length === 1}
-                                />
-                            }
-                            size="mini"
-                            content="Delete point"
-                        />
-                        }
-                    </Button>
-                </div>
-                }
+
                 <Header as={'h4'}>Time dependent boundary values at observation point</Header>
+
                 <BoundaryValuesDataTable
                     boundary={boundary}
                     onChange={this.props.onChange}
