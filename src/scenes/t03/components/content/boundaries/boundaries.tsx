@@ -13,7 +13,7 @@ import {fetchUrl, sendCommand} from '../../../../../services/api';
 import {updateBoundaries, updateModel} from '../../../actions/actions';
 import ModflowModelCommand from '../../../commands/modflowModelCommand';
 import BoundaryDetails from './boundaryDetails';
-import BoundariesImport from './boundaryImport';
+import BoundaryImport from './boundaryImport';
 import BoundaryList from './boundaryList';
 
 const baseUrl = '/tools/T03';
@@ -238,7 +238,7 @@ class Boundaries extends React.Component<Props, IState> {
                                             isError={error}
                                             saveButton={!readOnly}
                                             importButton={this.props.readOnly ||
-                                            <BoundariesImport
+                                            <BoundaryImport
                                                 model={this.props.model}
                                                 soilmodel={this.props.soilmodel}
                                                 boundaries={this.props.boundaries}

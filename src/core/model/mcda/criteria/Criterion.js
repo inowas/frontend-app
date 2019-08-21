@@ -243,7 +243,7 @@ export default Criterion;
                 const xmax = boundingBox.xMin + (x + 1) * dXCell;
                 const ymin = boundingBox.yMin + y * dYCell;
                 const ymax = boundingBox.yMin + (y + 1) * dYCell;
-                const CellBoundingBox = BoundingBox.fromArray([[xmin, ymin],[xmax, ymax]]);
+                const CellBoundingBox = BoundingBox.fromObject([[xmin, ymin],[xmax, ymax]]);
                 // Find all cells from tiles intersecting the grid cell and calculate the mean value
                 console.log(CellBoundingBox);
                 const tiles = this.tilesCollection.findByBoundingBox(CellBoundingBox);

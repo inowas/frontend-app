@@ -14,11 +14,10 @@ const defaults = {
     name: 'New real time monitoring tool',
     description: '',
     permissions: 'rwx',
-    public: false,
+    public: true,
     tool: 'T10',
     data: {
         sensors: [],
-        model: null,
-        calculation: null
+        model: null
     }
 };

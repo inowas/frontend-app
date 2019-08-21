@@ -19,6 +19,7 @@ const getRoutes = () => {
                 <PrivateRoute exact path="/tools/T03/" component={Scenes.T03.CreateModel} forRoles={['ROLE_USER']}/>
                 <PrivateRoute exact path="/tools/T07/" component={Scenes.T07.CreateScenarioAnalysis}
                               forRoles={['ROLE_USER']}/>
+                <PrivateRoute exact path="/tools/T10/" component={Scenes.T10Create} forRoles={['ROLE_USER']}/>
                 <PrivateRoute path="/credentials" component={Scenes.UserCredentials} forRoles={['ROLE_USER']}/>
                 <PrivateRoute path="/profile" component={Scenes.UserProfile} forRoles={['ROLE_USER']}/>
 
@@ -38,6 +39,7 @@ const getRoutes = () => {
                 <Route exact path="/tools/T09D/:id?" component={Scenes.T09D}/>
                 <Route exact path="/tools/T09E/:id?" component={Scenes.T09E}/>
                 <Route exact path="/tools/T09F/:id?" component={Scenes.T09F}/>
+                <Route exact path="/tools/T010/:id" component={Scenes.T10}/>
                 <Route exact path="/tools/T11" component={Scenes.T11}/>
                 <Route exact path="/tools/T12/:id?" component={Scenes.T12}/>
                 <Route exact path="/tools/T13" component={Scenes.T13}/>
@@ -86,6 +88,8 @@ const getRoutes = () => {
             <PrivateRoute exact path="/tools/T09D/:id?" component={Scenes.T09D} forRoles={['ROLE_USER']}/>
             <PrivateRoute exact path="/tools/T09E/:id?" component={Scenes.T09E} forRoles={['ROLE_USER']}/>
             <PrivateRoute exact path="/tools/T09F/:id?" component={Scenes.T09F} forRoles={['ROLE_USER']}/>
+            <PrivateRoute exact path="/tools/T10/" component={Scenes.T10Create} forRoles={['ROLE_USER']}/>
+            <PrivateRoute exact path="/tools/T10/:id" component={Scenes.T10} forRoles={['ROLE_USER']}/>
             <PrivateRoute exact path="/tools/T11" component={Scenes.T11} forRoles={['ROLE_USER']}/>
             <PrivateRoute exact path="/tools/T12/:id?" component={Scenes.T12} forRoles={['ROLE_USER']}/>
             <PrivateRoute exact path="/tools/T13" component={Scenes.T13} forRoles={['ROLE_USER']}/>

@@ -1,20 +1,6 @@
-import uuidv4 from 'uuid/v4';
-import {IMetaData, ISimpleTool} from '../types';
-import {ISensor} from './Sensor.type';
+import {Sensor} from './index';
+import {IRtm} from './Rtm.type';
 import {SensorCollection} from './SensorCollection';
-
-interface IRtm extends ISimpleTool<IRtmData> {
-    data: IRtmData;
-}
-
-// tslint:disable-next-line:no-empty-interface
-interface IModel extends IMetaData {
-}
-
-interface IRtmData {
-    sensors: ISensor[];
-    model: IModel | null;
-}
 
 export default class Rtm {
 
@@ -62,52 +48,38 @@ export default class Rtm {
         return this._props.tool;
     }
 
-    set tool(value: string) {
-        this._props.tool = value;
-    }
-
     get sensors(): SensorCollection {
-        return SensorCollection.fromArray(this._props.data.sensors);
+        return SensorCollection.fromObject(this._props.data.sensors);
     }
 
     set sensors(value: SensorCollection) {
-        this._props.data.sensors = value.toArray();
+        this._props.data.sensors = value.toObject();
     }
 
-    get model(): IModel | null {
+    get model(): string | null {
         return this._props.data.model;
     }
 
-    set model(value: IModel | null) {
+    set model(value: string | null) {
         this._props.data.model = value;
-    }
-
-    public static create(): Rtm {
-        return new Rtm();
     }
 
     public static fromObject(obj: IRtm): Rtm {
         return new Rtm(obj);
     }
 
-    private readonly _props: IRtm = {
-        id: uuidv4(),
-        name: '',
-        description: '',
-        public: true,
-        permissions: 'r--',
-        tool: 'T10',
-        data: {
-            sensors: [],
-            model: null
-        }
+    private readonly _props: IRtm;
 
-    };
+    constructor(data: IRtm) {
+        this._props = data;
+    }
 
-    constructor(data?: IRtm) {
-        if (data) {
-            this._props = data;
-        }
+    public addSensor(sensor: Sensor) {
+        this.sensors = (this.sensors).add(sensor);
+    }
+
+    public findSensor(id: string): null | Sensor {
+        return this.sensors.findById(id);
     }
 
     public toObject(): IRtm {

@@ -26,7 +26,7 @@ interface IProps {
     onChange: (boundaries: BoundaryCollection) => void;
 }
 
-class BoundariesImport extends React.Component<IProps, IState> {
+export default class BoundaryImport extends React.Component<IProps, IState> {
     private fileReader: FileReader;
 
     constructor(props: IProps) {
@@ -262,5 +262,3 @@ class BoundariesImport extends React.Component<IProps, IState> {
         </Modal>
     );
 }
-
-export default BoundariesImport;
