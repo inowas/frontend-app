@@ -1,10 +1,10 @@
 import React from 'react';
-import {Button, Dropdown, DropdownProps, Form, Grid, Icon, Menu, Segment} from 'semantic-ui-react';
+import {Button, Divider, Dropdown, DropdownProps, Grid, Header, Icon, Menu} from 'semantic-ui-react';
 import {ModflowModel, Soilmodel} from '../../../../../core/model/modflow';
 import {BoundaryCollection} from '../../../../../core/model/modflow/boundaries';
 import {BoundarySelection, BoundaryType} from '../../../../../core/model/modflow/boundaries/Boundary.type';
 import {IBoundaryComparisonItem} from '../../../../../core/model/modflow/boundaries/BoundaryCollection';
-import BoundaryDetails from './boundaryDetails';
+import BoundaryDetailsImport from './boundaryDetailsImport';
 import BoundarySynchronizer from './boundarySychronizer';
 
 interface IBoundaryTypeObject {
@@ -60,12 +60,16 @@ class BoundaryComparator extends React.Component<IProps, IState> {
 
         return (
             <div>
-                <Segment color={'grey'}>
-                    <Grid>
+                <Divider horizontal={true}>
+                    <Header as="h4">
+                        <Icon name="eye" />
+                        Preview Changes
+                    </Header>
+                </Divider>
+
+                    <Grid stackable={true}>
                         <Grid.Row>
                             <Grid.Column width={4}>
-                                <Grid padded={true}>
-                                    <Grid.Row style={{paddingTop: 0}}>
                                         {types && types.length === 1 ?
                                             <Button
                                                 className="blue"
@@ -77,8 +81,6 @@ class BoundaryComparator extends React.Component<IProps, IState> {
                                                 Add
                                             </Button>
                                             :
-                                            <Form.Group>
-
                                                 <Button as="div" labelPosition="left">
                                                     <Dropdown
                                                         selection={true}
@@ -99,19 +101,15 @@ class BoundaryComparator extends React.Component<IProps, IState> {
                                                         })}
                                                         onChange={this.handleLocalChange}
                                                         value={this.state.selectedType}
-                                                        style={{minWidth: '120px', width: '120px'}}
                                                     />
                                                 </Button>
-                                            </Form.Group>
                                         }
-                                    </Grid.Row>
-                                    <Grid.Row>
+
                                         {this.list()}
-                                    </Grid.Row>
-                                </Grid>
+
                             </Grid.Column>
                             <Grid.Column width={12}>
-                                {boundary && <BoundaryDetails
+                                {boundary && <BoundaryDetailsImport
                                     boundary={boundary}
                                     boundaries={this.props.newBoundaries}
                                     model={this.props.model}
@@ -123,7 +121,6 @@ class BoundaryComparator extends React.Component<IProps, IState> {
                             </Grid.Column>
                         </Grid.Row>
                     </Grid>
-                </Segment>
                 <BoundarySynchronizer
                     currentBoundaries={this.props.currentBoundaries}
                     newBoundaries={this.props.newBoundaries}
@@ -146,7 +143,7 @@ class BoundaryComparator extends React.Component<IProps, IState> {
         }
 
         return [
-            {key: 'all', value: 'all', text: 'All'},
+            {key: 'all', value: 'all', text: 'All types'},
             {key: 'chd', value: 'chd', text: 'CHD'},
             {key: 'drn', value: 'drn', text: 'DRN'},
             {key: 'evt', value: 'evt', text: 'EVT'},
