@@ -8,7 +8,7 @@ import SoilmodelLayer from '../../../../../core/model/modflow/soilmodel/Soilmode
 import {defaultSoilmodelLayer} from '../../../../../scenes/t03/defaults/soilmodel';
 
 test('Zones to parameters', () => {
-    const gridSize = new GridSize(3, 3);
+    const gridSize = new GridSize({n_x: 3, n_y: 3});
     const layer = new SoilmodelLayer(defaultSoilmodelLayer);
     layer.id = '0cda5c8e-f583-4067-a1b8-d90308f3dea7';
     const relations = LayerParameterZonesCollection.fromObject([
