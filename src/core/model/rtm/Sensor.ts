@@ -1,33 +1,7 @@
-import uuidv4 from 'uuid/v4';
+import {cloneDeep} from 'lodash';
 import {ISensor} from './Sensor.type';
 
 export default class Sensor {
-
-    public static create(): Sensor {
-        return new Sensor();
-    }
-
-    public static fromObject(obj: ISensor): Sensor {
-        return new Sensor(obj);
-    }
-
-    private readonly _props: ISensor = {
-        id: uuidv4(),
-        name: '',
-        description: '',
-        geolocation: null,
-        dataQuery: null
-    };
-
-    constructor(data?: ISensor) {
-        if (data) {
-            this._props = data;
-        }
-    }
-
-    public toObject(): ISensor {
-        return this._props;
-    }
 
     get id(): string {
         return this._props.id;
@@ -45,14 +19,6 @@ export default class Sensor {
         this._props.name = value;
     }
 
-    get description(): string {
-        return this._props.description;
-    }
-
-    set description(value: string) {
-        this._props.description = value;
-    }
-
     get geolocation(): [number, number] | null {
         return this._props.geolocation;
     }
@@ -61,11 +27,17 @@ export default class Sensor {
         this._props.geolocation = value;
     }
 
-    get dataQuery(): string | null {
-        return this._props.dataQuery;
+    public static fromObject(obj: ISensor): Sensor {
+        return new Sensor(obj);
     }
 
-    set dataQuery(value: string | null) {
-        this._props.dataQuery = value;
+    private readonly _props: ISensor;
+
+    constructor(data: ISensor) {
+        this._props = cloneDeep(data);
+    }
+
+    public toObject(): ISensor {
+        return this._props;
     }
 }

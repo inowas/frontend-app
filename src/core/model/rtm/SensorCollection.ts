@@ -3,13 +3,13 @@ import {Sensor} from './index';
 import {ISensor} from './Sensor.type';
 
 export class SensorCollection extends Collection<Sensor> {
-    public static fromArray(array: ISensor[]) {
+    public static fromObject(obj: ISensor[]) {
         const sc = new SensorCollection();
-        sc.items = array.map((s) => Sensor.fromObject(s));
+        sc.items = obj.map((s) => Sensor.fromObject(s));
         return sc;
     }
 
-    public toArray() {
+    public toObject() {
         return this.all.map(
             (item) => item.toObject());
     }

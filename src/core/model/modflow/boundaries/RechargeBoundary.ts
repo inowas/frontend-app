@@ -108,7 +108,7 @@ export default class RechargeBoundary extends Boundary {
     }
 
     public static create(id: string, geometry: Polygon, name: string,
-                         layers: number[], cells: ICells, spValues: ISpValues, nrchop: INrchop) {
+                         layers: number[], cells: ICells, spValues: ISpValues, nrchop: INrchop = 1) {
 
         return new this({
             id,
@@ -145,7 +145,7 @@ export default class RechargeBoundary extends Boundary {
         name: this.name,
         geometry: this.geometry.toObject() as Polygon,
         layers: this.layers,
-        nrchop: this.nrchop,
+        nrchop: this.nrchop ? this.nrchop : 1,
         sp_values: this.getSpValues()
     });
 

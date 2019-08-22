@@ -1,5 +1,5 @@
 import React from 'react';
-import {Button, Grid, Header, List, Modal, Segment} from 'semantic-ui-react';
+import {Button, Divider, Grid, Header, List, Modal, Segment} from 'semantic-ui-react';
 import {
     ModflowModel,
 } from '../../../../../core/model/modflow';
@@ -26,7 +26,7 @@ interface IProps {
     onChange: (boundaries: BoundaryCollection) => void;
 }
 
-class BoundariesImport extends React.Component<IProps, IState> {
+export default class BoundaryImport extends React.Component<IProps, IState> {
     private fileReader: FileReader;
 
     constructor(props: IProps) {
@@ -202,47 +202,66 @@ class BoundariesImport extends React.Component<IProps, IState> {
 
     private renderImportModal = () => (
         <Modal
+            trigger={<Button>Show Modal</Button>}
+            closeIcon={true}
             open={true}
             onClose={this.onCancel}
             dimmer={'blurring'}
-            size={'large'}
         >
             <Modal.Header>Import Boundaries</Modal.Header>
             <Modal.Content>
                 <Grid stackable={true}>
-                    <Grid.Row columns={2}>
+                    <Grid.Row>
                         <Grid.Column>
-                            <Segment basic={true}>
-                                <List bulleted={true}>
-                                    <List.Item>The file has to be a valid json-file.</List.Item>
-                                    <List.Item
-                                        as={'a'}
-                                        onClick={this.download}
-                                    >
-                                        Download the list of boundaries.
-                                    </List.Item>
-                                </List>
-                                <Button
-                                    color={'grey'}
-                                    as={'label'}
-                                    htmlFor={'inputField'}
-                                    icon={'file alternate'}
-                                    content={'Select File'}
-                                    labelPosition={'left'}
-                                    loading={this.state.isLoading}
-                                />
-                                <input
-                                    hidden={true}
-                                    type={'file'}
-                                    id={'inputField'}
-                                    onChange={this.handleUpload}
-                                    onClick={this.onFileUploadClick}
-                                    value={''}
-                                />
+                            <Segment basic={true} placeholder={true} style={{minHeight: '10rem'}}>
+                                <Grid columns={2} stackable={true} textAlign="center">
+                                    <Divider vertical={true} />
+                                    <Grid.Row verticalAlign="top">
+                                        <Grid.Column>
+                                            {!this.state.errors &&
+                                            <div>
+                                                <Header as={'h3'}>
+                                                    Download the list of boundaries.
+                                                </Header>
+                                                <Button
+                                                    htmlFor={'inputField'}
+                                                    content={'Get JSON File'}
+                                                    onClick={this.download}
+                                                />
+                                            </div>
+                                            }
+                                            {this.state.errors && this.renderValidationErrors(this.state.errors)}
+                                        </Grid.Column>
+
+                                        <Grid.Column>
+                                            <Header as={'h3'}>
+                                                Upload Boundaries
+                                            </Header>
+                                            <Button
+                                                color={'grey'}
+                                                as={'label'}
+                                                htmlFor={'inputField'}
+                                                icon={'file alternate'}
+                                                content={'Select File'}
+                                                labelPosition={'left'}
+                                                loading={this.state.isLoading}
+                                                size={'large'}
+                                            />
+                                            <input
+                                                hidden={true}
+                                                type={'file'}
+                                                id={'inputField'}
+                                                onChange={this.handleUpload}
+                                                onClick={this.onFileUploadClick}
+                                                value={''}
+                                            />
+                                            <br/>
+                                            <p>The file has to be a valid json-file.</p>
+                                        </Grid.Column>
+
+                                    </Grid.Row>
+                                </Grid>
                             </Segment>
-                        </Grid.Column>
-                        <Grid.Column>
-                            {this.state.errors && this.renderValidationErrors(this.state.errors)}
                         </Grid.Column>
                     </Grid.Row>
                     <Grid.Row>
@@ -262,5 +281,3 @@ class BoundariesImport extends React.Component<IProps, IState> {
         </Modal>
     );
 }
-
-export default BoundariesImport;
