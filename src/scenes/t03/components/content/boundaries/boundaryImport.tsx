@@ -169,8 +169,8 @@ class BoundariesImport extends React.Component<IProps, IState> {
             <Header as="h3" style={{textAlign: 'left'}}>Validation Errors</Header>
             <List>
                 {errors.map((e, idx) => (
-                    <List.Item key={idx}>
-                        <List.Icon name="eye"/>
+                    <List.Item key={idx} style={{textAlign: 'left'}}>
+                        <List.Icon name="attention"/>
                         <List.Content>{e.message}</List.Content>
                     </List.Item>
                 ))}
@@ -224,6 +224,8 @@ class BoundariesImport extends React.Component<IProps, IState> {
                                                     Download the list of boundaries.
                                                 </Header>
                                                 <Button
+                                                    basic
+                                                    color={'blue'}
                                                     htmlFor={'inputField'}
                                                     content={'Get JSON File'}
                                                     onClick={this.download}

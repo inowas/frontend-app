@@ -60,13 +60,15 @@ class BoundarySynchronizer extends React.Component<IProps, IState> {
         return (
             <Button
                 fluid={true}
+                icon={'sync'}
+                labelPosition={'left'}
+                size={'large'}
                 positive={true}
+                content={'Synchronize'}
                 onClick={this.synchronize}
                 loading={synchronizing}
                 disabled={commands.length === commandsErrorSent + commandsSuccessfullySent}
-            >
-                Synchronize
-            </Button>
+            />
         );
     }
 

@@ -6,9 +6,7 @@ import {RechargeBoundary, WellBoundary} from '../../../../../core/model/modflow/
 import EvapotranspirationBoundary from '../../../../../core/model/modflow/boundaries/EvapotranspirationBoundary';
 import NoContent from '../../../../shared/complexTools/noContent';
 import BoundaryMap from '../../maps/boundaryMap';
-import BoundaryGeometryEditor from './boundaryGeometryEditor';
 import BoundaryValuesDataTable from './boundaryValuesDataTable';
-import ObservationPointEditor from './observationPointEditor';
 
 interface IProps {
     boundary: Boundary;
@@ -179,43 +177,9 @@ class BoundaryDetailsImport extends React.Component<IProps, IState> {
                     selectedOP={observationPointId}
                     stressperiods={stressperiods}
                 />
-
-                {this.state.showBoundaryEditor &&
-                <BoundaryGeometryEditor
-                    boundary={boundary}
-                    boundaries={boundaries}
-                    model={model}
-                    onCancel={this.handleCancelGeometryEditor}
-                    onChange={this.props.onChange}
-                    readOnly={this.props.readOnly}
-                />
-                }
-                {(this.state.showObservationPointEditor && boundary instanceof LineBoundary) &&
-                <ObservationPointEditor
-                    boundary={boundary}
-                    model={model}
-                    observationPointId={this.state.observationPointId}
-                    onCancel={this.handleCancelObservationPointEditor}
-                    onChange={this.props.onChange}
-                    readOnly={this.props.readOnly}
-                />
-                }
             </div>
         );
     }
-
-    private handleCancelGeometryEditor = () => this.setState({showBoundaryEditor: false});
-    private handleCancelObservationPointEditor = () => this.setState({showObservationPointEditor: false});
-    private handleClickBoundary = (id: string) => this.props.onClick(id);
-    private handleClickShowBoundaryEditor = () => this.setState({showBoundaryEditor: true});
-    private handleEditPoint = () => this.setState({showObservationPointEditor: true});
-    private handleSelectObservationPoint = (e: SyntheticEvent<HTMLElement, Event>, data: DropdownProps) => {
-        if (data.value && typeof data.value === 'string') {
-            return this.setState({
-                observationPointId: data.value
-            });
-        }
-    };
 }
 
 export default BoundaryDetailsImport;

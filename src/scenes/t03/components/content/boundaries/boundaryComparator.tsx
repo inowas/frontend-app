@@ -67,66 +67,67 @@ class BoundaryComparator extends React.Component<IProps, IState> {
                     </Header>
                 </Divider>
 
-                    <Grid stackable={true}>
-                        <Grid.Row>
-                            <Grid.Column width={4}>
-                                        {types && types.length === 1 ?
-                                            <Button
-                                                className="blue"
-                                                fluid={true}
-                                                icon={true}
-                                                labelPosition="left"
-                                            >
-                                                <Icon name="plus"/>
-                                                Add
-                                            </Button>
-                                            :
-                                                <Button as="div" labelPosition="left">
-                                                    <Dropdown
-                                                        selection={true}
-                                                        options={this.boundaryTypes().map((b) => {
-                                                            let numberOfBoundaries = boundaryList.length;
-                                                            if (b.value !== 'all') {
-                                                                numberOfBoundaries = boundaryList
-                                                                    .filter((e) => (e.type === b.value)).length;
-                                                            }
+                <Grid stackable={true}>
+                    <Grid.Row>
+                        <Grid.Column width={4}>
+                            {types && types.length === 1 ?
+                                <Button
+                                    className="blue"
+                                    fluid={true}
+                                    icon={true}
+                                    labelPosition="left"
+                                >
+                                    <Icon name="plus"/>
+                                    Add
+                                </Button>
+                                :
+                                <Button as="div" labelPosition="left">
+                                    <Dropdown
+                                        selection={true}
+                                        options={this.boundaryTypes().map((b) => {
+                                            let numberOfBoundaries = boundaryList.length;
+                                            if (b.value !== 'all') {
+                                                numberOfBoundaries = boundaryList
+                                                    .filter((e) => (e.type === b.value)).length;
+                                            }
 
-                                                            const name = `${b.text} (${numberOfBoundaries})`;
+                                            const name = `${b.text} (${numberOfBoundaries})`;
 
-                                                            return {
-                                                                ...b,
-                                                                disabled: b.value !== 'all' && numberOfBoundaries === 0,
-                                                                text: name
-                                                            };
-                                                        })}
-                                                        onChange={this.handleLocalChange}
-                                                        value={this.state.selectedType}
-                                                    />
-                                                </Button>
-                                        }
+                                            return {
+                                                ...b,
+                                                disabled: b.value !== 'all' && numberOfBoundaries === 0,
+                                                text: name
+                                            };
+                                        })}
+                                        onChange={this.handleLocalChange}
+                                        value={this.state.selectedType}
+                                    />
+                                </Button>
+                            }
+                            {this.list()}
+                        </Grid.Column>
 
-                                        {this.list()}
+                        <Grid.Column width={12}>
+                            {boundary && <BoundaryDetailsImport
+                                boundary={boundary}
+                                boundaries={this.props.newBoundaries}
+                                model={this.props.model}
+                                soilmodel={this.props.soilmodel}
+                                onChange={this.noHandle}
+                                onClick={this.noHandle}
+                                readOnly={true}
+                            />}
+                            <Divider hidden/>
+                            <BoundarySynchronizer
+                                currentBoundaries={this.props.currentBoundaries}
+                                newBoundaries={this.props.newBoundaries}
+                                model={this.props.model}
+                                onChange={this.props.onChange}
+                            />
+                        </Grid.Column>
+                    </Grid.Row>
+                </Grid>
 
-                            </Grid.Column>
-                            <Grid.Column width={12}>
-                                {boundary && <BoundaryDetailsImport
-                                    boundary={boundary}
-                                    boundaries={this.props.newBoundaries}
-                                    model={this.props.model}
-                                    soilmodel={this.props.soilmodel}
-                                    onChange={this.noHandle}
-                                    onClick={this.noHandle}
-                                    readOnly={true}
-                                />}
-                            </Grid.Column>
-                        </Grid.Row>
-                    </Grid>
-                <BoundarySynchronizer
-                    currentBoundaries={this.props.currentBoundaries}
-                    newBoundaries={this.props.newBoundaries}
-                    model={this.props.model}
-                    onChange={this.props.onChange}
-                />
             </div>
         );
     }
