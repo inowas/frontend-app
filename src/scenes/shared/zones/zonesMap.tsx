@@ -97,12 +97,14 @@ const zonesMap = (props: IProps) => {
                 <div/>
             }
             <FeatureGroup>
+                {!readOnly &&
                 <EditControl
                     position="bottomright"
                     onCreated={props.onCreatePath}
                     onEdited={props.onEditPath}
                     {...options}
                 />
+                }
                 {iGeometry &&
                 <Polygon
                     key={uniqueId(iGeometry.hash())}

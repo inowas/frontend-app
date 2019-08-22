@@ -150,7 +150,6 @@ const soilmodelSynchronizer = (props: IProps) => {
     const synchronize = () => {
         setCommandsSuccessfullySent(0);
         setCommandsErrorSent(0);
-    console.log('SYNCHRONIZE');
         sendCommands(cloneDeep(commands), onSendCommandSuccess, onSendCommandError, onSendCommand);
     };
 

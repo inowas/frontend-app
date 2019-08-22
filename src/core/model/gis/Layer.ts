@@ -37,6 +37,10 @@ class Layer {
         this._props.id = value;
     }
 
+    get name() {
+        return this._props.name;
+    }
+
     set name(value: string) {
         this._props.name = value;
     }

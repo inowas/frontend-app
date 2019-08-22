@@ -1,4 +1,4 @@
-import {default as geojson, Polygon} from 'geojson';
+import geojson from 'geojson';
 import {DrawEvents} from 'leaflet';
 import React, {ChangeEvent, useEffect, useState} from 'react';
 import {
@@ -17,7 +17,8 @@ import LayerParameterZonesCollection from '../../../core/model/gis/LayerParamete
 import Zone from '../../../core/model/gis/Zone';
 import {IZone} from '../../../core/model/gis/Zone.type';
 import ZonesCollection from '../../../core/model/gis/ZonesCollection';
-import {ModflowModel} from '../../../core/model/modflow';
+import {Geometry, ModflowModel} from '../../../core/model/modflow';
+import {calculateActiveCells} from '../../../services/geoTools';
 import {ZonesMap} from './index';
 
 interface IProps {
@@ -100,9 +101,11 @@ const zoneDetails = (props: IProps) => {
     const handleCreatePath = (e: DrawEvents.Created) => {
         const layer = e.layer;
         if (layer) {
+            const geometry = Geometry.fromGeoJson(layer.toGeoJSON().geometry);
             const cZone: IZone = {
                 ...zone,
-                geometry: layer.toGeoJSON().geometry as Polygon
+                cells: calculateActiveCells(geometry, props.model.boundingBox, props.model.gridSize).toObject(),
+                geometry: geometry.toObject()
             };
             return props.onChange(Zone.fromObject(cZone));
         }
@@ -113,9 +116,12 @@ const zoneDetails = (props: IProps) => {
 
         if (layers.features.length > 0) {
             const layer = layers.features[0];
+            const geometry = Geometry.fromGeoJson(layer.geometry);
+
             const cZone: IZone = {
                 ...zone,
-                geometry: layer.geometry as Polygon
+                cells: calculateActiveCells(geometry, props.model.boundingBox, props.model.gridSize).toObject(),
+                geometry: geometry.toObject()
             };
 
             if (relations.length > 0) {

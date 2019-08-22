@@ -59,7 +59,12 @@ const layerDetails = (props: IProps) => {
 
     const handleChange = () => props.onChange(SoilmodelLayer.fromObject(layer));
 
-    const handleChangeRelations = (relations: LayerParameterZonesCollection) => {
+    const handleChangeRelations = (cRelations: LayerParameterZonesCollection) => {
+        const relations = props.relations;
+        cRelations.all.forEach((r) => {
+           relations.update(r);
+        });
+
         const cLayer = SoilmodelLayer.fromObject(layer).zonesToParameters(
             props.model.gridSize,
             relations,

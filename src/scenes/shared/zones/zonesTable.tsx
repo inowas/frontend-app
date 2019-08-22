@@ -178,7 +178,7 @@ const zonesTable = (props: IProps) => {
                         {!props.readOnly && relation.priority > 0 &&
                         <Button.Group floated="right" size="small">
                             <Button
-                                disabled={props.readOnly || !(relation.priority < props.zones.length - 1)}
+                                disabled={props.readOnly || !(relation.priority < props.relations.length - 1)}
                                 icon={true}
                                 relation={relation}
                                 order="up"

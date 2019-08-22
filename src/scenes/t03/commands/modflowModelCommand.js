@@ -17,7 +17,7 @@ class ModflowModelCommand extends AbstractCommand {
         const name = 'addLayer';
         return new ModflowModelCommand(
             name,
-            {id: modelId, layer: layer},
+            {id: modelId, layer: layer.toObject()},
             JSON_SCHEMA_URL + '/commands/' + name
         );
     }

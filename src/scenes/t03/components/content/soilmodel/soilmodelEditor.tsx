@@ -1,3 +1,4 @@
+import {cloneDeep} from 'lodash';
 import React, {MouseEvent, useEffect, useState} from 'react';
 import {connect} from 'react-redux';
 import {Redirect, withRouter} from 'react-router-dom';
@@ -10,8 +11,9 @@ import {IZone} from '../../../../../core/model/gis/Zone.type';
 import {ModflowModel} from '../../../../../core/model/modflow';
 import {Soilmodel, SoilmodelLayer} from '../../../../../core/model/modflow/soilmodel';
 import {ISoilmodelLayer} from '../../../../../core/model/modflow/soilmodel/SoilmodelLayer.type';
-import {fetchUrl} from '../../../../../services/api';
 import {sendCommand} from '../../../../../services/api';
+import {sendCommands} from '../../../../../services/api/commandHelper';
+import NoContent from '../../../../shared/complexTools/noContent';
 import ContentToolBar from '../../../../shared/ContentToolbar';
 import {CreateZoneModal, ZoneDetails} from '../../../../shared/zones';
 import {
@@ -71,7 +73,7 @@ const soilmodelEditor = (props: IProps) => {
     const [selectedZone, setSelectedZone] = useState<IZone | null>(null);
     const [isLoading, setIsLoading] = useState<boolean>(false);
     const [isDirty, setIsDirty] = useState<boolean>(false);
-    const [isError] = useState<boolean>(false);
+    const [isError, setIsError] = useState<boolean>(false);
 
     const {soilmodel} = props;
     const {id, pid, property, type} = props.match.params;
@@ -107,22 +109,93 @@ const soilmodelEditor = (props: IProps) => {
         }
     };
 
+    const handleRemoveLayer = (layerId: string) => {
+        const commands = [];
+
+        const cRelations = soilmodel.relationsCollection.findBy('layerId', layerId, false);
+        const properties = {
+            ...soilmodel.toObject().properties,
+            relations: cRelations
+        };
+
+        commands.push(
+            Command.removeLayer({
+                id: props.model.id,
+                layer_id: layerId
+            })
+        );
+
+        commands.push(
+            Command.updateSoilmodelProperties({
+                id: props.model.id,
+                properties
+            })
+        );
+
+        sendCommands(commands, () => {
+                props.removeLayer(layerId);
+                props.updateSoilmodelRelations(LayerParameterZonesCollection.fromObject(cRelations));
+                setIsLoading(false);
+            }, () => setIsError(true)
+        );
+    };
+
+    const handleAddLayer = (layer: SoilmodelLayer, cRelations: LayerParameterZonesCollection) => {
+        const commands = [];
+
+        const properties = {
+            ...soilmodel.toObject().properties,
+            relations: cRelations.all
+        };
+
+        setIsLoading(true);
+
+        commands.push(
+            Command.updateSoilmodelProperties({
+                id: props.model.id,
+                properties
+            })
+        );
+
+        commands.push(
+            Command.addLayer(
+                props.model.id,
+                layer
+            )
+        );
+
+        sendCommands(commands, () => {
+                props.addLayer(layer);
+                props.updateSoilmodelRelations(cRelations);
+                setIsLoading(false);
+                props.history.push(`${baseUrl}/${id}/${property}/${type || 'layers'}/${layer.id}`);
+            },
+            () => setIsError(true)
+        );
+    };
+
     const handleClickAddItem = () => {
         if (type === nav.LAYERS) {
             const lc = soilmodel.layersCollection;
 
             const layer = new SoilmodelLayer(defaultSoilmodelLayer);
+            layer.id = Uuid.v4();
+            layer.name = 'New Layer';
             layer.number = lc.length > 0 ? lc.orderBy('number', 'desc').first.number + 1 : 1;
 
-            setIsLoading(true);
+            const cRelations = soilmodel.relationsCollection;
+            soilmodel.parametersCollection.findBy('parameter', 'top', false).forEach((p) => {
+                cRelations.add({
+                    id: Uuid.v4(),
+                    layerId: layer.id,
+                    parameter: p.id,
+                    priority: 0,
+                    value: p.defaultValue,
+                    zoneId: defaultRelation.zoneId
+                } as ILayerParameterZone);
+            });
 
-            return sendCommand(
-                Command.addLayer(props.model.id, layer), () => {
-                    props.addLayer(layer);
-                    setIsLoading(false);
-                    props.history.push(`${baseUrl}/${id}/${property}/${type || 'layers'}/${layer.id}`);
-                }
-            );
+            return handleAddLayer(layer, cRelations);
         }
 
         if (type === nav.ZONES) {
@@ -133,46 +206,40 @@ const soilmodelEditor = (props: IProps) => {
     const handleCloneItem = (item: SoilmodelLayer | Zone) => {
         setIsLoading(true);
 
-        if (type === nav.LAYERS) {
-            fetchUrl(`modflowmodels/${id}/soilmodel/${item.id}`,
-                (cLayer: ISoilmodelLayer) => {
-                    const newLayer = SoilmodelLayer.fromObject(cLayer);
-                    newLayer.id = Uuid.v4();
-                    newLayer.name = cLayer.name + ' (clone)';
+        if (type === nav.LAYERS && item instanceof SoilmodelLayer) {
+            const newLayer = cloneDeep(item);
+            newLayer.id = Uuid.v4();
+            newLayer.name = item.name + ' (clone)';
+            newLayer.number = soilmodel.layersCollection.length > 0 ?
+                soilmodel.layersCollection.orderBy('number', 'desc').first.number + 1 : 1;
+            newLayer.parameters = item.parameters.filter((p) => p.id !== 'top');
 
-                    return sendCommand(
-                        Command.addLayer(props.model.id, newLayer), () => {
-                            props.addLayer(newLayer);
-                            setIsLoading(false);
-                            props.history.push(`${baseUrl}/${id}/${property}/${type || '!'}/${newLayer.id}`);
-                        }
-                    );
-                }
-            );
+            const newRelations = soilmodel.relationsCollection.all.filter((r) =>
+                r.parameter !== 'top' && r.layerId === item.id).map((r) => {
+                r.id = Uuid.v4();
+                r.layerId = newLayer.id;
+                return r;
+            });
+
+            const cRelations = soilmodel.relationsCollection;
+
+            newRelations.forEach((r) => {
+                cRelations.add(r);
+            });
+
+            return handleAddLayer(newLayer, cRelations);
         }
 
-        if (type === nav.ZONES) {
-            return null;
+        if (type === nav.ZONES && item instanceof Zone) {
+            const newZone = cloneDeep(item);
+            newZone.id = Uuid.v4();
+            newZone.name = newZone.name + ' (clone)';
+            return handleAddZone(newZone);
         }
     };
 
     const handleImport = () => {
         console.log('HANDLE IMPORT');
-    };
-
-    const handleRemoveLayer = (layerId: string) => {
-        setIsLoading(true);
-
-        return sendCommand(
-            Command.removeLayer({
-                id,
-                layer_id: layerId
-            }), () => {
-                props.removeLayer(layerId);
-                setIsLoading(false);
-                props.history.push(`${baseUrl}/${id}/${property}`);
-            }
-        );
     };
 
     const handleAddZone = (zone: Zone) => {
@@ -233,7 +300,7 @@ const soilmodelEditor = (props: IProps) => {
             return props.history.push(`${baseUrl}/${id}/${property}/layers/${lid}`);
         }
         if (value === nav.ZONES) {
-            if (soilmodel.zonesCollection.length > 0) {
+            if (soilmodel.zonesCollection.length > 1) {
                 lid = firstZone ? firstZone.id : soilmodel.zonesCollection.first.id;
                 return props.history.push(`${baseUrl}/${id}/${property}/zones/${lid}`);
             }
@@ -245,24 +312,18 @@ const soilmodelEditor = (props: IProps) => {
     const handleRemoveItem = (rId: string) => {
         if (type === nav.LAYERS) {
             setIsLoading(true);
-            return sendCommand(
-                Command.removeLayer({
-                    id,
-                    layer_id: rId
-                }), () => {
-                    props.removeLayer(rId);
-                    setIsLoading(false);
-                }
-            );
+            handleRemoveLayer(rId);
         }
         if (type === nav.ZONES) {
             setIsLoading(true);
+            const cRelations = soilmodel.relationsCollection.all.filter((r) => r.zoneId !== rId);
             const cZones = soilmodel.zonesCollection.removeById(rId);
             return sendCommand(
                 Command.updateSoilmodelProperties({
                     id: props.model.id,
                     properties: {
                         ...props.soilmodel.toObject().properties,
+                        relations: cRelations,
                         zones: cZones.all
                     }
                 }), () => {
@@ -327,11 +388,10 @@ const soilmodelEditor = (props: IProps) => {
                 return <Redirect to={`${baseUrl}/${id}/${property}/layers/${lid}`}/>;
             }
             // ... existing zone:
-            if (type === nav.ZONES && soilmodel.zonesCollection.length > 0) {
-                lid = firstZone ? firstZone.id : soilmodel.zonesCollection.first.id;
+            if (type === nav.ZONES && soilmodel.zonesCollection.length > 0 && firstZone) {
+                lid = firstZone.id;
                 return <Redirect to={`${baseUrl}/${id}/${property}/zones/${lid}`}/>;
             }
-
         }
         // If the active layer or zone id doesn't exist ...
         if (pid) {
@@ -340,13 +400,19 @@ const soilmodelEditor = (props: IProps) => {
                 lid = soilmodel.layersCollection.first.id;
                 return <Redirect to={`${baseUrl}/${id}/${property}/${type}/${lid}`}/>;
             }
+
+            const nonDefaultZones = ZonesCollection.fromObject(
+                soilmodel.zonesCollection.all.filter((z) => z.id !== defaultRelation.zoneId)
+            );
+
             // ... redirect to the first existing zone ...
-            if (type === nav.ZONES && !soilmodel.zonesCollection.findFirstBy('id', pid)) {
+            if (type === nav.ZONES && !nonDefaultZones.findFirstBy('id', pid)) {
                 // ... if there is one:
-                if (soilmodel.zonesCollection.length > 0) {
+                if (nonDefaultZones.length > 0) {
                     lid = firstZone ? firstZone.id : soilmodel.zonesCollection.first.id;
                     return <Redirect to={`${baseUrl}/${id}/${property}/${type}/${lid}`}/>;
                 }
+                return <Redirect to={`${baseUrl}/${id}/${property}/zones`}/>;
             }
         }
         return null;
@@ -405,7 +471,7 @@ const soilmodelEditor = (props: IProps) => {
                         <LayersList
                             onClick={handleClickItem}
                             onClone={handleCloneItem}
-                            onRemove={handleRemoveLayer}
+                            onRemove={handleRemoveItem}
                             layers={props.soilmodel.layersCollection}
                             readOnly={readOnly}
                             selected={pid}
@@ -444,6 +510,9 @@ const soilmodelEditor = (props: IProps) => {
                             zone={Zone.fromObject(selectedZone)}
                             zones={soilmodel.zonesCollection}
                         />
+                        }
+                        {((type === nav.ZONES && !selectedZone) || (type === nav.LAYERS && !selectedLayer)) &&
+                            <NoContent message={'No objects.'}/>
                         }
                     </Grid.Column>
                 </Grid.Row>
