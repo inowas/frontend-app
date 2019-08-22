@@ -1,4 +1,4 @@
-import FlopyModflowSerializable from '../FlopyModflowSerializable';
+import FlopyModflowSerializable from '../FlopySerializable';
 import FlopyModflow from './FlopyModflow';
 
 const isValue = (data) => {

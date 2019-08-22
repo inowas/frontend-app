@@ -34,7 +34,7 @@ class GridSize {
         return new GridSize({n_x, n_y});
     }
 
-    public static fromData(data: Array2D) {
+    public static fromData(data: Array2D<number>) {
         if (data.length === 0) {
             throw new Error('Data expected to have at least one row and one column.');
         }

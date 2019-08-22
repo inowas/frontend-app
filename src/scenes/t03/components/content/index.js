@@ -6,9 +6,10 @@ import Modflow from './modflow/flow';
 import Optimization from './optimization/optimization.js';
 import {BudgetResults, FlowResults, TransportResults} from './results';
 import Calculation from './calculation/calculation';
+import {Modpath} from './modpath';
 import Mt3d from './mt3d/Mt3dProperties.js';
 import Seawat from './seawat/SeawatProperties';
-import SoilmodelEditor from './soilmodel/soilmodelEditor';
+import SoilmodelGuard from './soilmodel/soilmodelGuard';
 import {Transport} from './transport'
 import VariableDensityProperties from './variableDensity/VariableDensity';
 
@@ -20,12 +21,13 @@ export {
     Discretization,
     FlowResults,
     Modflow,
+    Modpath,
     Mt3d,
     Observations,
     Optimization,
     Seawat,
     Transport,
     TransportResults,
-    SoilmodelEditor,
+    SoilmodelGuard,
     VariableDensityProperties
 }

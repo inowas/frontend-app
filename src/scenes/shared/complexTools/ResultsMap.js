@@ -64,16 +64,16 @@ class ResultsMap extends React.Component {
     };
 
     renderLegend = (rainbow) => {
-        const gradients = rainbow.getGradients().slice().reverse();
+        const gradients = rainbow.gradients.slice().reverse();
         const lastGradient = gradients[gradients.length - 1];
         const legend = gradients.map(gradient => ({
-            color: '#' + gradient.getEndColour(),
-            value: Number(gradient.getMaxNum()).toExponential(2)
+            color: '#' + gradient.endColor,
+            value: Number(gradient.maxNum).toExponential(2)
         }));
 
         legend.push({
-            color: '#' + lastGradient.getStartColour(),
-            value: Number(lastGradient.getMinNum()).toExponential(2)
+            color: '#' + lastGradient.startColor,
+            value: Number(lastGradient.minNum).toExponential(2)
         });
 
         return <ColorLegend legend={legend} unit={''}/>;

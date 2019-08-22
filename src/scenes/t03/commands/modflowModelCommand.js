@@ -133,6 +133,11 @@ class ModflowModelCommand extends AbstractCommand {
         return new ModflowModelCommand(name, payload, JSON_SCHEMA_URL + '/commands/' + name);
     }
 
+    static updateSoilmodelProperties(payload) {
+        const name = 'updateSoilmodelProperties';
+        return new ModflowModelCommand(name, payload, JSON_SCHEMA_URL + '/commands/' + name);
+    }
+
     static updateStressperiods(payload) {
         const name = 'updateStressperiods';
         return new ModflowModelCommand(name, payload, JSON_SCHEMA_URL + '/commands/' + name);

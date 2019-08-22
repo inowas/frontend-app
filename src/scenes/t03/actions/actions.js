@@ -2,10 +2,9 @@ import {UPDATE_BOUNDARIES} from '../reducers/boundaries';
 import {UPDATE_CALCULATION} from '../reducers/calculation';
 import {CLEAR, UPDATE_MODEL, UPDATE_MT3DMS, UPDATE_STRESSPERIODS} from '../reducers/model';
 import {
-    ADD_SOILMODEL_LAYER, CLONE_SOILMODEL_LAYER,
-    REMOVE_SOILMODEL_LAYER,
-    UPDATE_SOILMODEL,
-    UPDATE_SOILMODEL_LAYER
+    ADD_ZONE, CLONE_ZONE, REMOVE_ZONE, UPDATE_ZONE,
+    ADD_SOILMODEL_LAYER, CLONE_SOILMODEL_LAYER, REMOVE_SOILMODEL_LAYER, UPDATE_SOILMODEL_LAYER,
+    UPDATE_SOILMODEL, UPDATE_SOILMODEL_RELATIONS
 } from '../reducers/soilmodel';
 import {UPDATE_OPTIMIZATION} from '../reducers/optimization';
 
@@ -18,6 +17,8 @@ import FlopyPackages from '../../../core/model/flopy/packages/FlopyPackages';
 import {UPDATE_PACKAGES} from '../reducers/packages';
 import {UPDATE_TRANSPORT} from '../reducers/transport';
 import {UPDATE_VARIABLE_DENSITY} from '../reducers/variableDensity';
+import {Zone} from "../../../core/model/gis";
+import LayerParameterZonesCollection from "../../../core/model/gis/LayerParameterZonesCollection";
 
 export function clear() {
     return {
@@ -138,6 +139,42 @@ export function removeLayer(layer_id) {
     }
 }
 
+export function addZone(zone) {
+    if (!zone instanceof Zone) {
+        throw new Error('Zone is expected to be instance of Zone');
+    }
+
+    return {
+        type: ADD_ZONE,
+        zone: zone.toObject()
+    };
+}
+
+export function cloneZone(zone_id, new_zone_id) {
+    return {
+        type: CLONE_ZONE,
+        zone_id, new_zone_id
+    }
+}
+
+export function updateZone(zone) {
+    if (!(zone instanceof Zone)) {
+        throw new Error('Zone is expected to be instance of Zone');
+    }
+
+    return {
+        type: UPDATE_ZONE,
+        zone: zone.toObject()
+    };
+}
+
+export function removeZone(zone_id) {
+    return {
+        type: REMOVE_ZONE,
+        zone_id: zone_id
+    }
+}
+
 export function updateOptimization(optimization) {
     if (!optimization instanceof Optimization) {
         throw new Error('optimization is expected to be instance of Optimization');
@@ -157,6 +194,17 @@ export function updateSoilmodel(soilmodel) {
     return {
         type: UPDATE_SOILMODEL,
         soilmodel: soilmodel.toObject()
+    };
+}
+
+export function updateSoilmodelRelations(relations) {
+    if (!relations instanceof LayerParameterZonesCollection) {
+        throw new Error('Relations is expected to be instance of LayerParameterZonesCollection');
+    }
+
+    return {
+        type: UPDATE_SOILMODEL_RELATIONS,
+        relations: relations.toObject()
     };
 }
 

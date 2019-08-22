@@ -144,8 +144,8 @@ export default class FlopyModflow {
 
         const layers = soilmodel.layersCollection.orderBy('number').all;
         mfDis.laycbd = layers.map(() => 0);
-        mfDis.top = layers[0].top;
-        mfDis.botm = layers.map(l => l.botm);
+        mfDis.top = soilmodel.top;
+        mfDis.botm = soilmodel.getParameterValue('botm');
 
         const stressperiods = model.stressperiods;
         mfDis.perlen = stressperiods.perlens;
@@ -297,11 +297,11 @@ export default class FlopyModflow {
             mfLpf.chani = layers.map(() => 0);
             mfLpf.layvka = layers.map(() => 0);
             mfLpf.laywet = layers.map(l => l.laywet);
-            mfLpf.hk = layers.map(l => l.hk);
-            mfLpf.hani = layers.map(l => l.hani);
-            mfLpf.vka = layers.map(l => l.vka);
-            mfLpf.ss = layers.map(l => l.ss);
-            mfLpf.sy = layers.map(l => l.sy);
+            mfLpf.hk = soilmodel.getParameterValue('hk');
+            mfLpf.hani = soilmodel.getParameterValue('hani');
+            mfLpf.vka = soilmodel.getParameterValue('vka');
+            mfLpf.ss = soilmodel.getParameterValue('ss');
+            mfLpf.sy = soilmodel.getParameterValue('sy');
             return this.setPackage(mfLpf);
         }
 

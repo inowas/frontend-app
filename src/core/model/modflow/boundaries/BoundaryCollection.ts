@@ -56,8 +56,8 @@ class BoundaryCollection extends Collection<Boundary> {
         return this;
     }
 
-    public toObject = () => {
-        return this.boundaries.map((b) => b.toObject());
+    public toObject = (): IBoundary[] => {
+        return this.all.map((b) => b.toObject());
     };
 
     public toExport = () => {

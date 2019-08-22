@@ -3,6 +3,7 @@ import jsrp from 'json-schema-ref-parser';
 
 import md5 from 'md5';
 import FlopyModflow from './mf/FlopyModflow';
+import FlopyModpath from "./mp/FlopyModpath";
 import FlopyMt3d from './mt/FlopyMt3d';
 import FlopySeawat from './swt/FlopySeawat';
 
@@ -18,12 +19,17 @@ export default class FlopyPackages {
     _model_id;
 
     _mf;
+    _mp;
     _mt;
     _swt;
 
-    static create(modelId, mf, mt, swt) {
+    static create(modelId, mf, mp, mt, swt) {
         if (!(mf instanceof FlopyModflow)) {
             throw new Error('Mf has to be instance of FlopyModflowMf')
+        }
+
+        if (!(mp instanceof FlopyModpath)) {
+            throw new Error('Modpath has to be instance of FlopyModpath')
         }
 
         if (!(mt instanceof FlopyMt3d)) {
@@ -37,6 +43,7 @@ export default class FlopyPackages {
         const self = new this();
         self.model_id = modelId;
         self.mf = mf;
+        self.mp = mp;
         self.mt = mt;
         self.mf.setTransportEnabled(mt.enabled);
         self.swt = swt;
@@ -54,6 +61,7 @@ export default class FlopyPackages {
 
     static fromObject(obj) {
         const mf = FlopyModflow.fromObject(obj.mf);
+        const mp = obj.mp ? FlopyModpath.fromObject(obj.mp) : new FlopyModpath();
         const mt = FlopyMt3d.fromObject(obj.mt);
         const swt = obj.swt ? FlopySeawat.fromObject(obj.swt) : new FlopySeawat();
         const modelId = obj.model_id;
@@ -61,6 +69,7 @@ export default class FlopyPackages {
         const self = new this();
         self._model_id = modelId;
         self._mf = mf;
+        self._mp = mp;
         self._mt = mt;
         self._swt = swt;
         self._version = obj.version;
@@ -113,6 +122,18 @@ export default class FlopyPackages {
         this._mf = value;
     }
 
+    get mp() {
+        return this._mp;
+    }
+
+    set mp(value) {
+        if (!(value instanceof FlopyModpath)) {
+            throw new Error('Modpath has to be instance of FlopyModpath')
+        }
+
+        this._mp = value;
+    }
+
     get mt() {
         return this._mt;
     }
@@ -140,12 +161,16 @@ export default class FlopyPackages {
         const data = {};
         data['mf'] = this.mf.toFlopyCalculation();
 
+        if (this.mp && this.mp.enabled) {
+            data['mp'] = this.mp.toCalculation();
+        }
+
         if (this.mt && this.mt.enabled) {
-            data['mt'] = this.mt.toFlopyCalculation()
+            data['mt'] = this.mt.toFlopyCalculation();
         }
 
         if (this.swt && this.swt.enabled) {
-            data['swt'] = this.swt.toFlopyCalculation()
+            data['swt'] = this.swt.toFlopyCalculation();
         }
 
         return data;
@@ -158,6 +183,7 @@ export default class FlopyPackages {
             version: this.version,
             model_id: this.model_id,
             mf: this.mf.toObject(),
+            mp: this.mp.toObject(),
             mt: this.mt.toObject(),
             swt: this.swt.toObject()
         }

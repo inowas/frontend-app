@@ -41,6 +41,7 @@ import {FlopyModflow} from '../../../core/model/flopy/packages/mf';
 import {FlopyMt3d} from '../../../core/model/flopy/packages/mt';
 import {fetchCalculationDetails} from '../../../services/api';
 import {cloneDeep} from 'lodash';
+import FlopyModpath from '../../../core/model/flopy/packages/mp/FlopyModpath';
 import FlopySeawat from '../../../core/model/flopy/packages/swt/FlopySeawat';
 import {BoundaryCollection, BoundaryFactory} from '../../../core/model/modflow/boundaries';
 
@@ -211,7 +212,7 @@ class T03 extends React.Component {
 
     fetchSoilmodel(id) {
         fetchUrl(`modflowmodels/${id}/soilmodel`,
-            data => this.props.updateSoilmodel(Soilmodel.fromObject(data)),
+            data => this.props.updateSoilmodel(Soilmodel.fromQuery(data)),
             error => this.setState(
                 {error, isLoading: false},
                 () => this.handleError(error)
@@ -243,11 +244,12 @@ class T03 extends React.Component {
         return new Promise((resolve, reject) => {
             this.setState({calculatePackages: 'calculation'});
             const mf = FlopyModflow.createFromModel(this.props.model, this.props.soilmodel, this.props.boundaries);
+            const modpath = new FlopyModpath();
             const mt = FlopyMt3d.createFromTransport(this.props.transport, this.props.boundaries);
             const swt = FlopySeawat.createFromVariableDensity(this.props.variableDensity);
             const modelId = this.props.model.id;
 
-            const flopyPackages = FlopyPackages.create(modelId, mf, mt, swt);
+            const flopyPackages = FlopyPackages.create(modelId, mf, modpath, mt, swt);
             if (flopyPackages instanceof FlopyPackages) {
                 this.setState({calculatePackages: false});
                 resolve(flopyPackages);
@@ -255,7 +257,7 @@ class T03 extends React.Component {
 
             this.setState({calculatePackages: 'error'});
             reject('Error creating instance of FlopyPackages.');
-        })
+        });
     };
 
     handleError = error => {
@@ -272,7 +274,7 @@ class T03 extends React.Component {
             case 'discretization':
                 return (<Content.Discretization/>);
             case 'soilmodel':
-                return (<Content.SoilmodelEditor/>);
+                return (<Content.SoilmodelGuard/>);
             case 'boundaries':
                 if (BoundaryFactory.availableTypes.indexOf(type) > -1) {
                     return (<Content.CreateBoundary type={type}/>);
@@ -301,6 +303,8 @@ class T03 extends React.Component {
                 return (<Content.FlowResults/>);
             case 'budget':
                 return (<Content.BudgetResults/>);
+            case 'modpath':
+                return (<Content.Modpath/>);
             case 'concentration':
                 return (<Content.TransportResults/>);
             case 'optimization':

@@ -117,7 +117,8 @@ class Boundaries extends React.Component<Props, IState> {
                     isLoading: false,
                     selectedBoundary: boundary
                 });
-            }
+            },
+            () => this.setState({error: true})
         );
 
     public onChangeBoundary = (boundary: Boundary) => {
@@ -156,7 +157,8 @@ class Boundaries extends React.Component<Props, IState> {
                         () => this.setState({error: true})
                     );
                 }
-            }
+            },
+            () => this.setState({error: true})
         );
     };
 

@@ -72,13 +72,15 @@ class CreateBoundary extends React.Component<Props, IState> {
     }
 
     public onChangeGeometry = (geometry: Geometry) => {
-        const cells = calculateActiveCells(geometry, this.props.model.boundingBox,
-            this.props.model.gridSize);
-        this.setState({
-            cells: cells.toObject(),
-            geometry: geometry.toObject(),
-            isDirty: true
-        });
+        if (this.props.model.boundingBox) {
+            const cells = calculateActiveCells(geometry, this.props.model.boundingBox,
+                this.props.model.gridSize);
+            this.setState({
+                cells: cells.toObject(),
+                geometry: geometry.toObject(),
+                isDirty: true
+            });
+        }
     };
 
     public onToggleEditMode = () => this.setState((prevState) => ({

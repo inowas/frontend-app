@@ -86,7 +86,8 @@ class SeawatProperties extends React.Component<Props, ISeawatPropertiesState> {
                 () => {
                     this.props.updatePackages(packages);
                     return this.setState({isDirty: false, isLoading: false});
-                }
+                },
+                (error) => this.setState({isError: true})
             )
         );
     };

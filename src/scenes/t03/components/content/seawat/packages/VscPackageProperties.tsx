@@ -1,13 +1,9 @@
-import React, {ChangeEvent, FocusEvent, SyntheticEvent} from 'react';
+import React, {ChangeEvent, FocusEvent} from 'react';
 import {Form, Input, InputOnChangeData} from 'semantic-ui-react';
-
-import {FlopyModflowMfriv} from '../../../../../../core/model/flopy/packages/mf';
-import {FlopySeawatPackage} from '../../../../../../core/model/flopy/packages/swt';
-import {GridSize} from '../../../../../../core/model/modflow';
 import {Substance} from '../../../../../../core/model/modflow/transport';
-import renderInfoPopup from '../../../../../shared/complexTools/InfoPopUp';
+import renderInfoPopup from '../../../../../shared/complexTools/InfoPopup';
 import InfoPopup from '../../../../../shared/InfoPopup';
-import {RasterDataImage} from '../../../../../shared/rasterData';
+import {PopupPosition} from '../../../../../types';
 import {documentation} from '../../../../defaults/flow';
 import AbstractPackageProperties from './AbstractPackageProperties';
 
@@ -71,7 +67,7 @@ class VscPackageProperties extends AbstractPackageProperties {
                             disabled={readOnly}
                             onBlur={this.handleOnBlur}
                             onChange={this.handleOnChange}
-                            icon={renderInfoPopup(documentation.viscmin, 'viscmin', 'bottom left')}
+                            icon={renderInfoPopup(documentation.viscmin, 'viscmin', PopupPosition.BOTTOM_LEFT)}
                             type="number"
                         />
                     </Form.Field>
@@ -83,7 +79,7 @@ class VscPackageProperties extends AbstractPackageProperties {
                             disabled={readOnly}
                             onBlur={this.handleOnBlur}
                             onChange={this.handleOnChange}
-                            icon={renderInfoPopup(documentation.viscmax, 'viscmax', 'bottom right')}
+                            icon={renderInfoPopup(documentation.viscmax, 'viscmax', PopupPosition.BOTTOM_RIGHT)}
                             type="number"
                         />
                     </Form.Field>
@@ -97,7 +93,7 @@ class VscPackageProperties extends AbstractPackageProperties {
                             disabled={readOnly}
                             onBlur={this.handleOnBlur}
                             onChange={this.handleOnChange}
-                            icon={renderInfoPopup(documentation.viscref, 'viscref', 'bottom right')}
+                            icon={renderInfoPopup(documentation.viscref, 'viscref', PopupPosition.BOTTOM_RIGHT)}
                             type="number"
                         />
                     </Form.Field>
@@ -111,7 +107,7 @@ class VscPackageProperties extends AbstractPackageProperties {
                             disabled={readOnly}
                             onBlur={this.handleOnBlur}
                             onChange={this.handleOnChange}
-                            icon={renderInfoPopup(documentation.dmudc, 'dmudc', 'bottom right')}
+                            icon={renderInfoPopup(documentation.dmudc, 'dmudc', PopupPosition.BOTTOM_RIGHT)}
                             type="number"
                         />
                     </Form.Field>
@@ -125,7 +121,7 @@ class VscPackageProperties extends AbstractPackageProperties {
                             disabled={readOnly}
                             onBlur={this.handleOnBlur}
                             onChange={this.handleOnChange}
-                            icon={renderInfoPopup(documentation.cmuref, 'cmuref', 'top right')}
+                            icon={renderInfoPopup(documentation.cmuref, 'cmuref', PopupPosition.TOP_RIGHT)}
                             type="number"
                         />
                     </Form.Field>
