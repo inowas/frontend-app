@@ -90,13 +90,20 @@ class LayerParameterZonesCollection extends Collection<ILayerParameterZone> {
     }
 
     public reorderPriority(layerId: string, parameter: string) {
-        this.items = this.orderBy('priority').all.filter(
-            (r) => r.layerId === layerId && r.parameter === parameter
-        ).map((r, key) => {
-            r.priority = key;
+        let priority = 0;
+        this.items = this.orderBy('priority').all.map((r, key) => {
+            if (r.layerId === layerId && r.parameter === parameter) {
+                r.priority = priority;
+                priority++;
+            }
             return r;
         });
+
         return this;
+    }
+
+    public toObject() {
+        return this.all;
     }
 }
 

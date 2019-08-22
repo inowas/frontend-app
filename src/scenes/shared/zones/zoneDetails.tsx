@@ -1,7 +1,19 @@
 import {default as geojson, Polygon} from 'geojson';
 import {DrawEvents} from 'leaflet';
 import React, {ChangeEvent, useEffect, useState} from 'react';
-import {Checkbox, CheckboxProps, Form, Grid, InputOnChangeData, List, Menu, Tab} from 'semantic-ui-react';
+import {
+    Button,
+    Checkbox,
+    CheckboxProps,
+    Form,
+    Grid,
+    InputOnChangeData,
+    List,
+    Menu,
+    Modal,
+    Tab
+} from 'semantic-ui-react';
+import LayerParameterZonesCollection from '../../../core/model/gis/LayerParameterZonesCollection';
 import Zone from '../../../core/model/gis/Zone';
 import {IZone} from '../../../core/model/gis/Zone.type';
 import ZonesCollection from '../../../core/model/gis/ZonesCollection';
@@ -11,6 +23,7 @@ import {ZonesMap} from './index';
 interface IProps {
     onChange: (zone: Zone) => any;
     model: ModflowModel;
+    relations: LayerParameterZonesCollection;
     zone: Zone;
     zones: ZonesCollection;
 }
@@ -20,9 +33,14 @@ interface IVisibleZone extends IZone {
 }
 
 const zoneDetails = (props: IProps) => {
+    const [relationWarning, setRelationWarning] = useState<boolean>(false);
+    const [editedZone, setEditedZone] = useState<IZone | null>(null);
     const [zone, setZone] = useState<IZone>(props.zone.toObject());
     const [visibleZones, setVisibleZones] = useState<IVisibleZone[]>(
-        props.zones.findBy('id', props.zone.id, false).map((z) => {
+        props.zones.all.filter((z) =>
+            z.id !== zone.id &&
+            props.relations.all.filter((r) => r.zoneId === z.id && r.priority === 0).length === 0
+        ).map((z) => {
             return {
                 ...z,
                 isActive: false
@@ -30,20 +48,25 @@ const zoneDetails = (props: IProps) => {
         })
     );
 
+    const relations = props.relations.all.filter((r) => r.zoneId === zone.id);
+
     useEffect(() => {
         setZone(props.zone.toObject());
     }, [props.zone]);
 
     useEffect(() => {
         setVisibleZones(
-            props.zones.findBy('id', props.zone.id, false).map((z) => {
+            props.zones.all.filter((z) =>
+                z.id !== zone.id &&
+                props.relations.all.filter((r) => r.zoneId === z.id && r.priority === 0).length === 0
+            ).map((z) => {
                 return {
                     ...z,
                     isActive: false
                 };
             })
         );
-    }, [props.zones]);
+    }, [props.zones, zone]);
 
     const handleChange = () => props.onChange(Zone.fromObject(zone));
 
@@ -94,9 +117,29 @@ const zoneDetails = (props: IProps) => {
                 ...zone,
                 geometry: layer.geometry as Polygon
             };
+
+            if (relations.length > 0) {
+                setEditedZone(cZone);
+                return setRelationWarning(true);
+            }
             return props.onChange(Zone.fromObject(cZone));
         }
     };
+
+    const handleAcceptWarning = () => {
+        setRelationWarning(false);
+        if (editedZone) {
+            return props.onChange(Zone.fromObject(editedZone));
+        }
+        return setEditedZone(null);
+    };
+
+    const handleRejectWarning = () => {
+        setEditedZone(null);
+        setRelationWarning(false);
+    };
+
+    const readOnly = props.model.readOnly;
 
     return (
         <div>
@@ -117,6 +160,7 @@ const zoneDetails = (props: IProps) => {
                                             onBlur={handleChange}
                                             onChange={handleLocalChange}
                                             placeholder="name ="
+                                            readOnly={readOnly}
                                             type="text"
                                         />
                                     </Grid.Column>
@@ -133,7 +177,7 @@ const zoneDetails = (props: IProps) => {
                                                 }
                                                 onCreatePath={handleCreatePath}
                                                 onEditPath={handleEditPath}
-                                                readOnly={false}
+                                                readOnly={readOnly}
                                             />
                                         </Form.Field>
                                     </Grid.Column>
@@ -164,19 +208,34 @@ const zoneDetails = (props: IProps) => {
                                         </Form.Field>
                                     </Grid.Column>
                                 </Grid.Row>
-                                <Grid.Row>
-                                    <Grid.Column>
-                                        <Form.Field>
-                                            <label>Affected layers</label>
-
-                                        </Form.Field>
-                                    </Grid.Column>
-                                </Grid.Row>
                             </Grid>
                         </Tab.Pane>
                     }]}
                 />
             </Form>
+            {relationWarning &&
+            <Modal size="small" open={relationWarning}>
+                <Modal.Header>This change causes conflicts</Modal.Header>
+                <Modal.Content>
+                    <p>There are {relations.length} layer - parameter relations depending on this zone. </p>
+                </Modal.Content>
+                <Modal.Actions>
+                    <Button
+                        negative={true}
+                        onClick={handleRejectWarning}
+                    >
+                        No
+                    </Button>
+                    <Button
+                        positive={true}
+                        onClick={handleAcceptWarning}
+                        icon="checkmark"
+                        labelPosition="right"
+                        content="Yes"
+                    />
+                </Modal.Actions>
+            </Modal>
+            }
         </div>
     );
 };

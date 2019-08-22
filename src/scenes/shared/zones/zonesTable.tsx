@@ -46,8 +46,6 @@ const zonesTable = (props: IProps) => {
 
     const handleClickUpload = () => props.onClickUpload();
 
-    const handleEdit = (id: string) => () => null;
-
     const handleLocalChange = (e: ChangeEvent<HTMLInputElement>, {name, value}: InputOnChangeData) => {
         setActiveRow(name);
         setActiveValue(value);
@@ -225,7 +223,7 @@ const zonesTable = (props: IProps) => {
                                 as="a"
                                 color={relation ? 'blue' : 'grey'}
                                 value={zone.id}
-                                onClick={handleToggleZone}
+                                onClick={!props.readOnly ? handleToggleZone : undefined}
                                 key={key}
                             >
                                 {zone.name}

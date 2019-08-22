@@ -180,7 +180,7 @@ const zonesEditor = (props: IProps) => {
                     </Grid.Column>
                 </Grid.Row>
             </Grid>
-            {rasterUploadModal &&
+            {rasterUploadModal && !props.readOnly &&
             <RasterfileUploadModal
                 gridSize={props.gridSize}
                 parameter={props.parameter}

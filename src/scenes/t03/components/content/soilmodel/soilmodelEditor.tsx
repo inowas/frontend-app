@@ -10,8 +10,8 @@ import {IZone} from '../../../../../core/model/gis/Zone.type';
 import {ModflowModel} from '../../../../../core/model/modflow';
 import {Soilmodel, SoilmodelLayer} from '../../../../../core/model/modflow/soilmodel';
 import {ISoilmodelLayer} from '../../../../../core/model/modflow/soilmodel/SoilmodelLayer.type';
-import {sendCommand} from '../../../../../services/api';
 import {fetchUrl} from '../../../../../services/api';
+import {sendCommand} from '../../../../../services/api';
 import ContentToolBar from '../../../../shared/ContentToolbar';
 import {CreateZoneModal, ZoneDetails} from '../../../../shared/zones';
 import {
@@ -40,13 +40,12 @@ interface IOwnProps {
     history: any;
     location: any;
     match: any;
-    model: ModflowModel;
     readOnly: boolean;
+    soilmodel: Soilmodel;
 }
 
 interface IStateProps {
     model: ModflowModel;
-    soilmodel: Soilmodel;
 }
 
 interface IDispatchProps {
@@ -368,6 +367,7 @@ const soilmodelEditor = (props: IProps) => {
                             labelPosition="left"
                             onClick={handleClickAddItem}
                             content={type === nav.LAYERS ? 'Add Layer' : 'Add Zone'}
+                            disabled={readOnly}
                         />
                     </Grid.Column>
                     <Grid.Column width={12}>
@@ -407,6 +407,7 @@ const soilmodelEditor = (props: IProps) => {
                             onClone={handleCloneItem}
                             onRemove={handleRemoveLayer}
                             layers={props.soilmodel.layersCollection}
+                            readOnly={readOnly}
                             selected={pid}
                         />
                         }
@@ -439,6 +440,7 @@ const soilmodelEditor = (props: IProps) => {
                         <ZoneDetails
                             onChange={handleChangeZone}
                             model={props.model}
+                            relations={LayerParameterZonesCollection.fromObject(relations)}
                             zone={Zone.fromObject(selectedZone)}
                             zones={soilmodel.zonesCollection}
                         />
@@ -446,7 +448,7 @@ const soilmodelEditor = (props: IProps) => {
                     </Grid.Column>
                 </Grid.Row>
             </Grid>
-            {createZoneModal &&
+            {createZoneModal && !readOnly &&
             <CreateZoneModal
                 onCancel={handleCancelModals}
                 onChange={handleAddZone}
@@ -457,13 +459,11 @@ const soilmodelEditor = (props: IProps) => {
             }
         </Segment>
     );
-
 };
 
 const mapStateToProps = (state: any) => {
     return ({
-        model: ModflowModel.fromObject(state.T03.model),
-        soilmodel: Soilmodel.fromObject(state.T03.soilmodel)
+        model: ModflowModel.fromObject(state.T03.model)
     });
 };
 

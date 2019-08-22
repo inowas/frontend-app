@@ -1,6 +1,6 @@
 import {DrawEvents, LatLngExpression} from 'leaflet';
 import {uniqueId} from 'lodash';
-import React, {useRef} from 'react';
+import React from 'react';
 import {FeatureGroup, GeoJSON, Map, Polygon} from 'react-leaflet';
 import {EditControl} from 'react-leaflet-draw';
 import {Zone, ZonesCollection} from '../../../core/model/gis';
@@ -26,7 +26,6 @@ interface IProps {
 }
 
 const zonesMap = (props: IProps) => {
-    const mapRef = useRef(null);
     const {boundingBox, geometry, readOnly, zone, zones} = props;
 
     const options = {
@@ -61,6 +60,7 @@ const zonesMap = (props: IProps) => {
 
     return (
         <Map
+            key={zone ? zone.id : undefined}
             zoomControl={false}
             dragging={!readOnly}
             boxZoom={!readOnly}
@@ -68,7 +68,6 @@ const zonesMap = (props: IProps) => {
             doubleClickZoom={!readOnly}
             scrollWheelZoom={!readOnly}
             bounds={boundingBox.getBoundsLatLng()}
-            ref={mapRef}
             style={styles.map}
         >
             <BasicTileLayer/>

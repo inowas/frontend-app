@@ -9,6 +9,10 @@ class ZonesCollection extends Collection<IZone> {
     public reorder() {
         return this;
     }
+
+    public toObject() {
+        return this.all;
+    }
 }
 
 export default ZonesCollection;

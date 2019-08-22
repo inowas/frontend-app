@@ -3,7 +3,6 @@ import uuidv4 from 'uuid/v4';
 import {GridSize} from '../geometry';
 import {Array2D} from '../geometry/Array2D.type';
 import {ICell} from '../geometry/Cells.type';
-import {IGridSize} from '../geometry/GridSize.type';
 import {ILayer} from './Layer.type';
 import {ILayerParameter} from './LayerParameter.type';
 import LayerParameterZonesCollection from './LayerParameterZonesCollection';
@@ -66,8 +65,8 @@ class Layer {
             if (Array.isArray(lParameter.value)) {
                 const cValue: Array2D<number> = cloneDeep(lParameter.value);
                 for (let cyc = 1; cyc <= cycles; cyc++) {
-                    for (let row = 0; row < gridSize.nX; row++) {
-                        for (let col = 0; col < gridSize.nY; col++) {
+                    for (let row = 0; row < gridSize.nY; row++) {
+                        for (let col = 0; col < gridSize.nX; col++) {
                             let avg = lParameter.value[row][col];
                             let div = 1;
 

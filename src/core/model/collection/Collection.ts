@@ -31,10 +31,6 @@ export abstract class Collection<T extends IItem> {
         this.items = cloneDeep(array);
     }
 
-    public toObject() {
-        return this.all;
-    }
-
     public add(item: T) {
         this._items.push(item);
         return this;

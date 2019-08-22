@@ -10,10 +10,11 @@ interface IProps {
     onClick: (layerId: string) => any;
     onClone: (layer: SoilmodelLayer) => any;
     onRemove: (layerId: string) => any;
+    readOnly: boolean;
     selected?: string;
 }
 
-const layersList = ({layers, onClick, onClone, onRemove, selected}: IProps) => {
+const layersList = ({layers, onClick, onClone, onRemove, readOnly, selected}: IProps) => {
 
     const handleClick = (id: string) => {
         return () => onClick(id);
@@ -39,6 +40,7 @@ const layersList = ({layers, onClick, onClone, onRemove, selected}: IProps) => {
                         active={layer.id === selected}
                         onClick={handleClick(layer.id)}
                     >
+                        {!readOnly &&
                         <Popup
                             trigger={<Icon name="ellipsis horizontal"/>}
                             content={
@@ -72,6 +74,7 @@ const layersList = ({layers, onClick, onClone, onRemove, selected}: IProps) => {
                             on={'click'}
                             position={'right center'}
                         />
+                        }
                         {layer.number}: {layer.name}
                     </Menu.Item>
                 ))}

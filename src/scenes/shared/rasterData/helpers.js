@@ -1,4 +1,4 @@
-import Rainbow from '../../../../node_modules/rainbowvis.js/rainbowvis';
+import Rainbow from '../../../services/rainbowvis/Rainbowvis';
 
 export function isValue(data) {
     return !isNaN(data);

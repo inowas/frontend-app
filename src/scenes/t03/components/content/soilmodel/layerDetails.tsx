@@ -46,7 +46,8 @@ const layerDetails = (props: IProps) => {
 
     const handleAddRelation = (relation: ILayerParameterZone) => {
         const relations = props.relations;
-        relations.add(relation).reorderPriority(relation.layerId, relation.parameter);
+        relations.add(relation);
+        relations.reorderPriority(relation.layerId, relation.parameter);
         const cLayer = SoilmodelLayer.fromObject(layer).zonesToParameters(
             props.model.gridSize,
             relations,
@@ -77,7 +78,8 @@ const layerDetails = (props: IProps) => {
 
     const handleRemoveRelation = (relation: ILayerParameterZone) => {
         const relations = LayerParameterZonesCollection.fromObject(props.relations.toObject());
-        relations.removeById(relation.id).reorderPriority(relation.layerId, relation.parameter);
+        relations.removeById(relation.id);
+        relations.reorderPriority(relation.layerId, relation.parameter);
         const cLayer = SoilmodelLayer.fromObject(layer).zonesToParameters(
             props.model.gridSize,
             relations,

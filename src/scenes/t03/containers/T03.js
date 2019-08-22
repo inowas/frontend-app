@@ -274,7 +274,7 @@ class T03 extends React.Component {
             case 'discretization':
                 return (<Content.Discretization/>);
             case 'soilmodel':
-                return (<Content.SoilmodelEditor/>);
+                return (<Content.SoilmodelGuard/>);
             case 'boundaries':
                 if (BoundaryFactory.availableTypes.indexOf(type) > -1) {
                     return (<Content.CreateBoundary type={type}/>);

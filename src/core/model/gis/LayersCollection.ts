@@ -6,6 +6,10 @@ class LayersCollection extends Collection<ILayer> {
         return new LayersCollection(obj);
     }
 
+    public toObject() {
+        return this.all;
+    }
+
     public reorder() {
         this.items = this.orderBy('number').all.map((layer, key) => {
             layer.number = key;

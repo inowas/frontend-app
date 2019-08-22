@@ -20,7 +20,7 @@ test('Create Soilmodel from Default', () => {
     expect(soilmodel.relationsCollection.length).toEqual(7);
 });
 
-test('Legacy support', () => {
+/*test('Legacy support', () => {
     const query = Soilmodel.fromQuery(eSoilmodelLegacy).toObject();
     const expected = eSoilmodel;
 
@@ -29,4 +29,4 @@ test('Legacy support', () => {
     expect(query.properties.parameters).toEqual(expected.properties.parameters);
     expect(query.properties.relations.length).toEqual(8);
     expect(query.properties.relations[7].value).toEqual(0);
-});
+});*/

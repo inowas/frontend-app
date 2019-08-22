@@ -9,7 +9,7 @@ import Calculation from './calculation/calculation';
 import {Modpath} from './modpath';
 import Mt3d from './mt3d/Mt3dProperties.js';
 import Seawat from './seawat/SeawatProperties';
-import SoilmodelEditor from './soilmodel/soilmodelEditor';
+import SoilmodelGuard from './soilmodel/soilmodelGuard';
 import {Transport} from './transport'
 import VariableDensityProperties from './variableDensity/VariableDensity';
 
@@ -28,6 +28,6 @@ export {
     Seawat,
     Transport,
     TransportResults,
-    SoilmodelEditor,
+    SoilmodelGuard,
     VariableDensityProperties
 }
