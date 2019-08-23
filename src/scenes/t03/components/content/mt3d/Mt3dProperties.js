@@ -6,7 +6,7 @@ import {sendCommand} from '../../../../../services/api';
 import ModflowModelCommand from '../../../commands/modflowModelCommand';
 
 import {Grid, Menu, Segment} from 'semantic-ui-react';
-import {ModflowModel, Transport} from '../../../../../core/model/modflow';
+import {ModflowModel, Stressperiods, Transport} from '../../../../../core/model/modflow';
 import {BoundaryCollection} from '../../../../../core/model/modflow/boundaries';
 import {FlopyMt3d} from '../../../../../core/model/flopy/packages/mt';
 import {
@@ -105,8 +105,7 @@ class Mt3dProperties extends React.Component {
         const mt3d = FlopyMt3d.fromObject(this.state.mt);
         const {boundaries, packages} = this.props;
 
-        const model = this.props.model.toObject();
-        if (!model.stressperiods) {
+        if (!(this.model.stressperiods instanceof Stressperiods)) {
             return null;
         }
 
