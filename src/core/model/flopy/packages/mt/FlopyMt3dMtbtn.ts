@@ -15,7 +15,7 @@ class FlopyMt3dMtbtn extends FlopyMt3dPackage {
      * Specifies whether or not to read arrays using the MODFLOW array
      * reader format or the original MT3DMS array reader.
      */
-    _MFStyleArr = false;
+    private _MFStyleArr = false;
 
     /**
      * @type {boolean}
@@ -25,7 +25,7 @@ class FlopyMt3dMtbtn extends FlopyMt3dPackage {
      * When MF-NWT is used to generate the flow-transport link file,
      * this is a distinct possibility.
      */
-    _DRYCell = false;
+    private _DRYCell = false;
 
     /**
      * @type {boolean}
@@ -33,7 +33,7 @@ class FlopyMt3dMtbtn extends FlopyMt3dPackage {
      *
      * Specifies whether or not to use the storage formulation used in MT3DMS.
      */
-    _Legacy99Stor = false;
+    private _Legacy99Stor = false;
 
     /**
      * @type {boolean}
@@ -41,7 +41,7 @@ class FlopyMt3dMtbtn extends FlopyMt3dPackage {
      *
      * Specifies if flow-transport link terms (cell-by-cell flows) should be echoed to the MT3D-USGS listing file.
      */
-    _FTLPrint = false;
+    private _FTLPrint = false;
 
     /**
      * @type {boolean}
@@ -49,7 +49,7 @@ class FlopyMt3dMtbtn extends FlopyMt3dPackage {
      *
      * Specifies whether or not to suppress wet/dry messaging in the MT3D-USGS listing file.
      */
-    _NoWetDryPrint = false;
+    private _NoWetDryPrint = false;
 
     /**
      * @type {boolean}
@@ -58,7 +58,7 @@ class FlopyMt3dMtbtn extends FlopyMt3dPackage {
      * Specifies whether or not to include the mass flux terms through
      * dry cells in the mass budget written to the listing file.
      */
-    _OmitDryBud = false;
+    private _OmitDryBud = false;
 
     /**
      * @type {boolean}
@@ -69,39 +69,39 @@ class FlopyMt3dMtbtn extends FlopyMt3dPackage {
      * with the aqueous phase, even though the aqueous phase may only occupy a portion
      * of the cell’s thickness. When used, only the saturated portion of the cell is available for sorbing.
      */
-    _AltWTSorb = false;
+    private _AltWTSorb = false;
 
     /**
-     * @type {integer|null}
+     * @type {number|null}
      * @private
      *
      * Total number of layers
      */
-    _nlay = null;
+    private _nlay = null;
 
     /**
-     * @type {integer|null}
+     * @type {number|null}
      * @private
      *
      * Total number of rows
      */
-    _nrow = null;
+    private _nrow = null;
 
     /**
-     * @type {integer|null}
+     * @type {number|null}
      * @private
      *
      * Total number of columns
      */
-    _ncol = null;
+    private _ncol = null;
 
     /**
-     * @type {integer|null}
+     * @type {number|null}
      * @private
      *
      * Total number of stressperiods
      */
-    _nper = null;
+    private _nper = null;
 
     /**
      * @type {number|array|null}
@@ -109,7 +109,7 @@ class FlopyMt3dMtbtn extends FlopyMt3dPackage {
      *
      * Length of stressperiods
      */
-    _perlen = null;
+    private _perlen = null;
 
     /**
      * @type {number|array|null}
@@ -117,7 +117,7 @@ class FlopyMt3dMtbtn extends FlopyMt3dPackage {
      *
      * Number of time steps
      */
-    _nstp = null;
+    private _nstp = null;
 
     /**
      * @type {number|array|null}
@@ -125,7 +125,7 @@ class FlopyMt3dMtbtn extends FlopyMt3dPackage {
      *
      * Time step multiplier
      */
-    _tsmult = null;
+    private _tsmult = null;
 
     /**
      * @type {number|array|null}
@@ -133,7 +133,7 @@ class FlopyMt3dMtbtn extends FlopyMt3dPackage {
      *
      * steady state flag for each stress period
      */
-    _ssflag = null;
+    private _ssflag = null;
 
     /**
      * @type {number}
@@ -142,7 +142,7 @@ class FlopyMt3dMtbtn extends FlopyMt3dPackage {
      * The total number of chemical species in the simulation.
      * (default is None, will be changed to 1 if sconc is single value)
      */
-    _ncomp = 1;
+    private _ncomp = 1;
 
     /**
      * @type {number}
@@ -151,7 +151,7 @@ class FlopyMt3dMtbtn extends FlopyMt3dPackage {
      * The total number of ‘mobile’ species (default is 1).
      * mcomp must be equal or less than ncomp.
      */
-    _mcomp = 1;
+    private _mcomp = 1;
 
     /**
      * @type {string}
@@ -160,7 +160,7 @@ class FlopyMt3dMtbtn extends FlopyMt3dPackage {
      * The name of unit for time (default is ‘D’, for ‘days’).
      * Used for identification purposes only.
      */
-    _tunit = 'D';
+    private _tunit = 'D';
 
     /**
      * @type {string}
@@ -169,7 +169,7 @@ class FlopyMt3dMtbtn extends FlopyMt3dPackage {
      * The name of unit for length (default is ‘M’, for ‘meters’).
      * Used for identification purposes only.
      */
-    _lunit = 'M';
+    private _lunit = 'M';
 
     /**
      * @type {string}
@@ -178,37 +178,37 @@ class FlopyMt3dMtbtn extends FlopyMt3dPackage {
      * The name of unit for mass (default is ‘KG’, for ‘kilograms’).
      * Used for identification purposes only.
      */
-    _munit = 'KG';
+    private _munit = 'KG';
 
     /**
      * @type {number|array|null}
      * @private
      */
-    _laycon = null;
+    private _laycon = null;
 
     /**
      * @type {number|array|null}
      * @private
      */
-    _delr = null;
+    private _delr = null;
 
     /**
      * @type {number|array|null}
      * @private
      */
-    _delc = null;
+    private _delc = null;
 
     /**
      * @type {number|array|null}
      * @private
      */
-    _htop = null;
+    private _htop = null;
 
     /**
      * @type {number|array|null}
      * @private
      */
-    _dz = null;
+    private _dz = null;
 
     /**
      * @type {number}
@@ -218,7 +218,7 @@ class FlopyMt3dMtbtn extends FlopyMt3dPackage {
      * or the mobile porosity in a dual-porosity medium (the immobile porosity
      * is defined through the Chemical Reaction Package. (default is 0.25).
      */
-    _prsity = 0.25;
+    private _prsity = 0.25;
 
     /**
      * @type {number}
@@ -232,7 +232,7 @@ class FlopyMt3dMtbtn extends FlopyMt3dPackage {
      * If icbund > 0, the cell is an active concentration cell where
      * the concentration value will be calculated. (default is 1).
      */
-    _icbund = 1;
+    private _icbund = 1;
 
     /**
      * @type {number}
@@ -242,7 +242,7 @@ class FlopyMt3dMtbtn extends FlopyMt3dPackage {
      * starting concentrations for other species in a multi-species simulation,
      * include additional keywords, such as sconc2, sconc3, and so forth.
      */
-    _sconc = 0.0;
+    private _sconc = 0.0;
 
     /**
      * @type {number}
@@ -250,7 +250,7 @@ class FlopyMt3dMtbtn extends FlopyMt3dPackage {
      *
      * The value for indicating an inactive concentration cell. (default is 1e30).
      */
-    _cinact = 1e+30;
+    private _cinact = 1e+30;
 
     /**
      * @type {number}
@@ -260,7 +260,7 @@ class FlopyMt3dMtbtn extends FlopyMt3dPackage {
      * fraction of its thickness, below which the cell is considered inactive.
      * (default is 0.01).
      */
-    _thkmin = 0.01;
+    private _thkmin = 0.01;
 
     /**
      * @type {number}
@@ -275,7 +275,7 @@ class FlopyMt3dMtbtn extends FlopyMt3dPackage {
      * If ifmtcn = 0 concentrations are not printed.
      * (default is 0).
      */
-    _ifmtcn = 0;
+    private _ifmtcn = 0;
 
     /**
      * @type {number}
@@ -285,7 +285,7 @@ class FlopyMt3dMtbtn extends FlopyMt3dPackage {
      * to the standard output text file. The convention is the same as for ifmtcn.
      * (default is 0).
      */
-    _ifmtnp = 0;
+    private _ifmtnp = 0;
 
     /**
      * @type {number}
@@ -296,7 +296,7 @@ class FlopyMt3dMtbtn extends FlopyMt3dPackage {
      * The convention is the same as for ifmtcn.
      * (default is 0).
      */
-    _ifmtrf = 0;
+    private _ifmtrf = 0;
 
     /**
      * @type {number}
@@ -307,7 +307,7 @@ class FlopyMt3dMtbtn extends FlopyMt3dPackage {
      * The convention is the same as for ifmtcn.
      * (default is 0).
      */
-    _ifmtdp = 0;
+    private _ifmtdp = 0;
 
     /**
      * @type {boolean}
@@ -316,7 +316,7 @@ class FlopyMt3dMtbtn extends FlopyMt3dPackage {
      * A logical flag indicating whether the concentration solution should be saved in an unformatted file.
      * (default is True).
      */
-    _savucn = true;
+    private _savucn = true;
 
     /**
      * @type {number}
@@ -332,7 +332,7 @@ class FlopyMt3dMtbtn extends FlopyMt3dPackage {
      * If NPRS < 0, simulation results will be saved whenever the number of transport steps is an even multiple of nprs.
      * (default is 0).
      */
-    _nprs = 0;
+    private _nprs = 0;
 
     /**
      * @type {null}
@@ -342,7 +342,7 @@ class FlopyMt3dMtbtn extends FlopyMt3dPackage {
      * The number of entries in timprs must equal nprs.
      * (default is None).
      */
-    _timprs = null;
+    private _timprs = null;
 
     /**
      * @type {array|null}
@@ -354,7 +354,7 @@ class FlopyMt3dMtbtn extends FlopyMt3dPackage {
      *
      * obs indices must be entered as zero-based numbers as a 1 is added to them before writing to the btn file.
      */
-    _obs = null;
+    private _obs = null;
 
     /**
      * @type {number}
@@ -363,7 +363,7 @@ class FlopyMt3dMtbtn extends FlopyMt3dPackage {
      * An integer indicating how frequently the concentration at the specified observation points should be saved.
      * (default is 1).
      */
-    _nprobs = 1;
+    private _nprobs = 1;
 
     /**
      * @type {boolean}
@@ -372,7 +372,7 @@ class FlopyMt3dMtbtn extends FlopyMt3dPackage {
      * A logical flag indicating whether a one-line summary of mass balance information should be printed.
      * (default is True).
      */
-    _chkmas = true;
+    private _chkmas = true;
 
     /**
      * @type {number}
@@ -381,7 +381,7 @@ class FlopyMt3dMtbtn extends FlopyMt3dPackage {
      * An integer indicating how frequently the mass budget information should be saved.
      * (default is 1).
      */
-    _nprmas = 1;
+    private _nprmas = 1;
 
     /**
      * @type {number}
@@ -390,7 +390,7 @@ class FlopyMt3dMtbtn extends FlopyMt3dPackage {
      * The user-specified initial transport step size within each time-step of the flow solution.
      * (default is 0).
      */
-    _dt0 = 0;
+    private _dt0 = 0;
 
     /**
      * @type {number}
@@ -399,7 +399,7 @@ class FlopyMt3dMtbtn extends FlopyMt3dPackage {
      * The maximum number of transport steps allowed within one time step of the flow solution.
      * (default is 50000).
      */
-    _mxstrn = 50000;
+    private _mxstrn = 50000;
 
     /**
      * @type {number}
@@ -410,7 +410,7 @@ class FlopyMt3dMtbtn extends FlopyMt3dPackage {
      * is the standard finite-difference method.
      * (default is 1.0).
      */
-    _ttsmult = 1.0;
+    private _ttsmult = 1.0;
 
     /**
      * @type {number}
@@ -419,7 +419,7 @@ class FlopyMt3dMtbtn extends FlopyMt3dPackage {
      * The maximum transport step size allowed when transport step size multiplier TTSMULT > 1.0.
      * (default is 0).
      */
-    _ttsmax = 0;
+    private _ttsmax = 0;
 
     /**
      * @type {array|string}
@@ -427,7 +427,8 @@ class FlopyMt3dMtbtn extends FlopyMt3dPackage {
      *
      * A list of names for every species in the simulation.
      */
-    _species_names = null;
+    // tslint:disable-next-line:variable-name
+    private _species_names = null;
 
     /**
      * @type {string}
@@ -435,7 +436,7 @@ class FlopyMt3dMtbtn extends FlopyMt3dPackage {
      *
      * Filename extension (default is ‘btn’)
      */
-    _extension = 'btn';
+    private _extension = 'btn';
 
     /**
      * @type {string|null}
@@ -443,7 +444,7 @@ class FlopyMt3dMtbtn extends FlopyMt3dPackage {
      *
      * File unit number (default is None).
      */
-    _unitnumber = null;
+    private _unitnumber = null;
 
     /**
      * @type {string|null}
@@ -454,7 +455,7 @@ class FlopyMt3dMtbtn extends FlopyMt3dPackage {
      * If a single string is passed the package will be set to the string.
      * (Default is None).
      */
-    _filenames = null;
+    private _filenames = null;
 
     get MFStyleArr() {
         return this._MFStyleArr;

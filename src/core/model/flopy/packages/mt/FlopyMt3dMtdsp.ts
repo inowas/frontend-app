@@ -2,14 +2,14 @@ import FlopyMt3dPackage from './FlopyMt3dPackage';
 
 class FlopyMt3dMtdsp extends FlopyMt3dPackage {
 
-    _al = 0.01;
-    _trpt = 0.1;
-    _trpv = 0.01;
-    _dmcoef = 1e-9;
-    _extension = 'dsp';
-    _multiDiff = false;
-    _unitnumber = null;
-    _filenames = null;
+    private _al = 0.01;
+    private _trpt = 0.1;
+    private _trpv = 0.01;
+    private _dmcoef = 1e-9;
+    private _extension = 'dsp';
+    private _multiDiff = false;
+    private _unitnumber = null;
+    private _filenames = null;
 
     get al() {
         return this._al;

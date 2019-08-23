@@ -2,16 +2,16 @@ import FlopyMt3dPackage from './FlopyMt3dPackage';
 
 class FlopyMt3dMtgcg extends FlopyMt3dPackage {
 
-    _mxiter = 1;
-    _iter1 = 50;
-    _isolve = 3;
-    _ncrs = 0;
-    _accl = 1;
-    _cclose = 1e-5;
-    _iprgcg = 0;
-    _extension = 'gcg';
-    _unitnumber = null;
-    _filenames = null;
+    private _mxiter = 1;
+    private _iter1 = 50;
+    private _isolve = 3;
+    private _ncrs = 0;
+    private _accl = 1;
+    private _cclose = 1e-5;
+    private _iprgcg = 0;
+    private _extension = 'gcg';
+    private _unitnumber = null;
+    private _filenames = null;
 
     get mxiter() {
         return this._mxiter;

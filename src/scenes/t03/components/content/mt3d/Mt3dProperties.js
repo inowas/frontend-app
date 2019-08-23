@@ -6,7 +6,7 @@ import {sendCommand} from '../../../../../services/api';
 import ModflowModelCommand from '../../../commands/modflowModelCommand';
 
 import {Grid, Menu, Segment} from 'semantic-ui-react';
-import {ModflowModel, Stressperiods, Transport} from '../../../../../core/model/modflow';
+import {ModflowModel, Soilmodel, Stressperiods, Transport} from '../../../../../core/model/modflow';
 import {BoundaryCollection} from '../../../../../core/model/modflow/boundaries';
 import {FlopyMt3d} from '../../../../../core/model/flopy/packages/mt';
 import {
@@ -46,8 +46,9 @@ class Mt3dProperties extends React.Component {
     }
 
     componentDidMount() {
-        const {boundaries, transport} = this.props;
+        const {boundaries, model, soilmodel, transport} = this.props;
         const packages = FlopyPackages.fromObject(this.props.packages.toObject());
+        packages.mf.recalculate(model, soilmodel, boundaries);
         packages.mt.recalculate(transport, boundaries);
         this.props.updatePackages(packages);
     }
@@ -105,7 +106,7 @@ class Mt3dProperties extends React.Component {
         const mt3d = FlopyMt3d.fromObject(this.state.mt);
         const {boundaries, packages} = this.props;
 
-        if (!(this.model.stressperiods instanceof Stressperiods)) {
+        if (!(this.props.model.stressperiods instanceof Stressperiods)) {
             return null;
         }
 
@@ -122,7 +123,7 @@ class Mt3dProperties extends React.Component {
                     <AdvPackageProperties
                         mtPackage={mt3d.getPackage(type)}
                         onChange={this.handleChangePackage}
-                        readonly={readOnly}
+                        readOnly={readOnly}
                     />
                 );
             case 'btn':
@@ -130,7 +131,7 @@ class Mt3dProperties extends React.Component {
                     <BtnPackageProperties
                         mtPackage={mt3d.getPackage(type)}
                         onChange={this.handleChangePackage}
-                        readonly={readOnly}
+                        readOnly={readOnly}
                     />
                 );
             case 'dsp':
@@ -138,7 +139,7 @@ class Mt3dProperties extends React.Component {
                     <DspPackageProperties
                         mtPackage={mt3d.getPackage(type)}
                         onChange={this.handleChangePackage}
-                        readonly={readOnly}
+                        readOnly={readOnly}
                     />
                 );
             case 'gcg':
@@ -146,7 +147,7 @@ class Mt3dProperties extends React.Component {
                     <GcgPackageProperties
                         mtPackage={mt3d.getPackage(type)}
                         onChange={this.handleChangePackage}
-                        readonly={readOnly}
+                        readOnly={readOnly}
                     />
                 );
             case 'rct':
@@ -163,7 +164,7 @@ class Mt3dProperties extends React.Component {
                         mtPackage={mt3d.getPackage(type)}
                         mfPackages={packages.mf}
                         onChange={this.handleChangePackage}
-                        readonly={readOnly}
+                        readOnly={readOnly}
                     />
                 );
             default:
@@ -171,7 +172,7 @@ class Mt3dProperties extends React.Component {
                     <MtPackageProperties
                         mtPackage={mt3d.getPackage('mt')}
                         onChange={this.handleChangePackage}
-                        readonly={readOnly}
+                        readOnly={readOnly}
                     />
                 );
         }
@@ -232,6 +233,7 @@ const mapStateToProps = (state) => ({
     boundaries: BoundaryCollection.fromObject(state.T03.boundaries),
     model: ModflowModel.fromObject(state.T03.model),
     packages: FlopyPackages.fromObject(state.T03.packages),
+    soilmodel: Soilmodel.fromObject(state.T03.soilmodel),
     transport: Transport.fromObject(state.T03.transport),
 });
 

@@ -21,7 +21,7 @@ class GcgPackageProperties extends AbstractPackageProperties {
             return null;
         }
 
-        const {readonly} = this.props;
+        const {readOnly} = this.props;
         const {mtPackage} = this.state;
 
         return (
@@ -33,7 +33,7 @@ class GcgPackageProperties extends AbstractPackageProperties {
                             type={'number'}
                             name={'mxiter'}
                             value={mtPackage.mxiter}
-                            disabled={readonly}
+                            disabled={readOnly}
                             onBlur={this.handleOnBlur(parseInt)}
                             onChange={this.handleOnChange}
                             style={styles.inputFix}
@@ -46,7 +46,7 @@ class GcgPackageProperties extends AbstractPackageProperties {
                             type={'number'}
                             name={'iter1'}
                             value={mtPackage.iter1}
-                            disabled={readonly}
+                            disabled={readOnly}
                             onBlur={this.handleOnBlur(parseInt)}
                             onChange={this.handleOnChange}
                             style={styles.inputFix}
@@ -61,7 +61,7 @@ class GcgPackageProperties extends AbstractPackageProperties {
                         <Select fluid
                                 name={'isolve'}
                                 value={mtPackage.isolve}
-                                disabled={readonly}
+                                disabled={readOnly}
                                 onChange={this.handleOnSelect}
                                 options={[
                                     {key: 0, value: 1, text: '1: Jacobi'},
@@ -81,7 +81,7 @@ class GcgPackageProperties extends AbstractPackageProperties {
                         <Select fluid
                                 name={'ncrs'}
                                 value={mtPackage.ncrs}
-                                disabled={readonly}
+                                disabled={readOnly}
                                 onChange={this.handleOnSelect}
                                 options={[
                                     {
@@ -104,7 +104,7 @@ class GcgPackageProperties extends AbstractPackageProperties {
                         type={'number'}
                         name={'accl'}
                         value={mtPackage.accl}
-                        disabled={readonly}
+                        disabled={readOnly}
                         onBlur={this.handleOnBlur(parseInt)}
                         onChange={this.handleOnChange}
                         style={styles.inputFix}
@@ -117,7 +117,7 @@ class GcgPackageProperties extends AbstractPackageProperties {
                         type={'number'}
                         name={'cclose'}
                         value={mtPackage.cclose}
-                        disabled={readonly}
+                        disabled={readOnly}
                         onBlur={this.handleOnBlur(parseFloat)}
                         onChange={this.handleOnChange}
                         style={styles.inputFix}
@@ -130,7 +130,7 @@ class GcgPackageProperties extends AbstractPackageProperties {
                         type={'number'}
                         name={'iprgcg'}
                         value={mtPackage.iprgcg}
-                        disabled={readonly}
+                        disabled={readOnly}
                         onBlur={this.handleOnBlur(parseInt)}
                         onChange={this.handleOnChange}
                         style={styles.inputFix}
@@ -145,7 +145,7 @@ class GcgPackageProperties extends AbstractPackageProperties {
 GcgPackageProperties.propTypes = {
     mtPackage: PropTypes.instanceOf(FlopyMt3dMtgcg),
     onChange: PropTypes.func.isRequired,
-    readonly: PropTypes.bool.isRequired,
+    readOnly: PropTypes.bool.isRequired,
 };
 
 export default GcgPackageProperties;
