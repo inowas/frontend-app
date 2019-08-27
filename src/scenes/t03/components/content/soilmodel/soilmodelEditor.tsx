@@ -453,7 +453,7 @@ const soilmodelEditor = (props: IProps) => {
                 </Grid.Row>
                 <Grid.Row>
                     <Grid.Column width={4}>
-                        <Menu secondary={true} pointing={true}>
+                        <Menu secondary={true} fluid={true} widths={2}>
                             <Menu.Item
                                 name="Layers"
                                 value={nav.LAYERS}

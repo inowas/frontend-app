@@ -1,6 +1,6 @@
 import React from 'react';
 
-import {Button, Dimmer, Grid, Header, Modal, List, Loader, Segment} from 'semantic-ui-react';
+import {Button, Dimmer, Divider, Grid, Header, Modal, List, Loader, Segment} from 'semantic-ui-react';
 
 import PapaParse from 'papaparse';
 import {Stressperiod, Stressperiods} from '../../../../../core/model/modflow';
@@ -105,11 +105,16 @@ class LayersImport extends React.Component {
     };
 
     renderImportModal = () => (
-        <Modal open onClose={this.props.onCancel} dimmer={'blurring'}>
+        <Modal
+            open={true}
+            onClose={this.props.onCancel}
+            dimmer={'blurring'}
+            size={'small'}
+        >
             <Modal.Header>Import Layers</Modal.Header>
             <Modal.Content>
-                <Grid>
-                    <Grid.Row columns={2}>
+                <Grid stackable={true}>
+                    <Grid.Row>
                         <Grid.Column>
                             {this.state.isLoading &&
                             <Dimmer active inverted>
@@ -117,39 +122,65 @@ class LayersImport extends React.Component {
                             </Dimmer>
                             }
                             {!this.state.isLoading &&
-                            <Segment color={'green'}>
-                                <Header as="h3" style={{'textAlign': 'left'}}>File Requirements</Header>
-                                <List bulleted>
-                                    <List.Item>
-                                        The file has to be a csv or json-file.
-                                    </List.Item>
-                                    <List.Item>
-                                        Examples can be found <a
-                                        href='https://github.com/inowas/inowas-dss-cra/blob/master/imports'
-                                        target='_blank' rel='noopener noreferrer'>here</a>.
-                                    </List.Item>
-                                </List>
-                                <Button
-                                    primary
-                                    fluid
-                                    as='label'
-                                    htmlFor={'inputField'}
-                                    icon='file alternate'
-                                    content='Select File'
-                                    labelPosition='left'
-                                />
-                                <input
-                                    hidden
-                                    type='file'
-                                    id='inputField'
-                                    onChange={this.handleUpload}
-                                />
+
+                            <Segment basic={true} placeholder={true} style={{minHeight: '10rem'}}>
+                                <Grid columns={2} stackable={true} textAlign="center">
+                                    <Divider vertical={true} />
+                                    <Grid.Row verticalAlign="top">
+                                        <Grid.Column>
+                                            {!this.state.errors &&
+                                            <div>
+                                                <Header as={'h3'}>
+                                                    Download layers.
+                                                </Header>
+                                                <Button
+                                                    htmlFor={'inputField'}
+                                                    content={'Get JSON File'}
+                                                    onClick={this.download}
+                                                />
+                                            </div>
+                                            }
+                                            {this.state.payload && this.renderMetaData(this.state.payload)}
+                                            {this.state.errors && this.renderValidationErrors(this.state.errors)}
+                                        </Grid.Column>
+                                        <Grid.Column>
+                                            <Header as={'h3'}>
+                                                Upload layers
+                                            </Header>
+                                            <Button
+                                                color={'grey'}
+                                                as={'label'}
+                                                htmlFor={'inputField'}
+                                                icon={'file alternate'}
+                                                content={'Select File'}
+                                                labelPosition={'left'}
+                                                loading={this.state.isLoading}
+                                                size={'large'}
+                                            />
+                                            <input
+                                                hidden={true}
+                                                type={'file'}
+                                                id={'inputField'}
+                                                onChange={this.handleUpload}
+                                                onClick={this.onClickUpload}
+                                                value={''}
+                                            />
+                                            <br/>
+                                            <List>
+                                                <List.Item>
+                                                    The file has to be a csv or json-file.
+                                                </List.Item>
+                                                <List.Item>
+                                                    Examples can be found <a
+                                                    href='https://github.com/inowas/inowas-dss-cra/blob/master/imports'
+                                                    target='_blank' rel='noopener noreferrer'>here</a>.
+                                                </List.Item>
+                                            </List>
+                                        </Grid.Column>
+                                    </Grid.Row>
+                                </Grid>
                             </Segment>
                             }
-                        </Grid.Column>
-                        <Grid.Column>
-                            {this.state.payload && this.renderMetaData(this.state.payload)}
-                            {this.state.errors && this.renderValidationErrors(this.state.errors)}
                         </Grid.Column>
                     </Grid.Row>
                     <Grid.Row>
