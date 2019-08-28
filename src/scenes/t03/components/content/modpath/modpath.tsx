@@ -13,7 +13,7 @@ import {sendCommand} from '../../../../../services/api';
 import ContentToolBar from '../../../../shared/ContentToolbar';
 import {updatePackages} from '../../../actions/actions';
 import ModflowModelCommand from '../../../commands/modflowModelCommand';
-import {Mp7basPackageProperties, Mp7PackageProperties} from './index';
+import {Mp7basPackageProperties, Mp7PackageProperties, Mp7simPackageProperties} from './index';
 
 const baseUrl = '/tools/T03/';
 
@@ -36,6 +36,7 @@ interface IDispatchProps {
 
 enum NavigationItem {
     BAS = 'bas',
+    SIM = 'sim',
     SETUP = 'setup',
     PARTICLES = 'particles',
     RESULTS = 'results'
@@ -82,6 +83,12 @@ const modpath: React.FC<Props> = (props: Props) => {
             setIsDirty(true);
             return setMp(cMp.toObject());
         }
+    };
+
+    const handleClickEdit = (layerId: string, parameter: string) => {
+        return props.history.push(
+            `${baseUrl}${model.id}/soilmodel/layers/${layerId}?type=modpath&param=${parameter}`
+        );
     };
 
     const handleMenuClick = (event: MouseEvent<HTMLAnchorElement>, data: MenuItemProps) => {
@@ -131,9 +138,22 @@ const modpath: React.FC<Props> = (props: Props) => {
                 case NavigationItem.BAS:
                     return (
                         <Mp7basPackageProperties
+                            model={props.model}
                             mpPackage={modpathInstance.getPackage('mp7bas')}
+                            onClickEdit={handleClickEdit}
                             onChange={handleChangePackage}
                             readOnly={model.readOnly}
+                            soilmodel={props.soilmodel}
+                        />
+                    );
+                case NavigationItem.SIM:
+                    return (
+                        <Mp7simPackageProperties
+                            model={props.model}
+                            mpPackage={modpathInstance.getPackage('mp7sim')}
+                            onClickEdit={handleClickEdit}
+                            readOnly={model.readOnly}
+                            soilmodel={props.soilmodel}
                         />
                     );
                 default:
@@ -173,7 +193,7 @@ const modpath: React.FC<Props> = (props: Props) => {
                             </Menu.Item>
                             <Menu.Item
                                 name="setup"
-                                active={activeItem === 'setup'}
+                                active={activeItem === 'setup' || !activeItem}
                                 onClick={handleMenuClick}
                                 content="Setup"
                             />
@@ -184,10 +204,10 @@ const modpath: React.FC<Props> = (props: Props) => {
                                 content="Basic package"
                             />
                             <Menu.Item
-                                name="particles"
-                                active={activeItem === 'particles'}
+                                name="sim"
+                                active={activeItem === 'sim'}
                                 onClick={handleMenuClick}
-                                content="Particles"
+                                content="Simulation package"
                             />
                             <Menu.Item
                                 name="results"

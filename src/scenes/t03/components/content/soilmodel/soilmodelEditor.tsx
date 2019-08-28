@@ -25,7 +25,7 @@ import {
     updateSoilmodel, updateSoilmodelRelations, updateZone
 } from '../../../actions/actions';
 import Command from '../../../commands/modflowModelCommand';
-import {defaultSoilmodelLayer} from '../../../defaults/soilmodel';
+import {defaultSoilmodelLayer, modpathParameters, soilmodelParameters} from '../../../defaults/soilmodel';
 import LayerDetails from './layerDetails';
 import LayersImport from './layersImport';
 import LayersList from './layersList';
@@ -66,7 +66,6 @@ interface IDispatchProps {
 type IProps = IStateProps & IDispatchProps & IOwnProps;
 
 const soilmodelEditor = (props: IProps) => {
-    const [activeIndex, setActiveIndex] = useState<number>(0);
     const [createZoneModal, setCreateZoneModal] = useState<boolean>(false);
     const [relations, setRelations] = useState<ILayerParameterZone[]>(props.soilmodel.relationsCollection.toObject());
     const [selectedLayer, setSelectedLayer] = useState<ISoilmodelLayer | null>(null);
@@ -74,9 +73,13 @@ const soilmodelEditor = (props: IProps) => {
     const [isLoading, setIsLoading] = useState<boolean>(false);
     const [isDirty, setIsDirty] = useState<boolean>(false);
     const [isError, setIsError] = useState<boolean>(false);
+    const [pageNotFound, setPageNotFound] = useState<boolean>(false);
 
     const {soilmodel} = props;
     const {id, pid, property, type} = props.match.params;
+    const searchParams = new URLSearchParams(props.location.search);
+    const activeParamType = searchParams.get('type') || 'soilmodel';
+    const activeParam = searchParams.get('param') || 'properties';
 
     const defaultRelation = props.soilmodel.relationsCollection.findFirstBy('priority', 0);
 
@@ -99,6 +102,18 @@ const soilmodelEditor = (props: IProps) => {
         }
     }, [props.match.params, props.soilmodel]);
 
+    useEffect(() => {
+        const paramType = searchParams.get('type');
+        if (paramType && !['soilmodel', 'modpath'].includes(paramType)) {
+            return setPageNotFound(true);
+        }
+        const param = searchParams.get('param');
+        if (param && paramType && param !== 'properties' &&
+            getParameters(paramType).filter((p) => p.name === param).length === 0) {
+            return setPageNotFound(true);
+        }
+    }, [searchParams]);
+
     const fetch = (iId: string) => {
         if (type === nav.LAYERS) {
             setRelations(soilmodel.relationsCollection.all);
@@ -106,6 +121,15 @@ const soilmodelEditor = (props: IProps) => {
         }
         if (type === nav.ZONES) {
             return setSelectedZone(soilmodel.zonesCollection.findById(iId));
+        }
+    };
+
+    const getParameters = (paramType: string) => {
+        switch (paramType) {
+            case 'modpath':
+                return modpathParameters;
+            default:
+                return soilmodelParameters;
         }
     };
 
@@ -276,7 +300,12 @@ const soilmodelEditor = (props: IProps) => {
     };
 
     const handleChangeTab = (e: MouseEvent<Element>, data: MenuItemProps) => {
-        return setActiveIndex(data.activeIndex);
+        if (data.name) {
+            return props.history.push(
+                `${baseUrl}/${id}/${property}/layers/${pid}?type=${activeParamType}&param=${data.name}`
+            );
+        }
+        return props.history.push(`${baseUrl}/${id}/${property}/layers/${pid}`);
     };
 
     const handleChangeZone = (zone: Zone) => {
@@ -286,7 +315,9 @@ const soilmodelEditor = (props: IProps) => {
 
     const handleClickItem = (iId: string) => {
         if (type === nav.LAYERS) {
-            props.history.push(`${baseUrl}/${id}/${property}/layers/${iId}`);
+            props.history.push(
+                `${baseUrl}/${id}/${property}/layers/${iId}?type=${activeParamType}&param=${activeParam}`
+            );
         }
         if (type === nav.ZONES) {
             props.history.push(`${baseUrl}/${id}/${property}/zones/${iId}`);
@@ -420,6 +451,14 @@ const soilmodelEditor = (props: IProps) => {
 
     const {readOnly} = props.model;
 
+    if (pageNotFound) {
+        return (
+            <Segment color={'grey'}>
+                404 - Page not found
+            </Segment>
+        );
+    }
+
     return (
         <Segment color={'grey'} loading={isLoading}>
             {redirect()}
@@ -491,10 +530,11 @@ const soilmodelEditor = (props: IProps) => {
                     <Grid.Column width={12}>
                         {!isLoading && type === nav.LAYERS && selectedLayer &&
                         <LayerDetails
-                            activeIndex={activeIndex}
+                            activeParam={activeParam}
                             onChange={handleChangeLayer}
                             onChangeTab={handleChangeTab}
                             onChangeRelations={handleChangeRelations}
+                            parameters={getParameters(activeParamType)}
                             model={props.model}
                             layer={SoilmodelLayer.fromObject(selectedLayer as ISoilmodelLayer)}
                             readOnly={readOnly}
@@ -512,7 +552,7 @@ const soilmodelEditor = (props: IProps) => {
                         />
                         }
                         {((type === nav.ZONES && !selectedZone) || (type === nav.LAYERS && !selectedLayer)) &&
-                            <NoContent message={'No objects.'}/>
+                        <NoContent message={'No objects.'}/>
                         }
                     </Grid.Column>
                 </Grid.Row>

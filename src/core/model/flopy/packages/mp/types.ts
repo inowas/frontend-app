@@ -12,7 +12,7 @@ export type TrackingDirectionType = 'forward' | 'backward';
 
 export type WeakSinkSourceOptionType = 'pass_through' | 'stop_at';
 
-export type BudgetOutOptionType = 'no' | 'summary' | 'record_summary';
+export type BudgetOutputOptionType = 'no' | 'summary' | 'record_summary';
 
 export type StopTimeOptionType = 'total' | 'extend' | 'specified';
 

@@ -1,8 +1,9 @@
+import {Array2D} from '../../../geometry/Array2D.type';
 import FlopyModpathMp7 from './FlopyModpathMp7';
 import FlopyModpathMp7particlegroup from './FlopyModpathMp7particlegroup';
 import FlopyModpathPackage from './FlopyModpathPackage';
 import {
-    BudgetOutOptionType, OnOffType, SimulationType, StopTimeOptionType,
+    BudgetOutputOptionType, OnOffType, SimulationType, StopTimeOptionType,
     TrackingDirectionType, WeakSinkSourceOptionType
 } from './types';
 
@@ -18,7 +19,7 @@ export default class FlopyModpathMp7sim extends FlopyModpathPackage {
     private _trackingdirection: TrackingDirectionType = 'forward';
     private _weaksinkoption: WeakSinkSourceOptionType = 'stop_at';
     private _weaksourceoption: WeakSinkSourceOptionType = 'stop_at';
-    private _budgetoutoption: BudgetOutOptionType = 'summary';
+    private _budgetoutputoption: BudgetOutputOptionType = 'summary';
     private _traceparticledata: number[] | null = null;
     private _budgetcellnumbers: number[] | null = null;
     private _referencetime: number | number[] | null = null;
@@ -27,9 +28,9 @@ export default class FlopyModpathMp7sim extends FlopyModpathPackage {
     private _timepointdata: Array<number | number[]> | null = null;
     private _zonedataoption: OnOffType = 'off';
     private _stopzone: number | null = null;
-    private _zones: number | number[] = 0;
+    private _zones: number | Array2D<number> = 0;
     private _retardationfactoroption: OnOffType = 'on';
-    private _retardation: number | number[] = 1;
+    private _retardation: number | Array2D<number> = 1;
     private _particlegroups: FlopyModpathMp7particlegroup | FlopyModpathMp7particlegroup[] | null = null;
     private _extension: string = 'mpsim';
 
@@ -121,12 +122,12 @@ export default class FlopyModpathMp7sim extends FlopyModpathPackage {
         this._weaksourceoption = value;
     }
 
-    get budgetoutoption(): BudgetOutOptionType {
-        return this._budgetoutoption;
+    get budgetoutputoption(): BudgetOutputOptionType {
+        return this._budgetoutputoption;
     }
 
-    set budgetoutoption(value: BudgetOutOptionType) {
-        this._budgetoutoption = value;
+    set budgetoutputoption(value: BudgetOutputOptionType) {
+        this._budgetoutputoption = value;
     }
 
     get traceparticledata(): number[] | null {
@@ -193,11 +194,11 @@ export default class FlopyModpathMp7sim extends FlopyModpathPackage {
         this._stopzone = value;
     }
 
-    get zones(): number | number[] {
+    get zones(): number | Array2D<number> {
         return this._zones;
     }
 
-    set zones(value: number | number[]) {
+    set zones(value: number | Array2D<number>) {
         this._zones = value;
     }
 
@@ -209,11 +210,11 @@ export default class FlopyModpathMp7sim extends FlopyModpathPackage {
         this._retardationfactoroption = value;
     }
 
-    get retardation(): number | number[] {
+    get retardation(): number | Array2D<number> {
         return this._retardation;
     }
 
-    set retardation(value: number | number[]) {
+    set retardation(value: number | Array2D<number>) {
         this._retardation = value;
     }
 

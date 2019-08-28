@@ -1,4 +1,4 @@
-import React, {ChangeEvent} from 'react';
+import React, {ChangeEvent, useEffect, useState} from 'react';
 import {Icon, Input, InputOnChangeData, Popup} from 'semantic-ui-react';
 
 interface IProps {
@@ -10,80 +10,63 @@ interface IProps {
     value: string | number | null;
 }
 
-interface IState {
-    localValue: string | number | null;
-}
+const toggleableInput = (props: IProps) => {
+    const [localValue, setLocalValue] = useState<string | number | null>(props.value);
 
-class ToggleableInput extends React.Component<IProps, IState> {
+    useEffect(() => {
+        setLocalValue(props.value);
+    }, [props.value]);
 
-    constructor(props: IProps) {
-        super(props);
-        this.state = {
-            localValue: props.value
-        };
-    }
+    const handleChange = () => {
+        const parsedValue = props.type === 'number' && typeof localValue === 'string' ?
+            parseFloat(localValue) : localValue;
 
-    public componentWillReceiveProps(nextProps: IProps) {
-        this.setState({
-            localValue: nextProps.value
-        });
-    }
-
-    public render() {
-        const {name, value} = this.props;
-        const {localValue} = this.state;
-
-        const isActive = value !== null;
-        const type = !isActive ? 'string' : this.props.type;
-
-        return (
-            <Input
-                disabled={!isActive}
-                onBlur={this.onChange}
-                onChange={this.onLocalChange}
-                readOnly={this.props.readOnly}
-                type={type}
-                name={name}
-                value={!isActive ? '-' : localValue}
-                onKeyPress={this.onKeyPress}
-                icon={
-                    <Popup
-                        trigger={
-                            <Icon
-                                name={!isActive ? 'toggle on' : 'toggle off'}
-                                link={true}
-                                onClick={this.onToggle}
-                            />
-                        }
-                        content="Toggle"
-                        size="mini"
-                    />
-                }
-            />
-        );
-    }
-
-    private onChange = () => {
-        const parsedValue = this.props.type === 'number' && typeof this.state.localValue === 'string' ?
-            parseFloat(this.state.localValue) : this.state.localValue;
-
-        return this.props.onChange(this.props.name, parsedValue);
+        return props.onChange(props.name, parsedValue);
     };
 
-    private onKeyPress = (e: KeyboardEvent) => {
+    const handleKeyPress = (e: KeyboardEvent) => {
         if (e.key === 'Enter') {
             e.preventDefault();
-            return this.onChange();
+            return handleChange();
         }
     };
 
-    private onLocalChange = (e: ChangeEvent<HTMLInputElement>, data: InputOnChangeData) => this.setState({
-        localValue: data.value
-    });
-
-    private onToggle = () => {
-        return this.props.onChange(this.props.name, this.props.value === null ? this.props.placeholder : null);
+    const handleLocalChange = (e: ChangeEvent<HTMLInputElement>, data: InputOnChangeData) => {
+        setLocalValue(data.value);
     };
-}
 
-export default ToggleableInput;
+    const handleToggle = () => {
+        return props.onChange(props.name, props.value === null ? props.placeholder : null);
+    };
+
+    const isActive = props.value !== null;
+    const type = !isActive ? 'string' : props.type;
+
+    return (
+        <Input
+            disabled={!isActive}
+            onBlur={handleChange}
+            onChange={handleLocalChange}
+            readOnly={props.readOnly}
+            type={type}
+            name={name}
+            value={!isActive ? '-' : localValue}
+            onKeyPress={handleKeyPress}
+            icon={
+                <Popup
+                    trigger={
+                        <Icon
+                            name={!isActive ? 'toggle on' : 'toggle off'}
+                            link={true}
+                            onClick={handleToggle}
+                        />
+                    }
+                    content="Toggle"
+                    size="mini"
+                />
+            }
+        />
+    );
+};
+
+export default toggleableInput;

@@ -28,4 +28,4 @@ export interface ILegendItemDiscrete extends ILegendItem {
     value: number;
 }
 
-export type RainbowOrLegend = ILegendItemContinuous[] | ILegendItemDiscrete[] | Rainbow;
+export type RainbowOrLegend = ILegendItemDiscrete[] | ILegendItemContinuous[] | Rainbow;

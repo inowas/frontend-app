@@ -3,7 +3,31 @@ import {ILayerParameter} from '../../../core/model/gis/LayerParameter.type';
 import {IRasterParameter} from '../../../core/model/gis/RasterParameter.type';
 import {ISoilmodelLayer} from '../../../core/model/modflow/soilmodel/SoilmodelLayer.type';
 
-export const layerParameters = [
+export interface IParameter {
+    name: string;
+    description: string;
+    unit: string;
+}
+
+export const modpathParameters: IParameter[] = [
+    {
+        name: 'porosity',
+        description: 'Porosity',
+        unit: '-'
+    },
+    {
+        name: 'retardation',
+        description: 'Retardation',
+        unit: '-'
+    },
+    {
+        name: 'zones',
+        description: 'Zones',
+        unit: '-'
+    }
+];
+
+export const soilmodelParameters: IParameter[] = [
     {
         name: 'top',
         description: 'Top elevation',
@@ -49,6 +73,12 @@ export const defaultSoilmodelLayerParameters: ILayerParameter[] = [
     {id: 'vka', value: 1},
     {id: 'ss', value: 0.00002},
     {id: 'sy', value: 0.15},
+    // SEAWAT:
+    {id: 'visc', value: -1},
+    // MODPATH:
+    {id: 'porosity', value: 0.3},
+    {id: 'retardation', value: 1},
+    {id: 'zones', value: 0}
 ];
 
 export const defaultSoilmodelParameters: IRasterParameter[] = [
@@ -100,6 +130,36 @@ export const defaultSoilmodelParameters: IRasterParameter[] = [
         id: 'top',
         title: 'Top elevation',
         unit: 'm a.s.l.'
+    },
+    // SEAWAT:
+    {
+        defaultValue: -1,
+        isActive: true,
+        id: 'visc',
+        title: 'Viscosity',
+        unit: '-'
+    },
+    // MODPATH:
+    {
+        defaultValue: 0.3,
+        isActive: true,
+        id: 'porosity',
+        title: 'Porosity',
+        unit: '-'
+    },
+    {
+        defaultValue: 1,
+        isActive: true,
+        id: 'retardation',
+        title: 'Retardation',
+        unit: '-'
+    },
+    {
+        defaultValue: 0,
+        isActive: true,
+        id: 'zones',
+        title: 'Zones',
+        unit: '-'
     }
 ];
 

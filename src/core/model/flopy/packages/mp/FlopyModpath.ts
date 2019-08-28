@@ -71,6 +71,9 @@ class FlopyModpath {
 
         const mp7bas = this.hasPackage('mp7bas') ? this.getPackage('mp7bas') : FlopyModpathMp7bas.create(this);
         this.setPackage(mp7bas);
+
+        const mp7sim = this.hasPackage('mp7sim') ? this.getPackage('mp7sim') : FlopyModpathMp7sim.create(this);
+        this.setPackage(mp7sim);
     };
 
     public setPackage(p: FlopyModpathPackage) {

@@ -7,6 +7,7 @@ import {fetchUrl} from '../../../../../services/api';
 import {
     updateSoilmodel
 } from '../../../actions/actions';
+import {defaultSoilmodelLayerParameters} from '../../../defaults/soilmodel';
 import SoilmodelEditor from './soilmodelEditor';
 import SoilmodelSynchronizer from './soilmodelSychronizer';
 
@@ -33,6 +34,13 @@ const soilmodelGuard = (props: IProps) => {
     };
 
     if (props.soilmodel instanceof Soilmodel) {
+        // Check if all parameters exist
+        props.soilmodel.layersCollection.all.forEach((l) => {
+            if (l.parameters.length !== defaultSoilmodelLayerParameters.length) {
+                throw new Error('You are running an old model. It is currently not supported.');
+            }
+        });
+
         return (
             <SoilmodelEditor
                 readOnly={props.model.readOnly}
