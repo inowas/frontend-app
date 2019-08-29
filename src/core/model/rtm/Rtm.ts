@@ -1,3 +1,6 @@
+import {cloneDeep, includes} from 'lodash';
+import Uuid from 'uuid';
+import {Geometry} from '../geometry';
 import {Sensor} from './index';
 import {IRtm} from './Rtm.type';
 import {SensorCollection} from './SensorCollection';
@@ -64,6 +67,17 @@ export default class Rtm {
         this._props.data.model = value;
     }
 
+    get readOnly() {
+        return !includes(this.permissions, 'w');
+    }
+
+    get geometry() {
+        if (!this.sensors.getBoundingBoxPolygon()) {
+            return null;
+        }
+        return Geometry.fromGeoJson(this.sensors.getBoundingBoxPolygon());
+    }
+
     public static fromObject(obj: IRtm): Rtm {
         return new Rtm(obj);
     }
@@ -71,15 +85,36 @@ export default class Rtm {
     private readonly _props: IRtm;
 
     constructor(data: IRtm) {
-        this._props = data;
+        this._props = cloneDeep(data);
     }
 
     public addSensor(sensor: Sensor) {
         this.sensors = (this.sensors).add(sensor);
+        return this;
+    }
+
+    public cloneSensor(id: string) {
+        const sensor = this.findSensor(id);
+
+        if (!(sensor instanceof Sensor)) {
+            return;
+        }
+
+        const clonedSensor = sensor.clone(Uuid.v4());
+        this.addSensor(clonedSensor);
     }
 
     public findSensor(id: string): null | Sensor {
         return this.sensors.findById(id);
+    }
+
+    public removeSensor(id: string) {
+        this.sensors = (this.sensors).removeById(id);
+        return this;
+    }
+
+    public updateSensor(sensor: Sensor) {
+        this.sensors = this.sensors.updateSensor(sensor);
     }
 
     public toObject(): IRtm {

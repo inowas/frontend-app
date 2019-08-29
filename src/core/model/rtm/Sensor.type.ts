@@ -1,9 +1,9 @@
-import {Point} from '../geometry/Cells.type';
+import { Point } from 'geojson';
 
 export interface ISensor {
     id: string;
     name: string;
-    geolocation: Point | null;
+    geolocation: Point;
     properties: ISensorProperty[];
 }
 

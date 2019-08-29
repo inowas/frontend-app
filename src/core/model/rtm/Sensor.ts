@@ -1,3 +1,4 @@
+import {Point} from 'geojson';
 import {cloneDeep} from 'lodash';
 import {ISensor} from './Sensor.type';
 
@@ -19,11 +20,11 @@ export default class Sensor {
         this._props.name = value;
     }
 
-    get geolocation(): [number, number] | null {
+    get geolocation(): Point {
         return this._props.geolocation;
     }
 
-    set geolocation(value: [number, number] | null) {
+    set geolocation(value) {
         this._props.geolocation = value;
     }
 
@@ -39,5 +40,11 @@ export default class Sensor {
 
     public toObject(): ISensor {
         return this._props;
+    }
+
+    public clone(id: string): Sensor {
+        const data = cloneDeep(this.toObject());
+        data.id = id;
+        return Sensor.fromObject(data);
     }
 }
