@@ -134,6 +134,8 @@ class LayersImport extends React.Component {
                                                     Download layers.
                                                 </Header>
                                                 <Button
+                                                    basic={true}
+                                                    color='blue'
                                                     htmlFor={'inputField'}
                                                     content={'Get JSON File'}
                                                     onClick={this.download}

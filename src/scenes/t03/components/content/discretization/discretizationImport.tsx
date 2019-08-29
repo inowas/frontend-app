@@ -299,6 +299,8 @@ class DiscretizationImport extends React.Component<IProps, IState> {
                                                     Download actual discretization.
                                                 </Header>
                                                 <Button
+                                                    basic={true}
+                                                    color="blue"
                                                     htmlFor={'inputField'}
                                                     content={'Get JSON File'}
                                                     onClick={this.download}
