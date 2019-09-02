@@ -1,6 +1,7 @@
 import {Point} from 'geojson';
 import {cloneDeep} from 'lodash';
 import {ISensor} from './Sensor.type';
+import {SensorPropertyCollection} from './SensorPropertyCollection';
 
 export default class Sensor {
 
@@ -26,6 +27,14 @@ export default class Sensor {
 
     set geolocation(value) {
         this._props.geolocation = value;
+    }
+
+    get properties() {
+        return SensorPropertyCollection.fromObject(this._props.properties);
+    }
+
+    set properties(value) {
+        this._props.properties = value.toObject();
     }
 
     public static fromObject(obj: ISensor): Sensor {

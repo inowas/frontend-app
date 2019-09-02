@@ -114,7 +114,7 @@ export default class Rtm {
     }
 
     public updateSensor(sensor: Sensor) {
-        this.sensors = this.sensors.updateSensor(sensor);
+        this.sensors = this.sensors.update(sensor);
     }
 
     public toObject(): IRtm {

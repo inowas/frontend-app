@@ -1,4 +1,4 @@
-import { Point } from 'geojson';
+import {Point} from 'geojson';
 
 export interface ISensor {
     id: string;
@@ -8,11 +8,14 @@ export interface ISensor {
 }
 
 export interface ISensorProperty {
+    id: string;
     name: string;
     dataSource: IDataSource;
-    filters: Array<() => void>;
+    filters: IFilter[];
     data: IDateTimeValue[];
 }
+
+export type IFilter = Array<() => void>;
 
 export interface IDataSource {
     type: string;

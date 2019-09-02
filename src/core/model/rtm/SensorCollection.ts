@@ -38,16 +38,4 @@ export class SensorCollection extends Collection<Sensor> {
         const features = turf.featureCollection(turfPoints);
         return turf.envelope(features);
     };
-
-    public updateSensor = (sensor: Sensor) => {
-        this.items = this.all.map((s) => {
-            if (s.id === sensor.id) {
-                return sensor;
-            }
-
-            return s;
-        });
-
-        return this;
-    };
 }

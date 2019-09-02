@@ -24,6 +24,7 @@ interface IState {
 const style = {
     map: {
         height: '400px',
+        marginBottom: '20px',
         marginTop: '20px'
     }
 };
