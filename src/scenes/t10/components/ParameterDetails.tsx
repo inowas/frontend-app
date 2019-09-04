@@ -2,6 +2,7 @@ import React, {useEffect, useState} from 'react';
 import {Button, Form, Modal, Segment} from 'semantic-ui-react';
 import {Rtm} from '../../../core/model/rtm';
 import {IDataSource, IDateTimeValue, IFilter, ISensorProperty} from '../../../core/model/rtm/Sensor.type';
+import {OnlineDatasource} from './index';
 
 interface IProps {
     rtm: Rtm;
@@ -10,7 +11,7 @@ interface IProps {
     onClose: () => void;
 }
 
-const sensorPropertyDetails = (props: IProps) => {
+const parameterDetails = (props: IProps) => {
 
     const [name, setName] = useState<string>('name');
     const [dataSource, setDataSource] = useState<IDataSource>({type: 'noSource', query: null, server: null});
@@ -29,24 +30,6 @@ const sensorPropertyDetails = (props: IProps) => {
     const handleChange = (func: (value: any) => void) => (e: any, d: any) => {
         const v = d.value;
         func(v);
-    };
-
-    const handleChangeDataSourceType = (e: any, d: any) => {
-        if (props.sensorProperty) {
-            const ds = props.sensorProperty.dataSource;
-            ds.type = d.value;
-            handleChangeDataSource(ds);
-        }
-    };
-
-    const handleChangeDataSource = (ds: IDataSource) => {
-        if (props.sensorProperty) {
-            const p = {
-                ...props.sensorProperty,
-                dataSource: ds
-            };
-            props.onChange(p);
-        }
     };
 
     const handleSave = () => {
@@ -69,20 +52,25 @@ const sensorPropertyDetails = (props: IProps) => {
         return null;
     }
 
+    const handleChangeDataSourceType = (e: any, d: any) => {
+        setDataSource({...dataSource, type: d.value});
+    };
+
     const renderDataSourceDetails = (ds: IDataSource) => {
-        switch (ds.type) {
-            case 'sensoWeb':
-                return (<h1>SensoWeb</h1>);
-            default:
-                return (<h1>NoSource</h1>);
+        if (ds.type === 'online') {
+            return (
+                <OnlineDatasource datasource={ds} onChange={setDataSource}/>
+            );
         }
+
+        return (<h1> NoSource </h1>);
     };
 
     return (
         <Modal centered={false} onClose={props.onClose} closeIcon={true} open={true} dimmer={'blurring'}>
             <Modal.Header>Edit sensor property</Modal.Header>
             <Modal.Content>
-                <Segment color={'red'}>
+                <Segment color={'grey'}>
                     <Form>
                         <Form.Group>
                             <Form.Input
@@ -101,20 +89,20 @@ const sensorPropertyDetails = (props: IProps) => {
                             value={dataSource.type}
                             options={[
                                 {key: 0, value: 'noSource', text: 'No data source'},
-                                {key: 1, value: 'sensoWeb', text: 'Sensoweb'},
+                                {key: 1, value: 'online', text: 'Online'},
                             ]}
                             onChange={handleChangeDataSourceType}
                         />
                     </Form>
-                    {props.sensorProperty.dataSource && renderDataSourceDetails(props.sensorProperty.dataSource)}
+                    {dataSource && renderDataSourceDetails(dataSource)}
                 </Segment>
             </Modal.Content>
             <Modal.Actions>
                 <Button negative={true} onClick={props.onClose}>Cancel</Button>
-                <Button labelPosition={'right'} content={'Save'} onClick={handleSave}/>
+                <Button positive={true} labelPosition={'right'} onClick={handleSave}>Apply</Button>
             </Modal.Actions>
         </Modal>
     );
 };
 
-export default sensorPropertyDetails;
+export default parameterDetails;

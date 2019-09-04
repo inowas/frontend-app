@@ -59,7 +59,7 @@ export const uploadRasterfileToApi = (
 
 export const uploadRasterfile = (
     file: File,
-    onSuccess: CallbackFunction<{hash: string}, void>,
+    onSuccess: CallbackFunction<{ hash: string }, void>,
     onError: ErrorCallbackFunction
 ) => {
     const uploadData = new FormData();
@@ -337,3 +337,24 @@ export const retrieveDroppedData = (
         data: {}
     }).then((response) => response.data).then(onSuccess).catch(onError);
 };
+
+interface IFetchSensorData {
+    server: string;
+    query: string;
+}
+
+export const fetchSensorData = (
+    {server, query}: IFetchSensorData,
+    onSuccess: CallbackFunction<any, any>,
+    onError: ErrorCallbackFunction
+) => (
+    axios.request({
+        method: 'GET',
+        url: server + '/' + query,
+        headers: {
+            'Access-Control-Allow-Origin': '*',
+            'Content-Type': 'application/json'
+        },
+        data: {}
+    }).then((response) => response.data).then(onSuccess).catch(onError)
+);

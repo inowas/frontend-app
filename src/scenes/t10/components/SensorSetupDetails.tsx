@@ -2,8 +2,8 @@ import {Point} from 'geojson';
 import React from 'react';
 import {Form} from 'semantic-ui-react';
 import {Rtm, Sensor} from '../../../core/model/rtm';
-import {SensorPropertyCollection} from '../../../core/model/rtm/SensorPropertyCollection';
-import {SensorMap, SensorProperties} from './index';
+import {ParameterCollection} from '../../../core/model/rtm/ParameterCollection';
+import {Parameters, SensorMap} from './index';
 
 interface IProps {
     rtm: Rtm;
@@ -43,7 +43,7 @@ const sensorSetupDetails = (props: IProps) => {
         props.onChange(sensor);
     };
 
-    const handleChangeProperties = (properties: SensorPropertyCollection) => {
+    const handleChangeProperties = (properties: ParameterCollection) => {
         const sensor = Sensor.fromObject(props.sensor.toObject());
         sensor.properties = properties;
         props.onChange(sensor);
@@ -78,7 +78,7 @@ const sensorSetupDetails = (props: IProps) => {
                 onChangeGeometry={handleChangeGeometry}
                 rtm={props.rtm}
             />
-            <SensorProperties properties={props.sensor.properties} onChange={handleChangeProperties} rtm={props.rtm}/>
+            <Parameters parameters={props.sensor.properties} onChange={handleChangeProperties} rtm={props.rtm}/>
         </div>
     );
 };
