@@ -1,7 +1,7 @@
 import {Point} from 'geojson';
 import {cloneDeep} from 'lodash';
+import {ParameterCollection} from './ParameterCollection';
 import {ISensor} from './Sensor.type';
-import {SensorPropertyCollection} from './SensorPropertyCollection';
 
 export default class Sensor {
 
@@ -30,7 +30,7 @@ export default class Sensor {
     }
 
     get properties() {
-        return SensorPropertyCollection.fromObject(this._props.properties);
+        return ParameterCollection.fromObject(this._props.properties);
     }
 
     set properties(value) {

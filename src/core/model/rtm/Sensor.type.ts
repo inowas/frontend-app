@@ -24,6 +24,6 @@ export interface IDataSource {
 }
 
 export interface IDateTimeValue {
-    dateTime: string;
+    timeStamp: string;
     value: number;
 }
