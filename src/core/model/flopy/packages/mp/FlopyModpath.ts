@@ -130,7 +130,7 @@ class FlopyModpath {
 
         for (const prop in this.packages) {
             if (this.packages.hasOwnProperty(prop)) {
-                obj[prop] = this.packages[prop];
+                obj[prop] = this.packages[prop].toObject();
             }
         }
 

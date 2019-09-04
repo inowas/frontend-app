@@ -6,12 +6,12 @@ export default class FlopyModpathMp extends FlopyModpathPackage {
     private _simfile_ext: string = 'mpsim';
     private _namefile_ext: string = 'mpnam';
     private _version: string = 'modpath';
-    private _exe_name: string = 'mp6.exe';
+    private _exe_name: string = 'mp6';
     private _modflowmodel: ModflowModel | null = null;
-    private _dis_file: string | null = null;
+    private _dis_file: string | null = 'mf.dis';
     private _dis_unit: number = 87;
-    private _head_file: string | null = null;
-    private _budget_file: string | null = null;
+    private _head_file: string | null = 'mf.hds';
+    private _budget_file: string | null = 'mf.list';
     private _model_ws: string | null = null;
     private _external_path: string | null = null;
     private _verbose: boolean = false;
@@ -91,6 +91,9 @@ export default class FlopyModpathMp extends FlopyModpathPackage {
     }
 
     get head_file(): string | null {
+        if (!this._head_file) {
+            return 'mf.hds';
+        }
         return this._head_file;
     }
 
@@ -99,6 +102,9 @@ export default class FlopyModpathMp extends FlopyModpathPackage {
     }
 
     get budget_file(): string | null {
+        if (!this._budget_file) {
+            return 'mf.list';
+        }
         return this._budget_file;
     }
 
