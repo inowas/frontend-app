@@ -661,10 +661,10 @@
 
 /* Yellow */
 .ui.yellow.table {
-  border-top: 0.2em solid #FBBD08;
+  border-top: 0.2em solid #F1C40F;
 }
 .ui.inverted.yellow.table {
-  background-color: #FBBD08 !important;
+  background-color: #F1C40F !important;
   color: #FFFFFF !important;
 }
 
@@ -679,10 +679,10 @@
 
 /* Green */
 .ui.green.table {
-  border-top: 0.2em solid #4CAF53;
+  border-top: 0.2em solid #2ECC71;
 }
 .ui.inverted.green.table {
-  background-color: #4CAF53 !important;
+  background-color: #2ECC71 !important;
   color: #FFFFFF !important;
 }
 
@@ -715,10 +715,10 @@
 
 /* Purple */
 .ui.purple.table {
-  border-top: 0.2em solid #A333C8;
+  border-top: 0.2em solid #8E44AD;
 }
 .ui.inverted.purple.table {
-  background-color: #A333C8 !important;
+  background-color: #8E44AD !important;
   color: #FFFFFF !important;
 }
 

@@ -1,7 +1,7 @@
 import React, {ChangeEvent, MouseEvent, useState} from 'react';
 import {
     Button,
-    ButtonProps, Icon, Input, InputOnChangeData, Label, LabelProps, Popup, Segment, Table
+    ButtonProps, Header, Icon, Input, InputOnChangeData, Label, LabelProps, Popup, Segment, Table
 } from 'semantic-ui-react';
 import uuidv4 from 'uuid/v4';
 import {ILayerParameterZone} from '../../../core/model/gis/LayerParameterZone.type';
@@ -213,25 +213,28 @@ const zonesTable = (props: IProps) => {
 
     return (
         <React.Fragment>
-            <Segment>
-                {props.zones.all.map((zone, key) => {
-                    const relation = props.relations.findFirstBy('zoneId', zone.id);
+            {props.zones.all.length > 1 &&
+                <Segment style={{boxShadow: '0 0 1px 0 rgba(0,0,0,.1)'}}>
+                    <Header as={'h5'} style={{fontWeight: '500'}}>Select Zones</Header>
+                    {props.zones.all.map((zone, key) => {
+                        const relation = props.relations.findFirstBy('zoneId', zone.id);
 
-                    if (!relation || (relation.priority !== 0)) {
-                        return (
-                            <Label
-                                as="a"
-                                color={relation ? 'blue' : 'grey'}
-                                value={zone.id}
-                                onClick={!props.readOnly ? handleToggleZone : undefined}
-                                key={key}
-                            >
-                                {zone.name}
-                            </Label>
-                        );
-                    }
-                })}
-            </Segment>
+                        if (!relation || (relation.priority !== 0)) {
+                            return (
+                                <Label
+                                    as="a"
+                                    color={relation ? 'blue' : undefined}
+                                    value={zone.id}
+                                    onClick={!props.readOnly ? handleToggleZone : undefined}
+                                    key={key}
+                                >
+                                    {zone.name}
+                                </Label>
+                            );
+                        }
+                    })}
+                </Segment>
+            }
             <Table>
                 <Table.Header>
                     <Table.Row>

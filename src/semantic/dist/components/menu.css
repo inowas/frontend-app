@@ -1329,8 +1329,8 @@ Floated Menu / Item
 }
 .ui.menu .yellow.active.item,
 .ui.yellow.menu .active.item {
-  border-color: #FBBD08 !important;
-  color: #FBBD08 !important;
+  border-color: #F1C40F !important;
+  color: #F1C40F !important;
 }
 .ui.menu .olive.active.item,
 .ui.olive.menu .active.item {
@@ -1339,8 +1339,8 @@ Floated Menu / Item
 }
 .ui.menu .green.active.item,
 .ui.green.menu .active.item {
-  border-color: #4CAF53 !important;
-  color: #4CAF53 !important;
+  border-color: #2ECC71 !important;
+  color: #2ECC71 !important;
 }
 .ui.menu .teal.active.item,
 .ui.teal.menu .active.item {
@@ -1359,8 +1359,8 @@ Floated Menu / Item
 }
 .ui.menu .purple.active.item,
 .ui.purple.menu .active.item {
-  border-color: #A333C8 !important;
-  color: #A333C8 !important;
+  border-color: #8E44AD !important;
+  color: #8E44AD !important;
 }
 .ui.menu .pink.active.item,
 .ui.pink.menu .active.item {
@@ -1527,7 +1527,7 @@ Floated Menu / Item
 /* Yellow */
 .ui.inverted.menu .yellow.active.item,
 .ui.inverted.yellow.menu {
-  background-color: #FBBD08;
+  background-color: #F1C40F;
 }
 .ui.inverted.yellow.menu .item:before {
   background-color: rgba(34, 36, 38, 0.1);
@@ -1551,7 +1551,7 @@ Floated Menu / Item
 /* Green */
 .ui.inverted.menu .green.active.item,
 .ui.inverted.green.menu {
-  background-color: #4CAF53;
+  background-color: #2ECC71;
 }
 .ui.inverted.green.menu .item:before {
   background-color: rgba(34, 36, 38, 0.1);
@@ -1599,7 +1599,7 @@ Floated Menu / Item
 /* Purple */
 .ui.inverted.menu .purple.active.item,
 .ui.inverted.purple.menu {
-  background-color: #A333C8;
+  background-color: #8E44AD;
 }
 .ui.inverted.purple.menu .item:before {
   background-color: rgba(34, 36, 38, 0.1);
@@ -2066,4 +2066,12 @@ Floated Menu / Item
 }
 .menuItemHeader {
   text-transform: uppercase;
+}
+
+/*-----------------------------------------
+  Custom Pointing Menu in T03 Layers/ Zones
+  -----------------------------------------*/
+
+.ui.pointing.secondary.menu.soilmodel {
+  border-color: rgba(30, 177, 237, 0.5);
 }

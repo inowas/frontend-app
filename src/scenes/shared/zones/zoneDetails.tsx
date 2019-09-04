@@ -157,8 +157,8 @@ const zoneDetails = (props: IProps) => {
                         menuItem: (<Menu.Item key={0}>Properties</Menu.Item>),
                         render: () => <Tab.Pane>
                             <Grid>
-                                <Grid.Row>
-                                    <Grid.Column>
+                                <Grid.Row columns={2}>
+                                    <Grid.Column width={12}>
                                         <Form.Input
                                             name="name"
                                             value={zone.name}
@@ -169,10 +169,6 @@ const zoneDetails = (props: IProps) => {
                                             readOnly={readOnly}
                                             type="text"
                                         />
-                                    </Grid.Column>
-                                </Grid.Row>
-                                <Grid.Row>
-                                    <Grid.Column width={12}>
                                         <Form.Field>
                                             <label>Geometry</label>
                                             <ZonesMap
@@ -187,9 +183,10 @@ const zoneDetails = (props: IProps) => {
                                             />
                                         </Form.Field>
                                     </Grid.Column>
+
                                     <Grid.Column width={4}>
                                         <Form.Field>
-                                            <label>Show other Zones</label>
+                                            <label>Other Zones</label>
                                             <List>
                                                 {visibleZones.map((z) => (
                                                     <List.Item key={z.id}>
@@ -205,7 +202,7 @@ const zoneDetails = (props: IProps) => {
                                                 <List.Item>
                                                     <Checkbox
                                                         checked={visibleZones.filter((z) => !z.isActive).length === 0}
-                                                        label="Toggle all"
+                                                        label="Show All"
                                                         onChange={handleChangeCheckbox}
                                                         name="_all"
                                                     />
