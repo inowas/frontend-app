@@ -1,15 +1,15 @@
 import React from 'react';
 import {Form, Grid, Input} from 'semantic-ui-react';
-import {FlopyModpathMp7} from '../../../../../../core/model/flopy/packages/mp';
+import {FlopyModpathMp} from '../../../../../../core/model/flopy/packages/mp';
 import renderInfoPopup from '../../../../../shared/complexTools/InfoPopup';
 import {documentation} from '../../../../defaults/modpath';
 
 interface IProps {
-    mfPackage: FlopyModpathMp7;
+    mfPackage: FlopyModpathMp;
     readOnly: boolean;
 }
 
-const mp7PackageProperties = (props: IProps) => {
+const mpPackageProperties = (props: IProps) => {
     const {mfPackage} = props;
 
     return (
@@ -73,4 +73,4 @@ const mp7PackageProperties = (props: IProps) => {
     );
 };
 
-export default mp7PackageProperties;
+export default mpPackageProperties;

@@ -1,21 +1,17 @@
+import {IZone} from '../../../gis/Zone.type';
 import {IPropertyValueObject} from '../../../types';
-import ZonesCollection from '../../../gis/ZonesCollection';
 import FlopyModpathPackage from './FlopyModpathPackage';
 import {
-    FlopyModpathMp7,
-    FlopyModpathMp7bas,
-    FlopyModpathMp7particledata,
-    FlopyModpathMp7particlegroup,
-    FlopyModpathMp7sim
+    FlopyModpathMp,
+    FlopyModpathMpbas,
+    FlopyModpathMpsim
 } from './index';
 import {ModpathPackage} from './types';
 
 const packagesMap: IPropertyValueObject = {
-    mp7: FlopyModpathMp7,
-    mp7bas: FlopyModpathMp7bas,
-    mp7particledata: FlopyModpathMp7particledata,
-    mp7particlegroup: FlopyModpathMp7particlegroup,
-    mp7sim: FlopyModpathMp7sim
+    mp: FlopyModpathMp,
+    mpbas: FlopyModpathMpbas,
+    mpsim: FlopyModpathMpsim
 };
 
 class FlopyModpath {
@@ -32,17 +28,14 @@ class FlopyModpath {
         return this._packages;
     }
 
-    get zones(): ZonesCollection {
-        return this._meta.zones;
-    }
-
-    set zones(value: ZonesCollection) {
-        this._meta.zones = value;
+    get meta() {
+        return this._meta;
     }
 
     public static fromObject(obj: IPropertyValueObject) {
         const self = new this();
         self.enabled = obj.enabled;
+        self._meta = obj._meta;
         for (const prop in obj) {
             if (prop !== '_meta' && prop !== 'enabled') {
                 if (obj.hasOwnProperty(prop)) {
@@ -55,24 +48,24 @@ class FlopyModpath {
 
     private _enabled: boolean = false;
     private _meta: {
-        zones: ZonesCollection
+        particleZones: IZone[]
     } = {
-        zones: new ZonesCollection()
+        particleZones: []
     };
     private _packages: IPropertyValueObject = {};
 
     constructor() {
-        this.setPackage(new FlopyModpathMp7());
+        this.setPackage(new FlopyModpathMp());
     }
 
     public recalculate = () => {
-        const mp7 = this.hasPackage('mp7') ? this.getPackage('mp7') : FlopyModpathMp7.create(this);
+        const mp7 = this.hasPackage('mp') ? this.getPackage('mp') : FlopyModpathMp.create(this);
         this.setPackage(mp7);
 
-        const mp7bas = this.hasPackage('mp7bas') ? this.getPackage('mp7bas') : FlopyModpathMp7bas.create(this);
+        const mp7bas = this.hasPackage('mpbas') ? this.getPackage('mpbas') : FlopyModpathMpbas.create(this);
         this.setPackage(mp7bas);
 
-        const mp7sim = this.hasPackage('mp7sim') ? this.getPackage('mp7sim') : FlopyModpathMp7sim.create(this);
+        const mp7sim = this.hasPackage('mpsim') ? this.getPackage('mpsim') : FlopyModpathMpsim.create(this);
         this.setPackage(mp7sim);
     };
 
@@ -113,7 +106,8 @@ class FlopyModpath {
 
     public toObject() {
         const obj: IPropertyValueObject = {
-            enabled: this.enabled
+            enabled: this.enabled,
+            _meta: this.meta
         };
 
         for (const prop in this.packages) {
@@ -136,7 +130,7 @@ class FlopyModpath {
 
         for (const prop in this.packages) {
             if (this.packages.hasOwnProperty(prop)) {
-                obj[prop] = this.packages[prop].toObject();
+                obj[prop] = this.packages[prop];
             }
         }
 

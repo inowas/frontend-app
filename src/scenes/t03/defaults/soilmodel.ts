@@ -11,17 +11,17 @@ export interface IParameter {
 
 export const modpathParameters: IParameter[] = [
     {
-        name: 'porosity',
+        name: 'prsity',
         description: 'Porosity',
         unit: '-'
     },
     {
-        name: 'retardation',
+        name: 'retard',
         description: 'Retardation',
         unit: '-'
     },
     {
-        name: 'zones',
+        name: 'stopzone',
         description: 'Zones',
         unit: '-'
     }
@@ -76,9 +76,9 @@ export const defaultSoilmodelLayerParameters: ILayerParameter[] = [
     // SEAWAT:
     {id: 'visc', value: -1},
     // MODPATH:
-    {id: 'porosity', value: 0.3},
-    {id: 'retardation', value: 1},
-    {id: 'zones', value: 0}
+    {id: 'prsity', value: 0.3},
+    {id: 'retard', value: 1},
+    {id: 'stopzone', value: 1}
 ];
 
 export const defaultSoilmodelParameters: IRasterParameter[] = [
@@ -143,22 +143,22 @@ export const defaultSoilmodelParameters: IRasterParameter[] = [
     {
         defaultValue: 0.3,
         isActive: true,
-        id: 'porosity',
+        id: 'prsity',
         title: 'Porosity',
         unit: '-'
     },
     {
         defaultValue: 1,
         isActive: true,
-        id: 'retardation',
-        title: 'Retardation',
+        id: 'retard',
+        title: 'Retardation factor',
         unit: '-'
     },
     {
         defaultValue: 0,
         isActive: true,
-        id: 'zones',
-        title: 'Zones',
+        id: 'stopzone',
+        title: 'Stop zone',
         unit: '-'
     }
 ];

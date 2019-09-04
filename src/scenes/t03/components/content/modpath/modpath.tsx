@@ -13,7 +13,7 @@ import {sendCommand} from '../../../../../services/api';
 import ContentToolBar from '../../../../shared/ContentToolbar';
 import {updatePackages} from '../../../actions/actions';
 import ModflowModelCommand from '../../../commands/modflowModelCommand';
-import {Mp7basPackageProperties, Mp7PackageProperties, Mp7simPackageProperties} from './index';
+import {MpBasPackageProperties, MpPackageProperties, MpSimPackageProperties} from './index';
 
 const baseUrl = '/tools/T03/';
 
@@ -51,6 +51,7 @@ const isNavigationItem = (arg: any): arg is NavigationItem => {
 const modpath: React.FC<Props> = (props: Props) => {
     const {boundaries, match, model, packages, soilmodel} = props;
     const [activeItem, setActiveItem] = useState<NavigationItem>(NavigationItem.SETUP);
+    const [isCalculating, setIsCalculating] = useState<boolean>(false);
     const [isDirty, setIsDirty] = useState<boolean>(false);
     const [isError, setIsError] = useState<boolean>(false);
     const [isLoading, setIsLoading] = useState<boolean>(true);
@@ -137,9 +138,9 @@ const modpath: React.FC<Props> = (props: Props) => {
             switch (type) {
                 case NavigationItem.BAS:
                     return (
-                        <Mp7basPackageProperties
+                        <MpBasPackageProperties
                             model={props.model}
-                            mpPackage={modpathInstance.getPackage('mp7bas')}
+                            mpPackage={modpathInstance.getPackage('mpbas')}
                             onClickEdit={handleClickEdit}
                             onChange={handleChangePackage}
                             readOnly={model.readOnly}
@@ -148,9 +149,9 @@ const modpath: React.FC<Props> = (props: Props) => {
                     );
                 case NavigationItem.SIM:
                     return (
-                        <Mp7simPackageProperties
+                        <MpSimPackageProperties
                             model={props.model}
-                            mpPackage={modpathInstance.getPackage('mp7sim')}
+                            mpPackage={modpathInstance.getPackage('mpsim')}
                             onClickEdit={handleClickEdit}
                             readOnly={model.readOnly}
                             soilmodel={props.soilmodel}
@@ -158,8 +159,8 @@ const modpath: React.FC<Props> = (props: Props) => {
                     );
                 default:
                     return (
-                        <Mp7PackageProperties
-                            mfPackage={modpathInstance.getPackage('mp7')}
+                        <MpPackageProperties
+                            mfPackage={modpathInstance.getPackage('mp')}
                             readOnly={model.readOnly}
                         />
                     );

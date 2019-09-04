@@ -7,7 +7,6 @@ import {
     Menu,
     MenuItemProps,
     Popup,
-    Tab,
     TextAreaProps
 } from 'semantic-ui-react';
 import {Layer, RasterParameter} from '../../../../../core/model/gis';
@@ -41,6 +40,8 @@ interface ISmoothParameters {
 const layerDetails = (props: IProps) => {
     const [layer, setLayer] = useState<ISoilmodelLayer>(props.layer.toObject());
 
+    const activeParameter = props.activeParam ? layer.parameters.filter((p) => p.id === props.activeParam) : undefined;
+
     useEffect(() => {
         setLayer(props.layer.toObject());
     }, [props.layer]);
@@ -52,7 +53,8 @@ const layerDetails = (props: IProps) => {
         const cLayer = SoilmodelLayer.fromObject(layer).zonesToParameters(
             props.model.gridSize,
             relations,
-            props.soilmodel.zonesCollection
+            props.soilmodel.zonesCollection,
+            activeParameter
         );
         props.onChange(cLayer);
         return props.onChangeRelations(relations);
@@ -69,7 +71,8 @@ const layerDetails = (props: IProps) => {
         const cLayer = SoilmodelLayer.fromObject(layer).zonesToParameters(
             props.model.gridSize,
             relations,
-            props.soilmodel.zonesCollection
+            props.soilmodel.zonesCollection,
+            activeParameter
         );
         props.onChange(cLayer);
         return props.onChangeRelations(relations);
@@ -89,7 +92,8 @@ const layerDetails = (props: IProps) => {
         const cLayer = SoilmodelLayer.fromObject(layer).zonesToParameters(
             props.model.gridSize,
             relations,
-            props.soilmodel.zonesCollection
+            props.soilmodel.zonesCollection,
+            activeParameter
         );
         props.onChange(cLayer);
         return props.onChangeRelations(relations);
@@ -111,7 +115,7 @@ const layerDetails = (props: IProps) => {
     };
 
     const renderPanes = () => {
-        const {activeParam, readOnly} = props;
+        const {activeParam} = props;
 
         if (!layer) {
             return [];

@@ -1,9 +1,7 @@
 import {
-    FlopyModpathMp7,
-    FlopyModpathMp7bas,
-    FlopyModpathMp7particledata,
-    FlopyModpathMp7particlegroup,
-    FlopyModpathMp7sim
+    FlopyModpathMp,
+    FlopyModpathMpbas,
+    FlopyModpathMpsim
 } from './index';
 
 export type SimulationType = 'endpoint' | 'pathline' | 'timeseries' | 'combined';
@@ -19,11 +17,9 @@ export type StopTimeOptionType = 'total' | 'extend' | 'specified';
 export type OnOffType = 'off' | 'on';
 
 export type ModpathPackage =
-    FlopyModpathMp7
-    | FlopyModpathMp7bas
-    | FlopyModpathMp7particledata
-    | FlopyModpathMp7particlegroup
-    | FlopyModpathMp7sim;
+    FlopyModpathMp
+    | FlopyModpathMpbas
+    | FlopyModpathMpsim;
 
 export enum ModPathPackageType {
     MP7= 'mp7',

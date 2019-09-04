@@ -1,6 +1,6 @@
-import React, {MouseEvent, useEffect, useState} from 'react';
-import {ButtonProps, Form, Grid} from 'semantic-ui-react';
-import {FlopyModpathMp7bas} from '../../../../../../core/model/flopy/packages/mp';
+import React, {useEffect, useState} from 'react';
+import {Form, Grid} from 'semantic-ui-react';
+import {FlopyModpathMpbas} from '../../../../../../core/model/flopy/packages/mp';
 import {ModflowModel} from '../../../../../../core/model/modflow';
 import Soilmodel from '../../../../../../core/model/modflow/soilmodel/Soilmodel';
 import {IPropertyValueObject} from '../../../../../../core/model/types';
@@ -10,22 +10,22 @@ import {documentation} from '../../../../defaults/modpath';
 
 interface IProps {
     model: ModflowModel;
-    mpPackage: FlopyModpathMp7bas;
-    onChange: (mp: FlopyModpathMp7bas) => any;
+    mpPackage: FlopyModpathMpbas;
+    onChange: (mp: FlopyModpathMpbas) => any;
     onClickEdit: (layerId: string, parameter: string) => any;
     readOnly: boolean;
     soilmodel: Soilmodel;
 }
 
-const mp7basPackageProperties = (props: IProps) => {
+const mpBasPackageProperties = (props: IProps) => {
     const [mpPackage, setMpPackage] = useState<IPropertyValueObject>(props.mpPackage.toObject());
 
     useEffect(() => {
         return setMpPackage(props.mpPackage.toObject());
     }, [props.mpPackage]);
 
-    const handleClickEdit = (property: string) => (e: MouseEvent<HTMLButtonElement>, data: ButtonProps) => {
-        return props.onClickEdit(data.value, property);
+    const handleClickEdit = (layerId: string, parameter: string) => {
+        return props.onClickEdit(layerId, parameter);
     };
 
     const renderParameterView = () => {
@@ -33,8 +33,8 @@ const mp7basPackageProperties = (props: IProps) => {
             <React.Fragment>
                 <h4>Porosity</h4>
                 <RasterDataFormGroup
-                    data={mpPackage.porosity}
-                    onClickEdit={handleClickEdit('porosity')}
+                    parameter="prsity"
+                    onClickEdit={handleClickEdit}
                     layers={props.soilmodel.layersCollection}
                     model={props.model}
                 />
@@ -62,4 +62,4 @@ const mp7basPackageProperties = (props: IProps) => {
     );
 };
 
-export default mp7basPackageProperties;
+export default mpBasPackageProperties;

@@ -105,7 +105,7 @@ class Mt3dProperties extends React.Component {
         const mt3d = FlopyMt3d.fromObject(this.state.mt);
         const {boundaries, packages} = this.props;
 
-        const model = this.props.model.toObject();
+        const model = this.props.model;
         if (!model.stressperiods) {
             return null;
         }
