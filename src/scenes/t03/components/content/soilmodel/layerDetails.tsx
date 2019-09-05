@@ -256,7 +256,7 @@ const layerDetails = (props: IProps) => {
     return (
         <Form>
             <Tab
-                menu={{secondary: true, pointing: true}}
+                menu={{secondary: true, pointing: true, className: 'soilmodel'}}
                 activeIndex={props.activeIndex || 0}
                 onTabChange={props.onChangeTab}
                 panes={renderPanes()}
