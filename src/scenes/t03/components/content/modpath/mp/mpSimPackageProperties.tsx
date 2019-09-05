@@ -1,7 +1,7 @@
-import React, {MouseEvent, useState} from 'react';
+import React, {MouseEvent, SyntheticEvent, useState} from 'react';
 import {
     Accordion,
-    AccordionTitleProps,
+    AccordionTitleProps, DropdownProps,
     Form,
     Grid,
     Icon,
@@ -18,6 +18,7 @@ import {documentation} from '../../../../defaults/modpath';
 interface IProps {
     model: ModflowModel;
     mpPackage: FlopyModpathMpsim;
+    onChange: (data: FlopyModpathMpsim) => any;
     onClickEdit: (layerId: string, parameter: string) => any;
     readOnly: boolean;
     soilmodel: Soilmodel;
@@ -57,15 +58,6 @@ const mpSimPackageProperties = (props: IProps) => {
         {key: 1, value: 2, text: 'Pathline'}
     ];
 
-    const stopTimeOptions: Array<{
-        key: number;
-        value: number;
-        text: string;
-    }> = [
-        {key: 0, value: 1, text: 'Stop at end/beginning of MODFLOW simulation (1)'},
-        {key: 1, value: 3, text: 'Stop particle tracking at specified tracking time (3)'}
-    ];
-
     const trackingDirectionOptions: Array<{
         key: number;
         value: number;
@@ -93,11 +85,6 @@ const mpSimPackageProperties = (props: IProps) => {
         {key: 1, value: 2, text: 'Stop particles when entering cells with weak sources (2)'}
     ];
 
-    const handleChangeToggleableInput = (name: string, value: string | number | null) => {
-        setActiveInput(name);
-        setActiveValue(value);
-    };
-
     const handleClickAccordion = (e: MouseEvent<HTMLDivElement>, {index}: AccordionTitleProps) => {
         return setActiveIndex(index as number);
     };
@@ -106,8 +93,12 @@ const mpSimPackageProperties = (props: IProps) => {
         return props.onClickEdit(layerId, parameter);
     };
 
-    const handleOnSelect = () => {
-
+    const handleOnSelect = (e: SyntheticEvent<HTMLElement>, data: DropdownProps) => {
+        const cMpPackage = {
+            ...mpPackage.toObject(),
+            [data.name]: data.value
+        };
+        props.onChange(FlopyModpathMpsim.fromObject(cMpPackage) as FlopyModpathMpsim);
     };
 
     return (
@@ -138,7 +129,7 @@ const mpSimPackageProperties = (props: IProps) => {
                                             onChange={handleOnSelect}
                                             value={mpPackage.simulationType}
                                             disabled={readOnly}
-                                            name={'simulationtype'}
+                                            name="simulationType"
                                             selection={true}
                                         />
                                     </Form.Field>
@@ -158,7 +149,7 @@ const mpSimPackageProperties = (props: IProps) => {
                                             onChange={handleOnSelect}
                                             value={mpPackage.trackingDirection}
                                             disabled={readOnly}
-                                            name={'trackingdirection'}
+                                            name="trackingDirection"
                                             selection={true}
                                         />
                                     </Form.Field>
@@ -180,7 +171,7 @@ const mpSimPackageProperties = (props: IProps) => {
                                             onChange={handleOnSelect}
                                             value={mpPackage.weakSinkOption}
                                             disabled={readOnly}
-                                            name={'weaksinkoption'}
+                                            name="weakSinkOption"
                                             selection={true}
                                         />
                                     </Form.Field>
@@ -202,7 +193,7 @@ const mpSimPackageProperties = (props: IProps) => {
                                             onChange={handleOnSelect}
                                             value={mpPackage.weakSourceOption}
                                             disabled={readOnly}
-                                            name={'weaksourceoption'}
+                                            name="weakSourceOption"
                                             selection={true}
                                         />
                                     </Form.Field>
@@ -224,7 +215,7 @@ const mpSimPackageProperties = (props: IProps) => {
                                             onChange={handleOnSelect}
                                             value={mpPackage.budgetOutputOption}
                                             disabled={true}
-                                            name={'budgetoutputoption'}
+                                            name="budgetOutputOption"
                                             selection={true}
                                         />
                                     </Form.Field>
@@ -252,7 +243,7 @@ const mpSimPackageProperties = (props: IProps) => {
                                             onChange={handleOnSelect}
                                             value={mpPackage.retardationOption}
                                             disabled={readOnly}
-                                            name={'retardationfactoroption'}
+                                            name="retardationOption"
                                             selection={true}
                                         />
                                     </Form.Field>
@@ -286,7 +277,7 @@ const mpSimPackageProperties = (props: IProps) => {
                                             onChange={handleOnSelect}
                                             value={mpPackage.zoneArrayOption}
                                             disabled={readOnly}
-                                            name={'zonedataoption'}
+                                            name="zoneArrayOption"
                                             selection={true}
                                         />
                                     </Form.Field>
