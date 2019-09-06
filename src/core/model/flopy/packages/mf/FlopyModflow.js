@@ -163,7 +163,7 @@ export default class FlopyModflow {
 
         this.setPackage(mfDis);
 
-        const mfBas = this.hasPackage('bas') ? this.getPackage('bas') : FlopyModflowMfbas.create(null, {});
+        const mfBas = this.hasPackage('bas') ? this.getPackage('bas') : FlopyModflowMfbas.create();
         mfBas.ibound = model.cells.calculateIBound(mfDis.nlay, mfDis.nrow, mfDis.ncol);
         mfBas.strt = new Array(mfDis.nlay).fill(mfDis.top);
         this.setPackage(mfBas);
