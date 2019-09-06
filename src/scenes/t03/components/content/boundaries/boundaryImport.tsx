@@ -202,6 +202,7 @@ export default class BoundaryImport extends React.Component<IProps, IState> {
 
     private renderImportModal = () => (
         <Modal
+            size={'large'}
             trigger={<Button>Show Modal</Button>}
             closeIcon={true}
             open={true}
@@ -224,6 +225,8 @@ export default class BoundaryImport extends React.Component<IProps, IState> {
                                                     Download the list of boundaries.
                                                 </Header>
                                                 <Button
+                                                    basic={true}
+                                                    color="blue"
                                                     htmlFor={'inputField'}
                                                     content={'Get JSON File'}
                                                     onClick={this.download}

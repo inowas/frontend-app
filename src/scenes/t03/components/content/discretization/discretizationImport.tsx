@@ -293,14 +293,31 @@ class DiscretizationImport extends React.Component<IProps, IState> {
                                     <Divider vertical={true} />
                                     <Grid.Row verticalAlign="top">
                                         <Grid.Column>
-                                            <Header>
+                                            {!this.state.errors &&
+                                            <div>
+                                                <Header as={'h3'}>
+                                                    Download actual discretization.
+                                                </Header>
+                                                <Button
+                                                    basic={true}
+                                                    color="blue"
+                                                    htmlFor={'inputField'}
+                                                    content={'Get JSON File'}
+                                                    onClick={this.download}
+                                                />
+                                            </div>
+                                            }
+                                            {this.state.errors && this.renderValidationErrors(this.state.errors)}
+                                        </Grid.Column>
+                                        <Grid.Column>
+                                            <Header as={'h3'}>
                                                 Upload discretization file
                                             </Header>
                                             <Button
                                                 color={'grey'}
                                                 as={'label'}
                                                 htmlFor={'inputField'}
-                                                icon={'upload'}
+                                                icon={'file alternate'}
                                                 content={'Select File'}
                                                 labelPosition={'left'}
                                                 loading={this.state.isLoading}
@@ -311,26 +328,11 @@ class DiscretizationImport extends React.Component<IProps, IState> {
                                                 type={'file'}
                                                 id={'inputField'}
                                                 onChange={this.handleUpload}
+                                                onClick={this.onClickUpload}
+                                                value={''}
                                             />
+                                            <br/>
                                             <p>The file has to be a csv or json-file.</p>
-                                        </Grid.Column>
-
-                                        <Grid.Column>
-                                            {!this.state.errors &&
-                                                <div>
-                                            <Header>
-                                                Or download actual discretization
-                                            </Header>
-                                            <Button
-                                                htmlFor={'inputField'}
-                                                icon={'download'}
-                                                content={'Get JSON File'}
-                                                labelPosition={'left'}
-                                                onClick={this.download}
-                                            />
-                                                </div>
-                                            }
-                                            {this.state.errors && this.renderValidationErrors(this.state.errors)}
                                         </Grid.Column>
                                     </Grid.Row>
                                 </Grid>

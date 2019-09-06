@@ -120,7 +120,7 @@ class BoundaryDetailsImport extends React.Component<IProps, IState> {
                 <Label basic={true} horizontal={true}>
                     {boundary.layers.map(
                         (l: number) => (this.props.soilmodel.layersCollection.toObject()[l].name)
-                    ).join(',')}
+                    ).join(', ')}
                 </Label>
             </React.Fragment>
         );
@@ -141,7 +141,7 @@ class BoundaryDetailsImport extends React.Component<IProps, IState> {
 
         return (
             <div>
-                <Segment basic={true}>
+                <Segment basic={true} style={{padding: '0'}}>
                     <Label basic={true} horizontal={true}>
                         {boundary.type.toUpperCase()}
                     </Label>

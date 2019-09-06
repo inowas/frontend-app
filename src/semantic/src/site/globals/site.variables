@@ -50,8 +50,11 @@
 @lightBlue  : #3AC6FF;
 
 @red              : #FF5B4D;
+@yellow           : #F1C40F;
 @brown            : #CC6C00;
-@green            : #4CAF53;
+@green            : #2ECC71; /*#4CAF53;*/
+@purple           : #8E44AD;
+
 
 
 /*---   Neutrals  ---*/

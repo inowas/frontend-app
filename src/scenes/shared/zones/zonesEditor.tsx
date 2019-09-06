@@ -113,7 +113,7 @@ const zonesEditor = (props: IProps) => {
                 </Grid.Row>
                 <Grid.Row>
                     <Grid.Column>
-                        <Accordion>
+                        <Accordion styled={true} fluid={true}>
                             <Accordion.Title active={activeIndex === 1} index={1} onClick={handleClick}>
                                 <Icon name="dropdown"/>
                                 <label>Smoothing</label>
@@ -127,7 +127,7 @@ const zonesEditor = (props: IProps) => {
                                         value={smoothParams.cycles}
                                         placeholder="cycles="
                                         onChange={handleChangeSmoothParams}
-                                        width={5}
+                                        width={4}
                                         readOnly={props.readOnly}
                                     />
                                     <Form.Input
@@ -137,7 +137,7 @@ const zonesEditor = (props: IProps) => {
                                         value={smoothParams.distance}
                                         placeholder="distance ="
                                         onChange={handleChangeSmoothParams}
-                                        width={5}
+                                        width={4}
                                         readOnly={props.readOnly}
                                     />
                                     <Form.Button
@@ -156,7 +156,7 @@ const zonesEditor = (props: IProps) => {
                                         labelPosition="left"
                                         onClick={recalculateMap}
                                         content={'Remove Smoothing'}
-                                        width={8}
+                                        width={9}
                                         style={{marginTop: '23px'}}
                                         disabled={props.readOnly}
                                     />
