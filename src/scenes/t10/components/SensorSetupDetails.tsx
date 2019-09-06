@@ -64,12 +64,14 @@ const sensorSetupDetails = (props: IProps) => {
                         name={'lat'}
                         value={props.sensor.geolocation.coordinates[1]}
                         onChange={handleChange}
+                        type={'number'}
                     />
                     <Form.Input
                         label={'Lon'}
                         name={'lon'}
                         value={props.sensor.geolocation.coordinates[0]}
                         onChange={handleChange}
+                        type={'number'}
                     />
                 </Form.Group>
             </Form>

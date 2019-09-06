@@ -99,7 +99,7 @@ const parameterDetails = (props: IProps) => {
             </Modal.Content>
             <Modal.Actions>
                 <Button negative={true} onClick={props.onClose}>Cancel</Button>
-                <Button positive={true} labelPosition={'right'} onClick={handleSave}>Apply</Button>
+                <Button positive={true} onClick={handleSave}>Apply</Button>
             </Modal.Actions>
         </Modal>
     );
