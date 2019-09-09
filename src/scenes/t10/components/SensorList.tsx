@@ -9,6 +9,7 @@ interface IProps {
     onChangeSelectedSensor: (id: string) => void;
     onClone: (id: string) => void;
     onRemove: (id: string) => void;
+    readOnly: boolean;
 }
 
 const sensorList = (props: IProps) => {
@@ -26,11 +27,11 @@ const sensorList = (props: IProps) => {
                     icon={true}
                     labelPosition={'left'}
                     onClick={props.onAdd}
+                    disabled={props.readOnly}
                 >
                     <Icon name={'plus'}/>
                     Add
                 </Button>
-
             </Grid.Row>
             <Grid.Row>
                 <Menu
@@ -45,7 +46,7 @@ const sensorList = (props: IProps) => {
                             active={s.id === props.selectedSensor}
                             onClick={handleClick(s.id)}
                         >
-                            <Popup
+                            {!props.readOnly && <Popup
                                 trigger={<Icon name="ellipsis horizontal"/>}
                                 content={
                                     <div>
@@ -68,6 +69,7 @@ const sensorList = (props: IProps) => {
                                 on={'click'}
                                 position={'right center'}
                             />
+                            }
                             {s.name}
                         </Menu.Item>
                     ))}

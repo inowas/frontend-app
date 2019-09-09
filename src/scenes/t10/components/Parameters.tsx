@@ -3,23 +3,41 @@ import {Button, Form, Icon, Segment, Table} from 'semantic-ui-react';
 import Uuid from 'uuid';
 import {Rtm} from '../../../core/model/rtm';
 import {ParameterCollection} from '../../../core/model/rtm/ParameterCollection';
-import {ISensorProperty} from '../../../core/model/rtm/Sensor.type';
+import {ISensorParameter} from '../../../core/model/rtm/Sensor.type';
 import {ParameterDetails} from './index';
 
 interface IProps {
     rtm: Rtm;
     parameters: ParameterCollection;
-    onChange: (properties: ParameterCollection) => void;
+    onChange: (params: ParameterCollection) => void;
 }
+
+export const parameterList = [
+    {parameter: 'do', text: 'Dissolved oxygen'},
+    {parameter: 'ec', text: 'Electrical conductivity'},
+    {parameter: 'h', text: 'Water level'},
+    {parameter: 'ph', text: 'pH'},
+    {parameter: 'prH', text: 'Pressure head'},
+    {parameter: 'rp', text: 'Redox potential'},
+    {parameter: 't', text: 'Temperature'},
+    {parameter: 'wc', text: 'Water content'},
+    {parameter: 'other', text: 'Other'}
+];
 
 const parameters = (props: IProps) => {
 
-    const [parameterName, setParameterName] = useState<string>('');
+    const [parameterType, setParameterType] = useState<string>('');
+    const [parameterDescription, setParameterDescription] = useState<string>('');
     const [editParameter, setEditParameter] = useState<string | null>(null);
 
-    const handleChange = (e: any, data: any) => {
+    const handleChangeDescription = (e: any, data: any) => {
         const v = data.value;
-        setParameterName(v);
+        setParameterDescription(v);
+    };
+
+    const handleChangeType = (e: any, data: any) => {
+        const v = data.value;
+        setParameterType(v);
     };
 
     const handleDeleteProperty = (id: string) => () => {
@@ -32,26 +50,23 @@ const parameters = (props: IProps) => {
     };
 
     const handleAdd = () => {
-        const properties = ParameterCollection.fromObject(props.parameters.toObject());
-        properties.add({
+        const params = ParameterCollection.fromObject(props.parameters.toObject());
+        params.add({
             id: Uuid.v4(),
-            name: parameterName,
-            dataSource: {
-                type: 'noSource',
-                server: null,
-                query: null
-            },
+            type: parameterType,
+            description: parameterDescription,
+            dataSource: {type: 'noSource'},
             filters: [],
             data: []
         });
-        props.onChange(properties);
+        props.onChange(params);
     };
 
     const handleClose = () => setEditParameter(null);
 
-    const handleChangeProperty = (property: ISensorProperty) => {
-        const properties = ParameterCollection.fromObject(props.parameters.toObject()).update(property, false);
-        props.onChange(properties);
+    const handleChangeProperty = (param: ISensorParameter) => {
+        const params = ParameterCollection.fromObject(props.parameters.toObject()).update(param, false);
+        props.onChange(params);
     };
 
     return (
@@ -60,7 +75,8 @@ const parameters = (props: IProps) => {
             <Table color={'grey'}>
                 <Table.Header>
                     <Table.Row>
-                        <Table.HeaderCell>Property</Table.HeaderCell>
+                        <Table.HeaderCell>Parameter</Table.HeaderCell>
+                        <Table.HeaderCell>Description</Table.HeaderCell>
                         <Table.HeaderCell>Data source</Table.HeaderCell>
                         <Table.HeaderCell>Filters</Table.HeaderCell>
                         <Table.HeaderCell/>
@@ -69,7 +85,8 @@ const parameters = (props: IProps) => {
                 <Table.Body>
                     {props.parameters.all.map((p) => (
                         <Table.Row key={p.id}>
-                            <Table.Cell>{p.name}</Table.Cell>
+                            <Table.Cell>{parameterList.filter((i) => i.parameter === p.type)[0].text}</Table.Cell>
+                            <Table.Cell>{p.description}</Table.Cell>
                             <Table.Cell>{p.dataSource.type}</Table.Cell>
                             <Table.Cell>{p.filters.length === 0 ? '-' : p.filters.length}</Table.Cell>
                             <Table.Cell textAlign={'right'}>
@@ -100,17 +117,29 @@ const parameters = (props: IProps) => {
                             alignItems: 'flex-end'
                         }}
                     >
-                        <Form.Input
-                            label={'Add parameter:'}
+                        <Form.Dropdown
+                            selection={true}
+                            label={'Parameter'}
                             placeholder={'Parameter'}
-                            name={'parameter'}
-                            value={parameterName}
-                            onChange={handleChange}
+                            name={'type'}
+                            value={parameterType}
+                            onChange={handleChangeType}
+                            options={parameterList.map((i) => ({
+                                key: i.parameter,
+                                text: i.text,
+                                value: i.parameter
+                            }))}
+                        />
+                        <Form.Input
+                            label={'Description'}
+                            name={'description'}
+                            value={parameterDescription}
+                            onChange={handleChangeDescription}
                         />
                         <Form.Button
                             content={'Add'}
                             onClick={handleAdd}
-                            disabled={parameterName.length < 1}
+                            disabled={parameterType === ''}
                         />
                     </Form.Group>
                 </Form>

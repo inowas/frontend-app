@@ -43,9 +43,9 @@ const sensorSetupDetails = (props: IProps) => {
         props.onChange(sensor);
     };
 
-    const handleChangeProperties = (properties: ParameterCollection) => {
+    const handleChangeParameters = (properties: ParameterCollection) => {
         const sensor = Sensor.fromObject(props.sensor.toObject());
-        sensor.properties = properties;
+        sensor.parameters = properties;
         props.onChange(sensor);
     };
 
@@ -58,6 +58,7 @@ const sensorSetupDetails = (props: IProps) => {
                         name={'name'}
                         value={props.sensor.name}
                         onChange={handleChange}
+                        disabled={props.rtm.readOnly}
                     />
                     <Form.Input
                         label={'Lat'}
@@ -65,6 +66,7 @@ const sensorSetupDetails = (props: IProps) => {
                         value={props.sensor.geolocation.coordinates[1]}
                         onChange={handleChange}
                         type={'number'}
+                        disabled={props.rtm.readOnly}
                     />
                     <Form.Input
                         label={'Lon'}
@@ -72,6 +74,7 @@ const sensorSetupDetails = (props: IProps) => {
                         value={props.sensor.geolocation.coordinates[0]}
                         onChange={handleChange}
                         type={'number'}
+                        disabled={props.rtm.readOnly}
                     />
                 </Form.Group>
             </Form>
@@ -80,7 +83,7 @@ const sensorSetupDetails = (props: IProps) => {
                 onChangeGeometry={handleChangeGeometry}
                 rtm={props.rtm}
             />
-            <Parameters parameters={props.sensor.properties} onChange={handleChangeProperties} rtm={props.rtm}/>
+            <Parameters parameters={props.sensor.parameters} onChange={handleChangeParameters} rtm={props.rtm}/>
         </div>
     );
 };

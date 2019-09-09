@@ -4,12 +4,13 @@ export interface ISensor {
     id: string;
     name: string;
     geolocation: Point;
-    properties: ISensorProperty[];
+    parameters: ISensorParameter[];
 }
 
-export interface ISensorProperty {
+export interface ISensorParameter {
     id: string;
-    name: string;
+    type: string;
+    description: string;
     dataSource: IDataSource;
     filters: IFilter[];
     data: IDateTimeValue[];
@@ -17,10 +18,16 @@ export interface ISensorProperty {
 
 export type IFilter = Array<() => void>;
 
+export interface IQueryParams {
+    project: string;
+    sensor: string;
+    property: string;
+}
+
 export interface IDataSource {
     type: string;
-    server: string | null;
-    query: string | null;
+    server?: string;
+    queryParams?: IQueryParams;
 }
 
 export interface IDateTimeValue {

@@ -29,12 +29,12 @@ export default class Sensor {
         this._props.geolocation = value;
     }
 
-    get properties() {
-        return ParameterCollection.fromObject(this._props.properties);
+    get parameters() {
+        return ParameterCollection.fromObject(this._props.parameters);
     }
 
-    set properties(value) {
-        this._props.properties = value.toObject();
+    set parameters(value) {
+        this._props.parameters = value.toObject();
     }
 
     public static fromObject(obj: ISensor): Sensor {

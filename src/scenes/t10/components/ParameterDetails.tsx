@@ -1,26 +1,29 @@
 import React, {useEffect, useState} from 'react';
 import {Button, Form, Modal, Segment} from 'semantic-ui-react';
 import {Rtm} from '../../../core/model/rtm';
-import {IDataSource, IDateTimeValue, IFilter, ISensorProperty} from '../../../core/model/rtm/Sensor.type';
+import {IDataSource, IDateTimeValue, IFilter, ISensorParameter} from '../../../core/model/rtm/Sensor.type';
 import {OnlineDatasource} from './index';
+import {parameterList} from './Parameters';
 
 interface IProps {
     rtm: Rtm;
-    sensorProperty: ISensorProperty | null;
-    onChange: (property: ISensorProperty) => void;
+    sensorProperty: ISensorParameter | null;
+    onChange: (property: ISensorParameter) => void;
     onClose: () => void;
 }
 
 const parameterDetails = (props: IProps) => {
 
-    const [name, setName] = useState<string>('name');
-    const [dataSource, setDataSource] = useState<IDataSource>({type: 'noSource', query: null, server: null});
+    const [parameterType, setParameterType] = useState<string>('');
+    const [parameterDescription, setParameterDescription] = useState<string>('');
+    const [dataSource, setDataSource] = useState<IDataSource>({type: 'noSource'});
     const [filters, setFilters] = useState<IFilter[]>([]);
     const [data, setData] = useState<IDateTimeValue[]>([]);
 
     useEffect(() => {
         if (props.sensorProperty) {
-            setName(props.sensorProperty.name);
+            setParameterType(props.sensorProperty.type);
+            setParameterDescription(props.sensorProperty.description);
             setDataSource(props.sensorProperty.dataSource);
             setFilters(props.sensorProperty.filters);
             setData(props.sensorProperty.data);
@@ -32,12 +35,13 @@ const parameterDetails = (props: IProps) => {
         func(v);
     };
 
-    const handleSave = () => {
+    const handleApply = () => {
         if (props.sensorProperty) {
             const property = {
                 ...props.sensorProperty,
                 id: props.sensorProperty.id,
-                name,
+                type: parameterType,
+                description: parameterDescription,
                 dataSource,
                 filters,
                 data
@@ -73,11 +77,25 @@ const parameterDetails = (props: IProps) => {
                 <Segment color={'grey'}>
                     <Form>
                         <Form.Group>
+                            <Form.Dropdown
+                                fluid={true}
+                                selection={true}
+                                label={'Parameter'}
+                                placeholder={'Parameter'}
+                                name={'type'}
+                                value={parameterType}
+                                onChange={handleChange(setParameterType)}
+                                options={parameterList.map((i) => ({
+                                    key: i.parameter,
+                                    text: i.text,
+                                    value: i.parameter
+                                }))}
+                            />
                             <Form.Input
-                                label={'Name'}
-                                name={'name'}
-                                value={name}
-                                onChange={handleChange(setName)}
+                                label={'Description'}
+                                name={'description'}
+                                value={parameterDescription}
+                                onChange={handleChange(setParameterDescription)}
                             />
                         </Form.Group>
                     </Form>
@@ -87,6 +105,7 @@ const parameterDetails = (props: IProps) => {
                         <Form.Dropdown
                             label={'Data source'}
                             value={dataSource.type}
+                            selection={true}
                             options={[
                                 {key: 0, value: 'noSource', text: 'No data source'},
                                 {key: 1, value: 'online', text: 'Online'},
@@ -99,7 +118,7 @@ const parameterDetails = (props: IProps) => {
             </Modal.Content>
             <Modal.Actions>
                 <Button negative={true} onClick={props.onClose}>Cancel</Button>
-                <Button positive={true} onClick={handleSave}>Apply</Button>
+                <Button positive={true} onClick={handleApply}>Apply</Button>
             </Modal.Actions>
         </Modal>
     );

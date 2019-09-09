@@ -104,6 +104,7 @@ const sensorSetup = (props: IProps) => {
                             onAdd={onAddNewSensor}
                             onClone={handleCloneSensor}
                             onRemove={handleRemoveSensor}
+                            readOnly={props.rtm.readOnly}
                         />
                     </Grid.Column>
                     <Grid.Column width={12}>

@@ -47,7 +47,7 @@ const sensorSetupDetailsCreateNew = (props: IProps) => {
                 id: Uuid.v4(),
                 name,
                 geolocation,
-                properties: []
+                parameters: []
             });
             props.onAdd(sensor);
         }

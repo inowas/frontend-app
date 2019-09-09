@@ -1,8 +1,8 @@
 import {Collection} from '../collection/Collection';
-import {ISensorProperty} from './Sensor.type';
+import {ISensorParameter} from './Sensor.type';
 
-export class ParameterCollection extends Collection<ISensorProperty> {
-    public static fromObject(obj: ISensorProperty[]) {
+export class ParameterCollection extends Collection<ISensorParameter> {
+    public static fromObject(obj: ISensorParameter[]) {
         return new ParameterCollection(obj);
     }
 
