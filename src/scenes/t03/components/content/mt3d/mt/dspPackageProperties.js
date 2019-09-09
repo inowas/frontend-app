@@ -19,7 +19,7 @@ class DspPackageProperties extends AbstractPackageProperties {
             return null;
         }
 
-        const {readonly} = this.props;
+        const {readOnly} = this.props;
         const {mtPackage} = this.state;
 
         return (
@@ -30,7 +30,7 @@ class DspPackageProperties extends AbstractPackageProperties {
                         type={'number'}
                         name={'al'}
                         value={mtPackage.al}
-                        disabled={readonly}
+                        disabled={readOnly}
                         onBlur={this.handleOnBlur(parseFloat)}
                         onChange={this.handleOnChange}
                         style={styles.inputFix}
@@ -44,7 +44,7 @@ class DspPackageProperties extends AbstractPackageProperties {
                             type={'number'}
                             name={'trpt'}
                             value={mtPackage.trpt}
-                            disabled={readonly}
+                            disabled={readOnly}
                             onBlur={this.handleOnBlur(parseFloat)}
                             onChange={this.handleOnChange}
                             style={styles.inputFix}
@@ -57,7 +57,7 @@ class DspPackageProperties extends AbstractPackageProperties {
                             type={'number'}
                             name={'trpv'}
                             value={mtPackage.trpv}
-                            disabled={readonly}
+                            disabled={readOnly}
                             onBlur={this.handleOnBlur(parseFloat)}
                             onChange={this.handleOnChange}
                             style={styles.inputFix}
@@ -72,7 +72,7 @@ class DspPackageProperties extends AbstractPackageProperties {
                             type={'number'}
                             name={'dmcoef'}
                             value={mtPackage.dmcoef}
-                            disabled={readonly}
+                            disabled={readOnly}
                             onBlur={this.handleOnBlur(parseFloat)}
                             onChange={this.handleOnChange}
                             style={styles.inputFix}
@@ -88,7 +88,7 @@ class DspPackageProperties extends AbstractPackageProperties {
 DspPackageProperties.propTypes = {
     mtPackage: PropTypes.instanceOf(FlopyMt3dMtdsp),
     onChange: PropTypes.func.isRequired,
-    readonly: PropTypes.bool.isRequired,
+    readOnly: PropTypes.bool.isRequired,
 };
 
 

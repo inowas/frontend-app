@@ -18,7 +18,7 @@ class BtnPackageProperties extends AbstractPackageProperties {
             return null;
         }
 
-        const {readonly} = this.props;
+        const {readOnly} = this.props;
         const {activeIndex, mtPackage} = this.state;
 
         return (
@@ -36,7 +36,7 @@ class BtnPackageProperties extends AbstractPackageProperties {
                                     type='number'
                                     name='ncomp'
                                     value={mtPackage.ncomp}
-                                    disabled={readonly}
+                                    disabled={readOnly}
                                     onBlur={this.handleOnBlur(parseInt)}
                                     onChange={this.handleOnChange}
                                     style={styles.inputFix}
@@ -49,7 +49,7 @@ class BtnPackageProperties extends AbstractPackageProperties {
                                     type={'number'}
                                     name={'mcomp'}
                                     value={mtPackage.mcomp}
-                                    disabled={readonly}
+                                    disabled={readOnly}
                                     onBlur={this.handleOnBlur(parseInt)}
                                     onChange={this.handleOnChange}
                                     style={styles.inputFix}
@@ -64,7 +64,7 @@ class BtnPackageProperties extends AbstractPackageProperties {
                                     type={'number'}
                                     name={'prsity'}
                                     value={mtPackage.prsity}
-                                    disabled={readonly}
+                                    disabled={readOnly}
                                     onBlur={this.handleOnBlur(parseFloat)}
                                     onChange={this.handleOnChange}
                                     style={styles.inputFix}
@@ -77,7 +77,7 @@ class BtnPackageProperties extends AbstractPackageProperties {
                                     type={'number'}
                                     name={'icbund'}
                                     value={mtPackage.icbund}
-                                    disabled={readonly}
+                                    disabled={readOnly}
                                     onBlur={this.handleOnBlur(parseFloat)}
                                     onChange={this.handleOnChange}
                                     style={styles.inputFix}
@@ -91,7 +91,7 @@ class BtnPackageProperties extends AbstractPackageProperties {
                                 type={'number'}
                                 name={'sconc'}
                                 value={mtPackage.sconc}
-                                disabled={readonly}
+                                disabled={readOnly}
                                 onBlur={this.handleOnBlur(parseFloat)}
                                 onChange={this.handleOnChange}
                                 style={styles.inputFix}
@@ -124,7 +124,7 @@ class BtnPackageProperties extends AbstractPackageProperties {
                                     type={'number'}
                                     name={'thkmin'}
                                     value={mtPackage.thkmin}
-                                    disabled={readonly}
+                                    disabled={readOnly}
                                     onBlur={this.handleOnBlur(parseFloat)}
                                     onChange={this.handleOnChange}
                                     style={styles.inputFix}
@@ -145,7 +145,7 @@ class BtnPackageProperties extends AbstractPackageProperties {
                                     type={'number'}
                                     name={'ifmtcn'}
                                     value={mtPackage.ifmtcn}
-                                    disabled={readonly}
+                                    disabled={readOnly}
                                     onBlur={this.handleOnBlur(parseInt)}
                                     onChange={this.handleOnChange}
                                     style={styles.inputFix}
@@ -158,7 +158,7 @@ class BtnPackageProperties extends AbstractPackageProperties {
                                     type={'number'}
                                     name={'ifmtnp'}
                                     value={mtPackage.ifmtnp}
-                                    disabled={readonly}
+                                    disabled={readOnly}
                                     onBlur={this.handleOnBlur(parseInt)}
                                     onChange={this.handleOnChange}
                                     style={styles.inputFix}
@@ -173,7 +173,7 @@ class BtnPackageProperties extends AbstractPackageProperties {
                                     type={'number'}
                                     name={'ifmtrf'}
                                     value={mtPackage.ifmtrf}
-                                    disabled={readonly}
+                                    disabled={readOnly}
                                     onBlur={this.handleOnBlur(parseInt)}
                                     onChange={this.handleOnChange}
                                     style={styles.inputFix}
@@ -186,7 +186,7 @@ class BtnPackageProperties extends AbstractPackageProperties {
                                     type={'number'}
                                     name={'ifmtdp'}
                                     value={mtPackage.ifmtdp}
-                                    disabled={readonly}
+                                    disabled={readOnly}
                                     onBlur={this.handleOnBlur(parseInt)}
                                     onChange={this.handleOnChange}
                                     style={styles.inputFix}
@@ -201,7 +201,7 @@ class BtnPackageProperties extends AbstractPackageProperties {
                                     type={'number'}
                                     name={'nprs'}
                                     value={mtPackage.nprs}
-                                    disabled={readonly}
+                                    disabled={readOnly}
                                     onBlur={this.handleOnBlur(parseInt)}
                                     onChange={this.handleOnChange}
                                     style={styles.inputFix}
@@ -214,7 +214,7 @@ class BtnPackageProperties extends AbstractPackageProperties {
                                     type={'number'}
                                     name={'nprobs'}
                                     value={mtPackage.nprobs}
-                                    disabled={readonly}
+                                    disabled={readOnly}
                                     onBlur={this.handleOnBlur(parseInt)}
                                     onChange={this.handleOnChange}
                                     style={styles.inputFix}
@@ -227,7 +227,7 @@ class BtnPackageProperties extends AbstractPackageProperties {
                                     type={'number'}
                                     name={'nprmas'}
                                     value={mtPackage.nprmas}
-                                    disabled={readonly}
+                                    disabled={readOnly}
                                     onBlur={this.handleOnBlur(parseInt)}
                                     onChange={this.handleOnChange}
                                     style={styles.inputFix}
@@ -248,7 +248,7 @@ class BtnPackageProperties extends AbstractPackageProperties {
                                     type={'number'}
                                     name={'dt0'}
                                     value={mtPackage.dt0}
-                                    disabled={readonly}
+                                    disabled={readOnly}
                                     onBlur={this.handleOnBlur(parseFloat)}
                                     onChange={this.handleOnChange}
                                     style={styles.inputFix}
@@ -261,7 +261,7 @@ class BtnPackageProperties extends AbstractPackageProperties {
                                     type={'number'}
                                     name={'mxstrn'}
                                     value={mtPackage.mxstrn}
-                                    disabled={readonly}
+                                    disabled={readOnly}
                                     onBlur={this.handleOnBlur(parseInt)}
                                     onChange={this.handleOnChange}
                                     style={styles.inputFix}
@@ -276,7 +276,7 @@ class BtnPackageProperties extends AbstractPackageProperties {
                                     type={'number'}
                                     name={'ttsmult'}
                                     value={mtPackage.ttsmult}
-                                    disabled={readonly}
+                                    disabled={readOnly}
                                     onBlur={this.handleOnBlur(parseFloat)}
                                     onChange={this.handleOnChange}
                                     style={styles.inputFix}
@@ -289,7 +289,7 @@ class BtnPackageProperties extends AbstractPackageProperties {
                                     type={'number'}
                                     name={'ttsmax'}
                                     value={mtPackage.ttsmax}
-                                    disabled={readonly}
+                                    disabled={readOnly}
                                     onBlur={this.handleOnBlur(parseFloat)}
                                     onChange={this.handleOnChange}
                                     style={styles.inputFix}
@@ -307,7 +307,7 @@ class BtnPackageProperties extends AbstractPackageProperties {
 BtnPackageProperties.propTypes = {
     mtPackage: PropTypes.instanceOf(FlopyMt3dMtbtn),
     onChange: PropTypes.func.isRequired,
-    readonly: PropTypes.bool.isRequired,
+    readOnly: PropTypes.bool.isRequired,
 };
 
 export default BtnPackageProperties;

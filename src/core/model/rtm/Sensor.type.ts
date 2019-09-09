@@ -1,26 +1,36 @@
-import {Point} from '../geometry/Cells.type';
+import {Point} from 'geojson';
 
 export interface ISensor {
     id: string;
     name: string;
-    geolocation: Point | null;
-    properties: ISensorProperty[];
+    geolocation: Point;
+    parameters: ISensorParameter[];
 }
 
-export interface ISensorProperty {
-    name: string;
+export interface ISensorParameter {
+    id: string;
+    type: string;
+    description: string;
     dataSource: IDataSource;
-    filters: Array<() => void>;
+    filters: IFilter[];
     data: IDateTimeValue[];
+}
+
+export type IFilter = Array<() => void>;
+
+export interface IQueryParams {
+    project: string;
+    sensor: string;
+    property: string;
 }
 
 export interface IDataSource {
     type: string;
-    server: string | null;
-    query: string | null;
+    server?: string;
+    queryParams?: IQueryParams;
 }
 
 export interface IDateTimeValue {
-    dateTime: string;
+    timeStamp: string;
     value: number;
 }

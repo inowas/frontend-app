@@ -98,7 +98,7 @@ class BoundaryDetails extends React.Component<IProps, IState> {
     };
 
     public layerOptions = () => {
-        if (!(this.props.soilmodel instanceof Soilmodel)) {
+        if (!(this.props.soilmodel)) {
             return [];
         }
 
@@ -135,7 +135,7 @@ class BoundaryDetails extends React.Component<IProps, IState> {
                 <Form.Dropdown
                     label={boundary.type === 'rch' ? 'Recharge option' : 'Evapotranspiration option'}
                     style={{zIndex: 1000}}
-                    selection={true}
+                    selection={!this.props.readOnly}
                     options={[
                         {key: 0, value: 1, text: '1: Top grid layer'},
                         {key: 1, value: 2, text: '2: Specified layer'},
@@ -144,16 +144,17 @@ class BoundaryDetails extends React.Component<IProps, IState> {
                     value={boundary.optionCode}
                     name={'optionCode'}
                     onChange={this.handleChange}
+                    disabled={this.props.readOnly}
                 />
                 }
-                <Form.Select
-                    disabled={(boundary instanceof RechargeBoundary ||
+                <Form.Dropdown
+                    disabled={this.props.readOnly || (boundary instanceof RechargeBoundary ||
                         boundary instanceof EvapotranspirationBoundary) && boundary.optionCode !== 2}
-                    loading={!(this.props.soilmodel instanceof Soilmodel)}
+                    loading={!(this.props.soilmodel)}
                     label={multipleLayers ? 'Selected layers' : 'Selected layer'}
                     style={{zIndex: 1000}}
                     multiple={multipleLayers}
-                    selection={true}
+                    selection={!this.props.readOnly}
                     options={this.layerOptions()}
                     value={multipleLayers ? boundary.layers : boundary.layers[0]}
                     name={'layers'}
@@ -208,6 +209,7 @@ class BoundaryDetails extends React.Component<IProps, IState> {
                             value={boundary.wellType}
                             name={'wellType'}
                             onChange={this.handleChange}
+                            disabled={this.props.readOnly}
                         />
                         }
                     </Form.Group>

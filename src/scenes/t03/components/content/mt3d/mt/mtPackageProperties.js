@@ -22,7 +22,7 @@ class MtPackageProperties extends AbstractPackageProperties {
             return null;
         }
 
-        const {readonly} = this.props;
+        const {readOnly} = this.props;
         const {mtPackage} = this.state;
 
         return (
@@ -37,7 +37,7 @@ class MtPackageProperties extends AbstractPackageProperties {
                             ]}
                             onChange={this.handleSelectExecutable}
                             value={mtPackage.exe_name}
-                            disabled={readonly}
+                            disabled={readOnly}
                         />
                     </Form.Field>
                     <Form.Field>
@@ -65,7 +65,7 @@ class MtPackageProperties extends AbstractPackageProperties {
 MtPackageProperties.propTypes = {
     mtPackage: PropTypes.instanceOf(FlopyMt3dMt),
     onChange: PropTypes.func.isRequired,
-    readonly: PropTypes.bool.isRequired,
+    readOnly: PropTypes.bool.isRequired,
 };
 
 

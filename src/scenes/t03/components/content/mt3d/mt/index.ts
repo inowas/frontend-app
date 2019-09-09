@@ -16,4 +16,4 @@ export {
     MtPackageProperties,
     RctPackageProperties,
     SsmPackageProperties,
-}
+};

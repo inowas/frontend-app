@@ -1,19 +1,17 @@
-import PropTypes from 'prop-types';
 import React from 'react';
 import {Form, Input} from 'semantic-ui-react';
-import AbstractPackageProperties from './AbstractPackageProperties';
+import ToggleableInput from '../../../../../shared/complexTools/ToggleableInput';
+import InfoPopup from '../../../../../shared/InfoPopup';
 import {documentation} from '../../../../defaults/transport';
-import FlopyMt3dMtrct from "../../../../../../core/model/flopy/packages/mt/FlopyMt3dMtrct";
-import InfoPopup from "../../../../../shared/InfoPopup";
-import ToggleableInput from "../../../../../shared/complexTools/ToggleableInput";
+import AbstractPackageProperties from './AbstractPackageProperties';
 
 class RctPackageProperties extends AbstractPackageProperties {
 
-    handleOnToggleableChange = (name, value) => this.handleOnBlur()({
+    public handleOnToggleableChange = (name: string, value: any) => this.handleOnBlur()({
         target: {name, value}
     });
 
-    render() {
+    public render() {
 
         if (!this.state.mtPackage) {
             return null;
@@ -91,7 +89,12 @@ class RctPackageProperties extends AbstractPackageProperties {
                             disabled={readOnly}
                             onBlur={this.handleOnBlur(parseFloat)}
                             onChange={this.handleOnChange}
-                            icon={this.renderInfoPopup(documentation.igetsc, 'IGETSC', 'bottom left')}
+                            icon={<InfoPopup
+                                description={documentation.igetsc}
+                                title={'IGETSC'}
+                                position={'bottom left'}
+                            />
+                            }
                         />
                     </Form.Field>
                 </Form.Group>
@@ -107,7 +110,7 @@ class RctPackageProperties extends AbstractPackageProperties {
                                 readOnly={readOnly}
                                 onChange={this.handleOnToggleableChange}
                                 placeholder={0}
-                                type='number'
+                                type="number"
                             />
                         </Form.Field>
                         <Form.Field width={1}>
@@ -131,7 +134,7 @@ class RctPackageProperties extends AbstractPackageProperties {
                                 readOnly={readOnly}
                                 onChange={this.handleOnToggleableChange}
                                 placeholder={0}
-                                type='number'
+                                type="number"
                             />
                         </Form.Field>
                         <Form.Field width={1}>
@@ -156,7 +159,7 @@ class RctPackageProperties extends AbstractPackageProperties {
                             readOnly={readOnly}
                             onChange={this.handleOnToggleableChange}
                             placeholder={0}
-                            type='number'
+                            type="number"
                         />
                     </Form.Field>
                     <Form.Field width={1}>
@@ -179,7 +182,7 @@ class RctPackageProperties extends AbstractPackageProperties {
                             readOnly={readOnly}
                             onChange={this.handleOnToggleableChange}
                             placeholder={0}
-                            type='number'
+                            type="number"
                         />
                     </Form.Field>
                     <Form.Field width={1}>
@@ -199,7 +202,7 @@ class RctPackageProperties extends AbstractPackageProperties {
                             readOnly={readOnly}
                             onChange={this.handleOnToggleableChange}
                             placeholder={0}
-                            type='number'
+                            type="number"
                         />
                     </Form.Field>
                     <Form.Field width={1}>
@@ -223,7 +226,7 @@ class RctPackageProperties extends AbstractPackageProperties {
                             readOnly={readOnly}
                             onChange={this.handleOnToggleableChange}
                             placeholder={0}
-                            type='number'
+                            type="number"
                         />
                     </Form.Field>
                     <Form.Field width={1}>
@@ -243,7 +246,7 @@ class RctPackageProperties extends AbstractPackageProperties {
                             readOnly={readOnly}
                             onChange={this.handleOnToggleableChange}
                             placeholder={0}
-                            type='number'
+                            type="number"
                         />
                     </Form.Field>
                     <Form.Field width={1}>
@@ -261,11 +264,5 @@ class RctPackageProperties extends AbstractPackageProperties {
         );
     }
 }
-
-RctPackageProperties.propTypes = {
-    mtPackage: PropTypes.instanceOf(FlopyMt3dMtrct),
-    onChange: PropTypes.func.isRequired,
-    readOnly: PropTypes.bool.isRequired,
-};
 
 export default RctPackageProperties;

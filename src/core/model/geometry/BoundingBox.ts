@@ -1,6 +1,6 @@
 import {AllGeoJSON} from '@turf/helpers';
 import {envelope} from '@turf/turf';
-import {GeoJSON} from 'geojson';
+import {GeoJSON, Point} from 'geojson';
 import {isEqual} from 'lodash';
 import md5 from 'md5';
 import {IBoundingBox} from './BoundingBox.type';
@@ -95,6 +95,46 @@ class BoundingBox {
             [xMin, yMin],
             [xMax, yMax]
         ]);
+    }
+
+    public static fromPoints(points: Point[]) {
+        if (points.length < 1) {
+            return new BoundingBox([[13.74, 51.03], [13.75, 51.04]]);
+        }
+
+        const firstPoint = points[0];
+        let [xMin, yMin] = firstPoint.coordinates;
+        let [xMax, yMax] = firstPoint.coordinates;
+
+        if (points.length === 1) {
+            xMin -= .01;
+            xMax += .01;
+            yMin -= .01;
+            yMax += .01;
+            return new BoundingBox([[xMin, yMin], [xMax, yMax]]);
+        }
+
+        points.forEach((p: Point) => {
+            const [x, y] = p.coordinates;
+            if (x < xMin) {
+                xMin = x;
+            }
+
+            if (x > xMax) {
+                xMax = x;
+            }
+
+            if (y < yMin) {
+                yMin = y;
+            }
+
+            if (y > yMax) {
+                yMax = y;
+            }
+        });
+
+        return new BoundingBox([[xMin, yMin], [xMax, yMax]]);
+
     }
 
     public static fromObject(obj: IBoundingBox) {

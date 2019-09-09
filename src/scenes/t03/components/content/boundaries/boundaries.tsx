@@ -226,6 +226,7 @@ class Boundaries extends React.Component<Props, IState> {
                                 onClick={this.handleBoundaryClick}
                                 onClone={this.onClone}
                                 onRemove={this.onRemove}
+                                readOnly={model.readOnly}
                                 selected={pid}
                                 types={types}
                             />

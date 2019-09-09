@@ -59,7 +59,7 @@ export const uploadRasterfileToApi = (
 
 export const uploadRasterfile = (
     file: File,
-    onSuccess: CallbackFunction<{hash: string}, void>,
+    onSuccess: CallbackFunction<{ hash: string }, void>,
     onError: ErrorCallbackFunction
 ) => {
     const uploadData = new FormData();

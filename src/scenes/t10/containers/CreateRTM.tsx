@@ -39,7 +39,7 @@ const createRTM = (props: IProps) => {
     const [tool] = useState<string>('T10');
 
     useEffect(() => {
-        fetchUrl('tools/T03', (data: IMetaData[]) => {
+        fetchUrl('tools/T10', (data: IMetaData[]) => {
             setModels(data);
             setFetchingModels(false);
         });

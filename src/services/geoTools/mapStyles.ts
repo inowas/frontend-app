@@ -216,6 +216,20 @@ const styles: IMapStyles = {
         fillColor: '#ed350c',
         fillOpacity: 0
     },
+    sensor_active: {
+        radius: 5,
+        color: 'black',
+        weight: 2,
+        fillColor: '#0288D1',
+        fillOpacity: 0.7
+    },
+    sensor: {
+        radius: 5,
+        color: 'black',
+        weight: 2,
+        fillColor: '#0288D1',
+        fillOpacity: 0.7
+    },
     default: {
         radius: 5,
         weight: 2,

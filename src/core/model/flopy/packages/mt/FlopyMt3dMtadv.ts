@@ -1,25 +1,7 @@
 import FlopyMt3dPackage from './FlopyMt3dPackage';
+import {FlopyMt3d} from './index';
 
 class FlopyMt3dMtadv extends FlopyMt3dPackage {
-
-    _mixelm = 3;
-    _percel = 0.75;
-    _mxpart = 800000;
-    _nadvfd = 1;
-    _itrack = 3;
-    _wd = 0.5;
-    _dceps = 1e-5;
-    _nplane = 2;
-    _npl = 10;
-    _nph = 40;
-    _npmin = 5;
-    _npmax = 80;
-    _nlsink = 0;
-    _npsink = 15;
-    _dchmoc = 0.0001;
-    _extension = 'adv';
-    _unitnumber = null;
-    _filenames = null;
 
     get mixelm() {
         return this._mixelm;
@@ -164,6 +146,33 @@ class FlopyMt3dMtadv extends FlopyMt3dPackage {
     set filenames(value) {
         this._filenames = value;
     }
+
+    public static create(mt: FlopyMt3d, obj = {}) {
+        const self = this.fromObject(obj);
+        if (mt instanceof FlopyMt3d) {
+            mt.setPackage(self);
+        }
+        return self;
+    }
+
+    private _mixelm = 3;
+    private _percel = 0.75;
+    private _mxpart = 800000;
+    private _nadvfd = 1;
+    private _itrack = 3;
+    private _wd = 0.5;
+    private _dceps = 1e-5;
+    private _nplane = 2;
+    private _npl = 10;
+    private _nph = 40;
+    private _npmin = 5;
+    private _npmax = 80;
+    private _nlsink = 0;
+    private _npsink = 15;
+    private _dchmoc = 0.0001;
+    private _extension = 'adv';
+    private _unitnumber = null;
+    private _filenames = null;
 }
 
 export default FlopyMt3dMtadv;

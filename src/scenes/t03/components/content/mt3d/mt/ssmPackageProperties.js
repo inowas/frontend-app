@@ -91,9 +91,9 @@ class SsmPackageProperties extends AbstractPackageProperties {
 
 SsmPackageProperties.propTypes = {
     mtPackage: PropTypes.instanceOf(FlopyMt3dMtssm),
-    mtPackages: PropTypes.instanceOf(FlopyModflow),
+    mfPackages: PropTypes.instanceOf(FlopyModflow),
     onChange: PropTypes.func.isRequired,
-    readonly: PropTypes.bool.isRequired,
+    readOnly: PropTypes.bool.isRequired,
 };
 
 
