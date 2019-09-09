@@ -15,6 +15,7 @@ interface IBoundaryListProps {
     onClick: (id: string) => any;
     onClone: (id: string) => any;
     onRemove: (id: string) => any;
+    readOnly: boolean;
     selected?: string;
     types?: BoundaryType[];
 }
@@ -38,7 +39,7 @@ class BoundaryList extends React.Component<IBoundaryListProps, IBoundaryListStat
     }
 
     public render() {
-        const {boundaries, types} = this.props;
+        const {boundaries, readOnly, types} = this.props;
 
         return (
             <Grid padded={true}>
@@ -50,13 +51,13 @@ class BoundaryList extends React.Component<IBoundaryListProps, IBoundaryListStat
                             icon={true}
                             labelPosition="left"
                             onClick={this.handleAdd(types[0])}
+                            disabled={readOnly}
                         >
                             <Icon name="plus"/>
                             Add
                         </Button>
                         :
                         <Form.Group>
-
                             <Button as="div" labelPosition="left">
                                 <Dropdown
                                     selection={true}
@@ -78,7 +79,14 @@ class BoundaryList extends React.Component<IBoundaryListProps, IBoundaryListStat
                                     value={this.state.selectedType}
                                     style={{minWidth: '120px', width: '120px'}}
                                 />
-                                <Dropdown text="Add" icon="add" labeled={true} button={true} className="icon blue">
+                                <Dropdown
+                                    text="Add"
+                                    icon="add"
+                                    labeled={true}
+                                    button={true}
+                                    className="icon blue"
+                                    disabled={readOnly}
+                                >
                                     <Dropdown.Menu>
                                         <Dropdown.Header>Choose type</Dropdown.Header>
                                         {this.boundaryTypes()
@@ -145,7 +153,7 @@ class BoundaryList extends React.Component<IBoundaryListProps, IBoundaryListStat
                         active={b.id === this.props.selected}
                         onClick={this.handleClick(b.id)}
                     >
-                        <Popup
+                        {!this.props.readOnly && <Popup
                             trigger={<Icon name="ellipsis horizontal"/>}
                             content={
                                 <div>
@@ -168,6 +176,7 @@ class BoundaryList extends React.Component<IBoundaryListProps, IBoundaryListStat
                             on={'click'}
                             position={'right center'}
                         />
+                        }
                         {b.name}
                     </Menu.Item>
                 ))}
