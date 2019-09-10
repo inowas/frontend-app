@@ -1,12 +1,13 @@
 export interface IStressPeriodData {
-    [key: number]: [number, number, number, number, number];
+    [stressPeriod: number]: [number, number, number, number, number];
 }
 
-export interface IFlopyModflowMfchd {
+export interface IFlopyModflowMfdrn {
+    ipakcb: number | null;
     stress_period_data: IStressPeriodData | [number, number, number, number, number, number] | null;
     dtype: null;
-    options: null;
-    extension: 'chd';
+    extension: 'drn';
+    options: string[] | null;
     unitnumber: number | null;
     filenames: string | string[] | null;
 }

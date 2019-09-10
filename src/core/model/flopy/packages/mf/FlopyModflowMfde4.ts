@@ -3,6 +3,35 @@ import {IFlopyModflowMfde4} from './FlopyModflowMfde4.type';
 
 export default class FlopyModflowMfde4 {
 
+    public static create() {
+        return new FlopyModflowMfde4({
+            itmx: 50,
+            mxup: 0,
+            mxlow: 0,
+            mxbw: 0,
+            ifreq: 3,
+            mutd4: 0,
+            accl: 1.0,
+            hclose: 1e-05,
+            iprd4: 1,
+            extension: 'de4',
+            unitnumber: null,
+            filenames: null
+        });
+    }
+
+    public static fromObject(obj: IFlopyModflowMfde4) {
+        return new FlopyModflowMfde4(obj);
+    }
+
+    private readonly _props: IFlopyModflowMfde4;
+
+    constructor(props: IFlopyModflowMfde4) {
+        this._props = props;
+    }
+
+    public toObject = () => (cloneDeep(this._props));
+
     get itmx() {
         return this._props.itmx;
     }
@@ -98,33 +127,4 @@ export default class FlopyModflowMfde4 {
     set filenames(value) {
         this._props.filenames = value;
     }
-
-    public static create() {
-        return new FlopyModflowMfde4({
-            itmx: 50,
-            mxup: 0,
-            mxlow: 0,
-            mxbw: 0,
-            ifreq: 3,
-            mutd4: 0,
-            accl: 1.0,
-            hclose: 1e-05,
-            iprd4: 1,
-            extension: 'de4',
-            unitnumber: null,
-            filenames: null
-        });
-    }
-
-    public static fromObject(obj: IFlopyModflowMfde4) {
-        return new FlopyModflowMfde4(obj);
-    }
-
-    private readonly _props: IFlopyModflowMfde4;
-
-    constructor(props: IFlopyModflowMfde4) {
-        this._props = props;
-    }
-
-    public toObject = () => (cloneDeep(this._props));
 }

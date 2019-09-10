@@ -1,6 +1,7 @@
 import {LineString} from 'geojson';
 import Uuid from 'uuid';
 import {FlopyModflow, FlopyModflowMfchd} from '../../../../../../core/model/flopy/packages/mf';
+import {IStressPeriodData} from '../../../../../../core/model/flopy/packages/mf/FlopyModflowMfchd.type';
 import {BoundingBox, Cells, Geometry, GridSize} from '../../../../../../core/model/geometry';
 import {ConstantHeadBoundary} from '../../../../../../core/model/modflow/boundaries';
 
@@ -35,8 +36,9 @@ const createConstantHeadBoundary = () => {
 
 test('It can instantiate FlopyModflowMfChd', () => {
     const model = new FlopyModflow();
-    const spData = {0: [1, 2, 4, 4, 5], 1: [1, 2, 4, 4, 5], 2: [1, 2, 4, 4, 5]};
-    const mfChd = FlopyModflowMfchd.create(model, {stress_period_data: spData});
+    const spData: IStressPeriodData = {0: [1, 2, 4, 4, 5], 1: [1, 2, 4, 4, 5], 2: [1, 2, 4, 4, 5]};
+    const mfChd = FlopyModflowMfchd.create();
+    mfChd.stress_period_data = spData;
     expect(mfChd).toBeInstanceOf(FlopyModflowMfchd);
     expect(mfChd.stress_period_data).toEqual(spData);
     expect(model.getPackage('chd')).toBeInstanceOf(FlopyModflowMfchd);
