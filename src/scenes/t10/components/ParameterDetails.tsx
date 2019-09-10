@@ -63,7 +63,7 @@ const parameterDetails = (props: IProps) => {
     const renderDataSourceDetails = (ds: IDataSource) => {
         if (ds.type === 'online') {
             return (
-                <OnlineDatasource datasource={ds} onChange={setDataSource}/>
+                <OnlineDatasource dataSource={ds} onChange={setDataSource}/>
             );
         }
 
@@ -73,7 +73,7 @@ const parameterDetails = (props: IProps) => {
     return (
         <Modal centered={false} onClose={props.onClose} closeIcon={true} open={true} dimmer={'blurring'}>
             <Modal.Header>Edit sensor property</Modal.Header>
-            <Modal.Content>
+            <Modal.Content scrolling={true}>
                 <Segment color={'grey'}>
                     <Form>
                         <Form.Group>
@@ -97,22 +97,20 @@ const parameterDetails = (props: IProps) => {
                                 value={parameterDescription}
                                 onChange={handleChange(setParameterDescription)}
                             />
+                            <Form.Dropdown
+                                label={'Data source'}
+                                value={dataSource.type}
+                                selection={true}
+                                options={[
+                                    {key: 0, value: 'noSource', text: 'No data source'},
+                                    {key: 1, value: 'online', text: 'Online'},
+                                ]}
+                                onChange={handleChangeDataSourceType}
+                            />
                         </Form.Group>
                     </Form>
                 </Segment>
                 <Segment color={'blue'}>
-                    <Form>
-                        <Form.Dropdown
-                            label={'Data source'}
-                            value={dataSource.type}
-                            selection={true}
-                            options={[
-                                {key: 0, value: 'noSource', text: 'No data source'},
-                                {key: 1, value: 'online', text: 'Online'},
-                            ]}
-                            onChange={handleChangeDataSourceType}
-                        />
-                    </Form>
                     {dataSource && renderDataSourceDetails(dataSource)}
                 </Segment>
             </Modal.Content>

@@ -16,18 +16,21 @@ export interface ISensorParameter {
     data: IDateTimeValue[];
 }
 
-export type IFilter = Array<() => void>;
+export type IFilter = () => void;
 
 export interface IQueryParams {
     project: string;
     sensor: string;
     property: string;
+    begin?: number;
+    end?: number;
 }
 
 export interface IDataSource {
     type: string;
     server?: string;
     queryParams?: IQueryParams;
+    range?: Array<number | null>;
 }
 
 export interface IDateTimeValue {
