@@ -82,6 +82,7 @@ const sensorSetupDetails = (props: IProps) => {
                 geometry={props.sensor.geolocation}
                 onChangeGeometry={handleChangeGeometry}
                 rtm={props.rtm}
+                sensor={props.sensor}
             />
             <Parameters parameters={props.sensor.parameters} onChange={handleChangeParameters} rtm={props.rtm}/>
         </div>
