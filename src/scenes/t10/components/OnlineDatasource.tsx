@@ -12,8 +12,9 @@ interface IProps {
 }
 
 export const servers = [{
-    url: 'https://uit-sensors.inowas.com',
-    pattern: ''
+    protocol: 'https',
+    url: 'uit-sensors.inowas.com',
+    path: 'sensors'
 }];
 
 interface ISensorMetaData {
@@ -76,19 +77,32 @@ const onlineDataSource = (props: IProps) => {
     const handleChange = (f: (v: any) => void) => (e: any, d: any) => f(d.value);
 
     const fetchServerMetadata = () => {
-        if (server) {
-            setFetchingMetaData(true);
-            fetchUrl(
-                new URL('/sensors/', server).toString(),
-                (d: ISensorMetaData[]) => {
-                    setSensorMetaData(d);
-                    setFetchingMetaData(false);
-                },
-                () => {
-                    setFetchingMetaData(false);
-                    setFetchingError(true);
-                });
+        if (!server) {
+            return;
         }
+
+        const filteredServers = servers.filter((s) => s.url = server);
+        if (filteredServers.length === 0) {
+            return;
+        }
+
+        const srv = filteredServers[0];
+        const url = new URL(
+            `${srv.path}/`,
+            `${srv.protocol}://${srv.url}/${srv.path}`
+        );
+
+        setFetchingMetaData(true);
+        fetchUrl(
+            url.toString(),
+            (d: ISensorMetaData[]) => {
+                setSensorMetaData(d);
+                setFetchingMetaData(false);
+            },
+            () => {
+                setFetchingMetaData(false);
+                setFetchingError(true);
+            });
     };
 
     const executeQuery = () => {
@@ -96,11 +110,22 @@ const onlineDataSource = (props: IProps) => {
             return;
         }
 
+        const filteredServers = servers.filter((s) => s.url = server);
+        if (filteredServers.length === 0) {
+            return;
+        }
+
+        const srv = filteredServers[0];
+
         setData(null);
         setFetchingError(false);
         setFetchingData(true);
 
-        const url = new URL(`sensors/project/${project}/sensor/${sensor}/property/${parameter}`, server);
+        const url = new URL(
+            `${srv.path}/project/${project}/sensor/${sensor}/property/${parameter}`,
+            `${srv.protocol}://${srv.url}`
+        );
+
         fetchUrl(
             url.toString(),
             (response: any) => {
@@ -224,9 +249,9 @@ const onlineDataSource = (props: IProps) => {
                     </Form>
                 </Grid.Column>
                 <Grid.Column width={10}>
-                    <Segment loading={fetchingData}>
+                    {server && <Segment loading={fetchingData}>
                         {renderData()}
-                    </Segment>
+                    </Segment>}
                 </Grid.Column>
             </Grid.Row>
         </Grid>
