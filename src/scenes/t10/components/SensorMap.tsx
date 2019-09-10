@@ -4,6 +4,7 @@ import {uniqueId} from 'lodash';
 import React, {useEffect, useRef, useState} from 'react';
 import {CircleMarker, FeatureGroup, Map} from 'react-leaflet';
 import {EditControl} from 'react-leaflet-draw';
+import uuidv4 from 'uuid/v4';
 import {GeoJson} from '../../../core/model/geometry/Geometry.type';
 import {Geometry} from '../../../core/model/modflow';
 import {Rtm, Sensor} from '../../../core/model/rtm';
@@ -30,17 +31,38 @@ const style = {
     }
 };
 
-const flyToZoomLevel: number = 15;
-
 const sensorMap = (props: IProps) => {
+    const [mapKey, setMapKey] = useState<string>(uuidv4());
     const [geometry, setGeometry] = useState<GeoJson | null>(
         props.geometry ? Geometry.fromGeoJson(props.geometry).toObject() : null
     );
     const refMap = useRef<Map>(null);
     const refPrevSensor = usePrevious<Sensor>(props.sensor);
 
+    const setBoundingBox = () => {
+        let bGeometry = props.rtm.geometry;
+        if (!bGeometry) {
+            bGeometry = Geometry.fromGeoJson({
+                type: 'Feature',
+                geometry: {
+                    type: 'Polygon',
+                    coordinates: [[[13.74, 51.03], [13.75, 51.03], [13.75, 51.04], [13.74, 51.04], [13.74, 51.03]]]
+                }
+            });
+        }
+        return bGeometry.getBoundsLatLng();
+    };
+
+    const [boundingBox] = useState<Array<[number, number]>>(setBoundingBox());
+
     useEffect(() => {
         setGeometry(props.geometry ? Geometry.fromGeoJson(props.geometry).toObject() : null);
+        if (props.geometry && refMap.current) {
+            refMap.current.leafletElement.panTo({
+                lat: props.geometry.coordinates[1],
+                lng: props.geometry.coordinates[0]
+            });
+        }
     }, [props.geometry]);
 
     useEffect(() => {
@@ -50,13 +72,14 @@ const sensorMap = (props: IProps) => {
                     lat: props.sensor.geolocation.coordinates[1],
                     lng: props.sensor.geolocation.coordinates[0]
                 };
-                refMap.current.leafletElement.flyTo(latLng, flyToZoomLevel);
+                refMap.current.leafletElement.flyTo(latLng);
             }
         }
     }, [props.sensor]);
 
     const handleCreated = (e: DrawEvents.Created) => {
         const cGeometry = Geometry.fromGeoJson(e.layer.toGeoJSON()).toObject() as Point;
+        setMapKey(uuidv4());
         props.onChangeGeometry(cGeometry);
         return setGeometry(cGeometry);
     };
@@ -112,7 +135,7 @@ const sensorMap = (props: IProps) => {
     };
 
     const renderSensors = (sensors: SensorCollection) => {
-        return sensors.all.filter((s) => props.sensor && s.id !== props.sensor.id).map((s) => {
+        return sensors.all.filter((s) => !props.sensor || (props.sensor && s.id !== props.sensor.id)).map((s) => {
             const rGeometry = Geometry.fromGeoJson(s.geolocation);
             return (
                 <CircleMarker
@@ -127,27 +150,17 @@ const sensorMap = (props: IProps) => {
         });
     };
 
-    let bGeometry = props.rtm.geometry;
-    if (!bGeometry) {
-        bGeometry = Geometry.fromGeoJson({
-            type: 'Feature',
-            geometry: {
-                type: 'Polygon',
-                coordinates: [[[13.74, 51.03], [13.75, 51.03], [13.75, 51.04], [13.74, 51.04], [13.74, 51.03]]]
-            }
-        });
-    }
-
     return (
         <Map
             style={style.map}
-            bounds={bGeometry.getBoundsLatLng()}
+            bounds={boundingBox}
             ref={refMap}
+            key={mapKey}
         >
             {refMap && refMap.current &&
             <CenterControl
                 map={refMap.current}
-                bounds={bGeometry.getBoundsLatLng()}
+                bounds={boundingBox}
             />
             }
             <BasicTileLayer/>
