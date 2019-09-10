@@ -89,7 +89,7 @@ const onlineDataSource = (props: IProps) => {
         const srv = filteredServers[0];
         const url = new URL(
             `${srv.path}/`,
-            `${srv.protocol}://${srv.url}/${srv.path}`
+            `${srv.protocol}://${srv.url}`
         );
 
         setFetchingMetaData(true);
