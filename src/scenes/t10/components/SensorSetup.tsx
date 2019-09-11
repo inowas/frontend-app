@@ -23,6 +23,16 @@ const sensorSetup = (props: IProps) => {
         setAddSensor(false);
     }, [selectedSensorId]);
 
+    useEffect(() => {
+            if (props.rtm.sensors.length === 0) {
+                return setSelectedSensorId(null);
+            }
+
+            setSelectedSensorId(props.rtm.sensors.first.id);
+        },
+        [props.rtm.sensors]
+    );
+
     const onAddNewSensor = () => {
         setAddSensor(true);
     };
@@ -37,6 +47,7 @@ const sensorSetup = (props: IProps) => {
         props.onChange(rtm);
         props.onSave(rtm);
         setAddSensor(false);
+        setSelectedSensorId(sensor.id);
     };
 
     const handleCloneSensor = (id: string) => {
@@ -50,6 +61,13 @@ const sensorSetup = (props: IProps) => {
         rtm.removeSensor(id);
         props.onChange(rtm);
         props.onSave(rtm);
+
+        if (rtm.sensors.length === 0) {
+            setSelectedSensorId(null);
+            return;
+        }
+
+        setSelectedSensorId(rtm.sensors.first.id);
     };
 
     const handleUpdateSensor = (sensor: Sensor) => {
