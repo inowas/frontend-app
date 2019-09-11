@@ -39,6 +39,9 @@ const toolNames = [
         slug: 'T09F',
         name: 'Sea level rise (inclined coast)',
     }, {
+        slug: 'T10',
+        name: 'Real time monitoring',
+    }, {
         slug: 'T11',
         name: 'MAR model selection',
     }, {

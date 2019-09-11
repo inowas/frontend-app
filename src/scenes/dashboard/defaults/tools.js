@@ -66,6 +66,13 @@ const availableTools = [
         role: ROLE_USER,
         instances: []
     }, {
+        slug: 'T10',
+        name: 'Real time monitoring',
+        path: '/tools/',
+        subPath: '',
+        role: ROLE_USER,
+        instances: []
+    }, {
         slug: 'T11',
         name: 'MAR model selection',
         path: '/tools/',
