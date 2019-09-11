@@ -254,11 +254,9 @@ const onlineDataSource = (props: IProps) => {
             );
         }
 
-        let filteredData = data;
-        if (minValueEnabled || maxValueEnabled) {
-            filteredData = filteredData.filter((v) => !(minValueEnabled && v.value < minValue));
-            filteredData = filteredData.filter((v) => !(maxValueEnabled && v.value > maxValue));
-        }
+        const filteredData = data
+            .filter((v) => !(minValueEnabled && v.value < minValue))
+            .filter((v) => !(maxValueEnabled && v.value > maxValue));
 
         return (
             <ResponsiveContainer height={300}>
@@ -399,8 +397,8 @@ const onlineDataSource = (props: IProps) => {
                         </Form>
                     </Segment>
                 </Grid.Column>
-                <Grid.Column width={8} loading={fetchingMetadata}>
-                    <Segment raised={true}>
+                <Grid.Column width={8}>
+                    <Segment raised={true} loading={fetchingMetadata}>
                         <Label as={'div'} color={'blue'} ribbon={true}>Value range</Label>
                         <Form>
                             <Form.Group>
@@ -441,8 +439,8 @@ const onlineDataSource = (props: IProps) => {
 
             {server &&
             <Grid.Row>
-                < Grid.Column>
-                    <Segment loading={fetchingData || fetchingMetadata} raised={true}>
+                <Grid.Column>
+                    <Segment loading={(fetchingData || fetchingMetadata)} raised={true}>
                         {!fetchingData && <Label as={'div'} color={'red'} ribbon={true}>Data</Label>}
                         {renderDiagram()}
                     </Segment>
