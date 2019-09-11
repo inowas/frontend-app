@@ -129,6 +129,7 @@ const parameters = (props: IProps) => {
                                 text: i.text,
                                 value: i.parameter
                             }))}
+                            style={{zIndex: 10000}}
                         />
                         <Form.Input
                             label={'Description'}

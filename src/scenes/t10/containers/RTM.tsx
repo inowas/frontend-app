@@ -121,7 +121,7 @@ const RTM = (props: IProps) => {
                 const basePath = path.split(':')[0];
                 return (
                     <Redirect
-                        to={basePath + props.match.params.id + '/sensor-visualization' + props.location.search}
+                        to={basePath + props.match.params.id + '/sensor-setup' + props.location.search}
                     />
                 );
         }
