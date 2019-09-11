@@ -24,11 +24,17 @@ const sensorSetup = (props: IProps) => {
     }, [selectedSensorId]);
 
     useEffect(() => {
+            if (selectedSensorId === null && props.rtm.sensors.length > 0) {
+                return setSelectedSensorId(props.rtm.sensors.first.id);
+            }
+
+            if (!props.rtm.sensors.findById(selectedSensorId as string) && props.rtm.sensors.length > 0) {
+                return setSelectedSensorId(props.rtm.sensors.first.id);
+            }
+
             if (props.rtm.sensors.length === 0) {
                 return setSelectedSensorId(null);
             }
-
-            setSelectedSensorId(props.rtm.sensors.first.id);
         },
         [props.rtm.sensors]
     );
