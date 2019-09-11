@@ -220,7 +220,7 @@ const styles: IMapStyles = {
         radius: 5,
         color: 'black',
         weight: 2,
-        fillColor: '#0288D1',
+        fillColor: '#FBBD08',
         fillOpacity: 0.7
     },
     sensor: {

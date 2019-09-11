@@ -1,7 +1,7 @@
 import {Point} from 'geojson';
 import {cloneDeep} from 'lodash';
-import React, {useState} from 'react';
-import {Form, Grid, Header, Segment} from 'semantic-ui-react';
+import React, {ChangeEvent, useState} from 'react';
+import {Form, Grid, Header, InputOnChangeData, Segment} from 'semantic-ui-react';
 import Uuid from 'uuid';
 import {Rtm, Sensor} from '../../../core/model/rtm';
 import ContentToolBar from '../../shared/ContentToolbar';
@@ -13,9 +13,14 @@ interface IProps {
     onCancel: () => void;
 }
 
-const sensorSetupDetailsCreateNew = (props: IProps) => {
+interface IActiveInput {
+    name: string;
+    value: string;
+}
 
+const sensorSetupDetailsCreateNew = (props: IProps) => {
     const [name, setName] = useState<string>('New Sensor');
+    const [activeInput, setActiveInput] = useState<IActiveInput | null>(null);
     const [geolocation, setGeolocation] = useState<Point | null>(null);
 
     const handleChange = (func: any) => (e: any, data: any) => {
@@ -23,10 +28,20 @@ const sensorSetupDetailsCreateNew = (props: IProps) => {
         func(value);
     };
 
-    const handleChangeGeolocation = (e: any, data: any) => {
-        if (geolocation) {
-            const n = data.name;
-            const value = parseFloat(data.value);
+    const handleLocalChange = (e: ChangeEvent<HTMLInputElement>, data: InputOnChangeData) => setActiveInput({
+        name: data.name,
+        value: data.value
+    });
+
+    const handleChangeGeolocation = () => {
+        if (geolocation && activeInput) {
+            const n = activeInput.name;
+            const value = parseFloat(activeInput.value);
+
+            if (isNaN(value)) {
+                setActiveInput(null);
+                return;
+            }
 
             const g = cloneDeep(geolocation);
             if (n === 'lat') {
@@ -37,6 +52,7 @@ const sensorSetupDetailsCreateNew = (props: IProps) => {
                 g.coordinates[0] = value;
             }
 
+            setActiveInput(null);
             setGeolocation(g);
         }
     };
@@ -75,14 +91,18 @@ const sensorSetupDetailsCreateNew = (props: IProps) => {
                                 <Form.Input
                                     label={'Lat'}
                                     name={'lat'}
-                                    value={geolocation.coordinates[1]}
-                                    onChange={handleChangeGeolocation}
+                                    value={activeInput && activeInput.name === 'lat' ?
+                                        activeInput.value : geolocation.coordinates[1]}
+                                    onBlur={handleChangeGeolocation}
+                                    onChange={handleLocalChange}
                                 />
                                 <Form.Input
                                     label={'Long'}
                                     name={'lon'}
-                                    value={geolocation.coordinates[0]}
-                                    onChange={handleChangeGeolocation}
+                                    value={activeInput && activeInput.name === 'lon' ?
+                                        activeInput.value : geolocation.coordinates[0]}
+                                    onBlur={handleChangeGeolocation}
+                                    onChange={handleLocalChange}
                                 />
                             </div>
                             }
@@ -96,7 +116,11 @@ const sensorSetupDetailsCreateNew = (props: IProps) => {
                             isError={false}
                             saveButton={true}
                         />
-                        <SensorMap rtm={props.rtm} onChangeGeometry={handleChangeGeometry}/>
+                        <SensorMap
+                            geometry={geolocation || undefined}
+                            rtm={props.rtm}
+                            onChangeGeometry={handleChangeGeometry}
+                        />
                     </Grid.Column>
                 </Grid.Row>
             </Grid>
