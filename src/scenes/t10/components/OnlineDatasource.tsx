@@ -2,7 +2,7 @@ import {uniqBy} from 'lodash';
 import moment from 'moment';
 import React, {useEffect, useState} from 'react';
 import {ResponsiveContainer, Scatter, ScatterChart, XAxis, YAxis} from 'recharts';
-import {Button, Form, Grid, Header, Label, Segment} from 'semantic-ui-react';
+import {Form, Grid, Header, Label, Segment} from 'semantic-ui-react';
 import {IDataSource, IDateTimeValue} from '../../../core/model/rtm/Sensor.type';
 import {fetchUrl} from '../../../services/api';
 
@@ -101,8 +101,12 @@ const onlineDataSource = (props: IProps) => {
 
     useEffect(() => {
         executeQuery();
+    }, [begin, end, beginEnabled, endEnabled]);
+
+    useEffect(() => {
+        executeQuery();
         updateDataSource();
-    }, [parameter, begin, end]);
+    }, [parameter]);
 
     useEffect(() => {
         updateDataSource();
@@ -128,6 +132,15 @@ const onlineDataSource = (props: IProps) => {
 
             props.onChange(ds);
         }
+    };
+
+    const handleChangeParameter = (e: any, d: any) => {
+        const {value} = d;
+        setParameter(value);
+        setBeginEnabled(false);
+        setEndEnabled(false);
+        setMinValueEnabled(false);
+        setMaxValueEnabled(false);
     };
 
     const handleChange = (f: (v: any) => void) => (e: any, d: any) => {
@@ -327,7 +340,7 @@ const onlineDataSource = (props: IProps) => {
                                     name={'parameter'}
                                     selection={true}
                                     value={parameter || undefined}
-                                    onChange={handleChange(setParameter)}
+                                    onChange={handleChangeParameter}
                                     options={sensorMetaData.filter((s) => s.project === project)
                                         .filter((s) => s.name === sensor).length === 0 ? [] :
                                         sensorMetaData.filter((s) => s.project === project)
@@ -348,7 +361,7 @@ const onlineDataSource = (props: IProps) => {
             {server &&
             <Grid.Row>
                 <Grid.Column width={8}>
-                    <Segment raised={true}>
+                    <Segment raised={true} loading={fetchingMetadata}>
                         <Label as={'div'} color={'blue'} ribbon={true}>Time range</Label>
                         <Form>
                             <Form.Group>
@@ -377,22 +390,16 @@ const onlineDataSource = (props: IProps) => {
                                 <Form.Input
                                     label={'End'}
                                     type={'date'}
-                                    value={moment.unix(end).format('YYYY-MM-DD')}
+                                    value={moment.unix(lEnd).format('YYYY-MM-DD')}
                                     disabled={!endEnabled}
                                     onChange={handleChange((d) => setLEnd(moment.utc(d).unix()))}
-                                    onBlur={handleBlur(() => setBegin(lEnd))}
+                                    onBlur={handleBlur(() => setEnd(lEnd))}
                                 />
                             </Form.Group>
-                            <Button
-                                content={'Run'}
-                                fluid={true}
-                                onClick={executeQuery}
-                                positive={true}
-                            />
                         </Form>
                     </Segment>
                 </Grid.Column>
-                <Grid.Column width={8}>
+                <Grid.Column width={8} loading={fetchingMetadata}>
                     <Segment raised={true}>
                         <Label as={'div'} color={'blue'} ribbon={true}>Value range</Label>
                         <Form>
@@ -435,7 +442,7 @@ const onlineDataSource = (props: IProps) => {
             {server &&
             <Grid.Row>
                 < Grid.Column>
-                    < Segment loading={fetchingData} raised={true}>
+                    <Segment loading={fetchingData || fetchingMetadata} raised={true}>
                         {!fetchingData && <Label as={'div'} color={'red'} ribbon={true}>Data</Label>}
                         {renderDiagram()}
                     </Segment>

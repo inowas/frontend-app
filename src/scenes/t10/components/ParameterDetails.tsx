@@ -71,7 +71,7 @@ const parameterDetails = (props: IProps) => {
     };
 
     return (
-        <Modal centered={false} onClose={props.onClose} closeIcon={true} open={true} dimmer={'blurring'}>
+        <Modal centered={false} onClose={props.onClose} open={true} dimmer={'blurring'}>
             <Modal.Header>Edit sensor property</Modal.Header>
             <Modal.Content scrolling={true}>
                 <Segment color={'grey'}>
