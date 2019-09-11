@@ -1,24 +1,26 @@
 import {Point} from 'geojson';
+import {DrawEvents} from 'leaflet';
 import {uniqueId} from 'lodash';
-import React from 'react';
-import {CircleMarker, FeatureGroup, GeoJSON, Map} from 'react-leaflet';
+import React, {useEffect, useRef, useState} from 'react';
+import {CircleMarker, FeatureGroup, Map} from 'react-leaflet';
 import {EditControl} from 'react-leaflet-draw';
+import uuidv4 from 'uuid/v4';
+import {GeoJson} from '../../../core/model/geometry/Geometry.type';
 import {Geometry} from '../../../core/model/modflow';
-import {Rtm} from '../../../core/model/rtm';
+import {Rtm, Sensor} from '../../../core/model/rtm';
 import {SensorCollection} from '../../../core/model/rtm/SensorCollection';
 import {getStyle} from '../../../services/geoTools/mapHelpers';
 import {BasicTileLayer} from '../../../services/geoTools/tileLayers';
 import CenterControl from '../../shared/leaflet/CenterControl';
+import {usePrevious} from '../../shared/simpleTools/helpers/customHooks';
 
 interface IProps {
+    readOnly?: boolean;
     rtm: Rtm;
     onChangeGeometry: (point: Point) => any;
     onToggleEditMode?: () => any;
     geometry?: Point;
-}
-
-interface IState {
-    geometry: any;
+    sensor?: Sensor;
 }
 
 const style = {
@@ -29,105 +31,18 @@ const style = {
     }
 };
 
-class SensorMap extends React.Component<IProps, IState> {
-    private map: any;
-    private mapInstance: any;
+const sensorMap = (props: IProps) => {
+    const [mapKey, setMapKey] = useState<string>(uuidv4());
+    const [geometry, setGeometry] = useState<GeoJson | null>(
+        props.geometry ? Geometry.fromGeoJson(props.geometry).toObject() : null
+    );
+    const refMap = useRef<Map>(null);
+    const refPrevSensor = usePrevious<Sensor>(props.sensor);
 
-    constructor(props: IProps) {
-        super(props);
-        this.state = {
-            geometry: props.geometry ? Geometry.fromGeoJson(props.geometry).toObject() : null
-        };
-    }
-
-    public componentWillReceiveProps(nextProps: IProps) {
-        if (nextProps.geometry) {
-            this.setState({
-                geometry: nextProps.geometry ? Geometry.fromGeoJson(nextProps.geometry).toObject() : null
-            });
-        }
-    }
-
-    public componentDidMount() {
-        this.map = this.mapInstance.leafletElement;
-    }
-
-    public onCreated = (e: any) => {
-        const geometry = Geometry.fromGeoJson(e.layer.toGeoJSON()).toObject() as Point;
-        this.props.onChangeGeometry(geometry);
-        this.setState({
-            geometry
-        });
-    };
-
-    public onEdited = (e: any) => {
-        e.layers.eachLayer((layer: any) => {
-            const geometry = Geometry.fromGeoJson(layer.toGeoJSON()).toObject() as Point;
-            this.setState({
-                geometry
-            });
-            this.props.onChangeGeometry(geometry);
-        });
-    };
-
-    public editControl = () => {
-        return (
-            <FeatureGroup>
-                <EditControl
-                    position="topright"
-                    draw={{
-                        circle: false,
-                        circlemarker: !this.state.geometry,
-                        marker: false,
-                        polyline: false,
-                        rectangle: false,
-                        polygon: false
-                    }}
-                    edit={{
-                        edit: !!this.state.geometry,
-                        remove: false
-                    }}
-                    onCreated={this.onCreated}
-                    onEdited={this.onEdited}
-                    onEditStart={this.props.onToggleEditMode}
-                    onEditStop={this.props.onToggleEditMode}
-                >
-                    {this.state.geometry && this.renderGeometry(Geometry.fromGeoJson(this.state.geometry))}
-                </EditControl>
-            </FeatureGroup>
-        );
-    };
-
-    public renderGeometry(geometry: Geometry) {
-        return (
-            <GeoJSON
-                key={uniqueId(geometry.hash())}
-                data={geometry.toGeoJSON()}
-                style={getStyle('sensor_active')}
-            />
-        );
-    }
-
-    public renderSensors(sensors: SensorCollection) {
-        return sensors.all.map((s) => {
-            const geometry = Geometry.fromGeoJson(s.geolocation);
-            return (
-                <CircleMarker
-                    key={uniqueId(geometry.hash())}
-                    center={[
-                        geometry.coordinates[1],
-                        geometry.coordinates[0]
-                    ]}
-                    {...getStyle('sensor')}
-                />
-            );
-        });
-    }
-
-    public render() {
-        let {geometry} = this.props.rtm;
-        if (!geometry) {
-            geometry = Geometry.fromGeoJson({
+    const setBoundingBox = () => {
+        let bGeometry = props.rtm.geometry;
+        if (!bGeometry) {
+            bGeometry = Geometry.fromGeoJson({
                 type: 'Feature',
                 geometry: {
                     type: 'Polygon',
@@ -135,25 +50,126 @@ class SensorMap extends React.Component<IProps, IState> {
                 }
             });
         }
+        return bGeometry.getBoundsLatLng();
+    };
+
+    const [boundingBox] = useState<Array<[number, number]>>(setBoundingBox());
+
+    useEffect(() => {
+        setGeometry(props.geometry ? Geometry.fromGeoJson(props.geometry).toObject() : null);
+        if (props.geometry && refMap.current) {
+            refMap.current.leafletElement.panTo({
+                lat: props.geometry.coordinates[1],
+                lng: props.geometry.coordinates[0]
+            });
+        }
+    }, [props.geometry]);
+
+    useEffect(() => {
+        if (refPrevSensor && props.sensor && refPrevSensor.id !== props.sensor.id) {
+            if (refMap && refMap.current) {
+                const latLng = {
+                    lat: props.sensor.geolocation.coordinates[1],
+                    lng: props.sensor.geolocation.coordinates[0]
+                };
+                refMap.current.leafletElement.flyTo(latLng);
+            }
+        }
+    }, [props.sensor]);
+
+    const handleCreated = (e: DrawEvents.Created) => {
+        const cGeometry = Geometry.fromGeoJson(e.layer.toGeoJSON()).toObject() as Point;
+        setMapKey(uuidv4());
+        props.onChangeGeometry(cGeometry);
+        return setGeometry(cGeometry);
+    };
+
+    const handleEdited = (e: DrawEvents.Edited) => {
+        e.layers.eachLayer((layer: any) => {
+            const cGeometry = Geometry.fromGeoJson(layer.toGeoJSON()).toObject() as Point;
+            props.onChangeGeometry(cGeometry);
+            return setGeometry(cGeometry);
+        });
+    };
+
+    const editControl = () => {
+        return (
+            <FeatureGroup>
+                <EditControl
+                    position="topright"
+                    draw={{
+                        circle: false,
+                        circlemarker: !geometry && !props.readOnly,
+                        marker: false,
+                        polyline: false,
+                        rectangle: false,
+                        polygon: false
+                    }}
+                    edit={{
+                        edit: !!geometry && !props.readOnly,
+                        remove: false
+                    }}
+                    onCreated={handleCreated}
+                    onEdited={handleEdited}
+                    onEditStart={props.onToggleEditMode}
+                    onEditStop={props.onToggleEditMode}
+                />
+                {geometry && renderGeometry()}
+            </FeatureGroup>
+        );
+    };
+
+    const renderGeometry = () => {
+        const rGeometry = Geometry.fromGeoJson(geometry);
 
         return (
-            <Map
-                style={style.map}
-                bounds={geometry.getBoundsLatLng()}
-                ref={(e) => {
-                    this.mapInstance = e;
-                }}
-            >
-                <CenterControl
-                    map={this.map}
-                    bounds={geometry.getBoundsLatLng()}
-                />
-                <BasicTileLayer/>
-                {this.editControl()}
-                {this.renderSensors(this.props.rtm.sensors)}
-            </Map>
+            <CircleMarker
+                key={uniqueId(rGeometry.hash())}
+                center={[
+                    rGeometry.coordinates[1],
+                    rGeometry.coordinates[0]
+                ]}
+                {...getStyle('sensor_active')}
+            />
         );
-    }
-}
+    };
 
-export default SensorMap;
+    const renderSensors = (sensors: SensorCollection) => {
+        return sensors.all.filter((s) => !props.sensor || (props.sensor && s.id !== props.sensor.id)).map((s) => {
+            const rGeometry = Geometry.fromGeoJson(s.geolocation);
+            return (
+                <CircleMarker
+                    key={uniqueId(rGeometry.hash())}
+                    center={[
+                        rGeometry.coordinates[1],
+                        rGeometry.coordinates[0]
+                    ]}
+                    {...getStyle('sensor')}
+                />
+            );
+        });
+    };
+
+    return (
+        <Map
+            style={style.map}
+            bounds={boundingBox}
+            ref={refMap}
+            key={mapKey}
+        >
+            {refMap && refMap.current &&
+            <CenterControl
+                map={refMap.current}
+                bounds={boundingBox}
+            />
+            }
+            <BasicTileLayer/>
+            {editControl()}
+            <FeatureGroup>
+                {renderSensors(props.rtm.sensors)}
+            </FeatureGroup>
+        </Map>
+    );
+};
+
+export default sensorMap;
