@@ -2,11 +2,9 @@ import {Collection} from '../../collection/Collection';
 import Rule from './Rule';
 import {IRule} from './Rule.type';
 
-class RulesCollection extends Collection<Rule> {
-    public static fromArray(array: IRule[]) {
-        const rc = new RulesCollection();
-        rc.items = array.map((item) => Rule.fromObject(item));
-        return rc;
+class RulesCollection extends Collection<IRule> {
+    public static fromObject(obj: IRule[]) {
+        return new RulesCollection(obj);
     }
 
     public findByValue(value: number) {
@@ -27,8 +25,8 @@ class RulesCollection extends Collection<Rule> {
         )).length > 0;
     }
 
-    public toArray() {
-        return this.all.map((item) => item.toObject());
+    public toObject() {
+        return this.all;
     }
 }
 

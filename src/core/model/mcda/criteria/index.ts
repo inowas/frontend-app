@@ -1,6 +1,6 @@
-import Criterion from './Criterion';
 import CriteriaCollection from './CriteriaCollection';
 import CriteriaRelation from './CriteriaRelation';
+import Criterion from './Criterion';
 import Rule from './Rule';
 import RulesCollection from './RulesCollection';
 import Weight from './Weight';
