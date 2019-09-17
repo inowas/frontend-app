@@ -33,6 +33,12 @@ export interface IDataSource {
     range?: Array<number | null>;
 }
 
+export interface ICSVDataSource extends IDataSource {
+    type: string;
+    property?: string | number | null;
+    url?: string;
+}
+
 export interface IDateTimeValue {
     timeStamp: string;
     value: number;
