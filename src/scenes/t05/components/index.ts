@@ -1,9 +1,9 @@
-import CriteriaEditor from './criteriaEditor';
 import {CriteriaDataEditor, CriteriaNavigation, CriteriaRasterMap} from './cd';
-import WeightAssignmentEditor from './weightAssignment/weightAssignment';
+import ConstraintsEditor from './cm/constraintsEditor';
+import CriteriaEditor from './criteriaEditor';
 import SuitabilityEditor from './su/suitabilityEditor';
 import ToolNavigation from './toolNavigation';
-import ConstraintsEditor from './cm/constraintsEditor';
+import WeightAssignmentEditor from './weightAssignment/weightAssignment';
 
 export {
     CriteriaEditor,
@@ -14,4 +14,4 @@ export {
     SuitabilityEditor,
     ToolNavigation,
     WeightAssignmentEditor
-}
+};

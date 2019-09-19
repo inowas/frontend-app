@@ -10,4 +10,4 @@ export {
     CriteriaRasterMap,
     CriteriaRasterUpload,
     CriteriaReclassification
-}
+};

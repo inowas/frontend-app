@@ -1,15 +1,15 @@
 import {cloneDeep as _cloneDeep} from 'lodash';
 import math from 'mathjs';
+import uuidv4 from 'uuid/v4';
+import {BoundingBox, GridSize} from '../geometry';
+import {Array2D} from '../geometry/Array2D.type';
 import {multiplyElementWise} from './calculations';
 import {CriteriaCollection, WeightAssignmentsCollection} from './criteria';
-import {GisMap} from './gis';
+import {GisMap, Raster} from './gis';
 import {IMCDA} from './MCDA.type';
 import Suitability from './Suitability';
-import { BoundingBox } from '../geometry';
-import {Array2D} from '../geometry/Array2D.type';
 
 class MCDA {
-
     get criteriaCollection() {
         return CriteriaCollection.fromObject(this._props.criteria);
     }
@@ -27,11 +27,19 @@ class MCDA {
     }
 
     get constraints() {
-        return GisMap.fromObject(this._props.constraints);
+        return this._props.constraints ? GisMap.fromObject(this._props.constraints) : null;
     }
 
     set constraints(value) {
-        this._props.constraints = value.toObject();
+        this._props.constraints = value ? value.toObject() : undefined;
+    }
+
+    get gridSize() {
+        return GridSize.fromObject(this._props.gridSize);
+    }
+
+    set gridSize(value) {
+        this._props.gridSize = value.toObject();
     }
 
     get withAhp() {
@@ -54,6 +62,22 @@ class MCDA {
         return new MCDA(obj);
     }
 
+    public static fromDefaults() {
+        return new MCDA({
+            criteria: [],
+            gridSize: {
+                n_x: 10,
+                n_y: 10
+            },
+            suitability: {
+                raster: (Raster.fromDefaults()).toObject(),
+                rules: []
+            },
+            weightAssignments: [],
+            withAhp: false
+        });
+    }
+
     protected _props: IMCDA;
 
     constructor(obj: IMCDA) {
@@ -66,8 +90,9 @@ class MCDA {
 
     public toPayload() {
         return ({
-            constraints: this.constraints.toPayload(),
+            constraints: this.constraints ? this.constraints.toPayload() : undefined,
             criteria: this.criteriaCollection.toPayload(),
+            gridSize: this.gridSize,
             suitability: this.suitability.toPayload(),
             weight_assignments: this.weightAssignmentsCollection.toObject(),
             with_ahp: this.withAhp
@@ -75,6 +100,21 @@ class MCDA {
     }
 
     public calculate() {
+        let rasterData = new Raster({
+            boundingBox: [],
+            gridSize: this.gridSize.toObject(),
+            data: [],
+            id: uuidv4(),
+            isFetching: false,
+            min: 0,
+            max: 0,
+            url: ''
+        });
+
+        if (this.suitability.raster) {
+            rasterData = _cloneDeep(this.suitability.raster);
+        }
+
         const criteria = !this.withAhp ? this.criteriaCollection.all : this.criteriaCollection.all.filter(
             (c) => c.parent
         );
@@ -99,11 +139,9 @@ class MCDA {
             return math.dotMultiply(criterion.suitability.data, weight);
         });
 
-        const rasterData = _cloneDeep(this.suitability.raster);
-
         rasterData.boundingBox = BoundingBox.fromObject(criteria[0].suitability.boundingBox);
-        rasterData.gridSize = this.constraints.gridSize;
-        // TODO rasterData.data = math.add(...data);
+        rasterData.gridSize = this.gridSize;
+        // TODO: rasterData.data = math.add(...data);
 
         // STEP 2: multiply with constraints
         this.criteriaCollection.all.forEach((c) => {
@@ -114,7 +152,7 @@ class MCDA {
         });
 
         // STEP 3: multiply global constraints
-        if (this.constraints.raster && this.constraints.raster.data.length > 0) {
+        if (this.constraints && this.constraints.raster && this.constraints.raster.data.length > 0) {
             rasterData.data = multiplyElementWise(rasterData.data, this.constraints.raster.data) as Array2D<number>;
         }
 

@@ -20,6 +20,13 @@ class Suitability {
         return RulesCollection.fromObject(this._props.rules);
     }
 
+    public static fromDefault() {
+        return new Suitability({
+            raster: Raster.fromDefaults().toObject(),
+            rules: []
+        });
+    }
+
     public static fromObject(obj: ISuitability) {
         return new Suitability(obj);
     }

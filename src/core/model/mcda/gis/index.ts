@@ -8,4 +8,4 @@ export {
     GisAreasCollection,
     GisMap,
     Raster
-}
+};

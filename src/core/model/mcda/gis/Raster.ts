@@ -1,7 +1,7 @@
 import uuidv4 from 'uuid/v4';
 import {rainbowFactory} from '../../../../scenes/shared/rasterData/helpers';
 import {heatMapColors} from '../../../../scenes/t05/defaults/gis';
-import {ILegendItem} from '../../../../services/rainbowvis/types';
+import {ILegendItemContinuous, ILegendItemDiscrete} from '../../../../services/rainbowvis/types';
 import {BoundingBox, GridSize} from '../../geometry';
 import {Array2D} from '../../geometry/Array2D.type';
 import {RulesCollection} from '../criteria';
@@ -167,12 +167,11 @@ class Raster {
     }
 
     public generateLegend(rulesCollection: RulesCollection, type = 'discrete', mode = 'unclassified') {
-        const legend: ILegendItem[] = [];
-        let rainbow;
         if (type === 'discrete') {
+            const dLegend: ILegendItemDiscrete[] = [];
             if (mode === 'unclassified' || rulesCollection.length === 0) {
                 this.uniqueValues.sort((a, b) => a - b).forEach((v, key) => {
-                        legend.push({
+                    dLegend.push({
                             color: key < heatMapColors.discrete.length ? heatMapColors.discrete[key] : '#000000',
                             isContinuous: false,
                             label: v.toFixed(2),
@@ -180,28 +179,28 @@ class Raster {
                         });
                     }
                 );
-                return legend;
+                return dLegend;
             }
             rulesCollection.orderBy('from').all.forEach((rule) => {
-                legend.push({
+                dLegend.push({
                     color: rule.color,
                     isContinuous: false,
                     label: rule.name,
                     value: rule.from
                 });
             });
-            return legend;
+            return dLegend;
         }
         if (type === 'continuous') {
             if (mode === 'unclassified' || rulesCollection.length === 0) {
-                rainbow = rainbowFactory({
+                return rainbowFactory({
                     min: this.min,
                     max: this.max
                 }, heatMapColors.terrain);
-                return rainbow;
             }
+            const cLegend: ILegendItemContinuous[] = [];
             rulesCollection.orderBy('from').all.forEach((rule) => {
-                legend.push({
+                cLegend.push({
                     color: rule.color,
                     label: rule.name,
                     fromOperator: rule.fromOperator,
@@ -211,8 +210,12 @@ class Raster {
                     to: rule.to
                 });
             });
-            legend.push({color: '#fff', label: 'Not Classified'});
-            return legend;
+            cLegend.push({
+                color: '#fff',
+                label: 'Not Classified',
+                isContinuous: true
+            });
+            return cLegend;
         }
     }
 }

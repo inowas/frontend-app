@@ -1,112 +1,107 @@
-import PropTypes from 'prop-types';
-import React from 'react';
-import {Criterion, Rule} from '../../../../core/model/mcda/criteria';
-import {Button, Grid, Icon, Message, Segment, Table} from 'semantic-ui-react';
-import CriteriaReclassificationModal from './criteriaReclassificationModal';
+import * as math from 'mathjs';
+import React, {useState} from 'react';
 import {CartesianGrid, Scatter, ScatterChart, XAxis, YAxis} from 'recharts';
-import * as math from 'mathjs'
-import CriteriaReclassificationDiscrete from './criteriaReclassificationDiscrete';
+import {Button, Grid, Icon, Message, Segment, Table} from 'semantic-ui-react';
+import {Criterion, Rule} from '../../../../core/model/mcda/criteria';
+import {CriteriaType} from '../../../../core/model/mcda/criteria/Criterion.type';
+import {IRule} from '../../../../core/model/mcda/criteria/Rule.type';
 import {dropData} from '../../../../services/api';
+import CriteriaReclassificationDiscrete from './criteriaReclassificationDiscrete';
+import CriteriaReclassificationModal from './criteriaReclassificationModal';
 
-class CriteriaReclassification extends React.Component {
+interface IProps {
+    criterion: Criterion;
+    onChange: (criterion: Criterion) => any;
+    readOnly: boolean;
+}
 
-    constructor(props) {
-        super(props);
+const criteriaReclassification = (props: IProps) => {
+    const [selectedRule, setSelectedRule] = useState<IRule | null>(null);
+    const [showInfo, setShowInfo] = useState<boolean>(true);
 
-        this.state = {
-            selectedRule: null,
-            showInfo: true
-        }
-    }
-
-    saveRaster(criterion) {
+    const saveRaster = (criterion: Criterion) => {
         dropData(
             criterion.suitability.data,
-            response => {
+            (response) => {
                 criterion.suitability.url = response.filename;
-                this.props.onChange(criterion);
+                props.onChange(criterion);
             },
-            response => {
+            (response) => {
                 throw new Error(response);
             }
         );
-    }
-
-    handleCloseModal = () => this.setState({selectedRule: null});
-
-    handleDismiss = () => this.setState({showInfo: false});
-
-    handleAddRule = () => {
-        if (this.props.readOnly) {
-            return null;
-        }
-        const rule = new Rule();
-        this.setState({
-            selectedRule: rule.toObject()
-        });
     };
 
-    handleEditRule = id => {
-        if (this.props.readOnly) {
+    const handleClickEditRule = (id: string) => () => handleEditRule(id);
+    const handleClickRemoveRule = (id: string) => () => handleRemoveRule(id);
+    const handleCloseModal = () => setSelectedRule(null);
+
+    const handleDismiss = () => setShowInfo(false);
+
+    const handleAddRule = () => {
+        if (props.readOnly) {
             return null;
         }
-        const rule = this.props.criterion.rulesCollection.findById(id);
+        const rule = Rule.fromDefaults();
+        setSelectedRule(rule.toObject);
+    };
+
+    const handleEditRule = (id: string) => {
+        if (props.readOnly) {
+            return null;
+        }
+        const rule = props.criterion.rulesCollection.findById(id);
         if (rule) {
-            this.setState({
-                selectedRule: rule.toObject()
-            });
+            setSelectedRule(rule);
         }
     };
 
-    handleRemoveRule = id => {
-        if (this.props.readOnly) {
+    const handleRemoveRule = (id: string) => {
+        if (props.readOnly) {
             return null;
         }
-        const criterion = this.props.criterion;
-        criterion.rulesCollection.items = criterion.rulesCollection.all.filter(rule => rule.id !== id);
+        const criterion = props.criterion;
+        criterion.rulesCollection.items = criterion.rulesCollection.all.filter((rule) => rule.id !== id);
         criterion.calculateSuitability();
         criterion.step = 2;
-        return this.props.onChange(criterion);
+        return props.onChange(criterion);
     };
 
-    handleClickCalculate = () => {
-        if (this.props.readOnly) {
+    const handleClickCalculate = () => {
+        if (props.readOnly) {
             return null;
         }
-        const criterion = this.props.criterion;
+        const criterion = props.criterion;
         criterion.calculateSuitability();
         criterion.step = 3;
-        return this.saveRaster(criterion);
+        return saveRaster(criterion);
     };
 
-    handleChangeRule = rule => {
-        if (this.props.readOnly) {
+    const handleChangeRule = (rule: Rule) => {
+        if (props.readOnly) {
             return null;
         }
-        if (!(rule instanceof Rule)) {
-            throw new Error('Rule expected to be instance of Rule.');
-        }
-        rule.from = parseFloat(rule.from);
-        rule.to = parseFloat(rule.to);
-        const criterion = this.props.criterion;
+
+        rule.from = rule.from;
+        rule.to = rule.to;
+        const criterion = props.criterion;
         criterion.rulesCollection.update(rule);
         criterion.step = 2;
-        this.handleCloseModal();
-        return this.props.onChange(criterion);
+        handleCloseModal();
+        return props.onChange(criterion);
     };
 
-    renderEditorContinuous() {
-        const {showInfo} = this.state;
-        const {criterion, readOnly} = this.props;
+    const renderEditorContinuous = () => {
+        const {criterion, readOnly} = props;
         const raster = criterion.raster;
 
         if (!criterion.rulesCollection || criterion.rulesCollection.length === 0) {
             return (
-                <Message warning>
+                <Message warning={true}>
                     <Message.Header>No data found</Message.Header>
                     <p>You need to upload a raster file before adding reclassification rules.</p>
                 </Message>
-            )
+            );
         }
 
         const rules = criterion.rulesCollection.orderBy('to', 'desc');
@@ -117,15 +112,15 @@ class CriteriaReclassification extends React.Component {
             if (filteredRules.length > 0) {
                 const rule = filteredRules[0];
                 if (rule.type === 'calc') {
-                    const value = math.eval(rule.expression, {min: raster.min, max: raster.max, x: x});
-                    data.push({x: x, y: value});
+                    const value = math.eval(rule.expression, {min: raster.min, max: raster.max, x});
+                    data.push({x, y: value});
                 }
                 if (rule.type === 'fixed') {
-                    data.push({x: x, y: parseFloat(rule.value)});
+                    data.push({x, y: rule.value});
                 }
             }
             if (filteredRules.length === 0) {
-                data.push({x: x, y: 0});
+                data.push({x, y: 0});
             }
         }
 
@@ -134,7 +129,7 @@ class CriteriaReclassification extends React.Component {
                 {showInfo &&
                 <Grid.Row>
                     <Grid.Column width={16}>
-                        <Message onDismiss={this.handleDismiss}>
+                        <Message onDismiss={handleDismiss}>
                             <Message.Header>Reclassification for continuous values</Message.Header>
                             <p>
                                 Classes are defined by intervals of cell values and a corresponding suitability value
@@ -158,20 +153,34 @@ class CriteriaReclassification extends React.Component {
                 }
                 <Grid.Row>
                     <Grid.Column width={5}>
-                            <Segment textAlign='center' inverted color='grey' secondary>
-                                Commands
-                            </Segment>
-                            <Segment>
-                                <Button disabled={readOnly} primary icon fluid labelPosition='left' onClick={this.handleAddRule}>
-                                    <Icon name='add'/>
-                                    Add Class
-                                </Button>
-                                <br/>
-                                <Button disabled={readOnly} positive icon fluid labelPosition='left' onClick={this.handleClickCalculate}>
-                                    <Icon name='calculator'/>
-                                    Perform reclassification
-                                </Button>
-                            </Segment>
+                        <Segment textAlign="center" inverted={true} color="grey" secondary={true}>
+                            Commands
+                        </Segment>
+                        <Segment>
+                            <Button
+                                disabled={readOnly}
+                                primary={true}
+                                icon={true}
+                                fluid={true}
+                                labelPosition="left"
+                                onClick={handleAddRule}
+                            >
+                                <Icon name="add"/>
+                                Add Class
+                            </Button>
+                            <br/>
+                            <Button
+                                disabled={readOnly}
+                                positive={true}
+                                icon={true}
+                                fluid={true}
+                                labelPosition="left"
+                                onClick={handleClickCalculate}
+                            >
+                                <Icon name="calculator"/>
+                                Perform reclassification
+                            </Button>
+                        </Segment>
                     </Grid.Column>
                     <Grid.Column width={11}>
                         <Table>
@@ -187,7 +196,7 @@ class CriteriaReclassification extends React.Component {
                                 {rules.all.map((rule, key) =>
                                     <Table.Row key={key}>
                                         <Table.Cell>
-                                            <Icon name='circle' style={{color: rule.color}}/>
+                                            <Icon name="circle" style={{color: rule.color}}/>
                                         </Table.Cell>
                                         <Table.Cell>
                                             {rule.name}
@@ -201,14 +210,14 @@ class CriteriaReclassification extends React.Component {
                                         <Table.Cell>
                                             {rule.type === 'calc' ? rule.expression : rule.value}
                                         </Table.Cell>
-                                        <Table.Cell textAlign='right'>
+                                        <Table.Cell textAlign="right">
                                             {!readOnly &&
                                             <Button.Group>
-                                                {this.props.criterion.rulesCollection.isError(rule) &&
-                                                <Button negative icon='warning sign'/>
+                                                {props.criterion.rulesCollection.isError(Rule.fromObject(rule)) &&
+                                                <Button negative={true} icon="warning sign"/>
                                                 }
-                                                <Button onClick={() => this.handleEditRule(rule.id)} icon='edit'/>
-                                                <Button onClick={() => this.handleRemoveRule(rule.id)} icon='trash'/>
+                                                <Button onClick={handleClickEditRule(rule.id)} icon="edit"/>
+                                                <Button onClick={handleClickRemoveRule(rule.id)} icon="trash"/>
                                             </Button.Group>
                                             }
                                         </Table.Cell>
@@ -227,17 +236,17 @@ class CriteriaReclassification extends React.Component {
                             margin={{top: 5, right: 30, left: 20, bottom: 5}}
                         >
                             <CartesianGrid strokeDasharray="3 3"/>
-                            <XAxis type="number" dataKey={'x'} domain={[Math.floor(raster.min), Math.ceil(raster.max)]}
-                                   name='criterion'/>
-                            <YAxis type="number" dataKey={'y'} domain={[0, 1]} name='suitability'/>
+                            <XAxis
+                                type="number"
+                                dataKey={'x'}
+                                domain={[Math.floor(raster.min), Math.ceil(raster.max)]}
+                                name="criterion"
+                            />
+                            <YAxis type="number" dataKey={'y'} domain={[0, 1]} name="suitability"/>
                             <Scatter
                                 name="Suitability"
                                 line={{stroke: '#8884d8', strokeWidth: 1}}
                                 data={data}
-                                shape={() => {
-                                    return null;
-                                }}
-                                dataKey='suitability'
                             />
                         </ScatterChart>
                     </Grid.Column>
@@ -245,40 +254,29 @@ class CriteriaReclassification extends React.Component {
                 }
             </Grid>
         );
-    }
+    };
 
-    render() {
-        const {criterion, readOnly} = this.props;
-        const rule = this.state.selectedRule;
-
-        return (
-            <div>
-                {rule &&
-                <CriteriaReclassificationModal
-                    onSave={this.handleChangeRule}
-                    onClose={this.handleCloseModal}
-                    rule={Rule.fromObject(rule)}
-                />
-                }
-                {criterion.type === 'continuous' &&
-                this.renderEditorContinuous()
-                }
-                {criterion.type === 'discrete' &&
-                <CriteriaReclassificationDiscrete
-                    criterion={criterion}
-                    onChange={this.props.onChange}
-                    readOnly={readOnly}
-                />
-                }
-            </div>
-        );
-    }
-}
-
-CriteriaReclassification.propTypes = {
-    criterion: PropTypes.instanceOf(Criterion).isRequired,
-    onChange: PropTypes.func.isRequired,
-    readOnly: PropTypes.bool
+    return (
+        <div>
+            {selectedRule &&
+            <CriteriaReclassificationModal
+                onSave={handleChangeRule}
+                onClose={handleCloseModal}
+                rule={Rule.fromObject(selectedRule)}
+            />
+            }
+            {props.criterion.type === CriteriaType.CONTINUOUS &&
+            renderEditorContinuous()
+            }
+            {props.criterion.type === 'discrete' &&
+            <CriteriaReclassificationDiscrete
+                criterion={props.criterion}
+                onChange={props.onChange}
+                readOnly={props.readOnly}
+            />
+            }
+        </div>
+    );
 };
 
-export default CriteriaReclassification;
+export default criteriaReclassification;

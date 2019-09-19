@@ -1,11 +1,15 @@
 import MCDA from '../../../core/model/mcda/MCDA';
 
-const getMenuItems = mcda => {
+export interface IMenuItem {
+    name: string;
+    property: string;
+    status: {
+        val: string;
+        msg: string | null;
+    } | null;
+}
 
-    if (!(mcda instanceof MCDA)) {
-        throw new Error('T05 ToolNavigation expects parameter of type MCDA.');
-    }
-
+export const getMenuItems = (mcda: MCDA): IMenuItem[] => {
     const criteriaStatus = () => {
         if (mcda.weightAssignmentsCollection.length > 0) {
             return {
@@ -63,7 +67,7 @@ const getMenuItems = mcda => {
                 msg: 'Criteria data is needed first.'
             };
         }
-        if (mcda.constraints.raster && mcda.constraints.raster.data.length > 0) {
+        if (mcda.constraints && mcda.constraints.raster && mcda.constraints.raster.data.length > 0) {
             return {
                 val: 'success',
                 msg: null
@@ -116,5 +120,3 @@ const getMenuItems = mcda => {
         }
     ];
 };
-
-export default getMenuItems;

@@ -1,8 +1,7 @@
 import React, {Fragment} from 'react';
 import {Button, Icon, Segment, Table} from 'semantic-ui-react';
-import {Criterion} from '../../../../core/model/mcda/criteria';
+import {ICriterion} from '../../../../core/model/mcda/criteria/Criterion.type';
 import MCDA from '../../../../core/model/mcda/MCDA';
-import {retrieveDroppedData} from '../../../../services/api';
 
 interface IPointObject {
     x: number;
@@ -16,15 +15,10 @@ interface ICellAnalyzerProps {
     onClose(): any;
 }
 
-export class CellAnalyzer extends React.PureComponent<ICellAnalyzerProps> {
-    constructor(props: ICellAnalyzerProps) {
-        super(props);
-    }
+const cellAnalyzer = (props: ICellAnalyzerProps) => {
+    const {onClose, cell, mcda} = props;
 
-    public renderCriterion(criterion: Criterion) {
-        const raster = criterion.raster;
-        const {cell} = this.props;
-
+    const renderCriterion = (criterion: ICriterion) => {
         /* TODO: criteria raster are not available at this point
         return (
             <Table.Row>
@@ -32,13 +26,11 @@ export class CellAnalyzer extends React.PureComponent<ICellAnalyzerProps> {
                 <Table.Cell>{raster.data[cell.y][cell.x]}</Table.Cell>
             </Table.Row>
         );*/
-    }
+    };
 
-    public renderSuitability() {
-        const {cell} = this.props;
-
-        const value = this.props.mcda.suitability.raster.data[cell.y][cell.x];
-        const rule = this.props.mcda.suitability.rulesCollection.findByValue(value);
+    const renderSuitability = () => {
+        const value = props.mcda.suitability.raster.data[cell.y][cell.x];
+        const rule = props.mcda.suitability.rulesCollection.findByValue(value);
 
         return (
             <Fragment>
@@ -52,41 +44,39 @@ export class CellAnalyzer extends React.PureComponent<ICellAnalyzerProps> {
                 </Table.Row>
             </Fragment>
         );
-    }
+    };
 
-    public render() {
-        const {onClose, cell, mcda} = this.props;
+    return (
+        <div>
+            <Button
+                fluid={true}
+                primary={true}
+                icon={true}
+                labelPosition="left"
+                onClick={onClose}
+            >
+                <Icon name="arrow circle left"/>
+                Back
+            </Button>
+            <Segment textAlign="center" inverted={true} color="grey" secondary={true}>
+                Cell Analyzer
+            </Segment>
+            <Table>
+                <Table.Body>
+                    <Table.Row>
+                        <Table.Cell>
+                            Cell
+                        </Table.Cell>
+                        <Table.Cell>
+                            x: {cell.x}, y: {cell.y}
+                        </Table.Cell>
+                    </Table.Row>
+                    {mcda.criteriaCollection.all.map((criterion: ICriterion) => renderCriterion(criterion))}
+                    {renderSuitability()}
+                </Table.Body>
+            </Table>
+        </div>
+    );
+};
 
-        return (
-            <div>
-                <Button
-                    fluid={true}
-                    primary={true}
-                    icon={true}
-                    labelPosition="left"
-                    onClick={onClose}
-                >
-                    <Icon name="arrow circle left"/>
-                    Back
-                </Button>
-                <Segment textAlign="center" inverted={true} color="grey" secondary={true}>
-                    Cell Analyzer
-                </Segment>
-                <Table>
-                    <Table.Body>
-                        <Table.Row>
-                            <Table.Cell>
-                                Cell
-                            </Table.Cell>
-                            <Table.Cell>
-                                x: {cell.x}, y: {cell.y}
-                            </Table.Cell>
-                        </Table.Row>
-                        {mcda.criteriaCollection.all.map((criterion: Criterion) => this.renderCriterion(criterion))}
-                        {this.renderSuitability()}
-                    </Table.Body>
-                </Table>
-            </div>
-        );
-    }
-}
+export default cellAnalyzer;

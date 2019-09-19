@@ -3,7 +3,8 @@ import * as math from 'mathjs';
 import uuidv4 from 'uuid/v4';
 import {Array2D} from '../../geometry/Array2D.type';
 import Raster from '../gis/Raster';
-import {ICriterion} from './Criterion.type';
+import Suitability from '../Suitability';
+import {CriteriaType, ICriterion} from './Criterion.type';
 import RulesCollection from './RulesCollection';
 
 class Criterion {
@@ -64,11 +65,11 @@ class Criterion {
         this._props.rules = value.toObject();
     }
 
-    get suitability(): Raster {
-        return Raster.fromObject(this._props.suitability);
+    get suitability(): Suitability {
+        return Suitability.fromObject(this._props.suitability);
     }
 
-    set suitability(value: Raster) {
+    set suitability(value: Suitability) {
         this._props.suitability = value.toObject();
     }
 
@@ -94,6 +95,22 @@ class Criterion {
 
     set step(value) {
         this._props.step = value;
+    }
+
+    public static fromDefaults() {
+        return new Criterion({
+            id: uuidv4(),
+            parent: null,
+            name: 'New Criterion',
+            type: CriteriaType.CONTINUOUS,
+            unit: '-',
+            raster: Raster.fromDefaults().toObject(),
+            rules: [],
+            suitability: Suitability.fromDefault().toObject(),
+            constraintRaster: Raster.fromDefaults().toObject(),
+            constraintRules: [],
+            step: 0
+        });
     }
 
     public static fromObject(obj: ICriterion) {
@@ -162,11 +179,11 @@ class Criterion {
 
     public calculateConstraints() {
         this.constraintRaster = this.calculateRaster(this.raster, this.constraintRules);
-        this.suitability = this.calculateRaster(this.raster, this.rulesCollection, this.constraintRaster);
+        this.suitability.raster = this.calculateRaster(this.raster, this.rulesCollection, this.constraintRaster);
     }
 
     public calculateSuitability() {
-        this.suitability = this.calculateRaster(this.raster, this.rulesCollection, this.constraintRaster);
+        this.suitability.raster = this.calculateRaster(this.raster, this.rulesCollection, this.constraintRaster);
     }
 
     public generateLegend(mode = 'unclassified') {

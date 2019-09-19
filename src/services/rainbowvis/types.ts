@@ -13,12 +13,12 @@ export interface ILegendItem {
 
 export interface ILegendItemContinuous extends ILegendItem {
     color: string;
-    from: number;
-    fromOperator: '>' | '>=';
+    from?: number;
+    fromOperator?: '>' | '>=';
     isContinuous: true;
     label: string;
-    toOperator: '<' | '<=';
-    to: number;
+    toOperator?: '<' | '<=';
+    to?: number;
 }
 
 export interface ILegendItemDiscrete extends ILegendItem {
