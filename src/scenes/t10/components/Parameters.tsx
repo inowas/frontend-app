@@ -150,7 +150,7 @@ const parameters = (props: IProps) => {
             {editParameter &&
             <ParameterDetails
                 rtm={props.rtm}
-                sensorProperty={props.parameters.findById(editParameter)}
+                parameter={props.parameters.findById(editParameter)}
                 onChange={handleChangeProperty}
                 onClose={handleClose}
             />

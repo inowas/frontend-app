@@ -7,7 +7,7 @@ import {parameterList} from './Parameters';
 
 interface IProps {
     rtm: Rtm;
-    sensorProperty: ISensorParameter | null;
+    parameter: ISensorParameter | null;
     onChange: (property: ISensorParameter) => void;
     onClose: () => void;
 }
@@ -21,12 +21,12 @@ const parameterDetails = (props: IProps) => {
     const [data, setData] = useState<IDateTimeValue[]>([]);
 
     useEffect(() => {
-        if (props.sensorProperty) {
-            setParameterType(props.sensorProperty.type);
-            setParameterDescription(props.sensorProperty.description);
-            setDataSource(props.sensorProperty.dataSource);
-            setFilters(props.sensorProperty.filters);
-            setData(props.sensorProperty.data);
+        if (props.parameter) {
+            setParameterType(props.parameter.type);
+            setParameterDescription(props.parameter.description);
+            setDataSource(props.parameter.dataSource);
+            setFilters(props.parameter.filters);
+            setData(props.parameter.data);
         }
     }, []);
 
@@ -36,10 +36,10 @@ const parameterDetails = (props: IProps) => {
     };
 
     const handleApply = () => {
-        if (props.sensorProperty) {
+        if (props.parameter) {
             const property = {
-                ...props.sensorProperty,
-                id: props.sensorProperty.id,
+                ...props.parameter,
+                id: props.parameter.id,
                 type: parameterType,
                 description: parameterDescription,
                 dataSource,
@@ -52,7 +52,7 @@ const parameterDetails = (props: IProps) => {
         }
     };
 
-    if (!props.sensorProperty) {
+    if (!props.parameter) {
         return null;
     }
 
