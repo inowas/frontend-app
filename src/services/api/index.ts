@@ -322,7 +322,7 @@ export const dropData = (
 
 export const retrieveDroppedData = (
     filename: string,
-    onSuccess: CallbackFunction<Array3D<number>, void>,
+    onSuccess: CallbackFunction<any, void>,
     onError: ErrorCallbackFunction
 ) => {
     const url = DATADROPPER_URL + '/' + filename;

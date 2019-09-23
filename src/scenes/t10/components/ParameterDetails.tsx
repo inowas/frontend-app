@@ -2,7 +2,7 @@ import React, {useEffect, useState} from 'react';
 import {Button, Form, Modal, Segment} from 'semantic-ui-react';
 import {Rtm} from '../../../core/model/rtm';
 import {IDataSource, IDateTimeValue, IFilter, ISensorParameter} from '../../../core/model/rtm/Sensor.type';
-import {OnlineDatasource} from './index';
+import {CSVDatasource, OnlineDatasource} from './index';
 import {parameterList} from './Parameters';
 
 interface IProps {
@@ -61,6 +61,12 @@ const parameterDetails = (props: IProps) => {
     };
 
     const renderDataSourceDetails = (ds: IDataSource) => {
+        if (ds.type === 'csv') {
+            return (
+                <CSVDatasource dataSource={ds} onChange={setDataSource}/>
+            );
+        }
+
         if (ds.type === 'online') {
             return (
                 <OnlineDatasource dataSource={ds} onChange={setDataSource}/>
@@ -104,6 +110,7 @@ const parameterDetails = (props: IProps) => {
                                 options={[
                                     {key: 0, value: 'noSource', text: 'No data source'},
                                     {key: 1, value: 'online', text: 'Online'},
+                                    {key: 2, value: 'csv', text: 'CSV'}
                                 ]}
                                 onChange={handleChangeDataSourceType}
                             />
