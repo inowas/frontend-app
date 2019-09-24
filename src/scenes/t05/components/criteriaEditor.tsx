@@ -45,7 +45,7 @@ interface IProps {
     toolName: string;
     onChange: (mcda: MCDA) => any;
     readOnly: boolean;
-    routeTo: () => any;
+    routeTo: (route: string) => void;
 }
 
 const criteriaEditor = (props: IProps) => {
@@ -192,6 +192,10 @@ const criteriaEditor = (props: IProps) => {
         })
     };
 
+    const handleClickRouteToT04 = (route: string) => () => {
+        return props.routeTo(route);
+    };
+
     return (
         <Grid>
             <Grid.Row>
@@ -201,7 +205,13 @@ const criteriaEditor = (props: IProps) => {
                         <Message.Header>Choose your criteria</Message.Header>
                         <p>For managed aquifer recharge (MAR) MCDA you can find information of former scientific
                             works and recommendations for criteria in our database:
-                            <Button basic={true} style={styles.link} onClick={props.routeTo}>T04</Button>
+                            <Button
+                                basic={true}
+                                style={styles.link}
+                                onClick={handleClickRouteToT04('/tools/t04')}
+                            >
+                                T04
+                            </Button>
                             Do not forget to specify, if a criteria is described by continuous or discrete values.
                         </p>
                         <p><b>Analytical Hierarchy Process</b> <i>(Saaty, 1980)</i>: Choose this method, to separate

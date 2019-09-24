@@ -1,4 +1,4 @@
-import {IRaster} from '../gis/Raster.type';
+import {IRasterLayer} from '../gis/RasterLayer.type';
 import {ISuitability} from '../Suitability.type';
 import {IRule} from './Rule.type';
 
@@ -31,10 +31,10 @@ export interface ICriterion extends IIndexSignature {
     name: string;
     type: CriteriaType;
     unit: string;
-    raster: IRaster;
+    raster: IRasterLayer;
     rules: IRule[];
     suitability: ISuitability;
-    constraintRaster: IRaster;
+    constraintRaster: IRasterLayer;
     constraintRules: IRule[];
     step: number;
 }

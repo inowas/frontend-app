@@ -1,7 +1,7 @@
 import {Geometry} from '../../geometry';
-import {IGisArea} from './GisArea.type';
+import {IVectorLayer} from './VectorLayer.type';
 
-class GisArea {
+class VectorLayer {
 
     get id() {
         return this._props.id;
@@ -35,13 +35,13 @@ class GisArea {
         this._props.geometry = value.toObject();
     }
 
-    public static fromObject(obj: IGisArea) {
-        return new GisArea(obj);
+    public static fromObject(obj: IVectorLayer) {
+        return new VectorLayer(obj);
     }
 
-    protected _props: IGisArea;
+    protected _props: IVectorLayer;
 
-    constructor(obj: IGisArea) {
+    constructor(obj: IVectorLayer) {
         this._props = obj;
     }
 
@@ -50,4 +50,4 @@ class GisArea {
     }
 }
 
-export default GisArea;
+export default VectorLayer;

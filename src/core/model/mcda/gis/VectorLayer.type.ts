@@ -1,6 +1,6 @@
 import {IGeometry} from '../../geometry/Geometry.type';
 
-export interface IGisArea {
+export interface IVectorLayer {
     id: string;
     color: string;
     type: string; // TODO

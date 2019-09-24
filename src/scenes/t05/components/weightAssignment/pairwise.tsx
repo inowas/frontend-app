@@ -24,6 +24,7 @@ const styles = {
     }
 };
 
+// @ts-ignore
 const SliderWithTooltip = Slider.createSliderWithTooltip(Slider);
 
 const fromSliderValue = (value: number) => {
@@ -145,7 +146,7 @@ const pairwiseComparison = (props: IProps) => {
                             {relations.map((relation, key) =>
                                 <Grid.Row key={key}>
                                     <Grid.Column width={5}>
-                                        {relation.from.name}
+                                        {/*TODO: relation.from.name*/}
                                     </Grid.Column>
                                     <Grid.Column width={6}>
                                         <SliderWithTooltip
@@ -163,7 +164,7 @@ const pairwiseComparison = (props: IProps) => {
                                         />
                                     </Grid.Column>
                                     <Grid.Column width={5} textAlign="right">
-                                        {relation.to.name}
+                                        {relation.to}
                                     </Grid.Column>
                                 </Grid.Row>
                             )}

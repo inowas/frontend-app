@@ -4,7 +4,7 @@ import {Dimmer, Loader, MenuItemProps, Message, Step} from 'semantic-ui-react';
 import {MCDA} from '../../../../core/model/mcda';
 import {Criterion} from '../../../../core/model/mcda/criteria';
 import {ICriterion} from '../../../../core/model/mcda/criteria/Criterion.type';
-import {Raster} from '../../../../core/model/mcda/gis';
+import {RasterLayer} from '../../../../core/model/mcda/gis';
 import {ITask, retrieveRasters} from '../../../../services/api/rasterHelper';
 import {usePrevious} from '../../../shared/simpleTools/helpers/customHooks';
 import CriteriaDataConstraints from './criteriaDataConstraints';
@@ -33,7 +33,7 @@ const criteriaDataEditor = (props: IProps) => {
             (prevCriterion && nextCriterion && (
                 (nextCriterion.raster.url !== prevCriterion.raster.url) ||
                 (nextCriterion.constraintRaster.url !== prevCriterion.constraintRaster.url) ||
-                (nextCriterion.suitability.url !== prevCriterion.suitability.url)
+                (nextCriterion.suitability.raster.url !== prevCriterion.suitability.raster.url)
             ));
 
         if (fetchRasters) {
@@ -65,22 +65,22 @@ const criteriaDataEditor = (props: IProps) => {
             {
                 raster: cCriterion.raster,
                 oldUrl: prevCriterion ? prevCriterion.raster.url : '',
-                onSuccess: (response: Raster) => {
+                onSuccess: (response: RasterLayer) => {
                     cCriterion.raster = response;
                 }
             },
             {
                 raster: cCriterion.constraintRaster,
                 oldUrl: prevCriterion ? prevCriterion.constraintRaster.url : '',
-                onSuccess: (response: Raster) => {
+                onSuccess: (response: RasterLayer) => {
                     cCriterion.constraintRaster = response;
                 }
             },
             {
-                raster: cCriterion.suitability,
-                oldUrl: prevCriterion ? prevCriterion.suitability.url : '',
-                onSuccess: (response: Raster) => {
-                    cCriterion.suitability = response;
+                raster: cCriterion.suitability.raster,
+                oldUrl: prevCriterion ? prevCriterion.suitability.raster.url : '',
+                onSuccess: (response: RasterLayer) => {
+                    cCriterion.suitability.raster = response;
                 }
             },
         ];

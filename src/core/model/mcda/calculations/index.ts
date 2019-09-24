@@ -6,14 +6,15 @@ const getRandomIndex = (n: number) => {
     return indices[n - 1];
 };
 
-export const multiplyElementWise = (m1: Array2D<number>, m2: Array2D<number>) => {
+export const multiplyElementWise = (m1: Array2D<number>, m2: Array2D<number>): Array2D<number> => {
     const dimCol = m1[0].length === m2[0].length ? m1[0].length : null;
     const dimRow = m1.length === m2.length ? m1.length : null;
-    const m3 = new Array(dimRow).fill(0).map(() => new Array(dimCol).fill(0));
 
     if (!dimCol || !dimRow) {
         throw new Error('Matrices m1 and m2 need to have the same dimensions.');
     }
+
+    const m3 = new Array(dimRow).fill(0).map(() => new Array(dimCol).fill(0)) as Array2D<number>;
 
     for (let row = 0; row <= dimRow - 1; row++) {
         for (let col = 0; col <= dimCol - 1; col++) {
@@ -41,7 +42,7 @@ export const calculatePwcWeights = (criteria: string[], relations: ICriteriaRela
         lambda: number;
         ci: number;
         cr: number;
-        [criterion: string]: number | IResult;
+        [criterion: string]: any;
     }
 
     interface IResult {

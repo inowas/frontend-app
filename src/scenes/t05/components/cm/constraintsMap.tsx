@@ -7,15 +7,15 @@ import {pure} from 'recompose';
 import {Button, Popup} from 'semantic-ui-react';
 import uuidv4 from 'uuid/v4';
 import {Geometry} from '../../../../core/model/geometry';
-import {GisArea, GisAreasCollection, GisMap} from '../../../../core/model/mcda/gis';
+import {Gis, VectorLayer, VectorLayersCollection} from '../../../../core/model/mcda/gis';
 import ActiveCellsLayer from '../../../../services/geoTools/activeCellsLayer';
 import {BasicTileLayer} from '../../../../services/geoTools/tileLayers';
 import {heatMapColors} from '../../defaults/gis';
 import CriteriaRasterMap from '../cd/criteriaRasterMap';
 
 interface IProps {
-    map: GisMap;
-    onChange: (map: GisMap) => any;
+    map: Gis;
+    onChange: (map: Gis) => any;
     mode: string;
     readOnly: boolean;
 }
@@ -34,7 +34,7 @@ const constraintsMap = (props: IProps) => {
     const handleCreateHole = (e: DrawEvents.Created) => {
         const polygon = e.layer.toGeoJSON();
 
-        const hole = GisArea.fromObject({
+        const hole = VectorLayer.fromObject({
             id: uuidv4(),
             type: 'hole',
             color: 'red',
@@ -42,7 +42,7 @@ const constraintsMap = (props: IProps) => {
         });
 
         const map = props.map;
-        map.areasCollection.add(hole.toObject());
+        map.vectorLayers.add(hole.toObject());
 
         setRefreshKey(uuidv4());
         return props.onChange(map);
@@ -51,7 +51,7 @@ const constraintsMap = (props: IProps) => {
     // TODO: Delete single shapes
     const handleDeleted = () => {
         const map = props.map;
-        map.areasCollection = new GisAreasCollection();
+        map.vectorLayers = new VectorLayersCollection();
         return props.onChange(map);
     };
 
@@ -59,14 +59,14 @@ const constraintsMap = (props: IProps) => {
         const map = props.map;
 
         e.layers.eachLayer((layer: any) => {
-            const area = map.areasCollection.findById(layer.options.id);
+            const area = map.vectorLayers.findById(layer.options.id);
 
             if (!area) {
                 return null;
             }
 
             area.geometry = Geometry.fromGeoJson(layer.toGeoJSON().geometry).toObject();
-            map.areasCollection.update(area);
+            map.vectorLayers.update(area);
         });
 
         setRefreshKey(uuidv4());
@@ -103,7 +103,7 @@ const constraintsMap = (props: IProps) => {
                     onEdited={handleEdited}
                     ref={refDrawControl}
                 />
-                {map.areasCollection.all.map((area) => {
+                {map.vectorLayers.all.map((area) => {
                     return (
                         <Polygon
                             id={area.id}
@@ -158,11 +158,11 @@ const constraintsMap = (props: IProps) => {
             </Button.Group>
             {props.mode === 'raster' &&
             <CriteriaRasterMap
-                raster={props.map.raster}
+                raster={props.map.rasterLayer}
                 showBasicLayer={true}
                 showButton={false}
                 showLegend={true}
-                legend={props.map.raster.generateRainbow(heatMapColors.colorBlind)}
+                legend={props.map.rasterLayer.generateRainbow(heatMapColors.colorBlind)}
             />
             }
             {props.mode !== 'raster' && props.map.boundingBox &&

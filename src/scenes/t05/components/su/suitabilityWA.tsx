@@ -59,7 +59,7 @@ const suitabilityWeightAssignment = (props: IProps) => {
         }
 
         const criteriaDataIsConsistent = cMcda.criteria.filter(
-            (criterion) => criterion.suitability.url !== '' && criterion.suitability.data.length === 0
+            (criterion) => criterion.suitability.raster.url !== '' && criterion.suitability.raster.data.length === 0
         ).length === 0;
 
         const criteriaConstraintsAreConsistent = cMcda.criteria.filter(
@@ -67,10 +67,10 @@ const suitabilityWeightAssignment = (props: IProps) => {
         ).length === 0;
 
         const constraintsAreConsistent = cMcda.constraints && (
-            !cMcda.constraints.raster || (
-                cMcda.constraints.raster &&
-                cMcda.constraints.raster.url !== '' &&
-                cMcda.constraints.raster.data.length > 0
+            !cMcda.constraints.rasterLayer || (
+                cMcda.constraints.rasterLayer &&
+                cMcda.constraints.rasterLayer.url !== '' &&
+                cMcda.constraints.rasterLayer.data.length > 0
             )
         );
 
@@ -103,7 +103,7 @@ const suitabilityWeightAssignment = (props: IProps) => {
             return;
         }
         const criteria1 = cMcda.criteria.filter(
-            (criterion) => criterion.suitability.url !== '' && criterion.suitability.data.length === 0
+            (criterion) => criterion.suitability.raster.url !== '' && criterion.suitability.raster.data.length === 0
         );
         const criteria2 = cMcda.criteria.filter(
             (criterion) => criterion.constraintRaster.url !== '' && criterion.constraintRaster.data.length === 0
@@ -117,9 +117,9 @@ const suitabilityWeightAssignment = (props: IProps) => {
             });
 
             retrieveDroppedData(
-                criterion.suitability.url,
+                criterion.suitability.raster.url,
                 (response) => {
-                    criterion.suitability.data = response[0];
+                    criterion.suitability.raster.data = response[0];
                     cMcda.criteria = cMcda.criteria.map((c) => {
                         if (c.id === criterion.id) {
                             return criterion;
@@ -161,18 +161,18 @@ const suitabilityWeightAssignment = (props: IProps) => {
         }
 
         if (criteria1.length === 0 && criteria2.length === 0) {
-            if (cMcda.constraints && cMcda.constraints.raster && cMcda.constraints.raster.url !== '' &&
-                cMcda.constraints.raster.data.length === 0) {
+            if (cMcda.constraints && cMcda.constraints.rasterLayer && cMcda.constraints.rasterLayer.url !== '' &&
+                cMcda.constraints.rasterLayer.data.length === 0) {
                 setCalculationState({
                     task: calculationState.task + 1,
                     message: 'Retrieving global constraint data'
                 });
 
                 retrieveDroppedData(
-                    cMcda.constraints.raster.url,
+                    cMcda.constraints.rasterLayer.url,
                     (response) => {
                         if (cMcda.constraints) {
-                            cMcda.constraints.raster.data = response[0];
+                            cMcda.constraints.rasterLayer.data = response[0];
                         }
                         getDataAndCalculate(cMcda);
                     },
@@ -193,13 +193,13 @@ const suitabilityWeightAssignment = (props: IProps) => {
 
         const cMcda = props.mcda.toObject();
         const criteria1 = cMcda.criteria.filter(
-            (criterion) => criterion.suitability.url !== '' && criterion.suitability.data.length === 0
+            (criterion) => criterion.suitability.raster.url !== '' && criterion.suitability.raster.data.length === 0
         );
         const criteria2 = cMcda.criteria.filter(
             (criterion) => criterion.constraintRaster.url !== '' && criterion.constraintRaster.data.length === 0
         );
-        const globalCon = cMcda.constraints && cMcda.constraints.raster && cMcda.constraints.raster.url !== '' &&
-        cMcda.constraints.raster.data.length === 0 ? 1 : 0;
+        const globalCon = cMcda.constraints && cMcda.constraints.rasterLayer && cMcda.constraints.rasterLayer.url !== ''
+        && cMcda.constraints.rasterLayer.data.length === 0 ? 1 : 0;
         const iNumberOfTasks = criteria1.length + criteria2.length + globalCon + 1;
 
         setIsRunning(true);

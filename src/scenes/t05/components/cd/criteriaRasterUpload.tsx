@@ -5,7 +5,7 @@ import {Array2D} from '../../../../core/model/geometry/Array2D.type';
 import {RasterParameter} from '../../../../core/model/gis';
 import {Criterion, Rule, RulesCollection} from '../../../../core/model/mcda/criteria';
 import {CriteriaType} from '../../../../core/model/mcda/criteria/Criterion.type';
-import {Raster} from '../../../../core/model/mcda/gis';
+import {RasterLayer} from '../../../../core/model/mcda/gis';
 import {dropData} from '../../../../services/api';
 import {IRasterFileMetadata} from '../../../../services/api/types';
 import {max, min} from '../../../shared/rasterData/helpers';
@@ -32,7 +32,7 @@ const criteriaRasterUpload = (props: IProps) => {
         setShowUploadModal(false);
     };
 
-    const handleChangeRaster = (raster: Raster) => {
+    const handleChangeRaster = (raster: RasterLayer) => {
         if (props.readOnly) {
             return null;
         }
@@ -52,7 +52,7 @@ const criteriaRasterUpload = (props: IProps) => {
         const {data, metadata} = result;
 
         const criterion = props.criterion;
-        const raster = Raster.fromDefaults();
+        const raster = RasterLayer.fromDefaults();
         dropData(
             JSON.stringify(data),
             (response: any) => {
@@ -78,8 +78,8 @@ const criteriaRasterUpload = (props: IProps) => {
                 }
                 criterion.raster = raster;
                 criterion.step = 2;
-                criterion.suitability = Raster.fromDefaults();
-                criterion.constraintRaster = Raster.fromDefaults();
+                criterion.suitability.raster = RasterLayer.fromDefaults();
+                criterion.constraintRaster = RasterLayer.fromDefaults();
 
                 if (boundingBox) {
                     raster.boundingBox = boundingBox;

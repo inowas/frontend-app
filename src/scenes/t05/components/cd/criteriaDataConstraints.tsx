@@ -3,7 +3,7 @@ import {Button, DropdownProps, Form, Grid, Icon, InputOnChangeData, Message, Rad
 import {Criterion, Rule, RulesCollection} from '../../../../core/model/mcda/criteria';
 import {CriteriaType, ICriterion} from '../../../../core/model/mcda/criteria/Criterion.type';
 import {IRule, RuleIndex} from '../../../../core/model/mcda/criteria/Rule.type';
-import {Raster} from '../../../../core/model/mcda/gis';
+import {RasterLayer} from '../../../../core/model/mcda/gis';
 import {dropData} from '../../../../services/api';
 import {ILegendItemDiscrete} from '../../../../services/rainbowvis/types';
 import CriteriaRasterMap from './criteriaRasterMap';
@@ -171,7 +171,7 @@ const criteriaDataConstraints = (props: IProps) => {
                 <Grid.Column width={11}>
                     <CriteriaRasterMap
                         legend={legend}
-                        raster={Raster.fromObject(criterion.constraintRaster)}
+                        raster={RasterLayer.fromObject(criterion.constraintRaster)}
                         showBasicLayer={false}
                         showButton={false}
                         showLegend={true}

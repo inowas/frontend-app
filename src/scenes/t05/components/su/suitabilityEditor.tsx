@@ -2,7 +2,7 @@ import React, {MouseEvent, useEffect, useState} from 'react';
 import {RouteComponentProps, withRouter} from 'react-router-dom';
 import {Step, StepProps} from 'semantic-ui-react';
 import {MCDA} from '../../../../core/model/mcda';
-import Raster from '../../../../core/model/mcda/gis/Raster';
+import RasterLayer from '../../../../core/model/mcda/gis/RasterLayer';
 import {IMCDA} from '../../../../core/model/mcda/MCDA.type';
 import {ITask, retrieveRasters} from '../../../../services/api/rasterHelper';
 import {usePrevious} from '../../../shared/simpleTools/helpers/customHooks';
@@ -30,9 +30,9 @@ const suitabilityEditor = (props: IProps) => {
 
             const tasks: ITask[] = [
                 {
-                    raster: Raster.fromObject(mcda.suitability.raster),
+                    raster: RasterLayer.fromObject(mcda.suitability.raster),
                     oldUrl: prevMcda ? prevMcda.suitability.raster.url : '',
-                    onSuccess: (raster: Raster) => newMcda.suitability.raster = raster
+                    onSuccess: (raster: RasterLayer) => newMcda.suitability.raster = raster
                 }
             ];
 

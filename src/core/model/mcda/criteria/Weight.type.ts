@@ -5,7 +5,7 @@ export interface IWeight {
     criterion: {
         id: string,
         name: string
-    } | null;
+    };
     initialValue: number;
     relations: ICriteriaRelation[];
     value: number;

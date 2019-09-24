@@ -67,7 +67,7 @@ export const getMenuItems = (mcda: MCDA): IMenuItem[] => {
                 msg: 'Criteria data is needed first.'
             };
         }
-        if (mcda.constraints && mcda.constraints.raster && mcda.constraints.raster.data.length > 0) {
+        if (mcda.constraints && mcda.constraints.rasterLayer && mcda.constraints.rasterLayer.data.length > 0) {
             return {
                 val: 'success',
                 msg: null

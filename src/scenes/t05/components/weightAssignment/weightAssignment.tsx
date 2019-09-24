@@ -104,6 +104,9 @@ const weightAssignmentEditor = (props: IProps) => {
                     );
             }
         }
+        return (
+            <div>ERROR</div>
+        );
     };
 
     const renderMethods = (name: string, criterion: ICriterion | null = null, key: number = -1) => {

@@ -3,6 +3,7 @@ import React, {MouseEvent, useEffect, useState} from 'react';
 import {RouteComponentProps, withRouter} from 'react-router-dom';
 import {Divider, Grid, Icon, MenuItemProps, Segment} from 'semantic-ui-react';
 import {MCDA} from '../../../core/model/mcda';
+import {WeightAssignment} from '../../../core/model/mcda/criteria';
 import Criterion from '../../../core/model/mcda/criteria/Criterion';
 import {fetchTool, sendCommand} from '../../../services/api';
 import {RainbowOrLegend} from '../../../services/rainbowvis/types';
@@ -182,7 +183,7 @@ const t05 = (props: IProps) => {
                     <CriteriaEditor
                         toolName={cTool.name}
                         readOnly={readOnly || mcda.weightAssignmentsCollection.length > 0}
-                        routeTo={handleRouteTo('/tools/t04')}
+                        routeTo={handleRouteTo}
                         mcda={mcda}
                         onChange={handleChange}
                     />
@@ -199,13 +200,16 @@ const t05 = (props: IProps) => {
                     />
                 );
             case 'wa':
-                const weightAssignment = cCid ? mcda.weightAssignmentsCollection.findById(cCid) : null;
+                const filteredWeightAssignment = mcda.weightAssignmentsCollection.findById(cCid);
+                const weightAssignment = cCid && filteredWeightAssignment ? filteredWeightAssignment : null;
                 return (
                     <WeightAssignmentEditor
                         toolName={cTool.name}
                         readOnly={readOnly}
                         mcda={mcda}
-                        selectedWeightAssignment={weightAssignment}
+                        selectedWeightAssignment={
+                            weightAssignment ? WeightAssignment.fromObject(weightAssignment) : undefined
+                        }
                         onChange={handleChange}
                         routeTo={routeTo}
                     />

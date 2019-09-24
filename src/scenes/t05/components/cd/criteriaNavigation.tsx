@@ -72,7 +72,7 @@ const criteriaNavigation = (props: IProps) => {
             name={criterion.id}
             onClick={props.onClick}
         >
-            {criterion.suitability && criterion.suitability.url !== '' &&
+            {criterion.suitability && criterion.suitability.raster.url !== '' &&
             <Icon name="check circle" color="green"/>
             }
             {criterion.name}

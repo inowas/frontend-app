@@ -28,17 +28,18 @@ const criteriaDataResults = (props: IProps) => {
     const handleDownload = () => {
         const hSuitability = props.criterion.suitability;
 
-        const cellSize = (hSuitability.boundingBox.yMax - hSuitability.boundingBox.yMin) / hSuitability.gridSize.nY;
+        const cellSize = (hSuitability.raster.boundingBox.yMax - hSuitability.raster.boundingBox.yMin) /
+            hSuitability.raster.gridSize.nY;
 
-        let content = `NCOLS ${hSuitability.gridSize.nX}
-NROWS ${hSuitability.gridSize.nY}
-XLLCORNER ${hSuitability.boundingBox.xMin}
-YLLCORNER ${hSuitability.boundingBox.yMin}
+        let content = `NCOLS ${hSuitability.raster.gridSize.nX}
+NROWS ${hSuitability.raster.gridSize.nY}
+XLLCORNER ${hSuitability.raster.boundingBox.xMin}
+YLLCORNER ${hSuitability.raster.boundingBox.yMin}
 CELLSIZE ${cellSize}
 NODATA_VALUE -9999
 `;
 
-        suitability.data.forEach((row) => {
+        suitability.raster.data.forEach((row) => {
             content += row.join(' ');
             content += '\n';
 
@@ -67,17 +68,17 @@ NODATA_VALUE -9999
     }
     if (layer === 'suitability' || layer === 'constraints') {
         if (colors === 'default') {
-            legend = suitability.generateRainbow(heatMapColors.default, [0, 1]);
+            legend = suitability.raster.generateRainbow(heatMapColors.default, [0, 1]);
         }
         if (colors === 'colorBlind') {
-            legend = suitability.generateRainbow(heatMapColors.colorBlind, [0, 1]);
+            legend = suitability.raster.generateRainbow(heatMapColors.colorBlind, [0, 1]);
         }
     }
 
     let raster;
     switch (layer) {
         case 'suitability':
-            raster = criterion.suitability;
+            raster = criterion.suitability.raster;
             break;
         case 'constraints':
             raster = criterion.constraintRaster;
@@ -213,7 +214,7 @@ NODATA_VALUE -9999
                 </Button>
             </Grid.Column>
             <Grid.Column width={11}>
-                {criterion.suitability.data.length > 0 && !!legend &&
+                {criterion.suitability.raster.data.length > 0 && !!legend &&
                 <CriteriaRasterMap
                     raster={raster}
                     showBasicLayer={showBasicLayer}

@@ -61,9 +61,9 @@ const criteriaReclassificationDiscrete = (props: IProps) => {
 
     const saveRaster = (uCriterion: Criterion) => {
         dropData(
-            uCriterion.suitability.data,
+            uCriterion.suitability.raster.data,
             (response) => {
-                uCriterion.suitability.url = response.filename;
+                uCriterion.suitability.raster.url = response.filename;
                 props.onChange(uCriterion);
             },
             (response) => {

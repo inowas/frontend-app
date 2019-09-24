@@ -4,11 +4,11 @@ import {BoundingBox, Geometry} from '../../geometry';
 import {Array2D} from '../../geometry/Array2D.type';
 import GridSize from '../../geometry/GridSize';
 import {Cells} from '../../modflow';
-import GisAreasCollection from './GisAreasCollection';
-import {IGisMap} from './GisMap.type';
-import Raster from './Raster';
+import {IGis} from './Gis.type';
+import RasterLayer from './RasterLayer';
+import VectorLayersCollection from './VectorLayersCollection';
 
-class GisMap {
+class Gis {
 
     get cells(): Cells {
         return Cells.fromObject(this._props.activeCells);
@@ -26,12 +26,12 @@ class GisMap {
         this._props.boundingBox = value.toObject();
     }
 
-    get areasCollection(): GisAreasCollection {
-        return GisAreasCollection.fromObject(this._props.areas);
+    get vectorLayers(): VectorLayersCollection {
+        return VectorLayersCollection.fromObject(this._props.vectorLayers);
     }
 
-    set areasCollection(value: GisAreasCollection) {
-        this._props.areas = value.toObject();
+    set vectorLayers(value: VectorLayersCollection) {
+        this._props.vectorLayers = value.toObject();
     }
 
     get gridSize(): GridSize {
@@ -42,21 +42,21 @@ class GisMap {
         this._props.gridSize = value.toObject();
     }
 
-    get raster(): Raster {
-        return Raster.fromObject(this._props.raster);
+    get rasterLayer(): RasterLayer {
+        return RasterLayer.fromObject(this._props.rasterLayer);
     }
 
-    set raster(value: Raster) {
-        this._props.raster = value.toObject();
+    set rasterLayer(value: RasterLayer) {
+        this._props.rasterLayer = value.toObject();
     }
 
-    public static fromObject(obj: IGisMap) {
-        return new GisMap(obj);
+    public static fromObject(obj: IGis) {
+        return new Gis(obj);
     }
 
-    protected _props: IGisMap;
+    protected _props: IGis;
 
-    constructor(obj: IGisMap) {
+    constructor(obj: IGis) {
         this._props = obj;
     }
 
@@ -66,17 +66,17 @@ class GisMap {
 
     public toPayload() {
         return {
-            cells: this.cells,
-            boundingBox: this.boundingBox,
-            areas: this.areasCollection,
-            gridSize: this.gridSize,
-            raster: this.raster
+            cells: this.cells.toObject(),
+            boundingBox: this.boundingBox.toObject(),
+            vectorLayers: this.vectorLayers.toObject(),
+            gridSize: this.gridSize.toObject(),
+            raster: this.rasterLayer.toObject()
         };
     }
 
     public calculateActiveCells() {
         const gridCells = getGridCells(this.boundingBox, this.gridSize);
-        const raster = Raster.fromDefaults();
+        const raster = RasterLayer.fromDefaults();
         raster.data = Array(this.gridSize.nY).fill(0).map(() => Array(this.gridSize.nX).fill(1)) as Array2D<number>;
         raster.gridSize = this.gridSize;
         raster.boundingBox = this.boundingBox;
@@ -84,7 +84,7 @@ class GisMap {
         raster.max = 1;
 
         const suitableArea = Geometry.fromGeoJson(this.boundingBox.geoJson);
-        const nonSuitableAreas = this.areasCollection.findBy('type', 'hole');
+        const nonSuitableAreas = this.vectorLayers.findBy('type', 'hole');
 
         if (!suitableArea) {
             return null;
@@ -107,8 +107,8 @@ class GisMap {
         });
 
         // this.cells = cells;
-        this.raster = raster;
+        this.rasterLayer = raster;
     }
 }
 
-export default GisMap;
+export default Gis;

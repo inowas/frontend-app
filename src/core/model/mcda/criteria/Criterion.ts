@@ -2,7 +2,7 @@ import {cloneDeep} from 'lodash';
 import * as math from 'mathjs';
 import uuidv4 from 'uuid/v4';
 import {Array2D} from '../../geometry/Array2D.type';
-import Raster from '../gis/Raster';
+import RasterLayer from '../gis/RasterLayer';
 import Suitability from '../Suitability';
 import {CriteriaType, ICriterion} from './Criterion.type';
 import RulesCollection from './RulesCollection';
@@ -49,11 +49,11 @@ class Criterion {
         this._props.unit = value;
     }
 
-    get raster(): Raster {
-        return Raster.fromObject(this._props.raster);
+    get raster(): RasterLayer {
+        return RasterLayer.fromObject(this._props.raster);
     }
 
-    set raster(value: Raster) {
+    set raster(value: RasterLayer) {
         this._props.raster = value.toObject();
     }
 
@@ -73,11 +73,11 @@ class Criterion {
         this._props.suitability = value.toObject();
     }
 
-    get constraintRaster(): Raster {
-        return Raster.fromObject(this._props.constraintRaster);
+    get constraintRaster(): RasterLayer {
+        return RasterLayer.fromObject(this._props.constraintRaster);
     }
 
-    set constraintRaster(value: Raster) {
+    set constraintRaster(value: RasterLayer) {
         this._props.constraintRaster = value.toObject();
     }
 
@@ -104,10 +104,10 @@ class Criterion {
             name: 'New Criterion',
             type: CriteriaType.CONTINUOUS,
             unit: '-',
-            raster: Raster.fromDefaults().toObject(),
+            raster: RasterLayer.fromDefaults().toObject(),
             rules: [],
             suitability: Suitability.fromDefault().toObject(),
-            constraintRaster: Raster.fromDefaults().toObject(),
+            constraintRaster: RasterLayer.fromDefaults().toObject(),
             constraintRules: [],
             step: 0
         });
@@ -143,7 +143,7 @@ class Criterion {
         });
     }
 
-    public calculateRaster(raster: Raster, rulesCollection: RulesCollection, factor: Raster | null = null) {
+    public calculateRaster(raster: RasterLayer, rulesCollection: RulesCollection, factor: RasterLayer | null = null) {
         const newRaster = cloneDeep(raster);
         newRaster.boundingBox = raster.boundingBox;
         newRaster.gridSize = raster.gridSize;

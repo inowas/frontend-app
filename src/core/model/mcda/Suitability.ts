@@ -1,5 +1,5 @@
 import RulesCollection from './criteria/RulesCollection';
-import {Raster} from './gis';
+import {RasterLayer} from './gis';
 import {ISuitability} from './Suitability.type';
 
 class Suitability {
@@ -9,7 +9,7 @@ class Suitability {
     }
 
     get raster() {
-        return Raster.fromObject(this._props.raster);
+        return RasterLayer.fromObject(this._props.raster);
     }
 
     set rulesCollection(value) {
@@ -22,7 +22,7 @@ class Suitability {
 
     public static fromDefault() {
         return new Suitability({
-            raster: Raster.fromDefaults().toObject(),
+            raster: RasterLayer.fromDefaults().toObject(),
             rules: []
         });
     }

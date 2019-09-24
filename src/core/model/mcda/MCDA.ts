@@ -5,7 +5,7 @@ import {BoundingBox, GridSize} from '../geometry';
 import {Array2D} from '../geometry/Array2D.type';
 import {multiplyElementWise} from './calculations';
 import {CriteriaCollection, WeightAssignmentsCollection} from './criteria';
-import {GisMap, Raster} from './gis';
+import {Gis, RasterLayer} from './gis';
 import {IMCDA} from './MCDA.type';
 import Suitability from './Suitability';
 
@@ -27,11 +27,11 @@ class MCDA {
     }
 
     get constraints() {
-        return this._props.constraints ? GisMap.fromObject(this._props.constraints) : null;
+        return Gis.fromObject(this._props.constraints);
     }
 
     set constraints(value) {
-        this._props.constraints = value ? value.toObject() : undefined;
+        this._props.constraints = value.toObject();
     }
 
     get gridSize() {
@@ -64,13 +64,23 @@ class MCDA {
 
     public static fromDefaults() {
         return new MCDA({
+            constraints: {
+                activeCells: [],
+                boundingBox: [[0, 0], [0, 0]],
+                gridSize: {
+                    n_x: 10,
+                    n_y: 10
+                },
+                rasterLayer: (RasterLayer.fromDefaults()).toObject(),
+                vectorLayers: []
+            },
             criteria: [],
             gridSize: {
                 n_x: 10,
                 n_y: 10
             },
             suitability: {
-                raster: (Raster.fromDefaults()).toObject(),
+                raster: (RasterLayer.fromDefaults()).toObject(),
                 rules: []
             },
             weightAssignments: [],
@@ -100,7 +110,7 @@ class MCDA {
     }
 
     public calculate() {
-        let rasterData = new Raster({
+        let rasterData = new RasterLayer({
             boundingBox: [],
             gridSize: this.gridSize.toObject(),
             data: [],
@@ -136,10 +146,10 @@ class MCDA {
                 weight = filteredWeight[0].value * parentWeightValue;
             }
 
-            return math.dotMultiply(criterion.suitability.data, weight);
+            return math.dotMultiply(criterion.suitability.raster.data, weight);
         });
 
-        rasterData.boundingBox = BoundingBox.fromObject(criteria[0].suitability.boundingBox);
+        rasterData.boundingBox = BoundingBox.fromObject(criteria[0].suitability.raster.boundingBox);
         rasterData.gridSize = this.gridSize;
         // TODO: rasterData.data = math.add(...data);
 
@@ -152,8 +162,8 @@ class MCDA {
         });
 
         // STEP 3: multiply global constraints
-        if (this.constraints && this.constraints.raster && this.constraints.raster.data.length > 0) {
-            rasterData.data = multiplyElementWise(rasterData.data, this.constraints.raster.data) as Array2D<number>;
+        if (this.constraints && this.constraints.rasterLayer && this.constraints.rasterLayer.data.length > 0) {
+            rasterData.data = multiplyElementWise(rasterData.data, this.constraints.rasterLayer.data);
         }
 
         this.suitability.raster = rasterData.calculateMinMax();

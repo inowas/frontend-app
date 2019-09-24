@@ -71,7 +71,7 @@ const multiInfluence = (props: IProps) => {
     const [edges, setEdges] = useState<IEdge[]>(data.edges);
     const [nodes, setNodes] = useState<INode[]>(data.nodes);
     const [editEdgeMode, setEditEdgeMode] = useState<boolean>(false);
-    const [selectedEdges, setSelectedEdges] = useState<IEdge[] | null>(null);
+    const [selectedEdges, setSelectedEdges] = useState<string[] | null>(null);
     const [wa, setWa] = useState<IWeightAssignment>(props.weightAssignment.toObject());
     const [showInfo, setShowInfo] = useState<boolean>(true);
 
@@ -86,7 +86,7 @@ const multiInfluence = (props: IProps) => {
 
     const handleDismiss = () => setShowInfo(false);
 
-    const addEdge = (cData) => {
+    const addEdge = (cData: {id: string, from: string, to: string}) => {
         const cEdges = edges;
         cEdges.push({
             id: cData.id,
@@ -95,36 +95,44 @@ const multiInfluence = (props: IProps) => {
         });
 
         setEdges(cEdges);
+        // @ts-ignore
         network.redraw();
     };
 
     const changeEdgeType = () => {
-        setEdges(edges.map((edge) => {
-            return {
-                ...edge,
-                dashes: selectedEdges.includes(edge.id) ? !edge.dashes : edge.dashes
-            };
-        }));
-        network.redraw();
+        if (selectedEdges) {
+            setEdges(edges.map((edge) => {
+                return {
+                    ...edge,
+                    dashes: selectedEdges.includes(edge.id) ? !edge.dashes : edge.dashes
+                };
+            }));
+            // @ts-ignore
+            network.redraw();
+        }
     };
 
     const deleteEdge = () => {
-        const cEdges = edges.filter((e) => !(selectedEdges.includes(e.id)));
-        setEdges(cEdges);
-        network.redraw();
+        if (selectedEdges) {
+            const cEdges = edges.filter((e) => !(selectedEdges.includes(e.id)));
+            setEdges(cEdges);
+            // @ts-ignore
+            network.redraw();
+        }
     };
 
     const handleToggleEditMode = () => setEditEdgeMode(!editEdgeMode);
 
     const handleClickNode = () => {
         if (editEdgeMode) {
+            // @ts-ignore
             network.addEdgeMode();
         }
     };
 
     const handleDeselectEdge = () => setSelectedEdges(null);
 
-    const handleSelectEdge = (cEdges: IEdge[]) => setSelectedEdges(cEdges);
+    const handleSelectEdge = (cEdges: string[]) => setSelectedEdges(cEdges);
 
     const handleSaveEdges = () => {
         const cWeights = props.weightAssignment.weightsCollection.all.map((weight) => {

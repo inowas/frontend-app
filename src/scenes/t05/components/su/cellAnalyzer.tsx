@@ -19,13 +19,12 @@ const cellAnalyzer = (props: ICellAnalyzerProps) => {
     const {onClose, cell, mcda} = props;
 
     const renderCriterion = (criterion: ICriterion) => {
-        /* TODO: criteria raster are not available at this point
         return (
             <Table.Row>
                 <Table.Cell>{criterion.name}</Table.Cell>
-                <Table.Cell>{raster.data[cell.y][cell.x]}</Table.Cell>
+                <Table.Cell>{criterion.raster.data[cell.y][cell.x]}</Table.Cell>
             </Table.Row>
-        );*/
+        );
     };
 
     const renderSuitability = () => {

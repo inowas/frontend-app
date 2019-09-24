@@ -1,8 +1,8 @@
 import React, {FormEvent, useEffect, useState} from 'react';
 import {Button, CheckboxProps, Dimmer, Form, Grid, Loader, Message, Radio, Segment} from 'semantic-ui-react';
 import {MCDA} from '../../../../core/model/mcda';
-import {GisMap, Raster} from '../../../../core/model/mcda/gis';
-import {IGisMap} from '../../../../core/model/mcda/gis/GisMap.type';
+import {Gis, RasterLayer} from '../../../../core/model/mcda/gis';
+import {IGis} from '../../../../core/model/mcda/gis/Gis.type';
 import {dropData} from '../../../../services/api';
 import {ITask, retrieveRasters} from '../../../../services/api/rasterHelper';
 import {usePrevious} from '../../../shared/simpleTools/helpers/customHooks';
@@ -15,14 +15,14 @@ interface IProps {
 }
 
 const constraintsEditor = (props: IProps) => {
-    const [constraints, setConstraints] = useState<IGisMap>(props.mcda.constraints.toObject());
+    const [constraints, setConstraints] = useState<IGis>(props.mcda.constraints.toObject());
     const [isFetching, setIsFetching] = useState<boolean>(false);
     const [mode, setMode] = useState<string>('map');
     const [showInfo, setShowInfo] = useState<boolean>(true);
     const prevConstraints = usePrevious(props.mcda.constraints.toObject());
 
     useEffect(() => {
-        if (!props.mcda.constraints.raster) {
+        if (!props.mcda.constraints.rasterLayer) {
             setConstraints(props.mcda.constraints.toObject());
         }
 
@@ -31,16 +31,16 @@ const constraintsEditor = (props: IProps) => {
         }
     }, [props.mcda.constraints]);
 
-    const constraintsToState = (cPrevConstraints: IGisMap | null, cConstraints: IGisMap) => {
+    const constraintsToState = (cPrevConstraints: IGis | null, cConstraints: IGis) => {
         setIsFetching(true);
 
         const newConstraints = cConstraints;
 
         const tasks: ITask[] = [
             {
-                raster: Raster.fromObject(cConstraints.raster),
-                oldUrl: cPrevConstraints && cPrevConstraints.raster ? cPrevConstraints.raster.url : '',
-                onSuccess: (cRaster: Raster) => newConstraints.raster = cRaster.toObject()
+                raster: RasterLayer.fromObject(cConstraints.rasterLayer),
+                oldUrl: cPrevConstraints && cPrevConstraints.rasterLayer ? cPrevConstraints.rasterLayer.url : '',
+                onSuccess: (cRaster: RasterLayer) => newConstraints.rasterLayer = cRaster.toObject()
             }
         ];
 
@@ -52,22 +52,22 @@ const constraintsEditor = (props: IProps) => {
 
     const handleDismiss = () => setShowInfo(false);
 
-    const handleChange = (cConstraints: GisMap) => {
+    const handleChange = (cConstraints: Gis) => {
         if (props.readOnly) {
             return;
         }
 
         const mcda = props.mcda;
-        mcda.constraints = GisMap.fromObject(constraints);
+        mcda.constraints = Gis.fromObject(constraints);
 
-        if (!constraints.raster || !constraints.raster.data) {
+        if (!constraints.rasterLayer || !constraints.rasterLayer.data) {
             return props.onChange(mcda);
         }
 
         dropData(
-            JSON.stringify(constraints.raster.data),
+            JSON.stringify(constraints.rasterLayer.data),
             (response) => {
-                mcda.constraints.raster.url = response.filename;
+                mcda.constraints.rasterLayer.url = response.filename;
                 props.onChange(mcda);
             },
             (response) => {
@@ -80,11 +80,11 @@ const constraintsEditor = (props: IProps) => {
         if (props.readOnly) {
             return;
         }
-        handleChange(GisMap.fromObject(constraints));
+        handleChange(Gis.fromObject(constraints));
     };
 
     const handleCalculateActiveCells = () => {
-        const cConstraints = GisMap.fromObject(constraints);
+        const cConstraints = Gis.fromObject(constraints);
         cConstraints.calculateActiveCells();
         return handleChange(cConstraints);
     };
@@ -129,7 +129,7 @@ const constraintsEditor = (props: IProps) => {
                                     name="mode"
                                     value="raster"
                                     checked={mode === 'raster'}
-                                    disabled={!constraints.raster || constraints.raster.data.length === 0}
+                                    disabled={!constraints.rasterLayer || constraints.rasterLayer.data.length === 0}
                                     onChange={handleChangeMode}
                                 />
                             </Form.Field>
@@ -168,7 +168,7 @@ const constraintsEditor = (props: IProps) => {
                 </Grid.Column>
                 <Grid.Column width={11}>
                     <ConstraintsMap
-                        map={GisMap.fromObject(constraints)}
+                        map={Gis.fromObject(constraints)}
                         onChange={handleChange}
                         mode={mode}
                         readOnly={props.readOnly}

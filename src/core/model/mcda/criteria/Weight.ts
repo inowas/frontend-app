@@ -47,7 +47,10 @@ class Weight {
     public static fromDefaults() {
         return new Weight({
             id: uuidv4(),
-            criterion: null,
+            criterion: {
+                id: '',
+                name: ''
+            },
             initialValue: 0,
             relations: [],
             value: 0

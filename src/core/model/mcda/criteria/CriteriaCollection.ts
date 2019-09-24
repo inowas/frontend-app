@@ -16,12 +16,12 @@ class CriteriaCollection extends Collection<ICriterion> {
     public isFinished(withAhp = false) {
         if (withAhp) {
             return this.length > 0 && this.all.filter((c) =>
-                c.parent && (!c.suitability || !c.suitability.url || c.suitability.url === '')
+                c.parent && (!c.suitability || c.suitability.raster.url === '')
             ).length === 0;
         }
 
         return this.length > 0 && this.all.filter(
-            (c) => !c.suitability || !c.suitability.url || c.suitability.url === ''
+            (c) => !c.suitability || c.suitability.raster.url === ''
         ).length === 0;
     }
 

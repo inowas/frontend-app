@@ -1,11 +1,11 @@
-import GisArea from './GisArea';
-import GisAreasCollection from './GisAreasCollection';
-import GisMap from './GisMap';
-import Raster from './Raster';
+import Gis from './Gis';
+import RasterLayer from './RasterLayer';
+import VectorLayer from './VectorLayer';
+import VectorLayersCollection from './VectorLayersCollection';
 
 export {
-    GisArea,
-    GisAreasCollection,
-    GisMap,
-    Raster
+    VectorLayer,
+    VectorLayersCollection,
+    Gis,
+    RasterLayer
 };

@@ -4,7 +4,7 @@ import {FeatureGroup, Map, MapLayerProps, Rectangle} from 'react-leaflet';
 import {EditControl} from 'react-leaflet-draw';
 import {Button, Icon} from 'semantic-ui-react';
 import {BoundingBox} from '../../../../core/model/geometry';
-import {Raster} from '../../../../core/model/mcda/gis';
+import {RasterLayer} from '../../../../core/model/mcda/gis';
 import {getActiveCellFromCoordinate} from '../../../../services/geoTools';
 import {BasicTileLayer} from '../../../../services/geoTools/tileLayers';
 import Rainbow from '../../../../services/rainbowvis/Rainbowvis';
@@ -35,9 +35,9 @@ const options = {
 const maximumGridCells = 10000;
 
 interface IProps {
-    onChange?: (raster: Raster) => any;
+    onChange?: (raster: RasterLayer) => any;
     onClickCell?: ({x, y}: { x: number, y: number }) => any;
-    raster: Raster;
+    raster: RasterLayer;
     showBasicLayer: boolean;
     showButton: boolean;
     showLegend: boolean;

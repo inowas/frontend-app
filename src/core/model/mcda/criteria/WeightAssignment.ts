@@ -231,15 +231,17 @@ class WeightAssignment {
             const criteria = this.weightsCollection.allCriteriaIds;
             const relations = this.weightsCollection.allRelations;
 
-            const results = calculatePwcWeights(criteria, relations);
+            if (criteria) {
+                const results = calculatePwcWeights(criteria as string[], relations);
 
-            weights.all.forEach((weight) => {
-                if (weight.criterion) {
-                    weight.value = results[weight.criterion.id].w;
-                    this.meta.consistency = results.cr;
-                    this.weightsCollection.update(weight);
-                }
-            });
+                weights.all.forEach((weight) => {
+                    if (weight.criterion) {
+                        weight.value = results[weight.criterion.id].w;
+                        this.meta.consistency = results.cr;
+                        this.weightsCollection.update(weight);
+                    }
+                });
+            }
         }
 
         return this;

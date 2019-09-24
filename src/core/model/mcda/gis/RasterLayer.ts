@@ -5,9 +5,9 @@ import {ILegendItemContinuous, ILegendItemDiscrete} from '../../../../services/r
 import {BoundingBox, GridSize} from '../../geometry';
 import {Array2D} from '../../geometry/Array2D.type';
 import {RulesCollection} from '../criteria';
-import {IRaster} from './Raster.type';
+import {IRasterLayer} from './RasterLayer.type';
 
-class Raster {
+class RasterLayer {
 
     get id() {
         return this._props.id;
@@ -79,12 +79,12 @@ class Raster {
         return distinct;
     }
 
-    public static fromObject(obj: IRaster) {
-        return new Raster(obj);
+    public static fromObject(obj: IRasterLayer) {
+        return new RasterLayer(obj);
     }
 
     public static fromDefaults() {
-        return new Raster({
+        return new RasterLayer({
             boundingBox: [[0, 0], [0, 0]],
             gridSize: {
                 n_x: 10,
@@ -99,9 +99,9 @@ class Raster {
         });
     }
 
-    protected _props: IRaster;
+    protected _props: IRasterLayer;
 
-    constructor(obj: IRaster) {
+    constructor(obj: IRasterLayer) {
         this._props = obj;
     }
 
@@ -213,11 +213,15 @@ class Raster {
             cLegend.push({
                 color: '#fff',
                 label: 'Not Classified',
-                isContinuous: true
+                isContinuous: true,
+                from: NaN,
+                fromOperator: '>',
+                to: NaN,
+                toOperator: '<'
             });
             return cLegend;
         }
     }
 }
 
-export default Raster;
+export default RasterLayer;
