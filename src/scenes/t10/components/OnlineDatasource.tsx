@@ -3,12 +3,12 @@ import moment from 'moment';
 import React, {useEffect, useState} from 'react';
 import {ResponsiveContainer, Scatter, ScatterChart, XAxis, YAxis} from 'recharts';
 import {Form, Grid, Header, Label, Segment} from 'semantic-ui-react';
-import {IDataSource, IDateTimeValue} from '../../../core/model/rtm/Sensor.type';
+import {IDateTimeValue, IOnlineDataSource} from '../../../core/model/rtm/Sensor.type';
 import {fetchUrl} from '../../../services/api';
 
 interface IProps {
-    dataSource: IDataSource;
-    onChange: (ds: IDataSource) => void;
+    dataSource: IOnlineDataSource;
+    onChange: (ds: IOnlineDataSource) => void;
 }
 
 export const servers = [{
@@ -51,9 +51,9 @@ const onlineDataSource = (props: IProps) => {
     const [lEnd, setLEnd] = useState<number>(moment.utc().unix());
 
     const [minValueEnabled, setMinValueEnabled] = useState<boolean>(false);
-    const [minValue, setMinValue] = useState<number>(0);
+    const [minValue, setMinValue] = useState<number | string>(0);
     const [maxValueEnabled, setMaxValueEnabled] = useState<boolean>(false);
-    const [maxValue, setMaxValue] = useState<number>(0);
+    const [maxValue, setMaxValue] = useState<number | string>(0);
 
     useEffect(() => {
         const {dataSource} = props;
@@ -62,26 +62,30 @@ const onlineDataSource = (props: IProps) => {
             setServer(dataSource.server);
         }
 
-        const {queryParams, range} = dataSource;
+        const {queryParams, valueRange, timeRange} = dataSource;
         if (queryParams) {
             setProject(queryParams.project);
             setSensor(queryParams.sensor);
             setParameter(queryParams.property);
 
-            if (queryParams.begin !== undefined) {
-                setBeginEnabled(true);
-                setBegin(queryParams.begin);
-                setLBegin(queryParams.begin);
+            if (timeRange) {
+                const [minTime, maxTime] = timeRange;
+
+                if (minTime) {
+                    setBeginEnabled(true);
+                    setBegin(minTime);
+                    setLBegin(minTime);
+                }
+
+                if (maxTime) {
+                    setEndEnabled(true);
+                    setEnd(maxTime);
+                    setLEnd(maxTime);
+                }
             }
 
-            if (queryParams.end !== undefined) {
-                setEndEnabled(true);
-                setEnd(queryParams.end);
-                setLEnd(queryParams.end);
-            }
-
-            if (range) {
-                const [minVal, maxVal] = range;
+            if (valueRange) {
+                const [minVal, maxVal] = valueRange;
                 if (minVal) {
                     setMinValueEnabled(true);
                     setMinValue(minVal);
@@ -124,9 +128,13 @@ const onlineDataSource = (props: IProps) => {
                     begin: beginEnabled ? begin : undefined,
                     end: endEnabled ? end : undefined
                 },
-                range: [
-                    minValueEnabled ? minValue : null,
-                    maxValueEnabled ? maxValue : null
+                valueRange: [
+                    minValueEnabled ? minValue as number : null,
+                    maxValueEnabled ? maxValue as number : null
+                ],
+                timeRange: [
+                    beginEnabled ? begin : null,
+                    endEnabled ? end : null
                 ]
             };
 
@@ -144,13 +152,16 @@ const onlineDataSource = (props: IProps) => {
     };
 
     const handleChange = (f: (v: any) => void) => (e: any, d: any) => {
-        if (d.hasOwnProperty('value')) {
-            f(d.value);
+
+        if (d && d.hasOwnProperty('value')) {
+            return f(d.value);
         }
 
-        if (d.hasOwnProperty('checked')) {
-            f(d.checked);
+        if (d && d.hasOwnProperty('checked')) {
+            return f(d.checked);
         }
+
+        return f(e.target.value);
     };
 
     const handleBlur = (f: (v: any) => void) => (v: any) => {
@@ -413,7 +424,8 @@ const onlineDataSource = (props: IProps) => {
                                     type={'number'}
                                     value={maxValue}
                                     disabled={!maxValueEnabled}
-                                    onChange={handleChange((v) => setMaxValue(parseFloat(v)))}
+                                    onChange={handleChange((v) => setMaxValue(v))}
+                                    onBlur={handleChange((v) => setMaxValue(parseFloat(v)))}
                                 />
                             </Form.Group>
                             <Form.Group>
@@ -428,7 +440,8 @@ const onlineDataSource = (props: IProps) => {
                                     type={'number'}
                                     value={minValue}
                                     disabled={!minValueEnabled}
-                                    onChange={handleChange((v) => setMinValue(parseFloat(v)))}
+                                    onChange={handleChange((v) => setMinValue(v))}
+                                    onBlur={handleChange((v) => setMinValue(parseFloat(v)))}
                                 />
                             </Form.Group>
                         </Form>

@@ -10,7 +10,7 @@ import AppContainer from '../../shared/AppContainer';
 import ToolNavigation from '../../shared/complexTools/toolNavigation';
 import SimpleToolsCommand from '../../shared/simpleTools/commands/SimpleToolsCommand';
 import ToolMetaData from '../../shared/simpleTools/ToolMetaData';
-import {SensorSetup} from '../components/index';
+import {SensorProcessing, SensorSetup} from '../components/index';
 
 export interface IProps extends RouteComponentProps<{ id: string, property: string, pid: string }> {
 }
@@ -54,6 +54,7 @@ const RTM = (props: IProps) => {
     const [rtm, setRtm] = useState<IRtm | null>(null);
 
     useEffect(() => {
+        setFetching(true);
         fetchUrl(`tools/${tool}/${id}`,
             (m: IRtm) => {
                 setRtm(m);
@@ -113,7 +114,16 @@ const RTM = (props: IProps) => {
                     />
                 );
             case 'sensor-processing':
-                return <h1>sensor-processing</h1>;
+                return (
+                    <SensorProcessing
+                        rtm={Rtm.fromObject(rtm)}
+                        isDirty={isDirty}
+                        isError={isError}
+                        onChange={onchange}
+                        onSave={onSave}
+                    />
+                );
+
             case 'sensor-visualization':
                 return <h1>sensor-visualization</h1>;
             default:

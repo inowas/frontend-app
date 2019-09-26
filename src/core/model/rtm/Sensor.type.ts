@@ -11,12 +11,20 @@ export interface ISensorParameter {
     id: string;
     type: string;
     description: string;
-    dataSource: IDataSource;
+    dataSources: IDataSource[];
     filters: IFilter[];
     data: IDateTimeValue[];
 }
 
-export type IFilter = () => void;
+export interface IFilter {
+    type: string;
+    begin: number | null;
+    end: number | null;
+}
+
+export interface IValueFilter extends IFilter {
+    type: 'valuefilter';
+}
 
 export interface IQueryParams {
     project: string;
@@ -27,14 +35,18 @@ export interface IQueryParams {
 }
 
 export interface IDataSource {
+    id: string;
     type: string;
+    valueRange?: Array<number | null>;
+    timeRange?: Array<number | null>;
+}
+
+export interface IOnlineDataSource extends IDataSource {
     server?: string;
     queryParams?: IQueryParams;
-    range?: Array<number | null>;
 }
 
 export interface ICSVDataSource extends IDataSource {
-    type: string;
     property?: string | number | null;
     url?: string;
 }

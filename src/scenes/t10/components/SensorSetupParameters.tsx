@@ -4,7 +4,8 @@ import Uuid from 'uuid';
 import {Rtm} from '../../../core/model/rtm';
 import {ParameterCollection} from '../../../core/model/rtm/ParameterCollection';
 import {ISensorParameter} from '../../../core/model/rtm/Sensor.type';
-import {ParameterDetails} from './index';
+import {parameterList} from '../defaults';
+import {SensorSetupParameterDetails} from './index';
 
 interface IProps {
     rtm: Rtm;
@@ -12,28 +13,11 @@ interface IProps {
     onChange: (params: ParameterCollection) => void;
 }
 
-export const parameterList = [
-    {parameter: 'do', text: 'Dissolved oxygen'},
-    {parameter: 'ec', text: 'Electrical conductivity'},
-    {parameter: 'h', text: 'Water level'},
-    {parameter: 'ph', text: 'pH'},
-    {parameter: 'prH', text: 'Pressure head'},
-    {parameter: 'rp', text: 'Redox potential'},
-    {parameter: 't', text: 'Temperature'},
-    {parameter: 'wc', text: 'Water content'},
-    {parameter: 'other', text: 'Other'}
-];
-
-const parameters = (props: IProps) => {
+const sensorSetupParameters = (props: IProps) => {
 
     const [parameterType, setParameterType] = useState<string>('');
-    const [parameterDescription, setParameterDescription] = useState<string>('');
+    const [parameterDescription] = useState<string>('');
     const [editParameter, setEditParameter] = useState<string | null>(null);
-
-    const handleChangeDescription = (e: any, data: any) => {
-        const v = data.value;
-        setParameterDescription(v);
-    };
 
     const handleChangeType = (e: any, data: any) => {
         const v = data.value;
@@ -55,7 +39,7 @@ const parameters = (props: IProps) => {
             id: Uuid.v4(),
             type: parameterType,
             description: parameterDescription,
-            dataSource: {type: 'noSource'},
+            dataSources: [],
             filters: [],
             data: []
         });
@@ -78,7 +62,6 @@ const parameters = (props: IProps) => {
                         <Table.HeaderCell>Parameter</Table.HeaderCell>
                         <Table.HeaderCell>Description</Table.HeaderCell>
                         <Table.HeaderCell>Data source</Table.HeaderCell>
-                        <Table.HeaderCell>Filters</Table.HeaderCell>
                         <Table.HeaderCell/>
                     </Table.Row>
                 </Table.Header>
@@ -87,8 +70,7 @@ const parameters = (props: IProps) => {
                         <Table.Row key={p.id}>
                             <Table.Cell>{parameterList.filter((i) => i.parameter === p.type)[0].text}</Table.Cell>
                             <Table.Cell>{p.description}</Table.Cell>
-                            <Table.Cell>{p.dataSource.type}</Table.Cell>
-                            <Table.Cell>{p.filters.length === 0 ? '-' : p.filters.length}</Table.Cell>
+                            <Table.Cell>{p.dataSources.length}</Table.Cell>
                             <Table.Cell textAlign={'right'}>
                                 {!props.rtm.readOnly &&
                                 <Button.Group>
@@ -131,12 +113,6 @@ const parameters = (props: IProps) => {
                             }))}
                             style={{zIndex: 10000}}
                         />
-                        <Form.Input
-                            label={'Description'}
-                            name={'description'}
-                            value={parameterDescription}
-                            onChange={handleChangeDescription}
-                        />
                         <Form.Button
                             content={'Add'}
                             onClick={handleAdd}
@@ -148,7 +124,7 @@ const parameters = (props: IProps) => {
             }
 
             {editParameter &&
-            <ParameterDetails
+            <SensorSetupParameterDetails
                 rtm={props.rtm}
                 parameter={props.parameters.findById(editParameter)}
                 onChange={handleChangeProperty}
@@ -159,4 +135,4 @@ const parameters = (props: IProps) => {
     );
 };
 
-export default parameters;
+export default sensorSetupParameters;

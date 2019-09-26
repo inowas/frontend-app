@@ -1,9 +1,10 @@
 import React, {useEffect, useState} from 'react';
 import {Button, Form, Modal, Segment} from 'semantic-ui-react';
+import uuid from 'uuid';
 import {Rtm} from '../../../core/model/rtm';
 import {IDataSource, IDateTimeValue, IFilter, ISensorParameter} from '../../../core/model/rtm/Sensor.type';
+import {parameterList} from '../defaults';
 import {CSVDatasource, OnlineDatasource} from './index';
-import {parameterList} from './Parameters';
 
 interface IProps {
     rtm: Rtm;
@@ -12,11 +13,11 @@ interface IProps {
     onClose: () => void;
 }
 
-const parameterDetails = (props: IProps) => {
+const sensorSetupParameterDetails = (props: IProps) => {
 
     const [parameterType, setParameterType] = useState<string>('');
     const [parameterDescription, setParameterDescription] = useState<string>('');
-    const [dataSource, setDataSource] = useState<IDataSource>({type: 'noSource'});
+    const [dataSource, setDataSource] = useState<IDataSource>({type: 'csv', id: uuid.v4()});
     const [filters, setFilters] = useState<IFilter[]>([]);
     const [data, setData] = useState<IDateTimeValue[]>([]);
 
@@ -24,7 +25,9 @@ const parameterDetails = (props: IProps) => {
         if (props.parameter) {
             setParameterType(props.parameter.type);
             setParameterDescription(props.parameter.description);
-            setDataSource(props.parameter.dataSource);
+            if (props.parameter.dataSources.length > 0) {
+                setDataSource(props.parameter.dataSources[0]);
+            }
             setFilters(props.parameter.filters);
             setData(props.parameter.data);
         }
@@ -129,4 +132,4 @@ const parameterDetails = (props: IProps) => {
     );
 };
 
-export default parameterDetails;
+export default sensorSetupParameterDetails;
