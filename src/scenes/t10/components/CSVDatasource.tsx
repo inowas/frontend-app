@@ -350,10 +350,8 @@ const csvDatasource = (props: IProps) => {
                             </Form>
                         </Segment>
                     </Grid.Column>
-                </Grid.Row>
-                }
-            </React.Fragment>
-            }
+                </Grid.Row>}
+            </React.Fragment>}
 
             {data &&
             <Grid.Row>

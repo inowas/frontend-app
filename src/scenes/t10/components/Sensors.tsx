@@ -1,20 +1,21 @@
-import React, {useEffect, useState} from 'react';
-import {withRouter} from 'react-router-dom';
+import React, {ReactFragment, useEffect, useState} from 'react';
+import {RouteComponentProps, withRouter} from 'react-router';
 import {Grid, Segment} from 'semantic-ui-react';
 import {Rtm, Sensor} from '../../../core/model/rtm';
 import ContentToolBar from '../../shared/ContentToolbar';
-import {IProps as BaseIProps} from '../containers/RTM';
-import {SensorList, SensorProcessingDetails, SensorSetupDetailsCreateNew} from './index';
+import {AddSensor, SensorList} from './index';
 
-interface IProps extends BaseIProps {
+export interface IProps extends RouteComponentProps<{ id: string, property: string, pid: string }> {
     rtm: Rtm;
     isDirty: boolean;
     isError: boolean;
     onChange: (rtm: Rtm) => void;
+    onChangeSelectedSensorId: (id: string) => void;
     onSave: (rtm: Rtm) => void;
+    children: ReactFragment;
 }
 
-const sensorProcessing = (props: IProps) => {
+const sensors = (props: IProps) => {
 
     const [selectedSensorId, setSelectedSensorId] = useState<string | null>(null);
     const [addSensor, setAddSensor] = useState<boolean>(false);
@@ -38,6 +39,12 @@ const sensorProcessing = (props: IProps) => {
         },
         [props.rtm.sensors]
     );
+
+    useEffect(() => {
+        if (selectedSensorId) {
+            props.onChangeSelectedSensorId(selectedSensorId);
+        }
+    }, [selectedSensorId]);
 
     const onAddNewSensor = () => {
         setAddSensor(true);
@@ -76,46 +83,6 @@ const sensorProcessing = (props: IProps) => {
         setSelectedSensorId(rtm.sensors.first.id);
     };
 
-    const handleUpdateSensor = (sensor: Sensor) => {
-        const rtm = Rtm.fromObject(props.rtm.toObject());
-        rtm.updateSensor(sensor);
-        return props.onChange(rtm);
-    };
-
-    const renderDetails = () => {
-        if (!selectedSensorId) {
-            return <h1>Please Select or add a Sensor</h1>;
-        }
-
-        const sensor = props.rtm.findSensor(selectedSensorId);
-
-        if (!(sensor instanceof Sensor)) {
-            return <h1>Error selecting a sensor</h1>;
-        }
-
-        return (
-            <SensorProcessingDetails
-                rtm={props.rtm}
-                sensor={sensor}
-                onChange={handleUpdateSensor}
-            />
-        );
-    };
-
-    if (!props.rtm) {
-        return null;
-    }
-
-    if (addSensor) {
-        return (
-            <SensorSetupDetailsCreateNew
-                rtm={props.rtm}
-                onCancel={onCancelAddNewSensor}
-                onAdd={handleAddSensor}
-            />
-        );
-    }
-
     return (
         <Segment color={'grey'}>
             <Grid>
@@ -142,15 +109,22 @@ const sensorProcessing = (props: IProps) => {
                                         saveButton={!props.rtm.readOnly}
                                         importButton={false}
                                     />
-                                    {renderDetails()}
+                                    {props.children}
                                 </Grid.Column>
                             </Grid.Row>
                         </Grid>
                     </Grid.Column>
                 </Grid.Row>
             </Grid>
+
+            {addSensor &&
+            <AddSensor
+                rtm={props.rtm}
+                onCancel={onCancelAddNewSensor}
+                onAdd={handleAddSensor}
+            />}
         </Segment>
     );
 };
 
-export default withRouter<IProps>(sensorProcessing);
+export default withRouter<IProps>(sensors);
