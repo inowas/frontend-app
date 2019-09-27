@@ -21,3 +21,17 @@ const defaults = {
         model: null
     }
 };
+
+export const parameterList = [
+    {parameter: 'do', text: 'Dissolved oxygen'},
+    {parameter: 'ec', text: 'Electrical conductivity'},
+    {parameter: 'h', text: 'Water level'},
+    {parameter: 'ph', text: 'pH'},
+    {parameter: 'prH', text: 'Pressure head'},
+    {parameter: 'rp', text: 'Redox potential'},
+    {parameter: 't', text: 'Temperature'},
+    {parameter: 'wc', text: 'Water content'},
+    {parameter: 'other', text: 'Other'}
+];
+
+export const dataSourceList = ['csv', 'online'];

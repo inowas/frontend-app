@@ -118,6 +118,6 @@ export default class Rtm {
     }
 
     public toObject(): IRtm {
-        return this._props;
+        return cloneDeep(this._props);
     }
 }

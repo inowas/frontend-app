@@ -2,15 +2,16 @@ import React, {useEffect, useState} from 'react';
 import {Redirect, RouteComponentProps, withRouter} from 'react-router-dom';
 
 import {Grid, Icon, Message} from 'semantic-ui-react';
-import {Rtm} from '../../../core/model/rtm';
+import {Rtm, Sensor} from '../../../core/model/rtm';
 import {IRtm} from '../../../core/model/rtm/Rtm.type';
+import {ISensorParameter} from '../../../core/model/rtm/Sensor.type';
 import {IMetaData} from '../../../core/model/types';
 import {fetchUrl, sendCommand} from '../../../services/api';
 import AppContainer from '../../shared/AppContainer';
 import ToolNavigation from '../../shared/complexTools/toolNavigation';
 import SimpleToolsCommand from '../../shared/simpleTools/commands/SimpleToolsCommand';
 import ToolMetaData from '../../shared/simpleTools/ToolMetaData';
-import {SensorSetup} from '../components/index';
+import {DataSources, SensorMetaData, Sensors} from '../components/index';
 
 export interface IProps extends RouteComponentProps<{ id: string, property: string, pid: string }> {
 }
@@ -52,8 +53,11 @@ const RTM = (props: IProps) => {
     const [isError, setError] = useState<boolean>(false);
     const [fetching, setFetching] = useState<boolean>(false);
     const [rtm, setRtm] = useState<IRtm | null>(null);
+    const [selectedParameterId, setSelectedParameterId] = useState<string | null>(null);
+    const [selectedSensorId, setSelectedSensorId] = useState<string | null>(null);
 
     useEffect(() => {
+        setFetching(true);
         fetchUrl(`tools/${tool}/${id}`,
             (m: IRtm) => {
                 setRtm(m);
@@ -70,6 +74,38 @@ const RTM = (props: IProps) => {
     useEffect(() => {
         setDirty(true);
     }, [rtm]);
+
+    const handleUpdateSensor = (sensor: Sensor) => {
+        if (!rtm) {
+            return;
+        }
+
+        const lRtm = Rtm.fromObject(rtm);
+        lRtm.updateSensor(sensor);
+        setRtm(lRtm.toObject());
+    };
+
+    const handleUpdateParameter = (parameter: ISensorParameter) => {
+        if (!rtm) {
+            return;
+        }
+
+        if (!selectedSensorId) {
+            return;
+        }
+
+        const sensor = Rtm.fromObject(rtm).sensors.findById(selectedSensorId);
+
+        if (!sensor) {
+            return;
+        }
+
+        sensor.parameters = sensor.parameters.update(parameter, false);
+
+        const lRtm = Rtm.fromObject(rtm);
+        lRtm.updateSensor(sensor);
+        setRtm(lRtm.toObject());
+    };
 
     const onchangeMetaData = (metaData: IMetaData) => {
         if (rtm) {
@@ -101,30 +137,44 @@ const RTM = (props: IProps) => {
             return null;
         }
 
-        switch (property) {
-            case 'sensor-setup':
-                return (
-                    <SensorSetup
-                        rtm={Rtm.fromObject(rtm)}
-                        isDirty={isDirty}
-                        isError={isError}
-                        onChange={onchange}
-                        onSave={onSave}
-                    />
-                );
-            case 'sensor-processing':
-                return <h1>sensor-processing</h1>;
-            case 'sensor-visualization':
-                return <h1>sensor-visualization</h1>;
-            default:
-                const path = props.match.path;
-                const basePath = path.split(':')[0];
-                return (
-                    <Redirect
-                        to={basePath + props.match.params.id + '/sensor-setup' + props.location.search}
-                    />
-                );
+        const sensor = selectedSensorId ? Rtm.fromObject(rtm).sensors.findById(selectedSensorId) : null;
+        let parameter = null;
+        if (sensor && selectedParameterId) {
+            parameter = sensor.parameters.findById(selectedParameterId);
         }
+
+        if (!['sensor-setup', 'sensor-processing', 'sensor-visualization'].includes(property)) {
+            const path = props.match.path;
+            const basePath = path.split(':')[0];
+            return (
+                <Redirect
+                    to={basePath + props.match.params.id + '/sensor-setup' + props.location.search}
+                />
+            );
+        }
+
+        return (
+            <Sensors
+                rtm={Rtm.fromObject(rtm)}
+                isDirty={isDirty}
+                isError={isError}
+                onChange={onchange}
+                onChangeSelectedSensorId={setSelectedSensorId}
+                onSave={onSave}
+            >
+                <SensorMetaData
+                    rtm={Rtm.fromObject(rtm)}
+                    sensor={sensor}
+                    onChange={handleUpdateSensor}
+                    onChangeSelectedParameterId={setSelectedParameterId}
+                />
+                {parameter && property === 'sensor-setup' && <DataSources
+                    rtm={Rtm.fromObject(rtm)}
+                    parameter={parameter}
+                    onChange={handleUpdateParameter}
+                />}
+            </Sensors>
+        );
     };
 
     if (fetching) {

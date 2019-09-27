@@ -1,21 +1,19 @@
+import AddSensor from './AddSensor';
 import CSVDatasource from './CSVDatasource';
+import DataSources from './DataSources';
 import OnlineDatasource from './OnlineDatasource';
-import ParameterDetails from './ParameterDetails';
-import Parameters from './Parameters';
 import SensorList from './SensorList';
 import SensorMap from './SensorMap';
-import SensorSetup from './SensorSetup';
-import SensorSetupDetails from './SensorSetupDetails';
-import SensorSetupDetailsCreateNew from './SensorSetupDetailsCreateNew';
+import SensorMetaData from './SensorMetadata';
+import Sensors from './Sensors';
 
 export {
+    AddSensor,
     CSVDatasource,
+    DataSources,
     OnlineDatasource,
     SensorList,
+    Sensors,
     SensorMap,
-    Parameters,
-    ParameterDetails,
-    SensorSetup,
-    SensorSetupDetails,
-    SensorSetupDetailsCreateNew
+    SensorMetaData,
 };
