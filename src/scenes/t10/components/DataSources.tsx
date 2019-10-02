@@ -5,7 +5,7 @@ import Uuid from 'uuid';
 import {Rtm} from '../../../core/model/rtm';
 import {IDataSource, ISensorParameter} from '../../../core/model/rtm/Sensor.type';
 import {dataSourceList, parameterList} from '../defaults';
-import {CSVDatasource, OnlineDatasource} from './index';
+import {CSVDatasource, OnlineDatasource, TinyLineChart} from './index';
 
 interface IProps {
     rtm: Rtm;
@@ -55,6 +55,8 @@ const dataSources = (props: IProps) => {
         if (maxValue) {
             return `<= ${maxValue}`;
         }
+
+        return '-';
     };
 
     const handleAddEditDataSource = () => {
@@ -143,14 +145,30 @@ const dataSources = (props: IProps) => {
                                     <Table.HeaderCell>Time range</Table.HeaderCell>
                                     <Table.HeaderCell>Value range</Table.HeaderCell>
                                     <Table.HeaderCell/>
+                                    <Table.HeaderCell/>
                                 </Table.Row>
                             </Table.Header>
                             <Table.Body>
-                                {props.parameter.dataSources.map((ds, key) => (
+                                {props.parameter.dataSources.sort((a, b) => {
+                                    if (a.timeRange && b.timeRange) {
+                                        const aBegin = a.timeRange[0];
+                                        const bBegin = b.timeRange[0];
+
+                                        if (aBegin && bBegin) {
+                                            return aBegin - bBegin;
+                                        }
+                                    }
+
+                                    return 1;
+
+                                }).map((ds, key) => (
                                     <Table.Row key={key}>
                                         <Table.Cell>{ds.type}</Table.Cell>
                                         <Table.Cell>{getTimeRangeText(ds.timeRange)}</Table.Cell>
                                         <Table.Cell>{getValueRangeText(ds.valueRange)}</Table.Cell>
+                                        <Table.Cell>
+                                            <TinyLineChart url={ds.url}/>
+                                        </Table.Cell>
                                         <Table.Cell textAlign={'right'}>
                                             {!props.rtm.readOnly &&
                                             <Button.Group>
@@ -169,7 +187,7 @@ const dataSources = (props: IProps) => {
                             {!props.rtm.readOnly &&
                             <Table.Footer>
                                 <Table.Row>
-                                    <Table.HeaderCell colSpan={4}>
+                                    <Table.HeaderCell colSpan={5}>
                                         <Button
                                             as="div"
                                             labelPosition="left"

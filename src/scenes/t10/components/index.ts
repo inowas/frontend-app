@@ -6,6 +6,7 @@ import SensorList from './SensorList';
 import SensorMap from './SensorMap';
 import SensorMetaData from './SensorMetadata';
 import Sensors from './Sensors';
+import TinyLineChart from './TinyLineChart';
 
 export {
     AddSensor,
@@ -16,4 +17,5 @@ export {
     Sensors,
     SensorMap,
     SensorMetaData,
+    TinyLineChart
 };

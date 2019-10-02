@@ -55,6 +55,8 @@ const onlineDataSource = (props: IProps) => {
     const [maxValueEnabled, setMaxValueEnabled] = useState<boolean>(false);
     const [maxValue, setMaxValue] = useState<number | string>(0);
 
+    const [url, setUrl] = useState<string | null>(null);
+
     useEffect(() => {
         const {dataSource} = props;
 
@@ -62,71 +64,87 @@ const onlineDataSource = (props: IProps) => {
             setServer(dataSource.server);
         }
 
-        const {queryParams, valueRange, timeRange} = dataSource;
-        if (queryParams) {
-            setProject(queryParams.project);
-            setSensor(queryParams.sensor);
-            setParameter(queryParams.property);
+        if (dataSource.queryParams) {
+            setProject(dataSource.queryParams.project);
+            setSensor(dataSource.queryParams.sensor);
+            setParameter(dataSource.queryParams.property);
+        }
 
-            if (timeRange) {
-                const [minTime, maxTime] = timeRange;
+        if (dataSource.timeRange) {
+            const [minTime, maxTime] = dataSource.timeRange;
 
-                if (minTime) {
-                    setBeginEnabled(true);
-                    setBegin(minTime);
-                    setLBegin(minTime);
-                }
-
-                if (maxTime) {
-                    setEndEnabled(true);
-                    setEnd(maxTime);
-                    setLEnd(maxTime);
-                }
+            if (minTime) {
+                setBeginEnabled(true);
+                setBegin(minTime);
+                setLBegin(minTime);
             }
 
-            if (valueRange) {
-                const [minVal, maxVal] = valueRange;
-                if (minVal) {
-                    setMinValueEnabled(true);
-                    setMinValue(minVal);
-                }
-
-                if (maxVal) {
-                    setMaxValueEnabled(true);
-                    setMaxValue(maxVal);
-                }
+            if (maxTime) {
+                setEndEnabled(true);
+                setEnd(maxTime);
+                setLEnd(maxTime);
             }
         }
+
+        if (dataSource.valueRange) {
+            const [minVal, maxVal] = dataSource.valueRange;
+            if (minVal) {
+                setMinValueEnabled(true);
+                setMinValue(minVal);
+            }
+
+            if (maxVal) {
+                setMaxValueEnabled(true);
+                setMaxValue(maxVal);
+            }
+        }
+
+        if (dataSource.url) {
+            setUrl(dataSource.url);
+        }
+
     }, []);
 
     useEffect(() => {
-        fetchServerMetadata();
+        fetchServerMetadata(server);
     }, [server]);
 
     useEffect(() => {
         executeQuery();
-    }, [begin, end, beginEnabled, endEnabled]);
-
-    useEffect(() => {
-        executeQuery();
-        updateDataSource();
-    }, [parameter]);
+    }, [begin, end, beginEnabled, endEnabled, minValue, minValueEnabled, maxValueEnabled, maxValue, parameter]);
 
     useEffect(() => {
         updateDataSource();
-    }, [begin, beginEnabled, end, endEnabled, minValue, minValueEnabled, maxValueEnabled, maxValue]);
+    }, [begin, beginEnabled, end, endEnabled, minValue, minValueEnabled, maxValueEnabled, maxValue, url]);
+
+    useEffect(() => {
+        if (!data || data.length === 0) {
+            return;
+        }
+
+        if (!beginEnabled) {
+            setBeginEnabled(true);
+            setBegin(data[0].timeStamp);
+            setLBegin(data[0].timeStamp);
+        }
+
+        if (!endEnabled) {
+            setEndEnabled(true);
+            setEnd(data[data.length - 1].timeStamp);
+            setLEnd(data[data.length - 1].timeStamp);
+        }
+
+    }, [data]);
 
     const updateDataSource = () => {
-        if (server && project && sensor && parameter) {
+        if (server && project && sensor && parameter && url) {
             const ds = {
                 ...props.dataSource,
                 server,
                 queryParams: {
                     sensor,
                     project,
-                    property: parameter,
-                    begin: beginEnabled ? begin : undefined,
-                    end: endEnabled ? end : undefined
+                    property: parameter
                 },
                 valueRange: [
                     minValueEnabled ? minValue as number : null,
@@ -135,7 +153,8 @@ const onlineDataSource = (props: IProps) => {
                 timeRange: [
                     beginEnabled ? begin : null,
                     endEnabled ? end : null
-                ]
+                ],
+                url
             };
 
             props.onChange(ds);
@@ -168,25 +187,21 @@ const onlineDataSource = (props: IProps) => {
         f(v);
     };
 
-    const fetchServerMetadata = () => {
-        if (!server) {
+    const fetchServerMetadata = (serverUrl: string | null) => {
+        if (!serverUrl) {
             return;
         }
 
-        const filteredServers = servers.filter((s) => s.url = server);
+        const filteredServers = servers.filter((s) => s.url = serverUrl);
         if (filteredServers.length === 0) {
             return;
         }
 
         const srv = filteredServers[0];
-        const url = new URL(
-            `${srv.path}/`,
-            `${srv.protocol}://${srv.url}`
-        );
 
         setFetchingMetaData(true);
         fetchUrl(
-            url.toString(),
+            new URL(`${srv.path}/`, `${srv.protocol}://${srv.url}`).toString(),
             (d: ISensorMetaData[]) => {
                 setSensorMetaData(d);
                 setFetchingMetaData(false);
@@ -213,29 +228,37 @@ const onlineDataSource = (props: IProps) => {
         setFetchingError(false);
         setFetchingData(true);
 
-        let url = new URL(
+        let queryUrl = new URL(
             `${srv.path}/project/${project}/sensor/${sensor}/property/${parameter}`,
             `${srv.protocol}://${srv.url}`
         ).toString();
 
-        if (beginEnabled || endEnabled) {
-            url += '?';
+        if (beginEnabled || endEnabled || minValueEnabled || maxValueEnabled) {
+            queryUrl += '?';
 
             if (beginEnabled) {
-                url += 'begin=' + begin;
-            }
-
-            if (beginEnabled && endEnabled) {
-                url += '&';
+                queryUrl += 'begin=' + begin + '&';
             }
 
             if (endEnabled) {
-                url += 'end=' + end;
+                queryUrl += 'end=' + end + '&';
+            }
+
+            if (minValueEnabled) {
+                queryUrl += 'min=' + minValue + '&';
+            }
+
+            if (maxValueEnabled) {
+                queryUrl += 'max=' + maxValue + '&';
+            }
+
+            if (queryUrl.endsWith('&')) {
+                queryUrl = queryUrl.substr(0, queryUrl.length - 1);
             }
         }
 
         fetchUrl(
-            url,
+            queryUrl,
             (response: any) => {
                 const d: any = response.map((ds: any) => {
                     const [dateTime, value] = Object.values(ds);
@@ -246,6 +269,7 @@ const onlineDataSource = (props: IProps) => {
                 });
 
                 setData(d);
+                setUrl(queryUrl);
                 setFetchingData(false);
             },
             () => {
@@ -265,23 +289,22 @@ const onlineDataSource = (props: IProps) => {
             );
         }
 
-        const filteredData = data
-            .filter((v) => !(minValueEnabled && v.value < minValue))
-            .filter((v) => !(maxValueEnabled && v.value > maxValue));
-
         return (
             <ResponsiveContainer height={300}>
                 <ScatterChart>
                     <XAxis
                         dataKey={'timeStamp'}
-                        domain={['auto', 'auto']}
+                        domain={[
+                            beginEnabled ? begin : 'auto',
+                            endEnabled ? end : 'auto',
+                        ]}
                         name={'Date Time'}
                         tickFormatter={formatDateTimeTicks}
                         type={'number'}
                     />
                     <YAxis dataKey={'value'} name={parameter} domain={['auto', 'auto']}/>
                     <Scatter
-                        data={filteredData}
+                        data={data}
                         line={{stroke: '#eee'}}
                         lineJointType={'monotoneX'}
                         lineType={'joint'}

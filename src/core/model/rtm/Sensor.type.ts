@@ -32,6 +32,8 @@ export interface IQueryParams {
     property: string;
     begin?: number;
     end?: number;
+    min?: number;
+    max?: number;
 }
 
 export interface IDataSource {
@@ -39,6 +41,7 @@ export interface IDataSource {
     type: string;
     valueRange?: Array<number | null>;
     timeRange?: Array<number | null>;
+    url?: string;
 }
 
 export interface IOnlineDataSource extends IDataSource {
@@ -48,10 +51,9 @@ export interface IOnlineDataSource extends IDataSource {
 
 export interface ICSVDataSource extends IDataSource {
     property?: string | number | null;
-    url?: string;
 }
 
 export interface IDateTimeValue {
-    timeStamp: string;
+    timeStamp: number;
     value: number;
 }
