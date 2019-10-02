@@ -87,11 +87,19 @@ const dataSources = (props: IProps) => {
 
     const handleAddDataSourceClick = (dsType: string) => () => {
         if (dsType === 'csv') {
-            setDatasource({id: Uuid.v4(), type: dsType});
+            setDatasource({
+                id: Uuid.v4(),
+                type: dsType,
+                timeRange: [null, null]
+            });
         }
 
         if (dsType === 'online') {
-            setDatasource({id: Uuid.v4(), type: dsType});
+            setDatasource({
+                id: Uuid.v4(),
+                type: dsType,
+                timeRange: [null, null]
+            });
         }
     };
 

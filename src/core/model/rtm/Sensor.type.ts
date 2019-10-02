@@ -40,7 +40,7 @@ export interface IDataSource {
     id: string;
     type: string;
     valueRange?: Array<number | null>;
-    timeRange?: Array<number | null>;
+    timeRange: Array<number | null>;
     url?: string;
 }
 

@@ -1,7 +1,7 @@
 import {cloneDeep} from 'lodash';
 import moment from 'moment';
 import React, {useEffect, useState} from 'react';
-import {ResponsiveContainer, Scatter, ScatterChart, XAxis, YAxis} from 'recharts';
+import {ReferenceArea, ReferenceLine, ResponsiveContainer, Scatter, ScatterChart, XAxis, YAxis} from 'recharts';
 import {IDataSource, IDateTimeValue} from '../../../core/model/rtm/Sensor.type';
 import {fetchUrl} from '../../../services/api';
 import {colors} from '../defaults';
@@ -78,6 +78,23 @@ const dataSourcesChart = (props: IProps) => {
     // tslint:disable-next-line:variable-name
     const RenderNoShape = () => null;
 
+    const renderReferenceArea = (ds: IEnhancedDataSource, idx: number) => {
+        if (!ds.data) {
+            return;
+        }
+
+        const begin = ds.timeRange[0] ? ds.timeRange[0] : ds.data[0].timeStamp;
+        const end = ds.timeRange[1] ? ds.timeRange[0] : ds.data[ds.data.length - 1].timeStamp;
+
+        if (begin === null || end === null) {
+            return;
+        }
+
+        return (
+            <ReferenceLine key={idx} x={begin} stroke={colors[idx]} strokeWidth={3}/>
+        );
+    };
+
     return (
         <ResponsiveContainer height={300}>
             <ScatterChart>
@@ -89,6 +106,7 @@ const dataSourcesChart = (props: IProps) => {
                     type={'number'}
                 />
                 <YAxis dataKey={'value'} name={''} domain={['auto', 'auto']}/>
+                {dataSources.map((ds, idx) => (renderReferenceArea(ds, idx)))}
                 {dataSources.map((ds, idx) => {
                     if (ds.data) {
                         return (
