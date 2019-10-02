@@ -5,6 +5,7 @@ import {fetchUrl} from '../../../services/api';
 
 interface IProps {
     url?: string;
+    color?: string;
 }
 
 const tinyLineChart = (props: IProps) => {
@@ -57,7 +58,7 @@ const tinyLineChart = (props: IProps) => {
         return (
             <LineChart width={100} height={30} data={data}>
                 <YAxis dataKey={'value'} domain={['auto', 'auto']} hide={true}/>
-                <Line type="monotone" dataKey="value" dot={false}/>
+                <Line type="monotone" dataKey="value" dot={false} stroke={props.color ? props.color : 'purple'}/>
             </LineChart>
         );
     }

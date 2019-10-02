@@ -35,3 +35,5 @@ export const parameterList = [
 ];
 
 export const dataSourceList = ['csv', 'online'];
+
+export const colors = ['red', 'blue', 'green', 'grey', 'brown'];

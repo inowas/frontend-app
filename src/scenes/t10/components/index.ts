@@ -1,6 +1,7 @@
 import AddSensor from './AddSensor';
 import CSVDatasource from './CSVDatasource';
 import DataSources from './DataSources';
+import DataSourcesChart from './DataSourcesChart';
 import OnlineDatasource from './OnlineDatasource';
 import SensorList from './SensorList';
 import SensorMap from './SensorMap';
@@ -12,6 +13,7 @@ export {
     AddSensor,
     CSVDatasource,
     DataSources,
+    DataSourcesChart,
     OnlineDatasource,
     SensorList,
     Sensors,

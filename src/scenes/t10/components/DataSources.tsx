@@ -5,7 +5,8 @@ import Uuid from 'uuid';
 import {Rtm} from '../../../core/model/rtm';
 import {IDataSource, ISensorParameter} from '../../../core/model/rtm/Sensor.type';
 import {dataSourceList, parameterList} from '../defaults';
-import {CSVDatasource, OnlineDatasource, TinyLineChart} from './index';
+import {colors} from '../defaults';
+import {CSVDatasource, DataSourcesChart, OnlineDatasource, TinyLineChart} from './index';
 
 interface IProps {
     rtm: Rtm;
@@ -167,7 +168,7 @@ const dataSources = (props: IProps) => {
                                         <Table.Cell>{getTimeRangeText(ds.timeRange)}</Table.Cell>
                                         <Table.Cell>{getValueRangeText(ds.valueRange)}</Table.Cell>
                                         <Table.Cell>
-                                            <TinyLineChart url={ds.url}/>
+                                            <TinyLineChart url={ds.url} color={colors[key]}/>
                                         </Table.Cell>
                                         <Table.Cell textAlign={'right'}>
                                             {!props.rtm.readOnly &&
@@ -218,6 +219,12 @@ const dataSources = (props: IProps) => {
                             </Table.Footer>
                             }
                         </Table>
+                    </Segment>
+                    <Segment color={'grey'} raised={true}>
+                        <Label color={'blue'} ribbon={true} size={'large'}>
+                            Chart
+                        </Label>
+                        <DataSourcesChart dataSources={props.parameter.dataSources}/>
                     </Segment>
                 </Grid.Column>
             </Grid.Row>
