@@ -1,7 +1,8 @@
 import uuidv4 from 'uuid';
 import {MCDA} from '../../../core/model/mcda';
+import {IToolMetaData} from '../../shared/simpleTools/ToolMetaData/ToolMetaData.type';
 
-export const defaults = () => {
+export const defaults = (): IToolMetaData => {
     return {
         id: uuidv4(),
         name: 'New Multi-criteria decision analysis',

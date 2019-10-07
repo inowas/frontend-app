@@ -1,4 +1,4 @@
-import React, {ChangeEvent, SyntheticEvent, useEffect, useState} from 'react';
+import React, {ChangeEvent, SyntheticEvent, useEffect, useRef, useState} from 'react';
 import {
     Button,
     DropdownProps,
@@ -50,10 +50,8 @@ interface IProps {
 
 const criteriaEditor = (props: IProps) => {
     const [criteria, setCriteria] = useState<ICriterion[]>(props.mcda.criteriaCollection.toObject());
-    const [network, setNetwork] = useState(null);
     const [showInfo, setShowInfo] = useState<boolean>(true);
-
-    const setNetworkInstance = (nw: any) => setNetwork(nw);
+    const network = useRef<any>(null);
 
     useEffect(() => {
         setCriteria(props.mcda.criteriaCollection.toObject());
@@ -63,9 +61,8 @@ const criteriaEditor = (props: IProps) => {
         if (props.readOnly) {
             return;
         }
-
-        mcda.criteriaCollection.add(Criterion.fromDefaults().toObject());
-        return props.onChange(mcda);
+        const cMcda = props.mcda.addCriterion(Criterion.fromDefaults());
+        return props.onChange(cMcda);
     };
 
     const handleDismiss = () => setShowInfo(false);
@@ -84,28 +81,29 @@ const criteriaEditor = (props: IProps) => {
         if (props.readOnly) {
             return;
         }
-
-        mcda.criteriaCollection.update(criterion.toObject());
-        return props.onChange(mcda);
+        const cMcda = props.mcda.updateCriterion(criterion);
+        return props.onChange(cMcda);
     };
 
     const handleClickAhp = () => {
         if (props.readOnly) {
             return;
         }
-        mcda.withAhp = !props.mcda.withAhp;
-        return props.onChange(mcda);
+        const cMcda = props.mcda;
+        cMcda.withAhp = !props.mcda.withAhp;
+        return props.onChange(cMcda);
     };
 
     const handleRemoveCriterion = (id: string) => () => {
         if (props.readOnly) {
             return;
         }
-        mcda.criteriaCollection.removeById(id);
-        mcda.criteriaCollection.getSubCriteria(id).forEach((c) => {
-            mcda.criteriaCollection.removeById(c.id);
+        const cMcda = props.mcda;
+        cMcda.criteriaCollection.removeById(id);
+        cMcda.criteriaCollection.getSubCriteria(id).forEach((c) => {
+            cMcda.criteriaCollection.removeById(c.id);
         });
-        return props.onChange(mcda);
+        return props.onChange(cMcda);
     };
 
     const handleSelectChange = (id: string) => (e: SyntheticEvent<HTMLElement>, {name, value}: DropdownProps) => {
@@ -144,10 +142,9 @@ const criteriaEditor = (props: IProps) => {
             return setCriteria(criteriaCollection.update(criterion).toObject());
         };
 
-    const {mcda, readOnly} = props;
     let allCriteria = criteria;
 
-    if (mcda.withAhp) {
+    if (props.mcda.withAhp) {
         allCriteria = criteria.filter((c) => !c.parent);
     }
 
@@ -226,17 +223,17 @@ const criteriaEditor = (props: IProps) => {
                             <Icon name="sitemap"/>
                             Analytical Hierarchy Process</Header>
                         <Radio
-                            checked={mcda.withAhp}
+                            checked={props.mcda.withAhp}
                             onChange={handleClickAhp}
                             toggle={true}
-                            readOnly={readOnly}
+                            readOnly={props.readOnly}
                         />
                     </Segment>
                 </Grid.Column>
             </Grid.Row>
             <Grid.Row>
                 <Grid.Column width={16}>
-                    {mcda.weightAssignmentsCollection.length > 0 &&
+                    {props.mcda.weightAssignmentsCollection && props.mcda.weightAssignmentsCollection.length > 0 &&
                     <Message
                         content="To change, delete or add criteria, you have to delete all weight assignments first or
                         start a new project."
@@ -262,17 +259,17 @@ const criteriaEditor = (props: IProps) => {
                                     <Table.Cell>
                                         <Input
                                             name={CriterionIndex.NAME}
-                                            disabled={readOnly}
+                                            disabled={props.readOnly}
                                             value={c.name}
                                             onBlur={handleLocalChange(c.id, true)}
                                             onChange={handleLocalChange(c.id)}
                                         />
                                     </Table.Cell>
                                     <Table.Cell>
-                                        {!mcda.withAhp &&
+                                        {!props.mcda.withAhp &&
                                         <Select
                                             name={CriterionIndex.TYPE}
-                                            disabled={readOnly}
+                                            disabled={props.readOnly}
                                             value={c.type}
                                             onChange={handleSelectChange(c.id)}
                                             options={[
@@ -283,10 +280,10 @@ const criteriaEditor = (props: IProps) => {
                                         }
                                     </Table.Cell>
                                     <Table.Cell>
-                                        {!mcda.withAhp &&
+                                        {!props.mcda.withAhp &&
                                         <Input
                                             name={CriterionIndex.UNIT}
-                                            disabled={readOnly}
+                                            disabled={props.readOnly}
                                             value={c.unit}
                                             onBlur={handleLocalChange(c.id, true)}
                                             onChange={handleLocalChange(c.id)}
@@ -294,9 +291,9 @@ const criteriaEditor = (props: IProps) => {
                                         }
                                     </Table.Cell>
                                     <Table.Cell textAlign="right">
-                                        {!readOnly &&
+                                        {!props.readOnly &&
                                         <Button.Group>
-                                            {mcda.withAhp &&
+                                            {props.mcda.withAhp &&
                                             <Button
                                                 icon={true}
                                                 labelPosition="left"
@@ -316,13 +313,13 @@ const criteriaEditor = (props: IProps) => {
                                         }
                                     </Table.Cell>
                                 </Table.Row>
-                                {mcda.withAhp && allCriteria.filter((cc) => cc.parent === c.id).map((cc, ckey) =>
+                                {props.mcda.withAhp && allCriteria.filter((cc) => cc.parent === c.id).map((cc, ckey) =>
                                     <Table.Row key={cc.id}>
                                         <Table.Cell>{key + 1}.{ckey + 1}</Table.Cell>
                                         <Table.Cell>
                                             <Input
                                                 name={CriterionIndex.NAME}
-                                                disabled={readOnly}
+                                                disabled={props.readOnly}
                                                 value={cc.name}
                                                 onBlur={handleLocalChange(cc.id, true)}
                                                 onChange={handleLocalChange(cc.id)}
@@ -331,7 +328,7 @@ const criteriaEditor = (props: IProps) => {
                                         <Table.Cell>
                                             <Select
                                                 name={CriterionIndex.TYPE}
-                                                disabled={readOnly}
+                                                disabled={props.readOnly}
                                                 value={cc.type}
                                                 onChange={handleSelectChange(cc.id)}
                                                 options={[
@@ -343,14 +340,14 @@ const criteriaEditor = (props: IProps) => {
                                         <Table.Cell>
                                             <Input
                                                 name={CriterionIndex.UNIT}
-                                                disabled={readOnly}
+                                                disabled={props.readOnly}
                                                 value={cc.unit}
                                                 onBlur={handleLocalChange(cc.id, true)}
                                                 onChange={handleLocalChange(cc.id)}
                                             />
                                         </Table.Cell>
                                         <Table.Cell textAlign="right">
-                                            {!readOnly &&
+                                            {!props.readOnly &&
                                             <Button.Group>
                                                 <Button
                                                     negative={true}
@@ -366,21 +363,21 @@ const criteriaEditor = (props: IProps) => {
                         )}
                     </Table>
                     }
-                    {!readOnly &&
+                    {!props.readOnly &&
                     <Button
                         fluid={true}
                         onClick={handleAddCriteria}
                     >
-                        Add new {mcda.withAhp ? 'main' : ''} criterion
+                        Add new {props.mcda.withAhp ? 'main' : ''} criterion
                     </Button>
                     }
                 </Grid.Column>
             </Grid.Row>
-            {mcda.withAhp &&
+            {props.mcda.withAhp &&
             <Grid.Row>
                 <Grid.Column with={16}>
                     <Graph
-                        getNetwork={setNetworkInstance}
+                        ref={network}
                         graph={graph}
                         options={options}
                         style={styles.graph}

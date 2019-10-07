@@ -3,10 +3,6 @@ import AbstractCommand from '../../../../core/model/command/AbstractCommand';
 import {ICommand} from './command.type';
 
 class Command extends AbstractCommand {
-    set payload(value: any) {
-        this._props.payload = value;
-    }
-
     public static createToolInstance = (payload: any) => {
         return new Command('createToolInstance', payload);
     };
@@ -25,8 +21,6 @@ class Command extends AbstractCommand {
         metadata: {},
         payload: null
     };
-
-    public toObject = () => this._props;
 }
 
 export default Command;

@@ -83,6 +83,7 @@ const t05 = (props: IProps) => {
     };
 
     const handleChange = (cMcda: MCDA) => {
+        console.log({cMcda});
         setIsDirty(true);
         setTool({
             ...tool,
@@ -181,7 +182,7 @@ const t05 = (props: IProps) => {
             case 'criteria':
                 return (
                     <CriteriaEditor
-                        toolName={cTool.name}
+                        toolName={tool.name}
                         readOnly={readOnly || mcda.weightAssignmentsCollection.length > 0}
                         routeTo={handleRouteTo}
                         mcda={mcda}

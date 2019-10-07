@@ -1,15 +1,17 @@
-import {cloneDeep as _cloneDeep} from 'lodash';
+import {cloneDeep} from 'lodash';
 import math from 'mathjs';
 import uuidv4 from 'uuid/v4';
 import {BoundingBox, GridSize} from '../geometry';
 import {Array2D} from '../geometry/Array2D.type';
 import {multiplyElementWise} from './calculations';
 import {CriteriaCollection, WeightAssignmentsCollection} from './criteria';
+import Criterion from './criteria/Criterion';
 import {Gis, RasterLayer} from './gis';
 import {IMCDA} from './MCDA.type';
 import Suitability from './Suitability';
 
 class MCDA {
+
     get criteriaCollection() {
         return CriteriaCollection.fromObject(this._props.criteria);
     }
@@ -59,7 +61,7 @@ class MCDA {
     }
 
     public static fromObject(obj: IMCDA) {
-        return new MCDA(obj);
+        return new MCDA(cloneDeep(obj));
     }
 
     public static fromDefaults() {
@@ -93,16 +95,25 @@ class MCDA {
     constructor(obj: IMCDA) {
         this._props = obj;
     }
+    public addCriterion(criterion: Criterion) {
+        this.criteriaCollection = this.criteriaCollection.add(criterion.toObject());
+        return this;
+    }
+
+    public updateCriterion(criterion: Criterion) {
+        this.criteriaCollection = this.criteriaCollection.update(criterion.toObject());
+        return this;
+    }
 
     public toObject() {
-        return this._props;
+        return cloneDeep(this._props);
     }
 
     public toPayload() {
         return ({
             constraints: this.constraints ? this.constraints.toPayload() : undefined,
             criteria: this.criteriaCollection.toPayload(),
-            gridSize: this.gridSize,
+            grid_size: this.gridSize,
             suitability: this.suitability.toPayload(),
             weight_assignments: this.weightAssignmentsCollection.toObject(),
             with_ahp: this.withAhp
@@ -122,7 +133,7 @@ class MCDA {
         });
 
         if (this.suitability.raster) {
-            rasterData = _cloneDeep(this.suitability.raster);
+            rasterData = cloneDeep(this.suitability.raster);
         }
 
         const criteria = !this.withAhp ? this.criteriaCollection.all : this.criteriaCollection.all.filter(

@@ -1,4 +1,4 @@
-import {cloneDeep as _cloneDeep} from 'lodash';
+import {cloneDeep} from 'lodash';
 import {Collection} from '../../collection/Collection';
 import BoundingBox from '../../geometry/BoundingBox';
 import Criterion from './Criterion';
@@ -10,7 +10,7 @@ class CriteriaCollection extends Collection<ICriterion> {
     }
 
     public toPayload() {
-        return _cloneDeep(this.all.map((item) => Criterion.fromObject(item).toPayload()));
+        return this.toObject().map((item) => Criterion.fromObject(item).toPayload());
     }
 
     public isFinished(withAhp = false) {
@@ -45,7 +45,7 @@ class CriteriaCollection extends Collection<ICriterion> {
     }
 
     public toObject() {
-        return this.all;
+        return cloneDeep(this.all);
     }
 }
 
