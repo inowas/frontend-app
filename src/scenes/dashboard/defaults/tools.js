@@ -1,14 +1,14 @@
 export const ROLE_USER = 'ROLE_USER';
 
 const availableTools = [
-    /*{
+    {
         slug: 'T01',
         name: 'SAT basin infiltration capacity reduction database',
         path: '/tools/',
         subPath: '',
         role: ROLE_USER,
         instances: []
-    },*/
+    },
     {
         slug: 'T02',
         name: 'Groundwater mounding (Hantush)',
