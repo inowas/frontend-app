@@ -45,7 +45,7 @@ export default abstract class PointBoundary extends Boundary {
     }
 
     set cells(value) {
-        this._props.properties.cells = value.toObject;
+        this._props.properties.cells = value.toObject();
     }
 
     public getSpValues() {
