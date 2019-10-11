@@ -1,3 +1,5 @@
+import {LTOB} from 'downsample';
+import {DataPoint} from 'downsample/dist/types';
 import {cloneDeep} from 'lodash';
 import moment from 'moment';
 import * as Papa from 'papaparse';
@@ -5,8 +7,8 @@ import {ParseResult} from 'papaparse';
 import React, {ChangeEvent, useEffect, useState} from 'react';
 import {ResponsiveContainer, Scatter, ScatterChart, XAxis, YAxis} from 'recharts';
 import {Form, Grid, Header, Label, List, Segment} from 'semantic-ui-react';
-import {ICSVDataSource} from '../../../core/model/rtm/Sensor.type';
-import {dropData, retrieveDroppedData} from '../../../services/api';
+import {FileDataSource} from '../../../core/model/rtm';
+import {IFileDataSource} from '../../../core/model/rtm/Sensor.type';
 
 interface IDateTimeValue {
     timeStamp: number;
@@ -14,13 +16,14 @@ interface IDateTimeValue {
 }
 
 interface IProps {
-    dataSource: ICSVDataSource;
-    onChange: (ds: ICSVDataSource) => void;
+    dataSource: FileDataSource;
+    onChange: (ds: FileDataSource) => void;
 }
 
 const csvDatasource = (props: IProps) => {
+    const [lDataSource, setLDataSource] = useState<IFileDataSource | null>(null);
+
     const [data, setData] = useState<IDateTimeValue[] | null>(null);
-    const [filteredData, setFilteredData] = useState<IDateTimeValue[] | null>(null);
     const [metadata, setMetadata] = useState<ParseResult | null>(null);
 
     const [dateTimeFormat, setDateTimeFormat] = useState<string>('DD.MM.YYYY H:i:s');
@@ -30,6 +33,7 @@ const csvDatasource = (props: IProps) => {
     const [parameterField, setParameterField] = useState<number | null>(null);
 
     const [fetchingData, setFetchingData] = useState<boolean>(false);
+    const [fetchingError, setFetchingError] = useState<boolean>(false);
     const [parsingData, setParsingData] = useState<boolean>(false);
 
     const [isFetched, setIsFetched] = useState<boolean>(false);
@@ -51,21 +55,24 @@ const csvDatasource = (props: IProps) => {
     const [lMaxValue, setLMaxValue] = useState<string>('0');
 
     useEffect(() => {
-        const {dataSource} = props;
-        if (dataSource && dataSource.url && dataSource.property) {
-            setFetchingData(true);
-            retrieveDroppedData(dataSource.url,
-                (rData) => {
-                    setFetchingData(false);
-                    setIsFetched(true);
-                    setParameterField(0);
-                    return setData(rData as IDateTimeValue[]);
-                },
-                () => {
-                    setFetchingData(false);
-                }
-            );
+        if (!props.dataSource) {
+            return;
         }
+
+        setLDataSource(props.dataSource.toObject());
+
+        const ds = FileDataSource.fromObject(props.dataSource.toObject());
+        setFetchingData(true);
+        ds.getData().then((d) => {
+            setFetchingData(false);
+            setIsFetched(true);
+            setParameterField(0);
+            setLDataSource(ds.toObject());
+            setData(d);
+        }).catch(() => {
+            setFetchingData(false);
+            setFetchingError(true);
+        });
     }, []);
 
     useEffect(() => {
@@ -74,12 +81,10 @@ const csvDatasource = (props: IProps) => {
             if (firstRowIsHeader) {
                 fData.shift();
             }
-            const cData: IDateTimeValue[] = fData.map((r) => {
-                return {
-                    timeStamp: moment.utc(r[datetimeField], dateTimeFormat).unix(),
-                    value: parseFloat(r[parameterField])
-                };
-            });
+            const cData: IDateTimeValue[] = fData.map((r) => ({
+                timeStamp: moment.utc(r[datetimeField], dateTimeFormat).unix(),
+                value: parseFloat(r[parameterField])
+            }));
             sendData(cData);
             return setData(cData);
         }
@@ -93,26 +98,32 @@ const csvDatasource = (props: IProps) => {
                 !(beginEnabled && v.timeStamp <= begin) && !(endEnabled && v.timeStamp >= end)
             );
             sendData(fData);
-            return setFilteredData(fData);
         }
     }, [begin, beginEnabled, end, endEnabled, minValue, minValueEnabled, maxValue, maxValueEnabled]);
 
+    useEffect(() => {
+        if (!data || data.length === 0) {
+            return;
+        }
+
+        if (!beginEnabled) {
+            setBeginEnabled(true);
+            setBegin(data[0].timeStamp);
+            setLBegin(data[0].timeStamp);
+        }
+
+        if (!endEnabled) {
+            setEndEnabled(true);
+            setEnd(data[data.length - 1].timeStamp);
+            setLEnd(data[data.length - 1].timeStamp);
+        }
+
+    }, [data]);
+
     const sendData = (sData: IDateTimeValue[]) => {
         setFetchingData(true);
-        dropData(sData,
-            (url) => {
-                setFetchingData(false);
-                const ds = {
-                    ...props.dataSource,
-                    property: parameterField,
-                    url: url.filename
-                };
-                return props.onChange(ds);
-            },
-            () => {
-                setFetchingData(false);
-            }
-        );
+        props.dataSource.dropData(sData).then().catch();
+
     };
 
     const handleBlur = (f: (v: any) => void) => (v: any) => {
@@ -147,30 +158,41 @@ const csvDatasource = (props: IProps) => {
         return moment.unix(dt).format('YYYY/MM/DD');
     };
 
+    // tslint:disable-next-line:variable-name
+    const RenderNoShape = () => null;
+
     const renderDiagram = () => {
-        if (!data || parameterField === null) {
+        if (!data || !parameterField) {
             return (
                 <Header as={'h2'}>No data</Header>
             );
         }
 
+        const downSampledDataLTOB: DataPoint[] = LTOB(data.map((ds: IDateTimeValue) => ({
+            x: ds.timeStamp,
+            y: ds.value
+        })), 200);
+
         return (
             <ResponsiveContainer height={300}>
                 <ScatterChart>
                     <XAxis
-                        dataKey={'timeStamp'}
-                        domain={['auto', 'auto']}
+                        dataKey={'x'}
+                        domain={[
+                            beginEnabled ? begin : 'auto',
+                            endEnabled ? end : 'auto',
+                        ]}
                         name={'Date Time'}
                         tickFormatter={formatDateTimeTicks}
                         type={'number'}
                     />
-                    <YAxis dataKey={'value'} name={parameterField} domain={['auto', 'auto']}/>
+                    <YAxis dataKey={'y'} name={parameterField} domain={['auto', 'auto']}/>
                     <Scatter
-                        data={filteredData !== null ? filteredData : data}
-                        line={{stroke: '#eee'}}
-                        lineJointType={'monotoneX'}
+                        data={downSampledDataLTOB}
+                        line={{stroke: '#1eb1ed', strokeWidth: 2}}
                         lineType={'joint'}
                         name={parameterField}
+                        shape={<RenderNoShape/>}
                     />
                 </ScatterChart>
             </ResponsiveContainer>

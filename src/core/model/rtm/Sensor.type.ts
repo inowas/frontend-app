@@ -12,46 +12,26 @@ export interface ISensorParameter {
     type: string;
     description: string;
     dataSources: IDataSource[];
-    filters: IFilter[];
-    data: IDateTimeValue[];
 }
 
-export interface IFilter {
-    type: string;
-    begin: number | null;
-    end: number | null;
-}
+import {IDateTimeValue} from './Sensor.type';
 
-export interface IValueFilter extends IFilter {
-    type: 'valuefilter';
-}
+export type IDataSource = ISensorDataSource | IFileDataSource;
 
-export interface IQueryParams {
-    project: string;
-    sensor: string;
-    property: string;
-    begin?: number;
-    end?: number;
-}
-
-export interface IDataSource {
+export interface IDataSourceBase {
     id: string;
-    type: string;
-    valueRange?: Array<number | null>;
-    timeRange?: Array<number | null>;
+    data?: IDateTimeValue[] | object;
 }
 
-export interface IOnlineDataSource extends IDataSource {
-    server?: string;
-    queryParams?: IQueryParams;
+export interface ISensorDataSource extends IDataSourceBase {
+    url: string;
 }
 
-export interface ICSVDataSource extends IDataSource {
-    property?: string | number | null;
-    url?: string;
+export interface IFileDataSource extends IDataSourceBase {
+    filename: string;
 }
 
 export interface IDateTimeValue {
-    timeStamp: string;
+    timeStamp: number;
     value: number;
 }

@@ -1,14 +1,17 @@
+import {LTOB} from 'downsample';
+import {DataPoint} from 'downsample/dist/types';
 import {uniqBy} from 'lodash';
 import moment from 'moment';
 import React, {useEffect, useState} from 'react';
 import {ResponsiveContainer, Scatter, ScatterChart, XAxis, YAxis} from 'recharts';
 import {Form, Grid, Header, Label, Segment} from 'semantic-ui-react';
-import {IDateTimeValue, IOnlineDataSource} from '../../../core/model/rtm/Sensor.type';
+import {IDateTimeValue} from '../../../core/model/rtm/Sensor.type';
+import SensorDataSource from '../../../core/model/rtm/SensorDataSource';
 import {fetchUrl} from '../../../services/api';
 
 interface IProps {
-    dataSource: IOnlineDataSource;
-    onChange: (ds: IOnlineDataSource) => void;
+    dataSource: SensorDataSource | null;
+    onChange: (ds: SensorDataSource) => void;
 }
 
 export const servers = [{
@@ -55,89 +58,94 @@ const onlineDataSource = (props: IProps) => {
     const [maxValueEnabled, setMaxValueEnabled] = useState<boolean>(false);
     const [maxValue, setMaxValue] = useState<number | string>(0);
 
+    const [url, setUrl] = useState<string | null>(null);
+
     useEffect(() => {
         const {dataSource} = props;
 
-        if (dataSource.server) {
+        if (dataSource) {
             setServer(dataSource.server);
-        }
+            setProject(dataSource.project);
+            setSensor(dataSource.sensor);
+            setParameter(dataSource.parameter);
 
-        const {queryParams, valueRange, timeRange} = dataSource;
-        if (queryParams) {
-            setProject(queryParams.project);
-            setSensor(queryParams.sensor);
-            setParameter(queryParams.property);
-
-            if (timeRange) {
-                const [minTime, maxTime] = timeRange;
-
-                if (minTime) {
-                    setBeginEnabled(true);
-                    setBegin(minTime);
-                    setLBegin(minTime);
-                }
-
-                if (maxTime) {
-                    setEndEnabled(true);
-                    setEnd(maxTime);
-                    setLEnd(maxTime);
-                }
+            if (dataSource.begin) {
+                setBeginEnabled(true);
+                setBegin(dataSource.begin);
+                setLBegin(dataSource.begin);
             }
 
-            if (valueRange) {
-                const [minVal, maxVal] = valueRange;
-                if (minVal) {
-                    setMinValueEnabled(true);
-                    setMinValue(minVal);
-                }
-
-                if (maxVal) {
-                    setMaxValueEnabled(true);
-                    setMaxValue(maxVal);
-                }
+            if (dataSource.end) {
+                setEndEnabled(true);
+                setEnd(dataSource.end);
+                setLEnd(dataSource.end);
             }
+
+            if (dataSource.url) {
+                setUrl(dataSource.url.toString);
+            }
+
+            fetchData();
         }
+
+        if (!dataSource) {
+            setServer(servers[0].url);
+        }
+
     }, []);
 
     useEffect(() => {
-        fetchServerMetadata();
+        fetchServerMetadata(server);
     }, [server]);
 
     useEffect(() => {
-        executeQuery();
-    }, [begin, end, beginEnabled, endEnabled]);
+        updateDataSource();
+    }, [begin, beginEnabled, end, endEnabled, minValue, minValueEnabled, maxValueEnabled, maxValue, url]);
 
     useEffect(() => {
-        executeQuery();
-        updateDataSource();
-    }, [parameter]);
+        if (!data || data.length === 0) {
+            return;
+        }
 
-    useEffect(() => {
-        updateDataSource();
-    }, [begin, beginEnabled, end, endEnabled, minValue, minValueEnabled, maxValueEnabled, maxValue]);
+        if (!beginEnabled) {
+            setBeginEnabled(true);
+            setBegin(data[0].timeStamp);
+            setLBegin(data[0].timeStamp);
+        }
+
+        if (!endEnabled) {
+            setEndEnabled(true);
+            setEnd(data[data.length - 1].timeStamp);
+            setLEnd(data[data.length - 1].timeStamp);
+        }
+
+    }, [data]);
+
+    const fetchData = () => {
+        if (!props.dataSource) {
+            return;
+        }
+        setFetchingData(true);
+        props.dataSource.getData().then((d) => {
+            setData(d);
+            setFetchingData(false);
+            setFetchingError(false);
+        }).catch((e) => {
+            setFetchingData(false);
+            setFetchingError(true);
+        });
+    };
 
     const updateDataSource = () => {
+        if (!props.dataSource) {
+            return;
+        }
         if (server && project && sensor && parameter) {
-            const ds = {
-                ...props.dataSource,
-                server,
-                queryParams: {
-                    sensor,
-                    project,
-                    property: parameter,
-                    begin: beginEnabled ? begin : undefined,
-                    end: endEnabled ? end : undefined
-                },
-                valueRange: [
-                    minValueEnabled ? minValue as number : null,
-                    maxValueEnabled ? maxValue as number : null
-                ],
-                timeRange: [
-                    beginEnabled ? begin : null,
-                    endEnabled ? end : null
-                ]
-            };
-
+            const ds = props.dataSource;
+            ds.server = server;
+            ds.project = project;
+            ds.sensor = sensor;
+            ds.parameter = parameter;
             props.onChange(ds);
         }
     };
@@ -168,25 +176,21 @@ const onlineDataSource = (props: IProps) => {
         f(v);
     };
 
-    const fetchServerMetadata = () => {
-        if (!server) {
+    const fetchServerMetadata = (serverUrl: string | null) => {
+        if (!serverUrl) {
             return;
         }
 
-        const filteredServers = servers.filter((s) => s.url = server);
+        const filteredServers = servers.filter((s) => s.url = serverUrl);
         if (filteredServers.length === 0) {
             return;
         }
 
         const srv = filteredServers[0];
-        const url = new URL(
-            `${srv.path}/`,
-            `${srv.protocol}://${srv.url}`
-        );
 
         setFetchingMetaData(true);
         fetchUrl(
-            url.toString(),
+            new URL(`${srv.path}/`, `${srv.protocol}://${srv.url}`).toString(),
             (d: ISensorMetaData[]) => {
                 setSensorMetaData(d);
                 setFetchingMetaData(false);
@@ -197,66 +201,12 @@ const onlineDataSource = (props: IProps) => {
             });
     };
 
-    const executeQuery = () => {
-        if (!(server && project && sensor && parameter)) {
-            return;
-        }
-
-        const filteredServers = servers.filter((s) => s.url = server);
-        if (filteredServers.length === 0) {
-            return;
-        }
-
-        const srv = filteredServers[0];
-
-        setData(null);
-        setFetchingError(false);
-        setFetchingData(true);
-
-        let url = new URL(
-            `${srv.path}/project/${project}/sensor/${sensor}/property/${parameter}`,
-            `${srv.protocol}://${srv.url}`
-        ).toString();
-
-        if (beginEnabled || endEnabled) {
-            url += '?';
-
-            if (beginEnabled) {
-                url += 'begin=' + begin;
-            }
-
-            if (beginEnabled && endEnabled) {
-                url += '&';
-            }
-
-            if (endEnabled) {
-                url += 'end=' + end;
-            }
-        }
-
-        fetchUrl(
-            url,
-            (response: any) => {
-                const d: any = response.map((ds: any) => {
-                    const [dateTime, value] = Object.values(ds);
-                    return {
-                        timeStamp: moment.utc(dateTime).unix(),
-                        value
-                    };
-                });
-
-                setData(d);
-                setFetchingData(false);
-            },
-            () => {
-                setFetchingData(false);
-                setFetchingError(true);
-            });
-    };
-
     const formatDateTimeTicks = (dt: number) => {
         return moment.unix(dt).format('YYYY/MM/DD');
     };
+
+    // tslint:disable-next-line:variable-name
+    const RenderNoShape = () => null;
 
     const renderDiagram = () => {
         if (!data || !parameter) {
@@ -265,27 +215,31 @@ const onlineDataSource = (props: IProps) => {
             );
         }
 
-        const filteredData = data
-            .filter((v) => !(minValueEnabled && v.value < minValue))
-            .filter((v) => !(maxValueEnabled && v.value > maxValue));
+        const downSampledDataLTOB: DataPoint[] = LTOB(data.map((ds: IDateTimeValue) => ({
+            x: ds.timeStamp,
+            y: ds.value
+        })), 200);
 
         return (
             <ResponsiveContainer height={300}>
                 <ScatterChart>
                     <XAxis
-                        dataKey={'timeStamp'}
-                        domain={['auto', 'auto']}
+                        dataKey={'x'}
+                        domain={[
+                            beginEnabled ? begin : 'auto',
+                            endEnabled ? end : 'auto',
+                        ]}
                         name={'Date Time'}
                         tickFormatter={formatDateTimeTicks}
                         type={'number'}
                     />
-                    <YAxis dataKey={'value'} name={parameter} domain={['auto', 'auto']}/>
+                    <YAxis dataKey={'y'} name={parameter} domain={['auto', 'auto']}/>
                     <Scatter
-                        data={filteredData}
-                        line={{stroke: '#eee'}}
-                        lineJointType={'monotoneX'}
+                        data={downSampledDataLTOB}
+                        line={{stroke: '#1eb1ed', strokeWidth: 2}}
                         lineType={'joint'}
                         name={parameter}
+                        shape={<RenderNoShape/>}
                     />
                 </ScatterChart>
             </ResponsiveContainer>
@@ -297,9 +251,10 @@ const onlineDataSource = (props: IProps) => {
             <Grid.Row>
                 <Grid.Column>
                     <Form>
-                        <Segment raised={true} loading={fetchingMetadata} color={fetchingError ? 'red' : undefined}>
+                        <Segment raised={true} color={fetchingError ? 'red' : undefined}>
                             <Label as={'div'} color={'blue'} ribbon={true}>Server</Label>
                             <Form.Dropdown
+                                loading={fetchingMetadata}
                                 width={6}
                                 name={'server'}
                                 selection={true}
@@ -455,7 +410,7 @@ const onlineDataSource = (props: IProps) => {
                 <Grid.Column>
                     <Segment loading={(fetchingData || fetchingMetadata)} raised={true}>
                         {!fetchingData && <Label as={'div'} color={'red'} ribbon={true}>Data</Label>}
-                        {renderDiagram()}
+                        {!fetchingData && renderDiagram()}
                     </Segment>
                 </Grid.Column>
             </Grid.Row>

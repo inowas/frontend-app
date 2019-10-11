@@ -127,7 +127,7 @@ const RTM = (props: IProps) => {
         }
 
         sendCommand(
-            SimpleToolsCommand.updateToolInstance(r.toObject()),
+            SimpleToolsCommand.updateToolInstance(r.toObjectWithoutData()),
             () => setDirty(false)
         );
     };

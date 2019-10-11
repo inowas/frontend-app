@@ -274,6 +274,14 @@ export const fetchUrl = (
         .catch(onError);
 };
 
+export async function asyncFetchUrl(url: string) {
+    const api = createApi(getToken());
+    const response = await api.get(url);
+    const json = await response.data;
+    console.log(json);
+    return json;
+}
+
 interface ISubmitSignUpCredentials {
     name: string;
     email: string;
@@ -304,12 +312,8 @@ export const submitLoginCredentials = (
         .catch(onError);
 };
 
-export const dropData = (
-    data: object,
-    onSuccess: CallbackFunction<any, void>,
-    onError: ErrorCallbackFunction
-) => {
-    return axios.request({
+export const postRequest = (url: string, data: object) =>
+    axios.request({
         method: 'POST',
         url: DATADROPPER_URL,
         data,
@@ -317,8 +321,7 @@ export const dropData = (
             'Access-Control-Allow-Origin': '*',
             'Content-Type': 'application/json',
         }
-    }).then((response) => response.data).then(onSuccess).catch(onError);
-};
+    }).then((response) => response.data);
 
 export const retrieveDroppedData = (
     filename: string,

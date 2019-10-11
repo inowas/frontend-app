@@ -4,8 +4,8 @@ import {Button, Dropdown, Grid, Header, Icon, Label, Modal, Segment, Table} from
 import Uuid from 'uuid';
 import {Rtm} from '../../../core/model/rtm';
 import {IDataSource, ISensorParameter} from '../../../core/model/rtm/Sensor.type';
-import {dataSourceList, parameterList} from '../defaults';
-import {CSVDatasource, OnlineDatasource} from './index';
+import {colors, dataSourceList, parameterList} from '../defaults';
+import {CSVDatasource, DataSourcesChart, OnlineDatasource, TinyLineChart} from './index';
 
 interface IProps {
     rtm: Rtm;
@@ -15,7 +15,7 @@ interface IProps {
 
 const dataSources = (props: IProps) => {
 
-    const [datasource, setDatasource] = useState<IDataSource | null>(null);
+    const [selectedDatasource, setSelectedDatasource] = useState<IDataSource | null>(null);
 
     const getTimeRangeText = (timeRange: any) => {
         if (!timeRange) {
@@ -55,45 +55,55 @@ const dataSources = (props: IProps) => {
         if (maxValue) {
             return `<= ${maxValue}`;
         }
+
+        return '-';
     };
 
     const handleAddEditDataSource = () => {
 
         const {parameter} = props;
-        if (!parameter || !datasource) {
+        if (!parameter || !selectedDatasource) {
             return;
         }
 
         let add = true;
         parameter.dataSources = parameter.dataSources.map((ds) => {
-            if (ds.id === datasource.id) {
+            if (ds.id === selectedDatasource.id) {
                 add = false;
-                return datasource;
+                return selectedDatasource;
             }
 
             return ds;
         });
 
         if (add) {
-            parameter.dataSources.push(datasource);
+            parameter.dataSources.push(selectedDatasource);
         }
 
-        setDatasource(null);
+        setSelectedDatasource(null);
         props.onChange(parameter);
     };
 
     const handleAddDataSourceClick = (dsType: string) => () => {
         if (dsType === 'csv') {
-            setDatasource({id: Uuid.v4(), type: dsType});
+            setSelectedDatasource({
+                id: Uuid.v4(),
+                type: dsType,
+                timeRange: [null, null]
+            });
         }
 
         if (dsType === 'online') {
-            setDatasource({id: Uuid.v4(), type: dsType});
+            setSelectedDatasource({
+                id: Uuid.v4(),
+                type: dsType,
+                timeRange: [null, null]
+            });
         }
     };
 
     const handleCancelAddDataSourceClick = () => {
-        setDatasource(null);
+        setSelectedDatasource(null);
     };
 
     const handleDeleteDataSourceClick = (id: string) => () => {
@@ -118,7 +128,13 @@ const dataSources = (props: IProps) => {
             return;
         }
 
-        setDatasource(filteredDs[0]);
+        setSelectedDatasource(filteredDs[0]);
+    };
+
+    const handleMoveUpDataSourceClick = (id: string) => () => {
+    };
+
+    const handleMoveDownDataSourceClick = (id: string) => () => {
     };
 
     if (!props.parameter) {
@@ -143,6 +159,7 @@ const dataSources = (props: IProps) => {
                                     <Table.HeaderCell>Time range</Table.HeaderCell>
                                     <Table.HeaderCell>Value range</Table.HeaderCell>
                                     <Table.HeaderCell/>
+                                    <Table.HeaderCell/>
                                 </Table.Row>
                             </Table.Header>
                             <Table.Body>
@@ -151,16 +168,30 @@ const dataSources = (props: IProps) => {
                                         <Table.Cell>{ds.type}</Table.Cell>
                                         <Table.Cell>{getTimeRangeText(ds.timeRange)}</Table.Cell>
                                         <Table.Cell>{getValueRangeText(ds.valueRange)}</Table.Cell>
+                                        <Table.Cell>
+                                            <TinyLineChart url={ds.url} color={colors[key]}/>
+                                        </Table.Cell>
                                         <Table.Cell textAlign={'right'}>
                                             {!props.rtm.readOnly &&
-                                            <Button.Group>
-                                                <Button icon={true} onClick={handleEditDataSourceClick(ds.id)}>
-                                                    <Icon name={'edit'}/>
-                                                </Button>
-                                                <Button icon={true} onClick={handleDeleteDataSourceClick(ds.id)}>
-                                                    <Icon name={'trash'}/>
-                                                </Button>
-                                            </Button.Group>}
+                                            <div>
+                                                <Button.Group>
+                                                    <Button icon={true} onClick={handleMoveUpDataSourceClick(ds.id)}>
+                                                        <Icon name={'arrow up'}/>
+                                                    </Button>
+                                                    <Button icon={true} onClick={handleMoveDownDataSourceClick(ds.id)}>
+                                                        <Icon name={'arrow down'}/>
+                                                    </Button>
+                                                </Button.Group>
+                                                {' '}
+                                                <Button.Group>
+                                                    <Button icon={true} onClick={handleEditDataSourceClick(ds.id)}>
+                                                        <Icon name={'edit'}/>
+                                                    </Button>
+                                                    <Button icon={true} onClick={handleDeleteDataSourceClick(ds.id)}>
+                                                        <Icon name={'trash'}/>
+                                                    </Button>
+                                                </Button.Group>
+                                            </div>}
                                         </Table.Cell>
                                     </Table.Row>
                                 ))}
@@ -169,7 +200,7 @@ const dataSources = (props: IProps) => {
                             {!props.rtm.readOnly &&
                             <Table.Footer>
                                 <Table.Row>
-                                    <Table.HeaderCell colSpan={4}>
+                                    <Table.HeaderCell colSpan={5}>
                                         <Button
                                             as="div"
                                             labelPosition="left"
@@ -201,19 +232,28 @@ const dataSources = (props: IProps) => {
                             }
                         </Table>
                     </Segment>
+                    {props.parameter.dataSources.length > 0 &&
+                    <Segment color={'grey'} raised={true}>
+                        <Label color={'blue'} ribbon={true} size={'large'}>
+                            Chart
+                        </Label>
+                        <DataSourcesChart dataSources={props.parameter.dataSources}/>
+                    </Segment>
+                    }
+
                 </Grid.Column>
             </Grid.Row>
 
-            {datasource &&
+            {selectedDatasource &&
             <Modal centered={false} open={true} dimmer={'blurring'}>
                 <Modal.Header>Add Datasource</Modal.Header>
                 <Modal.Content>
-                    {datasource && datasource.type === 'csv' &&
-                    <CSVDatasource dataSource={datasource} onChange={setDatasource}/>
+                    {selectedDatasource && selectedDatasource.type === 'csv' &&
+                    <CSVDatasource dataSource={selectedDatasource} onChange={setSelectedDatasource}/>
                     }
 
-                    {datasource && datasource.type === 'online' &&
-                    <OnlineDatasource dataSource={datasource} onChange={setDatasource}/>
+                    {selectedDatasource && selectedDatasource.type === 'online' &&
+                    <OnlineDatasource dataSource={selectedDatasource} onChange={setSelectedDatasource}/>
                     }
                 </Modal.Content>
                 <Modal.Actions>
