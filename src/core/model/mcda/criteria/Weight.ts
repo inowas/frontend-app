@@ -1,5 +1,6 @@
+import {cloneDeep} from 'lodash';
 import uuidv4 from 'uuid/v4';
-import { ICriteriaRelation } from './CriteriaRelation.type';
+import CriteriaRelation from './CriteriaRelation';
 import {IWeight} from './Weight.type';
 
 class Weight {
@@ -9,7 +10,7 @@ class Weight {
     }
 
     set id(value) {
-        this._props.id = value ? value : uuidv4();
+        this._props.id = value;
     }
 
     get initialValue() {
@@ -28,12 +29,12 @@ class Weight {
         this._props.criterion = value;
     }
 
-    get relations(): ICriteriaRelation[] {
-        return this._props.relations;
+    get relations(): CriteriaRelation[] {
+        return this._props.relations.map((r) => CriteriaRelation.fromObject(r));
     }
 
-    set relations(value: ICriteriaRelation[]) {
-        this._props.relations = value || [];
+    set relations(value: CriteriaRelation[]) {
+        this._props.relations = value.map((r) => r.toObject());
     }
 
     get value() {
@@ -60,6 +61,7 @@ class Weight {
     public static fromObject(obj: IWeight) {
         return new Weight(obj);
     }
+
     protected _props: IWeight;
 
     constructor(obj: IWeight) {
@@ -67,7 +69,7 @@ class Weight {
     }
 
     public toObject() {
-        return this._props;
+        return cloneDeep(this._props);
     }
 }
 

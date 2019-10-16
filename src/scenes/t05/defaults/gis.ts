@@ -37,7 +37,9 @@ const heatMapColors: {
         '#666666',
         '#888888',
         '#aaaaaa',
-        '#cccccc'
+        '#018571',
+        '#76cdc5',
+        '#a5cdc2'
     ],
     colorBlind: [
         '#a6611a',

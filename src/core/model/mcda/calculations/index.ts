@@ -37,7 +37,12 @@ export const multiplyElementWise = (m1: Array2D<number>, m2: Array2D<number>): A
  *
  * @return {object} results   Object with properties ci, cv, lambda.
  */
-export const calculatePwcWeights = (criteria: string[], relations: ICriteriaRelation[]) => {
+export const calculatePwcWeights = (criteria: string[], relations: {
+    id: string;
+    from: string;
+    to: string;
+    value: number;
+}[]) => {
     interface IResults {
         lambda: number;
         ci: number;
@@ -86,11 +91,11 @@ export const calculatePwcWeights = (criteria: string[], relations: ICriteriaRela
                 value = 1;
             }
             /* TODO: this might be wrong (relation.id was originally relation.from) */
-            const reld = relations.filter((relation) => relation.id === col && relation.to === row);
+            const reld = relations.filter((relation) => relation.from === col && relation.to === row);
             if (reld.length > 0) {
                 value = 1 / reld[0].value;
             }
-            const reli = relations.filter((relation) => relation.id === row && relation.to === col);
+            const reli = relations.filter((relation) => relation.from === row && relation.to === col);
             if (reli.length > 0) {
                 value = reli[0].value;
             }

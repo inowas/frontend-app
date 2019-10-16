@@ -1,3 +1,4 @@
+import {CriteriaType} from './criteria/Criterion.type';
 import RulesCollection from './criteria/RulesCollection';
 import {RasterLayer} from './gis';
 import {ISuitability} from './Suitability.type';
@@ -41,15 +42,8 @@ class Suitability {
         return this._props;
     }
 
-    public toPayload() {
-        return ({
-            raster: this.raster.toPayload(),
-            rules: this.rulesCollection.toObject()
-        });
-    }
-
     public generateLegend(mode = 'reclassified') {
-        return this.raster.generateLegend(this.rulesCollection, 'continuous', mode);
+        return this.raster.generateLegend(this.rulesCollection, CriteriaType.CONTINUOUS, mode);
     }
 }
 

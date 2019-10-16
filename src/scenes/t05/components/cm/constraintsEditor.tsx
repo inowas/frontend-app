@@ -1,5 +1,6 @@
 import React, {FormEvent, useEffect, useState} from 'react';
 import {Button, CheckboxProps, Dimmer, Form, Grid, Loader, Message, Radio, Segment} from 'semantic-ui-react';
+import GridSize from '../../../../core/model/geometry/GridSize';
 import {MCDA} from '../../../../core/model/mcda';
 import {Gis, RasterLayer} from '../../../../core/model/mcda/gis';
 import {IGis} from '../../../../core/model/mcda/gis/Gis.type';
@@ -9,6 +10,7 @@ import {usePrevious} from '../../../shared/simpleTools/helpers/customHooks';
 import ConstraintsMap from './constraintsMap';
 
 interface IProps {
+    gridSize: GridSize;
     onChange: (mcda: MCDA) => any;
     mcda: MCDA;
     readOnly: boolean;
@@ -85,7 +87,7 @@ const constraintsEditor = (props: IProps) => {
 
     const handleCalculateActiveCells = () => {
         const cConstraints = Gis.fromObject(constraints);
-        cConstraints.calculateActiveCells();
+        cConstraints.calculateActiveCells(props.gridSize);
         return handleChange(cConstraints);
     };
 
@@ -168,6 +170,7 @@ const constraintsEditor = (props: IProps) => {
                 </Grid.Column>
                 <Grid.Column width={11}>
                     <ConstraintsMap
+                        gridSize={props.gridSize}
                         map={Gis.fromObject(constraints)}
                         onChange={handleChange}
                         mode={mode}

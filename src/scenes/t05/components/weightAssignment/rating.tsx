@@ -1,6 +1,6 @@
 import React, {ChangeEvent, useState} from 'react';
 import {Form, Grid, Input, InputOnChangeData, Message, Segment, Table} from 'semantic-ui-react';
-import {WeightAssignment} from '../../../../core/model/mcda/criteria';
+import {Weight, WeightAssignment, WeightsCollection} from '../../../../core/model/mcda/criteria';
 import {IWeightAssignment} from '../../../../core/model/mcda/criteria/WeightAssignment.type';
 
 interface IProps {
@@ -9,9 +9,12 @@ interface IProps {
     weightAssignment: WeightAssignment;
 }
 
-const simpleWeightAssignment = (props: IProps) => {
+const rating = (props: IProps) => {
     const [showInfo, setShowInfo] = useState<boolean>(true);
     const [wa, setWa] = useState<IWeightAssignment>(props.weightAssignment.toObject());
+
+    const [activeInput, setActiveInput] = useState<string | null>(null);
+    const [activeValue, setActiveValue] = useState<string>('');
 
     const handleDismiss = () => setShowInfo(false);
 
@@ -27,26 +30,41 @@ const simpleWeightAssignment = (props: IProps) => {
     };
 
     const handleBlurValue = () => {
-        if (props.readOnly) {
+        if (props.readOnly || !activeInput) {
             return;
         }
+
         const cWa = WeightAssignment.fromObject(wa);
-        cWa.calculateWeights();
-        return props.handleChange(cWa);
+        const weight = cWa.weightsCollection.findById(activeInput);
+
+        if (weight) {
+            weight.initialValue = parseFloat(activeValue);
+            cWa.updateWeight(Weight.fromObject(weight));
+            cWa.calculateWeights();
+
+            setActiveValue('');
+            setActiveInput(null);
+
+            return props.handleChange(cWa);
+        }
     };
 
     const handleChangeValue = (e: ChangeEvent<HTMLInputElement>, {name, value}: InputOnChangeData) => {
         if (props.readOnly) {
             return;
         }
-        const cWa = wa;
-        cWa.weights = wa.weights.map((weight) => {
+
+        setActiveInput(name);
+        setActiveValue(value);
+
+        const cWa = WeightAssignment.fromObject(wa);
+        cWa.weightsCollection = WeightsCollection.fromObject(wa.weights.map((weight) => {
             if (name === weight.id) {
                 weight.initialValue = parseFloat(value);
             }
             return weight;
-        });
-        return setWa(cWa);
+        }));
+        return setWa(cWa.toObject());
     };
 
     return (
@@ -79,7 +97,7 @@ const simpleWeightAssignment = (props: IProps) => {
                                             name={weight.id}
                                             onBlur={handleBlurValue}
                                             onChange={handleChangeValue}
-                                            value={weight.initialValue}
+                                            value={activeInput === weight.id ? activeValue : weight.initialValue}
                                         />
                                     </Grid.Column>
                                 </Grid.Row>
@@ -133,4 +151,4 @@ const simpleWeightAssignment = (props: IProps) => {
     );
 };
 
-export default simpleWeightAssignment;
+export default rating;

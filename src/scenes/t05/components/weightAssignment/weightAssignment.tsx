@@ -13,10 +13,11 @@ import {MCDA} from '../../../../core/model/mcda';
 import {WeightAssignment} from '../../../../core/model/mcda/criteria';
 import CriteriaCollection from '../../../../core/model/mcda/criteria/CriteriaCollection';
 import {ICriterion} from '../../../../core/model/mcda/criteria/Criterion.type';
+import {WeightAssignmentType} from '../../../../core/model/mcda/criteria/WeightAssignment.type';
 import MultiInfluence from './multiInfluence';
 import PairwiseComparison from './pairwise';
 import Ranking from './ranking';
-import SimpleWeightAssignment from './spl';
+import Rating from './rating';
 
 interface IProps {
     toolName: string;
@@ -33,47 +34,40 @@ const weightAssignmentEditor = (props: IProps) => {
     const handleDismiss = () => setShowInfo(false);
 
     const handleClickDelete = (id: string) => () => {
-        const cMcda = props.mcda;
-        cMcda.weightAssignmentsCollection.removeById(id);
-        return props.onChange(cMcda);
+        return props.onChange(props.mcda.removeWeightAssignment(id));
     };
 
     const handleChange = (weightAssignment: WeightAssignment) => {
-        const cMcda = props.mcda;
-        cMcda.weightAssignmentsCollection.update(weightAssignment.toObject());
-        return props.onChange(cMcda);
+        return props.onChange(props.mcda.updateWeightAssignment(weightAssignment));
     };
 
-    const handleClickNew = (cc: ICriterion[]) =>
-        (e: MouseEvent<HTMLAnchorElement | HTMLDivElement>, {name}: DropdownItemProps | MenuItemProps) => {
-            const wa = WeightAssignment.fromMethodAndCriteria(name, CriteriaCollection.fromObject(cc));
-            if (props.mcda.withAhp) {
-                wa.parent = cc[0].parent;
-            }
-
-            const cMcda = props.mcda;
-            cMcda.weightAssignmentsCollection.add(wa.toObject());
-
-            props.onChange(cMcda);
-            if (props.routeTo !== undefined) {
-                return props.routeTo(wa.id);
-            }
-        };
+    const handleClickNew = (cc: ICriterion[]) => (
+        e: MouseEvent<HTMLAnchorElement | HTMLDivElement>, {name}: DropdownItemProps | MenuItemProps
+    ) => {
+        const wa = WeightAssignment.fromMethodAndCriteria(name, CriteriaCollection.fromObject(cc));
+        if (props.mcda.withAhp) {
+            wa.parent = cc[0].parent;
+        }
+        props.onChange(props.mcda.addWeightAssignment(wa));
+        if (props.routeTo !== undefined) {
+            return props.routeTo(wa.id);
+        }
+    };
 
     const renderContent = () => {
         const selectedWeightAssignment = props.selectedWeightAssignment || null;
 
         if (selectedWeightAssignment) {
             switch (selectedWeightAssignment.method) {
-                case 'spl':
+                case WeightAssignmentType.RATING:
                     return (
-                        <SimpleWeightAssignment
+                        <Rating
                             weightAssignment={selectedWeightAssignment}
                             handleChange={handleChange}
                             readOnly={props.readOnly}
                         />
                     );
-                case 'mif':
+                case WeightAssignmentType.MULTI_INFLUENCE:
                     return (
                         <MultiInfluence
                             criteriaCollection={props.mcda.criteriaCollection}
@@ -84,7 +78,7 @@ const weightAssignmentEditor = (props: IProps) => {
                         />
                     );
 
-                case 'pwc':
+                case WeightAssignmentType.PAIRWISE_COMPARISON:
                     return (
                         <PairwiseComparison
                             criteriaCollection={props.mcda.criteriaCollection}
@@ -110,32 +104,32 @@ const weightAssignmentEditor = (props: IProps) => {
     };
 
     const renderMethods = (name: string, criterion: ICriterion | null = null, key: number = -1) => {
-        const subCriteria = !criterion ? mcda.criteriaCollection.findBy('parentId', null) :
-            mcda.criteriaCollection.findBy('parentId', criterion.id);
+        const subCriteria = !criterion ? mcda.criteriaCollection.findBy('parent', null) :
+            mcda.criteriaCollection.findBy('parent', criterion.id);
 
         return (
             <Dropdown item={true} text={`${name} (${subCriteria.length})`} key={key}>
                 <Dropdown.Menu>
                     <Dropdown.Item
-                        name="spl"
+                        name={WeightAssignmentType.RATING}
                         icon="write"
                         onClick={handleClickNew(subCriteria)}
                         text="Rating"
                     />
                     <Dropdown.Item
-                        name="rnk"
+                        name={WeightAssignmentType.RANKING}
                         icon="ordered list"
                         onClick={handleClickNew(subCriteria)}
                         text="Ranking"
                     />
                     <Dropdown.Item
-                        name="mif"
+                        name={WeightAssignmentType.MULTI_INFLUENCE}
                         icon="fork"
                         onClick={handleClickNew(subCriteria)}
                         text="Multi-Influence"
                     />
                     <Dropdown.Item
-                        name="pwc"
+                        name={WeightAssignmentType.PAIRWISE_COMPARISON}
                         icon="sliders horizontal"
                         onClick={handleClickNew(subCriteria)}
                         text="Pairwise Comparison"
@@ -160,7 +154,7 @@ const weightAssignmentEditor = (props: IProps) => {
 
     const {mcda, readOnly} = props;
     const mainCriteria = mcda.withAhp ?
-        CriteriaCollection.fromObject(mcda.criteriaCollection.findBy('parentId', null)) :
+        CriteriaCollection.fromObject(mcda.criteriaCollection.findBy('parent', null)) :
         mcda.criteriaCollection;
 
     if (props.selectedWeightAssignment) {
@@ -192,28 +186,28 @@ const weightAssignmentEditor = (props: IProps) => {
                     {!mcda.withAhp && !readOnly &&
                     <Menu icon="labeled" fluid={true} vertical={true}>
                         <Menu.Item
-                            name="spl"
+                            name={WeightAssignmentType.RATING}
                             onClick={handleClickNew(mainCriteria.toObject())}
                         >
                             <Icon name="write"/>
                             Rating
                         </Menu.Item>
                         <Menu.Item
-                            name="rnk"
+                            name={WeightAssignmentType.RANKING}
                             onClick={handleClickNew(mainCriteria.toObject())}
                         >
                             <Icon name="ordered list"/>
                             Ranking
                         </Menu.Item>
                         <Menu.Item
-                            name="mif"
+                            name={WeightAssignmentType.MULTI_INFLUENCE}
                             onClick={handleClickNew(mainCriteria.toObject())}
                         >
                             <Icon name="fork"/>
                             Multi-Influence
                         </Menu.Item>
                         <Menu.Item
-                            name="pwc"
+                            name={WeightAssignmentType.PAIRWISE_COMPARISON}
                             onClick={handleClickNew(mainCriteria.toObject())}
                         >
                             <Icon name="sliders horizontal"/>

@@ -60,7 +60,7 @@ export const getMenuItems = (mcda: MCDA): IMenuItem[] => {
         return null;
     };
 
-    const constraintsStatus = () => {
+    /*const constraintsStatus = () => {
         if (!criteriaAreFinished) {
             return {
                 val: 'warning',
@@ -74,7 +74,7 @@ export const getMenuItems = (mcda: MCDA): IMenuItem[] => {
             };
         }
         return null;
-    };
+    };*/
 
     const suitabilityDataStatus = () => {
         if (!criteriaAreFinished) {
@@ -108,11 +108,11 @@ export const getMenuItems = (mcda: MCDA): IMenuItem[] => {
             property: 'cd',
             status: criteriaDataStatus()
         },
-        {
+        /*{
             name: 'Global Constraints',
             property: 'cm',
             status: constraintsStatus()
-        },
+        },*/
         {
             name: 'Suitability',
             property: 'su',

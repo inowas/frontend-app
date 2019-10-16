@@ -1,16 +1,11 @@
 import {cloneDeep} from 'lodash';
 import {Collection} from '../../collection/Collection';
 import BoundingBox from '../../geometry/BoundingBox';
-import Criterion from './Criterion';
 import {ICriterion} from './Criterion.type';
 
 class CriteriaCollection extends Collection<ICriterion> {
     public static fromObject(obj: ICriterion[]) {
         return new CriteriaCollection(obj);
-    }
-
-    public toPayload() {
-        return this.toObject().map((item) => Criterion.fromObject(item).toPayload());
     }
 
     public isFinished(withAhp = false) {

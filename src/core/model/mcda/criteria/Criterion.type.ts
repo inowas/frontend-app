@@ -3,7 +3,7 @@ import {ISuitability} from '../Suitability.type';
 import {IRule} from './Rule.type';
 
 export enum CriteriaType {
-    CONTINUOUS = 'continuos',
+    CONTINUOUS = 'continuous',
     DISCRETE = 'discrete'
 }
 

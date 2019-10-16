@@ -33,10 +33,10 @@ const suitabilityResults = (props: IProps) => {
     const handleDownload = () => {
         if (mcda.constraints) {
             const cellSize = (mcda.constraints.boundingBox.yMax - mcda.constraints.boundingBox.yMin) /
-                mcda.constraints.gridSize.nY;
+                mcda.gridSize.nY;
 
-            let content = `NCOLS ${mcda.constraints.gridSize.nX}
-NROWS ${mcda.constraints.gridSize.nY}
+            let content = `NCOLS ${mcda.gridSize.nX}
+NROWS ${mcda.gridSize.nY}
 XLLCORNER ${mcda.constraints.boundingBox.xMin}
 YLLCORNER ${mcda.constraints.boundingBox.yMin}
 CELLSIZE ${cellSize}
@@ -181,6 +181,7 @@ NODATA_VALUE -9999
             <Grid.Column width={11}>
                 {mcda.suitability.raster.data.length > 0 && !!legend &&
                 <CriteriaRasterMap
+                    gridSize={props.mcda.gridSize}
                     onClickCell={handleClickCell}
                     raster={raster}
                     showBasicLayer={showBasicLayer}

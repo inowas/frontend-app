@@ -66,7 +66,7 @@ export const uploadRasterfile = (
     uploadData.append('file', file);
     return axios.request({
         method: 'POST',
-        url: GEOPROCESSING_URL,
+        url: GEOPROCESSING_URL + '/',
         data: uploadData,
         headers: {
             'Access-Control-Allow-Origin': '*',
@@ -270,6 +270,20 @@ export const fetchUrl = (
     const api = createApi(getToken());
     api.get(url)
         .then((response) => response.data)
+        .then(onSuccess)
+        .catch(onError);
+};
+
+export const fetchUrlAndUpdate = (
+    url: string,
+    onUpcast: (data: any) => any,
+    onSuccess?: CallbackFunction<any, void>,
+    onError?: ErrorCallbackFunction
+) => {
+    const api = createApi(getToken());
+    api.get(url)
+        .then((response) => response.data)
+        .then((data) => onUpcast(data))
         .then(onSuccess)
         .catch(onError);
 };

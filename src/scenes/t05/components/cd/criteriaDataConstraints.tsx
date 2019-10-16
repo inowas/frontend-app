@@ -1,5 +1,6 @@
 import React, {ChangeEvent, SyntheticEvent, useEffect, useState} from 'react';
 import {Button, DropdownProps, Form, Grid, Icon, InputOnChangeData, Message, Radio, Table} from 'semantic-ui-react';
+import GridSize from '../../../../core/model/geometry/GridSize';
 import {Criterion, Rule, RulesCollection} from '../../../../core/model/mcda/criteria';
 import {CriteriaType, ICriterion} from '../../../../core/model/mcda/criteria/Criterion.type';
 import {IRule, RuleIndex} from '../../../../core/model/mcda/criteria/Rule.type';
@@ -19,6 +20,7 @@ const legend: ILegendItemDiscrete[] = [
 
 interface IProps {
     criterion: Criterion;
+    gridSize: GridSize;
     onChange: (criterion: Criterion) => any;
     readOnly: boolean;
 }
@@ -170,6 +172,7 @@ const criteriaDataConstraints = (props: IProps) => {
                 </Grid.Column>
                 <Grid.Column width={11}>
                     <CriteriaRasterMap
+                        gridSize={props.gridSize}
                         legend={legend}
                         raster={RasterLayer.fromObject(criterion.constraintRaster)}
                         showBasicLayer={false}
@@ -289,6 +292,7 @@ const criteriaDataConstraints = (props: IProps) => {
                     {iCriterion.constraintRaster && iCriterion.constraintRaster.data.length > 0 &&
                     iCriterion.step > 1 &&
                     <CriteriaRasterMap
+                        gridSize={props.gridSize}
                         legend={legend}
                         raster={iCriterion.constraintRaster}
                         showBasicLayer={true}

@@ -34,7 +34,7 @@ interface IEdge {
     id: string;
     from: string;
     to: string;
-    dashes?: boolean;
+    dashes: boolean;
 }
 
 interface INode {
@@ -59,7 +59,7 @@ const multiInfluence = (props: IProps) => {
             };
         });
 
-        nodes.push({
+        cNodes.push({
             id: 'mcda-main-node',
             label: props.toolName
         });
@@ -67,9 +67,9 @@ const multiInfluence = (props: IProps) => {
         return {edges: cEdges, nodes: cNodes};
     };
 
-    const data: {edges: IEdge[], nodes: INode[]} = prepareData();
-    const [edges, setEdges] = useState<IEdge[]>(data.edges);
-    const [nodes, setNodes] = useState<INode[]>(data.nodes);
+    const data = useRef<{edges: IEdge[], nodes: INode[]}>(prepareData());
+    const [edges, setEdges] = useState<IEdge[]>(data.current.edges);
+    const [nodes, setNodes] = useState<INode[]>(data.current.nodes);
     const [editEdgeMode, setEditEdgeMode] = useState<boolean>(false);
     const [selectedEdges, setSelectedEdges] = useState<string[] | null>(null);
     const [wa, setWa] = useState<IWeightAssignment>(props.weightAssignment.toObject());
@@ -78,9 +78,10 @@ const multiInfluence = (props: IProps) => {
     const network = useRef<any>(null);
 
     useEffect(() => {
-        const cData = prepareData();
-        setEdges(cData.edges);
-        setNodes(cData.nodes);
+        console.log('USE EFFECT');
+        data.current = prepareData();
+        setEdges(data.current.edges);
+        setNodes(data.current.nodes);
         setWa(props.weightAssignment.toObject());
     }, [props.weightAssignment]);
 
@@ -91,33 +92,31 @@ const multiInfluence = (props: IProps) => {
         cEdges.push({
             id: cData.id,
             from: cData.from,
-            to: cData.to
+            to: cData.to,
+            dashes: false
         });
 
         setEdges(cEdges);
-        // @ts-ignore
-        network.redraw();
+        network.current.redraw();
     };
 
     const changeEdgeType = () => {
-        if (selectedEdges) {
+        if (Array.isArray(selectedEdges)) {
             setEdges(edges.map((edge) => {
                 return {
                     ...edge,
                     dashes: selectedEdges.includes(edge.id) ? !edge.dashes : edge.dashes
                 };
             }));
-            // @ts-ignore
-            network.redraw();
+            network.current.redraw();
         }
     };
 
     const deleteEdge = () => {
-        if (selectedEdges) {
+        if (Array.isArray(selectedEdges)) {
             const cEdges = edges.filter((e) => !(selectedEdges.includes(e.id)));
             setEdges(cEdges);
-            // @ts-ignore
-            network.redraw();
+            network.current.redraw();
         }
     };
 
@@ -125,8 +124,7 @@ const multiInfluence = (props: IProps) => {
 
     const handleClickNode = () => {
         if (editEdgeMode) {
-            // @ts-ignore
-            network.addEdgeMode();
+            network.current.addEdgeMode();
         }
     };
 
@@ -147,14 +145,14 @@ const multiInfluence = (props: IProps) => {
                 })
             };
         });
-        const weightAssignment = WeightAssignment.fromObject(wa);
 
+        const cWa = WeightAssignment.fromObject(wa);
         cWeights.forEach((w) => {
-            weightAssignment.weightsCollection.update(Weight.fromObject(w));
+            cWa.updateWeight(Weight.fromObject(w));
         });
-        weightAssignment.calculateWeights();
+        cWa.calculateWeights();
 
-        return props.handleChange(weightAssignment);
+        return props.handleChange(cWa);
     };
 
     const handleLocalChange = (e: ChangeEvent<HTMLInputElement>, {name, value}: InputOnChangeData) => {
@@ -217,6 +215,10 @@ const multiInfluence = (props: IProps) => {
         }
     };
 
+    const setNetwork = (e: any) => {
+          network.current = e;
+    };
+
     const events = {
         click: handleClickNode,
         deselectEdge: handleDeselectEdge,
@@ -252,7 +254,7 @@ const multiInfluence = (props: IProps) => {
                     </Segment>
                     <Segment>
                         <Graph
-                            getNetwork={network}
+                            getNetwork={setNetwork}
                             graph={graph}
                             options={options}
                             events={events}

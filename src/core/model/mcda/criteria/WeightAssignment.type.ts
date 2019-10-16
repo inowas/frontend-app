@@ -17,17 +17,16 @@ type IIndexSignature = {
 };
 
 export enum WARankingSubMethod {
-    EXP = 'exp',
-    REC = 'rec',
-    SUM = 'sum'
+    EXPONENTIAL = 'exp',
+    RECIPROCAL = 'rec',
+    SUMMED = 'sum'
 }
 
 export enum WeightAssignmentType {
-    SPL = 'spl',
-    RNK = 'rnk',
-    RRW = 'rrw',
-    MIF = 'mif',
-    PWC = 'pwc'
+    RATING = 'rtn',
+    RANKING = 'rnk',
+    MULTI_INFLUENCE = 'mif',
+    PAIRWISE_COMPARISON = 'pwc'
 }
 
 export interface IWeightAssignment extends IIndexSignature {

@@ -60,7 +60,8 @@ const criteriaRasterUpload = (props: IProps) => {
                 raster.data = data;
                 raster.min = min(raster.data);
                 raster.max = max(raster.data);
-                raster.gridSize = props.gridSize;
+
+                console.log({raster});
 
                 let boundingBox = null;
                 if (metadata) {
@@ -86,14 +87,12 @@ const criteriaRasterUpload = (props: IProps) => {
                     criterion.constraintRaster.boundingBox = boundingBox;
                 }
 
-                criterion.constraintRaster.gridSize = props.gridSize;
-
                 criterion.rulesCollection = new RulesCollection();
                 if (criterion.type === CriteriaType.CONTINUOUS) {
                     const rule = Rule.fromDefaults();
                     rule.from = raster.min;
                     rule.to = raster.max;
-                    criterion.rulesCollection.add(rule);
+                    criterion.rulesCollection = criterion.rulesCollection.add(rule);
                 }
                 if (criterion.type === CriteriaType.DISCRETE) {
                     const uniqueValues = criterion.raster.uniqueValues;
@@ -101,12 +100,14 @@ const criteriaRasterUpload = (props: IProps) => {
                         const rule = Rule.fromDefaults();
                         rule.from = value;
                         rule.to = value;
-                        criterion.rulesCollection.add(rule);
+                        criterion.rulesCollection = criterion.rulesCollection.add(rule);
                     });
                     criterion.constraintRules = criterion.rulesCollection;
                 }
 
                 setShowUploadModal(false);
+
+                console.log({criterion: criterion.toObject()});
 
                 return props.onChange(criterion);
             },
@@ -203,6 +204,7 @@ const criteriaRasterUpload = (props: IProps) => {
                 <Grid.Column width={11}>
                     {props.criterion.raster && props.criterion.raster.data.length > 0 &&
                     <CriteriaRasterMap
+                        gridSize={props.gridSize}
                         onChange={handleChangeRaster}
                         raster={props.criterion.raster}
                         showBasicLayer={showBasicLayer}

@@ -12,7 +12,12 @@ class WeightsCollection extends Collection<IWeight> {
     }
 
     get allRelations() {
-        let relations: ICriteriaRelation[] = [];
+        let relations: Array<{
+            id: string;
+            from: string;
+            to: string;
+            value: number;
+        }> = [];
 
         this.all.forEach((weight) => {
             if (weight.relations.length > 0) {

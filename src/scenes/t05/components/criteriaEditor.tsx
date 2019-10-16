@@ -55,65 +55,50 @@ const criteriaEditor = (props: IProps) => {
 
     useEffect(() => {
         setCriteria(props.mcda.criteriaCollection.toObject());
-    }, [props.mcda.criteriaCollection]);
+    }, [props.mcda]);
+
+    const handleDismiss = () => setShowInfo(false);
 
     const handleAddCriteria = () => {
         if (props.readOnly) {
             return;
         }
-        const cMcda = props.mcda.addCriterion(Criterion.fromDefaults());
-        return props.onChange(cMcda);
+        return props.onChange(props.mcda.addCriterion(Criterion.fromDefaults()));
     };
-
-    const handleDismiss = () => setShowInfo(false);
 
     const handleAddSubCriterion = (id: string) => () => {
         if (props.readOnly) {
             return;
         }
-
-        const criterion = Criterion.fromDefaults();
-        criterion.parentId = id;
-        return handleChangeCriterion(criterion);
+        return props.onChange(props.mcda.addSubCriterion(id));
     };
 
     const handleChangeCriterion = (criterion: Criterion) => {
         if (props.readOnly) {
             return;
         }
-        const cMcda = props.mcda.updateCriterion(criterion);
-        return props.onChange(cMcda);
+        return props.onChange(props.mcda.updateCriterion(criterion));
     };
 
     const handleClickAhp = () => {
         if (props.readOnly) {
             return;
         }
-        const cMcda = props.mcda;
-        cMcda.withAhp = !props.mcda.withAhp;
-        return props.onChange(cMcda);
+        return props.onChange(props.mcda.toggleAhp());
     };
 
     const handleRemoveCriterion = (id: string) => () => {
         if (props.readOnly) {
             return;
         }
-        const cMcda = props.mcda;
-        cMcda.criteriaCollection.removeById(id);
-        cMcda.criteriaCollection.getSubCriteria(id).forEach((c) => {
-            cMcda.criteriaCollection.removeById(c.id);
-        });
-        return props.onChange(cMcda);
+        return props.onChange(props.mcda.removeCriterion(id));
     };
 
     const handleSelectChange = (id: string) => (e: SyntheticEvent<HTMLElement>, {name, value}: DropdownProps) => {
-        if (props.readOnly) {
-            return;
-        }
         const criteriaCollection = CriteriaCollection.fromObject(criteria);
         const criterion = criteriaCollection.findById(id);
 
-        if (!criterion) {
+        if (props.readOnly || !criterion) {
             return;
         }
 
@@ -121,31 +106,35 @@ const criteriaEditor = (props: IProps) => {
         return handleChangeCriterion(Criterion.fromObject(criterion));
     };
 
-    const handleLocalChange = (id: string, blur: boolean = false) =>
-        (e: ChangeEvent<HTMLInputElement>, {name, value}: InputOnChangeData) => {
-            if (props.readOnly) {
-                return;
-            }
+    const handleBlur = (id: string) => () => {
+        const criteriaCollection = CriteriaCollection.fromObject(criteria);
+        const criterion = criteriaCollection.findById(id);
 
-            const criteriaCollection = CriteriaCollection.fromObject(criteria);
-            const criterion = criteriaCollection.findById(id);
+        if (props.readOnly || !criterion) {
+            return;
+        }
 
-            if (!criterion) {
-                return;
-            }
+        return handleChangeCriterion(Criterion.fromObject(criterion));
+    };
 
-            if (blur) {
-                return handleChangeCriterion(Criterion.fromObject(criterion));
-            }
+    const handleLocalChange = (id: string) => (
+        e: ChangeEvent<HTMLInputElement>, {name, value}: InputOnChangeData
+    ) => {
+        const criteriaCollection = CriteriaCollection.fromObject(criteria);
+        const criterion = criteriaCollection.findById(id);
 
-            criterion[name as CriterionIndex] = value;
-            return setCriteria(criteriaCollection.update(criterion).toObject());
-        };
+        if (props.readOnly || !criterion) {
+            return;
+        }
 
-    let allCriteria = criteria;
+        criterion[name as CriterionIndex] = value;
+        return setCriteria(criteriaCollection.update(criterion).toObject());
+    };
+
+    let mainCriteria = criteria;
 
     if (props.mcda.withAhp) {
-        allCriteria = criteria.filter((c) => !c.parent);
+        mainCriteria = criteria.filter((c) => !c.parent);
     }
 
     const options = {
@@ -171,7 +160,7 @@ const criteriaEditor = (props: IProps) => {
 
     const graph = {
         nodes: [{id: '0', label: props.toolName, level: 0}].concat(
-            allCriteria.map((c) => {
+            criteria.map((c) => {
                     return {
                         id: c.id,
                         label: c.name,
@@ -180,7 +169,7 @@ const criteriaEditor = (props: IProps) => {
                 }
             )
         ),
-        edges: allCriteria.map((c, key) => {
+        edges: criteria.map((c, key) => {
             return {
                 id: key,
                 from: c.parent || 0,
@@ -241,7 +230,7 @@ const criteriaEditor = (props: IProps) => {
                         warning={true}
                     />
                     }
-                    {criteria.length > 0 &&
+                    {mainCriteria.length > 0 &&
                     <Table>
                         <Table.Header>
                             <Table.Row>
@@ -252,7 +241,7 @@ const criteriaEditor = (props: IProps) => {
                                 <Table.HeaderCell/>
                             </Table.Row>
                         </Table.Header>
-                        {criteria.map((c, key) =>
+                        {mainCriteria.map((c, key) =>
                             <Table.Body key={key}>
                                 <Table.Row>
                                     <Table.Cell>{key + 1}</Table.Cell>
@@ -261,7 +250,7 @@ const criteriaEditor = (props: IProps) => {
                                             name={CriterionIndex.NAME}
                                             disabled={props.readOnly}
                                             value={c.name}
-                                            onBlur={handleLocalChange(c.id, true)}
+                                            onBlur={handleBlur(c.id)}
                                             onChange={handleLocalChange(c.id)}
                                         />
                                     </Table.Cell>
@@ -285,7 +274,7 @@ const criteriaEditor = (props: IProps) => {
                                             name={CriterionIndex.UNIT}
                                             disabled={props.readOnly}
                                             value={c.unit}
-                                            onBlur={handleLocalChange(c.id, true)}
+                                            onBlur={handleBlur(c.id)}
                                             onChange={handleLocalChange(c.id)}
                                         />
                                         }
@@ -313,7 +302,7 @@ const criteriaEditor = (props: IProps) => {
                                         }
                                     </Table.Cell>
                                 </Table.Row>
-                                {props.mcda.withAhp && allCriteria.filter((cc) => cc.parent === c.id).map((cc, ckey) =>
+                                {props.mcda.withAhp && criteria.filter((cc) => cc.parent === c.id).map((cc, ckey) =>
                                     <Table.Row key={cc.id}>
                                         <Table.Cell>{key + 1}.{ckey + 1}</Table.Cell>
                                         <Table.Cell>
@@ -321,7 +310,7 @@ const criteriaEditor = (props: IProps) => {
                                                 name={CriterionIndex.NAME}
                                                 disabled={props.readOnly}
                                                 value={cc.name}
-                                                onBlur={handleLocalChange(cc.id, true)}
+                                                onBlur={handleBlur(cc.id)}
                                                 onChange={handleLocalChange(cc.id)}
                                             />
                                         </Table.Cell>
@@ -342,7 +331,7 @@ const criteriaEditor = (props: IProps) => {
                                                 name={CriterionIndex.UNIT}
                                                 disabled={props.readOnly}
                                                 value={cc.unit}
-                                                onBlur={handleLocalChange(cc.id, true)}
+                                                onBlur={handleBlur(cc.id)}
                                                 onChange={handleLocalChange(cc.id)}
                                             />
                                         </Table.Cell>

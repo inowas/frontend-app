@@ -39,7 +39,7 @@ const ranking = (props: IProps) => {
             return;
         }
 
-        if (value === WARankingSubMethod.EXP) {
+        if (value === WARankingSubMethod.EXPONENTIAL) {
             wa.subParam = 2;
         }
 
@@ -161,9 +161,9 @@ const ranking = (props: IProps) => {
                                 label="Method"
                                 onChange={handleChangeSubMethod}
                                 options={[
-                                    {key: 'sum', text: 'Rank sum weight', value: WARankingSubMethod.SUM},
-                                    {key: 'rec', text: 'Rank reciprocal weight', value: WARankingSubMethod.REC},
-                                    {key: 'exp', text: 'Rank exponent', value: WARankingSubMethod.EXP}
+                                    {key: 'sum', text: 'Rank sum weight', value: WARankingSubMethod.SUMMED},
+                                    {key: 'rec', text: 'Rank reciprocal weight', value: WARankingSubMethod.RECIPROCAL},
+                                    {key: 'exp', text: 'Rank exponent', value: WARankingSubMethod.EXPONENTIAL}
                                 ]}
                                 name={WeightAssignmentIndex.SUB_METHOD}
                                 readOnly={props.readOnly}

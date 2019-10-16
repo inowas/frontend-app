@@ -93,7 +93,7 @@ const criteriaDataEditor = (props: IProps) => {
 
     const handleChange = (cCriterion: Criterion) => {
         const mcda = props.mcda;
-        mcda.criteriaCollection.update(cCriterion.toObject());
+        mcda.criteriaCollection = mcda.criteriaCollection.update(cCriterion.toObject());
         return props.onChange(mcda);
     };
 
@@ -106,6 +106,8 @@ const criteriaDataEditor = (props: IProps) => {
     const renderTool = () => {
         if (criterion) {
             const rCriterion = Criterion.fromObject(criterion);
+
+            console.log({rCriterion});
 
             switch (props.activeTool) {
                 case 'reclassification':
@@ -120,6 +122,7 @@ const criteriaDataEditor = (props: IProps) => {
                     return (
                         <CriteriaDataConstraints
                             criterion={rCriterion}
+                            gridSize={props.mcda.gridSize}
                             onChange={handleChange}
                             readOnly={props.readOnly}
                         />
@@ -128,6 +131,7 @@ const criteriaDataEditor = (props: IProps) => {
                     return (
                         <CriteriaDataResults
                             criterion={rCriterion}
+                            gridSize={props.mcda.gridSize}
                             onChange={handleChange}
                         />
                     );

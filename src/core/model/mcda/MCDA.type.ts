@@ -9,6 +9,17 @@ export interface IMCDA {
     weightAssignments: IWeightAssignment[];
     constraints: IGis;
     gridSize: IGridSize;
+    version: string;
     withAhp: boolean;
+    suitability: ISuitability;
+}
+
+export interface IMCDAPayload {
+    criteria: ICriterion[];
+    weight_assignments: IWeightAssignment[];
+    constraints: IGis;
+    grid_size: IGridSize;
+    version: string;
+    with_ahp: boolean;
     suitability: ISuitability;
 }

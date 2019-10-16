@@ -10,6 +10,7 @@ export interface ISoilmodel {
     properties: {
         parameters: IRasterParameter[];
         relations: ILayerParameterZone[];
+        version?: number;
         zones: IZone[];
     };
 }
@@ -21,4 +22,5 @@ export interface ISoilmodelLegacy {
     };
     properties?: IPropertyValueObject;
     layers: ISoilmodelLayerLegacy[];
+    version?: number;
 }

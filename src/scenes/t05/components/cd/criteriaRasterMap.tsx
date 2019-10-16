@@ -4,6 +4,7 @@ import {FeatureGroup, Map, MapLayerProps, Rectangle} from 'react-leaflet';
 import {EditControl} from 'react-leaflet-draw';
 import {Button, Icon} from 'semantic-ui-react';
 import {BoundingBox} from '../../../../core/model/geometry';
+import GridSize from '../../../../core/model/geometry/GridSize';
 import {RasterLayer} from '../../../../core/model/mcda/gis';
 import {getActiveCellFromCoordinate} from '../../../../services/geoTools';
 import {BasicTileLayer} from '../../../../services/geoTools/tileLayers';
@@ -35,6 +36,7 @@ const options = {
 const maximumGridCells = 10000;
 
 interface IProps {
+    gridSize: GridSize;
     onChange?: (raster: RasterLayer) => any;
     onClickCell?: ({x, y}: { x: number, y: number }) => any;
     raster: RasterLayer;
@@ -47,11 +49,11 @@ interface IProps {
 
 const criteriaRasterMap = (props: IProps) => {
     const [showMap, setShowMap] = useState<boolean>(
-        props.raster.gridSize.nX * props.raster.gridSize.nY <= maximumGridCells
+        props.gridSize.nX * props.gridSize.nY <= maximumGridCells
     );
 
     useEffect(() => {
-        setShowMap(props.showBasicLayer || props.raster.gridSize.nX * props.raster.gridSize.nY <= maximumGridCells);
+        setShowMap(props.showBasicLayer || props.gridSize.nX * props.gridSize.nY <= maximumGridCells);
     }, [props.showBasicLayer, props.raster]);
 
     const handleClickMap = (e: LeafletMouseEvent) => {
@@ -62,10 +64,10 @@ const criteriaRasterMap = (props: IProps) => {
             const cell = getActiveCellFromCoordinate(
                 [latlng.lng, latlng.lat],
                 cRaster.boundingBox,
-                cRaster.gridSize
+                props.gridSize
             );
 
-            if (cell[0] < 0 || cell[1] < 0 || cell[0] > cRaster.gridSize.nX || cell[1] > cRaster.gridSize.nY) {
+            if (cell[0] < 0 || cell[1] < 0 || cell[0] > props.gridSize.nX || cell[1] > props.gridSize.nY) {
                 return;
             }
 
@@ -104,8 +106,8 @@ const criteriaRasterMap = (props: IProps) => {
         return <ColorLegendDiscrete legend={rainbow as ILegendItemDiscrete[]} unit={''}/>;
     };
 
-    const {raster, showButton} = props;
-    const {boundingBox, gridSize} = props.raster;
+    const {gridSize, raster, showButton} = props;
+    const {boundingBox} = props.raster;
 
     if (!showMap) {
         return (
@@ -131,7 +133,6 @@ const criteriaRasterMap = (props: IProps) => {
             </div>
         );
     }
-
     const mapProps = {
         nX: gridSize.nX,
         nY: gridSize.nY,

@@ -7,6 +7,7 @@ import {pure} from 'recompose';
 import {Button, Popup} from 'semantic-ui-react';
 import uuidv4 from 'uuid/v4';
 import {Geometry} from '../../../../core/model/geometry';
+import GridSize from '../../../../core/model/geometry/GridSize';
 import {Gis, VectorLayer, VectorLayersCollection} from '../../../../core/model/mcda/gis';
 import ActiveCellsLayer from '../../../../services/geoTools/activeCellsLayer';
 import {BasicTileLayer} from '../../../../services/geoTools/tileLayers';
@@ -14,6 +15,7 @@ import {heatMapColors} from '../../defaults/gis';
 import CriteriaRasterMap from '../cd/criteriaRasterMap';
 
 interface IProps {
+    gridSize: GridSize;
     map: Gis;
     onChange: (map: Gis) => any;
     mode: string;
@@ -121,7 +123,7 @@ const constraintsMap = (props: IProps) => {
         return (
             <ActiveCellsLayer
                 boundingBox={props.map.boundingBox}
-                gridSize={props.map.gridSize}
+                gridSize={props.gridSize}
                 cells={props.map.cells}
                 styles={{
                     line: {
@@ -158,6 +160,7 @@ const constraintsMap = (props: IProps) => {
             </Button.Group>
             {props.mode === 'raster' &&
             <CriteriaRasterMap
+                gridSize={props.gridSize}
                 raster={props.map.rasterLayer}
                 showBasicLayer={true}
                 showButton={false}

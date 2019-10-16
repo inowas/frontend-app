@@ -1,5 +1,6 @@
 import React, {FormEvent, useState} from 'react';
 import {Button, Checkbox, CheckboxProps, Form, Grid, Icon, Radio, Segment} from 'semantic-ui-react';
+import GridSize from '../../../../core/model/geometry/GridSize';
 import {Criterion} from '../../../../core/model/mcda/criteria';
 import {RainbowOrLegend} from '../../../../services/rainbowvis/types';
 import {heatMapColors} from '../../defaults/gis';
@@ -7,6 +8,7 @@ import CriteriaRasterMap from './criteriaRasterMap';
 
 interface IProps {
     criterion: Criterion;
+    gridSize: GridSize;
     onChange: (criterion: Criterion) => any;
 }
 
@@ -29,10 +31,10 @@ const criteriaDataResults = (props: IProps) => {
         const hSuitability = props.criterion.suitability;
 
         const cellSize = (hSuitability.raster.boundingBox.yMax - hSuitability.raster.boundingBox.yMin) /
-            hSuitability.raster.gridSize.nY;
+            props.gridSize.nY;
 
-        let content = `NCOLS ${hSuitability.raster.gridSize.nX}
-NROWS ${hSuitability.raster.gridSize.nY}
+        let content = `NCOLS ${props.gridSize.nX}
+NROWS ${props.gridSize.nY}
 XLLCORNER ${hSuitability.raster.boundingBox.xMin}
 YLLCORNER ${hSuitability.raster.boundingBox.yMin}
 CELLSIZE ${cellSize}
@@ -216,6 +218,7 @@ NODATA_VALUE -9999
             <Grid.Column width={11}>
                 {criterion.suitability.raster.data.length > 0 && !!legend &&
                 <CriteriaRasterMap
+                    gridSize={props.gridSize}
                     raster={raster}
                     showBasicLayer={showBasicLayer}
                     showButton={true}

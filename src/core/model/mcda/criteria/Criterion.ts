@@ -124,29 +124,12 @@ class Criterion {
     }
 
     public toObject() {
-        return this._props;
-    }
-
-    public toPayload() {
-        return ({
-            id: this.id,
-            parentId: this.parentId,
-            name: this.name,
-            type: this.type,
-            unit: this.unit,
-            raster: this.raster.toPayload(),
-            rules: this.rulesCollection.toObject(),
-            suitability: this.suitability.toPayload(),
-            constraintRaster: this.constraintRaster.toPayload(),
-            constraintRules: this.constraintRules.toObject(),
-            step: this.step
-        });
+        return cloneDeep(this._props);
     }
 
     public calculateRaster(raster: RasterLayer, rulesCollection: RulesCollection, factor: RasterLayer | null = null) {
         const newRaster = cloneDeep(raster);
         newRaster.boundingBox = raster.boundingBox;
-        newRaster.gridSize = raster.gridSize;
         newRaster.data = cloneDeep(raster.data).map((row) => {
             return row.map((cell) => {
                 const rules = rulesCollection.findByValue(cell);

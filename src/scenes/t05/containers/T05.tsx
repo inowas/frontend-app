@@ -1,7 +1,7 @@
 import {includes} from 'lodash';
 import React, {MouseEvent, useEffect, useState} from 'react';
 import {RouteComponentProps, withRouter} from 'react-router-dom';
-import {Divider, Grid, Icon, MenuItemProps, Segment} from 'semantic-ui-react';
+import {Dimmer, Divider, Grid, Icon, Loader, MenuItemProps, Segment} from 'semantic-ui-react';
 import {MCDA} from '../../../core/model/mcda';
 import {WeightAssignment} from '../../../core/model/mcda/criteria';
 import Criterion from '../../../core/model/mcda/criteria/Criterion';
@@ -10,7 +10,6 @@ import {RainbowOrLegend} from '../../../services/rainbowvis/types';
 import AppContainer from '../../shared/AppContainer';
 import ContentToolBar from '../../shared/ContentToolbar';
 import Command from '../../shared/simpleTools/commands/command';
-import {deepMerge} from '../../shared/simpleTools/helpers';
 import ToolMetaData from '../../shared/simpleTools/ToolMetaData';
 import {IToolMetaData} from '../../shared/simpleTools/ToolMetaData/ToolMetaData.type';
 import {
@@ -23,7 +22,7 @@ import {
     ToolNavigation,
     WeightAssignmentEditor
 } from '../components';
-import {defaultsT05, getMenuItems} from '../defaults';
+import {getMenuItems} from '../defaults';
 import {heatMapColors} from '../defaults/gis';
 
 const navigation = [{
@@ -33,57 +32,68 @@ const navigation = [{
 }];
 
 interface IProps extends RouteComponentProps<any> {
-    mcda?: MCDA;
+    mcda: MCDA;
 }
 
 const t05 = (props: IProps) => {
     const [isDirty, setIsDirty] = useState<boolean>(false);
     const [isError, setIsError] = useState<boolean>(false);
     const [isLoading, setIsLoading] = useState<boolean>(true);
-    const [tool, setTool] = useState<IToolMetaData>(defaultsT05());
+    const [tool, setTool] = useState<IToolMetaData | null>(null);
 
     const {id, cid, property} = props.match.params;
+
+    useEffect(() => {
+        setIsLoading(true);
+        fetchTool(
+            'T05',
+            props.match.params.id,
+            (cTool) => {
+                setTool({
+                    id: cTool.id,
+                    name: cTool.name,
+                    description: cTool.description,
+                    permissions: cTool.permissions,
+                    public: cTool.public,
+                    data: 'version' in cTool.data ? MCDA.fromPayload(cTool.data).toObject() : cTool.data,
+                    tool: 'T05',
+                    type: 'T05'
+                });
+                setIsDirty(false);
+                setIsLoading(false);
+            },
+            () => {
+                setIsError(true);
+                setIsLoading(false);
+            }
+        );
+    }, []);
+
+    if (!tool) {
+        return (
+            <Dimmer active={true} inverted={true}>
+                <Loader content="Loading"/>
+            </Dimmer>
+        );
+    }
+
     const mcda = MCDA.fromObject(tool.data);
     const {permissions} = tool;
     const readOnly = !includes(permissions, 'w');
     const menuItems = getMenuItems(mcda);
 
-    useEffect(() => {
-        if (props.match.params.id) {
-            setIsLoading(true);
-            fetchTool(
-                tool.tool,
-                props.match.params.id,
-                (cTool) => {
-                    setTool(deepMerge(tool, cTool));
-                    setIsDirty(false);
-                    setIsLoading(false);
-                },
-                () => {
-                    setIsError(true);
-                    setIsLoading(false);
-                }
-            );
-        } else {
-            handleSave();
-        }
-    }, []);
-
     const buildPayload = (cTool: IToolMetaData) => {
-        const data = MCDA.fromObject(cTool.data);
-
         return ({
             id: cTool.id,
             name: cTool.name,
             description: cTool.description,
             public: cTool.public,
             tool: cTool.tool,
-            data: data.toPayload()
+            data: mcda.toPayload()
         });
     };
 
     const handleChange = (cMcda: MCDA) => {
-        console.log({cMcda});
         setIsDirty(true);
         setTool({
             ...tool,
@@ -111,32 +121,19 @@ const t05 = (props: IProps) => {
     };
 
     const handleSave = () => {
-        if (id) {
-            setIsLoading(true);
-            sendCommand(
-                Command.updateToolInstance(buildPayload(tool)),
-                () => {
-                    setIsDirty(false);
-                    setIsLoading(false);
-                },
-                () => {
-                    setIsError(true);
-                    setIsLoading(false);
-                }
-            );
-            return;
-        }
-
+        setIsLoading(true);
         sendCommand(
-            Command.createToolInstance(buildPayload(tool)),
+            Command.updateToolInstance(buildPayload(tool)),
             () => {
-                const path = props.match.path;
-                const basePath = path.split(':')[0];
+                setIsDirty(false);
                 setIsLoading(false);
-                props.history.push(basePath + tool.id + '/criteria');
             },
-            () => setIsError(true)
+            () => {
+                setIsError(true);
+                setIsLoading(false);
+            }
         );
+        return;
     };
 
     const handleUpdateMetaData = (cTool: IToolMetaData) => {
@@ -158,7 +155,7 @@ const t05 = (props: IProps) => {
         const cTool = nTool || props.match.params.tool || null;
         const path = props.match.path;
         const basePath = path.split(':')[0];
-        if (!!cCid && !!tool) {
+        if (!!cCid && !!cTool) {
             return props.history.push(basePath + id + '/' + property + '/' + cCid + '/' + cTool);
         }
         if (!!cCid) {
@@ -195,6 +192,7 @@ const t05 = (props: IProps) => {
                 }
                 return (
                     <ConstraintsEditor
+                        gridSize={mcda.gridSize}
                         readOnly={readOnly}
                         mcda={mcda}
                         onChange={handleChange}
@@ -205,7 +203,7 @@ const t05 = (props: IProps) => {
                 const weightAssignment = cCid && filteredWeightAssignment ? filteredWeightAssignment : null;
                 return (
                     <WeightAssignmentEditor
-                        toolName={cTool.name}
+                        toolName={tool.name}
                         readOnly={readOnly}
                         mcda={mcda}
                         selectedWeightAssignment={
@@ -291,6 +289,7 @@ const t05 = (props: IProps) => {
                         <Segment color="blue">
                             <p>Overview</p>
                             <CriteriaRasterMap
+                                gridSize={mcda.gridSize}
                                 raster={mcda.suitability.raster}
                                 showBasicLayer={false}
                                 showButton={false}

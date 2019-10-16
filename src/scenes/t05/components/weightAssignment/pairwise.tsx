@@ -2,7 +2,6 @@ import Slider from 'rc-slider';
 import React, {ChangeEvent, useState} from 'react';
 import {Form, Grid, InputOnChangeData, Message, Segment, Table} from 'semantic-ui-react';
 import {CriteriaCollection, WeightAssignment, WeightsCollection} from '../../../../core/model/mcda/criteria';
-import {ICriteriaRelation} from '../../../../core/model/mcda/criteria/CriteriaRelation.type';
 import {IWeightAssignment} from '../../../../core/model/mcda/criteria/WeightAssignment.type';
 
 interface IProps {
@@ -24,6 +23,15 @@ const styles = {
     }
 };
 
+interface IRelation {
+    id: string;
+    from: string;
+    fromName: string;
+    to: string;
+    toName: string;
+    value: number;
+}
+
 // @ts-ignore
 const SliderWithTooltip = Slider.createSliderWithTooltip(Slider);
 
@@ -43,15 +51,23 @@ const toSliderValue = (value: number) => {
 
 const pairwiseComparison = (props: IProps) => {
     const prepareState = () => {
-        let cRelations: ICriteriaRelation[] = [];
+        let cRelations: IRelation[] = [];
 
         props.weightAssignment.weightsCollection.all.forEach((weight) => {
-            cRelations = relations.concat(
+            cRelations = cRelations.concat(
                 weight.relations.map((relation) => {
                     const toCriterion = props.criteriaCollection.findById(relation.to);
-                    const nRelation: ICriteriaRelation = {
+
+                    if (!toCriterion) {
+                        throw new Error(`Criterion ${relation.to} couldn't be found.`);
+                    }
+
+                    const nRelation: IRelation = {
+                        from: weight.criterion.id,
+                        fromName: weight.criterion.name,
                         id: relation.id,
                         to: toCriterion ? toCriterion.id : '',
+                        toName: toCriterion ? toCriterion.name : '',
                         value: relation.value
                     };
                     return nRelation;
@@ -146,7 +162,7 @@ const pairwiseComparison = (props: IProps) => {
                             {relations.map((relation, key) =>
                                 <Grid.Row key={key}>
                                     <Grid.Column width={5}>
-                                        {/*TODO: relation.from.name*/}
+                                        {relation.fromName}
                                     </Grid.Column>
                                     <Grid.Column width={6}>
                                         <SliderWithTooltip
@@ -164,7 +180,7 @@ const pairwiseComparison = (props: IProps) => {
                                         />
                                     </Grid.Column>
                                     <Grid.Column width={5} textAlign="right">
-                                        {relation.to}
+                                        {relation.toName}
                                     </Grid.Column>
                                 </Grid.Row>
                             )}

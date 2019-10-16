@@ -62,7 +62,7 @@ const weightAssignmentTable = (props: IProps) => {
         );
     }
 
-    const mainCriteria = mcda.criteriaCollection.orderBy('id', 'asc').findBy('parentId', null);
+    const mainCriteria = mcda.criteriaCollection.orderBy('id', 'asc').findBy('parent', null);
     const mainCriteriaMethods = mcda.weightAssignmentsCollection.findBy('parent', null);
 
     return (
@@ -125,7 +125,7 @@ const weightAssignmentTable = (props: IProps) => {
                             <Table.Row>
                                 <Table.HeaderCell/>
                                 <Table.HeaderCell>Method</Table.HeaderCell>
-                                {mcda.criteriaCollection.orderBy('id').findBy('parentId', mc.id).map((c, ckey) =>
+                                {mcda.criteriaCollection.orderBy('id').findBy('parent', mc.id).map((c, ckey) =>
                                     <Table.HeaderCell key={ckey}>{c.name}</Table.HeaderCell>
                                 )}
                             </Table.Row>

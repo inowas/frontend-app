@@ -10,7 +10,7 @@ import {T01} from './t01/containers';
 import {T02} from './t02/containers';
 import * as T03 from './t03/containers';
 import {T04} from './t04/containers';
-import {T05} from './t05/containers';
+import {T05, T05Create} from './t05/containers';
 import {T06} from './t06/containers';
 import * as T07 from './t07/containers';
 import {T08} from './t08/containers';
@@ -36,6 +36,7 @@ export {
     T03,
     T04,
     T05,
+    T05Create,
     T06,
     T07,
     T08,

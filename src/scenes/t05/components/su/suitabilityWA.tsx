@@ -28,7 +28,7 @@ const suitabilityWeightAssignment = (props: IProps) => {
 
     const handleDismiss = () => setShowInfo(false);
 
-    const handleChangeWA = (parentId: string | null = null) => {
+    const handleChangeWA = (parent: string | null = null) => {
         if (props.readOnly) {
             return;
         }
@@ -38,10 +38,10 @@ const suitabilityWeightAssignment = (props: IProps) => {
                 wa.isActive = wa.id === name;
                 return wa;
             }
-            if (wa.id === name || (wa.isActive && parentId && wa.parent !== parentId)) {
+            if (wa.id === name || (wa.isActive && parent && wa.parent !== parent)) {
                 wa.isActive = true;
             }
-            if (wa.isActive && parentId && (wa.parent === parentId || (!wa.parent && parentId === 'main')) &&
+            if (wa.isActive && parent && (wa.parent === parent || (!wa.parent && parent === 'main')) &&
                 wa.id !== name) {
                 wa.isActive = false;
             }

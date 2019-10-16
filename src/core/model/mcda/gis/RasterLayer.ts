@@ -2,9 +2,10 @@ import uuidv4 from 'uuid/v4';
 import {rainbowFactory} from '../../../../scenes/shared/rasterData/helpers';
 import {heatMapColors} from '../../../../scenes/t05/defaults/gis';
 import {ILegendItemContinuous, ILegendItemDiscrete} from '../../../../services/rainbowvis/types';
-import {BoundingBox, GridSize} from '../../geometry';
+import {BoundingBox} from '../../geometry';
 import {Array2D} from '../../geometry/Array2D.type';
 import {RulesCollection} from '../criteria';
+import {CriteriaType} from '../criteria/Criterion.type';
 import {IRasterLayer} from './RasterLayer.type';
 
 class RasterLayer {
@@ -31,14 +32,6 @@ class RasterLayer {
 
     set data(value: Array2D<number>) {
         this._props.data = value;
-    }
-
-    get gridSize(): GridSize {
-        return GridSize.fromObject(this._props.gridSize);
-    }
-
-    set gridSize(value: GridSize) {
-        this._props.gridSize = value.toObject();
     }
 
     get min() {
@@ -86,10 +79,6 @@ class RasterLayer {
     public static fromDefaults() {
         return new RasterLayer({
             boundingBox: [[0, 0], [0, 0]],
-            gridSize: {
-                n_x: 10,
-                n_y: 10
-            },
             data: [],
             id: uuidv4(),
             isFetching: false,
@@ -107,17 +96,6 @@ class RasterLayer {
 
     public toObject() {
         return this._props;
-    }
-
-    public toPayload() {
-        return {
-            boundingBox: this.boundingBox,
-            gridSize: this.gridSize,
-            id: this.id,
-            max: this.max,
-            min: this.min,
-            url: this.url
-        };
     }
 
     public calculateMinMax(constraintRules: RulesCollection | null = null) {
@@ -166,8 +144,9 @@ class RasterLayer {
         }, colors);
     }
 
-    public generateLegend(rulesCollection: RulesCollection, type = 'discrete', mode = 'unclassified') {
-        if (type === 'discrete') {
+    public generateLegend(rulesCollection: RulesCollection, type = CriteriaType.DISCRETE, mode = 'unclassified') {
+        console.log('GENERATE LEGEND', {rulesCollection, type, mode});
+        if (type === CriteriaType.DISCRETE) {
             const dLegend: ILegendItemDiscrete[] = [];
             if (mode === 'unclassified' || rulesCollection.length === 0) {
                 this.uniqueValues.sort((a, b) => a - b).forEach((v, key) => {
@@ -191,7 +170,7 @@ class RasterLayer {
             });
             return dLegend;
         }
-        if (type === 'continuous') {
+        if (type === CriteriaType.CONTINUOUS) {
             if (mode === 'unclassified' || rulesCollection.length === 0) {
                 return rainbowFactory({
                     min: this.min,

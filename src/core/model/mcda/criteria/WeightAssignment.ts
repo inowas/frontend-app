@@ -3,10 +3,10 @@ import {calculatePwcWeights} from '../calculations';
 import CriteriaCollection from './CriteriaCollection';
 import {ICriteriaRelation} from './CriteriaRelation.type';
 import {CriteriaRelation, Weight, WeightsCollection} from './index';
-import {IWeightAssignment, WeightAssignmentType} from './WeightAssignment.type';
+import {IWeightAssignment, WARankingSubMethod, WeightAssignmentType} from './WeightAssignment.type';
 
 const methods = {
-    spl: 'Simple Weights',
+    rtn: 'Rating',
     rnk: 'Ranking',
     rrw: 'Reciprocal Ranking',
     mif: 'Multi-Influence Factor',
@@ -92,7 +92,7 @@ class WeightAssignment {
         return new WeightAssignment({
             id: uuidv4(),
             meta: {},
-            method: WeightAssignmentType.RNK,
+            method: WeightAssignmentType.RANKING,
             subMethod: '',
             subParam: 0,
             name: 'New Weight Assignment',
@@ -122,7 +122,7 @@ class WeightAssignment {
             weight.initialValue = key + 1;
 
             addedRelations.push(weight.criterion.id);
-            if (method === 'pwc') {
+            if (method === WeightAssignmentType.PAIRWISE_COMPARISON) {
                 weight.relations = criteriaCollection.all.filter((c) => !addedRelations.includes(c.id)).map(
                     (cc) => {
                         const cr = CriteriaRelation.fromDefaults();
@@ -133,7 +133,7 @@ class WeightAssignment {
                 );
             }
 
-            wa.weightsCollection.add(weight);
+            wa.weightsCollection = wa.weightsCollection.add(weight.toObject());
         });
 
         wa.calculateWeights();
@@ -154,6 +154,11 @@ class WeightAssignment {
         return this._props;
     }
 
+    public updateWeight(weight: Weight) {
+        this.weightsCollection = this.weightsCollection.update(weight.toObject());
+        return this;
+    }
+
     public calculateWeights() {
         const weights = this.weightsCollection;
 
@@ -161,17 +166,17 @@ class WeightAssignment {
             return null;
         }
 
-        if (this.method === 'spl') {
+        if (this.method === WeightAssignmentType.RATING) {
             const sum = weights.sumBy('initialValue');
             weights.all.forEach((weight) => {
                 if (sum > 0) {
                     weight.value = weight.initialValue / sum;
                 }
-                this.weightsCollection.update(weight);
+                this.weightsCollection = this.weightsCollection.update(weight);
             });
         }
 
-        if (this.method === 'rnk') {
+        if (this.method === WeightAssignmentType.RANKING) {
             const variables = weights.all.map((w) => {
                 return {
                     rank: w.initialValue,
@@ -181,30 +186,30 @@ class WeightAssignment {
             });
 
             const sum = variables.reduce((prev, cur) => {
-                if (this.subMethod === 'rec') {
+                if (this.subMethod === WARankingSubMethod.RECIPROCAL) {
                     return prev + cur.r;
                 }
-                if (this.subMethod === 'exp') {
+                if (this.subMethod === WARankingSubMethod.EXPONENTIAL) {
                     return prev + Math.pow(cur.n, this.subParam);
                 }
                 return prev + cur.n;
             }, 0);
 
             weights.all.forEach((weight, key) => {
-                if (this.subMethod === 'sum') {
+                if (this.subMethod === WARankingSubMethod.SUMMED) {
                     weight.value = variables[key].n / sum;
                 }
-                if (this.subMethod === 'rec') {
+                if (this.subMethod === WARankingSubMethod.RECIPROCAL) {
                     weight.value = variables[key].r / sum;
                 }
-                if (this.subMethod === 'exp') {
+                if (this.subMethod === WARankingSubMethod.EXPONENTIAL) {
                     weight.value = Math.pow(variables[key].n, this.subParam) / sum;
                 }
-                this.weightsCollection.update(weight);
+                this.weightsCollection = this.weightsCollection.update(weight);
             });
         }
 
-        if (this.method === 'mif') {
+        if (this.method === WeightAssignmentType.MULTI_INFLUENCE) {
             let nScore = 0;
 
             const variables = weights.all.map((w) => {
@@ -223,11 +228,11 @@ class WeightAssignment {
 
             weights.all.forEach((weight, key) => {
                 weight.value = variables[key].score / nScore;
-                this.weightsCollection.update(weight);
+                this.weightsCollection = this.weightsCollection.update(weight);
             });
         }
 
-        if (this.method === 'pwc') {
+        if (this.method === WeightAssignmentType.PAIRWISE_COMPARISON) {
             const criteria = this.weightsCollection.allCriteriaIds;
             const relations = this.weightsCollection.allRelations;
 
@@ -238,7 +243,7 @@ class WeightAssignment {
                     if (weight.criterion) {
                         weight.value = results[weight.criterion.id].w;
                         this.meta.consistency = results.cr;
-                        this.weightsCollection.update(weight);
+                        this.weightsCollection = this.weightsCollection.update(weight);
                     }
                 });
             }

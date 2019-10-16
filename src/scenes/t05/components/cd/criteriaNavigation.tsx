@@ -55,7 +55,7 @@ const criteriaNavigation = (props: IProps) => {
         let criteria = mcda.criteriaCollection.toObject();
 
         if (mcda.withAhp) {
-            criteria = mcda.criteriaCollection.findBy('parentId', null, false);
+            criteria = mcda.criteriaCollection.findBy('parent', null, false);
         }
 
         if (searchTerm === '') {

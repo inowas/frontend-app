@@ -1,3 +1,4 @@
+import {cloneDeep} from 'lodash';
 import uuidv4 from 'uuid/v4';
 import {ICriteriaRelation} from './CriteriaRelation.type';
 
@@ -36,25 +37,17 @@ class CriteriaRelation {
     }
 
     public static fromObject(obj: ICriteriaRelation) {
-        return new CriteriaRelation({
-            to: obj.to,
-            value: obj.value,
-            id: obj.id
-        });
+        return new CriteriaRelation(obj);
     }
 
-    private _props: ICriteriaRelation;
+    private readonly _props: ICriteriaRelation;
 
     constructor(obj: ICriteriaRelation) {
         this._props = obj;
     }
 
     public toObject() {
-        return ({
-            id: this.id,
-            to: this.to,
-            value: this.value
-        });
+        return cloneDeep(this._props);
     }
 }
 

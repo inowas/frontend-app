@@ -34,14 +34,6 @@ class Gis {
         this._props.vectorLayers = value.toObject();
     }
 
-    get gridSize(): GridSize {
-        return GridSize.fromObject(this._props.gridSize);
-    }
-
-    set gridSize(value: GridSize) {
-        this._props.gridSize = value.toObject();
-    }
-
     get rasterLayer(): RasterLayer {
         return RasterLayer.fromObject(this._props.rasterLayer);
     }
@@ -64,21 +56,10 @@ class Gis {
         return this._props;
     }
 
-    public toPayload() {
-        return {
-            cells: this.cells.toObject(),
-            boundingBox: this.boundingBox.toObject(),
-            vectorLayers: this.vectorLayers.toObject(),
-            gridSize: this.gridSize.toObject(),
-            raster: this.rasterLayer.toObject()
-        };
-    }
-
-    public calculateActiveCells() {
-        const gridCells = getGridCells(this.boundingBox, this.gridSize);
+    public calculateActiveCells(gridSize: GridSize) {
+        const gridCells = getGridCells(this.boundingBox, gridSize);
         const raster = RasterLayer.fromDefaults();
-        raster.data = Array(this.gridSize.nY).fill(0).map(() => Array(this.gridSize.nX).fill(1)) as Array2D<number>;
-        raster.gridSize = this.gridSize;
+        raster.data = Array(gridSize.nY).fill(0).map(() => Array(gridSize.nX).fill(1)) as Array2D<number>;
         raster.boundingBox = this.boundingBox;
         raster.min = 0;
         raster.max = 1;
