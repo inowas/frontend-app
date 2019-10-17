@@ -1,53 +1,60 @@
 import Uuid from 'uuid';
 import FileDataSource from '../../../core/model/rtm/FileDataSource';
-
 import {IFileDataSource} from '../../../core/model/rtm/Sensor.type';
+import {DATADROPPER_URL} from '../../../services/api';
 
-test('Test FileDataSource, loading pre-loaded data', () => {
+test('Test FileDataSource, loading pre-loaded data', async () => {
     const obj: IFileDataSource = {
         id: Uuid.v4(),
-        filename: ''
+        file: {filename: '', server: DATADROPPER_URL}
     };
 
     const ds = new FileDataSource(obj);
 
     // @ts-ignore
     ds._props.data = [{timeStamp: 1, value: 1.2}];
-    expect(ds.getData().then((data) => {
-        expect(data).toEqual(ds.toObject().data);
-    }));
+    await ds.loadData();
+    expect(ds.data).toEqual([{timeStamp: 1, value: 1.2}]);
 });
 
-test('Test FileDataSource, loading from http-resource', () => {
+test('Test FileDataSource, loading from http-resource', async () => {
     const obj: IFileDataSource = {
         id: Uuid.v4(),
-        filename: '4483fd26048475aec17476b8450ee9ee8851112c.json'
+        file: {
+            filename: '4483fd26048475aec17476b8450ee9ee8851112c.json',
+            server: DATADROPPER_URL
+        }
     };
 
     const ds = new FileDataSource(obj);
-    expect(ds.getData().then((data) => {
-        expect(data.length).toEqual(15305);
-    }));
+    await ds.loadData();
+    expect(ds.data && ds.data.length).toEqual(15305);
 });
 
 // async/await can be used.
 test('Test FileDataSource from data', async () => {
-    const data = {
-        a: 123,
-        b: 234,
-        c: ['abc', 'def']
-    };
+    const data = [{
+        timeStamp: 123444,
+        value: 1
+    }];
 
     const ds = await FileDataSource.fromData(data);
     expect(ds).toBeInstanceOf(FileDataSource);
-    expect(await ds.getData()).toEqual(data);
-    expect(ds.filename).toEqual('365f22fd8f75257d0403e03a2da3ff49a91fbd9d.json');
+    await ds.loadData();
+    expect(ds.data).toEqual(data);
+    expect(ds.file).toEqual({
+        filename: 'fb6da03381069eec2492185b9ab2879f03a962af.json',
+        server: DATADROPPER_URL
+    });
 });
 
 // async/await can be used.
 test('Test FileDataSource from filename', async () => {
-    const filename = '365f22fd8f75257d0403e03a2da3ff49a91fbd9d.json';
-    const ds = await FileDataSource.fromFilename(filename);
+    const ds = await FileDataSource.fromFile({
+        filename: 'fb6da03381069eec2492185b9ab2879f03a962af.json',
+        server: DATADROPPER_URL
+    });
     expect(ds).toBeInstanceOf(FileDataSource);
-    expect(await ds.getData()).toEqual({a: 123, b: 234, c: ['abc', 'def']});
+    await ds.loadData();
+    expect(ds.data).toEqual([{timeStamp: 123444, value: 1}]);
 });

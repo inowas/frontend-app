@@ -1,9 +1,10 @@
 import {cloneDeep} from 'lodash';
-import {URL} from 'url';
 import uuid from 'uuid';
+import {GenericObject} from '../genericObject/GenericObject';
 import {IDateTimeValue, ISensorDataSource} from './Sensor.type';
+import {getUrlPathRegex, pathIsValid, retrieveData} from './SensorDataHelper';
 
-class SensorDataSource {
+class SensorDataSource extends GenericObject<ISensorDataSource> {
 
     get id() {
         return this._props.id;
@@ -44,14 +45,14 @@ class SensorDataSource {
     }
 
     get project(): string {
-        return this.getUrlPathRegex(this.url.pathname)[1];
+        return getUrlPathRegex(this.url.pathname)[1];
     }
 
     set project(value: string) {
         const url = this.url;
         url.pathname = `/sensors/project/${value}/sensor/${this.sensor}/property/${this.parameter}`;
 
-        if (!(this.getUrlPathRegex(url.pathname)[1] === value)) {
+        if (!(getUrlPathRegex(url.pathname)[1] === value)) {
             throw new Error('Invalid project name');
         }
 
@@ -59,14 +60,14 @@ class SensorDataSource {
     }
 
     get sensor(): string {
-        return this.getUrlPathRegex(this.url.pathname)[2];
+        return getUrlPathRegex(this.url.pathname)[2];
     }
 
     set sensor(value: string) {
         const url = this.url;
         url.pathname = `/sensors/project/${this.project}/sensor/${value}/property/${this.parameter}`;
 
-        if (!(this.getUrlPathRegex(url.pathname)[2] === value)) {
+        if (!(getUrlPathRegex(url.pathname)[2] === value)) {
             throw new Error('Invalid sensor name');
         }
 
@@ -74,14 +75,14 @@ class SensorDataSource {
     }
 
     get parameter(): string {
-        return this.getUrlPathRegex(this.url.pathname)[3];
+        return getUrlPathRegex(this.url.pathname)[3];
     }
 
     set parameter(value: string) {
         const url = this.url;
         url.pathname = `/sensors/project/${this.project}/sensor/${this.sensor}/property/${value}`;
 
-        if (!(this.getUrlPathRegex(url.pathname)[3] === value)) {
+        if (!(getUrlPathRegex(url.pathname)[3] === value)) {
             throw new Error('Invalid sensor name');
         }
 
@@ -103,7 +104,7 @@ class SensorDataSource {
 
     get min(): number | null {
         const min = this.urlSearchParams.get('min');
-        if (!min) {
+        if (min === null) {
             return null;
         }
 
@@ -113,7 +114,7 @@ class SensorDataSource {
     set min(value: number | null) {
         const url = this.url;
         url.searchParams.delete('min');
-        if (value) {
+        if (value !== null) {
             url.searchParams.append('min', value.toString());
         }
         this.url = url;
@@ -121,7 +122,7 @@ class SensorDataSource {
 
     get max(): number | null {
         const max = this.urlSearchParams.get('max');
-        if (!max) {
+        if (max === null) {
             return null;
         }
 
@@ -139,7 +140,7 @@ class SensorDataSource {
 
     get begin(): number | null {
         const begin = this.urlSearchParams.get('begin');
-        if (!begin) {
+        if (begin === null) {
             return null;
         }
 
@@ -149,7 +150,7 @@ class SensorDataSource {
     set begin(value: number | null) {
         const url = this.url;
         url.searchParams.delete('begin');
-        if (value) {
+        if (value !== null) {
             url.searchParams.append('begin', value.toString());
         }
         this.url = url;
@@ -157,7 +158,7 @@ class SensorDataSource {
 
     get end(): number | null {
         const end = this.urlSearchParams.get('end');
-        if (!end) {
+        if (end === null) {
             return null;
         }
 
@@ -167,14 +168,34 @@ class SensorDataSource {
     set end(value: number | null) {
         const url = this.url;
         url.searchParams.delete('end');
-        if (value) {
+        if (value !== null) {
             url.searchParams.append('end', value.toString());
         }
         this.url = url;
     }
 
-    set data(data: IDateTimeValue[]) {
+    get isIdempotent() {
+        return this.end !== null;
+    }
+
+    get fetching() {
+        return this._props.fetching;
+    }
+
+    get fetched() {
+        return this._props.fetched;
+    }
+
+    get error() {
+        return this._props.error;
+    }
+
+    set data(data: IDateTimeValue[] | undefined | null) {
         this._props.data = data;
+    }
+
+    get data() {
+        return this._props.data;
     }
 
     public static fromParams(server: string, project: string, sensor: string, parameter: string) {
@@ -184,53 +205,49 @@ class SensorDataSource {
             url
         });
 
-        if (ds.getUrlPathRegex(ds.urlPathName)) {
+        if (pathIsValid(ds.urlPathName)) {
             return ds;
         }
+
+        return null;
     }
 
     public static fromObject(obj: ISensorDataSource) {
         return new this(obj);
     }
 
-    private readonly _props: ISensorDataSource;
-
     constructor(data: ISensorDataSource) {
-        this._props = data;
+        super(data);
+        if (this.data === undefined) {
+            this.loadData();
+        }
     }
 
-    public async getData() {
+    public async loadData() {
         if (this._props.data) {
-            return this._props.data;
+            return;
         }
 
-        const res = await fetch(
-            this.url.toString(),
-            {
-                method: 'GET',
-                headers: {
-                    'Content-Type': 'application/json',
-                }
-            }
-        );
-
-        return await res.json();
-    }
-
-    public toObject() {
-        return cloneDeep(this._props);
-    }
-
-    private getUrlPathRegex(path: string) {
-        const myRe = /^\/sensors\/project\/([A-Za-z0-9-]+)\/sensor\/([A-Za-z0-9-]+)\/property\/([A-Za-z0-9-]+)$/;
-        const matchObj = myRe.exec(path);
-
-        if (!matchObj) {
-            throw new Error('Invalid url-schema: ' + this.url.toString());
+        this._props.fetching = true;
+        this._props.data = null;
+        try {
+            const data = await retrieveData({url: this.url.toString()}, this.isIdempotent);
+            this._props.data = cloneDeep(data);
+            this.sortData();
+            this._props.fetching = false;
+            this._props.fetched = true;
+        } catch (e) {
+            this._props.data = null;
+            this._props.fetching = false;
+            this._props.error = e;
         }
-
-        return matchObj;
     }
+
+    protected sortData = () => {
+        if (this._props.data) {
+            this._props.data.sort((a, b) => a.timeStamp - b.timeStamp);
+        }
+    };
 }
 
 export default SensorDataSource;

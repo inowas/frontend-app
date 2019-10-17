@@ -1,45 +1,67 @@
-import {cloneDeep} from 'lodash';
-import {URL} from 'url';
 import uuid from 'uuid';
-import {DATADROPPER_URL} from '../../../services/api';
-import {IFileDataSource} from './Sensor.type';
+import {dropData, retrieveData} from '../../../services/dataDropper';
+import {IDataDropperObject} from '../../../services/dataDropper/DataDropper.type';
+import {GenericObject} from '../genericObject/GenericObject';
+import {IDateTimeValue, IFileDataSource} from './Sensor.type';
 
-class FileDataSource {
+class FileDataSource extends GenericObject<IFileDataSource> {
 
     get id() {
         return this._props.id;
     }
 
     get url(): URL {
-        return new URL(`${DATADROPPER_URL}/${this._props.filename}`);
+        return new URL(`${this.file.server}/${this.file.filename}`);
     }
 
-    get filename() {
-        return this._props.filename;
+    get file(): IDataDropperObject {
+        return this._props.file;
     }
 
-    public static fromFilename(filename: string) {
-        return new FileDataSource({
+    get data() {
+        return this._props.data;
+    }
+
+    get begin() {
+        if (this.data && this.data.length > 0) {
+            return this.data[0].timeStamp;
+        }
+
+        return null;
+    }
+
+    get end() {
+        if (this.data && this.data.length > 0) {
+            return this.data[this.data.length - 1].timeStamp;
+        }
+
+        return null;
+    }
+
+    public static fromFile(file: IDataDropperObject) {
+        const fds = new this({
             id: uuid.v4(),
-            filename
+            file,
+            data: null,
+            fetching: false,
+            fetched: false,
+            error: null
         });
+
+        fds.loadData();
+
+        return fds;
     }
 
-    public static async fromData(data: object) {
-        const response = await fetch(
-            DATADROPPER_URL, {
-                method: 'post',
-                body: JSON.stringify(data),
-                headers: {
-                    'Access-Control-Allow-Origin': '*',
-                    'Content-Type': 'application/json',
-                }
-            });
-
-        return new FileDataSource({
+    public static async fromData(data: IDateTimeValue[]) {
+        const file: IDataDropperObject = await dropData(data);
+        return new this({
             id: uuid.v4(),
-            filename: (await response.json()).filename,
-            data
+            file,
+            data,
+            fetching: false,
+            fetched: true,
+            error: null
         });
     }
 
@@ -47,34 +69,43 @@ class FileDataSource {
         return new this(obj);
     }
 
-    private readonly _props: IFileDataSource;
-
     constructor(data: IFileDataSource) {
-        this._props = data;
+        super(data);
+        if (this.data === undefined) {
+            this.loadData();
+        }
     }
 
-    public async getData() {
+    public async saveData(data: IDateTimeValue[]) {
+        this._props.file = await dropData(data);
+        this._props.data = data;
+        return this;
+    }
+
+    public async loadData() {
         if (this._props.data) {
-            return this._props.data;
+            return;
         }
 
-        const res = await fetch(
-            this.url.toString(),
-            {
-                method: 'GET',
-                headers: {
-                    'Access-Control-Allow-Origin': '*',
-                    'Content-Type': 'application/json',
-                }
-            }
-        );
-
-        return await res.json();
+        this._props.data = null;
+        this._props.fetching = true;
+        try {
+            this._props.data = await retrieveData(this.file);
+            this.sortData();
+            this._props.fetching = false;
+            this._props.fetched = true;
+        } catch (e) {
+            this._props.data = null;
+            this._props.fetching = false;
+            this._props.error = e;
+        }
     }
 
-    public toObject() {
-        return cloneDeep(this._props);
-    }
+    protected sortData = () => {
+        if (this._props.data) {
+            this._props.data.sort((a, b) => a.timeStamp - b.timeStamp);
+        }
+    };
 }
 
 export default FileDataSource;

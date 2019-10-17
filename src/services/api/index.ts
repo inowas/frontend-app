@@ -46,17 +46,6 @@ export const sendCommand = (
         .catch(onError);
 };
 
-export const uploadRasterfileToApi = (
-    file: File,
-    onSuccess: CallbackFunction<undefined, void>,
-    onError: ErrorCallbackFunction
-) => {
-    const uploadData = new FormData();
-    uploadData.append('file', file);
-    const api = createApi(true);
-    api.post('rasterfile', uploadData).then((response) => response.data).then(onSuccess).catch(onError);
-};
-
 export const uploadRasterfile = (
     file: File,
     onSuccess: CallbackFunction<{ hash: string }, void>,
@@ -274,14 +263,6 @@ export const fetchUrl = (
         .catch(onError);
 };
 
-export async function asyncFetchUrl(url: string) {
-    const api = createApi(getToken());
-    const response = await api.get(url);
-    const json = await response.data;
-    console.log(json);
-    return json;
-}
-
 interface ISubmitSignUpCredentials {
     name: string;
     email: string;
@@ -312,8 +293,12 @@ export const submitLoginCredentials = (
         .catch(onError);
 };
 
-export const postRequest = (url: string, data: object) =>
-    axios.request({
+export const dropData = (
+    data: object,
+    onSuccess: CallbackFunction<any, void>,
+    onError: ErrorCallbackFunction
+) => {
+    return axios.request({
         method: 'POST',
         url: DATADROPPER_URL,
         data,
@@ -321,7 +306,8 @@ export const postRequest = (url: string, data: object) =>
             'Access-Control-Allow-Origin': '*',
             'Content-Type': 'application/json',
         }
-    }).then((response) => response.data);
+    }).then((response) => response.data).then(onSuccess).catch(onError);
+};
 
 export const retrieveDroppedData = (
     filename: string,

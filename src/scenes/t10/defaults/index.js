@@ -34,6 +34,6 @@ export const parameterList = [
     {parameter: 'other', text: 'Other'}
 ];
 
-export const dataSourceList = ['csv', 'online'];
+export const dataSourceList = ['file', 'online'];
 
 export const colors = ['red', 'green', 'brown', 'blue'];

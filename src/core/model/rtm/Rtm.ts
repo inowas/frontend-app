@@ -125,10 +125,13 @@ export default class Rtm {
         const obj = this.toObject();
         obj.data.sensors = obj.data.sensors.map((s) => {
             s.parameters = s.parameters.map((p) => {
-                p.dataSources = p.dataSources.map((ds) => {
-                    ds.data = undefined;
-                    return ds;
-                });
+                p.dataSources = p.dataSources.map((ds) => ({
+                    ...ds,
+                    data: undefined,
+                    fetched: undefined,
+                    fetching: undefined,
+                    error: undefined
+                }));
                 return p;
             });
             return s;
