@@ -4,6 +4,11 @@ import {ISensorData, IServerSensorData} from './Sensor.type';
 export async function retrieveData(sensorData: ISensorData, caching: boolean = false) {
     const url = new URL(`${sensorData.url}`);
 
+    const localStorageObj = sessionStorage.getItem(url.toString());
+    if (localStorageObj) {
+        return JSON.parse(localStorageObj);
+    }
+
     const response = await fetch(
         url.toString(), {
             method: 'get',

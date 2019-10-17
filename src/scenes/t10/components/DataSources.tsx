@@ -43,10 +43,6 @@ const dataSources = (props: IProps) => {
 
     useEffect(() => {
         props.parameter.dataSources.map((ds) => {
-            if (ds.data) {
-                return ds;
-            }
-
             const d = DataSourceFactory.fromObject(ds);
             if (d === null) {
                 return ds;
@@ -54,7 +50,7 @@ const dataSources = (props: IProps) => {
 
             d.loadData().then(() => handleUpdateDataSource(d));
         });
-    }, [props.parameter]);
+    }, []);
 
     const getDsType = (ds: DataSource) => {
         if (ds instanceof FileDataSource) {
@@ -134,35 +130,36 @@ const dataSources = (props: IProps) => {
     };
 
     const renderDatasourceDetails = () => {
-        if (addDatasource && addDatasource === 'online') {
-            return (
-                <SensorDatasourceEditor
-                    onCancel={handleCancelDataSourceClick}
-                    onSave={handleAddDataSource}
-                />
-            );
+        if (addDatasource) {
+            switch (addDatasource) {
+                case 'online':
+                    return (
+                        <SensorDatasourceEditor
+                            onCancel={handleCancelDataSourceClick}
+                            onSave={handleAddDataSource}
+                        />
+                    );
+                case 'file':
+                    return (
+                        <FileDatasourceEditor
+                            onCancel={handleCancelDataSourceClick}
+                            onSave={handleAddDataSource}
+                        />
+                    );
+            }
         }
 
-        if (addDatasource && addDatasource === 'file') {
-            return (
-                <FileDatasourceEditor
-                    onCancel={handleCancelDataSourceClick}
-                    onSave={handleAddDataSource}
-                />
-            );
-        }
+        if (editDatasource) {
+            if (editDatasource instanceof SensorDataSource) {
+                return (
+                    <SensorDatasourceEditor
+                        dataSource={editDatasource}
+                        onCancel={handleCancelDataSourceClick}
+                        onSave={handleUpdateDataSource}
+                    />
+                );
+            }
 
-        if (editDatasource && (editDatasource instanceof SensorDataSource)) {
-            return (
-                <SensorDatasourceEditor
-                    dataSource={editDatasource}
-                    onCancel={handleCancelDataSourceClick}
-                    onSave={handleUpdateDataSource}
-                />
-            );
-        }
-
-        if (editDatasource && (editDatasource instanceof FileDataSource)) {
             return (
                 <FileDatasourceEditor
                     dataSource={editDatasource}
@@ -216,8 +213,10 @@ const dataSources = (props: IProps) => {
                                                 <TinyLineChart
                                                     datasource={dsInst}
                                                     color={colors[key]}
-                                                    begin={DataSourceCollection.fromObject(props.parameter.dataSources).globalBegin()}
-                                                    end={DataSourceCollection.fromObject(props.parameter.dataSources).globalEnd()}
+                                                    begin={DataSourceCollection
+                                                        .fromObject(props.parameter.dataSources).globalBegin()}
+                                                    end={DataSourceCollection
+                                                        .fromObject(props.parameter.dataSources).globalEnd()}
                                                 />
                                             </Table.Cell>
                                             <Table.Cell textAlign={'right'}>
