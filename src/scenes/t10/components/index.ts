@@ -1,8 +1,9 @@
 import AddSensor from './AddSensor';
-import CSVDatasource from './CSVDatasource';
 import DataSources from './DataSources';
 import DataSourcesChart from './DataSourcesChart';
-import OnlineDatasource from './OnlineDatasource';
+import DataSourceTimeRange from './DataSourceTimeRange';
+import FileDatasourceEditor from './FileDatasourceEditor';
+import SensorDatasourceEditor from './SensorDatasourceEditor';
 import SensorList from './SensorList';
 import SensorMap from './SensorMap';
 import SensorMetaData from './SensorMetadata';
@@ -11,12 +12,13 @@ import TinyLineChart from './TinyLineChart';
 
 export {
     AddSensor,
-    CSVDatasource,
     DataSources,
     DataSourcesChart,
-    OnlineDatasource,
+    DataSourceTimeRange,
+    FileDatasourceEditor,
     SensorList,
     Sensors,
+    SensorDatasourceEditor,
     SensorMap,
     SensorMetaData,
     TinyLineChart

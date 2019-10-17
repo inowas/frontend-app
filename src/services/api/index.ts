@@ -46,17 +46,6 @@ export const sendCommand = (
         .catch(onError);
 };
 
-export const uploadRasterfileToApi = (
-    file: File,
-    onSuccess: CallbackFunction<undefined, void>,
-    onError: ErrorCallbackFunction
-) => {
-    const uploadData = new FormData();
-    uploadData.append('file', file);
-    const api = createApi(true);
-    api.post('rasterfile', uploadData).then((response) => response.data).then(onSuccess).catch(onError);
-};
-
 export const uploadRasterfile = (
     file: File,
     onSuccess: CallbackFunction<{ hash: string }, void>,

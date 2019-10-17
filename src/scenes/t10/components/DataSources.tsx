@@ -1,12 +1,17 @@
-import moment from 'moment';
-import React, {useState} from 'react';
-import {Button, Dropdown, Grid, Header, Icon, Label, Modal, Segment, Table} from 'semantic-ui-react';
-import Uuid from 'uuid';
-import {Rtm} from '../../../core/model/rtm';
-import {IDataSource, ISensorParameter} from '../../../core/model/rtm/Sensor.type';
-import {dataSourceList, parameterList} from '../defaults';
-import {colors} from '../defaults';
-import {CSVDatasource, DataSourcesChart, OnlineDatasource, TinyLineChart} from './index';
+import React, {useEffect, useState} from 'react';
+import {Button, Dropdown, Grid, Header, Icon, Label, Segment, Table} from 'semantic-ui-react';
+import {DataSourceCollection, DataSourceFactory, Rtm} from '../../../core/model/rtm';
+import FileDataSource from '../../../core/model/rtm/FileDataSource';
+import {DataSource, IDataSource, ISensorParameter} from '../../../core/model/rtm/Sensor.type';
+import SensorDataSource from '../../../core/model/rtm/SensorDataSource';
+import {colors, dataSourceList, parameterList} from '../defaults';
+import {
+    DataSourcesChart,
+    DataSourceTimeRange,
+    FileDatasourceEditor,
+    SensorDatasourceEditor,
+    TinyLineChart
+} from './index';
 
 interface IProps {
     rtm: Rtm;
@@ -14,101 +19,87 @@ interface IProps {
     onChange: (parameter: ISensorParameter) => void;
 }
 
+const arrayMoveItems = (arr: any[], from: number, to: number) => {
+    if (from !== to && 0 <= from && from <= arr.length && 0 <= to && to <= arr.length) {
+        const tmp = arr[from];
+        if (from < to) {
+            for (let i = from; i < to; i++) {
+                arr[i] = arr[i + 1];
+            }
+        } else {
+            for (let i = from; i > to; i--) {
+                arr[i] = arr[i - 1];
+            }
+        }
+        arr[to] = tmp;
+    }
+
+    return arr;
+};
+
 const dataSources = (props: IProps) => {
+    const [addDatasource, setAddDatasource] = useState<string | null>(null);
+    const [editDatasource, setEditDatasource] = useState<DataSource | null>(null);
 
-    const [datasource, setDatasource] = useState<IDataSource | null>(null);
+    useEffect(() => {
+        props.parameter.dataSources.map((ds) => {
+            const d = DataSourceFactory.fromObject(ds);
+            if (d === null) {
+                return ds;
+            }
 
-    const getTimeRangeText = (timeRange: any) => {
-        if (!timeRange) {
-            return '-';
+            d.loadData().then(() => handleUpdateDataSource(d));
+        });
+    }, []);
+
+    const getDsType = (ds: DataSource) => {
+        if (ds instanceof FileDataSource) {
+            return 'file';
         }
 
-        const [beginTimeStamp, endTimeStamp] = timeRange;
-
-        let begin = '';
-        if (beginTimeStamp) {
-            begin = moment.unix(beginTimeStamp).format('YYYY/MM/DD');
-        }
-
-        let end = '';
-        if (endTimeStamp) {
-            end = moment.unix(endTimeStamp).format('YYYY/MM/DD');
-        }
-
-        return `${begin} - ${end}`;
+        return 'online';
     };
 
-    const getValueRangeText = (valueRange: any) => {
-        if (!valueRange) {
-            return '-';
-        }
-
-        const [minValue, maxValue] = valueRange;
-
-        if (minValue && maxValue) {
-            return `${minValue} - ${maxValue}`;
-        }
-
-        if (minValue) {
-            return `>= ${minValue}`;
-        }
-
-        if (maxValue) {
-            return `<= ${maxValue}`;
-        }
-
-        return '-';
-    };
-
-    const handleAddEditDataSource = () => {
+    const handleAddDataSource = (ds: DataSource) => {
 
         const {parameter} = props;
-        if (!parameter || !datasource) {
+        if (!parameter) {
             return;
         }
 
-        let add = true;
-        parameter.dataSources = parameter.dataSources.map((ds) => {
-            if (ds.id === datasource.id) {
-                add = false;
-                return datasource;
-            }
+        parameter.dataSources.push(ds.toObject());
+        setAddDatasource(null);
+        props.onChange(parameter);
+    };
 
-            return ds;
-        });
-
-        if (add) {
-            parameter.dataSources.push(datasource);
+    const handleUpdateDataSource = (ds: DataSource) => {
+        const {parameter} = props;
+        if (!parameter) {
+            return;
         }
 
-        setDatasource(null);
+        parameter.dataSources = parameter.dataSources.map((d) => {
+            if (d.id === ds.id) {
+                return ds.toObject();
+            }
+
+            return d;
+        });
+
+        setEditDatasource(null);
         props.onChange(parameter);
     };
 
     const handleAddDataSourceClick = (dsType: string) => () => {
-        if (dsType === 'csv') {
-            setDatasource({
-                id: Uuid.v4(),
-                type: dsType,
-                timeRange: [null, null]
-            });
-        }
-
-        if (dsType === 'online') {
-            setDatasource({
-                id: Uuid.v4(),
-                type: dsType,
-                timeRange: [null, null]
-            });
-        }
+        setAddDatasource(dsType);
     };
 
-    const handleCancelAddDataSourceClick = () => {
-        setDatasource(null);
+    const handleCancelDataSourceClick = () => {
+        setAddDatasource(null);
+        setEditDatasource(null);
     };
 
     const handleDeleteDataSourceClick = (id: string) => () => {
-
         const {parameter} = props;
         if (!parameter) {
             return;
@@ -129,7 +120,56 @@ const dataSources = (props: IProps) => {
             return;
         }
 
-        setDatasource(filteredDs[0]);
+        setEditDatasource(DataSourceFactory.fromObject(filteredDs[0]));
+    };
+
+    const handleMoveDataSourceClick = (from: number, to: number) => () => {
+        const {parameter} = props;
+        parameter.dataSources = arrayMoveItems(parameter.dataSources, from, to);
+        props.onChange(parameter);
+    };
+
+    const renderDatasourceDetails = () => {
+        if (addDatasource) {
+            switch (addDatasource) {
+                case 'online':
+                    return (
+                        <SensorDatasourceEditor
+                            onCancel={handleCancelDataSourceClick}
+                            onSave={handleAddDataSource}
+                        />
+                    );
+                case 'file':
+                    return (
+                        <FileDatasourceEditor
+                            onCancel={handleCancelDataSourceClick}
+                            onSave={handleAddDataSource}
+                        />
+                    );
+            }
+        }
+
+        if (editDatasource) {
+            if (editDatasource instanceof SensorDataSource) {
+                return (
+                    <SensorDatasourceEditor
+                        dataSource={editDatasource}
+                        onCancel={handleCancelDataSourceClick}
+                        onSave={handleUpdateDataSource}
+                    />
+                );
+            }
+
+            return (
+                <FileDatasourceEditor
+                    dataSource={editDatasource}
+                    onCancel={handleCancelDataSourceClick}
+                    onSave={handleUpdateDataSource}
+                />
+            );
+        }
+
+        return null;
     };
 
     if (!props.parameter) {
@@ -152,45 +192,72 @@ const dataSources = (props: IProps) => {
                                 <Table.Row>
                                     <Table.HeaderCell>Type</Table.HeaderCell>
                                     <Table.HeaderCell>Time range</Table.HeaderCell>
-                                    <Table.HeaderCell>Value range</Table.HeaderCell>
                                     <Table.HeaderCell/>
                                     <Table.HeaderCell/>
                                 </Table.Row>
                             </Table.Header>
                             <Table.Body>
-                                {props.parameter.dataSources.sort((a, b) => {
-                                    if (a.timeRange && b.timeRange) {
-                                        const aBegin = a.timeRange[0];
-                                        const bBegin = b.timeRange[0];
-
-                                        if (aBegin && bBegin) {
-                                            return aBegin - bBegin;
-                                        }
+                                {props.parameter.dataSources.map((ds, key) => {
+                                    const dsInst = DataSourceFactory.fromObject(ds);
+                                    if (dsInst === null) {
+                                        return null;
                                     }
 
-                                    return 1;
-
-                                }).map((ds, key) => (
-                                    <Table.Row key={key}>
-                                        <Table.Cell>{ds.type}</Table.Cell>
-                                        <Table.Cell>{getTimeRangeText(ds.timeRange)}</Table.Cell>
-                                        <Table.Cell>{getValueRangeText(ds.valueRange)}</Table.Cell>
-                                        <Table.Cell>
-                                            <TinyLineChart url={ds.url} color={colors[key]}/>
-                                        </Table.Cell>
-                                        <Table.Cell textAlign={'right'}>
-                                            {!props.rtm.readOnly &&
-                                            <Button.Group>
-                                                <Button icon={true} onClick={handleEditDataSourceClick(ds.id)}>
-                                                    <Icon name={'edit'}/>
-                                                </Button>
-                                                <Button icon={true} onClick={handleDeleteDataSourceClick(ds.id)}>
-                                                    <Icon name={'trash'}/>
-                                                </Button>
-                                            </Button.Group>}
-                                        </Table.Cell>
-                                    </Table.Row>
-                                ))}
+                                    return (
+                                        <Table.Row key={key}>
+                                            <Table.Cell>{getDsType(dsInst)}</Table.Cell>
+                                            <Table.Cell>
+                                                <DataSourceTimeRange datasource={dsInst}/>
+                                            </Table.Cell>
+                                            <Table.Cell>
+                                                <TinyLineChart
+                                                    datasource={dsInst}
+                                                    color={colors[key]}
+                                                    begin={DataSourceCollection
+                                                        .fromObject(props.parameter.dataSources).globalBegin()}
+                                                    end={DataSourceCollection
+                                                        .fromObject(props.parameter.dataSources).globalEnd()}
+                                                />
+                                            </Table.Cell>
+                                            <Table.Cell textAlign={'right'}>
+                                                {!props.rtm.readOnly &&
+                                                <div>
+                                                    <Button.Group>
+                                                        <Button
+                                                            icon={true}
+                                                            onClick={handleMoveDataSourceClick(key, key - 1)}
+                                                            disabled={key === 0}
+                                                        >
+                                                            <Icon name={'arrow up'}/>
+                                                        </Button>
+                                                        <Button
+                                                            icon={true}
+                                                            onClick={handleMoveDataSourceClick(key, key + 1)}
+                                                            disabled={key === props.parameter.dataSources.length - 1}
+                                                        >
+                                                            <Icon name={'arrow down'}/>
+                                                        </Button>
+                                                    </Button.Group>
+                                                    {' '}
+                                                    <Button.Group>
+                                                        <Button
+                                                            icon={true}
+                                                            onClick={handleEditDataSourceClick(dsInst.id)}
+                                                        >
+                                                            <Icon name={'edit'}/>
+                                                        </Button>
+                                                        <Button
+                                                            icon={true}
+                                                            onClick={handleDeleteDataSourceClick(dsInst.id)}
+                                                        >
+                                                            <Icon name={'trash'}/>
+                                                        </Button>
+                                                    </Button.Group>
+                                                </div>}
+                                            </Table.Cell>
+                                        </Table.Row>
+                                    );
+                                })}
                             </Table.Body>
 
                             {!props.rtm.readOnly &&
@@ -228,32 +295,19 @@ const dataSources = (props: IProps) => {
                             }
                         </Table>
                     </Segment>
+
+                    {props.parameter.dataSources.length > 0 &&
                     <Segment color={'grey'} raised={true}>
                         <Label color={'blue'} ribbon={true} size={'large'}>
                             Chart
                         </Label>
-                        <DataSourcesChart dataSources={props.parameter.dataSources}/>
+                        <DataSourcesChart dataSources={DataSourceCollection.fromObject(props.parameter.dataSources)}/>
                     </Segment>
+                    }
+
                 </Grid.Column>
             </Grid.Row>
-
-            {datasource &&
-            <Modal centered={false} open={true} dimmer={'blurring'}>
-                <Modal.Header>Add Datasource</Modal.Header>
-                <Modal.Content>
-                    {datasource && datasource.type === 'csv' &&
-                    <CSVDatasource dataSource={datasource} onChange={setDatasource}/>
-                    }
-
-                    {datasource && datasource.type === 'online' &&
-                    <OnlineDatasource dataSource={datasource} onChange={setDatasource}/>
-                    }
-                </Modal.Content>
-                <Modal.Actions>
-                    <Button negative={true} onClick={handleCancelAddDataSourceClick}>Cancel</Button>
-                    <Button positive={true} onClick={handleAddEditDataSource}>Apply</Button>
-                </Modal.Actions>
-            </Modal>}
+            {renderDatasourceDetails()}
         </Grid>
     );
 };

@@ -1,4 +1,8 @@
 import {Point} from 'geojson';
+import {IDataDropperObject} from '../../../services/dataDropper/DataDropper.type';
+import FileDataSource from './FileDataSource';
+import {IDateTimeValue} from './Sensor.type';
+import SensorDataSource from './SensorDataSource';
 
 export interface ISensor {
     id: string;
@@ -12,48 +16,42 @@ export interface ISensorParameter {
     type: string;
     description: string;
     dataSources: IDataSource[];
-    filters: IFilter[];
-    data: IDateTimeValue[];
 }
 
-export interface IFilter {
-    type: string;
-    begin: number | null;
-    end: number | null;
-}
+export type DataSource = FileDataSource | SensorDataSource;
+export type IDataSource = ISensorDataSource | IFileDataSource;
 
-export interface IValueFilter extends IFilter {
-    type: 'valuefilter';
-}
+export type IFileDataSource = IReducedFileDataSource & IFetchDataSource;
+export type ISensorDataSource = IReducedSensorDataSource & IFetchDataSource;
 
-export interface IQueryParams {
-    project: string;
-    sensor: string;
-    property: string;
-    begin?: number;
-    end?: number;
-    min?: number;
-    max?: number;
-}
-
-export interface IDataSource {
+export interface IReducedSensorDataSource {
     id: string;
-    type: string;
-    valueRange?: Array<number | null>;
-    timeRange: Array<number | null>;
-    url?: string;
+    url: string;
 }
 
-export interface IOnlineDataSource extends IDataSource {
-    server?: string;
-    queryParams?: IQueryParams;
+export interface IReducedFileDataSource {
+    id: string;
+    file: IDataDropperObject;
 }
 
-export interface ICSVDataSource extends IDataSource {
-    property?: string | number | null;
+export interface IFetchDataSource {
+    fetching?: boolean;
+    fetched?: boolean;
+    error?: any;
+    data?: IDateTimeValue[] | null;
 }
 
 export interface IDateTimeValue {
     timeStamp: number;
     value: number;
+}
+
+export interface ISensorData {
+    url: string;
+}
+
+export interface IServerSensorData {
+    date_time: string;
+
+    [key: string]: number | string;
 }
