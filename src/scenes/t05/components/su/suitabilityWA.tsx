@@ -1,5 +1,5 @@
 import React, {useState} from 'react';
-import {Button, Dimmer, Header, Message, Progress} from 'semantic-ui-react';
+import {Button, Dimmer, Header, Progress} from 'semantic-ui-react';
 import {MCDA} from '../../../../core/model/mcda';
 import {WeightAssignmentsCollection} from '../../../../core/model/mcda/criteria';
 import {IMCDA} from '../../../../core/model/mcda/MCDA.type';
@@ -22,27 +22,23 @@ const suitabilityWeightAssignment = (props: IProps) => {
     });
     const [isRunning, setIsRunning] = useState<boolean>(false);
     const [numberOfTasks, setNumberOfTasks] = useState<number>(0);
-    const [showInfo, setShowInfo] = useState<boolean>(true);
-
     const {mcda} = props;
 
-    const handleDismiss = () => setShowInfo(false);
-
-    const handleChangeWA = (parent: string | null = null) => {
+    const handleChangeWA = (id: string | null = null) => {
         if (props.readOnly) {
             return;
         }
 
         const wac = mcda.weightAssignmentsCollection.toObject().map((wa) => {
             if (!mcda.withAhp) {
-                wa.isActive = wa.id === name;
+                wa.isActive = wa.id === id;
                 return wa;
             }
-            if (wa.id === name || (wa.isActive && parent && wa.parent !== parent)) {
+            if (wa.id === id || (wa.isActive && id && wa.parent !== id)) {
                 wa.isActive = true;
             }
-            if (wa.isActive && parent && (wa.parent === parent || (!wa.parent && parent === 'main')) &&
-                wa.id !== name) {
+            if (wa.isActive && id && (wa.parent === id || (!wa.parent && id === 'main')) &&
+                wa.id !== id) {
                 wa.isActive = false;
             }
 
@@ -66,13 +62,13 @@ const suitabilityWeightAssignment = (props: IProps) => {
             (criterion) => criterion.constraintRaster.url !== '' && criterion.constraintRaster.data.length === 0
         ).length === 0;
 
-        const constraintsAreConsistent = cMcda.constraints && (
+        const constraintsAreConsistent = true; /*cMcda.constraints && (
             !cMcda.constraints.rasterLayer || (
                 cMcda.constraints.rasterLayer &&
                 cMcda.constraints.rasterLayer.url !== '' &&
                 cMcda.constraints.rasterLayer.data.length > 0
             )
-        );
+        );*/
 
         if (criteriaDataIsConsistent && constraintsAreConsistent && criteriaConstraintsAreConsistent) {
             setCalculationState({
@@ -198,9 +194,9 @@ const suitabilityWeightAssignment = (props: IProps) => {
         const criteria2 = cMcda.criteria.filter(
             (criterion) => criterion.constraintRaster.url !== '' && criterion.constraintRaster.data.length === 0
         );
-        const globalCon = cMcda.constraints && cMcda.constraints.rasterLayer && cMcda.constraints.rasterLayer.url !== ''
-        && cMcda.constraints.rasterLayer.data.length === 0 ? 1 : 0;
-        const iNumberOfTasks = criteria1.length + criteria2.length + globalCon + 1;
+        /*const globalCon = cMcda.constraints && cMcda.constraints.rasterLayer && cMcda.constraints.rasterLayer.url !== ''
+        && cMcda.constraints.rasterLayer.data.length === 0 ? 1 : 0;*/
+        const iNumberOfTasks = criteria1.length + criteria2.length + 1; // + globalCon
 
         setIsRunning(true);
         setNumberOfTasks(iNumberOfTasks);
@@ -227,12 +223,6 @@ const suitabilityWeightAssignment = (props: IProps) => {
 
     return (
         <div>
-            {showInfo &&
-            <Message onDismiss={handleDismiss}>
-                <Message.Header>Suitability</Message.Header>
-                <p>...</p>
-            </Message>
-            }
             <WeightAssignmentTable
                 handleChange={handleChangeWA}
                 mcda={props.mcda}

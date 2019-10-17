@@ -43,7 +43,7 @@ const criteriaReclassification = (props: IProps) => {
             return null;
         }
         const rule = Rule.fromDefaults();
-        setSelectedRule(rule.toObject);
+        setSelectedRule(rule.toObject());
     };
 
     const handleEditRule = (id: string) => {
@@ -61,7 +61,7 @@ const criteriaReclassification = (props: IProps) => {
             return null;
         }
         const criterion = props.criterion;
-        criterion.rulesCollection.items = criterion.rulesCollection.all.filter((rule) => rule.id !== id);
+        criterion.removeRule(id);
         criterion.calculateSuitability();
         criterion.step = 2;
         return props.onChange(criterion);
@@ -85,7 +85,7 @@ const criteriaReclassification = (props: IProps) => {
         rule.from = rule.from;
         rule.to = rule.to;
         const criterion = props.criterion;
-        criterion.rulesCollection.update(rule);
+        criterion.updateRule(rule.toObject());
         criterion.step = 2;
         handleCloseModal();
         return props.onChange(criterion);
@@ -95,7 +95,7 @@ const criteriaReclassification = (props: IProps) => {
         const {criterion, readOnly} = props;
         const raster = criterion.raster;
 
-        if (!criterion.rulesCollection || criterion.rulesCollection.length === 0) {
+        if (!criterion.rulesCollection) {
             return (
                 <Message warning={true}>
                     <Message.Header>No data found</Message.Header>
@@ -123,6 +123,9 @@ const criteriaReclassification = (props: IProps) => {
                 data.push({x, y: 0});
             }
         }
+
+        // tslint:disable-next-line:variable-name
+        const RenderNoShape = () => null;
 
         return (
             <Grid>
@@ -213,7 +216,7 @@ const criteriaReclassification = (props: IProps) => {
                                         <Table.Cell textAlign="right">
                                             {!readOnly &&
                                             <Button.Group>
-                                                {props.criterion.rulesCollection.isError(Rule.fromObject(rule)) &&
+                                                {props.criterion.rulesCollection.isError(rule) &&
                                                 <Button negative={true} icon="warning sign"/>
                                                 }
                                                 <Button onClick={handleClickEditRule(rule.id)} icon="edit"/>
@@ -247,6 +250,7 @@ const criteriaReclassification = (props: IProps) => {
                                 name="Suitability"
                                 line={{stroke: '#8884d8', strokeWidth: 1}}
                                 data={data}
+                                shape={<RenderNoShape/>}
                             />
                         </ScatterChart>
                     </Grid.Column>

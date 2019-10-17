@@ -1,5 +1,4 @@
 import {Array2D} from '../../geometry/Array2D.type';
-import {ICriteriaRelation} from '../criteria/CriteriaRelation.type';
 
 const getRandomIndex = (n: number) => {
     const indices = [0, 0, 0.58, 0.9, 1.12, 1.24, 1.32, 1.41, 1.45, 1.49, 1.51, 1.48, 1.56, 1.57, 1.59];
@@ -27,6 +26,30 @@ export const multiplyElementWise = (m1: Array2D<number>, m2: Array2D<number>): A
     }
 
     return m3;
+};
+
+export const sumRasters = (arrays: Array<Array2D<number>>): Array2D<number> => {
+    const rows = arrays[0].length;
+    const cols = arrays[0][0].length;
+    const sum = new Array(rows).fill(0).map(() => new Array(cols).fill(0)) as Array2D<number>;
+
+    for (let row = 0; row < rows; row++) {
+        for (let col = 0; col < cols; col++) {
+            arrays.forEach((r) => {
+                if (r.length === rows && r[0].length === cols) {
+                    if (!isNaN(sum[row][col])) {
+                        if (isNaN(r[row][col])) {
+                            sum[row][col] = NaN;
+                        } else {
+                            sum[row][col] += r[row][col];
+                        }
+                    }
+                }
+            });
+        }
+    }
+
+    return sum;
 };
 
 /**

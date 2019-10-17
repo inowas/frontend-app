@@ -146,7 +146,7 @@ const criteriaReclassificationDiscrete = (props: IProps) => {
                 rule.color = row[1];
                 rule.name = row[2];
                 rule.value = row[3];
-                uCriterion.rulesCollection.update(rule);
+                uCriterion.updateRule(rule);
             }
         });
         return props.onChange(uCriterion);

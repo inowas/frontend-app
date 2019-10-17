@@ -145,7 +145,6 @@ class RasterLayer {
     }
 
     public generateLegend(rulesCollection: RulesCollection, type = CriteriaType.DISCRETE, mode = 'unclassified') {
-        console.log('GENERATE LEGEND', {rulesCollection, type, mode});
         if (type === CriteriaType.DISCRETE) {
             const dLegend: ILegendItemDiscrete[] = [];
             if (mode === 'unclassified' || rulesCollection.length === 0) {

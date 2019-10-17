@@ -5,6 +5,7 @@ import {Array2D} from '../../geometry/Array2D.type';
 import RasterLayer from '../gis/RasterLayer';
 import Suitability from '../Suitability';
 import {CriteriaType, ICriterion} from './Criterion.type';
+import {IRule} from './Rule.type';
 import RulesCollection from './RulesCollection';
 
 class Criterion {
@@ -17,11 +18,11 @@ class Criterion {
         this._props.id = value ? value : uuidv4();
     }
 
-    get parentId() {
+    get parent() {
         return this._props.parent;
     }
 
-    set parentId(value) {
+    set parent(value) {
         this._props.parent = value || null;
     }
 
@@ -127,6 +128,31 @@ class Criterion {
         return cloneDeep(this._props);
     }
 
+    public addConstraint(rule: IRule) {
+        this.constraintRules = this.constraintRules.add(rule);
+        return this;
+    }
+
+    public removeConstraint(id: string) {
+        this.constraintRules = this.constraintRules.removeById(id);
+        return this;
+    }
+
+    public updateConstraint(rule: IRule) {
+        this.constraintRules = this.constraintRules.update(rule);
+        return this;
+    }
+
+    public removeRule(id: string) {
+        this.rulesCollection = this.rulesCollection.removeById(id);
+        return this;
+    }
+
+    public updateRule(rule: IRule) {
+        this.rulesCollection = this.rulesCollection.update(rule);
+        return this;
+    }
+
     public calculateRaster(raster: RasterLayer, rulesCollection: RulesCollection, factor: RasterLayer | null = null) {
         const newRaster = cloneDeep(raster);
         newRaster.boundingBox = raster.boundingBox;
@@ -162,11 +188,13 @@ class Criterion {
 
     public calculateConstraints() {
         this.constraintRaster = this.calculateRaster(this.raster, this.constraintRules);
-        this.suitability.raster = this.calculateRaster(this.raster, this.rulesCollection, this.constraintRaster);
+        this._props.suitability.raster =
+            this.calculateRaster(this.raster, this.rulesCollection, this.constraintRaster).toObject();
     }
 
     public calculateSuitability() {
-        this.suitability.raster = this.calculateRaster(this.raster, this.rulesCollection, this.constraintRaster);
+        this._props.suitability.raster =
+            this.calculateRaster(this.raster, this.rulesCollection, this.constraintRaster).toObject();
     }
 
     public generateLegend(mode = 'unclassified') {

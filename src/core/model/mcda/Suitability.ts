@@ -1,4 +1,7 @@
+import {cloneDeep} from 'lodash';
+import {suitabilityRules} from '../../../scenes/t05/defaults/gis';
 import {CriteriaType} from './criteria/Criterion.type';
+import {IRule} from './criteria/Rule.type';
 import RulesCollection from './criteria/RulesCollection';
 import {RasterLayer} from './gis';
 import {ISuitability} from './Suitability.type';
@@ -24,7 +27,7 @@ class Suitability {
     public static fromDefault() {
         return new Suitability({
             raster: RasterLayer.fromDefaults().toObject(),
-            rules: []
+            rules: RulesCollection.fromObject(suitabilityRules).toObject()
         });
     }
 
@@ -38,8 +41,18 @@ class Suitability {
         this._props = obj;
     }
 
+    public removeRule(id: string) {
+        this.rulesCollection = this.rulesCollection.removeById(id);
+        return this;
+    }
+
+    public updateRule(rule: IRule) {
+        this.rulesCollection = this.rulesCollection.update(rule);
+        return this;
+    }
+
     public toObject() {
-        return this._props;
+        return cloneDeep(this._props);
     }
 
     public generateLegend(mode = 'reclassified') {

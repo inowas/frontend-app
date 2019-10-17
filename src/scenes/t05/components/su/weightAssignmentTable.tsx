@@ -24,8 +24,8 @@ const weightAssignmentTable = (props: IProps) => {
 
     const handleDismiss = () => setShowInfo(false);
 
-    const handleChangeRadioButton = (e: FormEvent<HTMLInputElement>, data: CheckboxProps) => {
-        return props.handleChange(data.name ? data.name : '');
+    const handleChangeRadioButton = (e: FormEvent<HTMLInputElement>, {name}: CheckboxProps) => {
+        return props.handleChange(name ? name : '');
     };
 
     if (!mcda.withAhp) {

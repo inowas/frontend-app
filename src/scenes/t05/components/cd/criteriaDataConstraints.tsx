@@ -26,7 +26,7 @@ interface IProps {
 }
 
 const criteriaDataConstraints = (props: IProps) => {
-    const [criterion, setCriterion] = useState<ICriterion>(props.criterion.toObject);
+    const [criterion, setCriterion] = useState<ICriterion>(props.criterion.toObject());
     const [showInfo, setShowInfo] = useState<boolean>(true);
 
     useEffect(() => {
@@ -55,9 +55,9 @@ const criteriaDataConstraints = (props: IProps) => {
         const rule = Rule.fromDefaults();
         rule.value = NaN;
         const cCriterion = Criterion.fromObject(criterion);
-        cCriterion.constraintRules.add(rule);
-        cCriterion.raster.calculateMinMax(cCriterion.constraintRules);
-        props.onChange(cCriterion);
+        cCriterion.addConstraint(rule.toObject());
+        cCriterion.raster = cCriterion.raster.calculateMinMax(cCriterion.constraintRules);
+        return props.onChange(cCriterion);
     };
 
     const handleLocalChange = (id: string) => (e: ChangeEvent<HTMLInputElement>, {name, value}: InputOnChangeData) => {
@@ -66,12 +66,12 @@ const criteriaDataConstraints = (props: IProps) => {
         }
 
         const cCriterion = Criterion.fromObject(criterion);
-        cCriterion.constraintRules.items = cCriterion.constraintRules.all.map((r: IRule) => {
+        cCriterion.constraintRules = RulesCollection.fromObject(cCriterion.constraintRules.all.map((r: IRule) => {
             if (r.id === id) {
                 r[name as RuleIndex] = value || NaN;
             }
             return r;
-        });
+        }));
 
         return setCriterion(cCriterion.toObject());
     };
@@ -82,14 +82,14 @@ const criteriaDataConstraints = (props: IProps) => {
         }
 
         const cCriterion = Criterion.fromObject(criterion);
-        cCriterion.constraintRules.items = cCriterion.constraintRules.all.map((r) => {
+        cCriterion.constraintRules = RulesCollection.fromObject(cCriterion.constraintRules.all.map((r) => {
             if (r.id === id) {
                 r[name as RuleIndex] = value as string || NaN;
             }
             return r;
-        });
-        cCriterion.raster.calculateMinMax(cCriterion.constraintRules);
-        props.onChange(cCriterion);
+        }));
+        cCriterion.raster = cCriterion.raster.calculateMinMax(cCriterion.constraintRules);
+        return props.onChange(cCriterion);
     };
 
     const handleChange = () => {
@@ -98,8 +98,8 @@ const criteriaDataConstraints = (props: IProps) => {
         }
 
         const cCriterion = Criterion.fromObject(criterion);
-        cCriterion.raster.calculateMinMax(cCriterion.constraintRules);
-        props.onChange(cCriterion);
+        cCriterion.raster = cCriterion.raster.calculateMinMax(cCriterion.constraintRules);
+        return props.onChange(cCriterion);
     };
 
     const handleClickRecalculate = () => {
@@ -109,8 +109,8 @@ const criteriaDataConstraints = (props: IProps) => {
 
         const cCriterion = Criterion.fromObject(criterion);
         cCriterion.calculateConstraints();
-        cCriterion.raster.calculateMinMax(cCriterion.constraintRules);
-        saveRaster(cCriterion);
+        cCriterion.raster = cCriterion.raster.calculateMinMax(cCriterion.constraintRules);
+        return saveRaster(cCriterion);
     };
 
     const handleClickRemoveRule = (id: string) => () => handleRemoveRule(id);
@@ -121,9 +121,9 @@ const criteriaDataConstraints = (props: IProps) => {
         }
 
         const cCriterion = Criterion.fromObject(criterion);
-        cCriterion.raster.calculateMinMax(cCriterion.constraintRules);
-        cCriterion.constraintRules.removeById(id);
-        props.onChange(cCriterion);
+        cCriterion.removeConstraint(id);
+        cCriterion.raster = cCriterion.raster.calculateMinMax(cCriterion.constraintRules);
+        return props.onChange(cCriterion);
     };
 
     const handleToggleRule = (rule: IRule) => {
@@ -133,9 +133,9 @@ const criteriaDataConstraints = (props: IProps) => {
 
         rule.value = rule.value === 1 ? NaN : 1;
         const cCriterion = props.criterion;
-        cCriterion.constraintRules.update(rule);
+        cCriterion.updateConstraint(rule);
         cCriterion.calculateConstraints();
-        saveRaster(cCriterion);
+        return saveRaster(cCriterion);
     };
 
     const handleChangeToggleRule = (rule: IRule) => () => handleToggleRule(rule);

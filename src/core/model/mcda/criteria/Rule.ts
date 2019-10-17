@@ -1,3 +1,4 @@
+import {cloneDeep} from 'lodash';
 import uuidv4 from 'uuid/v4';
 import {IRule} from './Rule.type';
 
@@ -108,7 +109,7 @@ class Rule {
     }
 
     public toObject() {
-        return this._props;
+        return cloneDeep(this._props);
     }
 }
 

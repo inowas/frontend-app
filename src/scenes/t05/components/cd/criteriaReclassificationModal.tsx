@@ -26,6 +26,8 @@ interface IProps {
 }
 
 const criteriaReclassificationModal = (props: IProps) => {
+    const [activeInput, setActiveInput] = useState<string | null>(null);
+    const [activeValue, setActiveValue] = useState<string>('');
     const [displayColorPicker, setDisplayColorPicker] = useState<boolean>(false);
     const [rule, setRule] = useState<IRule>(props.rule.toObject());
 
@@ -44,12 +46,28 @@ const criteriaReclassificationModal = (props: IProps) => {
         [name]: value
     });
 
+    const handleChangeNumber = (e: ChangeEvent<HTMLInputElement>, {name, value}: InputOnChangeData) => {
+        setActiveValue(value);
+        setActiveInput(name);
+    };
+
+    const handleBlurNumber = () => {
+        if (activeInput) {
+            setRule({
+                ...rule,
+                [activeInput]: parseFloat(activeValue)
+            });
+            setActiveInput(null);
+            setActiveValue('');
+        }
+    };
+
     const handleSave = () => {
         return props.onSave(Rule.fromObject(rule));
     };
 
     return (
-        <Modal size="tiny" open={!!rule} dimmer={'blurring'} onClose={props.onClose}>
+        <Modal size="small" open={!!rule} dimmer={'blurring'}>
             <Modal.Header>Edit reclassification rule</Modal.Header>
             <Modal.Content>
                 <Form>
@@ -100,9 +118,10 @@ const criteriaReclassificationModal = (props: IProps) => {
                             fluid={true}
                             label="From value"
                             name="from"
-                            onChange={handleLocalChange}
+                            onBlur={handleBlurNumber}
+                            onChange={handleChangeNumber}
                             type="number"
-                            value={rule.from}
+                            value={activeInput === 'from' ? activeValue : rule.from}
                         />
                     </Form.Group>
                     <Form.Group widths="equal">
@@ -122,9 +141,10 @@ const criteriaReclassificationModal = (props: IProps) => {
                             fluid={true}
                             label="To value"
                             type="number"
-                            onChange={handleLocalChange}
+                            onBlur={handleBlurNumber}
+                            onChange={handleChangeNumber}
                             name="to"
-                            value={rule.to}
+                            value={activeInput === 'to' ? activeValue : rule.to}
                         />
                     </Form.Group>
                     {!props.valueIsStatic &&

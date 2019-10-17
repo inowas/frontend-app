@@ -107,8 +107,6 @@ const criteriaDataEditor = (props: IProps) => {
         if (criterion) {
             const rCriterion = Criterion.fromObject(criterion);
 
-            console.log({rCriterion});
-
             switch (props.activeTool) {
                 case 'reclassification':
                     return (

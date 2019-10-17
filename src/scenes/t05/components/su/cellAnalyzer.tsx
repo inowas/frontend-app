@@ -35,11 +35,11 @@ const cellAnalyzer = (props: ICellAnalyzerProps) => {
             <Fragment>
                 <Table.Row>
                     <Table.Cell>Suitability</Table.Cell>
-                    <Table.Cell>{value.toFixed(4)}</Table.Cell>
+                    <Table.Cell>{value ? value.toFixed(4) : 'No Value'}</Table.Cell>
                 </Table.Row>
                 <Table.Row>
                     <Table.Cell>Class</Table.Cell>
-                    <Table.Cell>{rule[0].name}</Table.Cell>
+                    <Table.Cell>{rule && rule.length > 0 ? rule[0].name : 'No Class'}</Table.Cell>
                 </Table.Row>
             </Fragment>
         );
@@ -70,7 +70,7 @@ const cellAnalyzer = (props: ICellAnalyzerProps) => {
                             x: {cell.x}, y: {cell.y}
                         </Table.Cell>
                     </Table.Row>
-                    {mcda.criteriaCollection.all.map((criterion: ICriterion) => renderCriterion(criterion))}
+                    {mcda.toObject().criteria.map((criterion: ICriterion) => renderCriterion(criterion))}
                     {renderSuitability()}
                 </Table.Body>
             </Table>

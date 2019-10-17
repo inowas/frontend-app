@@ -46,7 +46,7 @@ const suitabilityClasses = (props: IProps) => {
             return;
         }
 
-        mcda.suitability.rulesCollection.update(rule);
+        mcda.suitability = mcda.suitability.updateRule(rule.toObject());
         handleCloseModal();
         return props.handleChange(mcda);
     };
@@ -56,7 +56,7 @@ const suitabilityClasses = (props: IProps) => {
             return;
         }
 
-        mcda.suitability.rulesCollection.removeById(id);
+        mcda.suitability.removeRule(id);
         return props.handleChange(mcda);
     };
 

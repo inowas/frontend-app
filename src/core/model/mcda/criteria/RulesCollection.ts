@@ -1,5 +1,5 @@
+import {cloneDeep} from 'lodash';
 import {Collection} from '../../collection/Collection';
-import Rule from './Rule';
 import {IRule} from './Rule.type';
 
 class RulesCollection extends Collection<IRule> {
@@ -14,19 +14,15 @@ class RulesCollection extends Collection<IRule> {
         );
     }
 
-    public isError(rule: Rule) {
-        if (rule.from > rule.to) {
-            return true;
-        }
-
-        return this.all.filter((r) => r.id !== rule.id && (
+    public isError(rule: IRule) {
+        return rule.from > rule.to || this.all.filter((r) => r.id !== rule.id && (
             (rule.to > r.from && rule.from < r.to) ||
             (rule.to < r.to && rule.from > r.from)
         )).length > 0;
     }
 
     public toObject() {
-        return this.all;
+        return cloneDeep(this.all);
     }
 }
 

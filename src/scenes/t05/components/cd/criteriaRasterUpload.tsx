@@ -61,8 +61,6 @@ const criteriaRasterUpload = (props: IProps) => {
                 raster.min = min(raster.data);
                 raster.max = max(raster.data);
 
-                console.log({raster});
-
                 let boundingBox = null;
                 if (metadata) {
                     boundingBox = BoundingBox.fromObject([
@@ -92,7 +90,7 @@ const criteriaRasterUpload = (props: IProps) => {
                     const rule = Rule.fromDefaults();
                     rule.from = raster.min;
                     rule.to = raster.max;
-                    criterion.rulesCollection = criterion.rulesCollection.add(rule);
+                    criterion.rulesCollection = criterion.rulesCollection.add(rule.toObject());
                 }
                 if (criterion.type === CriteriaType.DISCRETE) {
                     const uniqueValues = criterion.raster.uniqueValues;
@@ -100,15 +98,12 @@ const criteriaRasterUpload = (props: IProps) => {
                         const rule = Rule.fromDefaults();
                         rule.from = value;
                         rule.to = value;
-                        criterion.rulesCollection = criterion.rulesCollection.add(rule);
+                        criterion.rulesCollection = criterion.rulesCollection.add(rule.toObject());
                     });
                     criterion.constraintRules = criterion.rulesCollection;
                 }
 
                 setShowUploadModal(false);
-
-                console.log({criterion: criterion.toObject()});
-
                 return props.onChange(criterion);
             },
             (response: string) => {

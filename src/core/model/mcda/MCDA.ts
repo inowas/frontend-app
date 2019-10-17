@@ -4,13 +4,13 @@ import uuidv4 from 'uuid/v4';
 import {LATEST_VERSION} from '../../../scenes/t05/defaults/defaults';
 import {BoundingBox, GridSize} from '../geometry';
 import {Array2D} from '../geometry/Array2D.type';
-import {multiplyElementWise} from './calculations';
+import {multiplyElementWise, sumRasters} from './calculations';
 import {CriteriaCollection, WeightAssignmentsCollection} from './criteria';
 import Criterion from './criteria/Criterion';
+import WeightAssignment from './criteria/WeightAssignment';
 import {Gis, RasterLayer} from './gis';
 import {IMCDA, IMCDAPayload} from './MCDA.type';
 import Suitability from './Suitability';
-import WeightAssignment from './criteria/WeightAssignment';
 
 class MCDA {
 
@@ -122,7 +122,7 @@ class MCDA {
 
     public addSubCriterion(id: string) {
         const criterion = Criterion.fromDefaults();
-        criterion.parentId = id;
+        criterion.parent = id;
         this.addCriterion(criterion);
         return this;
     }
@@ -218,7 +218,7 @@ class MCDA {
         });
 
         rasterData.boundingBox = BoundingBox.fromObject(criteria[0].suitability.raster.boundingBox);
-        // TODO: rasterData.data = math.add(...data);
+        rasterData.data = sumRasters(data as Array<Array2D<number>>);
 
         // STEP 2: multiply with constraints
         this.criteriaCollection.all.forEach((c) => {
@@ -228,10 +228,10 @@ class MCDA {
             }
         });
 
-        // STEP 3: multiply global constraints
+        /*// STEP 3: multiply global constraints
         if (this.constraints && this.constraints.rasterLayer && this.constraints.rasterLayer.data.length > 0) {
             rasterData.data = multiplyElementWise(rasterData.data, this.constraints.rasterLayer.data);
-        }
+        }*/
 
         this.suitability.raster = rasterData.calculateMinMax();
 
