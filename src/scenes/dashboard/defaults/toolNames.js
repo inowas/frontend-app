@@ -1,5 +1,8 @@
 const toolNames = [
     {
+        slug: 'T01',
+        name: 'SAT basin infiltration capacity reduction database',
+    }, {
         slug: 'T02',
         name: 'Groundwater mounding (Hantush)',
     }, {

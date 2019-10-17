@@ -44,8 +44,8 @@ class BoundaryDiscretizationMap extends React.Component {
             const geometry = Geometry.fromGeoJson(layer.toGeoJSON());
             this.calculate(boundary, geometry, boundingBox, gridSize)
                 .then(cells => {
-                    boundary.cells = cells.toObject();
-                    boundary.geometry = geometry.toObject();
+                    boundary.cells = cells;
+                    boundary.geometry = geometry;
                     return onChange(boundary);
                 });
         });

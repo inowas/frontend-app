@@ -3,6 +3,7 @@ import Impressum from './impressum/Impressum';
 import LandingPage from './landingPage/LandingPage';
 import Login from './user/containers/Login';
 import Logout from './user/containers/Logout';
+import TermsAndConditions from './termsAndConditions';
 import UserProfile from './user/containers/UserProfile';
 import UserCredentials from './user/containers/UserCredentials';
 import SignUp from './user/containers/SignUp';
@@ -28,6 +29,7 @@ export {
     LandingPage,
     Login,
     Logout,
+    TermsAndConditions,
     UserCredentials,
     UserProfile,
     SignUp,

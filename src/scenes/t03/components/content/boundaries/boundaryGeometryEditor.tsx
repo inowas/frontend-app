@@ -56,7 +56,7 @@ class BoundaryGeometryEditor extends React.Component<IProps, IState> {
         }
     };
 
-    public onChangeGeometry = (boundary: Boundary) => {
+    public handleChangeBoundary = (boundary: Boundary) => {
         this.setState({
             boundary: boundary.toObject(),
             buttonsDisabled: false
@@ -121,7 +121,7 @@ class BoundaryGeometryEditor extends React.Component<IProps, IState> {
                             model={model}
                             boundary={boundary}
                             boundaries={boundaries}
-                            onChange={this.onChangeGeometry}
+                            onChange={this.handleChangeBoundary}
                             readOnly={readOnly}
                             showBoundaryGeometry={true}
                             showActiveCells={false}
@@ -130,7 +130,7 @@ class BoundaryGeometryEditor extends React.Component<IProps, IState> {
                             model={model}
                             boundary={boundary}
                             boundaries={boundaries}
-                            onChange={this.onChangeGeometry}
+                            onChange={this.handleChangeBoundary}
                             readOnly={readOnly}
                             showBoundaryGeometry={true}
                             showActiveCells={true}
