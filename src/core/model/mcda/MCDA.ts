@@ -198,8 +198,6 @@ class MCDA {
         );
         const weights = this.weightAssignmentsCollection.activeWeights();
 
-        console.log(weights);
-
         // STEP 1: multiply parent weight with weight and criteria data
         const data = criteria.map((criterion) => {
             let parentWeightValue = 1;
@@ -218,8 +216,6 @@ class MCDA {
 
             return math.dotMultiply(criterion.suitability.raster.data, weight);
         });
-
-        console.log(data);
 
         rasterData.boundingBox = BoundingBox.fromObject(criteria[0].suitability.raster.boundingBox);
         rasterData.data = sumRasters(data as Array<Array2D<number>>);
