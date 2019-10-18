@@ -67,7 +67,7 @@ const criteriaRasterMap = (props: IProps) => {
                 props.gridSize
             );
 
-            if (cell[0] < 0 || cell[1] < 0 || cell[0] > props.gridSize.nX || cell[1] > props.gridSize.nY) {
+            if (cell[0] < 0 || cell[1] < 0 || cell[0] >= props.gridSize.nX || cell[1] >= props.gridSize.nY) {
                 return;
             }
 

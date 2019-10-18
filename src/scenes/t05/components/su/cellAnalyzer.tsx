@@ -18,31 +18,35 @@ interface ICellAnalyzerProps {
 const cellAnalyzer = (props: ICellAnalyzerProps) => {
     const {onClose, cell, mcda} = props;
 
-    const renderCriterion = (criterion: ICriterion) => {
-        return (
-            <Table.Row>
-                <Table.Cell>{criterion.name}</Table.Cell>
-                <Table.Cell>{criterion.raster.data[cell.y][cell.x]}</Table.Cell>
-            </Table.Row>
-        );
+    const renderCriterion = (criterion: ICriterion, key: number) => {
+        if (criterion.raster.data[cell.y] && criterion.raster.data[cell.y][cell.x]) {
+            return (
+                <Table.Row key={key}>
+                    <Table.Cell>{criterion.name}</Table.Cell>
+                    <Table.Cell>{criterion.raster.data[cell.y][cell.x]} {criterion.unit}</Table.Cell>
+                </Table.Row>
+            );
+        }
     };
 
     const renderSuitability = () => {
-        const value = props.mcda.suitability.raster.data[cell.y][cell.x];
-        const rule = props.mcda.suitability.rulesCollection.findByValue(value);
+        if (props.mcda.suitability.raster.data[cell.y] && props.mcda.suitability.raster.data[cell.y][cell.x]) {
+            const value = props.mcda.suitability.raster.data[cell.y][cell.x];
+            const rule = props.mcda.suitability.rulesCollection.findByValue(value);
 
-        return (
-            <Fragment>
-                <Table.Row>
-                    <Table.Cell>Suitability</Table.Cell>
-                    <Table.Cell>{value ? value.toFixed(4) : 'No Value'}</Table.Cell>
-                </Table.Row>
-                <Table.Row>
-                    <Table.Cell>Class</Table.Cell>
-                    <Table.Cell>{rule && rule.length > 0 ? rule[0].name : 'No Class'}</Table.Cell>
-                </Table.Row>
-            </Fragment>
-        );
+            return (
+                <Fragment>
+                    <Table.Row>
+                        <Table.Cell>Suitability</Table.Cell>
+                        <Table.Cell>{value ? value.toFixed(4) : 'No Value'}</Table.Cell>
+                    </Table.Row>
+                    <Table.Row>
+                        <Table.Cell>Class</Table.Cell>
+                        <Table.Cell>{rule && rule.length > 0 ? rule[0].name : 'Unsuitable'}</Table.Cell>
+                    </Table.Row>
+                </Fragment>
+            );
+        }
     };
 
     return (
@@ -70,7 +74,11 @@ const cellAnalyzer = (props: ICellAnalyzerProps) => {
                             x: {cell.x}, y: {cell.y}
                         </Table.Cell>
                     </Table.Row>
-                    {mcda.toObject().criteria.map((criterion: ICriterion) => renderCriterion(criterion))}
+                    {
+                        mcda.toObject().criteria.map(
+                            (criterion: ICriterion, key: number) => renderCriterion(criterion, key)
+                        )
+                    }
                     {renderSuitability()}
                 </Table.Body>
             </Table>

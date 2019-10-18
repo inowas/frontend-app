@@ -1,4 +1,5 @@
 import {Collection} from '../../collection/Collection';
+import {IWeight} from './Weight.type';
 import {IWeightAssignment} from './WeightAssignment.type';
 import WeightsCollection from './WeightsCollection';
 
@@ -12,11 +13,13 @@ class WeightAssignmentsCollection extends Collection<IWeightAssignment> {
         return this.length >= 1;
     }
 
-    public collectActiveWeights() {
+    public activeWeights() {
         const activeWeightsCollection = new WeightsCollection();
         const activeWeightAssignments = this.all.filter((wa) => wa.isActive);
         if (activeWeightAssignments.length > 0) {
-            //TODO: activeWeightsCollection.items = [].concat(...activeWeightAssignments.map((wa) => wa.weights));
+            activeWeightsCollection.items = ([] as IWeight[]).concat(...activeWeightAssignments.map(
+                (wa) => wa.weights
+            ));
         }
         return activeWeightsCollection;
     }
