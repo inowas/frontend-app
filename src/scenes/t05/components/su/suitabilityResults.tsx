@@ -37,8 +37,8 @@ const suitabilityResults = (props: IProps) => {
 
             let content = `NCOLS ${mcda.gridSize.nX}
 NROWS ${mcda.gridSize.nY}
-XLLCORNER ${mcda.constraints.boundingBox.xMin}
-YLLCORNER ${mcda.constraints.boundingBox.yMin}
+XLLCORNER ${mcda.suitability.raster.boundingBox.xMin}
+YLLCORNER ${mcda.suitability.raster.boundingBox.yMin}
 CELLSIZE ${cellSize}
 NODATA_VALUE -9999
 `;
