@@ -6,6 +6,7 @@ import RasterLayer from '../gis/RasterLayer';
 import {CriteriaType, ICriterion, ICriterion1v0} from './Criterion.type';
 import {IRule} from './Rule.type';
 import RulesCollection from './RulesCollection';
+import {criterionStep} from '../../../../scenes/t05/defaults/defaults';
 
 class Criterion {
 
@@ -109,7 +110,7 @@ class Criterion {
             suitability: RasterLayer.fromDefaults().toObject(),
             constraintRaster: RasterLayer.fromDefaults().toObject(),
             constraintRules: [],
-            step: 0
+            step: criterionStep.START
         });
     }
 

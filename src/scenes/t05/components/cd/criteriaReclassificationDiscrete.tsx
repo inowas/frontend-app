@@ -10,6 +10,7 @@ import {dropData} from '../../../../services/api';
 import Rainbow from '../../../../services/rainbowvis/Rainbowvis';
 import {rainbowFactory} from '../../../shared/rasterData/helpers';
 import CsvUpload from '../../../shared/simpleTools/upload/CsvUpload';
+import {criterionStep} from '../../defaults/defaults';
 import {heatMapColors} from '../../defaults/gis';
 
 const styles = {
@@ -41,7 +42,6 @@ interface IUploadState {
 }
 
 const criteriaReclassificationDiscrete = (props: IProps) => {
-    // TODO: criterion.rulesCollection.orderBy('from');
     const [criterion, setCriterion] = useState<ICriterion>(props.criterion.toObject());
     const [ruleToPickColorFor, setRuleToPickColorFor] = useState<IRule | null>(null);
     const [showInfo, setShowInfo] = useState<boolean>(true);
@@ -93,7 +93,7 @@ const criteriaReclassificationDiscrete = (props: IProps) => {
                 }
                 return rule;
             }),
-            step: 2
+            step: criterionStep.AFTER_CONSTRAINTS
         });
     };
 
@@ -109,7 +109,7 @@ const criteriaReclassificationDiscrete = (props: IProps) => {
                 }
                 return r;
             }),
-            step: 2
+            step: criterionStep.AFTER_CONSTRAINTS
         });
     };
 
@@ -118,7 +118,7 @@ const criteriaReclassificationDiscrete = (props: IProps) => {
             return;
         }
         const uCriterion = props.criterion;
-        uCriterion.step = 3;
+        uCriterion.step = criterionStep.AFTER_RECLASSIFICATION;
         uCriterion.calculateSuitability();
         return saveRaster(uCriterion);
     };

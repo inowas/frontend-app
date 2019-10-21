@@ -5,6 +5,7 @@ import {GridSize} from '../../../../core/model/geometry';
 import {IGridSize} from '../../../../core/model/geometry/GridSize.type';
 import {MCDA} from '../../../../core/model/mcda';
 import { CriteriaCollection } from '../../../../core/model/mcda/criteria';
+import {criterionStep} from '../../defaults/defaults';
 
 const styles = {
     noPaddingBottom: {
@@ -73,6 +74,7 @@ const criteriaNavigation = (props: IProps) => {
             onClick={props.onClick}
         >
             {criterion.suitability && criterion.suitability.url !== '' &&
+            criterion.step === criterionStep.AFTER_RECLASSIFICATION &&
             <Icon name="check circle" color="green"/>
             }
             {criterion.name}

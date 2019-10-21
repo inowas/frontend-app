@@ -7,6 +7,7 @@ import {ICriterion} from '../../../../core/model/mcda/criteria/Criterion.type';
 import {RasterLayer} from '../../../../core/model/mcda/gis';
 import {ITask, retrieveRasters} from '../../../../services/api/rasterHelper';
 import {usePrevious} from '../../../shared/simpleTools/helpers/customHooks';
+import {criterionStep} from '../../defaults/defaults';
 import CriteriaDataConstraints from './criteriaDataConstraints';
 import CriteriaDataResults from './criteriaDataResults';
 import {CriteriaRasterUpload, CriteriaReclassification} from './index';
@@ -109,6 +110,9 @@ const criteriaDataEditor = (props: IProps) => {
 
             switch (props.activeTool) {
                 case 'reclassification':
+                    if (rCriterion.step < criterionStep.AFTER_CONSTRAINTS) {
+                        return props.onClickTool(rCriterion.id, 'upload');
+                    }
                     return (
                         <CriteriaReclassification
                             criterion={rCriterion}
@@ -117,6 +121,9 @@ const criteriaDataEditor = (props: IProps) => {
                         />
                     );
                 case 'constraints':
+                    if (rCriterion.step < criterionStep.AFTER_UPLOAD) {
+                        return props.onClickTool(rCriterion.id, 'upload');
+                    }
                     return (
                         <CriteriaDataConstraints
                             criterion={rCriterion}
@@ -126,6 +133,9 @@ const criteriaDataEditor = (props: IProps) => {
                         />
                     );
                 case 'results':
+                    if (rCriterion.step < criterionStep.AFTER_RECLASSIFICATION) {
+                        return props.onClickTool(rCriterion.id, 'upload');
+                    }
                     return (
                         <CriteriaDataResults
                             criterion={rCriterion}
@@ -173,7 +183,7 @@ const criteriaDataEditor = (props: IProps) => {
                         />
                         <Step
                             active={props.activeTool === 'constraints'}
-                            disabled={criterion.step < 1}
+                            disabled={criterion.step < criterionStep.AFTER_UPLOAD}
                             name="constraints"
                             icon="eraser"
                             title="Constraints"
@@ -182,7 +192,7 @@ const criteriaDataEditor = (props: IProps) => {
                         />
                         <Step
                             active={props.activeTool === 'reclassification'}
-                            disabled={criterion.step < 2}
+                            disabled={criterion.step < criterionStep.AFTER_CONSTRAINTS}
                             name="reclassification"
                             icon="chart bar"
                             title="Reclassification"
@@ -191,7 +201,7 @@ const criteriaDataEditor = (props: IProps) => {
                         />
                         <Step
                             active={props.activeTool === 'results'}
-                            disabled={criterion.step < 3}
+                            disabled={criterion.step < criterionStep.AFTER_RECLASSIFICATION}
                             name="results"
                             icon="map"
                             title="Results"

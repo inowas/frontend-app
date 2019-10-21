@@ -7,6 +7,7 @@ import {IRule, RuleIndex} from '../../../../core/model/mcda/criteria/Rule.type';
 import {RasterLayer} from '../../../../core/model/mcda/gis';
 import {dropData} from '../../../../services/api';
 import {ILegendItemDiscrete} from '../../../../services/rainbowvis/types';
+import {criterionStep} from '../../defaults/defaults';
 import CriteriaRasterMap from './criteriaRasterMap';
 
 const legend: ILegendItemDiscrete[] = [
@@ -290,7 +291,7 @@ const criteriaDataConstraints = (props: IProps) => {
                     </Button>
                     }
                     {iCriterion.constraintRaster && iCriterion.constraintRaster.data.length > 0 &&
-                    iCriterion.step > 1 &&
+                    iCriterion.step > criterionStep.AFTER_UPLOAD &&
                     <CriteriaRasterMap
                         gridSize={props.gridSize}
                         legend={legend}

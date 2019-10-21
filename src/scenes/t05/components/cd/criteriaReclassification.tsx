@@ -6,6 +6,7 @@ import {Criterion, Rule} from '../../../../core/model/mcda/criteria';
 import {CriteriaType} from '../../../../core/model/mcda/criteria/Criterion.type';
 import {IRule} from '../../../../core/model/mcda/criteria/Rule.type';
 import {dropData} from '../../../../services/api';
+import {criterionStep} from '../../defaults/defaults';
 import CriteriaReclassificationDiscrete from './criteriaReclassificationDiscrete';
 import CriteriaReclassificationModal from './criteriaReclassificationModal';
 
@@ -63,7 +64,7 @@ const criteriaReclassification = (props: IProps) => {
         const criterion = props.criterion;
         criterion.removeRule(id);
         criterion.calculateSuitability();
-        criterion.step = 2;
+        criterion.step = criterionStep.AFTER_CONSTRAINTS;
         return props.onChange(criterion);
     };
 
@@ -73,7 +74,7 @@ const criteriaReclassification = (props: IProps) => {
         }
         const criterion = props.criterion;
         criterion.calculateSuitability();
-        criterion.step = 3;
+        criterion.step = criterionStep.AFTER_RECLASSIFICATION;
         return saveRaster(criterion);
     };
 
@@ -86,7 +87,7 @@ const criteriaReclassification = (props: IProps) => {
         rule.to = rule.to;
         const criterion = props.criterion;
         criterion.updateRule(rule.toObject());
-        criterion.step = 2;
+        criterion.step = criterionStep.AFTER_CONSTRAINTS;
         handleCloseModal();
         return props.onChange(criterion);
     };

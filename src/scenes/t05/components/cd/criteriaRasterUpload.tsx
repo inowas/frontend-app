@@ -10,6 +10,7 @@ import {dropData} from '../../../../services/api';
 import {IRasterFileMetadata} from '../../../../services/api/types';
 import {max, min} from '../../../shared/rasterData/helpers';
 import RasterfileUploadModal from '../../../shared/rasterData/rasterfileUploadModal';
+import {criterionStep} from '../../defaults/defaults';
 import CriteriaRasterMap from './criteriaRasterMap';
 
 interface IProps {
@@ -76,7 +77,7 @@ const criteriaRasterUpload = (props: IProps) => {
 
                 }
                 criterion.raster = raster;
-                criterion.step = 2;
+                criterion.step = criterionStep.AFTER_CONSTRAINTS;
                 criterion.suitability = RasterLayer.fromDefaults();
                 criterion.constraintRaster = RasterLayer.fromDefaults();
 
@@ -102,6 +103,8 @@ const criteriaRasterUpload = (props: IProps) => {
                     });
                     criterion.constraintRules = criterion.rulesCollection;
                 }
+
+                criterion.calculateConstraints();
 
                 setShowUploadModal(false);
                 return props.onChange(criterion);
