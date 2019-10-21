@@ -21,9 +21,9 @@ const criteriaReclassification = (props: IProps) => {
 
     const saveRaster = (criterion: Criterion) => {
         dropData(
-            criterion.suitability.raster.data,
+            criterion.suitability.data,
             (response) => {
-                criterion.suitability.raster.url = response.filename;
+                criterion.suitability.url = response.filename;
                 props.onChange(criterion);
             },
             (response) => {

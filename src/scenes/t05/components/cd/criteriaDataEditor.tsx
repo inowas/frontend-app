@@ -33,7 +33,7 @@ const criteriaDataEditor = (props: IProps) => {
             (prevCriterion && nextCriterion && (
                 (nextCriterion.raster.url !== prevCriterion.raster.url) ||
                 (nextCriterion.constraintRaster.url !== prevCriterion.constraintRaster.url) ||
-                (nextCriterion.suitability.raster.url !== prevCriterion.suitability.raster.url)
+                (nextCriterion.suitability.url !== prevCriterion.suitability.url)
             ));
 
         if (fetchRasters) {
@@ -77,10 +77,10 @@ const criteriaDataEditor = (props: IProps) => {
                 }
             },
             {
-                raster: cCriterion.suitability.raster,
-                oldUrl: prevCriterion ? prevCriterion.suitability.raster.url : '',
+                raster: cCriterion.suitability,
+                oldUrl: prevCriterion ? prevCriterion.suitability.url : '',
                 onSuccess: (response: RasterLayer) => {
-                    cCriterion.suitability.raster = response;
+                    cCriterion.suitability = response;
                 }
             },
         ];

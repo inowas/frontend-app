@@ -16,12 +16,12 @@ type IIndexSignature = {
 };
 
 export interface IRule extends IIndexSignature {
-    id: string;
-    name: string;
     color: string;
     expression: string;
     from: number;
     fromOperator: '>' | '>=';
+    id: string;
+    name: string;
     to: number;
     toOperator: '<' | '<=';
     type: 'fixed' | 'calc';

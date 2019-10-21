@@ -55,7 +55,7 @@ const suitabilityWeightAssignment = (props: IProps) => {
         }
 
         const criteriaDataIsConsistent = cMcda.criteria.filter(
-            (criterion) => criterion.suitability.raster.url !== '' && criterion.suitability.raster.data.length === 0
+            (criterion) => criterion.suitability.url !== '' && criterion.suitability.data.length === 0
         ).length === 0;
 
         const criteriaConstraintsAreConsistent = cMcda.criteria.filter(
@@ -99,7 +99,7 @@ const suitabilityWeightAssignment = (props: IProps) => {
             return;
         }
         const criteria1 = cMcda.criteria.filter(
-            (criterion) => criterion.suitability.raster.url !== '' && criterion.suitability.raster.data.length === 0
+            (criterion) => criterion.suitability.url !== '' && criterion.suitability.data.length === 0
         );
         const criteria2 = cMcda.criteria.filter(
             (criterion) => criterion.constraintRaster.url !== '' && criterion.constraintRaster.data.length === 0
@@ -113,9 +113,9 @@ const suitabilityWeightAssignment = (props: IProps) => {
             });
 
             retrieveDroppedData(
-                criterion.suitability.raster.url,
+                criterion.suitability.url,
                 (response) => {
-                    criterion.suitability.raster.data = response[0];
+                    criterion.suitability.data = response[0];
                     cMcda.criteria = cMcda.criteria.map((c) => {
                         if (c.id === criterion.id) {
                             return criterion;
@@ -189,7 +189,7 @@ const suitabilityWeightAssignment = (props: IProps) => {
 
         const cMcda = props.mcda.toObject();
         const criteria1 = cMcda.criteria.filter(
-            (criterion) => criterion.suitability.raster.url !== '' && criterion.suitability.raster.data.length === 0
+            (criterion) => criterion.suitability.url !== '' && criterion.suitability.data.length === 0
         );
         const criteria2 = cMcda.criteria.filter(
             (criterion) => criterion.constraintRaster.url !== '' && criterion.constraintRaster.data.length === 0

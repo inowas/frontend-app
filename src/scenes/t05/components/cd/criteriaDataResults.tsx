@@ -30,18 +30,18 @@ const criteriaDataResults = (props: IProps) => {
     const handleDownload = () => {
         const hSuitability = props.criterion.suitability;
 
-        const cellSize = (hSuitability.raster.boundingBox.yMax - hSuitability.raster.boundingBox.yMin) /
+        const cellSize = (hSuitability.boundingBox.yMax - hSuitability.boundingBox.yMin) /
             props.gridSize.nY;
 
         let content = `NCOLS ${props.gridSize.nX}
 NROWS ${props.gridSize.nY}
-XLLCORNER ${hSuitability.raster.boundingBox.xMin}
-YLLCORNER ${hSuitability.raster.boundingBox.yMin}
+XLLCORNER ${hSuitability.boundingBox.xMin}
+YLLCORNER ${hSuitability.boundingBox.yMin}
 CELLSIZE ${cellSize}
 NODATA_VALUE -9999
 `;
 
-        suitability.raster.data.forEach((row) => {
+        suitability.data.forEach((row) => {
             content += row.join(' ');
             content += '\n';
 
@@ -70,17 +70,17 @@ NODATA_VALUE -9999
     }
     if (layer === 'suitability' || layer === 'constraints') {
         if (colors === 'default') {
-            legend = suitability.raster.generateRainbow(heatMapColors.default, [0, 1]);
+            legend = suitability.generateRainbow(heatMapColors.default, [0, 1]);
         }
         if (colors === 'colorBlind') {
-            legend = suitability.raster.generateRainbow(heatMapColors.colorBlind, [0, 1]);
+            legend = suitability.generateRainbow(heatMapColors.colorBlind, [0, 1]);
         }
     }
 
     let raster;
     switch (layer) {
         case 'suitability':
-            raster = criterion.suitability.raster;
+            raster = criterion.suitability;
             break;
         case 'constraints':
             raster = criterion.constraintRaster;
@@ -216,7 +216,7 @@ NODATA_VALUE -9999
                 </Button>
             </Grid.Column>
             <Grid.Column width={11}>
-                {criterion.suitability.raster.data.length > 0 && !!legend &&
+                {criterion.suitability.data.length > 0 && !!legend &&
                 <CriteriaRasterMap
                     gridSize={props.gridSize}
                     raster={raster}

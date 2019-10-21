@@ -3,8 +3,7 @@ import * as math from 'mathjs';
 import uuidv4 from 'uuid/v4';
 import {Array2D} from '../../geometry/Array2D.type';
 import RasterLayer from '../gis/RasterLayer';
-import Suitability from '../Suitability';
-import {CriteriaType, ICriterion} from './Criterion.type';
+import {CriteriaType, ICriterion, ICriterion1v0} from './Criterion.type';
 import {IRule} from './Rule.type';
 import RulesCollection from './RulesCollection';
 
@@ -66,11 +65,11 @@ class Criterion {
         this._props.rules = value.toObject();
     }
 
-    get suitability(): Suitability {
-        return Suitability.fromObject(this._props.suitability);
+    get suitability(): RasterLayer {
+        return RasterLayer.fromObject(this._props.suitability);
     }
 
-    set suitability(value: Suitability) {
+    set suitability(value: RasterLayer) {
         this._props.suitability = value.toObject();
     }
 
@@ -107,7 +106,7 @@ class Criterion {
             unit: '-',
             raster: RasterLayer.fromDefaults().toObject(),
             rules: [],
-            suitability: Suitability.fromDefault().toObject(),
+            suitability: RasterLayer.fromDefaults().toObject(),
             constraintRaster: RasterLayer.fromDefaults().toObject(),
             constraintRules: [],
             step: 0
@@ -116,6 +115,22 @@ class Criterion {
 
     public static fromObject(obj: ICriterion) {
         return new Criterion(obj);
+    }
+
+    public static update1v0to1v1(criterion: ICriterion1v0): ICriterion {
+        return {
+            id: criterion.id,
+            parent: criterion.parentId,
+            name: criterion.name,
+            type: criterion.type,
+            unit: criterion.unit,
+            raster: RasterLayer.update1v0to1v1(criterion.raster),
+            rules: criterion.rules,
+            suitability: RasterLayer.update1v0to1v1(criterion.suitability),
+            constraintRaster: RasterLayer.update1v0to1v1(criterion.constraintRaster),
+            constraintRules: criterion.rules,
+            step: criterion.step
+        };
     }
 
     protected _props: ICriterion;
@@ -188,12 +203,12 @@ class Criterion {
 
     public calculateConstraints() {
         this.constraintRaster = this.calculateRaster(this.raster, this.constraintRules);
-        this._props.suitability.raster =
+        this._props.suitability =
             this.calculateRaster(this.raster, this.rulesCollection, this.constraintRaster).toObject();
     }
 
     public calculateSuitability() {
-        this._props.suitability.raster =
+        this._props.suitability =
             this.calculateRaster(this.raster, this.rulesCollection, this.constraintRaster).toObject();
     }
 

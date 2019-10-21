@@ -1,5 +1,4 @@
-import {IRasterLayer} from '../gis/RasterLayer.type';
-import {ISuitability} from '../Suitability.type';
+import {IRasterLayer, IRasterLayer1v0} from '../gis/RasterLayer.type';
 import {IRule} from './Rule.type';
 
 export enum CriteriaType {
@@ -33,8 +32,22 @@ export interface ICriterion extends IIndexSignature {
     unit: string;
     raster: IRasterLayer;
     rules: IRule[];
-    suitability: ISuitability;
+    suitability: IRasterLayer;
     constraintRaster: IRasterLayer;
+    constraintRules: IRule[];
+    step: number;
+}
+
+export interface ICriterion1v0 {
+    id: string;
+    parentId: string | null;
+    name: string;
+    type: CriteriaType;
+    unit: string;
+    raster: IRasterLayer1v0;
+    rules: IRule[];
+    suitability: IRasterLayer1v0;
+    constraintRaster: IRasterLayer1v0;
     constraintRules: IRule[];
     step: number;
 }

@@ -77,7 +77,7 @@ const criteriaRasterUpload = (props: IProps) => {
                 }
                 criterion.raster = raster;
                 criterion.step = 2;
-                criterion.suitability.raster = RasterLayer.fromDefaults();
+                criterion.suitability = RasterLayer.fromDefaults();
                 criterion.constraintRaster = RasterLayer.fromDefaults();
 
                 if (boundingBox) {

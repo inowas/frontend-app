@@ -1,12 +1,21 @@
 import {Collection} from '../../collection/Collection';
 import {IWeight} from './Weight.type';
-import {IWeightAssignment} from './WeightAssignment.type';
+import {IWeightAssignment, IWeightAssignment1v0, WeightAssignmentType} from './WeightAssignment.type';
 import WeightsCollection from './WeightsCollection';
 
 class WeightAssignmentsCollection extends Collection<IWeightAssignment> {
 
     public static fromObject(obj: IWeightAssignment[]) {
         return new WeightAssignmentsCollection(obj);
+    }
+
+    public static update1v0to1v1(wac: IWeightAssignment1v0[]): IWeightAssignment[] {
+        return wac.map((wa) => {
+            if (wa.method === 'spl') {
+                wa.method = WeightAssignmentType.RATING;
+            }
+            return wa as IWeightAssignment;
+        });
     }
 
     public isFinished() {

@@ -24,6 +24,7 @@ import {
 } from '../components';
 import {getMenuItems} from '../defaults';
 import {heatMapColors} from '../defaults/gis';
+import { updater } from '../updaters/mcda';
 
 const navigation = [{
     name: 'Documentation',
@@ -55,7 +56,7 @@ const t05 = (props: IProps) => {
                     description: cTool.description,
                     permissions: cTool.permissions,
                     public: cTool.public,
-                    data: 'version' in cTool.data ? MCDA.fromPayload(cTool.data).toObject() : cTool.data,
+                    data: 'criteria' in cTool.data ? MCDA.fromPayload(updater(cTool.data)).toObject() : cTool.data,
                     tool: 'T05',
                     type: 'T05'
                 });

@@ -4,9 +4,13 @@ import {BoundingBox, Geometry} from '../../geometry';
 import {Array2D} from '../../geometry/Array2D.type';
 import GridSize from '../../geometry/GridSize';
 import {Cells} from '../../modflow';
-import {IGis} from './Gis.type';
+import {IGis, IGis1v0} from './Gis.type';
 import RasterLayer from './RasterLayer';
 import VectorLayersCollection from './VectorLayersCollection';
+import {IRasterLayer, IRasterLayer1v0} from './RasterLayer.type';
+import {ICells} from '../../geometry/Cells.type';
+import {IBoundingBox} from '../../geometry/BoundingBox.type';
+import {IVectorLayer} from './VectorLayer.type';
 
 class Gis {
 
@@ -44,6 +48,15 @@ class Gis {
 
     public static fromObject(obj: IGis) {
         return new Gis(obj);
+    }
+
+    public static update1v0to1v1(gis: IGis1v0): IGis {
+        return {
+            activeCells: gis.cells,
+            boundingBox: gis.boundingBox,
+            rasterLayer: RasterLayer.update1v0to1v1(gis.raster),
+            vectorLayers: gis.areas
+        };
     }
 
     protected _props: IGis;

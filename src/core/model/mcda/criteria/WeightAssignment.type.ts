@@ -31,12 +31,24 @@ export enum WeightAssignmentType {
 
 export interface IWeightAssignment extends IIndexSignature {
     id: string;
+    isActive: boolean;
     meta: any;
     method: WeightAssignmentType;
+    name: string;
+    parent: string | null;
     subMethod: string;
     subParam: number;
-    name: string;
     weights: IWeight[];
+}
+
+export interface IWeightAssignment1v0 {
+    id: string;
     isActive: boolean;
+    meta: any;
+    method: string;
+    name: string;
     parent: string | null;
+    subMethod: string;
+    subParam: number;
+    weights: IWeight[];
 }

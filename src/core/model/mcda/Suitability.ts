@@ -4,7 +4,7 @@ import {CriteriaType} from './criteria/Criterion.type';
 import {IRule} from './criteria/Rule.type';
 import RulesCollection from './criteria/RulesCollection';
 import {RasterLayer} from './gis';
-import {ISuitability} from './Suitability.type';
+import {ISuitability, ISuitability1v0} from './Suitability.type';
 
 class Suitability {
 
@@ -33,6 +33,13 @@ class Suitability {
 
     public static fromObject(obj: ISuitability) {
         return new Suitability(obj);
+    }
+
+    public static update1v0to1v1(suitability: ISuitability1v0): ISuitability {
+        return {
+            raster: RasterLayer.update1v0to1v1(suitability.raster),
+            rules: suitability.rules
+        };
     }
 
     protected _props: ISuitability;

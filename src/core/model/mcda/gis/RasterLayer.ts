@@ -6,7 +6,8 @@ import {BoundingBox} from '../../geometry';
 import {Array2D} from '../../geometry/Array2D.type';
 import {RulesCollection} from '../criteria';
 import {CriteriaType} from '../criteria/Criterion.type';
-import {IRasterLayer} from './RasterLayer.type';
+import {IRasterLayer, IRasterLayer1v0} from './RasterLayer.type';
+import {IBoundingBox} from '../../geometry/BoundingBox.type';
 
 class RasterLayer {
 
@@ -88,6 +89,18 @@ class RasterLayer {
         });
     }
 
+    public static update1v0to1v1(raster: IRasterLayer1v0): IRasterLayer {
+        return {
+            boundingBox: raster.boundingBox,
+            data: [],
+            id: raster.id,
+            isFetching: false,
+            min: raster.min,
+            max: raster.max,
+            url: raster.url
+        };
+    }
+
     protected _props: IRasterLayer;
 
     constructor(obj: IRasterLayer) {
@@ -149,7 +162,7 @@ class RasterLayer {
             const dLegend: ILegendItemDiscrete[] = [];
             if (mode === 'unclassified' || rulesCollection.length === 0) {
                 this.uniqueValues.sort((a, b) => a - b).forEach((v, key) => {
-                    dLegend.push({
+                        dLegend.push({
                             color: key < heatMapColors.discrete.length ? heatMapColors.discrete[key] : '#000000',
                             isContinuous: false,
                             label: v.toFixed(2),

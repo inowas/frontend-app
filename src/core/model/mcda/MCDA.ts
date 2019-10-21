@@ -211,10 +211,10 @@ class MCDA {
                 weight = filteredWeight[0].value * parentWeightValue;
             }
 
-            return math.dotMultiply(criterion.suitability.raster.data, weight);
+            return math.dotMultiply(criterion.suitability.data, weight);
         });
 
-        rasterData.boundingBox = BoundingBox.fromObject(criteria[0].suitability.raster.boundingBox);
+        rasterData.boundingBox = BoundingBox.fromObject(criteria[0].suitability.boundingBox);
         rasterData.data = sumRasters(data as Array<Array2D<number>>);
 
         // STEP 2: multiply with constraints
