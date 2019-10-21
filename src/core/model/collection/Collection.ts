@@ -13,7 +13,7 @@ export abstract class Collection<T extends IItem> {
         this._items = value;
     }
 
-    get all() {
+    get all(): T[] {
         return this._items;
     }
 
@@ -40,7 +40,7 @@ export abstract class Collection<T extends IItem> {
         return this._items.filter((item) => (item[property].toLowerCase()).indexOf(value.toLowerCase()) > -1);
     }
 
-    public findBy(property: string, value: any, equal: boolean = true) {
+    public findBy(property: string, value: any, equal: boolean = true): T[] {
         const items = this.all.filter((item) => {
             if (equal) {
                 return item[property] === value;

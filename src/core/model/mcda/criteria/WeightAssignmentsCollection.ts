@@ -24,6 +24,19 @@ class WeightAssignmentsCollection extends Collection<IWeightAssignment> {
         return activeWeightsCollection;
     }
 
+    get subCriteriaWithoutActiveWA() {
+        const result: IWeightAssignment[] = [];
+        this.all.forEach((wa) => {
+            if (
+                (!wa.parent && result.filter((wx) => !wx.parent && wx.isActive).length === 0) ||
+                (wa.parent && result.filter((wx) => wx.parent === wa.parent && wx.isActive).length === 0)
+            ) {
+                result.push(wa);
+            }
+        });
+        return result;
+    }
+
     public toObject() {
         return this.all;
     }

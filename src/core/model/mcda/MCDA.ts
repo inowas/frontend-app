@@ -79,7 +79,7 @@ class MCDA {
             constraints: {
                 activeCells: [],
                 boundingBox: [[0, 0], [0, 0]],
-                rasterLayer: (RasterLayer.fromDefaults()).toObject(),
+                rasterLayer: RasterLayer.fromDefaults().toObject(),
                 vectorLayers: []
             },
             criteria: [],
@@ -87,10 +87,7 @@ class MCDA {
                 n_x: 10,
                 n_y: 10
             },
-            suitability: {
-                raster: (RasterLayer.fromDefaults()).toObject(),
-                rules: []
-            },
+            suitability: Suitability.fromDefault().toObject(),
             version: LATEST_VERSION,
             weightAssignments: [],
             withAhp: false
@@ -236,6 +233,19 @@ class MCDA {
         this.suitability.raster = rasterData.calculateMinMax();
 
         return this;
+    }
+
+    public checkWeightAssignments() {
+        const mainCriteria = this.criteriaCollection.findBy('parent', null);
+
+        return this.withAhp ?
+            this.weightAssignmentsCollection.all.filter((wa) => wa.parent === null && wa.isActive).length === 1 &&
+            mainCriteria.filter((c) => {
+                return this.weightAssignmentsCollection.all.filter(
+                    (wa) => wa.parent === c.id && wa.isActive
+                ).length === 1;
+            }).length === mainCriteria.length :
+            this.weightAssignmentsCollection.all.filter((wa) => wa.isActive).length === 1;
     }
 }
 

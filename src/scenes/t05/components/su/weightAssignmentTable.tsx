@@ -1,4 +1,4 @@
-import React, {FormEvent, useState} from 'react';
+import React, {FormEvent, SyntheticEvent, useState} from 'react';
 import {CheckboxProps, Message, Radio, Segment, Table} from 'semantic-ui-react';
 import {MCDA} from '../../../../core/model/mcda';
 import {WeightsCollection} from '../../../../core/model/mcda/criteria';
@@ -13,7 +13,7 @@ const styles = {
 };
 
 interface IProps {
-    handleChange: (id: string) => any;
+    onChange: (parent: string | null, id: string) => any;
     mcda: MCDA;
     readOnly: boolean;
 }
@@ -25,7 +25,7 @@ const weightAssignmentTable = (props: IProps) => {
     const handleDismiss = () => setShowInfo(false);
 
     const handleChangeRadioButton = (e: FormEvent<HTMLInputElement>, {name}: CheckboxProps) => {
-        return props.handleChange(name ? name : '');
+        return props.onChange(null, name ? name : '');
     };
 
     if (!mcda.withAhp) {
@@ -65,6 +65,12 @@ const weightAssignmentTable = (props: IProps) => {
     const mainCriteria = mcda.criteriaCollection.orderBy('id', 'asc').findBy('parent', null);
     const mainCriteriaMethods = mcda.weightAssignmentsCollection.findBy('parent', null);
 
+    const handleChangeMethod = (parent: string) => (e: SyntheticEvent, {name}: CheckboxProps) => {
+        if (name) {
+            return props.onChange(parent, name);
+        }
+    };
+
     return (
         <div>
             {showInfo &&
@@ -100,7 +106,7 @@ const weightAssignmentTable = (props: IProps) => {
                                 <Table.Cell>
                                     <Radio
                                         name={wa.id}
-                                        onChange={props.handleChange('main')}
+                                        onChange={handleChangeMethod('main')}
                                         checked={wa.isActive}
                                         readOnly={props.readOnly}
                                     />
@@ -108,8 +114,8 @@ const weightAssignmentTable = (props: IProps) => {
                                 <Table.Cell>{wa.name}</Table.Cell>
                                 {WeightsCollection.fromObject(wa.weights)
                                     .orderBy('criterion.id', 'asc').all.map((w, wKey) =>
-                                    <Table.Cell key={wKey}>{w.value.toFixed(3)}</Table.Cell>
-                                )}
+                                        <Table.Cell key={wKey}>{w.value.toFixed(3)}</Table.Cell>
+                                    )}
                             </Table.Row>
                         )}
                     </Table.Body>
@@ -136,7 +142,7 @@ const weightAssignmentTable = (props: IProps) => {
                                     <Table.Cell>
                                         <Radio
                                             name={wa.id}
-                                            onChange={props.handleChange(mc.id)}
+                                            onChange={handleChangeMethod(mc.id)}
                                             checked={wa.isActive}
                                             readOnly={props.readOnly}
                                         />
@@ -144,8 +150,8 @@ const weightAssignmentTable = (props: IProps) => {
                                     <Table.Cell>{wa.name}</Table.Cell>
                                     {WeightsCollection.fromObject(wa.weights)
                                         .orderBy('criterion.id').all.map((w, wKey) =>
-                                        <Table.Cell key={wKey}>{w.value.toFixed(3)}</Table.Cell>
-                                    )}
+                                            <Table.Cell key={wKey}>{w.value.toFixed(3)}</Table.Cell>
+                                        )}
                                 </Table.Row>
                             )}
                         </Table.Body>

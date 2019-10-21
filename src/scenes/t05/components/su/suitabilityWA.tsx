@@ -24,20 +24,20 @@ const suitabilityWeightAssignment = (props: IProps) => {
     const [numberOfTasks, setNumberOfTasks] = useState<number>(0);
     const {mcda} = props;
 
-    const handleChangeWA = (id: string | null = null) => {
+    const handleChangeWA = (parent: string | null = null, id: string) => {
         if (props.readOnly) {
             return;
         }
 
-        const wac = mcda.weightAssignmentsCollection.toObject().map((wa) => {
+        const wac = mcda.weightAssignmentsCollection.all.map((wa) => {
             if (!mcda.withAhp) {
                 wa.isActive = wa.id === id;
                 return wa;
             }
-            if (wa.id === id || (wa.isActive && id && wa.parent !== id)) {
+            if (wa.id === id || (wa.isActive && parent && wa.parent !== parent)) {
                 wa.isActive = true;
             }
-            if (wa.isActive && id && (wa.parent === id || (!wa.parent && id === 'main')) &&
+            if (wa.isActive && parent && (wa.parent === parent || (!wa.parent && parent === 'main')) &&
                 wa.id !== id) {
                 wa.isActive = false;
             }
@@ -224,12 +224,14 @@ const suitabilityWeightAssignment = (props: IProps) => {
     return (
         <div>
             <WeightAssignmentTable
-                handleChange={handleChangeWA}
+                onChange={handleChangeWA}
                 mcda={props.mcda}
                 readOnly={props.readOnly}
             />
             <Button
-                disabled={props.readOnly || mcda.weightAssignmentsCollection.findBy('isActive', true).length < 1}
+                disabled={
+                    props.readOnly || !mcda.checkWeightAssignments()
+                }
                 onClick={handleClickCalculation}
                 primary={true}
                 fluid={true}

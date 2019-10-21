@@ -1,4 +1,4 @@
-import {calculatePwcWeights} from '../../../../core/model/mcda/calculations';
+import {calculatePwcWeights} from '../../../../../core/model/mcda/calculations';
 
 const isInRange = (valueToTest, valueToCompare, tolerance = 0.1) => {
     return valueToTest >= (valueToCompare - tolerance * valueToCompare)
