@@ -1,6 +1,7 @@
 import {cloneDeep} from 'lodash';
 import uuidv4 from 'uuid/v4';
 import {defaultSoilmodelParameters} from '../../../../scenes/t03/defaults/soilmodel';
+import {versions} from '../../../../scenes/t03/updaters/versions';
 import {Cells, Geometry} from '../../geometry';
 import {RasterParametersCollection, ZonesCollection} from '../../gis';
 import {ILayerParameterZone} from '../../gis/LayerParameterZone.type';
@@ -84,6 +85,7 @@ class Soilmodel {
             properties: {
                 parameters,
                 relations,
+                version: versions.soilmodel,
                 zones: [defaultZone]
             }
         });

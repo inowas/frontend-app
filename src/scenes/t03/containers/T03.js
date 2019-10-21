@@ -10,7 +10,7 @@ import ToolNavigation from '../../shared/complexTools/toolNavigation';
 import menuItems from '../defaults/menuItems';
 import * as Content from '../components/content/index';
 import ToolMetaData from '../../shared/simpleTools/ToolMetaData';
-import {fetchUrl, sendCommand} from '../../../services/api';
+import {fetchUrl, fetchUrlAndUpdate, sendCommand} from '../../../services/api';
 
 import {
     clear,
@@ -44,6 +44,7 @@ import {cloneDeep} from 'lodash';
 import FlopyModpath from '../../../core/model/flopy/packages/mp/FlopyModpath';
 import FlopySeawat from '../../../core/model/flopy/packages/swt/FlopySeawat';
 import {BoundaryCollection, BoundaryFactory} from '../../../core/model/modflow/boundaries';
+import {updater} from "../updaters/soilmodel";
 
 const navigation = [{
     name: 'Documentation',
@@ -211,8 +212,13 @@ class T03 extends React.Component {
     };
 
     fetchSoilmodel(id) {
-        fetchUrl(`modflowmodels/${id}/soilmodel`,
-            data => this.props.updateSoilmodel(Soilmodel.fromQuery(data)),
+        fetchUrlAndUpdate(`modflowmodels/${id}/soilmodel`,
+            data => {
+                return updater(data, this.props.model);
+            },
+            data => {
+                return this.props.updateSoilmodel(Soilmodel.fromQuery(data));
+            },
             error => this.setState(
                 {error, isLoading: false},
                 () => this.handleError(error)

@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import {Button, Form, Grid, Message, Segment, Table} from 'semantic-ui-react';
 import Graph from 'vis-react';
-import {CriteriaCollection, Weight, WeightAssignment} from '../../../../core/model/mcda/criteria';
+import {CriteriaCollection, WeightAssignment} from '../../../../core/model/mcda/criteria';
 
 const styles = {
     graph: {
@@ -120,7 +120,7 @@ class MultiInfluence extends React.Component {
     });
 
     onSaveEdges = () => {
-        const weights = this.props.weightAssignment.weightsCollection.toArray().map(weight => {
+        const weights = this.props.weightAssignment.weightsCollection.toObject().map(weight => {
             return {
                 ...weight,
                 relations: this.state.edges.filter(edge => edge.from === weight.criterion.id).map(edge => {
@@ -135,7 +135,7 @@ class MultiInfluence extends React.Component {
         const weightAssignment = WeightAssignment.fromObject(this.state.wa);
 
         weights.forEach(w => {
-            weightAssignment.weightsCollection.update(Weight.fromObject(w));
+            weightAssignment.weightsCollection = weightAssignment.weightsCollection.update(w);
         });
         weightAssignment.calculateWeights();
 

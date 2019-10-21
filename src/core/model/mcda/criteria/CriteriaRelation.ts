@@ -1,55 +1,53 @@
+import {cloneDeep} from 'lodash';
 import uuidv4 from 'uuid/v4';
-
-interface ICriteriaRelation {
-    id: string;
-    to: string;
-    value: number;
-}
+import {ICriteriaRelation} from './CriteriaRelation.type';
 
 class CriteriaRelation {
 
     public get id() {
-        return this._id;
+        return this._props.id;
     }
 
     public set id(value) {
-        this._id = value;
+        this._props.id = value;
     }
 
     public get to() {
-        return this._to;
+        return this._props.to;
     }
 
     public set to(value) {
-        this._to = value;
+        this._props.to = value;
     }
 
     public get value() {
-        return this._value;
+        return this._props.value;
     }
 
     public set value(value) {
-        this._value = value;
+        this._props.value = value;
+    }
+
+    public static fromDefaults() {
+        return new CriteriaRelation({
+            id: uuidv4(),
+            to: '',
+            value: 0
+        });
     }
 
     public static fromObject(obj: ICriteriaRelation) {
-        const relation = new CriteriaRelation();
-        relation.to = obj.to;
-        relation.value = obj.value;
-        relation.id = obj.id;
-        return relation;
+        return new CriteriaRelation(obj);
     }
 
-    private _id = uuidv4();
-    private _to = '';
-    private _value = 0;
+    private readonly _props: ICriteriaRelation;
+
+    constructor(obj: ICriteriaRelation) {
+        this._props = obj;
+    }
 
     public toObject() {
-        return ({
-            id: this.id,
-            to: this.to,
-            value: this.value
-        });
+        return cloneDeep(this._props);
     }
 }
 

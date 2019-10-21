@@ -1,11 +1,11 @@
 import axios, {AxiosResponse} from 'axios';
 import getConfig from '../../config.default.js';
+import AbstractCommand from '../../core/model/command/AbstractCommand';
 import FlopyPackages from '../../core/model/flopy/packages/FlopyPackages';
 import {Array2D, Array3D} from '../../core/model/geometry/Array2D.type';
 import {ICalculation} from '../../core/model/modflow/Calculation.type';
 import {IMetaData, ISimpleTool} from '../../core/model/types';
 import {InterpolationType} from '../../scenes/shared/rasterData/types';
-import ModflowModelCommand from '../../scenes/t03/commands/modflowModelCommand';
 import {CallbackFunction, ErrorCallbackFunction} from '../../scenes/types';
 import storeToCreate from '../../store';
 import {IBudgetData, IModflowFile, IRasterFileMetadata} from './types';
@@ -35,7 +35,7 @@ const createApi = (token: boolean = false) => {
 };
 
 export const sendCommand = (
-    command: ModflowModelCommand,
+    command: AbstractCommand,
     onSuccess?: CallbackFunction<undefined, void>,
     onError?: ErrorCallbackFunction
 ) => {
@@ -55,7 +55,7 @@ export const uploadRasterfile = (
     uploadData.append('file', file);
     return axios.request({
         method: 'POST',
-        url: GEOPROCESSING_URL,
+        url: GEOPROCESSING_URL + '/',
         data: uploadData,
         headers: {
             'Access-Control-Allow-Origin': '*',
@@ -263,6 +263,20 @@ export const fetchUrl = (
         .catch(onError);
 };
 
+export const fetchUrlAndUpdate = (
+    url: string,
+    onUpcast: (data: any) => any,
+    onSuccess?: CallbackFunction<any, void>,
+    onError?: ErrorCallbackFunction
+) => {
+    const api = createApi(getToken());
+    api.get(url)
+        .then((response) => response.data)
+        .then((data) => onUpcast(data))
+        .then(onSuccess)
+        .catch(onError);
+};
+
 interface ISubmitSignUpCredentials {
     name: string;
     email: string;
@@ -294,7 +308,7 @@ export const submitLoginCredentials = (
 };
 
 export const dropData = (
-    data: object,
+    data: any,
     onSuccess: CallbackFunction<any, void>,
     onError: ErrorCallbackFunction
 ) => {

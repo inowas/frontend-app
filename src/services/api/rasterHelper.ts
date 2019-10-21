@@ -1,10 +1,10 @@
-import {Raster} from '../../core/model/mcda/gis';
+import {RasterLayer} from '../../core/model/mcda/gis';
 import {retrieveDroppedData} from './index';
 
-interface ITask {
-    raster: Raster;
+export interface ITask {
+    raster: RasterLayer;
     oldUrl: string;
-    onSuccess: (response: object) => Raster;
+    onSuccess: (response: RasterLayer) => any;
 }
 
 // {raster, oldUrl, onSuccess}
