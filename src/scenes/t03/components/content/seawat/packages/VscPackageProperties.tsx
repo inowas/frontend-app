@@ -242,7 +242,9 @@ class VscPackageProperties extends AbstractPackageProperties {
                         <label>A{c}</label>
                         <Input
                             name={`amucoeff${key}`}
-                            value={swtPackage.amucoeff && swtPackage.amucoeff.length > key ? swtPackage.amucoeff[key] : 0}
+                            value={
+                                swtPackage.amucoeff && swtPackage.amucoeff.length > key ? swtPackage.amucoeff[key] : 0
+                            }
                             disabled={readOnly}
                             type="number"
                             onBlur={this.handleOnBlurAmuncoeff(key)}
