@@ -9,9 +9,10 @@ interface IProps {
     onClick: (id: string) => any;
     onRemove: (id: string) => any;
     selected?: string;
+    readOnly: boolean;
 }
 
-const substanceList = ({addSubstance, substances, onClick, onRemove, selected}: IProps) => {
+const substanceList = ({addSubstance, substances, onClick, onRemove, selected, readOnly}: IProps) => {
 
     const onClickItem = (substanceId: string) => () => {
         return onClick(substanceId);
@@ -32,6 +33,7 @@ const substanceList = ({addSubstance, substances, onClick, onRemove, selected}: 
                     onClick={addSubstance}
                     content={'Add Substance'}
                     style={{marginLeft: '-20px', width: '200px'}}
+                    disabled={readOnly}
                 />
             </Menu.Item>
             {substances.all.map((substance, idx) => (

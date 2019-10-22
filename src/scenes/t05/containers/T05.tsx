@@ -281,7 +281,6 @@ const t05 = (props: IProps) => {
                             activeCriterion={cid}
                             mcda={mcda}
                             onClick={handleClickCriteriaNavigation}
-                            handleChange={handleChange}
                             readOnly={readOnly}
                         />
                         }

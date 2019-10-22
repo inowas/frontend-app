@@ -1,16 +1,15 @@
 import React from 'react';
 import {connect} from 'react-redux';
 import {withRouter} from 'react-router-dom';
-import {FlopySeawat, FlopySeawatPackage} from '../../../../../core/model/flopy/packages/swt';
-import {sendCommand} from '../../../../../services/api';
-import ModflowModelCommand from '../../../commands/modflowModelCommand';
-
 import {Grid, Menu, Segment} from 'semantic-ui-react';
 import FlopyPackages from '../../../../../core/model/flopy/packages/FlopyPackages';
+import {FlopySeawat, FlopySeawatPackage} from '../../../../../core/model/flopy/packages/swt';
 import {ModflowModel, Transport, VariableDensity} from '../../../../../core/model/modflow';
 import {BoundaryCollection} from '../../../../../core/model/modflow/boundaries';
+import {sendCommand} from '../../../../../services/api';
 import ContentToolBar from '../../../../shared/ContentToolbar';
 import {updatePackages} from '../../../actions/actions';
+import ModflowModelCommand from '../../../commands/modflowModelCommand';
 import {SeawatPackageProperties, VdfPackageProperties, VscPackageProperties} from './packages';
 
 interface IOwnProps {
@@ -87,7 +86,7 @@ class SeawatProperties extends React.Component<Props, ISeawatPropertiesState> {
                     this.props.updatePackages(packages);
                     return this.setState({isDirty: false, isLoading: false});
                 },
-                (error) => this.setState({isError: true})
+                () => this.setState({isError: true})
             )
         );
     };

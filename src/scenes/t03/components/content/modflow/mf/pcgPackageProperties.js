@@ -53,7 +53,7 @@ class PcgPackageProperties extends AbstractPackageProperties {
                             name='npcond'
                             selection
                             value={mfPackage.npcond}
-                            readOnly={readOnly}
+                            disabled={readOnly}
                             onChange={this.handleOnSelect}
                         />
                     </Form.Field>
@@ -139,7 +139,7 @@ class PcgPackageProperties extends AbstractPackageProperties {
                             name='mutpcg'
                             selection
                             value={mfPackage.mutpcg}
-                            readOnly={readOnly}
+                            disabled={readOnly}
                             onChange={this.handleOnSelect}
                         />
                     </Form.Field>

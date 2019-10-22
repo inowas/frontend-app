@@ -39,7 +39,7 @@ class RctPackageProperties extends AbstractPackageProperties {
                             name="isothm"
                             selection={true}
                             value={mtPackage.isothm || 0}
-                            readOnly={readOnly}
+                            disabled={readOnly}
                             onChange={this.handleOnSelect}
                         />
                     </Form.Field>
@@ -65,7 +65,7 @@ class RctPackageProperties extends AbstractPackageProperties {
                             name="ireact"
                             selection={true}
                             value={mtPackage.ireact || 0}
-                            readOnly={readOnly}
+                            disabled={readOnly}
                             onChange={this.handleOnSelect}
                         />
                     </Form.Field>

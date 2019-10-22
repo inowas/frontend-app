@@ -98,18 +98,21 @@ class OcPackageProperties extends AbstractPackageProperties {
                                     <Checkbox
                                         onChange={() => this.onToggleCheckBox(per, stp, 'save head')}
                                         checked={d[1].includes('save head')}
+                                        disabled={this.props.readonly}
                                     />
                                 </Table.Cell>
                                 <Table.Cell>
                                     <Checkbox
                                         onChange={() => this.onToggleCheckBox(per, stp, 'save drawdown')}
                                         checked={d[1].includes('save drawdown')}
+                                        disabled={this.props.readonly}
                                     />
                                 </Table.Cell>
                                 <Table.Cell>
                                     <Checkbox
                                         onChange={() => this.onToggleCheckBox(per, stp, 'save budget')}
                                         checked={d[1].includes('save budget')}
+                                        disabled={this.props.readonly}
                                     />
                                 </Table.Cell>
                             </Table.Row>
@@ -142,7 +145,7 @@ class OcPackageProperties extends AbstractPackageProperties {
                             name='ihedfm'
                             selection
                             value={mfPackage.ihedfm}
-                            readOnly={readOnly}
+                            disabled={readOnly}
                             onChange={this.handleOnSelect}
                         />
                     </Form.Field>
@@ -161,7 +164,7 @@ class OcPackageProperties extends AbstractPackageProperties {
                             name='iddnfm'
                             selection
                             value={mfPackage.iddnfm}
-                            readOnly={readOnly}
+                            disabled={readOnly}
                             onChange={this.handleOnSelect}
                         />
                     </Form.Field>
@@ -233,7 +236,7 @@ class OcPackageProperties extends AbstractPackageProperties {
                             name='compact'
                             selection
                             value={mfPackage.compact}
-                            readOnly={readOnly}
+                            disabled={readOnly}
                             onChange={this.handleOnSelect}
                         />
                     </Form.Field>

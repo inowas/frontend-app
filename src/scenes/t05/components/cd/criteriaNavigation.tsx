@@ -1,7 +1,6 @@
 import React, {ChangeEvent, MouseEvent, useEffect, useState} from 'react';
 import {RouteComponentProps, withRouter} from 'react-router-dom';
 import {Form, Icon, Input, InputOnChangeData, Menu, MenuItemProps, Segment} from 'semantic-ui-react';
-import {GridSize} from '../../../../core/model/geometry';
 import {IGridSize} from '../../../../core/model/geometry/GridSize.type';
 import {MCDA} from '../../../../core/model/mcda';
 import { CriteriaCollection } from '../../../../core/model/mcda/criteria';
@@ -18,7 +17,6 @@ interface IProps extends RouteComponentProps<any> {
     activeCriterion: string | null;
     onClick: (e: MouseEvent<HTMLAnchorElement>, {name}: MenuItemProps) => any;
     mcda: MCDA;
-    handleChange: (mcda: MCDA) => any;
     readOnly: boolean;
 }
 
@@ -29,23 +27,6 @@ const criteriaNavigation = (props: IProps) => {
     useEffect(() => {
         setGridSize(props.mcda.gridSize.toObject());
     }, [props.mcda.gridSize]);
-
-    const handleBlur = () => {
-        const mcda = props.mcda;
-        mcda.gridSize = GridSize.fromObject(gridSize);
-        return props.handleChange(mcda);
-    };
-
-    const handleChangeGridSize = (e: ChangeEvent<HTMLInputElement>, {name, value}: InputOnChangeData) => {
-        if (props.readOnly) {
-            return;
-        }
-        return setGridSize({
-                ...gridSize,
-                [name]: value
-            }
-        );
-    };
 
     const handleSearchCriterion = (e: ChangeEvent<HTMLInputElement>, {value}: InputOnChangeData) => {
         setSearchTerm(value);
@@ -81,8 +62,6 @@ const criteriaNavigation = (props: IProps) => {
         </Menu.Item>
     ));
 
-    const gridSizeEditable = props.mcda.criteriaCollection.all.filter((c) => c.raster.data.length > 0).length === 0;
-
     return (
         <Segment color={'black'}>
             <Menu secondary={true} vertical={true} style={{width: '100%'}}>
@@ -92,23 +71,19 @@ const criteriaNavigation = (props: IProps) => {
                         <Form.Group widths="equal">
                             <Form.Input
                                 fluid={true}
-                                disabled={!gridSizeEditable || props.readOnly}
+                                readOnly={true}
                                 type="number"
                                 label="Columns"
                                 name="n_x"
                                 value={gridSize.n_x}
-                                onBlur={handleBlur}
-                                onChange={handleChangeGridSize}
                             />
                             <Form.Input
                                 fluid={true}
-                                disabled={!gridSizeEditable || props.readOnly}
+                                readOnly={true}
                                 type="number"
                                 label="Rows"
                                 name="n_y"
                                 value={gridSize.n_y}
-                                onBlur={handleBlur}
-                                onChange={handleChangeGridSize}
                             />
                         </Form.Group>
                     </Form>

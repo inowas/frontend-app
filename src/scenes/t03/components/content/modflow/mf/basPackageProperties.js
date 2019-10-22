@@ -88,7 +88,7 @@ class BasPackageProperties extends AbstractPackageProperties {
                                             name='ichflg'
                                             selection
                                             value={mfPackage.ichflg}
-                                            readOnly={readonly}
+                                            disabled={readonly}
                                             onChange={this.handleOnSelect}
                                         />
                                     </Form.Field>

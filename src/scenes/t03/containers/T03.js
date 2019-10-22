@@ -1,9 +1,7 @@
 import React from 'react';
 import {connect} from 'react-redux';
 import {Redirect, withRouter} from 'react-router-dom';
-
 import PropTypes from 'prop-types';
-
 import AppContainer from '../../shared/AppContainer';
 import {Grid, Icon, Message} from 'semantic-ui-react';
 import ToolNavigation from '../../shared/complexTools/toolNavigation';
@@ -114,8 +112,11 @@ class T03 extends React.Component {
                     if (i.property === 'mt3d' || i.property === 'concentration') {
                         if (nextProps.transport &&
                             nextProps.transport.enabled &&
-                            calculationState === CALCULATION_STATE_FINISHED
-                        ) {
+                            calculationState === CALCULATION_STATE_FINISHED &&
+                            !(i.property === 'concentration' && nextProps.calculation && nextProps.calculation.layer_values.filter((l) =>
+                                l.includes('concentration')).length === 0)
+                            )
+                        {
                             i.disabled = false;
                             return i;
                         }

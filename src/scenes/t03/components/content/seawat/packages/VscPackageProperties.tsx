@@ -44,7 +44,7 @@ class VscPackageProperties extends AbstractPackageProperties {
                             name="mtmuspec"
                             selection={true}
                             value={swtPackage.mtmuspec || 0}
-                            readOnly={readOnly}
+                            disabled={readOnly}
                             onChange={this.handleOnSelect}
                         />
                     </Form.Field>
@@ -140,7 +140,7 @@ class VscPackageProperties extends AbstractPackageProperties {
                             name="mutempopt"
                             selection={true}
                             value={swtPackage.mutempopt || 0}
-                            readOnly={readOnly}
+                            disabled={readOnly}
                             onChange={this.handleOnSelect}
                         />
                     </Form.Field>
@@ -162,8 +162,23 @@ class VscPackageProperties extends AbstractPackageProperties {
     private handleOnChangeAmuncoeff = (key: number) => (e: ChangeEvent<HTMLInputElement>, data: InputOnChangeData) => {
         const {value} = data;
 
-        const amucoeff = this.state.swtPackage.amucoeff;
-        amucoeff[key] = parseFloat(value);
+        let amucoeff = this.state.swtPackage.amucoeff;
+        if (!Array.isArray(amucoeff) || amucoeff.length < key) {
+            switch (this.state.swtPackage.mutempopt) {
+                case 1:
+                    amucoeff = [0, 0, 0, 0];
+                    break;
+                case 2:
+                    amucoeff = [0, 0, 0, 0, 0];
+                    break;
+                case 3:
+                    amucoeff = [0, 0];
+                    break;
+                default:
+                    return null;
+            }
+        }
+        amucoeff[key] = value;
 
         return this.setState({
             swtPackage: {
@@ -176,7 +191,22 @@ class VscPackageProperties extends AbstractPackageProperties {
     private handleOnBlurAmuncoeff = (key: number) => (e: FocusEvent<HTMLInputElement>) => {
         const {value} = e.currentTarget;
 
-        const amucoeff = this.state.swtPackage.amucoeff;
+        let amucoeff = this.state.swtPackage.amucoeff;
+        if (!Array.isArray(amucoeff) || amucoeff.length < key) {
+            switch (this.state.swtPackage.mutempopt) {
+                case 1:
+                    amucoeff = [0, 0, 0, 0];
+                    break;
+                case 2:
+                    amucoeff = [0, 0, 0, 0, 0];
+                    break;
+                case 3:
+                    amucoeff = [0, 0];
+                    break;
+                default:
+                    return null;
+            }
+        }
         amucoeff[key] = parseFloat(value);
 
         this.setState({swtPackage: {...this.state.swtPackage, amucoeff}});
@@ -212,7 +242,9 @@ class VscPackageProperties extends AbstractPackageProperties {
                         <label>A{c}</label>
                         <Input
                             name={`amucoeff${key}`}
-                            value={swtPackage.amucoeff ? swtPackage.amucoeff[key] : 0}
+                            value={
+                                swtPackage.amucoeff && swtPackage.amucoeff.length > key ? swtPackage.amucoeff[key] : 0
+                            }
                             disabled={readOnly}
                             type="number"
                             onBlur={this.handleOnBlurAmuncoeff(key)}

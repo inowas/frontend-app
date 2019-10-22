@@ -115,7 +115,7 @@ class ContentToolBar extends React.Component {
                                 Back
                             </Button>
                             }
-                            {this.props.importButton && this.props.importButton}
+                            <div>{this.props.importButton || null}</div>
                         </Grid.Column>
                         <Grid.Column>
                             {message &&
