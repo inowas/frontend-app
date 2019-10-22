@@ -1,6 +1,6 @@
-import FlopyModflowPackage from './FlopyModflowPackage';
+import FlopyModflowSolverPackage from './FlopyModflowSolverPackage';
 
-export default class FlopyModflowMfsip extends FlopyModflowPackage {
+export default class FlopyModflowMfsip extends FlopyModflowSolverPackage {
 
     _mxiter = 200;
     _nparm = 5;

@@ -1,12 +1,13 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import {BoundaryCollection, Geometry, ModflowModel} from 'core/model/modflow';
+import {Geometry, ModflowModel} from '../../../core/model/modflow';
 import {CircleMarker, FeatureGroup, GeoJSON, LayersControl, Map, Rectangle} from 'react-leaflet';
-import {BasicTileLayer} from 'services/geoTools/tileLayers';
-import {getStyle} from 'services/geoTools/mapHelpers';
+import {BasicTileLayer} from '../../../services/geoTools/tileLayers';
+import {getStyle} from '../../../services/geoTools/mapHelpers';
 import {ColorLegend, ReactLeafletHeatMapCanvasOverlay} from '../rasterData';
 import {createGridData, max, min, rainbowFactory} from '../rasterData/helpers';
-import {getActiveCellFromCoordinate} from 'services/geoTools';
+import {getActiveCellFromCoordinate} from '../../../services/geoTools';
+import {BoundaryCollection} from '../../../core/model/modflow/boundaries';
 
 const style = {
     map: {
@@ -63,16 +64,16 @@ class ResultsMap extends React.Component {
     };
 
     renderLegend = (rainbow) => {
-        const gradients = rainbow.getGradients().slice().reverse();
+        const gradients = rainbow.gradients.slice().reverse();
         const lastGradient = gradients[gradients.length - 1];
         const legend = gradients.map(gradient => ({
-            color: '#' + gradient.getEndColour(),
-            value: Number(gradient.getMaxNum()).toExponential(2)
+            color: '#' + gradient.endColor,
+            value: Number(gradient.maxNum).toExponential(2)
         }));
 
         legend.push({
-            color: '#' + lastGradient.getStartColour(),
-            value: Number(lastGradient.getMinNum()).toExponential(2)
+            color: '#' + lastGradient.startColor,
+            value: Number(lastGradient.minNum).toExponential(2)
         });
 
         return <ColorLegend legend={legend} unit={''}/>;
@@ -174,7 +175,7 @@ class ResultsMap extends React.Component {
 
         const rainbowVis = rainbowFactory(
             {min: minData, max: maxData},
-            ['#800080', '#ff2200', '#fcff00', '#45ff8e', '#15d6ff', '#0000FF']
+            this.props.colors || ['#800080', '#ff2200', '#fcff00', '#45ff8e', '#15d6ff', '#0000FF']
         );
 
         return (
@@ -217,7 +218,7 @@ class ResultsMap extends React.Component {
                         rainbow={rainbowVis}
                         dataArray={createGridData(data, gridSize.nX, gridSize.nY)}
                         bounds={boundingBox.getBoundsLatLng()}
-                        opacity={0.5}
+                        opacity={this.props.opacity || 0.5}
                         model={model}
                     />}
                     {this.renderLegend(rainbowVis)}
@@ -237,6 +238,7 @@ ResultsMap.propTypes = {
     onClick: PropTypes.func,
     onViewPortChange: PropTypes.func,
     viewport: PropTypes.object,
+    colors: PropTypes.array
 };
 
 export default ResultsMap;

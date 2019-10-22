@@ -1,7 +1,7 @@
 import React from 'react';
 import {pure} from 'recompose';
 import PropTypes from 'prop-types';
-import ParameterSlider from 'scenes/shared/simpleTools/parameterSlider';
+import ParameterSlider from '../../scenes/shared/simpleTools/parameterSlider';
 import {Button, Grid} from 'semantic-ui-react';
 import SliderParameter from './simpleTools/parameterSlider/SliderParameter';
 

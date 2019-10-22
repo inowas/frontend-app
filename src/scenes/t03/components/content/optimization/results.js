@@ -6,7 +6,7 @@ import {
     optimizationHasError,
     optimizationInProgress
 } from '../../../defaults/optimization';
-import {Optimization, OptimizationInput, OptimizationObject, OptimizationSolution} from 'core/model/modflow/optimization';
+import {Optimization, OptimizationInput, OptimizationObject, OptimizationSolution} from '../../../../../core/model/modflow/optimization';
 import {FitnessChart, LocalOptimizationModal, OptimizationSolutionModal} from './shared';
 
 class OptimizationResultsComponent extends React.Component {

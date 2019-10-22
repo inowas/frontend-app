@@ -1,12 +1,12 @@
 import React, {Component} from 'react';
 import PropTypes from 'prop-types';
 import {GeoJSON, Map, FeatureGroup, Polygon} from 'react-leaflet';
-import {ModflowModel} from 'core/model/modflow';
-import {BasicTileLayer} from 'services/geoTools/tileLayers';
+import {ModflowModel} from '../../../../core/model/modflow';
+import {BasicTileLayer} from '../../../../services/geoTools/tileLayers';
 
 import {disableMap, getStyle} from './index';
 import {EditControl} from 'react-leaflet-draw';
-import {SoilmodelLayer, SoilmodelZone} from 'core/model/modflow/soilmodel';
+import {SoilmodelLayer, SoilmodelZone} from '../../../../core/model/modflow/soilmodel';
 
 const styles = {
     map: {

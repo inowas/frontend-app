@@ -13,8 +13,8 @@ stress_period_data = {
 export default class FlopyModflowMfrch extends FlopyModflowBoundary {
 
     _nrchop = 3;
-    _ipakcb = null;
-    _stress_period_data = 0.001;
+    _ipakcb = 0;
+    _rech = 0.001;
     _irch = 0;
     _extension = 'rch';
     _unitnumber = null;
@@ -26,6 +26,8 @@ export default class FlopyModflowMfrch extends FlopyModflowBoundary {
         if (rechargeBoundaries.length === 0) {
             return null;
         }
+
+        let layers = [...new Set( rechargeBoundaries.map(obj => obj.layers[0]))];
 
         let spData = [];
         for (let per = 0; per < nper; per++) {
@@ -39,8 +41,8 @@ export default class FlopyModflowMfrch extends FlopyModflowBoundary {
         }
 
         rechargeBoundaries.forEach(rch => {
-            const cells = rch.cells;
-            const spValues = rch.spValues;
+            const cells = rch.cells.toObject();
+            const spValues = rch.getSpValues();
 
             spData.forEach((sp, per) => {
                 cells.forEach(cell => {
@@ -51,7 +53,10 @@ export default class FlopyModflowMfrch extends FlopyModflowBoundary {
             });
         });
 
-        return FlopyModflowMfrch.arrayToObject(spData);
+        return {
+            spData: FlopyModflowMfrch.arrayToObject(spData),
+            irch: layers.length > 1 ? layers : layers[0]
+        };
     };
 
     get nrchop() {
@@ -71,14 +76,22 @@ export default class FlopyModflowMfrch extends FlopyModflowBoundary {
     }
 
     get stress_period_data() {
-        return this._stress_period_data;
+        return this._rech;
     }
 
     set stress_period_data(value) {
         if (Array.isArray(value)) {
             value = FlopyModflowBoundary.arrayToObject(value);
         }
-        this._stress_period_data = value;
+        this._rech = value;
+    }
+
+    get rech() {
+        return this._rech;
+    }
+
+    set rech(value) {
+        this._rech = value;
     }
 
     get irch() {

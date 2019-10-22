@@ -103,7 +103,7 @@ const Chart = ({settings, parameters}) => {
 
     if (variable === 'x') {
         xAxis = (
-            <XAxis type="number" dataKey="x"  tick={{fontSize: 'small', transform: 'translate(0, 5)'}}>
+            <XAxis type="number" dataKey="x" tick={{fontSize: 'small', transform: 'translate(0, 5)'}}>
                 <Label
                     fill={'#4C4C4C'}
                     value='x [m]'

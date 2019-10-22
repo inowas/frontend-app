@@ -165,7 +165,7 @@ export const getData = () => {
         }, {
             slug: 'Flooding',
             name: 'Flooding',
-            description: 'Flooding as a MAR technique is used on when excess river water is available during high flow season or when flood events need to be managed. The system uses passive infiltration delivers and spreads the recharge water whichthen infiltrate through the vadose zone to the underlying aquifer. These systems can combine many benefits such as flood protection, drought preparedness, aquifer remediation, and ecosystem restoration.',
+            description: 'Flooding as a MAR technique is used on when excess river water is available during high modflow season or when flood events need to be managed. The system uses passive infiltration delivers and spreads the recharge water whichthen infiltrate through the vadose zone to the underlying aquifer. These systems can combine many benefits such as flood protection, drought preparedness, aquifer remediation, and ecosystem restoration.',
             highCost: false,
             highLandNeed: true,
             image: Flooding,
@@ -229,7 +229,7 @@ export const getData = () => {
         }, {
             slug: 'W-S-B',
             name: 'Shallow wells, shafts and pits infiltration',
-            description: 'The infiltration through shallow wells, shafts or pits is usually practiced to recharge a phreatic aquifer where spreading methods cannot be applied because of the existence of a low permeability surface layers. Often abandoned wells or pits are used that had previously fallen dry. The water fed into the structure will slowly replenish the aquifer. It is a cost effective method because recharge is governed by gravity flow only.',
+            description: 'The infiltration through shallow wells, shafts or pits is usually practiced to recharge a phreatic aquifer where spreading methods cannot be applied because of the existence of a low permeability surface layers. Often abandoned wells or pits are used that had previously fallen dry. The water fed into the structure will slowly replenish the aquifer. It is a cost effective method because recharge is governed by gravity modflow only.',
             highCost: true,
             highLandNeed: false,
             image: WSB,
@@ -237,7 +237,7 @@ export const getData = () => {
         }, {
             slug: 'SS Dam',
             name: 'Subsurface dams',
-            description: 'Subsurface dams are barriers of low permeability that are constructed underground. These structures reduce or stop the lateral flow of groundwater in order to store water below ground and elevate the groundwater table. To construct a subsurface dams, a trench is built across a stream or valley until the depth of the bedrock or a layer of clay is reached. Within the trench, an impervious or low permeability wall is constructed and the trench is afterwards filled with the excavated material.',
+            description: 'Subsurface dams are barriers of low permeability that are constructed underground. These structures reduce or stop the lateral modflow of groundwater in order to store water below ground and elevate the groundwater table. To construct a subsurface dams, a trench is built across a stream or valley until the depth of the bedrock or a layer of clay is reached. Within the trench, an impervious or low permeability wall is constructed and the trench is afterwards filled with the excavated material.',
             highCost: true,
             highLandNeed: false,
             image: SSDam,
@@ -261,7 +261,7 @@ export const getData = () => {
         }, {
             slug: 'Bund',
             name: 'Barrier and bunds',
-            description: 'Rainwater harvesting is being increasingly used to collect precipitation water. The ideas of barriers is to obstruct surface runoff from catchments and prohibit flow of the water to be infiltrated. The collected rainwater of rainwater can be achieved by building bunds, barriers or contour ridges. These structures are easy to built and maintain and very adaptable. They can also be used in combination with trenches.',
+            description: 'Rainwater harvesting is being increasingly used to collect precipitation water. The ideas of barriers is to obstruct surface runoff from catchments and prohibit modflow of the water to be infiltrated. The collected rainwater of rainwater can be achieved by building bunds, barriers or contour ridges. These structures are easy to built and maintain and very adaptable. They can also be used in combination with trenches.',
             highCost: false,
             highLandNeed: true,
             image: Bounds,
@@ -285,7 +285,7 @@ export const getData = () => {
         }, {
             slug: 'CS',
             name: 'Channel spreading',
-            description: 'Channel spreading is grouping technologies by which the wetted area of a drainage channel or river bed is artificially increased in order to enhance water infiltration to the aquifer. The drainage channel can be widened, leveled, scarified or dredged. The river flow can also be modified by installing L shaped levees (pcitures above). Recharge is enhanced by inceasing the potential infiltration area and slowing down the flow velocity.',
+            description: 'Channel spreading is grouping technologies by which the wetted area of a drainage channel or river bed is artificially increased in order to enhance water infiltration to the aquifer. The drainage channel can be widened, leveled, scarified or dredged. The river modflow can also be modified by installing L shaped levees (pcitures above). Recharge is enhanced by inceasing the potential infiltration area and slowing down the modflow velocity.',
             highCost: false,
             highLandNeed: true,
             image: CS,

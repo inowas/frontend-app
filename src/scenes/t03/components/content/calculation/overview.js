@@ -1,17 +1,18 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-import {Calculation, ModflowModel, Soilmodel} from 'core/model/modflow';
+import {Calculation, ModflowModel, Soilmodel, VariableDensity} from '../../../../../core/model/modflow';
 import {Button, Grid, Header, Segment} from 'semantic-ui-react';
 import RunModelOverviewMap from '../../maps/runModelOverviewMap';
 import {connect} from 'react-redux';
 import CalculationStatus, {CALCULATION_STATE_NEW} from './CalculationStatus';
-import {sendCalculationRequest, sendCommand} from 'services/api';
+import {sendCalculationRequest, sendCommand} from '../../../../../services/api';
 import {updateCalculation, updatePackages} from '../../../actions/actions';
-import FlopyPackages from 'core/model/flopy/packages/FlopyPackages';
+import FlopyPackages from '../../../../../core/model/flopy/packages/FlopyPackages';
 import ModflowModelCommand from '../../../commands/modflowModelCommand';
-import {BoundaryCollection} from 'core/model/modflow/boundaries';
+import {BoundaryCollection} from '../../../../../core/model/modflow/boundaries';
 import Terminal from '../../../../shared/complexTools/Terminal';
+import Transport from '../../../../../core/model/modflow/transport/Transport';
 
 class Overview extends React.Component {
 
@@ -28,9 +29,18 @@ class Overview extends React.Component {
     }
 
     componentDidMount() {
-        const {boundaries, model, soilmodel} = this.props;
+        const {boundaries, model, soilmodel, transport, variableDensity} = this.props;
         const packages = FlopyPackages.fromObject(this.props.packages.toObject());
         packages.mf.recalculate(model, soilmodel, boundaries);
+
+        if (transport.enabled) {
+            packages.mt.recalculate(transport, boundaries);
+        }
+
+        if (variableDensity.enabled) {
+            packages.swt.recalculate(variableDensity);
+        }
+
         this.props.updatePackages(packages);
     }
 
@@ -46,7 +56,7 @@ class Overview extends React.Component {
         );
     };
 
-    renderCalculationButton = canBeCalculated => {
+    renderCalculationButton = (canBeCalculated, isCalculating) => {
         const {sending} = this.state;
 
         if (canBeCalculated) {
@@ -58,6 +68,18 @@ class Overview extends React.Component {
                     loading={sending}
                 >
                     Calculate
+                </Button>
+            )
+        }
+
+        if (isCalculating) {
+            return (
+                <Button
+                    positive
+                    disabled
+                    fluid
+                >
+                    Calculating
                 </Button>
             )
         }
@@ -137,9 +159,15 @@ class Overview extends React.Component {
         }
 
         let canBeCalculated = true;
+        let isCalculating = false;
+
         if (calculation instanceof Calculation) {
             if (calculation.state > 0 && calculation.state < 100) {
                 canBeCalculated = false;
+            }
+
+            if (calculation.state >= 0 && calculation.state < 100) {
+                isCalculating = true;
             }
         }
 
@@ -152,7 +180,7 @@ class Overview extends React.Component {
                 <Grid.Row>
                     <Grid.Column width={6}>
                         <Header as={'h3'}>Calculation</Header>
-                        {!model.readOnly && this.renderCalculationButton(canBeCalculated)}
+                        {!model.readOnly && this.renderCalculationButton(canBeCalculated, isCalculating)}
                         {!model.readOnly && this.renderCalculationProgress(calculation)}
 
                     </Grid.Column>
@@ -175,18 +203,22 @@ const mapStateToProps = state => ({
     model: ModflowModel.fromObject(state.T03.model),
     packages: FlopyPackages.fromObject(state.T03.packages),
     soilmodel: Soilmodel.fromObject(state.T03.soilmodel),
+    transport: Transport.fromObject(state.T03.transport),
+    variableDensity: VariableDensity.fromObject(state.T03.variableDensity)
 });
 
 const mapDispatchToProps = {
     updateCalculation, updatePackages
 };
 
-Overview.proptypes = {
+Overview.propTypes = {
     boundaries: PropTypes.instanceOf(BoundaryCollection).isRequired,
     calculation: PropTypes.instanceOf(Calculation),
     model: PropTypes.instanceOf(ModflowModel).isRequired,
     packages: PropTypes.instanceOf(FlopyPackages).isRequired,
     soilmodel: PropTypes.instanceOf(Soilmodel).isRequired,
+    transport: PropTypes.instanceOf(Transport).isRequired,
+    variableDensity: PropTypes.instanceOf(VariableDensity).isRequired,
     updateCalculation: PropTypes.func.isRequired,
     updatePackages: PropTypes.func.isRequired,
 };

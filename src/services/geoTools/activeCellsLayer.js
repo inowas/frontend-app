@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import {Polyline, FeatureGroup} from 'react-leaflet';
 import {pure} from 'recompose';
-import {Cells, BoundingBox, GridSize} from 'core/model/geometry';
+import {Cells, BoundingBox, GridSize} from '../../core/model/geometry';
 
 const renderGridCell = (key, xMin, xMax, yMin, yMax, styles) => {
     return (<Polyline key={key} positions={[

@@ -1,6 +1,6 @@
-import AbstractCommand from 'core/model/command/AbstractCommand';
-import {JSON_SCHEMA_URL} from 'services/api';
-import FlopyPackages from 'core/model/flopy/packages/FlopyPackages';
+import AbstractCommand from '../../../core/model/command/AbstractCommand';
+import {JSON_SCHEMA_URL} from '../../../services/api';
+import FlopyPackages from '../../../core/model/flopy/packages/FlopyPackages';
 
 class ModflowModelCommand extends AbstractCommand {
 
@@ -128,8 +128,23 @@ class ModflowModelCommand extends AbstractCommand {
         return new ModflowModelCommand(name, payload, JSON_SCHEMA_URL + '/commands/' + name);
     }
 
+    static updateTransport(payload) {
+        const name = 'updateTransport';
+        return new ModflowModelCommand(name, payload, JSON_SCHEMA_URL + '/commands/' + name);
+    }
+
+    static updateSoilmodelProperties(payload) {
+        const name = 'updateSoilmodelProperties';
+        return new ModflowModelCommand(name, payload, JSON_SCHEMA_URL + '/commands/' + name);
+    }
+
     static updateStressperiods(payload) {
         const name = 'updateStressperiods';
+        return new ModflowModelCommand(name, payload, JSON_SCHEMA_URL + '/commands/' + name);
+    }
+
+    static updateVariableDensity(payload) {
+        const name = 'updateVariableDensity';
         return new ModflowModelCommand(name, payload, JSON_SCHEMA_URL + '/commands/' + name);
     }
 }

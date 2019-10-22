@@ -66,7 +66,7 @@ export default class FlopyModflowMfbas extends FlopyModflowPackage {
     }
 
     set hnoflo(value) {
-        this._hnoflo = value;
+        this._hnoflo = parseFloat(value);
     }
 
     get extension() {

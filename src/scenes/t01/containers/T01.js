@@ -10,7 +10,7 @@ import ToolGrid from '../../shared/simpleTools/ToolGrid';
 
 const navigation = [{
     name: 'Documentation',
-    path: 'https://inowas.hydro.tu-dresden.de/',
+    path: 'https://inowas.com/tools/t01-sat-basin-infiltration-capacity-reduction-database/',
     icon: <Icon name="file"/>
 }];
 
@@ -43,9 +43,9 @@ class T01 extends React.Component {
     };
 
     renderBreadcrumbs = () => (
-        <Breadcrumb size='large'>
-            <Breadcrumb.Section link>Tools</Breadcrumb.Section>
-            <Breadcrumb.Divider icon='right angle'/>
+        <Breadcrumb>
+            <Breadcrumb.Section link onClick={() => this.props.history.push('/tools')}>Tools</Breadcrumb.Section>
+            <Breadcrumb.Divider icon='right chevron'/>
             <Breadcrumb.Section active>T01. SAT basin infiltration capacity reduction database</Breadcrumb.Section>
         </Breadcrumb>
     );

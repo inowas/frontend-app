@@ -6,11 +6,11 @@ import {Button, Form, Grid, Header, Message, Modal, Segment} from 'semantic-ui-r
 import InputRange from './inputRange';
 import InputObjectList from './inputObjectList';
 import {EditControl} from 'react-leaflet-draw';
-import {getActiveCellFromCoordinate} from 'services/geoTools';
-import {ModflowModel} from 'core/model/modflow';
+import {getActiveCellFromCoordinate} from '../../../../../../services/geoTools';
+import {ModflowModel} from '../../../../../../core/model/modflow';
 import {getStyle} from '../../../maps';
-import {BasicTileLayer} from 'services/geoTools/tileLayers';
-import {AbstractPosition, OptimizationLocation, OptimizationObjectsCollection} from 'core/model/modflow/optimization';
+import {BasicTileLayer} from '../../../../../../services/geoTools/tileLayers';
+import {AbstractPosition, OptimizationLocation, OptimizationObjectsCollection} from '../../../../../../core/model/modflow/optimization';
 
 const styles = {
     map: {

@@ -1,12 +1,12 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import {GeoJSON, Map, FeatureGroup, CircleMarker, Rectangle} from 'react-leaflet';
-import {ModflowModel} from 'core/model/modflow';
-import {BasicTileLayer} from 'services/geoTools/tileLayers';
+import {ModflowModel} from '../../../../core/model/modflow';
+import {BasicTileLayer} from '../../../../services/geoTools/tileLayers';
 
 import {disableMap, getStyle} from './index';
 import {EditControl} from 'react-leaflet-draw';
-import {AbstractPosition} from 'core/model/modflow/optimization';
+import {AbstractPosition} from '../../../../core/model/modflow/optimization';
 
 import uuidv4 from 'uuid/v4';
 

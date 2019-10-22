@@ -2,8 +2,8 @@ import React from 'react';
 import {Button, Divider, Dropdown, Form, Icon, List, Modal} from 'semantic-ui-react';
 import PropTypes from 'prop-types';
 import FluxDataTable from './fluxDataTable';
-import {ModflowModel} from 'core/model/modflow';
-import {OptimizationObject} from 'core/model/modflow/optimization';
+import {ModflowModel} from '../../../../../../core/model/modflow';
+import {OptimizationObject} from '../../../../../../core/model/modflow/optimization';
 
 class SubstanceEditor extends React.Component {
 
@@ -44,7 +44,7 @@ class SubstanceEditor extends React.Component {
     }
 
     handleChangeSubstanceData = rows => {
-        const substance = this.state.selectedSubstance;
+        const substance = this.state.selectedSubstanceId;
         substance.data = rows.map((row, key) => {
             return {
                 id: key,
@@ -54,11 +54,11 @@ class SubstanceEditor extends React.Component {
         });
 
         return this.setState({
-            selectedSubstance: substance,
+            selectedSubstanceId: substance,
         });
     };
 
-    addSubstance = (e, {name, value}) => {
+    addSubstance = (e, {value}) => {
         const substances = this.props.model.mt3dms.packages.ssm._meta.substances;
         const substance = substances.filter(s => s.id === value)[0];
 
@@ -71,7 +71,7 @@ class SubstanceEditor extends React.Component {
                 };
             });
             return this.setState({
-                selectedSubstance: substance
+                selectedSubstanceId: substance
             });
         }
     };
@@ -84,16 +84,16 @@ class SubstanceEditor extends React.Component {
     editSubstance = (id) => {
         const substance = this.state.addedSubstances.filter(s => s.id === id)[0];
         return this.setState({
-            selectedSubstance: substance
+            selectedSubstanceId: substance
         })
     };
 
     onCancelModal = () => this.setState({
-        selectedSubstance: null
+        selectedSubstanceId: null
     });
 
     onSaveModal = () => {
-        const substance = this.state.selectedSubstance;
+        const substance = this.state.selectedSubstanceId;
         let substanceHasBeenAdded = false;
 
         const addedSubstances = this.state.addedSubstances.map(s => {
@@ -109,7 +109,7 @@ class SubstanceEditor extends React.Component {
         }
 
         this.setState({
-            selectedSubstance: null
+            selectedSubstanceId: null
         });
 
         return this.props.onChange(addedSubstances);
@@ -152,14 +152,14 @@ class SubstanceEditor extends React.Component {
         });
 
         let substanceRows = [];
-        if (this.state.selectedSubstance) {
+        if (this.state.selectedSubstanceId) {
             substanceRows = this.props.model.stressperiods.dateTimes.map((dt, key) => {
                 return {
                     id: key,
                     date_time: dt,
-                    min: this.state.selectedSubstance.data[key] ? this.state.selectedSubstance.data[key].min : 0,
-                    max: this.state.selectedSubstance.data[key] ? this.state.selectedSubstance.data[key].max : 0,
-                    result: this.state.selectedSubstance.data[key] ? this.state.selectedSubstance.data[key].result : 0
+                    min: this.state.selectedSubstanceId.data[key] ? this.state.selectedSubstanceId.data[key].min : 0,
+                    max: this.state.selectedSubstanceId.data[key] ? this.state.selectedSubstanceId.data[key].max : 0,
+                    result: this.state.selectedSubstanceId.data[key] ? this.state.selectedSubstanceId.data[key].result : 0
                 };
             });
         }
@@ -175,7 +175,7 @@ class SubstanceEditor extends React.Component {
                         options={addableSubstances}
                         onChange={this.addSubstance}
                         disabled={addableSubstances.length < 1}
-                        value={this.state.selectedSubstance ? this.state.selectedSubstance.id : null}
+                        value={this.state.selectedSubstanceId ? this.state.selectedSubstanceId.id : null}
                     />
                 </Form.Group>
                 {!this.props.readOnly &&
@@ -208,9 +208,9 @@ class SubstanceEditor extends React.Component {
                     }
                 </div>
                 }
-                {this.state.selectedSubstance && this.props.readOnly &&
+                {this.state.selectedSubstanceId && this.props.readOnly &&
                 <div>
-                    <Divider horizontal>{this.state.selectedSubstance.name}</Divider>
+                    <Divider horizontal>{this.state.selectedSubstanceId.name}</Divider>
                     <FluxDataTable
                         onChange={this.handleChangeSubstanceData}
                         readOnly={model.readOnly}
@@ -218,9 +218,9 @@ class SubstanceEditor extends React.Component {
                     />
                 </div>
                 }
-                {this.state.selectedSubstance && !this.props.readOnly &&
+                {this.state.selectedSubstanceId && !this.props.readOnly &&
                 <Modal size={'large'} open onClose={this.onCancelModal} dimmer={'inverted'}>
-                    <Modal.Header>{this.state.selectedSubstance.name}</Modal.Header>
+                    <Modal.Header>{this.state.selectedSubstanceId.name}</Modal.Header>
                     <Modal.Content>
                         <FluxDataTable
                             readOnly={model.readOnly}

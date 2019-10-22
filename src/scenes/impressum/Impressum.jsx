@@ -1,17 +1,19 @@
 import React, {Component} from 'react';
-import AppContainer from "../shared/AppContainer";
+import AppContainer from '../shared/AppContainer';
 
 export default class Impressum extends Component {
     render() {
         return (
-            <AppContainer>
+            <AppContainer navbarItems={[]}>
                 <div className="app-width container">
                     <div className="row top-space">
                         <h2>Impressum</h2>
                         <p className="description">
                             Es gilt das
                             <a href="https://tu-dresden.de/impressum" target="_blank" rel="noopener noreferrer">
-                                Impressum der TU Dresden</a> mit folgenden Abweichungen:
+                                 &nbsp;Impressum der TU Dresden&nbsp;
+                            </a>
+                            mit folgenden Abweichungen:
                         </p>
 
                         <p className="description">
@@ -20,8 +22,8 @@ export default class Impressum extends Component {
                             Technische Universität Dresden<br/>
                             Junior Research Group INOWAS<br/>
                             01062 Dresden<br/>
-                            Tel.: +49 3501 530044<br/>
-                            Fax: +49 3501 530022<br/>
+                            Tel.: +49 351 46344144<br/>
+                            Fax: +49 351 46344122<br/>
                             Email: catalin.stefan@tu-dresden.de<br/>
                         </p>
 
@@ -31,8 +33,7 @@ export default class Impressum extends Component {
                             Technische Universität Dresden<br/>
                             Junior Research Group INOWAS<br/>
                             01062 Dresden<br/>
-                            Tel.: +49 3501 530039<br/>
-                            Fax: +49 3501 530022<br/>
+                            Tel.: +49 351 46342691<br/>
                             Email: ralf.junghanns@tu-dresden.de<br/>
                         </p>
                     </div>

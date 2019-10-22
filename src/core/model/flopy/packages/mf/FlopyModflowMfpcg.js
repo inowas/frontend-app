@@ -1,6 +1,6 @@
-import FlopyModflowPackage from './FlopyModflowPackage';
+import FlopyModflowSolverPackage from './FlopyModflowSolverPackage';
 
-export default class FlopyModflowMfpcg extends FlopyModflowPackage {
+export default class FlopyModflowMfpcg extends FlopyModflowSolverPackage {
 
     _mxiter = 50;
     _iter1 = 30;
@@ -23,6 +23,7 @@ export default class FlopyModflowMfpcg extends FlopyModflowPackage {
     }
 
     set mxiter(value) {
+        value = parseInt(value, 10);
         this._mxiter = value;
     }
 
@@ -31,6 +32,7 @@ export default class FlopyModflowMfpcg extends FlopyModflowPackage {
     }
 
     set iter1(value) {
+        value = parseInt(value, 10);
         this._iter1 = value;
     }
 
@@ -39,6 +41,7 @@ export default class FlopyModflowMfpcg extends FlopyModflowPackage {
     }
 
     set npcond(value) {
+        value = parseInt(value, 10);
         this._npcond = value;
     }
 
@@ -47,6 +50,7 @@ export default class FlopyModflowMfpcg extends FlopyModflowPackage {
     }
 
     set hclose(value) {
+        value = parseFloat(value);
         this._hclose = value;
     }
 
@@ -55,6 +59,7 @@ export default class FlopyModflowMfpcg extends FlopyModflowPackage {
     }
 
     set rclose(value) {
+        value = parseFloat(value);
         this._rclose = value;
     }
 
@@ -63,6 +68,7 @@ export default class FlopyModflowMfpcg extends FlopyModflowPackage {
     }
 
     set relax(value) {
+        value = parseFloat(value);
         this._relax = value;
     }
 
@@ -71,6 +77,7 @@ export default class FlopyModflowMfpcg extends FlopyModflowPackage {
     }
 
     set nbpol(value) {
+        value = parseInt(value, 10);
         this._nbpol = value;
     }
 
@@ -79,6 +86,7 @@ export default class FlopyModflowMfpcg extends FlopyModflowPackage {
     }
 
     set iprpcg(value) {
+        value = parseInt(value, 10);
         this._iprpcg = value;
     }
 
@@ -87,6 +95,7 @@ export default class FlopyModflowMfpcg extends FlopyModflowPackage {
     }
 
     set mutpcg(value) {
+        value = parseInt(value, 10);
         this._mutpcg = value;
     }
 
@@ -95,6 +104,7 @@ export default class FlopyModflowMfpcg extends FlopyModflowPackage {
     }
 
     set damp(value) {
+        value = parseFloat(value);
         this._damp = value;
     }
 
@@ -103,6 +113,7 @@ export default class FlopyModflowMfpcg extends FlopyModflowPackage {
     }
 
     set dampt(value) {
+        value = parseFloat(value);
         this._dampt = value;
     }
 
@@ -111,6 +122,7 @@ export default class FlopyModflowMfpcg extends FlopyModflowPackage {
     }
 
     set ihcofadd(value) {
+        value = parseInt(value, 10);
         this._ihcofadd = value;
     }
 

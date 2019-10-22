@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import {Button, Form, Icon, List} from 'semantic-ui-react';
-import {OptimizationObjectsCollection} from 'core/model/modflow/optimization';
+import {OptimizationObjectsCollection} from '../../../../../../core/model/modflow/optimization';
 
 class InputObjectList extends React.Component {
 

@@ -4,19 +4,18 @@ import PropTypes from 'prop-types';
 import {CircleMarker, FeatureGroup, GeoJSON, Map, Polygon, Polyline} from 'react-leaflet';
 import {EditControl} from 'react-leaflet-draw';
 
-import ActiveCellsLayer from 'services/geoTools/activeCellsLayer';
-import {BasicTileLayer} from 'services/geoTools/tileLayers';
+import ActiveCellsLayer from '../../../../services/geoTools/activeCellsLayer';
+import {BasicTileLayer} from '../../../../services/geoTools/tileLayers';
 import {uniqueId} from 'lodash';
 import {getStyle} from './index';
+
+import {Cells, ModflowModel, Geometry} from '../../../../core/model/modflow';
 
 import {
     Boundary,
     BoundaryCollection,
-    Geometry, LineBoundary,
-    ModflowModel
-} from 'core/model/modflow';
-
-import Cells from 'core/model/geometry/Cells';
+    LineBoundary,
+} from '../../../../core/model/modflow/boundaries';
 
 const style = {
     map: {
@@ -45,8 +44,8 @@ class BoundaryDiscretizationMap extends React.Component {
             const geometry = Geometry.fromGeoJson(layer.toGeoJSON());
             this.calculate(boundary, geometry, boundingBox, gridSize)
                 .then(cells => {
-                    boundary.cells = cells.toArray();
-                    boundary.geometry = geometry.toObject();
+                    boundary.cells = cells;
+                    boundary.geometry = geometry;
                     return onChange(boundary);
                 });
         });
@@ -171,7 +170,7 @@ class BoundaryDiscretizationMap extends React.Component {
             <ActiveCellsLayer
                 boundingBox={boundingBox}
                 gridSize={gridSize}
-                cells={Cells.fromArray(this.props.boundary.cells)}
+                cells={Cells.fromObject(this.props.boundary.cells)}
                 styles={getStyle('active_cells')}
             />
         )
@@ -199,7 +198,7 @@ class BoundaryDiscretizationMap extends React.Component {
             cells.calculateValues(this.props.boundary, boundingBox, gridSize);
         }
 
-        boundary.cells = cells.toArray();
+        boundary.cells = cells.toObject();
         this.props.onChange(boundary);
     };
 
@@ -220,7 +219,7 @@ class BoundaryDiscretizationMap extends React.Component {
     }
 }
 
-BoundaryDiscretizationMap.proptypes = {
+BoundaryDiscretizationMap.propTypes = {
     model: PropTypes.instanceOf(ModflowModel).isRequired,
     boundary: PropTypes.instanceOf(Boundary).isRequired,
     boundaries: PropTypes.instanceOf(BoundaryCollection).isRequired,

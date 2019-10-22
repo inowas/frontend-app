@@ -6,14 +6,16 @@ import BoundaryMap from './boundaryMap';
 import CreateBoundaryMap from './createBoundaryMap';
 import CreateModelMap from './createModelMap';
 import ModelDiscretizationMap from './modelDiscretizationMap';
-import {disableMap, getStyle, invalidateSize} from 'services/geoTools/mapHelpers';
-import mapStyles from 'services/geoTools/mapStyles';
+import ModelMap from './ModelMap';
+import {disableMap, getStyle, invalidateSize} from '../../../../services/geoTools/mapHelpers';
+import mapStyles from '../../../../services/geoTools/mapStyles';
 
 export {
     BoundaryMap,
     CreateBoundaryMap,
     CreateModelMap,
     ModelDiscretizationMap,
+    ModelMap,
     mapStyles,
     disableMap,
     invalidateSize,

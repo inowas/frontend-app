@@ -10,7 +10,7 @@ class Parameters extends React.Component {
         return (
             <div>
                 <Header textAlign='left'>
-                    Selected
+                    Selected Scenarios
                     <Button compact floated={'right'} size={'small'} onClick={this.props.handleReset}>
                         Default
                     </Button>
@@ -24,6 +24,7 @@ class Parameters extends React.Component {
                 />
 
                 <Header textAlign='left'>
+                    Infiltration Scenarios
                 </Header>
                 <DataTable
                     toggleSelect={this.props.toggleSelect}

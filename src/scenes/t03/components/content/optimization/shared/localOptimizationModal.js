@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import {Button, Form, Grid, Modal, Segment} from 'semantic-ui-react';
-import {OptimizationObjective, OptimizationInput, OptimizationSolution} from 'core/model/modflow/optimization';
+import {OptimizationObjective, OptimizationInput, OptimizationSolution} from '../../../../../../core/model/modflow/optimization';
 
 class LocalOptimizationModal extends React.Component {
 

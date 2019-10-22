@@ -3,12 +3,15 @@ import jsrp from 'json-schema-ref-parser';
 
 import md5 from 'md5';
 import FlopyModflow from './mf/FlopyModflow';
-import FlopyMt3d from './mt/Mt3dms';
-import {JSON_SCHEMA_URL} from 'services/api';
+import FlopyModpath from "./mp/FlopyModpath";
+import FlopyMt3d from './mt/FlopyMt3d';
+import FlopySeawat from './swt/FlopySeawat';
+
+import {JSON_SCHEMA_URL} from '../../../../services/api';
 
 export default class FlopyPackages {
 
-    _version = '3.2.10';
+    _version = '3.2.12';
 
     _author = '';
     _project = '';
@@ -16,22 +19,35 @@ export default class FlopyPackages {
     _model_id;
 
     _mf;
+    _mp;
     _mt;
+    _swt;
 
-    static create(modelId, mf, mt) {
+    static create(modelId, mf, mp, mt, swt) {
         if (!(mf instanceof FlopyModflow)) {
             throw new Error('Mf has to be instance of FlopyModflowMf')
+        }
+
+        if (!(mp instanceof FlopyModpath)) {
+            throw new Error('Modpath has to be instance of FlopyModpath')
         }
 
         if (!(mt instanceof FlopyMt3d)) {
             throw new Error('Mt has to be instance of FlopyMt3d')
         }
 
+        if (!(swt instanceof FlopySeawat)) {
+            throw new Error('Swt has to be instance of FlopySeawat')
+        }
+
         const self = new this();
         self.model_id = modelId;
         self.mf = mf;
+        self.mp = mp;
         self.mt = mt;
         self.mf.setTransportEnabled(mt.enabled);
+        self.swt = swt;
+
         return self;
     }
 
@@ -45,13 +61,17 @@ export default class FlopyPackages {
 
     static fromObject(obj) {
         const mf = FlopyModflow.fromObject(obj.mf);
+        const mp = obj.mp ? FlopyModpath.fromObject(obj.mp) : new FlopyModpath();
         const mt = FlopyMt3d.fromObject(obj.mt);
+        const swt = obj.swt ? FlopySeawat.fromObject(obj.swt) : new FlopySeawat();
         const modelId = obj.model_id;
 
         const self = new this();
         self._model_id = modelId;
         self._mf = mf;
+        self._mp = mp;
         self._mt = mt;
+        self._swt = swt;
         self._version = obj.version;
         self._author = obj.author;
         self._project = obj.project;
@@ -102,6 +122,18 @@ export default class FlopyPackages {
         this._mf = value;
     }
 
+    get mp() {
+        return this._mp;
+    }
+
+    set mp(value) {
+        if (!(value instanceof FlopyModpath)) {
+            throw new Error('Modpath has to be instance of FlopyModpath')
+        }
+
+        this._mp = value;
+    }
+
     get mt() {
         return this._mt;
     }
@@ -114,12 +146,31 @@ export default class FlopyPackages {
         this.mf.setTransportEnabled(value.enabled);
     }
 
+    get swt() {
+        return this._swt;
+    }
+
+    set swt(value) {
+        if (!(value instanceof FlopySeawat)) {
+            throw new Error('Swt has to be instance of FlopySeawat')
+        }
+        this._swt = value;
+    }
+
     getData = () => {
         const data = {};
         data['mf'] = this.mf.toFlopyCalculation();
 
-        if (this._mt && this.mt.enabled) {
-            data['mt'] = this.mt.toFlopyCalculation()
+        if (this.mp && this.mp.enabled) {
+            data['mp'] = this.mp.toCalculation();
+        }
+
+        if (this.mt && this.mt.enabled) {
+            data['mt'] = this.mt.toFlopyCalculation();
+        }
+
+        if (this.swt && this.swt.enabled) {
+            data['swt'] = this.swt.toFlopyCalculation();
         }
 
         return data;
@@ -132,7 +183,9 @@ export default class FlopyPackages {
             version: this.version,
             model_id: this.model_id,
             mf: this.mf.toObject(),
-            mt: this.mt.toObject()
+            mp: this.mp.toObject(),
+            mt: this.mt.toObject(),
+            swt: this.swt.toObject()
         }
     };
 

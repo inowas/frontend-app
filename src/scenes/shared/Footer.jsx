@@ -59,7 +59,7 @@ class Footer extends React.Component {
     }
 }
 
-Footer.proptypes = {
+Footer.propTypes = {
     width: PropTypes.number.isRequired,
     style: PropTypes.object
 };

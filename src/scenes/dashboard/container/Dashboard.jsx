@@ -12,33 +12,16 @@ import AppContainer from '../../shared/AppContainer';
 import tools from '../defaults/tools';
 import ToolsMenu from '../components/ToolsMenu';
 import ToolsDataTable from '../components/ToolsDataTable';
-import {fetchUrl, sendCommand} from 'services/api';
+import {fetchUrl, sendCommand} from '../../../services/api';
 
 import uuid from 'uuid';
 import ModflowModelImport from '../components/ModflowModelImport';
 
-
-const styles = {
-    columnContainer: {
-        background: '#FFFFFF',
-        boxShadow: '0 0 3px 0px rgba(0, 0, 0, 0.3)',
-        height: '100%',
-    },
-    grid: {
-        marginTop: '25px'
-    }
-};
-
 const navigation = [
     {
         name: 'Documentation',
-        path: 'https://inowas.hydro.tu-dresden.de/',
+        path: 'https://inowas.com/tools',
         icon: <Icon name="file alternate"/>
-    },
-    {
-        name: 'Datasets',
-        path: 'https://kb.inowas.hydro.tu-dresden.de',
-        icon: <Icon name="database"/>
     }
 ];
 
@@ -120,7 +103,7 @@ class Dashboard extends React.Component {
         }
 
         return (
-            <Search/>
+            <Search input={{ fluid: true }} />
         )
     };
 
@@ -130,7 +113,7 @@ class Dashboard extends React.Component {
 
         return (
             <AppContainer navbarItems={navigation}>
-                <Grid padded style={styles.grid}>
+                <Grid padded>
                     <Grid.Column width={6}>
                         <ToolsMenu
                             activeTool={activeTool.slug}
@@ -140,27 +123,31 @@ class Dashboard extends React.Component {
                         />
                     </Grid.Column>
                     <Grid.Column width={10}>
-                        <Container style={styles.columnContainer}>
+                        <Container className='columnContainer'>
                             <Grid padded>
                                 <Grid.Row columns={1}>
                                     <Grid.Column>
-                                        <Header as='h1' align={'center'} size={'medium'}>Instances
+                                        <Header as='h1' align='center' size='medium'>Instances
                                             of {activeTool.slug}: {activeTool.name}</Header>
                                     </Grid.Column>
                                 </Grid.Row>
                                 <Grid.Row columns={3}>
-                                    <Grid.Column width={4} floated='left' textAlign='center'>
-                                        <Button content='Create new' positive icon='plus' labelPosition='left' fluid
-                                                style={styles.iconFix}
-                                                onClick={() => push(activeTool.path + activeTool.slug)}
+                                    <Grid.Column width={4} align='left'>
+                                        <Button
+                                            content='Create new'
+                                            positive
+                                            icon='plus'
+                                            labelPosition='left'
+                                            fluid
+                                            onClick={() => push(activeTool.path + activeTool.slug)}
                                         >
                                         </Button>
                                     </Grid.Column>
-                                    <Grid.Column width={4}>
+                                    <Grid.Column width={8}>
                                         {this.renderImportOrSearch(activeTool)}
                                     </Grid.Column>
-                                    <Grid.Column width={4} floated='right' textAlign='right'>
-                                        <Button.Group fluid size='tiny'>
+                                    <Grid.Column width={4} align='right'>
+                                        <Button.Group size='tiny'>
                                             <Button
                                                 onClick={() => this.setPublic(false)}
                                                 primary={!showPublicInstances}
@@ -210,10 +197,11 @@ const mapDispatchToProps = {
     setActiveTool, setPublic
 };
 
-Dashboard.propTypes = {
+Dashboard.proptypes = {
     activeTool: PropTypes.object.isRequired,
     roles: PropTypes.array.isRequired,
     setActiveTool: PropTypes.func.isRequired,
+    setPublic: PropTypes.func.isRequired,
     showPublicInstances: PropTypes.bool.isRequired,
     history: PropTypes.object.isRequired
 };
