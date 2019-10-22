@@ -97,21 +97,8 @@ test('Test SensorDataSource, loading from http-resource', async () => {
     };
 
     const ds = new SensorDataSource(obj);
-    expect(await ds.loadData().then(() => expect(ds.data && ds.data.length).toEqual(131)));
-
-    ds.data = [{timeStamp: 1, value: 1.2}];
-    expect(ds.loadData().then(() => expect(ds.data).toEqual(ds.toObject().data)));
-});
-
-test('Test FileDataSource, loading from http-resource', () => {
-    const obj: ISensorDataSource = {
-        id: Uuid.v4(),
-        url: `https://uit-sensors.inowas.com/sensors/project/DEU1/sensor/I-6/property/ec` +
-            `?timeResolution=1D&begin=0&end=1571047333`
-    };
-
-    const ds = new SensorDataSource(obj);
-    expect(ds.loadData().then(() => expect(ds.data && ds.data.length).toEqual(126)));
+    await ds.loadData();
+    expect(ds.data && ds.data.length).toEqual(131);
 
     ds.data = [{timeStamp: 1, value: 1.2}];
     expect(ds.loadData().then(() => expect(ds.data).toEqual(ds.toObject().data)));
