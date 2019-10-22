@@ -15,7 +15,12 @@ class SensorDataSource extends GenericObject<ISensorDataSource> {
     }
 
     set url(url: URL) {
+        if (this.url.toString() === url.toString()) {
+            return;
+        }
+
         this._props.url = url.toString();
+        this._props.data = null;
     }
 
     get urlProtocol(): string {
@@ -117,6 +122,7 @@ class SensorDataSource extends GenericObject<ISensorDataSource> {
         if (value !== null) {
             url.searchParams.append('min', value.toString());
         }
+
         this.url = url;
     }
 

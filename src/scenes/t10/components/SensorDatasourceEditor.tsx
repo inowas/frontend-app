@@ -439,7 +439,7 @@ const sensorDatasourceEditor = (props: IProps) => {
                         </Grid.Column>
                     </Grid.Row>
 
-                    {dataSource && dataSource.data &&
+                    {dataSource &&
                     <Grid.Row>
                         <Grid.Column width={8}>
                             <Segment raised={true} loading={fetchingServerMetaData}>
@@ -530,7 +530,7 @@ const sensorDatasourceEditor = (props: IProps) => {
                     {dataSource &&
                     <Grid.Row>
                         <Grid.Column>
-                            <Segment loading={fetchingServerMetaData} raised={true}>
+                            <Segment loading={!dataSource.data} raised={true}>
                                 <Label as={'div'} color={'red'} ribbon={true}>Data</Label>
                                 {renderDiagram()}
                             </Segment>
