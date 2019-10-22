@@ -79,7 +79,7 @@ class De4PackageProperties extends AbstractPackageProperties {
                             name='ifreq'
                             selection
                             value={mfPackage.ifreq}
-                            readOnly={readOnly}
+                            disabled={readOnly}
                             onChange={this.handleOnSelect}
                         />
                     </Form.Field>
@@ -100,7 +100,7 @@ class De4PackageProperties extends AbstractPackageProperties {
                             name='mutd4'
                             selection
                             value={mfPackage.mutd4}
-                            readOnly={readOnly}
+                            disabled={readOnly}
                             onChange={this.handleOnSelect}
                         />
                     </Form.Field>

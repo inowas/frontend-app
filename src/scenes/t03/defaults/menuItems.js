@@ -101,7 +101,7 @@ const menuItems = [
                 name: 'Modpath',
                 property: 'modpath',
                 icon: <Icon name='code branch'/>,
-                disabled: false
+                disabled: true
             },
             {
                 name: 'Optimization',

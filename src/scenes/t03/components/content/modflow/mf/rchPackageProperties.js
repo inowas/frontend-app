@@ -50,7 +50,7 @@ class RchPackageProperties extends AbstractPackageProperties {
                             name='ipakcb'
                             selection
                             value={mfPackage.ipakcb}
-                            readOnly={readonly}
+                            disabled={readonly}
                             onChange={this.handleOnSelect}
                         />
                     </Form.Field>

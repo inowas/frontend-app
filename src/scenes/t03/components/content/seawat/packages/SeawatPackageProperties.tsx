@@ -1,6 +1,5 @@
-import React, {SyntheticEvent} from 'react';
+import React from 'react';
 import {Form, Input} from 'semantic-ui-react';
-import {FlopySeawatPackage, FlopySeawatSwt} from '../../../../../../core/model/flopy/packages/swt';
 import AbstractPackageProperties from './AbstractPackageProperties';
 
 class SeawatPackageProperties extends AbstractPackageProperties {

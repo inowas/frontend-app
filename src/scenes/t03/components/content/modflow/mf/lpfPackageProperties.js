@@ -59,7 +59,7 @@ class LpfPackageProperties extends AbstractPackageProperties {
                             name='ipakcb'
                             selection
                             value={mfPackage.ipakcb}
-                            readOnly={readonly}
+                            disabled={readonly}
                             onChange={this.handleOnSelect}
                         />
                     </Form.Field>
@@ -243,7 +243,7 @@ class LpfPackageProperties extends AbstractPackageProperties {
                             name='storagecoefficient'
                             selection
                             value={mfPackage.storagecoefficient}
-                            readOnly={readonly}
+                            disabled={readonly}
                             onChange={this.handleOnSelect}
                         />
                     </Form.Field>
@@ -258,7 +258,7 @@ class LpfPackageProperties extends AbstractPackageProperties {
                             name='constantcv'
                             selection
                             value={mfPackage.constantcv}
-                            readOnly={readonly}
+                            disabled={readonly}
                             onChange={this.handleOnSelect}
                         />
                     </Form.Field>
@@ -273,7 +273,7 @@ class LpfPackageProperties extends AbstractPackageProperties {
                             name='thickstrt'
                             selection
                             value={mfPackage.thickstrt}
-                            readOnly={readonly}
+                            disabled={readonly}
                             onChange={this.handleOnSelect}
                         />
                     </Form.Field>
@@ -291,7 +291,7 @@ class LpfPackageProperties extends AbstractPackageProperties {
                             name='nocvcorrection'
                             selection
                             value={mfPackage.nocvcorrection}
-                            readOnly={readonly}
+                            disabled={readonly}
                             onChange={this.handleOnSelect}
                         />
                     </Form.Field>
@@ -306,7 +306,7 @@ class LpfPackageProperties extends AbstractPackageProperties {
                             name='novfc'
                             selection
                             value={mfPackage.novfc}
-                            readOnly={readonly}
+                            disabled={readonly}
                             onChange={this.handleOnSelect}
                         />
                     </Form.Field>

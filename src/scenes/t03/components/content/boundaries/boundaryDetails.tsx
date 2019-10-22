@@ -215,6 +215,7 @@ class BoundaryDetails extends React.Component<IProps, IState> {
                     </Form.Group>
                 </Form>
 
+                {!this.props.readOnly &&
                 <List horizontal={true}>
                     <List.Item
                         as="a"
@@ -223,6 +224,7 @@ class BoundaryDetails extends React.Component<IProps, IState> {
                         Edit boundary on map
                     </List.Item>
                 </List>
+                }
                 <BoundaryMap
                     geometry={geometry}
                     boundary={boundary}
@@ -253,6 +255,7 @@ class BoundaryDetails extends React.Component<IProps, IState> {
                                 <Button
                                     icon={'edit'}
                                     onClick={this.handleEditPoint}
+                                    disabled={this.props.readOnly}
                                 />
                             }
                             size="mini"
@@ -263,6 +266,7 @@ class BoundaryDetails extends React.Component<IProps, IState> {
                                 <Button
                                     icon={'clone'}
                                     onClick={this.handleCloneClick}
+                                    disabled={this.props.readOnly}
                                 />
                             }
                             size="mini"
@@ -274,7 +278,7 @@ class BoundaryDetails extends React.Component<IProps, IState> {
                                 <Button
                                     icon="trash"
                                     onClick={this.handleRemoveClick}
-                                    disabled={boundary.observationPoints.length === 1}
+                                    disabled={this.props.readOnly || boundary.observationPoints.length === 1}
                                 />
                             }
                             size="mini"

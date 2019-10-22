@@ -71,7 +71,7 @@ class SolverPackageProperties extends React.Component {
                                 selection
                                 value={selectedSolverPackagePackageType}
                                 onChange={this.handleSelectChange}
-                                readOnly={readonly}
+                                disabled={readonly}
                             />
                         </Form.Field>
                         <Form.Field width={1}>

@@ -46,7 +46,7 @@ class ToggleableInput extends React.Component<IProps, IState> {
                 name={name}
                 value={!isActive ? '-' : localValue}
                 onKeyPress={this.onKeyPress}
-                icon={
+                icon={!this.props.readOnly &&
                     <Popup
                         trigger={
                             <Icon

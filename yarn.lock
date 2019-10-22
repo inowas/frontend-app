@@ -4407,7 +4407,6 @@ dotenv@6.0.0:
 downsample@^1.0.3:
   version "1.0.3"
   resolved "https://registry.yarnpkg.com/downsample/-/downsample-1.0.3.tgz#d97a60a4453a34b2157b28cf4416a1be676510df"
-  integrity sha512-/76FHN30cksZ9TlgBp/BYt4tkeSbERxx0k8BG24Z3yzaV/W/fNQEICIWYmn/+nkpE7ZozHi13+mCabMDmXevYw==
 
 duplexer2@0.0.2:
   version "0.0.2"

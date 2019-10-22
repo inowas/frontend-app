@@ -57,7 +57,7 @@ class RivPackageProperties extends AbstractPackageProperties {
                             name='ipakcb'
                             selection
                             value={mfPackage.ipakcb || 0}
-                            readOnly={readonly}
+                            disabled={readonly}
                             onChange={this.handleOnSelect}
                         />
                     </Form.Field>

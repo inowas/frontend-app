@@ -148,6 +148,7 @@ class TransportUi extends React.Component<Props, IState> {
                             <Menu fluid={true} vertical={true} tabular={true}>
                                 <Menu.Item>
                                     <Button
+                                        disabled={readOnly}
                                         negative={!transport.enabled}
                                         positive={transport.enabled}
                                         icon={transport.enabled ? 'toggle on' : 'toggle off'}
@@ -163,6 +164,7 @@ class TransportUi extends React.Component<Props, IState> {
                                     onRemove={this.handleRemoveSubstance}
                                     selected={selectedSubstanceId || undefined}
                                     substances={substances}
+                                    readOnly={readOnly}
                                 />
                             </Menu>
                         </Grid.Column>

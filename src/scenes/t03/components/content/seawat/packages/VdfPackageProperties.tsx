@@ -30,7 +30,7 @@ class VdfPackageProperties extends AbstractPackageProperties {
                             name="mtdnconc"
                             selection={true}
                             value={swtPackage.mtdnconc || 1}
-                            readOnly={readOnly}
+                            disabled={readOnly}
                             onChange={this.handleOnSelect}
                         />
                     </Form.Field>
@@ -51,7 +51,6 @@ class VdfPackageProperties extends AbstractPackageProperties {
                             readOnly={readOnly}
                             name="denseref"
                             value={swtPackage.denseref}
-                            disabled={readOnly}
                             onBlur={this.handleOnBlur}
                             onChange={this.handleOnChange}
                             icon={renderInfoPopup(documentation.denseref, 'denseref', PopupPosition.BOTTOM_RIGHT)}
@@ -85,7 +84,7 @@ class VdfPackageProperties extends AbstractPackageProperties {
                             name="mfnadvfd"
                             selection={true}
                             value={swtPackage.mfnadvfd || 0}
-                            readOnly={readOnly}
+                            disabled={readOnly}
                             onChange={this.handleOnSelect}
                         />
                     </Form.Field>
@@ -112,7 +111,7 @@ class VdfPackageProperties extends AbstractPackageProperties {
                             name="nswtcpl"
                             selection={true}
                             value={swtPackage.nswtcpl}
-                            readOnly={readOnly}
+                            disabled={readOnly}
                             onChange={this.handleOnSelect}
                         />
                     </Form.Field>
@@ -208,7 +207,7 @@ class VdfPackageProperties extends AbstractPackageProperties {
                             name="iwtable"
                             selection={true}
                             value={swtPackage.iwtable || 0}
-                            readOnly={readOnly}
+                            disabled={readOnly}
                             onChange={this.handleOnSelect}
                         />
                     </Form.Field>
