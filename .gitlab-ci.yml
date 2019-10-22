@@ -14,22 +14,22 @@ test:
 build:dev:
   image: node:10
   stage: build
-  
-  script: 
+
+  script:
     - yarn install
-    - REACT_APP_API_URL=https://api.dev.inowas.com NODE_PATH=src yarn build
+    - REACT_APP_API_URL=https://api.dev.inowas.com yarn build
     - VERSION=$(git describe --tags --always --dirty=+) && DATE=$(date +%Y-%m-%dT%H:%M:%S) && sed -i "s/@@__VERSION__@@/${VERSION}/g;s/@@__BUILT__@@/${DATE}/g" ./build/index.html
 
   artifacts:
     paths:
       - build/
-      
+
   only:
     - dev
-    
+
 deploy:dev:
   stage: deploy
-  dependencies: 
+  dependencies:
     - build:dev
 
   before_script:
@@ -51,13 +51,54 @@ deploy:dev:
   only:
     - dev
 
+build:smart-control:
+  image: node:10
+  stage: build
+
+  script:
+    - yarn install
+    - REACT_APP_API_URL=https://api.dss.smart-control.inowas.com REACT_APP_USERS_CAN_REGISTER=false REACT_APP_PUBLIC_PROJECTS_ACCESS=false yarn build
+    - VERSION=$(git describe --tags --always --dirty=+) && DATE=$(date +%Y-%m-%dT%H:%M:%S) && sed -i "s/@@__VERSION__@@/${VERSION}/g;s/@@__BUILT__@@/${DATE}/g" ./build/index.html
+
+  artifacts:
+    paths:
+      - build/
+
+  only:
+    - dev
+
+deploy:smart-control:
+  stage: deploy
+  dependencies:
+    - build:smart-control
+
+  before_script:
+    - 'which ssh-agent || ( apt-get update -y && apt-get install openssh-client -y )'
+    - mkdir -p ~/.ssh
+    - eval $(ssh-agent -s)
+    - '[[ -f /.dockerenv ]] && echo -e "Host *\n\tStrictHostKeyChecking no\n\n" > ~/.ssh/config'
+    - ssh-add <(echo "$STAGING_PRIVATE_KEY")
+    - apt-get install rsync -y
+  script:
+    - ssh -p22 $SSH_CREDENTIALS_SMART_CONTROL_SERVER "mkdir -p $SMART_CONTROL_PATH.tmp/"
+    - rsync -rav -e ssh ./build/ $SSH_CREDENTIALS_SMART_CONTROL_SERVER:/$SMART_CONTROL_PATH.tmp/
+    - ssh -p22 $SSH_CREDENTIALS_SMART_CONTROL_SERVER "mv $SMART_CONTROL_PATH $SMART_CONTROL_PATH.old"
+    - ssh -p22 $SSH_CREDENTIALS_SMART_CONTROL_SERVER "mv $SMART_CONTROL_PATH.tmp $SMART_CONTROL_PATH"
+    - ssh -p22 $SSH_CREDENTIALS_SMART_CONTROL_SERVER "rm -rf $SMART_CONTROL_PATH.old"
+  environment:
+    name: smart-control
+    url: https://dss.smart-control.inowas.com
+  only:
+    - dev
+
+
 build:training:
   image: node:10
   stage: build
 
   script:
     - yarn install
-    - REACT_APP_API_URL=https://api.training.inowas.com NODE_PATH=src yarn build
+    - REACT_APP_API_URL=https://api.training.inowas.com yarn build
     - VERSION=$(git describe --tags --always --dirty=+) && DATE=$(date +%Y-%m-%dT%H:%M:%S) && sed -i "s/@@__VERSION__@@/${VERSION}/g;s/@@__BUILT__@@/${DATE}/g" ./build/index.html
 
   artifacts:
@@ -94,22 +135,22 @@ deploy:training:
 build:prod:
   image: node:10
   stage: build
-  
-  script: 
+
+  script:
     - yarn install
-    - REACT_APP_API_URL=https://api.dss.inowas.com NODE_PATH=src yarn build
+    - REACT_APP_API_URL=https://api.dss.inowas.com yarn build
     - VERSION=$(git describe --tags --always --dirty=+) && DATE=$(date +%Y-%m-%dT%H:%M:%S) && sed -i "s/@@__VERSION__@@/${VERSION}/g;s/@@__BUILT__@@/${DATE}/g" ./build/index.html
 
   artifacts:
     paths:
       - build/
-      
+
   only:
     - master
 
 deploy:prod:staging:
   stage: deploy
-  dependencies: 
+  dependencies:
     - build:prod
 
   before_script:
@@ -133,7 +174,7 @@ deploy:prod:staging:
 
 deploy:prod:production:
   stage: deploy
-  dependencies: 
+  dependencies:
     - build:prod
 
   before_script:
@@ -152,6 +193,6 @@ deploy:prod:production:
   environment:
     name: production
     url: https://dss.inowas.com
-  when: manual    
+  when: manual
   only:
     - master    

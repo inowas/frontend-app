@@ -1,13 +1,15 @@
 import ColorLegend from './ColorLegend';
+import ColorLegendDiscrete from './ColorLegendDiscrete';
 import RasterDataImage from './rasterDataImage';
-import RasterDataMap from './rasterDataMap';
+import rasterDataMap from './rasterDataMap';
 import RasterfileUploadModal from './rasterfileUploadModal';
 import ReactLeafletHeatMapCanvasOverlay from './ReactLeafletHeatMapCanvasOverlay';
 
 export {
     ColorLegend,
+    ColorLegendDiscrete,
     RasterDataImage,
-    RasterDataMap,
+    rasterDataMap as RasterDataMap,
     RasterfileUploadModal,
     ReactLeafletHeatMapCanvasOverlay
 }

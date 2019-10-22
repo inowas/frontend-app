@@ -1,13 +1,13 @@
-import FlopyModflowPackage from './FlopyModflowPackage';
+import FlopyModflowFlowPackage from './FlopyModflowFlowPackage';
 
-export default class FlopyModflowMflpf extends FlopyModflowPackage {
+export default class FlopyModflowMflpf extends FlopyModflowFlowPackage {
 
     _laytyp = 0;
     _layavg = 0;
     _chani = 1.0;
     _layvka = 0;
     _laywet = 0;
-    _ipakcb = null;
+    _ipakcb = 0;
     _hdry = -1e+30;
     _iwdflg = 0;
     _wetfct = 0.1;
@@ -123,6 +123,10 @@ export default class FlopyModflowMflpf extends FlopyModflowPackage {
     }
 
     set hk(value) {
+        if (Array.isArray(value)) {
+            value = value.map(h => this.minify2dGridIfPossible(h));
+        }
+
         this._hk = value;
     }
 
@@ -131,6 +135,10 @@ export default class FlopyModflowMflpf extends FlopyModflowPackage {
     }
 
     set hani(value) {
+        if (Array.isArray(value)) {
+            value = value.map(h => this.minify2dGridIfPossible(h));
+        }
+
         this._hani = value;
     }
 
@@ -139,6 +147,10 @@ export default class FlopyModflowMflpf extends FlopyModflowPackage {
     }
 
     set vka(value) {
+        if (Array.isArray(value)) {
+            value = value.map(h => this.minify2dGridIfPossible(h));
+        }
+
         this._vka = value;
     }
 
@@ -147,6 +159,10 @@ export default class FlopyModflowMflpf extends FlopyModflowPackage {
     }
 
     set ss(value) {
+        if (Array.isArray(value)) {
+            value = value.map(h => this.minify2dGridIfPossible(h));
+        }
+
         this._ss = value;
     }
 
@@ -155,6 +171,10 @@ export default class FlopyModflowMflpf extends FlopyModflowPackage {
     }
 
     set sy(value) {
+        if (Array.isArray(value)) {
+            value = value.map(h => this.minify2dGridIfPossible(h));
+        }
+        
         this._sy = value;
     }
 
@@ -171,7 +191,7 @@ export default class FlopyModflowMflpf extends FlopyModflowPackage {
     }
 
     set wetdry(value) {
-        this._wetdry = value;
+        this._wetdry = parseFloat(value);
     }
 
     get storagecoefficient() {
@@ -237,4 +257,8 @@ export default class FlopyModflowMflpf extends FlopyModflowPackage {
     set filenames(value) {
         this._filenames = value;
     }
+
+    supportedModflowVersions = () => [
+        {name: 'MODFLOW-2005', executable: 'mf2005', version: 'mf2005', default: true}
+    ]
 }

@@ -1,15 +1,14 @@
 export const ROLE_USER = 'ROLE_USER';
-export const ROLE_NM_MF = 'ROLE_NM_MF';
 
 const availableTools = [
-    /*{
+    {
         slug: 'T01',
         name: 'SAT basin infiltration capacity reduction database',
         path: '/tools/',
         subPath: '',
         role: ROLE_USER,
         instances: []
-    },*/
+    },
     {
         slug: 'T02',
         name: 'Groundwater mounding (Hantush)',
@@ -22,7 +21,7 @@ const availableTools = [
         name: 'Numerical groundwater modelling and optimization',
         path: '/tools/',
         subPath: '',
-        role: ROLE_NM_MF,
+        role: ROLE_USER,
         instances: []
     }, {
         slug: 'T04',
@@ -50,11 +49,11 @@ const availableTools = [
         name: 'MODFLOW model scenario manager',
         path: '/tools/',
         subPath: '',
-        role: ROLE_NM_MF,
+        role: ROLE_USER,
         instances: []
     }, {
         slug: 'T08',
-        name: '1D transport model (Ogata-Banks)',
+        name: '1D transport equation (Ogata-Banks)',
         path: '/tools/',
         subPath: '',
         role: ROLE_USER,
@@ -62,6 +61,13 @@ const availableTools = [
     }, {
         slug: 'T09',
         name: 'Simple saltwater intrusion equations',
+        path: '/tools/',
+        subPath: '',
+        role: ROLE_USER,
+        instances: []
+    }, {
+        slug: 'T10',
+        name: 'Real time monitoring',
         path: '/tools/',
         subPath: '',
         role: ROLE_USER,

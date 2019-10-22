@@ -1,3 +1,3 @@
-import Parameters from 'scenes/shared/Parameters';
+import Parameters from '../../../scenes/shared/Parameters';
 
 export default Parameters;

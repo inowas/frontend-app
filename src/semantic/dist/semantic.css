@@ -600,7 +600,7 @@ body {
   margin: 0px;
   padding: 0px;
   overflow-x: hidden;
-  min-width: 320px;
+  min-width: 1280px;
   background: #EFF3F6;
   font-family: 'Oxygen', 'Helvetica Neue', Arial, Helvetica, sans-serif;
   font-size: 14px;
@@ -2922,7 +2922,7 @@ body .ui.inverted::-webkit-scrollbar-thumb:hover {
 
 .ui.green.buttons .button,
 .ui.green.button {
-  background-color: #4CAF53;
+  background-color: #2ECC71;
   color: #FFFFFF;
   text-shadow: none;
   background-image: none;
@@ -2935,21 +2935,21 @@ body .ui.inverted::-webkit-scrollbar-thumb:hover {
 
 .ui.green.buttons .button:hover,
 .ui.green.button:hover {
-  background-color: #40a247;
+  background-color: #22be64;
   color: #FFFFFF;
   text-shadow: none;
 }
 
 .ui.green.buttons .button:focus,
 .ui.green.button:focus {
-  background-color: #379b3e;
+  background-color: #19b85d;
   color: #FFFFFF;
   text-shadow: none;
 }
 
 .ui.green.buttons .button:active,
 .ui.green.button:active {
-  background-color: #3d8b42;
+  background-color: #25a25a;
   color: #FFFFFF;
   text-shadow: none;
 }
@@ -2958,7 +2958,7 @@ body .ui.inverted::-webkit-scrollbar-thumb:hover {
 .ui.green.buttons .active.button:active,
 .ui.green.active.button,
 .ui.green.button .active.button:active {
-  background-color: #3ea445;
+  background-color: #1fc264;
   color: #FFFFFF;
   text-shadow: none;
 }
@@ -2967,40 +2967,40 @@ body .ui.inverted::-webkit-scrollbar-thumb:hover {
 
 .ui.basic.green.buttons .button,
 .ui.basic.green.button {
-  -webkit-box-shadow: 0px 0px 0px 1px #4CAF53 inset !important;
-  box-shadow: 0px 0px 0px 1px #4CAF53 inset !important;
-  color: #4CAF53 !important;
+  -webkit-box-shadow: 0px 0px 0px 1px #2ECC71 inset !important;
+  box-shadow: 0px 0px 0px 1px #2ECC71 inset !important;
+  color: #2ECC71 !important;
 }
 
 .ui.basic.green.buttons .button:hover,
 .ui.basic.green.button:hover {
   background: transparent !important;
-  -webkit-box-shadow: 0px 0px 0px 1px #40a247 inset !important;
-  box-shadow: 0px 0px 0px 1px #40a247 inset !important;
-  color: #40a247 !important;
+  -webkit-box-shadow: 0px 0px 0px 1px #22be64 inset !important;
+  box-shadow: 0px 0px 0px 1px #22be64 inset !important;
+  color: #22be64 !important;
 }
 
 .ui.basic.green.buttons .button:focus,
 .ui.basic.green.button:focus {
   background: transparent !important;
-  -webkit-box-shadow: 0px 0px 0px 1px #379b3e inset !important;
-  box-shadow: 0px 0px 0px 1px #379b3e inset !important;
-  color: #40a247 !important;
+  -webkit-box-shadow: 0px 0px 0px 1px #19b85d inset !important;
+  box-shadow: 0px 0px 0px 1px #19b85d inset !important;
+  color: #22be64 !important;
 }
 
 .ui.basic.green.buttons .active.button,
 .ui.basic.green.active.button {
   background: transparent !important;
-  -webkit-box-shadow: 0px 0px 0px 1px #3ea445 inset !important;
-  box-shadow: 0px 0px 0px 1px #3ea445 inset !important;
-  color: #3d8b42 !important;
+  -webkit-box-shadow: 0px 0px 0px 1px #1fc264 inset !important;
+  box-shadow: 0px 0px 0px 1px #1fc264 inset !important;
+  color: #25a25a !important;
 }
 
 .ui.basic.green.buttons .button:active,
 .ui.basic.green.button:active {
-  -webkit-box-shadow: 0px 0px 0px 1px #3d8b42 inset !important;
-  box-shadow: 0px 0px 0px 1px #3d8b42 inset !important;
-  color: #3d8b42 !important;
+  -webkit-box-shadow: 0px 0px 0px 1px #25a25a inset !important;
+  box-shadow: 0px 0px 0px 1px #25a25a inset !important;
+  color: #25a25a !important;
 }
 
 .ui.buttons:not(.vertical) > .basic.green.button:not(:first-child) {
@@ -3622,7 +3622,7 @@ body .ui.inverted::-webkit-scrollbar-thumb:hover {
 
 .ui.purple.buttons .button,
 .ui.purple.button {
-  background-color: #A333C8;
+  background-color: #8E44AD;
   color: #FFFFFF;
   text-shadow: none;
   background-image: none;
@@ -3635,21 +3635,21 @@ body .ui.inverted::-webkit-scrollbar-thumb:hover {
 
 .ui.purple.buttons .button:hover,
 .ui.purple.button:hover {
-  background-color: #9627ba;
+  background-color: #81389f;
   color: #FFFFFF;
   text-shadow: none;
 }
 
 .ui.purple.buttons .button:focus,
 .ui.purple.button:focus {
-  background-color: #8f1eb4;
+  background-color: #7a3098;
   color: #FFFFFF;
   text-shadow: none;
 }
 
 .ui.purple.buttons .button:active,
 .ui.purple.button:active {
-  background-color: #82299f;
+  background-color: #703688;
   color: #FFFFFF;
   text-shadow: none;
 }
@@ -3658,7 +3658,7 @@ body .ui.inverted::-webkit-scrollbar-thumb:hover {
 .ui.purple.buttons .active.button:active,
 .ui.purple.active.button,
 .ui.purple.button .active.button:active {
-  background-color: #9724be;
+  background-color: #8236a2;
   color: #FFFFFF;
   text-shadow: none;
 }
@@ -3667,40 +3667,40 @@ body .ui.inverted::-webkit-scrollbar-thumb:hover {
 
 .ui.basic.purple.buttons .button,
 .ui.basic.purple.button {
-  -webkit-box-shadow: 0px 0px 0px 1px #A333C8 inset !important;
-  box-shadow: 0px 0px 0px 1px #A333C8 inset !important;
-  color: #A333C8 !important;
+  -webkit-box-shadow: 0px 0px 0px 1px #8E44AD inset !important;
+  box-shadow: 0px 0px 0px 1px #8E44AD inset !important;
+  color: #8E44AD !important;
 }
 
 .ui.basic.purple.buttons .button:hover,
 .ui.basic.purple.button:hover {
   background: transparent !important;
-  -webkit-box-shadow: 0px 0px 0px 1px #9627ba inset !important;
-  box-shadow: 0px 0px 0px 1px #9627ba inset !important;
-  color: #9627ba !important;
+  -webkit-box-shadow: 0px 0px 0px 1px #81389f inset !important;
+  box-shadow: 0px 0px 0px 1px #81389f inset !important;
+  color: #81389f !important;
 }
 
 .ui.basic.purple.buttons .button:focus,
 .ui.basic.purple.button:focus {
   background: transparent !important;
-  -webkit-box-shadow: 0px 0px 0px 1px #8f1eb4 inset !important;
-  box-shadow: 0px 0px 0px 1px #8f1eb4 inset !important;
-  color: #9627ba !important;
+  -webkit-box-shadow: 0px 0px 0px 1px #7a3098 inset !important;
+  box-shadow: 0px 0px 0px 1px #7a3098 inset !important;
+  color: #81389f !important;
 }
 
 .ui.basic.purple.buttons .active.button,
 .ui.basic.purple.active.button {
   background: transparent !important;
-  -webkit-box-shadow: 0px 0px 0px 1px #9724be inset !important;
-  box-shadow: 0px 0px 0px 1px #9724be inset !important;
-  color: #82299f !important;
+  -webkit-box-shadow: 0px 0px 0px 1px #8236a2 inset !important;
+  box-shadow: 0px 0px 0px 1px #8236a2 inset !important;
+  color: #703688 !important;
 }
 
 .ui.basic.purple.buttons .button:active,
 .ui.basic.purple.button:active {
-  -webkit-box-shadow: 0px 0px 0px 1px #82299f inset !important;
-  box-shadow: 0px 0px 0px 1px #82299f inset !important;
-  color: #82299f !important;
+  -webkit-box-shadow: 0px 0px 0px 1px #703688 inset !important;
+  box-shadow: 0px 0px 0px 1px #703688 inset !important;
+  color: #703688 !important;
 }
 
 .ui.buttons:not(.vertical) > .basic.purple.button:not(:first-child) {
@@ -4322,7 +4322,7 @@ body .ui.inverted::-webkit-scrollbar-thumb:hover {
 
 .ui.yellow.buttons .button,
 .ui.yellow.button {
-  background-color: #FBBD08;
+  background-color: #F1C40F;
   color: #FFFFFF;
   text-shadow: none;
   background-image: none;
@@ -4335,21 +4335,21 @@ body .ui.inverted::-webkit-scrollbar-thumb:hover {
 
 .ui.yellow.buttons .button:hover,
 .ui.yellow.button:hover {
-  background-color: #eaae00;
+  background-color: #e4b702;
   color: #FFFFFF;
   text-shadow: none;
 }
 
 .ui.yellow.buttons .button:focus,
 .ui.yellow.button:focus {
-  background-color: #daa300;
+  background-color: #d7ac00;
   color: #FFFFFF;
   text-shadow: none;
 }
 
 .ui.yellow.buttons .button:active,
 .ui.yellow.button:active {
-  background-color: #cd9903;
+  background-color: #c29d0b;
   color: #FFFFFF;
   text-shadow: none;
 }
@@ -4358,7 +4358,7 @@ body .ui.inverted::-webkit-scrollbar-thumb:hover {
 .ui.yellow.buttons .active.button:active,
 .ui.yellow.active.button,
 .ui.yellow.button .active.button:active {
-  background-color: #eaae00;
+  background-color: #e7b900;
   color: #FFFFFF;
   text-shadow: none;
 }
@@ -4367,40 +4367,40 @@ body .ui.inverted::-webkit-scrollbar-thumb:hover {
 
 .ui.basic.yellow.buttons .button,
 .ui.basic.yellow.button {
-  -webkit-box-shadow: 0px 0px 0px 1px #FBBD08 inset !important;
-  box-shadow: 0px 0px 0px 1px #FBBD08 inset !important;
-  color: #FBBD08 !important;
+  -webkit-box-shadow: 0px 0px 0px 1px #F1C40F inset !important;
+  box-shadow: 0px 0px 0px 1px #F1C40F inset !important;
+  color: #F1C40F !important;
 }
 
 .ui.basic.yellow.buttons .button:hover,
 .ui.basic.yellow.button:hover {
   background: transparent !important;
-  -webkit-box-shadow: 0px 0px 0px 1px #eaae00 inset !important;
-  box-shadow: 0px 0px 0px 1px #eaae00 inset !important;
-  color: #eaae00 !important;
+  -webkit-box-shadow: 0px 0px 0px 1px #e4b702 inset !important;
+  box-shadow: 0px 0px 0px 1px #e4b702 inset !important;
+  color: #e4b702 !important;
 }
 
 .ui.basic.yellow.buttons .button:focus,
 .ui.basic.yellow.button:focus {
   background: transparent !important;
-  -webkit-box-shadow: 0px 0px 0px 1px #daa300 inset !important;
-  box-shadow: 0px 0px 0px 1px #daa300 inset !important;
-  color: #eaae00 !important;
+  -webkit-box-shadow: 0px 0px 0px 1px #d7ac00 inset !important;
+  box-shadow: 0px 0px 0px 1px #d7ac00 inset !important;
+  color: #e4b702 !important;
 }
 
 .ui.basic.yellow.buttons .active.button,
 .ui.basic.yellow.active.button {
   background: transparent !important;
-  -webkit-box-shadow: 0px 0px 0px 1px #eaae00 inset !important;
-  box-shadow: 0px 0px 0px 1px #eaae00 inset !important;
-  color: #cd9903 !important;
+  -webkit-box-shadow: 0px 0px 0px 1px #e7b900 inset !important;
+  box-shadow: 0px 0px 0px 1px #e7b900 inset !important;
+  color: #c29d0b !important;
 }
 
 .ui.basic.yellow.buttons .button:active,
 .ui.basic.yellow.button:active {
-  -webkit-box-shadow: 0px 0px 0px 1px #cd9903 inset !important;
-  box-shadow: 0px 0px 0px 1px #cd9903 inset !important;
-  color: #cd9903 !important;
+  -webkit-box-shadow: 0px 0px 0px 1px #c29d0b inset !important;
+  box-shadow: 0px 0px 0px 1px #c29d0b inset !important;
+  color: #c29d0b !important;
 }
 
 .ui.buttons:not(.vertical) > .basic.yellow.button:not(:first-child) {
@@ -5309,6 +5309,13 @@ body .ui.inverted::-webkit-scrollbar-thumb:hover {
 /*******************************
          Site Overrides
 *******************************/
+
+.columnContainer {
+  background-color: #FFFFFF;
+  -webkit-box-shadow: 0 0 3px 0px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 0 3px 0px rgba(0, 0, 0, 0.3);
+  height: 100%;
+}
 /*!
  * # Semantic UI undefined - Divider
  * http://github.com/semantic-org/semantic-ui/
@@ -7288,15 +7295,15 @@ a.ui.inverted.olive.header:hover {
 /*--- Yellow ---*/
 
 .ui.yellow.header {
-  color: #FBBD08 !important;
+  color: #F1C40F !important;
 }
 
 a.ui.yellow.header:hover {
-  color: #eaae00 !important;
+  color: #e4b702 !important;
 }
 
 .ui.yellow.dividing.header {
-  border-bottom: 2px solid #FBBD08;
+  border-bottom: 2px solid #F1C40F;
 }
 
 /* Inverted */
@@ -7312,15 +7319,15 @@ a.ui.inverted.yellow.header:hover {
 /*--- Green ---*/
 
 .ui.green.header {
-  color: #4CAF53 !important;
+  color: #2ECC71 !important;
 }
 
 a.ui.green.header:hover {
-  color: #40a247 !important;
+  color: #22be64 !important;
 }
 
 .ui.green.dividing.header {
-  border-bottom: 2px solid #4CAF53;
+  border-bottom: 2px solid #2ECC71;
 }
 
 /* Inverted */
@@ -7408,15 +7415,15 @@ a.ui.inverted.violet.header:hover {
 /*--- Purple ---*/
 
 .ui.purple.header {
-  color: #A333C8 !important;
+  color: #8E44AD !important;
 }
 
 a.ui.purple.header:hover {
-  color: #9627ba !important;
+  color: #81389f !important;
 }
 
 .ui.purple.dividing.header {
-  border-bottom: 2px solid #A333C8;
+  border-bottom: 2px solid #8E44AD;
 }
 
 /* Inverted */
@@ -7944,7 +7951,7 @@ i.inverted.circular.orange.icon {
 /* Yellow */
 
 i.yellow.icon {
-  color: #FBBD08 !important;
+  color: #F1C40F !important;
 }
 
 i.inverted.yellow.icon {
@@ -7953,7 +7960,7 @@ i.inverted.yellow.icon {
 
 i.inverted.bordered.yellow.icon,
 i.inverted.circular.yellow.icon {
-  background-color: #FBBD08 !important;
+  background-color: #F1C40F !important;
   color: #FFFFFF !important;
 }
 
@@ -7976,7 +7983,7 @@ i.inverted.circular.olive.icon {
 /* Green */
 
 i.green.icon {
-  color: #4CAF53 !important;
+  color: #2ECC71 !important;
 }
 
 i.inverted.green.icon {
@@ -7985,7 +7992,7 @@ i.inverted.green.icon {
 
 i.inverted.bordered.green.icon,
 i.inverted.circular.green.icon {
-  background-color: #4CAF53 !important;
+  background-color: #2ECC71 !important;
   color: #FFFFFF !important;
 }
 
@@ -8040,7 +8047,7 @@ i.inverted.circular.violet.icon {
 /* Purple */
 
 i.purple.icon {
-  color: #A333C8 !important;
+  color: #8E44AD !important;
 }
 
 i.inverted.purple.icon {
@@ -8049,7 +8056,7 @@ i.inverted.purple.icon {
 
 i.inverted.bordered.purple.icon,
 i.inverted.circular.purple.icon {
-  background-color: #A333C8 !important;
+  background-color: #8E44AD !important;
   color: #FFFFFF !important;
 }
 
@@ -13832,6 +13839,17 @@ i.icon.youtube.square {
 /*******************************
          Site Overrides
 *******************************/
+
+.iconFix {
+  background-color: #FFFFFF;
+  width: 5px;
+  height: 5px;
+}
+
+i.icon.iconOutside {
+  margin-top: 4px;
+  margin-left: -4px;
+}
 /*!
  * # Semantic UI undefined - Image
  * http://github.com/semantic-org/semantic-ui/
@@ -15396,8 +15414,8 @@ a.ui.basic.orange.label:hover {
 
 .ui.yellow.labels .label,
 .ui.yellow.label {
-  background-color: #FBBD08 !important;
-  border-color: #FBBD08 !important;
+  background-color: #F1C40F !important;
+  border-color: #F1C40F !important;
   color: #FFFFFF !important;
 }
 
@@ -15405,8 +15423,8 @@ a.ui.basic.orange.label:hover {
 
 .ui.yellow.labels .label:hover,
 a.ui.yellow.label:hover {
-  background-color: #eaae00 !important;
-  border-color: #eaae00 !important;
+  background-color: #e4b702 !important;
+  border-color: #e4b702 !important;
   color: #FFFFFF !important;
 }
 
@@ -15420,22 +15438,22 @@ a.ui.yellow.label:hover {
 /* Ribbon */
 
 .ui.yellow.ribbon.label {
-  border-color: #cd9903 !important;
+  border-color: #c29d0b !important;
 }
 
 /* Basic */
 
 .ui.basic.yellow.label {
   background: none #FFFFFF !important;
-  color: #FBBD08 !important;
-  border-color: #FBBD08 !important;
+  color: #F1C40F !important;
+  border-color: #F1C40F !important;
 }
 
 .ui.basic.yellow.labels a.label:hover,
 a.ui.basic.yellow.label:hover {
   background-color: #FFFFFF !important;
-  color: #eaae00 !important;
-  border-color: #eaae00 !important;
+  color: #e4b702 !important;
+  border-color: #e4b702 !important;
 }
 
 /*--- Olive ---*/
@@ -15466,7 +15484,7 @@ a.ui.olive.label:hover {
 /* Ribbon */
 
 .ui.olive.ribbon.label {
-  border-color: #3d8b42 !important;
+  border-color: #25a25a !important;
 }
 
 /* Basic */
@@ -15488,8 +15506,8 @@ a.ui.basic.olive.label:hover {
 
 .ui.green.labels .label,
 .ui.green.label {
-  background-color: #4CAF53 !important;
-  border-color: #4CAF53 !important;
+  background-color: #2ECC71 !important;
+  border-color: #2ECC71 !important;
   color: #FFFFFF !important;
 }
 
@@ -15497,8 +15515,8 @@ a.ui.basic.olive.label:hover {
 
 .ui.green.labels .label:hover,
 a.ui.green.label:hover {
-  background-color: #40a247 !important;
-  border-color: #40a247 !important;
+  background-color: #22be64 !important;
+  border-color: #22be64 !important;
   color: #FFFFFF !important;
 }
 
@@ -15512,22 +15530,22 @@ a.ui.green.label:hover {
 /* Ribbon */
 
 .ui.green.ribbon.label {
-  border-color: #3d8b42 !important;
+  border-color: #25a25a !important;
 }
 
 /* Basic */
 
 .ui.basic.green.label {
   background: none #FFFFFF !important;
-  color: #4CAF53 !important;
-  border-color: #4CAF53 !important;
+  color: #2ECC71 !important;
+  border-color: #2ECC71 !important;
 }
 
 .ui.basic.green.labels a.label:hover,
 a.ui.basic.green.label:hover {
   background-color: #FFFFFF !important;
-  color: #40a247 !important;
-  border-color: #40a247 !important;
+  color: #22be64 !important;
+  border-color: #22be64 !important;
 }
 
 /*--- Teal ---*/
@@ -15672,8 +15690,8 @@ a.ui.basic.violet.label:hover {
 
 .ui.purple.labels .label,
 .ui.purple.label {
-  background-color: #A333C8 !important;
-  border-color: #A333C8 !important;
+  background-color: #8E44AD !important;
+  border-color: #8E44AD !important;
   color: #FFFFFF !important;
 }
 
@@ -15681,8 +15699,8 @@ a.ui.basic.violet.label:hover {
 
 .ui.purple.labels .label:hover,
 a.ui.purple.label:hover {
-  background-color: #9627ba !important;
-  border-color: #9627ba !important;
+  background-color: #81389f !important;
+  border-color: #81389f !important;
   color: #FFFFFF !important;
 }
 
@@ -15696,22 +15714,22 @@ a.ui.purple.label:hover {
 /* Ribbon */
 
 .ui.purple.ribbon.label {
-  border-color: #82299f !important;
+  border-color: #703688 !important;
 }
 
 /* Basic */
 
 .ui.basic.purple.label {
   background: none #FFFFFF !important;
-  color: #A333C8 !important;
-  border-color: #A333C8 !important;
+  color: #8E44AD !important;
+  border-color: #8E44AD !important;
 }
 
 .ui.basic.purple.labels a.label:hover,
 a.ui.basic.purple.label:hover {
   background-color: #FFFFFF !important;
-  color: #9627ba !important;
-  border-color: #9627ba !important;
+  color: #81389f !important;
+  border-color: #81389f !important;
 }
 
 /*--- Pink ---*/
@@ -19048,11 +19066,11 @@ ol.ui.horizontal.list li:before,
 /* Yellow */
 
 .ui.yellow.segment:not(.inverted) {
-  border-top: 2px solid #FBBD08 !important;
+  border-top: 2px solid #F1C40F !important;
 }
 
 .ui.inverted.yellow.segment {
-  background-color: #FBBD08 !important;
+  background-color: #F1C40F !important;
   color: #FFFFFF !important;
 }
 
@@ -19070,11 +19088,11 @@ ol.ui.horizontal.list li:before,
 /* Green */
 
 .ui.green.segment:not(.inverted) {
-  border-top: 2px solid #4CAF53 !important;
+  border-top: 2px solid #2ECC71 !important;
 }
 
 .ui.inverted.green.segment {
-  background-color: #4CAF53 !important;
+  background-color: #2ECC71 !important;
   color: #FFFFFF !important;
 }
 
@@ -19114,11 +19132,11 @@ ol.ui.horizontal.list li:before,
 /* Purple */
 
 .ui.purple.segment:not(.inverted) {
-  border-top: 2px solid #A333C8 !important;
+  border-top: 2px solid #8E44AD !important;
 }
 
 .ui.inverted.purple.segment {
-  background-color: #A333C8 !important;
+  background-color: #8E44AD !important;
   color: #FFFFFF !important;
 }
 
@@ -22990,7 +23008,7 @@ input[readonly="readonly"]:focus {
 .ui.grid > .yellow.row,
 .ui.grid > .yellow.column,
 .ui.grid > .row > .yellow.column {
-  background-color: #FBBD08 !important;
+  background-color: #F1C40F !important;
   color: #FFFFFF;
 }
 
@@ -23008,7 +23026,7 @@ input[readonly="readonly"]:focus {
 .ui.grid > .green.row,
 .ui.grid > .green.column,
 .ui.grid > .row > .green.column {
-  background-color: #4CAF53 !important;
+  background-color: #2ECC71 !important;
   color: #FFFFFF;
 }
 
@@ -23044,7 +23062,7 @@ input[readonly="readonly"]:focus {
 .ui.grid > .purple.row,
 .ui.grid > .purple.column,
 .ui.grid > .row > .purple.column {
-  background-color: #A333C8 !important;
+  background-color: #8E44AD !important;
   color: #FFFFFF;
 }
 
@@ -23748,6 +23766,63 @@ input[readonly="readonly"]:focus {
 /*******************************
          Site Overrides
 *******************************/
+
+/*------------------
+ Custom Grid Margin
+ ------------------*/
+
+.resetMarginTop {
+  margin-top: -1rem;
+}
+
+.resetMarginRight {
+  margin-right: -1rem;
+}
+
+.resetMarginBottom {
+  margin-bottom: -1rem;
+}
+
+.resetMarginLeft {
+  margin-left: -1rem;
+}
+
+.noMarginTop {
+  margin-top: 0rem;
+}
+
+.noMarginRight {
+  margin-right: 0rem;
+}
+
+.noMarginBottom {
+  margin-bottom: 0rem;
+}
+
+.noMarginLeft {
+  margin-left: 0rem;
+}
+
+/*------------------
+   Custom Grid Padding
+   ------------------*/
+
+.noPaddingTop,
+.ui.grid > .row.noPaddingTop {
+  padding-top: 0rem;
+}
+
+.noPaddingRight {
+  padding-right: 0rem;
+}
+
+.noPaddingBottom {
+  padding-bottom: 0rem;
+}
+
+.noPaddingLeft {
+  padding-left: 0rem;
+}
 /*
  * # Semantic - Menu
  * http://github.com/semantic-org/semantic-ui/
@@ -25208,8 +25283,8 @@ Floated Menu / Item
 
 .ui.menu .yellow.active.item,
 .ui.yellow.menu .active.item {
-  border-color: #FBBD08 !important;
-  color: #FBBD08 !important;
+  border-color: #F1C40F !important;
+  color: #F1C40F !important;
 }
 
 .ui.menu .olive.active.item,
@@ -25220,8 +25295,8 @@ Floated Menu / Item
 
 .ui.menu .green.active.item,
 .ui.green.menu .active.item {
-  border-color: #4CAF53 !important;
-  color: #4CAF53 !important;
+  border-color: #2ECC71 !important;
+  color: #2ECC71 !important;
 }
 
 .ui.menu .teal.active.item,
@@ -25244,8 +25319,8 @@ Floated Menu / Item
 
 .ui.menu .purple.active.item,
 .ui.purple.menu .active.item {
-  border-color: #A333C8 !important;
-  color: #A333C8 !important;
+  border-color: #8E44AD !important;
+  color: #8E44AD !important;
 }
 
 .ui.menu .pink.active.item,
@@ -25433,7 +25508,7 @@ Floated Menu / Item
 
 .ui.inverted.menu .yellow.active.item,
 .ui.inverted.yellow.menu {
-  background-color: #FBBD08;
+  background-color: #F1C40F;
 }
 
 .ui.inverted.yellow.menu .item:before {
@@ -25463,7 +25538,7 @@ Floated Menu / Item
 
 .ui.inverted.menu .green.active.item,
 .ui.inverted.green.menu {
-  background-color: #4CAF53;
+  background-color: #2ECC71;
 }
 
 .ui.inverted.green.menu .item:before {
@@ -25523,7 +25598,7 @@ Floated Menu / Item
 
 .ui.inverted.menu .purple.active.item,
 .ui.inverted.purple.menu {
-  background-color: #A333C8;
+  background-color: #8E44AD;
 }
 
 .ui.inverted.purple.menu .item:before {
@@ -26062,6 +26137,14 @@ Floated Menu / Item
 .menuItemHeader {
   text-transform: uppercase;
 }
+
+/*-----------------------------------------
+  Custom Pointing Menu in T03 Layers/ Zones
+  -----------------------------------------*/
+
+.ui.pointing.secondary.menu.soilmodel {
+  border-color: rgba(30, 177, 237, 0.5);
+}
 /*!
  * # Semantic UI undefined - Message
  * http://github.com/semantic-org/semantic-ui/
@@ -26558,13 +26641,13 @@ Floated Menu / Item
 
 .ui.purple.message {
   background-color: #F6E7FF;
-  color: #A333C8;
-  -webkit-box-shadow: 0px 0px 0px 1px #A333C8 inset, 0px 0px 0px 0px rgba(0, 0, 0, 0);
-  box-shadow: 0px 0px 0px 1px #A333C8 inset, 0px 0px 0px 0px rgba(0, 0, 0, 0);
+  color: #8E44AD;
+  -webkit-box-shadow: 0px 0px 0px 1px #8E44AD inset, 0px 0px 0px 0px rgba(0, 0, 0, 0);
+  box-shadow: 0px 0px 0px 1px #8E44AD inset, 0px 0px 0px 0px rgba(0, 0, 0, 0);
 }
 
 .ui.purple.message .header {
-  color: #922eb4;
+  color: #7f3d9b;
 }
 
 .ui.pink.message {
@@ -26632,6 +26715,23 @@ Floated Menu / Item
 /*******************************
         Site Overrides
 *******************************/
+
+.ui.warning.message {
+  -webkit-box-shadow: 0 0 0 1px #e8d1b0 inset;
+  box-shadow: 0 0 0 1px #e8d1b0 inset;
+}
+
+.ui.icon.visible.message.thinMessage {
+  padding-top: 6.929px;
+  padding-bottom: 6.929px;
+  font-size: 1rem;
+  text-align: center;
+}
+
+.ui.icon.message > .icon.thinMessageIcon {
+  display: inline-block;
+  font-size: 1em;
+}
 /*!
  * # Semantic UI undefined - Table
  * http://github.com/semantic-org/semantic-ui/
@@ -27365,11 +27465,11 @@ Floated Menu / Item
 /* Yellow */
 
 .ui.yellow.table {
-  border-top: 0.2em solid #FBBD08;
+  border-top: 0.2em solid #F1C40F;
 }
 
 .ui.inverted.yellow.table {
-  background-color: #FBBD08 !important;
+  background-color: #F1C40F !important;
   color: #FFFFFF !important;
 }
 
@@ -27387,11 +27487,11 @@ Floated Menu / Item
 /* Green */
 
 .ui.green.table {
-  border-top: 0.2em solid #4CAF53;
+  border-top: 0.2em solid #2ECC71;
 }
 
 .ui.inverted.green.table {
-  background-color: #4CAF53 !important;
+  background-color: #2ECC71 !important;
   color: #FFFFFF !important;
 }
 
@@ -27431,11 +27531,11 @@ Floated Menu / Item
 /* Purple */
 
 .ui.purple.table {
-  border-top: 0.2em solid #A333C8;
+  border-top: 0.2em solid #8E44AD;
 }
 
 .ui.inverted.purple.table {
-  background-color: #A333C8 !important;
+  background-color: #8E44AD !important;
   color: #FFFFFF !important;
 }
 
@@ -28802,15 +28902,15 @@ a.ui.card:hover,
 .ui.yellow.cards > .card,
 .ui.cards > .yellow.card,
 .ui.yellow.card {
-  -webkit-box-shadow: 0px 0px 0px 1px #D4D4D5, 0px 2px 0px 0px #FBBD08, 0px 1px 3px 0px #D4D4D5;
-  box-shadow: 0px 0px 0px 1px #D4D4D5, 0px 2px 0px 0px #FBBD08, 0px 1px 3px 0px #D4D4D5;
+  -webkit-box-shadow: 0px 0px 0px 1px #D4D4D5, 0px 2px 0px 0px #F1C40F, 0px 1px 3px 0px #D4D4D5;
+  box-shadow: 0px 0px 0px 1px #D4D4D5, 0px 2px 0px 0px #F1C40F, 0px 1px 3px 0px #D4D4D5;
 }
 
 .ui.yellow.cards > .card:hover,
 .ui.cards > .yellow.card:hover,
 .ui.yellow.card:hover {
-  -webkit-box-shadow: 0px 0px 0px 1px #D4D4D5, 0px 2px 0px 0px #eaae00, 0px 1px 3px 0px #BCBDBD;
-  box-shadow: 0px 0px 0px 1px #D4D4D5, 0px 2px 0px 0px #eaae00, 0px 1px 3px 0px #BCBDBD;
+  -webkit-box-shadow: 0px 0px 0px 1px #D4D4D5, 0px 2px 0px 0px #e4b702, 0px 1px 3px 0px #BCBDBD;
+  box-shadow: 0px 0px 0px 1px #D4D4D5, 0px 2px 0px 0px #e4b702, 0px 1px 3px 0px #BCBDBD;
 }
 
 /* Olive */
@@ -28834,15 +28934,15 @@ a.ui.card:hover,
 .ui.green.cards > .card,
 .ui.cards > .green.card,
 .ui.green.card {
-  -webkit-box-shadow: 0px 0px 0px 1px #D4D4D5, 0px 2px 0px 0px #4CAF53, 0px 1px 3px 0px #D4D4D5;
-  box-shadow: 0px 0px 0px 1px #D4D4D5, 0px 2px 0px 0px #4CAF53, 0px 1px 3px 0px #D4D4D5;
+  -webkit-box-shadow: 0px 0px 0px 1px #D4D4D5, 0px 2px 0px 0px #2ECC71, 0px 1px 3px 0px #D4D4D5;
+  box-shadow: 0px 0px 0px 1px #D4D4D5, 0px 2px 0px 0px #2ECC71, 0px 1px 3px 0px #D4D4D5;
 }
 
 .ui.green.cards > .card:hover,
 .ui.cards > .green.card:hover,
 .ui.green.card:hover {
-  -webkit-box-shadow: 0px 0px 0px 1px #D4D4D5, 0px 2px 0px 0px #40a247, 0px 1px 3px 0px #BCBDBD;
-  box-shadow: 0px 0px 0px 1px #D4D4D5, 0px 2px 0px 0px #40a247, 0px 1px 3px 0px #BCBDBD;
+  -webkit-box-shadow: 0px 0px 0px 1px #D4D4D5, 0px 2px 0px 0px #22be64, 0px 1px 3px 0px #BCBDBD;
+  box-shadow: 0px 0px 0px 1px #D4D4D5, 0px 2px 0px 0px #22be64, 0px 1px 3px 0px #BCBDBD;
 }
 
 /* Teal */
@@ -28898,15 +28998,15 @@ a.ui.card:hover,
 .ui.purple.cards > .card,
 .ui.cards > .purple.card,
 .ui.purple.card {
-  -webkit-box-shadow: 0px 0px 0px 1px #D4D4D5, 0px 2px 0px 0px #A333C8, 0px 1px 3px 0px #D4D4D5;
-  box-shadow: 0px 0px 0px 1px #D4D4D5, 0px 2px 0px 0px #A333C8, 0px 1px 3px 0px #D4D4D5;
+  -webkit-box-shadow: 0px 0px 0px 1px #D4D4D5, 0px 2px 0px 0px #8E44AD, 0px 1px 3px 0px #D4D4D5;
+  box-shadow: 0px 0px 0px 1px #D4D4D5, 0px 2px 0px 0px #8E44AD, 0px 1px 3px 0px #D4D4D5;
 }
 
 .ui.purple.cards > .card:hover,
 .ui.cards > .purple.card:hover,
 .ui.purple.card:hover {
-  -webkit-box-shadow: 0px 0px 0px 1px #D4D4D5, 0px 2px 0px 0px #9627ba, 0px 1px 3px 0px #BCBDBD;
-  box-shadow: 0px 0px 0px 1px #D4D4D5, 0px 2px 0px 0px #9627ba, 0px 1px 3px 0px #BCBDBD;
+  -webkit-box-shadow: 0px 0px 0px 1px #D4D4D5, 0px 2px 0px 0px #81389f, 0px 1px 3px 0px #BCBDBD;
+  box-shadow: 0px 0px 0px 1px #D4D4D5, 0px 2px 0px 0px #81389f, 0px 1px 3px 0px #BCBDBD;
 }
 
 /* Pink */
@@ -30812,7 +30912,7 @@ a.ui.card:hover,
 .ui.yellow.statistics .statistic > .value,
 .ui.statistics .yellow.statistic > .value,
 .ui.yellow.statistic > .value {
-  color: #FBBD08;
+  color: #F1C40F;
 }
 
 .ui.olive.statistics .statistic > .value,
@@ -30824,7 +30924,7 @@ a.ui.card:hover,
 .ui.green.statistics .statistic > .value,
 .ui.statistics .green.statistic > .value,
 .ui.green.statistic > .value {
-  color: #4CAF53;
+  color: #2ECC71;
 }
 
 .ui.teal.statistics .statistic > .value,
@@ -30848,7 +30948,7 @@ a.ui.card:hover,
 .ui.purple.statistics .statistic > .value,
 .ui.statistics .purple.statistic > .value,
 .ui.purple.statistic > .value {
-  color: #A333C8;
+  color: #8E44AD;
 }
 
 .ui.pink.statistics .statistic > .value,
@@ -35769,6 +35869,15 @@ a.ui.nag {
 /*******************************
         User Overrides
 *******************************/
+
+.popupFix {
+  max-width: 350px !important;
+}
+
+.contentFix {
+  width: auto;
+  max-width: 350px;
+}
 /*!
  * # Semantic UI undefined - Progress Bar
  * http://github.com/semantic-org/semantic-ui/
@@ -36193,7 +36302,7 @@ a.ui.nag {
 /* Yellow */
 
 .ui.yellow.progress .bar {
-  background-color: #FBBD08;
+  background-color: #F1C40F;
 }
 
 .ui.yellow.inverted.progress .bar {
@@ -36213,7 +36322,7 @@ a.ui.nag {
 /* Green */
 
 .ui.green.progress .bar {
-  background-color: #4CAF53;
+  background-color: #2ECC71;
 }
 
 .ui.green.inverted.progress .bar {
@@ -36253,7 +36362,7 @@ a.ui.nag {
 /* Purple */
 
 .ui.purple.progress .bar {
-  background-color: #A333C8;
+  background-color: #8E44AD;
 }
 
 .ui.purple.inverted.progress .bar {
@@ -36772,7 +36881,7 @@ a.ui.nag {
 
 .ui.search > .results .result .price {
   float: right;
-  color: #4CAF53;
+  color: #2ECC71;
 }
 
 /*--------------

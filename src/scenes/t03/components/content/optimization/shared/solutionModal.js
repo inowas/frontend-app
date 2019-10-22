@@ -1,11 +1,11 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import {Grid, Button, Icon, Modal, Accordion, Form, List, Segment} from 'semantic-ui-react';
-import {OptimizationSolution} from 'core/model/modflow/optimization';
+import {OptimizationSolution} from '../../../../../../core/model/modflow/optimization';
 import FluxDataTable from './fluxDataTable';
 import SubstanceEditor from './substanceEditor';
 import OptimizationResultsMap from './resultsMap';
-import {Stressperiods} from 'core/model/modflow';
+import {Stressperiods} from '../../../../../../core/model/modflow';
 
 class OptimizationSolutionModal extends React.Component {
 

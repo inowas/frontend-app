@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import {Button, Form, Grid, Message, Segment, Table} from 'semantic-ui-react';
 import Graph from 'vis-react';
-import {CriteriaCollection, Weight, WeightAssignment} from 'core/model/mcda/criteria';
+import {CriteriaCollection, WeightAssignment} from '../../../../core/model/mcda/criteria';
 
 const styles = {
     graph: {
@@ -120,7 +120,7 @@ class MultiInfluence extends React.Component {
     });
 
     onSaveEdges = () => {
-        const weights = this.props.weightAssignment.weightsCollection.toArray().map(weight => {
+        const weights = this.props.weightAssignment.weightsCollection.toObject().map(weight => {
             return {
                 ...weight,
                 relations: this.state.edges.filter(edge => edge.from === weight.criterion.id).map(edge => {
@@ -135,19 +135,24 @@ class MultiInfluence extends React.Component {
         const weightAssignment = WeightAssignment.fromObject(this.state.wa);
 
         weights.forEach(w => {
-            weightAssignment.weightsCollection.update(Weight.fromObject(w));
+            weightAssignment.weightsCollection = weightAssignment.weightsCollection.update(w);
         });
         weightAssignment.calculateWeights();
 
         return this.props.handleChange(weightAssignment);
     };
 
-    handleLocalChange = (e, {name, value}) => this.setState(prevState => ({
-        wa: {
-            ...prevState.wa,
-            [name]: value
+    handleLocalChange = (e, {name, value}) => {
+        if (this.props.readOnly) {
+            return;
         }
-    }));
+        this.setState(prevState => ({
+            wa: {
+                ...prevState.wa,
+                [name]: value
+            }
+        }));
+    };
 
     setNetworkInstance = nw => this.setState({
         network: nw
@@ -179,10 +184,29 @@ class MultiInfluence extends React.Component {
             },
             nodes: styles.nodes,
             layout: {
+                improvedLayout: true,
                 hierarchical: false
             },
             edges: {
-                color: '#000000'
+                color: '#000000',
+                smooth: true
+            },
+            physics: {
+                forceAtlas2Based: {
+                    gravitationalConstant: -26,
+                    centralGravity: 0.005,
+                    springLength: 230,
+                    springConstant: 0.18,
+                    avoidOverlap: 1.5
+                },
+                maxVelocity: 146,
+                solver: 'forceAtlas2Based',
+                timestep: 0.35,
+                stabilization: {
+                    enabled: true,
+                    iterations: 1000,
+                    updateInterval: 25
+                }
             }
         };
 
@@ -254,12 +278,13 @@ class MultiInfluence extends React.Component {
                                     name='name'
                                     type='text'
                                     label='Name'
+                                    readOnly={readOnly}
                                     value={this.state.wa.name}
                                 />
                             </Form.Field>
                         </Form>
                         <Segment textAlign='center' inverted color='grey' secondary>
-                            Weight Assignment
+                            Resulting Weights
                         </Segment>
                         <Table>
                             <Table.Header>

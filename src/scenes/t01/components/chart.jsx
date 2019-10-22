@@ -4,6 +4,7 @@ import {pure} from 'recompose';
 
 import {
     CartesianGrid,
+    Label,
     Legend,
     ResponsiveContainer,
     Scatter,
@@ -12,25 +13,34 @@ import {
     XAxis,
     YAxis
 } from 'recharts';
-import {Grid, Header} from 'semantic-ui-react';
+import {Button, Grid, Icon} from 'semantic-ui-react';
+import {exportChartData, exportChartImage} from '../../shared/simpleTools/helpers';
 
-const cbPalette = ['#999999' /* grey */, '#ED8D05' /* orange */, '#1EB1ED' /* blue */, '#009E73' /* green */, '#F0E442' /* yellow */, '#0A75A0' /* navy */, '#CC6C00' /* brown */, '#FF5B4D' /* red */];
+const cbPalette = [
+    '#808080' /* grey */,
+    '#bf6c00' /* orange */,
+    '#2e9935' /* green */,
+    '#FFAA34' /* yellow */,
+    '#0a678c' /* navy */,
+    '#00b5ad' /* cyan */,
+    '#9b3fcc' /* brown */,
+    '#FF4434' /* red */];
 
 const styles = {
     diagram: {
         position: 'relative'
-    },
-    diagramXLabels: {
-        //display: 'flex',
-        //justifyContent: 'center',
-        //alignItems: 'center',
-        fontSize:   'small'
     },
     diagramYLabels: {
         position: 'absolute',
         bottom: '50%',
         transform: 'rotate(-90deg)',
         fontSize:   'small'
+    },
+    chart: {
+        top: 20,
+        right: 20,
+        left: 20,
+        bottom: 0
     }
 };
 
@@ -48,33 +58,76 @@ const Chart = ({data}) => {
             }
             const color = cbPalette[row.id % cbPalette.length];
             return (
-                <Scatter key={row.id} name={row.name} data={scatterData} fill={color} line/>
+                <Scatter key={row.id} name={row.name} data={scatterData} fill={color} line strokeWidth={"2"}/>
             );
         }
 
         return null;
     });
 
+    let currentChart;
+
     return (
         <div>
-            <Header textAlign='center'>Infiltration capacity decline</Header>
             <Grid>
                 <Grid.Column>
-                    <div style={styles.diagram}>
-                        <ResponsiveContainer width={'100%'} aspect={2.5}>
-                            <ScatterChart data={data} margin={{top: 20, right: 20, left: 20, bottom: 0}}>
-                                <CartesianGrid strokeDasharray="3 3"/>
+                    <ResponsiveContainer width={'100%'} aspect={2.5}>
+                        <ScatterChart data={data} margin={styles.chart}>
+                            <CartesianGrid strokeDasharray="3 3"/>
+                            <XAxis
+                                type={'number'}
+                                dataKey={'x'}
+                                name={'Specific volume'}
+                                tick={{fontSize: 'small', transform: 'translate(0, 5)'}}
+                                tickLine={false}>
+                                <Label
+                                    fill={'#4C4C4C'}
+                                    offset={10}
+                                    position='bottom'
+                                    style={{fontSize: '13px'}}
+                                    value={'Specific volume (L/m²)'}
+                                />
+                            </XAxis>
+                            <YAxis
+                                type={'number'}
+                                dataKey={'y'}
+                                name={'v50/v50o'}
+                                tick={{fontSize: 'small', transform: 'translate(-3, 0)'}}
+                                tickLine={false}>
+                                <Label
+                                    angle={270}
+                                    fill={'#4C4C4C'}
+                                    position='left'
+                                    style={{textAnchor: 'center', fontSize: '13px'}}
+                                    value={'v50/v50o'}
+                                />
+                            </YAxis>
+                            <Tooltip
+                                cursor={{strokeDasharray: '3 3'}}
+                            />
+                            <Legend
+                                layout={'vertical'}
+                                align={'right'}
+                                verticalAlign={'top'}
+                                wrapperStyle={{right: 10, fontSize: '13px'}}
+                            />
+                            {scatterLines}
+                        </ScatterChart>
+                    </ResponsiveContainer>
 
-                                <XAxis type={'number'} dataKey={'x'} name={'Specific volume'} tick={{fill: '#B5B5B5', fontSize: 'small', transform: 'translate(0, 5)'}} />
-                                <YAxis type={'number'} dataKey={'y'} name={'v50/v50o'} tick={{fill: '#B5B5B5', fontSize: 'small', transform: 'translate(-3, 0)'}}/>
-                                <Tooltip cursor={{strokeDasharray: '3 3'}} />
-                                <Legend layout={'vertical'} align={'right'} verticalAlign={'top'}
-                                        wrapperStyle={{right: 10, fontSize: '13px'}}/>
-                                {scatterLines}
-                            </ScatterChart>
-                        </ResponsiveContainer>
-                        <div style={styles.diagramYLabels}>V<sub>50</sub>/V<sub>50o</sub></div>
-                        <div style={styles.diagramXLabels} align='center'>Specific volume (L/m<sup>2</sup>)</div>
+                    <div className='downloadButtons'>
+                        <Button compact basic icon
+                                size={'small'}
+                                onClick={() => exportChartImage(currentChart)}
+                        >
+                            <Icon name='download' /> JPG
+                        </Button>
+                        <Button compact basic icon
+                                size={'small'}
+                                onClick={() => exportChartData(currentChart)}
+                        >
+                            <Icon name='download' /> CSV
+                        </Button>
                     </div>
                 </Grid.Column>
             </Grid>

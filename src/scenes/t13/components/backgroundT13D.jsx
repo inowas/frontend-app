@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types';
 import React from 'react';
 import {pure} from 'recompose';
-import Background from 'scenes/shared/Background';
+import Background from '../../../scenes/shared/Background';
 import {getParameterValues} from '../../shared/simpleTools/helpers';
 import {calculateXwd} from '../calculations';
 

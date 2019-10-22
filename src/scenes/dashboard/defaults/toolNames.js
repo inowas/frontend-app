@@ -1,5 +1,8 @@
 const toolNames = [
     {
+        slug: 'T01',
+        name: 'SAT basin infiltration capacity reduction database',
+    }, {
         slug: 'T02',
         name: 'Groundwater mounding (Hantush)',
     }, {
@@ -19,7 +22,7 @@ const toolNames = [
         name: 'MODFLOW model scenario manager',
     }, {
         slug: 'T08',
-        name: '1D transport model (Ogata-Banks)',
+        name: '1D transport equation (Ogata-Banks)',
     }, {
         slug: 'T09A',
         name: 'Depth of saltwater interface',
@@ -38,6 +41,9 @@ const toolNames = [
     }, {
         slug: 'T09F',
         name: 'Sea level rise (inclined coast)',
+    }, {
+        slug: 'T10',
+        name: 'Real time monitoring',
     }, {
         slug: 'T11',
         name: 'MAR model selection',

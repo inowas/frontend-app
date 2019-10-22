@@ -5,12 +5,11 @@ import {GeoJSON, Map, CircleMarker} from 'react-leaflet';
 
 import {disableMap, getStyle} from './index';
 import {uniqueId} from 'lodash';
-import {BasicTileLayer} from 'services/geoTools/tileLayers';
+import {BasicTileLayer} from '../../../../services/geoTools/tileLayers';
 import {nearestPointOnLine} from '@turf/turf';
 import {lineString, point} from '@turf/helpers';
-import {Boundary} from 'core/model/modflow';
-import {Geometry} from 'core/model/geometry';
-import {ObservationPoint} from 'core/model/modflow/boundaries';
+import {Boundary, ObservationPoint} from '../../../../core/model/modflow/boundaries';
+import {Geometry} from '../../../../core/model/geometry';
 
 const styles = {
     map: {

@@ -2,20 +2,23 @@ import {UPDATE_BOUNDARIES} from '../reducers/boundaries';
 import {UPDATE_CALCULATION} from '../reducers/calculation';
 import {CLEAR, UPDATE_MODEL, UPDATE_MT3DMS, UPDATE_STRESSPERIODS} from '../reducers/model';
 import {
-    ADD_SOILMODEL_LAYER, CLONE_SOILMODEL_LAYER,
-    REMOVE_SOILMODEL_LAYER,
-    UPDATE_SOILMODEL,
-    UPDATE_SOILMODEL_LAYER
+    ADD_ZONE, CLONE_ZONE, REMOVE_ZONE, UPDATE_ZONE,
+    ADD_SOILMODEL_LAYER, CLONE_SOILMODEL_LAYER, REMOVE_SOILMODEL_LAYER, UPDATE_SOILMODEL_LAYER,
+    UPDATE_SOILMODEL, UPDATE_SOILMODEL_RELATIONS
 } from '../reducers/soilmodel';
 import {UPDATE_OPTIMIZATION} from '../reducers/optimization';
 
-import {Calculation, ModflowModel, Stressperiods} from 'core/model/modflow';
-import {BoundaryCollection} from 'core/model/modflow/boundaries';
-import {Soilmodel, SoilmodelLayer} from 'core/model/modflow/soilmodel';
-import {Mt3dms} from 'core/model/flopy/packages/mt';
-import {Optimization} from 'core/model/modflow/optimization';
+import {Calculation, ModflowModel, Stressperiods, Transport, VariableDensity} from '../../../core/model/modflow';
+import {BoundaryCollection} from '../../../core/model/modflow/boundaries';
+import {Soilmodel, SoilmodelLayer} from '../../../core/model/modflow/soilmodel';
+import {FlopyMt3d} from '../../../core/model/flopy/packages/mt';
+import {Optimization} from '../../../core/model/modflow/optimization';
 import FlopyPackages from '../../../core/model/flopy/packages/FlopyPackages';
 import {UPDATE_PACKAGES} from '../reducers/packages';
+import {UPDATE_TRANSPORT} from '../reducers/transport';
+import {UPDATE_VARIABLE_DENSITY} from '../reducers/variableDensity';
+import {Zone} from "../../../core/model/gis";
+import LayerParameterZonesCollection from "../../../core/model/gis/LayerParameterZonesCollection";
 
 export function clear() {
     return {
@@ -56,6 +59,28 @@ export function updateBoundaries(boundaryCollection) {
     };
 }
 
+export function updateTransport(transport) {
+    if (!(transport instanceof Transport)) {
+        throw new Error('Transport is expected to be instance of Transport');
+    }
+
+    return {
+        type: UPDATE_TRANSPORT,
+        payload: transport.toObject()
+    };
+}
+
+export function updateVariableDensity(variableDensity) {
+    if (!(variableDensity instanceof VariableDensity)) {
+        throw new Error('VariableDensity is expected to be instance of VariableDensity');
+    }
+
+    return {
+        type: UPDATE_VARIABLE_DENSITY,
+        payload: variableDensity.toObject()
+    };
+}
+
 export function updateCalculation(calculation) {
     if (!(calculation instanceof Calculation)) {
         throw new Error('Calculation is expected to be instance of Calculation');
@@ -79,8 +104,8 @@ export function updatePackages(packages) {
 }
 
 export function updateMt3dms(mt3dms) {
-    if (!mt3dms instanceof Mt3dms) {
-        throw new Error('Mt3dms is expected to be instance of Mt3dms');
+    if (!mt3dms instanceof FlopyMt3d) {
+        throw new Error('FlopyMt3d is expected to be instance of FlopyMt3d');
     }
 
     return {
@@ -114,6 +139,42 @@ export function removeLayer(layer_id) {
     }
 }
 
+export function addZone(zone) {
+    if (!zone instanceof Zone) {
+        throw new Error('Zone is expected to be instance of Zone');
+    }
+
+    return {
+        type: ADD_ZONE,
+        zone: zone.toObject()
+    };
+}
+
+export function cloneZone(zone_id, new_zone_id) {
+    return {
+        type: CLONE_ZONE,
+        zone_id, new_zone_id
+    }
+}
+
+export function updateZone(zone) {
+    if (!(zone instanceof Zone)) {
+        throw new Error('Zone is expected to be instance of Zone');
+    }
+
+    return {
+        type: UPDATE_ZONE,
+        zone: zone.toObject()
+    };
+}
+
+export function removeZone(zone_id) {
+    return {
+        type: REMOVE_ZONE,
+        zone_id: zone_id
+    }
+}
+
 export function updateOptimization(optimization) {
     if (!optimization instanceof Optimization) {
         throw new Error('optimization is expected to be instance of Optimization');
@@ -133,6 +194,17 @@ export function updateSoilmodel(soilmodel) {
     return {
         type: UPDATE_SOILMODEL,
         soilmodel: soilmodel.toObject()
+    };
+}
+
+export function updateSoilmodelRelations(relations) {
+    if (!relations instanceof LayerParameterZonesCollection) {
+        throw new Error('Relations is expected to be instance of LayerParameterZonesCollection');
+    }
+
+    return {
+        type: UPDATE_SOILMODEL_RELATIONS,
+        relations: relations.toObject()
     };
 }
 

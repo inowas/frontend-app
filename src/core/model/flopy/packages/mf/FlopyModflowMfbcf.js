@@ -1,8 +1,8 @@
-import FlopyModflowPackage from './FlopyModflowPackage';
+import FlopyModflowFlowPackage from './FlopyModflowFlowPackage';
 
-export default class FlopyModflowMfbcf extends FlopyModflowPackage {
+export default class FlopyModflowMfbcf extends FlopyModflowFlowPackage {
 
-    _ipakcb = null;
+    _ipakcb = 0;
     _intercellt = 0;
     _laycon = 3;
     _trpy = 1.0;
@@ -50,6 +50,9 @@ export default class FlopyModflowMfbcf extends FlopyModflowPackage {
     }
 
     set trpy(value) {
+        if (Array.isArray(value)) {
+            value = value.map(h => this.minify2dGridIfPossible(h));
+        }
         this._trpy = value;
     }
 
@@ -98,6 +101,9 @@ export default class FlopyModflowMfbcf extends FlopyModflowPackage {
     }
 
     set tran(value) {
+        if (Array.isArray(value)) {
+            value = value.map(h => this.minify2dGridIfPossible(h));
+        }
         this._tran = value;
     }
 
@@ -106,6 +112,9 @@ export default class FlopyModflowMfbcf extends FlopyModflowPackage {
     }
 
     set hy(value) {
+        if (Array.isArray(value)) {
+            value = value.map(h => this.minify2dGridIfPossible(h));
+        }
         this._hy = value;
     }
 
@@ -114,6 +123,9 @@ export default class FlopyModflowMfbcf extends FlopyModflowPackage {
     }
 
     set vcont(value) {
+        if (Array.isArray(value)) {
+            value = value.map(h => this.minify2dGridIfPossible(h));
+        }
         this._vcont = value;
     }
 
@@ -122,6 +134,9 @@ export default class FlopyModflowMfbcf extends FlopyModflowPackage {
     }
 
     set sf1(value) {
+        if (Array.isArray(value)) {
+            value = value.map(h => this.minify2dGridIfPossible(h));
+        }
         this._sf1 = value;
     }
 
@@ -130,6 +145,9 @@ export default class FlopyModflowMfbcf extends FlopyModflowPackage {
     }
 
     set sf2(value) {
+        if (Array.isArray(value)) {
+            value = value.map(h => this.minify2dGridIfPossible(h));
+        }
         this._sf2 = value;
     }
 
@@ -164,4 +182,8 @@ export default class FlopyModflowMfbcf extends FlopyModflowPackage {
     set filenames(value) {
         this._filenames = value;
     }
+
+    supportedModflowVersions = () => [
+        {name: 'MODFLOW-2005', executable: 'mf2005', version: 'mf2005', default: true},
+    ]
 }

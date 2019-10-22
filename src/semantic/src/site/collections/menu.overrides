@@ -17,3 +17,11 @@
 .menuItemHeader {
     text-transform: uppercase;
 }
+
+/*-----------------------------------------
+  Custom Pointing Menu in T03 Layers/ Zones
+  -----------------------------------------*/
+
+.ui.pointing.secondary.menu.soilmodel {
+    border-color: rgba(30, 177, 237, 0.5);
+}

@@ -2,9 +2,9 @@ import React from 'react';
 import {Button, Form, Grid, Icon, Table, Accordion, Message} from 'semantic-ui-react';
 import PropTypes from 'prop-types';
 import {FluxDataTable, SubstanceEditor} from './shared';
-import {OptimizationInput, OptimizationObject} from 'core/model/modflow/optimization';
+import {OptimizationInput, OptimizationObject} from '../../../../../core/model/modflow/optimization';
 import OptimizationMap from './shared/map';
-import {ModflowModel} from 'core/model/modflow';
+import {ModflowModel} from '../../../../../core/model/modflow';
 import ContentToolBar from '../../../../shared/ContentToolbar';
 
 const styles = {
@@ -54,7 +54,7 @@ class OptimizationObjectsComponent extends React.Component {
         }, this.handleChange);
     };
 
-    handleChangeLocation = (e, {name, value}) => this.setState({
+    handleChangeLocation = (e, {value}) => this.setState({
         selectedObject: {
             ...this.state.selectedObject,
             position: value
@@ -75,7 +75,7 @@ class OptimizationObjectsComponent extends React.Component {
 
     handleClickBack = () => this.setState({
         selectedObject: null,
-        selectedSubstance: null
+        selectedSubstanceId: null
     });
 
     handleClickDelete = (id) => {
@@ -84,7 +84,7 @@ class OptimizationObjectsComponent extends React.Component {
         this.props.onChange(input, true);
     };
 
-    handleClickNew = (e, {name, value}) => {
+    handleClickNew = (e, {value}) => {
         const newObject = new OptimizationObject();
         newObject.type = value;
         newObject.numberOfStressPeriods = this.props.model.stressperiods.count;

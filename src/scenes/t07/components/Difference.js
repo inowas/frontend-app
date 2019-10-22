@@ -3,13 +3,14 @@ import {connect} from 'react-redux';
 import PropTypes from 'prop-types';
 
 import {Form, Grid, Header, Segment} from 'semantic-ui-react';
-import {BoundaryCollection, ModflowModel} from 'core/model/modflow';
-import {fetchUrl} from 'services/api';
-import {ScenarioAnalysis} from 'core/model/scenarioAnalysis';
-import ResultsSelector from '../../shared/complexTools/ResultsSelector';
+import {ModflowModel} from '../../../core/model/modflow';
+import {fetchUrl} from '../../../services/api';
+import {ScenarioAnalysis} from '../../../core/model/scenarioAnalysis';
+import ResultsSelectorFlow from '../../shared/complexTools/ResultsSelectorFlow';
 import ResultsMap from '../../shared/complexTools/ResultsMap';
 import ResultsChart from '../../shared/complexTools/ResultsChart';
 import {cloneDeep} from 'lodash';
+import {BoundaryCollection} from '../../../core/model/modflow/boundaries';
 
 class Difference extends React.Component {
 
@@ -164,7 +165,7 @@ class Difference extends React.Component {
         return (
             <div>
                 <Segment color={'grey'} loading={this.state.isLoading}>
-                    <ResultsSelector
+                    <ResultsSelectorFlow
                         data={{
                             type: selectedType,
                             layer: selectedLay,
@@ -276,7 +277,7 @@ const mapStateToProps = state => {
     };
 };
 
-Difference.proptypes = {
+Difference.propTypes = {
     models: PropTypes.array.isRequired,
     scenarioAnalysis: PropTypes.instanceOf(ScenarioAnalysis).isRequired,
 };

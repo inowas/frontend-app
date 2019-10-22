@@ -13,35 +13,70 @@ const menuItems = [
             {
                 name: 'Soil Layers',
                 property: 'soilmodel',
+                type: 'layers',
                 icon: <Icon name="expand"/>
             },
             {
                 name: 'Boundaries',
                 property: 'boundaries',
                 icon: <Icon name="map marker alternate"/>
+            },
+            {
+                name: 'Head Observations',
+                property: 'head_observations',
+                icon: <Icon name="eye"/>
+            },
+            {
+                name: 'Transport',
+                property: 'transport',
+                icon: <Icon name="cube"/>
+            },
+            {
+                name: 'Variable Density',
+                property: 'variable_density',
+                icon: <Icon name="gem"/>
             }]
     }, {
         header: 'Calculation',
         items: [
             {
-                name: 'Flow',
-                property: 'flow',
+                name: 'Mf packages',
+                property: 'modflow',
                 icon: <Icon name="retweet"/>
             },
             {
-                name: 'Transport',
-                property: 'transport',
+                name: 'Mt packages',
+                property: 'mt3d',
                 icon: <Icon name="exchange"/>
             },
             {
-                name: 'Calculation',
-                property: 'calculation',
-                icon: <Icon name="save outline"/>
+                name: 'Swt package',
+                property: 'seawat',
+                icon: <Icon name="eyedropper"/>
             },
             {
-                name: 'Results',
-                property: 'results',
+                name: 'Run calculation',
+                property: 'calculation',
+                icon: <Icon name="save outline"/>
+            }
+        ]
+    }, {
+        header: 'Results',
+        items: [
+            {
+                name: 'Flow',
+                property: 'flow',
                 icon: <Icon name="chart bar outline"/>,
+            },
+            {
+                name: 'Budget',
+                property: 'budget',
+                icon: <Icon name="chart bar outline"/>
+            },
+            {
+                name: 'Concentration',
+                property: 'concentration',
+                icon: <Icon name="chart bar outline"/>
             }
         ]
     }, {
@@ -51,7 +86,6 @@ const menuItems = [
                 name: 'Observations',
                 property: 'observations',
                 icon: <Icon name="clipboard outline"/>,
-                disabled: true
             },
             {
                 name: 'Calibration',
@@ -63,6 +97,12 @@ const menuItems = [
     }, {
         header: 'Computation',
         items: [
+            {
+                name: 'Modpath',
+                property: 'modpath',
+                icon: <Icon name='code branch'/>,
+                disabled: true
+            },
             {
                 name: 'Optimization',
                 property: 'optimization',

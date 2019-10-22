@@ -2,24 +2,37 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import {connect} from 'react-redux';
 
-import {Calculation} from 'core/model/modflow';
-import {Grid, Header, List, Segment} from 'semantic-ui-react';
+import {Calculation, ModflowModel} from '../../../../../core/model/modflow';
+import {Grid, Header, Icon, List, Popup, Segment} from 'semantic-ui-react';
 import Terminal from '../../../../shared/complexTools/Terminal';
 
-import {fetchModflowFile} from 'services/api';
+import {fetchModflowFile, MODFLOW_CALCULATION_URL} from '../../../../../services/api';
+import Button from 'semantic-ui-react/dist/commonjs/elements/Button';
 
 class Files extends React.Component {
 
-    state = {
-        isLoading: false,
-        isError: false,
-        selectedFile: 'mf.list',
-        file: null
-
-    };
+    constructor(props) {
+        super(props);
+        this.state = {
+            isLoading: false,
+            isError: false,
+            selectedFile: null,
+            copyToClipBoardSuccessful: false,
+            file: null
+        };
+    }
 
     componentDidMount() {
-        this.fetchFile();
+
+        if (!this.props.calculation) {
+            return;
+        }
+
+        this.props.calculation.files.forEach(f => {
+            if (f.endsWith('.list')) {
+                this.setState({selectedFile: f}, this.fetchFile);
+            }
+        });
     }
 
 
@@ -47,16 +60,39 @@ class Files extends React.Component {
     };
 
     onClickFile = (file) => {
-        this.setState({selectedFile: file}, () => this.fetchFile());
+        this.setState({
+            selectedFile: file,
+            copyToClipBoardSuccessful: false
+        }, () => this.fetchFile());
+    };
+
+    onCopyToClipboard = () => {
+        const {content} = this.state.file;
+        const dummy = document.createElement('textarea');
+        // to avoid breaking orgain page when copying more words
+        // cant copy when adding below this code
+        // dummy.style.display = 'none'
+        document.body.appendChild(dummy);
+        //Be careful if you use texarea. setAttribute('value', value), which works with "input" does not work with "textarea". – Eduard
+        dummy.value = content;
+        dummy.select();
+        document.execCommand('copy');
+        document.body.removeChild(dummy);
+        this.setState({copyToClipBoardSuccessful: true})
     };
 
     render() {
+        if (!this.props.calculation) {
+            return null;
+        }
+
         const {calculation} = this.props;
         const {selectedFile} = this.state;
 
-        if (!calculation) {
-            return null;
-        }
+        let {files} = calculation;
+
+        files = files.filter(f => !f.toLowerCase().startsWith('mt'))
+            .sort((a, b) => a.localeCompare(b, undefined, {sensitivity: 'base'}));
 
         return (
             <Grid>
@@ -65,7 +101,7 @@ class Files extends React.Component {
                         <Header as={'h3'}>File list</Header>
                         <Segment color={'grey'}>
                             <List>
-                                {calculation.files.map((f, idx) => (
+                                {files.map((f, idx) => (
                                     <List.Item
                                         as={selectedFile === f ? '' : 'a'}
                                         key={idx}
@@ -77,9 +113,25 @@ class Files extends React.Component {
 
                             </List>
                         </Segment>
+                        {!this.props.readOnly &&
+                        <a className="ui button positive fluid"
+                           href={`${MODFLOW_CALCULATION_URL}/${calculation.id}/download`} target="_blank"
+                           rel="noopener noreferrer">
+                            Download
+                        </a>
+                        }
                     </Grid.Column>
                     <Grid.Column width={12}>
-                        <Header as={'h3'}>Content file: {this.state.selectedFile}</Header>
+                        <Header as={'h3'}>
+                            File content for {this.state.selectedFile} &nbsp;
+                            <Button icon basic={true} onClick={this.onCopyToClipboard}>
+                                <Popup content={'Copy top clipboard'} position={'right center'} trigger={
+                                    <Icon
+                                        name={this.state.copyToClipBoardSuccessful ? 'clipboard check' : 'clipboard outline'}
+                                        size={'small'}/>
+                                }/>
+                            </Button>
+                        </Header>
                         <Segment color={'grey'} loading={this.state.isLoading}>
                             {this.state.file && <Terminal content={this.state.file.content}/>}
                         </Segment>
@@ -90,14 +142,14 @@ class Files extends React.Component {
     }
 }
 
-const mapStateToProps = state => {
-    return {
-        calculation: state.T03.calculation ? Calculation.fromObject(state.T03.calculation) : null
-    };
-};
+const mapStateToProps = state => ({
+    calculation: state.T03.calculation ? Calculation.fromObject(state.T03.calculation) : null,
+    readOnly: state.T03.model ? ModflowModel.fromObject(state.T03.model).readOnly : false
+});
 
-Files.proptypes = {
-    calculation: PropTypes.instanceOf(Calculation)
+Files.propTypes = {
+    calculation: PropTypes.instanceOf(Calculation),
+    readOnly: PropTypes.bool,
 };
 
 export default connect(mapStateToProps)(Files);

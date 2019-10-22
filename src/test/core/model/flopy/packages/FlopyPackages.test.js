@@ -1,15 +1,19 @@
 import Uuid from 'uuid';
-import {FlopyModflow} from 'core/model/flopy/packages/mf';
-import {Mt3dms} from 'core/model/flopy/packages/mt';
-import FlopyPackages from 'core/model/flopy/packages/FlopyPackages';
+import {FlopyModflow} from '../../../../../core/model/flopy/packages/mf';
+import {FlopyMt3d} from '../../../../../core/model/flopy/packages/mt';
+import FlopyPackages from '../../../../../core/model/flopy/packages/FlopyPackages';
+import {FlopySeawat} from '../../../../../core/model/flopy/packages/swt';
+import FlopyModpath from "../../../../../core/model/flopy/packages/mp/FlopyModpath";
 
 test('It can instantiate FlopyPackages', () => {
     const modelId = Uuid.v4();
 
     const mf = new FlopyModflow();
-    const mt = Mt3dms.fromDefaults();
+    const mt = new FlopyMt3d();
+    const mp = new FlopyModpath();
+    const swt = new FlopySeawat();
 
-    const flopyPackages = FlopyPackages.create(modelId, mf, mt);
+    const flopyPackages = FlopyPackages.create(modelId, mf, mp, mt, swt);
     expect(flopyPackages).toBeInstanceOf(FlopyPackages);
 
     expect(flopyPackages.model_id).toEqual(modelId);

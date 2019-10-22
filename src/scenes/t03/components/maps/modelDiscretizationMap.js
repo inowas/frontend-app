@@ -2,12 +2,12 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import {FeatureGroup, GeoJSON, Map, Polygon} from 'react-leaflet';
 import {EditControl} from 'react-leaflet-draw';
-import {calculateActiveCells} from 'services/geoTools';
+import {calculateActiveCells} from '../../../../services/geoTools';
 import md5 from 'md5';
 
-import ActiveCellsLayer from 'services/geoTools/activeCellsLayer';
-import {BasicTileLayer} from 'services/geoTools/tileLayers';
-import {Cells, BoundingBox, Geometry, GridSize} from 'core/model/geometry';
+import ActiveCellsLayer from '../../../../services/geoTools/activeCellsLayer';
+import {BasicTileLayer} from '../../../../services/geoTools/tileLayers';
+import {Cells, BoundingBox, Geometry, GridSize} from '../../../../core/model/geometry';
 import {getStyle} from './index';
 import {pure} from 'recompose';
 import {uniqueId} from 'lodash';
@@ -23,8 +23,8 @@ class ModelDiscretizationMap extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            cells: props.cells ? props.cells.toArray() : null,
-            boundingBox: props.boundingBox ? props.boundingBox.toArray() : null,
+            cells: props.cells ? props.cells.toObject() : null,
+            boundingBox: props.boundingBox ? props.boundingBox.toObject() : null,
             geometry: props.geometry ? props.geometry.toObject() : null,
             gridSize: props.gridSize.toObject(),
             calculating: false
@@ -53,14 +53,14 @@ class ModelDiscretizationMap extends React.Component {
             return null;
         }
 
-        const boundingBox = BoundingBox.fromArray(this.state.boundingBox);
+        const boundingBox = BoundingBox.fromObject(this.state.boundingBox);
         const geometry = Geometry.fromObject(this.state.geometry);
         const gridSize = GridSize.fromObject(this.state.gridSize);
 
         this.setState({calculating: true});
         this.calculate(geometry, boundingBox, gridSize)
             .then(cells => this.setState({
-                    cells: cells.toArray(),
+                    cells: cells.toObject(),
                     gridSize: gridSize.toObject(),
                     calculating: false
                 }, this.handleChange({cells, boundingBox, geometry})
@@ -81,8 +81,8 @@ class ModelDiscretizationMap extends React.Component {
         this.calculate(geometry, boundingBox, gridSize).then(
             cells => {
                 return this.setState({
-                        cells: cells.toArray(),
-                        boundingBox: boundingBox.toArray(),
+                        cells: cells.toObject(),
+                        boundingBox: boundingBox.toObject(),
                         geometry: geometry.toObject(),
                         calculating: false
                     },
@@ -130,10 +130,10 @@ class ModelDiscretizationMap extends React.Component {
     );
 
     boundingBoxLayer = () => {
-        const boundingBox = BoundingBox.fromArray(this.state.boundingBox);
+        const boundingBox = BoundingBox.fromObject(this.state.boundingBox);
         return (
             <GeoJSON
-                key={md5(JSON.stringify(boundingBox.toArray()))}
+                key={md5(JSON.stringify(boundingBox.toObject()))}
                 data={boundingBox.geoJson}
                 style={getStyle('bounding_box')}
             />
@@ -143,9 +143,9 @@ class ModelDiscretizationMap extends React.Component {
     cellsLayer = () => {
         return (
             <ActiveCellsLayer
-                boundingBox={BoundingBox.fromArray(this.state.boundingBox)}
+                boundingBox={BoundingBox.fromObject(this.state.boundingBox)}
                 gridSize={GridSize.fromObject(this.state.gridSize)}
-                cells={Cells.fromArray(this.state.cells)}
+                cells={Cells.fromObject(this.state.cells)}
                 styles={getStyle('active_cells')}
             />
         )
@@ -153,7 +153,7 @@ class ModelDiscretizationMap extends React.Component {
 
     getBoundsLatLng = () => {
         if (this.state.boundingBox) {
-            return BoundingBox.fromArray(this.state.boundingBox).getBoundsLatLng();
+            return BoundingBox.fromObject(this.state.boundingBox).getBoundsLatLng();
         }
 
         return [[60, 10], [45, 30]];
@@ -164,15 +164,15 @@ class ModelDiscretizationMap extends React.Component {
             return null;
         }
 
-        const cells = Cells.fromArray(this.state.cells);
-        const boundingBox = BoundingBox.fromArray(this.state.boundingBox);
+        const cells = Cells.fromObject(this.state.cells);
+        const boundingBox = BoundingBox.fromObject(this.state.boundingBox);
         const geometry = Geometry.fromObject(this.state.geometry);
         const gridSize = GridSize.fromObject(this.state.gridSize);
         const x = latlng.lng;
         const y = latlng.lat;
 
         this.setState({
-            cells: cells.toggle([x, y], boundingBox, gridSize).toArray()
+            cells: cells.toggle([x, y], boundingBox, gridSize).toObject()
         }, () => this.handleChange({cells, boundingBox, geometry}))
     };
 
@@ -192,12 +192,12 @@ class ModelDiscretizationMap extends React.Component {
     }
 }
 
-ModelDiscretizationMap.proptypes = {
+ModelDiscretizationMap.propTypes = {
     cells: PropTypes.instanceOf(Cells),
     boundingBox: PropTypes.instanceOf(BoundingBox),
     geometry: PropTypes.instanceOf(Geometry),
     gridSize: PropTypes.instanceOf(GridSize).isRequired,
-    styles: PropTypes.object.isRequired,
+    styles: PropTypes.object,
     onChange: PropTypes.func.isRequired
 };
 

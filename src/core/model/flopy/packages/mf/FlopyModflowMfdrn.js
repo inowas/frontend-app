@@ -1,6 +1,8 @@
-import FlopyModflowPackage from './FlopyModflowPackage';
+import FlopyModflowLineBoundary from "./FlopyModflowLineBoundary";
+import DrainageBoundary from "../../../modflow/boundaries/DrainageBoundary";
+import FlopyModflowBoundary from "./FlopyModflowBoundary";
 
-export default class FlopyModflowMfdrn extends FlopyModflowPackage {
+export default class FlopyModflowMfdrn extends FlopyModflowLineBoundary {
 
     _ipakcb = null;
     _stress_period_data = null;
@@ -9,6 +11,16 @@ export default class FlopyModflowMfdrn extends FlopyModflowPackage {
     _unitnumber = null;
     _options = null;
     _filenames = null;
+
+    static calculateSpData = (boundaries, nper) => {
+
+        boundaries = boundaries.filter(boundary => (boundary instanceof DrainageBoundary));
+        if (boundaries.length === 0) {
+            return null;
+        }
+
+        return FlopyModflowLineBoundary.calculateSpData(boundaries, nper);
+    };
 
     get ipakcb() {
         return this._ipakcb;
@@ -23,6 +35,9 @@ export default class FlopyModflowMfdrn extends FlopyModflowPackage {
     }
 
     set stress_period_data(value) {
+        if (Array.isArray(value)) {
+            value = FlopyModflowBoundary.arrayToObject(value);
+        }
         this._stress_period_data = value;
     }
 

@@ -1368,7 +1368,7 @@
 .ui.grid > .yellow.row,
 .ui.grid > .yellow.column,
 .ui.grid > .row > .yellow.column {
-  background-color: #FBBD08 !important;
+  background-color: #F1C40F !important;
   color: #FFFFFF;
 }
 
@@ -1384,7 +1384,7 @@
 .ui.grid > .green.row,
 .ui.grid > .green.column,
 .ui.grid > .row > .green.column {
-  background-color: #4CAF53 !important;
+  background-color: #2ECC71 !important;
   color: #FFFFFF;
 }
 
@@ -1416,7 +1416,7 @@
 .ui.grid > .purple.row,
 .ui.grid > .purple.column,
 .ui.grid > .row > .purple.column {
-  background-color: #A333C8 !important;
+  background-color: #8E44AD !important;
   color: #FFFFFF;
 }
 
@@ -2037,3 +2037,50 @@
          Site Overrides
 *******************************/
 
+
+/*------------------
+ Custom Grid Margin
+ ------------------*/
+
+.resetMarginTop {
+  margin-top: -1rem;
+}
+.resetMarginRight {
+  margin-right: -1rem;
+}
+.resetMarginBottom {
+  margin-bottom: -1rem;
+}
+.resetMarginLeft {
+  margin-left: -1rem;
+}
+.noMarginTop {
+  margin-top: 0rem;
+}
+.noMarginRight {
+  margin-right: 0rem;
+}
+.noMarginBottom {
+  margin-bottom: 0rem;
+}
+.noMarginLeft {
+  margin-left: 0rem;
+}
+
+/*------------------
+   Custom Grid Padding
+   ------------------*/
+
+.noPaddingTop,
+.ui.grid > .row.noPaddingTop {
+  padding-top: 0rem;
+}
+.noPaddingRight {
+  padding-right: 0rem;
+}
+.noPaddingBottom {
+  padding-bottom: 0rem;
+}
+.noPaddingLeft {
+  padding-left: 0rem;
+}

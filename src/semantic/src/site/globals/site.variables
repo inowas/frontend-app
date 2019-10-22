@@ -1,6 +1,6 @@
 /*******************************
      User Global Variables
-*******************************
+*******************************/
 
 @pageMinWidth  : 1280px;
 
@@ -44,14 +44,16 @@
 @blue       : #1EB1ED;
 @grey       : #4C4C4C;
 @orange     : #ED8D05;
-@red        : #FF5B4D; /*#BA3005*/
 
 @lightGrey  : #EEEEEE;
 @lightBlue  : #3AC6FF;
 
-@red              : #FF5B4D;
+@red              : #FF5B4D; /*#BA3005*/
+@yellow           : #F1C40F;
 @brown            : #CC6C00;
-@green            : #4CAF53;
+@green            : #2ECC71; /*#4CAF53;*/
+@purple           : #8E44AD;
+
 
 
 /*---   Neutrals  ---*/

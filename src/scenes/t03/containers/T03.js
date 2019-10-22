@@ -1,16 +1,14 @@
 import React from 'react';
 import {connect} from 'react-redux';
 import {Redirect, withRouter} from 'react-router-dom';
-
 import PropTypes from 'prop-types';
-
 import AppContainer from '../../shared/AppContainer';
 import {Grid, Icon, Message} from 'semantic-ui-react';
 import ToolNavigation from '../../shared/complexTools/toolNavigation';
 import menuItems from '../defaults/menuItems';
 import * as Content from '../components/content/index';
 import ToolMetaData from '../../shared/simpleTools/ToolMetaData';
-import {fetchUrl, sendCommand} from 'services/api';
+import {fetchUrl, fetchUrlAndUpdate, sendCommand} from '../../../services/api';
 
 import {
     clear,
@@ -19,25 +17,32 @@ import {
     updateModel,
     updateOptimization,
     updatePackages,
-    updateSoilmodel
+    updateSoilmodel,
+    updateTransport,
+    updateVariableDensity
 } from '../actions/actions';
 
 import {
-    BoundaryCollection,
-    BoundaryFactory,
     Calculation,
     ModflowModel,
     Soilmodel,
-} from 'core/model/modflow';
+    Transport,
+    VariableDensity
+} from '../../../core/model/modflow';
+
 import ModflowModelCommand from '../commands/modflowModelCommand';
 import CalculationProgressBar from '../components/content/calculation/calculationProgressBar';
 import OptimizationProgressBar from '../components/content/optimization/optimizationProgressBar';
 import {CALCULATION_STATE_FINISHED} from '../components/content/calculation/CalculationStatus';
-import FlopyPackages from 'core/model/flopy/packages/FlopyPackages';
-import {FlopyModflow} from 'core/model/flopy/packages/mf';
-import {Mt3dms} from 'core/model/flopy/packages/mt';
-import {fetchCalculationDetails} from 'services/api';
+import FlopyPackages from '../../../core/model/flopy/packages/FlopyPackages';
+import {FlopyModflow} from '../../../core/model/flopy/packages/mf';
+import {FlopyMt3d} from '../../../core/model/flopy/packages/mt';
+import {fetchCalculationDetails} from '../../../services/api';
 import {cloneDeep} from 'lodash';
+import FlopyModpath from '../../../core/model/flopy/packages/mp/FlopyModpath';
+import FlopySeawat from '../../../core/model/flopy/packages/swt/FlopySeawat';
+import {BoundaryCollection, BoundaryFactory} from '../../../core/model/modflow/boundaries';
+import {updater} from "../updaters/soilmodel";
 
 const navigation = [{
     name: 'Documentation',
@@ -85,7 +90,7 @@ class T03 extends React.Component {
         )
     };
 
-    componentWillReceiveProps(nextProps, nextContext) {
+    componentWillReceiveProps(nextProps) {
         const {id} = nextProps.match.params;
         if (!this.props.model || this.props.model.id !== id) {
             if (!this.state.isLoading) {
@@ -99,8 +104,39 @@ class T03 extends React.Component {
             const calculationState = nextProps.calculation.state;
             const mappedMenuItems = menuItems.map(mi => {
                 mi.items = mi.items.map(i => {
-                    if (i.property === 'results') {
+                    if (i.property === 'flow' || i.property === 'budget') {
                         i.disabled = calculationState !== CALCULATION_STATE_FINISHED;
+                        return i;
+                    }
+
+                    if (i.property === 'mt3d' || i.property === 'concentration') {
+                        if (nextProps.transport &&
+                            nextProps.transport.enabled &&
+                            calculationState === CALCULATION_STATE_FINISHED &&
+                            !(i.property === 'concentration' && nextProps.calculation && nextProps.calculation.layer_values.filter((l) =>
+                                l.includes('concentration')).length === 0)
+                            )
+                        {
+                            i.disabled = false;
+                            return i;
+                        }
+
+                        i.disabled = true;
+                        return i;
+                    }
+
+                    if (i.property === 'seawat') {
+                        i.disabled = !nextProps.transport.enabled || !nextProps.variableDensity.vdfEnabled;
+                        return i;
+                    }
+
+                    if (i.property === 'observations') {
+                        if (nextProps.calculation.files.filter(f => f.endsWith('.hob.stat')).length > 0) {
+                            i.disabled = false;
+                            return i;
+                        }
+
+                        i.disabled = true;
                         return i;
                     }
 
@@ -133,6 +169,8 @@ class T03 extends React.Component {
                     this.fetchBoundaries(id);
                     this.fetchPackages(id);
                     this.fetchSoilmodel(id);
+                    this.fetchTransport(id);
+                    this.fetchVariableDensity(id);
 
                     if (modflowModel.calculationId) {
                         fetchCalculationDetails(modflowModel.calculationId,
@@ -175,8 +213,13 @@ class T03 extends React.Component {
     };
 
     fetchSoilmodel(id) {
-        fetchUrl(`modflowmodels/${id}/soilmodel`,
-            data => this.props.updateSoilmodel(Soilmodel.fromObject(data)),
+        fetchUrlAndUpdate(`modflowmodels/${id}/soilmodel`,
+            data => {
+                return updater(data, this.props.model);
+            },
+            data => {
+                return this.props.updateSoilmodel(Soilmodel.fromQuery(data));
+            },
             error => this.setState(
                 {error, isLoading: false},
                 () => this.handleError(error)
@@ -184,14 +227,36 @@ class T03 extends React.Component {
         );
     };
 
+    fetchTransport(id) {
+        fetchUrl(`modflowmodels/${id}/transport`,
+            data => this.props.updateTransport(Transport.fromQuery(data)),
+            error => this.setState(
+                {error, isLoading: false},
+                () => this.handleError(error)
+            )
+        );
+    };
+
+    fetchVariableDensity(id) {
+        fetchUrl(`modflowmodels/${id}/variableDensity`,
+            data => this.props.updateVariableDensity(VariableDensity.fromQuery(data)),
+            error => this.setState(
+                {error, isLoading: false},
+                () => this.handleError(error)
+            )
+        );
+    }
+
     calculatePackages = () => {
         return new Promise((resolve, reject) => {
             this.setState({calculatePackages: 'calculation'});
             const mf = FlopyModflow.createFromModel(this.props.model, this.props.soilmodel, this.props.boundaries);
-            const mt = Mt3dms.fromDefaults();
+            const modpath = new FlopyModpath();
+            const mt = FlopyMt3d.createFromTransport(this.props.transport, this.props.boundaries);
+            const swt = FlopySeawat.createFromVariableDensity(this.props.variableDensity);
             const modelId = this.props.model.id;
 
-            const flopyPackages = FlopyPackages.create(modelId, mf, mt);
+            const flopyPackages = FlopyPackages.create(modelId, mf, modpath, mt, swt);
             if (flopyPackages instanceof FlopyPackages) {
                 this.setState({calculatePackages: false});
                 resolve(flopyPackages);
@@ -199,7 +264,7 @@ class T03 extends React.Component {
 
             this.setState({calculatePackages: 'error'});
             reject('Error creating instance of FlopyPackages.');
-        })
+        });
     };
 
     handleError = error => {
@@ -216,22 +281,39 @@ class T03 extends React.Component {
             case 'discretization':
                 return (<Content.Discretization/>);
             case 'soilmodel':
-                return (<Content.SoilmodelEditor/>);
+                return (<Content.SoilmodelGuard/>);
             case 'boundaries':
                 if (BoundaryFactory.availableTypes.indexOf(type) > -1) {
+                    return (<Content.CreateBoundary type={type}/>);
+                }
+                return (<Content.Boundaries types={['chd', 'drn', 'evt', 'ghb', 'rch', 'riv', 'wel']}/>);
+            case 'head_observations':
+                if (type === 'hob') {
                     return (<Content.CreateBoundary/>);
                 }
-                return (<Content.Boundaries/>);
-            case 'observations':
-                return (<Content.Observations/>);
-            case 'flow':
-                return (<Content.Flow/>);
+                return (<Content.Boundaries types={['hob']}/>);
             case 'transport':
                 return (<Content.Transport/>);
+            case 'variable_density':
+                return (<Content.VariableDensityProperties/>);
+            case 'observations':
+                return (<Content.Observations/>);
+            case 'modflow':
+                return (<Content.Modflow/>);
+            case 'mt3d':
+                return (<Content.Mt3d/>);
+            case 'seawat':
+                return (<Content.Seawat/>);
             case 'calculation':
                 return (<Content.Calculation/>);
-            case 'results':
-                return (<Content.Results/>);
+            case 'flow':
+                return (<Content.FlowResults/>);
+            case 'budget':
+                return (<Content.BudgetResults/>);
+            case 'modpath':
+                return (<Content.Modpath/>);
+            case 'concentration':
+                return (<Content.TransportResults/>);
             case 'optimization':
                 return (<Content.Optimization/>);
             default:
@@ -264,7 +346,9 @@ class T03 extends React.Component {
 
         if (!(this.props.model instanceof ModflowModel) ||
             !(this.props.boundaries instanceof BoundaryCollection) ||
-            !(this.props.soilmodel instanceof Soilmodel)
+            !(this.props.soilmodel instanceof Soilmodel) ||
+            !(this.props.transport instanceof Transport) ||
+            !(this.props.variableDensity instanceof VariableDensity)
         ) {
             return (
                 <AppContainer navbarItems={navigation}>
@@ -300,7 +384,8 @@ class T03 extends React.Component {
             <AppContainer navbarItems={navigation}>
                 <ToolMetaData
                     isDirty={false}
-                    onChange={() => {}}
+                    onChange={() => {
+                    }}
                     readOnly={false}
                     tool={{
                         tool: 'T03',
@@ -334,29 +419,41 @@ const mapStateToProps = state => ({
     boundaries: state.T03.boundaries ? BoundaryCollection.fromObject(state.T03.boundaries) : null,
     calculation: state.T03.calculation ? Calculation.fromObject(state.T03.calculation) : null,
     packages: state.T03.packages ? FlopyPackages.fromObject(state.T03.packages) : null,
-    soilmodel: state.T03.soilmodel ? Soilmodel.fromObject(state.T03.soilmodel) : null
+    soilmodel: state.T03.soilmodel ? Soilmodel.fromObject(state.T03.soilmodel) : null,
+    transport: state.T03.transport ? Transport.fromObject(state.T03.transport) : null,
+    variableDensity: state.T03.variableDensity ? VariableDensity.fromObject(state.T03.variableDensity) : null
 });
 
 const mapDispatchToProps = {
-    clear, updateCalculation, updateBoundaries, updatePackages, updateModel, updateOptimization, updateSoilmodel
+    clear,
+    updateCalculation,
+    updateBoundaries,
+    updatePackages,
+    updateModel,
+    updateOptimization,
+    updateTransport,
+    updateSoilmodel,
+    updateVariableDensity
 };
 
 
-T03.proptypes = {
+T03.propTypes = {
     history: PropTypes.object.isRequired,
     location: PropTypes.object.isRequired,
     match: PropTypes.object.isRequired,
-    boundaries: PropTypes.instanceOf(BoundaryCollection).isRequired,
-    calculation: PropTypes.instanceOf(Calculation).isRequired,
-    packages: PropTypes.instanceOf(FlopyPackages).isRequired,
-    model: PropTypes.instanceOf(ModflowModel).isRequired,
-    soilmodel: PropTypes.instanceOf(Soilmodel).isRequired,
+    boundaries: PropTypes.instanceOf(BoundaryCollection),
+    calculation: PropTypes.instanceOf(Calculation),
+    packages: PropTypes.instanceOf(FlopyPackages),
+    model: PropTypes.instanceOf(ModflowModel),
+    soilmodel: PropTypes.instanceOf(Soilmodel),
+    variableDensity: PropTypes.instanceOf(VariableDensity),
     clear: PropTypes.func.isRequired,
     updateModel: PropTypes.func.isRequired,
     updatePackages: PropTypes.func.isRequired,
     updateBoundaries: PropTypes.func.isRequired,
     updateOptimization: PropTypes.func.isRequired,
     updateSoilmodel: PropTypes.func.isRequired,
+    updateVariableDensity: PropTypes.func.isRequired
 };
 
 export default withRouter(connect(mapStateToProps, mapDispatchToProps)(T03));

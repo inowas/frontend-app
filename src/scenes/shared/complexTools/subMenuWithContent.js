@@ -16,18 +16,17 @@ class SubMenuWithContent extends React.Component {
         const {selected} = this.state;
         return (
             <Segment color={'grey'}>
-                <Grid padded>
+                <Grid>
                     <Grid.Row>
                         <Grid.Column width={3}>
                             <Menu fluid vertical tabular>
                                 <Menu.Item>&nbsp;</Menu.Item>
                                 {menuItems.map(i =>
                                     <Menu.Item
-                                        name={i.name}
                                         key={i.id}
                                         active={i.id === selected}
                                         onClick={() => this.setState({selected: i.id})}
-                                    />
+                                    >{i.name}</Menu.Item>
                                 )}
                                 <Menu.Item>&nbsp;</Menu.Item>
                             </Menu>
@@ -43,7 +42,7 @@ class SubMenuWithContent extends React.Component {
     }
 }
 
-SubMenuWithContent.proptypes = {
+SubMenuWithContent.propTypes = {
     menuItems: PropTypes.array.isRequired
 };
 

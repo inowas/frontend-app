@@ -1,6 +1,6 @@
-import FlopyModflowPackage from './FlopyModflowPackage';
+import FlopyModflowSolverPackage from './FlopyModflowSolverPackage';
 
-export default class FlopyModflowMfnwt extends FlopyModflowPackage {
+export default class FlopyModflowMfnwt extends FlopyModflowSolverPackage {
 
     _headtol = 0.01;
     _fluxtol = 500;

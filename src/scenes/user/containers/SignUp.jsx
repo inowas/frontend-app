@@ -1,12 +1,16 @@
 import PropTypes from 'prop-types';
 import React from 'react';
-import {submitSignUpCredentials} from 'services/api';
+import {submitSignUpCredentials} from '../../../services/api';
 
 import {connect} from 'react-redux';
 import {hasSessionKey} from '../reducers/index';
 import {Link, withRouter} from 'react-router-dom';
 import {Button, Container, Form, Grid, Header, Image, Message} from 'semantic-ui-react';
 import logo from '../images/favicon.png';
+
+import getConfig from '../../../config.default';
+
+const {USERS_CAN_REGISTER} = getConfig();
 
 const styles = {
     signup: {
@@ -211,6 +215,7 @@ class SignUp extends React.Component {
                 fluid size="large"
                 onClick={this.onSignUpClick}
                 loading={this.state.loading}
+                disabled={!USERS_CAN_REGISTER}
             >
                 Sign up
             </Button>
@@ -237,6 +242,7 @@ class SignUp extends React.Component {
                                     type="text"
                                     onChange={this.onNameChange}
                                     placeholder="Name"
+                                    disabled={!USERS_CAN_REGISTER}
                                 />
                             </Form.Field>
                             <Form.Field>
@@ -244,6 +250,7 @@ class SignUp extends React.Component {
                                     type="text"
                                     onChange={this.onEmailChange}
                                     placeholder="Email"
+                                    disabled={!USERS_CAN_REGISTER}
                                 />
                             </Form.Field>
                             <Form.Field>
@@ -251,6 +258,7 @@ class SignUp extends React.Component {
                                     onChange={this.onPasswordChange}
                                     placeholder="Password"
                                     type="password"
+                                    disabled={!USERS_CAN_REGISTER}
                                 />
                             </Form.Field>
                             <Form.Field>
@@ -258,14 +266,23 @@ class SignUp extends React.Component {
                                     onChange={this.onPasswordConfirmationChange}
                                     placeholder="Confirm Password"
                                     type="password"
+                                    disabled={!USERS_CAN_REGISTER}
                                 />
                             </Form.Field>
                             {this.renderButton()}
                         </Form>
+                        {USERS_CAN_REGISTER &&
                         <Message attached="bottom" warning>
                             Already registered?<br/>
                             <Link to={'/login'}>Login here!</Link>
                         </Message>
+                        }
+                        {!USERS_CAN_REGISTER &&
+                        <Message attached="bottom" warning>
+                            Registration closed.<br/>
+                            <Link to={'/login'}>Login here!</Link>
+                        </Message>
+                        }
                     </Grid.Column>
                 </Grid>
             </Container>
