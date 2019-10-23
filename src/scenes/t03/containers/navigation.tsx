@@ -22,6 +22,7 @@ const t03Navigation = (props: IProps) => {
 
     const calculationState = props.calculation ? props.calculation.state : null;
     const calculationResults: string[] = props.calculation ? props.calculation.layer_values[0] : [];
+    const totalTimes = props.calculation && props.calculation.times ? props.calculation.times.total_times : [];
 
     const mappedMenuItems: IMenu = menuItems.map((mi) => {
         mi.items = mi.items.map((i) => {
@@ -38,19 +39,22 @@ const t03Navigation = (props: IProps) => {
 
             if (i.property === 'flow') {
                 i.disabled = calculationState !== CALCULATION_STATE_FINISHED ||
-                    !calculationResults.includes('head');
+                    !calculationResults.includes('head') ||
+                    totalTimes.length === 0;
                 return i;
             }
 
             if (i.property === 'budget') {
                 i.disabled = calculationState !== CALCULATION_STATE_FINISHED ||
-                    !calculationResults.includes('budget');
+                    !calculationResults.includes('budget') ||
+                    totalTimes.length === 0;
                 return i;
             }
 
             if (i.property === 'concentration') {
                 i.disabled = calculationState !== CALCULATION_STATE_FINISHED ||
-                    !calculationResults.includes('concentration');
+                    !calculationResults.includes('concentration') ||
+                    totalTimes.length === 0;
                 return i;
             }
 

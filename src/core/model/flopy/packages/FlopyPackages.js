@@ -171,7 +171,6 @@ export default class FlopyPackages {
         }
 
         if (this.swt && this.mt.enabled && this.swt.enabled) {
-            console.log('SEAWAT', this.swt);
             data['swt'] = this.swt.toFlopyCalculation();
         }
 
