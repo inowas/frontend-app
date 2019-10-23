@@ -44,14 +44,15 @@ const layerDetails = (props: IProps) => {
         setLayer(props.layer.toObject());
     }, [props.layer]);
 
-    const handleAddRelation = (relation: ILayerParameterZone) => {
+    const handleAddRelation = (relation: ILayerParameterZone, parameterId?: string) => {
         const relations = props.relations;
         relations.add(relation);
         relations.reorderPriority(relation.layerId, relation.parameter);
         const cLayer = SoilmodelLayer.fromObject(layer).zonesToParameters(
             props.model.gridSize,
             relations,
-            props.soilmodel.zonesCollection
+            props.soilmodel.zonesCollection,
+            parameterId
         );
         props.onChange(cLayer);
         return props.onChangeRelations(relations);
@@ -59,7 +60,7 @@ const layerDetails = (props: IProps) => {
 
     const handleChange = () => props.onChange(SoilmodelLayer.fromObject(layer));
 
-    const handleChangeRelations = (cRelations: LayerParameterZonesCollection) => {
+    const handleChangeRelations = (cRelations: LayerParameterZonesCollection, parameterId?: string) => {
         const relations = props.relations;
         cRelations.all.forEach((r) => {
            relations.update(r);
@@ -68,7 +69,8 @@ const layerDetails = (props: IProps) => {
         const cLayer = SoilmodelLayer.fromObject(layer).zonesToParameters(
             props.model.gridSize,
             relations,
-            props.soilmodel.zonesCollection
+            props.soilmodel.zonesCollection,
+            parameterId
         );
         props.onChange(cLayer);
         return props.onChangeRelations(relations);
@@ -81,14 +83,15 @@ const layerDetails = (props: IProps) => {
         [name]: value
     });
 
-    const handleRemoveRelation = (relation: ILayerParameterZone) => {
+    const handleRemoveRelation = (relation: ILayerParameterZone, parameterId?: string) => {
         const relations = LayerParameterZonesCollection.fromObject(props.relations.toObject());
         relations.removeById(relation.id);
         relations.reorderPriority(relation.layerId, relation.parameter);
         const cLayer = SoilmodelLayer.fromObject(layer).zonesToParameters(
             props.model.gridSize,
             relations,
-            props.soilmodel.zonesCollection
+            props.soilmodel.zonesCollection,
+            parameterId
         );
         props.onChange(cLayer);
         return props.onChangeRelations(relations);

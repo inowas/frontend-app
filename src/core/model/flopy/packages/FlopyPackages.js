@@ -69,6 +69,7 @@ export default class FlopyPackages {
         const self = new this();
         self._model_id = modelId;
         self._mf = mf;
+        self._mf.setTransportEnabled(mt.enabled);
         self._mp = mp;
         self._mt = mt;
         self._swt = swt;
@@ -169,7 +170,7 @@ export default class FlopyPackages {
             data['mt'] = this.mt.toFlopyCalculation();
         }
 
-        if (this.swt && this.swt.enabled) {
+        if (this.swt && this.mt.enabled && this.swt.enabled) {
             data['swt'] = this.swt.toFlopyCalculation();
         }
 
