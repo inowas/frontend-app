@@ -103,8 +103,14 @@ class Layer {
         return this;
     }
 
-    public zonesToParameters(gridSize: GridSize, relations: LayerParameterZonesCollection, zones: ZonesCollection) {
-        const cParameters = this.parameters.map((parameter) => {
+    public zonesToParameters(
+        gridSize: GridSize,
+        relations: LayerParameterZonesCollection,
+        zones: ZonesCollection,
+        parameterId?: string
+    ) {
+        const fParameters = parameterId ? this.parameters.filter((p) => p.id === parameterId) : this.parameters;
+        const cParameters = fParameters.map((parameter) => {
             const lParameter: ILayerParameter = {
                 id: parameter.id,
                 value: parameter.value
@@ -132,6 +138,17 @@ class Layer {
             });
             return lParameter;
         });
+
+        if (parameterId && fParameters.length === 1) {
+            const changedParameter = cParameters[0];
+            this.parameters = cloneDeep(this.parameters).map((p) => {
+                if (p.id === changedParameter.id) {
+                    return changedParameter;
+                }
+                return p;
+            });
+            return this;
+        }
 
         this.parameters = cloneDeep(cParameters);
 

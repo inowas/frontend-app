@@ -13,7 +13,6 @@ import Command from '../../shared/simpleTools/commands/command';
 import ToolMetaData from '../../shared/simpleTools/ToolMetaData';
 import {IToolMetaData} from '../../shared/simpleTools/ToolMetaData/ToolMetaData.type';
 import {
-    ConstraintsEditor,
     CriteriaDataEditor,
     CriteriaEditor,
     CriteriaNavigation,
@@ -187,7 +186,7 @@ const t05 = (props: IProps) => {
                         onChange={handleChange}
                     />
                 );
-            case 'cm':
+            /*case 'cm':
                 if (mcda.criteriaCollection.length > 0 && (mcda.constraints && !mcda.constraints.boundingBox)) {
                     mcda.constraints.boundingBox = mcda.criteriaCollection.getBoundingBox(mcda.withAhp);
                 }
@@ -198,7 +197,7 @@ const t05 = (props: IProps) => {
                         mcda={mcda}
                         onChange={handleChange}
                     />
-                );
+                );*/
             case 'wa':
                 const filteredWeightAssignment = mcda.weightAssignmentsCollection.findById(cCid);
                 const weightAssignment = cCid && filteredWeightAssignment ? filteredWeightAssignment : null;

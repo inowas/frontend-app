@@ -4,8 +4,7 @@ import {Redirect, withRouter} from 'react-router-dom';
 import PropTypes from 'prop-types';
 import AppContainer from '../../shared/AppContainer';
 import {Grid, Icon, Message} from 'semantic-ui-react';
-import ToolNavigation from '../../shared/complexTools/toolNavigation';
-import menuItems from '../defaults/menuItems';
+import Navigation from './navigation';
 import * as Content from '../components/content/index';
 import ToolMetaData from '../../shared/simpleTools/ToolMetaData';
 import {fetchUrl, fetchUrlAndUpdate, sendCommand} from '../../../services/api';
@@ -33,7 +32,6 @@ import {
 import ModflowModelCommand from '../commands/modflowModelCommand';
 import CalculationProgressBar from '../components/content/calculation/calculationProgressBar';
 import OptimizationProgressBar from '../components/content/optimization/optimizationProgressBar';
-import {CALCULATION_STATE_FINISHED} from '../components/content/calculation/CalculationStatus';
 import FlopyPackages from '../../../core/model/flopy/packages/FlopyPackages';
 import {FlopyModflow} from '../../../core/model/flopy/packages/mf';
 import {FlopyMt3d} from '../../../core/model/flopy/packages/mt';
@@ -56,7 +54,6 @@ class T03 extends React.Component {
         super(props);
         this.state = {
             model: props.model ? props.model.toObject() : null,
-            menuItems: menuItems,
             error: false,
             isLoading: false,
             calculatePackages: false,
@@ -98,57 +95,6 @@ class T03 extends React.Component {
                     () => this.fetchModel(id)
                 )
             }
-        }
-
-        if (nextProps.calculation) {
-            const calculationState = nextProps.calculation.state;
-            const mappedMenuItems = menuItems.map(mi => {
-                mi.items = mi.items.map(i => {
-                    if (i.property === 'flow' || i.property === 'budget') {
-                        i.disabled = calculationState !== CALCULATION_STATE_FINISHED;
-                        return i;
-                    }
-
-                    if (i.property === 'mt3d' || i.property === 'concentration') {
-                        if (nextProps.transport &&
-                            nextProps.transport.enabled &&
-                            calculationState === CALCULATION_STATE_FINISHED &&
-                            !(i.property === 'concentration' && nextProps.calculation && nextProps.calculation.layer_values.filter((l) =>
-                                l.includes('concentration')).length === 0)
-                            )
-                        {
-                            i.disabled = false;
-                            return i;
-                        }
-
-                        i.disabled = true;
-                        return i;
-                    }
-
-                    if (i.property === 'seawat') {
-                        i.disabled = !nextProps.transport.enabled || !nextProps.variableDensity.vdfEnabled;
-                        return i;
-                    }
-
-                    if (i.property === 'observations') {
-                        if (nextProps.calculation.files.filter(f => f.endsWith('.hob.stat')).length > 0) {
-                            i.disabled = false;
-                            return i;
-                        }
-
-                        i.disabled = true;
-                        return i;
-                    }
-
-                    return i;
-                });
-
-                return mi;
-            });
-
-            this.setState({
-                menuItems: mappedMenuItems
-            })
         }
 
         this.setState({
@@ -400,7 +346,7 @@ class T03 extends React.Component {
                 <Grid padded>
                     <Grid.Row>
                         <Grid.Column width={3}>
-                            <ToolNavigation navigationItems={this.state.menuItems}/>
+                            <Navigation />
                             <CalculationProgressBar/>
                             <OptimizationProgressBar/>
                         </Grid.Column>

@@ -1,7 +1,22 @@
-import {Icon} from 'semantic-ui-react';
 import React from 'react';
+import {Icon} from 'semantic-ui-react';
 
-const menuItems = [
+export interface IMenuItem {
+    name: string;
+    property: string;
+    icon: React.ReactNode;
+    disabled?: boolean;
+    type?: string;
+}
+
+export interface IMenuSection {
+    header: string;
+    items: IMenuItem[];
+}
+
+export type IMenu = IMenuSection[];
+
+export const menuItems: IMenu = [
     {
         header: 'Model Setup',
         items: [
@@ -100,7 +115,7 @@ const menuItems = [
             {
                 name: 'Modpath',
                 property: 'modpath',
-                icon: <Icon name='code branch'/>,
+                icon: <Icon name="code branch"/>,
                 disabled: true
             },
             {
@@ -112,31 +127,3 @@ const menuItems = [
         ]
     }
 ];
-
-export default menuItems;
-
-export const enableProperty = (name, menuItems) => {
-    return menuItems.map(itemGroup => {
-        itemGroup = itemGroup.map(item => {
-            if (item.property === name) {
-                item.disabled = false;
-            }
-
-            return item;
-        });
-        return itemGroup;
-    })
-};
-
-export const disableProperty = (name, menuItems) => {
-    return menuItems.map(itemGroup => {
-        itemGroup = itemGroup.map(item => {
-            if (item.property === name) {
-                item.disabled = true;
-            }
-
-            return item;
-        });
-        return itemGroup;
-    })
-};

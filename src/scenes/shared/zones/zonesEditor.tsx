@@ -22,9 +22,9 @@ interface IProps {
     boundingBox: BoundingBox;
     layer: Layer;
     gridSize: GridSize;
-    onAddRelation: (relation: ILayerParameterZone) => any;
-    onChange: (relations: LayerParameterZonesCollection) => any;
-    onRemoveRelation: (relation: ILayerParameterZone) => any;
+    onAddRelation: (relation: ILayerParameterZone, parameterId?: string) => any;
+    onChange: (relations: LayerParameterZonesCollection, parameterId?: string) => any;
+    onRemoveRelation: (relation: ILayerParameterZone, parameterId?: string) => any;
     onSmoothLayer: (params: ISmoothParametersWithId) => any;
     parameter: RasterParameter;
     relations: LayerParameterZonesCollection;
@@ -48,16 +48,17 @@ const zonesEditor = (props: IProps) => {
     const [smoothParams, setSmoothParams] = useState<ISmoothParameters>({cycles: 1, distance: 1});
     const [rasterUploadModal, setRasterUploadModal] = useState<boolean>(false);
 
-    const recalculateMap = () => props.onChange(props.relations);
+    const recalculateMap = () => props.onChange(props.relations, props.parameter.id);
 
     const smoothMap = () => props.onSmoothLayer({
         ...smoothParams,
         parameterId: props.parameter.id
     });
 
-    const handleAddRelation = (relation: ILayerParameterZone) => props.onAddRelation(relation);
+    const handleAddRelation = (relation: ILayerParameterZone) => props.onAddRelation(relation, props.parameter.id);
 
-    const handleChangeRelation = (relations: LayerParameterZonesCollection) => props.onChange(relations);
+    const handleChangeRelation = (relations: LayerParameterZonesCollection) =>
+        props.onChange(relations, props.parameter.id);
 
     const handleChangeSmoothParams = (e: ChangeEvent<HTMLInputElement>, {name, value}: InputOnChangeData) => {
         const cSmoothParams = {
@@ -68,7 +69,8 @@ const zonesEditor = (props: IProps) => {
         return setSmoothParams(cSmoothParams);
     };
 
-    const handleRemoveRelation = (relation: ILayerParameterZone) => props.onRemoveRelation(relation);
+    const handleRemoveRelation = (relation: ILayerParameterZone) =>
+        props.onRemoveRelation(relation, props.parameter.id);
 
     const handleUploadRaster = (result: IUploadData) => {
         const cRelations = props.relations.all.map((r) => {
@@ -78,7 +80,7 @@ const zonesEditor = (props: IProps) => {
             return r;
         });
         setRasterUploadModal(false);
-        props.onChange(LayerParameterZonesCollection.fromObject(cRelations));
+        props.onChange(LayerParameterZonesCollection.fromObject(cRelations), props.parameter.id);
     };
 
     const handleCancelUploadModal = () => setRasterUploadModal(false);

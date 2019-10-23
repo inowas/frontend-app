@@ -108,11 +108,14 @@ export const getMenuItems = (mcda: MCDA): IMenuItem[] => {
             property: 'cd',
             status: criteriaDataStatus()
         },
-        /*{
+        {
             name: 'Global Constraints',
             property: 'cm',
-            status: constraintsStatus()
-        },*/
+            status: {
+                val: 'wip',
+                msg: 'Currently not available (Work in Progress)'
+            }
+        },
         {
             name: 'Suitability',
             property: 'su',
