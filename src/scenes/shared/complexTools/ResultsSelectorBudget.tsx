@@ -1,7 +1,8 @@
 import Moment from 'moment';
 import React from 'react';
+import {pure} from 'recompose';
 import {DropdownProps, Form, Grid, Header, Segment} from 'semantic-ui-react';
-import {Soilmodel, Stressperiods} from '../../../core/model/modflow';
+import {Stressperiods} from '../../../core/model/modflow';
 import SliderWithTooltip from './SliderWithTooltip';
 
 const styles = {
@@ -154,8 +155,10 @@ class ResultsSelectorBudget extends React.Component<IResultsSelectorBudgetProps,
             return;
         }
 
-        return Moment.utc(this.props.stressperiods.dateTimes[totalTimes.indexOf(value)]).format('L');
+        return Moment.utc(
+            this.props.stressperiods.dateTimes[0]
+        ).add(value, 'days').format('L');
     };
 }
 
-export default ResultsSelectorBudget;
+export default pure(ResultsSelectorBudget);

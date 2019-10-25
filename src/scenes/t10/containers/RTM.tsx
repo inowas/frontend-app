@@ -168,6 +168,9 @@ const RTM = (props: IProps) => {
                     onChange={handleUpdateSensor}
                     onChangeSelectedParameterId={setSelectedParameterId}
                 />
+                {parameter && property === 'sensor-processing' &&
+                <div>PROCESSING</div>
+                }
                 {parameter && property === 'sensor-setup' && <DataSources
                     rtm={Rtm.fromObject(rtm)}
                     parameter={parameter}

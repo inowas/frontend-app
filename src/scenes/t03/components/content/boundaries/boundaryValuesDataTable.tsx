@@ -1,7 +1,6 @@
 import moment from 'moment';
-import React, {ChangeEvent} from 'react';
+import React, {ChangeEvent, useState} from 'react';
 import {Input, Table} from 'semantic-ui-react';
-import uuidv4 from 'uuid/v4';
 import {Stressperiods} from '../../../../../core/model/modflow';
 import {Boundary} from '../../../../../core/model/modflow/boundaries';
 import {ISpValues} from '../../../../../core/model/modflow/boundaries/Boundary.type';
@@ -10,7 +9,7 @@ interface IActiveInput {
     col: number;
     name: string;
     row: number;
-    value: number;
+    value: string;
 }
 
 interface IProps {
@@ -21,61 +20,40 @@ interface IProps {
     stressperiods: Stressperiods;
 }
 
-interface IState {
-    activeInput: IActiveInput | null;
-    error: boolean;
-    errorMsg: string[];
-    id: string;
-    success: boolean;
-}
+const boundaryValuesDataTable = (props: IProps) => {
+    const [activeInput, setActiveInput] = useState<IActiveInput | null>(null);
 
-class BoundaryValuesDataTable extends React.Component<IProps, IState> {
-    constructor(props: IProps) {
-        super(props);
-        this.state = {
-            activeInput: null,
-            error: false,
-            errorMsg: [],
-            id: uuidv4(),
-            success: false
-        };
-    }
+    const {boundary, selectedOP} = props;
+    const spValues = boundary.getSpValues(selectedOP);
 
-    public handleLocalChange = (row: number, col: number) => (e: ChangeEvent<HTMLInputElement>) => this.setState({
-        activeInput: {
-            col,
-            name: e.target.name,
-            row,
-            value: parseFloat(e.target.value)
-        }
+    const handleLocalChange = (row: number, col: number) => (e: ChangeEvent<HTMLInputElement>) => setActiveInput({
+        col,
+        name: e.target.name,
+        row,
+        value: e.target.value
     });
 
-    public handleSpValuesChange = () => {
-        if (!this.state.activeInput) {
+    const handleSpValuesChange = () => {
+        if (!activeInput) {
             return;
         }
-        const {value, row, col} = this.state.activeInput;
-        this.setState({
-            activeInput: null
-        });
-
-        const {boundary, selectedOP} = this.props;
-        const spValues = boundary.getSpValues(selectedOP);
+        const {value, row, col} = activeInput;
+        setActiveInput(null);
 
         if (spValues) {
             const updatedSpValues = spValues.map((spv, spvIdx) => {
                 if (row === spvIdx) {
-                    spv[col] = value || 0;
+                    spv[col] = parseFloat(value) || 0;
                     return spv;
                 }
                 return spv;
             });
             boundary.setSpValues(updatedSpValues as ISpValues, selectedOP);
         }
-        this.props.onChange(boundary);
+        return props.onChange(boundary);
     };
 
-    public getCellStyle = (numberOfCells: number) => {
+    const getCellStyle = (numberOfCells: number) => {
         switch (numberOfCells) {
             case 2:
                 return {
@@ -98,9 +76,8 @@ class BoundaryValuesDataTable extends React.Component<IProps, IState> {
         }
     };
 
-    public body = (spValues: ISpValues) => {
-        const {activeInput} = this.state;
-        const {stressperiods} = this.props;
+    const body = () => {
+        const {stressperiods} = props;
 
         const dateTimes = stressperiods.dateTimes;
 
@@ -116,7 +93,7 @@ class BoundaryValuesDataTable extends React.Component<IProps, IState> {
             <Table.Row key={spIdx}>
                 <Table.Cell width={4}>
                     <Input
-                        style={this.getCellStyle(1)}
+                        style={getCellStyle(1)}
                         disabled={true}
                         id={spIdx}
                         name={'dateTime'}
@@ -127,13 +104,13 @@ class BoundaryValuesDataTable extends React.Component<IProps, IState> {
                 {spValue.map((v, vIdx) => (
                     <Table.Cell key={vIdx}>
                         <Input
-                            style={this.getCellStyle(spValue.length)}
-                            disabled={this.props.readOnly}
+                            style={getCellStyle(spValue.length)}
+                            disabled={props.readOnly}
                             id={spIdx}
                             col={vIdx}
                             name={'dateTimeValue'}
-                            onBlur={this.handleSpValuesChange}
-                            onChange={this.handleLocalChange(spIdx, vIdx)}
+                            onBlur={handleSpValuesChange}
+                            onChange={handleLocalChange(spIdx, vIdx)}
                             type={'number'}
                             value={activeInput && activeInput.col === vIdx && activeInput.row === spIdx ?
                                 activeInput.value : v}
@@ -200,26 +177,21 @@ class BoundaryValuesDataTable extends React.Component<IProps, IState> {
         });
     };*/
 
-    public render() {
-        const {boundary, selectedOP} = this.props;
-        const spValues = boundary.getSpValues(selectedOP);
+    return (
+        <div>
+            {/*<CsvUpload uploadState={this.state.uploadState} onUploaded={this.handleCSV}/>*/}
+            <Table size={'small'} singleLine={true}>
+                <Table.Header>
+                    <Table.Row>
+                        <Table.HeaderCell>Start Date</Table.HeaderCell>
+                        {boundary.valueProperties.map((p, idx) => (
+                            <Table.HeaderCell key={idx}>{p.name} ({p.unit})</Table.HeaderCell>))}
+                    </Table.Row>
+                </Table.Header>
+                <Table.Body>{spValues && body()}</Table.Body>
+            </Table>
+        </div>
+    );
+};
 
-        return (
-            <div>
-                {/*<CsvUpload uploadState={this.state.uploadState} onUploaded={this.handleCSV}/>*/}
-                <Table size={'small'} singleLine={true}>
-                    <Table.Header>
-                        <Table.Row>
-                            <Table.HeaderCell>Start Date</Table.HeaderCell>
-                            {boundary.valueProperties.map((p, idx) => (
-                                <Table.HeaderCell key={idx}>{p.name} ({p.unit})</Table.HeaderCell>))}
-                        </Table.Row>
-                    </Table.Header>
-                    <Table.Body>{spValues && this.body(spValues)}</Table.Body>
-                </Table>
-            </div>
-        );
-    }
-}
-
-export default BoundaryValuesDataTable;
+export default boundaryValuesDataTable;

@@ -20,12 +20,11 @@ const budgetResults = (props: IProps) => {
     const [data, setData] = useState<budgetData>(null);
     const [fetching, setFetching] = useState<boolean>(true);
     const [isError, setIsError] = useState<string | null>(null);
-    const [isLoading, setIsLoading] = useState<boolean>(false);
     const [selectedTotim, setSelectedTotim] = useState<number>(
         props.calculation && props.calculation.times ? props.calculation.times.total_times.slice(-1)[0] : 0
     );
     const [selectedType, setSelectedType] = useState<IBudgetType>('cumulative');
-    const [totalTimes, setTotalTimes] = useState<number[] | null>(
+    const [totalTimes] = useState<number[] | null>(
         props.calculation && props.calculation.times ? props.calculation.times.total_times : []
     );
     const chartRef = useRef<BarChart>(null);
@@ -84,7 +83,7 @@ const budgetResults = (props: IProps) => {
             return null;
         }
 
-        if (cData.name === 'all') {
+        if (cData.name === '_all') {
             const setToTrue = data.filter((c) => !c.active).length > 0;
             return setData(data.map((c) => {
                 c.active = setToTrue;
@@ -92,15 +91,12 @@ const budgetResults = (props: IProps) => {
             }));
         }
 
-        return ({
-            data: data.map((c) => {
-                if (c.name === cData.value) {
-                    c.active = !c.active;
-                }
-
-                return c;
-            })
-        });
+        return setData(data.map((c) => {
+            if (c.name === cData.value) {
+                c.active = !c.active;
+            }
+            return c;
+        }));
     };
 
     const exportData = () => {
@@ -124,7 +120,7 @@ const budgetResults = (props: IProps) => {
     }
 
     return (
-        <Segment color={'grey'} loading={isLoading}>
+        <Segment color={'grey'}>
             <Grid padded={true}>
                 <Grid.Row>
                     <Grid.Column>

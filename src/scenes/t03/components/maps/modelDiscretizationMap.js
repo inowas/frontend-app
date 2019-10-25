@@ -111,10 +111,10 @@ class ModelDiscretizationMap extends React.Component {
                     marker: false,
                     polyline: false,
                     rectangle: false,
-                    polygon: this.state.geometry == null
+                    polygon: !this.props.readOnly && this.state.geometry == null
                 }}
                 edit={{
-                    edit: this.state.geometry != null,
+                    edit: !this.props.readOnly && this.state.geometry != null,
                     remove: false
                 }}
                 onCreated={this.onCreated}
@@ -198,7 +198,8 @@ ModelDiscretizationMap.propTypes = {
     geometry: PropTypes.instanceOf(Geometry),
     gridSize: PropTypes.instanceOf(GridSize).isRequired,
     styles: PropTypes.object,
-    onChange: PropTypes.func.isRequired
+    onChange: PropTypes.func.isRequired,
+    readOnly: PropTypes.bool.isRequired
 };
 
 export default pure(ModelDiscretizationMap);

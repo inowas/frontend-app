@@ -1,15 +1,13 @@
+import moment from 'moment';
 import React, {ChangeEvent} from 'react';
 import {connect} from 'react-redux';
-
 import {Form, Grid, Message} from 'semantic-ui-react';
-
 import {ModflowModel, Stressperiods} from '../../../../../core/model/modflow';
+import {BoundaryCollection} from '../../../../../core/model/modflow/boundaries';
 import {IStressPeriods} from '../../../../../core/model/modflow/Stressperiods.type';
-import {updateStressperiods} from '../../../actions/actions';
-
-import moment from 'moment';
 import ContentToolBar from '../../../../../scenes/shared/ContentToolbar';
 import {sendCommand} from '../../../../../services/api';
+import {updateStressperiods} from '../../../actions/actions';
 import ModflowModelCommand from '../../../commands/modflowModelCommand';
 import DiscretizationImport from './discretizationImport';
 import StressPeriodsDataTable from './stressperiodsDatatable';
@@ -23,6 +21,7 @@ interface IState {
 }
 
 interface IStateProps {
+    boundaries: BoundaryCollection;
     model: ModflowModel;
 }
 
@@ -78,7 +77,7 @@ class StressperiodsEditor extends React.Component<IProps, IState> {
             return;
         }
 
-        if (e.type === 'blur') {
+        if (e.type === 'blur' && this.props.boundaries.length === 0) {
             const stressperiods = Stressperiods.fromObject(this.state.stressperiods);
 
             if (name === 'startDateTime' || name === 'endDateTime') {
@@ -114,23 +113,25 @@ class StressperiodsEditor extends React.Component<IProps, IState> {
 
         return (
             <Grid>
-                <Grid.Row>
-                    <Grid.Column width={16}>
-                        <ContentToolBar
-                            isDirty={this.state.isDirty}
-                            isError={this.state.isError}
-                            visible={!this.props.model.readOnly}
-                            saveButton={true}
-                            onSave={this.onSave}
-                            importButton={
-                                <DiscretizationImport
-                                    onChange={this.handleChange}
-                                    model={this.props.model}
-                                />
-                            }
-                        />
-                    </Grid.Column>
-                </Grid.Row>
+                {!this.props.model.readOnly && this.props.boundaries.length === 0 &&
+                    <Grid.Row>
+                        <Grid.Column width={16}>
+                            <ContentToolBar
+                                isDirty={this.state.isDirty}
+                                isError={this.state.isError}
+                                visible={!this.props.model.readOnly}
+                                saveButton={true}
+                                onSave={this.onSave}
+                                importButton={
+                                    <DiscretizationImport
+                                        onChange={this.handleChange}
+                                        model={this.props.model}
+                                    />
+                                }
+                            />
+                        </Grid.Column>
+                    </Grid.Row>
+                }
                 <Grid.Row>
                     <Grid.Column width={5}>
                         <Form color={'grey'}>
@@ -141,7 +142,7 @@ class StressperiodsEditor extends React.Component<IProps, IState> {
                                 value={this.state.startDateTime}
                                 onBlur={this.handleDateTimeChange}
                                 onChange={this.handleDateTimeChange}
-                                readOnly={this.props.model.readOnly}
+                                readOnly={this.props.model.readOnly || this.props.boundaries.length > 0}
                             />
                             <Form.Input
                                 error={datesInvalid}
@@ -151,7 +152,7 @@ class StressperiodsEditor extends React.Component<IProps, IState> {
                                 value={this.state.endDateTime}
                                 onBlur={this.handleDateTimeChange}
                                 onChange={this.handleDateTimeChange}
-                                readOnly={this.props.model.readOnly}
+                                readOnly={this.props.model.readOnly || this.props.boundaries.length > 0}
                             />
                             <Form.Select
                                 label="Time unit"
@@ -172,7 +173,7 @@ class StressperiodsEditor extends React.Component<IProps, IState> {
                     </Grid.Column>
                     <Grid.Column width={11}>
                         <StressPeriodsDataTable
-                            readOnly={this.props.model.readOnly}
+                            readOnly={this.props.model.readOnly || this.props.boundaries.length > 0}
                             stressperiods={stressperiods}
                             onChange={this.handleChange}
                         />
@@ -184,6 +185,7 @@ class StressperiodsEditor extends React.Component<IProps, IState> {
 }
 
 const mapStateToProps = (state: any) => ({
+    boundaries: state.T03.boundaries ? BoundaryCollection.fromObject(state.T03.boundaries) : new BoundaryCollection(),
     model: ModflowModel.fromObject(state.T03.model)
 });
 

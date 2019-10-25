@@ -6,15 +6,14 @@ import {ICells} from '../../../../../core/model/geometry/Cells.type';
 import {IGeometry} from '../../../../../core/model/geometry/Geometry.type';
 import {IGridSize} from '../../../../../core/model/geometry/GridSize.type';
 import {BoundingBox, Cells, Geometry, GridSize, ModflowModel} from '../../../../../core/model/modflow';
+import {BoundaryCollection} from '../../../../../core/model/modflow/boundaries';
 import {ILengthUnit} from '../../../../../core/model/modflow/LengthUnit.type';
-
 import {sendCommand} from '../../../../../services/api';
 import {dxCell, dyCell} from '../../../../../services/geoTools/distance';
 import ContentToolBar from '../../../../shared/ContentToolbar';
+import {updateModel} from '../../../actions/actions';
 import ModflowModelCommand from '../../../commands/modflowModelCommand';
 import {ModelDiscretizationMap} from '../../maps';
-
-import {updateModel} from '../../../actions/actions';
 import DiscretizationImport from './discretizationImport';
 
 interface IState {
@@ -29,6 +28,7 @@ interface IState {
 }
 
 interface IStateProps {
+    boundaries: BoundaryCollection;
     model: ModflowModel;
 }
 
@@ -61,6 +61,7 @@ class GridEditor extends React.Component<IProps, IState> {
 
         return (
             <Grid>
+                {!this.props.model.readOnly && this.props.boundaries.length === 0 &&
                 <Grid.Row>
                     <Grid.Column width={16}>
                         <ContentToolBar
@@ -78,6 +79,7 @@ class GridEditor extends React.Component<IProps, IState> {
                         />
                     </Grid.Column>
                 </Grid.Row>
+                }
                 <Grid.Row>
                     <Grid.Column>
                         <Form>
@@ -90,7 +92,7 @@ class GridEditor extends React.Component<IProps, IState> {
                                     onChange={this.handleGridSizeChange}
                                     onBlur={this.handleGridSizeChange}
                                     width={'6'}
-                                    readOnly={readOnly}
+                                    readOnly={readOnly || this.props.boundaries.length > 0}
                                 />
                                 <Form.Input
                                     type="number"
@@ -100,21 +102,21 @@ class GridEditor extends React.Component<IProps, IState> {
                                     onChange={this.handleGridSizeChange}
                                     onBlur={this.handleGridSizeChange}
                                     width={'6'}
-                                    readOnly={readOnly}
+                                    readOnly={readOnly || this.props.boundaries.length > 0}
                                 />
                                 <Form.Input
                                     type="number"
                                     label="Cell height"
                                     value={Math.round(dyCell(boundingBox, gridSize) * 10000) / 10}
                                     width={'6'}
-                                    readOnly={readOnly}
+                                    readOnly={readOnly || this.props.boundaries.length > 0}
                                 />
                                 <Form.Input
                                     type="number"
                                     label="Cell width"
                                     value={Math.round(dxCell(boundingBox, gridSize) * 10000) / 10}
                                     width={'6'}
-                                    readOnly={readOnly}
+                                    readOnly={readOnly || this.props.boundaries.length > 0}
                                 />
                                 <Form.Select
                                     compact={true}
@@ -122,7 +124,7 @@ class GridEditor extends React.Component<IProps, IState> {
                                     options={[{key: 2, text: 'meters', value: 2}]}
                                     style={{zIndex: 10000}}
                                     value={this.state.lengthUnit}
-                                    disabled={readOnly}
+                                    disabled={readOnly || this.props.boundaries.length > 0}
                                 />
                             </Form.Group>
                         </Form>
@@ -136,6 +138,7 @@ class GridEditor extends React.Component<IProps, IState> {
                             geometry={Geometry.fromObject(this.state.geometry)}
                             gridSize={GridSize.fromObject(this.state.gridSize)}
                             onChange={this.handleMapChange}
+                            readOnly={readOnly || this.props.boundaries.length > 0}
                         /></Grid.Column>
                 </Grid.Row>
 
@@ -214,6 +217,7 @@ class GridEditor extends React.Component<IProps, IState> {
 }
 
 const mapStateToProps = (state: any) => ({
+    boundaries: state.T03.boundaries ? BoundaryCollection.fromObject(state.T03.boundaries) : new BoundaryCollection(),
     model: ModflowModel.fromObject(state.T03.model)
 });
 
