@@ -362,7 +362,7 @@ export default class FlopyModflow {
 
         const spData = [];
         for (let per = 0; per < nper; per++) {
-            spData.push([[per, 0], ['save head', 'save drawdown']]);
+            spData.push([[per, 0], ['save head', 'save drawdown', 'save budget']]);
         }
 
         const mfOc = FlopyModflowMfoc.create();
