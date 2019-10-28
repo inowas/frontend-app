@@ -1,6 +1,5 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-
 import {Container, Grid, Header, Segment, Table} from 'semantic-ui-react';
 import {
     CartesianGrid,
@@ -15,7 +14,6 @@ import {
 import {Calculation} from '../../../../core/model/modflow';
 import {connect} from 'react-redux';
 import {fetchModflowFile} from '../../../../services/api';
-
 
 class Observations extends React.Component {
 
@@ -122,8 +120,6 @@ class Observations extends React.Component {
         // noinspection JSSuspiciousNameCombination
         const domainY = Math.ceil(Math.max(yMax, yMin));
         const line = [{x: xMin, y: yMin}, {x: xMax, y: yMax}];
-
-        console.log(linRegressSW);
 
         return (
             <Segment raised>

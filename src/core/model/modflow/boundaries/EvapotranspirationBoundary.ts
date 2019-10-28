@@ -52,11 +52,11 @@ export default class EvapotranspirationBoundary extends Boundary {
     }
 
     get cells() {
-        return this._props.properties.cells;
+        return Cells.fromObject(this._props.properties.cells);
     }
 
     set cells(value) {
-        this._props.properties.cells = value;
+        this._props.properties.cells = value.toObject();
     }
 
     get geometryType() {
