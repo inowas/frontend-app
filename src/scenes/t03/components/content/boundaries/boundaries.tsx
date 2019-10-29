@@ -43,54 +43,53 @@ const boundaries = (props: Props) => {
     const [isDirty, setIsDirty] = useState<boolean>(false);
     const [error, setError] = useState<boolean>(false);
 
-    const prevParams = usePrevious(props.match.params);
+    const prevPid = usePrevious<string>(props.match.params.pid);
 
     const {id, pid, property} = props.match.params;
     const {model, soilmodel, types} = props;
     const readOnly = model.readOnly;
 
+    const filteredBoundaries = () => {
+        const bc = new BoundaryCollection();
+        bc.items = props.boundaries.all.filter((b) => props.types.includes(b.type));
+        return bc;
+    };
+
     useEffect(() => {
-        if (props.boundaries.length === 0) {
-            return setIsLoading(false);
-        }
-
-        if (!pid && props.boundaries.length > 0) {
+        if (!props.match.params.pid) {
             return redirectToFirstBoundary();
-        }
-
-        if (pid) {
-            return fetchBoundary(id, pid);
         }
     }, []);
 
     useEffect(() => {
-        const fBoundaries = props.boundaries.all.filter((b) => types.includes(b.type));
-        if (!pid && fBoundaries.length > 0) {
+        if (!props.match.params.pid) {
             return redirectToFirstBoundary();
         }
+    }, [props.types]);
 
-        if (!prevParams || (prevParams && (
-            (props.match.params.id !== prevParams.id)
-            || (props.match.params.pid !== prevParams.pid)
-            || (props.match.params.property !== prevParams.property)
-        ))) {
-            if (fBoundaries.length === 0) {
-                setIsLoading(false);
-                return setSelectedBoundary(null);
-            }
-
-            setIsLoading(true);
-            return fetchBoundary(props.match.params.id, props.match.params.pid);
+    useEffect(() => {
+        if (!props.match.params.pid) {
+            return redirectToFirstBoundary();
         }
-    }, [props.boundaries, props.match.params]);
+        if (filteredBoundaries().findById(props.match.params.pid)) {
+            setIsLoading(true);
+            return fetchBoundary(props.model.id, props.match.params.pid);
+        }
+    }, [props.boundaries]);
+
+    useEffect(() => {
+        if (props.match.params.pid !== prevPid && filteredBoundaries().findById(props.match.params.pid)) {
+            setIsLoading(true);
+            return fetchBoundary(props.model.id, props.match.params.pid);
+        }
+    }, [props.match.params.pid]);
 
     const redirectToFirstBoundary = () => {
-        const fBoundaries = props.boundaries.all.filter((b) => types.includes(b.type));
-        if (fBoundaries.length > 0) {
-            const bid = fBoundaries[0].id;
+        if (filteredBoundaries().length > 0) {
+            const bid = filteredBoundaries().first.id;
             return props.history.push(`${baseUrl}/${id}/${property}/!/${bid}`);
         }
-
+        setIsLoading(false);
         return props.history.push(`${baseUrl}/${id}/${property}`);
     };
 
@@ -173,18 +172,13 @@ const boundaries = (props: Props) => {
         return props.updateBoundaries(cBoundaries);
     };
 
-    const sBoundaries = types ? new BoundaryCollection() : props.boundaries;
-    if (types) {
-        sBoundaries.items = props.boundaries.all.filter((b) => types.includes(b.type));
-    }
-
     return (
         <Segment color={'grey'} loading={isLoading}>
             <Grid>
                 <Grid.Row>
                     <Grid.Column width={4}>
                         <BoundaryList
-                            boundaries={sBoundaries}
+                            boundaries={filteredBoundaries()}
                             onAdd={handleAdd}
                             onClick={handleBoundaryClick}
                             onClone={handleClone}
@@ -215,7 +209,7 @@ const boundaries = (props: Props) => {
                                     {!isLoading && selectedBoundary &&
                                     <BoundaryDetails
                                         boundary={BoundaryFactory.fromObject(selectedBoundary)}
-                                        boundaries={sBoundaries}
+                                        boundaries={filteredBoundaries()}
                                         model={model}
                                         soilmodel={soilmodel}
                                         onClick={handleBoundaryClick}

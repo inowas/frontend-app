@@ -4,7 +4,12 @@ import {uniqueId} from 'lodash';
 import React, {Component} from 'react';
 import {CircleMarker, GeoJSON, Map, Polygon, Polyline, Tooltip} from 'react-leaflet';
 import {Geometry} from '../../../../core/model/modflow';
-import {Boundary, BoundaryCollection, LineBoundary} from '../../../../core/model/modflow/boundaries';
+import {
+    Boundary,
+    BoundaryCollection,
+    HeadObservationWell,
+    LineBoundary
+} from '../../../../core/model/modflow/boundaries';
 import WellBoundary from '../../../../core/model/modflow/boundaries/WellBoundary';
 import {BasicTileLayer} from '../../../../services/geoTools/tileLayers';
 import {getStyle} from './index';
@@ -100,14 +105,14 @@ class BoundaryMap extends Component<IProps> {
 
         switch (geometry.type.toLowerCase()) {
             case 'point':
-                return b instanceof WellBoundary ? (
+                return (b instanceof WellBoundary || b instanceof HeadObservationWell) ? (
                     <CircleMarker
                         key={uniqueId(Geometry.fromObject(geometry as GeoJson.Point).hash())}
                         center={[
                             geometry.coordinates[1],
                             geometry.coordinates[0]
                         ]}
-                        {...getStyle(b.type, b.wellType)}
+                        {...getStyle(b.type, b instanceof WellBoundary ? b.wellType : undefined)}
                     />
                 ) : null;
             case 'linestring':
