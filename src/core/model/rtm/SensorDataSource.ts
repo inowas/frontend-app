@@ -225,7 +225,7 @@ class SensorDataSource extends GenericObject<ISensorDataSource> {
     constructor(data: ISensorDataSource) {
         super(data);
         if (this.data === undefined) {
-            this.loadData();
+            this.loadData().then().catch();
         }
     }
 

@@ -26,7 +26,7 @@ class ToolMetaData extends React.Component {
     };
 
     handleInputChange = (e, {value, name, checked}) => {
-        const tool = {...this.state.tool, [name]: value || checked};
+        const tool = {...this.state.tool, [name]: value || !!checked};
         this.setState({tool}, () => this.props.onChange(tool));
     };
 
@@ -90,7 +90,7 @@ class ToolMetaData extends React.Component {
                     </Grid.Column>
                 </Grid>
 
-                <Modal size={'mini'} open={edit} onClose={this.handleButtonClick} dimmer={'blurring'}>
+                <Modal size={'mini'} open={edit} dimmer={'blurring'}>
                     <Grid padded>
                         <Grid.Row>
                             <Grid.Column width={16}>
@@ -124,6 +124,7 @@ class ToolMetaData extends React.Component {
                                             width={16}
                                         />
                                     </Form.Group>
+                                    <Button onClick={this.handleButtonClick}>Cancel</Button>
                                     <Button positive onClick={this.handleSave}>Save</Button>
                                 </Form>
                             </Grid.Column>

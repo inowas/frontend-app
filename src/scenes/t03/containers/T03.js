@@ -278,7 +278,7 @@ class T03 extends React.Component {
         const {model} = this.props;
         model.name = name;
         model.description = description;
-        model.public = isPublic;
+        model.isPublic = isPublic;
 
         return sendCommand(
             ModflowModelCommand.updateModflowModelMetadata(model.id, name, description, isPublic),
@@ -337,7 +337,7 @@ class T03 extends React.Component {
                         tool: 'T03',
                         name: this.props.model.name,
                         description: this.props.model.description,
-                        public: this.props.model.public
+                        public: this.props.model.isPublic
                     }}
                     defaultButton={false}
                     saveButton={false}

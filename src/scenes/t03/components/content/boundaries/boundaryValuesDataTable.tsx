@@ -2,7 +2,7 @@ import moment from 'moment';
 import React, {ChangeEvent, useState} from 'react';
 import {Input, Table} from 'semantic-ui-react';
 import {Stressperiods} from '../../../../../core/model/modflow';
-import {Boundary} from '../../../../../core/model/modflow/boundaries';
+import {Boundary, LineBoundary} from '../../../../../core/model/modflow/boundaries';
 import {ISpValues} from '../../../../../core/model/modflow/boundaries/Boundary.type';
 
 interface IActiveInput {
@@ -24,7 +24,15 @@ const boundaryValuesDataTable = (props: IProps) => {
     const [activeInput, setActiveInput] = useState<IActiveInput | null>(null);
 
     const {boundary, selectedOP} = props;
-    const spValues = boundary.getSpValues(selectedOP);
+
+    const getSpValues = () => {
+        if (boundary instanceof LineBoundary) {
+            return selectedOP ? boundary.getSpValues(selectedOP) : null;
+        }
+        return boundary.getSpValues();
+    };
+
+    const spValues: ISpValues | null = getSpValues();
 
     const handleLocalChange = (row: number, col: number) => (e: ChangeEvent<HTMLInputElement>) => setActiveInput({
         col,
@@ -84,7 +92,8 @@ const boundaryValuesDataTable = (props: IProps) => {
         if (!spValues || dateTimes.length !== spValues.length) {
             return (
                 <Table.Row>
-                    <Table.Cell>Something went wrong!</Table.Cell>
+                    <Table.Cell>Boundary stress period number doesn't fit number of model stress periods. <br />
+                    Please create a new boundary instead.</Table.Cell>
                 </Table.Row>
             );
         }

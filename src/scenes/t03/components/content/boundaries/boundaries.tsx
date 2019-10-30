@@ -1,15 +1,13 @@
-import React from 'react';
+import React, {useEffect, useState} from 'react';
 import {connect} from 'react-redux';
 import {withRouter} from 'react-router-dom';
 import {Grid, Segment} from 'semantic-ui-react';
-
 import {ModflowModel, Soilmodel} from '../../../../../core/model/modflow';
 import {Boundary, BoundaryCollection, BoundaryFactory} from '../../../../../core/model/modflow/boundaries';
-
 import {BoundaryType, IBoundary} from '../../../../../core/model/modflow/boundaries/Boundary.type';
 import ContentToolBar from '../../../../../scenes/shared/ContentToolbar';
-
 import {fetchUrl, sendCommand} from '../../../../../services/api';
+import {usePrevious} from '../../../../shared/simpleTools/helpers/customHooks';
 import {updateBoundaries, updateModel} from '../../../actions/actions';
 import ModflowModelCommand from '../../../commands/modflowModelCommand';
 import BoundaryDetails from './boundaryDetails';
@@ -39,249 +37,220 @@ interface IDispatchProps {
 
 type Props = IStateProps & IDispatchProps & IOwnProps;
 
-interface IState {
-    selectedBoundary: IBoundary | null;
-    isLoading: boolean;
-    isDirty: boolean;
-    error: boolean;
-    state: null;
-}
+const boundaries = (props: Props) => {
+    const [selectedBoundary, setSelectedBoundary] = useState<IBoundary | null>(null);
+    const [isLoading, setIsLoading] = useState<boolean>(true);
+    const [isDirty, setIsDirty] = useState<boolean>(false);
+    const [error, setError] = useState<boolean>(false);
 
-class Boundaries extends React.Component<Props, IState> {
-    constructor(props: Props) {
-        super(props);
-        this.state = {
-            selectedBoundary: null,
-            isLoading: true,
-            isDirty: false,
-            error: false,
-            state: null
-        };
-    }
+    const prevPid = usePrevious<string>(props.match.params.pid);
+    const prevTypes = usePrevious<BoundaryType[]>(props.types);
 
-    public componentDidMount() {
-        const {id, pid} = this.props.match.params;
-        if (this.props.boundaries.length === 0) {
-            return this.setState({
-                isLoading: false
-            });
+    const {id, pid, property} = props.match.params;
+    const {model, soilmodel, types} = props;
+    const readOnly = model.readOnly;
+
+    const filteredBoundaries = () => {
+        const bc = new BoundaryCollection();
+        bc.items = props.boundaries.all.filter((b) => props.types.includes(b.type));
+        return bc;
+    };
+
+    useEffect(() => {
+        if (!props.match.params.pid) {
+            setIsLoading(true);
+            return redirectToFirstBoundary();
         }
+    }, []);
 
-        if (!pid && this.props.boundaries.length > 0) {
-            return this.redirectToFirstBoundary(this.props);
-        }
-
-        if (pid) {
-            return this.fetchBoundary(id, pid);
-        }
-    }
-
-    public componentWillReceiveProps(nextProps: Props) {
-        const {id, pid, property} = nextProps.match.params;
-
-        if (!pid && nextProps.boundaries.length > 0) {
-            return this.redirectToFirstBoundary(nextProps);
-        }
-
-        if ((this.props.match.params.id !== id)
-            || (this.props.match.params.pid !== pid)
-            || (this.props.match.params.property !== property)
-        ) {
-            if (nextProps.boundaries.length === 0) {
-                return this.setState({
-                    selectedBoundary: null
-                });
+    useEffect(() => {
+        if (prevTypes && JSON.stringify(props.types) !== JSON.stringify(prevTypes)) {
+            setSelectedBoundary(null);
+            setIsLoading(true);
+            if (!props.match.params.pid) {
+                return redirectToFirstBoundary();
             }
-
-            return this.setState({
-                isLoading: true,
-            }, () => this.fetchBoundary(id, pid));
         }
-    }
+    }, [props.types]);
 
-    public redirectToFirstBoundary = (props: Props) => {
-        const {id, property} = props.match.params;
-
-        if (props.boundaries.length > 0) {
-            const bid = props.boundaries.first.id;
-            return this.props.history.push(`${baseUrl}/${id}/${property}/!/${bid}`);
+    useEffect(() => {
+        setIsLoading(true);
+        if (!props.match.params.pid) {
+            return redirectToFirstBoundary();
         }
+        if (filteredBoundaries().findById(props.match.params.pid)) {
+            return fetchBoundary(props.model.id, props.match.params.pid);
+        }
+    }, [props.boundaries]);
 
-        return this.props.history.push(`${baseUrl}/${id}/${property}`);
+    useEffect(() => {
+        if (props.match.params.pid !== prevPid) {
+            setSelectedBoundary(null);
+            if (filteredBoundaries().findById(props.match.params.pid)) {
+                setIsLoading(true);
+                return fetchBoundary(props.model.id, props.match.params.pid);
+            }
+            return redirectToFirstBoundary();
+        }
+    }, [props.match.params.pid]);
+
+    const redirectToFirstBoundary = () => {
+        if (filteredBoundaries().length > 0) {
+            const bid = filteredBoundaries().first.id;
+            return props.history.push(`${baseUrl}/${id}/${property}/!/${bid}`);
+        }
+        if (pid) {
+            setIsLoading(false);
+            return props.history.push(`${baseUrl}/${id}/${property}`);
+        }
+        setIsLoading(false);
     };
 
-    public fetchBoundary = (modelId: string, boundaryId: string) =>
+    const fetchBoundary = (modelId: string, boundaryId: string) => {
         fetchUrl(`modflowmodels/${modelId}/boundaries/${boundaryId}`,
-            (boundary: IBoundary) => {
-                return this.setState({
-                    isLoading: false,
-                    selectedBoundary: boundary
-                });
+            (cBoundary: IBoundary) => {
+                setIsLoading(false);
+                setSelectedBoundary(cBoundary);
             },
-            () => this.setState({error: true})
+            () => setError(true)
         );
-
-    public onChangeBoundary = (boundary: Boundary) => {
-        return this.setState({
-            selectedBoundary: boundary.toObject(),
-            isDirty: true
-        });
     };
 
-    public handleBoundaryClick = (bid: string) => {
-        const {id, property} = this.props.match.params;
-        this.props.history.push(`${baseUrl}/${id}/${property}/${'!'}/${bid}`);
+    const handleChangeBoundary = (cBoundary: Boundary) => {
+        setSelectedBoundary(cBoundary.toObject());
+        setIsDirty(true);
     };
 
-    public onAdd = (type: BoundaryType) => {
-        const {id, property} = this.props.match.params;
+    const handleBoundaryClick = (bid: string) => {
+        props.history.push(`${baseUrl}/${id}/${property}/!/${bid}`);
+    };
+
+    const handleAdd = (type: BoundaryType) => {
         if (BoundaryFactory.availableTypes.indexOf(type) >= 0) {
-            this.props.history.push(`${baseUrl}/${id}/${property}/${type}`);
+            props.history.push(`${baseUrl}/${id}/${property}/${type}`);
         }
     };
 
-    public onClone = (boundaryId: string) => {
-        const model = this.props.model;
+    const handleClone = (boundaryId: string) => {
         fetchUrl(`modflowmodels/${model.id}/boundaries/${boundaryId}`,
-            (boundary: IBoundary) => {
-                const b = BoundaryFactory.fromObject(boundary);
+            (cBoundary: IBoundary) => {
+                const b = BoundaryFactory.fromObject(cBoundary);
                 if (b) {
                     const clonedBoundary = b.clone();
                     sendCommand(ModflowModelCommand.addBoundary(model.id, clonedBoundary),
                         () => {
-                            const boundaries = this.props.boundaries;
-                            boundaries.addBoundary(clonedBoundary);
-                            this.props.updateBoundaries(boundaries);
-                            this.handleBoundaryClick(clonedBoundary.id);
+                            const cBoundaries = props.boundaries;
+                            cBoundaries.addBoundary(clonedBoundary);
+                            props.updateBoundaries(cBoundaries);
+                            handleBoundaryClick(clonedBoundary.id);
                         },
-                        () => this.setState({error: true})
+                        () => setError(true)
                     );
                 }
             },
-            () => this.setState({error: true})
+            () => setError(true)
         );
     };
 
-    public onRemove = (boundaryId: string) => {
-        const model = this.props.model;
+    const handleRemove = (boundaryId: string) => {
         return sendCommand(ModflowModelCommand.removeBoundary(model.id, boundaryId),
             () => {
-                const boundaries = this.props.boundaries.removeById(boundaryId);
-                this.props.updateBoundaries(boundaries);
-                this.redirectToFirstBoundary(this.props);
+                const cBoundaries = props.boundaries.removeById(boundaryId);
+                props.updateBoundaries(cBoundaries);
+                return redirectToFirstBoundary();
             },
-            () => this.setState({error: true})
+            () => setError(true)
         );
     };
 
-    public onUpdate = () => {
-        if (!this.state.selectedBoundary) {
+    const handleUpdate = () => {
+        if (!selectedBoundary) {
             return;
         }
-        const model = this.props.model;
-        const boundary = BoundaryFactory.fromObject(this.state.selectedBoundary);
-        return sendCommand(ModflowModelCommand.updateBoundary(model.id, boundary),
+        const cBoundary = BoundaryFactory.fromObject(selectedBoundary);
+        return sendCommand(ModflowModelCommand.updateBoundary(model.id, cBoundary),
             () => {
-                this.setState({
-                    isDirty: false
-                });
-                if (boundary) {
-                    const boundaries = this.props.boundaries;
-                    boundaries.update(boundary);
-                    this.props.updateBoundaries(boundaries);
+                setIsDirty(false);
+                if (cBoundary) {
+                    const cBoundaries = props.boundaries;
+                    cBoundaries.update(cBoundary);
+                    props.updateBoundaries(cBoundaries);
                 }
             },
-            () => this.setState({error: true})
+            () => setError(true)
         );
     };
 
-    public handleChangeImport = (boundaries: BoundaryCollection) => {
-        return this.props.updateBoundaries(boundaries);
+    const handleChangeImport = (cBoundaries: BoundaryCollection) => {
+        return props.updateBoundaries(cBoundaries);
     };
 
-    public render() {
-        const {model, soilmodel, types} = this.props;
-        const readOnly = model.readOnly;
-        const {error, isDirty, isLoading, selectedBoundary} = this.state;
-        const {pid} = this.props.match.params;
-
-        const boundaries = types ? new BoundaryCollection() : this.props.boundaries;
-        if (types) {
-            boundaries.items = this.props.boundaries.all.filter((b) => types.includes(b.type));
-        }
-
-        let boundary = null;
-        if (selectedBoundary) {
-            boundary = BoundaryFactory.fromObject(selectedBoundary);
-        }
-
-        return (
-            <Segment color={'grey'} loading={isLoading}>
-                <Grid>
-                    <Grid.Row>
-                        <Grid.Column width={4}>
-                            <BoundaryList
-                                boundaries={boundaries}
-                                onAdd={this.onAdd}
-                                onClick={this.handleBoundaryClick}
-                                onClone={this.onClone}
-                                onRemove={this.onRemove}
-                                readOnly={model.readOnly}
-                                selected={pid}
-                                types={types}
-                            />
-                        </Grid.Column>
-                        <Grid.Column width={12}>
-                            <Grid>
-                                <Grid.Row>
-                                    <Grid.Column width={16}>
-                                        <ContentToolBar
-                                            onSave={this.onUpdate}
-                                            isDirty={isDirty}
-                                            isError={error}
-                                            saveButton={!readOnly}
-                                            importButton={this.props.readOnly ||
-                                            <BoundaryImport
-                                                model={this.props.model}
-                                                soilmodel={this.props.soilmodel}
-                                                boundaries={this.props.boundaries}
-                                                onChange={this.handleChangeImport}
-                                            />
-                                            }
+    return (
+        <Segment color={'grey'} loading={isLoading}>
+            <Grid>
+                <Grid.Row>
+                    <Grid.Column width={4}>
+                        <BoundaryList
+                            boundaries={filteredBoundaries()}
+                            onAdd={handleAdd}
+                            onClick={handleBoundaryClick}
+                            onClone={handleClone}
+                            onRemove={handleRemove}
+                            readOnly={model.readOnly}
+                            selected={pid}
+                            types={types}
+                        />
+                    </Grid.Column>
+                    <Grid.Column width={12}>
+                        <Grid>
+                            <Grid.Row>
+                                <Grid.Column width={16}>
+                                    <ContentToolBar
+                                        onSave={handleUpdate}
+                                        isDirty={isDirty}
+                                        isError={error}
+                                        saveButton={!readOnly}
+                                        importButton={props.readOnly ||
+                                        <BoundaryImport
+                                            model={props.model}
+                                            soilmodel={props.soilmodel}
+                                            boundaries={props.boundaries}
+                                            onChange={handleChangeImport}
                                         />
-                                        {!isLoading && boundary &&
-                                        <BoundaryDetails
-                                            boundary={boundary}
-                                            boundaries={boundaries}
-                                            model={model}
-                                            soilmodel={soilmodel}
-                                            onClick={this.handleBoundaryClick}
-                                            onChange={this.onChangeBoundary}
-                                            readOnly={readOnly}
-                                        />}
-                                    </Grid.Column>
-                                </Grid.Row>
-                            </Grid>
-                        </Grid.Column>
-                    </Grid.Row>
-                </Grid>
-            </Segment>
-        );
-    }
-}
+                                        }
+                                    />
+                                    {!isLoading && selectedBoundary &&
+                                    <BoundaryDetails
+                                        boundary={BoundaryFactory.fromObject(selectedBoundary)}
+                                        boundaries={filteredBoundaries()}
+                                        model={model}
+                                        soilmodel={soilmodel}
+                                        onClick={handleBoundaryClick}
+                                        onChange={handleChangeBoundary}
+                                        readOnly={readOnly}
+                                    />}
+                                </Grid.Column>
+                            </Grid.Row>
+                        </Grid>
+                    </Grid.Column>
+                </Grid.Row>
+            </Grid>
+        </Segment>
+    );
+};
 
-const mapStateToProps = (state: any, props: any) => {
+const mapStateToProps = (state: any) => {
     return ({
         readOnly: ModflowModel.fromObject(state.T03.model).readOnly,
-        boundaries: BoundaryCollection.fromObject(state.T03.boundaries).filter((b) => props.types.includes(b.type)),
+        boundaries: BoundaryCollection.fromObject(state.T03.boundaries),
         model: ModflowModel.fromObject(state.T03.model),
         soilmodel: Soilmodel.fromObject(state.T03.soilmodel)
     });
 };
 
 const mapDispatchToProps = (dispatch: any): IDispatchProps => ({
-    updateBoundaries: (boundaries: BoundaryCollection) => dispatch(updateBoundaries(boundaries)),
+    updateBoundaries: (cBoundaries: BoundaryCollection) => dispatch(updateBoundaries(cBoundaries)),
     updateModel: (model: ModflowModel) => dispatch(updateModel(model))
 });
 
-export default withRouter(connect(mapStateToProps, mapDispatchToProps)(Boundaries));
+export default withRouter(connect(mapStateToProps, mapDispatchToProps)(boundaries));

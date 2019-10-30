@@ -40,11 +40,11 @@ const styles: IMapStyles = {
         fill: false
     },
     hob: {
-        radius: 3,
+        radius: 5,
         color: 'green',
-        weight: 1,
+        weight: 2,
         fillColor: '#FBBD08',
-        fillOpacity: 1
+        fillOpacity: 0.7
     },
     rch: {
         weight: 2,

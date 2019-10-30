@@ -1,4 +1,4 @@
-import React, {ChangeEvent, SyntheticEvent} from 'react';
+import React, {ChangeEvent, SyntheticEvent, useEffect, useState} from 'react';
 import {Button, Dropdown, DropdownProps, Form, Header, InputOnChangeData, List, Popup} from 'semantic-ui-react';
 import uuid from 'uuid';
 import {ModflowModel, Soilmodel} from '../../../../../core/model/modflow';
@@ -21,99 +21,71 @@ interface IProps {
     readOnly: boolean;
 }
 
-interface IState {
-    showBoundaryEditor: boolean;
-    showObservationPointEditor: boolean;
-    observationPointId?: string;
-}
+const boundaryDetails = (props: IProps) => {
+    const [showBoundaryEditor, setShowBoundaryEditor] = useState<boolean>(false);
+    const [showObservationPointEditor, setShowObservationPointEditor] = useState<boolean>(false);
+    const [observationPointId, setObservationPointId] = useState<string | undefined>(undefined);
 
-class BoundaryDetails extends React.Component<IProps, IState> {
-    constructor(props: IProps) {
-        super(props);
-        this.state = {
-            showBoundaryEditor: false,
-            showObservationPointEditor: false,
-            observationPointId: props.boundary instanceof LineBoundary ?
-                props.boundary.observationPoints[0].id : undefined
-        };
-    }
-
-    public componentWillReceiveProps(nextProps: IProps) {
-        if (!nextProps.boundary) {
+    useEffect(() => {
+        if (!props.boundary) {
             return;
         }
 
-        if (nextProps.boundary instanceof LineBoundary) {
-            if (null === this.state.observationPointId) {
-                return this.setState({
-                    observationPointId: nextProps.boundary.observationPoints[0].id
-                });
-            }
-
-            try {
-                nextProps.boundary.findObservationPointById(this.state.observationPointId || '');
-            } catch (err) {
-                return this.setState({
-                    observationPointId: nextProps.boundary.observationPoints[0].id
-                });
-            }
+        if (!observationPointId && props.boundary instanceof LineBoundary) {
+            return setObservationPointId(props.boundary.observationPoints[0].id);
         }
-    }
+    }, [props.boundary]);
 
-    public handleChange = (e: SyntheticEvent<HTMLElement, Event> | ChangeEvent<HTMLInputElement>,
-                           data: DropdownProps | InputOnChangeData) => {
+    const handleChange = (e: SyntheticEvent<HTMLElement, Event> | ChangeEvent<HTMLInputElement>,
+                          data: DropdownProps | InputOnChangeData) => {
         let value = data.value;
         const name = data.name;
-        if (name === 'layers' && data.value && typeof data.value === 'number') {
+        if (name === 'layers' && data.value !== null && typeof data.value === 'number') {
             value = [data.value];
         }
-        const boundary = this.props.boundary;
+        const cBoundary = props.boundary;
         // @ts-ignore
-        boundary[name] = value;
-        return this.props.onChange(boundary);
+        cBoundary[name] = value;
+        return props.onChange(cBoundary);
     };
 
-    public handleCloneClick = () => {
-        if (this.props.boundary instanceof LineBoundary && this.state.observationPointId) {
-            const boundary = this.props.boundary;
+    const handleCloneClick = () => {
+        if (props.boundary instanceof LineBoundary && observationPointId) {
+            const cBoundary = props.boundary;
             const newOpId = uuid.v4();
-            boundary.cloneObservationPoint(this.state.observationPointId, newOpId);
-            this.setState({
-                observationPointId: newOpId,
-                showObservationPointEditor: true
-            });
-            this.props.onChange(boundary);
+            cBoundary.cloneObservationPoint(observationPointId, newOpId);
+            setObservationPointId(newOpId);
+            setShowObservationPointEditor(true);
+            return props.onChange(cBoundary);
         }
     };
 
-    public handleRemoveClick = () => {
-        if (this.props.boundary instanceof LineBoundary && this.state.observationPointId) {
-            const boundary = this.props.boundary;
-            boundary.removeObservationPoint(this.state.observationPointId);
-            this.setState({
-                observationPointId: boundary.observationPoints[0].id
-            });
-            this.props.onChange(boundary);
+    const handleRemoveClick = () => {
+        if (props.boundary instanceof LineBoundary && observationPointId) {
+            const cBoundary = props.boundary;
+            cBoundary.removeObservationPoint(observationPointId);
+            setObservationPointId(cBoundary.observationPoints[0].id);
+            return props.onChange(cBoundary);
         }
     };
 
-    public layerOptions = () => {
-        if (!(this.props.soilmodel)) {
+    const layerOptions = () => {
+        if (!(props.soilmodel)) {
             return [];
         }
 
-        return this.props.soilmodel.layersCollection.all.map((l, idx) => (
+        return props.soilmodel.layersCollection.all.map((l, idx) => (
             {key: l.id, value: idx, text: l.name}
         ));
     };
 
-    public renderLayerSelection = () => {
-        const {boundary} = this.props;
-        const multipleLayers = ['chd', 'ghb'].includes(boundary.type);
+    const renderLayerSelection = () => {
+        const cBoundary = props.boundary;
+        const multipleLayers = ['chd', 'ghb'].includes(cBoundary.type);
 
         let options = {enabled: false, label: '', name: ''};
 
-        switch (boundary.type) {
+        switch (cBoundary.type) {
             case 'rch':
                 options = {enabled: true, label: 'Recharge option', name: 'nrchop'};
                 break;
@@ -125,7 +97,7 @@ class BoundaryDetails extends React.Component<IProps, IState> {
                 break;
         }
 
-        if (!boundary.layers || ['riv'].includes(boundary.type)) {
+        if (!cBoundary.layers || ['riv'].includes(cBoundary.type)) {
             return null;
         }
 
@@ -135,7 +107,7 @@ class BoundaryDetails extends React.Component<IProps, IState> {
                 <Form.Dropdown
                     label={boundary.type === 'rch' ? 'Recharge option' : 'Evapotranspiration option'}
                     style={{zIndex: 1000}}
-                    selection={!this.props.readOnly}
+                    selection={!props.readOnly}
                     options={[
                         {key: 0, value: 1, text: '1: Top grid layer'},
                         {key: 1, value: 2, text: '2: Specified layer'},
@@ -143,196 +115,193 @@ class BoundaryDetails extends React.Component<IProps, IState> {
                     ]}
                     value={boundary.optionCode}
                     name={'optionCode'}
-                    onChange={this.handleChange}
-                    disabled={this.props.readOnly}
+                    onChange={handleChange}
+                    disabled={props.readOnly}
                 />
                 }
                 <Form.Dropdown
-                    disabled={this.props.readOnly || (boundary instanceof RechargeBoundary ||
+                    disabled={props.readOnly || (boundary instanceof RechargeBoundary ||
                         boundary instanceof EvapotranspirationBoundary) && boundary.optionCode !== 2}
-                    loading={!(this.props.soilmodel)}
+                    loading={!(props.soilmodel)}
                     label={multipleLayers ? 'Selected layers' : 'Selected layer'}
                     style={{zIndex: 1000}}
                     multiple={multipleLayers}
-                    selection={!this.props.readOnly}
-                    options={this.layerOptions()}
+                    selection={!props.readOnly}
+                    options={layerOptions()}
                     value={multipleLayers ? boundary.layers : boundary.layers[0]}
                     name={'layers'}
-                    onChange={this.handleChange}
+                    onChange={handleChange}
                 />
             </React.Fragment>
         );
     };
 
-    public render() {
-        const {boundary, boundaries, model} = this.props;
-        const {geometry, stressperiods} = model;
-        const {observationPointId} = this.state;
-
-        if (!boundary || !geometry) {
-            return <NoContent message={'No objects.'}/>;
-        }
-
-        if (!boundary.layers || boundary.layers.length === 0) {
-            return <NoContent message={'No layers.'}/>;
-        }
-
-        return (
-            <div>
-                <Form style={{marginTop: '1rem'}}>
-                    <Form.Group widths="equal">
-                        <Form.Input
-                            value={boundary.type.toUpperCase()}
-                            label="Type"
-                            readOnly={true}
-                            width={5}
-                        />
-
-                        <Form.Input
-                            label={'Name'}
-                            name={'name'}
-                            value={boundary.name}
-                            onChange={this.handleChange}
-                            readOnly={this.props.readOnly}
-                        />
-
-                        {this.renderLayerSelection()}
-
-                        {boundary.type === 'wel' && boundary instanceof WellBoundary &&
-                        <Form.Dropdown
-                            label={'Well type'}
-                            style={{zIndex: 1000}}
-                            selection={true}
-                            options={WellBoundary.wellTypes.types.map((t) => (
-                                {key: t.value, value: t.value, text: t.name}
-                            ))}
-                            value={boundary.wellType}
-                            name={'wellType'}
-                            onChange={this.handleChange}
-                            disabled={this.props.readOnly}
-                        />
-                        }
-                    </Form.Group>
-                </Form>
-
-                {!this.props.readOnly &&
-                <List horizontal={true}>
-                    <List.Item
-                        as="a"
-                        onClick={this.handleClickShowBoundaryEditor}
-                    >
-                        Edit boundary on map
-                    </List.Item>
-                </List>
-                }
-                <BoundaryMap
-                    geometry={geometry}
-                    boundary={boundary}
-                    boundaries={boundaries}
-                    selectedObservationPointId={observationPointId}
-                    onClick={this.handleClickBoundary}
-                />
-                {(boundary instanceof LineBoundary) &&
-                <div>
-                    <Button as={'div'} labelPosition={'left'} fluid={true}>
-                        <Popup
-                            trigger={
-                                <Dropdown
-                                    fluid={true}
-                                    selection={true}
-                                    value={this.state.observationPointId}
-                                    options={boundary.observationPoints.map((op) => (
-                                        {key: op.id, value: op.id, text: op.name})
-                                    )}
-                                    onChange={this.handleSelectObservationPoint}
-                                />
-                            }
-                            size="mini"
-                            content="Select Observation Point"
-                        />
-                        <Popup
-                            trigger={
-                                <Button
-                                    icon={'edit'}
-                                    onClick={this.handleEditPoint}
-                                    disabled={this.props.readOnly}
-                                />
-                            }
-                            size="mini"
-                            content="Edit point"
-                        />
-                        <Popup
-                            trigger={
-                                <Button
-                                    icon={'clone'}
-                                    onClick={this.handleCloneClick}
-                                    disabled={this.props.readOnly}
-                                />
-                            }
-                            size="mini"
-                            content="Clone point"
-                        />
-                        {boundary instanceof LineBoundary &&
-                        <Popup
-                            trigger={
-                                <Button
-                                    icon="trash"
-                                    onClick={this.handleRemoveClick}
-                                    disabled={this.props.readOnly || boundary.observationPoints.length === 1}
-                                />
-                            }
-                            size="mini"
-                            content="Delete point"
-                        />
-                        }
-                    </Button>
-                </div>
-                }
-                <Header as={'h4'}>Time dependent boundary values at observation point</Header>
-                <BoundaryValuesDataTable
-                    boundary={boundary}
-                    onChange={this.props.onChange}
-                    readOnly={this.props.readOnly}
-                    selectedOP={observationPointId}
-                    stressperiods={stressperiods}
-                />
-
-                {this.state.showBoundaryEditor &&
-                <BoundaryGeometryEditor
-                    boundary={boundary}
-                    boundaries={boundaries}
-                    model={model}
-                    onCancel={this.handleCancelGeometryEditor}
-                    onChange={this.props.onChange}
-                    readOnly={this.props.readOnly}
-                />
-                }
-                {(this.state.showObservationPointEditor && boundary instanceof LineBoundary) &&
-                <ObservationPointEditor
-                    boundary={boundary}
-                    model={model}
-                    observationPointId={this.state.observationPointId}
-                    onCancel={this.handleCancelObservationPointEditor}
-                    onChange={this.props.onChange}
-                    readOnly={this.props.readOnly}
-                />
-                }
-            </div>
-        );
-    }
-
-    private handleCancelGeometryEditor = () => this.setState({showBoundaryEditor: false});
-    private handleCancelObservationPointEditor = () => this.setState({showObservationPointEditor: false});
-    private handleClickBoundary = (id: string) => this.props.onClick(id);
-    private handleClickShowBoundaryEditor = () => this.setState({showBoundaryEditor: true});
-    private handleEditPoint = () => this.setState({showObservationPointEditor: true});
-    private handleSelectObservationPoint = (e: SyntheticEvent<HTMLElement, Event>, data: DropdownProps) => {
+    const handleCancelGeometryEditor = () => setShowBoundaryEditor(false);
+    const handleCancelObservationPointEditor = () => setShowObservationPointEditor(false);
+    const handleClickBoundary = (id: string) => props.onClick(id);
+    const handleClickShowBoundaryEditor = () => setShowBoundaryEditor(true);
+    const handleClickObservationPoint = (id: string) => setObservationPointId(id);
+    const handleEditPoint = () => setShowObservationPointEditor(true);
+    const handleSelectObservationPoint = (e: SyntheticEvent<HTMLElement, Event>, data: DropdownProps) => {
         if (data.value && typeof data.value === 'string') {
-            return this.setState({
-                observationPointId: data.value
-            });
+            return setObservationPointId(data.value);
         }
     };
-}
 
-export default BoundaryDetails;
+    const {boundary, boundaries, model} = props;
+    const {geometry, stressperiods} = model;
+
+    if (!boundary || !geometry) {
+        return <NoContent message={'No objects.'}/>;
+    }
+
+    if (!boundary.layers || boundary.layers.length === 0) {
+        return <NoContent message={'No layers.'}/>;
+    }
+
+    return (
+        <div>
+            <Form style={{marginTop: '1rem'}}>
+                <Form.Group widths="equal">
+                    <Form.Input
+                        value={boundary.type.toUpperCase()}
+                        label="Type"
+                        readOnly={true}
+                        width={5}
+                    />
+
+                    <Form.Input
+                        label={'Name'}
+                        name={'name'}
+                        value={boundary.name}
+                        onChange={handleChange}
+                        readOnly={props.readOnly}
+                    />
+
+                    {renderLayerSelection()}
+
+                    {boundary.type === 'wel' && boundary instanceof WellBoundary &&
+                    <Form.Dropdown
+                        label={'Well type'}
+                        style={{zIndex: 1000}}
+                        selection={true}
+                        options={WellBoundary.wellTypes.types.map((t) => (
+                            {key: t.value, value: t.value, text: t.name}
+                        ))}
+                        value={boundary.wellType}
+                        name={'wellType'}
+                        onChange={handleChange}
+                        disabled={props.readOnly}
+                    />
+                    }
+                </Form.Group>
+            </Form>
+
+            {!props.readOnly &&
+            <List horizontal={true}>
+                <List.Item
+                    as="a"
+                    onClick={handleClickShowBoundaryEditor}
+                >
+                    Edit boundary on map
+                </List.Item>
+            </List>
+            }
+            <BoundaryMap
+                geometry={geometry}
+                boundary={boundary}
+                boundaries={boundaries}
+                selectedObservationPointId={observationPointId}
+                onClick={handleClickBoundary}
+                onClickObservationPoint={handleClickObservationPoint}
+            />
+            {(boundary instanceof LineBoundary) &&
+            <div>
+                <Button as={'div'} labelPosition={'left'} fluid={true}>
+                    <Popup
+                        trigger={
+                            <Dropdown
+                                fluid={true}
+                                selection={true}
+                                value={observationPointId}
+                                options={boundary.observationPoints.map((op) => (
+                                    {key: op.id, value: op.id, text: op.name})
+                                )}
+                                onChange={handleSelectObservationPoint}
+                            />
+                        }
+                        size="mini"
+                        content="Select Observation Point"
+                    />
+                    <Popup
+                        trigger={
+                            <Button
+                                icon={'edit'}
+                                onClick={handleEditPoint}
+                                disabled={props.readOnly}
+                            />
+                        }
+                        size="mini"
+                        content="Edit point"
+                    />
+                    <Popup
+                        trigger={
+                            <Button
+                                icon={'clone'}
+                                onClick={handleCloneClick}
+                                disabled={props.readOnly}
+                            />
+                        }
+                        size="mini"
+                        content="Clone point"
+                    />
+                    {boundary instanceof LineBoundary &&
+                    <Popup
+                        trigger={
+                            <Button
+                                icon="trash"
+                                onClick={handleRemoveClick}
+                                disabled={props.readOnly || boundary.observationPoints.length === 1}
+                            />
+                        }
+                        size="mini"
+                        content="Delete point"
+                    />
+                    }
+                </Button>
+            </div>
+            }
+            <Header as={'h4'}>Time dependent boundary values at observation point</Header>
+            <BoundaryValuesDataTable
+                boundary={boundary}
+                onChange={props.onChange}
+                readOnly={props.readOnly}
+                selectedOP={observationPointId}
+                stressperiods={stressperiods}
+            />
+
+            {showBoundaryEditor &&
+            <BoundaryGeometryEditor
+                boundary={boundary}
+                boundaries={boundaries}
+                model={model}
+                onCancel={handleCancelGeometryEditor}
+                onChange={props.onChange}
+                readOnly={props.readOnly}
+            />
+            }
+            {(showObservationPointEditor && boundary instanceof LineBoundary) &&
+            <ObservationPointEditor
+                boundary={boundary}
+                model={model}
+                observationPointId={observationPointId}
+                onCancel={handleCancelObservationPointEditor}
+                onChange={props.onChange}
+                readOnly={props.readOnly}
+            />
+            }
+        </div>
+    );
+};
+
+export default boundaryDetails;

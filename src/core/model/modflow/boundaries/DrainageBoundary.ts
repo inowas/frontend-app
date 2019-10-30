@@ -63,7 +63,7 @@ export default class DrainageBoundary extends LineBoundary {
 
         const opIdToRemove = boundary.observationPoints[0].id;
         obj.ops.forEach((op) => {
-            boundary.addObservationPoint(
+            boundary.createObservationPoint(
                 op.id ? op.id : Uuid.v4(),
                 op.name,
                 op.geometry,
