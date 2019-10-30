@@ -42,14 +42,8 @@ const dataSources = (props: IProps) => {
     const [editDatasource, setEditDatasource] = useState<DataSource | null>(null);
 
     useEffect(() => {
-        props.parameter.dataSources.map((ds) => {
-            const d = DataSourceFactory.fromObject(ds);
-            if (d === null) {
-                return ds;
-            }
-
-            d.loadData().then(() => handleUpdateDataSource(d));
-        });
+        const dsc = DataSourceCollection.fromObject(props.parameter.dataSources);
+        dsc.mergedData().then((() => handleUpdateDataSources(dsc)));
     }, []);
 
     const getDsType = (ds: DataSource) => {
@@ -69,6 +63,17 @@ const dataSources = (props: IProps) => {
 
         parameter.dataSources.push(ds.toObject());
         setAddDatasource(null);
+        props.onChange(parameter);
+    };
+
+    const handleUpdateDataSources = (dsc: DataSourceCollection) => {
+        const {parameter} = props;
+        if (!parameter) {
+            return;
+        }
+
+        parameter.dataSources = dsc.toObject();
+        setEditDatasource(null);
         props.onChange(parameter);
     };
 
@@ -176,6 +181,7 @@ const dataSources = (props: IProps) => {
         return null;
     }
 
+    const dataSourceCollection = DataSourceCollection.fromObject(props.parameter.dataSources);
     return (
         <Grid>
             <Grid.Row>
@@ -301,7 +307,7 @@ const dataSources = (props: IProps) => {
                         <Label color={'blue'} ribbon={true} size={'large'}>
                             Chart
                         </Label>
-                        <DataSourcesChart dataSources={DataSourceCollection.fromObject(props.parameter.dataSources)}/>
+                        {dataSourceCollection.isFetched() && <DataSourcesChart dataSources={dataSourceCollection}/>}
                     </Segment>
                     }
 
