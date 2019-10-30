@@ -182,6 +182,7 @@ const dataSources = (props: IProps) => {
     }
 
     const dataSourceCollection = DataSourceCollection.fromObject(props.parameter.dataSources);
+
     return (
         <Grid>
             <Grid.Row>
@@ -203,7 +204,7 @@ const dataSources = (props: IProps) => {
                                 </Table.Row>
                             </Table.Header>
                             <Table.Body>
-                                {props.parameter.dataSources.map((ds, key) => {
+                                {dataSourceCollection.all.map((ds, key) => {
                                     const dsInst = DataSourceFactory.fromObject(ds);
                                     if (dsInst === null) {
                                         return null;
@@ -219,10 +220,8 @@ const dataSources = (props: IProps) => {
                                                 <TinyLineChart
                                                     datasource={dsInst}
                                                     color={colors[key]}
-                                                    begin={DataSourceCollection
-                                                        .fromObject(props.parameter.dataSources).globalBegin()}
-                                                    end={DataSourceCollection
-                                                        .fromObject(props.parameter.dataSources).globalEnd()}
+                                                    begin={dataSourceCollection.globalBegin()}
+                                                    end={dataSourceCollection.globalEnd()}
                                                 />
                                             </Table.Cell>
                                             <Table.Cell textAlign={'right'}>
@@ -239,7 +238,7 @@ const dataSources = (props: IProps) => {
                                                         <Button
                                                             icon={true}
                                                             onClick={handleMoveDataSourceClick(key, key + 1)}
-                                                            disabled={key === props.parameter.dataSources.length - 1}
+                                                            disabled={key === dataSourceCollection.length - 1}
                                                         >
                                                             <Icon name={'arrow down'}/>
                                                         </Button>
