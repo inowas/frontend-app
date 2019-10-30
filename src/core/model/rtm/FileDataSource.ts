@@ -48,8 +48,7 @@ class FileDataSource extends GenericObject<IFileDataSource> {
             error: null
         });
 
-        fds.loadData();
-
+        fds.loadData().then().catch();
         return fds;
     }
 
@@ -72,7 +71,7 @@ class FileDataSource extends GenericObject<IFileDataSource> {
     constructor(data: IFileDataSource) {
         super(data);
         if (this.data === undefined) {
-            this.loadData();
+            this.loadData().then().catch();
         }
     }
 
@@ -84,7 +83,7 @@ class FileDataSource extends GenericObject<IFileDataSource> {
 
     public async loadData() {
         if (this._props.data) {
-            return;
+            return null;
         }
 
         this._props.data = null;

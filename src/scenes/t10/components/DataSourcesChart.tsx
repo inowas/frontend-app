@@ -1,9 +1,10 @@
 import {LTOB} from 'downsample';
 import {DataPoint} from 'downsample/dist/types';
 import moment from 'moment';
-import React from 'react';
+import React, {useEffect, useState} from 'react';
 import {ResponsiveContainer, Scatter, ScatterChart, XAxis, YAxis} from 'recharts';
 import {DataSourceCollection} from '../../../core/model/rtm';
+import {IDateTimeValue} from '../../../core/model/rtm/Sensor.type';
 
 interface IProps {
     dataSources: DataSourceCollection;
@@ -11,14 +12,18 @@ interface IProps {
 
 const dataSourcesChart = (props: IProps) => {
 
+    const [data, setData] = useState<IDateTimeValue[] | null>(null);
+
+    useEffect(() => {
+        props.dataSources.mergedData().then((d) => setData(d));
+    }, [props.dataSources]);
+
     const formatDateTimeTicks = (dt: number) => {
         return moment.unix(dt).format('YYYY/MM/DD');
     };
 
     // tslint:disable-next-line:variable-name
     const RenderNoShape = () => null;
-
-    const data = props.dataSources.getMergedData();
 
     if (!data || data.length === 0) {
         return null;
