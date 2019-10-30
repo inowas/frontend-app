@@ -54,7 +54,7 @@ class BoundaryMap extends Component<IProps> {
                         onClick={this.handleClickObservationPoint(op.id)}
                         {...getStyle('op' + selected)}
                     >
-                        <Tooltip offset={[-5, 0]} opacity={1} sticky={true}>
+                        <Tooltip offset={[0, 0]} opacity={1} sticky={true}>
                             <b>{op.name}</b><br />
                             {op.geometry.coordinates[1] >= 0 ? 'N ' : 'S '}
                             {op.geometry.coordinates[1].toFixed(3)}

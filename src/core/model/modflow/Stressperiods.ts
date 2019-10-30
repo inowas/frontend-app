@@ -158,6 +158,16 @@ class Stressperiods {
         return this.stressperiods[idx];
     }
 
+    public get first() {
+        let first = this.stressperiods[0];
+        this.stressperiods.forEach((sp) => {
+            if (sp.startDateTime.isBefore(first.startDateTime)) {
+                first = sp;
+            }
+        });
+        return first;
+    }
+
     public last() {
         return this.stressperiods[this.count - 1];
     }
@@ -183,6 +193,17 @@ class Stressperiods {
         });
 
         this.stressperiods = stressperiods;
+    }
+
+    public updateStressPeriodsByStartDateTime() {
+        const firstStressPeriod = this.first;
+        const difference = moment.duration(this.startDateTime.diff(firstStressPeriod.startDateTime)).asDays();
+
+        this.stressperiods = this.stressperiods.map((sp) => {
+            sp.startDateTime = sp.startDateTime.add(difference, 'days');
+            return sp;
+        });
+        return this;
     }
 
     public toObject = () => {

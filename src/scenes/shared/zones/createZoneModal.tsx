@@ -20,7 +20,7 @@ interface IProps {
 }
 
 const createZoneModal = (props: IProps) => {
-    const [name, setName] = useState<string>('');
+    const [name, setName] = useState<string>('New Zone');
     const [geometry, setGeometry] = useState<Polygon | null>(null);
 
     const handleApply = () => {
@@ -60,7 +60,7 @@ const createZoneModal = (props: IProps) => {
     };
 
     return (
-        <Modal size={'large'} open={true} onClose={props.onCancel} dimmer={'inverted'}>
+        <Modal size={'large'} open={true} dimmer={'inverted'}>
             <Modal.Header>Edit Zone</Modal.Header>
             <Modal.Content>
                 <Form>

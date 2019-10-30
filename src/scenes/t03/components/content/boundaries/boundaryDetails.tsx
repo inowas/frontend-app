@@ -31,16 +31,8 @@ const boundaryDetails = (props: IProps) => {
             return;
         }
 
-        if (props.boundary instanceof LineBoundary) {
-            if (null === observationPointId) {
-                return setObservationPointId(props.boundary.observationPoints[0].id);
-            }
-
-            try {
-                props.boundary.findObservationPointById(observationPointId || '');
-            } catch (err) {
-                return setObservationPointId(props.boundary.observationPoints[0].id);
-            }
+        if (!observationPointId && props.boundary instanceof LineBoundary) {
+            return setObservationPointId(props.boundary.observationPoints[0].id);
         }
     }, [props.boundary]);
 

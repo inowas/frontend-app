@@ -44,6 +44,7 @@ const boundaries = (props: Props) => {
     const [error, setError] = useState<boolean>(false);
 
     const prevPid = usePrevious<string>(props.match.params.pid);
+    const prevTypes = usePrevious<BoundaryType[]>(props.types);
 
     const {id, pid, property} = props.match.params;
     const {model, soilmodel, types} = props;
@@ -57,30 +58,39 @@ const boundaries = (props: Props) => {
 
     useEffect(() => {
         if (!props.match.params.pid) {
+            setIsLoading(true);
             return redirectToFirstBoundary();
         }
     }, []);
 
     useEffect(() => {
-        if (!props.match.params.pid) {
-            return redirectToFirstBoundary();
+        if (prevTypes && JSON.stringify(props.types) !== JSON.stringify(prevTypes)) {
+            setSelectedBoundary(null);
+            setIsLoading(true);
+            if (!props.match.params.pid) {
+                return redirectToFirstBoundary();
+            }
         }
     }, [props.types]);
 
     useEffect(() => {
+        setIsLoading(true);
         if (!props.match.params.pid) {
             return redirectToFirstBoundary();
         }
         if (filteredBoundaries().findById(props.match.params.pid)) {
-            setIsLoading(true);
             return fetchBoundary(props.model.id, props.match.params.pid);
         }
     }, [props.boundaries]);
 
     useEffect(() => {
-        if (props.match.params.pid !== prevPid && filteredBoundaries().findById(props.match.params.pid)) {
-            setIsLoading(true);
-            return fetchBoundary(props.model.id, props.match.params.pid);
+        if (props.match.params.pid !== prevPid) {
+            setSelectedBoundary(null);
+            if (filteredBoundaries().findById(props.match.params.pid)) {
+                setIsLoading(true);
+                return fetchBoundary(props.model.id, props.match.params.pid);
+            }
+            return redirectToFirstBoundary();
         }
     }, [props.match.params.pid]);
 
@@ -89,8 +99,11 @@ const boundaries = (props: Props) => {
             const bid = filteredBoundaries().first.id;
             return props.history.push(`${baseUrl}/${id}/${property}/!/${bid}`);
         }
+        if (pid) {
+            setIsLoading(false);
+            return props.history.push(`${baseUrl}/${id}/${property}`);
+        }
         setIsLoading(false);
-        return props.history.push(`${baseUrl}/${id}/${property}`);
     };
 
     const fetchBoundary = (modelId: string, boundaryId: string) => {
