@@ -1,7 +1,6 @@
 import * as turf from '@turf/helpers';
 import {lineDistance, lineSlice} from '@turf/turf';
 import {LineString, Point} from 'geojson';
-import Uuid from 'uuid';
 import {Cells, Geometry} from '../index';
 import {ISpValues} from './Boundary.type';
 import {IConstantHeadBoundaryFeature} from './ConstantHeadBoundary.type';
@@ -199,19 +198,20 @@ export default abstract class LineBoundary extends Boundary {
         });
     }
 
-    public addObservationPoint = (id: string, name: string, geometry: Point, spValues: ISpValues) => {
+    public createObservationPoint = (newId: string, name: string, geometry: Point, spValues: ISpValues) => {
         const ops = this.observationPoints;
-        ops.push(ObservationPoint.create(
-            Uuid.v4(), 'op', geometry, name, spValues,
-            distanceOnLine(this.geometry as LineString, geometry)
-        ));
+        ops.push(
+            ObservationPoint.create(newId, 'op', geometry, name, spValues,
+                distanceOnLine(this.geometry as LineString, geometry)
+            )
+        );
 
         this.observationPoints = ops;
     };
 
     public cloneObservationPoint = (id: string, newId: string) => {
         const op = this.findObservationPointById(id);
-        this.addObservationPoint(newId, op.name + ' (clone)', op.geometry as Point, op.spValues as ISpValues);
+        this.createObservationPoint(newId, op.name + ' (clone)', op.geometry as Point, op.spValues as ISpValues);
     };
 
     public findObservationPointById = (id: string) => {
