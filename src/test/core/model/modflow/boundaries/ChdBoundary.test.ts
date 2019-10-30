@@ -39,7 +39,7 @@ test('ConstantHeadBoundary create', () => {
 
 test('ConstantHeadBoundary add ObservationPoint', () => {
     const constantHeadBoundary = createConstantHeadBoundary();
-    constantHeadBoundary.addObservationPoint(Uuid.v4(), 'Op2', {type: 'Point', coordinates: [1, 2]}, [[3], [2], [1]]);
+    constantHeadBoundary.createObservationPoint(Uuid.v4(), 'Op2', {type: 'Point', coordinates: [1, 2]}, [[3], [2], [1]]);
     expect(constantHeadBoundary.observationPoints).toHaveLength(2);
 
     const op2 = constantHeadBoundary.findObservationPointByName('Op2');
@@ -52,7 +52,7 @@ test('ConstantHeadBoundary add ObservationPoint', () => {
 
 test('ConstantHeadBoundary update ObservationPoint', () => {
     const constantHeadBoundary = createConstantHeadBoundary();
-    constantHeadBoundary.addObservationPoint(Uuid.v4(), 'Op2', {type: 'Point', coordinates: [1, 2]}, [[3], [2], [1]]);
+    constantHeadBoundary.createObservationPoint(Uuid.v4(), 'Op2', {type: 'Point', coordinates: [1, 2]}, [[3], [2], [1]]);
     expect(constantHeadBoundary.observationPoints).toHaveLength(2);
     const op2 = constantHeadBoundary.findObservationPointByName('Op2');
 
@@ -74,7 +74,7 @@ test('ConstantHeadBoundary update ObservationPoint', () => {
 
 test('ConstantHeadBoundary remove ObservationPoint', () => {
     const constantHeadBoundary = createConstantHeadBoundary();
-    constantHeadBoundary.addObservationPoint(Uuid.v4(), 'Op2', {type: 'Point', coordinates: [1, 2]}, [[3], [2], [1]]);
+    constantHeadBoundary.createObservationPoint(Uuid.v4(), 'Op2', {type: 'Point', coordinates: [1, 2]}, [[3], [2], [1]]);
     expect(constantHeadBoundary.observationPoints).toHaveLength(2);
     const op2 = constantHeadBoundary.findObservationPointByName('Op2');
     constantHeadBoundary.removeObservationPoint(op2.id);
