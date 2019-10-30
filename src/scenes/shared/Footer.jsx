@@ -7,6 +7,7 @@ import logoInowas from '../../images/logo-inowas.svg';
 import logoTUD from '../../images/logo-tud.svg';
 import logoBmbf from '../../images/logo-bmbf.svg';
 import {Container, Grid, List, Segment, Header} from 'semantic-ui-react';
+import getConfig from "../../config.default";
 
 class Footer extends React.Component {
     render() {
@@ -29,6 +30,9 @@ class Footer extends React.Component {
                                         <Link to={"https://tu-dresden.de/bu/umwelt/hydro/inowas/project/kontakt"}>
                                             Contact
                                         </Link>
+                                    </List.Item>
+                                    <List.Item>
+                                        Release: {getConfig().VERSION}
                                     </List.Item>
                                 </List>
                             </Grid.Column>
