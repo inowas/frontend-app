@@ -1,6 +1,7 @@
 import {Point} from 'geojson';
-import {IDataDropperObject} from '../../../services/dataDropper/DataDropper.type';
+import {IDataDropperFile} from '../../../services/dataDropper/DataDropper.type';
 import FileDataSource from './FileDataSource';
+import {IProcessing} from './processing/Processing.type';
 import {IDateTimeValue} from './Sensor.type';
 import SensorDataSource from './SensorDataSource';
 
@@ -16,6 +17,7 @@ export interface ISensorParameter {
     type: string;
     description: string;
     dataSources: IDataSource[];
+    processings: IProcessing[];
 }
 
 export type DataSource = FileDataSource | SensorDataSource;
@@ -31,7 +33,7 @@ export interface IReducedSensorDataSource {
 
 export interface IReducedFileDataSource {
     id: string;
-    file: IDataDropperObject;
+    file: IDataDropperFile;
 }
 
 export interface IFetchDataSource {

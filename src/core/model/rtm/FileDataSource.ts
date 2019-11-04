@@ -1,6 +1,6 @@
 import uuid from 'uuid';
 import {dropData, retrieveData} from '../../../services/dataDropper';
-import {IDataDropperObject} from '../../../services/dataDropper/DataDropper.type';
+import {IDataDropperFile} from '../../../services/dataDropper/DataDropper.type';
 import {GenericObject} from '../genericObject/GenericObject';
 import {IDateTimeValue, IFileDataSource} from './Sensor.type';
 
@@ -14,7 +14,7 @@ class FileDataSource extends GenericObject<IFileDataSource> {
         return new URL(`${this.file.server}/${this.file.filename}`);
     }
 
-    get file(): IDataDropperObject {
+    get file(): IDataDropperFile {
         return this._props.file;
     }
 
@@ -38,7 +38,7 @@ class FileDataSource extends GenericObject<IFileDataSource> {
         return null;
     }
 
-    public static fromFile(file: IDataDropperObject) {
+    public static fromFile(file: IDataDropperFile) {
         const fds = new this({
             id: uuid.v4(),
             file,
@@ -53,7 +53,7 @@ class FileDataSource extends GenericObject<IFileDataSource> {
     }
 
     public static async fromData(data: IDateTimeValue[]) {
-        const file: IDataDropperObject = await dropData(data);
+        const file: IDataDropperFile = await dropData(data);
         return new this({
             id: uuid.v4(),
             file,

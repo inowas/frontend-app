@@ -1,5 +1,5 @@
 import {DATADROPPER_URL} from '../api';
-import {IDataDropperObject} from './DataDropper.type';
+import {IDataDropperFile} from './DataDropper.type';
 
 export async function dropData(data: any) {
     const response = await fetch(
@@ -18,10 +18,10 @@ export async function dropData(data: any) {
     return {
         filename,
         server: DATADROPPER_URL
-    } as IDataDropperObject;
+    } as IDataDropperFile;
 }
 
-export async function retrieveData(file: IDataDropperObject) {
+export async function retrieveData(file: IDataDropperFile) {
     const url = new URL(`${file.server}/${file.filename}`);
 
     const localStorageObj = sessionStorage.getItem(file.filename);
