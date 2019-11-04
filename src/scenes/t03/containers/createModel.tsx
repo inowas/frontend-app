@@ -1,20 +1,20 @@
+import moment from 'moment/moment';
 import React from 'react';
-import uuidv4 from 'uuid/v4';
-import PropTypes from 'prop-types';
 import {withRouter} from 'react-router-dom';
 import {Button, Checkbox, Form, Grid, Icon, Segment} from 'semantic-ui-react';
-import {CreateModelMap} from '../components/maps';
-import {Cells, Geometry, GridSize, ModflowModel, Stressperiods} from '../../../core/model/modflow';
-import ModflowModelCommand from '../commands/modflowModelCommand';
-import defaults from '../defaults/createModel';
-import moment from 'moment/moment';
-import AppContainer from '../../shared/AppContainer';
+import uuidv4 from 'uuid/v4';
 import BoundingBox from '../../../core/model/geometry/BoundingBox';
+import {Cells, Geometry, GridSize, ModflowModel, Stressperiods} from '../../../core/model/modflow';
 import LengthUnit from '../../../core/model/modflow/LengthUnit';
+import Soilmodel from '../../../core/model/modflow/soilmodel/Soilmodel';
+import SoilmodelLayer from '../../../core/model/modflow/soilmodel/SoilmodelLayer';
+import {ISoilmodelLayer} from '../../../core/model/modflow/soilmodel/SoilmodelLayer.type';
 import TimeUnit from '../../../core/model/modflow/TimeUnit';
-import Soilmodel from "../../../core/model/modflow/soilmodel/Soilmodel";
-import {sendCommands} from "../../../services/api/commandHelper";
-import SoilmodelLayer from "../../../core/model/modflow/soilmodel/SoilmodelLayer";
+import {sendCommands} from '../../../services/api/commandHelper';
+import AppContainer from '../../shared/AppContainer';
+import ModflowModelCommand from '../commands/modflowModelCommand';
+import {CreateModelMap} from '../components/maps';
+import defaults from '../defaults/createModel';
 
 const navigation = [{
     name: 'Documentation',
@@ -23,7 +23,11 @@ const navigation = [{
 }];
 
 class CreateModel extends React.Component {
-    constructor(props) {
+
+    public props: any;
+    public state: any;
+
+    constructor(props: any) {
         super(props);
         this.state = {
             id: defaults.id,
@@ -45,10 +49,10 @@ class CreateModel extends React.Component {
                 endDateTime: defaults.stressperiods.endDateTime.format('YYYY-MM-DD'),
             },
             validation: [false, []]
-        }
+        };
     }
 
-    getPayload = () => (ModflowModel.createFromParameters(
+    public getPayload = () => (ModflowModel.createFromParameters(
         uuidv4(),
         this.state.name,
         this.state.description,
@@ -62,7 +66,7 @@ class CreateModel extends React.Component {
         this.state.isPublic
     )).toCreatePayload();
 
-    handleSave = () => {
+    public handleSave = () => {
         const commands = [];
 
         const soilmodel = Soilmodel.fromDefaults(
@@ -74,7 +78,7 @@ class CreateModel extends React.Component {
         commands.push(ModflowModelCommand.createModflowModel(createModelPayload));
         commands.push(ModflowModelCommand.addLayer(
             createModelPayload.id,
-            SoilmodelLayer.fromObject(soilmodel.layersCollection.first)
+            SoilmodelLayer.fromObject(soilmodel.layersCollection.first as ISoilmodelLayer)
         ));
         commands.push(ModflowModelCommand.updateSoilmodelProperties({
             id: createModelPayload.id,
@@ -83,23 +87,24 @@ class CreateModel extends React.Component {
 
         return sendCommands(
             commands,
-            () => this.props.history.push('T03/' + createModelPayload.id),
-            (e) => this.setState({error: e})
+            () => this.props.history.push(`T03/${createModelPayload.id}`),
+            (e: any) => this.setState({error: e})
         );
     };
 
-    handleInputChange = (e, {value, name, checked}) => {
+    public handleInputChange = (e: any, {value, name, checked}: any) => {
         this.setState({
             [name]: value || checked
         });
     };
 
-    handleGridSizeChange = (e) => {
+    public handleGridSizeChange = (e: any) => {
         const {type, target} = e;
         const {name, value} = target;
 
         if (type === 'change') {
             const gridSize = GridSize.fromObject(this.state.gridSizeLocal);
+            // @ts-ignore
             gridSize[name] = parseFloat(value);
             this.setState({gridSizeLocal: gridSize.toObject()});
         }
@@ -109,12 +114,12 @@ class CreateModel extends React.Component {
         }
     };
 
-    handleStressperiodsChange = (e) => {
+    public handleStressperiodsChange = (e: any) => {
         const {type, target} = e;
         const {name, value} = target;
 
         if (type === 'change') {
-            this.setState(prevState => ({
+            this.setState((prevState: any) => ({
                 stressperiodsLocal: {
                     ...prevState.stressperiodsLocal,
                     [name]: value
@@ -124,43 +129,43 @@ class CreateModel extends React.Component {
 
         if (type === 'blur') {
             const stressPeriods = Stressperiods.fromObject(this.state.stressperiods);
-            stressPeriods.startDateTime = new moment.utc(this.state.stressperiodsLocal.startDateTime);
-            stressPeriods.endDateTime = new moment.utc(this.state.stressperiodsLocal.endDateTime);
+            stressPeriods.startDateTime = moment.utc(this.state.stressperiodsLocal.startDateTime);
+            stressPeriods.endDateTime = moment.utc(this.state.stressperiodsLocal.endDateTime);
             this.setState({stressperiods: stressPeriods.toObject()}, () => this.validate());
         }
     };
 
-    handleMapInputChange = ({cells, boundingBox, geometry}) => {
-        return this.setState({
+    public handleMapInputChange = ({cells, boundingBox, geometry}: any) => {
+        this.setState({
             cells: cells.toObject(),
             boundingBox: boundingBox.toObject(),
             geometry: geometry.toObject()
-        }, () => this.validate())
+        }, () => this.validate());
     };
 
-    validate = () => {
+    public validate = () => {
         if (!this.state.boundingBox || !this.state.geometry) {
             return false;
         }
 
         const command = ModflowModelCommand.createModflowModel(this.getPayload());
         command.validate().then(
-            validation => this.setState({validation})
+            (validation) => this.setState({validation})
         );
     };
 
-    render() {
+    public render() {
         return (
             <AppContainer navbarItems={navigation}>
                 <Segment color={'grey'}>
-                    <Grid padded columns={2}>
-                        <Grid.Row stretched>
+                    <Grid padded={true} columns={2}>
+                        <Grid.Row stretched={true}>
                             <Grid.Column width={6}>
                                 <Segment>
                                     <Form>
                                         <Form.Group>
                                             <Form.Input
-                                                label='Name'
+                                                label="Name"
                                                 name={'name'}
                                                 value={this.state.name}
                                                 width={14}
@@ -169,7 +174,7 @@ class CreateModel extends React.Component {
                                             <Form.Field>
                                                 <label>Public</label>
                                                 <Checkbox
-                                                    toggle
+                                                    toggle={true}
                                                     checked={this.state.isPublic}
                                                     onChange={this.handleInputChange}
                                                     name={'isPublic'}
@@ -193,26 +198,27 @@ class CreateModel extends React.Component {
                                             <Segment>
                                                 <Form>
                                                     <Form.Input
-                                                        type='number'
-                                                        label='Rows'
+                                                        type="number"
+                                                        label="Rows"
                                                         name={'nY'}
                                                         value={(GridSize.fromObject(this.state.gridSizeLocal)).nY}
                                                         onChange={this.handleGridSizeChange}
                                                         onBlur={this.handleGridSizeChange}
                                                     />
                                                     <Form.Input
-                                                        type='number'
-                                                        label='Columns'
+                                                        type="number"
+                                                        label="Columns"
                                                         name={'nX'}
                                                         value={GridSize.fromObject(this.state.gridSizeLocal).nX}
                                                         onChange={this.handleGridSizeChange}
                                                         onBlur={this.handleGridSizeChange}
                                                     />
-                                                    <Form.Select compact
-                                                                 label='Length unit'
-                                                                 options={[{key: 2, text: 'meters', value: 2}]}
-                                                                 style={{zIndex: 10000}}
-                                                                 value={this.state.lengthUnit}
+                                                    <Form.Select
+                                                        compact={true}
+                                                        label="Length unit"
+                                                        options={[{key: 2, text: 'meters', value: 2}]}
+                                                        style={{zIndex: 10000}}
+                                                        value={this.state.lengthUnit}
                                                     />
                                                 </Form>
                                             </Segment>
@@ -221,26 +227,27 @@ class CreateModel extends React.Component {
                                             <Segment>
                                                 <Form>
                                                     <Form.Input
-                                                        type='date'
-                                                        label='Start Date'
+                                                        type="date"
+                                                        label="Start Date"
                                                         name={'startDateTime'}
                                                         value={this.state.stressperiodsLocal.startDateTime}
                                                         onChange={this.handleStressperiodsChange}
                                                         onBlur={this.handleStressperiodsChange}
                                                     />
                                                     <Form.Input
-                                                        type='date'
-                                                        label='End Date'
+                                                        type="date"
+                                                        label="End Date"
                                                         name={'endDateTime'}
                                                         value={this.state.stressperiodsLocal.endDateTime}
                                                         onChange={this.handleStressperiodsChange}
                                                         onBlur={this.handleStressperiodsChange}
                                                     />
-                                                    <Form.Select compact
-                                                                 label='Time unit'
-                                                                 options={[{key: 4, text: 'days', value: 4}]}
-                                                                 style={{zIndex: 10000}}
-                                                                 value={this.state.timeUnit}
+                                                    <Form.Select
+                                                        compact={true}
+                                                        label="Time unit"
+                                                        options={[{key: 4, text: 'days', value: 4}]}
+                                                        style={{zIndex: 10000}}
+                                                        value={this.state.timeUnit}
                                                     />
                                                 </Form>
                                             </Segment>
@@ -248,10 +255,11 @@ class CreateModel extends React.Component {
                                     </Grid.Row>
                                     <Grid.Row>
                                         <Grid.Column width={16}>
-                                            <Button primary
-                                                    type='submit'
-                                                    onClick={this.handleSave}
-                                                    disabled={!this.state.validation[0]}
+                                            <Button
+                                                primary={true}
+                                                type="submit"
+                                                onClick={this.handleSave}
+                                                disabled={!this.state.validation[0]}
                                             >
                                                 Create model
                                             </Button>
@@ -262,7 +270,6 @@ class CreateModel extends React.Component {
                             <Grid.Column width={10}>
                                 <CreateModelMap
                                     gridSize={GridSize.fromObject(this.state.gridSize)}
-                                    styles={this.state.styles}
                                     onChange={this.handleMapInputChange}
                                 />
                             </Grid.Column>
@@ -270,14 +277,8 @@ class CreateModel extends React.Component {
                     </Grid>
                 </Segment>
             </AppContainer>
-        )
+        );
     }
 }
-
-CreateModel.propTypes = {
-    history: PropTypes.object.isRequired,
-    location: PropTypes.object.isRequired,
-    match: PropTypes.object.isRequired
-};
 
 export default withRouter(CreateModel);
