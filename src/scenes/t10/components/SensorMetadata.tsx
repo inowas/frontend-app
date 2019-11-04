@@ -105,7 +105,8 @@ const sensorMetadata = (props: IProps) => {
                 id,
                 type: pType,
                 description: '',
-                dataSources: []
+                dataSources: [],
+                processings: []
             });
             handleChangeParameters(params);
             setSelectedParameterId(id);
