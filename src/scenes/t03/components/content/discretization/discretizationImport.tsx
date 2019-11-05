@@ -76,7 +76,7 @@ class DiscretizationImport extends React.Component<IProps, IState> {
                     primary={true}
                     fluid={true}
                     icon={'download'}
-                    content={'Import Discretization'}
+                    content={'Import'}
                     labelPosition={'left'}
                     onClick={this.onClickUpload}
                 />
@@ -290,7 +290,7 @@ class DiscretizationImport extends React.Component<IProps, IState> {
 
                             <Segment basic={true} placeholder={true} style={{minHeight: '10rem'}}>
                                 <Grid columns={2} stackable={true} textAlign="center">
-                                    <Divider vertical={true} />
+                                    <Divider vertical={true}/>
                                     <Grid.Row verticalAlign="top">
                                         <Grid.Column>
                                             {!this.state.errors &&
