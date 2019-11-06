@@ -86,12 +86,7 @@ class DiscretizationImport extends React.Component<IProps, IState> {
     }
 
     private onImportClick = () => {
-        this.setState({
-            showImportModal: false
-        });
-
         const model = ModflowModel.fromObject(this.props.model.toObject());
-
         const {geometry, bounding_box, grid_size, cells, stressperiods, length_unit, time_unit} = this.state;
 
         if (geometry) {
@@ -122,7 +117,10 @@ class DiscretizationImport extends React.Component<IProps, IState> {
             model.timeUnit = TimeUnit.fromInt(time_unit);
         }
 
-        return this.props.onChange(model);
+        this.props.onChange(model);
+        return this.setState({
+            showImportModal: false
+        });
     };
 
     private onCancel = () => {

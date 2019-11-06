@@ -1,5 +1,4 @@
 import React, {ChangeEvent} from 'react';
-import {connect} from 'react-redux';
 import {Form, Grid} from 'semantic-ui-react';
 import {IBoundingBox} from '../../../../../core/model/geometry/BoundingBox.type';
 import {ICells} from '../../../../../core/model/geometry/Cells.type';
@@ -8,13 +7,9 @@ import {IGridSize} from '../../../../../core/model/geometry/GridSize.type';
 import {BoundingBox, Cells, Geometry, GridSize, ModflowModel} from '../../../../../core/model/modflow';
 import {BoundaryCollection} from '../../../../../core/model/modflow/boundaries';
 import {ILengthUnit} from '../../../../../core/model/modflow/LengthUnit.type';
-import {sendCommand} from '../../../../../services/api';
 import {dxCell, dyCell} from '../../../../../services/geoTools/distance';
 import ContentToolBar from '../../../../shared/ContentToolbar';
-import {updateModel} from '../../../actions/actions';
-import ModflowModelCommand from '../../../commands/modflowModelCommand';
 import {ModelDiscretizationMap} from '../../maps';
-import DiscretizationImport from './discretizationImport';
 
 interface IState {
     boundingBox: IBoundingBox;
@@ -23,20 +18,16 @@ interface IState {
     gridSizeLocal: IGridSize;
     cells: ICells;
     lengthUnit: ILengthUnit;
-    isDirty: boolean;
-    isError: boolean;
 }
 
-interface IStateProps {
+interface IProps {
     boundaries: BoundaryCollection;
     model: ModflowModel;
-}
-
-interface IDispatchProps {
+    isDirty: boolean;
+    isError: boolean;
     onChange: (modflowModel: ModflowModel) => void;
+    onSave: (modflowModel: ModflowModel) => void;
 }
-
-type IProps = IStateProps & IDispatchProps;
 
 class GridEditor extends React.Component<IProps, IState> {
     constructor(props: IProps) {
@@ -47,9 +38,7 @@ class GridEditor extends React.Component<IProps, IState> {
             lengthUnit: props.model.lengthUnit.toInt(),
             geometry: props.model.geometry.toObject(),
             gridSize: props.model.gridSize.toObject(),
-            gridSizeLocal: props.model.gridSize.toObject(),
-            isDirty: false,
-            isError: false
+            gridSizeLocal: props.model.gridSize.toObject()
         };
     }
 
@@ -61,25 +50,18 @@ class GridEditor extends React.Component<IProps, IState> {
 
         return (
             <Grid>
-                {!this.props.model.readOnly && this.props.boundaries.length === 0 &&
+                {!readOnly &&
                 <Grid.Row>
                     <Grid.Column width={16}>
                         <ContentToolBar
-                            isDirty={this.state.isDirty}
-                            isError={this.state.isError}
-                            visible={!readOnly}
+                            isDirty={this.props.isDirty}
+                            isError={this.props.isError}
+                            visible={!(readOnly)}
                             saveButton={true}
                             onSave={this.onSave}
-                            importButton={
-                                <DiscretizationImport
-                                    onChange={this.handleImport}
-                                    model={this.props.model}
-                                />
-                            }
                         />
                     </Grid.Column>
-                </Grid.Row>
-                }
+                </Grid.Row>}
                 <Grid.Row>
                     <Grid.Column>
                         <Form>
@@ -139,7 +121,8 @@ class GridEditor extends React.Component<IProps, IState> {
                             gridSize={GridSize.fromObject(this.state.gridSize)}
                             onChange={this.handleMapChange}
                             readOnly={readOnly || this.props.boundaries.length > 0}
-                        /></Grid.Column>
+                        />
+                    </Grid.Column>
                 </Grid.Row>
 
                 <Grid.Row>
@@ -149,41 +132,22 @@ class GridEditor extends React.Component<IProps, IState> {
         );
     }
 
-    private handleImport = (model: ModflowModel) =>
-        this.setState({
-            boundingBox: model.boundingBox.toObject(),
-            geometry: model.geometry.toObject(),
-            gridSize: model.gridSize.toObject(),
-            gridSizeLocal: model.gridSize.toObject(),
-            cells: model.cells.toObject(),
-            lengthUnit: model.lengthUnit.toInt(),
-            isDirty: true
-        });
-
     private onSave = () => {
-        const model = this.props.model;
+        const model = this.props.model.getClone();
         model.cells = Cells.fromObject(this.state.cells);
         model.boundingBox = BoundingBox.fromObject(this.state.boundingBox);
         model.geometry = Geometry.fromObject(this.state.geometry);
         model.gridSize = GridSize.fromObject(this.state.gridSize);
-        const command = ModflowModelCommand.updateModflowModelDiscretization(
-            model.id,
-            model.geometry.toObject(),
-            model.boundingBox.toObject(),
-            model.gridSize.toObject(),
-            model.cells.toObject(),
-            model.stressperiods.toObject(),
-            model.lengthUnit.toInt(),
-            model.timeUnit.toInt()
-        );
+        return this.props.onSave(model);
+    };
 
-        return sendCommand(command,
-            () => {
-                this.setState({isDirty: false});
-                this.props.onChange(model);
-            },
-            () => this.setState({isError: true})
-        );
+    private onChange = () => {
+        const model = this.props.model.getClone();
+        model.cells = Cells.fromObject(this.state.cells);
+        model.boundingBox = BoundingBox.fromObject(this.state.boundingBox);
+        model.geometry = Geometry.fromObject(this.state.geometry);
+        model.gridSize = GridSize.fromObject(this.state.gridSize);
+        this.props.onChange(model);
     };
 
     private handleGridSizeChange = (e: ChangeEvent<HTMLInputElement>) => {
@@ -199,8 +163,7 @@ class GridEditor extends React.Component<IProps, IState> {
         if (type === 'blur') {
             this.setState({
                 gridSize: this.state.gridSizeLocal,
-                isDirty: true
-            });
+            }, () => this.onChange());
         }
     };
 
@@ -211,18 +174,8 @@ class GridEditor extends React.Component<IProps, IState> {
             cells: cells.toObject(),
             boundingBox: boundingBox.toObject(),
             geometry: geometry.toObject(),
-            isDirty: true
-        });
+        }, () => this.onChange());
     };
 }
 
-const mapStateToProps = (state: any) => ({
-    boundaries: state.T03.boundaries ? BoundaryCollection.fromObject(state.T03.boundaries) : new BoundaryCollection(),
-    model: ModflowModel.fromObject(state.T03.model)
-});
-
-const mapDispatchToProps = (dispatch: any) => ({
-    onChange: (model: ModflowModel) => dispatch(updateModel(model))
-});
-
-export default connect(mapStateToProps, mapDispatchToProps)(GridEditor);
+export default GridEditor;
