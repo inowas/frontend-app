@@ -23,7 +23,7 @@ import {sendCommands} from '../../../services/api/commandHelper';
 import {calculateCells} from '../../../services/geoTools';
 import AppContainer from '../../shared/AppContainer';
 import ModflowModelCommand from '../commands/modflowModelCommand';
-import {DrawOnMapModal} from '../components/content/create';
+import {DrawOnMapModal, UploadGeoJSONModal} from '../components/content/create';
 import {ModelMap} from '../components/maps';
 import defaults from '../defaults/createModel';
 
@@ -341,6 +341,16 @@ class CreateModel extends React.Component<IProps, IState> {
                                                     <Header as={'h1'}>Set model geometry</Header>
                                                     <p>You have the following options</p>
                                                     <DrawOnMapModal
+                                                        onChange={(geometry) => {
+                                                            this.setState({geometry: geometry.toGeoJSON()},
+                                                                () => this.recalculate());
+                                                        }}
+                                                    />
+                                                </Grid.Column>
+                                            </Grid.Row>
+                                            <Grid.Row>
+                                                <Grid.Column>
+                                                    <UploadGeoJSONModal
                                                         onChange={(geometry) => {
                                                             this.setState({geometry: geometry.toGeoJSON()},
                                                                 () => this.recalculate());
