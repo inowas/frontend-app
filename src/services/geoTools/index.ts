@@ -46,6 +46,13 @@ export const getActiveCellFromCoordinate = (coordinate: number[], boundingBox: B
     ];
 };
 
+export const calculateCells = (geometry: Geometry, boundingBox: BoundingBox, gridSize: GridSize) => {
+    return new Promise<Cells>((resolve) => {
+        const activeCells = calculateActiveCells(geometry, boundingBox, gridSize);
+        resolve(activeCells);
+    });
+};
+
 export const calculateActiveCells = (geometry: Geometry, boundingBox: BoundingBox, gridSize: GridSize) => {
     const activeCells = new Cells([]);
 

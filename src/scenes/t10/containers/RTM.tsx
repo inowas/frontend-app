@@ -13,8 +13,7 @@ import SimpleToolsCommand from '../../shared/simpleTools/commands/SimpleToolsCom
 import ToolMetaData from '../../shared/simpleTools/ToolMetaData';
 import {DataSources, SensorMetaData, Sensors} from '../components/index';
 
-export interface IProps extends RouteComponentProps<{ id: string, property: string, pid: string }> {
-}
+export interface IProps extends RouteComponentProps<{ id: string, property: string, pid: string }> {}
 
 const menuItems = [{
     header: 'Sensors',
