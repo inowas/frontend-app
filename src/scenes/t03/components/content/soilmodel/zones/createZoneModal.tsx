@@ -3,12 +3,9 @@ import { DrawEvents } from 'leaflet';
 import React, {ChangeEvent, useState} from 'react';
 import {Button, Form, InputOnChangeData, Modal} from 'semantic-ui-react';
 import uuidv4 from 'uuid/v4';
-import BoundingBox from '../../../core/model/geometry/BoundingBox';
-import GridSize from '../../../core/model/geometry/GridSize';
-import Zone from '../../../core/model/gis/Zone';
-import ZonesCollection from '../../../core/model/gis/ZonesCollection';
-import {Geometry} from '../../../core/model/modflow';
-import {calculateActiveCells} from '../../../services/geoTools';
+import {BoundingBox, Geometry, GridSize} from '../../../../../../core/model/geometry';
+import {Zone, ZonesCollection} from '../../../../../../core/model/modflow/soilmodel';
+import {calculateActiveCells} from '../../../../../../services/geoTools';
 import {ZonesMap} from './index';
 
 interface IProps {
@@ -27,6 +24,7 @@ const createZoneModal = (props: IProps) => {
         if (name && geometry) {
             const zone = new Zone({
                 id: uuidv4(),
+                isDefault: false,
                 name,
                 geometry,
                 cells: geometry ? calculateActiveCells(Geometry.fromGeoJson(geometry), props.boundingBox,

@@ -36,6 +36,7 @@ export interface IReducedFileDataSource {
     file: IDataDropperFile;
 }
 
+// todo: GENERIC (IDateTimeValue to Array2D)
 export interface IFetchDataSource {
     fetching?: boolean;
     fetched?: boolean;

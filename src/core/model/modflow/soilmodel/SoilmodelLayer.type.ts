@@ -1,9 +1,9 @@
 import {Array2D} from '../../geometry/Array2D.type';
-import {ILayer} from '../../gis/Layer.type';
-import {ILayerParameter} from '../../gis/LayerParameter.type';
-import {IZoneLegacy} from '../../gis/Zone.type';
+import {ILayerParameter, ILayerParameter2v0} from './LayerParameter.type';
+import {ILayerParameterZone} from './LayerParameterZone.type';
+import {IZoneLegacy} from './Zone.type';
 
-export interface ISoilmodelLayer extends ILayer {
+export interface ISoilmodelLayer {
     id: string;
     name: string;
     description: string;
@@ -12,13 +12,25 @@ export interface ISoilmodelLayer extends ILayer {
     laytyp: number;
     laywet: number;
     parameters: ILayerParameter[];
+    relations: ILayerParameterZone[];
 }
 
-export interface ISoilmodelLayerLegacy {
+export interface ISoilmodelLayer2v0 {
+    id: string;
+    name: string;
+    description: string;
+    number: number;
+    layavg: number;
+    laytyp: number;
+    laywet: number;
+    parameters: ILayerParameter2v0[];
+}
+
+export interface ISoilmodelLayer1v0 {
     id: string;
     name: string;
     _meta: {
-        'zones': IZoneLegacy[];
+        zones: IZoneLegacy[];
     };
     description: string;
     number: number;

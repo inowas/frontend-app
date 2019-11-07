@@ -2,8 +2,7 @@ import {Polygon} from 'geojson';
 import {Geometry} from '../../../../../core/model/geometry';
 import {ICell} from '../../../../../core/model/geometry/Cells.type';
 import GridSize from '../../../../../core/model/geometry/GridSize';
-import LayerParameterZonesCollection from '../../../../../core/model/gis/LayerParameterZonesCollection';
-import ZonesCollection from '../../../../../core/model/gis/ZonesCollection';
+import {LayerParameterZonesCollection, ZonesCollection} from '../../../../../core/model/modflow/soilmodel';
 import SoilmodelLayer from '../../../../../core/model/modflow/soilmodel/SoilmodelLayer';
 import {defaultSoilmodelLayer} from '../../../../../scenes/t03/defaults/soilmodel';
 

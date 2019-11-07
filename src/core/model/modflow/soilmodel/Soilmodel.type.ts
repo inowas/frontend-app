@@ -1,26 +1,34 @@
-import {ILayer} from '../../gis/Layer.type';
-import {ILayerParameterZone} from '../../gis/LayerParameterZone.type';
-import {IRasterParameter} from '../../gis/RasterParameter.type';
-import {IZone} from '../../gis/Zone.type';
 import {IPropertyValueObject} from '../../types';
-import {ISoilmodelLayerLegacy} from './SoilmodelLayer.type';
+import {ILayerParameterZone2v0} from './LayerParameterZone.type';
+import {IRasterParameter} from './RasterParameter.type';
+import {ISoilmodelLayer, ISoilmodelLayer1v0, ISoilmodelLayer2v0} from './SoilmodelLayer.type';
+import {IZone, IZone2v0} from './Zone.type';
 
 export interface ISoilmodel {
-    layers: ILayer[];
+    layers: ISoilmodelLayer[];
     properties: {
         parameters: IRasterParameter[];
-        relations: ILayerParameterZone[];
-        version?: number;
+        version: string;
         zones: IZone[];
     };
 }
 
-export interface ISoilmodelLegacy {
+export interface ISoilmodel2v0 {
+    layers: ISoilmodelLayer2v0[];
+    properties: {
+        parameters: IRasterParameter[];
+        relations: ILayerParameterZone2v0[];
+        version?: number;
+        zones: IZone2v0[];
+    };
+}
+
+export interface ISoilmodel1v0 {
     _meta?: IPropertyValueObject;
     general?: {
         wetfct: number
     };
     properties?: IPropertyValueObject;
-    layers: ISoilmodelLayerLegacy[];
+    layers: ISoilmodelLayer1v0[];
     version?: number;
 }

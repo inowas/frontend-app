@@ -1,16 +1,16 @@
 import React, {ChangeEvent, MouseEvent, useState} from 'react';
 import {Accordion, AccordionTitleProps, Form, Grid, Header, Icon, InputOnChangeData} from 'semantic-ui-react';
-import {Array2D} from '../../../core/model/geometry/Array2D.type';
-import BoundingBox from '../../../core/model/geometry/BoundingBox';
-import GridSize from '../../../core/model/geometry/GridSize';
-import {ZonesCollection} from '../../../core/model/gis';
-import Layer from '../../../core/model/gis/Layer';
-import {ILayerParameterZone} from '../../../core/model/gis/LayerParameterZone.type';
-import LayerParameterZonesCollection from '../../../core/model/gis/LayerParameterZonesCollection';
-import RasterParameter from '../../../core/model/gis/RasterParameter';
-import {IRasterFileMetadata} from '../../../services/api/types';
-import {RasterDataMap} from '../rasterData';
-import RasterfileUploadModal from '../rasterData/rasterfileUploadModal';
+import {BoundingBox, GridSize} from '../../../../../../core/model/geometry';
+import {Array2D} from '../../../../../../core/model/geometry/Array2D.type';
+import {
+    LayerParameterZonesCollection,
+    RasterParameter,
+    ZonesCollection
+} from '../../../../../../core/model/modflow/soilmodel';
+import {ILayerParameterZone} from '../../../../../../core/model/modflow/soilmodel/LayerParameterZone.type';
+import SoilmodelLayer from '../../../../../../core/model/modflow/soilmodel/SoilmodelLayer';
+import {IRasterFileMetadata} from '../../../../../../services/api/types';
+import {RasterDataMap, RasterfileUploadModal} from '../../../../../shared/rasterData';
 import ZonesTable from './zonesTable';
 
 interface IUploadData {
@@ -20,14 +20,13 @@ interface IUploadData {
 
 interface IProps {
     boundingBox: BoundingBox;
-    layer: Layer;
+    layer: SoilmodelLayer;
     gridSize: GridSize;
     onAddRelation: (relation: ILayerParameterZone, parameterId?: string) => any;
     onChange: (relations: LayerParameterZonesCollection, parameterId?: string) => any;
     onRemoveRelation: (relation: ILayerParameterZone, parameterId?: string) => any;
     onSmoothLayer: (params: ISmoothParametersWithId) => any;
     parameter: RasterParameter;
-    relations: LayerParameterZonesCollection;
     readOnly: boolean;
     zones: ZonesCollection;
 }
@@ -48,7 +47,9 @@ const zonesEditor = (props: IProps) => {
     const [smoothParams, setSmoothParams] = useState<ISmoothParameters>({cycles: 1, distance: 1});
     const [rasterUploadModal, setRasterUploadModal] = useState<boolean>(false);
 
-    const recalculateMap = () => props.onChange(props.relations, props.parameter.id);
+    const relations = props.layer.getRelationsByParameter(props.parameter.id);
+
+    const recalculateMap = () => props.onChange(relations, props.parameter.id);
 
     const smoothMap = () => props.onSmoothLayer({
         ...smoothParams,
@@ -57,8 +58,8 @@ const zonesEditor = (props: IProps) => {
 
     const handleAddRelation = (relation: ILayerParameterZone) => props.onAddRelation(relation, props.parameter.id);
 
-    const handleChangeRelation = (relations: LayerParameterZonesCollection) =>
-        props.onChange(relations, props.parameter.id);
+    const handleChangeRelation = (cRelations: LayerParameterZonesCollection) =>
+        props.onChange(cRelations, props.parameter.id);
 
     const handleChangeSmoothParams = (e: ChangeEvent<HTMLInputElement>, {name, value}: InputOnChangeData) => {
         const cSmoothParams = {
@@ -73,7 +74,7 @@ const zonesEditor = (props: IProps) => {
         props.onRemoveRelation(relation, props.parameter.id);
 
     const handleUploadRaster = (result: IUploadData) => {
-        const cRelations = props.relations.all.map((r) => {
+        const cRelations = relations.all.map((r) => {
             if (r.priority === 0) {
                 r.value = result.data;
             }
@@ -95,7 +96,28 @@ const zonesEditor = (props: IProps) => {
         }
     };
 
-    const rParameter = props.layer.parameters.filter((p) => p.id === props.parameter.id);
+    const renderMap = () => {
+        const rParameter = props.layer.parameters.filter((p) => p.id === props.parameter.id);
+
+        if (rParameter.length === 0) {
+            return null;
+        }
+
+        const data = !rParameter[0].value && rParameter[0].data.file ? rParameter[0].data.data : rParameter[0].value;
+
+        if (data === null || data === undefined) {
+            return null;
+        }
+
+        return (
+            <RasterDataMap
+                boundingBox={props.boundingBox}
+                data={data as Array2D<number> | number}
+                gridSize={props.gridSize}
+                unit={props.parameter.unit}
+            />
+        );
+    };
 
     return (
         <div>
@@ -103,14 +125,7 @@ const zonesEditor = (props: IProps) => {
                 <Grid.Row>
                     <Grid.Column>
                         <Header as="h4">{props.parameter.title}, {props.parameter.id} [{props.parameter.unit}]</Header>
-                        {rParameter.length > 0 &&
-                            <RasterDataMap
-                                boundingBox={props.boundingBox}
-                                data={rParameter[0].value}
-                                gridSize={props.gridSize}
-                                unit={props.parameter.unit}
-                            />
-                        }
+                        {renderMap()}
                     </Grid.Column>
                 </Grid.Row>
                 <Grid.Row>
@@ -177,7 +192,7 @@ const zonesEditor = (props: IProps) => {
                             parameter={props.parameter}
                             readOnly={props.readOnly}
                             zones={props.zones}
-                            relations={props.relations}
+                            relations={relations}
                         />
                     </Grid.Column>
                 </Grid.Row>

@@ -1,12 +1,17 @@
 import {cloneDeep} from 'lodash';
 import uuidv4 from 'uuid/v4';
 import {defaultSoilmodelLayerParameters} from '../../../../scenes/t03/defaults/soilmodel';
+import {GridSize} from '../../geometry';
 import {Array2D} from '../../geometry/Array2D.type';
-import {Layer} from '../../gis';
-import {IRasterParameter} from '../../gis/RasterParameter.type';
+import {ICell} from '../../geometry/Cells.type';
+import {LayerParameterZonesCollection} from './index';
+import {ILayerParameter} from './LayerParameter.type';
+import {ILayerParameterZone} from './LayerParameterZone.type';
+import {IRasterParameter} from './RasterParameter.type';
 import {ISoilmodelLayer} from './SoilmodelLayer.type';
+import ZonesCollection from './ZonesCollection';
 
-class SoilmodelLayer extends Layer {
+class SoilmodelLayer {
 
     public static fromDefault() {
         return new SoilmodelLayer({
@@ -17,7 +22,8 @@ class SoilmodelLayer extends Layer {
             laywet: 0,
             name: 'Top Layer',
             number: 0,
-            parameters: defaultSoilmodelLayerParameters
+            parameters: defaultSoilmodelLayerParameters,
+            relations: []
         });
     }
 
@@ -28,12 +34,213 @@ class SoilmodelLayer extends Layer {
     protected _props: ISoilmodelLayer;
 
     constructor(props: ISoilmodelLayer) {
-        super(props);
         this._props = cloneDeep(props);
+    }
+
+    get id() {
+        return this._props.id;
+    }
+
+    set id(value: string) {
+        this._props.id = value;
+    }
+
+    get name() {
+        return this._props.name;
+    }
+
+    set name(value: string) {
+        this._props.name = value;
+    }
+
+    get number() {
+        return this._props.number;
+    }
+
+    set number(value) {
+        this._props.number = value;
+    }
+
+    get parameters() {
+        return this._props.parameters;
+    }
+
+    set parameters(value: ILayerParameter[]) {
+        this._props.parameters = value;
+    }
+
+    get relations() {
+        return LayerParameterZonesCollection.fromObject(this._props.relations);
+    }
+
+    set relations(value: LayerParameterZonesCollection) {
+        this._props.relations = value.toObject();
+    }
+
+    public addRelation(relation: ILayerParameterZone) {
+        this._props.relations.push(relation);
+        return this;
+    }
+
+    public updateRelation(relation: ILayerParameterZone) {
+        this._props.relations = this._props.relations.map((r) => {
+            if (r.id === relation.id) {
+                return relation;
+            }
+            return r;
+        });
+    }
+
+    public getRelationsByParameter(paramId: string) {
+        return LayerParameterZonesCollection.fromObject(this.relations.all.filter((r) => r.parameter === paramId));
+    }
+
+    public clone() {
+        const layer = SoilmodelLayer.fromObject(this.toObject());
+        layer._props.id = uuidv4();
+        return layer;
     }
 
     public toObject(): ISoilmodelLayer {
         return this._props;
+    }
+
+    public zonesToParameters(
+        gridSize: GridSize,
+        zones: ZonesCollection,
+        parameters?: ILayerParameter | ILayerParameter[]
+    ) {
+        let fParameters = this.parameters;
+        if (parameters && Array.isArray(parameters)) {
+            fParameters = parameters;
+        }
+        if (parameters && !Array.isArray(parameters)) {
+            fParameters = [parameters];
+        }
+
+        const cParameters = fParameters.map((parameter) => {
+            const lParameter: ILayerParameter = {
+                data: {
+                    file: null
+                },
+                id: parameter.id,
+                value: parameter.value
+            };
+            const fRelations = LayerParameterZonesCollection.fromObject(this.relations.all.filter(
+                (r) => r.parameter === parameter.id)).orderBy('priority');
+
+            // Only one relation (default) and value is a number:
+            if (
+                fRelations.length === 1 && !Array.isArray(fRelations.first.value) &&
+                !Array.isArray(fRelations.first.data.data)
+            ) {
+                lParameter.value = fRelations.first.value;
+                return lParameter;
+            }
+
+            // More than one relation (multiple zones):
+            fRelations.all.forEach((relation) => {
+                if (relation.priority === 0) {
+                    if (!Array.isArray(relation.value) && !Array.isArray(relation.data.data)) {
+                        lParameter.value = new Array(gridSize.nY).fill(0).map(() =>
+                            new Array(gridSize.nX).fill(relation.value)) as Array2D<number>;
+                    } else {
+                        if (Array.isArray(relation.data.data) && !Array.isArray(relation.value)) {
+                            lParameter.value = cloneDeep(relation.data.data);
+                        }
+                        if (Array.isArray(relation.value)) {
+                            lParameter.value = cloneDeep(relation.value);
+                        }
+                    }
+                } else {
+                    const zone = zones.findById(relation.zoneId);
+                    if (zone) {
+                        zone.cells.forEach((cell: ICell) => {
+                            if (Array.isArray(lParameter.value) && !isNaN(lParameter.value[cell[1]][cell[0]])) {
+                                lParameter.value[cell[1]][cell[0]] = relation.value as number;
+                            }
+                        });
+                    }
+                }
+            });
+            return lParameter;
+        });
+
+        if (parameters && fParameters.length === 1) {
+            const changedParameter = cParameters[0];
+            this.parameters = cloneDeep(this.parameters).map((p) => {
+                if (p.id === changedParameter.id) {
+                    return changedParameter;
+                }
+                return p;
+            });
+            return this;
+        }
+
+        this.parameters = cloneDeep(cParameters);
+
+        return this;
+    }
+
+    public smoothParameter(gridSize: GridSize, parameter: string, cycles: number = 1, distance: number = 1) {
+        const lParameters = this.parameters.filter((p) => p.id === parameter);
+
+        if (lParameters.length > 0) {
+            let cValue: Array2D<number> = [];
+            const lParameter: ILayerParameter = {
+                data: {
+                    file: null
+                },
+                id: lParameters[0].id
+            };
+
+            if (Array.isArray(lParameters[0].value)) {
+                cValue = cloneDeep(lParameters[0].value);
+                lParameter.value = cloneDeep(lParameters[0].value);
+            }
+
+            if (!Array.isArray(lParameters[0].value) && Array.isArray(lParameters[0].data.data)) {
+                cValue = cloneDeep(lParameters[0].data.data);
+                lParameter.value = cloneDeep(lParameters[0].data.data);
+            }
+
+            if (!Array.isArray(lParameter.value) || cValue.length === 0) {
+                return;
+            }
+
+            for (let cyc = 1; cyc <= cycles; cyc++) {
+                for (let row = 0; row < gridSize.nY; row++) {
+                    for (let col = 0; col < gridSize.nX; col++) {
+                        let avg = lParameter.value[row][col];
+                        let div = 1;
+
+                        lParameter.value.forEach((r: number[], rowKey: number) => {
+                            if (rowKey >= row - distance && rowKey <= row + distance &&
+                                Array.isArray(lParameter.value)) {
+                                lParameter.value[rowKey].forEach((c: number, colKey: number) => {
+                                    if (colKey >= col - distance && colKey <= col + distance &&
+                                        Array.isArray(lParameter.value) &&
+                                        !isNaN(lParameter.value[rowKey][colKey])) {
+                                        avg += lParameter.value[rowKey][colKey];
+                                        div++;
+                                    }
+                                });
+                            }
+                        });
+                        cValue[row][col] = avg / div;
+                    }
+                }
+            }
+            const cParameters = this.parameters.map((p) => {
+                if (p.id === lParameter.id) {
+                    lParameter.value = cValue;
+                    return lParameter;
+                }
+                return p;
+            });
+            this.parameters = cloneDeep(cParameters);
+        }
+        return this;
     }
 
     public calculateTransmissivity(top: IRasterParameter): number | Array2D<number> {

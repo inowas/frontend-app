@@ -1,4 +1,4 @@
-import {Collection} from '../collection/Collection';
+import {Collection} from '../../collection/Collection';
 import {IZone} from './Zone.type';
 
 class ZonesCollection extends Collection<IZone> {

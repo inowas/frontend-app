@@ -17,8 +17,8 @@ import FlopyPackages from '../../../core/model/flopy/packages/FlopyPackages';
 import {UPDATE_PACKAGES} from '../reducers/packages';
 import {UPDATE_TRANSPORT} from '../reducers/transport';
 import {UPDATE_VARIABLE_DENSITY} from '../reducers/variableDensity';
-import {Zone} from "../../../core/model/gis";
-import LayerParameterZonesCollection from "../../../core/model/gis/LayerParameterZonesCollection";
+import {Zone} from "../../../core/model/modflow/soilmodel";
+import LayerParameterZonesCollection from "../../../core/model/modflow/soilmodel/LayerParameterZonesCollection";
 
 export function clear() {
     return {

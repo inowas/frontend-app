@@ -1,9 +1,46 @@
 import uuidv4 from 'uuid/v4';
-import {ILayerParameter} from '../../../core/model/gis/LayerParameter.type';
-import {IRasterParameter} from '../../../core/model/gis/RasterParameter.type';
+import {ILayerParameter} from '../../../core/model/modflow/soilmodel/LayerParameter.type';
+import {IRasterParameter} from '../../../core/model/modflow/soilmodel/RasterParameter.type';
 import {ISoilmodelLayer} from '../../../core/model/modflow/soilmodel/SoilmodelLayer.type';
 
-export const layerParameters = [
+export interface IParameter {
+    name: string;
+    description: string;
+    unit: string;
+}
+
+export const basParameters: IParameter[] = [
+    {
+        name: 'ibound',
+        description: 'IBound',
+        unit: '-'
+    },
+    {
+        name: 'strt',
+        description: 'Starting Head',
+        unit: '-'
+    }
+];
+
+export const modpathParameters: IParameter[] = [
+    {
+        name: 'prsity',
+        description: 'Porosity',
+        unit: '-'
+    },
+    {
+        name: 'retard',
+        description: 'Retardation',
+        unit: '-'
+    },
+    {
+        name: 'stopzone',
+        description: 'Zones',
+        unit: '-'
+    }
+];
+
+export const soilmodelParameters: IParameter[] = [
     {
         name: 'top',
         description: 'Top elevation',
@@ -42,13 +79,23 @@ export const layerParameters = [
 ];
 
 export const defaultSoilmodelLayerParameters: ILayerParameter[] = [
-    {id: 'top', value: 1},
-    {id: 'botm', value: 0},
-    {id: 'hk', value: 10},
-    {id: 'hani', value: 1},
-    {id: 'vka', value: 1},
-    {id: 'ss', value: 0.00002},
-    {id: 'sy', value: 0.15},
+    // SOILMODEL:
+    {id: 'top', data: {file: null}, value: 1},
+    {id: 'botm', data: {file: null}, value: 0},
+    {id: 'hk', data: {file: null}, value: 10},
+    {id: 'hani', data: {file: null}, value: 1},
+    {id: 'vka', data: {file: null}, value: 1},
+    {id: 'ss', data: {file: null}, value: 0.00002},
+    {id: 'sy', data: {file: null}, value: 0.15},
+    // BAS:
+    {id: 'ibound', data: {file: null}, value: 1},
+    {id: 'strt', data: {file: null}, value: 1.0},
+    // SEAWAT:
+    {id: 'visc', data: {file: null}, value: -1},
+    // MODPATH:
+    {id: 'prsity', data: {file: null}, value: 0.3},
+    {id: 'retard', data: {file: null}, value: 1},
+    {id: 'stopzone', data: {file: null}, value: 1}
 ];
 
 export const defaultSoilmodelParameters: IRasterParameter[] = [
@@ -103,6 +150,54 @@ export const defaultSoilmodelParameters: IRasterParameter[] = [
     }
 ];
 
+export const otherParameters: IRasterParameter[] = [
+    // BAS:
+    {
+        defaultValue: 1,
+        isActive: true,
+        id: 'ibound',
+        title: 'IBound',
+        unit: '-'
+    },
+    {
+        defaultValue: 1.0,
+        isActive: true,
+        id: 'strt',
+        title: 'Starting Head',
+        unit: '-'
+    },
+    // SEAWAT:
+    {
+        defaultValue: -1,
+        isActive: true,
+        id: 'visc',
+        title: 'Viscosity',
+        unit: '-'
+    },
+    // MODPATH:
+    {
+        defaultValue: 0.3,
+        isActive: true,
+        id: 'prsity',
+        title: 'Porosity',
+        unit: '-'
+    },
+    {
+        defaultValue: 1,
+        isActive: true,
+        id: 'retard',
+        title: 'Retardation factor',
+        unit: '-'
+    },
+    {
+        defaultValue: 0,
+        isActive: true,
+        id: 'stopzone',
+        title: 'Stop zone',
+        unit: '-'
+    }
+];
+
 export const defaultSoilmodelLayer: ISoilmodelLayer = {
     id: uuidv4(),
     name: 'Default layer',
@@ -111,5 +206,6 @@ export const defaultSoilmodelLayer: ISoilmodelLayer = {
     laytyp: 0,
     layavg: 0,
     laywet: 0,
-    parameters: defaultSoilmodelLayerParameters
+    parameters: defaultSoilmodelLayerParameters,
+    relations: []
 };

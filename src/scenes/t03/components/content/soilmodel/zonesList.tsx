@@ -1,9 +1,8 @@
 import React from 'react';
 import {pure} from 'recompose';
 import {Button, Icon, Menu, Popup} from 'semantic-ui-react';
-import Zone from '../../../../../core/model/gis/Zone';
-import {IZone} from '../../../../../core/model/gis/Zone.type';
-import ZonesCollection from '../../../../../core/model/gis/ZonesCollection';
+import {Zone, ZonesCollection} from '../../../../../core/model/modflow/soilmodel';
+import {IZone} from '../../../../../core/model/modflow/soilmodel/Zone.type';
 
 interface IProps {
     zones: ZonesCollection;

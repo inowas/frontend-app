@@ -3,14 +3,11 @@ import uuidv4 from 'uuid/v4';
 import {defaultSoilmodelParameters} from '../../../../scenes/t03/defaults/soilmodel';
 import {versions} from '../../../../scenes/t03/updaters/versions';
 import {Cells, Geometry} from '../../geometry';
-import {RasterParametersCollection, ZonesCollection} from '../../gis';
-import {ILayerParameterZone} from '../../gis/LayerParameterZone.type';
-import LayerParameterZonesCollection from '../../gis/LayerParameterZonesCollection';
-import LayersCollection from '../../gis/LayersCollection';
-import {IZone, IZoneLegacy} from '../../gis/Zone.type';
-import {ISoilmodel, ISoilmodelLegacy} from './Soilmodel.type';
+import {LayersCollection, RasterParametersCollection, ZonesCollection} from './index';
+import {ISoilmodel, ISoilmodel1v0, ISoilmodel2v0} from './Soilmodel.type';
 import SoilmodelLayer from './SoilmodelLayer';
 import SoilmodelLegacy from './SoilmodelLegacy';
+import {IZone} from './Zone.type';
 
 class Soilmodel {
     get layersCollection() {
@@ -23,18 +20,6 @@ class Soilmodel {
 
     get parametersCollection() {
         return RasterParametersCollection.fromObject(this._props.properties.parameters);
-    }
-
-    set parametersCollection(value: RasterParametersCollection) {
-        this._props.properties.parameters = value.toObject();
-    }
-
-    get relationsCollection() {
-        return LayerParameterZonesCollection.fromObject(this._props.properties.relations);
-    }
-
-    set relationsCollection(value: LayerParameterZonesCollection) {
-        this._props.properties.relations = value.toObject();
     }
 
     get zonesCollection() {
@@ -60,31 +45,33 @@ class Soilmodel {
     public static fromDefaults(geometry: Geometry, cells: Cells) {
         const parameters = defaultSoilmodelParameters;
 
-        const defaultLayer = SoilmodelLayer.fromDefault().toObject();
+        const defaultLayer = SoilmodelLayer.fromDefault();
 
         const defaultZone: IZone = {
-            id: uuidv4(),
+            id: 'default',
+            isDefault: true,
             name: 'Default Zone',
             geometry: geometry.toObject(),
             cells: cells.toObject()
         };
 
-        const relations: ILayerParameterZone[] = parameters.map((p) => {
-            return {
+        parameters.forEach((p) => {
+            defaultLayer.addRelation({
+                data: {
+                    file: null
+                },
                 id: uuidv4(),
-                layerId: defaultLayer.id,
                 parameter: p.id,
-                zoneId: defaultZone.id,
+                priority: 0,
                 value: p.defaultValue,
-                priority: 0
-            };
+                zoneId: defaultZone.id,
+            });
         });
 
         return new Soilmodel({
-            layers: [defaultLayer],
+            layers: [defaultLayer.toObject()],
             properties: {
                 parameters,
-                relations,
                 version: versions.soilmodel,
                 zones: [defaultZone]
             }
@@ -95,29 +82,22 @@ class Soilmodel {
         return new Soilmodel(obj);
     }
 
-    public static fromQuery(obj: ISoilmodel | ISoilmodelLegacy) {
+    public static fromQuery(obj: ISoilmodel | ISoilmodel1v0 | ISoilmodel2v0) {
         if (Soilmodel.isLegacy(obj)) {
-            return new SoilmodelLegacy(obj);
+            return new SoilmodelLegacy(obj as ISoilmodel1v0 | ISoilmodel2v0);
         }
-        return new Soilmodel(obj);
+
+        return new Soilmodel(obj as ISoilmodel);
     }
 
-    public static isLegacy(input: ISoilmodel | ISoilmodelLegacy): input is ISoilmodelLegacy {
-        return input.layers.length > 0 && 'top' in input.layers[0];
+    public static isLegacy(input: ISoilmodel | ISoilmodel1v0 | ISoilmodel2v0) {
+        return !input.properties || (input.properties && input.properties.version !== versions.soilmodel);
     }
 
     private readonly _props: ISoilmodel;
 
     constructor(props: ISoilmodel) {
         this._props = cloneDeep(props);
-    }
-
-    public getZonesByLayerAndParameter(layerId: string, parameterId: string) {
-        const relations = this.relationsCollection.getZoneIds(layerId, parameterId);
-        if (relations.length > 0) {
-            return ZonesCollection.fromObject(this.zonesCollection.all.filter((z) => relations.includes(z.id)));
-        }
-        return new ZonesCollection();
     }
 
     public getParameterValue(param: string) {

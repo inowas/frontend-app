@@ -1,4 +1,4 @@
-import {Cells, Geometry} from '../geometry';
+import {Cells, Geometry} from '../../geometry';
 import {IZone} from './Zone.type';
 
 class Zone {
