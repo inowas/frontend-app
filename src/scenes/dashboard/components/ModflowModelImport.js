@@ -48,11 +48,14 @@ class ModflowModelImport extends React.Component {
             const id = Uuid.v4();
             const geometry = Geometry.fromGeoJson(data.discretization.geometry);
             const boundingBox = BoundingBox.fromGeoJson(data.discretization.geometry);
-            const gridSize = Array.isArray(data.discretization.grid_size) ? GridSize.fromObject(data.discretization.grid_size) : GridSize.fromObject(data.discretization.grid_size);
+            const gridSize = Array.isArray(data.discretization.grid_size) ? GridSize.fromArray(data.discretization.grid_size) : GridSize.fromObject(data.discretization.grid_size);
             const stressperiods = Stressperiods.fromImport(data.discretization.stressperiods);
             const soilmodel = data.soilmodel;
 
-            soilmodel.layers = soilmodel.layers.map(l => {
+            const cells = Cells.fromGeometry(geometry, boundingBox, gridSize);
+            const sm = Soilmodel.fromDefaults(geometry, cells);
+
+            sm.soilmodel.layers = soilmodel.layers.map(l => {
                 l.id = Uuid.v4();
                 return l;
             });
