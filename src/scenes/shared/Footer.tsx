@@ -27,15 +27,20 @@ const footer = (props: IProps) => {
                         <Grid.Column textAlign="left" style={{padding: '0em 2em'}}>
                             <List link={true} inverted={true}>
                                 <List.Item>
-                                    <Link to={'/imprint'}>Imprint</Link>
-                                </List.Item>
-                                <List.Item>
-                                    <Link to={'https://tu-dresden.de/bu/umwelt/hydro/inowas/project/kontakt'}>
-                                        Contact
-                                    </Link>
-                                </List.Item>
-                                <List.Item>
                                     Release: {getConfig().VERSION}
+                                </List.Item>
+                                &nbsp;
+                                <List.Item>
+                                    <a
+                                        href="https://tu-dresden.de/bu/umwelt/hydro/inowas"
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                    >
+                                        Contact
+                                    </a>
+                                </List.Item>
+                                <List.Item>
+                                    <Link to={'/imprint'}>Imprint</Link>
                                 </List.Item>
                             </List>
                         </Grid.Column>
