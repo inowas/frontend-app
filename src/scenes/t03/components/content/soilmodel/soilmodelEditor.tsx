@@ -137,10 +137,9 @@ const soilmodelEditor = (props: IProps) => {
     }, [searchParams]);
 
     const redirect = () => {
-        if (pid && type === nav.LAYERS && !soilmodel.layersCollection.findFirstBy('id', pid)) {
+        if (type === nav.LAYERS && (!pid || (pid && !soilmodel.layersCollection.findFirstBy('id', pid)))) {
             return props.history.push(`${baseUrl}/${id}/${property}/${type}/${soilmodel.layersCollection.first.id}`);
         }
-
         if (pid && type === nav.ZONES && !soilmodel.zonesCollection.findFirstBy('id', pid)) {
             if (fZones.length > 0) {
                 return props.history.push(`${baseUrl}/${id}/${property}/${type}/${fZones[0].id}`);
@@ -156,7 +155,6 @@ const soilmodelEditor = (props: IProps) => {
             if (fZones.length > 0) {
                 return props.history.push(`${baseUrl}/${id}/${property}/${type}/${fZones[0].id}`);
             }
-            return props.history.push(`${baseUrl}/${id}/${property}/zones`);
         }
         return null;
     };
