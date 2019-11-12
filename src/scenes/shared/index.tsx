@@ -12,4 +12,4 @@ export {
     Footer,
     Navbar,
     Parameters
-}
+};

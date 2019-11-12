@@ -26,9 +26,13 @@ class SubMenuWithContent extends React.Component {
                                         key={i.id}
                                         active={i.id === selected}
                                         onClick={() => this.setState({selected: i.id})}
-                                    >{i.name}</Menu.Item>
+                                    >
+                                        {i.name}
+                                    </Menu.Item>
                                 )}
                                 <Menu.Item>&nbsp;</Menu.Item>
+                                {!!this.props.children &&
+                                <Menu.Item>{this.props.children}</Menu.Item>}
                             </Menu>
                         </Grid.Column>
                         <Grid.Column width={13}>

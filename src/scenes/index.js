@@ -1,5 +1,5 @@
 import Dashboard from './dashboard/container';
-import Impressum from './impressum/Impressum';
+import Imprint from './imprint';
 import LandingPage from './landingPage/LandingPage';
 import Login from './user/containers/Login';
 import Logout from './user/containers/Logout';
@@ -25,7 +25,7 @@ import {T18} from './t18/containers';
 
 export {
     Dashboard,
-    Impressum,
+    Imprint,
     LandingPage,
     Login,
     Logout,

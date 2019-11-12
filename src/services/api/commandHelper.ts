@@ -2,7 +2,7 @@ import ModflowModelCommand from '../../scenes/t03/commands/modflowModelCommand';
 import {sendCommand} from './index';
 
 // {raster, oldUrl, onSuccess}
-export const sendCommands = (commands: ModflowModelCommand[], onSuccess: () => void, onError: () => void,
+export const sendCommands = (commands: ModflowModelCommand[], onSuccess: () => void, onError: (e: any) => void,
                              onSendCommand: () => void = () => null) => {
     const handleSuccess = () => {
         if (commands.length === 0) {
