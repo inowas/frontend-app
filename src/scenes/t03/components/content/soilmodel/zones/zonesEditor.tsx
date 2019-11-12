@@ -1,5 +1,5 @@
 import React, {ChangeEvent, MouseEvent, useState} from 'react';
-import {Accordion, AccordionTitleProps, Form, Grid, Header, Icon, InputOnChangeData} from 'semantic-ui-react';
+import {Accordion, AccordionTitleProps, Form, Grid, Header, Icon, InputOnChangeData, Loader} from 'semantic-ui-react';
 import {BoundingBox, GridSize} from '../../../../../../core/model/geometry';
 import {Array2D} from '../../../../../../core/model/geometry/Array2D.type';
 import {
@@ -100,13 +100,14 @@ const zonesEditor = (props: IProps) => {
         const rParameter = props.layer.parameters.filter((p) => p.id === props.parameter.id);
 
         if (rParameter.length === 0) {
-            return null;
+            return <Loader active={true} inline="centered" />;
         }
 
-        const data = !rParameter[0].value && rParameter[0].data.file ? rParameter[0].data.data : rParameter[0].value;
+        const data = (rParameter[0].value === null || rParameter[0].value === undefined) &&
+        rParameter[0].data.file ? rParameter[0].data.data : rParameter[0].value;
 
         if (data === null || data === undefined) {
-            return null;
+            return <Loader active={true} inline="centered" />;
         }
 
         return (

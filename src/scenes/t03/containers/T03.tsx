@@ -21,7 +21,6 @@ import Optimization from '../../../core/model/modflow/optimization/Optimization'
 import {ISoilmodel} from '../../../core/model/modflow/soilmodel/Soilmodel.type';
 import {fetchUrl, fetchUrlAndUpdate, sendCommand} from '../../../services/api';
 import {fetchCalculationDetails} from '../../../services/api';
-import {FileData} from '../../../services/dataDropper';
 import AppContainer from '../../shared/AppContainer';
 import ToolMetaData from '../../shared/simpleTools/ToolMetaData';
 import {IToolMetaData} from '../../shared/simpleTools/ToolMetaData/ToolMetaData.type';
@@ -42,6 +41,7 @@ import CalculationProgressBar from '../components/content/calculation/calculatio
 import * as Content from '../components/content/index';
 import optimization from '../components/content/optimization/optimization';
 import OptimizationProgressBar from '../components/content/optimization/optimizationProgressBar';
+import {fetchSoilmodel} from '../components/content/soilmodel/fileDropper';
 import {updater} from '../updaters/soilmodel';
 import Navigation from './navigation';
 
@@ -126,7 +126,7 @@ const t03 = (props: IProps) => {
                 message: `Start fetching soilmodel.`,
                 fetching: true
             });
-            fetchSoilmodel(props.model.id);
+            fetchAndUpdateSoilmodel(props.model.id);
         }
     }, [props.model]);
 
@@ -184,74 +184,7 @@ const t03 = (props: IProps) => {
             });
     };
 
-    const fetchSoilmodelTasks = (soilmodel: ISoilmodel) => {
-        const layers = soilmodel.layers.filter((layer) =>
-            layer.parameters.filter(
-                (parameter) => parameter.data.file && !Array.isArray(parameter.data.data)).length > 0 ||
-            layer.relations.filter((relation) => relation.data.file && !Array.isArray(relation.data.data)).length > 0);
-
-        if (layers.length) {
-            const layer = layers[0];
-            const parameters = layer.parameters.filter(
-                (parameter) => parameter.data.file && !Array.isArray(parameter.data.data)
-            );
-            if (parameters.length > 0) {
-                const parameter = parameters[0];
-                setSoilmodelFetcher({
-                    message: `Fetching parameter ${parameter.id} for layer ${layer.name}`,
-                    fetching: true
-                });
-
-                if (parameter.data.file) {
-                    FileData.fromFile(parameter.data.file).then((file) => {
-                        soilmodel.layers = soilmodel.layers.map((l) => {
-                            l.parameters = l.parameters.map((p) => {
-                                p.data = file.toObject();
-                                return p;
-                            });
-                            return l;
-                        });
-                        return fetchSoilmodelTasks(soilmodel);
-                    });
-                }
-                return;
-            }
-            const relations = layer.relations.filter(
-                (relation) => relation.data.file && !Array.isArray(relation.data.data)
-            );
-            if (relations.length > 0) {
-                const relation = relations[0];
-
-                setSoilmodelFetcher({
-                    message: `Fetching relation ${relation.id} for layer ${layer.name}`,
-                    fetching: true
-                });
-
-                if (relation.data.file) {
-                    FileData.fromFile(relation.data.file).then((file) => {
-                        soilmodel.layers = soilmodel.layers.map((l) => {
-                            l.relations = l.relations.map((r) => {
-                                r.data = file.toObject();
-                                return r;
-                            });
-                            return l;
-                        });
-                        return fetchSoilmodelTasks(soilmodel);
-                    });
-                }
-                return;
-            }
-        }
-
-        setSoilmodelFetcher({
-            message: `Fetching finished.`,
-            fetching: false
-        });
-
-        return props.updateSoilmodel(Soilmodel.fromObject(soilmodel));
-    };
-
-    const fetchSoilmodel = (id: string) => {
+    const fetchAndUpdateSoilmodel = (id: string) => {
         fetchUrlAndUpdate(`modflowmodels/${id}/soilmodel`,
             (data) => {
                 if (props.model) {
@@ -260,7 +193,17 @@ const t03 = (props: IProps) => {
             },
             (data) => {
                 const soilmodel = Soilmodel.fromQuery(data).toObject();
-                return fetchSoilmodelTasks(soilmodel as ISoilmodel);
+                setSoilmodelFetcher({
+                    message: `Start fetching soilmodel...`,
+                    fetching: true
+                });
+                return fetchSoilmodel(
+                    soilmodel as ISoilmodel,
+                    (result) => setSoilmodelFetcher(result),
+                    (result) => {
+                        return props.updateSoilmodel(Soilmodel.fromObject(result))
+                    }
+                );
             },
             (cError) => {
                 setIsLoading(false);
@@ -327,7 +270,7 @@ const t03 = (props: IProps) => {
             case 'discretization':
                 return (<Content.Discretization/>);
             case 'soilmodel':
-                return (<Content.SoilmodelGuard/>);
+                return (<Content.SoilmodelEditor fetchSoilmodel={fetchAndUpdateSoilmodel} readOnly={readOnly}/>);
             case 'boundaries':
                 if (BoundaryFactory.availableTypes.indexOf(type) > -1) {
                     return (<Content.CreateBoundary readOnly={readOnly} type={type}/>);

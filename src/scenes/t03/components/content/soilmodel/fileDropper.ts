@@ -3,7 +3,7 @@ import Soilmodel from '../../../../../core/model/modflow/soilmodel/Soilmodel';
 import {ISoilmodel} from '../../../../../core/model/modflow/soilmodel/Soilmodel.type';
 import {ISoilmodelLayer} from '../../../../../core/model/modflow/soilmodel/SoilmodelLayer.type';
 import {sendCommand} from '../../../../../services/api';
-import {dropData} from '../../../../../services/dataDropper';
+import {dropData, FileData} from '../../../../../services/dataDropper';
 import ModflowModelCommand from '../../../commands/modflowModelCommand';
 
 const addCommand = (commands: ModflowModelCommand[], model: IModflowModel, layer: ISoilmodelLayer) => {
@@ -195,4 +195,83 @@ export const saveSoilmodel = (
     }
 
     return cSoilmodel.toObject();
+};
+
+export const fetchSoilmodel = (
+    soilmodel: ISoilmodel,
+    onEachTask: (result: { message: string, fetching: boolean }) => any,
+    onFinished: (soilmodel: ISoilmodel) => any
+) => {
+    const layers = soilmodel.layers.filter((layer) =>
+        layer.parameters.filter(
+            (parameter) => parameter.data.file && !Array.isArray(parameter.data.data)).length > 0 ||
+        layer.relations.filter((relation) => relation.data.file && !Array.isArray(relation.data.data)).length > 0);
+
+    if (layers.length > 0) {
+        const layer = layers[0];
+        const parameters = layer.parameters.filter(
+            (parameter) => parameter.data.file && !Array.isArray(parameter.data.data)
+        );
+        if (parameters.length > 0) {
+            const parameter = parameters[0];
+            onEachTask({
+                message: `Fetching parameter ${parameter.id} for layer ${layer.name}`,
+                fetching: true
+            });
+
+            if (parameter.data.file) {
+                FileData.fromFile(parameter.data.file).then((file) => {
+                    soilmodel.layers = soilmodel.layers.map((l) => {
+                        if (l.id === layer.id) {
+                            l.parameters = l.parameters.map((p) => {
+                                if (p.id === parameter.id) {
+                                    p.data = file.toObject();
+                                }
+                                return p;
+                            });
+                        }
+                        return l;
+                    });
+                    return fetchSoilmodel(soilmodel, onEachTask, onFinished);
+                });
+            }
+            return;
+        }
+        const relations = layer.relations.filter(
+            (relation) => relation.data.file && !Array.isArray(relation.data.data)
+        );
+        if (relations.length > 0) {
+            const relation = relations[0];
+
+            onEachTask({
+                message: `Fetching relation ${relation.id} for layer ${layer.name}`,
+                fetching: true
+            });
+
+            if (relation.data.file) {
+                FileData.fromFile(relation.data.file).then((file) => {
+                    soilmodel.layers = soilmodel.layers.map((l) => {
+                        if (l.id === layer.id) {
+                            l.relations = l.relations.map((r) => {
+                                if (r.id === relation.id) {
+                                    r.data = file.toObject();
+                                }
+                                return r;
+                            });
+                        }
+                        return l;
+                    });
+                    return fetchSoilmodel(soilmodel, onEachTask, onFinished);
+                });
+            }
+            return;
+        }
+    }
+
+    onEachTask({
+        message: `Fetching finished.`,
+        fetching: false
+    });
+
+    return onFinished(soilmodel);
 };

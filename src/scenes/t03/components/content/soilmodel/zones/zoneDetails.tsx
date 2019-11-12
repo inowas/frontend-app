@@ -7,7 +7,7 @@ import {
     CheckboxProps,
     Form,
     Grid,
-    InputOnChangeData,
+    InputOnChangeData, Label,
     List,
     Menu,
     Modal,
@@ -17,7 +17,7 @@ import {Geometry} from '../../../../../../core/model/geometry';
 import {ModflowModel} from '../../../../../../core/model/modflow';
 import {Zone, ZonesCollection} from '../../../../../../core/model/modflow/soilmodel';
 import LayersCollection from '../../../../../../core/model/modflow/soilmodel/LayersCollection';
-import { IZone } from '../../../../../../core/model/modflow/soilmodel/Zone.type';
+import {IZone} from '../../../../../../core/model/modflow/soilmodel/Zone.type';
 import {calculateActiveCells} from '../../../../../../services/geoTools';
 import {ZonesMap} from './index';
 
@@ -206,6 +206,20 @@ const zoneDetails = (props: IProps) => {
                                                     />
                                                 </List.Item>
                                             </List>
+                                        </Form.Field>
+                                    </Grid.Column>
+                                </Grid.Row>
+                                <Grid.Row>
+                                    <Grid.Column>
+                                        <Form.Field>
+                                            <label>Affected layers:</label>
+                                                {affectedLayers.map((l, key) =>
+                                                    <Label
+                                                        key={key}
+                                                    >
+                                                        {l.name}
+                                                    </Label>
+                                                )}
                                         </Form.Field>
                                     </Grid.Column>
                                 </Grid.Row>

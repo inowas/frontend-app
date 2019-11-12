@@ -38,7 +38,6 @@ import {
 } from '../../../defaults/soilmodel';
 import {saveLayer} from './fileDropper';
 import LayerDetails from './layerDetails';
-import LayersImport from './layersImport';
 import LayersList from './layersList';
 import {CreateZoneModal, ZoneDetails} from './zones';
 import ZonesList from './zonesList';
@@ -55,7 +54,7 @@ interface IOwnProps {
     location: any;
     match: any;
     readOnly: boolean;
-    soilmodel: Soilmodel;
+    fetchSoilmodel: (id: string) => any;
 }
 
 interface IStateProps {
@@ -118,6 +117,11 @@ const soilmodelEditor = (props: IProps) => {
     }, [selectedLayer]);
 
     useEffect(() => {
+        const sLayer = props.soilmodel.layersCollection.findById(pid);
+        if (selectedLayer) {
+            setSelectedLayer(sLayer);
+        }
+
         if (pid && pid !== prevPid) {
             fetch(pid);
         }
@@ -287,10 +291,6 @@ const soilmodelEditor = (props: IProps) => {
         }
     };
 
-    const handleImport = () => {
-        console.log('HANDLE IMPORT');
-    };
-
     const handleAddZone = (zone: Zone) => {
         const cZones = soilmodel.zonesCollection.add(zone.toObject());
         setCreateZoneModal(false);
@@ -408,12 +408,18 @@ const soilmodelEditor = (props: IProps) => {
 
             return saveLayer(selectedLayer, props.model.toObject(), false, 0,
                 (state) => {
-                    console.log(state);
                     setCalculationState(state);
                 },
                 (layer) => {
-                    props.updateLayer(SoilmodelLayer.fromObject(layer));
-                    return setIsDirty(false);
+                    return sendCommand(
+                        Command.updateLayer({
+                            id: props.model.id,
+                            layer
+                        }), () => {
+                            setIsDirty(false);
+                            return props.fetchSoilmodel(props.model.id);
+                        }
+                    );
                 }
             );
         }
@@ -445,6 +451,8 @@ const soilmodelEditor = (props: IProps) => {
         );
     }
 
+    console.log({isDirty});
+
     return (
         <Segment color={'grey'} loading={isLoading}>
             <Grid>
@@ -467,11 +475,6 @@ const soilmodelEditor = (props: IProps) => {
                             visible={!readOnly}
                             save={true}
                             onSave={handleSave}
-                            importButton={props.readOnly ||
-                            <LayersImport
-                                onChange={handleImport}
-                            />
-                            }
                         />
                     </Grid.Column>
                 </Grid.Row>
@@ -518,6 +521,7 @@ const soilmodelEditor = (props: IProps) => {
                         }
                         {type === nav.ZONES &&
                         <ZonesList
+                            layers={props.soilmodel.layersCollection}
                             onClick={handleClickItem}
                             onClone={handleCloneItem}
                             onRemove={handleRemoveItem}
