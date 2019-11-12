@@ -96,14 +96,14 @@ const update1v0to2v1 = (soilmodel: ISoilmodel1v0, model: ModflowModel) => {
         cells: model.cells.toObject()
     });
 
-    soilmodel.layers.forEach((layer: ISoilmodelLayer1v0, key: number) => {
+    soilmodel.layers.forEach((layer: ISoilmodelLayer1v0, lKey: number) => {
         const relations: ILayerParameterZone[] = [];
         if (!layer.id) {
             layer.id = uuidv4();
         }
 
         if (!layer.number) {
-            layer.number = key;
+            layer.number = lKey;
         }
 
         if (layer._meta && layer._meta.zones) {
@@ -117,6 +117,7 @@ const update1v0to2v1 = (soilmodel: ISoilmodel1v0, model: ModflowModel) => {
                         cells: zone.cells
                     };
                     if (zone.priority === 0) {
+                        newZone.id = 'default';
                         newZone.isDefault = true;
                         defaultZoneExists = true;
                     }
@@ -131,8 +132,7 @@ const update1v0to2v1 = (soilmodel: ISoilmodel1v0, model: ModflowModel) => {
                                 file: null
                             },
                             id: uuidv4(),
-                            layerId: layer.id,
-                            zoneId: zone.id,
+                            zoneId: zone.priority === 0 ? 'default' : zone.id,
                             parameter: key,
                             value: zone[key as parameterProp].value,
                             priority: zone.priority
