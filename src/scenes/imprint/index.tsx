@@ -1,17 +1,18 @@
-import React, {Component} from 'react';
+import React from 'react';
+import {Grid, Header} from 'semantic-ui-react';
 import AppContainer from '../shared/AppContainer';
 
-export default class Impressum extends Component {
-    render() {
-        return (
-            <AppContainer navbarItems={[]}>
-                <div className="app-width container">
-                    <div className="row top-space">
-                        <h2>Impressum</h2>
+const imprint = () => {
+    return (
+        <AppContainer navbarItems={[]}>
+            <Grid padded={true}>
+                <Grid.Row>
+                    <Grid.Column textAlign={'center'}>
+                        <Header as={'h1'}>Impressum</Header>
                         <p className="description">
                             Es gilt das
                             <a href="https://tu-dresden.de/impressum" target="_blank" rel="noopener noreferrer">
-                                 &nbsp;Impressum der TU Dresden&nbsp;
+                                &nbsp;Impressum der TU Dresden&nbsp;
                             </a>
                             mit folgenden Abweichungen:
                         </p>
@@ -36,9 +37,11 @@ export default class Impressum extends Component {
                             Tel.: +49 351 46342691<br/>
                             Email: ralf.junghanns@tu-dresden.de<br/>
                         </p>
-                    </div>
-                </div>
-            </AppContainer>
-        );
-    }
-}
+                    </Grid.Column>
+                </Grid.Row>
+            </Grid>
+        </AppContainer>
+    );
+};
+
+export default imprint;
