@@ -5,7 +5,6 @@ import {ModflowModel, Stressperiods} from '../../../../../core/model/modflow';
 import {BoundaryCollection} from '../../../../../core/model/modflow/boundaries';
 import {IStressPeriods} from '../../../../../core/model/modflow/Stressperiods.type';
 import ContentToolBar from '../../../../../scenes/shared/ContentToolbar';
-import DiscretizationImport from './discretizationImport';
 import StressPeriodsDataTable from './stressperiodsDatatable';
 
 interface IState {
