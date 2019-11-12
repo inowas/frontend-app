@@ -35,7 +35,7 @@
     "react-leaflet-draw": "0.19.0",
     "react-leaflet-fullscreen": "0.0.6",
     "react-pivottable": "0.9.0",
-    "react-redux": "5.1.1",
+    "react-redux": "7.1.1",
     "react-router-dom": "4.3.1",
     "react-scripts": "2.1.0",
     "react-xml-parser": "1.0.8",
@@ -45,7 +45,7 @@
     "redux-logger": "3.0.6",
     "redux-thunk": "2.3.0",
     "reproject": "1.2.4",
-    "semantic-ui-react": "0.83.0",
+    "semantic-ui-react": "0.88.1",
     "uuid": "3.3.2",
     "vis-react": "0.4.5"
   },

@@ -1,10 +1,15 @@
+import {Feature} from 'geojson';
 import * as GeoJson from 'geojson';
 import {LatLngExpression} from 'leaflet';
 import {uniqueId} from 'lodash';
+import md5 from 'md5';
 import React, {Component} from 'react';
-import {CircleMarker, GeoJSON, Map, Polygon, Polyline} from 'react-leaflet';
-import {Geometry} from '../../../../core/model/modflow';
+import {CircleMarker, GeoJSON, LayersControl, Map, Polygon, Polyline} from 'react-leaflet';
+import BoundingBox from '../../../../core/model/geometry/BoundingBox';
+import GridSize from '../../../../core/model/geometry/GridSize';
+import {Cells, Geometry} from '../../../../core/model/modflow';
 import {Boundary, BoundaryCollection, WellBoundary} from '../../../../core/model/modflow/boundaries';
+import ActiveCellsLayer from '../../../../services/geoTools/activeCellsLayer';
 
 import {getStyle} from '../../../../services/geoTools/mapHelpers';
 import {BasicTileLayer} from '../../../../services/geoTools/tileLayers';
@@ -12,6 +17,9 @@ import {BasicTileLayer} from '../../../../services/geoTools/tileLayers';
 export interface IPropsModelMap {
     geometry: Geometry;
     boundaries: BoundaryCollection | null;
+    boundingBox?: BoundingBox;
+    cells?: Cells;
+    gridSize?: GridSize;
 }
 
 const style = {
@@ -96,8 +104,32 @@ class ModelMap extends Component<IPropsModelMap> {
             .map((b: Boundary) => this.renderBoundaryGeometry(b, true));
     }
 
+    public renderBoundingBox = (boundingBox: BoundingBox) => {
+        return (
+            <GeoJSON
+                key={md5(JSON.stringify(boundingBox.toObject()))}
+                data={boundingBox.geoJson as Feature}
+                style={getStyle('bounding_box')}
+            />
+        );
+    };
+
+    public renderCells = () => {
+        const {boundingBox, cells, gridSize} = this.props;
+        if (boundingBox && gridSize && cells) {
+            return (
+                <ActiveCellsLayer
+                    boundingBox={boundingBox}
+                    gridSize={gridSize}
+                    cells={cells}
+                    styles={getStyle('active_cells')}
+                />
+            );
+        }
+    };
+
     public render() {
-        const {geometry, boundaries} = this.props;
+        const {geometry, boundaries, boundingBox, cells} = this.props;
 
         return (
             <Map
@@ -112,6 +144,13 @@ class ModelMap extends Component<IPropsModelMap> {
                     style={getStyle('area')}
                 />
                 {boundaries && this.renderOtherBoundaries(boundaries)}
+                {boundingBox && this.renderBoundingBox(boundingBox)}
+                {cells &&
+                <LayersControl position="topright">
+                    <LayersControl.Overlay name="Active cells">
+                        {this.renderCells()}
+                    </LayersControl.Overlay>
+                </LayersControl>}
             </Map>
         );
     }

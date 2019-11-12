@@ -1,5 +1,4 @@
 import React from 'react';
-
 import {Button, Dimmer, Divider, Grid, Header, List, Loader, Modal, Segment} from 'semantic-ui-react';
 import {IBoundingBox} from '../../../../../core/model/geometry/BoundingBox.type';
 import {ICells} from '../../../../../core/model/geometry/Cells.type';
@@ -76,7 +75,7 @@ class DiscretizationImport extends React.Component<IProps, IState> {
                     primary={true}
                     fluid={true}
                     icon={'download'}
-                    content={'Import Discretization'}
+                    content={'Import'}
                     labelPosition={'left'}
                     onClick={this.onClickUpload}
                 />
@@ -86,12 +85,7 @@ class DiscretizationImport extends React.Component<IProps, IState> {
     }
 
     private onImportClick = () => {
-        this.setState({
-            showImportModal: false
-        });
-
-        const model = ModflowModel.fromObject(this.props.model.toObject());
-
+        const model =  this.props.model.getClone();
         const {geometry, bounding_box, grid_size, cells, stressperiods, length_unit, time_unit} = this.state;
 
         if (geometry) {
@@ -122,7 +116,10 @@ class DiscretizationImport extends React.Component<IProps, IState> {
             model.timeUnit = TimeUnit.fromInt(time_unit);
         }
 
-        return this.props.onChange(model);
+        this.props.onChange(model);
+        return this.setState({
+            showImportModal: false
+        });
     };
 
     private onCancel = () => {
@@ -137,11 +134,8 @@ class DiscretizationImport extends React.Component<IProps, IState> {
         let recalculateCells = false;
         if (geometry) {
             this.setState({geometry});
-            recalculateCells = true;
-        }
-
-        if (bounding_box) {
-            this.setState({bounding_box});
+            const bbox = BoundingBox.fromGeoJson(geometry);
+            this.setState({bounding_box: bbox.toObject()});
             recalculateCells = true;
         }
 
@@ -158,9 +152,6 @@ class DiscretizationImport extends React.Component<IProps, IState> {
             );
 
             this.setState({
-                geometry: this.props.model.geometry.toObject(),
-                bounding_box: this.props.model.boundingBox.toObject(),
-                grid_size: this.props.model.gridSize.toObject(),
                 cells: cells.toObject()
             });
         }
@@ -290,7 +281,7 @@ class DiscretizationImport extends React.Component<IProps, IState> {
 
                             <Segment basic={true} placeholder={true} style={{minHeight: '10rem'}}>
                                 <Grid columns={2} stackable={true} textAlign="center">
-                                    <Divider vertical={true} />
+                                    <Divider vertical={true}/>
                                     <Grid.Row verticalAlign="top">
                                         <Grid.Column>
                                             {!this.state.errors &&

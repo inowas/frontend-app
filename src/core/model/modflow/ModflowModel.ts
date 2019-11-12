@@ -178,4 +178,8 @@ export default class ModflowModel {
         stressperiods: this.stressperiods.toObject(),
         time_unit: this.timeUnit.toInt()
     });
+
+    public getClone = () => (
+        ModflowModel.fromObject(this.toObject())
+    );
 }

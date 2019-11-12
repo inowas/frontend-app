@@ -36,12 +36,10 @@ const calculateGridCells = (boundingBox, gridSize, cells) => {
 };
 
 const ActiveCellsLayer = ({boundingBox, gridSize, cells, styles}) => {
-    if (!(cells instanceof Cells)){
+    if (!(cells instanceof Cells)) {
         return null;
     }
-
     const gridCells = calculateGridCells(boundingBox, gridSize, cells);
-
     return (
         <FeatureGroup>
             {gridCells.map((c, k) => renderGridCell(k, c[0], c[1], c[2], c[3], styles))};

@@ -21,7 +21,7 @@ const style = {
 
 interface ICreateModelMapProps {
     gridSize: GridSize;
-    onChange: (args: { cells: Cells, boundingBox: BoundingBox, geometry: Geometry }) => {};
+    onChange: (args: { cells: Cells, boundingBox: BoundingBox, geometry: Geometry }) => void;
 }
 
 interface ICreateModelMapState {
