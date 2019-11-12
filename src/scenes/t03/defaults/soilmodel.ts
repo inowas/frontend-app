@@ -87,15 +87,6 @@ export const defaultSoilmodelLayerParameters: ILayerParameter[] = [
     {id: 'vka', data: {file: null}, value: 1},
     {id: 'ss', data: {file: null}, value: 0.00002},
     {id: 'sy', data: {file: null}, value: 0.15},
-    // BAS:
-    {id: 'ibound', data: {file: null}, value: 1},
-    {id: 'strt', data: {file: null}, value: 1.0},
-    // SEAWAT:
-    {id: 'visc', data: {file: null}, value: -1},
-    // MODPATH:
-    {id: 'prsity', data: {file: null}, value: 0.3},
-    {id: 'retard', data: {file: null}, value: 1},
-    {id: 'stopzone', data: {file: null}, value: 1}
 ];
 
 export const defaultSoilmodelParameters: IRasterParameter[] = [

@@ -45,3 +45,19 @@ export interface ISoilmodelLayer1v0 {
     ss: number | Array2D<number>;
     sy: number | Array2D<number>;
 }
+
+export interface ISoilmodelLayerExport {
+    name: string;
+    description: string;
+    number: number;
+    laytyp: number;
+    top: number | Array2D<number>;
+    botm: number | Array2D<number>;
+    hk: number | Array2D<number>;
+    hani: number | Array2D<number>;
+    vka: number | Array2D<number>;
+    layavg: number;
+    laywet: number;
+    ss: number | Array2D<number>;
+    sy: number | Array2D<number>;
+}

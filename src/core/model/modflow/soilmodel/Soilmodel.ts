@@ -1,11 +1,14 @@
 import {cloneDeep} from 'lodash';
 import uuidv4 from 'uuid/v4';
 import {defaultSoilmodelParameters} from '../../../../scenes/t03/defaults/soilmodel';
+import {updater} from '../../../../scenes/t03/updaters/soilmodel';
 import {versions} from '../../../../scenes/t03/updaters/versions';
 import {Cells, Geometry} from '../../geometry';
+import {ModflowModel} from '../index';
 import {LayersCollection, RasterParametersCollection, ZonesCollection} from './index';
-import {ISoilmodel, ISoilmodel1v0, ISoilmodel2v0} from './Soilmodel.type';
+import {ISoilmodel, ISoilmodel1v0, ISoilmodel2v0, ISoilmodelExport} from './Soilmodel.type';
 import SoilmodelLayer from './SoilmodelLayer';
+import {ISoilmodelLayer} from './SoilmodelLayer.type';
 import SoilmodelLegacy from './SoilmodelLegacy';
 import {IZone} from './Zone.type';
 
@@ -78,6 +81,14 @@ class Soilmodel {
         });
     }
 
+    public static fromExport(obj: ISoilmodelExport, model: ModflowModel) {
+        if (this.isLegacy(obj)) {
+            const updatedSoilmodel = updater(obj, model);
+            return new Soilmodel(updatedSoilmodel);
+        }
+        return new Soilmodel(obj as ISoilmodel);
+    }
+
     public static fromObject(obj: ISoilmodel) {
         return new Soilmodel(obj);
     }
@@ -90,7 +101,7 @@ class Soilmodel {
         return new Soilmodel(obj as ISoilmodel);
     }
 
-    public static isLegacy(input: ISoilmodel | ISoilmodel1v0 | ISoilmodel2v0) {
+    public static isLegacy(input: any) {
         return !input.properties || (input.properties && input.properties.version !== versions.soilmodel);
     }
 
@@ -100,15 +111,54 @@ class Soilmodel {
         this._props = cloneDeep(props);
     }
 
+    public addLayer(layer: ISoilmodelLayer) {
+        const defaultZone = this.zonesCollection.findFirstBy('isDefault', true);
+        if (layer.relations.length === 0 && this.zonesCollection.length > 0) {
+            if (defaultZone) {
+                defaultSoilmodelParameters.forEach((p) => {
+                    layer.relations.push({
+                        id: uuidv4(),
+                        data: {file: null},
+                        parameter: p.id,
+                        priority: 0,
+                        zoneId: defaultZone.id
+                    });
+                });
+            }
+        }
+        if (layer.relations.length === 0 && !defaultZone) {
+            throw new Error('Layer has no relations and default zone does not exist.');
+        }
+        this._props.layers.push(layer);
+        return this;
+    }
+
+    public updateLayer(layer: ISoilmodelLayer) {
+        this._props.layers = this.layersCollection.all.map((l) => {
+            if (layer.id === l.id) {
+                return layer;
+            }
+            return l;
+        });
+        return this;
+    }
+
     public getParameterValue(param: string) {
         return this.layersCollection.all.map((layer) => {
             const parameter = layer.parameters.filter((p) => p.id === param);
             if (parameter.length > 0) {
-                return parameter[0].value;
+                if (parameter[0].value !== null && parameter[0].value !== undefined) {
+                    return parameter[0].value;
+                }
+                if (parameter[0].data.data) {
+                    return parameter[0].data.data;
+                }
             }
-            throw new Error(`Layer must contain parameter with name ${param}`);
+            throw new Error(`Layer ${layer.id} must contain parameter with name ${param}`);
         });
     }
+
+    public toExport = () => (this._props);
 
     public toObject = () => (this._props);
 }

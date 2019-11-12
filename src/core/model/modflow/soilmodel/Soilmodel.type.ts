@@ -1,7 +1,7 @@
 import {IPropertyValueObject} from '../../types';
 import {ILayerParameterZone2v0} from './LayerParameterZone.type';
 import {IRasterParameter} from './RasterParameter.type';
-import {ISoilmodelLayer, ISoilmodelLayer1v0, ISoilmodelLayer2v0} from './SoilmodelLayer.type';
+import {ISoilmodelLayer, ISoilmodelLayer1v0, ISoilmodelLayer2v0, ISoilmodelLayerExport} from './SoilmodelLayer.type';
 import {IZone, IZone2v0} from './Zone.type';
 
 export interface ISoilmodel {
@@ -31,4 +31,13 @@ export interface ISoilmodel1v0 {
     properties?: IPropertyValueObject;
     layers: ISoilmodelLayer1v0[];
     version?: number;
+}
+
+export interface ISoilmodelExport {
+    layers: ISoilmodelLayerExport[] | ISoilmodelLayer[];
+    properties?: {
+        parameters: IRasterParameter[];
+        version?: string;
+        zones: IZone[];
+    };
 }

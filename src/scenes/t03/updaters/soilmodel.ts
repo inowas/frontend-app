@@ -1,42 +1,39 @@
 import uuidv4 from 'uuid/v4';
 import {ModflowModel} from '../../../core/model/modflow';
+import {Zone} from '../../../core/model/modflow/soilmodel';
 import {ILayerParameterZone} from '../../../core/model/modflow/soilmodel/LayerParameterZone.type';
 import {IRasterParameter} from '../../../core/model/modflow/soilmodel/RasterParameter.type';
 import Soilmodel from '../../../core/model/modflow/soilmodel/Soilmodel';
 import {
     ISoilmodel,
     ISoilmodel1v0,
-    ISoilmodel2v0
+    ISoilmodel2v0, ISoilmodelExport
 } from '../../../core/model/modflow/soilmodel/Soilmodel.type';
 import {
     ISoilmodelLayer,
     ISoilmodelLayer1v0
 } from '../../../core/model/modflow/soilmodel/SoilmodelLayer.type';
 import {IZone, IZoneLegacy} from '../../../core/model/modflow/soilmodel/Zone.type';
-import {sendCommands} from '../../../services/api/commandHelper';
-import ModflowModelCommand from '../commands/modflowModelCommand';
-import {defaultSoilmodelParameters} from '../defaults/soilmodel';
+import {defaultSoilmodelLayerParameters, defaultSoilmodelParameters} from '../defaults/soilmodel';
 
 export const updater = (
-    soilmodel: ISoilmodel | ISoilmodel1v0 | ISoilmodel2v0,
+    soilmodel: ISoilmodelExport | ISoilmodel | ISoilmodel1v0 | ISoilmodel2v0,
     model: ModflowModel
-) => {
+): ISoilmodel => {
     if (
         !soilmodel.properties || !soilmodel.properties.version || (
             soilmodel.properties && soilmodel.properties.version && soilmodel.properties.version === 1
         )
     ) {
-        return update1v0to2v0(soilmodel as ISoilmodel1v0, model);
+        return update1v0to2v1(soilmodel as ISoilmodel1v0, model);
     }
     if (soilmodel.properties.version === 2) {
         return update2v0to2v1(soilmodel as ISoilmodel2v0, model);
     }
-    return soilmodel;
+    return soilmodel as ISoilmodel;
 };
 
 const update2v0to2v1 = (soilmodel: ISoilmodel2v0, model: ModflowModel) => {
-    const commands: ModflowModelCommand[] = [];
-
     const updateLayers = () => {
         return soilmodel.layers.map((layer) => {
             const nLayer: ISoilmodelLayer = {
@@ -49,29 +46,21 @@ const update2v0to2v1 = (soilmodel: ISoilmodel2v0, model: ModflowModel) => {
                         }
                     };
                 }),
-                relations: []
+                relations: soilmodel.properties.relations.filter((r) => r.layerId === layer.id).map((r) => {
+                    return {
+                        ...r,
+                        data: {
+                            file: null
+                        },
+                        layerId: undefined
+                    };
+                })
             };
-            /*nLayer.relations = soilmodel.properties.relations.filter((r) => r.layerId === layer.id).map(
-                async (r: ILayerParameterZone) => {
-                    if (Array.isArray(r.value)) {
-                        const fd = await FileData.fromData(r.value, !model.readOnly);
-                        r.value = fd.toObject();
-                    }
-                    return r;
-                }
-            );
-            nLayer.parameters = nLayer.parameters.map(async (p) => {
-                if (Array.isArray(p.value)) {
-                    const fd = await FileData.fromData(p.value, !model.readOnly);
-                    p.value = fd.toObject();
-                }
-                return p;
-            });*/
             return nLayer;
         });
     };
 
-    const newSoilmodel = Soilmodel.fromObject({
+    const nSoilmodel = Soilmodel.fromObject({
         layers: updateLayers(),
         properties: {
             parameters: soilmodel.properties.parameters,
@@ -86,79 +75,84 @@ const update2v0to2v1 = (soilmodel: ISoilmodel2v0, model: ModflowModel) => {
         }
     });
 
-    commands.push(
-        ModflowModelCommand.updateSoilmodelProperties({
-            id: model.id,
-            properties: newSoilmodel.toObject().properties
-        })
-    );
-
-    newSoilmodel.layersCollection.all.forEach((layer) => {
-        commands.push(
-            ModflowModelCommand.addLayer({
-                id: model.id,
-                layer
-            })
-        );
-    });
-
-    if (!model.readOnly) {
-        sendCommands(commands,
-            () => null,
-            () => null,
-            () => null
-        );
-    }
-
-    return newSoilmodel;
+    return nSoilmodel.toObject();
 };
 
-const update1v0to2v0 = (soilmodel: ISoilmodel1v0, model: ModflowModel) => {
-    const commands: ModflowModelCommand[] = [];
-
+const update1v0to2v1 = (soilmodel: ISoilmodel1v0, model: ModflowModel) => {
     type parameterProp = 'top' | 'botm' | 'vka' | 'hk' | 'hani' | 'ss' | 'sy';
     let defaultZoneExists = false;
     const paramsLegacy = ['top', 'botm', 'vka', 'hk', 'hani', 'ss', 'sy'];
-    const relations: ILayerParameterZone[] = [];
     const parameters: IRasterParameter[] = defaultSoilmodelParameters;
     const zones: IZone[] = [];
     const layers: ISoilmodelLayer[] = [];
 
+    const defaultZone = new Zone({
+        id: 'default',
+        isDefault: true,
+        name: 'Default Zone',
+        geometry: model.geometry.toObject(),
+        cells: model.cells.toObject()
+    });
+
     soilmodel.layers.forEach((layer: ISoilmodelLayer1v0) => {
-        layer._meta.zones.forEach((zone: IZoneLegacy) => {
-            if ((zone.priority === 0 && !defaultZoneExists) || zone.priority !== 0) {
-                if (zone.priority === 0) {
-                    defaultZoneExists = true;
-                }
+        const relations: ILayerParameterZone[] = [];
+        if (!layer.id) {
+            layer.id = uuidv4();
+        }
 
-                const newZone: IZone = {
-                    id: zone.id,
-                    isDefault: false,
-                    name: zone.name,
-                    geometry: zone.geometry,
-                    cells: zone.cells
-                };
-                zones.push(newZone);
-            }
-
-            Object.keys(zone).filter((k) => paramsLegacy.includes(k)).forEach((key) => {
-                if (zone[key as parameterProp].isActive) {
-                    const newRelation = {
-                        data: {
-                            file: null
-                        },
-                        id: uuidv4(),
-                        layerId: layer.id,
-                        zoneId: zone.id,
-                        parameter: key,
-                        value: zone[key as parameterProp].value,
-                        priority: zone.priority
+        if (layer._meta && layer._meta.zones) {
+            layer._meta.zones.forEach((zone: IZoneLegacy) => {
+                if ((zone.priority === 0 && !defaultZoneExists) || zone.priority !== 0) {
+                    const newZone: IZone = {
+                        id: zone.id,
+                        isDefault: false,
+                        name: zone.name,
+                        geometry: zone.geometry,
+                        cells: zone.cells
                     };
-                    relations.push(newRelation);
+                    if (zone.priority === 0) {
+                        newZone.id = 'default';
+                        defaultZoneExists = true;
+                    }
+                    zones.push(newZone);
                 }
-            });
 
-        });
+                Object.keys(zone).filter((k) => paramsLegacy.includes(k)).forEach((key) => {
+                    if (zone[key as parameterProp].isActive) {
+                        const newRelation = {
+                            data: {
+                                file: null
+                            },
+                            id: uuidv4(),
+                            layerId: layer.id,
+                            zoneId: zone.id,
+                            parameter: key,
+                            value: zone[key as parameterProp].value,
+                            priority: zone.priority
+                        };
+                        relations.push(newRelation);
+                    }
+                });
+            });
+        } else {
+            defaultSoilmodelParameters.forEach((p) => {
+                const newRelation = {
+                    data: {
+                        file: null
+                    },
+                    id: uuidv4(),
+                    layerId: layer.id,
+                    zoneId: 'default',
+                    parameter: p.id,
+                    value: layer[p.id as parameterProp],
+                    priority: 0
+                };
+                relations.push(newRelation);
+            });
+        }
+
+        const paramKeys = Object.keys(layer).filter((k) => paramsLegacy.includes(k));
+
         const newLayer: ISoilmodelLayer = {
             id: layer.id,
             name: layer.name,
@@ -167,7 +161,7 @@ const update1v0to2v0 = (soilmodel: ISoilmodel1v0, model: ModflowModel) => {
             layavg: layer.layavg,
             laytyp: layer.laytyp,
             laywet: layer.laywet,
-            parameters: Object.keys(layer).filter((k) => paramsLegacy.includes(k)).map((key) => {
+            parameters: paramKeys.length > 0 ? Object.keys(layer).filter((k) => paramsLegacy.includes(k)).map((key) => {
                 return {
                     data: {
                         file: null
@@ -175,19 +169,15 @@ const update1v0to2v0 = (soilmodel: ISoilmodel1v0, model: ModflowModel) => {
                     id: key,
                     value: layer[key as parameterProp]
                 };
-            }),
-            relations: []
+            }) : defaultSoilmodelLayerParameters,
+            relations
         };
         layers.push(newLayer);
-
-        commands.push(
-            ModflowModelCommand.updateLayer({
-                id: model.id,
-                layer_id: layer.id,
-                layer: newLayer
-            })
-        );
     });
+
+    if (!defaultZoneExists) {
+        zones.push(defaultZone.toObject());
+    }
 
     const nSoilmodel = new Soilmodel({
         layers,
@@ -198,22 +188,5 @@ const update1v0to2v0 = (soilmodel: ISoilmodel1v0, model: ModflowModel) => {
         }
     });
 
-    const newSoilmodel = nSoilmodel.toObject();
-
-    commands.push(
-        ModflowModelCommand.updateSoilmodelProperties({
-            id: model.id,
-            properties: nSoilmodel.toObject().properties
-        })
-    );
-
-    if (!model.readOnly) {
-        sendCommands(commands,
-            () => null,
-            () => null,
-            () => null
-        );
-    }
-
-    return newSoilmodel;
+    return nSoilmodel.toObject();
 };

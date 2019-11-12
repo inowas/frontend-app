@@ -136,7 +136,7 @@ const zonesTable = (props: IProps) => {
                 onKeyPress={handlePressEnter}
                 icon={
                     <Icon
-                        name={isArray ? 'map' : 'map pin'}
+                        name={isArray ? 'cancel' : 'map pin'}
                         link={isArray}
                         onClick={isArray ? () => handleToggleDefault(relation.id) : null}
                     />

@@ -41,6 +41,7 @@ import FlopyModpath from '../../../core/model/flopy/packages/mp/FlopyModpath';
 import FlopySeawat from '../../../core/model/flopy/packages/swt/FlopySeawat';
 import {BoundaryCollection, BoundaryFactory} from '../../../core/model/modflow/boundaries';
 import {updater} from "../updaters/soilmodel";
+import {FileData} from "../../../services/dataDropper";
 
 const navigation = [{
     name: 'Documentation',
@@ -58,7 +59,11 @@ class T03 extends React.Component {
             isLoading: false,
             calculatePackages: false,
             scenarioAnalysisId: null,
-            navigation
+            navigation,
+            soilmodelFetcher: {
+                message: 'Start Fetching Soilmodel ...',
+                fetching: true
+            }
         }
     }
 
@@ -158,13 +163,74 @@ class T03 extends React.Component {
         );
     };
 
+    fetchSoilmodelTasks(soilmodel) {
+        const layers = soilmodel.layers.filter((layer) =>
+            layer.parameters.filter((parameter) => parameter.data.file && !Array.isArray(parameter.data.data)).length > 0 ||
+            layer.relations.filter((relation) => relation.data.file && !Array.isArray(relation.data.data)).length > 0);
+
+        if (layers.length) {
+            const layer = layers[0];
+            const parameters = layer.parameters.filter((parameter) => parameter.data.file && !Array.isArray(parameter.data.data));
+            if (parameters.length > 0) {
+                const parameter = parameters[0];
+                this.setState({
+                    soilmodelFetcher: {
+                        message: `Fetching parameter ${parameter.id} for layer ${layer.name}`,
+                        fetching: true
+                    }
+                });
+                FileData.fromFile(parameter.data.file).then((file) => {
+                    soilmodel.layers = soilmodel.layers.map((layer) => {
+                        layer.parameters = layer.parameters.map((parameter) => {
+                            parameter.data = file.toObject();
+                            return parameter;
+                        });
+                        return layer;
+                    });
+                    return this.fetchSoilmodelTasks(soilmodel);
+                });
+                return;
+            }
+            const relations = layer.relations.filter((relation) => relation.data.file && !Array.isArray(relation.data.data));
+            if (relations.length > 0) {
+                const relation = relations[0];
+                this.setState({
+                    soilmodelFetcher: {
+                        message: `Fetching relation ${relation.id} for layer ${layer.name}`,
+                        fetching: true
+                    }
+                });
+                FileData.fromFile(relation.data.file).then((file) => {
+                    soilmodel.layers = soilmodel.layers.map((layer) => {
+                        layer.relations = layer.relations.map((relation) => {
+                            relation.data = file.toObject();
+                            return relation;
+                        });
+                        return layer;
+                    });
+                    return this.fetchSoilmodelTasks(soilmodel);
+                });
+                return;
+            }
+        }
+
+        this.setState({
+            soilmodelFetcher: {
+                message: `Fetching finished.`,
+                fetching: false
+            }
+        });
+        return this.props.updateSoilmodel(Soilmodel.fromObject(soilmodel));
+    };
+
     fetchSoilmodel(id) {
         fetchUrlAndUpdate(`modflowmodels/${id}/soilmodel`,
             data => {
                 return updater(data, this.props.model);
             },
             data => {
-                return this.props.updateSoilmodel(Soilmodel.fromQuery(data));
+                const soilmodel = Soilmodel.fromQuery(data).toObject();
+                return this.fetchSoilmodelTasks(soilmodel);
             },
             error => this.setState(
                 {error, isLoading: false},
@@ -290,7 +356,8 @@ class T03 extends React.Component {
     render() {
         const {navigation} = this.state;
 
-        if (!(this.props.model instanceof ModflowModel) ||
+        if (this.state.soilmodelFetcher.fetching ||
+            !(this.props.model instanceof ModflowModel) ||
             !(this.props.boundaries instanceof BoundaryCollection) ||
             !(this.props.soilmodel instanceof Soilmodel) ||
             !(this.props.transport instanceof Transport) ||
@@ -346,7 +413,7 @@ class T03 extends React.Component {
                 <Grid padded>
                     <Grid.Row>
                         <Grid.Column width={3}>
-                            <Navigation />
+                            <Navigation/>
                             <CalculationProgressBar/>
                             <OptimizationProgressBar/>
                         </Grid.Column>

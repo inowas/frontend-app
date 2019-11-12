@@ -23,7 +23,6 @@ import {ISoilmodelLayer} from '../../../../../core/model/modflow/soilmodel/Soilm
 import {IZone} from '../../../../../core/model/modflow/soilmodel/Zone.type';
 import {sendCommand} from '../../../../../services/api';
 import {sendCommands} from '../../../../../services/api/commandHelper';
-import {dropData, FileData} from '../../../../../services/dataDropper';
 import NoContent from '../../../../shared/complexTools/noContent';
 import ContentToolBar from '../../../../shared/ContentToolbar';
 import {usePrevious} from '../../../../shared/simpleTools/helpers/customHooks';
@@ -37,6 +36,7 @@ import {
     modpathParameters,
     soilmodelParameters
 } from '../../../defaults/soilmodel';
+import {saveLayer} from './fileDropper';
 import LayerDetails from './layerDetails';
 import LayersImport from './layersImport';
 import LayersList from './layersList';
@@ -60,6 +60,7 @@ interface IOwnProps {
 
 interface IStateProps {
     model: ModflowModel;
+    soilmodel: Soilmodel;
 }
 
 interface IDispatchProps {
@@ -162,70 +163,12 @@ const soilmodelEditor = (props: IProps) => {
 
     const fetch = (iId: string) => {
         if (type === nav.LAYERS) {
-            const cLayer = soilmodel.layersCollection.findById(iId);
-            if (cLayer) {
-                setNumberOfTasks(
-                    cLayer.parameters.filter((p) => p.data.file).length + cLayer.relations.filter(
-                    (r) => r.data.file
-                    ).length
-                );
-                return fetchFiles(cLayer);
-            }
+            const cLayer = props.soilmodel.layersCollection.findById(iId);
+            return setSelectedLayer(cLayer);
         }
         if (type === nav.ZONES) {
             return setSelectedZone(soilmodel.zonesCollection.findById(iId));
         }
-    };
-
-    const fetchFiles = (cLayer: ISoilmodelLayer): any => {
-        const parameters = cLayer.parameters.filter((p) => p.data.file && !Array.isArray(p.data.data));
-        if (parameters.length > 0 && parameters[0].data.file) {
-            setCalculationState(() => {
-                return {
-                    message: `Receiving data for parameter ${parameters[0].id}.`,
-                    task: ++calculationState.task
-                };
-            });
-
-            FileData.fromFile(parameters[0].data.file).then((file) => {
-                cLayer.parameters = cLayer.parameters.map((p) => {
-                    if (p.id === parameters[0].id) {
-                        p.data = file.toObject();
-                    }
-                    return p;
-                });
-
-                return fetchFiles(cLayer);
-            });
-            return;
-        }
-
-        const relations = cLayer.relations.filter((r) => r.data.file && !Array.isArray(r.data.data));
-        if (relations.length > 0 && relations[0].data.file) {
-            setCalculationState({
-                message: `Receiving data for relation ${relations[0].id}.`,
-                task: ++calculationState.task
-            });
-
-            FileData.fromFile(relations[0].data.file).then((file) => {
-                cLayer.relations = cLayer.relations.map((r) => {
-                    if (r.id === relations[0].id) {
-                        r.data = file.toObject();
-                    }
-                    return r;
-                });
-
-                return fetchFiles(cLayer);
-            });
-            return;
-        }
-
-        setNumberOfTasks(0);
-        setCalculationState({
-            message: 'Start Fetching ...',
-            task: 0
-        });
-        return setSelectedLayer(cLayer);
     };
 
     const getParameters = (paramType: string) => {
@@ -438,84 +381,6 @@ const soilmodelEditor = (props: IProps) => {
         }
     };
 
-    const saveLayer = (cLayer: ISoilmodelLayer) => {
-        const parameters = cLayer.parameters.filter((p) => Array.isArray(p.value));
-        if (parameters.length > 0) {
-            setCalculationState({
-                message: `Saving data for parameter ${parameters[0].id}.`,
-                task: calculationState.task++
-            });
-
-            dropData(parameters[0].value).then((file) => {
-                cLayer.parameters = cLayer.parameters.map((p) => {
-                    if (p.id === parameters[0].id) {
-                        p.data.file = file;
-                        p.value = undefined;
-                    }
-                    return p;
-                });
-
-                return saveLayer(cLayer);
-            });
-        }
-
-        const relations = cLayer.relations.filter((r) => Array.isArray(r.value));
-        if (relations.length > 0) {
-            setCalculationState({
-                message: `Saving data for relation ${relations[0].id}.`,
-                task: calculationState.task++
-            });
-
-            dropData(relations[0].value).then((file) => {
-                cLayer.relations = cLayer.relations.map((r) => {
-                    if (r.id === relations[0].id) {
-                        r.data.file = file;
-                        r.value = undefined;
-                    }
-                    return r;
-                });
-
-                return saveLayer(cLayer);
-            });
-        }
-
-        return sendCommand(
-            Command.updateLayer({
-                id: props.model.id,
-                layer: {
-                    ...cLayer,
-                    parameters: cLayer.parameters.map((p) => {
-                        p.data = {
-                            ...p.data,
-                            data: undefined,
-                            fetching: undefined,
-                            fetched: undefined,
-                            error: undefined
-                        };
-                        p.value = Array.isArray(p.value) ? undefined : p.value;
-                        return p;
-                    }),
-                    relations: cLayer.relations.map((r) => {
-                        r.data = {
-                            ...r.data,
-                            data: undefined,
-                            fetching: undefined,
-                            fetched: undefined,
-                            error: undefined
-                        };
-                        r.value = Array.isArray(r.value) ? undefined : r.value;
-                        return r;
-                    })
-                }
-            }), () => {
-                props.updateLayer(SoilmodelLayer.fromObject(cLayer));
-                fetchFiles(cLayer);
-                setIsLoading(false);
-                return setIsDirty(false);
-            }
-        );
-    };
-
     const handleSave = () => {
         const cZones = soilmodel.zonesCollection;
         if (selectedZone && type === nav.ZONES) {
@@ -543,7 +408,16 @@ const soilmodelEditor = (props: IProps) => {
                 selectedLayer.relations.filter((r) => Array.isArray(r.value)).length
             );
 
-            return saveLayer(selectedLayer);
+            return saveLayer(selectedLayer, props.model.toObject(), false, 0,
+                (state) => {
+                    console.log(state);
+                    setCalculationState(state);
+                },
+                (layer) => {
+                    props.updateLayer(SoilmodelLayer.fromObject(layer));
+                    return setIsDirty(false);
+                }
+            );
         }
     };
 
@@ -619,18 +493,20 @@ const soilmodelEditor = (props: IProps) => {
                                 onClick={handleNavClick}
                             />
                         </Menu>
-                        <Dropdown
-                            placeholder="Select parameter set"
-                            fluid={true}
-                            selection={true}
-                            onChange={handleChangeParameterSet}
-                            options={[
-                                {key: 'soilmodel', text: 'Soilmodel', value: 'soilmodel'},
-                                {key: 'bas', text: 'Basic', value: 'bas'},
-                                {key: 'modpath', text: 'Modpath', value: 'modpath'}
-                            ]}
-                            value={activeParamType}
-                        />
+                        {false &&
+                            <Dropdown
+                                placeholder="Select parameter set"
+                                fluid={true}
+                                selection={true}
+                                onChange={handleChangeParameterSet}
+                                options={[
+                                    {key: 'soilmodel', text: 'Soilmodel', value: 'soilmodel'},
+                                    {key: 'bas', text: 'Basic', value: 'bas'},
+                                    {key: 'modpath', text: 'Modpath', value: 'modpath'}
+                                ]}
+                                value={activeParamType}
+                            />
+                        }
                         <br/>
                         {type === nav.LAYERS &&
                         <LayersList
@@ -696,7 +572,8 @@ const soilmodelEditor = (props: IProps) => {
 
 const mapStateToProps = (state: any) => {
     return ({
-        model: ModflowModel.fromObject(state.T03.model)
+        model: ModflowModel.fromObject(state.T03.model),
+        soilmodel: Soilmodel.fromObject(state.T03.soilmodel)
     });
 };
 
