@@ -13,7 +13,7 @@ export class GenericObject<T> {
     }
 
     public getClone() {
-        this._props = cloneDeep(this._props);
-        return this;
+        // @ts-ignore
+        return new this.constructor(cloneDeep(this._props));
     }
 }

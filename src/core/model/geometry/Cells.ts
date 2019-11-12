@@ -11,7 +11,7 @@ import {
 
 import {NearestPointOnLine} from '@turf/nearest-point-on-line';
 import {Feature, LineString} from 'geojson';
-import {floor, isEqual} from 'lodash';
+import {cloneDeep, floor, isEqual} from 'lodash';
 import {LineBoundary} from '../modflow/boundaries';
 import {BoundingBox, Geometry, GridSize} from '../modflow/index';
 import {ICell, ICells, Point} from './Cells.type';
@@ -73,15 +73,15 @@ const distanceOnLine = (ls: Feature<LineString>, point: NearestPointOnLine) => {
 export default class Cells {
 
     public static create(cells: ICells = []) {
-        return new this(cells);
+        return new this(cloneDeep(cells));
     }
 
     public static fromArray(cells: ICells) {
-        return new this(cells);
+        return new this(cloneDeep(cells));
     }
 
     public static fromObject(cells: ICells) {
-        return new this(cells);
+        return new this(cloneDeep(cells));
     }
 
     public static fromGeometry(geometry: Geometry, boundingBox: BoundingBox, gridSize: GridSize) {
@@ -224,15 +224,15 @@ export default class Cells {
     };
 
     get cells() {
-        return this._cells;
+        return cloneDeep(this._cells);
     }
 
     public toArray() {
-        return this._cells;
+        return cloneDeep(this._cells);
     }
 
     public toObject() {
-        return this._cells;
+        return cloneDeep(this._cells);
     }
 
     public sameAs = (obj: Cells) => {

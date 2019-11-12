@@ -1,5 +1,6 @@
 import {bbox} from '@turf/turf';
 import {LineString, MultiPolygon, Polygon} from 'geojson';
+import {cloneDeep} from 'lodash';
 import md5 from 'md5';
 import {GeoJson} from './Geometry.type';
 
@@ -45,7 +46,7 @@ class Geometry {
         }
     }
 
-    public toObject = () => (this._geometry);
+    public toObject = () => (cloneDeep(this._geometry));
 
     public toGeoJSON = () => (this._geometry);
 

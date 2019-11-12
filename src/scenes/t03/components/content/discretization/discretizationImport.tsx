@@ -1,5 +1,4 @@
 import React from 'react';
-
 import {Button, Dimmer, Divider, Grid, Header, List, Loader, Modal, Segment} from 'semantic-ui-react';
 import {IBoundingBox} from '../../../../../core/model/geometry/BoundingBox.type';
 import {ICells} from '../../../../../core/model/geometry/Cells.type';
@@ -86,7 +85,7 @@ class DiscretizationImport extends React.Component<IProps, IState> {
     }
 
     private onImportClick = () => {
-        const model = ModflowModel.fromObject(this.props.model.toObject());
+        const model =  this.props.model.getClone();
         const {geometry, bounding_box, grid_size, cells, stressperiods, length_unit, time_unit} = this.state;
 
         if (geometry) {
@@ -135,11 +134,8 @@ class DiscretizationImport extends React.Component<IProps, IState> {
         let recalculateCells = false;
         if (geometry) {
             this.setState({geometry});
-            recalculateCells = true;
-        }
-
-        if (bounding_box) {
-            this.setState({bounding_box});
+            const bbox = BoundingBox.fromGeoJson(geometry);
+            this.setState({bounding_box: bbox.toObject()});
             recalculateCells = true;
         }
 
@@ -156,9 +152,6 @@ class DiscretizationImport extends React.Component<IProps, IState> {
             );
 
             this.setState({
-                geometry: this.props.model.geometry.toObject(),
-                bounding_box: this.props.model.boundingBox.toObject(),
-                grid_size: this.props.model.gridSize.toObject(),
                 cells: cells.toObject()
             });
         }
