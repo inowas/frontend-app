@@ -28,9 +28,8 @@ const style = {
 
 const discretizationMap = (props: IProps) => {
 
-    const [geometry, setGeometry] = useState<IGeometry | null>(null);
-
     const cellsRef = useRef<Cells | null>(null);
+    const [geometry, setGeometry] = useState<IGeometry | null>(null);
 
     useEffect(() => {
         if (props.cells) {
@@ -133,11 +132,11 @@ const discretizationMap = (props: IProps) => {
                 style={getStyle('bounding_box')}
             />}
 
-            {cellsRef.current &&
+            {props.cells &&
             <ActiveCellsLayer
                 boundingBox={props.boundingBox}
                 gridSize={props.gridSize}
-                cells={cellsRef.current}
+                cells={props.cells}
                 styles={getStyle('active_cells')}
             />}
         </Map>
