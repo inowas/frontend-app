@@ -451,8 +451,6 @@ const soilmodelEditor = (props: IProps) => {
         );
     }
 
-    console.log({isDirty});
-
     return (
         <Segment color={'grey'} loading={isLoading}>
             <Grid>

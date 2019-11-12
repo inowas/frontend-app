@@ -25,9 +25,11 @@ export const updater = (
             soilmodel.properties && soilmodel.properties.version && soilmodel.properties.version === 1
         )
     ) {
+        console.log('%c Updating soilmodel from 1v0 to 2v1', 'background: #222; color: #bada55');
         return update1v0to2v1(soilmodel as ISoilmodel1v0, model);
     }
     if (soilmodel.properties.version === 2) {
+        console.log('%c Updating soilmodel from 2v0 to 2v1', 'background: #222; color: #bada55');
         return update2v0to2v1(soilmodel as ISoilmodel2v0, model);
     }
     return soilmodel as ISoilmodel;
@@ -94,10 +96,14 @@ const update1v0to2v1 = (soilmodel: ISoilmodel1v0, model: ModflowModel) => {
         cells: model.cells.toObject()
     });
 
-    soilmodel.layers.forEach((layer: ISoilmodelLayer1v0) => {
+    soilmodel.layers.forEach((layer: ISoilmodelLayer1v0, key: number) => {
         const relations: ILayerParameterZone[] = [];
         if (!layer.id) {
             layer.id = uuidv4();
+        }
+
+        if (!layer.number) {
+            layer.number = key;
         }
 
         if (layer._meta && layer._meta.zones) {
@@ -111,14 +117,15 @@ const update1v0to2v1 = (soilmodel: ISoilmodel1v0, model: ModflowModel) => {
                         cells: zone.cells
                     };
                     if (zone.priority === 0) {
-                        newZone.id = 'default';
+                        newZone.isDefault = true;
                         defaultZoneExists = true;
                     }
                     zones.push(newZone);
                 }
 
                 Object.keys(zone).filter((k) => paramsLegacy.includes(k)).forEach((key) => {
-                    if (zone[key as parameterProp].isActive) {
+                    if (zone[key as parameterProp].isActive &&
+                        (key !== 'top' || (key === 'top') && layer.number === 0)) {
                         const newRelation = {
                             data: {
                                 file: null
