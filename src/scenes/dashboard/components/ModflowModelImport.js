@@ -19,6 +19,7 @@ import {JSON_SCHEMA_URL, sendCommand} from '../../../services/api';
 import {dxGeometry, dyGeometry} from '../../../services/geoTools/distance';
 import {validate} from '../../../services/jsonSchemaValidator';
 import {BoundaryCollection} from '../../../core/model/modflow/boundaries';
+import ModflowModel from "../../../core/model/modflow/ModflowModel";
 
 class ModflowModelImport extends React.Component {
 
@@ -48,17 +49,9 @@ class ModflowModelImport extends React.Component {
             const id = Uuid.v4();
             const geometry = Geometry.fromGeoJson(data.discretization.geometry);
             const boundingBox = BoundingBox.fromGeoJson(data.discretization.geometry);
-            const gridSize = Array.isArray(data.discretization.grid_size) ? GridSize.fromArray(data.discretization.grid_size) : GridSize.fromObject(data.discretization.grid_size);
+            const gridSize = Array.isArray(data.discretization.grid_size) ?
+                GridSize.fromArray(data.discretization.grid_size) : GridSize.fromObject(data.discretization.grid_size);
             const stressperiods = Stressperiods.fromImport(data.discretization.stressperiods);
-            const soilmodel = data.soilmodel;
-
-            const cells = Cells.fromGeometry(geometry, boundingBox, gridSize);
-            const sm = Soilmodel.fromDefaults(geometry, cells);
-
-            sm.soilmodel.layers = soilmodel.layers.map(l => {
-                l.id = Uuid.v4();
-                return l;
-            });
 
             const payload = {
                 id,
@@ -74,11 +67,18 @@ class ModflowModelImport extends React.Component {
                     length_unit: data.discretization.length_unit,
                     time_unit: data.discretization.time_unit,
                 },
-                soilmodel: {
-                    layers: Soilmodel.fromObject(soilmodel).toObject().layers
-                },
                 boundaries: BoundaryCollection.fromExport(data.boundaries, boundingBox, gridSize).toObject()
             };
+
+            const model = ModflowModel.fromObject({
+                id: payload.id,
+                name: payload.name,
+                description: payload.description,
+                public: payload.public,
+                discretization: payload.discretization,
+            });
+
+            payload.soilmodel = Soilmodel.fromExport(data.soilmodel, model).toObject();
 
             return this.setState({payload, errors: null});
         })

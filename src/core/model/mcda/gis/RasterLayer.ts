@@ -7,7 +7,6 @@ import {Array2D} from '../../geometry/Array2D.type';
 import {RulesCollection} from '../criteria';
 import {CriteriaType} from '../criteria/Criterion.type';
 import {IRasterLayer, IRasterLayer1v0} from './RasterLayer.type';
-import {IBoundingBox} from '../../geometry/BoundingBox.type';
 
 class RasterLayer {
 

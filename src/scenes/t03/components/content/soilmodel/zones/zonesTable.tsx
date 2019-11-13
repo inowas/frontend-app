@@ -4,10 +4,12 @@ import {
     ButtonProps, Header, Icon, Input, InputOnChangeData, Label, LabelProps, Popup, Segment, Table
 } from 'semantic-ui-react';
 import uuidv4 from 'uuid/v4';
-import {ILayerParameterZone} from '../../../core/model/gis/LayerParameterZone.type';
-import LayerParameterZonesCollection from '../../../core/model/gis/LayerParameterZonesCollection';
-import RasterParameter from '../../../core/model/gis/RasterParameter';
-import ZonesCollection from '../../../core/model/gis/ZonesCollection';
+import {
+    LayerParameterZonesCollection,
+    RasterParameter,
+    ZonesCollection
+} from '../../../../../../core/model/modflow/soilmodel';
+import {ILayerParameterZone} from '../../../../../../core/model/modflow/soilmodel/LayerParameterZone.type';
 
 const styles = {
     input: {
@@ -61,6 +63,9 @@ const zonesTable = (props: IProps) => {
     const handleToggleDefault = (id: string) => {
         const relation = LayerParameterZonesCollection.fromObject(relations).findById(id);
         if (relation) {
+            relation.data = {
+                file: null
+            };
             relation.value = props.parameter.defaultValue || 0;
             return props.onChange(
                 LayerParameterZonesCollection.fromObject(relations).update(relation)
@@ -95,22 +100,27 @@ const zonesTable = (props: IProps) => {
         }
 
         const relation: ILayerParameterZone = {
+            data: {
+                file: null
+            },
             id: uuidv4(),
-            layerId: relations[0].layerId,
-            zoneId: data.value,
             parameter: props.parameter.id,
+            priority: relations.length,
             value: props.parameter.defaultValue,
-            priority: relations.length
+            zoneId: data.value
         };
 
         return handleAddRelation(relation);
     };
 
     const renderDefaultInput = (relation: ILayerParameterZone) => {
-        const isArray = relation.value instanceof Array;
-        let value = relation.id === activeRow ? activeValue : relation.value;
+        const isArray = Array.isArray(relation.data.data) || Array.isArray(relation.value);
+        let value = relation.id === activeRow && activeValue !== '' ? activeValue : relation.value;
         if (isArray) {
             value = 'Raster';
+        }
+        if (!isArray && relation.value === undefined) {
+            value = 0;
         }
 
         return (
@@ -126,7 +136,7 @@ const zonesTable = (props: IProps) => {
                 onKeyPress={handlePressEnter}
                 icon={
                     <Icon
-                        name={isArray ? 'map' : 'map pin'}
+                        name={isArray ? 'cancel' : 'map pin'}
                         link={isArray}
                         onClick={isArray ? () => handleToggleDefault(relation.id) : null}
                     />
@@ -214,26 +224,26 @@ const zonesTable = (props: IProps) => {
     return (
         <React.Fragment>
             {props.zones.all.length > 1 &&
-                <Segment style={{boxShadow: '0 0 1px 0 rgba(0,0,0,.1)'}}>
-                    <Header as={'h5'} style={{fontWeight: '500'}}>Select Zones</Header>
-                    {props.zones.all.map((zone, key) => {
-                        const relation = props.relations.findFirstBy('zoneId', zone.id);
+            <Segment style={{boxShadow: '0 0 1px 0 rgba(0,0,0,.1)'}}>
+                <Header as={'h5'} style={{fontWeight: '500'}}>Select Zones</Header>
+                {props.zones.all.map((zone, key) => {
+                    const relation = props.relations.findFirstBy('zoneId', zone.id);
 
-                        if (!relation || (relation.priority !== 0)) {
-                            return (
-                                <Label
-                                    as="a"
-                                    color={relation ? 'blue' : undefined}
-                                    value={zone.id}
-                                    onClick={!props.readOnly ? handleToggleZone : undefined}
-                                    key={key}
-                                >
-                                    {zone.name}
-                                </Label>
-                            );
-                        }
-                    })}
-                </Segment>
+                    if (!relation || (relation.priority !== 0)) {
+                        return (
+                            <Label
+                                as="a"
+                                color={relation ? 'blue' : undefined}
+                                value={zone.id}
+                                onClick={!props.readOnly ? handleToggleZone : undefined}
+                                key={key}
+                            >
+                                {zone.name}
+                            </Label>
+                        );
+                    }
+                })}
+            </Segment>
             }
             <Table>
                 <Table.Header>

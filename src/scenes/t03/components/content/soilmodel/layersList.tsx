@@ -1,7 +1,7 @@
 import React from 'react';
 import {pure} from 'recompose';
 import {Button, Icon, Menu, Popup} from 'semantic-ui-react';
-import LayersCollection from '../../../../../core/model/gis/LayersCollection';
+import {LayersCollection} from '../../../../../core/model/modflow/soilmodel';
 import SoilmodelLayer from '../../../../../core/model/modflow/soilmodel/SoilmodelLayer';
 import {ISoilmodelLayer} from '../../../../../core/model/modflow/soilmodel/SoilmodelLayer.type';
 

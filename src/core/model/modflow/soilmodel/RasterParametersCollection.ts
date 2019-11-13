@@ -1,4 +1,4 @@
-import {Collection} from '../collection/Collection';
+import {Collection} from '../../collection/Collection';
 import {IRasterParameter} from './RasterParameter.type';
 
 class RasterParametersCollection extends Collection<IRasterParameter> {

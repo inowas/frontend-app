@@ -3,10 +3,10 @@ import {uniqueId} from 'lodash';
 import React from 'react';
 import {FeatureGroup, GeoJSON, Map, Polygon} from 'react-leaflet';
 import {EditControl} from 'react-leaflet-draw';
-import {Zone, ZonesCollection} from '../../../core/model/gis';
-import {BoundingBox, Geometry} from '../../../core/model/modflow';
-import {getStyle} from '../../../services/geoTools/mapHelpers';
-import {BasicTileLayer} from '../../../services/geoTools/tileLayers';
+import {BoundingBox, Geometry} from '../../../../../../core/model/geometry';
+import {Zone, ZonesCollection} from '../../../../../../core/model/modflow/soilmodel';
+import {BasicTileLayer} from '../../../../../../services/geoTools/tileLayers';
+import {getStyle} from '../../../maps';
 
 const styles = {
     map: {

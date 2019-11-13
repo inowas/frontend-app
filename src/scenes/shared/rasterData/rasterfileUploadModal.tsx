@@ -18,7 +18,7 @@ import {
 } from 'semantic-ui-react';
 import {GridSize} from '../../../core/model/geometry';
 import {Array2D, Array3D} from '../../../core/model/geometry/Array2D.type';
-import {RasterParameter} from '../../../core/model/gis';
+import {RasterParameter} from '../../../core/model/modflow/soilmodel';
 import {fetchRasterData, fetchRasterMetaData, uploadRasterfile} from '../../../services/api';
 import {IRasterFileMetadata} from '../../../services/api/types';
 import RasterDataImage from './rasterDataImage';

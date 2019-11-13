@@ -7,24 +7,24 @@ import {
     CheckboxProps,
     Form,
     Grid,
-    InputOnChangeData,
+    InputOnChangeData, Label,
     List,
     Menu,
     Modal,
     Tab
 } from 'semantic-ui-react';
-import LayerParameterZonesCollection from '../../../core/model/gis/LayerParameterZonesCollection';
-import Zone from '../../../core/model/gis/Zone';
-import {IZone} from '../../../core/model/gis/Zone.type';
-import ZonesCollection from '../../../core/model/gis/ZonesCollection';
-import {Geometry, ModflowModel} from '../../../core/model/modflow';
-import {calculateActiveCells} from '../../../services/geoTools';
+import {Geometry} from '../../../../../../core/model/geometry';
+import {ModflowModel} from '../../../../../../core/model/modflow';
+import {Zone, ZonesCollection} from '../../../../../../core/model/modflow/soilmodel';
+import LayersCollection from '../../../../../../core/model/modflow/soilmodel/LayersCollection';
+import {IZone} from '../../../../../../core/model/modflow/soilmodel/Zone.type';
+import {calculateActiveCells} from '../../../../../../services/geoTools';
 import {ZonesMap} from './index';
 
 interface IProps {
     onChange: (zone: Zone) => any;
+    layers: LayersCollection;
     model: ModflowModel;
-    relations: LayerParameterZonesCollection;
     zone: Zone;
     zones: ZonesCollection;
 }
@@ -39,8 +39,7 @@ const zoneDetails = (props: IProps) => {
     const [zone, setZone] = useState<IZone>(props.zone.toObject());
     const [visibleZones, setVisibleZones] = useState<IVisibleZone[]>(
         props.zones.all.filter((z) =>
-            z.id !== zone.id &&
-            props.relations.all.filter((r) => r.zoneId === z.id && r.priority === 0).length === 0
+            z.id !== zone.id && !zone.isDefault
         ).map((z) => {
             return {
                 ...z,
@@ -49,7 +48,7 @@ const zoneDetails = (props: IProps) => {
         })
     );
 
-    const relations = props.relations.all.filter((r) => r.zoneId === zone.id);
+    const affectedLayers = props.layers.getAffectedByZone(zone.id);
 
     useEffect(() => {
         setZone(props.zone.toObject());
@@ -58,8 +57,7 @@ const zoneDetails = (props: IProps) => {
     useEffect(() => {
         setVisibleZones(
             props.zones.all.filter((z) =>
-                z.id !== zone.id &&
-                props.relations.all.filter((r) => r.zoneId === z.id && r.priority === 0).length === 0
+                z.id !== zone.id && !z.isDefault
             ).map((z) => {
                 return {
                     ...z,
@@ -124,7 +122,7 @@ const zoneDetails = (props: IProps) => {
                 geometry: geometry.toObject()
             };
 
-            if (relations.length > 0) {
+            if (affectedLayers.length > 0) {
                 setEditedZone(cZone);
                 return setRelationWarning(true);
             }
@@ -211,6 +209,20 @@ const zoneDetails = (props: IProps) => {
                                         </Form.Field>
                                     </Grid.Column>
                                 </Grid.Row>
+                                <Grid.Row>
+                                    <Grid.Column>
+                                        <Form.Field>
+                                            <label>Affected layers:</label>
+                                                {affectedLayers.map((l, key) =>
+                                                    <Label
+                                                        key={key}
+                                                    >
+                                                        {l.name}
+                                                    </Label>
+                                                )}
+                                        </Form.Field>
+                                    </Grid.Column>
+                                </Grid.Row>
                             </Grid>
                         </Tab.Pane>
                     }]}
@@ -220,7 +232,12 @@ const zoneDetails = (props: IProps) => {
             <Modal size="small" open={relationWarning}>
                 <Modal.Header>This change causes conflicts</Modal.Header>
                 <Modal.Content>
-                    <p>There are {relations.length} layer - parameter relations depending on this zone. </p>
+                    <p>There are {affectedLayers.length} layers depending on this zone.</p>
+                    <List>
+                        {affectedLayers.map((l, key) =>
+                            <List.Item key={key}>{l.name}</List.Item>
+                        )}
+                    </List>
                 </Modal.Content>
                 <Modal.Actions>
                     <Button

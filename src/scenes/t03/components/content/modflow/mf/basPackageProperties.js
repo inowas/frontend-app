@@ -41,7 +41,8 @@ class BasPackageProperties extends AbstractPackageProperties {
                                                 {value: -1, color: 'red', label: 'constant'},
                                                 {value: 0, color: 'white', label: 'no modflow'},
                                                 {value: 1, color: 'blue', label: 'flow'},
-                                            ]}/>
+                                            ]}
+                                        />
                                     </Grid.Column>
                                 ))}
                             </Grid.Row>

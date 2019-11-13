@@ -1,11 +1,12 @@
 import React from 'react';
 import {pure} from 'recompose';
 import {Button, Icon, Menu, Popup} from 'semantic-ui-react';
-import Zone from '../../../../../core/model/gis/Zone';
-import {IZone} from '../../../../../core/model/gis/Zone.type';
-import ZonesCollection from '../../../../../core/model/gis/ZonesCollection';
+import {Zone, ZonesCollection} from '../../../../../core/model/modflow/soilmodel';
+import LayersCollection from '../../../../../core/model/modflow/soilmodel/LayersCollection';
+import {IZone} from '../../../../../core/model/modflow/soilmodel/Zone.type';
 
 interface IProps {
+    layers: LayersCollection;
     zones: ZonesCollection;
     onClick: (zoneId: string) => any;
     onClone: (zone: Zone) => any;
@@ -14,7 +15,7 @@ interface IProps {
     selected?: string;
 }
 
-const zonesList = ({zones, onClick, onClone, onRemove, readOnly, selected}: IProps) => {
+const zonesList = ({layers, zones, onClick, onClone, onRemove, readOnly, selected}: IProps) => {
 
     const handleClick = (id: string) => {
         return () => onClick(id);
@@ -25,8 +26,12 @@ const zonesList = ({zones, onClick, onClone, onRemove, readOnly, selected}: IPro
     };
 
     const handleRemove = (id: string) => {
-        return () => onRemove(id);
+        if (!isAffectingLayers(id)) {
+            return () => onRemove(id);
+        }
     };
+
+    const isAffectingLayers = (id: string) => layers.getAffectedByZone(id).length > 0;
 
     return (
         <div>
@@ -58,6 +63,7 @@ const zonesList = ({zones, onClick, onClone, onRemove, readOnly, selected}: IPro
                                         <Popup
                                             trigger={
                                                 <Button
+                                                    disabled={isAffectingLayers(zone.id)}
                                                     icon={'trash'}
                                                     onClick={handleRemove(zone.id)}
                                                 />

@@ -1,14 +1,14 @@
 import {cloneDeep} from 'lodash';
-import {ISoilmodelLegacy} from './Soilmodel.type';
+import {ISoilmodel1v0, ISoilmodel2v0} from './Soilmodel.type';
 
 class SoilmodelLegacy {
-    public static fromObject(obj: ISoilmodelLegacy) {
+    public static fromObject(obj: ISoilmodel1v0 | ISoilmodel2v0) {
         return new SoilmodelLegacy(obj);
     }
 
-    private readonly _props: ISoilmodelLegacy;
+    private readonly _props: ISoilmodel1v0 | ISoilmodel2v0;
 
-    constructor(props: ISoilmodelLegacy) {
+    constructor(props: ISoilmodel1v0 | ISoilmodel2v0) {
         this._props = cloneDeep(props);
     }
 

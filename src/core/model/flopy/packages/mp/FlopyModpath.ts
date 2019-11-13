@@ -1,5 +1,5 @@
+import {ZonesCollection} from '../../../modflow/soilmodel';
 import {IPropertyValueObject} from '../../../types';
-import ZonesCollection from '../../../gis/ZonesCollection';
 import FlopyModpathPackage from './FlopyModpathPackage';
 import {
     FlopyModpathMp7,
