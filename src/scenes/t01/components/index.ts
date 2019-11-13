@@ -1,7 +1,7 @@
 import Background from './background';
 import Chart from './chart';
-import Parameters from './parameters';
 import Info from './info';
+import Parameters from './parameters';
 
 export {
     Background,
