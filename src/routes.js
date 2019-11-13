@@ -7,7 +7,10 @@ import PrivateRoute from './services/router/PrivateRoute';
 
 import getConfig from './config.default';
 
-const {PUBLIC_PROJECTS_ACCESS} = getConfig();
+const {PUBLIC_PROJECTS_ACCESS, DISABLE_TOOL} = getConfig();
+
+const disabledTools = DISABLE_TOOL.split(',').map(s => s.trim()).map(s => s.toUpperCase());
+const isDisabled = (tool) => disabledTools.findIndex((e) => e === tool) >= 0;
 
 const getRoutes = () => {
 
@@ -40,7 +43,7 @@ const getRoutes = () => {
                 <Route exact path="/tools/T09D/:id?" component={Scenes.T09D}/>
                 <Route exact path="/tools/T09E/:id?" component={Scenes.T09E}/>
                 <Route exact path="/tools/T09F/:id?" component={Scenes.T09F}/>
-                <Route exact path="/tools/T10/:id/:property?/:pid?" component={Scenes.T10}/>
+                {!isDisabled('T10') && <Route exact path="/tools/T10/:id/:property?/:pid?" component={Scenes.T10}/>}
                 <Route exact path="/tools/T11" component={Scenes.T11}/>
                 <Route exact path="/tools/T12/:id?" component={Scenes.T12}/>
                 <Route exact path="/tools/T13" component={Scenes.T13}/>
@@ -91,7 +94,8 @@ const getRoutes = () => {
             <PrivateRoute exact path="/tools/T09D/:id?" component={Scenes.T09D} forRoles={['ROLE_USER']}/>
             <PrivateRoute exact path="/tools/T09E/:id?" component={Scenes.T09E} forRoles={['ROLE_USER']}/>
             <PrivateRoute exact path="/tools/T09F/:id?" component={Scenes.T09F} forRoles={['ROLE_USER']}/>
-            <PrivateRoute exact path="/tools/T10/" component={Scenes.T10Create} forRoles={['ROLE_USER']}/>
+            {!isDisabled('T10') &&
+            <PrivateRoute exact path="/tools/T10/" component={Scenes.T10Create} forRoles={['ROLE_USER']}/>}
             <PrivateRoute exact path="/tools/T10/:id/:property?/:pid?" component={Scenes.T10} forRoles={['ROLE_USER']}/>
             <PrivateRoute exact path="/tools/T11" component={Scenes.T11} forRoles={['ROLE_USER']}/>
             <PrivateRoute exact path="/tools/T12/:id?" component={Scenes.T12} forRoles={['ROLE_USER']}/>
