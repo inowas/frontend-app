@@ -1,84 +1,14 @@
 import uuidv4 from 'uuid/v4';
-import {ModflowModel} from '../../../core/model/modflow';
-import {Zone} from '../../../core/model/modflow/soilmodel';
-import {ILayerParameterZone} from '../../../core/model/modflow/soilmodel/LayerParameterZone.type';
-import {IRasterParameter} from '../../../core/model/modflow/soilmodel/RasterParameter.type';
-import Soilmodel from '../../../core/model/modflow/soilmodel/Soilmodel';
+import {ModflowModel} from '../..';
 import {
-    ISoilmodel,
-    ISoilmodel1v0,
-    ISoilmodel2v0, ISoilmodelExport
-} from '../../../core/model/modflow/soilmodel/Soilmodel.type';
-import {
-    ISoilmodelLayer,
-    ISoilmodelLayer1v0
-} from '../../../core/model/modflow/soilmodel/SoilmodelLayer.type';
-import {IZone, IZoneLegacy} from '../../../core/model/modflow/soilmodel/Zone.type';
-import {defaultSoilmodelLayerParameters, defaultSoilmodelParameters} from '../defaults/soilmodel';
-
-export const updater = (
-    soilmodel: ISoilmodelExport | ISoilmodel | ISoilmodel1v0 | ISoilmodel2v0,
-    model: ModflowModel
-): ISoilmodel => {
-    if (
-        !soilmodel.properties || !soilmodel.properties.version || (
-            soilmodel.properties && soilmodel.properties.version && soilmodel.properties.version === 1
-        )
-    ) {
-        console.log('%c Updating soilmodel from 1v0 to 2v1', 'background: #222; color: #bada55');
-        return update1v0to2v1(soilmodel as ISoilmodel1v0, model);
-    }
-    if (soilmodel.properties.version === 2) {
-        console.log('%c Updating soilmodel from 2v0 to 2v1', 'background: #222; color: #bada55');
-        return update2v0to2v1(soilmodel as ISoilmodel2v0, model);
-    }
-    return soilmodel as ISoilmodel;
-};
-
-const update2v0to2v1 = (soilmodel: ISoilmodel2v0, model: ModflowModel) => {
-    const updateLayers = () => {
-        return soilmodel.layers.map((layer) => {
-            const nLayer: ISoilmodelLayer = {
-                ...layer,
-                parameters: layer.parameters.map((p) => {
-                    return {
-                        ...p,
-                        data: {
-                            file: null
-                        }
-                    };
-                }),
-                relations: soilmodel.properties.relations.filter((r) => r.layerId === layer.id).map((r) => {
-                    return {
-                        ...r,
-                        data: {
-                            file: null
-                        },
-                        layerId: undefined
-                    };
-                })
-            };
-            return nLayer;
-        });
-    };
-
-    const nSoilmodel = Soilmodel.fromObject({
-        layers: updateLayers(),
-        properties: {
-            parameters: soilmodel.properties.parameters,
-            version: '2.1',
-            zones: soilmodel.properties.zones.map((z) => {
-                const newZone: IZone = {
-                    ...z,
-                    isDefault: z.name === 'Default Zone'
-                };
-                return newZone;
-            })
-        }
-    });
-
-    return nSoilmodel.toObject();
-};
+    defaultSoilmodelLayerParameters,
+    defaultSoilmodelParameters
+} from '../../../../../scenes/t03/defaults/soilmodel';
+import {ILayerParameterZone} from '../LayerParameterZone.type';
+import {IRasterParameter} from '../RasterParameter.type';
+import {ISoilmodel1v0} from '../Soilmodel.type';
+import {ISoilmodelLayer, ISoilmodelLayer1v0} from '../SoilmodelLayer.type';
+import {IZone, IZoneLegacy} from '../Zone.type';
 
 const update1v0to2v1 = (soilmodel: ISoilmodel1v0, model: ModflowModel) => {
     type parameterProp = 'top' | 'botm' | 'vka' | 'hk' | 'hani' | 'ss' | 'sy';
@@ -88,13 +18,13 @@ const update1v0to2v1 = (soilmodel: ISoilmodel1v0, model: ModflowModel) => {
     const zones: IZone[] = [];
     const layers: ISoilmodelLayer[] = [];
 
-    const defaultZone = new Zone({
+    const defaultZone: IZone = {
         id: 'default',
         isDefault: true,
         name: 'Default Zone',
         geometry: model.geometry.toObject(),
         cells: model.cells.toObject()
-    });
+    };
 
     soilmodel.layers.forEach((layer: ISoilmodelLayer1v0, lKey: number) => {
         const relations: ILayerParameterZone[] = [];
@@ -183,17 +113,17 @@ const update1v0to2v1 = (soilmodel: ISoilmodel1v0, model: ModflowModel) => {
     });
 
     if (!defaultZoneExists) {
-        zones.push(defaultZone.toObject());
+        zones.push(defaultZone);
     }
 
-    const nSoilmodel = new Soilmodel({
+    return {
         layers,
         properties: {
             parameters,
             version: '2.1',
             zones
         }
-    });
-
-    return nSoilmodel.toObject();
+    };
 };
+
+export default update1v0to2v1;

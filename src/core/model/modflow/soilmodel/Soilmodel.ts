@@ -1,8 +1,6 @@
 import {cloneDeep} from 'lodash';
 import uuidv4 from 'uuid/v4';
 import {defaultSoilmodelParameters} from '../../../../scenes/t03/defaults/soilmodel';
-import {updater} from '../../../../scenes/t03/updaters/soilmodel';
-import {versions} from '../../../../scenes/t03/updaters/versions';
 import {Cells, Geometry} from '../../geometry';
 import {ModflowModel} from '../index';
 import {LayersCollection, RasterParametersCollection, ZonesCollection} from './index';
@@ -10,6 +8,8 @@ import {ISoilmodel, ISoilmodel1v0, ISoilmodel2v0, ISoilmodelExport} from './Soil
 import SoilmodelLayer from './SoilmodelLayer';
 import {ISoilmodelLayer} from './SoilmodelLayer.type';
 import SoilmodelLegacy from './SoilmodelLegacy';
+import {version} from './updater/defaults';
+import updateSoilmodel from './updater/updateSoilmodel';
 import {IZone} from './Zone.type';
 
 class Soilmodel {
@@ -75,7 +75,7 @@ class Soilmodel {
             layers: [defaultLayer.toObject()],
             properties: {
                 parameters,
-                version: versions.soilmodel,
+                version,
                 zones: [defaultZone]
             }
         });
@@ -83,8 +83,8 @@ class Soilmodel {
 
     public static fromExport(obj: ISoilmodelExport, model: ModflowModel) {
         if (this.isLegacy(obj)) {
-            const updatedSoilmodel = updater(obj, model);
-            return new Soilmodel(updatedSoilmodel);
+            const result = updateSoilmodel(obj, model);
+            return new Soilmodel(result.soilmodel);
         }
         return new Soilmodel(obj as ISoilmodel);
     }
@@ -102,7 +102,7 @@ class Soilmodel {
     }
 
     public static isLegacy(input: any) {
-        return !input.properties || (input.properties && input.properties.version !== versions.soilmodel);
+        return !input.properties || (input.properties && input.properties.version !== version);
     }
 
     private readonly _props: ISoilmodel;

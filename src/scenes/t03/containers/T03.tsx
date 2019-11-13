@@ -18,9 +18,10 @@ import {
 import {BoundaryCollection, BoundaryFactory} from '../../../core/model/modflow/boundaries';
 import {BoundaryType} from '../../../core/model/modflow/boundaries/Boundary.type';
 import Optimization from '../../../core/model/modflow/optimization/Optimization';
-import {ISoilmodel} from '../../../core/model/modflow/soilmodel/Soilmodel.type';
-import {fetchUrl, fetchUrlAndUpdate, sendCommand} from '../../../services/api';
+import {fetchSoilmodel} from '../../../core/model/modflow/soilmodel/updater/services';
+import updater from '../../../core/model/modflow/soilmodel/updater/updater';
 import {fetchCalculationDetails} from '../../../services/api';
+import {fetchUrl, sendCommand} from '../../../services/api';
 import AppContainer from '../../shared/AppContainer';
 import ToolMetaData from '../../shared/simpleTools/ToolMetaData';
 import {IToolMetaData} from '../../shared/simpleTools/ToolMetaData/ToolMetaData.type';
@@ -41,8 +42,6 @@ import CalculationProgressBar from '../components/content/calculation/calculatio
 import * as Content from '../components/content/index';
 import optimization from '../components/content/optimization/optimization';
 import OptimizationProgressBar from '../components/content/optimization/optimizationProgressBar';
-import {fetchSoilmodel} from '../components/content/soilmodel/fileDropper';
-import {updater} from '../updaters/soilmodel';
 import Navigation from './navigation';
 
 const navDocumentation = [{
@@ -185,25 +184,48 @@ const t03 = (props: IProps) => {
     };
 
     const fetchAndUpdateSoilmodel = (id: string) => {
-        fetchUrlAndUpdate(`modflowmodels/${id}/soilmodel`,
+        fetchUrl(`modflowmodels/${id}/soilmodel`,
             (data) => {
                 if (props.model) {
-                    return updater(data, props.model);
+                    setSoilmodelFetcher({
+                        message: 'Start updating soilmodel.',
+                        fetching: true
+                    });
+                    updater(
+                        data,
+                        props.model,
+                        (result) => setSoilmodelFetcher({
+                            message: result.message,
+                            fetching: true
+                        }),
+                        (result, needsToBeFetched) => {
+                            setSoilmodelFetcher({
+                                message: 'Finished updating soilmodel.',
+                                fetching: false
+                            });
+
+                            if (needsToBeFetched) {
+                                setSoilmodelFetcher({
+                                    message: `Start fetching soilmodel...`,
+                                    fetching: true
+                                });
+                                return fetchSoilmodel(
+                                    result,
+                                    (r) => setSoilmodelFetcher(r),
+                                    (r) => {
+                                        setSoilmodelFetcher({
+                                            message: 'Finished fetching soilmodel.',
+                                            fetching: false
+                                        });
+                                        return props.updateSoilmodel(Soilmodel.fromObject(r));
+                                    }
+                                );
+                            }
+
+                            return props.updateSoilmodel(Soilmodel.fromObject(result));
+                        }
+                    );
                 }
-            },
-            (data) => {
-                const soilmodel = Soilmodel.fromQuery(data).toObject();
-                setSoilmodelFetcher({
-                    message: `Start fetching soilmodel...`,
-                    fetching: true
-                });
-                return fetchSoilmodel(
-                    soilmodel as ISoilmodel,
-                    (result) => setSoilmodelFetcher(result),
-                    (result) => {
-                        return props.updateSoilmodel(Soilmodel.fromObject(result))
-                    }
-                );
             },
             (cError) => {
                 setIsLoading(false);

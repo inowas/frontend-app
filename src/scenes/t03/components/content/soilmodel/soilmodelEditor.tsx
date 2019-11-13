@@ -20,6 +20,7 @@ import {Soilmodel, SoilmodelLayer} from '../../../../../core/model/modflow/soilm
 import {Zone, ZonesCollection} from '../../../../../core/model/modflow/soilmodel';
 import LayerParameterZonesCollection from '../../../../../core/model/modflow/soilmodel/LayerParameterZonesCollection';
 import {ISoilmodelLayer} from '../../../../../core/model/modflow/soilmodel/SoilmodelLayer.type';
+import {saveLayer} from '../../../../../core/model/modflow/soilmodel/updater/services';
 import {IZone} from '../../../../../core/model/modflow/soilmodel/Zone.type';
 import {sendCommand} from '../../../../../services/api';
 import {sendCommands} from '../../../../../services/api/commandHelper';
@@ -36,7 +37,6 @@ import {
     modpathParameters,
     soilmodelParameters
 } from '../../../defaults/soilmodel';
-import {saveLayer} from './fileDropper';
 import LayerDetails from './layerDetails';
 import LayersList from './layersList';
 import {CreateZoneModal, ZoneDetails} from './zones';
@@ -411,6 +411,8 @@ const soilmodelEditor = (props: IProps) => {
                     setCalculationState(state);
                 },
                 (layer) => {
+                    console.log({layer});
+
                     return sendCommand(
                         Command.updateLayer({
                             id: props.model.id,
