@@ -25,6 +25,7 @@ import FlopyModflowSolverPackage from './FlopyModflowSolverPackage';
 import FlopyModflowMfdrn from './FlopyModflowMfdrn';
 import FlopyModflowMfevt from './FlopyModflowMfevt';
 import {BoundaryCollection} from '../../../modflow/boundaries';
+import Cells from "../../../geometry/Cells";
 
 
 const packagesMap = {
@@ -164,7 +165,13 @@ export default class FlopyModflow {
         this.setPackage(mfDis);
 
         const mfBas = this.hasPackage('bas') ? this.getPackage('bas') : FlopyModflowMfbas.create(null, {});
-        mfBas.ibound = model.cells.calculateIBound(mfDis.nlay, mfDis.nrow, mfDis.ncol);
+        mfBas.ibound = soilmodel.layersCollection.all.map((l) => {
+            const param = l.parameters.filter((p) => p.id === 'ibound');
+            if (param.length > 0) {
+                return Cells.fromArray(Array.isArray(param[0].value) ? param[0].value : param[0].data.data).calculateIBound(mfDis.nrow, mfDis.ncol);
+            }
+            return model.cells.calculateIBound(mfDis.nrow, mfDis.ncol);
+        });
         mfBas.strt = new Array(mfDis.nlay).fill(mfDis.top);
         this.setPackage(mfBas);
     }

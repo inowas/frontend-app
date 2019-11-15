@@ -102,7 +102,7 @@ class SoilmodelLayer {
     }
 
     public toObject(): ISoilmodelLayer {
-        return this._props;
+        return cloneDeep(this._props);
     }
 
     public zonesToParameters(

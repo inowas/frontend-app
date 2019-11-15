@@ -1,4 +1,5 @@
 import * as turf from '@turf/helpers';
+import {NearestPointOnLine} from '@turf/nearest-point-on-line';
 import {
     booleanContains,
     booleanCrosses,
@@ -8,8 +9,6 @@ import {
     lineSlice,
     nearestPointOnLine
 } from '@turf/turf';
-
-import {NearestPointOnLine} from '@turf/nearest-point-on-line';
 import {Feature, LineString} from 'geojson';
 import {cloneDeep, floor, isEqual} from 'lodash';
 import {LineBoundary} from '../modflow/boundaries';
@@ -171,15 +170,17 @@ export default class Cells {
         this._cells = cellObjs.map((li) => ([li.x, li.y, li.value]) as ICell);
     };
 
-    public toggle = ([x, y]: number[], boundingBox: BoundingBox, gridSize: GridSize) => {
-
+    public toggle = ([x, y]: number[], boundingBox: BoundingBox, gridSize: GridSize, transform: boolean = true) => {
         const dx = boundingBox.dX / gridSize.nX;
         const dy = boundingBox.dY / gridSize.nY;
 
-        const clickedCell = [
-            floor((x - boundingBox.xMin) / dx),
-            floor(gridSize.nY - (y - boundingBox.yMin) / dy)
-        ];
+        let clickedCell = [x, y];
+        if (transform) {
+            clickedCell = [
+                floor((x - boundingBox.xMin) / dx),
+                floor(gridSize.nY - (y - boundingBox.yMin) / dy)
+            ];
+        }
 
         const cells = [];
         let removed = false;
@@ -199,28 +200,36 @@ export default class Cells {
         return this;
     };
 
+    public toggleByRectangle = (geometry: Geometry, boundingBox: BoundingBox, gridSize: GridSize) => {
+        const affectedCells = Cells.fromGeometry(geometry, boundingBox, gridSize).toObject();
+
+        affectedCells.forEach((ac) => {
+            this.toggle([ac[0], ac[1]], boundingBox, gridSize, false);
+        });
+
+        return this;
+    };
+
     public addCell = (cell: ICell) => {
         this._cells.push(cell);
     };
 
-    public calculateIBound = (nlay: number, nrow: number, ncol: number) => {
+    public calculateIBound = (nrow: number, ncol: number) => {
         const iBound2D: number[][] = [];
         for (let row = 0; row < nrow; row++) {
-            iBound2D[row] = [];
+            iBound2D[row] = new Array(ncol).fill(0);
             for (let col = 0; col < ncol; col++) {
                 iBound2D[row][col] = 0;
             }
         }
 
         this.cells.forEach((cell) => {
-            iBound2D[cell[1]][cell[0]] = 1;
+            if (cell[1] <= iBound2D.length && cell[0] <= iBound2D[0].length) {
+                iBound2D[cell[1]][cell[0]] = 1;
+            }
         });
 
-        const iBound = [];
-        for (let lay = 0; lay < nlay; lay++) {
-            iBound[lay] = iBound2D;
-        }
-        return iBound;
+        return iBound2D;
     };
 
     get cells() {

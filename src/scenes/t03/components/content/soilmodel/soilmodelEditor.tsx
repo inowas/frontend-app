@@ -316,6 +316,9 @@ const soilmodelEditor = (props: IProps) => {
 
     const handleChangeLayer = (layer: SoilmodelLayer) => {
         setIsDirty(true);
+
+        console.log('CHANGE', layer);
+
         return setSelectedLayer(layer.toObject());
     };
 
@@ -411,8 +414,6 @@ const soilmodelEditor = (props: IProps) => {
                     setCalculationState(state);
                 },
                 (layer) => {
-                    console.log({layer});
-
                     return sendCommand(
                         Command.updateLayer({
                             id: props.model.id,
@@ -494,20 +495,18 @@ const soilmodelEditor = (props: IProps) => {
                                 onClick={handleNavClick}
                             />
                         </Menu>
-                        {false &&
-                            <Dropdown
-                                placeholder="Select parameter set"
-                                fluid={true}
-                                selection={true}
-                                onChange={handleChangeParameterSet}
-                                options={[
-                                    {key: 'soilmodel', text: 'Soilmodel', value: 'soilmodel'},
-                                    {key: 'bas', text: 'Basic', value: 'bas'},
-                                    {key: 'modpath', text: 'Modpath', value: 'modpath'}
-                                ]}
-                                value={activeParamType}
-                            />
-                        }
+                        <Dropdown
+                            placeholder="Select parameter set"
+                            fluid={true}
+                            selection={true}
+                            onChange={handleChangeParameterSet}
+                            options={[
+                                {key: 'soilmodel', text: 'Soilmodel', value: 'soilmodel'},
+                                {key: 'bas', text: 'Basic', value: 'bas'},
+                                //{key: 'modpath', text: 'Modpath', value: 'modpath'}
+                            ]}
+                            value={activeParamType}
+                        />
                         <br/>
                         {type === nav.LAYERS &&
                         <LayersList

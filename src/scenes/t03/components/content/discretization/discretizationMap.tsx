@@ -1,4 +1,4 @@
-import {LatLngBoundsExpression, LatLngExpression} from 'leaflet';
+import {DrawEvents, LatLngBoundsExpression, LatLngExpression} from 'leaflet';
 import {uniqueId} from 'lodash';
 import React, {useEffect, useRef, useState} from 'react';
 import {FeatureGroup, GeoJSON, Map, Polygon} from 'react-leaflet';
@@ -16,7 +16,7 @@ interface IProps {
     gridSize: GridSize;
     readOnly: boolean;
     onChangeCells: (cells: Cells) => void;
-    onChangeGeometry: (geometry: Geometry) => void;
+    onChangeGeometry?: (geometry: Geometry) => void;
 }
 
 const style = {
@@ -27,8 +27,9 @@ const style = {
 };
 
 const discretizationMap = (props: IProps) => {
-
     const cellsRef = useRef<Cells | null>(null);
+    const mapRef = useRef<Map>(null);
+    const readOnlyRef = useRef<boolean>(true);
     const [geometry, setGeometry] = useState<IGeometry | null>(null);
 
     useEffect(() => {
@@ -39,6 +40,8 @@ const discretizationMap = (props: IProps) => {
         if (props.geometry) {
             setGeometry(props.geometry.toObject());
         }
+
+        readOnlyRef.current = props.readOnly;
     }, []);
 
     useEffect(() => {
@@ -47,15 +50,39 @@ const discretizationMap = (props: IProps) => {
         }
     }, [props.cells]);
 
-    const onCreated = (e: any) => {
+    useEffect(() => {
+        readOnlyRef.current = props.readOnly;
+    }, [props.readOnly]);
+
+    const onCreated = (e: DrawEvents.Created) => {
+        if (e.layerType === 'rectangle') {
+            if (!cellsRef.current) {
+                return;
+            }
+
+            if (mapRef && mapRef.current) {
+                mapRef.current.leafletElement.removeLayer(e.layer);
+            }
+
+            const c: Cells = cellsRef.current;
+            c.toggleByRectangle(Geometry.fromGeoJson(e.layer.toGeoJSON()), props.boundingBox, props.gridSize);
+            cellsRef.current = c;
+            return props.onChangeCells(c);
+        }
+        if (!props.onChangeGeometry) {
+            return;
+        }
         const polygon = e.layer;
         const g = Geometry.fromGeoJson(polygon.toGeoJSON());
         setGeometry(g.toObject());
-        props.onChangeGeometry(g);
+        return props.onChangeGeometry(g);
     };
 
-    const onEdited = (e: any) => {
+    const onEdited = (e: DrawEvents.Edited) => {
         e.layers.eachLayer((layer: any) => {
+            if (!props.onChangeGeometry) {
+                return;
+            }
             const g = Geometry.fromGeoJson(layer.toGeoJSON());
             setGeometry(g.toObject());
             props.onChangeGeometry(g);
@@ -75,8 +102,7 @@ const discretizationMap = (props: IProps) => {
     };
 
     const handleClickOnMap = ({latlng}: { latlng: any }) => {
-
-        if (!cellsRef.current || !props.boundingBox || !props.gridSize) {
+        if (readOnlyRef.current || !cellsRef.current || !props.boundingBox || !props.gridSize) {
             return null;
         }
 
@@ -90,10 +116,12 @@ const discretizationMap = (props: IProps) => {
     };
 
     return (
+        // @ts-ignore
         <Map
             style={style.map}
             bounds={getBoundsLatLng() as LatLngBoundsExpression}
             onClick={handleClickOnMap}
+            ref={mapRef}
         >
             <BasicTileLayer/>
 
@@ -106,11 +134,11 @@ const discretizationMap = (props: IProps) => {
                         circlemarker: false,
                         marker: false,
                         polyline: false,
-                        rectangle: false,
+                        rectangle: geometry != null,
                         polygon: geometry == null
                     }}
                     edit={{
-                        edit: geometry != null,
+                        edit: geometry != null && !!props.onChangeGeometry,
                         remove: false
                     }}
                     onCreated={onCreated}
