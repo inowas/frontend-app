@@ -4,7 +4,7 @@ export interface ISupportedModflowVersion {
     name: string;
     executable: string;
     version: string;
-    default: boolean;
+    default?: boolean;
 }
 
 export default abstract class FlopyModflowFlowPackage<T> extends FlopyModflowPackage<T> {
