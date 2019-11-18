@@ -24,6 +24,8 @@ import FlopyModflowMfrch from './FlopyModflowMfrch';
 import FlopyModflowMfriv from './FlopyModflowMfriv';
 import FlopyModflowMfsip from './FlopyModflowMfsip';
 import FlopyModflowMfsms from './FlopyModflowMfsms';
+import FlopyModflowMfsor from './FlopyModflowMfsor';
+import FlopyModflowMfstr from './FlopyModflowMfstr';
 import FlopyModflowMfuzf1 from './FlopyModflowMfuzf1';
 import FlopyModflowMfwel from './FlopyModflowMfwel';
 import FlopyModflowPackage from './FlopyModflowPackage';
@@ -54,6 +56,8 @@ export {
     FlopyModflowMfrch,
     FlopyModflowMfsip,
     FlopyModflowMfsms,
+    FlopyModflowMfsor,
+    FlopyModflowMfstr,
     FlopyModflowMfriv,
     FlopyModflowMfuzf1,
     FlopyModflowMfwel,
