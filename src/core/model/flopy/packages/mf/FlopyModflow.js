@@ -214,7 +214,12 @@ export default class FlopyModflow {
         // EVT
         const mfEvt = this.hasPackage('evt') ? this.getPackage('evt') : FlopyModflowMfevt.create();
         this.removePackageIfExists(mfEvt);
-        const evtPackage = FlopyModflowMfevt.calculateSpData(boundaries.all, nper, nrow, ncol);
+        const evtPackage = FlopyModflowMfevt.calculateSpData({
+            boundaries: boundaries.all,
+            nper: nper,
+            nrow: nrow,
+            ncol: ncol
+        });
         if (evtPackage) {
             const {ievt, evtr, surf, exdp} = evtPackage;
             mfEvt.ievt = ievt;
