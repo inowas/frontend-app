@@ -80,6 +80,16 @@ export default class FlopyModflowMfghb extends FlopyModflowLineBoundary<IFlopyMo
         return calculateLineBoundarySpData(bd, nper);
     };
 
+    public recalculateSpData = (boundaries: BoundaryCollection, nper: number) => {
+        const spData = FlopyModflowMfghb.calculateSpData(boundaries, nper);
+        if (!spData) {
+            return null;
+        }
+
+        this.stress_period_data = spData;
+        return this;
+    };
+
     get ipakcb() {
         return this._props.ipakcb;
     }

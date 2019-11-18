@@ -75,6 +75,17 @@ export default class FlopyModflowMfrch extends FlopyModflowBoundary<IFlopyModflo
         return calculateRechargeSpData(bd, nper, nrow, ncol);
     };
 
+    public recalculateSpData = (boundaries: BoundaryCollection, nper: number, nrow: number, ncol: number) => {
+        const spData = FlopyModflowMfrch.calculateSpData(boundaries, nper, nrow, ncol);
+        if (!spData) {
+            return null;
+        }
+
+        this.rech = spData.spData;
+        this.irch = spData.irch;
+        return this;
+    };
+
     get nrchop() {
         return this._props.nrchop;
     }
