@@ -1,6 +1,6 @@
 import {cloneDeep} from 'lodash';
 import React from 'react';
-import {Checkbox, Grid, Header} from 'semantic-ui-react';
+import {Checkbox, Header} from 'semantic-ui-react';
 import uuidv4 from 'uuid/v4';
 import {Array2D} from '../../../../../../core/model/geometry/Array2D.type';
 import {ModflowModel} from '../../../../../../core/model/modflow';

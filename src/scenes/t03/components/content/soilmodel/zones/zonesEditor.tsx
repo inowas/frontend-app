@@ -1,5 +1,5 @@
 import React, {ChangeEvent, MouseEvent, useState} from 'react';
-import {Accordion, AccordionTitleProps, Form, Grid, Header, Icon, InputOnChangeData, Loader} from 'semantic-ui-react';
+import {Accordion, AccordionTitleProps, Form, Header, Icon, InputOnChangeData, Loader} from 'semantic-ui-react';
 import {BoundingBox, GridSize} from '../../../../../../core/model/geometry';
 import {Array2D} from '../../../../../../core/model/geometry/Array2D.type';
 import {

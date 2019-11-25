@@ -6,8 +6,8 @@ import {ICell} from '../../../../../../core/model/geometry/Cells.type';
 import {ModflowModel} from '../../../../../../core/model/modflow';
 import {RasterParameter} from '../../../../../../core/model/modflow/soilmodel';
 import SoilmodelLayer from '../../../../../../core/model/modflow/soilmodel/SoilmodelLayer';
-import {DiscretizationMap} from '../../discretization';
 import RasterDataImage from '../../../../../shared/rasterData/rasterDataImage';
+import {DiscretizationMap} from '../../discretization';
 
 interface IProps {
     model: ModflowModel;
@@ -52,23 +52,18 @@ const ibound = (props: IProps) => {
     const renderData = () => {
         let cells: Cells = new Cells();
         const cParameters = parameters.filter((p) => p.id === props.parameter.id);
-        let defaultValue = true;
-        let data = null;
 
         if (cParameters.length > 0) {
-            defaultValue = false;
             const parameter = cParameters[0];
-            data = parameter.value !== null && parameter.value !== undefined ? parameter.value :
+            const data = parameter.value !== null && parameter.value !== undefined ? parameter.value :
                 parameter.data.data;
             if (Array.isArray(data)) {
                 cells = Cells.fromArray(data as ICell[]);
             }
-        }
 
-        if (!defaultValue) {
             return (
                 <DiscretizationMap
-                    cells={defaultValue ? props.model.cells : cells}
+                    cells={cells}
                     boundingBox={props.model.boundingBox}
                     geometry={props.model.geometry}
                     gridSize={props.model.gridSize}
@@ -78,12 +73,9 @@ const ibound = (props: IProps) => {
             );
         }
 
-        if (!data) {
-            data = props.model.cells.calculateIBound(props.model.gridSize.nY, props.model.gridSize.nX);
-        }
         return (
             <RasterDataImage
-                data={data}
+                data={props.model.cells.calculateIBound(props.model.gridSize.nY, props.model.gridSize.nX)}
                 gridSize={props.model.gridSize}
                 unit={props.parameter.unit}
             />
