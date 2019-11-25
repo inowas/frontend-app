@@ -16,7 +16,8 @@ import {ILayerParameterZone} from '../../../../../core/model/modflow/soilmodel/L
 import LayerParameterZonesCollection from '../../../../../core/model/modflow/soilmodel/LayerParameterZonesCollection';
 import SoilmodelLayer from '../../../../../core/model/modflow/soilmodel/SoilmodelLayer';
 import {ISoilmodelLayer} from '../../../../../core/model/modflow/soilmodel/SoilmodelLayer.type';
-import {IParameter} from '../../../defaults/soilmodel';
+import {IParameter, otherParameters} from '../../../defaults/soilmodel';
+import {Ibound, Regular} from './parameters';
 import ZonesEditor from './zones/zonesEditor';
 
 interface IProps {
@@ -180,11 +181,38 @@ const layerDetails = (props: IProps) => {
                 );
             }
 
-            return (
-                <div>
-                    PARAMETER DEFAULT
-                </div>
-            );
+            const oParameter = otherParameters.filter((p) => p.id === activeParam);
+
+            if (oParameter.length > 0) {
+                switch (activeParam) {
+                    case 'ibound':
+                        return (
+                            <Ibound
+                                model={props.model}
+                                layer={SoilmodelLayer.fromObject(layer)}
+                                onChange={props.onChange}
+                                parameter={RasterParameter.fromObject(oParameter[0])}
+                            />
+                        );
+                    case 'strt':
+                        return (
+                            <Regular
+                                defaultData={props.soilmodel.top}
+                                layer={SoilmodelLayer.fromObject(layer)}
+                                model={props.model}
+                                onChange={props.onChange}
+                                parameter={RasterParameter.fromObject(oParameter[0])}
+                                soilmodel={props.soilmodel}
+                            />
+                        );
+                    default:
+                        return (
+                            <div>
+                                PARAMETER DEFAULT
+                            </div>
+                        );
+                }
+            }
         }
 
         return (
