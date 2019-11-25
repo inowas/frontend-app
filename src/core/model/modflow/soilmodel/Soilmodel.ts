@@ -2,6 +2,7 @@ import {cloneDeep} from 'lodash';
 import uuidv4 from 'uuid/v4';
 import {defaultSoilmodelParameters} from '../../../../scenes/t03/defaults/soilmodel';
 import {Cells, Geometry} from '../../geometry';
+import { Array2D } from '../../geometry/Array2D.type';
 import {ModflowModel} from '../index';
 import {LayersCollection, RasterParametersCollection, ZonesCollection} from './index';
 import {ISoilmodel, ISoilmodel1v0, ISoilmodel2v0, ISoilmodelExport} from './Soilmodel.type';
@@ -38,7 +39,7 @@ class Soilmodel {
         if (topLayer) {
             const top = topLayer.parameters.filter((p) => p.id === 'top');
             if (top.length > 0) {
-                return top[0].value;
+                return top[0].value !== undefined ? top[0].value : top[0].data.data as number | Array2D<number>;
             }
             throw new Error('Top layer must contain parameter with name top.');
         }

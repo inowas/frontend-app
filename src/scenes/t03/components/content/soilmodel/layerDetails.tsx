@@ -17,7 +17,7 @@ import LayerParameterZonesCollection from '../../../../../core/model/modflow/soi
 import SoilmodelLayer from '../../../../../core/model/modflow/soilmodel/SoilmodelLayer';
 import {ISoilmodelLayer} from '../../../../../core/model/modflow/soilmodel/SoilmodelLayer.type';
 import {IParameter, otherParameters} from '../../../defaults/soilmodel';
-import {Ibound} from './parameters';
+import {Ibound, Regular} from './parameters';
 import ZonesEditor from './zones/zonesEditor';
 
 interface IProps {
@@ -192,6 +192,17 @@ const layerDetails = (props: IProps) => {
                                 layer={SoilmodelLayer.fromObject(layer)}
                                 onChange={props.onChange}
                                 parameter={RasterParameter.fromObject(oParameter[0])}
+                            />
+                        );
+                    case 'strt':
+                        return (
+                            <Regular
+                                defaultData={props.soilmodel.top}
+                                layer={SoilmodelLayer.fromObject(layer)}
+                                model={props.model}
+                                onChange={props.onChange}
+                                parameter={RasterParameter.fromObject(oParameter[0])}
+                                soilmodel={props.soilmodel}
                             />
                         );
                     default:

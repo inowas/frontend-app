@@ -1,5 +1,7 @@
-import ibound from "./ibound";
+import ibound from './ibound';
+import regular from './regular';
 
 export {
-    ibound as Ibound
+    ibound as Ibound,
+    regular as Regular
 };

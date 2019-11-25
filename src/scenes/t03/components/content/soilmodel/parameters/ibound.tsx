@@ -1,11 +1,10 @@
 import {cloneDeep} from 'lodash';
-import React, {useEffect, useRef} from 'react';
+import React from 'react';
 import {Checkbox, Grid, Header} from 'semantic-ui-react';
 import {Cells} from '../../../../../../core/model/geometry';
 import {ICell} from '../../../../../../core/model/geometry/Cells.type';
 import {ModflowModel} from '../../../../../../core/model/modflow';
 import {RasterParameter} from '../../../../../../core/model/modflow/soilmodel';
-import {ILayerParameter} from '../../../../../../core/model/modflow/soilmodel/LayerParameter.type';
 import SoilmodelLayer from '../../../../../../core/model/modflow/soilmodel/SoilmodelLayer';
 import {DiscretizationMap} from '../../discretization';
 
@@ -17,16 +16,11 @@ interface IProps {
 }
 
 const ibound = (props: IProps) => {
-    const paramtersRef = useRef<ILayerParameter[]>(props.layer.toObject().parameters);
-
-    useEffect(() => {
-        paramtersRef.current = props.layer.toObject().parameters;
-        console.log(props.layer.toObject());
-    }, [props.layer]);
+    const parameters = props.layer.toObject().parameters;
 
     const handleChangeCells = (cells: Cells) => {
         const layer = props.layer.toObject();
-        layer.parameters = paramtersRef.current.map((p) => {
+        layer.parameters = parameters.map((p) => {
             if (p.id === props.parameter.id) {
                 p.value = cells.toArray();
             }
@@ -36,7 +30,7 @@ const ibound = (props: IProps) => {
     };
 
     const handleToggleDefault = () => {
-        const cParameters = cloneDeep(paramtersRef.current);
+        const cParameters = cloneDeep(parameters);
 
         if (cParameters.filter((p) => p.id === props.parameter.id).length === 0) {
             cParameters.push({
@@ -50,13 +44,13 @@ const ibound = (props: IProps) => {
         }
 
         const layer = props.layer.toObject();
-        layer.parameters = paramtersRef.current.filter((p) => p.id !== props.parameter.id);
+        layer.parameters = parameters.filter((p) => p.id !== props.parameter.id);
         return props.onChange(SoilmodelLayer.fromObject(layer));
     };
 
     const renderData = () => {
         let cells: Cells = new Cells();
-        const cParameters = paramtersRef.current.filter((p) => p.id === props.parameter.id);
+        const cParameters = parameters.filter((p) => p.id === props.parameter.id);
         let defaultValue = true;
 
         if (cParameters.length > 0) {
@@ -80,7 +74,7 @@ const ibound = (props: IProps) => {
                 geometry={props.model.geometry}
                 gridSize={props.model.gridSize}
                 onChangeCells={handleChangeCells}
-                readOnly={paramtersRef.current.filter((p) => p.id === props.parameter.id).length === 0}
+                readOnly={parameters.filter((p) => p.id === props.parameter.id).length === 0}
             />
         );
     };
@@ -91,7 +85,7 @@ const ibound = (props: IProps) => {
                 <Grid.Column>
                     <Header as="h4">{props.parameter.title}, {props.parameter.id} [{props.parameter.unit}]
                         <Checkbox
-                            checked={paramtersRef.current.filter((p) => p.id === props.parameter.id).length === 0}
+                            checked={parameters.filter((p) => p.id === props.parameter.id).length === 0}
                             disabled={props.model.readOnly}
                             label="Use default value."
                             onChange={handleToggleDefault}

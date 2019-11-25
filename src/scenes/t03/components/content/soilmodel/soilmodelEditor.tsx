@@ -316,9 +316,6 @@ const soilmodelEditor = (props: IProps) => {
 
     const handleChangeLayer = (layer: SoilmodelLayer) => {
         setIsDirty(true);
-
-        console.log('CHANGE', layer);
-
         return setSelectedLayer(layer.toObject());
     };
 

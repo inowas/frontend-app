@@ -28,6 +28,7 @@ interface IProps {
     onSmoothLayer: (params: ISmoothParametersWithId) => any;
     parameter: RasterParameter;
     readOnly: boolean;
+    showHeadline?: boolean;
     zones: ZonesCollection;
 }
 
@@ -100,14 +101,14 @@ const zonesEditor = (props: IProps) => {
         const rParameter = props.layer.parameters.filter((p) => p.id === props.parameter.id);
 
         if (rParameter.length === 0) {
-            return <Loader active={true} inline="centered" />;
+            return <Loader active={true} inline="centered"/>;
         }
 
         const data = (rParameter[0].value === null || rParameter[0].value === undefined) &&
         rParameter[0].data.file ? rParameter[0].data.data : rParameter[0].value;
 
         if (data === null || data === undefined) {
-            return <Loader active={true} inline="centered" />;
+            return <Loader active={true} inline="centered"/>;
         }
 
         return (
@@ -122,82 +123,72 @@ const zonesEditor = (props: IProps) => {
 
     return (
         <div>
-            <Grid>
-                <Grid.Row>
-                    <Grid.Column>
-                        <Header as="h4">{props.parameter.title}, {props.parameter.id} [{props.parameter.unit}]</Header>
-                        {renderMap()}
-                    </Grid.Column>
-                </Grid.Row>
-                <Grid.Row>
-                    <Grid.Column>
-                        <Accordion styled={true} fluid={true}>
-                            <Accordion.Title active={activeIndex === 1} index={1} onClick={handleClick}>
-                                <Icon name="dropdown"/>
-                                <label>Smoothing</label>
-                            </Accordion.Title>
-                            <Accordion.Content active={activeIndex === 1}>
-                                <Form.Group>
-                                    <Form.Input
-                                        label="Cycles"
-                                        type="number"
-                                        name="cycles"
-                                        value={smoothParams.cycles}
-                                        placeholder="cycles="
-                                        onChange={handleChangeSmoothParams}
-                                        width={4}
-                                        readOnly={props.readOnly}
-                                    />
-                                    <Form.Input
-                                        label="Distance"
-                                        type="number"
-                                        name="distance"
-                                        value={smoothParams.distance}
-                                        placeholder="distance ="
-                                        onChange={handleChangeSmoothParams}
-                                        width={4}
-                                        readOnly={props.readOnly}
-                                    />
-                                    <Form.Button
-                                        fluid={true}
-                                        icon="tint"
-                                        labelPosition="left"
-                                        onClick={smoothMap}
-                                        content={'Start Smoothing'}
-                                        width={8}
-                                        style={{marginTop: '23px'}}
-                                        disabled={props.readOnly}
-                                    />
-                                    <Form.Button
-                                        fluid={true}
-                                        icon="trash"
-                                        labelPosition="left"
-                                        onClick={recalculateMap}
-                                        content={'Remove Smoothing'}
-                                        width={9}
-                                        style={{marginTop: '23px'}}
-                                        disabled={props.readOnly}
-                                    />
-                                </Form.Group>
-                            </Accordion.Content>
-                        </Accordion>
-                    </Grid.Column>
-                </Grid.Row>
-                <Grid.Row>
-                    <Grid.Column>
-                        <ZonesTable
-                            onAddRelation={handleAddRelation}
-                            onClickUpload={handleClickUpload}
-                            onChange={handleChangeRelation}
-                            onRemoveRelation={handleRemoveRelation}
-                            parameter={props.parameter}
+            {props.showHeadline &&
+            <Header as="h4">
+                {props.parameter.title}, {props.parameter.id} [{props.parameter.unit}]
+            </Header>
+            }
+            {renderMap()}
+            <Accordion styled={true} fluid={true}>
+                <Accordion.Title active={activeIndex === 1} index={1} onClick={handleClick}>
+                    <Icon name="dropdown"/>
+                    <label>Smoothing</label>
+                </Accordion.Title>
+                <Accordion.Content active={activeIndex === 1}>
+                    <Form.Group>
+                        <Form.Input
+                            label="Cycles"
+                            type="number"
+                            name="cycles"
+                            value={smoothParams.cycles}
+                            placeholder="cycles="
+                            onChange={handleChangeSmoothParams}
+                            width={4}
                             readOnly={props.readOnly}
-                            zones={props.zones}
-                            relations={relations}
                         />
-                    </Grid.Column>
-                </Grid.Row>
-            </Grid>
+                        <Form.Input
+                            label="Distance"
+                            type="number"
+                            name="distance"
+                            value={smoothParams.distance}
+                            placeholder="distance ="
+                            onChange={handleChangeSmoothParams}
+                            width={4}
+                            readOnly={props.readOnly}
+                        />
+                        <Form.Button
+                            fluid={true}
+                            icon="tint"
+                            labelPosition="left"
+                            onClick={smoothMap}
+                            content={'Start Smoothing'}
+                            width={8}
+                            style={{marginTop: '23px'}}
+                            disabled={props.readOnly}
+                        />
+                        <Form.Button
+                            fluid={true}
+                            icon="trash"
+                            labelPosition="left"
+                            onClick={recalculateMap}
+                            content={'Remove Smoothing'}
+                            width={9}
+                            style={{marginTop: '23px'}}
+                            disabled={props.readOnly}
+                        />
+                    </Form.Group>
+                </Accordion.Content>
+            </Accordion>
+            <ZonesTable
+                onAddRelation={handleAddRelation}
+                onClickUpload={handleClickUpload}
+                onChange={handleChangeRelation}
+                onRemoveRelation={handleRemoveRelation}
+                parameter={props.parameter}
+                readOnly={props.readOnly}
+                zones={props.zones}
+                relations={relations}
+            />
             {rasterUploadModal && !props.readOnly &&
             <RasterfileUploadModal
                 gridSize={props.gridSize}
