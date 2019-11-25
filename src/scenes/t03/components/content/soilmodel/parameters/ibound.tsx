@@ -7,6 +7,7 @@ import {ModflowModel} from '../../../../../../core/model/modflow';
 import {RasterParameter} from '../../../../../../core/model/modflow/soilmodel';
 import SoilmodelLayer from '../../../../../../core/model/modflow/soilmodel/SoilmodelLayer';
 import {DiscretizationMap} from '../../discretization';
+import RasterDataImage from '../../../../../shared/rasterData/rasterDataImage';
 
 interface IProps {
     model: ModflowModel;
@@ -52,11 +53,12 @@ const ibound = (props: IProps) => {
         let cells: Cells = new Cells();
         const cParameters = parameters.filter((p) => p.id === props.parameter.id);
         let defaultValue = true;
+        let data = null;
 
         if (cParameters.length > 0) {
             defaultValue = false;
             const parameter = cParameters[0];
-            const data = parameter.value !== null && parameter.value !== undefined ? parameter.value :
+            data = parameter.value !== null && parameter.value !== undefined ? parameter.value :
                 parameter.data.data;
             if (Array.isArray(data)) {
                 cells = Cells.fromArray(data as ICell[]);
@@ -64,17 +66,26 @@ const ibound = (props: IProps) => {
         }
 
         if (!defaultValue) {
-            defaultValue = props.model.readOnly;
+            return (
+                <DiscretizationMap
+                    cells={defaultValue ? props.model.cells : cells}
+                    boundingBox={props.model.boundingBox}
+                    geometry={props.model.geometry}
+                    gridSize={props.model.gridSize}
+                    onChangeCells={handleChangeCells}
+                    readOnly={parameters.filter((p) => p.id === props.parameter.id).length === 0}
+                />
+            );
         }
 
+        if (!data) {
+            data = props.model.cells.calculateIBound(props.model.gridSize.nY, props.model.gridSize.nX);
+        }
         return (
-            <DiscretizationMap
-                cells={defaultValue ? props.model.cells : cells}
-                boundingBox={props.model.boundingBox}
-                geometry={props.model.geometry}
+            <RasterDataImage
+                data={data}
                 gridSize={props.model.gridSize}
-                onChangeCells={handleChangeCells}
-                readOnly={parameters.filter((p) => p.id === props.parameter.id).length === 0}
+                unit={props.parameter.unit}
             />
         );
     };

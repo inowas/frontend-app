@@ -13,6 +13,7 @@ import {Feature, LineString} from 'geojson';
 import {cloneDeep, floor, isEqual} from 'lodash';
 import {LineBoundary} from '../modflow/boundaries';
 import {BoundingBox, Geometry, GridSize} from '../modflow/index';
+import {Array2D} from './Array2D.type';
 import {ICell, ICells, Point} from './Cells.type';
 
 const getActiveCellFromCoordinate = (coordinate: Point, boundingBox: BoundingBox, gridSize: GridSize): ICell => {
@@ -214,21 +215,18 @@ export default class Cells {
         this._cells.push(cell);
     };
 
-    public calculateIBound = (nrow: number, ncol: number) => {
-        const iBound2D: number[][] = [];
-        for (let row = 0; row < nrow; row++) {
-            iBound2D[row] = new Array(ncol).fill(0);
-            for (let col = 0; col < ncol; col++) {
+    public calculateIBound = (nrow: number, ncol: number): Array2D<number> => {
+        const iBound2D: Array2D<number> = new Array(nrow).fill([]);
+        for (let row: number = 0; row < nrow; row++) {
+            for (let col: number = 0; col < ncol; col++) {
                 iBound2D[row][col] = 0;
             }
         }
-
         this.cells.forEach((cell) => {
             if (cell[1] <= iBound2D.length && cell[0] <= iBound2D[0].length) {
                 iBound2D[cell[1]][cell[0]] = 1;
             }
         });
-
         return iBound2D;
     };
 

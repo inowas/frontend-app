@@ -82,6 +82,15 @@ class SoilmodelLayer {
         return this;
     }
 
+    public getValueOfParameter(parameter: string): number | Array2D<number> {
+        const param = this.parameters.filter((p) => p.id === parameter);
+        if (param.length > 0) {
+            const v = param[0].value !== undefined ? param[0].value : param[0].data.data;
+            return v || 0;
+        }
+        return 0;
+    }
+
     public updateRelation(relation: ILayerParameterZone) {
         this._props.relations = this._props.relations.map((r) => {
             if (r.id === relation.id) {
