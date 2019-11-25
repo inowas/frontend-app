@@ -3,10 +3,11 @@ import React from 'react';
 import {Form, Grid, Header, Input} from 'semantic-ui-react';
 
 import AbstractPackageProperties from './AbstractPackageProperties';
-import {FlopyModflow, FlopyModflowMfevt} from '../../../../../../core/model/flopy/packages/mf';
+import {FlopyModflowMfevt} from '../../../../../../core/model/flopy/packages/mf';
 import {documentation} from '../../../../defaults/flow';
 import {RasterDataImage} from '../../../../../shared/rasterData';
 import {GridSize} from '../../../../../../core/model/modflow';
+import FlopyModflow from '../../../../../../core/model/flopy/packages/mf/FlopyModflow';
 
 class EvtPackageProperties extends AbstractPackageProperties {
 

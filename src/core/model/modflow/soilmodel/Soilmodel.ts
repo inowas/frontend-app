@@ -38,7 +38,7 @@ class Soilmodel {
         if (topLayer) {
             const top = topLayer.parameters.filter((p) => p.id === 'top');
             if (top.length > 0) {
-                return top[0].value;
+                return top[0].value !== null && top[0].value !== undefined ? top[0].value : top[0].data.data;
             }
             throw new Error('Top layer must contain parameter with name top.');
         }

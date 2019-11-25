@@ -1,10 +1,10 @@
 import {WellBoundary} from '../../../modflow/boundaries';
 import BoundaryCollection from '../../../modflow/boundaries/BoundaryCollection';
+import Stressperiods from '../../../modflow/Stressperiods';
 import {IPropertyValueObject} from '../../../types';
 import {calculatePointBoundarySpData} from '../../helpers';
 import {IStressPeriodData} from './FlopyModflow.type';
 import FlopyModflowBoundary from './FlopyModflowBoundary';
-import {FlopyModflow} from './index';
 
 /*
 https://modflowpy.github.io/flopydoc/mfwel.html
@@ -47,13 +47,15 @@ export const defaults: IFlopyModflowMfwel = {
 
 export default class FlopyModflowMfwel extends FlopyModflowBoundary<IFlopyModflowMfwel> {
 
-    public static create(model: FlopyModflow, obj = {}) {
-        const self = this.fromObject(obj);
-        model.setPackage(self);
-        return self;
+    public static create(boundaries: BoundaryCollection, stressperiods: Stressperiods) {
+        return this.fromDefault().update(boundaries, stressperiods.count);
     }
 
-    public static fromObject(obj: IPropertyValueObject) {
+    public static fromDefault() {
+        return this.fromObject({});
+    }
+
+    public static fromObject(obj: IPropertyValueObject): FlopyModflowMfwel {
         const d: any = FlopyModflowBoundary.cloneDeep(defaults);
         for (const key in d) {
             if (d.hasOwnProperty(key) && obj.hasOwnProperty(key)) {
@@ -64,13 +66,20 @@ export default class FlopyModflowMfwel extends FlopyModflowBoundary<IFlopyModflo
         return new this(d);
     }
 
-    public static calculateSpData = (boundaries: BoundaryCollection, nper: number) => {
+    public update = (boundaries: BoundaryCollection, nper: number) => {
         const bd = boundaries.all.filter((b) => (b instanceof WellBoundary)) as WellBoundary[];
         if (boundaries.length === 0) {
             return null;
         }
 
-        return calculatePointBoundarySpData(bd, nper, true);
+        const spData = calculatePointBoundarySpData(bd, nper, true);
+        if (!spData) {
+            return null;
+        }
+
+        this.stress_period_data = spData;
+        return this;
+
     };
 
     get ipakcb() {

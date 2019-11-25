@@ -1,11 +1,13 @@
 import {Array2D} from '../../../geometry/Array2D.type';
+import GridSize from '../../../geometry/GridSize';
 import {RechargeBoundary} from '../../../modflow/boundaries';
 import BoundaryCollection from '../../../modflow/boundaries/BoundaryCollection';
+import Stressperiods from '../../../modflow/Stressperiods';
 import {IPropertyValueObject} from '../../../types';
 import {calculateRechargeSpData} from '../../helpers';
 import {IStressPeriodData} from './FlopyModflow.type';
 import FlopyModflowBoundary from './FlopyModflowBoundary';
-import {FlopyModflow, FlopyModflowPackage} from './index';
+import FlopyModflowPackage from './FlopyModflowPackage';
 
 /*
 https://modflowpy.github.io/flopydoc/mfrch.html
@@ -50,13 +52,15 @@ export const defaults: IFlopyModflowMfrch = {
 
 export default class FlopyModflowMfrch extends FlopyModflowBoundary<IFlopyModflowMfrch> {
 
-    public static create(model: FlopyModflow, obj = {}) {
-        const self = this.fromObject(obj);
-        model.setPackage(self);
-        return self;
+    public static create(boundaries: BoundaryCollection, stressperiods: Stressperiods, gridSize: GridSize) {
+        return this.fromDefault().update(boundaries, stressperiods.count, gridSize.nY, gridSize.nX);
     }
 
-    public static fromObject(obj: IPropertyValueObject) {
+    public static fromDefault() {
+        return this.fromObject({});
+    }
+
+    public static fromObject(obj: IPropertyValueObject): FlopyModflowMfrch {
         const d: any = FlopyModflowPackage.cloneDeep(defaults);
         for (const key in d) {
             if (d.hasOwnProperty(key) && obj.hasOwnProperty(key)) {
@@ -67,16 +71,13 @@ export default class FlopyModflowMfrch extends FlopyModflowBoundary<IFlopyModflo
         return new this(d);
     }
 
-    public static calculateSpData = (boundaries: BoundaryCollection, nper: number, nrow: number, ncol: number) => {
+    public update = (boundaries: BoundaryCollection, nper: number, nrow: number, ncol: number) => {
         const bd = boundaries.all.filter((b) => (b instanceof RechargeBoundary)) as RechargeBoundary[];
         if (boundaries.length === 0) {
             return null;
         }
-        return calculateRechargeSpData(bd, nper, nrow, ncol);
-    };
 
-    public recalculateSpData = (boundaries: BoundaryCollection, nper: number, nrow: number, ncol: number) => {
-        const spData = FlopyModflowMfrch.calculateSpData(boundaries, nper, nrow, ncol);
+        const spData = calculateRechargeSpData(bd, nper, nrow, ncol);
         if (!spData) {
             return null;
         }

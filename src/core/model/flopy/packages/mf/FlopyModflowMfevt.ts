@@ -1,8 +1,12 @@
 import {Array2D} from '../../../geometry/Array2D.type';
+import GridSize from '../../../geometry/GridSize';
 import {BoundaryCollection, EvapotranspirationBoundary} from '../../../modflow/boundaries';
+import Stressperiods from '../../../modflow/Stressperiods';
+import {IPropertyValueObject} from '../../../types';
 import {calculateEvapotranspirationSpData} from '../../helpers';
 import {IStressPeriodData} from './FlopyModflow.type';
-import {FlopyModflowBoundary} from './index';
+import FlopyModflowBoundary from './FlopyModflowBoundary';
+import FlopyModflowFlowPackage from './FlopyModflowFlowPackage';
 
 export interface IFlopyModflowMfevt {
     nevtop: number;
@@ -30,12 +34,47 @@ export const defaults: IFlopyModflowMfevt = {
 
 export default class FlopyModflowMfevt extends FlopyModflowBoundary<IFlopyModflowMfevt> {
 
+    public static create(boundaries: BoundaryCollection, stressperiods: Stressperiods, gridSize: GridSize) {
+        return this.fromDefault().update(boundaries, stressperiods.count, gridSize.nY, gridSize.nX);
+    }
+
+    public static fromDefault() {
+        return this.fromObject({});
+    }
+
+    public static fromObject(obj: IPropertyValueObject): FlopyModflowMfevt {
+        const d: any = FlopyModflowFlowPackage.cloneDeep(defaults);
+        for (const key in d) {
+            if (d.hasOwnProperty(key) && obj.hasOwnProperty(key)) {
+                return d[key] = obj[key];
+            }
+        }
+
+        return new this(d);
+    }
+
     public static calculateSpData = (bc: BoundaryCollection, nper: number, nrow: number, ncol: number) => {
         const bd = bc.all.filter((b) => (b instanceof EvapotranspirationBoundary)) as EvapotranspirationBoundary[];
         if (bd.length === 0) {
             return null;
         }
         return calculateEvapotranspirationSpData(bd, nper, nrow, ncol);
+    };
+
+    public update = (boundaries: BoundaryCollection, nper: number, nrow: number, ncol: number) => {
+        const bd = boundaries.all.filter((b) =>
+            (b instanceof EvapotranspirationBoundary)) as EvapotranspirationBoundary[];
+        if (boundaries.length === 0) {
+            return null;
+        }
+
+        const spData = calculateEvapotranspirationSpData(bd, nper, nrow, ncol);
+        if (!spData) {
+            return null;
+        }
+
+        this.stress_period_data = spData;
+        return this;
     };
 
     get nevtop() {

@@ -1,5 +1,3 @@
-import {FlopyModflowBoundary} from './index';
-
 /*
 https://modflowpy.github.io/flopydoc/mffhb.html
 
@@ -19,6 +17,10 @@ ds7 =
     [lay, row, col, iaux, sbhed1, sbhed2, ..., sbhed(nbdtime)]
 ]
 */
+
+import {IPropertyValueObject} from '../../../types';
+import FlopyModflowBoundary from './FlopyModflowBoundary';
+import FlopyModflowPackage from './FlopyModflowPackage';
 
 export interface IFlopyModflowMffhb {
     nbdtim: number;
@@ -61,6 +63,25 @@ export const defaults: IFlopyModflowMffhb = {
 };
 
 export default class FlopyModflowMffhb extends FlopyModflowBoundary<IFlopyModflowMffhb> {
+
+    public static create() {
+        return this.fromDefault();
+    }
+
+    public static fromDefault() {
+        return this.fromObject({});
+    }
+
+    public static fromObject(obj: IPropertyValueObject): FlopyModflowMffhb {
+        const d: any = FlopyModflowPackage.cloneDeep(defaults);
+        for (const key in d) {
+            if (d.hasOwnProperty(key) && obj.hasOwnProperty(key)) {
+                return d[key] = obj[key];
+            }
+        }
+
+        return new this(d);
+    }
 
     get nbdtim() {
         return this._props.nbdtim;

@@ -1,6 +1,5 @@
 import {IPropertyValueObject} from '../../../types';
 import FlopyModflowPackage from './FlopyModflowPackage';
-import {FlopyModflow} from './index';
 
 export interface IFlopyModflowMfoc {
     ihedfm: number;
@@ -32,13 +31,15 @@ export const defaults: IFlopyModflowMfoc = {
 
 export default class FlopyModflowMfoc extends FlopyModflowPackage<IFlopyModflowMfoc> {
 
-    public static create(model: FlopyModflow, obj = {}) {
-        const self = this.fromObject(obj);
-        model.setPackage(self);
-        return self;
+    public static create(nper: number) {
+        return this.fromDefault().update(nper);
     }
 
-    public static fromObject(obj: IPropertyValueObject) {
+    public static fromDefault() {
+        return this.fromObject({});
+    }
+
+    public static fromObject(obj: IPropertyValueObject): FlopyModflowMfoc {
         const d: any = FlopyModflowPackage.cloneDeep(defaults);
         for (const key in d) {
             if (d.hasOwnProperty(key) && obj.hasOwnProperty(key)) {
@@ -47,6 +48,16 @@ export default class FlopyModflowMfoc extends FlopyModflowPackage<IFlopyModflowM
         }
 
         return new this(d);
+    }
+
+    public update(nper: number) {
+        const spData: IFlopyModflowMfoc['stress_period_data'] = [];
+        for (let per = 0; per < nper; per++) {
+            spData.push([[per, 0], ['save head', 'save drawdown', 'save budget']]);
+        }
+
+        this.stress_period_data = spData;
+        return this;
     }
 
     get ihedfm() {

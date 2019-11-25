@@ -1,5 +1,7 @@
 import {IPropertyValueObject} from '../../../types';
-import {FlopyModflow, FlopyModflowBoundary, FlopyModflowPackage} from './index';
+import FlopyModflow from './FlopyModflow';
+import FlopyModflowBoundary from './FlopyModflowBoundary';
+import FlopyModflowPackage from './FlopyModflowPackage';
 
 /*
 https://modflowpy.github.io/flopydoc/mfhfb.html
@@ -45,7 +47,11 @@ export default class FlopyModflowMfhfb extends FlopyModflowBoundary<IFlopyModflo
         return self;
     }
 
-    public static fromObject(obj: IPropertyValueObject) {
+    public static fromDefault() {
+        return this.fromObject({});
+    }
+
+    public static fromObject(obj: IPropertyValueObject): FlopyModflowMfhfb {
         const d: any = FlopyModflowPackage.cloneDeep(defaults);
         for (const key in d) {
             if (d.hasOwnProperty(key) && obj.hasOwnProperty(key)) {

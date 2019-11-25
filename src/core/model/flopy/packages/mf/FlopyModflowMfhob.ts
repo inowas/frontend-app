@@ -4,7 +4,6 @@ import {IPropertyValueObject} from '../../../types';
 import {calculateHeadObservationData} from '../../helpers';
 import FlopyModflowBoundary from './FlopyModflowBoundary';
 import FlopyModflowFlowPackage from './FlopyModflowFlowPackage';
-import {FlopyModflow} from './index';
 
 export interface IFlopyModflowMfhob {
     iuhobsv: number;
@@ -29,13 +28,15 @@ export const defaults: IFlopyModflowMfhob = {
 
 export default class FlopyModflowMfhob extends FlopyModflowBoundary<IFlopyModflowMfhob> {
 
-    public static create(model: FlopyModflow, obj = {}) {
-        const self = this.fromObject(obj);
-        model.setPackage(self);
-        return self;
+    public static create(boundaries: BoundaryCollection, stressPeriods: Stressperiods) {
+        return this.fromDefault().update(boundaries, stressPeriods);
     }
 
-    public static fromObject(obj: IPropertyValueObject) {
+    public static fromDefault() {
+        return this.fromObject({});
+    }
+
+    public static fromObject(obj: IPropertyValueObject): FlopyModflowMfhob {
         const d: any = FlopyModflowFlowPackage.cloneDeep(defaults);
         for (const key in d) {
             if (d.hasOwnProperty(key) && obj.hasOwnProperty(key)) {
@@ -46,13 +47,20 @@ export default class FlopyModflowMfhob extends FlopyModflowBoundary<IFlopyModflo
         return new this(d);
     }
 
-    public static calculateSpData = (boundaries: BoundaryCollection, stressperiods: Stressperiods) => {
+    public update = (boundaries: BoundaryCollection, stressperiods: Stressperiods) => {
         const bd = boundaries.all.filter((b) => (b instanceof HeadObservationWell)) as HeadObservationWell[];
         if (boundaries.length === 0) {
             return null;
         }
 
-        return calculateHeadObservationData(bd, stressperiods);
+        const spData = calculateHeadObservationData(bd, stressperiods);
+
+        if (!spData) {
+            return null;
+        }
+
+        this.obs_data = spData;
+        return this;
     };
 
     get iuhobsv() {

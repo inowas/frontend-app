@@ -1,6 +1,7 @@
 import {IPropertyValueObject} from '../../../types';
+import FlopyModflow from './FlopyModflow';
 import FlopyModflowFlowPackage from './FlopyModflowFlowPackage';
-import {FlopyModflow, FlopyModflowPackage} from './index';
+import FlopyModflowPackage from './FlopyModflowPackage';
 
 export interface IFlopyModflowMfswi2 {
     nsrf: number;
@@ -94,7 +95,11 @@ export default class FlopyModflowMfswi2 extends FlopyModflowFlowPackage<IFlopyMo
         return self;
     }
 
-    public static fromObject(obj: IPropertyValueObject) {
+    public static fromDefault() {
+        return this.fromObject({});
+    }
+
+    public static fromObject(obj: IPropertyValueObject): FlopyModflowMfswi2 {
         const d: any = FlopyModflowPackage.cloneDeep(defaults);
         for (const key in d) {
             if (d.hasOwnProperty(key) && obj.hasOwnProperty(key)) {

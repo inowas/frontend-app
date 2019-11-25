@@ -1,5 +1,6 @@
 import {IPropertyValueObject} from '../../../types';
-import {FlopyModflow, FlopyModflowPackage, FlopyModflowSolverPackage} from './index';
+import FlopyModflowPackage from './FlopyModflowPackage';
+import FlopyModflowSolverPackage from './FlopyModflowSolverPackage';
 
 export interface IFlopyModflowMfpcg {
     mxiter: number;
@@ -39,13 +40,15 @@ export const defaults: IFlopyModflowMfpcg = {
 
 export default class FlopyModflowMfpcg extends FlopyModflowSolverPackage<IFlopyModflowMfpcg> {
 
-    public static create(model: FlopyModflow, obj = {}) {
-        const self = this.fromObject(obj);
-        model.setPackage(self);
-        return self;
+    public static create(obj = {}) {
+        return this.fromObject(obj);
     }
 
-    public static fromObject(obj: IPropertyValueObject) {
+    public static fromDefault() {
+        return this.fromObject({});
+    }
+
+    public static fromObject(obj: IPropertyValueObject): FlopyModflowMfpcg {
         const d: any = FlopyModflowPackage.cloneDeep(defaults);
         for (const key in d) {
             if (d.hasOwnProperty(key) && obj.hasOwnProperty(key)) {

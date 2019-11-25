@@ -1,5 +1,7 @@
 import {IPropertyValueObject} from '../../../types';
-import {FlopyModflow, FlopyModflowPackage, FlopyModflowSolverPackage} from './index';
+import FlopyModflow from './FlopyModflow';
+import FlopyModflowPackage from './FlopyModflowPackage';
+import FlopyModflowSolverPackage from './FlopyModflowSolverPackage';
 
 export interface IFlopyModflowMfsor {
     mxiter: number;
@@ -29,7 +31,11 @@ export default class FlopyModflowMfsor extends FlopyModflowSolverPackage<IFlopyM
         return self;
     }
 
-    public static fromObject(obj: IPropertyValueObject) {
+    public static fromDefault() {
+        return this.fromObject({});
+    }
+
+    public static fromObject(obj: IPropertyValueObject): FlopyModflowMfsor {
         const d: any = FlopyModflowPackage.cloneDeep(defaults);
         for (const key in d) {
             if (d.hasOwnProperty(key) && obj.hasOwnProperty(key)) {

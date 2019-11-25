@@ -1,7 +1,3 @@
-import FlopyModflowSerializable from '../FlopySerializable';
-import FlopyModflow from './FlopyModflow';
-import FlopyModflowBoundary from './FlopyModflowBoundary';
-import FlopyModflowLineBoundary from './FlopyModflowLineBoundary';
 import FlopyModflowMf from './FlopyModflowMf';
 import FlopyModflowMfbas from './FlopyModflowMfbas';
 import FlopyModflowMfbcf from './FlopyModflowMfbcf';
@@ -16,7 +12,9 @@ import FlopyModflowMfgmg from './FlopyModflowMfgmg';
 import FlopyModflowMfhfb from './FlopyModflowMfhfb';
 import FlopyModflowMfhob from './FlopyModflowMfhob';
 import FlopyModflowMflak from './FlopyModflowMflak';
+import FlopyModflowMflmt from './FlopyModflowMflmt';
 import FlopyModflowMflpf from './FlopyModflowMflpf';
+import FlopyModflowMfnwt from './FlopyModflowMfnwt';
 import FlopyModflowMfoc from './FlopyModflowMfoc';
 import FlopyModflowMfpcg from './FlopyModflowMfpcg';
 import FlopyModflowMfpcgn from './FlopyModflowMfpcgn';
@@ -26,15 +24,11 @@ import FlopyModflowMfsip from './FlopyModflowMfsip';
 import FlopyModflowMfsms from './FlopyModflowMfsms';
 import FlopyModflowMfsor from './FlopyModflowMfsor';
 import FlopyModflowMfstr from './FlopyModflowMfstr';
+import FlopyModflowMfupw from './FlopyModflowMfupw';
 import FlopyModflowMfuzf1 from './FlopyModflowMfuzf1';
 import FlopyModflowMfwel from './FlopyModflowMfwel';
-import FlopyModflowPackage from './FlopyModflowPackage';
-import FlopyModflowSolverPackage from './FlopyModflowSolverPackage';
 
 export {
-    FlopyModflow,
-    FlopyModflowBoundary,
-    FlopyModflowLineBoundary,
     FlopyModflowMf,
     FlopyModflowMfbas,
     FlopyModflowMfbcf,
@@ -49,7 +43,9 @@ export {
     FlopyModflowMfhfb,
     FlopyModflowMfhob,
     FlopyModflowMflak,
+    FlopyModflowMflmt,
     FlopyModflowMflpf,
+    FlopyModflowMfnwt,
     FlopyModflowMfoc,
     FlopyModflowMfpcg,
     FlopyModflowMfpcgn,
@@ -59,9 +55,7 @@ export {
     FlopyModflowMfsor,
     FlopyModflowMfstr,
     FlopyModflowMfriv,
+    FlopyModflowMfupw,
     FlopyModflowMfuzf1,
     FlopyModflowMfwel,
-    FlopyModflowPackage,
-    FlopyModflowSerializable,
-    FlopyModflowSolverPackage
 };

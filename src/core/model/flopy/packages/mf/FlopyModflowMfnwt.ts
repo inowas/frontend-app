@@ -1,3 +1,5 @@
+import {IPropertyValueObject} from '../../../types';
+import FlopyModflowPackage from './FlopyModflowPackage';
 import FlopyModflowSolverPackage from './FlopyModflowSolverPackage';
 
 export interface IFlopyModflowMfnwt {
@@ -77,6 +79,27 @@ export const defaults: IFlopyModflowMfnwt = {
 };
 
 export default class FlopyModflowMfnwt extends FlopyModflowSolverPackage<IFlopyModflowMfnwt> {
+
+    public static create() {
+        return this.fromDefault();
+    }
+
+    public static fromDefault() {
+        return this.fromObject({});
+    }
+
+    public static fromObject(obj: IPropertyValueObject): FlopyModflowMfnwt {
+        const d: any = FlopyModflowPackage.cloneDeep(defaults);
+        for (const key in d) {
+            if (d.hasOwnProperty(key) && obj.hasOwnProperty(key)) {
+                return d[key] = obj[key];
+            }
+        }
+
+        return new this(d);
+    }
+
+    protected _props = {...defaults};
 
     get headtol() {
         return this._props.headtol;

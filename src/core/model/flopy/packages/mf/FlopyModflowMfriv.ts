@@ -1,8 +1,10 @@
 import {BoundaryCollection, RiverBoundary} from '../../../modflow/boundaries';
+import Stressperiods from '../../../modflow/Stressperiods';
 import {IPropertyValueObject} from '../../../types';
 import {calculateLineBoundarySpData} from '../../helpers';
 import {IStressPeriodData} from './FlopyModflow.type';
-import {FlopyModflow, FlopyModflowLineBoundary, FlopyModflowPackage} from './index';
+import FlopyModflowLineBoundary from './FlopyModflowLineBoundary';
+import FlopyModflowPackage from './FlopyModflowPackage';
 
 /*
 https://modflowpy.github.io/flopydoc/mfriv.html
@@ -49,13 +51,15 @@ export const defaults: IFlopyModflowMfriv = {
 
 export default class FlopyModflowMfriv extends FlopyModflowLineBoundary<IFlopyModflowMfriv> {
 
-    public static create(model: FlopyModflow, obj = {}) {
-        const self = this.fromObject(obj);
-        model.setPackage(self);
-        return self;
+    public static create(boundaries: BoundaryCollection, stressperiods: Stressperiods) {
+        return this.fromDefault().update(boundaries, stressperiods.count);
     }
 
-    public static fromObject(obj: IPropertyValueObject) {
+    public static fromDefault() {
+        return this.fromObject({});
+    }
+
+    public static fromObject(obj: IPropertyValueObject): FlopyModflowMfriv {
         const d: any = FlopyModflowPackage.cloneDeep(defaults);
         for (const key in d) {
             if (d.hasOwnProperty(key) && obj.hasOwnProperty(key)) {
@@ -66,17 +70,14 @@ export default class FlopyModflowMfriv extends FlopyModflowLineBoundary<IFlopyMo
         return new this(d);
     }
 
-    public static calculateSpData = (boundaries: BoundaryCollection, nper: number) => {
+    public update = (boundaries: BoundaryCollection, nper: number) => {
+
         const bd = boundaries.all.filter((b) => (b instanceof RiverBoundary)) as RiverBoundary[];
         if (boundaries.length === 0) {
             return null;
         }
 
-        return calculateLineBoundarySpData(bd, nper);
-    };
-
-    public recalculateSpData = (boundaries: BoundaryCollection, nper: number) => {
-        const spData = FlopyModflowMfriv.calculateSpData(boundaries, nper);
+        const spData = calculateLineBoundarySpData(bd, nper);
         if (!spData) {
             return null;
         }

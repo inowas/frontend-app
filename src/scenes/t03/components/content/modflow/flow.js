@@ -10,7 +10,6 @@ import {BoundaryCollection} from '../../../../../core/model/modflow/boundaries';
 import ContentToolBar from '../../../../shared/ContentToolbar';
 import {updatePackages} from '../../../actions/actions';
 
-import {FlopyModflow, FlopyModflowPackage} from '../../../../../core/model/flopy/packages/mf';
 import FlopyPackages from '../../../../../core/model/flopy/packages/FlopyPackages';
 
 import {
@@ -31,6 +30,8 @@ import {
 } from './mf';
 import {sendCommand} from '../../../../../services/api';
 import ModflowModelCommand from '../../../commands/modflowModelCommand';
+import FlopyModflowPackage from '../../../../../core/model/flopy/packages/mf/FlopyModflowPackage';
+import FlopyModflow from '../../../../../core/model/flopy/packages/mf/FlopyModflow';
 
 const sideBar = (boundaries) => ([
     {id: undefined, name: 'Modflow package', enabled: true},

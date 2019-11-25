@@ -1,11 +1,11 @@
 import {GeneralHeadBoundary} from '../../../modflow/boundaries';
 import BoundaryCollection from '../../../modflow/boundaries/BoundaryCollection';
+import Stressperiods from '../../../modflow/Stressperiods';
 import {IPropertyValueObject} from '../../../types';
 import {calculateLineBoundarySpData} from '../../helpers';
 import {IStressPeriodData} from './FlopyModflow.type';
 import FlopyModflowFlowPackage from './FlopyModflowFlowPackage';
 import FlopyModflowLineBoundary from './FlopyModflowLineBoundary';
-import {FlopyModflow} from './index';
 
 /*
 https://modflowpy.github.io/flopydoc/mfghb.html
@@ -54,13 +54,15 @@ export const defaults: IFlopyModflowMfghb = {
 
 export default class FlopyModflowMfghb extends FlopyModflowLineBoundary<IFlopyModflowMfghb> {
 
-    public static create(model: FlopyModflow, obj = {}) {
-        const self = this.fromObject(obj);
-        model.setPackage(self);
-        return self;
+    public static create(boundaries: BoundaryCollection, stressperiods: Stressperiods) {
+        return this.fromDefault().update(boundaries, stressperiods.count);
     }
 
-    public static fromObject(obj: IPropertyValueObject) {
+    public static fromDefault() {
+        return this.fromObject({});
+    }
+
+    public static fromObject(obj: IPropertyValueObject): FlopyModflowMfghb {
         const d: any = FlopyModflowFlowPackage.cloneDeep(defaults);
         for (const key in d) {
             if (d.hasOwnProperty(key) && obj.hasOwnProperty(key)) {
@@ -71,17 +73,13 @@ export default class FlopyModflowMfghb extends FlopyModflowLineBoundary<IFlopyMo
         return new this(d);
     }
 
-    public static calculateSpData = (boundaries: BoundaryCollection, nper: number) => {
+    public update = (boundaries: BoundaryCollection, nper: number) => {
         const bd = boundaries.all.filter((b) => (b instanceof GeneralHeadBoundary)) as GeneralHeadBoundary[];
         if (boundaries.length === 0) {
             return null;
         }
 
-        return calculateLineBoundarySpData(bd, nper);
-    };
-
-    public recalculateSpData = (boundaries: BoundaryCollection, nper: number) => {
-        const spData = FlopyModflowMfghb.calculateSpData(boundaries, nper);
+        const spData = calculateLineBoundarySpData(bd, nper);
         if (!spData) {
             return null;
         }

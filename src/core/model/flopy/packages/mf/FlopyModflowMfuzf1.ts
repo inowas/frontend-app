@@ -1,6 +1,7 @@
 import {IPropertyValueObject} from '../../../types';
-import FlopyModflowFlowPackage from './FlopyModflowFlowPackage';
-import {FlopyModflow, FlopyModflowPackage} from './index';
+import FlopyModflow from './FlopyModflow';
+import FlopyModflowBoundary from './FlopyModflowBoundary';
+import FlopyModflowPackage from './FlopyModflowPackage';
 
 export interface IFlopyModflowMfuzf1 {
     nuztop: number;
@@ -76,7 +77,7 @@ export const defaults: IFlopyModflowMfuzf1 = {
     filenames: null
 };
 
-export default class FlopyModflowMfuzf1 extends FlopyModflowFlowPackage<IFlopyModflowMfuzf1> {
+export default class FlopyModflowMfuzf1 extends FlopyModflowBoundary<IFlopyModflowMfuzf1> {
 
     public static create(model: FlopyModflow, obj = {}) {
         const self = this.fromObject(obj);
@@ -84,7 +85,11 @@ export default class FlopyModflowMfuzf1 extends FlopyModflowFlowPackage<IFlopyMo
         return self;
     }
 
-    public static fromObject(obj: IPropertyValueObject) {
+    public static fromDefault() {
+        return this.fromObject({});
+    }
+
+    public static fromObject(obj: IPropertyValueObject): FlopyModflowMfuzf1 {
         const d: any = FlopyModflowPackage.cloneDeep(defaults);
         for (const key in d) {
             if (d.hasOwnProperty(key) && obj.hasOwnProperty(key)) {

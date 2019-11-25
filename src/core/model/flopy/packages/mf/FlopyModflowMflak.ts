@@ -1,10 +1,12 @@
 import {Array3D} from '../../../geometry/Array2D.type';
+import BoundaryCollection from '../../../modflow/boundaries/BoundaryCollection';
+import Stressperiods from '../../../modflow/Stressperiods';
 import {IPropertyValueObject} from '../../../types';
 import {IStressPeriodData} from './FlopyModflow.type';
+import FlopyModflowBoundary from './FlopyModflowBoundary';
 import FlopyModflowPackage from './FlopyModflowPackage';
-import {FlopyModflow, FlopyModflowBoundary} from './index';
 
-interface IFlopyModflowMflak {
+export interface IFlopyModflowMflak {
     nlakes: number;
     ipakcb: number | null;
     theta: number;
@@ -44,13 +46,15 @@ export const defaults: IFlopyModflowMflak = {
 
 export default class FlopyModflowMflak extends FlopyModflowBoundary<IFlopyModflowMflak> {
 
-    public static create(model: FlopyModflow, obj = {}) {
-        const self = this.fromObject(obj);
-        model.setPackage(self);
-        return self;
+    public static create(boundaries: BoundaryCollection, stressPeriods: Stressperiods) {
+        return this.fromDefault().update(boundaries, stressPeriods);
     }
 
-    public static fromObject(obj: IPropertyValueObject) {
+    public static fromDefault() {
+        return this.fromObject({});
+    }
+
+    public static fromObject(obj: IPropertyValueObject): FlopyModflowMflak {
         const d: any = FlopyModflowPackage.cloneDeep(defaults);
         for (const key in d) {
             if (d.hasOwnProperty(key) && obj.hasOwnProperty(key)) {
@@ -62,13 +66,9 @@ export default class FlopyModflowMflak extends FlopyModflowBoundary<IFlopyModflo
     }
 
     // TODO
-    public static calculateSpData = () => {
+    public update = (boundaries: BoundaryCollection, stressPeriods: Stressperiods) => {
+        return this;
     };
-
-    // TODO
-    public recalculateSpData() {
-
-    }
 
     get nlakes() {
         return this._props.nlakes;

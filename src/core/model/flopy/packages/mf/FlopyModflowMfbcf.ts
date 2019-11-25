@@ -1,22 +1,24 @@
-import {Array2D, Array3D} from '../../../geometry/Array2D.type';
+import {Array2D} from '../../../geometry/Array2D.type';
+import {SoilmodelLayer} from '../../../modflow/soilmodel';
+import Soilmodel from '../../../modflow/soilmodel/Soilmodel';
 import {IPropertyValueObject} from '../../../types';
-import {FlopyModflow, FlopyModflowPackage} from './index';
+import FlopyModflowFlowPackage from './FlopyModflowFlowPackage';
 
 export interface IFlopyModflowMfbcf {
     ipakcb: number;
-    intercellt: number;
-    laycon: number;
-    trpy: number | number[];
+    intercellt: number | number[];
+    laycon: number | number[];
+    trpy: number | Array<number | Array2D<number>>;
     hdry: number;
-    iwdflg: number;
+    iwdflg: number | number[];
     wetfct: number;
     iwetit: number;
     ihdwet: number;
-    tran: number | Array3D<number>;
-    hy: number | Array3D<number>;
-    vcont: number | Array3D<number>;
-    sf1: number | Array3D<number>;
-    sf2: number | Array2D<number>;
+    tran: number | Array<number | Array2D<number>>;
+    hy: number | Array<number | Array2D<number>>;
+    vcont: number | Array<number | Array2D<number>>;
+    sf1: number | Array<number | Array2D<number>>;
+    sf2: number | Array<number | Array2D<number>>;
     wetdry: number;
     extension: string;
     unitnumber: number | null;
@@ -44,16 +46,20 @@ export const defaults: IFlopyModflowMfbcf = {
     filenames: null
 };
 
-export default class FlopyModflowMfbcf extends FlopyModflowPackage<IFlopyModflowMfbcf> {
+// https://modflowpy.github.io/flopydoc/mfbcf.html
 
-    public static create(model: FlopyModflow, obj = {}) {
-        const self = this.fromObject(obj);
-        model.setPackage(self);
-        return self;
+export default class FlopyModflowMfbcf extends FlopyModflowFlowPackage<IFlopyModflowMfbcf> {
+
+    public static create(soilmodel: Soilmodel) {
+        return this.fromDefault().update(soilmodel);
     }
 
-    public static fromObject(obj: IPropertyValueObject) {
-        const d: any = FlopyModflowPackage.cloneDeep(defaults);
+    public static fromDefault() {
+        return this.fromObject({});
+    }
+
+    public static fromObject(obj: IPropertyValueObject): FlopyModflowMfbcf {
+        const d: any = FlopyModflowFlowPackage.cloneDeep(defaults);
         for (const key in d) {
             if (d.hasOwnProperty(key) && obj.hasOwnProperty(key)) {
                 return d[key] = obj[key];
@@ -64,6 +70,35 @@ export default class FlopyModflowMfbcf extends FlopyModflowPackage<IFlopyModflow
     }
 
     protected _props = {...defaults};
+
+    public update(soilmodel: Soilmodel) {
+        const layers = soilmodel.layersCollection.orderBy('number').all;
+
+        this.intercellt = layers.map((l) => l.layavg);
+        this.laycon = layers.map((l) => l.laytyp);
+        this.trpy = soilmodel.getParameterValue('hani');
+        this.iwdflg = layers.map((l) => l.laywet);
+        this.tran = layers.map((l, idx) => {
+            const layer = SoilmodelLayer.fromObject(l);
+            if (idx === 0) {
+                const top = soilmodel.getParameterValue('top');
+                if (top) {
+                    return layer.calculateTransmissivity(top[0]);
+                }
+            }
+
+            const botm = soilmodel.getParameterValue('botm');
+            if (botm && botm[idx - 1]) {
+                return layer.calculateTransmissivity(botm[idx - 1]);
+            }
+
+            return 0;
+        });
+        this.hy = soilmodel.getParameterValue('hk');
+        this.sf1 = soilmodel.getParameterValue('ss');
+        this.sf2 = soilmodel.getParameterValue('sy');
+        return this;
+    }
 
     get ipakcb() {
         return this._props.ipakcb;

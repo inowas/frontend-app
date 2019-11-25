@@ -1,6 +1,9 @@
+import {delc, delr} from '../../../../../services/geoTools/distance';
+import {Array2D} from '../../../geometry/Array2D.type';
+import {ModflowModel} from '../../../modflow';
+import Soilmodel from '../../../modflow/soilmodel/Soilmodel';
 import {IPropertyValueObject} from '../../../types';
 import FlopyModflowPackage from './FlopyModflowPackage';
-import {FlopyModflow} from './index';
 
 export interface IFlopyModflowMfdis {
     nlay: number;
@@ -9,12 +12,12 @@ export interface IFlopyModflowMfdis {
     nper: number;
     delr: number;
     delc: number;
-    laycbd: number;
-    top: number;
-    botm: number;
-    perlen: number;
-    nstp: number;
-    tsmult: number;
+    laycbd: number | number[];
+    top: Array2D<number> | number;
+    botm: Array<number | Array2D<number>> | number;
+    perlen: number | number[];
+    nstp: number | number[];
+    tsmult: number | number[];
     steady: boolean | boolean[];
     itmuni: number;
     lenuni: number;
@@ -24,7 +27,7 @@ export interface IFlopyModflowMfdis {
     xul: number | null;
     yul: number | null;
     rotation: number;
-    proj4_str: number | null;
+    proj4_str: string | null;
     start_datetime: string | null;
 }
 
@@ -56,13 +59,15 @@ export const defaults: IFlopyModflowMfdis = {
 
 export default class FlopyModflowMfdis extends FlopyModflowPackage<IFlopyModflowMfdis> {
 
-    public static create(model: FlopyModflow, obj = {}) {
-        const self = this.fromObject(obj);
-        model.setPackage(self);
-        return self;
+    public static create(model: ModflowModel, soilmodel: Soilmodel) {
+        return this.fromDefault().update(model, soilmodel);
     }
 
-    public static fromObject(obj: IPropertyValueObject) {
+    public static fromDefault() {
+        return this.fromObject({});
+    }
+
+    public static fromObject(obj: IPropertyValueObject): FlopyModflowMfdis {
         const d: any = FlopyModflowPackage.cloneDeep(defaults);
         for (const key in d) {
             if (d.hasOwnProperty(key) && obj.hasOwnProperty(key)) {
@@ -74,6 +79,35 @@ export default class FlopyModflowMfdis extends FlopyModflowPackage<IFlopyModflow
     }
 
     protected _props = {...defaults};
+
+    public update(model: ModflowModel, soilmodel: Soilmodel) {
+        this.nlay = soilmodel.layersCollection.length;
+        this.nrow = model.gridSize.nY;
+        this.ncol = model.gridSize.nX;
+        this.nper = model.stressperiods.count;
+        this.delr = delr(model.boundingBox, model.gridSize);
+        this.delc = delc(model.boundingBox, model.gridSize);
+
+        const layers = soilmodel.layersCollection.orderBy('number').all;
+        this.laycbd = layers.map(() => 0);
+        soilmodel.top ? this.top = soilmodel.top : this.top = defaults.top;
+        this.botm = soilmodel.getParameterValue('botm');
+
+        const stressperiods = model.stressperiods;
+        this.perlen = stressperiods.perlens;
+        this.nstp = stressperiods.stressperiods.map((sp) => sp.nstp);
+        this.tsmult = stressperiods.stressperiods.map((sp) => sp.tsmult);
+        this.steady = stressperiods.stressperiods.map((sp) => sp.steady);
+
+        this.itmuni = model.timeUnit.toInt();
+        this.lenuni = model.lengthUnit.toInt();
+
+        this.xul = model.boundingBox.xMin;
+        this.yul = model.boundingBox.yMax;
+        this.proj4_str = 'EPSG:4326';
+        this.start_datetime = stressperiods.startDateTime.format('YYYY-MM-DD');
+        return this;
+    }
 
     get nlay() {
         return this._props.nlay;

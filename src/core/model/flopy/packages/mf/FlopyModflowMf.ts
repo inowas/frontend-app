@@ -1,6 +1,5 @@
 import {IPropertyValueObject} from '../../../types';
 import FlopyModflowPackage from './FlopyModflowPackage';
-import {FlopyModflow} from './index';
 
 export interface IFlopyModflowMf {
     modelname: string;
@@ -28,13 +27,11 @@ export const defaults: IFlopyModflowMf = {
 
 export default class FlopyModflowMf extends FlopyModflowPackage<IFlopyModflowMf> {
 
-    public static create(model: FlopyModflow, obj = {}) {
-        const self = this.fromObject(obj);
-        model.setPackage(self);
-        return self;
+    public static create(obj = {}) {
+        return this.fromObject(obj);
     }
 
-    public static fromObject(obj: IPropertyValueObject) {
+    public static fromObject(obj: IPropertyValueObject): FlopyModflowMf {
         const d: any = FlopyModflowPackage.cloneDeep(defaults);
         for (const key in d) {
             if (d.hasOwnProperty(key) && obj.hasOwnProperty(key)) {

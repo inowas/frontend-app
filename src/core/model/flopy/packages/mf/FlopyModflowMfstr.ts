@@ -1,6 +1,8 @@
 import {IPropertyValueObject} from '../../../types';
+import FlopyModflow from './FlopyModflow';
 import {IStressPeriodData} from './FlopyModflow.type';
-import {FlopyModflow, FlopyModflowLineBoundary, FlopyModflowPackage} from './index';
+import FlopyModflowLineBoundary from './FlopyModflowLineBoundary';
+import FlopyModflowPackage from './FlopyModflowPackage';
 
 export interface IFlopyModflowMfstr {
     mxacts: number;
@@ -12,7 +14,8 @@ export interface IFlopyModflowMfstr {
     ipakcb: number | null;
     istcb2: number | null;
     dtype: number | null;
-    stress_period_data: IStressPeriodData<[[number, number, number, number, number, number, number, number, number, number]]> | null;
+    stress_period_data:
+        IStressPeriodData<[[number, number, number, number, number, number, number, number, number, number]]> | null;
     segment_data: IStressPeriodData<number[][]> | null;
     extension: string;
     unitnumber: number | null;
@@ -46,7 +49,11 @@ export default class FlopyModflowMfstr extends FlopyModflowLineBoundary<IFlopyMo
         return self;
     }
 
-    public static fromObject(obj: IPropertyValueObject) {
+    public static fromDefault() {
+        return this.fromObject({});
+    }
+
+    public static fromObject(obj: IPropertyValueObject): FlopyModflowMfstr {
         const d: any = FlopyModflowPackage.cloneDeep(defaults);
         for (const key in d) {
             if (d.hasOwnProperty(key) && obj.hasOwnProperty(key)) {

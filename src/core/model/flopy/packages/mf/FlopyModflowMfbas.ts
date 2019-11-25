@@ -1,10 +1,13 @@
 import {Array2D} from '../../../geometry/Array2D.type';
+import {ModflowModel} from '../../../modflow';
+import {SoilmodelLayer} from '../../../modflow/soilmodel';
+import Soilmodel from '../../../modflow/soilmodel/Soilmodel';
 import {IPropertyValueObject} from '../../../types';
-import {FlopyModflow, FlopyModflowPackage} from './index';
+import FlopyModflowPackage from './FlopyModflowPackage';
 
 export interface IFlopyModflowMfbas {
-    ibound: number | Array2D<number>;
-    strt: number | Array2D<number>;
+    ibound: Array<number | Array2D<number>> | number;
+    strt: Array<number | Array2D<number>> | number;
     ifrefm: boolean;
     ixsec: boolean;
     ichflg: boolean;
@@ -30,13 +33,15 @@ export const defaults: IFlopyModflowMfbas = {
 
 export default class FlopyModflowMfbas extends FlopyModflowPackage<IFlopyModflowMfbas> {
 
-    public static create(model: FlopyModflow, obj = {}) {
-        const self = this.fromObject(obj);
-        model.setPackage(self);
-        return self;
+    public static create(model: ModflowModel, soilmodel: Soilmodel) {
+        return this.fromDefault().update(model, soilmodel);
     }
 
-    public static fromObject(obj: IPropertyValueObject) {
+    public static fromDefault() {
+        return this.fromObject({});
+    }
+
+    public static fromObject(obj: IPropertyValueObject): FlopyModflowMfbas {
         const d: any = FlopyModflowPackage.cloneDeep(defaults);
         for (const key in d) {
             if (d.hasOwnProperty(key) && obj.hasOwnProperty(key)) {
@@ -48,6 +53,29 @@ export default class FlopyModflowMfbas extends FlopyModflowPackage<IFlopyModflow
     }
 
     protected _props = {...defaults};
+
+    public update(model: ModflowModel, soilmodel: Soilmodel) {
+        this.ibound = soilmodel.layersCollection.all.map((l) => {
+            const value = SoilmodelLayer.fromObject(l).getValueOfParameter('ibound');
+
+            if (value !== undefined) {
+                return value;
+            }
+
+            return model.cells.calculateIBound(model.gridSize.nY, model.gridSize.nX);
+        });
+
+        this.strt = soilmodel.layersCollection.all.map((l) => {
+            const value = SoilmodelLayer.fromObject(l).getValueOfParameter('strt');
+            if (value !== undefined) {
+                return value;
+            }
+
+            return soilmodel.top as Array2D<number>;
+        });
+
+        return this;
+    }
 
     get ibound() {
         return this._props.ibound;

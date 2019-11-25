@@ -4,7 +4,7 @@ import {connect} from 'react-redux';
 import {Redirect, RouteComponentProps, withRouter} from 'react-router-dom';
 import {Grid, Icon, Message} from 'semantic-ui-react';
 import FlopyPackages from '../../../core/model/flopy/packages/FlopyPackages';
-import {FlopyModflow} from '../../../core/model/flopy/packages/mf';
+import FlopyModflow from '../../../core/model/flopy/packages/mf/FlopyModflow';
 import FlopyModpath from '../../../core/model/flopy/packages/mp/FlopyModpath';
 import {FlopyMt3d} from '../../../core/model/flopy/packages/mt';
 import FlopySeawat from '../../../core/model/flopy/packages/swt/FlopySeawat';
@@ -201,7 +201,7 @@ const t03 = (props: IProps) => {
                     soilmodel as ISoilmodel,
                     (result) => setSoilmodelFetcher(result),
                     (result) => {
-                        return props.updateSoilmodel(Soilmodel.fromObject(result))
+                        return props.updateSoilmodel(Soilmodel.fromObject(result));
                     }
                 );
             },
@@ -232,6 +232,10 @@ const t03 = (props: IProps) => {
     const calculatePackagesFunction = () => {
         return new Promise((resolve, reject) => {
             setCalculatePackages('calculation');
+            if (!props.model || !props.soilmodel || !props.boundaries) {
+                return;
+            }
+
             const mf = FlopyModflow.createFromModel(props.model, props.soilmodel, props.boundaries);
             const modpath = new FlopyModpath();
             const mt = FlopyMt3d.createFromTransport(props.transport, props.boundaries);

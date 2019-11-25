@@ -1,25 +1,26 @@
+import {Array2D} from '../../../geometry/Array2D.type';
 import {IPropertyValueObject} from '../../../types';
-import {FlopyModflow, FlopyModflowPackage} from './index';
+import FlopyModflowPackage from './FlopyModflowPackage';
 
 export interface IFlopyModflowMflpf {
-    laytyp: number;
-    layavg: number;
-    chani: number;
-    layvka: number;
-    laywet: number;
+    laytyp: number | number[];
+    layavg: number | number[];
+    chani: number | number[];
+    layvka: number | number[];
+    laywet: number | number[];
     ipakcb: number;
     hdry: number;
-    iwdflg: number;
+    iwdflg: number | number[];
     wetfct: number;
     iwetit: number;
     ihdwet: number;
-    hk: number;
-    hani: number;
-    vka: number;
-    ss: number;
-    sy: number;
-    vkcb: number;
-    wetdry: number;
+    hk: number | Array<number | Array2D<number>>;
+    hani: number | Array<number | Array2D<number>>;
+    vka: number | Array<number | Array2D<number>>;
+    ss: number | Array<number | Array2D<number>>;
+    sy: number | Array<number | Array2D<number>>;
+    vkcb: number | Array<number | Array2D<number>>;
+    wetdry: number | Array<number | Array2D<number>>;
     storagecoefficient: boolean;
     constantcv: boolean;
     thickstrt: boolean;
@@ -36,7 +37,7 @@ export const defaults: IFlopyModflowMflpf = {
     chani: 1.0,
     layvka: 0,
     laywet: 0,
-    ipakcb: 0,
+    ipakcb: 53,
     hdry: -1e+30,
     iwdflg: 0,
     wetfct: 0.1,
@@ -61,13 +62,15 @@ export const defaults: IFlopyModflowMflpf = {
 
 export default class FlopyModflowMflpf extends FlopyModflowPackage<IFlopyModflowMflpf> {
 
-    public static create(model: FlopyModflow, obj = {}) {
-        const self = this.fromObject(obj);
-        model.setPackage(self);
-        return self;
+    public static create(obj = {}) {
+        return this.fromObject(obj);
     }
 
-    public static fromObject(obj: IPropertyValueObject) {
+    public static fromDefault() {
+        return this.fromObject({});
+    }
+
+    public static fromObject(obj: IPropertyValueObject): FlopyModflowMflpf {
         const d: any = FlopyModflowPackage.cloneDeep(defaults);
         for (const key in d) {
             if (d.hasOwnProperty(key) && obj.hasOwnProperty(key)) {
