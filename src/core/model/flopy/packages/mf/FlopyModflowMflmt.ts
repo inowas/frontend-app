@@ -25,8 +25,8 @@ export const defaults: IFlopyModflowMflmt = {
 
 export default class FlopyModflowMflmt extends FlopyModflowPackage<IFlopyModflowMflmt> {
 
-    public static create(obj = {}) {
-        return this.fromObject(obj);
+    public static create() {
+        return this.fromDefault();
     }
 
     public static fromDefault() {
@@ -37,7 +37,7 @@ export default class FlopyModflowMflmt extends FlopyModflowPackage<IFlopyModflow
         const d: any = FlopyModflowPackage.cloneDeep(defaults);
         for (const key in d) {
             if (d.hasOwnProperty(key) && obj.hasOwnProperty(key)) {
-                return d[key] = obj[key];
+                d[key] = obj[key];
             }
         }
 

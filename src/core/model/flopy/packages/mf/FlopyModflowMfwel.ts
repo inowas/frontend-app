@@ -59,7 +59,7 @@ export default class FlopyModflowMfwel extends FlopyModflowBoundary<IFlopyModflo
         const d: any = FlopyModflowBoundary.cloneDeep(defaults);
         for (const key in d) {
             if (d.hasOwnProperty(key) && obj.hasOwnProperty(key)) {
-                return d[key] = obj[key];
+                d[key] = obj[key];
             }
         }
 

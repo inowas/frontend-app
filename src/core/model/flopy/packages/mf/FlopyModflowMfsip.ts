@@ -1,5 +1,4 @@
 import {IPropertyValueObject} from '../../../types';
-import FlopyModflow from './FlopyModflow';
 import FlopyModflowPackage from './FlopyModflowPackage';
 import FlopyModflowSolverPackage from './FlopyModflowSolverPackage';
 
@@ -31,10 +30,8 @@ export const defaults: IFlopyModflowMfsip = {
 
 export default class FlopyModflowMfsip extends FlopyModflowSolverPackage<IFlopyModflowMfsip> {
 
-    public static create(model: FlopyModflow, obj = {}) {
-        const self = this.fromObject(obj);
-        model.setPackage(self);
-        return self;
+    public static create() {
+        return this.fromDefault();
     }
 
     public static fromDefault() {
@@ -45,7 +42,7 @@ export default class FlopyModflowMfsip extends FlopyModflowSolverPackage<IFlopyM
         const d: any = FlopyModflowPackage.cloneDeep(defaults);
         for (const key in d) {
             if (d.hasOwnProperty(key) && obj.hasOwnProperty(key)) {
-                return d[key] = obj[key];
+                d[key] = obj[key];
             }
         }
 

@@ -71,14 +71,12 @@ export default class FlopyModflowMfdis extends FlopyModflowPackage<IFlopyModflow
         const d: any = FlopyModflowPackage.cloneDeep(defaults);
         for (const key in d) {
             if (d.hasOwnProperty(key) && obj.hasOwnProperty(key)) {
-                return d[key] = obj[key];
+                d[key] = obj[key];
             }
         }
 
         return new this(d);
     }
-
-    protected _props = {...defaults};
 
     public update(model: ModflowModel, soilmodel: Soilmodel) {
         this.nlay = soilmodel.layersCollection.length;

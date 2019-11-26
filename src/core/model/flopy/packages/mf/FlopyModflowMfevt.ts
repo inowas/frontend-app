@@ -46,20 +46,12 @@ export default class FlopyModflowMfevt extends FlopyModflowBoundary<IFlopyModflo
         const d: any = FlopyModflowFlowPackage.cloneDeep(defaults);
         for (const key in d) {
             if (d.hasOwnProperty(key) && obj.hasOwnProperty(key)) {
-                return d[key] = obj[key];
+                d[key] = obj[key];
             }
         }
 
         return new this(d);
     }
-
-    public static calculateSpData = (bc: BoundaryCollection, nper: number, nrow: number, ncol: number) => {
-        const bd = bc.all.filter((b) => (b instanceof EvapotranspirationBoundary)) as EvapotranspirationBoundary[];
-        if (bd.length === 0) {
-            return null;
-        }
-        return calculateEvapotranspirationSpData(bd, nper, nrow, ncol);
-    };
 
     public update = (boundaries: BoundaryCollection, nper: number, nrow: number, ncol: number) => {
         const bd = boundaries.all.filter((b) =>

@@ -1,5 +1,6 @@
+import {BoundaryCollection} from '../../../modflow/boundaries';
+import Stressperiods from '../../../modflow/Stressperiods';
 import {IPropertyValueObject} from '../../../types';
-import FlopyModflow from './FlopyModflow';
 import {IStressPeriodData} from './FlopyModflow.type';
 import FlopyModflowLineBoundary from './FlopyModflowLineBoundary';
 import FlopyModflowPackage from './FlopyModflowPackage';
@@ -43,10 +44,8 @@ export const defaults: IFlopyModflowMfstr = {
 
 export default class FlopyModflowMfstr extends FlopyModflowLineBoundary<IFlopyModflowMfstr> {
 
-    public static create(model: FlopyModflow, obj = {}) {
-        const self = this.fromObject(obj);
-        model.setPackage(self);
-        return self;
+    public static create(boundaries: BoundaryCollection, stressperiods: Stressperiods) {
+        return this.fromDefault().update(boundaries, stressperiods);
     }
 
     public static fromDefault() {
@@ -57,20 +56,16 @@ export default class FlopyModflowMfstr extends FlopyModflowLineBoundary<IFlopyMo
         const d: any = FlopyModflowPackage.cloneDeep(defaults);
         for (const key in d) {
             if (d.hasOwnProperty(key) && obj.hasOwnProperty(key)) {
-                return d[key] = obj[key];
+                d[key] = obj[key];
             }
         }
 
         return new this(d);
     }
 
-    // TODO
-    public static calculateSpData = () => {
+    public update = (boundaries: BoundaryCollection, stressperiods: Stressperiods) => {
+        return this;
     };
-
-    // TODO
-    public recalculateSpData() {
-    }
 
     get mxacts() {
         return this._props.mxacts;

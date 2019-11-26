@@ -17,9 +17,15 @@ export const validate = (data, schema) => {
                 const val = ajv.compile(schema);
                 const isValid = val(data);
                 const errors = val.errors;
+
+                if (!isValid) {
+                    console.warn('Invalid ' + data, schema, JSON.stringify(errors));
+                }
+
                 resolve([isValid, errors]);
             })
             .catch(e => {
+                console.log(e);
                 resolve([false, e]);
             });
     });

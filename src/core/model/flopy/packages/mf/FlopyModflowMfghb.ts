@@ -66,7 +66,7 @@ export default class FlopyModflowMfghb extends FlopyModflowLineBoundary<IFlopyMo
         const d: any = FlopyModflowFlowPackage.cloneDeep(defaults);
         for (const key in d) {
             if (d.hasOwnProperty(key) && obj.hasOwnProperty(key)) {
-                return d[key] = obj[key];
+                d[key] = obj[key];
             }
         }
 
@@ -75,9 +75,6 @@ export default class FlopyModflowMfghb extends FlopyModflowLineBoundary<IFlopyMo
 
     public update = (boundaries: BoundaryCollection, nper: number) => {
         const bd = boundaries.all.filter((b) => (b instanceof GeneralHeadBoundary)) as GeneralHeadBoundary[];
-        if (boundaries.length === 0) {
-            return null;
-        }
 
         const spData = calculateLineBoundarySpData(bd, nper);
         if (!spData) {

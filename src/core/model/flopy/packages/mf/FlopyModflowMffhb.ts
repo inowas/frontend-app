@@ -1,4 +1,5 @@
 /*
+MODFLOW Flow and Head Boundary Package Class.
 https://modflowpy.github.io/flopydoc/mffhb.html
 
 ds5 =
@@ -18,6 +19,8 @@ ds7 =
 ]
 */
 
+import BoundaryCollection from '../../../modflow/boundaries/BoundaryCollection';
+import Stressperiods from '../../../modflow/Stressperiods';
 import {IPropertyValueObject} from '../../../types';
 import FlopyModflowBoundary from './FlopyModflowBoundary';
 import FlopyModflowPackage from './FlopyModflowPackage';
@@ -64,8 +67,8 @@ export const defaults: IFlopyModflowMffhb = {
 
 export default class FlopyModflowMffhb extends FlopyModflowBoundary<IFlopyModflowMffhb> {
 
-    public static create() {
-        return this.fromDefault();
+    public static create(boundaries: BoundaryCollection, stressperiods: Stressperiods) {
+        return this.fromDefault().update(boundaries, stressperiods);
     }
 
     public static fromDefault() {
@@ -76,12 +79,17 @@ export default class FlopyModflowMffhb extends FlopyModflowBoundary<IFlopyModflo
         const d: any = FlopyModflowPackage.cloneDeep(defaults);
         for (const key in d) {
             if (d.hasOwnProperty(key) && obj.hasOwnProperty(key)) {
-                return d[key] = obj[key];
+                d[key] = obj[key];
             }
         }
 
         return new this(d);
     }
+
+    // TODO
+    public update = (boundaries: BoundaryCollection, stressperiods: Stressperiods) => {
+        return this;
+    };
 
     get nbdtim() {
         return this._props.nbdtim;

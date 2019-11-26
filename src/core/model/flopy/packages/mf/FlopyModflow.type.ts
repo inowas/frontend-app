@@ -1,3 +1,4 @@
+import {IPropertyValueObject} from '../../../types';
 import {IFlopyModflowMf} from './FlopyModflowMf';
 import {IFlopyModflowMfbas} from './FlopyModflowMfbas';
 import {IFlopyModflowMfbcf} from './FlopyModflowMfbcf';
@@ -35,7 +36,7 @@ export interface IStressPeriodData<T> {
 
 type IPackage = IFlopyModflowMf | IFlopyModflowMfbas | IFlopyModflowMfbcf | IFlopyModflowMfchd;
 
-export interface IFlopyModflow {
+export interface IFlopyModflow extends IPropertyValueObject {
     mf: IFlopyModflowMf;
     bas: IFlopyModflowMfbas;
     dis: IFlopyModflowMfdis;

@@ -1,5 +1,6 @@
+import BoundaryCollection from '../../../modflow/boundaries/BoundaryCollection';
+import Stressperiods from '../../../modflow/Stressperiods';
 import {IPropertyValueObject} from '../../../types';
-import FlopyModflow from './FlopyModflow';
 import FlopyModflowBoundary from './FlopyModflowBoundary';
 import FlopyModflowPackage from './FlopyModflowPackage';
 
@@ -41,10 +42,8 @@ export const defaults: IFlopyModflowMfhfb = {
 
 export default class FlopyModflowMfhfb extends FlopyModflowBoundary<IFlopyModflowMfhfb> {
 
-    public static create(model: FlopyModflow, obj = {}) {
-        const self = this.fromObject(obj);
-        model.setPackage(self);
-        return self;
+    public static create(boundaries: BoundaryCollection, stressperiods: Stressperiods) {
+        return this.fromDefault().update(boundaries, stressperiods.count);
     }
 
     public static fromDefault() {
@@ -55,7 +54,7 @@ export default class FlopyModflowMfhfb extends FlopyModflowBoundary<IFlopyModflo
         const d: any = FlopyModflowPackage.cloneDeep(defaults);
         for (const key in d) {
             if (d.hasOwnProperty(key) && obj.hasOwnProperty(key)) {
-                return d[key] = obj[key];
+                d[key] = obj[key];
             }
         }
 
@@ -63,13 +62,9 @@ export default class FlopyModflowMfhfb extends FlopyModflowBoundary<IFlopyModflo
     }
 
     // TODO
-    public static calculateSpData = () => {
+    public update = (boundaries: BoundaryCollection, nper: number) => {
+        return this;
     };
-
-    // TODO
-    public recalculateSpData() {
-
-    }
 
     get nphfb() {
         return this._props.nphfb;

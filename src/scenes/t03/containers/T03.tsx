@@ -236,7 +236,7 @@ const t03 = (props: IProps) => {
                 return;
             }
 
-            const mf = FlopyModflow.createFromModel(props.model, props.soilmodel, props.boundaries);
+            const mf = FlopyModflow.create(props.model, props.soilmodel, props.boundaries);
             const modpath = new FlopyModpath();
             const mt = FlopyMt3d.createFromTransport(props.transport, props.boundaries);
             const swt = FlopySeawat.createFromVariableDensity(props.variableDensity);

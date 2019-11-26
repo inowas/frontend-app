@@ -40,8 +40,8 @@ export const defaults: IFlopyModflowMfpcg = {
 
 export default class FlopyModflowMfpcg extends FlopyModflowSolverPackage<IFlopyModflowMfpcg> {
 
-    public static create(obj = {}) {
-        return this.fromObject(obj);
+    public static create() {
+        return this.fromDefault();
     }
 
     public static fromDefault() {
@@ -52,7 +52,7 @@ export default class FlopyModflowMfpcg extends FlopyModflowSolverPackage<IFlopyM
         const d: any = FlopyModflowPackage.cloneDeep(defaults);
         for (const key in d) {
             if (d.hasOwnProperty(key) && obj.hasOwnProperty(key)) {
-                return d[key] = obj[key];
+                d[key] = obj[key];
             }
         }
 

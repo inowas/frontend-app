@@ -92,14 +92,12 @@ export default class FlopyModflowMfnwt extends FlopyModflowSolverPackage<IFlopyM
         const d: any = FlopyModflowPackage.cloneDeep(defaults);
         for (const key in d) {
             if (d.hasOwnProperty(key) && obj.hasOwnProperty(key)) {
-                return d[key] = obj[key];
+                d[key] = obj[key];
             }
         }
 
         return new this(d);
     }
-
-    protected _props = {...defaults};
 
     get headtol() {
         return this._props.headtol;

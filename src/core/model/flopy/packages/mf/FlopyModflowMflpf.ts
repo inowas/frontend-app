@@ -1,8 +1,10 @@
 import {Array2D} from '../../../geometry/Array2D.type';
+import Soilmodel from '../../../modflow/soilmodel/Soilmodel';
 import {IPropertyValueObject} from '../../../types';
+import FlopyModflowFlowPackage from './FlopyModflowFlowPackage';
 import FlopyModflowPackage from './FlopyModflowPackage';
 
-export interface IFlopyModflowMflpf {
+export interface IFlopyModflowMflpf extends IPropertyValueObject {
     laytyp: number | number[];
     layavg: number | number[];
     chani: number | number[];
@@ -60,10 +62,10 @@ export const defaults: IFlopyModflowMflpf = {
     filenames: null,
 };
 
-export default class FlopyModflowMflpf extends FlopyModflowPackage<IFlopyModflowMflpf> {
+export default class FlopyModflowMflpf extends FlopyModflowFlowPackage<IFlopyModflowMflpf> {
 
-    public static create(obj = {}) {
-        return this.fromObject(obj);
+    public static create(soilmodel: Soilmodel) {
+        return this.fromDefault().update(soilmodel);
     }
 
     public static fromDefault() {
@@ -74,11 +76,26 @@ export default class FlopyModflowMflpf extends FlopyModflowPackage<IFlopyModflow
         const d: any = FlopyModflowPackage.cloneDeep(defaults);
         for (const key in d) {
             if (d.hasOwnProperty(key) && obj.hasOwnProperty(key)) {
-                return d[key] = obj[key];
+                d[key] = obj[key];
             }
         }
 
         return new this(d);
+    }
+
+    public update(soilmodel: Soilmodel) {
+        const layers = soilmodel.layersCollection.orderBy('number').all;
+        this.laytyp = layers.map((l) => l.laytyp);
+        this.layavg = layers.map((l) => l.layavg);
+        this.chani = layers.map(() => 0);
+        this.layvka = layers.map(() => 0);
+        this.laywet = layers.map((l) => l.laywet);
+        this.hk = soilmodel.getParameterValue('hk');
+        this.hani = soilmodel.getParameterValue('hani');
+        this.vka = soilmodel.getParameterValue('vka');
+        this.ss = soilmodel.getParameterValue('ss');
+        this.sy = soilmodel.getParameterValue('sy');
+        return this;
     }
 
     get laytyp() {

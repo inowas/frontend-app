@@ -31,7 +31,7 @@ import {
 import {sendCommand} from '../../../../../services/api';
 import ModflowModelCommand from '../../../commands/modflowModelCommand';
 import FlopyModflowPackage from '../../../../../core/model/flopy/packages/mf/FlopyModflowPackage';
-import FlopyModflow from '../../../../../core/model/flopy/packages/mf/FlopyModflow';
+import FlopyModflow, {flowPackages, packagesMap} from '../../../../../core/model/flopy/packages/mf/FlopyModflow';
 
 const sideBar = (boundaries) => ([
     {id: undefined, name: 'Modflow package', enabled: true},
@@ -115,14 +115,15 @@ class Flow extends React.Component {
     };
 
     handleChangeFlowPackageType = type => {
-        const mfPackages = FlopyModflow.fromObject(this.state.mf);
-        mfPackages.setFlowPackageType(type, this.props.soilmodel);
 
-        const flowPackage = mfPackages.getFlowPackage();
-        const mfPackage = mfPackages.getPackage('mf');
-        mfPackage.exe_name = flowPackage.supportedModflowVersions().filter(v => v.default === true)[0].executable;
-        mfPackage.version = flowPackage.supportedModflowVersions().filter(v => v.default === true)[0].version;
-        mfPackages.setPackage(mfPackage);
+        if (flowPackages.indexOf(type) < 0) {
+            throw Error('Type ' + type + 'is not a registered FlowPackage type')
+        }
+
+        const fp = packagesMap[type].create(this.props.soilmodel);
+
+        const mfPackages = FlopyModflow.fromObject(this.state.mf);
+        mfPackages.setPackage(fp);
 
         return this.setState({mf: mfPackages.toObject(), isDirty: true}, () => {
             const packages = this.props.packages;

@@ -1,5 +1,6 @@
+import BoundaryCollection from '../../../modflow/boundaries/BoundaryCollection';
+import Stressperiods from '../../../modflow/Stressperiods';
 import {IPropertyValueObject} from '../../../types';
-import FlopyModflow from './FlopyModflow';
 import FlopyModflowBoundary from './FlopyModflowBoundary';
 import FlopyModflowPackage from './FlopyModflowPackage';
 
@@ -79,10 +80,8 @@ export const defaults: IFlopyModflowMfuzf1 = {
 
 export default class FlopyModflowMfuzf1 extends FlopyModflowBoundary<IFlopyModflowMfuzf1> {
 
-    public static create(model: FlopyModflow, obj = {}) {
-        const self = this.fromObject(obj);
-        model.setPackage(self);
-        return self;
+    public static create(boundaries: BoundaryCollection, stressperiods: Stressperiods) {
+        return this.fromDefault().update(boundaries, stressperiods);
     }
 
     public static fromDefault() {
@@ -93,12 +92,17 @@ export default class FlopyModflowMfuzf1 extends FlopyModflowBoundary<IFlopyModfl
         const d: any = FlopyModflowPackage.cloneDeep(defaults);
         for (const key in d) {
             if (d.hasOwnProperty(key) && obj.hasOwnProperty(key)) {
-                return d[key] = obj[key];
+                d[key] = obj[key];
             }
         }
 
         return new this(d);
     }
+
+    // TODO
+    public update = (boundaries: BoundaryCollection, stressperiods: Stressperiods) => {
+        return this;
+    };
 
     get nuztop() {
         return this._props.nuztop;

@@ -1,23 +1,24 @@
+import {Array2D} from '../../../geometry/Array2D.type';
+import Soilmodel from '../../../modflow/soilmodel/Soilmodel';
 import {IPropertyValueObject} from '../../../types';
-import FlopyModflow from './FlopyModflow';
 import FlopyModflowFlowPackage from './FlopyModflowFlowPackage';
 import FlopyModflowPackage from './FlopyModflowPackage';
 
 export interface IFlopyModflowMfupw {
-    laytyp: number;
-    layavg: number;
-    chani: number;
-    layvka: number;
-    laywet: number;
+    laytyp: number | number[];
+    layavg: number | number[];
+    chani: number | number[];
+    layvka: number | number[];
+    laywet: number | number[];
     ipakcb: number | null;
     hdry: number;
     iphdry: number;
-    hk: number;
-    hani: number;
-    vka: number;
-    ss: number;
-    sy: number;
-    vkcb: number;
+    hk: number | Array<number | Array2D<number>>;
+    hani: number | Array<number | Array2D<number>>;
+    vka: number | Array<number | Array2D<number>>;
+    ss: number | Array<number | Array2D<number>>;
+    sy: number | Array<number | Array2D<number>>;
+    vkcb: number | Array<number | Array2D<number>>;
     noparcheck: boolean;
     extension: string;
     unitnumber: number | null;
@@ -47,10 +48,8 @@ export const defaults: IFlopyModflowMfupw = {
 
 export default class FlopyModflowMfupw extends FlopyModflowFlowPackage<IFlopyModflowMfupw> {
 
-    public static create(model: FlopyModflow, obj = {}) {
-        const self = this.fromObject(obj);
-        model.setPackage(self);
-        return self;
+    public static create(soilmodel: Soilmodel) {
+        return this.fromDefault().update(soilmodel);
     }
 
     public static fromDefault() {
@@ -61,11 +60,26 @@ export default class FlopyModflowMfupw extends FlopyModflowFlowPackage<IFlopyMod
         const d: any = FlopyModflowPackage.cloneDeep(defaults);
         for (const key in d) {
             if (d.hasOwnProperty(key) && obj.hasOwnProperty(key)) {
-                return d[key] = obj[key];
+                d[key] = obj[key];
             }
         }
 
         return new this(d);
+    }
+
+    public update(soilmodel: Soilmodel) {
+        const layers = soilmodel.layersCollection.orderBy('number').all;
+        this.laytyp = layers.map((l) => l.laytyp);
+        this.layavg = layers.map((l) => l.layavg);
+        this.chani = layers.map(() => 0);
+        this.layvka = layers.map(() => 0);
+        this.laywet = layers.map((l) => l.laywet);
+        this.hk = soilmodel.getParameterValue('hk');
+        this.hani = soilmodel.getParameterValue('hani');
+        this.vka = soilmodel.getParameterValue('vka');
+        this.ss = soilmodel.getParameterValue('ss');
+        this.sy = soilmodel.getParameterValue('sy');
+        return this;
     }
 
     get laytyp() {

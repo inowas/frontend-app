@@ -31,11 +31,15 @@ export default class FlopyModflowMf extends FlopyModflowPackage<IFlopyModflowMf>
         return this.fromObject(obj);
     }
 
+    public static fromDefault() {
+        return this.fromObject({});
+    }
+
     public static fromObject(obj: IPropertyValueObject): FlopyModflowMf {
         const d: any = FlopyModflowPackage.cloneDeep(defaults);
         for (const key in d) {
             if (d.hasOwnProperty(key) && obj.hasOwnProperty(key)) {
-                return d[key] = obj[key];
+                d[key] = obj[key];
             }
         }
 

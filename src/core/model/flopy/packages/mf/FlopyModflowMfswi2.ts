@@ -1,5 +1,5 @@
+import Soilmodel from '../../../modflow/soilmodel/Soilmodel';
 import {IPropertyValueObject} from '../../../types';
-import FlopyModflow from './FlopyModflow';
 import FlopyModflowFlowPackage from './FlopyModflowFlowPackage';
 import FlopyModflowPackage from './FlopyModflowPackage';
 
@@ -89,10 +89,8 @@ export const defaults: IFlopyModflowMfswi2 = {
 
 export default class FlopyModflowMfswi2 extends FlopyModflowFlowPackage<IFlopyModflowMfswi2> {
 
-    public static create(model: FlopyModflow, obj = {}) {
-        const self = this.fromObject(obj);
-        model.setPackage(self);
-        return self;
+    public static create(soilmodel: Soilmodel) {
+        return this.fromDefault().update(soilmodel);
     }
 
     public static fromDefault() {
@@ -103,11 +101,16 @@ export default class FlopyModflowMfswi2 extends FlopyModflowFlowPackage<IFlopyMo
         const d: any = FlopyModflowPackage.cloneDeep(defaults);
         for (const key in d) {
             if (d.hasOwnProperty(key) && obj.hasOwnProperty(key)) {
-                return d[key] = obj[key];
+                d[key] = obj[key];
             }
         }
 
         return new this(d);
+    }
+
+    // TODO
+    public update(soilmodel: Soilmodel) {
+        return this;
     }
 
     get nsrf() {

@@ -63,7 +63,7 @@ export default class FlopyModflowMfdrn extends FlopyModflowLineBoundary<IFlopyMo
         const d: any = FlopyModflowFlowPackage.cloneDeep(defaults);
         for (const key in d) {
             if (d.hasOwnProperty(key) && obj.hasOwnProperty(key)) {
-                return d[key] = obj[key];
+                d[key] = obj[key];
             }
         }
 
