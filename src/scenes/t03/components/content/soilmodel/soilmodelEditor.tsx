@@ -20,6 +20,7 @@ import {Soilmodel, SoilmodelLayer} from '../../../../../core/model/modflow/soilm
 import {Zone, ZonesCollection} from '../../../../../core/model/modflow/soilmodel';
 import LayerParameterZonesCollection from '../../../../../core/model/modflow/soilmodel/LayerParameterZonesCollection';
 import {ISoilmodelLayer} from '../../../../../core/model/modflow/soilmodel/SoilmodelLayer.type';
+import {saveLayer} from '../../../../../core/model/modflow/soilmodel/updater/services';
 import {IZone} from '../../../../../core/model/modflow/soilmodel/Zone.type';
 import {sendCommand} from '../../../../../services/api';
 import {sendCommands} from '../../../../../services/api/commandHelper';
@@ -36,7 +37,6 @@ import {
     modpathParameters,
     soilmodelParameters
 } from '../../../defaults/soilmodel';
-import {saveLayer} from './fileDropper';
 import LayerDetails from './layerDetails';
 import LayersList from './layersList';
 import {CreateZoneModal, ZoneDetails} from './zones';
@@ -492,20 +492,18 @@ const soilmodelEditor = (props: IProps) => {
                                 onClick={handleNavClick}
                             />
                         </Menu>
-                        {false &&
-                            <Dropdown
-                                placeholder="Select parameter set"
-                                fluid={true}
-                                selection={true}
-                                onChange={handleChangeParameterSet}
-                                options={[
-                                    {key: 'soilmodel', text: 'Soilmodel', value: 'soilmodel'},
-                                    {key: 'bas', text: 'Basic', value: 'bas'},
-                                    {key: 'modpath', text: 'Modpath', value: 'modpath'}
-                                ]}
-                                value={activeParamType}
-                            />
-                        }
+                        <Dropdown
+                            placeholder="Select parameter set"
+                            fluid={true}
+                            selection={true}
+                            onChange={handleChangeParameterSet}
+                            options={[
+                                {key: 'soilmodel', text: 'Soilmodel', value: 'soilmodel'},
+                                {key: 'bas', text: 'Basic', value: 'bas'},
+                                //{key: 'modpath', text: 'Modpath', value: 'modpath'}
+                            ]}
+                            value={activeParamType}
+                        />
                         <br/>
                         {type === nav.LAYERS &&
                         <LayersList

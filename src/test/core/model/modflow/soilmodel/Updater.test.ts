@@ -1,7 +1,7 @@
 import {GeoJson} from '../../../../../core/model/geometry/Geometry.type';
 import {ModflowModel} from '../../../../../core/model/modflow';
 import {ISoilmodelExport} from '../../../../../core/model/modflow/soilmodel/Soilmodel.type';
-import {updater} from '../../../../../scenes/t03/updaters/soilmodel';
+import updater from '../../../../../core/model/modflow/soilmodel/updater/updater';
 
 const model = {
     calculation_id: 'null',
@@ -72,11 +72,12 @@ const soilmodel: ISoilmodelExport = {
 };
 
 test('Update soilmodel from 1v0 to 2v1', () => {
-    const updatedSoilmodel = updater(soilmodel, ModflowModel.fromObject(model));
-    expect(updatedSoilmodel.layers).toHaveLength(2);
-    expect(updatedSoilmodel.layers[0].relations).toHaveLength(7);
-    expect(updatedSoilmodel.layers[1].parameters).toHaveLength(7);
-    expect(updatedSoilmodel.properties.zones).toHaveLength(1);
-    expect(updatedSoilmodel.properties.zones[0].id).toEqual('default');
-    expect(updatedSoilmodel.properties.version).toEqual('2.1');
+    updater(soilmodel, ModflowModel.fromObject(model), () => null, (updatedSoilmodel) => {
+        expect(updatedSoilmodel.layers).toHaveLength(2);
+        expect(updatedSoilmodel.layers[0].relations).toHaveLength(7);
+        expect(updatedSoilmodel.layers[1].parameters).toHaveLength(7);
+        expect(updatedSoilmodel.properties.zones).toHaveLength(1);
+        expect(updatedSoilmodel.properties.zones[0].id).toEqual('default');
+        expect(updatedSoilmodel.properties.version).toEqual('2.1');
+    });
 });

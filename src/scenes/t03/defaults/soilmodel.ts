@@ -18,7 +18,7 @@ export const basParameters: IParameter[] = [
     {
         name: 'strt',
         description: 'Starting Head',
-        unit: '-'
+        unit: 'm a.s.l.'
     }
 ];
 

@@ -1,10 +1,10 @@
-import {IModflowModel} from '../../../../../core/model/modflow/ModflowModel.type';
-import Soilmodel from '../../../../../core/model/modflow/soilmodel/Soilmodel';
-import {ISoilmodel} from '../../../../../core/model/modflow/soilmodel/Soilmodel.type';
-import {ISoilmodelLayer} from '../../../../../core/model/modflow/soilmodel/SoilmodelLayer.type';
+import ModflowModelCommand from '../../../../../scenes/t03/commands/modflowModelCommand';
 import {sendCommand} from '../../../../../services/api';
 import {dropData, FileData} from '../../../../../services/dataDropper';
-import ModflowModelCommand from '../../../commands/modflowModelCommand';
+import {IModflowModel} from '../../ModflowModel.type';
+import {Soilmodel} from '../index';
+import {ISoilmodel} from '../Soilmodel.type';
+import {ISoilmodelLayer} from '../SoilmodelLayer.type';
 
 const addCommand = (commands: ModflowModelCommand[], model: IModflowModel, layer: ISoilmodelLayer) => {
     commands.push(
@@ -122,13 +122,32 @@ export const saveLayer = (
 };
 
 export const saveSoilmodel = (
-    commands: ModflowModelCommand[],
     model: IModflowModel,
     soilmodel: ISoilmodel,
-    onEachTask?: ({message, task}: { message: string, task: number }) => any,
-    task?: number
+    onEachTask: ({message, task}: { message: string, task: number }) => any,
+    onSuccess: (soilmodel: ISoilmodel, needToBeFetched: boolean) => any,
+    saveProperties: boolean,
+    commands: ModflowModelCommand[] = [],
+    task: number = 0,
 ): ISoilmodel => {
     const cSoilmodel = Soilmodel.fromObject(soilmodel);
+
+    if (saveProperties) {
+        onEachTask({
+            message: `Saving soilmodel properties.`,
+            task: task++
+        });
+        sendCommand(
+            ModflowModelCommand.updateSoilmodelProperties({
+                id: model.id,
+                properties: cSoilmodel.toObject().properties
+            }), () => {
+                return saveSoilmodel(
+                    model, cSoilmodel.toObject(), onEachTask, onSuccess, false, commands, task
+                );
+            }
+        );
+    }
 
     const layers = soilmodel.layers.filter((layer) =>
         layer.parameters.filter((p) => Array.isArray(p.value)) ||
@@ -157,7 +176,8 @@ export const saveSoilmodel = (
                 cSoilmodel.updateLayer(cLayer);
 
                 return saveSoilmodel(
-                    addCommand(commands, model, cLayer), model, cSoilmodel.toObject(), onEachTask, task
+                    model, cSoilmodel.toObject(), onEachTask, onSuccess, false,
+                    addCommand(commands, model, cLayer), task
                 );
             });
         }
@@ -182,7 +202,8 @@ export const saveSoilmodel = (
                 cSoilmodel.updateLayer(cLayer);
 
                 return saveSoilmodel(
-                    addCommand(commands, model, cLayer), model, cSoilmodel.toObject(), onEachTask, task
+                    model, cSoilmodel.toObject(), onEachTask,  onSuccess, false,
+                    addCommand(commands, model, cLayer), task
                 );
             });
         }
@@ -191,10 +212,10 @@ export const saveSoilmodel = (
     const command = commands.shift();
     if (command) {
         sendCommand(command);
-        return saveSoilmodel(commands, model, cSoilmodel.toObject(), onEachTask, task);
+        return saveSoilmodel(model, cSoilmodel.toObject(), onEachTask, onSuccess, false, commands, task);
     }
 
-    return cSoilmodel.toObject();
+    return onSuccess(cSoilmodel.toObject(), false);
 };
 
 export const fetchSoilmodel = (

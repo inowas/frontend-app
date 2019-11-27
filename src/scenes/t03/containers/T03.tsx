@@ -4,7 +4,7 @@ import {connect} from 'react-redux';
 import {Redirect, RouteComponentProps, withRouter} from 'react-router-dom';
 import {Grid, Icon, Message} from 'semantic-ui-react';
 import FlopyPackages from '../../../core/model/flopy/packages/FlopyPackages';
-import FlopyModflow from '../../../core/model/flopy/packages/mf/FlopyModflow';
+import {FlopyModflow} from '../../../core/model/flopy/packages/mf';
 import FlopyModpath from '../../../core/model/flopy/packages/mp/FlopyModpath';
 import {FlopyMt3d} from '../../../core/model/flopy/packages/mt';
 import FlopySeawat from '../../../core/model/flopy/packages/swt/FlopySeawat';
@@ -18,9 +18,10 @@ import {
 import {BoundaryCollection, BoundaryFactory} from '../../../core/model/modflow/boundaries';
 import {BoundaryType} from '../../../core/model/modflow/boundaries/Boundary.type';
 import Optimization from '../../../core/model/modflow/optimization/Optimization';
-import {ISoilmodel} from '../../../core/model/modflow/soilmodel/Soilmodel.type';
-import {fetchUrl, fetchUrlAndUpdate, sendCommand} from '../../../services/api';
+import {fetchSoilmodel} from '../../../core/model/modflow/soilmodel/updater/services';
+import updater from '../../../core/model/modflow/soilmodel/updater/updater';
 import {fetchCalculationDetails} from '../../../services/api';
+import {fetchUrl, sendCommand} from '../../../services/api';
 import AppContainer from '../../shared/AppContainer';
 import ToolMetaData from '../../shared/simpleTools/ToolMetaData';
 import {IToolMetaData} from '../../shared/simpleTools/ToolMetaData/ToolMetaData.type';
@@ -41,8 +42,6 @@ import CalculationProgressBar from '../components/content/calculation/calculatio
 import * as Content from '../components/content/index';
 import optimization from '../components/content/optimization/optimization';
 import OptimizationProgressBar from '../components/content/optimization/optimizationProgressBar';
-import {fetchSoilmodel} from '../components/content/soilmodel/fileDropper';
-import {updater} from '../updaters/soilmodel';
 import Navigation from './navigation';
 
 const navDocumentation = [{
@@ -185,25 +184,48 @@ const t03 = (props: IProps) => {
     };
 
     const fetchAndUpdateSoilmodel = (id: string) => {
-        fetchUrlAndUpdate(`modflowmodels/${id}/soilmodel`,
+        fetchUrl(`modflowmodels/${id}/soilmodel`,
             (data) => {
                 if (props.model) {
-                    return updater(data, props.model);
+                    setSoilmodelFetcher({
+                        message: 'Start updating soilmodel.',
+                        fetching: true
+                    });
+                    updater(
+                        data,
+                        props.model,
+                        (result) => setSoilmodelFetcher({
+                            message: result.message,
+                            fetching: true
+                        }),
+                        (result, needsToBeFetched) => {
+                            setSoilmodelFetcher({
+                                message: 'Finished updating soilmodel.',
+                                fetching: false
+                            });
+
+                            if (needsToBeFetched) {
+                                setSoilmodelFetcher({
+                                    message: `Start fetching soilmodel...`,
+                                    fetching: true
+                                });
+                                return fetchSoilmodel(
+                                    result,
+                                    (r) => setSoilmodelFetcher(r),
+                                    (r) => {
+                                        setSoilmodelFetcher({
+                                            message: 'Finished fetching soilmodel.',
+                                            fetching: false
+                                        });
+                                        return props.updateSoilmodel(Soilmodel.fromObject(r));
+                                    }
+                                );
+                            }
+
+                            return props.updateSoilmodel(Soilmodel.fromObject(result));
+                        }
+                    );
                 }
-            },
-            (data) => {
-                const soilmodel = Soilmodel.fromQuery(data).toObject();
-                setSoilmodelFetcher({
-                    message: `Start fetching soilmodel...`,
-                    fetching: true
-                });
-                return fetchSoilmodel(
-                    soilmodel as ISoilmodel,
-                    (result) => setSoilmodelFetcher(result),
-                    (result) => {
-                        return props.updateSoilmodel(Soilmodel.fromObject(result));
-                    }
-                );
             },
             (cError) => {
                 setIsLoading(false);
@@ -232,11 +254,7 @@ const t03 = (props: IProps) => {
     const calculatePackagesFunction = () => {
         return new Promise((resolve, reject) => {
             setCalculatePackages('calculation');
-            if (!props.model || !props.soilmodel || !props.boundaries) {
-                return;
-            }
-
-            const mf = FlopyModflow.create(props.model, props.soilmodel, props.boundaries);
+            const mf = FlopyModflow.createFromModel(props.model, props.soilmodel, props.boundaries);
             const modpath = new FlopyModpath();
             const mt = FlopyMt3d.createFromTransport(props.transport, props.boundaries);
             const swt = FlopySeawat.createFromVariableDensity(props.variableDensity);
