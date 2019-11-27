@@ -4,7 +4,7 @@ import {connect} from 'react-redux';
 import {Redirect, RouteComponentProps, withRouter} from 'react-router-dom';
 import {Grid, Icon, Message} from 'semantic-ui-react';
 import FlopyPackages from '../../../core/model/flopy/packages/FlopyPackages';
-import {FlopyModflow} from '../../../core/model/flopy/packages/mf';
+import FlopyModflow from '../../../core/model/flopy/packages/mf/FlopyModflow';
 import FlopyModpath from '../../../core/model/flopy/packages/mp/FlopyModpath';
 import {FlopyMt3d} from '../../../core/model/flopy/packages/mt';
 import FlopySeawat from '../../../core/model/flopy/packages/swt/FlopySeawat';
@@ -147,6 +147,7 @@ const t03 = (props: IProps) => {
                 if (modflowModel.calculationId) {
                     fetchCalculationDetails(modflowModel.calculationId,
                         (cData) => props.updateCalculation(Calculation.fromQuery(cData)),
+                        // tslint:disable-next-line:no-console
                         (cError) => console.log(cError)
                     );
                 }
@@ -253,8 +254,12 @@ const t03 = (props: IProps) => {
 
     const calculatePackagesFunction = () => {
         return new Promise((resolve, reject) => {
+            if (!props.model || !props.soilmodel || !props.boundaries) {
+                return;
+            }
+
             setCalculatePackages('calculation');
-            const mf = FlopyModflow.createFromModel(props.model, props.soilmodel, props.boundaries);
+            const mf = FlopyModflow.create(props.model, props.soilmodel, props.boundaries);
             const modpath = new FlopyModpath();
             const mt = FlopyMt3d.createFromTransport(props.transport, props.boundaries);
             const swt = FlopySeawat.createFromVariableDensity(props.variableDensity);
@@ -278,6 +283,7 @@ const t03 = (props: IProps) => {
     };
 
     const handleError = (dError: any) => {
+        // tslint:disable-next-line:no-console
         console.log(dError);
         const {response} = dError;
         const {status} = response;
@@ -349,6 +355,7 @@ const t03 = (props: IProps) => {
             return sendCommand(
                 ModflowModelCommand.updateModflowModelMetadata(cModel.id, name, description, isPublic),
                 () => props.updateModel(cModel),
+                // tslint:disable-next-line:no-console
                 (e) => console.log(e)
             );
         }
@@ -372,6 +379,7 @@ const t03 = (props: IProps) => {
                 props.updatePackages(packages as FlopyPackages);
                 return sendCommand(
                     ModflowModelCommand.updateFlopyPackages(props.model.id, packages),
+                    // tslint:disable-next-line:no-console
                     (e) => console.log(e)
                 );
             }
