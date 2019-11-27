@@ -80,7 +80,7 @@ export const packagesMap: IPropertyValueObject = {
 };
 
 export const flowPackages = ['bcf', 'lpf', 'swi2', 'upw'];
-export const solverPackages = ['bcf', 'lpf', 'swi2', 'upw'];
+export const solverPackages = ['de4', 'gmg', 'sor', 'sms', 'pcg', 'pcgn', 'nwt', 'sip'];
 
 export default class FlopyModflow extends GenericObject<IFlopyModflow> {
 
