@@ -5,7 +5,6 @@ import {Button, Grid, Menu, MenuItemProps, Segment} from 'semantic-ui-react';
 import FlopyPackages from '../../../../../core/model/flopy/packages/FlopyPackages';
 import FlopyModpath from '../../../../../core/model/flopy/packages/mp/FlopyModpath';
 import FlopyModpathPackage from '../../../../../core/model/flopy/packages/mp/FlopyModpathPackage';
-import {ModpathPackage} from '../../../../../core/model/flopy/packages/mp/types';
 import {ModflowModel, Soilmodel} from '../../../../../core/model/modflow';
 import {BoundaryCollection} from '../../../../../core/model/modflow/boundaries';
 import {IPropertyValueObject} from '../../../../../core/model/types';
@@ -70,7 +69,7 @@ const modpath: React.FC<Props> = (props: Props) => {
         setActiveItem(type);
     }, [match.params]);
 
-    const handleChange = (cMp: ModpathPackage) => {
+    const handleChange = (cMp: FlopyModpath) => {
         packages.mp = cMp;
         return props.updatePackages(packages);
     };
@@ -93,7 +92,7 @@ const modpath: React.FC<Props> = (props: Props) => {
     const handleSave = () => {
         if (mp) {
             const cPackages = props.packages;
-            cPackages.model_id = props.model.id;
+            cPackages.modelId = props.model.id;
             cPackages.mp = FlopyModpath.fromObject(mp);
 
             setIsLoading(true);

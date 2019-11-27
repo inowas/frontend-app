@@ -3,8 +3,9 @@ import React from 'react';
 import {Checkbox, Form, Input, Table} from 'semantic-ui-react';
 
 import AbstractPackageProperties from './AbstractPackageProperties';
-import {FlopyModflow, FlopyModflowMfoc} from '../../../../../../core/model/flopy/packages/mf';
+import {FlopyModflowMfoc} from '../../../../../../core/model/flopy/packages/mf';
 import {documentation} from '../../../../defaults/flow';
+import FlopyModflow from '../../../../../../core/model/flopy/packages/mf/FlopyModflow';
 
 const formats = [
     [0, '10G11.4'],

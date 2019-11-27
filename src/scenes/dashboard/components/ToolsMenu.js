@@ -11,8 +11,6 @@ const {DISABLE_TOOL} = getConfig();
 const disabledTools = DISABLE_TOOL.split(',').map(s => s.trim()).map(s => s.toUpperCase());
 const isDisabled = (tool) => disabledTools.findIndex((e) => e === tool) >= 0;
 
-console.log(isDisabled('T10'));
-
 const ToolsMenu = ({activeTool, onClick, roles, tools}) => {
     return (
         <Menu fluid vertical>

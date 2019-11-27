@@ -3,8 +3,9 @@ import React from 'react';
 import {Form, Select} from 'semantic-ui-react';
 
 import AbstractPackageProperties from './AbstractPackageProperties';
-import {FlopyModflow, FlopyModflowMf} from '../../../../../../core/model/flopy/packages/mf';
+import {FlopyModflowMf} from '../../../../../../core/model/flopy/packages/mf';
 import {documentation} from '../../../../defaults/flow';
+import FlopyModflow from '../../../../../../core/model/flopy/packages/mf/FlopyModflow';
 
 class MfPackageProperties extends AbstractPackageProperties {
 
@@ -37,7 +38,7 @@ class MfPackageProperties extends AbstractPackageProperties {
                         <label>&nbsp;</label>
                         {this.renderInfoPopup(documentation.exe_name, 'exe_name', 'top left', true)}
                     </Form.Field>
-                    <Form.Field  width={5}>
+                    <Form.Field width={5}>
                         <label>Version</label>
                         <Form.Input
                             value={mfPackage.version}

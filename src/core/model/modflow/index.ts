@@ -2,6 +2,7 @@ import BoundingBox from '../geometry/BoundingBox';
 import Cells from '../geometry/Cells';
 import Geometry from '../geometry/Geometry';
 import GridSize from '../geometry/GridSize';
+import BoundaryCollection from './boundaries/BoundaryCollection';
 import Calculation from './Calculation';
 import LengthUnit from './LengthUnit';
 import ModflowModel from './ModflowModel';
@@ -14,9 +15,10 @@ import Transport from './transport/Transport';
 import VariableDensity from './variableDensity';
 
 export {
-    Cells,
+    BoundaryCollection,
     BoundingBox,
     Calculation,
+    Cells,
     Geometry,
     GridSize,
     LengthUnit,

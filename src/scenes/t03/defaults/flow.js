@@ -34,10 +34,11 @@ export const documentation = {
     vcont: <div>vertical leakance between layers (default is 1.0)</div>,
     sf1: <div>specific storage (confined) or storage coefficient (unconfined), read when there is at least one transient stress period. (default is 1e-5)</div>,
     sf2: <div>specific yield, only read when laycon is 2 or 3 and there is at least one transient stress period (default is 0.15)</div>,
+    // TODO
+    vkcb: <div></div>,
     wetdry: <div>a combination of the wetting threshold and a flag to indicate which neighboring cells can cause a cell to become wet (default is -0.01)</div>,
 
     // DIS
-
     nlay: <div>Number of model layers (the default is 1).</div>,
     nrow: <div>Number of model rows (the default is 2).</div>,
     ncol: <div>Number of model columns (the default is 2).</div>,

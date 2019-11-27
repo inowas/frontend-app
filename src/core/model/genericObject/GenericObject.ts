@@ -2,6 +2,10 @@ import {cloneDeep} from 'lodash';
 
 export class GenericObject<T> {
 
+    public static cloneDeep(obj: any) {
+        return cloneDeep(obj);
+    }
+
     protected _props: T;
 
     constructor(data: T) {
@@ -9,7 +13,7 @@ export class GenericObject<T> {
     }
 
     public toObject(): T {
-        return cloneDeep(this._props);
+        return GenericObject.cloneDeep(this._props);
     }
 
     public getClone() {

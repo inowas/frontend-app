@@ -1,9 +1,9 @@
 import Uuid from 'uuid';
 import {FlopyModflow} from '../../../../../core/model/flopy/packages/mf';
 import {FlopyMt3d} from '../../../../../core/model/flopy/packages/mt';
-import FlopyPackages from '../../../../../core/model/flopy/packages/FlopyPackages';
 import {FlopySeawat} from '../../../../../core/model/flopy/packages/swt';
-import FlopyModpath from "../../../../../core/model/flopy/packages/mp/FlopyModpath";
+import FlopyModpath from '../../../../../core/model/flopy/packages/mp/FlopyModpath';
+import FlopyPackages from '../../../../../core/model/flopy/packages/FlopyPackages';
 
 test('It can instantiate FlopyPackages', () => {
     const modelId = Uuid.v4();

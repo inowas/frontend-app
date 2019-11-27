@@ -123,11 +123,11 @@ const variableDensityProperties = (props: IProps) => {
                                         checked={props.variableDensity.vscEnabled}
                                         onChange={handleChangeViscosity}
                                         name="vscEnabled"
-                                        disabled={props.model.readOnly || !props.packages.mf.packages.lpf ||
+                                        disabled={props.model.readOnly || !props.packages.mf.hasPackage('lpf') ||
                                         !props.transport.enabled || !props.variableDensity.vdfEnabled}
                                     />
                                 </Form.Field>
-                                {!props.packages.mf.packages.lpf &&
+                                {!props.packages.mf.hasPackage('lpf') &&
                                 <Message negative={true}>
                                     <Message.Header>LPF package has to be active, to activate
                                         viscosity.</Message.Header>
