@@ -137,18 +137,16 @@ const gridEditor = (props: IProps) => {
                                 readOnly={readOnly || props.boundaries.length > 0}
                             />
                             <Form.Input
-                                type="number"
                                 label="Cell height"
                                 value={Math.round(dyCell(boundingBox, gridSize) * 10000) / 10}
                                 width={'6'}
-                                readOnly={readOnly || props.boundaries.length > 0}
+                                readOnly={true}
                             />
                             <Form.Input
-                                type="number"
                                 label="Cell width"
                                 value={Math.round(dxCell(boundingBox, gridSize) * 10000) / 10}
                                 width={'6'}
-                                readOnly={readOnly || props.boundaries.length > 0}
+                                readOnly={true}
                             />
                             <Form.Select
                                 compact={true}
