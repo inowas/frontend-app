@@ -24,6 +24,10 @@ const gridEditor = (props: IProps) => {
         setGridSizeLocal(props.model.gridSize);
     }, []);
 
+    useEffect(() => {
+        setGridSizeLocal(props.model.gridSize);
+    }, [props.model.gridSize]);
+
     const readOnly = props.model.readOnly;
 
     const calculate = (g: Geometry, bb: BoundingBox, gz: GridSize) => {
