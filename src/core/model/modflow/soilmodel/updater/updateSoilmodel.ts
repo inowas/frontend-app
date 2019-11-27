@@ -26,13 +26,13 @@ const updateSoilmodel = (
             soilmodel.properties && soilmodel.properties.version && soilmodel.properties.version === 1
         )
     ) {
-        console.log('%c Updating soilmodel from 1v0 to 2v1', 'background: #222; color: #bada55');
+        // console.log('%c Updating soilmodel from 1v0 to 2v1', 'background: #222; color: #bada55');
         return {
             soilmodel: update1v0to2v1(soilmodel as ISoilmodel1v0, model),
             isDirty: true
         };
     } else if (soilmodel.properties.version === 2) {
-        console.log('%c Updating soilmodel from 2v0 to 2v1', 'background: #222; color: #bada55');
+        // console.log('%c Updating soilmodel from 2v0 to 2v1', 'background: #222; color: #bada55');
         return {
             soilmodel: update2v0to2v1(soilmodel as ISoilmodel2v0),
             isDirty: true

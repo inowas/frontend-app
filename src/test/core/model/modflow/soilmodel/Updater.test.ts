@@ -31,7 +31,7 @@ const model = {
     },
     id: '52a2919e-391c-40c4-aa90-de97776e711b',
     name: 'Test 5',
-    permissions: 'rwx',
+    permissions: 'r',
     public: false,
     tool: 'T03'
 };
