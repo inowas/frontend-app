@@ -1,10 +1,14 @@
 import {LineString} from 'geojson';
+import moment from 'moment';
 import Uuid from 'uuid';
-import {FlopyModflow, FlopyModflowMfchd} from '../../../../../../core/model/flopy/packages/mf';
+import {FlopyModflowMfchd} from '../../../../../../core/model/flopy/packages/mf';
 import {BoundingBox, Cells, Geometry, GridSize} from '../../../../../../core/model/geometry';
+import {Stressperiod} from '../../../../../../core/model/modflow';
 import {ConstantHeadBoundary} from '../../../../../../core/model/modflow/boundaries';
+import BoundaryCollection from '../../../../../../core/model/modflow/boundaries/BoundaryCollection';
+import Stressperiods from '../../../../../../core/model/modflow/Stressperiods';
 
-const createConstantHeadBoundary = () => {
+const createBoundaries = () => {
     const id = Uuid.v4();
     const name = 'NameOfBoundary';
     const geometry = Geometry.fromGeoJson({
@@ -30,22 +34,31 @@ const createConstantHeadBoundary = () => {
     cells.calculateValues(boundary, boundingBox, gridSize);
     boundary.cells = cells;
 
-    return boundary;
+    return new BoundaryCollection([boundary]);
+};
+
+const createStressPeriods = () => {
+    const stressperiods = Stressperiods.fromDefaults();
+    stressperiods.addStressPeriod(new Stressperiod({
+        start_date_time: moment('2001-01-01T00:00:00.000Z').toISOString(),
+        nstp: 2,
+        tsmult: 1,
+        steady: false
+    }));
+    return stressperiods;
 };
 
 test('It can instantiate FlopyModflowMfChd', () => {
-    const model = new FlopyModflow();
     const spData = {0: [1, 2, 4, 4, 5], 1: [1, 2, 4, 4, 5], 2: [1, 2, 4, 4, 5]};
-    const mfChd = FlopyModflowMfchd.create(model, {stress_period_data: spData});
+    const mfChd = FlopyModflowMfchd.fromObject({stress_period_data: spData});
     expect(mfChd).toBeInstanceOf(FlopyModflowMfchd);
     expect(mfChd.stress_period_data).toEqual(spData);
-    expect(model.getPackage('chd')).toBeInstanceOf(FlopyModflowMfchd);
-    expect(model.getPackage('chd').toObject()).toEqual(mfChd.toObject());
 });
 
 test('It can calculate spData of chd-boundaries', () => {
-    const spData = FlopyModflowMfchd.calculateSpData([createConstantHeadBoundary()], 2);
-    expect(spData).toEqual({
+    const mfChd = FlopyModflowMfchd.create(createBoundaries(), createStressPeriods()) as FlopyModflowMfchd;
+    expect(mfChd).toBeInstanceOf(FlopyModflowMfchd);
+    expect(mfChd.stress_period_data).toEqual({
             0: [
                 [0, 4, 0, 10, 20], [0, 4, 1, 10, 20], [0, 4, 2, 12.049, 22.049], [0, 3, 2, 13.022, 23.022],
                 [0, 3, 3, 15.009, 25.009], [0, 3, 4, 17.017, 27.017], [0, 2, 4, 18.003, 28.003], [0, 2, 5, 20, 30],

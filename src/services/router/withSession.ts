@@ -3,8 +3,6 @@ import {connect} from 'react-redux';
 
 const mapStateToProps = (state: any) => ({ session: state.session });
 
-const withSession = (component: ComponentType) => {
-    return connect(mapStateToProps)(component);
-};
+const withSession = (component: ComponentType) => connect(mapStateToProps)(component);
 
 export default withSession;

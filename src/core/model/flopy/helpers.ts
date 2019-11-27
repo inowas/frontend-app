@@ -164,10 +164,7 @@ export const calculatePointBoundarySpData = (boundaries: PointBoundary[], nper: 
         return null;
     }
 
-    const spData: number[][][] = [];
-    for (let per = 0; per < nper; per++) {
-        spData[per] = [];
-    }
+    const spData: number[][][] = new Array(nper).fill([]);
 
     spData.forEach((sp, idx) => {
         boundaries.forEach((b) => {
@@ -180,11 +177,11 @@ export const calculatePointBoundarySpData = (boundaries: PointBoundary[], nper: 
                 if (spd[0] === data[0] && spd[1] === data[1] && spd[2] === data[2]) {
                     push = false;
 
-                    for (let propIdx = 0; propIdx < spd.length; propIdx++) {
+                    for (let propIdx = 3; propIdx < spd.length; propIdx++) {
                         if (add) {
-                            spd[3 + propIdx] += data[3 + propIdx];
+                            spd[propIdx] += data[propIdx];
                         } else {
-                            spd[3 + propIdx] = data[3 + propIdx];
+                            spd[propIdx] = data[propIdx];
                         }
                     }
                 }

@@ -1,11 +1,12 @@
 import {Point} from 'geojson';
 import Uuid from 'uuid';
-
-import {FlopyModflowMfwel} from '../../../../../../core/model/flopy/packages/mf';
-import FlopyModflow from '../../../../../../core/model/flopy/packages/mf/FlopyModflow';
-import {Cells, Geometry} from '../../../../../../core/model/geometry';
-import {BoundaryCollection, Stressperiod, Stressperiods} from '../../../../../../core/model/modflow';
-import {WellBoundary} from '../../../../../../core/model/modflow/boundaries';
+import FlopyModflowMfwel from '../../../../../../core/model/flopy/packages/mf/FlopyModflowMfwel';
+import Cells from '../../../../../../core/model/geometry/Cells';
+import Geometry from '../../../../../../core/model/geometry/Geometry';
+import BoundaryCollection from '../../../../../../core/model/modflow/boundaries/BoundaryCollection';
+import WellBoundary from '../../../../../../core/model/modflow/boundaries/WellBoundary';
+import Stressperiod from '../../../../../../core/model/modflow/Stressperiod';
+import Stressperiods from '../../../../../../core/model/modflow/Stressperiods';
 
 const createStressperiods = () => {
     const stressperiods = Stressperiods.fromDefaults();
@@ -24,16 +25,6 @@ const createStressperiods = () => {
     return stressperiods;
 };
 
-test('It can instantiate FlopyModflowMfwel', () => {
-    const model = new FlopyModflow();
-    const spData = {0: [[1, 2, 1, 5000]], 1: [[1, 2, 1, 4000]], 2: [[1, 2, 1, 0]]};
-    const mfWel = FlopyModflowMfwel.create({stress_period_data: spData});
-    expect(mfWel).toBeInstanceOf(FlopyModflowMfwel);
-    expect(mfWel.stress_period_data).toEqual(spData);
-    expect(model.getPackage('wel')).toBeInstanceOf(FlopyModflowMfwel);
-    expect(model.getPackage('wel').toObject()).toEqual(mfWel.toObject());
-});
-
 test('It can calculate spData with one well', () => {
     const id = Uuid.v4();
     const name = 'NameOfWell';
@@ -46,12 +37,12 @@ test('It can calculate spData with one well', () => {
         id, geometry.toObject() as Point, name, layers, cells.toObject(), spValues
     ).toObject();
 
-    const spData = FlopyModflowMfwel.calculateSpData(
+    const mfWel = FlopyModflowMfwel.create(
         BoundaryCollection.fromObject([wellBoundary]),
-        createStressperiods().count
-    );
+        createStressperiods()
+    ) as FlopyModflowMfwel;
 
-    expect(spData).toEqual({
+    expect(mfWel.stress_period_data).toEqual({
         0: [[1, 2, 1, 5000]],
         1: [[1, 2, 1, 4000]],
         2: [[1, 2, 1, 0]],
@@ -82,8 +73,9 @@ test('It can calculate spData with two wells at the same cell', () => {
     );
 
     const bc = BoundaryCollection.fromObject([wellBoundary1.toObject(), wellBoundary2.toObject()]);
-    const spData = FlopyModflowMfwel.calculateSpData(bc, createStressperiods().count);
-    expect(spData).toEqual({
+    const mfWel = FlopyModflowMfwel.create(bc, createStressperiods()) as FlopyModflowMfwel;
+
+    expect(mfWel.stress_period_data).toEqual({
         0: [[1, 2, 1, 10000]],
         1: [[1, 2, 1, 8000]],
         2: [[1, 2, 1, 0]],
@@ -114,8 +106,10 @@ test('It can calculate spData with two wells at the different cells', () => {
     );
 
     const bc = BoundaryCollection.fromObject([wellBoundary1.toObject(), wellBoundary2.toObject()]);
-    const spData = FlopyModflowMfwel.calculateSpData(bc, createStressperiods().count);
-    expect(spData).toEqual({
+
+    const mfWel = FlopyModflowMfwel.create(bc, createStressperiods()) as FlopyModflowMfwel;
+
+    expect(mfWel.stress_period_data).toEqual({
         0: [[1, 2, 1, 5000], [1, 3, 1, 5000]],
         1: [[1, 2, 1, 4000], [1, 3, 1, 4000]],
         2: [[1, 2, 1, 0], [1, 3, 1, 0]],
