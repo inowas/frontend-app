@@ -1,20 +1,20 @@
-import ASTR from '../images/ASTR.png';
 import ASR from '../images/ASR.png';
-import IDF from '../images/dune_filtration.png';
-import SAT from '../images/soil_aquifer_treatment.png';
-import Rooftop from '../images/rooftop_rainwater_harvesting.png';
-import IBF from '../images/river_bank_filtration.png';
-import RD from '../images/recharge_dam.png';
-import SSDam from '../images/subsurface_dam.png';
-import Ponds from '../images/infiltration_ponds.png';
-import Sanddam from '../images/sand_dam.png';
+import ASTR from '../images/ASTR.png';
 import Bounds from '../images/barriers-and_bunds.png';
-import EI from '../images/excess_irrigation.png';
-import Ditches from '../images/ditches_and_furrows.png';
-import Trenches from '../images/trenches.png';
-import WSB from '../images/shallow_well_injection.png';
 import CS from '../images/channel_spreading.png';
+import Ditches from '../images/ditches_and_furrows.png';
+import IDF from '../images/dune_filtration.png';
+import EI from '../images/excess_irrigation.png';
 import Flooding from '../images/flooding.png';
+import Ponds from '../images/infiltration_ponds.png';
+import RD from '../images/recharge_dam.png';
+import IBF from '../images/river_bank_filtration.png';
+import Rooftop from '../images/rooftop_rainwater_harvesting.png';
+import Sanddam from '../images/sand_dam.png';
+import WSB from '../images/shallow_well_injection.png';
+import SAT from '../images/soil_aquifer_treatment.png';
+import SSDam from '../images/subsurface_dam.png';
+import Trenches from '../images/trenches.png';
 
 export const getData = () => {
     return {
