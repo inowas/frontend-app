@@ -210,17 +210,21 @@ const t03 = (props: IProps) => {
                                     message: `Start fetching soilmodel...`,
                                     fetching: true
                                 });
-                                return fetchSoilmodel(
-                                    result,
-                                    (r) => setSoilmodelFetcher(r),
-                                    (r) => {
-                                        setSoilmodelFetcher({
-                                            message: 'Finished fetching soilmodel.',
-                                            fetching: false
-                                        });
-                                        return props.updateSoilmodel(Soilmodel.fromObject(r));
-                                    }
-                                );
+
+                                const sm = Soilmodel.fromObject(result);
+                                if (sm.checkVersion()) {
+                                    return fetchSoilmodel(
+                                        result,
+                                        (r) => setSoilmodelFetcher(r),
+                                        (r) => {
+                                            setSoilmodelFetcher({
+                                                message: 'Finished fetching soilmodel.',
+                                                fetching: false
+                                            });
+                                            return props.updateSoilmodel(Soilmodel.fromObject(r));
+                                        }
+                                    );
+                                }
                             }
 
                             return props.updateSoilmodel(Soilmodel.fromObject(result));
@@ -254,7 +258,7 @@ const t03 = (props: IProps) => {
 
     const calculatePackagesFunction = () => {
         return new Promise((resolve, reject) => {
-            if (!props.model || !props.soilmodel || !props.boundaries) {
+            if (!props.model || !props.soilmodel || !props.soilmodel.checkVersion() || !props.boundaries) {
                 return;
             }
 
@@ -361,8 +365,18 @@ const t03 = (props: IProps) => {
         }
     };
 
-    if (soilmodelFetcher.fetching || !props.model || !props.boundaries || !props.soilmodel || !props.transport ||
-        !props.variableDensity
+    if (props.soilmodel && !props.soilmodel.checkVersion()) {
+        return (
+            <AppContainer navbarItems={navigation}>
+                <Message error={true}>
+                    The model you requested is not compatible with the current version. Just delete it!
+                </Message>
+            </AppContainer>
+        );
+    }
+
+    if (soilmodelFetcher.fetching || !props.model || !props.boundaries || !props.soilmodel ||
+        !props.soilmodel.checkVersion() || !props.transport || !props.variableDensity
     ) {
         return (
             <AppContainer navbarItems={navigation}>

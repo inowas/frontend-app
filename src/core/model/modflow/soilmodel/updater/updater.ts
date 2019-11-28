@@ -18,7 +18,7 @@ const updater = (
     model: ModflowModel,
     onEachTask: (result: { message: string, task: number }) => any,
     onUpdateSuccess: (soilmodel: ISoilmodel, needToBeFetched: boolean) => any
-): ISoilmodel => {
+): ISoilmodel | void => {
     const result = updateSoilmodel(soilmodel, model);
 
     if (result.isDirty && !model.readOnly) {
@@ -27,6 +27,7 @@ const updater = (
             result.soilmodel,
             onEachTask,
             onUpdateSuccess,
+            true,
             true
         );
     }

@@ -6,32 +6,6 @@ import {Soilmodel} from '../index';
 import {ISoilmodel} from '../Soilmodel.type';
 import {ISoilmodelLayer} from '../SoilmodelLayer.type';
 
-const addCommand = (commands: ModflowModelCommand[], model: IModflowModel, layer: ISoilmodelLayer) => {
-    commands.push(
-        ModflowModelCommand.updateLayer({
-            id: model.id,
-            layer: {
-                ...layer,
-                parameters: layer.parameters.map((p) => {
-                    p.data = {
-                        file: p.data.file
-                    };
-                    p.value = Array.isArray(p.value) ? undefined : p.value;
-                    return p;
-                }),
-                relations: layer.relations.map((r) => {
-                    r.data = {
-                        file: r.data.file
-                    };
-                    r.value = Array.isArray(r.value) ? undefined : r.value;
-                    return r;
-                })
-            }
-        })
-    );
-    return commands;
-};
-
 export const saveLayer = (
     layer: ISoilmodelLayer,
     model: IModflowModel,
@@ -111,6 +85,9 @@ export const saveLayer = (
                 }
             }), () => {
                 saveLayer(layer, model, true, task, onEachTask, onFinished);
+            }, (error) => {
+                // tslint:disable-next-line:no-console
+                console.error(error);
             }
         );
         return;
@@ -126,10 +103,11 @@ export const saveSoilmodel = (
     soilmodel: ISoilmodel,
     onEachTask: ({message, task}: { message: string, task: number }) => any,
     onSuccess: (soilmodel: ISoilmodel, needToBeFetched: boolean) => any,
+    saveLayers: boolean,
     saveProperties: boolean,
     commands: ModflowModelCommand[] = [],
     task: number = 0,
-): ISoilmodel => {
+): ISoilmodel | void => {
     const cSoilmodel = Soilmodel.fromObject(soilmodel);
 
     if (saveProperties) {
@@ -137,21 +115,24 @@ export const saveSoilmodel = (
             message: `Saving soilmodel properties.`,
             task: task++
         });
-        sendCommand(
+        return sendCommand(
             ModflowModelCommand.updateSoilmodelProperties({
                 id: model.id,
                 properties: cSoilmodel.toObject().properties
             }), () => {
                 return saveSoilmodel(
-                    model, cSoilmodel.toObject(), onEachTask, onSuccess, false, commands, task
+                    model, cSoilmodel.toObject(), onEachTask, onSuccess, true, false, commands, task
                 );
+            }, (error) => {
+                // tslint:disable-next-line:no-console
+                console.error(error);
             }
         );
     }
 
     const layers = soilmodel.layers.filter((layer) =>
-        layer.parameters.filter((p) => Array.isArray(p.value)) ||
-        layer.relations.filter((r) => Array.isArray(r.value))
+        layer.parameters.filter((p) => Array.isArray(p.value)).length > 0 ||
+        layer.relations.filter((r) => Array.isArray(r.value)).length > 0
     );
 
     if (layers.length > 0) {
@@ -176,10 +157,11 @@ export const saveSoilmodel = (
                 cSoilmodel.updateLayer(cLayer);
 
                 return saveSoilmodel(
-                    model, cSoilmodel.toObject(), onEachTask, onSuccess, false,
-                    addCommand(commands, model, cLayer), task
+                    model, cSoilmodel.toObject(), onEachTask, onSuccess, true, false,
+                    commands, task
                 );
             });
+            return;
         }
 
         const relations = cLayer.relations.filter((r) => Array.isArray(r.value));
@@ -202,20 +184,54 @@ export const saveSoilmodel = (
                 cSoilmodel.updateLayer(cLayer);
 
                 return saveSoilmodel(
-                    model, cSoilmodel.toObject(), onEachTask,  onSuccess, false,
-                    addCommand(commands, model, cLayer), task
+                    model, cSoilmodel.toObject(), onEachTask, onSuccess, true, false,
+                    commands, task
                 );
             });
+            return;
         }
+    }
+
+    if (saveLayers) {
+        cSoilmodel.layersCollection.all.forEach((uLayer) => {
+            commands.push(
+                ModflowModelCommand.updateLayer(
+                    {
+                        id: model.id,
+                        layer: {
+                            ...uLayer,
+                            parameters: uLayer.parameters.map((p) => {
+                                p.data = {
+                                    file: p.data.file
+                                };
+                                p.value = Array.isArray(p.value) ? undefined : p.value;
+                                return p;
+                            }),
+                            relations: uLayer.relations.map((r) => {
+                                r.data = {
+                                    file: r.data.file
+                                };
+                                r.value = Array.isArray(r.value) ? undefined : r.value;
+                                return r;
+                            })
+                        }
+                    }
+                )
+            );
+        });
     }
 
     const command = commands.shift();
     if (command) {
-        sendCommand(command);
-        return saveSoilmodel(model, cSoilmodel.toObject(), onEachTask, onSuccess, false, commands, task);
+        return sendCommand(command, () => {
+            return saveSoilmodel(model, cSoilmodel.toObject(), onEachTask, onSuccess, false, false, commands, task);
+        }, (error) => {
+            // tslint:disable-next-line:no-console
+            console.error(error);
+        });
     }
 
-    return onSuccess(cSoilmodel.toObject(), false);
+    return onSuccess(cSoilmodel.toObject(), true);
 };
 
 export const fetchSoilmodel = (
