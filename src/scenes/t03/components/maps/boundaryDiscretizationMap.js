@@ -170,7 +170,7 @@ class BoundaryDiscretizationMap extends React.Component {
             <ActiveCellsLayer
                 boundingBox={boundingBox}
                 gridSize={gridSize}
-                cells={Cells.fromObject(this.props.boundary.cells)}
+                cells={Cells.fromObject(this.props.boundary.cells.cells)}
                 styles={getStyle('active_cells')}
             />
         )
@@ -186,7 +186,7 @@ class BoundaryDiscretizationMap extends React.Component {
         }
 
         const boundary = this.props.boundary;
-        const cells = Cells.fromArray(boundary.cells);
+        const cells = Cells.fromObject(boundary.cells.cells);
         const boundingBox = this.props.model.boundingBox;
         const gridSize = this.props.model.gridSize;
         const x = latlng.lng;
@@ -198,7 +198,7 @@ class BoundaryDiscretizationMap extends React.Component {
             cells.calculateValues(this.props.boundary, boundingBox, gridSize);
         }
 
-        boundary.cells = cells.toObject();
+        boundary.cells = Cells.fromObject(cells.toObject());
         this.props.onChange(boundary);
     };
 
