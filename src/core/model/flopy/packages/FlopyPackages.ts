@@ -1,5 +1,8 @@
 import md5 from 'md5';
 import {validate as jsonSchemaValidate} from '../../../../services/jsonSchemaValidator';
+import {ModflowModel} from '../../modflow';
+import BoundaryCollection from '../../modflow/boundaries/BoundaryCollection';
+import Soilmodel from '../../modflow/soilmodel/Soilmodel';
 import {IPropertyValueObject} from '../../types';
 import {IFlopyCalculation, IFlopyPackages} from './FlopyPackages.type';
 import FlopyModflow from './mf/FlopyModflow';
@@ -147,6 +150,12 @@ export default class FlopyPackages {
     private _mt: FlopyMt3d | null = null;
     private _swt: FlopySeawat | null = null;
 
+    public update = (model: ModflowModel, soilmodel: Soilmodel, boundaries: BoundaryCollection) => {
+        this._mf = this.mf.recalculate(model, soilmodel, boundaries);
+
+
+    };
+
     public getData = () => {
         const data: any = {};
 
@@ -180,7 +189,7 @@ export default class FlopyPackages {
             mt: this.mt ? this.mt.toObject() : null,
             swt: this.swt ? this.swt.toObject() : null
         };
-    };
+    }
 
     public toFlopyCalculation(): IFlopyCalculation {
         return {

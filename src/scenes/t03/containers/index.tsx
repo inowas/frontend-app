@@ -6,4 +6,4 @@ export {
     CreateModel,
     CreateOptimizationObject,
     EditModel
-}
+};
