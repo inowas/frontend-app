@@ -14,7 +14,7 @@ const styles = {
 
 class RunModelOverviewMap extends Component {
     render() {
-        const {activeCells, boundingBox, geometry, gridSize} = this.props.model;
+        const {cells, boundingBox, geometry, gridSize} = this.props.model;
 
         return (
             <Map
@@ -39,7 +39,7 @@ class RunModelOverviewMap extends Component {
                 <ActiveCellsLayer
                     boundingBox={boundingBox}
                     gridSize={gridSize}
-                    activeCells={activeCells}
+                    cells={cells}
                     styles={getStyle('active_cells')}
                 />
             </Map>

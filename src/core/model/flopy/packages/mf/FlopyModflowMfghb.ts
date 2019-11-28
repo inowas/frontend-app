@@ -33,7 +33,6 @@ kper:
 export interface IFlopyModflowMfghb {
     ipakcb: number;
     stress_period_data: IStressPeriodData<[[number, number, number, number, number]]> | null;
-    dtype: null;
     no_print: boolean;
     options: null;
     extension: string;
@@ -44,10 +43,9 @@ export interface IFlopyModflowMfghb {
 export const defaults: IFlopyModflowMfghb = {
     ipakcb: 0,
     stress_period_data: null,
-    dtype: null,
     no_print: false,
     options: null,
-    extension: 'chd',
+    extension: 'ghb',
     unitnumber: null,
     filenames: null
 };
@@ -99,14 +97,6 @@ export default class FlopyModflowMfghb extends FlopyModflowLineBoundary<IFlopyMo
 
     set stress_period_data(value) {
         this._props.stress_period_data = value;
-    }
-
-    get dtype() {
-        return this._props.dtype;
-    }
-
-    set dtype(value) {
-        this._props.dtype = value;
     }
 
     get no_print() {
