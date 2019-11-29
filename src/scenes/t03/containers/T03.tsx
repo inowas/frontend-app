@@ -40,7 +40,6 @@ import ModflowModelCommand from '../commands/modflowModelCommand';
 import boundaries from '../components/content/boundaries/boundaries';
 import CalculationProgressBar from '../components/content/calculation/calculationProgressBar';
 import * as Content from '../components/content/index';
-import {PackagesWrapper} from '../components/content/modflow';
 import optimization from '../components/content/optimization/optimization';
 import OptimizationProgressBar from '../components/content/optimization/optimizationProgressBar';
 import Navigation from './navigation';
@@ -330,37 +329,27 @@ const t03 = (props: IProps) => {
             return (<Content.Observations/>);
         }
 
-        if (['modflow', 'mt3d', 'seawat', 'calculation'].indexOf(property) > 0) {
-            if (property === 'flow') {
-                return (<Content.FlowResults/>);
-            }
-            if (property === 'budget') {
-                return (<Content.BudgetResults/>);
-            }
-            if (property === 'modpath') {
-                return (<Content.Modpath/>);
-            }
-            if (property === 'concentration') {
-                return (<Content.TransportResults/>);
-            }
-            if (property === 'optimization') {
-                return (<Content.Optimization/>);
-            }
-            const path = props.match.path;
-            const basePath = path.split(':')[0];
-            return (
-                <Redirect to={basePath + id + '/discretization' + props.location.search}/>
-            );
-        } else {
-            return (
-                <PackagesWrapper renderChildren={true}>
-                    {property === 'modflow' && <Content.Modflow/>}
-                    {property === 'mt3d' && <Content.Mt3d/>}
-                    {property === 'seawat' && <Content.Seawat readOnly={readOnly}/>}
-                    {property === 'calculation' && <Content.Calculation/>}
-                </PackagesWrapper>
-            );
+        if (property === 'flow') {
+            return (<Content.FlowResults/>);
         }
+        if (property === 'budget') {
+            return (<Content.BudgetResults/>);
+        }
+        if (property === 'modpath') {
+            return (<Content.Modpath/>);
+        }
+        if (property === 'concentration') {
+            return (<Content.TransportResults/>);
+        }
+        if (property === 'optimization') {
+            return (<Content.Optimization/>);
+        }
+
+        const path = props.match.path;
+        const basePath = path.split(':')[0];
+        return (
+            <Redirect to={basePath + id + '/discretization' + props.location.search}/>
+        );
     };
 
     const saveMetaData = (tool: IToolMetaData) => {

@@ -34,6 +34,6 @@ export interface IT03Reducer {
     optimization: any;
     packages: IFlopyPackages;
     soilmodel: ISoilmodel;
-    transport: ITransport;
+    transport: ITransport | undefined;
     variableDensity: IVariableDensity;
 }
