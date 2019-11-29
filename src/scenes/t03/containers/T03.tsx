@@ -75,382 +75,399 @@ interface IStateProps {
 type IProps = IStateProps & IDispatchProps & RouteComponentProps<any>;
 
 const t03 = (props: IProps) => {
-    const [isLoading, setIsLoading] = useState<boolean>(false);
-    const [calculatePackages, setCalculatePackages] = useState<boolean | string>(false);
-    const [navigation, setNavigation] = useState<Array<{
-        name: string;
-        path: string;
-        icon: ReactNode
-    }>>(navDocumentation);
-    const [soilmodelFetcher, setSoilmodelFetcher] = useState<{
-        message: string;
-        fetching: boolean;
-    }>({
-        message: 'Start Fetching Soilmodel ...',
-        fetching: false
-    });
+        const [isLoading, setIsLoading] = useState<boolean>(false);
+        const [calculatePackages, setCalculatePackages] = useState<boolean | string>(false);
+        const [navigation, setNavigation] = useState<Array<{
+            name: string;
+            path: string;
+            icon: ReactNode
+        }>>(navDocumentation);
+        const [soilmodelFetcher, setSoilmodelFetcher] = useState<{
+            message: string;
+            fetching: boolean;
+        }>({
+            message: 'Start Fetching Soilmodel ...',
+            fetching: false
+        });
 
-    useEffect(() => {
-        const {search} = props.location;
+        useEffect(() => {
+            const {search} = props.location;
 
-        if (search.startsWith('?sid=')) {
-            const cScenarioAnalysisId = search.split('=')[1];
+            if (search.startsWith('?sid=')) {
+                const cScenarioAnalysisId = search.split('=')[1];
 
-            const cNavigation = cloneDeep(navigation);
-            cNavigation.push({
-                name: 'Return to ScenarioAnalysis',
-                path: '/tools/T07/' + cScenarioAnalysisId,
-                icon: <Icon name="file"/>
-            });
+                const cNavigation = cloneDeep(navigation);
+                cNavigation.push({
+                    name: 'Return to ScenarioAnalysis',
+                    path: '/tools/T07/' + cScenarioAnalysisId,
+                    icon: <Icon name="file"/>
+                });
 
-            setNavigation(cNavigation);
-        }
-
-        setIsLoading(true);
-        return fetchModel(props.match.params.id);
-    }, []);
-
-    useEffect(() => {
-        if (!props.model || props.model.id !== props.match.params.id) {
-            if (!isLoading) {
-                setIsLoading(true);
-                return fetchModel(props.match.params.id);
+                setNavigation(cNavigation);
             }
-        }
-    }, [props.match.params]);
 
-    useEffect(() => {
-        if (props.model && !props.soilmodel && !soilmodelFetcher.fetching) {
-            setSoilmodelFetcher({
-                message: `Start fetching soilmodel.`,
-                fetching: true
-            });
-            fetchAndUpdateSoilmodel(props.model.id);
-        }
-    }, [props.model]);
+            setIsLoading(true);
+            return fetchModel(props.match.params.id);
+        }, []);
 
-    const fetchModel = (id: string) => {
-        if (props.model && props.model.id !== id) {
-            props.clear();
-        }
-        fetchUrl(
-            `modflowmodels/${id}`,
-            (data) => {
-                const modflowModel = ModflowModel.fromQuery(data);
-                props.updateModel(modflowModel);
-                setIsLoading(false);
-                fetchBoundaries(id);
-                fetchPackages(id);
-                fetchTransport(id);
-                fetchVariableDensity(id);
-
-                if (modflowModel.calculationId) {
-                    fetchCalculationDetails(modflowModel.calculationId,
-                        (cData) => props.updateCalculation(Calculation.fromQuery(cData)),
-                        // tslint:disable-next-line:no-console
-                        (cError) => console.log(cError)
-                    );
+        useEffect(() => {
+            if (!props.model || props.model.id !== props.match.params.id) {
+                if (!isLoading) {
+                    setIsLoading(true);
+                    return fetchModel(props.match.params.id);
                 }
-            },
-            (cError) => {
-                setIsLoading(false);
-                return handleError(cError);
-            });
-    };
+            }
+        }, [props.match.params]);
 
-    const fetchBoundaries = (id: string) => {
-        fetchUrl(`modflowmodels/${id}/boundaries`,
-            (data) => props.updateBoundaries(BoundaryCollection.fromQuery(data)),
-            (cError) => {
-                setIsLoading(false);
-                return handleError(cError);
-            });
-    };
+        useEffect(() => {
+            if (props.model && !props.soilmodel && !soilmodelFetcher.fetching) {
+                setSoilmodelFetcher({
+                    message: `Start fetching soilmodel.`,
+                    fetching: true
+                });
+                fetchAndUpdateSoilmodel(props.model.id);
+            }
+        }, [props.model]);
 
-    const fetchPackages = (id: string) => {
-        fetchUrl(`modflowmodels/${id}/packages`,
-            (data) => {
-                if (Array.isArray(data) && data.length === 0) {
-                    return setCalculatePackages(true);
-                }
-                const packages = FlopyPackages.fromQuery(data);
-                if (packages) {
-                    return props.updatePackages(packages);
-                }
-            },
-            (cError) => {
-                setIsLoading(false);
-                return handleError(cError);
-            });
-    };
+        const fetchModel = (id: string) => {
+            if (props.model && props.model.id !== id) {
+                props.clear();
+            }
+            fetchUrl(
+                `modflowmodels/${id}`,
+                (data) => {
+                    const modflowModel = ModflowModel.fromQuery(data);
+                    props.updateModel(modflowModel);
+                    setIsLoading(false);
+                    fetchBoundaries(id);
+                    fetchPackages(id);
+                    fetchTransport(id);
+                    fetchVariableDensity(id);
 
-    const fetchAndUpdateSoilmodel = (id: string) => {
-        fetchUrl(`modflowmodels/${id}/soilmodel`,
-            (data) => {
-                if (props.model) {
-                    setSoilmodelFetcher({
-                        message: 'Start updating soilmodel.',
-                        fetching: true
-                    });
-                    updater(
-                        data,
-                        props.model,
-                        (result) => setSoilmodelFetcher({
-                            message: result.message,
+                    if (modflowModel.calculationId) {
+                        fetchCalculationDetails(modflowModel.calculationId,
+                            (cData) => props.updateCalculation(Calculation.fromQuery(cData)),
+                            // tslint:disable-next-line:no-console
+                            (cError) => console.log(cError)
+                        );
+                    }
+                },
+                (cError) => {
+                    setIsLoading(false);
+                    return handleError(cError);
+                });
+        };
+
+        const fetchBoundaries = (id: string) => {
+            fetchUrl(`modflowmodels/${id}/boundaries`,
+                (data) => props.updateBoundaries(BoundaryCollection.fromQuery(data)),
+                (cError) => {
+                    setIsLoading(false);
+                    return handleError(cError);
+                });
+        };
+
+        const fetchPackages = (id: string) => {
+            fetchUrl(`modflowmodels/${id}/packages`,
+                (data) => {
+                    if (Array.isArray(data) && data.length === 0) {
+                        return setCalculatePackages(true);
+                    }
+                    const packages = FlopyPackages.fromQuery(data);
+                    if (packages) {
+                        return props.updatePackages(packages);
+                    }
+                },
+                (cError) => {
+                    setIsLoading(false);
+                    return handleError(cError);
+                });
+        };
+
+        const fetchAndUpdateSoilmodel = (id: string) => {
+            fetchUrl(`modflowmodels/${id}/soilmodel`,
+                (data) => {
+                    if (props.model) {
+                        setSoilmodelFetcher({
+                            message: 'Start updating soilmodel.',
                             fetching: true
-                        }),
-                        (result, needsToBeFetched) => {
-                            setSoilmodelFetcher({
-                                message: 'Finished updating soilmodel.',
-                                fetching: false
-                            });
-
-                            if (needsToBeFetched) {
+                        });
+                        updater(
+                            data,
+                            props.model,
+                            (result) => setSoilmodelFetcher({
+                                message: result.message,
+                                fetching: true
+                            }),
+                            (result, needsToBeFetched) => {
                                 setSoilmodelFetcher({
-                                    message: `Start fetching soilmodel...`,
-                                    fetching: true
+                                    message: 'Finished updating soilmodel.',
+                                    fetching: false
                                 });
 
-                                const sm = Soilmodel.fromObject(result);
-                                if (sm.checkVersion()) {
-                                    return fetchSoilmodel(
-                                        result,
-                                        (r) => setSoilmodelFetcher(r),
-                                        (r) => {
-                                            setSoilmodelFetcher({
-                                                message: 'Finished fetching soilmodel.',
-                                                fetching: false
-                                            });
-                                            return props.updateSoilmodel(Soilmodel.fromObject(r));
-                                        }
-                                    );
+                                if (needsToBeFetched) {
+                                    setSoilmodelFetcher({
+                                        message: `Start fetching soilmodel...`,
+                                        fetching: true
+                                    });
+
+                                    const sm = Soilmodel.fromObject(result);
+                                    if (sm.checkVersion()) {
+                                        return fetchSoilmodel(
+                                            result,
+                                            (r) => setSoilmodelFetcher(r),
+                                            (r) => {
+                                                setSoilmodelFetcher({
+                                                    message: 'Finished fetching soilmodel.',
+                                                    fetching: false
+                                                });
+                                                return props.updateSoilmodel(Soilmodel.fromObject(r));
+                                            }
+                                        );
+                                    }
                                 }
+
+                                return props.updateSoilmodel(Soilmodel.fromObject(result));
                             }
+                        );
+                    }
+                },
+                (cError) => {
+                    setIsLoading(false);
+                    return handleError(cError);
+                });
+        };
 
-                            return props.updateSoilmodel(Soilmodel.fromObject(result));
-                        }
-                    );
-                }
-            },
-            (cError) => {
-                setIsLoading(false);
-                return handleError(cError);
-            });
-    };
+        const fetchTransport = (id: string) => {
+            fetchUrl(`modflowmodels/${id}/transport`,
+                (data) => props.updateTransport(Transport.fromQuery(data)),
+                (cError) => {
+                    setIsLoading(false);
+                    return handleError(cError);
+                });
+        };
 
-    const fetchTransport = (id: string) => {
-        fetchUrl(`modflowmodels/${id}/transport`,
-            (data) => props.updateTransport(Transport.fromQuery(data)),
-            (cError) => {
-                setIsLoading(false);
-                return handleError(cError);
-            });
-    };
+        const fetchVariableDensity = (id: string) => {
+            fetchUrl(`modflowmodels/${id}/variableDensity`,
+                (data) => props.updateVariableDensity(VariableDensity.fromQuery(data)),
+                (cError) => {
+                    setIsLoading(false);
+                    return handleError(cError);
+                });
+        };
 
-    const fetchVariableDensity = (id: string) => {
-        fetchUrl(`modflowmodels/${id}/variableDensity`,
-            (data) => props.updateVariableDensity(VariableDensity.fromQuery(data)),
-            (cError) => {
-                setIsLoading(false);
-                return handleError(cError);
-            });
-    };
-
-    const calculatePackagesFunction = () => {
-        return new Promise((resolve, reject) => {
-            if (!props.model || !props.soilmodel || !props.soilmodel.checkVersion() || !props.boundaries) {
-                return;
-            }
-
-            setCalculatePackages('calculation');
-            const mf = FlopyModflow.create(props.model, props.soilmodel, props.boundaries);
-            const modpath = new FlopyModpath();
-            const mt = FlopyMt3d.createFromTransport(props.transport, props.boundaries);
-            const swt = FlopySeawat.createFromVariableDensity(props.variableDensity);
-            if (props.model) {
-                const modelId = props.model.id;
-
-                const flopyPackages = FlopyPackages.create(modelId, mf, modpath, mt, swt);
-                if (flopyPackages instanceof FlopyPackages) {
-                    setCalculatePackages(false);
-                    resolve(flopyPackages);
+        const calculatePackagesFunction = () => {
+            return new Promise((resolve, reject) => {
+                if (!props.model || !props.soilmodel || !props.soilmodel.checkVersion() || !props.boundaries) {
+                    return;
                 }
 
-                setCalculatePackages('error');
-                reject('Error creating instance of FlopyPackages.');
+                setCalculatePackages('calculation');
+                const mf = FlopyModflow.create(props.model, props.soilmodel, props.boundaries);
+                const modpath = new FlopyModpath();
+                const mt = FlopyMt3d.createFromTransport(props.transport, props.boundaries);
+                const swt = FlopySeawat.createFromVariableDensity(props.variableDensity);
+                if (props.model) {
+                    const modelId = props.model.id;
+
+                    const flopyPackages = FlopyPackages.create(modelId, mf, modpath, mt, swt);
+                    if (flopyPackages instanceof FlopyPackages) {
+                        setCalculatePackages(false);
+                        resolve(flopyPackages);
+                    }
+
+                    setCalculatePackages('error');
+                    reject('Error creating instance of FlopyPackages.');
+                }
+            });
+        };
+
+        const handleChangeToolMetaData = () => {
+            return null;
+        };
+
+        const handleError = (dError: any) => {
+            // tslint:disable-next-line:no-console
+            console.log(dError);
+            const {response} = dError;
+            const {status} = response;
+            if (status === 422) {
+                props.history.push('/tools');
             }
-        });
-    };
+        };
 
-    const handleChangeToolMetaData = () => {
-        return null;
-    };
+        const renderContent = (id: string, property: string, type: BoundaryType) => {
+            const readOnly = props.model ? props.model.readOnly : false;
 
-    const handleError = (dError: any) => {
-        // tslint:disable-next-line:no-console
-        console.log(dError);
-        const {response} = dError;
-        const {status} = response;
-        if (status === 422) {
-            props.history.push('/tools');
-        }
-    };
-
-    const renderContent = (id: string, property: string, type: BoundaryType) => {
-        const readOnly = props.model ? props.model.readOnly : false;
-
-        if (property === 'discretization') {
-            return (<Content.Discretization/>);
-        }
-
-        if (property === 'soilmodel') {
-            return (<Content.SoilmodelEditor fetchSoilmodel={fetchAndUpdateSoilmodel} readOnly={readOnly}/>);
-        }
-
-        if (property === 'boundaries') {
-            if (BoundaryFactory.availableTypes.indexOf(type) > -1) {
-                return (<Content.CreateBoundary readOnly={readOnly} type={type}/>);
+            if (property === 'discretization') {
+                return (<Content.Discretization/>);
             }
-            return (<Content.Boundaries types={['chd', 'drn', 'evt', 'ghb', 'rch', 'riv', 'wel']}/>);
-        }
 
-        if (property === 'head_observations') {
-            if (type === 'hob') {
-                return (<Content.CreateBoundary readOnly={readOnly} type="hob"/>);
+            if (property === 'soilmodel') {
+                return (<Content.SoilmodelEditor fetchSoilmodel={fetchAndUpdateSoilmodel} readOnly={readOnly}/>);
             }
-            return (<Content.Boundaries types={['hob']}/>);
-        }
 
-        if (property === 'transport') {
-            return (<Content.Transport/>);
-        }
+            if (property === 'boundaries') {
+                if (BoundaryFactory.availableTypes.indexOf(type) > -1) {
+                    return (<Content.CreateBoundary readOnly={readOnly} type={type}/>);
+                }
+                return (<Content.Boundaries types={['chd', 'drn', 'evt', 'ghb', 'rch', 'riv', 'wel']}/>);
+            }
 
-        if (property === 'variable_density') {
-            return (<Content.VariableDensityProperties readOnly={readOnly}/>);
-        }
+            if (property === 'head_observations') {
+                if (type === 'hob') {
+                    return (<Content.CreateBoundary readOnly={readOnly} type="hob"/>);
+                }
+                return (<Content.Boundaries types={['hob']}/>);
+            }
 
-        if (property === 'observations') {
-            return (<Content.Observations/>);
-        }
+            if (property === 'transport') {
+                return (<Content.Transport/>);
+            }
 
-        if (property === 'flow') {
-            return (<Content.FlowResults/>);
-        }
-        if (property === 'budget') {
-            return (<Content.BudgetResults/>);
-        }
-        if (property === 'modpath') {
-            return (<Content.Modpath/>);
-        }
-        if (property === 'concentration') {
-            return (<Content.TransportResults/>);
-        }
-        if (property === 'optimization') {
-            return (<Content.Optimization/>);
-        }
+            if (property === 'variable_density') {
+                return (<Content.VariableDensityProperties readOnly={readOnly}/>);
+            }
 
-        const path = props.match.path;
-        const basePath = path.split(':')[0];
-        return (
-            <Redirect to={basePath + id + '/discretization' + props.location.search}/>
-        );
-    };
+            if (property === 'observations') {
+                return (<Content.Observations/>);
+            }
 
-    const saveMetaData = (tool: IToolMetaData) => {
-        const {name, description} = tool;
-        const isPublic = tool.public;
+            if (property === 'modflow') {
+                return (<Content.Modflow/>);
+            }
 
-        if (props.model) {
-            const cModel = props.model;
-            cModel.name = name;
-            cModel.description = description;
-            cModel.isPublic = isPublic;
+            if (property === 'mt3d') {
+                return (<Content.Mt3d/>);
+            }
 
-            return sendCommand(
-                ModflowModelCommand.updateModflowModelMetadata(cModel.id, name, description, isPublic),
-                () => props.updateModel(cModel),
-                // tslint:disable-next-line:no-console
-                (e) => console.log(e)
+            if (property === 'seawat') {
+                return (<Content.Seawat readOnly={readOnly}/>);
+            }
+
+            if (property === 'calculation') {
+                return (<Content.Calculation/>);
+            }
+
+            if (property === 'flow') {
+                return (<Content.FlowResults/>);
+            }
+            if (property === 'budget') {
+                return (<Content.BudgetResults/>);
+            }
+            if (property === 'modpath') {
+                return (<Content.Modpath/>);
+            }
+            if (property === 'concentration') {
+                return (<Content.TransportResults/>);
+            }
+            if (property === 'optimization') {
+                return (<Content.Optimization/>);
+            }
+
+            const path = props.match.path;
+            const basePath = path.split(':')[0];
+            return (
+                <Redirect to={basePath + id + '/discretization' + props.location.search}/>
             );
-        }
-    };
+        };
 
-    if (props.soilmodel && !props.soilmodel.checkVersion()) {
-        return (
-            <AppContainer navbarItems={navigation}>
-                <Message error={true}>
-                    The model you requested is not compatible with the current version. Just delete it!
-                </Message>
-            </AppContainer>
-        );
-    }
+        const saveMetaData = (tool: IToolMetaData) => {
+            const {name, description} = tool;
+            const isPublic = tool.public;
 
-    if (soilmodelFetcher.fetching || !props.model || !props.boundaries || !props.soilmodel ||
-        !props.soilmodel.checkVersion() || !props.transport || !props.variableDensity
-    ) {
-        return (
-            <AppContainer navbarItems={navigation}>
-                <Message icon={true}>
-                    <Icon name="circle notched" loading={true}/>
-                </Message>
-            </AppContainer>
-        );
-    }
-
-    if (calculatePackages === true) {
-        calculatePackagesFunction().then((packages) => {
             if (props.model) {
-                props.updatePackages(packages as FlopyPackages);
+                const cModel = props.model;
+                cModel.name = name;
+                cModel.description = description;
+                cModel.isPublic = isPublic;
+
                 return sendCommand(
-                    ModflowModelCommand.updateFlopyPackages(props.model.id, packages),
+                    ModflowModelCommand.updateModflowModelMetadata(cModel.id, name, description, isPublic),
+                    () => props.updateModel(cModel),
                     // tslint:disable-next-line:no-console
                     (e) => console.log(e)
                 );
             }
-        });
-    }
+        };
 
-    if (!props.packages) {
+        if (props.soilmodel && !props.soilmodel.checkVersion()) {
+            return (
+                <AppContainer navbarItems={navigation}>
+                    <Message error={true}>
+                        The model you requested is not compatible with the current version. Just delete it!
+                    </Message>
+                </AppContainer>
+            );
+        }
+
+        if (soilmodelFetcher.fetching || !props.model || !props.boundaries || !props.soilmodel || !props.transport ||
+            !props.soilmodel.checkVersion() || !props.variableDensity
+        ) {
+            return (
+                <AppContainer navbarItems={navigation}>
+                    <Message icon={true}>
+                        <Icon name="circle notched" loading={true}/>
+                    </Message>
+                </AppContainer>
+            );
+        }
+
+        if (calculatePackages === true) {
+            calculatePackagesFunction().then((packages) => {
+                if (props.model) {
+                    props.updatePackages(packages as FlopyPackages);
+                    return sendCommand(
+                        ModflowModelCommand.updateFlopyPackages(props.model.id, packages),
+                        // tslint:disable-next-line:no-console
+                        (e) => console.log(e)
+                    );
+                }
+            });
+        }
+
+        if (!props.packages) {
+            return (
+                <AppContainer navbarItems={navigation}>
+                    <Message icon={true}>
+                        <Icon name="circle notched" loading={true}/>
+                    </Message>
+                </AppContainer>
+            );
+        }
+
         return (
             <AppContainer navbarItems={navigation}>
-                <Message icon={true}>
-                    <Icon name="circle notched" loading={true}/>
-                </Message>
+                <ToolMetaData
+                    isDirty={false}
+                    onChange={handleChangeToolMetaData}
+                    readOnly={false}
+                    tool={{
+                        tool: 'T03',
+                        name: props.model.name,
+                        description: props.model.description,
+                        public: props.model.isPublic
+                    }}
+                    defaultButton={false}
+                    saveButton={false}
+                    onSave={saveMetaData}
+                />
+                <Grid padded={true}>
+                    <Grid.Row>
+                        <Grid.Column width={3}>
+                            <Navigation/>
+                            <CalculationProgressBar/>
+                            <OptimizationProgressBar/>
+                        </Grid.Column>
+                        <Grid.Column width={13}>
+                            {renderContent(props.match.params.id, props.match.params.property, props.match.params.type)}
+                        </Grid.Column>
+                    </Grid.Row>
+                </Grid>
             </AppContainer>
         );
     }
-
-    return (
-        <AppContainer navbarItems={navigation}>
-            <ToolMetaData
-                isDirty={false}
-                onChange={handleChangeToolMetaData}
-                readOnly={false}
-                tool={{
-                    tool: 'T03',
-                    name: props.model.name,
-                    description: props.model.description,
-                    public: props.model.isPublic
-                }}
-                defaultButton={false}
-                saveButton={false}
-                onSave={saveMetaData}
-            />
-            <Grid padded={true}>
-                <Grid.Row>
-                    <Grid.Column width={3}>
-                        <Navigation/>
-                        <CalculationProgressBar/>
-                        <OptimizationProgressBar/>
-                    </Grid.Column>
-                    <Grid.Column width={13}>
-                        {renderContent(props.match.params.id, props.match.params.property, props.match.params.type)}
-                    </Grid.Column>
-                </Grid.Row>
-            </Grid>
-        </AppContainer>
-    );
-};
+;
 
 const mapStateToProps = (state: any) => ({
     model: state.T03.model ? ModflowModel.fromObject(state.T03.model) : null,
