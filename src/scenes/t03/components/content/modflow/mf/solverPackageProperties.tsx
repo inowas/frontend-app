@@ -11,7 +11,6 @@ import {De4PackageProperties, PcgPackageProperties} from './index';
 interface IProps {
     mfPackages: FlopyModflow;
     onChange: (pck: FlopyModflowFlowPackage<any>) => void;
-    onChangeFlowPackageType: (t: string) => void;
     readonly: boolean;
 }
 

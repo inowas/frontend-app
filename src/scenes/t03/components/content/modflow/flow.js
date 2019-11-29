@@ -104,6 +104,14 @@ class Flow extends React.Component {
         );
     };
 
+    handleClickEdit = (layerId, set, parameter) => {
+        const path = this.props.match.path;
+        const basePath = path.split(':')[0];
+        return this.props.history.push(
+            `${basePath}${this.props.model.id}/soilmodel/layers/${layerId}?type=${set}&param=${parameter}`
+        );
+    };
+
     handleChangePackage = (p) => {
         if (p instanceof FlopyModflowPackage) {
             const mf = FlopyModflow.fromObject(this.state.mf);
@@ -157,7 +165,9 @@ class Flow extends React.Component {
                         mfPackage={mf.getPackage(type)}
                         mfPackages={mf}
                         onChange={this.handleChangePackage}
+                        onClickEdit={this.handleClickEdit}
                         readonly={readOnly}
+                        soilmodel={this.props.soilmodel}
                     />
                 );
             case 'chd':

@@ -23,7 +23,7 @@ const ibound = (props: IProps) => {
         const layer = props.layer.toObject();
         layer.parameters = parameters.map((p) => {
             if (p.id === props.parameter.id) {
-                p.value = cells.toArray();
+                p.value = cells.calculateIBound(props.model.gridSize.nY, props.model.gridSize.nX);
             }
             return p;
         });
@@ -37,7 +37,7 @@ const ibound = (props: IProps) => {
             cParameters.push({
                 id: props.parameter.id,
                 data: {file: null},
-                value: props.model.cells.toObject()
+                value: props.model.cells.calculateIBound(props.model.gridSize.nY, props.model.gridSize.nX)
             });
             const cLayer = props.layer.toObject();
             cLayer.parameters = cParameters;
@@ -58,7 +58,7 @@ const ibound = (props: IProps) => {
             const data = parameter.value !== null && parameter.value !== undefined ? parameter.value :
                 parameter.data.data;
             if (Array.isArray(data)) {
-                cells = Cells.fromArray(data as ICell[]);
+                cells = Cells.fromRaster(data as ICell[]);
             }
 
             return (

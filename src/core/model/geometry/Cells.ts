@@ -113,6 +113,18 @@ export default class Cells {
         return cells;
     }
 
+    public static fromRaster(raster: Array2D<number>) {
+        const cells = new Cells([]);
+        raster.forEach((row, rIdx) => {
+            row.forEach((value, cIdx) => {
+                if (value !== 0) {
+                    cells.addCell([cIdx, rIdx, value]);
+                }
+            });
+        });
+        return cells;
+    }
+
     constructor(private _cells: ICells = []) {
     }
 
@@ -216,8 +228,9 @@ export default class Cells {
     };
 
     public calculateIBound = (nrow: number, ncol: number): Array2D<number> => {
-        const iBound2D: Array2D<number> = new Array(nrow).fill([]);
+        const iBound2D: Array2D<number> = [];
         for (let row: number = 0; row < nrow; row++) {
+            iBound2D[row] = [0];
             for (let col: number = 0; col < ncol; col++) {
                 iBound2D[row][col] = 0;
             }
