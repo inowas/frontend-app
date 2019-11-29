@@ -14,7 +14,7 @@ import {fixMissingRelations, update1v0to2v1, update2v0to2v1} from './index';
  * model has been updated or not
  */
 
-const debug = true;
+const debug = false;
 
 const updateSoilmodel = (
     soilmodel: SoilmodelTypes,
