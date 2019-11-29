@@ -19,7 +19,8 @@ import {JSON_SCHEMA_URL, sendCommand} from '../../../services/api';
 import {dxGeometry, dyGeometry} from '../../../services/geoTools/distance';
 import {validate} from '../../../services/jsonSchemaValidator';
 import {BoundaryCollection} from '../../../core/model/modflow/boundaries';
-import ModflowModel from "../../../core/model/modflow/ModflowModel";
+import ModflowModel from '../../../core/model/modflow/ModflowModel';
+import {CoordinateSystemDisclaimer} from '../../shared/complexTools';
 
 class ModflowModelImport extends React.Component {
 
@@ -181,6 +182,7 @@ class ModflowModelImport extends React.Component {
         <Modal open onClose={this.props.onCancel} dimmer={'blurring'}>
             <Modal.Header>Import Model</Modal.Header>
             <Modal.Content>
+                <CoordinateSystemDisclaimer/>
                 <Grid>
                     <Grid.Row columns={2}>
                         <Grid.Column>

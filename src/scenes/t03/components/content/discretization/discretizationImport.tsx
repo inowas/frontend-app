@@ -20,6 +20,7 @@ import {IStressPeriods} from '../../../../../core/model/modflow/Stressperiods.ty
 import {ITimeUnit} from '../../../../../core/model/modflow/TimeUnit.type';
 import {JSON_SCHEMA_URL} from '../../../../../services/api';
 import {validate} from '../../../../../services/jsonSchemaValidator';
+import {CoordinateSystemDisclaimer} from '../../../../shared/complexTools';
 import StressPeriodsDataTable from './stressperiodsDatatable';
 
 interface IState {
@@ -85,7 +86,7 @@ class DiscretizationImport extends React.Component<IProps, IState> {
     }
 
     private onImportClick = () => {
-        const model =  this.props.model.getClone();
+        const model = this.props.model.getClone();
         const {geometry, bounding_box, grid_size, cells, stressperiods, length_unit, time_unit} = this.state;
 
         if (geometry) {
@@ -269,6 +270,7 @@ class DiscretizationImport extends React.Component<IProps, IState> {
         >
             <Modal.Header>Import Discretization</Modal.Header>
             <Modal.Content>
+                <CoordinateSystemDisclaimer/>
                 <Grid stackable={true}>
                     <Grid.Row>
                         <Grid.Column>

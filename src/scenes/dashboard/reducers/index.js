@@ -2,7 +2,7 @@ import {SET_ACTIVE_TOOL, SET_PUBLIC} from '../actions';
 import {LOGOUT, UNAUTHORIZED} from '../../user/actions/actions';
 
 const initialState = {
-    activeTool: 'T02',
+    activeTool: 'T03',
     showPublicInstances: false
 };
 
