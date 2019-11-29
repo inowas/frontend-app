@@ -1,7 +1,7 @@
 import {ITimeUnit} from './TimeUnit.type';
 
 export interface ICalculation {
-    calculation_id: null | string;
+    calculation_id: string;
     state: number;
     message: string;
     files: string[];

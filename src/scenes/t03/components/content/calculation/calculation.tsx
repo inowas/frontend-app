@@ -1,8 +1,8 @@
 import React from 'react';
-import SubMenuWithContent from '../../../../../scenes/shared/complexTools/subMenuWithContent'
-import Overview from './overview';
-import Log from './log';
+import SubMenuWithContent from '../../../../../scenes/shared/complexTools/subMenuWithContent';
 import Files from './files';
+import Log from './log';
+import Overview from './overview';
 
 const menuItems = [
     {id: 'overview', name: 'Overview', component: <Overview/>},
