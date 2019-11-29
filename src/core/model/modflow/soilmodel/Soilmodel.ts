@@ -26,6 +26,10 @@ class Soilmodel {
         return RasterParametersCollection.fromObject(this._props.properties.parameters);
     }
 
+    get version() {
+        return this._props.properties.version;
+    }
+
     get zonesCollection() {
         return ZonesCollection.fromObject(this._props.properties.zones);
     }
@@ -112,6 +116,11 @@ class Soilmodel {
         this._props = cloneDeep(props);
     }
 
+    public checkVersion = () => {
+        return version === this.version &&
+            this.layersCollection.all.filter((l) => !l.relations || !l.parameters).length === 0;
+    };
+
     public addLayer(layer: ISoilmodelLayer) {
         const defaultZone = this.zonesCollection.findFirstBy('isDefault', true);
         if (layer.relations.length === 0 && this.zonesCollection.length > 0) {
@@ -142,6 +151,15 @@ class Soilmodel {
             return l;
         });
         return this;
+    }
+
+    public shiftLayer() {
+        if (this._props.layers.length > 0) {
+            const layer = this._props.layers[0];
+            this._props.layers = this.layersCollection.removeById(layer.id).toObject();
+            return layer;
+        }
+        return null;
     }
 
     public getParameterValue(param: string) {

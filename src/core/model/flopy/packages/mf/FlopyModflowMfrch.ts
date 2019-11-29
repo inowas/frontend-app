@@ -33,7 +33,6 @@ export interface IFlopyModflowMfrch {
     nrchop: number;
     rech: number | IStressPeriodData<number> | IStressPeriodData<Array2D<number>>;
     irch: number | Array2D<number>;
-    dtype: null;
     extension: string;
     unitnumber: number | null;
     filenames: null | string | string[];
@@ -44,7 +43,6 @@ export const defaults: IFlopyModflowMfrch = {
     nrchop: 3,
     rech: 0.001,
     irch: 0,
-    dtype: null,
     extension: 'rch',
     unitnumber: null,
     filenames: null

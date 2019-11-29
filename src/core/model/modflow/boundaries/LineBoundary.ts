@@ -210,7 +210,7 @@ export default abstract class LineBoundary extends Boundary {
     };
 
     public cloneObservationPoint = (id: string, newId: string) => {
-        const op = this.findObservationPointById(id);
+        const op = ObservationPoint.fromObject(this.findObservationPointById(id).toObject());
         this.createObservationPoint(newId, op.name + ' (clone)', op.geometry as Point, op.spValues as ISpValues);
     };
 

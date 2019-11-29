@@ -153,6 +153,8 @@ const stressPeriodsDataTable = (props: IProps) => {
                     <Icon name="add circle"/> 1 Month</Button>
                 <Button icon={true} onClick={addNewStressperiod(1, 'years')}>
                     <Icon name="add circle"/> 1 Year</Button>
+                <Button icon={true} onClick={() => null}>
+                    <Icon name="add circle"/> Custom</Button>
             </Button.Group>
             }
         </div>

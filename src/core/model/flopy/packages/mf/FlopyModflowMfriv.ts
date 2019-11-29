@@ -32,7 +32,6 @@ kper:
 export interface IFlopyModflowMfriv {
     ipakcb: number;
     stress_period_data: IStressPeriodData<[[number, number, number, number, number, number]]> | null;
-    dtype: null;
     options: null;
     extension: string;
     unitnumber: number | null;
@@ -42,7 +41,6 @@ export interface IFlopyModflowMfriv {
 export const defaults: IFlopyModflowMfriv = {
     ipakcb: 0,
     stress_period_data: null,
-    dtype: null,
     extension: 'riv',
     options: null,
     unitnumber: null,
@@ -100,14 +98,6 @@ export default class FlopyModflowMfriv extends FlopyModflowLineBoundary<IFlopyMo
 
     set stress_period_data(value) {
         this._props.stress_period_data = value;
-    }
-
-    get dtype() {
-        return this._props.dtype;
-    }
-
-    set dtype(value) {
-        this._props.dtype = value;
     }
 
     get extension() {

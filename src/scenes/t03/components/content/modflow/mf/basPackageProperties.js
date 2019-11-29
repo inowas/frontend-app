@@ -1,12 +1,11 @@
 import PropTypes from 'prop-types';
 import React from 'react';
-import {Accordion, Form, Grid, Header, Icon, Input} from 'semantic-ui-react';
-
+import {Accordion, Form, Grid, Icon, Input} from 'semantic-ui-react';
 import AbstractPackageProperties from './AbstractPackageProperties';
 import {FlopyModflowMfbas} from '../../../../../../core/model/flopy/packages/mf';
 import {documentation} from '../../../../defaults/flow';
 import {RasterDataImage} from '../../../../../shared/rasterData';
-import {GridSize} from '../../../../../../core/model/modflow';
+import {GridSize, Soilmodel} from '../../../../../../core/model/modflow';
 
 class BasPackageProperties extends AbstractPackageProperties {
 
@@ -20,6 +19,67 @@ class BasPackageProperties extends AbstractPackageProperties {
         const mfPackage = FlopyModflowMfbas.fromObject(this.state.mfPackage);
         const {ibound, strt} = mfPackage;
 
+        const handleClickEdit = (layer, set, parameter) => () => this.props.onClickEdit(layer, set, parameter);
+
+        const renderIBoundImage = (layer, idx) => {
+            const layers = this.props.soilmodel.layersCollection.all;
+
+            if (layers[idx]) {
+                return (
+                    <Grid.Column key={idx}>
+                        <div>
+                            <label style={{float: 'left'}}>{layers[idx].number}: {layers[idx].name}</label>
+                            <Icon
+                                link={true}
+                                style={{float: 'right', zIndex: 10000}}
+                                name="edit"
+                                onClick={handleClickEdit(layers[idx].id, 'bas', 'ibound')}
+                            />
+                            <div style={{clear: 'both'}}/>
+                        </div>
+                        <RasterDataImage
+                            data={layer}
+                            gridSize={GridSize.fromData(layer)}
+                            unit={''}
+                            legend={[
+                                {value: -1, color: 'red', label: 'constant'},
+                                {value: 0, color: 'white', label: 'no modflow'},
+                                {value: 1, color: 'blue', label: 'flow'},
+                            ]}
+                        />
+                    </Grid.Column>
+                )
+            }
+            return null;
+        };
+
+        const renderStrtImage = (layer, idx) => {
+            const layers = this.props.soilmodel.layersCollection.all;
+
+            if (layers[idx]) {
+                return (
+                    <Grid.Column key={idx}>
+                        <div>
+                            <label style={{float: 'left'}}>{layers[idx].number}: {layers[idx].name}</label>
+                            <Icon
+                                link={true}
+                                style={{float: 'right', zIndex: 10000}}
+                                name="edit"
+                                onClick={handleClickEdit(layers[idx].id, 'bas', 'strt')}
+                            />
+                            <div style={{clear: 'both'}}/>
+                        </div>
+                        <RasterDataImage
+                            data={layer}
+                            gridSize={GridSize.fromData(ibound[0])}
+                            unit={'m'}
+                        />
+                    </Grid.Column>
+                );
+            }
+            return null;
+        };
+
         return (
             <div>
                 <Accordion styled fluid>
@@ -30,21 +90,7 @@ class BasPackageProperties extends AbstractPackageProperties {
                     <Accordion.Content active={activeIndex === 0}>
                         <Grid>
                             <Grid.Row columns={2}>
-                                {ibound.map((layer, idx) => (
-                                    <Grid.Column key={idx}>
-                                        <Header size='small' as='label'>Layer {idx + 1}</Header>
-                                        <RasterDataImage
-                                            data={layer}
-                                            gridSize={GridSize.fromData(layer)}
-                                            unit={''}
-                                            legend={[
-                                                {value: -1, color: 'red', label: 'constant'},
-                                                {value: 0, color: 'white', label: 'no modflow'},
-                                                {value: 1, color: 'blue', label: 'flow'},
-                                            ]}
-                                        />
-                                    </Grid.Column>
-                                ))}
+                                {ibound.map((layer, idx) => renderIBoundImage(layer, idx))}
                             </Grid.Row>
                         </Grid>
                     </Accordion.Content>
@@ -56,18 +102,7 @@ class BasPackageProperties extends AbstractPackageProperties {
                     <Accordion.Content active={activeIndex === 1}>
                         <Grid>
                             <Grid.Row columns={2}>
-                                {strt.map((layer, idx) => {
-                                    return (
-                                        <Grid.Column key={idx}>
-                                            <Header size='small' as='label'>Layer {idx + 1}</Header>
-                                            <RasterDataImage
-                                                data={layer}
-                                                gridSize={GridSize.fromData(ibound[0])}
-                                                unit={'m'}
-                                            />
-                                        </Grid.Column>
-                                    );
-                                })}
+                                {strt.map((layer, idx) => renderStrtImage(layer, idx))}
                             </Grid.Row>
                         </Grid>
                     </Accordion.Content>
@@ -130,7 +165,9 @@ class BasPackageProperties extends AbstractPackageProperties {
 BasPackageProperties.propTypes = {
     mfPackage: PropTypes.instanceOf(FlopyModflowMfbas).isRequired,
     onChange: PropTypes.func.isRequired,
-    readonly: PropTypes.bool.isRequired
+    onClickEdit: PropTypes.func.isRequired,
+    readonly: PropTypes.bool.isRequired,
+    soilmodel: PropTypes.instanceOf(Soilmodel).isRequired
 };
 
 export default BasPackageProperties;
