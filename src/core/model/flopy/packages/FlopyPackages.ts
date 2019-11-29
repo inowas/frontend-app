@@ -1,6 +1,6 @@
 import md5 from 'md5';
 import {validate as jsonSchemaValidate} from '../../../../services/jsonSchemaValidator';
-import {ModflowModel} from '../../modflow';
+import {ModflowModel, Transport, VariableDensity} from '../../modflow';
 import BoundaryCollection from '../../modflow/boundaries/BoundaryCollection';
 import Soilmodel from '../../modflow/soilmodel/Soilmodel';
 import {IPropertyValueObject} from '../../types';
@@ -150,10 +150,18 @@ export default class FlopyPackages {
     private _mt: FlopyMt3d | null = null;
     private _swt: FlopySeawat | null = null;
 
-    public update = (model: ModflowModel, soilmodel: Soilmodel, boundaries: BoundaryCollection) => {
-        this._mf = this.mf.recalculate(model, soilmodel, boundaries);
-
-
+    public update = (
+        model: ModflowModel,
+        soilmodel: Soilmodel,
+        boundaries: BoundaryCollection,
+        transport: Transport,
+        variableDensity: VariableDensity
+    ) => {
+        this.mf = this.mf.recalculate(model, soilmodel, boundaries);
+        this.mf.setTransportEnabled(transport.enabled);
+        this.mt = this.mt.update(transport, boundaries);
+        this.swt = this.swt.update(variableDensity);
+        return this;
     };
 
     public getData = () => {

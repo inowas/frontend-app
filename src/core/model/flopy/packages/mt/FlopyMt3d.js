@@ -3,7 +3,7 @@ import FlopyMt3dMtbtn from './FlopyMt3dMtbtn';
 import FlopyMt3dMtdsp from './FlopyMt3dMtdsp';
 import FlopyMt3dMtgcg from './FlopyMt3dMtgcg';
 import FlopyMt3dMt from './FlopyMt3dMt';
-import FlopyMt3dMtrct from "./FlopyMt3dMtrct";
+import FlopyMt3dMtrct from './FlopyMt3dMtrct';
 import FlopyMt3dMtssm from './FlopyMt3dMtssm';
 
 import {Transport} from '../../../modflow';
@@ -94,6 +94,11 @@ class FlopyMt3d {
         const mtSsm = this.hasPackage('ssm') ? this.getPackage('ssm') : FlopyMt3dMtssm.create(null, {});
         mtSsm.stress_period_data = FlopyMt3dMtssm.calculateSpData(transport.substances, boundaries);
         this.setPackage(mtSsm);
+    };
+
+    update = (transport, boundaries) => {
+        this.recalculate(transport, boundaries);
+        return this;
     };
 
     get enabled() {

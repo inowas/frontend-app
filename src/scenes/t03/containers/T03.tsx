@@ -38,6 +38,7 @@ import {
 } from '../actions/actions';
 import ModflowModelCommand from '../commands/modflowModelCommand';
 import boundaries from '../components/content/boundaries/boundaries';
+import {PackagesUpdater} from '../components/content/calculation';
 import CalculationProgressBar from '../components/content/calculation/calculationProgressBar';
 import * as Content from '../components/content/index';
 import optimization from '../components/content/optimization/optimization';
@@ -442,6 +443,7 @@ const t03 = (props: IProps) => {
                     <Grid.Row>
                         <Grid.Column width={3}>
                             <Navigation/>
+                            <PackagesUpdater/>
                             <CalculationProgressBar/>
                             <OptimizationProgressBar/>
                         </Grid.Column>

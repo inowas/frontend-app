@@ -68,6 +68,11 @@ class FlopySeawat {
         }
     };
 
+    update = (variableDensity) => {
+        this.recalculate(variableDensity);
+        return this;
+    };
+
     get enabled() {
         return this._enabled;
     }

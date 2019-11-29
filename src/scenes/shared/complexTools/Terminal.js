@@ -34,6 +34,8 @@ const Terminal = ({content, styles = null}) => {
                 <pre>{content}</pre>
             </div>
         );
+
+    return null;
 };
 
 Terminal.propTypes = {

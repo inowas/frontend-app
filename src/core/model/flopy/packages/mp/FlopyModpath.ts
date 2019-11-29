@@ -40,17 +40,14 @@ class FlopyModpath {
         this._meta.zones = value;
     }
 
-    public static fromObject(obj: IPropertyValueObject) {
+    public static fromObject(obj: IPropertyValueObject): FlopyModpath {
         const self = new this();
-        self.enabled = obj.enabled;
-        for (const prop in obj) {
-            if (prop !== '_meta' && prop !== 'enabled') {
-                if (obj.hasOwnProperty(prop)) {
-                    self.setPackage(packagesMap[prop].fromObject(obj[prop]));
-                }
-            }
-        }
+        self.enabled = obj.enabled || false;
         return self;
+    }
+
+    public static create() {
+        return FlopyModpath.fromObject({});
     }
 
     private _enabled: boolean = false;

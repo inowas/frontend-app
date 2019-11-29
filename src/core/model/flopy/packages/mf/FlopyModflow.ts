@@ -149,7 +149,7 @@ export default class FlopyModflow extends GenericObject<IFlopyModflow> {
     public recalculate = (model: ModflowModel, soilmodel: Soilmodel, boundaries: BoundaryCollection) => {
 
         // Recalculate Discretization
-        this._props.bas = (FlopyModflowMfbas.fromObject(this._props.bas)).update(model, soilmodel).toObject();
+        this._props.bas = FlopyModflowMfbas.fromObject(this._props.bas).update(model, soilmodel).toObject();
         this._props.dis = FlopyModflowMfdis.fromObject(this._props.dis).update(model, soilmodel).toObject();
 
         // Recalculate Boundaries
