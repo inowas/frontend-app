@@ -1,4 +1,5 @@
 import {Point} from 'geojson';
+import {cloneDeep} from 'lodash';
 import {ISpValues} from './Boundary.type';
 import {IObservationPoint} from './ObservationPoint.type';
 
@@ -81,7 +82,7 @@ export default class ObservationPoint {
     private _props: IObservationPoint;
 
     public constructor(props: IObservationPoint) {
-        this._props = props;
+        this._props = cloneDeep(props);
     }
 
     public getSpValues() {
@@ -93,7 +94,7 @@ export default class ObservationPoint {
     }
 
     public toObject(): IObservationPoint {
-        return {
+        return cloneDeep({
             type: 'Feature',
             id: this.id,
             geometry: this.geometry,
@@ -103,6 +104,6 @@ export default class ObservationPoint {
                 sp_values: this.spValues,
                 distance: this.distance
             }
-        };
+        });
     }
 }

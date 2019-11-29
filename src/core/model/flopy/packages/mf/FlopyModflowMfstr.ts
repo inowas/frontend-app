@@ -14,7 +14,6 @@ export interface IFlopyModflowMfstr {
     const: number;
     ipakcb: number | null;
     istcb2: number | null;
-    dtype: number | null;
     stress_period_data:
         IStressPeriodData<[[number, number, number, number, number, number, number, number, number, number]]> | null;
     segment_data: IStressPeriodData<number[][]> | null;
@@ -33,7 +32,6 @@ export const defaults: IFlopyModflowMfstr = {
     const: 86400.0,
     ipakcb: null,
     istcb2: null,
-    dtype: null,
     stress_period_data: null,
     segment_data: null,
     extension: 'str',
@@ -129,14 +127,6 @@ export default class FlopyModflowMfstr extends FlopyModflowLineBoundary<IFlopyMo
 
     set istcb2(value) {
         this._props.istcb2 = value;
-    }
-
-    get dtype() {
-        return this._props.dtype;
-    }
-
-    set dtype(value) {
-        this._props.dtype = value;
     }
 
     get stress_period_data() {

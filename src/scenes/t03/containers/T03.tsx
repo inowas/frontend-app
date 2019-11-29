@@ -298,52 +298,62 @@ const t03 = (props: IProps) => {
 
     const renderContent = (id: string, property: string, type: BoundaryType) => {
         const readOnly = props.model ? props.model.readOnly : false;
-        switch (property) {
-            case 'discretization':
-                return (<Content.Discretization/>);
-            case 'soilmodel':
-                return (<Content.SoilmodelEditor fetchSoilmodel={fetchAndUpdateSoilmodel} readOnly={readOnly}/>);
-            case 'boundaries':
-                if (BoundaryFactory.availableTypes.indexOf(type) > -1) {
-                    return (<Content.CreateBoundary readOnly={readOnly} type={type}/>);
-                }
-                return (<Content.Boundaries types={['chd', 'drn', 'evt', 'ghb', 'rch', 'riv', 'wel']}/>);
-            case 'head_observations':
-                if (type === 'hob') {
-                    return (<Content.CreateBoundary readOnly={readOnly} type="hob"/>);
-                }
-                return (<Content.Boundaries types={['hob']}/>);
-            case 'transport':
-                return (<Content.Transport/>);
-            case 'variable_density':
-                return (<Content.VariableDensityProperties readOnly={readOnly}/>);
-            case 'observations':
-                return (<Content.Observations/>);
-            case 'modflow':
-                return (<Content.Modflow/>);
-            case 'mt3d':
-                return (<Content.Mt3d/>);
-            case 'seawat':
-                return (<Content.Seawat readOnly={readOnly}/>);
-            case 'calculation':
-                return (<Content.Calculation/>);
-            case 'flow':
-                return (<Content.FlowResults/>);
-            case 'budget':
-                return (<Content.BudgetResults/>);
-            case 'modpath':
-                return (<Content.Modpath/>);
-            case 'concentration':
-                return (<Content.TransportResults/>);
-            case 'optimization':
-                return (<Content.Optimization/>);
-            default:
-                const path = props.match.path;
-                const basePath = path.split(':')[0];
-                return (
-                    <Redirect to={basePath + id + '/discretization' + props.location.search}/>
-                );
+
+        if (property === 'discretization') {
+            return (<Content.Discretization/>);
         }
+
+        if (property === 'soilmodel') {
+            return (<Content.SoilmodelEditor fetchSoilmodel={fetchAndUpdateSoilmodel} readOnly={readOnly}/>);
+        }
+
+        if (property === 'boundaries') {
+            if (BoundaryFactory.availableTypes.indexOf(type) > -1) {
+                return (<Content.CreateBoundary readOnly={readOnly} type={type}/>);
+            }
+            return (<Content.Boundaries types={['chd', 'drn', 'evt', 'ghb', 'rch', 'riv', 'wel']}/>);
+        }
+
+        if (property === 'head_observations') {
+            if (type === 'hob') {
+                return (<Content.CreateBoundary readOnly={readOnly} type="hob"/>);
+            }
+            return (<Content.Boundaries types={['hob']}/>);
+        }
+
+        if (property === 'transport') {
+            return (<Content.Transport/>);
+        }
+
+        if (property === 'variable_density') {
+            return (<Content.VariableDensityProperties readOnly={readOnly}/>);
+        }
+
+        if (property === 'observations') {
+            return (<Content.Observations/>);
+        }
+
+        if (property === 'flow') {
+            return (<Content.FlowResults/>);
+        }
+        if (property === 'budget') {
+            return (<Content.BudgetResults/>);
+        }
+        if (property === 'modpath') {
+            return (<Content.Modpath/>);
+        }
+        if (property === 'concentration') {
+            return (<Content.TransportResults/>);
+        }
+        if (property === 'optimization') {
+            return (<Content.Optimization/>);
+        }
+
+        const path = props.match.path;
+        const basePath = path.split(':')[0];
+        return (
+            <Redirect to={basePath + id + '/discretization' + props.location.search}/>
+        );
     };
 
     const saveMetaData = (tool: IToolMetaData) => {

@@ -92,8 +92,8 @@ const boundaryValuesDataTable = (props: IProps) => {
         if (!spValues || dateTimes.length !== spValues.length) {
             return (
                 <Table.Row>
-                    <Table.Cell>Boundary stress period number doesn't fit number of model stress periods. <br />
-                    Please create a new boundary instead.</Table.Cell>
+                    <Table.Cell>Boundary stress period number doesn't fit number of model stress periods. <br/>
+                        Please create a new boundary instead.</Table.Cell>
                 </Table.Row>
             );
         }

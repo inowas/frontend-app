@@ -188,6 +188,8 @@ export default class FlopyModflow extends GenericObject<IFlopyModflow> {
 
         const wel = FlopyModflowMfwel.create(boundaries, model.stressperiods);
         wel ? this._props.wel = wel.toObject() : delete this._props.wel;
+
+        return this;
     };
 
     public setTransportEnabled = (enabled: boolean) => {

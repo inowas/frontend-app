@@ -89,14 +89,14 @@ class StressperiodsEditor extends React.Component<IProps, IState> {
 
         return (
             <Grid>
-                {!this.props.model.readOnly && this.props.boundaries.length === 0 &&
+                {!this.props.model.readOnly &&
                 <Grid.Row>
                     <Grid.Column width={16}>
                         <ContentToolBar
                             isDirty={this.props.isDirty}
                             isError={this.props.isError}
                             visible={!this.props.model.readOnly}
-                            saveButton={true}
+                            saveButton={!this.props.model.readOnly}
                             onSave={this.onSave}
                         />
                     </Grid.Column>
