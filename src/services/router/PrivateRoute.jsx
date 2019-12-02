@@ -27,7 +27,8 @@ class PrivateRoute extends React.Component {
             },
             error => {
                 if (error.response.status === 401) {
-                    return (<Redirect to={'/logout'}/>);
+                    this.props.unauthorized();
+                    return (<Redirect to={'/login'}/>);
                 }
                 return this.setState({error});
             }
@@ -55,6 +56,8 @@ class PrivateRoute extends React.Component {
 
 const mapDispatchToProps = {
     setUser: Action.setUser,
+    loginError: Action.loginError,
+    unauthorized: Action.unauthorized,
 };
 
 const mapStateToProps = state => ({

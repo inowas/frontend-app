@@ -1,23 +1,35 @@
 import {LOGOUT, SET_USER, UNAUTHORIZED} from '../actions/actions';
 import {SET_USER_PROFILE} from '../actions/events';
 
-function initialState() {
-    return {
-        userName: '',
+const initialState = () => ({
+    userName: '',
+    name: '',
+    email: '',
+    enabled: true,
+    roles: [],
+    profile: {
         name: '',
         email: '',
-        enabled: true,
-        roles: [],
-        profile: {
-            'name': '',
-            'email': '',
-            'institution': ''
-        },
-        fetched: false
+        institution: ''
+    },
+    fetched: false
+});
+
+export interface IUserReducer {
+    userName: string;
+    name: string;
+    email: string;
+    profile: {
+        institution: string;
+        name: string;
+        email: string
     };
+    roles: any[];
+    enabled: boolean;
+    fetched: boolean;
 }
 
-export const user = (state = initialState(), action) => {
+export const user = (state: IUserReducer = initialState(), action: any) => {
     switch (action.type) {
         case SET_USER: {
             return {
@@ -50,9 +62,11 @@ export const user = (state = initialState(), action) => {
     }
 };
 
-export const getEmail = state => state.email;
-export const getName = state => state.name;
-export const getRoles = state => state.roles;
-export const getUserName = state => state.userName;
-export const getFetched = state => state.fetched;
-export const isAdmin = state => state.roles && Array.isArray(state.roles) && state.roles.includes('ROLE_ADMIN');
+export const getEmail = (state: IUserReducer) => state.email;
+export const getName = (state: IUserReducer) => state.name;
+export const getRoles = (state: IUserReducer) => state.roles;
+export const getUserName = (state: IUserReducer) => state.userName;
+export const getFetched = (state: IUserReducer) => state.fetched;
+export const isAdmin = (state: IUserReducer) => {
+    return state.roles && Array.isArray(state.roles) && state.roles.includes('ROLE_ADMIN');
+};
