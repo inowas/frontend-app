@@ -10,7 +10,7 @@ import {
     Grid,
     Header,
     Menu,
-    MenuItemProps,
+    MenuItemProps, Message,
     Progress,
     Segment
 } from 'semantic-ui-react';
@@ -105,7 +105,12 @@ const soilmodelEditor = (props: IProps) => {
     const defaultZone = soilmodel.zonesCollection.findFirstBy('isDefault', true);
 
     if (!defaultZone) {
-        throw new Error('There is no default zone.');
+        return (
+            <Message error={true}>
+                The model you requested is not compatible with the current version. Contact an administrator or
+                create a new model.
+            </Message>
+        );
     }
 
     useEffect(() => {
@@ -500,7 +505,7 @@ const soilmodelEditor = (props: IProps) => {
                             options={[
                                 {key: 'soilmodel', text: 'Soilmodel', value: 'soilmodel'},
                                 {key: 'bas', text: 'Basic', value: 'bas'},
-                                //{key: 'modpath', text: 'Modpath', value: 'modpath'}
+                                // {key: 'modpath', text: 'Modpath', value: 'modpath'}
                             ]}
                             value={activeParamType}
                         />

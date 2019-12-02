@@ -35,6 +35,16 @@ class Zone {
         this._props.cells = value.toArray();
     }
 
+    public static createDefault(geometry: Geometry, cells: Cells) {
+        return new this({
+            id: 'default',
+            isDefault: true,
+            name: 'Default Zone',
+            geometry: geometry.toObject(),
+            cells: cells.toObject()
+        });
+    }
+
     public static fromObject(obj: IZone) {
         return new Zone(obj);
     }
