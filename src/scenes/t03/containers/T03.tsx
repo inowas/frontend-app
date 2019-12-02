@@ -396,7 +396,8 @@ const t03 = (props: IProps) => {
             return (
                 <AppContainer navbarItems={navigation}>
                     <Message error={true}>
-                        The model you requested is not compatible with the current version. Just delete it!
+                        The model you requested is not compatible with the current version. Contact an administrator or
+                        create a new model.
                     </Message>
                 </AppContainer>
             );
@@ -419,9 +420,7 @@ const t03 = (props: IProps) => {
                 if (props.model) {
                     props.updatePackages(packages as FlopyPackages);
                     return sendCommand(
-                        ModflowModelCommand.updateFlopyPackages(props.model.id, packages),
-                        // tslint:disable-next-line:no-console
-                        (e) => console.log(e)
+                        ModflowModelCommand.updateFlopyPackages(props.model.id, packages), () => null
                     );
                 }
             });

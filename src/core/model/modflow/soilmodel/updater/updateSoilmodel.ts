@@ -1,7 +1,8 @@
 import {ModflowModel} from '../../index';
+import {ZonesCollection} from '../index';
 import {ISoilmodel, ISoilmodel1v0, ISoilmodel2v0, ISoilmodelExport} from '../Soilmodel.type';
 import {SoilmodelTypes} from './defaults';
-import {fixMissingRelations, update1v0to2v1, update2v0to2v1} from './index';
+import {fixDefaultZone, fixMissingRelations, update1v0to2v1, update2v0to2v1} from './index';
 
 /**
  * Checks incoming soilmodel and updates to newest version if necessary. The function can be used independently,
@@ -53,6 +54,16 @@ const updateSoilmodel = (
         }
         return {
             soilmodel: fixMissingRelations(soilmodel as ISoilmodel),
+            isDirty: true
+        };
+    } else if ('properties' in soilmodel &&
+        !ZonesCollection.fromObject(soilmodel.properties.zones).findFirstBy('isDefault', true)) {
+        if (debug) {
+            // tslint:disable-next-line:no-console
+            console.log('%c Fix default zone', 'background: #222; color: #bada55');
+        }
+        return {
+            soilmodel: fixDefaultZone(soilmodel as ISoilmodel),
             isDirty: true
         };
     }
