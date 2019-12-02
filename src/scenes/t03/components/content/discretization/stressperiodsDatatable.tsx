@@ -3,6 +3,7 @@ import moment from 'moment/moment';
 import React, {ChangeEvent, MouseEvent, useState} from 'react';
 import {Button, Checkbox, CheckboxProps, Form, Icon, InputOnChangeData, Popup, Table} from 'semantic-ui-react';
 import {Stressperiods} from '../../../../../core/model/modflow';
+import {StressperiodsGenerator} from './index';
 
 interface IProps {
     stressperiods: Stressperiods;
@@ -13,6 +14,7 @@ interface IProps {
 const stressPeriodsDataTable = (props: IProps) => {
     const [activeInput, setActiveInput] = useState<number | null>(null);
     const [activeValue, setActiveValue] = useState<string>('');
+    const [showGenerator, setShowGenerator] = useState<boolean>(false);
 
     const renderHeader = () => (
         <Table.Row>
@@ -87,6 +89,9 @@ const stressPeriodsDataTable = (props: IProps) => {
         }
     };
 
+    const handleCancelCustom = () => setShowGenerator(false);
+    const handleClickCustom = () => setShowGenerator(true);
+
     const addNewStressperiod = (value: DurationInputArg1, unit: DurationInputArg2) => () => {
         const stressperiods = props.stressperiods;
         const newStressperiod = stressperiods.last().clone();
@@ -153,9 +158,16 @@ const stressPeriodsDataTable = (props: IProps) => {
                     <Icon name="add circle"/> 1 Month</Button>
                 <Button icon={true} onClick={addNewStressperiod(1, 'years')}>
                     <Icon name="add circle"/> 1 Year</Button>
-                <Button icon={true} onClick={() => null}>
+                <Button icon={true} onClick={handleClickCustom}>
                     <Icon name="add circle"/> Custom</Button>
             </Button.Group>
+            }
+            {showGenerator && props.onChange !== undefined &&
+                <StressperiodsGenerator
+                    onCancel={handleCancelCustom}
+                    onSubmit={props.onChange}
+                    stressPeriods={props.stressperiods}
+                />
             }
         </div>
     );

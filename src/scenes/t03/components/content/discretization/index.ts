@@ -4,6 +4,7 @@ import DiscretizationMap from './discretizationMap';
 import GridEditor from './gridEditor';
 import StressperiodsDatatable from './stressperiodsDatatable';
 import StressperiodsEditor from './stressperiodsEditor';
+import StressperiodsGenerator from './stressperiodsGenerator';
 
 export {
     Discretization,
@@ -11,5 +12,6 @@ export {
     DiscretizationMap,
     GridEditor,
     StressperiodsDatatable,
-    StressperiodsEditor
+    StressperiodsEditor,
+    StressperiodsGenerator
 };
