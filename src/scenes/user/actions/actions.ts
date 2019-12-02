@@ -13,7 +13,7 @@ export const PUT_USER_PROFILE = 'users/PUT_USER_PROFILE';
 export const SET_USER = 'users/SET_USER';
 export const UNAUTHORIZED = 'users/UNAUTHORIZED_ACCESS';
 
-export function authentication(username, password) {
+export function authentication(username: string, password: string) {
     return {
         type: AUTHENTICATION,
         username,
@@ -21,7 +21,7 @@ export function authentication(username, password) {
     };
 }
 
-export function changePassword({oldPassword, newPassword}) {
+export function changePassword({oldPassword, newPassword}: { oldPassword: string, newPassword: string }) {
     return {
         type: CHANGE_PASSWORD,
         payload: {
@@ -37,38 +37,32 @@ export function fetchUser() {
     };
 }
 
-export function login(username, token) {
-    return {
-        type: LOGIN,
-        payload: {
-            username,
-            token
-        }
-    };
-}
+export const login = (username: string, token: string) => ({
+    type: LOGIN,
+    payload: {
+        username,
+        token
+    }
+});
 
-export function logout() {
-    return {
-        type: LOGOUT
-    };
-}
+export const logout = () => ({
+    type: LOGOUT
+});
 
-export function loginError() {
-    return {
-        type: LOGIN_ERROR
-    };
-}
+export const loginError = () => ({
+    type: LOGIN_ERROR
+});
 
-export function putUserProfile(userProfile) {
-    return {
-        type: PUT_USER_PROFILE,
-        payload: userProfile
-    };
-}
+export const unauthorized = () => ({
+    type: UNAUTHORIZED
+});
 
-export function setUser(userInformation) {
-    return {
-        type: SET_USER,
-        payload: userInformation
-    };
-}
+export const putUserProfile = (userProfile: any) => ({
+    type: PUT_USER_PROFILE,
+    payload: userProfile
+});
+
+export const setUser = (userInformation: any) => ({
+    type: SET_USER,
+    payload: userInformation
+});

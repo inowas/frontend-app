@@ -295,16 +295,9 @@ export const submitSignUpCredentials = (
         .catch(onError);
 };
 
-export const submitLoginCredentials = (
-    {username, password}: { username: string, password: string },
-    onSuccess: CallbackFunction<any, void>,
-    onError: ErrorCallbackFunction
-) => {
+export const submitLoginCredentials = ({username, password}: { username: string, password: string }) => {
     const api = createApi();
-    const payload = {username, password};
-    api.post('login_check', payload)
-        .then(onSuccess)
-        .catch(onError);
+    return api.post('login_check', {username, password});
 };
 
 export const dropData = (

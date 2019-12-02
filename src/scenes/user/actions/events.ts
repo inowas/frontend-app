@@ -4,7 +4,7 @@
 
 export const SET_USER_PROFILE = 'users/SET_USER_PROFILE';
 
-export function setUserProfile(profile) {
+export function setUserProfile(profile: any) {
     return {
         type: SET_USER_PROFILE,
         payload: profile

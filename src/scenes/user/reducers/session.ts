@@ -1,3 +1,4 @@
+import getConfig from '../../../config.default';
 import {LOGIN, LOGIN_ERROR, LOGOUT, UNAUTHORIZED} from '../actions/actions';
 
 interface ISessionReducer {
@@ -10,15 +11,17 @@ interface ISessionReducerAction {
     payload?: any;
 }
 
+const tokenIdentifier = () => `${getConfig().BASE_URL}-token`;
+
 const initialState = (): ISessionReducer => ({
-    token: localStorage.getItem('token'),
+    token: localStorage.getItem(tokenIdentifier()) || null,
     error: false
 });
 
 export const session = (state = initialState(), action: ISessionReducerAction) => {
     switch (action.type) {
         case LOGIN: {
-            localStorage.setItem('token', action.payload.token);
+            localStorage.setItem(tokenIdentifier(), action.payload.token);
             return {
                 ...state,
                 token: action.payload.token,
@@ -27,15 +30,16 @@ export const session = (state = initialState(), action: ISessionReducerAction) =
         }
 
         case LOGIN_ERROR: {
+            localStorage.removeItem(tokenIdentifier());
             return {
-                ...state,
+                ...initialState(),
                 error: true
             };
         }
 
         case UNAUTHORIZED:
         case LOGOUT: {
-            localStorage.removeItem('token');
+            localStorage.removeItem(tokenIdentifier());
             return initialState();
         }
 
@@ -45,5 +49,5 @@ export const session = (state = initialState(), action: ISessionReducerAction) =
     }
 };
 
-export const hasSessionKey = (state: ISessionReducer) => !!state.token;
 export const getApiKey = (state: ISessionReducer) => state.token;
+export const hasSessionKey = (state: ISessionReducer) => !!state.token;
