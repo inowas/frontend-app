@@ -1,4 +1,4 @@
-import axios, {AxiosResponse} from 'axios';
+import axios from 'axios';
 import getConfig from '../../config.default.js';
 import AbstractCommand from '../../core/model/command/AbstractCommand';
 import FlopyPackages from '../../core/model/flopy/packages/FlopyPackages';
@@ -283,16 +283,9 @@ interface ISubmitSignUpCredentials {
     password: string;
 }
 
-export const submitSignUpCredentials = (
-    {name, email, password}: ISubmitSignUpCredentials,
-    onSuccess: CallbackFunction<AxiosResponse<any>, void>,
-    onError: ErrorCallbackFunction
-) => {
+export const submitSignUpCredentials = ({name, email, password}: ISubmitSignUpCredentials) => {
     const api = createApi();
-    const payload = {name, email, password};
-    api.post('register', payload)
-        .then(onSuccess)
-        .catch(onError);
+    return api.post('register', {name, email, password});
 };
 
 export const submitLoginCredentials = ({username, password}: { username: string, password: string }) => {

@@ -1,21 +1,18 @@
 import React, {useEffect} from 'react';
 import {useDispatch} from 'react-redux';
-import {RouteComponentProps} from 'react-router';
-import {withRouter} from 'react-router-dom';
+import {Redirect} from 'react-router';
 import {Action} from '../actions/index';
 
-type IProps = RouteComponentProps<any>;
-
-const logout = (props: IProps) => {
-
+const logout = () => {
     const dispatch = useDispatch();
 
     useEffect(() => {
         dispatch(Action.logout());
-        props.history.push('/');
     }, []);
 
-    return null;
+    return (
+        <Redirect to={'/'}/>
+    );
 };
 
-export default withRouter(logout);
+export default logout;
