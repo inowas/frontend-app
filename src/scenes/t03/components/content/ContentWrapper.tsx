@@ -23,7 +23,7 @@ const contentWrapper = (props: IProps) => {
     }
 
     if (property === 'soilmodel') {
-        return (<Content.SoilmodelEditor readOnly={false} fetchSoilmodel={() => ({})}/>);
+        return (<Content.SoilmodelEditor/>);
     }
 
     if (property === 'boundaries') {
