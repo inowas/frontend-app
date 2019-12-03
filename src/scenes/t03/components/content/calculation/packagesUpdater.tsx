@@ -11,24 +11,11 @@ import Soilmodel from '../../../../../core/model/modflow/soilmodel/Soilmodel';
 import Transport from '../../../../../core/model/modflow/transport/Transport';
 import VariableDensity from '../../../../../core/model/modflow/variableDensity/VariableDensity';
 import {IRootReducer} from '../../../../../reducers';
-import {fetchUrl} from '../../../../../services/api';
 import {updatePackages} from '../../../actions/actions';
 
 const packagesUpdater = () => {
     const T03 = useSelector((state: IRootReducer) => state.T03);
     const dispatch = useDispatch();
-
-    useEffect(() => {
-        if (T03.model) {
-            fetchUrl(`modflowmodels/${T03.model.id}/packages`,
-                (data) => {
-                    const packages = FlopyPackages.fromQuery(data);
-                    if (packages) {
-                        dispatch(updatePackages(packages));
-                    }
-                }, () => ({}));
-        }
-    }, [T03.model]);
 
     useEffect(() => {
         const model = T03.model ? ModflowModel.fromObject(T03.model) : null;

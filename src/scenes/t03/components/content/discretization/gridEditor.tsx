@@ -25,8 +25,10 @@ const gridEditor = (props: IProps) => {
     }, []);
 
     useEffect(() => {
-        setGridSizeLocal(props.model.gridSize);
-    }, [props.model.gridSize]);
+        if (gridSizeLocal && (gridSizeLocal.nX !== gridSize.nX || gridSizeLocal.nY !== gridSize.nY)) {
+            setGridSizeLocal(props.model.gridSize);
+        }
+    }, [props.model.gridSize.nX, props.model.gridSize.nY]);
 
     const readOnly = props.model.readOnly;
 

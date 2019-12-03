@@ -128,7 +128,7 @@ class CreateModel extends React.Component<IProps, IState> {
 
         return sendCommands(
             commands,
-            () => this.props.history.push(`T03/${createModelPayload.id}`),
+            () => this.props.history.push(`/tools/T03/${createModelPayload.id}`),
             (e: any) => this.setState({error: e})
         );
     };

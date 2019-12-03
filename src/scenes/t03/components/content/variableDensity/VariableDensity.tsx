@@ -9,8 +9,8 @@ import ContentToolBar from '../../../../shared/ContentToolbar';
 import {updatePackages, updateVariableDensity} from '../../../actions/actions';
 import Command from '../../../commands/modflowModelCommand';
 
+// tslint:disable-next-line:no-empty-interface
 interface IOwnProps {
-    readOnly: boolean;
 }
 
 interface IStateProps {
