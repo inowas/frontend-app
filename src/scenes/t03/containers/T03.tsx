@@ -305,7 +305,7 @@ const t03 = (props: IProps) => {
             }
 
             if (property === 'soilmodel') {
-                return (<Content.SoilmodelEditor fetchSoilmodel={fetchAndUpdateSoilmodel} readOnly={readOnly}/>);
+                return (<Content.SoilmodelEditor/>);
             }
 
             if (property === 'boundaries') {
