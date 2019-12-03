@@ -36,7 +36,7 @@ const model = {
     tool: 'T03'
 };
 
-const soilmodel: ISoilmodelExport = {
+const soilmodel1v0: ISoilmodelExport = {
     layers: [
         {
             name: 'Boa Viagem',
@@ -72,7 +72,7 @@ const soilmodel: ISoilmodelExport = {
 };
 
 test('Update soilmodel from 1v0 to 2v1', () => {
-    updater(soilmodel, ModflowModel.fromObject(model), () => null, (updatedSoilmodel) => {
+    updater(soilmodel1v0, ModflowModel.fromObject(model), () => null, (updatedSoilmodel) => {
         expect(updatedSoilmodel.layers).toHaveLength(2);
         expect(updatedSoilmodel.layers[0].relations).toHaveLength(7);
         expect(updatedSoilmodel.layers[1].parameters).toHaveLength(7);

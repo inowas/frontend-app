@@ -53,8 +53,6 @@ interface IOwnProps {
     history: any;
     location: any;
     match: any;
-    readOnly: boolean;
-    fetchSoilmodel: (id: string) => any;
 }
 
 interface IStateProps {
@@ -416,15 +414,8 @@ const soilmodelEditor = (props: IProps) => {
                     setCalculationState(state);
                 },
                 (layer) => {
-                    return sendCommand(
-                        Command.updateLayer({
-                            id: props.model.id,
-                            layer
-                        }), () => {
-                            setIsDirty(false);
-                            return props.fetchSoilmodel(props.model.id);
-                        }
-                    );
+                    props.updateLayer(SoilmodelLayer.fromObject(layer));
+                    return setIsDirty(false);
                 }
             );
         }

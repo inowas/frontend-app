@@ -1,6 +1,8 @@
+import {cloneDeep, uniq} from 'lodash';
 import ModflowModelCommand from '../../../../../scenes/t03/commands/modflowModelCommand';
 import {sendCommand} from '../../../../../services/api';
 import {dropData, FileData} from '../../../../../services/dataDropper';
+import {Array2D} from '../../../geometry/Array2D.type';
 import {IModflowModel} from '../../ModflowModel.type';
 import {Soilmodel} from '../index';
 import {ISoilmodel} from '../Soilmodel.type';
@@ -13,7 +15,7 @@ export const saveLayer = (
     task: number = 0,
     onEachTask: ({message, task}: { message: string, task: number }) => any,
     onFinished: (layer: ISoilmodelLayer) => any
-) => {
+): any => {
     const parameters = layer.parameters.filter((p) => Array.isArray(p.value));
     if (parameters.length > 0) {
         task = ++task;
@@ -24,18 +26,29 @@ export const saveLayer = (
             });
         }
 
-        dropData(parameters[0].value).then((file) => {
+        if (Array.isArray(parameters[0].value) && uniq(parameters[0].value).length === 1) {
             layer.parameters = layer.parameters.map((p) => {
                 if (p.id === parameters[0].id) {
+                    p.data = {file: null};
+                    p.value = (parameters[0].value as Array2D<number>)[0][0];
+                }
+                return p;
+            });
+            return saveLayer(layer, model, false, task, onEachTask, onFinished);
+        }
+
+        return dropData(parameters[0].value).then((file) => {
+            layer.parameters = layer.parameters.map((p) => {
+                const value = cloneDeep(parameters[0].value);
+                if (p.id === parameters[0].id) {
                     p.data.file = file;
+                    p.data.data = Array.isArray(value) ? value : undefined;
                     p.value = undefined;
                 }
                 return p;
             });
-
             return saveLayer(layer, model, false, task, onEachTask, onFinished);
         });
-        return;
     }
 
     const relations = layer.relations.filter((r) => Array.isArray(r.value));
@@ -48,34 +61,45 @@ export const saveLayer = (
             });
         }
 
-        dropData(relations[0].value).then((file) => {
+        if (Array.isArray(relations[0].value) && uniq(relations[0].value).length === 1) {
+            layer.relations = layer.relations.map((r) => {
+                if (r.id === relations[0].id) {
+                    r.data = {file: null};
+                    r.value = (relations[0].value as Array2D<number>)[0][0];
+                }
+                return r;
+            });
+            return saveLayer(layer, model, false, task, onEachTask, onFinished);
+        }
+
+        return dropData(relations[0].value).then((file) => {
             layer.relations = layer.relations.map((r) => {
                 if (r.id === relations[0].id) {
                     r.data.file = file;
+                    r.data.data = Array.isArray(relations[0].value) ? relations[0].value : undefined;
                     r.value = undefined;
                 }
                 return r;
             });
-
             return saveLayer(layer, model, false, task, onEachTask, onFinished);
         });
-        return;
     }
 
     if (!isFinished) {
+        const clonedLayer = cloneDeep(layer);
         sendCommand(
             ModflowModelCommand.updateLayer({
                 id: model.id,
                 layer: {
-                    ...layer,
-                    parameters: layer.parameters.map((p) => {
+                    ...clonedLayer,
+                    parameters: clonedLayer.parameters.map((p) => {
                         p.data = {
                             file: p.data.file
                         };
                         p.value = Array.isArray(p.value) ? undefined : p.value;
                         return p;
                     }),
-                    relations: layer.relations.map((r) => {
+                    relations: clonedLayer.relations.map((r) => {
                         r.data = {
                             file: r.data.file
                         };
@@ -146,10 +170,26 @@ export const saveSoilmodel = (
                 });
             }
 
+            if (Array.isArray(parameters[0].value) && uniq(parameters[0].value).length === 1) {
+                cLayer.parameters = cLayer.parameters.map((p) => {
+                    if (p.id === parameters[0].id) {
+                        p.data = {file: null};
+                        p.value = (parameters[0].value as Array2D<number>)[0][0];
+                    }
+                    return p;
+                });
+                cSoilmodel.updateLayer(cLayer);
+                return saveSoilmodel(
+                    model, cSoilmodel.toObject(), onEachTask, onSuccess, true, false,
+                    commands, task
+                );
+            }
+
             dropData(parameters[0].value).then((file) => {
                 cLayer.parameters = cLayer.parameters.map((p) => {
                     if (p.id === parameters[0].id) {
                         p.data.file = file;
+                        p.data.data = Array.isArray(parameters[0].value) ? parameters[0].value : undefined;
                         p.value = undefined;
                     }
                     return p;
@@ -173,10 +213,26 @@ export const saveSoilmodel = (
                 });
             }
 
+            if (Array.isArray(relations[0].value) && uniq(relations[0].value).length === 1) {
+                cLayer.relations = cLayer.relations.map((r) => {
+                    if (r.id === relations[0].id) {
+                        r.data = {file: null};
+                        r.value = (relations[0].value as Array2D<number>)[0][0];
+                    }
+                    return r;
+                });
+                cSoilmodel.updateLayer(cLayer);
+                return saveSoilmodel(
+                    model, cSoilmodel.toObject(), onEachTask, onSuccess, true, false,
+                    commands, task
+                );
+            }
+
             dropData(relations[0].value).then((file) => {
                 cLayer.relations = cLayer.relations.map((r) => {
                     if (r.id === relations[0].id) {
                         r.data.file = file;
+                        r.data.data = Array.isArray(relations[0].value) ? relations[0].value : undefined;
                         r.value = undefined;
                     }
                     return r;
@@ -194,20 +250,21 @@ export const saveSoilmodel = (
 
     if (saveLayers) {
         cSoilmodel.layersCollection.all.forEach((uLayer) => {
+            const clonedLayer = cloneDeep(uLayer);
             commands.push(
                 ModflowModelCommand.updateLayer(
                     {
                         id: model.id,
                         layer: {
-                            ...uLayer,
-                            parameters: uLayer.parameters.map((p) => {
+                            ...clonedLayer,
+                            parameters: clonedLayer.parameters.map((p) => {
                                 p.data = {
                                     file: p.data.file
                                 };
                                 p.value = Array.isArray(p.value) ? undefined : p.value;
                                 return p;
                             }),
-                            relations: uLayer.relations.map((r) => {
+                            relations: clonedLayer.relations.map((r) => {
                                 r.data = {
                                     file: r.data.file
                                 };
