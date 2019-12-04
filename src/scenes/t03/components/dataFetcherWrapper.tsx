@@ -338,6 +338,8 @@ const dataFetcherWrapper = (props: IProps) => {
         );
     }
 
+    const renderSoilmodel = () => soilmodelFetcher.fetching ? `Soilmodel ... ${soilmodelFetcher.message}` : 'Soilmodel';
+
     return (
         <div>
             {everythingIsLoaded() && props.children}
@@ -348,7 +350,7 @@ const dataFetcherWrapper = (props: IProps) => {
                         {renderList([
                             {name: 'Main model', loading: fetchingModel, success: fetchingModelSuccess},
                             {name: 'Boundaries', loading: fetchingBoundaries, success: fetchingBoundariesSuccess},
-                            {name: 'Soilmodel', loading: fetchingSoilmodel, success: fetchingSoilmodelSuccess},
+                            {name: renderSoilmodel(), loading: fetchingSoilmodel, success: fetchingSoilmodelSuccess},
                             {name: 'Transport', loading: fetchingTransport, success: fetchingTransportSuccess},
                             {
                                 name: 'Variable Density',
