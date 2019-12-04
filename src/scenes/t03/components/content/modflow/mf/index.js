@@ -15,6 +15,7 @@ import PcgPackageProperties from './pcgPackageProperties';
 import RchPackageProperties from './rchPackageProperties';
 import RivPackageProperties from './rivPackageProperties';
 import SolverPackageProperties from './solverPackageProperties';
+import SorPackageProperties from './sorPackageProperties';
 import WelPackageProperties from './welPackageProperties';
 
 export {
@@ -34,6 +35,7 @@ export {
     PcgPackageProperties,
     RchPackageProperties,
     RivPackageProperties,
+    SorPackageProperties,
     SolverPackageProperties,
     WelPackageProperties
 }

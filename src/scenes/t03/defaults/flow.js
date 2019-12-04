@@ -314,6 +314,22 @@ export const documentation = {
     amucoeff: <div>Coefficient array of size MUNCOEFF. AMUCOEFF is A in equations 18, 19, and 20.</div>,
     mtmuspec: <div>MT3DMS species number corresponding to the adjacent DMUDC and CMUREF.</div>,
 
+    // DE4
+    de4: {
+        itmx: <div>TODO!</div>,
+        mxup: <div>TODO!</div>,
+        mxlow: <div>TODO!</div>,
+        mxbw: <div>TODO!</div>,
+        ifreq: <div>TODO!</div>,
+        mutd4: <div>TODO!</div>,
+        accl: <div>TODO!</div>,
+        iprd4: <div>TODO!</div>,
+        hclose: <div>TODO!</div>,
+        extension: <div>TODO!</div>,
+        unitnumber: <div>TODO!</div>,
+        filenames: <div>TODO!</div>,
+    },
+
     // PCG
     pcg: {
         mxiter: <div>TODO!</div>,
@@ -333,6 +349,7 @@ export const documentation = {
         filenames: <div>TODO!</div>,
     },
 
+    // GMG
     gmg: {
         mxiter: <div>For linear problems, set to 1. For nonlinear problems, set to a higher number though it is usually unnecessary to go above 100.</div>,
         iiter: <div>is the maximum number of PCG iterations for each linear solution. A value of 100 is typically sufficient. It is frequently useful to specify a smaller number for nonlinear problems so as to prevent an excessive number of inner iterations.</div>,
@@ -374,5 +391,13 @@ export const documentation = {
         extension: <div>TODO!</div>,
         unitnumber: <div>TODO!</div>,
         filenames: <div>TODO!</div>,
+    },
+
+    // SOR
+    sor: {
+        mxiter: <div>is the maximum number of iterations allowed in a time step.</div>,
+        accl: <div>is the acceleration variable, usually between 1.0 and 2.0.</div>,
+        hclose: <div>is the head change criterion for convergence. When the maximum absolute value of head change from all nodes during an iteration is less than or equal to HCLOSE, iteration stops.</div>,
+        iprsor: <div>is the printout interval for SOR. IF IPRSOR is equal to zero, it is changed to 999. The maximum head change (positive or negative) is printed for each iteration of a time step whenever the time step is an even multiple of IPRSOR. This printout also occurs at the end of each stress period regardless of the value of IPRSOR.</div>,
     }
 };
