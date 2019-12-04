@@ -79,7 +79,7 @@ const stressperiodsGenerator = (props: IProps) => {
             for (let p = 0; p < inputAmount; p++) {
                 const date = moment(inputStartDate)
                     .add(useInterval ? ((intervalAmount as number) * t) : 0, intervalUnit)
-                    .add(p + 1, inputUnit).format('YYYY-MM-DD');
+                    .add(useInterval ? p : p + 1, inputUnit).format('YYYY-MM-DD');
                 if (
                     props.stressPeriods.stressperiods.filter(
                         (sp) => sp.startDateTime.format('YYYY-MM-DD') === date
