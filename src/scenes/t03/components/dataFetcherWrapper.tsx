@@ -71,13 +71,16 @@ const dataFetcherWrapper = (props: IProps) => {
     const {model, soilmodel, boundaries, packages, variableDensity, transport} = T03;
 
     useEffect(() => {
+        dispatch(clear());
+    }, []);
+
+    useEffect(() => {
         if (modelId !== props.match.params.id) {
             setModelId(props.match.params.id);
         }
     }, [props.match.params.id]);
 
     useEffect(() => {
-        dispatch(clear());
         fetchModel(props.match.params.id);
     }, [modelId]);
 

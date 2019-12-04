@@ -1,7 +1,7 @@
 import {cloneDeep} from 'lodash';
 import moment from 'moment/moment';
 import React, {ChangeEvent, SyntheticEvent, useState} from 'react';
-import {Button, Divider, DropdownProps, Form, Icon, InputOnChangeData, Modal} from 'semantic-ui-react';
+import {Button, Checkbox, Divider, DropdownProps, Form, Input, InputOnChangeData, Modal} from 'semantic-ui-react';
 import Uuid from 'uuid';
 import {IStressPeriod} from '../../../../../core/model/modflow/Stressperiod.type';
 import Stressperiods from '../../../../../core/model/modflow/Stressperiods';
@@ -32,52 +32,80 @@ const stressperiodsGenerator = (props: IProps) => {
         props.stressPeriods.startDateTime.format('YYYY-MM-DD')
     );
     const [inputUnit, setInputUnit] = useState<EUnit>(EUnit.DAYS);
+    const [intervalAmount, setIntervalAmount] = useState<string | number>(1);
+    const [intervalUnit, setIntervalUnit] = useState<EUnit>(EUnit.DAYS);
+    const [intervalTimes, setIntervalTimes] = useState<string | number>(1);
+    const [useInterval, setUseInterval] = useState<boolean>(false);
 
-    const handleBlurAmount = () => {
-        if (typeof inputAmount === 'string') {
-            let n = parseFloat(inputAmount);
+    const handleBlurAmount = (getter: string | number, setter: (v: string | number) => any) => () => {
+        if (typeof getter === 'string') {
+            let n = parseFloat(getter);
             if (n < 0) {
                 n = 0;
             }
-            return setInputAmount(n);
+            return setter(n);
         }
     };
 
-    const handleChangeAmount = (e: ChangeEvent<HTMLInputElement>, {value}: InputOnChangeData) => setInputAmount(value);
+    const handleChangeAmount = (e: ChangeEvent<HTMLInputElement>, {name, value}: InputOnChangeData) => {
+        if (name === 'inputAmount') {
+            return setInputAmount(value || 0);
+        }
+        if (name === 'intervalAmount') {
+            return setIntervalAmount(value || 0);
+        }
+        if (name === 'intervalTimes') {
+            return setIntervalTimes(value || 0);
+        }
+    };
 
     const handleChangeDate = (date: string) => () => {
         return setInputStartDate(moment(date).format('YYYY-MM-DD'));
     };
 
-    const handleChangeUnit = (e: SyntheticEvent, {value}: DropdownProps) => {
-        setInputUnit(value as EUnit);
+    const handleChangeUnit = (e: SyntheticEvent, {name, value}: DropdownProps) => {
+        if (name === 'inputUnit') {
+            return setInputUnit(value as EUnit);
+        }
+        if (name === 'intervalUnit') {
+            return setIntervalUnit(value as EUnit);
+        }
     };
 
     const handleClickAdd = () => {
         const periods = cloneDeep(addedStressPeriods);
-        for (let p = 0; p < inputAmount; p++) {
-            periods.push({
-                start_date_time: moment(inputStartDate)
-                    .add(p + 1, inputUnit).format('YYYY-MM-DD'),
-                id: Uuid.v4(),
-                isNew: true,
-                nstp: 1,
-                tsmult: 1,
-                steady: true
-            });
+
+        for (let t = 1; t <= (useInterval ? intervalTimes : 1); t++) {
+            for (let p = 0; p < inputAmount; p++) {
+                const date = moment(inputStartDate)
+                    .add(useInterval ? ((intervalAmount as number) * t) : 0, intervalUnit)
+                    .add(p + 1, inputUnit).format('YYYY-MM-DD');
+                if (
+                    props.stressPeriods.stressperiods.filter(
+                        (sp) => sp.startDateTime.format('YYYY-MM-DD') === date
+                    ).length === 0
+                ) {
+                    periods.push({
+                        start_date_time: date,
+                        id: Uuid.v4(),
+                        isNew: true,
+                        nstp: 1,
+                        tsmult: 1,
+                        steady: true
+                    });
+                }
+            }
         }
         return setAddedStressPeriods(periods);
     };
+
+    const handleClickIntervalOption = () => setUseInterval(!useInterval);
 
     const handleClickRemove = (id: string | undefined) => () => {
         if (!id) {
             return;
         }
         return setAddedStressPeriods(addedStressPeriods.filter((p) => p.id !== id));
-    };
-
-    const handleClickReset = () => {
-        return setInputStartDate(props.stressPeriods.first.startDateTime.format('YYYY-MM-DD'));
     };
 
     const handleClickSubmit = () => {
@@ -97,15 +125,8 @@ const stressperiodsGenerator = (props: IProps) => {
         return props.onCancel();
     };
 
-    const handleDateTimeChange = (e: ChangeEvent<HTMLInputElement>, {value}: InputOnChangeData) => {
-        setInputStartDate(value);
-    };
-
     const renderPreview = () => {
-        const startDate = moment(inputStartDate);
-        const periods: IGeneratedPeriod[] = props.stressPeriods.toObject().stressperiods.filter((sp) =>
-            moment(sp.start_date_time).isSameOrAfter(startDate)
-        ).map((sp) => {
+        const periods: IGeneratedPeriod[] = props.stressPeriods.toObject().stressperiods.map((sp) => {
             const cSp: IGeneratedPeriod = {
                 ...sp,
                 isNew: false
@@ -126,41 +147,109 @@ const stressperiodsGenerator = (props: IProps) => {
         });
 
         return (
-            <React.Fragment>
+            <Form>
                 {periods.map((p, key) => (
                     <Form.Group key={key}>
-                        {p.isNew &&
-                        <Form.Field width={4}/>
-                        }
                         <Form.Input
-                            icon={
-                                <Icon
-                                    name="eye dropper"
-                                    onClick={handleChangeDate(p.start_date_time)}
-                                    inverted={true}
-                                    circular={true}
-                                    link={true}
-                                />
-                            }
                             value={moment(p.start_date_time).format('YYYY-MM-DD')}
-                            width={4}
-                        />
-                        {p.isNew &&
-                        <Form.Field>
+                            width={3}
+                        >
+                            <input/>
+                            <Button.Group>
+                                {p.isNew &&
+                                <Button
+                                    icon="trash"
+                                    onClick={handleClickRemove(p.id)}
+                                    negative={true}
+                                />
+                                }
+                                <Button
+                                    icon="calendar plus"
+                                    onClick={handleChangeDate(p.start_date_time)}
+                                    primary={true}
+                                />
+                            </Button.Group>
+                        </Form.Input>
+                        {moment(p.start_date_time).format('YYYY-MM-DD') === inputStartDate &&
+                        <React.Fragment>
+                            <Form.Field width={2}>
+                                <Input
+                                    onBlur={handleBlurAmount(inputAmount, setInputAmount)}
+                                    onChange={handleChangeAmount}
+                                    label="Add"
+                                    placeholder="Amount"
+                                    name="inputAmount"
+                                    type="number"
+                                    value={inputAmount}
+                                />
+                            </Form.Field>
+                            <Form.Select
+                                onChange={handleChangeUnit}
+                                options={[
+                                    {key: 0, text: inputAmount === 1 ? 'Day' : 'Days', value: EUnit.DAYS},
+                                    {key: 1, text: inputAmount === 1 ? 'Week' : 'Weeks', value: EUnit.WEEKS},
+                                    {key: 2, text: inputAmount === 1 ? 'Month' : 'Months', value: EUnit.MONTHS},
+                                    {key: 3, text: inputAmount === 1 ? 'Quarter' : 'Quarters', value: EUnit.QUARTERS},
+                                    {key: 4, text: inputAmount === 1 ? 'Year' : 'Years', value: EUnit.YEARS}
+                                ]}
+                                name="inputUnit"
+                                style={{width: '100px'}}
+                                value={inputUnit}
+                            />
+                            {useInterval &&
+                            <React.Fragment>
+                                <Form.Field width={2}>
+                                    <Input
+                                        onBlur={handleBlurAmount(intervalAmount, setIntervalAmount)}
+                                        onChange={handleChangeAmount}
+                                        placeholder="Amount"
+                                        type="number"
+                                        label="every"
+                                        name="intervalAmount"
+                                        value={intervalAmount}
+                                    />
+                                </Form.Field>
+                                <Form.Select
+                                    onChange={handleChangeUnit}
+                                    options={[
+                                        {key: 0, text: intervalAmount === 1 ? 'Day' : 'Days', value: EUnit.DAYS},
+                                        {key: 1, text: intervalAmount === 1 ? 'Week' : 'Weeks', value: EUnit.WEEKS},
+                                        {key: 2, text: intervalAmount === 1 ? 'Month' : 'Months', value: EUnit.MONTHS},
+                                        {
+                                            key: 3,
+                                            text: intervalAmount === 1 ? 'Quarter' : 'Quarters',
+                                            value: EUnit.QUARTERS
+                                        },
+                                        {key: 4, text: intervalAmount === 1 ? 'Year' : 'Years', value: EUnit.YEARS}
+                                    ]}
+                                    name="intervalUnit"
+                                    value={intervalUnit}
+                                    style={{width: '100px'}}
+                                />
+                                <Form.Field width={2}>
+                                    <Input
+                                        onBlur={handleBlurAmount(intervalTimes, setIntervalTimes)}
+                                        onChange={handleChangeAmount}
+                                        placeholder="Amount"
+                                        type="number"
+                                        label={intervalTimes === 1 ? 'time' : 'times'}
+                                        labelPosition="right"
+                                        name="intervalTimes"
+                                        value={intervalTimes}
+                                    />
+                                </Form.Field>
+                            </React.Fragment>
+                            }
                             <Button
-                                className="red"
-                                icon={true}
-                                labelPosition="left"
-                                onClick={handleClickRemove(p.id)}
-                            >
-                                <Icon name="trash"/>
-                                Remove
-                            </Button>
-                        </Form.Field>
+                                icon="plus"
+                                onClick={handleClickAdd}
+                                primary={true}
+                            />
+                        </React.Fragment>
                         }
                     </Form.Group>
                 ))}
-            </React.Fragment>
+            </Form>
         );
     };
 
@@ -169,67 +258,17 @@ const stressperiodsGenerator = (props: IProps) => {
             open={true}
             onClose={props.onCancel}
             dimmer={'blurring'}
+            size="large"
         >
             <Modal.Header>Generate stressperiods</Modal.Header>
             <Modal.Content>
-                <Form>
-                    <Form.Group>
-                        <Form.Input
-                            icon={
-                                <Icon
-                                    name="history"
-                                    onClick={handleClickReset}
-                                    inverted={true}
-                                    circular={true}
-                                    link={true}
-                                />
-                            }
-                            type="date"
-                            label="Start Date"
-                            name={'startDateTime'}
-                            value={inputStartDate}
-                            width={4}
-                            onChange={handleDateTimeChange}
-                        />
-                        <Form.Input
-                            label="Amount"
-                            onBlur={handleBlurAmount}
-                            onChange={handleChangeAmount}
-                            placeholder="Amount"
-                            type="number"
-                            value={inputAmount}
-                            width={4}
-                        />
-                        <Form.Select
-                            label="Unit"
-                            onChange={handleChangeUnit}
-                            options={[
-                                {key: 0, text: 'Days', value: EUnit.DAYS},
-                                {key: 1, text: 'Weeks', value: EUnit.WEEKS},
-                                {key: 2, text: 'Months', value: EUnit.MONTHS},
-                                {key: 3, text: 'Quarters', value: EUnit.QUARTERS},
-                                {key: 4, text: 'Years', value: EUnit.YEARS}
-                            ]}
-                            value={inputUnit}
-                            width={4}
-                        />
-                        <Form.Field width={4}>
-                            <label>&nbsp;</label>
-                            <Button
-                                className="blue"
-                                fluid={true}
-                                icon={true}
-                                labelPosition="left"
-                                onClick={handleClickAdd}
-                            >
-                                <Icon name="plus"/>
-                                Add
-                            </Button>
-                        </Form.Field>
-                    </Form.Group>
-                    <Divider/>
-                    {renderPreview()}
-                </Form>
+                <Checkbox
+                    checked={useInterval}
+                    label={{children: 'Interval Option'}}
+                    onChange={handleClickIntervalOption}
+                />
+                <Divider/>
+                {renderPreview()}
             </Modal.Content>
             <Modal.Actions>
                 <Button onClick={props.onCancel}>Cancel</Button>
