@@ -7,6 +7,7 @@ import DrnPackageProperties from './drnPackageProperties';
 import EvtPackageProperties from './evtPackageProperties';
 import FlowPackageProperties from './flowPackageProperties';
 import GhbPackageProperties from './ghbPackageProperties';
+import GmgPackageProperties from './gmgPackageProperties';
 import HobPackageProperties from './hobPackageProperties';
 import MfPackageProperties from './mfPackageProperties';
 import OcPackageProperties from './ocPackageProperties';
@@ -26,6 +27,7 @@ export {
     EvtPackageProperties,
     FlowPackageProperties,
     GhbPackageProperties,
+    GmgPackageProperties,
     HobPackageProperties,
     MfPackageProperties,
     OcPackageProperties,

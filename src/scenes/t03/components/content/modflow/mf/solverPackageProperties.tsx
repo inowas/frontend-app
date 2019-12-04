@@ -3,11 +3,12 @@ import {DropdownProps, Form} from 'semantic-ui-react';
 
 import FlopyModflow, {packagesMap, solverPackages} from '../../../../../../core/model/flopy/packages/mf/FlopyModflow';
 import FlopyModflowMfde4 from '../../../../../../core/model/flopy/packages/mf/FlopyModflowMfde4';
+import FlopyModflowMfgmg from '../../../../../../core/model/flopy/packages/mf/FlopyModflowMfgmg';
 import FlopyModflowMfpcg from '../../../../../../core/model/flopy/packages/mf/FlopyModflowMfpcg';
 import FlopyModflowSolverPackage from '../../../../../../core/model/flopy/packages/mf/FlopyModflowSolverPackage';
 import InfoPopup from '../../../../../shared/InfoPopup';
 import {documentation} from '../../../../defaults/flow';
-import {De4PackageProperties, PcgPackageProperties} from './index';
+import {De4PackageProperties, GmgPackageProperties, PcgPackageProperties} from './index';
 
 interface IProps {
     mfPackages: FlopyModflow;
@@ -41,6 +42,14 @@ const solverPackageProperties = (props: IProps) => {
                 return (
                     <De4PackageProperties
                         mfPackage={mf.getPackage(type) as FlopyModflowMfde4}
+                        onChange={props.onChange}
+                        readonly={readOnly}
+                    />
+                );
+            case 'gmg':
+                return (
+                    <GmgPackageProperties
+                        mfPackage={mf.getPackage(type) as FlopyModflowMfgmg}
                         onChange={props.onChange}
                         readonly={readOnly}
                     />
