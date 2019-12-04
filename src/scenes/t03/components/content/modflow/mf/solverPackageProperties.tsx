@@ -2,7 +2,8 @@ import React, {SyntheticEvent} from 'react';
 import {DropdownProps, Form} from 'semantic-ui-react';
 
 import FlopyModflow, {packagesMap, solverPackages} from '../../../../../../core/model/flopy/packages/mf/FlopyModflow';
-import FlopyModflowFlowPackage from '../../../../../../core/model/flopy/packages/mf/FlopyModflowFlowPackage';
+import FlopyModflowMfde4 from '../../../../../../core/model/flopy/packages/mf/FlopyModflowMfde4';
+import FlopyModflowMfpcg from '../../../../../../core/model/flopy/packages/mf/FlopyModflowMfpcg';
 import FlopyModflowSolverPackage from '../../../../../../core/model/flopy/packages/mf/FlopyModflowSolverPackage';
 import InfoPopup from '../../../../../shared/InfoPopup';
 import {documentation} from '../../../../defaults/flow';
@@ -10,7 +11,7 @@ import {De4PackageProperties, PcgPackageProperties} from './index';
 
 interface IProps {
     mfPackages: FlopyModflow;
-    onChange: (pck: FlopyModflowFlowPackage<any>) => void;
+    onChange: (pck: FlopyModflowSolverPackage<any>) => void;
     readonly: boolean;
 }
 
@@ -39,7 +40,7 @@ const solverPackageProperties = (props: IProps) => {
             case 'de4':
                 return (
                     <De4PackageProperties
-                        mfPackage={mf.getPackage(type)}
+                        mfPackage={mf.getPackage(type) as FlopyModflowMfde4}
                         onChange={props.onChange}
                         readonly={readOnly}
                     />
@@ -47,7 +48,7 @@ const solverPackageProperties = (props: IProps) => {
             case 'pcg':
                 return (
                     <PcgPackageProperties
-                        mfPackage={mf.getPackage(type)}
+                        mfPackage={mf.getPackage(type) as FlopyModflowMfpcg}
                         onChange={props.onChange}
                         readonly={readOnly}
                     />

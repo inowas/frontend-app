@@ -1,4 +1,4 @@
-import React, {SyntheticEvent, useState} from 'react';
+import React, {ChangeEvent, SyntheticEvent, useState} from 'react';
 import {DropdownProps, Form, Grid, Header, Input, Table} from 'semantic-ui-react';
 
 import {FlopyModflowMfdis, FlopyModflowMflpf} from '../../../../../../core/model/flopy/packages/mf';
@@ -31,12 +31,12 @@ const lpfPackageProperties = (props: IProps) => {
         props.onChange(FlopyModflowMflpf.fromObject({...mfPackage, [name]: value}));
     };
 
-    const handleOnChange = (e: any) => {
+    const handleOnChange = (e: ChangeEvent<HTMLInputElement>) => {
         const {name, value} = e.target;
         return setMfPackage({...mfPackage, [name]: value});
     };
 
-    const handleOnBlur = (e: any) => {
+    const handleOnBlur = (e: ChangeEvent<HTMLInputElement>) => {
         const {name, value} = e.target;
         props.onChange(FlopyModflowMflpf.fromObject({...mfPackage, [name]: value}));
     };
