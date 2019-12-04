@@ -16,7 +16,6 @@ interface IOwnProps {
     history: any;
     location: any;
     match: any;
-    readOnly: boolean;
 }
 
 interface IStateProps {

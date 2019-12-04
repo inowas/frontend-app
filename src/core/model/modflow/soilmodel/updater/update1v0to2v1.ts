@@ -56,7 +56,7 @@ const update1v0to2v1 = (soilmodel: ISoilmodel1v0, model: ModflowModel) => {
 
                 Object.keys(zone).filter((k) => paramsLegacy.includes(k)).forEach((key) => {
                     if (zone[key as parameterProp].isActive &&
-                        (key !== 'top' || (key === 'top') && layer.number === 0)) {
+                        (key !== 'top' || (key === 'top' && layer.number === 0))) {
                         const newRelation = {
                             data: {
                                 file: null

@@ -3,7 +3,7 @@ import {JSON_SCHEMA_URL} from '../../../services/api';
 
 class UserCommand extends AbstractCommand {
 
-    static changeUserProfile(userId, profile) {
+    public static changeUserProfile(userId: string, profile: any) {
         const name = 'changeUserProfile';
         return new UserCommand(name, {
             user_id: userId,
@@ -11,7 +11,7 @@ class UserCommand extends AbstractCommand {
         }, JSON_SCHEMA_URL + '/commands/' + name);
     }
 
-    static changeUserPassword(userId, password, newPassword) {
+    public static changeUserPassword(userId: string, password: string, newPassword: string) {
         const name = 'changeUserPassword';
         return new UserCommand(name, {
             user_id: userId,
