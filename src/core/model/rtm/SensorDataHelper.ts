@@ -1,5 +1,5 @@
 import moment from 'moment';
-import {ISensorData, IServerSensorData} from './Sensor.type';
+import {IPrometheusResponseData, ISensorData, IServerSensorData} from './Sensor.type';
 
 export async function retrieveData(sensorData: ISensorData, caching: boolean = false) {
     const url = new URL(`${sensorData.url}`);
@@ -34,6 +34,22 @@ export async function retrieveData(sensorData: ISensorData, caching: boolean = f
         }
 
         return data;
+    } catch (e) {
+        return null;
+    }
+}
+
+export async function retrievePrometheusData(url: string) {
+    const response = await fetch(
+        url.toString(), {
+            method: 'get',
+            headers: {
+                'Content-Type': 'application/json',
+            }
+        });
+
+    try {
+        return await response.json() as IPrometheusResponseData;
     } catch (e) {
         return null;
     }

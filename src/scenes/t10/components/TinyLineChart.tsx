@@ -3,12 +3,10 @@ import {DataPoint} from 'downsample/dist/types';
 import React from 'react';
 import {Line, LineChart, YAxis} from 'recharts';
 import {Loader} from 'semantic-ui-react';
-import FileDataSource from '../../../core/model/rtm/FileDataSource';
-import {IDateTimeValue} from '../../../core/model/rtm/Sensor.type';
-import SensorDataSource from '../../../core/model/rtm/SensorDataSource';
+import {DataSource, IDateTimeValue} from '../../../core/model/rtm/Sensor.type';
 
 interface IProps {
-    datasource: SensorDataSource | FileDataSource | null;
+    datasource: DataSource | null;
     color?: string;
     begin?: number;
     end?: number;

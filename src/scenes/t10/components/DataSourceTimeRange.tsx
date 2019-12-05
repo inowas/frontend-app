@@ -1,10 +1,9 @@
 import moment from 'moment';
 import React from 'react';
-import FileDataSource from '../../../core/model/rtm/FileDataSource';
-import SensorDataSource from '../../../core/model/rtm/SensorDataSource';
+import {DataSource} from '../../../core/model/rtm/Sensor.type';
 
 interface IProps {
-    datasource: SensorDataSource | FileDataSource | null;
+    datasource: DataSource | null;
     color?: string;
 }
 
