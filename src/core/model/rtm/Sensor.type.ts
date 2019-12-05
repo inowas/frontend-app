@@ -2,6 +2,7 @@ import {Point} from 'geojson';
 import {IDataDropperFile} from '../../../services/dataDropper/DataDropper.type';
 import FileDataSource from './FileDataSource';
 import {IProcessing} from './processing/Processing.type';
+import PrometheusDataSource from './PrometheusDataSource';
 import {IDateTimeValue} from './Sensor.type';
 import SensorDataSource from './SensorDataSource';
 
@@ -20,11 +21,42 @@ export interface ISensorParameter {
     processings: IProcessing[];
 }
 
-export type DataSource = FileDataSource | SensorDataSource;
-export type IDataSource = ISensorDataSource | IFileDataSource;
+export type DataSource = FileDataSource | PrometheusDataSource | SensorDataSource;
+export type IDataSource = IFileDataSource | IPrometheusDataSource | ISensorDataSource;
 
 export type IFileDataSource = IReducedFileDataSource & IFetchDataSource;
 export type ISensorDataSource = IReducedSensorDataSource & IFetchDataSource;
+
+export interface IPrometheusDataSource {
+    id: string;
+    protocol: string;
+    hostname: string;
+    query: string;
+    start: number;
+    end: number;
+    step: number;
+    fetching?: boolean;
+    fetched?: boolean;
+    error?: any;
+    data?: IDateTimeValue[] | null;
+}
+
+export interface IPrometheusResponseData {
+    data: {
+        result: IPrometheusResult[];
+        resultType: string;
+    };
+    status: string;
+    error?: string;
+}
+
+interface IPrometheusResult {
+    metric: {
+        [key: string]: number | string;
+    };
+    value?: [number, string];
+    values?: Array<[number, string]>;
+}
 
 export interface IReducedSensorDataSource {
     id: string;

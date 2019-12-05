@@ -2,6 +2,7 @@ import React, {useEffect, useState} from 'react';
 import {Button, Dropdown, Grid, Header, Icon, Label, Segment, Table} from 'semantic-ui-react';
 import {DataSourceCollection, DataSourceFactory, Rtm} from '../../../core/model/rtm';
 import FileDataSource from '../../../core/model/rtm/FileDataSource';
+import PrometheusDataSource from '../../../core/model/rtm/PrometheusDataSource';
 import {DataSource, IDataSource, ISensorParameter} from '../../../core/model/rtm/Sensor.type';
 import SensorDataSource from '../../../core/model/rtm/SensorDataSource';
 import {colors, dataSourceList, parameterList} from '../defaults';
@@ -9,6 +10,7 @@ import {
     DataSourcesChart,
     DataSourceTimeRange,
     FileDatasourceEditor,
+    PrometheusDatasourceEditor,
     SensorDatasourceEditor,
     TinyLineChart
 } from './index';
@@ -49,6 +51,10 @@ const dataSources = (props: IProps) => {
     const getDsType = (ds: DataSource) => {
         if (ds instanceof FileDataSource) {
             return 'file';
+        }
+
+        if (ds instanceof PrometheusDataSource) {
+            return 'prometheus';
         }
 
         return 'online';
@@ -144,6 +150,13 @@ const dataSources = (props: IProps) => {
                             onSave={handleAddDataSource}
                         />
                     );
+                case 'prometheus':
+                    return (
+                        <PrometheusDatasourceEditor
+                            onCancel={handleCancelDataSourceClick}
+                            onSave={handleAddDataSource}
+                        />
+                    );
                 case 'file':
                     return (
                         <FileDatasourceEditor
@@ -158,7 +171,17 @@ const dataSources = (props: IProps) => {
             if (editDatasource instanceof SensorDataSource) {
                 return (
                     <SensorDatasourceEditor
-                        dataSource={editDatasource}
+                        dataSource={editDatasource as SensorDataSource}
+                        onCancel={handleCancelDataSourceClick}
+                        onSave={handleUpdateDataSource}
+                    />
+                );
+            }
+
+            if (editDatasource instanceof PrometheusDataSource) {
+                return (
+                    <PrometheusDatasourceEditor
+                        dataSource={editDatasource as PrometheusDataSource}
                         onCancel={handleCancelDataSourceClick}
                         onSave={handleUpdateDataSource}
                     />
@@ -167,7 +190,7 @@ const dataSources = (props: IProps) => {
 
             return (
                 <FileDatasourceEditor
-                    dataSource={editDatasource}
+                    dataSource={editDatasource as FileDataSource}
                     onCancel={handleCancelDataSourceClick}
                     onSave={handleUpdateDataSource}
                 />

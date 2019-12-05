@@ -3,6 +3,7 @@ import DataSources from './DataSources';
 import DataSourcesChart from './DataSourcesChart';
 import DataSourceTimeRange from './DataSourceTimeRange';
 import FileDatasourceEditor from './FileDatasourceEditor';
+import PrometheusDatasourceEditor from './PrometheusDatasourceEditor';
 import SensorDatasourceEditor from './SensorDatasourceEditor';
 import SensorList from './SensorList';
 import SensorMap from './SensorMap';
@@ -16,10 +17,11 @@ export {
     DataSourcesChart,
     DataSourceTimeRange,
     FileDatasourceEditor,
-    SensorList,
-    Sensors,
+    PrometheusDatasourceEditor,
     SensorDatasourceEditor,
+    SensorList,
     SensorMap,
     SensorMetaData,
+    Sensors,
     TinyLineChart
 };
