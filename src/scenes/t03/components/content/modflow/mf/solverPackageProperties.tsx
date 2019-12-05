@@ -5,10 +5,11 @@ import FlopyModflow, {packagesMap, solverPackages} from '../../../../../../core/
 import FlopyModflowMfde4 from '../../../../../../core/model/flopy/packages/mf/FlopyModflowMfde4';
 import FlopyModflowMfgmg from '../../../../../../core/model/flopy/packages/mf/FlopyModflowMfgmg';
 import FlopyModflowMfpcg from '../../../../../../core/model/flopy/packages/mf/FlopyModflowMfpcg';
+import FlopyModflowMfsor from '../../../../../../core/model/flopy/packages/mf/FlopyModflowMfsor';
 import FlopyModflowSolverPackage from '../../../../../../core/model/flopy/packages/mf/FlopyModflowSolverPackage';
 import InfoPopup from '../../../../../shared/InfoPopup';
 import {documentation} from '../../../../defaults/flow';
-import {De4PackageProperties, GmgPackageProperties, PcgPackageProperties} from './index';
+import {De4PackageProperties, GmgPackageProperties, PcgPackageProperties, SorPackageProperties} from './index';
 
 interface IProps {
     mfPackages: FlopyModflow;
@@ -58,6 +59,14 @@ const solverPackageProperties = (props: IProps) => {
                 return (
                     <PcgPackageProperties
                         mfPackage={mf.getPackage(type) as FlopyModflowMfpcg}
+                        onChange={props.onChange}
+                        readonly={readOnly}
+                    />
+                );
+            case 'sor':
+                return (
+                    <SorPackageProperties
+                        mfPackage={mf.getPackage(type) as FlopyModflowMfsor}
                         onChange={props.onChange}
                         readonly={readOnly}
                     />

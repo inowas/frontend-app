@@ -48,7 +48,7 @@ const de4PackageProperties = (props: IProps) => {
 
     return (
         <Form>
-            <Form.Group>
+            <Form.Group widths="equal">
                 <Form.Field>
                     <label>Maximum number of iterations (itmx)</label>
                     <Input
@@ -56,7 +56,7 @@ const de4PackageProperties = (props: IProps) => {
                         readOnly={readOnly}
                         name={'itmx'}
                         value={mfPackage.itmx}
-                        icon={renderInfoPopup(documentation.itmx, 'itmx')}
+                        icon={renderInfoPopup(documentation.itmx, 'ITMX')}
                         onBlur={handleOnBlur}
                         onChange={handleOnChange}
                     />
@@ -67,18 +67,7 @@ const de4PackageProperties = (props: IProps) => {
                         readOnly={readOnly}
                         name={'mxup'}
                         value={mfPackage.mxup}
-                        icon={renderInfoPopup(documentation.mxup, 'mxup')}
-                        onBlur={handleOnBlur}
-                        onChange={handleOnChange}
-                    />
-                </Form.Field>
-                <Form.Field>
-                    <label>Maximum number of lower equations (mxlow)</label>
-                    <Input
-                        readOnly={readOnly}
-                        name="mxlow"
-                        value={mfPackage.mxlow}
-                        icon={renderInfoPopup(documentation.mxlow, 'mxlow')}
+                        icon={renderInfoPopup(documentation.mxup, 'MXUP')}
                         onBlur={handleOnBlur}
                         onChange={handleOnChange}
                     />
@@ -87,16 +76,30 @@ const de4PackageProperties = (props: IProps) => {
 
             <Form.Group widths="equal">
                 <Form.Field>
+                    <label>Maximum number of lower equations (mxlow)</label>
+                    <Input
+                        readOnly={readOnly}
+                        name="mxlow"
+                        value={mfPackage.mxlow}
+                        icon={renderInfoPopup(documentation.mxlow, 'MXLOW')}
+                        onBlur={handleOnBlur}
+                        onChange={handleOnChange}
+                    />
+                </Form.Field>
+                <Form.Field>
                     <label>Maximum bandwidth (mxbw)</label>
                     <Input
                         readOnly={readOnly}
                         name="mxbw"
                         value={mfPackage.mxbw}
-                        icon={renderInfoPopup(documentation.mxbw, 'mxbw')}
+                        icon={renderInfoPopup(documentation.mxbw, 'MXBW')}
                         onBlur={handleOnBlur}
                         onChange={handleOnChange}
                     />
                 </Form.Field>
+            </Form.Group>
+
+            <Form.Group widths="equal">
                 <Form.Field>
                     <label>Frequency of change (ifreq)</label>
                     <Form.Dropdown
@@ -115,7 +118,7 @@ const de4PackageProperties = (props: IProps) => {
                 </Form.Field>
                 <Form.Field width={1}>
                     <label>&nbsp;</label>
-                    {renderInfoPopup(documentation.ichflg, 'ifreq', 'top left', true)}
+                    {renderInfoPopup(documentation.ichflg, 'IFREQ', 'top left', true)}
                 </Form.Field>
 
                 <Form.Field>
@@ -136,7 +139,7 @@ const de4PackageProperties = (props: IProps) => {
                 </Form.Field>
                 <Form.Field width={1}>
                     <label>&nbsp;</label>
-                    {renderInfoPopup(documentation.mutd4, 'mutd4', 'top left', true)}
+                    {renderInfoPopup(documentation.mutd4, 'MUTD4', 'top left', true)}
                 </Form.Field>
             </Form.Group>
 
@@ -147,7 +150,7 @@ const de4PackageProperties = (props: IProps) => {
                         readOnly={readOnly}
                         name="accl"
                         value={mfPackage.accl}
-                        icon={renderInfoPopup(documentation.accl, 'accl')}
+                        icon={renderInfoPopup(documentation.accl, 'ACCL')}
                         onBlur={handleOnBlur}
                         onChange={handleOnChange}
                     />
@@ -158,7 +161,7 @@ const de4PackageProperties = (props: IProps) => {
                         readOnly={readOnly}
                         name="hclose"
                         value={mfPackage.hclose}
-                        icon={renderInfoPopup(documentation.hclose, 'hclose')}
+                        icon={renderInfoPopup(documentation.hclose, 'HCLOSE')}
                         onBlur={handleOnBlur}
                         onChange={handleOnChange}
                     />
@@ -169,7 +172,7 @@ const de4PackageProperties = (props: IProps) => {
                         readOnly={readOnly}
                         name="iprd4"
                         value={mfPackage.iprd4}
-                        icon={renderInfoPopup(documentation.iprd4, 'iprd4')}
+                        icon={renderInfoPopup(documentation.iprd4, 'IPRD4')}
                         onBlur={handleOnBlur}
                         onChange={handleOnChange}
                     />

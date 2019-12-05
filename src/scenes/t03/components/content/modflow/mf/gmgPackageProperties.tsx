@@ -112,7 +112,7 @@ const gmgPackageProperties = (props: IProps) => {
                             onChange={handleOnChange}
                         />
                     </Form.Field>
-                    <Form.Field>
+                    <Form.Field width={14}>
                         <label>Damping option (IADAMP)</label>
                         <Form.Dropdown
                             options={[
