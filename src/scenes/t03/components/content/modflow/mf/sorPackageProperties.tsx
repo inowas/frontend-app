@@ -1,5 +1,5 @@
-import React, {ChangeEvent, SyntheticEvent, useState} from 'react';
-import {DropdownProps, Form, Input, PopupProps} from 'semantic-ui-react';
+import React, {ChangeEvent, useState} from 'react';
+import {Form, Input, PopupProps} from 'semantic-ui-react';
 
 import {FlopyModflowMfsor} from '../../../../../../core/model/flopy/packages/mf';
 import {IFlopyModflowMfsor} from '../../../../../../core/model/flopy/packages/mf/FlopyModflowMfsor';
@@ -15,11 +15,6 @@ interface IProps {
 const sorPackageProperties = (props: IProps) => {
 
     const [mfPackage, setMfPackage] = useState<IFlopyModflowMfsor>(props.mfPackage.toObject());
-    const handleOnSelect = (e: SyntheticEvent<HTMLElement, Event>, data: DropdownProps) => {
-        const {name, value} = data;
-        setMfPackage({...mfPackage, [name]: value});
-        props.onChange(FlopyModflowMfsor.fromObject({...mfPackage, [name]: value}));
-    };
 
     const handleOnChange = (e: ChangeEvent<HTMLInputElement>) => {
         const {name, value} = e.target;
