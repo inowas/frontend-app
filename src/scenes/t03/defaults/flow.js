@@ -399,5 +399,40 @@ export const documentation = {
         accl: <div>is the acceleration variable, usually between 1.0 and 2.0.</div>,
         hclose: <div>is the head change criterion for convergence. When the maximum absolute value of head change from all nodes during an iteration is less than or equal to HCLOSE, iteration stops.</div>,
         iprsor: <div>is the printout interval for SOR. IF IPRSOR is equal to zero, it is changed to 999. The maximum head change (positive or negative) is printed for each iteration of a time step whenever the time step is an even multiple of IPRSOR. This printout also occurs at the end of each stress period regardless of the value of IPRSOR.</div>,
+    },
+
+
+    // SMS
+    sms: {
+        hclose: <div>TODO!</div>,
+        hiclose: <div>TODO!</div>,
+        mxiter: <div>TODO!</div>,
+        iter1: <div>TODO!</div>,
+        iprsms: <div>TODO!</div>,
+        nonlinmeth: <div>TODO!</div>,
+        linmeth: <div>TODO!</div>,
+        options: <div>TODO!</div>,
+        theta: <div>TODO!</div>,
+        akappa: <div>TODO!</div>,
+        gamma: <div>TODO!</div>,
+        amomentum: <div>TODO!</div>,
+        numtrack: <div>TODO!</div>,
+        btol: <div>TODO!</div>,
+        breduc: <div>TODO!</div>,
+        reslim: <div>TODO!</div>,
+        iacl: <div>TODO!</div>,
+        norder: <div>TODO!</div>,
+        level: <div>TODO!</div>,
+        north: <div>TODO!</div>,
+        iredsys: <div>TODO!</div>,
+        rrctol: <div>TODO!</div>,
+        idroptol: <div>TODO!</div>,
+        epsrn: <div>TODO!</div>,
+        clin: <div>TODO!</div>,
+        ipc: <div>TODO!</div>,
+        iscl: <div>TODO!</div>,
+        iord: <div>TODO!</div>,
+        rclosepcgu: <div>TODO!</div>,
+        relaxpcgu: <div>TODO!</div>
     }
 };
