@@ -1,6 +1,6 @@
 import {LTOB} from 'downsample';
 import {DataPoint} from 'downsample/dist/types';
-import React from 'react';
+import React, {useEffect, useState} from 'react';
 import {Line, LineChart, YAxis} from 'recharts';
 import {Loader} from 'semantic-ui-react';
 import {DataSource, IDateTimeValue} from '../../../core/model/rtm/Sensor.type';
@@ -14,12 +14,19 @@ interface IProps {
 
 const tinyLineChart = (props: IProps) => {
 
+    const [data, setData] = useState<any>(null);
+
+    useEffect(() => {
+        if (props.datasource && props.datasource.data) {
+            setData(props.datasource.data);
+        }
+    }, [props.datasource]);
+
     const {datasource} = props;
     if (!datasource) {
         return null;
     }
 
-    const {data} = datasource;
     if (!data) {
         return (<Loader active={true} inline={true}/>);
     }
