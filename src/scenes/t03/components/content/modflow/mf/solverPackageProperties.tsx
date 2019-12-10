@@ -5,12 +5,13 @@ import FlopyModflow, {packagesMap, solverPackages} from '../../../../../../core/
 import FlopyModflowMfde4 from '../../../../../../core/model/flopy/packages/mf/FlopyModflowMfde4';
 import FlopyModflowMfgmg from '../../../../../../core/model/flopy/packages/mf/FlopyModflowMfgmg';
 import FlopyModflowMfpcg from '../../../../../../core/model/flopy/packages/mf/FlopyModflowMfpcg';
-import FlopyModflowMfsor from '../../../../../../core/model/flopy/packages/mf/FlopyModflowMfsor';
+import FlopyModflowMfpcgn from '../../../../../../core/model/flopy/packages/mf/FlopyModflowMfpcgn';
 import FlopyModflowMfsms from '../../../../../../core/model/flopy/packages/mf/FlopyModflowMfsms';
+import FlopyModflowMfsor from '../../../../../../core/model/flopy/packages/mf/FlopyModflowMfsor';
 import FlopyModflowSolverPackage from '../../../../../../core/model/flopy/packages/mf/FlopyModflowSolverPackage';
 import InfoPopup from '../../../../../shared/InfoPopup';
 import {documentation} from '../../../../defaults/flow';
-import {De4PackageProperties, GmgPackageProperties, PcgPackageProperties, SorPackageProperties, SmsPackageProperties} from './index';
+import {De4PackageProperties, GmgPackageProperties, PcgPackageProperties, PcgnPackageProperties, SmsPackageProperties, SorPackageProperties} from './index';
 
 interface IProps {
     mfPackages: FlopyModflow;
@@ -64,10 +65,10 @@ const solverPackageProperties = (props: IProps) => {
                         readonly={readOnly}
                     />
                 );
-            case 'sor':
+            case 'pcgn':
                 return (
-                    <SorPackageProperties
-                        mfPackage={mf.getPackage(type) as FlopyModflowMfsor}
+                    <PcgnPackageProperties
+                        mfPackage={mf.getPackage(type) as FlopyModflowMfpcgn}
                         onChange={props.onChange}
                         readonly={readOnly}
                     />
@@ -80,7 +81,14 @@ const solverPackageProperties = (props: IProps) => {
                         readonly={readOnly}
                     />
                 );
-
+            case 'sor':
+                return (
+                    <SorPackageProperties
+                        mfPackage={mf.getPackage(type) as FlopyModflowMfsor}
+                        onChange={props.onChange}
+                        readonly={readOnly}
+                    />
+                );
             default:
                 return null;
         }

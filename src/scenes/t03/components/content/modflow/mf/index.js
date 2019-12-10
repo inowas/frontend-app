@@ -12,11 +12,12 @@ import HobPackageProperties from './hobPackageProperties';
 import MfPackageProperties from './mfPackageProperties';
 import OcPackageProperties from './ocPackageProperties';
 import PcgPackageProperties from './pcgPackageProperties';
+import PcgnPackageProperties from './pcgnPackageProperties';
 import RchPackageProperties from './rchPackageProperties';
 import RivPackageProperties from './rivPackageProperties';
+import SmsPackageProperties from './smsPackageProperties';
 import SolverPackageProperties from './solverPackageProperties';
 import SorPackageProperties from './sorPackageProperties';
-import SmsPackageProperties from './smsPackageProperties';
 import WelPackageProperties from './welPackageProperties';
 
 export {
@@ -34,10 +35,11 @@ export {
     MfPackageProperties,
     OcPackageProperties,
     PcgPackageProperties,
+    PcgnPackageProperties,
     RchPackageProperties,
     RivPackageProperties,
-    SorPackageProperties,
-    SolverPackageProperties,
     SmsPackageProperties,
+    SolverPackageProperties,
+    SorPackageProperties,
     WelPackageProperties
 }

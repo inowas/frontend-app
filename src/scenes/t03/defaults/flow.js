@@ -330,25 +330,6 @@ export const documentation = {
         filenames: <div>TODO!</div>,
     },
 
-    // PCG
-    pcg: {
-        mxiter: <div>TODO!</div>,
-        iter1: <div>TODO!</div>,
-        npcond: <div>TODO!</div>,
-        hclose: <div>TODO!</div>,
-        rclose: <div>TODO!</div>,
-        relax: <div>TODO!</div>,
-        nbpol: <div>TODO!</div>,
-        iprpcg: <div>TODO!</div>,
-        mutpcg: <div>TODO!</div>,
-        damp: <div>TODO!</div>,
-        dampt: <div>TODO!</div>,
-        ihcofadd: <div>TODO!</div>,
-        extension: <div>TODO!</div>,
-        unitnumber: <div>TODO!</div>,
-        filenames: <div>TODO!</div>,
-    },
-
     // GMG
     gmg: {
         mxiter: <div>For linear problems, set to 1. For nonlinear problems, set to a higher number though it is usually unnecessary to go above 100.</div>,
@@ -393,14 +374,49 @@ export const documentation = {
         filenames: <div>TODO!</div>,
     },
 
-    // SOR
-    sor: {
-        mxiter: <div>is the maximum number of iterations allowed in a time step.</div>,
-        accl: <div>is the acceleration variable, usually between 1.0 and 2.0.</div>,
-        hclose: <div>is the head change criterion for convergence. When the maximum absolute value of head change from all nodes during an iteration is less than or equal to HCLOSE, iteration stops.</div>,
-        iprsor: <div>is the printout interval for SOR. IF IPRSOR is equal to zero, it is changed to 999. The maximum head change (positive or negative) is printed for each iteration of a time step whenever the time step is an even multiple of IPRSOR. This printout also occurs at the end of each stress period regardless of the value of IPRSOR.</div>,
+    // PCG
+    pcg: {
+        mxiter: <div>TODO!</div>,
+        iter1: <div>TODO!</div>,
+        npcond: <div>TODO!</div>,
+        hclose: <div>TODO!</div>,
+        rclose: <div>TODO!</div>,
+        relax: <div>TODO!</div>,
+        nbpol: <div>TODO!</div>,
+        iprpcg: <div>TODO!</div>,
+        mutpcg: <div>TODO!</div>,
+        damp: <div>TODO!</div>,
+        dampt: <div>TODO!</div>,
+        ihcofadd: <div>TODO!</div>,
+        extension: <div>TODO!</div>,
+        unitnumber: <div>TODO!</div>,
+        filenames: <div>TODO!</div>,
     },
 
+    // PCGN
+    pcgn: {
+        iter_mo: <div>TODO!</div>,
+        iter_mi: <div>TODO!</div>,
+        close_h: <div>TODO!</div>,
+        close_r: <div>TODO!</div>,
+        relax: <div>TODO!</div>,
+        ifill: <div>TODO!</div>,
+        unit_pc: <div>TODO!</div>,
+        unit_ts: <div>TODO!</div>,
+        adamp: <div>TODO!</div>,
+        damp: <div>TODO!</div>,
+        damp_lb: <div>TODO!</div>,
+        rate_d: <div>TODO!</div>,
+        chglimit: <div>TODO!</div>,
+        acnvg: <div>TODO!</div>,
+        cnvg_lb: <div>TODO!</div>,
+        mcnvg: <div>TODO!</div>,
+        rate_c: <div>TODO!</div>,
+        ipunit: <div>TODO!</div>,
+        extension: <div>TODO!</div>,
+        unitnumber: <div>TODO!</div>,
+        filenames: <div>TODO!</div>,
+    },
 
     // SMS
     sms: {
@@ -465,5 +481,13 @@ export const documentation = {
             &#8226; 2 = minimum degree ordering</div>,
         rclosepcgu: <div>is a real value that defines the flow residual tolerance for convergence of the PCGU linear solver. This value represents the maximum allowable residual at any single node. Value is in units of length cubed per time, and must be consistent with MODFLOW-USG length and time units. Usually a value of 1.0x10-1 is sufficient for the flow-residual criteria when meters and seconds are the defined MODFLOW-USG length and time.</div>,
         relaxpcgu: <div>is a real value that defines the relaxation factor used by the MILU(0) preconditioner. RELAXPCGU is unitless and should be greater than or equal to 0.0 and less than or equal to 1.0. RELAXPCGU values of about 1.0 are commonly used, and experience suggests that convergence can be optimized in some cases with RELAXPCGU values of 0.97. A RELAXPCGU value of 0.0 will result in ILU(0) preconditioning. RELAXPCGU is only specified if IPC=3. If RELAXPCGU is not specified and IPC=3, then a default value of 0.97 will be assigned to RELAXPCGU.</div>
+    },
+
+    // SOR
+    sor: {
+        mxiter: <div>is the maximum number of iterations allowed in a time step.</div>,
+        accl: <div>is the acceleration variable, usually between 1.0 and 2.0.</div>,
+        hclose: <div>is the head change criterion for convergence. When the maximum absolute value of head change from all nodes during an iteration is less than or equal to HCLOSE, iteration stops.</div>,
+        iprsor: <div>is the printout interval for SOR. IF IPRSOR is equal to zero, it is changed to 999. The maximum head change (positive or negative) is printed for each iteration of a time step whenever the time step is an even multiple of IPRSOR. This printout also occurs at the end of each stress period regardless of the value of IPRSOR.</div>,
     }
 };
