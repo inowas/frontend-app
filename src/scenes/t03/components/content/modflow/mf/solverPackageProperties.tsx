@@ -91,7 +91,7 @@ const solverPackageProperties = (props: IProps) => {
             <Form>
                 <Form.Group>
                     <Form.Field width={15}>
-                        <label>Flow Packages</label>
+                        <label>Solver Packages</label>
                         <Form.Dropdown
                             options={solverPackages.map((sp) => ({
                                 key: sp, value: sp, text: sp

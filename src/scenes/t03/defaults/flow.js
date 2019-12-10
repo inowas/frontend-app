@@ -404,35 +404,66 @@ export const documentation = {
 
     // SMS
     sms: {
-        hclose: <div>TODO!</div>,
-        hiclose: <div>TODO!</div>,
-        mxiter: <div>TODO!</div>,
-        iter1: <div>TODO!</div>,
-        iprsms: <div>TODO!</div>,
-        nonlinmeth: <div>TODO!</div>,
-        linmeth: <div>TODO!</div>,
-        options: <div>TODO!</div>,
-        theta: <div>TODO!</div>,
-        akappa: <div>TODO!</div>,
-        gamma: <div>TODO!</div>,
-        amomentum: <div>TODO!</div>,
-        numtrack: <div>TODO!</div>,
-        btol: <div>TODO!</div>,
-        breduc: <div>TODO!</div>,
-        reslim: <div>TODO!</div>,
-        iacl: <div>TODO!</div>,
-        norder: <div>TODO!</div>,
-        level: <div>TODO!</div>,
-        north: <div>TODO!</div>,
-        iredsys: <div>TODO!</div>,
-        rrctol: <div>TODO!</div>,
-        idroptol: <div>TODO!</div>,
-        epsrn: <div>TODO!</div>,
-        clin: <div>TODO!</div>,
-        ipc: <div>TODO!</div>,
-        iscl: <div>TODO!</div>,
-        iord: <div>TODO!</div>,
-        rclosepcgu: <div>TODO!</div>,
-        relaxpcgu: <div>TODO!</div>
+        options: <div>An optional keyword setting that activates solver options:<br/>
+            &#8226; SIMPLE indicates that default solver input values will be defined that work well for nearly linear models. This would be used for models that do not include nonlinear stress packages (e.g. UZF, SFR) and models that are either confined or consist of a single unconfined layer that is thick enough to contain the water table within a single layer.<br/>
+            &#8226; MODERATE indicates that default solver input values will be defined that work well for moderately nonlinear models.  This would be used for models that include nonlinear stress packages and models that consist of one or more unconfined layers. The “MODERATE” option should be used when the “SIMPLE” option does not result in successful convergence.<br/>
+            &#8226; COMPLEX indicates that default solver input values will be defined that work well for highly nonlinear models. This would be used for models that include nonlinear stress packages and models that consist of one or more unconfined layers representing complex geology and sw/gw interaction. The “COMPLEX” option should be used when the “MODERATE” option does not result in successful convergence.<br/>
+            &#8226; CUSTOM indicates that no keyword will be included and the full list of applicable settings will be translated into the SMS package.</div>,
+        hclose: <div>is the head change criterion for convergence of the outer (nonlinear) iterations, in units of length. When the maximum absolute value of the head change at all nodes during an iteration is less than or equal to HCLOSE, iteration stops. Commonly, HCLOSE equals 0.01.</div>,
+        hiclose: <div>is the head change criterion for convergence of the inner (linear) iterations, in units of length. When the maximum absolute value of the head change at all nodes during an iteration is less than or equal to HICLOSE, the matrix solver assumes convergence. Commonly, HICLOSE is set an order of magnitude less than HCLOSE.</div>,
+        mxiter: <div>is the maximum number of outer (nonlinear) iterations – that is, calls to the solution routine. For a linear problem MXITER should be 1.</div>,
+        iter1: <div>is the maximum number of inner (linear) iterations. The number typically depends on the characteristics of the matrix solution scheme being used. For nonlinear problems, ITER1 usually ranges from 60 to 600; a value of 100 will be sufficient for most linear problems.</div>,
+        iprsms: <div>is a flag that controls printing of convergence information from the solver:<br/>
+            &#8226; 0 is print nothing;<br/>
+            &#8226; 1 is print only the total number of iterations and nonlinear residual reduction summaries;<br/>
+            &#8226; 2 is print matrix solver information in addition to above.</div>,
+        nonlinmeth: <div>is a flag that controls the nonlinear solution method and under- relaxation schemes.<br/>
+            &#8226; 0 is Picard iteration scheme is used without any under-relaxation schemes involved.<br/>
+            &#8226; &#62; 0 is Newton-Raphson iteration scheme is used with under-relaxation. Note that the Newton-Raphson linearization scheme is available only for the upstream weighted solution scheme of the BCF and LPF packages. <br/>
+            &#8226; &#60; 0 is Picard iteration scheme is used with under-relaxation. The absolute value of NONLINMETH determines the underrelaxation scheme used.<br/>
+            &#8226; 1 or -1, then Delta-Bar-Delta under-relaxation is used.<br/>
+            &#8226; 2 or -2 then Cooley under-relaxation scheme is used. Note that the under-relaxation schemes are used in conjunction with gradient based methods, however, experience has indicated that the Cooley under-relaxation and damping work well also for the Picard scheme with the wet/dry options of MODFLOW.</div>,
+        linmeth: <div>is a flag that controls the matrix solution method.<br/>
+            &#8226; (1) use Ibaraki chi-MD matrix solver: an asymmetric matrix solver called ᵪMD (chi-MD) (Ibaraki, 2005),<br/>
+            &#8226; (2) use White-Hughes matrix solver: an unstructured preconditioned conjugate gradient (PCGU) solver developed by White and Hughes (2011) for symmetric equations,<br/>
+            &#8226; (3) use SAMG matrix solver: the advanced/proprietary SAMG solver developed at the Frauenhofer Institute.</div>,
+        theta: <div>is the reduction factor for the learning rate (under-relaxation term) of the delta-bar-delta algorithm. The value of THETA is between zero and one. If the change in the variable (head) is of opposite sign to that of the previous iteration, the under-relaxation term is reduced by a factor of THETA. The value usually ranges from 0.3 to 0.9; a value of 0.7 works well for most problems.</div>,
+        akappa: <div>is the increment for the learning rate (under-relaxation term) of the delta-bar-delta algorithm. The value of AKAPPA is between zero and one. If the change in the variable (head) is of the same sign to that of the previous iteration, the under-relaxation term is increased by an increment of AKAPPA. The value usually ranges from 0.03 to 0.3; a value of 0.1 works well for most problems.</div>,
+        gamma: <div>is the history or memory term factor of the delta-bar-delta algorithm. Gamma is between zero and 1 but cannot be equal to one. When GAMMA is zero, only the most recent history (previous iteration value) is maintained. As GAMMA is increased, past history of iteration changes has greater influence on the memory term. The memory term is maintained as an exponential average of past changes. Retaining some past history can overcome granular behavior in the calculated function surface and therefore helps to overcome cyclic patterns of non-convergence. The value usually ranges from 0.1 to 0.3; a value of 0.2 works well for most problems.</div>,
+        amomentum: <div>is the fraction of past history changes that is added as a momentum term to the step change for a nonlinear iteration. The value of AMOMENTUM is between zero and one. A large momentum term should only be used when small learning rates are expected. Small amounts of the momentum term help convergence. The value usually ranges from 0.0001 to 0.1; a value of 0.001 works well for most problems.</div>,
+        numtrack: <div>is the maximum number of backtracking iterations allowed for residual reduction computations. If NUMTRACK = 0 then the backtracking iterations are omitted. The value usually ranges from 2 to 20; a value of 10 works well for most problems.</div>,
+        btol: <div>is the tolerance for residual change that is allowed for residual reduction computations. BTOL should not be less than one to avoid getting stuck in local minima. A large value serves to check for extreme residual increases, while a low value serves to control step size more severely. The value usually ranges from 1.0 to 1e6 ; a value of 1e4 works well for most problems but lower values like 1.1 may be required for harder problems.</div>,
+        breduc: <div>is the reduction in step size used for residual reduction computations. The value of BREDUC is between zero and one. The value usually ranges from 0.1 to 0.3; a value of 0.2 works well for most problems.</div>,
+        reslim: <div>is the limit to which the residual is reduced with backtracking. If the residual is smaller than RESLIM, then further backtracking is not performed. A value of 100 is suitable for large problems and residual reduction to smaller values may only slow down computations.</div>,
+        iacl: <div>is the flag for choosing the acceleration method.<br/>
+            &#8226; (0) is Conjugate Gradient; select this option if the matrix is symmetric.<br/>
+            &#8226; (1) is ORTHOMIN.<br/>
+            &#8226; (2) is BiCGSTAB.</div>,
+        norder: <div>is the flag for choosing the ordering scheme.<br/>
+            &#8226; (0) is original ordering<br/>
+            &#8226; (1) is reverse Cuthill McKee ordering<br/>
+            &#8226; (2) is Minimum degree ordering</div>,
+        level: <div>is the level of fill for ILU decomposition. Higher levels of fill provide more robustness but also require more memory. For optimal performance, it is suggested that a large level of fill be applied (7 or 8) with use of drop tolerance.</div>,
+        north: <div>is the number of orthogonalizations for the ORTHOMIN acceleration scheme. A number between 4 and 10 is appropriate. Small values require less storage but more iteration may be required. This number should equal 2 for the other acceleration methods.</div>,
+        iredsys: <div>is the index for creating a reduced system of equations using the red-black ordering scheme. 0 is do not create reduced system 1 is create reduced system using red-black ordering</div>,
+        rrctol: <div>is a residual tolerance criterion for convergence. The root mean squared residual of the matrix solution is evaluated against this number to determine convergence. The solver assumes convergence if either HICLOSE (the absolute head tolerance value for the solver) or RRCTOL is achieved. Note that a value of zero ignores residual tolerance in favor of the absolute tolerance (HICLOSE) for closure of the matrix solver.</div>,
+        idroptol: <div>is the flag to perform drop tolerance. 0 is do not perform drop tolerance 1 is perform drop tolerance.</div>,
+        epsrn: <div>is the drop tolerance value. A value of 10<sup>-3</sup> works well for most problems.</div>,
+        clin: <div>is an option keyword that defines the linear acceleration method used by the PCGU solver. CLIN is “CG”, then preconditioned conjugate gradient method. CLIN is “BCGS”, then preconditioned bi-conjugate gradient stabilized method.</div>,
+        ipc: <div>is an integer value that defines the preconditioner.<br/>
+            &#8226; IPC = 0, No preconditioning.<br/>
+            &#8226; IPC = 1, Jacobi preconditioning.<br/>
+            &#8226; IPC = 2, ILU(0) preconditioning.<br/>
+            &#8226; IPC = 3, MILU(0) preconditioning (default).</div>,
+        iscl: <div>is the flag for choosing the matrix scaling approach used.<br/>
+            &#8226; (0) is no matrix scaling applied <br/>
+            &#8226; (1) is symmetric matrix scaling using the scaling method by the POLCG preconditioner in Hill (1992). <br/>
+            &#8226; (2) is symmetric matrix scaling using the l2 norm of each row of A (DR) and the l2 norm of each row of DRA.</div>,
+        iord: <div>is the flag for choosing the matrix reordering approach used.<br/>
+            &#8226; 0 = original ordering<br/>
+            &#8226; 1 = reverse Cuthill McKee ordering<br/>
+            &#8226; 2 = minimum degree ordering</div>,
+        rclosepcgu: <div>is a real value that defines the flow residual tolerance for convergence of the PCGU linear solver. This value represents the maximum allowable residual at any single node. Value is in units of length cubed per time, and must be consistent with MODFLOW-USG length and time units. Usually a value of 1.0x10-1 is sufficient for the flow-residual criteria when meters and seconds are the defined MODFLOW-USG length and time.</div>,
+        relaxpcgu: <div>is a real value that defines the relaxation factor used by the MILU(0) preconditioner. RELAXPCGU is unitless and should be greater than or equal to 0.0 and less than or equal to 1.0. RELAXPCGU values of about 1.0 are commonly used, and experience suggests that convergence can be optimized in some cases with RELAXPCGU values of 0.97. A RELAXPCGU value of 0.0 will result in ILU(0) preconditioning. RELAXPCGU is only specified if IPC=3. If RELAXPCGU is not specified and IPC=3, then a default value of 0.97 will be assigned to RELAXPCGU.</div>
     }
 };

@@ -1,5 +1,5 @@
 import React, {ChangeEvent, SyntheticEvent, useState} from 'react';
-import {DropdownProps, Form, Input, PopupProps, Segment} from 'semantic-ui-react';
+import {Checkbox, DropdownProps, Form, Input, PopupProps, Segment} from 'semantic-ui-react';
 
 import {FlopyModflowMfsms} from '../../../../../../core/model/flopy/packages/mf';
 import {IFlopyModflowMfsms} from '../../../../../../core/model/flopy/packages/mf/FlopyModflowMfsms';
@@ -57,9 +57,35 @@ const smsPackageProperties = (props: IProps) => {
 
     return (
         <Form>
+            <Form.Group>
+                <Form.Field width={15}>
+                    <label>Pre-defined input values (OPTIONS)</label>
+                    <Form.Dropdown
+                        options={[
+                            {key: 0, value: 0, text: 'SIMPLE'},
+                            {key: 1, value: 1, text: 'MODERATE'},
+                            {key: 2, value: 2, text: 'COMPLEX'},
+                            {key: 3, value: 3, text: 'CUSTOM'}
+                        ]}
+                        selection={true}
+                        name={'options'}
+                        onChange={handleOnSelect}
+                        disabled={readOnly}
+                    />
+                </Form.Field>
+                <Form.Field width={1}>
+                    <label>&nbsp;</label>
+                    <InfoPopup
+                        description={documentation.sms.options}
+                        title="OPTIONS"
+                        position="top right"
+                        iconOutside={true}
+                    />
+            </Form.Field>
+            </Form.Group>
             <Form.Group widths="equal">
                 <Form.Field>
-                    <label>Max head change between outer iterations (L)(HCLOSE)</label>
+                    <label>Head change criterion(HCLOSE)</label>
                     <Input
                         type={'number'}
                         readOnly={readOnly}
@@ -71,7 +97,7 @@ const smsPackageProperties = (props: IProps) => {
                     />
                 </Form.Field>
                 <Form.Field>
-                    <label>Max head change between inner iterations (L)(HICLOSE)</label>
+                    <label>Head change criterion for convergence (HICLOSE)</label>
                     <Input
                         type={'number'}
                         readOnly={readOnly}
@@ -85,7 +111,7 @@ const smsPackageProperties = (props: IProps) => {
             </Form.Group>
             <Form.Group widths="equal">
                 <Form.Field>
-                    <label>Max number of outer nonlinear iterations for problem (MXITER)</label>
+                    <label>Max. outer iterations (MXITER)</label>
                     <Input
                         type={'number'}
                         readOnly={readOnly}
@@ -97,7 +123,7 @@ const smsPackageProperties = (props: IProps) => {
                     />
                 </Form.Field>
                 <Form.Field>
-                    <label>Max number of inner linear iterations for problem (ITER1)</label>
+                    <label>Max. inner iterations (ITER1)</label>
                     <Input
                         type={'number'}
                         readOnly={readOnly}
@@ -108,15 +134,13 @@ const smsPackageProperties = (props: IProps) => {
                         onChange={handleOnChange}
                     />
                 </Form.Field>
-            </Form.Group>
-            <Form.Group widths="equal">
                 <Form.Field>
-                    <label>Print additional info to listing file (IPRSMS)</label>
+                    <label>Print convergence info (IPRSMS)</label>
                     <Form.Dropdown
                         options={[
-                            {key: 0, value: 1, text: '(0) print nothing'},
-                            {key: 1, value: 2, text: '(1) print summary'},
-                            {key: 2, value: 3, text: '(2) print detail'},
+                            {key: 0, value: 0, text: '(0) Print nothing'},
+                            {key: 1, value: 1, text: '(1) Print summary'},
+                            {key: 2, value: 2, text: '(2) Print detail'},
                         ]}
                         selection={true}
                         disabled={readOnly}
@@ -129,15 +153,17 @@ const smsPackageProperties = (props: IProps) => {
                     <label>&nbsp;</label>
                     {renderInfoPopup(documentation.sms.iprsms, 'IPRSMS', 'top left', true)}
                 </Form.Field>
+            </Form.Group>
+            <Form.Group widths="equal">
                 <Form.Field>
                     <label>Nonlinear solution method (NONLINMETH)</label>
                     <Form.Dropdown
                         options={[
-                            {key: 0, value: 1, text: '(-2) Picard with Cooley'},
-                            {key: 1, value: 2, text: '(-1) Picard with Delta-Bar-Delta'},
-                            {key: 2, value: 3, text: '(0) Picard'},
-                            {key: 3, value: 4, text: '(1) Newton with Delta-Bar-Delta'},
-                            {key: 4, value: 5, text: '(2) Newton and Cooley'}
+                            {key: -2, value: -2, text: '(-2) Picard with Cooley'},
+                            {key: -1, value: -1, text: '(-1) Picard with Delta-Bar-Delta'},
+                            {key: 0, value: 0, text: '(0) Picard'},
+                            {key: 1, value: 1, text: '(1) Newton with Delta-Bar-Delta'},
+                            {key: 2, value: 2, text: '(2) Newton and Cooley'}
                         ]}
                         selection={true}
                         disabled={readOnly}
@@ -150,15 +176,13 @@ const smsPackageProperties = (props: IProps) => {
                     <label>&nbsp;</label>
                     {renderInfoPopup(documentation.sms.nonlinmeth, 'NONLINMETH', 'top left', true)}
                 </Form.Field>
-            </Form.Group>
-            <Form.Group widths="equal">
                 <Form.Field>
                     <label>Linear matrix solver (LINMETH)</label>
                     <Form.Dropdown
                         options={[
-                            {key: 0, value: 1, text: '(0) χMD'},
-                            {key: 1, value: 2, text: '(1) PCGU'},
-                            {key: 2, value: 3, text: '(2) SAMG'},
+                            {key: 0, value: 0, text: '(0) χMD'},
+                            {key: 1, value: 1, text: '(1) PCGU'},
+                            {key: 2, value: 2, text: '(2) SAMG'},
                         ]}
                         selection={true}
                         disabled={readOnly}
@@ -170,18 +194,6 @@ const smsPackageProperties = (props: IProps) => {
                 <Form.Field width={1}>
                     <label>&nbsp;</label>
                     {renderInfoPopup(documentation.sms.linmeth, 'LINMETH', 'top left', true)}
-                </Form.Field>
-                <Form.Field>
-                    <label>Options</label>
-                    <Input
-                        type={'options'}
-                        readOnly={readOnly}
-                        name={'options'}
-                        value={mfPackage.options}
-                        icon={renderInfoPopup(documentation.sms.options, 'OPTIONS')}
-                        onBlur={handleOnBlur}
-                        onChange={handleOnChange}
-                    />
                 </Form.Field>
             </Form.Group>
             <Segment>
@@ -217,7 +229,7 @@ const smsPackageProperties = (props: IProps) => {
                         />
                     </Form.Field>
                     <Form.Field>
-                        <label>Nonlinear fraction history added (AMOMENTUM)</label>
+                        <label>Fraction of past history added (AMOMENTUM)</label>
                         <Input
                             readOnly={true}
                             name="amomentum"
@@ -228,7 +240,7 @@ const smsPackageProperties = (props: IProps) => {
                 </Form.Group>
                 <Form.Group widths="equal">
                     <Form.Field>
-                        <label>Maximum residual backtracking iterations (NUMTRACK)</label>
+                        <label>Backtracking Iterations Allowed (NUMTRACK)</label>
                         <Input
                             readOnly={true}
                             name="numtrack"
@@ -248,7 +260,7 @@ const smsPackageProperties = (props: IProps) => {
                 </Form.Group>
                 <Form.Group widths="equal">
                     <Form.Field>
-                        <label>Residual change reduction size (BREDUC)</label>
+                        <label>Step Size Reduction (BREDUC)</label>
                         <Input
                             readOnly={true}
                             name="breduc"
@@ -272,26 +284,46 @@ const smsPackageProperties = (props: IProps) => {
                 <Form.Group widths="equal">
                     <Form.Field>
                         <label>Acceleration method (IACL)</label>
-                        <Input
-                            readOnly={true}
-                            name="iacl"
-                            value={mfPackage.iacl || ''}
-                            icon={renderInfoPopup(documentation.sms.iacl, 'IACL')}
+                        <Form.Dropdown
+                            options={[
+                                {key: 0, value: 0, text: '(0) Conjugate Gradient'},
+                                {key: 1, value: 1, text: '(1) ORTHOMIN'},
+                                {key: 2, value: 2, text: '(2) BiCGSTAB'},
+                            ]}
+                            selection={true}
+                            disabled={readOnly}
+                            name={'iacl'}
+                            value={mfPackage.iacl}
+                            onChange={handleOnSelect}
                         />
+                    </Form.Field>
+                    <Form.Field width={1}>
+                        <label>&nbsp;</label>
+                        {renderInfoPopup(documentation.sms.iacl, 'IACL', 'top left', true)}
                     </Form.Field>
                     <Form.Field>
                         <label>Ordering scheme (NORDER)</label>
-                        <Input
-                            readOnly={true}
-                            name="norder"
-                            value={mfPackage.norder || ''}
-                            icon={renderInfoPopup(documentation.sms.norder, 'NORDER')}
+                        <Form.Dropdown
+                            options={[
+                                {key: 0, value: 0, text: '(0) Original ordering'},
+                                {key: 1, value: 1, text: '(1) Reverse Cuthill McKee ordering'},
+                                {key: 2, value: 2, text: '(2) Minimum degree ordering'},
+                            ]}
+                            selection={true}
+                            disabled={readOnly}
+                            name={'norder'}
+                            value={mfPackage.norder}
+                            onChange={handleOnSelect}
                         />
+                    </Form.Field>
+                    <Form.Field width={1}>
+                        <label>&nbsp;</label>
+                        {renderInfoPopup(documentation.sms.norder, 'NORDER', 'top left', true)}
                     </Form.Field>
                 </Form.Group>
                 <Form.Group widths="equal">
                     <Form.Field>
-                        <label>ILU decomposition level of fill (LEVEL)</label>
+                        <label>Fill Level for ILU Decomposition (LEVEL)</label>
                         <Input
                             readOnly={true}
                             name="level"
@@ -300,7 +332,7 @@ const smsPackageProperties = (props: IProps) => {
                         />
                     </Form.Field>
                     <Form.Field>
-                        <label>Number of orthogonalizations for ORTHOMIN accel. (NORTH)</label>
+                        <label>Number of orthogonalizations (NORTH)</label>
                         <Input
                             readOnly={true}
                             name="north"
@@ -311,9 +343,10 @@ const smsPackageProperties = (props: IProps) => {
                 </Form.Group>
                 <Form.Group widths="equal">
                     <Form.Field>
-                        <label>Reduced system (IREDSYS)</label>
-                        <Input
-                            readOnly={true}
+                        <label>Reduced system index (IREDSYS)</label>
+                        <Checkbox
+                            toggle={true}
+                            readOnly={false}
                             name="iredsys"
                             value={mfPackage.iredsys || ''}
                             icon={renderInfoPopup(documentation.sms.iredsys, 'IREDSYS')}
@@ -332,8 +365,9 @@ const smsPackageProperties = (props: IProps) => {
                 <Form.Group widths="equal">
                     <Form.Field>
                         <label>Perform drop tolerance (IDROPTOL)</label>
-                        <Input
-                            readOnly={true}
+                        <Checkbox
+                            toggle={true}
+                            readOnly={false}
                             name="idroptol"
                             value={mfPackage.idroptol || ''}
                             icon={renderInfoPopup(documentation.sms.idroptol, 'IDROPTOL')}
@@ -364,37 +398,68 @@ const smsPackageProperties = (props: IProps) => {
                     </Form.Field>
                     <Form.Field>
                         <label>Preconditioner (IPC)</label>
-                        <Input
-                            readOnly={true}
-                            name="ipc"
-                            value={mfPackage.ipc || ''}
-                            icon={renderInfoPopup(documentation.sms.ipc, 'IPC')}
+                        <Form.Dropdown
+                            options={[
+                                {key: 0, value: 0, text: '(0) No preconditioning'},
+                                {key: 1, value: 1, text: '(1) Jacobi preconditioning'},
+                                {key: 2, value: 2, text: '(2) ILU(0) preconditioning'},
+                                {key: 3, value: 3, text: '(3) MILU(0) preconditioning'}
+                            ]}
+                            selection={true}
+                            disabled={readOnly}
+                            name={'ipc'}
+                            value={mfPackage.ipc}
+                            onChange={handleOnSelect}
                         />
+                    </Form.Field>
+                    <Form.Field width={1}>
+                        <label>&nbsp;</label>
+                        {renderInfoPopup(documentation.sms.ipc, 'IPC', 'top left', true)}
                     </Form.Field>
                 </Form.Group>
                 <Form.Group widths="equal">
                     <Form.Field>
                         <label>Matrix scaling approach (ISCL)</label>
-                        <Input
-                            readOnly={true}
-                            name="iscl"
-                            value={mfPackage.iscl || ''}
-                            icon={renderInfoPopup(documentation.sms.iscl, 'ISCL')}
+                        <Form.Dropdown
+                            options={[
+                                {key: 0, value: 0, text: '(0) No matrix scaling applied'},
+                                {key: 1, value: 1, text: '(1) Symmetric matrix scaling (POLCG)'},
+                                {key: 2, value: 2, text: '(2) Symmetric matrix scaling (L-squared norm)'}
+                            ]}
+                            selection={true}
+                            disabled={readOnly}
+                            name={'iscl'}
+                            value={mfPackage.iscl}
+                            onChange={handleOnSelect}
                         />
+                    </Form.Field>
+                    <Form.Field width={1}>
+                        <label>&nbsp;</label>
+                        {renderInfoPopup(documentation.sms.iscl, 'ISCL', 'top left', true)}
                     </Form.Field>
                     <Form.Field>
                         <label>Matrix reordering approach (IORD)</label>
-                        <Input
-                            readOnly={true}
-                            name="iord"
-                            value={mfPackage.iord || ''}
-                            icon={renderInfoPopup(documentation.sms.iord, 'IORD')}
+                        <Form.Dropdown
+                            options={[
+                                {key: 0, value: 0, text: '(0) Original ordering'},
+                                {key: 1, value: 1, text: '(1) Reverse Cuthill McKee ordering'},
+                                {key: 2, value: 2, text: '(2) Minimum degree ordering'}
+                            ]}
+                            selection={true}
+                            disabled={readOnly}
+                            name={'iord'}
+                            value={mfPackage.iord}
+                            onChange={handleOnSelect}
                         />
+                    </Form.Field>
+                    <Form.Field width={1}>
+                        <label>&nbsp;</label>
+                        {renderInfoPopup(documentation.sms.iord, 'IORD', 'top left', true)}
                     </Form.Field>
                 </Form.Group>
                 <Form.Group widths="equal">
                     <Form.Field>
-                        <label>Convergence flow residual tolerance (L^3)(RCLOSEPCGU)</label>
+                        <label>Convergence flow residual tolerance (RCLOSEPCGU)</label>
                         <Input
                             readOnly={true}
                             name="rclosepcgu"
@@ -409,26 +474,6 @@ const smsPackageProperties = (props: IProps) => {
                             name="relaxpcgu"
                             value={mfPackage.relaxpcgu || ''}
                             icon={renderInfoPopup(documentation.sms.relaxpcgu, 'RELAXPCGU')}
-                        />
-                    </Form.Field>
-                </Form.Group>
-                <Form.Group widths="equal">
-                    <Form.Field>
-                        <label>Perform drop tolerance (IDROPTOL)</label>
-                        <Input
-                            readOnly={true}
-                            name="idroptol"
-                            value={mfPackage.idroptol || ''}
-                            icon={renderInfoPopup(documentation.sms.idroptol, 'IDROPTOL')}
-                        />
-                    </Form.Field>
-                    <Form.Field>
-                        <label>Drop tolerance value (EPSRN)</label>
-                        <Input
-                            readOnly={true}
-                            name="epsrn"
-                            value={mfPackage.epsrn || ''}
-                            icon={renderInfoPopup(documentation.sms.epsrn, 'EPSRN')}
                         />
                     </Form.Field>
                 </Form.Group>
