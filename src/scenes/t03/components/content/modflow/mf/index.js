@@ -10,6 +10,7 @@ import GhbPackageProperties from './ghbPackageProperties';
 import GmgPackageProperties from './gmgPackageProperties';
 import HobPackageProperties from './hobPackageProperties';
 import MfPackageProperties from './mfPackageProperties';
+import NwtPackageProperties from './nwtPackageProperties';
 import OcPackageProperties from './ocPackageProperties';
 import PcgPackageProperties from './pcgPackageProperties';
 import PcgnPackageProperties from './pcgnPackageProperties';
@@ -33,6 +34,7 @@ export {
     GmgPackageProperties,
     HobPackageProperties,
     MfPackageProperties,
+    NwtPackageProperties,
     OcPackageProperties,
     PcgPackageProperties,
     PcgnPackageProperties,

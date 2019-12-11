@@ -4,6 +4,7 @@ import {DropdownProps, Form} from 'semantic-ui-react';
 import FlopyModflow, {packagesMap, solverPackages} from '../../../../../../core/model/flopy/packages/mf/FlopyModflow';
 import FlopyModflowMfde4 from '../../../../../../core/model/flopy/packages/mf/FlopyModflowMfde4';
 import FlopyModflowMfgmg from '../../../../../../core/model/flopy/packages/mf/FlopyModflowMfgmg';
+import FlopyModflowMfnwt from '../../../../../../core/model/flopy/packages/mf/FlopyModflowMfnwt';
 import FlopyModflowMfpcg from '../../../../../../core/model/flopy/packages/mf/FlopyModflowMfpcg';
 import FlopyModflowMfpcgn from '../../../../../../core/model/flopy/packages/mf/FlopyModflowMfpcgn';
 import FlopyModflowMfsms from '../../../../../../core/model/flopy/packages/mf/FlopyModflowMfsms';
@@ -11,7 +12,7 @@ import FlopyModflowMfsor from '../../../../../../core/model/flopy/packages/mf/Fl
 import FlopyModflowSolverPackage from '../../../../../../core/model/flopy/packages/mf/FlopyModflowSolverPackage';
 import InfoPopup from '../../../../../shared/InfoPopup';
 import {documentation} from '../../../../defaults/flow';
-import {De4PackageProperties, GmgPackageProperties, PcgPackageProperties, PcgnPackageProperties, SmsPackageProperties, SorPackageProperties} from './index';
+import {De4PackageProperties, GmgPackageProperties, NwtPackageProperties, PcgPackageProperties, PcgnPackageProperties, SmsPackageProperties, SorPackageProperties} from './index';
 
 interface IProps {
     mfPackages: FlopyModflow;
@@ -53,6 +54,14 @@ const solverPackageProperties = (props: IProps) => {
                 return (
                     <GmgPackageProperties
                         mfPackage={mf.getPackage(type) as FlopyModflowMfgmg}
+                        onChange={props.onChange}
+                        readonly={readOnly}
+                    />
+                );
+            case 'nwt':
+                return (
+                    <NwtPackageProperties
+                        mfPackage={mf.getPackage(type) as FlopyModflowMfnwt}
                         onChange={props.onChange}
                         readonly={readOnly}
                     />

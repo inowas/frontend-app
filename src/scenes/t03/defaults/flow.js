@@ -375,6 +375,45 @@ export const documentation = {
         filenames: <div>TODO!</div>,
     },
 
+    // NWT
+    nwt: {
+        headtol: <div>TODO!</div>,
+        fluxtol: <div>TODO!</div>,
+        maxiterout: <div>TODO!</div>,
+        thickfact: <div>TODO!</div>,
+        linmeth: <div>TODO!</div>,
+        iprnwt: <div>TODO!</div>,
+        ibotav: <div>TODO!</div>,
+        options: <div>TODO!</div>,
+        Continue: <div>TODO!</div>,
+        dbdtheta: <div>TODO!</div>,
+        dbdkappa: <div>TODO!</div>,
+        dbdgamma: <div>TODO!</div>,
+        momfact: <div>TODO!</div>,
+        backflag: <div>TODO!</div>,
+        maxbackiter: <div>TODO!</div>,
+        backtol: <div>TODO!</div>,
+        backreduce: <div>TODO!</div>,
+        maxitinner: <div>TODO!</div>,
+        ilumethod: <div>TODO!</div>,
+        levfill: <div>TODO!</div>,
+        stoptol: <div>TODO!</div>,
+        msdr: <div>TODO!</div>,
+        iacl: <div>TODO!</div>,
+        norder: <div>TODO!</div>,
+        level: <div>TODO!</div>,
+        north: <div>TODO!</div>,
+        iredsys: <div>TODO!</div>,
+        rrctols: <div>TODO!</div>,
+        idroptol: <div>TODO!</div>,
+        epsrn: <div>TODO!</div>,
+        hclosexmd: <div>TODO!</div>,
+        mxiterxmd: <div>TODO!</div>,
+        extension: <div>TODO!</div>,
+        unitnumber: <div>TODO!</div>,
+        filenames: <div>TODO!</div>
+    },
+
     // PCG
     pcg: {
         mxiter: <div>is the maximum number of outer iterations.<br/>
