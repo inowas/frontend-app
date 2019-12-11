@@ -119,7 +119,7 @@ const pcgnPackageProperties = (props: IProps) => {
                             name="relax"
                             type={'number'}
                             value={mfPackage.relax}
-                            icon={renderInfoPopup(documentation.pcgn.relax, 'relax')}
+                            icon={renderInfoPopup(documentation.pcgn.relax, 'RELAX')}
                             onBlur={handleOnBlur}
                             onChange={handleOnChange}
                         />
@@ -263,7 +263,7 @@ const pcgnPackageProperties = (props: IProps) => {
                             </Form.Field>
                             <Form.Field width={1}>
                                 <label>&nbsp;</label>
-                                {renderInfoPopup(documentation.pcgn.acnvg, 'ACNVG', 'top left', true)}
+                                {renderInfoPopup(documentation.pcgn.acnvg, 'ACNVG', 'left center', true)}
                             </Form.Field>
                         </Form.Group>
                         <Form.Field>
