@@ -33,12 +33,12 @@ const contentWrapper = (props: IProps) => {
         return (<Content.Boundaries types={['chd', 'drn', 'evt', 'ghb', 'rch', 'riv', 'wel']}/>);
     }
 
-    if (property === 'head_observations' && !type) {
-        return (<Content.Boundaries types={['hob']}/>);
-    }
+    if (property === 'head_observations') {
+        if (type === 'hob') {
+            return (<Content.CreateBoundary type="hob"/>);
+        }
 
-    if (property === 'head_observations' && type === 'hob') {
-        return (<Content.CreateBoundary type="hob"/>);
+        return (<Content.Boundaries types={['hob']}/>);
     }
 
     if (property === 'transport') {
