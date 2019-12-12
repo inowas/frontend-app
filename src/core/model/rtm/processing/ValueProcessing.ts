@@ -1,38 +1,59 @@
 import {GenericObject} from '../../genericObject/GenericObject';
 import {IDateTimeValue} from '../Sensor.type';
-import {IValueProcessing} from './Processing.type';
+import {IValueProcessing, IValueProcessingComparator} from './Processing.type';
+
+export const comparators = ['lte', 'le', 'gt', 'gte', 'eq'];
 
 class ValueProcessing extends GenericObject<IValueProcessing> {
 
+    public static fromObject(obj: IValueProcessing) {
+        return new ValueProcessing(obj);
+    }
+
     get id() {
         return this._props.id;
-    }
-
-    get begin(): number {
-        return this._props.begin;
-    }
-
-    get end(): number {
-        return this._props.begin;
     }
 
     get type(): string {
         return this._props.type;
     }
 
-    get comparison(): string {
-        return this._props.comparison;
+    get begin(): number {
+        return this._props.begin;
+    }
+
+    set begin(value) {
+        this._props.begin = value;
+    }
+
+    get end(): number {
+        return this._props.begin;
+    }
+
+    set end(value) {
+        this._props.end = value;
+    }
+
+    get comparator(): IValueProcessingComparator {
+        return this._props.comparator;
+    }
+
+    set comparator(value) {
+        this._props.comparator = value;
     }
 
     get value(): number {
         return this._props.value;
     }
 
-    public apply(input: IDateTimeValue[]) {
-        return input
-            .filter((i) => i.timeStamp >= this.begin && i.timeStamp <= this.end)
+    set value(value) {
+        this._props.value = value;
+    }
+
+    public async apply(input: IDateTimeValue[]) {
+        return input.filter((i) => i.timeStamp >= this.begin && i.timeStamp <= this.end)
             .filter((i) => {
-                switch (this.comparison) {
+                switch (this.comparator) {
                     case 'lte':
                         return i.value <= this.value;
                     case 'le':
@@ -46,7 +67,6 @@ class ValueProcessing extends GenericObject<IValueProcessing> {
                 }
             });
     }
-
 }
 
 export default ValueProcessing;

@@ -3,6 +3,7 @@ const getConfig = () => ({
     DATADROPPER_URL: process.env.REACT_APP_DATADROPPER_URL || 'https://datadropper.inowas.com',
     DISABLE_TOOL: process.env.REACT_APP_DISABLE_TOOL || '',
     GEOPROCESSING_URL: process.env.REACT_APP_GEOPROCESSING_URL || 'https://processing.inowas.com/rasters',
+    TIMEPROCESSING_URL: process.env.REACT_APP_GEOPROCESSING_URL || 'https://processing.inowas.com/timeseries/resample',
     JSON_SCHEMA_URL: process.env.REACT_APP_JSON_SCHEMA_URL || 'https://schema.inowas.com',
     MODFLOW_CALCULATION_URL: process.env.REACT_APP_MODFLOW_CALCULATION_URL || 'https://modflow.inowas.com',
     PUBLIC_PROJECTS_ACCESS: process.env.REACT_APP_PUBLIC_PROJECTS_ACCESS !== 'false',
