@@ -5,11 +5,13 @@ import FlopyModflow, {packagesMap, solverPackages} from '../../../../../../core/
 import FlopyModflowMfde4 from '../../../../../../core/model/flopy/packages/mf/FlopyModflowMfde4';
 import FlopyModflowMfgmg from '../../../../../../core/model/flopy/packages/mf/FlopyModflowMfgmg';
 import FlopyModflowMfpcg from '../../../../../../core/model/flopy/packages/mf/FlopyModflowMfpcg';
+import FlopyModflowMfpcgn from '../../../../../../core/model/flopy/packages/mf/FlopyModflowMfpcgn';
+import FlopyModflowMfsms from '../../../../../../core/model/flopy/packages/mf/FlopyModflowMfsms';
 import FlopyModflowMfsor from '../../../../../../core/model/flopy/packages/mf/FlopyModflowMfsor';
 import FlopyModflowSolverPackage from '../../../../../../core/model/flopy/packages/mf/FlopyModflowSolverPackage';
 import InfoPopup from '../../../../../shared/InfoPopup';
 import {documentation} from '../../../../defaults/flow';
-import {De4PackageProperties, GmgPackageProperties, PcgPackageProperties, SorPackageProperties} from './index';
+import {De4PackageProperties, GmgPackageProperties, PcgPackageProperties, PcgnPackageProperties, SmsPackageProperties, SorPackageProperties} from './index';
 
 interface IProps {
     mfPackages: FlopyModflow;
@@ -63,6 +65,22 @@ const solverPackageProperties = (props: IProps) => {
                         readonly={readOnly}
                     />
                 );
+            case 'pcgn':
+                return (
+                    <PcgnPackageProperties
+                        mfPackage={mf.getPackage(type) as FlopyModflowMfpcgn}
+                        onChange={props.onChange}
+                        readonly={readOnly}
+                    />
+                );
+            case 'sms':
+                return (
+                    <SmsPackageProperties
+                        mfPackage={mf.getPackage(type) as FlopyModflowMfsms}
+                        onChange={props.onChange}
+                        readonly={readOnly}
+                    />
+                );
             case 'sor':
                 return (
                     <SorPackageProperties
@@ -71,7 +89,6 @@ const solverPackageProperties = (props: IProps) => {
                         readonly={readOnly}
                     />
                 );
-
             default:
                 return null;
         }
@@ -82,7 +99,7 @@ const solverPackageProperties = (props: IProps) => {
             <Form>
                 <Form.Group>
                     <Form.Field width={15}>
-                        <label>Flow Packages</label>
+                        <label>Solver Packages</label>
                         <Form.Dropdown
                             options={solverPackages.map((sp) => ({
                                 key: sp, value: sp, text: sp

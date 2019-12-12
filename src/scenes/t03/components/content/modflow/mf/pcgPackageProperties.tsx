@@ -48,7 +48,7 @@ const pcgPackageProperties = (props: IProps) => {
 
     return (
         <Form>
-            <Form.Group>
+            <Form.Group widths="equal">
                 <Form.Field>
                     <label>Maximum number of outer iterations (mxiter)</label>
                     <Input
@@ -73,11 +73,13 @@ const pcgPackageProperties = (props: IProps) => {
                         onChange={handleOnChange}
                     />
                 </Form.Field>
-                <Form.Field>
+            </Form.Group>
+            <Form.Group widths="equal">
+                <Form.Field width={14}>
                     <label>Matrix conditioning method (npcond)</label>
                     <Form.Dropdown
                         options={[
-                            {key: 0, value: 1, text: 'Modified Incomplete Cholesky (1)'},
+                            {key: 0, value: 1, text: 'Modified Incomplete Cholesky'},
                             {key: 1, value: 2, text: 'Polynomial'},
                         ]}
                         placeholder="Select npcond"
@@ -92,8 +94,25 @@ const pcgPackageProperties = (props: IProps) => {
                     <label>&nbsp;</label>
                     {renderInfoPopup(documentation.pcg.npcond, 'npcond', 'top left', true)}
                 </Form.Field>
+                <Form.Field width={14}>
+                    <label>Active cells surrounded by dry cells (ihcofadd)</label>
+                    <Form.Dropdown
+                        options={[
+                            {key: 0, value: 0, text: '(0) Cell converts to dry'},
+                            {key: 1, value: 1, text: '(1) Cell converts to dry only if HCOF coefficient is 0'},
+                        ]}
+                        name="ihcofadd"
+                        selection={true}
+                        value={mfPackage.ihcofadd}
+                        disabled={readOnly}
+                        onChange={handleOnSelect}
+                    />
+                </Form.Field>
+                <Form.Field width={1}>
+                    <label>&nbsp;</label>
+                    {renderInfoPopup(documentation.pcg.ihcofadd, 'ihcofadd', 'top left', true)}
+                </Form.Field>
             </Form.Group>
-
             <Form.Group widths="equal">
                 <Form.Field>
                     <label>Head change criterion (hclose)</label>
@@ -119,6 +138,8 @@ const pcgPackageProperties = (props: IProps) => {
                         onChange={handleOnChange}
                     />
                 </Form.Field>
+            </Form.Group>
+            <Form.Group widths="equal">
                 <Form.Field>
                     <label>Relaxation parameter (relax)</label>
                     <Input
@@ -131,11 +152,8 @@ const pcgPackageProperties = (props: IProps) => {
                         onChange={handleOnChange}
                     />
                 </Form.Field>
-            </Form.Group>
-
-            <Form.Group widths="equal">
                 <Form.Field>
-                    <label>(nbpol)</label>
+                    <label>Eigenvalue upper bound (nbpol)</label>
                     <Input
                         readOnly={readOnly}
                         name="nbpol"
@@ -146,8 +164,10 @@ const pcgPackageProperties = (props: IProps) => {
                         onChange={handleOnChange}
                     />
                 </Form.Field>
+            </Form.Group>
+            <Form.Group widths="equal">
                 <Form.Field>
-                    <label>Solver print out interval(iprpcg)</label>
+                    <label>Solver printout interval (iprpcg)</label>
                     <Input
                         readOnly={readOnly}
                         name="iprpcg"
@@ -158,13 +178,14 @@ const pcgPackageProperties = (props: IProps) => {
                         onChange={handleOnChange}
                     />
                 </Form.Field>
-                <Form.Field>
+                <Form.Field width={14}>
                     <label>Print options (mutpcg)</label>
                     <Form.Dropdown
                         options={[
-                            {key: 0, value: 1, text: '1'},
-                            {key: 1, value: 2, text: '2'},
-                            {key: 2, value: 3, text: '3'},
+                            {key: 0, value: 0, text: '(0) Tables of maximum head change and residual each interation'},
+                            {key: 1, value: 1, text: '(1) Only total number of iterations'},
+                            {key: 2, value: 2, text: '(2) No printing'},
+                            {key: 3, value: 3, text: '(3) Printing only if convergence fails'},
                         ]}
                         placeholder="Select mutpcg"
                         name="mutpcg"
@@ -179,7 +200,6 @@ const pcgPackageProperties = (props: IProps) => {
                     {renderInfoPopup(documentation.pcg.mutpcg, 'mutpcg', 'top left', true)}
                 </Form.Field>
             </Form.Group>
-
             <Form.Group widths="equal">
                 <Form.Field>
                     <label>Steady-state damping factor (damp)</label>
@@ -199,17 +219,6 @@ const pcgPackageProperties = (props: IProps) => {
                         name="dampt"
                         value={mfPackage.dampt}
                         icon={renderInfoPopup(documentation.pcg.dampt, 'dampt')}
-                        onBlur={handleOnBlur}
-                        onChange={handleOnChange}
-                    />
-                </Form.Field>
-                <Form.Field>
-                    <label>(ihcofadd)</label>
-                    <Input
-                        readOnly={readOnly}
-                        name="ihcofadd"
-                        value={mfPackage.ihcofadd}
-                        icon={renderInfoPopup(documentation.pcg.ihcofadd, 'ihcofadd')}
                         onBlur={handleOnBlur}
                         onChange={handleOnChange}
                     />
