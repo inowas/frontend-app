@@ -14,6 +14,7 @@ interface IProps {
 const stressPeriodsDataTable = (props: IProps) => {
     const [activeInput, setActiveInput] = useState<number | null>(null);
     const [activeValue, setActiveValue] = useState<string>('');
+    const [startDateError, setStartDateError] = useState<boolean>(false);
     const [showGenerator, setShowGenerator] = useState<boolean>(false);
 
     const renderHeader = () => (
@@ -69,13 +70,21 @@ const stressPeriodsDataTable = (props: IProps) => {
     };
 
     const handleChange = () => {
+        setStartDateError(false);
         const stressperiods = props.stressperiods;
-        if (activeInput && activeValue) {
+        if (activeInput !== null && activeValue) {
             const edited = stressperiods.stressperiods[activeInput];
             edited.startDateTime = moment.utc(activeValue);
 
-            if (edited.startDateTime.isBefore(stressperiods.startDateTime)) {
-                edited.startDateTime = moment.utc(stressperiods.startDateTime).add(1, 'days');
+            if (activeInput === 0) {
+                if (stressperiods.stressperiods.filter((sp) => sp.startDateTime.isBefore(moment.utc(activeValue))
+                ).length > 1) {
+                    setActiveValue('');
+                    setActiveInput(null);
+                    setStartDateError(true);
+                    return;
+                }
+                stressperiods.startDateTime = moment.utc(activeValue);
             }
 
             stressperiods.updateStressperiodByIdx(activeInput, edited);
@@ -106,16 +115,23 @@ const stressPeriodsDataTable = (props: IProps) => {
     const rows = props.stressperiods.stressperiods.map((sp, idx) => (
         <Table.Row key={idx + '-' + sp.startDateTime.unix()}>
             <Table.Cell>
-                <Form.Input
-                    disabled={readOnly || idx === 0}
-                    type="date"
-                    name={'startDateTime'}
-                    idx={idx}
-                    value={
-                        activeInput === idx ? activeValue : moment.utc(sp.startDateTime).format('YYYY-MM-DD')
+                <Popup
+                    content="Start date of first stressperiod must be before all other stressperiods"
+                    open={idx === 0 && startDateError}
+                    position="top center"
+                    trigger={
+                        <Form.Input
+                            disabled={readOnly}
+                            type="date"
+                            name={'startDateTime'}
+                            idx={idx}
+                            value={
+                                activeInput === idx ? activeValue : moment.utc(sp.startDateTime).format('YYYY-MM-DD')
+                            }
+                            onBlur={handleChange}
+                            onChange={handleStressperiodChange}
+                        />
                     }
-                    onBlur={handleChange}
-                    onChange={handleStressperiodChange}
                 />
             </Table.Cell>
             <Table.Cell>{sp.nstp}</Table.Cell>
@@ -163,11 +179,11 @@ const stressPeriodsDataTable = (props: IProps) => {
             </Button.Group>
             }
             {showGenerator && props.onChange !== undefined &&
-                <StressperiodsGenerator
-                    onCancel={handleCancelCustom}
-                    onSubmit={props.onChange}
-                    stressPeriods={props.stressperiods}
-                />
+            <StressperiodsGenerator
+                onCancel={handleCancelCustom}
+                onSubmit={props.onChange}
+                stressPeriods={props.stressperiods}
+            />
             }
         </div>
     );
