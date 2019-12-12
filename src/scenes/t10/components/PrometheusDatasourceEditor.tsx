@@ -28,7 +28,8 @@ const prometheusDatasourceEditor = (props: IProps) => {
     const prevUrl = usePrevious(dataSource && dataSource.url);
 
     const [start, setStart] = useState<number>(moment().subtract(1, 'week').unix());
-    const [end, setEnd] = useState<number>(moment().unix());
+    const [end, setEnd] = useState<number | undefined>(undefined);
+    const [autoUpdate, setAutoUpdate] = useState<boolean>(true);
     const [step, setStep] = useState<number>(120);
     const [query, setQuery] = useState<string>('pegel_online_wsv_sensors{station="DRESDEN", type="waterlevel"}/100');
 
@@ -59,6 +60,7 @@ const prometheusDatasourceEditor = (props: IProps) => {
         setServer(ds.hostname);
         setStart(ds.start);
         setEnd(ds.end);
+        setAutoUpdate(!ds.end);
         setStep(ds.step);
         setQuery(ds.query);
         setDatasource(ds);
@@ -88,6 +90,29 @@ const prometheusDatasourceEditor = (props: IProps) => {
         }
 
         return f(e.target.value);
+    };
+
+    const handleAutoUpdateClick = () => {
+
+        if (!(dataSource instanceof PrometheusDataSource)) {
+            return;
+        }
+
+        const ds = PrometheusDataSource.fromObject(dataSource.toObject());
+
+        if (autoUpdate) {
+            // Switch to fixed end date
+            setEnd(moment.utc().unix());
+            setAutoUpdate(false);
+            ds.end = moment.utc().unix();
+            return setDatasource(PrometheusDataSource.fromObject(ds.toObject()));
+        }
+
+        // Switch to live end date
+        setEnd(undefined);
+        setAutoUpdate(true);
+        ds.end = undefined;
+        return setDatasource(PrometheusDataSource.fromObject(ds.toObject()));
     };
 
     const handleChangeServer = (e: any, d: any) => {
@@ -225,12 +250,21 @@ const prometheusDatasourceEditor = (props: IProps) => {
                                     </Form.Group>
                                     <Form.Group>
                                         <Form.Input
+                                            disabled={autoUpdate}
                                             label={'End'}
                                             type={'date'}
-                                            value={end && moment.unix(end).format('YYYY-MM-DD')}
+                                            value={end ? moment.unix(end).format('YYYY-MM-DD')
+                                                : moment.utc().format('YYYY-MM-DD')}
                                             onChange={handleGenericChange((d) => setEnd(moment.utc(d).unix()))}
                                             onBlur={handleBlur('end')}
                                         />
+                                        <Form.Group grouped={true}>
+                                            <label>Auto update</label>
+                                            <Form.Checkbox
+                                                checked={autoUpdate}
+                                                onChange={handleAutoUpdateClick}
+                                            />
+                                        </Form.Group>
                                     </Form.Group>
                                 </Form>
                             </Segment>
@@ -251,7 +285,7 @@ const prometheusDatasourceEditor = (props: IProps) => {
                     </Grid.Row>
                     }
 
-                    {dataSource &&
+                    {dataSource && !dataSource.error &&
                     <Grid.Row>
                         <Grid.Column>
                             <Segment loading={!dataSource.data} raised={true}>
@@ -262,11 +296,28 @@ const prometheusDatasourceEditor = (props: IProps) => {
                     </Grid.Row>
                     }
 
+                    {dataSource && dataSource.error &&
+                    <Grid.Row>
+                        <Grid.Column>
+                            <Segment raised={true}>
+                                <Label as={'div'} color={'red'} ribbon={true}>Error</Label>
+                                {dataSource.error}
+                            </Segment>
+                        </Grid.Column>
+                    </Grid.Row>
+                    }
+
                 </Grid>
             </Modal.Content>
             <Modal.Actions>
                 <Button negative={true} onClick={props.onCancel}>Cancel</Button>
-                <Button positive={true} onClick={handleSave}>Apply</Button>
+                <Button
+                    positive={true}
+                    onClick={handleSave}
+                    disabled={!dataSource || dataSource && !!dataSource.error}
+                >
+                    Apply
+                </Button>
             </Modal.Actions>
         </Modal>
     );

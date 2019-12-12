@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from 'react';
-import {Button, Dropdown, Grid, Header, Icon, Label, Segment, Table} from 'semantic-ui-react';
+import {Button, Dropdown, Grid, Header, Icon, Label, Popup, Segment, Table} from 'semantic-ui-react';
 import {DataSourceCollection, DataSourceFactory, Rtm} from '../../../core/model/rtm';
 import FileDataSource from '../../../core/model/rtm/FileDataSource';
 import PrometheusDataSource from '../../../core/model/rtm/PrometheusDataSource';
@@ -224,6 +224,7 @@ const dataSources = (props: IProps) => {
                                     <Table.HeaderCell>Time range</Table.HeaderCell>
                                     <Table.HeaderCell/>
                                     <Table.HeaderCell/>
+                                    <Table.HeaderCell/>
                                 </Table.Row>
                             </Table.Header>
                             <Table.Body>
@@ -246,6 +247,14 @@ const dataSources = (props: IProps) => {
                                                     begin={dataSourceCollection.globalBegin()}
                                                     end={dataSourceCollection.globalEnd()}
                                                 />
+                                            </Table.Cell>
+                                            <Table.Cell>
+                                                {dsInst.end === undefined &&
+                                                <Popup
+                                                    content={'Automatic update'}
+                                                    trigger={<Icon name={'circle'} color={'red'}/>}
+                                                />
+                                                }
                                             </Table.Cell>
                                             <Table.Cell textAlign={'right'}>
                                                 {!props.rtm.readOnly &&
