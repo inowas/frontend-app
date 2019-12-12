@@ -249,11 +249,13 @@ const dataSources = (props: IProps) => {
                                                 />
                                             </Table.Cell>
                                             <Table.Cell>
-                                                {dsInst.end === undefined &&
-                                                <Popup
-                                                    content={'Automatic update'}
-                                                    trigger={<Icon name={'circle'} color={'red'}/>}
-                                                />
+                                                {
+                                                    ((dsInst instanceof PrometheusDataSource && !dsInst.end) ||
+                                                        (dsInst instanceof SensorDataSource && !dsInst.end)) &&
+                                                    <Popup
+                                                        content={'Automatic update'}
+                                                        trigger={<Icon name={'circle'} color={'red'}/>}
+                                                    />
                                                 }
                                             </Table.Cell>
                                             <Table.Cell textAlign={'right'}>
