@@ -152,6 +152,9 @@ export default class FlopyModflow extends GenericObject<IFlopyModflow> {
         this._props.bas = FlopyModflowMfbas.fromObject(this._props.bas).update(model, soilmodel).toObject();
         this._props.dis = FlopyModflowMfdis.fromObject(this._props.dis).update(model, soilmodel).toObject();
 
+        // Recalculate Output Control
+        this._props.oc = FlopyModflowMfoc.create(model.stressperiods.count).toObject();
+
         // Recalculate Boundaries
         const chd = FlopyModflowMfchd.create(boundaries, model.stressperiods);
         chd ? this._props.chd = chd.toObject() : delete this._props.chd;
