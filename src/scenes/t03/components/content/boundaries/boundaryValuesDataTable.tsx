@@ -1,9 +1,10 @@
 import moment from 'moment';
 import React, {ChangeEvent, useState} from 'react';
-import {Input, Table} from 'semantic-ui-react';
+import {Button, Input, Table} from 'semantic-ui-react';
 import {Stressperiods} from '../../../../../core/model/modflow';
 import {Boundary, LineBoundary} from '../../../../../core/model/modflow/boundaries';
 import {ISpValues} from '../../../../../core/model/modflow/boundaries/Boundary.type';
+import {AdvancedCsvUpload} from '../../../../shared/simpleTools/upload';
 
 interface IActiveInput {
     col: number;
@@ -22,8 +23,11 @@ interface IProps {
 
 const boundaryValuesDataTable = (props: IProps) => {
     const [activeInput, setActiveInput] = useState<IActiveInput | null>(null);
+    const [showUploadModal, setShowUploadModal] = useState<boolean>(false);
 
     const {boundary, selectedOP} = props;
+
+    console.log({boundary: boundary.toObject()});
 
     const getSpValues = () => {
         if (boundary instanceof LineBoundary) {
@@ -33,6 +37,8 @@ const boundaryValuesDataTable = (props: IProps) => {
     };
 
     const spValues: ISpValues | null = getSpValues();
+
+    const handleToggleUploadModal = () => setShowUploadModal(!showUploadModal);
 
     const handleLocalChange = (row: number, col: number) => (e: ChangeEvent<HTMLInputElement>) => setActiveInput({
         col,
@@ -130,65 +136,28 @@ const boundaryValuesDataTable = (props: IProps) => {
         ));
     };
 
-    /*public handleCSV = (e: any) => { // todo: handle csv and type of e
-        let hasError = false;
-        const errorMessages: string[] = [];
-        const dateTimeValues = [];
-
-        const dateCodes = ['years', 'months', 'days', 'hours', 'minutes', 'seconds', 'milliseconds'];
-        const firstLine = moment.utc(e.data[0][0]);
-
-        if (!firstLine.isValid()) {
-            return this.setState({
-                error: true,
-                errorMsg: [`Invalid date_time at line 1 at ${dateCodes[firstLine.invalidAt()]}.`],
-                id: uuidv4(),
-                success: false
-            });
-        }
-
-        e.data.forEach((row: number[], rKey: number) => {
-            const values = this.props.boundary.defaultValues.map((v: number, vKey: number) => {
-                if (row[vKey + 1] && isNaN(row[vKey + 1])) {
-                    hasError = true;
-                    errorMessages.push(`Invalid value at line ${rKey + 1}, column ${vKey + 1}: value is not a number.`);
-                }
-
-                return row[vKey + 1] || v;
-            });
-            const dateTime = moment.utc(row[0]);
-
-            if (!dateTime.isValid()) {
-                hasError = true;
-                errorMessages.push(`Invalid date_time at line ${rKey + 1} at ${dateCodes[firstLine.invalidAt()]}.`);
-                return;
-            }
-
-            const dateTimeValue = {
-                date_time: dateTime.toISOString(),
-                values
-            };
-            dateTimeValues.push(dateTimeValue);
-        });
-
-        if (!hasError) {
-            const {boundary, selectedOP} = this.props;
-            boundary.setDateTimeValues(dateTimeValues, selectedOP);
-            this.props.onChange(boundary);
-        }
-
-        return this.setState({
-            ...this.state,
-            error: hasError,
-            errorMsg: errorMessages,
-            id: uuidv4(),
-            success: !hasError
-        });
-    };*/
-
     return (
         <div>
-            {/*<CsvUpload uploadState={this.state.uploadState} onUploaded={this.handleCSV}/>*/}
+            {showUploadModal &&
+            <AdvancedCsvUpload
+                columns={
+                    [{
+                        key: 0,
+                        value: 'datetime',
+                        text: 'Datetime'
+                    }].concat(boundary.valueProperties.map((p, key) => {
+                        return {
+                            key: key + 1,
+                            value: p.name.toLowerCase(),
+                            text: p.name
+                        };
+                    }))
+                }
+                onCancel={handleToggleUploadModal}
+                onSave={() => null}
+            />
+            }
+            <Button onClick={handleToggleUploadModal}>CSV Upload</Button>
             <Table size={'small'} singleLine={true}>
                 <Table.Header>
                     <Table.Row>
