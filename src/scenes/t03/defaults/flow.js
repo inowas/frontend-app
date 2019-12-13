@@ -377,38 +377,52 @@ export const documentation = {
 
     // NWT
     nwt: {
-        headtol: <div>TODO!</div>,
-        fluxtol: <div>TODO!</div>,
-        maxiterout: <div>TODO!</div>,
-        thickfact: <div>TODO!</div>,
-        linmeth: <div>TODO!</div>,
-        iprnwt: <div>TODO!</div>,
-        ibotav: <div>TODO!</div>,
-        options: <div>TODO!</div>,
-        Continue: <div>TODO!</div>,
-        dbdtheta: <div>TODO!</div>,
-        dbdkappa: <div>TODO!</div>,
-        dbdgamma: <div>TODO!</div>,
-        momfact: <div>TODO!</div>,
-        backflag: <div>TODO!</div>,
-        maxbackiter: <div>TODO!</div>,
-        backtol: <div>TODO!</div>,
-        backreduce: <div>TODO!</div>,
-        maxitinner: <div>TODO!</div>,
-        ilumethod: <div>TODO!</div>,
-        levfill: <div>TODO!</div>,
-        stoptol: <div>TODO!</div>,
-        msdr: <div>TODO!</div>,
-        iacl: <div>TODO!</div>,
-        norder: <div>TODO!</div>,
-        level: <div>TODO!</div>,
-        north: <div>TODO!</div>,
-        iredsys: <div>TODO!</div>,
-        rrctols: <div>TODO!</div>,
-        idroptol: <div>TODO!</div>,
-        epsrn: <div>TODO!</div>,
-        hclosexmd: <div>TODO!</div>,
-        mxiterxmd: <div>TODO!</div>,
+        options: <div>SPECIFIED indicates that the optional solver input values listed for items 1 and 2 will be specified in the NWT input file by the user.<br/>
+                    SIMPLE indicates that default solver input values will be defined that work well for nearly linear models. This would be used for models that do not include nonlinear stress packages, and models that are either confined or consist of a single unconfined layer that is thick enough to contain the water table within a single layer.<br/>
+                    MODERATE indicates that default solver input values will be defined that work well for moderately nonlinear models. This would be used for models that include nonlinear stress packages, and models that consist of one or more unconfined layers. The MODERATE option should be used when the SIMPLE option does not result in successful convergence.<br/>
+                    COMPLEX indicates that default solver input values will be defined that work well for highly nonlinear models. This would be used for models that include nonlinear stress packages, and models that consist of one or more unconfined layers representing complex geology and sw/gw interaction. The COMPLEX option should be used when the MODERATE option does not result in successful convergence. (default is COMPLEX).</div>,
+        headtol: <div>is the maximum head change between outer iterations for solution of the nonlinear problem. (default is 1e-4)</div>,
+        fluxtol: <div>is the maximum root-mean-squared flux difference between outer iterations for solution of the nonlinear problem. (default is 500)</div>,
+        maxiterout: <div>is the maximum number of iterations to be allowed for solution of the outer (nonlinear) problem. (default is 100).</div>,
+        thickfact: <div>is the portion of the cell thickness (length) used for smoothly adjusting storage and conductance coefficients to zero. (default is 1e-5)</div>,
+        linmeth: <div>is a flag that determines which matrix solver will be used. A value of 1 indicates GMRES will be used A value of 2 indicates XMD will be used. (default is 1)</div>,
+        iprnwt: <div>is a flag that indicates whether additional information about solver convergence will be printed to the main listing file. (default is 0)</div>,
+        ibotav: <div>is a flag that indicates whether corrections will be made to groundwater head relative to the cell-bottom altitude if the cell is surrounded by dewatered cells (integer). A value of 1 indicates that a correction will be made and a value of 0 indicates no correction will be made. (default is 0)</div>,
+        Continue: <div>if the model fails to converge during a time step then it will continue to solve the following time step. (default is False). Note the capital C on this option so that it doesn’t conflict with a reserved Python language word.</div>,
+        dbdtheta: <div>is a coefficient used to reduce the weight applied to the head change between nonlinear iterations. <strong>dbdtheta</strong> is used to control oscillations in head. Values range between 0.0 and 1.0, and larger values increase the weight (decrease under-relaxation) applied to the head change. (default is 0.4)</div>,
+        dbdkappa: <div>is a coefficient used to increase the weight applied to the head change between nonlinear iterations. <strong>dbdkappa</strong> is used to control oscillations in head. Values range between 0.0 and 1.0, and larger values increase the weight applied to the head change. (default is 1.e-5)</div>,
+        dbdgamma: <div>is a factor used to weight the head change for the previous and current iteration. Values range between 0.0 and 1.0, and greater values apply more weight to the head change calculated during the current iteration. (default is 0)</div>,
+        momfact: <div>is the momentum coefficient and ranges between 0.0 and 1.0. Greater values apply more weight to the head change for the current iteration. (default is 0.1)</div>,
+        backflag: <div>is a flag used to specify whether residual control will be used. A value of 1 indicates that residual control is active and a value of 0 indicates residual control is inactive. (default is 1)</div>,
+        maxbackiter: <div>is the maximum number of reductions (backtracks) in the head change between nonlinear iterations (integer). A value between 10 and 50 works well. (default is 50)</div>,
+        backtol: <div>is the proportional decrease in the root-mean-squared error of the groundwater-flow equation used to determine if residual control is required at the end of a nonlinear iteration. (default is 1.1)</div>,
+        backreduce: <div>is a reduction factor used for residual control that reduces the head change between nonlinear iterations. Values should be between 0.0 and 1.0, where smaller values result in smaller head-change values. (default 0.7)</div>,
+        maxitinner: <div>is the maximum number of iterations for the linear solution. (default is 50)</div>,
+        ilumethod: <div>is the index for selection of the method for incomplete factorization (ILU) used as a preconditioner. (default is 2)<br/>
+                •	(1) ILU with drop tolerance and fill limit. Fill-in terms less than drop tolerance times the diagonal are discarded. The number of fill-in terms in each row of L and U is limited to the fill limit. The fill-limit largest elements are kept in the L and U factors.<br/>
+                •	(2) ILU(k), Order k incomplete LU factorization. Fill-in terms of higher order than k in the factorization are discarded.
+                </div>,
+        levfill: <div>is the fill limit for ILUMETHOD = 1 and is the level of fill for ilumethod = 2. Recommended values: 5-10 for method 1, 0-2 for method 2. (default is 5).</div>,
+        stoptol: <div>is the tolerance for convergence of the linear solver. This is the residual of the linear equations scaled by the norm of the root mean squared error. Usually 1.e-8 to 1.e-12 works well. (default is 1.e-10)</div>,
+        msdr: <div>is the number of iterations between restarts of the GMRES Solver. (default is 15)</div>,
+        iacl: <div>is a flag for the acceleration method:<br/>
+            •   0 is conjugate gradient,<br/>
+            •   1 is ORTHOMIN,<br/>
+            •   2 is Bi-CGSTAB. (default is 2)</div>,
+        norder: <div>is a flag for the scheme of ordering the unknowns: 0 is original ordering, 1 is RCM ordering, 2 is Minimum Degree ordering. (default is 1)</div>,
+        level: <div>is the level of fill for incomplete LU factorization. (default is 5)</div>,
+        north: <div>is the number of orthogonalization for the ORTHOMIN acceleration scheme. A number between 4 and 10 is appropriate. Small values require less storage but more iterations may be required. This number should equal 2 for the other acceleration methods. (default is 7)</div>,
+        iredsys: <div>is a flag for reduced system preconditioning (integer):<br/>
+            •   0-do not apply reduced system preconditioning,<br/>
+            •   1-apply reduced system preconditioning.<br/>
+            (default is 0)</div>,
+        rrctols: <div>is the residual reduction-convergence criteria. (default is 0)</div>,
+        idroptol: <div>is a flag for using drop tolerance in the preconditioning:<br/>
+            •   0-don’t use drop tolerance,<br/>
+            •   1-use drop tolerance. (default is 1)</div>,
+        epsrn: <div>is the drop tolerance for preconditioning. (default is 1.e-4)</div>,
+        hclosexmd: <div>is the head closure criteria for inner (linear) iterations. (default is 1.e-4)</div>,
+        mxiterxmd: <div>is the maximum number of iterations for the linear solution. (default is 50)</div>,
         extension: <div>TODO!</div>,
         unitnumber: <div>TODO!</div>,
         filenames: <div>TODO!</div>
