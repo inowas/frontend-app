@@ -34,6 +34,23 @@ export default class TimeUnit {
 
     public toInt = () => (this._value);
 
+    public toString = () => {
+        switch (this._value) {
+            case 1:
+                return 'seconds';
+            case 2:
+                return 'minutes';
+            case 3:
+                return 'hours';
+            case 4:
+                return 'days';
+            case 5:
+                return 'years';
+            default:
+                return undefined;
+        }
+    };
+
     public sameAs = (obj: TimeUnit) => {
         return obj.toInt() === this.toInt();
     };
