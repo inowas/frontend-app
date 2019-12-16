@@ -1,4 +1,4 @@
-import moment, {isMoment} from 'moment';
+import moment from 'moment';
 import React, {ChangeEvent, useState} from 'react';
 import {Button, Icon, Input, Table} from 'semantic-ui-react';
 import {Stressperiods} from '../../../../../core/model/modflow';
