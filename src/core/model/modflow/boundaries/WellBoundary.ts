@@ -4,7 +4,7 @@ import Uuid from 'uuid';
 import BoundingBox from '../../geometry/BoundingBox';
 import {ICells} from '../../geometry/Cells.type';
 import GridSize from '../../geometry/GridSize';
-import {Cells, Geometry} from '../index';
+import {Cells, Geometry, Stressperiods} from '../index';
 import {ISpValues, IValueProperty} from './Boundary.type';
 import PointBoundary from './PointBoundary';
 import {IWellBoundary, IWellBoundaryExport, IWellType} from './WellBoundary.type';
@@ -104,7 +104,7 @@ export default class WellBoundary extends PointBoundary {
         this._class = WellBoundary;
     }
 
-    public toExport = (): IWellBoundaryExport => {
+    public toExport = (stressPeriods: Stressperiods): IWellBoundaryExport => {
         return {
             id: this.id,
             type: this.type,
@@ -113,7 +113,7 @@ export default class WellBoundary extends PointBoundary {
             geometry: this.geometry.toObject() as Point,
             layers: this.layers,
             well_type: this.wellType,
-            sp_values: this.getSpValues()
+            sp_values: this.getSpValues(stressPeriods)
         };
     };
 

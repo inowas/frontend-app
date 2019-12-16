@@ -1,7 +1,6 @@
-import {isEqual} from 'lodash';
 import Uuid from 'uuid';
-import simpleDiff from '../../../../services/diffTools/simpleDiff';
 import {Cells, Geometry} from '../index';
+import Stressperiods from '../Stressperiods';
 import {
     BoundaryType,
     IBoundary,
@@ -38,17 +37,17 @@ export default abstract class Boundary {
 
     abstract get valueProperties(): IValueProperty[];
 
-    public abstract getSpValues(opId?: string): ISpValues;
+    public abstract getSpValues(stressPeriods: Stressperiods, opId?: string): ISpValues;
 
     public abstract setSpValues(spValues: ISpValues, opId?: string): void;
 
-    public abstract toExport(): IBoundaryExport;
+    public abstract toExport(stressPeriods: Stressperiods): IBoundaryExport;
 
     public abstract toObject(): IBoundary;
 
-    public sameAs(b: Boundary): boolean {
+    /*public sameAs(b: Boundary): boolean {
         return isEqual(simpleDiff(this.toExport(), b.toExport()), {});
-    }
+    }*/
 
     public clone() {
         const b = this._class.fromObject(this._props);

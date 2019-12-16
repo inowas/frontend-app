@@ -5,6 +5,7 @@ import BoundingBox from '../../geometry/BoundingBox';
 import {ICells} from '../../geometry/Cells.type';
 import GridSize from '../../geometry/GridSize';
 import {Cells, Geometry} from '../index';
+import Stressperiods from '../Stressperiods';
 import {ISpValues, IValueProperty} from './Boundary.type';
 import {IConstantHeadBoundary, IConstantHeadBoundaryExport} from './ConstantHeadBoundary.type';
 import LineBoundary from './LineBoundary';
@@ -106,7 +107,7 @@ export default class ConstantHeadBoundary extends LineBoundary {
         this._class = ConstantHeadBoundary;
     }
 
-    public toExport(): IConstantHeadBoundaryExport {
+    public toExport(stressPeriods: Stressperiods): IConstantHeadBoundaryExport {
         return {
             id: this.id,
             type: this.type,
@@ -117,7 +118,7 @@ export default class ConstantHeadBoundary extends LineBoundary {
             ops: this.observationPoints.map((op) => ({
                     name: op.name,
                     geometry: op.geometry,
-                    sp_values: op.spValues
+                    sp_values: op.getSpValues(stressPeriods)
                 }
             ))
         };

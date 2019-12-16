@@ -35,7 +35,7 @@ export const defaults: IFlopyModflowMfevt = {
 export default class FlopyModflowMfevt extends FlopyModflowBoundary<IFlopyModflowMfevt> {
 
     public static create(boundaries: BoundaryCollection, stressperiods: Stressperiods, gridSize: GridSize) {
-        return this.fromDefault().update(boundaries, stressperiods.count, gridSize.nY, gridSize.nX);
+        return this.fromDefault().update(boundaries, stressperiods, gridSize.nY, gridSize.nX);
     }
 
     public static fromDefault() {
@@ -53,14 +53,14 @@ export default class FlopyModflowMfevt extends FlopyModflowBoundary<IFlopyModflo
         return new this(d);
     }
 
-    public update = (boundaries: BoundaryCollection, nper: number, nrow: number, ncol: number) => {
+    public update = (boundaries: BoundaryCollection, stressperiods: Stressperiods, nrow: number, ncol: number) => {
         const bd = boundaries.all.filter((b) =>
             (b instanceof EvapotranspirationBoundary)) as EvapotranspirationBoundary[];
         if (boundaries.length === 0) {
             return null;
         }
 
-        const spData = calculateEvapotranspirationSpData(bd, nper, nrow, ncol);
+        const spData = calculateEvapotranspirationSpData(bd, stressperiods, stressperiods.count, nrow, ncol);
         if (!spData) {
             return null;
         }

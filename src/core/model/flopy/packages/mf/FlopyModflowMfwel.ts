@@ -46,7 +46,7 @@ export const defaults: IFlopyModflowMfwel = {
 export default class FlopyModflowMfwel extends FlopyModflowBoundary<IFlopyModflowMfwel> {
 
     public static create(boundaries: BoundaryCollection, stressperiods: Stressperiods) {
-        return this.fromDefault().update(boundaries, stressperiods.count);
+        return this.fromDefault().update(boundaries, stressperiods);
     }
 
     public static fromDefault() {
@@ -64,13 +64,13 @@ export default class FlopyModflowMfwel extends FlopyModflowBoundary<IFlopyModflo
         return new this(d);
     }
 
-    public update = (boundaries: BoundaryCollection, nper: number) => {
+    public update = (boundaries: BoundaryCollection, stressPeriods: Stressperiods) => {
         const bd = boundaries.all.filter((b) => (b instanceof WellBoundary)) as WellBoundary[];
         if (boundaries.length === 0) {
             return null;
         }
 
-        const spData = calculatePointBoundarySpData(bd, nper, true);
+        const spData = calculatePointBoundarySpData(bd, stressPeriods, true);
         if (!spData) {
             return null;
         }

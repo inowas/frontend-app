@@ -1,11 +1,11 @@
 import {cloneDeep, isEqual, sortBy} from 'lodash';
+import simpleDiff from '../../../../services/diffTools/simpleDiff';
 import {Collection} from '../../collection/Collection';
 import BoundingBox from '../../geometry/BoundingBox';
 import GridSize from '../../geometry/GridSize';
+import Stressperiods from '../Stressperiods';
 import {BoundaryType, IBoundary, IBoundaryExport} from './Boundary.type';
 import {Boundary, BoundaryFactory} from './index';
-
-import simpleDiff from '../../../../services/diffTools/simpleDiff';
 
 export interface IBoundaryComparisonItem {
     id: string;
@@ -60,15 +60,15 @@ class BoundaryCollection extends Collection<Boundary> {
         return this.all.map((b) => b.toObject());
     };
 
-    public toExport = () => {
-        return this.all.map((b) => b.toExport());
+    public toExport = (stressPeriods: Stressperiods) => {
+        return this.all.map((b) => b.toExport(stressPeriods));
     };
 
     public filter = (callable: (b: any) => boolean) => {
         return BoundaryCollection.fromObject(this.all.filter(callable).map((b) => b.toObject()));
     };
 
-    public compareWith = (nbc: BoundaryCollection): IBoundaryComparisonItem[] => {
+    public compareWith = (stressPeriods: Stressperiods, nbc: BoundaryCollection): IBoundaryComparisonItem[] => {
         const currentBoundaries = BoundaryCollection.fromObject(cloneDeep(this.toObject()));
         const newBoundaries = nbc;
 
@@ -99,7 +99,7 @@ class BoundaryCollection extends Collection<Boundary> {
                 return;
             }
 
-            const diff = simpleDiff(newBoundary.toExport(), currentBoundary.toExport());
+            const diff = simpleDiff(newBoundary.toExport(stressPeriods), currentBoundary.toExport(stressPeriods));
             const state = (isEqual(diff, {})) ? 'noUpdate' : 'update';
 
             items = items.map((i) => {

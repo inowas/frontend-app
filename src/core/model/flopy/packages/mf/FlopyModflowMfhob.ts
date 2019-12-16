@@ -16,7 +16,7 @@ export interface IObsData {
     layer: number;
     row: number;
     column: number;
-    time_series_data: Array<[number, number]>;
+    time_series_data: number[][];
 }
 
 export const defaults: IFlopyModflowMfhob = {
