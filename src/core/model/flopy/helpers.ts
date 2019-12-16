@@ -76,7 +76,7 @@ export const calculateHeadObservationData = (hobs: HeadObservationWell[], stress
     return hobs.map((h) => {
         const layer = h.layers[0];
         const cell = h.cells.toObject()[0];
-        const timeSeriesData = h.getSpValues().map((spValue: number[], idx: number) => ([
+        const timeSeriesData = h.getSpValues(stressperiods).map((spValue: number[], idx: number) => ([
             totims[idx], spValue[0]
         ]));
 
@@ -89,14 +89,14 @@ export const calculateHeadObservationData = (hobs: HeadObservationWell[], stress
     });
 };
 
-export const calculateLineBoundarySpData = (boundaries: LineBoundary[], nper: number) => {
+export const calculateLineBoundarySpData = (boundaries: LineBoundary[], stressperiods: Stressperiods) => {
 
     if (boundaries.length === 0) {
         return null;
     }
 
     const spData: number[][][] = [];
-    for (let per = 0; per < nper; per++) {
+    for (let per = 0; per < stressperiods.count; per++) {
         spData[per] = [];
     }
 
@@ -105,7 +105,7 @@ export const calculateLineBoundarySpData = (boundaries: LineBoundary[], nper: nu
         const layers = b.layers;
         const ops = b.observationPoints;
 
-        for (let per = 0; per < nper; per++) {
+        for (let per = 0; per < stressperiods.count; per++) {
             layers.forEach((lay: number) => {
                 cells.forEach((cell: ICell) => {
                     const col = cell[0];
@@ -119,7 +119,7 @@ export const calculateLineBoundarySpData = (boundaries: LineBoundary[], nper: nu
                         throw Error('PrevOp not found');
                     }
 
-                    const prevSpValues = prevOP.spValues;
+                    const prevSpValues = prevOP.getSpValues(stressperiods);
                     if (!prevSpValues) {
                         return;
                     }
@@ -137,7 +137,7 @@ export const calculateLineBoundarySpData = (boundaries: LineBoundary[], nper: nu
                         throw Error('NextOp not found');
                     }
 
-                    const nextSpValues = nextOP.spValues;
+                    const nextSpValues = nextOP.getSpValues(stressperiods);
                     if (!nextSpValues) {
                         return;
                     }
@@ -158,19 +158,20 @@ export const calculateLineBoundarySpData = (boundaries: LineBoundary[], nper: nu
     return convertArrayToDict(spData);
 };
 
-export const calculatePointBoundarySpData = (boundaries: PointBoundary[], nper: number, add = true) => {
+export const calculatePointBoundarySpData = (boundaries: PointBoundary[], stressperiods: Stressperiods,
+                                             add = true) => {
 
     if (boundaries.length === 0) {
         return null;
     }
 
-    const spData: number[][][] = new Array(nper).fill([]);
+    const spData: number[][][] = new Array(stressperiods.count).fill([]);
 
     spData.forEach((sp, idx) => {
         boundaries.forEach((b) => {
             const layer = b.layers[0];
             const cell = b.cells.toObject()[0];
-            const data = [layer, cell[1], cell[0]].concat(b.getSpValues()[idx]);
+            const data = [layer, cell[1], cell[0]].concat(b.getSpValues(stressperiods)[idx]);
 
             let push = true;
             spData[idx] = spData[idx].map((spd) => {
@@ -198,7 +199,8 @@ export const calculatePointBoundarySpData = (boundaries: PointBoundary[], nper: 
 
 };
 
-export const calculateRechargeSpData = (boundaries: RechargeBoundary[], nper: number, nrow: number, ncol: number) => {
+export const calculateRechargeSpData = (boundaries: RechargeBoundary[], stressperiods: Stressperiods, nrow: number,
+                                        ncol: number) => {
 
     if (boundaries.length === 0) {
         return null;
@@ -207,7 +209,7 @@ export const calculateRechargeSpData = (boundaries: RechargeBoundary[], nper: nu
     const layers = sortedUniq(boundaries.map((b) => b.layers[0]));
 
     const spData: number[][][] = [];
-    for (let per = 0; per < nper; per++) {
+    for (let per = 0; per < stressperiods.count; per++) {
         spData[per] = [];
         for (let row = 0; row < nrow; row++) {
             spData[per][row] = [];
@@ -219,7 +221,7 @@ export const calculateRechargeSpData = (boundaries: RechargeBoundary[], nper: nu
 
     boundaries.forEach((rch) => {
         const cells = rch.cells.toObject();
-        const spValues = rch.getSpValues();
+        const spValues = rch.getSpValues(stressperiods);
 
         spData.forEach((sp, per) => {
             cells.forEach((cell) => {
@@ -239,6 +241,7 @@ export const calculateRechargeSpData = (boundaries: RechargeBoundary[], nper: nu
 
 export const calculateEvapotranspirationSpData = (
     boundaries: EvapotranspirationBoundary[],
+    stressperiods: Stressperiods,
     nper: number,
     nrow: number,
     ncol: number
@@ -283,7 +286,7 @@ export const calculateEvapotranspirationSpData = (
     }
     boundaries.forEach((b) => {
         const cells = b.cells.toObject();
-        const spValues = b.getSpValues();
+        const spValues = b.getSpValues(stressperiods);
 
         for (let per = 0; per < nper; per++) {
             const [evtr, surf, exdp] = spValues[per];

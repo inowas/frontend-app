@@ -42,7 +42,7 @@ export type IBoundaryExport =
 
 export type BoundarySelection = 'all' | BoundaryType;
 
-export type ISpValues = number[][] | null;
+export type ISpValues = number[][];
 
 export interface IValueProperty {
     name: string;

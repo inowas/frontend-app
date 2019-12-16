@@ -53,7 +53,7 @@ const boundaryDetails = (props: IProps) => {
         if (props.boundary instanceof LineBoundary && observationPointId) {
             const cBoundary = props.boundary;
             const newOpId = uuid.v4();
-            cBoundary.cloneObservationPoint(observationPointId, newOpId);
+            cBoundary.cloneObservationPoint(observationPointId, newOpId, props.model.stressperiods);
             setObservationPointId(newOpId);
             setShowObservationPointEditor(true);
             return props.onChange(cBoundary);
@@ -83,7 +83,7 @@ const boundaryDetails = (props: IProps) => {
         const cBoundary = props.boundary;
         const multipleLayers = ['chd', 'ghb'].includes(cBoundary.type);
 
-        let options = {enabled: false, label: '', name: ''};
+        let options;
 
         switch (cBoundary.type) {
             case 'rch':

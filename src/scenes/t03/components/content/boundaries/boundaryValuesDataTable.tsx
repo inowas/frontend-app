@@ -1,3 +1,4 @@
+import { cloneDeep } from 'lodash';
 import moment from 'moment';
 import React, {ChangeEvent, useState} from 'react';
 import {Button, Icon, Input, Table} from 'semantic-ui-react';
@@ -29,9 +30,9 @@ const boundaryValuesDataTable = (props: IProps) => {
 
     const getSpValues = () => {
         if (boundary instanceof LineBoundary) {
-            return selectedOP ? boundary.getSpValues(selectedOP) : null;
+            return selectedOP ? boundary.getSpValues(props.stressperiods, selectedOP) : null;
         }
-        return boundary.getSpValues();
+        return boundary.getSpValues(props.stressperiods);
     };
 
     const spValues: ISpValues | null = getSpValues();
@@ -53,12 +54,13 @@ const boundaryValuesDataTable = (props: IProps) => {
         setActiveInput(null);
 
         if (spValues) {
-            const updatedSpValues = spValues.map((spv, spvIdx) => {
+            const updatedSpValues = props.stressperiods.getSpValues(spValues).map((spv, spvIdx) => {
+                const newRow = cloneDeep(spv);
                 if (row === spvIdx) {
-                    spv[col] = parseFloat(value) || 0;
-                    return spv;
+                    newRow[col] = parseFloat(value) || 0;
+                    return newRow;
                 }
-                return spv;
+                return newRow;
             });
             boundary.setSpValues(updatedSpValues as ISpValues, selectedOP);
         }
@@ -103,11 +105,10 @@ const boundaryValuesDataTable = (props: IProps) => {
 
         const dateTimes = stressperiods.dateTimes;
 
-        if (!spValues || dateTimes.length !== spValues.length) {
+        if (!spValues) {
             return (
                 <Table.Row>
-                    <Table.Cell>Boundary stress period number doesn't fit number of model stress periods. <br/>
-                        Please create a new boundary instead.</Table.Cell>
+                    <Table.Cell>There are no stress period values.</Table.Cell>
                 </Table.Row>
             );
         }

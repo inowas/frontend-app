@@ -1,5 +1,6 @@
 import {Point} from 'geojson';
 import {cloneDeep} from 'lodash';
+import Stressperiods from '../Stressperiods';
 import {ISpValues} from './Boundary.type';
 import {IObservationPoint} from './ObservationPoint.type';
 
@@ -85,8 +86,8 @@ export default class ObservationPoint {
         this._props = cloneDeep(props);
     }
 
-    public getSpValues() {
-        return this._props.properties.sp_values;
+    public getSpValues(stressperiods: Stressperiods) {
+        return stressperiods.getSpValues(this._props.properties.sp_values);
     }
 
     public setSpValues(spValues: ISpValues) {

@@ -1,6 +1,7 @@
 import {Point} from 'geojson';
 import Uuid from 'uuid';
 import {ICells} from '../../../../../core/model/geometry/Cells.type';
+import {Stressperiods} from '../../../../../core/model/modflow';
 import {WellBoundary} from '../../../../../core/model/modflow/boundaries';
 import {JSON_SCHEMA_URL} from '../../../../../services/api';
 import {validate} from '../../../../../services/jsonSchemaValidator';
@@ -37,17 +38,17 @@ test('WellBoundary create', () => {
     expect(wellBoundary.geometry.toObject()).toEqual(geometry);
     expect(wellBoundary.layers).toEqual(layers);
     expect(wellBoundary.cells.toObject()).toEqual(cells);
-    expect(wellBoundary.getSpValues()).toEqual(spValues);
+    expect(wellBoundary.getSpValues(Stressperiods.fromDefaults())).toEqual([[1]]);
     expect(wellBoundary.wellType).toEqual('puw');
 
-    expect(wellBoundary.toExport()).toEqual(
+    expect(wellBoundary.toExport(Stressperiods.fromDefaults())).toEqual(
         {
             cells: [[1, 2]],
             geometry: {coordinates: [3, 4], type: 'Point'},
             id: wellBoundary.id,
             layers: [1],
             name: 'NameOfWell',
-            sp_values: [[1], [2], [3]],
+            sp_values: [[1]],
             type: 'wel',
             well_type: 'puw'
         }

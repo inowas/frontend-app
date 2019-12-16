@@ -5,6 +5,7 @@ import BoundingBox from '../../geometry/BoundingBox';
 import {ICells} from '../../geometry/Cells.type';
 import GridSize from '../../geometry/GridSize';
 import {Cells, Geometry} from '../index';
+import Stressperiods from '../Stressperiods';
 import {ISpValues, IValueProperty} from './Boundary.type';
 import {Boundary} from './index';
 import {INrchop, IRechargeBoundary, IRechargeBoundaryExport} from './RechargeBoundary.type';
@@ -131,22 +132,22 @@ export default class RechargeBoundary extends Boundary {
         this._class = RechargeBoundary;
     }
 
-    public getSpValues() {
-        return this._props.properties.sp_values;
+    public getSpValues(stressPeriods: Stressperiods) {
+        return stressPeriods.getSpValues(this._props.properties.sp_values);
     }
 
     public setSpValues(spValues: ISpValues, opId?: string) {
         this._props.properties.sp_values = spValues;
     }
 
-    public toExport = (): IRechargeBoundaryExport => ({
+    public toExport = (stressPeriods: Stressperiods): IRechargeBoundaryExport => ({
         id: this.id,
         type: this.type,
         name: this.name,
         geometry: this.geometry.toObject() as Polygon,
         layers: this.layers,
         nrchop: this.nrchop ? this.nrchop : 1,
-        sp_values: this.getSpValues()
+        sp_values: this.getSpValues(stressPeriods)
     });
 
     public toObject(): IRechargeBoundary {

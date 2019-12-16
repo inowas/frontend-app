@@ -51,7 +51,7 @@ export const defaults: IFlopyModflowMfrch = {
 export default class FlopyModflowMfrch extends FlopyModflowBoundary<IFlopyModflowMfrch> {
 
     public static create(boundaries: BoundaryCollection, stressperiods: Stressperiods, gridSize: GridSize) {
-        return this.fromDefault().update(boundaries, stressperiods.count, gridSize.nY, gridSize.nX);
+        return this.fromDefault().update(boundaries, stressperiods, gridSize.nY, gridSize.nX);
     }
 
     public static fromDefault() {
@@ -69,13 +69,13 @@ export default class FlopyModflowMfrch extends FlopyModflowBoundary<IFlopyModflo
         return new this(d);
     }
 
-    public update = (boundaries: BoundaryCollection, nper: number, nrow: number, ncol: number) => {
+    public update = (boundaries: BoundaryCollection, stressPeriods: Stressperiods, nrow: number, ncol: number) => {
         const bd = boundaries.all.filter((b) => (b instanceof RechargeBoundary)) as RechargeBoundary[];
         if (boundaries.length === 0) {
             return null;
         }
 
-        const spData = calculateRechargeSpData(bd, nper, nrow, ncol);
+        const spData = calculateRechargeSpData(bd, stressPeriods, nrow, ncol);
         if (!spData) {
             return null;
         }

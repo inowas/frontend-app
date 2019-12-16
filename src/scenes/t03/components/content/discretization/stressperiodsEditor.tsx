@@ -42,7 +42,7 @@ const stressperiodsEditor = (props: IProps) => {
             return;
         }
 
-        if (e.type === 'blur' && props.boundaries.length === 0) {
+        if (e.type === 'blur') {
             const sp = Stressperiods.fromObject(stressperiods);
 
             if (name === 'startDateTime' || name === 'endDateTime') {
@@ -119,7 +119,7 @@ const stressperiodsEditor = (props: IProps) => {
                             value={endDateTime}
                             onBlur={handleDateTimeChange}
                             onChange={handleDateTimeChange}
-                            readOnly={props.model.readOnly || props.boundaries.length > 0}
+                            readOnly={props.model.readOnly}
                         />
                         <Form.Select
                             label="Time unit"
@@ -140,7 +140,7 @@ const stressperiodsEditor = (props: IProps) => {
                 </Grid.Column>
                 <Grid.Column width={11}>
                     <StressPeriodsDataTable
-                        readOnly={props.model.readOnly || props.boundaries.length > 0}
+                        readOnly={props.model.readOnly}
                         stressperiods={iStressperiods}
                         onChange={handleChange}
                     />

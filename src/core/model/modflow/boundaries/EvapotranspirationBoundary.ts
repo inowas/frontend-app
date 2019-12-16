@@ -5,6 +5,7 @@ import BoundingBox from '../../geometry/BoundingBox';
 import {ICells} from '../../geometry/Cells.type';
 import GridSize from '../../geometry/GridSize';
 import {Cells, Geometry} from '../index';
+import Stressperiods from '../Stressperiods';
 import Boundary from './Boundary';
 import {ISpValues, IValueProperty} from './Boundary.type';
 import {
@@ -149,22 +150,22 @@ export default class EvapotranspirationBoundary extends Boundary {
         this._class = EvapotranspirationBoundary;
     }
 
-    public getSpValues() {
-        return this._props.properties.sp_values;
+    public getSpValues(stressperiods: Stressperiods) {
+        return stressperiods.getSpValues(this._props.properties.sp_values);
     }
 
     public setSpValues(spValues: ISpValues, opId?: string) {
         this._props.properties.sp_values = spValues;
     }
 
-    public toExport = (): IEvapotranspirationBoundaryExport => ({
+    public toExport = (stressperiods: Stressperiods): IEvapotranspirationBoundaryExport => ({
         id: this.id,
         type: this.type,
         name: this.name,
         geometry: this.geometry.toObject() as Polygon,
         layers: this.layers,
         nevtop: this.nevtop ? this.nevtop : 1,
-        sp_values: this.getSpValues()
+        sp_values: this.getSpValues(stressperiods)
     });
 
     public toObject(): IEvapotranspirationBoundary {
