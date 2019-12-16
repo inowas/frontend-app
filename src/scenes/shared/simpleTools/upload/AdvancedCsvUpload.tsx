@@ -1,19 +1,20 @@
 import moment from 'moment';
 import * as Papa from 'papaparse';
 import {ParseResult} from 'papaparse';
-import React, {ChangeEvent, SyntheticEvent, useState} from 'react';
-import {Button, DropdownProps, Form, Grid, Header, Input, Label, List, Modal, Segment, Table} from 'semantic-ui-react';
+import React, {ChangeEvent, SyntheticEvent, useEffect, useState} from 'react';
+import {Button, DropdownProps, Form, Grid, Header, Label, List, Modal, Segment} from 'semantic-ui-react';
 
 interface IProps {
     columns: Array<{ key: number, value: string, text: string }>;
-    onSave: (ds: any) => void;
+    onSave: (ds: any[][]) => void;
     onCancel: () => void;
 }
 
 const advancedCsvUpload = (props: IProps) => {
-    const [data, setData] = useState<number[][] | undefined>(undefined);
+    const [columns, setColumns] = useState<Array<{key: number, value: string, text: string}>>(props.columns);
     const [metadata, setMetadata] = useState<ParseResult | null>(null);
 
+    const [useDatetime, setUseDatetime] = useState<boolean>(false);
     const [dateTimeFormat, setDateTimeFormat] = useState<string>('DD.MM.YYYY H:i:s');
     const [firstRowIsHeader, setFirstRowIsHeader] = useState<boolean>(true);
 
@@ -24,13 +25,16 @@ const advancedCsvUpload = (props: IProps) => {
 
     const [isFetched] = useState<boolean>(false);
 
-    const [beginEnabled, setBeginEnabled] = useState<boolean>(false);
-    const [begin, setBegin] = useState<number>(0);
-    const [lBegin, setLBegin] = useState<number>(0);
-
-    const [endEnabled, setEndEnabled] = useState<boolean>(false);
-    const [end, setEnd] = useState<number>(moment.utc().unix());
-    const [lEnd, setLEnd] = useState<number>(moment.utc().unix());
+    useEffect(() => {
+        if (useDatetime) {
+            return setColumns([{
+                key: 0,
+                value: 'datetime',
+                text: 'Datetime'
+            }].concat(props.columns));
+        }
+        return setColumns(props.columns);
+    }, [props.columns, useDatetime]);
 
     const handleSave = () => {
         if (!metadata || !parameterColumns ||
@@ -38,20 +42,20 @@ const advancedCsvUpload = (props: IProps) => {
             return;
         }
 
-        const nData: number[][] = [];
+        const nData: any[][] = [];
         metadata.data.forEach((r, rKey) => {
             if (!firstRowIsHeader || firstRowIsHeader && rKey > 0) {
-                const row = props.columns.map((c) => {
-                    return r[parameterColumns[c.value]];
+                const row = columns.map((c, cKey) => {
+                    if (useDatetime && cKey === 0) {
+                        return moment(r[parameterColumns[c.value]]);
+                    }
+                    return r[parameterColumns[c.value]] || 0;
                 });
                 nData.push(row);
             }
         });
-        return setData(nData);
-    };
-
-    const handleBlur = (f: (v: any) => void) => (v: any) => {
-        f(v);
+        props.onCancel();
+        return props.onSave(nData);
     };
 
     const handleChange = (f: (v: any) => void) => (e: any, d: any) => {
@@ -78,6 +82,7 @@ const advancedCsvUpload = (props: IProps) => {
             setParsingData(true);
             Papa.parse(file, {
                 dynamicTyping: true,
+                skipEmptyLines: true,
                 complete: (results) => {
                     setMetadata(results);
                     setParsingData(false);
@@ -99,18 +104,30 @@ const advancedCsvUpload = (props: IProps) => {
                                     <Segment raised={true} loading={parsingData}>
                                         <Label as={'div'} color={'blue'} ribbon={true}>Upload File</Label>
                                         <Form.Group>
+                                            {useDatetime &&
+                                            <Form.Input
+                                                onChange={handleChange(setDateTimeFormat)}
+                                                label="Datetime format"
+                                                name={'datetimeField'}
+                                                value={dateTimeFormat}
+                                            />
+                                            }
+                                            {/*
+                                                <Form.Checkbox
+                                                    style={{marginTop: '30px'}}
+                                                    toggle={true}
+                                                    onChange={handleChange(setUseDatetime)}
+                                                    checked={useDatetime}
+                                                    label="Use datetime."
+
+                                                />
+                                            */}
                                             <Form.Input
                                                 onChange={handleUploadFile}
                                                 label="File"
                                                 name="file"
                                                 type="file"
                                                 width={6}
-                                            />
-                                            <Form.Input
-                                                onChange={handleChange(setDateTimeFormat)}
-                                                label="Datetime format"
-                                                name={'datetimeField'}
-                                                value={dateTimeFormat}
                                             />
                                             <Form.Checkbox
                                                 style={{marginTop: '30px'}}
@@ -151,7 +168,7 @@ const advancedCsvUpload = (props: IProps) => {
                                         <Label as={'div'} color={'blue'} ribbon={true}>Metadata</Label>
                                         <Form>
                                             <Form.Group>
-                                                {props.columns.map((c, key) => (
+                                                {columns.map((c, key) => (
                                                     <Form.Dropdown
                                                         key={key}
                                                         label={c.text}
@@ -173,71 +190,7 @@ const advancedCsvUpload = (props: IProps) => {
                                 </Segment>
                             </Grid.Column>
                         </Grid.Row>
-
-                        {metadata &&
-                        <Grid.Row>
-                            <Grid.Column width={8}>
-                                <Segment raised={true} loading={parsingData}>
-                                    <Label as={'div'} color={'blue'} ribbon={true}>Time range</Label>
-                                    <Form>
-                                        <Form.Group>
-                                            <Form.Checkbox
-                                                style={{marginTop: '30px'}}
-                                                toggle={true}
-                                                checked={beginEnabled}
-                                                onChange={handleChange(setBeginEnabled)}
-                                            />
-                                            <Form.Input
-                                                label={'Start'}
-                                                type={'date'}
-                                                value={moment.unix(lBegin).format('YYYY-MM-DD')}
-                                                disabled={!beginEnabled}
-                                                onChange={handleChange((d) => setLBegin(moment.utc(d).unix()))}
-                                                onBlur={handleBlur(() => setBegin(lBegin))}
-                                            />
-                                        </Form.Group>
-                                        <Form.Group>
-                                            <Form.Checkbox
-                                                style={{marginTop: '30px'}}
-                                                toggle={true}
-                                                checked={endEnabled}
-                                                onChange={handleChange(setEndEnabled)}
-                                            />
-                                            <Form.Input
-                                                label={'End'}
-                                                type={'date'}
-                                                value={moment.unix(lEnd).format('YYYY-MM-DD')}
-                                                disabled={!endEnabled}
-                                                onChange={handleChange((d) => setLEnd(moment.utc(d).unix()))}
-                                                onBlur={handleBlur(() => setEnd(lEnd))}
-                                            />
-                                        </Form.Group>
-                                    </Form>
-                                </Segment>
-                            </Grid.Column>
-                        </Grid.Row>}
-                    </React.Fragment>}
-
-                    {metadata && parameterColumns && Object.keys(parameterColumns).length !== props.columns.length &&
-                    <Grid.Row>
-                        <Grid.Column>
-                            <Segment loading={parsingData} raised={true}>
-                                {!parsingData && <Label as={'div'} color={'red'} ribbon={true}>Data</Label>}
-                                <Table size={'small'} singleLine={true}>
-                                    <Table.Header>
-                                        <Table.Row>
-                                            <Table.HeaderCell>Start Date</Table.HeaderCell>
-                                            {props.columns.map((p, idx) => (
-                                                <Table.HeaderCell key={idx}>{p.text}</Table.HeaderCell>))}
-                                        </Table.Row>
-                                    </Table.Header>
-                                    <Table.Body>
-
-                                    </Table.Body>
-                                </Table>
-                            </Segment>
-                        </Grid.Column>
-                    </Grid.Row>
+                    </React.Fragment>
                     }
                 </Grid>
             </Modal.Content>

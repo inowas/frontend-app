@@ -1,6 +1,6 @@
-import moment from 'moment';
+import moment, {isMoment} from 'moment';
 import React, {ChangeEvent, useState} from 'react';
-import {Button, Input, Table} from 'semantic-ui-react';
+import {Button, Icon, Input, Table} from 'semantic-ui-react';
 import {Stressperiods} from '../../../../../core/model/modflow';
 import {Boundary, LineBoundary} from '../../../../../core/model/modflow/boundaries';
 import {ISpValues} from '../../../../../core/model/modflow/boundaries/Boundary.type';
@@ -26,8 +26,6 @@ const boundaryValuesDataTable = (props: IProps) => {
     const [showUploadModal, setShowUploadModal] = useState<boolean>(false);
 
     const {boundary, selectedOP} = props;
-
-    console.log({boundary: boundary.toObject()});
 
     const getSpValues = () => {
         if (boundary instanceof LineBoundary) {
@@ -63,6 +61,16 @@ const boundaryValuesDataTable = (props: IProps) => {
                 return spv;
             });
             boundary.setSpValues(updatedSpValues as ISpValues, selectedOP);
+        }
+        return props.onChange(boundary);
+    };
+
+    const handleImportCsv = (data: any[][]) => {
+        if (spValues) {
+            const updatedSpValues = spValues.map((spv, key) => {
+                return data[key];
+            });
+            boundary.setSpValues(updatedSpValues, selectedOP);
         }
         return props.onChange(boundary);
     };
@@ -141,29 +149,39 @@ const boundaryValuesDataTable = (props: IProps) => {
             {showUploadModal &&
             <AdvancedCsvUpload
                 columns={
-                    [{
-                        key: 0,
-                        value: 'datetime',
-                        text: 'Datetime'
-                    }].concat(boundary.valueProperties.map((p, key) => {
+                    boundary.valueProperties.map((p, key) => {
                         return {
                             key: key + 1,
                             value: p.name.toLowerCase(),
                             text: p.name
                         };
-                    }))
+                    })
                 }
                 onCancel={handleToggleUploadModal}
-                onSave={() => null}
+                onSave={handleImportCsv}
             />
             }
-            <Button onClick={handleToggleUploadModal}>CSV Upload</Button>
+            <p style={{marginTop: '10px'}}>
+                <b>Time dependent boundary values{boundary instanceof LineBoundary ? ' observation point' : ''}</b>
+                <Button
+                    icon={true}
+                    labelPosition="left"
+                    onClick={handleToggleUploadModal}
+                    primary={true}
+                    floated="right"
+                    size="mini"
+                >
+                    <Icon name="upload" />
+                    Upload csv
+                </Button>
+            </p>
             <Table size={'small'} singleLine={true}>
                 <Table.Header>
                     <Table.Row>
                         <Table.HeaderCell>Start Date</Table.HeaderCell>
                         {boundary.valueProperties.map((p, idx) => (
-                            <Table.HeaderCell key={idx}>{p.name} ({p.unit})</Table.HeaderCell>))}
+                            <Table.HeaderCell key={idx}>{p.name} ({p.unit})</Table.HeaderCell>
+                        ))}
                     </Table.Row>
                 </Table.Header>
                 <Table.Body>{spValues && body()}</Table.Body>
