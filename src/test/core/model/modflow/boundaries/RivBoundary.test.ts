@@ -2,6 +2,7 @@ import {LineString, Point} from 'geojson';
 import Uuid from 'uuid';
 import {BoundingBox, Cells, Geometry, GridSize} from '../../../../../core/model/geometry';
 import {ICells} from '../../../../../core/model/geometry/Cells.type';
+import {Stressperiods} from '../../../../../core/model/modflow';
 import {RiverBoundary} from '../../../../../core/model/modflow/boundaries';
 import {JSON_SCHEMA_URL} from '../../../../../services/api';
 import {validate} from '../../../../../services/jsonSchemaValidator';
@@ -57,7 +58,7 @@ test('RiverBoundary clone ObservationPoint', () => {
     const op2 = riverBoundary.findObservationPointByName('Op2');
 
     const newId = Uuid.v4();
-    riverBoundary.cloneObservationPoint(op2.id, newId);
+    riverBoundary.cloneObservationPoint(op2.id, newId, Stressperiods.fromDefaults());
     expect(riverBoundary.observationPoints).toHaveLength(3);
 });
 

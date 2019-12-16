@@ -2,7 +2,7 @@ import {Point} from 'geojson';
 import Uuid from 'uuid';
 import {Geometry} from '../../../../../core/model/geometry';
 import {ICells} from '../../../../../core/model/geometry/Cells.type';
-import {Cells} from '../../../../../core/model/modflow';
+import {Cells, Stressperiods} from '../../../../../core/model/modflow';
 import {HeadObservationWell} from '../../../../../core/model/modflow/boundaries';
 import {JSON_SCHEMA_URL} from '../../../../../services/api';
 import {validate} from '../../../../../services/jsonSchemaValidator';
@@ -36,7 +36,7 @@ test('HeadObservationWell create', () => {
     expect(headObservationWell.layers).toEqual(layers);
     expect(headObservationWell.cells).toBeInstanceOf(Cells);
     expect(headObservationWell.cells.toObject()).toEqual(cells);
-    expect(headObservationWell.getSpValues()).toEqual(spValues);
+    expect(headObservationWell.getSpValues(Stressperiods.fromDefaults())).toEqual([[1]]);
 });
 
 test('HeadObservationWell fromObject', () => {

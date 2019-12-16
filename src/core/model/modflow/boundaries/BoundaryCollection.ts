@@ -68,7 +68,7 @@ class BoundaryCollection extends Collection<Boundary> {
         return BoundaryCollection.fromObject(this.all.filter(callable).map((b) => b.toObject()));
     };
 
-    public compareWith = (stressPeriods: Stressperiods, nbc: BoundaryCollection): IBoundaryComparisonItem[] => {
+    public compareWith = (stressperiods: Stressperiods, nbc: BoundaryCollection): IBoundaryComparisonItem[] => {
         const currentBoundaries = BoundaryCollection.fromObject(cloneDeep(this.toObject()));
         const newBoundaries = nbc;
 
@@ -99,7 +99,7 @@ class BoundaryCollection extends Collection<Boundary> {
                 return;
             }
 
-            const diff = simpleDiff(newBoundary.toExport(stressPeriods), currentBoundary.toExport(stressPeriods));
+            const diff = simpleDiff(newBoundary.toExport(stressperiods), currentBoundary.toExport(stressperiods));
             const state = (isEqual(diff, {})) ? 'noUpdate' : 'update';
 
             items = items.map((i) => {

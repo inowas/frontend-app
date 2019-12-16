@@ -2,7 +2,7 @@
 import {LineString} from 'geojson';
 import Uuid from 'uuid';
 import {ICells} from '../../../../../core/model/geometry/Cells.type';
-import {Geometry} from '../../../../../core/model/modflow';
+import {Geometry, Stressperiods} from '../../../../../core/model/modflow';
 import {BoundaryCollection, ConstantHeadBoundary, WellBoundary} from '../../../../../core/model/modflow/boundaries';
 import {IBoundary} from '../../../../../core/model/modflow/boundaries/Boundary.type';
 
@@ -61,7 +61,9 @@ test('BoundaryCollection compareWith well', () => {
         }
     }];
 
-    let result = BoundaryCollection.fromObject(bc1).compareWith(BoundaryCollection.fromObject(bc1));
+    let result = BoundaryCollection.fromObject(bc1).compareWith(
+        Stressperiods.fromDefaults(), BoundaryCollection.fromObject(bc1)
+    );
     expect(result).toEqual([{
         diff: {},
         id: 'b21336c6-f814-412f-a476-a033ca6ca570',
@@ -71,7 +73,9 @@ test('BoundaryCollection compareWith well', () => {
     }]);
 
     const bc2: IBoundary[] = [];
-    result = BoundaryCollection.fromObject(bc1).compareWith(BoundaryCollection.fromObject(bc2));
+    result = BoundaryCollection.fromObject(bc1).compareWith(
+        Stressperiods.fromDefaults(), BoundaryCollection.fromObject(bc2)
+    );
     expect(result).toEqual([{
         diff: {},
         id: 'b21336c6-f814-412f-a476-a033ca6ca570',
@@ -97,7 +101,9 @@ test('BoundaryCollection compareWith well', () => {
         }
     }];
 
-    result = BoundaryCollection.fromObject(bc1).compareWith(BoundaryCollection.fromObject(bc3));
+    result = BoundaryCollection.fromObject(bc1).compareWith(
+        Stressperiods.fromDefaults(), BoundaryCollection.fromObject(bc3)
+    );
 
     expect(result).toEqual([{
         diff: {
@@ -152,7 +158,9 @@ test('BoundaryCollection compareWith well', () => {
 
     const bc4bc = BoundaryCollection.fromObject(bc4);
     expect(bc4bc.length).toEqual(2);
-    result = BoundaryCollection.fromObject(bc1).compareWith(BoundaryCollection.fromObject(bc4));
+    result = BoundaryCollection.fromObject(bc1).compareWith(
+        Stressperiods.fromDefaults(), BoundaryCollection.fromObject(bc4)
+    );
     expect(result).toEqual([
         {
             diff: {},
@@ -183,7 +191,7 @@ test('BoundaryCollection compareWith LineBoundary', () => {
     const bc1 = new BoundaryCollection([chb1]);
     const bc2 = new BoundaryCollection([chb1]);
 
-    expect(bc1.compareWith(bc2)).toEqual([{
+    expect(bc1.compareWith(Stressperiods.fromDefaults(), bc2)).toEqual([{
         diff: {},
         id,
         name: "NameOfConstantHead",
@@ -192,7 +200,7 @@ test('BoundaryCollection compareWith LineBoundary', () => {
     }]);
 
     const bc3 = new BoundaryCollection();
-    expect(bc1.compareWith(bc3)).toEqual([{
+    expect(bc1.compareWith(Stressperiods.fromDefaults(), bc3)).toEqual([{
         diff: {},
         id,
         name: "NameOfConstantHead",
@@ -200,7 +208,7 @@ test('BoundaryCollection compareWith LineBoundary', () => {
         type: "chd"
     }]);
 
-    expect(bc3.compareWith(bc1)).toEqual([{
+    expect(bc3.compareWith(Stressperiods.fromDefaults(), bc1)).toEqual([{
         diff: {},
         id,
         name: "NameOfConstantHead",
@@ -214,7 +222,7 @@ test('BoundaryCollection compareWith LineBoundary', () => {
 
     const bc5 = new BoundaryCollection([chb2]);
 
-    expect(bc1.compareWith(bc5)).toEqual([{
+    expect(bc1.compareWith(Stressperiods.fromDefaults(), bc5)).toEqual([{
         diff: {
             geometry: {coordinates: [[3, 4], [3, 5], [4, 5], [5, 3], [3, 4]]},
             name: 'Updated'
