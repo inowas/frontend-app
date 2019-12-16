@@ -532,6 +532,19 @@ export const documentation = {
         filenames: <div>Filenames to use for the package and the output files. If <strong>filenames</strong>=None the package name will be created using the model name and package extension and the PCGN output names will be created using the model name and .pcgni, .pcgnt, and .pcgno extensions. If a single string is passed the package will be set to the string and PCGN output names will be created using the model name and PCGN output extensions. To define the names for all package files (input and output) the length of the list of strings should be 4. Default is None.</div>,
     },
 
+    // SIP
+    sip: {
+        mxiter: <div>The maximum number of times through the iteration loop in one time step in an attempt to solve the system of finite-difference equations. (default is 200)</div>,
+        nparm: <div>The number of iteration variables to be used. Five variables are generally sufficient. (default is 5)</div>,
+        accl: <div>The acceleration variable, which must be greater than zero and is generally equal to one. If a zero is entered, it is changed to one. (default is 1)</div>,
+        hclose: <div>The head change criterion for convergence. When the maximum absolute value of head change from all nodes during an iteration is less than or equal to <strong>hclose</strong>, iteration stops. (default is 1e-5)</div>,
+        ipcalc: <div>A flag indicating where the seed for calculating iteration variables will come from.<br/>
+                    0 is the seed entered by the user will be used.<br/>
+                    1 is the seed will be calculated at the start of the simulation from problem variables. (default is 0)</div>,
+        wseed: <div>The seed for calculating iteration variables. <strong>wseed</strong> is always read, but is used only if <strong>ipcalc</strong> is equal to zero. (default is 0)</div>,
+        iprsip: <div>if equal to zero, is changed to 999. The maximum head change (positive or negative) is printed for each iteration of a time step whenever the time step is an even multiple of <strong>iprsip</strong>. This printout also occurs at the end of each stress period regardless of the value of <strong>iprsip</strong>. (default is 0)</div>
+    },
+
     // SMS
     sms: {
         options: <div>An optional keyword setting that activates solver options:<br/>
