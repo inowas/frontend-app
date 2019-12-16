@@ -19,9 +19,6 @@ interface IProps {
 
 const stressperiodsEditor = (props: IProps) => {
     const [stressperiods, setStressperiods] = useState<IStressPeriods>(props.model.stressperiods.toObject());
-    const [startDateTime, setStartDateTime] = useState<string>(
-        props.model.stressperiods.startDateTime.format('YYYY-MM-DD')
-    );
     const [endDateTime, setEndDateTime] = useState<string>(
         props.model.stressperiods.endDateTime.format('YYYY-MM-DD')
     );
@@ -35,11 +32,6 @@ const stressperiodsEditor = (props: IProps) => {
     const handleDateTimeChange = (e: ChangeEvent<HTMLInputElement>) => {
         const {name, value} = e.target;
         if (e.type === 'change') {
-
-            if (name === 'startDateTime') {
-                setStartDateTime(value);
-            }
-
             if (name === 'endDateTime') {
                 setEndDateTime(value);
             }
@@ -73,7 +65,6 @@ const stressperiodsEditor = (props: IProps) => {
     };
 
     const handleChangeImport = (sp: Stressperiods) => {
-        setStartDateTime(sp.startDateTime.format('YYYY-MM-DD'));
         setEndDateTime(sp.endDateTime.format('YYYY-MM-DD'));
         setStressperiods(sp.toObject());
         return onChange();
@@ -117,10 +108,8 @@ const stressperiodsEditor = (props: IProps) => {
                             type="date"
                             label="Start Date"
                             name={'startDateTime'}
-                            value={startDateTime}
-                            onBlur={handleDateTimeChange}
-                            onChange={handleDateTimeChange}
-                            readOnly={props.model.readOnly || props.boundaries.length > 0}
+                            value={moment.utc(stressperiods.start_date_time).format('YYYY-MM-DD')}
+                            readOnly={true}
                         />
                         <Form.Input
                             error={datesInvalid}

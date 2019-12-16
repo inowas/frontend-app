@@ -1,5 +1,5 @@
 import React, {ChangeEvent, SyntheticEvent, useEffect, useState} from 'react';
-import {Button, Dropdown, DropdownProps, Form, Header, InputOnChangeData, List, Popup} from 'semantic-ui-react';
+import {Button, Dropdown, DropdownProps, Form, InputOnChangeData, List, Popup} from 'semantic-ui-react';
 import uuid from 'uuid';
 import {ModflowModel, Soilmodel} from '../../../../../core/model/modflow';
 import {Boundary, BoundaryCollection, LineBoundary} from '../../../../../core/model/modflow/boundaries';
@@ -271,7 +271,6 @@ const boundaryDetails = (props: IProps) => {
                 </Button>
             </div>
             }
-            <Header as={'h4'}>Time dependent boundary values at observation point</Header>
             <BoundaryValuesDataTable
                 boundary={boundary}
                 onChange={props.onChange}
