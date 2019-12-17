@@ -167,7 +167,7 @@ const processing = (props: IProps) => {
                             {parameterList.filter((i) => i.parameter === props.parameter.type)[0].text}
                         </Header>
                         <Label color={'blue'} ribbon={true} size={'large'}>
-                            Data sources
+                            Processings
                         </Label>
                         <Table>
                             <Table.Header>

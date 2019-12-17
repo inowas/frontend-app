@@ -91,7 +91,7 @@ const stressperiodsGenerator = (props: IProps) => {
                         isNew: true,
                         nstp: 1,
                         tsmult: 1,
-                        steady: true
+                        steady: false
                     });
                 }
             }
@@ -115,7 +115,7 @@ const stressperiodsGenerator = (props: IProps) => {
                 start_date_time: moment.utc(sp.start_date_time).format(),
                 nstp: 1,
                 tsmult: 1,
-                steady: true
+                steady: false
             };
         }).forEach((sp) => {
             stressPeriods.stressperiods.push(sp);

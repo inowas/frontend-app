@@ -5,11 +5,11 @@ export interface IProcessing {
     type: string;
 }
 
-export type IValueProcessingComparator = 'lte' | 'le' | 'gt' | 'gte';
+export type IValueProcessingOperator = '+' | '-' | '*' | '/' | '<' | '<=' | '>' | '>=' | '=';
 
 export interface IValueProcessing extends IProcessing {
     type: 'value';
-    comparator: IValueProcessingComparator;
+    operator: IValueProcessingOperator;
     value: number;
 }
 

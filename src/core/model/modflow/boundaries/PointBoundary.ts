@@ -50,7 +50,7 @@ export default abstract class PointBoundary extends Boundary {
     }
 
     public getSpValues(stressperiods: Stressperiods): ISpValues {
-        return stressperiods.getSpValues(this._props.properties.sp_values);
+        return Boundary.mergeStressperiodsWithSpValues(stressperiods, this._props.properties.sp_values);
     }
 
     public setSpValues(spValues: ISpValues, opId?: string) {

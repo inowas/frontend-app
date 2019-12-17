@@ -1,13 +1,13 @@
 import {GenericObject} from '../../genericObject/GenericObject';
 import {IDateTimeValue} from '../Sensor.type';
-import {IValueProcessing, IValueProcessingComparator} from './Processing.type';
+import {IValueProcessing, IValueProcessingOperator} from './Processing.type';
 
-export const comparators = ['lte', 'le', 'gt', 'gte', 'eq'];
+export const operators = ['+', '-', '*', '/', '<', '<=', '>', '>=', '='];
 
 class ValueProcessing extends GenericObject<IValueProcessing> {
 
     public static fromObject(obj: IValueProcessing) {
-        return new ValueProcessing(obj);
+        return new ValueProcessing(this.cloneDeep(obj));
     }
 
     get id() {
@@ -27,19 +27,19 @@ class ValueProcessing extends GenericObject<IValueProcessing> {
     }
 
     get end(): number {
-        return this._props.begin;
+        return this._props.end;
     }
 
     set end(value) {
         this._props.end = value;
     }
 
-    get comparator(): IValueProcessingComparator {
-        return this._props.comparator;
+    get operator(): IValueProcessingOperator {
+        return this._props.operator;
     }
 
-    set comparator(value) {
-        this._props.comparator = value;
+    set operator(value) {
+        this._props.operator = value;
     }
 
     get value(): number {
@@ -51,21 +51,57 @@ class ValueProcessing extends GenericObject<IValueProcessing> {
     }
 
     public async apply(input: IDateTimeValue[]) {
-        return input.filter((i) => i.timeStamp >= this.begin && i.timeStamp <= this.end)
-            .filter((i) => {
-                switch (this.comparator) {
-                    case 'lte':
-                        return i.value <= this.value;
-                    case 'le':
-                        return i.value < this.value;
-                    case 'gt':
-                        return i.value > this.value;
-                    case 'gte':
-                        return i.value >= this.value;
-                    default:
-                        return true;
+        let result = input;
+        if (this.operator) {
+            result = input.filter((i) => {
+                return i.timeStamp >= this.begin && i.timeStamp <= this.end;
+            }).map((i) => {
+                if (this.operator === '+') {
+                    i.value += this.value;
+                    return i;
                 }
-            });
+
+                if (this.operator === '-') {
+                    i.value -= this.value;
+                    return i;
+                }
+
+                if (this.operator === '*') {
+                    i.value *= this.value;
+                    return i;
+                }
+
+                if (this.operator === '/') {
+                    i.value /= this.value;
+                    return i;
+                }
+
+                if (this.operator === '<' && i.value < this.value) {
+                    return i;
+                }
+
+                if (this.operator === '<=' && i.value <= this.value) {
+                    return i;
+                }
+
+                if (this.operator === '>' && i.value > this.value) {
+                    return i;
+                }
+
+                if (this.operator === '>=' && i.value >= this.value) {
+                    return i;
+                }
+
+                if (this.operator === '=') {
+                    i.value = this.value;
+                    return i;
+                }
+
+                return undefined;
+            }).filter((i) => i !== undefined) as IDateTimeValue[];
+        }
+
+        return result;
     }
 }
 

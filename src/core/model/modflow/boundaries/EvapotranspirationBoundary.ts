@@ -151,7 +151,7 @@ export default class EvapotranspirationBoundary extends Boundary {
     }
 
     public getSpValues(stressperiods: Stressperiods) {
-        return stressperiods.getSpValues(this._props.properties.sp_values);
+        return Boundary.mergeStressperiodsWithSpValues(stressperiods, this._props.properties.sp_values);
     }
 
     public setSpValues(spValues: ISpValues, opId?: string) {
