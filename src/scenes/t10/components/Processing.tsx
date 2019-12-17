@@ -11,6 +11,7 @@ import {parameterList, processingList} from '../defaults';
 import {
     DataSourcesChart,
     ProcessingTimeRange,
+    TimeProcessingEditor,
     ValueProcessingEditor
 } from './index';
 
@@ -130,7 +131,17 @@ const processing = (props: IProps) => {
         props.onChange(parameter);
     };
 
-    const renderDatasourceDetails = () => {
+    const renderProcessingEditor = () => {
+        if (addProcessing && addProcessing === 'time') {
+            return (
+                <TimeProcessingEditor
+                    dsc={dataSourceCollection}
+                    onCancel={handleCancelProcessingClick}
+                    onSave={handleAddProcessing}
+                />
+            );
+        }
+
         if (addProcessing && addProcessing === 'value') {
             return (
                 <ValueProcessingEditor
@@ -141,6 +152,18 @@ const processing = (props: IProps) => {
             );
         }
 
+        if (editProcessing && editProcessing instanceof TimeProcessing) {
+            return (
+                <TimeProcessingEditor
+                    dsc={dataSourceCollection}
+                    processing={editProcessing as TimeProcessing}
+                    onCancel={handleCancelProcessingClick}
+                    onSave={handleUpdateProcessing}
+                />
+            );
+        }
+
+        // noinspection SuspiciousTypeOfGuard
         if (editProcessing && editProcessing instanceof ValueProcessing) {
             return (
                 <ValueProcessingEditor
@@ -178,7 +201,7 @@ const processing = (props: IProps) => {
                                 <Table.Row>
                                     <Table.HeaderCell>Type</Table.HeaderCell>
                                     <Table.HeaderCell>Time range</Table.HeaderCell>
-                                    <Table.HeaderCell>Operator</Table.HeaderCell>
+                                    <Table.HeaderCell>Method</Table.HeaderCell>
                                     <Table.HeaderCell>Value</Table.HeaderCell>
                                     <Table.HeaderCell/>
                                 </Table.Row>
@@ -292,7 +315,7 @@ const processing = (props: IProps) => {
 
                 </Grid.Column>
             </Grid.Row>
-            {renderDatasourceDetails()}
+            {renderProcessingEditor()}
         </Grid>
     );
 };

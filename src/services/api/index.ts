@@ -142,7 +142,7 @@ export const fetchRasterMetaData = (
 
 export const makeTimeProcessingRequest = (data: IDateTimeValue[], rule: string, method: string) => (
     axios.request({
-        method: 'GET',
+        method: 'POST',
         url: `${TIMEPROCESSING_URL}?rule=${rule}&interpolation_method=${method}`,
         headers: {
             'Access-Control-Allow-Origin': '*',
