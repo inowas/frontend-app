@@ -79,6 +79,7 @@ export default class Rtm {
     }
 
     public static fromObject(obj: IRtm): Rtm {
+
         return new Rtm(obj);
     }
 

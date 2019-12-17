@@ -83,6 +83,7 @@ const RTM = (props: IProps) => {
         const lRtm = Rtm.fromObject(rtm);
         lRtm.updateSensor(sensor);
         setRtm(lRtm.toObject());
+        onSave(lRtm);
     };
 
     const handleUpdateParameter = (parameter: ISensorParameter) => {
@@ -105,6 +106,7 @@ const RTM = (props: IProps) => {
         const lRtm = Rtm.fromObject(rtm);
         lRtm.updateSensor(sensor);
         setRtm(lRtm.toObject());
+        onSave(lRtm);
     };
 
     const onchangeMetaData = (metaData: IMetaData) => {

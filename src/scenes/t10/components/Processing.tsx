@@ -53,6 +53,10 @@ const processing = (props: IProps) => {
             return;
         }
 
+        if (!parameter.processings) {
+            parameter.processings = [];
+        }
+
         parameter.processings.push(p.toObject());
         setAddProcessing(null);
         props.onChange(parameter);
