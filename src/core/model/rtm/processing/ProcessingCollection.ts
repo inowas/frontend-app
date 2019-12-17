@@ -10,15 +10,15 @@ export class ProcessingCollection extends Collection<IProcessing> {
     }
 
     public async apply(rawData: IDateTimeValue[]) {
-        let data = rawData;
+        let processedData = cloneDeep(rawData);
         for (const p of this.all) {
             const inst = ProcessingFactory.fromObject(p);
             if (inst) {
-                data = await inst.apply(data);
+                processedData = await inst.apply(processedData);
             }
         }
 
-        return data;
+        return processedData;
     }
 
     public toObject() {

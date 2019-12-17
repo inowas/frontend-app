@@ -178,7 +178,8 @@ const processing = (props: IProps) => {
                                 <Table.Row>
                                     <Table.HeaderCell>Type</Table.HeaderCell>
                                     <Table.HeaderCell>Time range</Table.HeaderCell>
-                                    <Table.HeaderCell/>
+                                    <Table.HeaderCell>Operator</Table.HeaderCell>
+                                    <Table.HeaderCell>Value</Table.HeaderCell>
                                     <Table.HeaderCell/>
                                 </Table.Row>
                             </Table.Header>
@@ -195,7 +196,12 @@ const processing = (props: IProps) => {
                                             <Table.Cell>
                                                 <ProcessingTimeRange processing={pInst}/>
                                             </Table.Cell>
-                                            <Table.Cell/>
+                                            <Table.Cell textAlign={'center'}>
+                                                {pInst instanceof ValueProcessing ? pInst.operator : ''}
+                                            </Table.Cell>
+                                            <Table.Cell textAlign={'center'}>
+                                                {pInst instanceof ValueProcessing ? pInst.value : ''}
+                                            </Table.Cell>
                                             <Table.Cell textAlign={'right'}>
                                                 {!props.rtm.readOnly &&
                                                 <div>
@@ -278,7 +284,9 @@ const processing = (props: IProps) => {
                         <Label color={'blue'} ribbon={true} size={'large'}>
                             Chart
                         </Label>
-                        {dataSourceCollection.isFetched() && <DataSourcesChart dataSources={dataSourceCollection}/>}
+                        {dataSourceCollection.isFetched() &&
+                        <DataSourcesChart dataSources={dataSourceCollection} processings={processingCollection}/>
+                        }
                     </Segment>
                     }
 

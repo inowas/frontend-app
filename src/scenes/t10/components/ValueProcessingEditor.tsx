@@ -2,9 +2,9 @@ import {LTOB} from 'downsample';
 import {DataPoint} from 'downsample/dist/types';
 import {cloneDeep} from 'lodash';
 import moment from 'moment';
-import React, {SyntheticEvent, useEffect, useState} from 'react';
+import React, {ChangeEvent, SyntheticEvent, useEffect, useState} from 'react';
 import {ResponsiveContainer, Scatter, ScatterChart, XAxis, YAxis} from 'recharts';
-import {Button, DropdownProps, Form, Grid, Header, Label, Modal, Segment} from 'semantic-ui-react';
+import {Button, DropdownProps, Form, Grid, Header, InputOnChangeData, Label, Modal, Segment} from 'semantic-ui-react';
 import uuid from 'uuid';
 import DataSourceCollection from '../../../core/model/rtm/DataSourceCollection';
 import {IValueProcessingOperator} from '../../../core/model/rtm/processing/Processing.type';
@@ -116,6 +116,15 @@ const valueProcessingEditor = (props: IProps) => {
         }
 
         return f(e.target.value);
+    };
+
+    const handleValueChange = (e: ChangeEvent<HTMLInputElement>, d: InputOnChangeData) => {
+        const v = parseFloat(d.value);
+        if (isNaN(v)) {
+            return setValue(0);
+        }
+
+        return setValue(v);
     };
 
     const handleChangeOperator = (e: SyntheticEvent<HTMLElement, Event>, d: DropdownProps) => {
@@ -237,7 +246,7 @@ const valueProcessingEditor = (props: IProps) => {
                                             label={'Value'}
                                             type={'number'}
                                             value={value}
-                                            onChange={handleGenericChange((d) => setValue(parseFloat(d)))}
+                                            onChange={handleValueChange}
                                             onBlur={handleBlur}
                                         />
                                     </Form.Group>
