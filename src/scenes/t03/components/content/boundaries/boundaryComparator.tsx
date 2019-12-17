@@ -33,7 +33,7 @@ class BoundaryComparator extends React.Component<IProps, IState> {
     public constructor(props: IProps) {
         super(props);
         this.state = {
-            boundaryList: props.currentBoundaries.compareWith(props.newBoundaries),
+            boundaryList: props.currentBoundaries.compareWith(props.model.stressperiods, props.newBoundaries),
             selectedType: props.types && props.types.length === 1 ? props.types[0] : 'all'
         };
     }
@@ -41,7 +41,9 @@ class BoundaryComparator extends React.Component<IProps, IState> {
     public componentWillReceiveProps(nextProps: IProps) {
         this.setState({
             selectedType: nextProps.types && nextProps.types.length === 1 ? nextProps.types[0] : 'all',
-            boundaryList: nextProps.currentBoundaries.compareWith(nextProps.newBoundaries)
+            boundaryList: nextProps.currentBoundaries.compareWith(
+                nextProps.model.stressperiods, nextProps.newBoundaries
+            )
         });
     }
 

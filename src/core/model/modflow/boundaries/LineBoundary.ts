@@ -2,6 +2,7 @@ import * as turf from '@turf/helpers';
 import {lineDistance, lineSlice} from '@turf/turf';
 import {LineString, Point} from 'geojson';
 import {Cells, Geometry} from '../index';
+import Stressperiods from '../Stressperiods';
 import {ISpValues} from './Boundary.type';
 import {IConstantHeadBoundaryFeature} from './ConstantHeadBoundary.type';
 import {Boundary, ObservationPoint} from './index';
@@ -175,19 +176,9 @@ export default abstract class LineBoundary extends Boundary {
         this._props.features = features.concat(ops.map((op) => op.toObject()));
     }
 
-    public getSpValues(opId: string): ISpValues {
-        let spValues: any;
-        this._props.features.forEach((f: IObservationPoint | IConstantHeadBoundaryFeature) => {
-            if (f.properties.type === 'op' && f.id === opId) {
-                spValues = f.properties.sp_values;
-            }
-        });
-
-        if (spValues) {
-            return spValues;
-        }
-
-        throw new Error('Main feature not available.');
+    public getSpValues(stressperiods: Stressperiods, opId: string): ISpValues {
+        const observationPoint = this.findObservationPointById(opId);
+        return observationPoint.getSpValues(stressperiods);
     }
 
     public setSpValues(spValues: ISpValues, opId: string) {
@@ -209,9 +200,9 @@ export default abstract class LineBoundary extends Boundary {
         this.observationPoints = ops;
     };
 
-    public cloneObservationPoint = (id: string, newId: string) => {
+    public cloneObservationPoint = (id: string, newId: string, stressperiods: Stressperiods) => {
         const op = ObservationPoint.fromObject(this.findObservationPointById(id).toObject());
-        this.createObservationPoint(newId, op.name + ' (clone)', op.geometry as Point, op.spValues as ISpValues);
+        this.createObservationPoint(newId, op.name + ' (clone)', op.geometry as Point, op.getSpValues(stressperiods));
     };
 
     public findObservationPointById = (id: string) => {

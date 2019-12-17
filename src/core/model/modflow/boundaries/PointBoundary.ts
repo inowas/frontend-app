@@ -1,4 +1,5 @@
 import {Cells, Geometry} from '../index';
+import Stressperiods from '../Stressperiods';
 import Boundary from './Boundary';
 import {ISpValues} from './Boundary.type';
 
@@ -48,8 +49,8 @@ export default abstract class PointBoundary extends Boundary {
         this._props.properties.cells = value.toObject();
     }
 
-    public getSpValues() {
-        return this._props.properties.sp_values;
+    public getSpValues(stressperiods: Stressperiods): ISpValues {
+        return stressperiods.getSpValues(this._props.properties.sp_values);
     }
 
     public setSpValues(spValues: ISpValues, opId?: string) {

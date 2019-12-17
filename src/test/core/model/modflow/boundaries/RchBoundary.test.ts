@@ -1,6 +1,7 @@
 import {Polygon} from 'geojson';
 import Uuid from 'uuid';
 import {ICells} from '../../../../../core/model/geometry/Cells.type';
+import {Stressperiods} from '../../../../../core/model/modflow';
 import {RechargeBoundary} from '../../../../../core/model/modflow/boundaries';
 import {JSON_SCHEMA_URL} from '../../../../../services/api';
 import {validate} from '../../../../../services/jsonSchemaValidator';
@@ -32,7 +33,7 @@ test('RechargeBoundary create', () => {
     expect(rechargeBoundary.geometry.toObject()).toEqual(geometry);
     expect(rechargeBoundary.layers).toEqual(layers);
     expect(rechargeBoundary.cells.toObject()).toEqual(cells);
-    expect(rechargeBoundary.getSpValues()).toEqual(spValues);
+    expect(rechargeBoundary.getSpValues(Stressperiods.fromDefaults())).toEqual([[1]]);
 });
 
 test('RechargeBoundary fromObject', () => {

@@ -1,5 +1,5 @@
 import React, {ChangeEvent, SyntheticEvent, useEffect, useState} from 'react';
-import {Button, Dropdown, DropdownProps, Form, Header, InputOnChangeData, List, Popup} from 'semantic-ui-react';
+import {Button, Dropdown, DropdownProps, Form, InputOnChangeData, List, Popup} from 'semantic-ui-react';
 import uuid from 'uuid';
 import {ModflowModel, Soilmodel} from '../../../../../core/model/modflow';
 import {Boundary, BoundaryCollection, LineBoundary} from '../../../../../core/model/modflow/boundaries';
@@ -53,7 +53,7 @@ const boundaryDetails = (props: IProps) => {
         if (props.boundary instanceof LineBoundary && observationPointId) {
             const cBoundary = props.boundary;
             const newOpId = uuid.v4();
-            cBoundary.cloneObservationPoint(observationPointId, newOpId);
+            cBoundary.cloneObservationPoint(observationPointId, newOpId, props.model.stressperiods);
             setObservationPointId(newOpId);
             setShowObservationPointEditor(true);
             return props.onChange(cBoundary);
@@ -83,7 +83,7 @@ const boundaryDetails = (props: IProps) => {
         const cBoundary = props.boundary;
         const multipleLayers = ['chd', 'ghb'].includes(cBoundary.type);
 
-        let options = {enabled: false, label: '', name: ''};
+        let options;
 
         switch (cBoundary.type) {
             case 'rch':
@@ -271,7 +271,6 @@ const boundaryDetails = (props: IProps) => {
                 </Button>
             </div>
             }
-            <Header as={'h4'}>Time dependent boundary values at observation point</Header>
             <BoundaryValuesDataTable
                 boundary={boundary}
                 onChange={props.onChange}

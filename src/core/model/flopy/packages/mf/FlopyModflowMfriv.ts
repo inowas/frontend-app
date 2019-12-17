@@ -50,7 +50,7 @@ export const defaults: IFlopyModflowMfriv = {
 export default class FlopyModflowMfriv extends FlopyModflowLineBoundary<IFlopyModflowMfriv> {
 
     public static create(boundaries: BoundaryCollection, stressperiods: Stressperiods) {
-        return this.fromDefault().update(boundaries, stressperiods.count);
+        return this.fromDefault().update(boundaries, stressperiods);
     }
 
     public static fromDefault() {
@@ -68,14 +68,14 @@ export default class FlopyModflowMfriv extends FlopyModflowLineBoundary<IFlopyMo
         return new this(d);
     }
 
-    public update = (boundaries: BoundaryCollection, nper: number) => {
+    public update = (boundaries: BoundaryCollection, stressperiods: Stressperiods) => {
 
         const bd = boundaries.all.filter((b) => (b instanceof RiverBoundary)) as RiverBoundary[];
         if (boundaries.length === 0) {
             return null;
         }
 
-        const spData = calculateLineBoundarySpData(bd, nper);
+        const spData = calculateLineBoundarySpData(bd, stressperiods);
         if (!spData) {
             return null;
         }

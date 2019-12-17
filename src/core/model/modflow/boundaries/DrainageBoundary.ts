@@ -5,6 +5,7 @@ import BoundingBox from '../../geometry/BoundingBox';
 import {ICells} from '../../geometry/Cells.type';
 import GridSize from '../../geometry/GridSize';
 import {Cells, Geometry} from '../index';
+import Stressperiods from '../Stressperiods';
 import {ISpValues, IValueProperty} from './Boundary.type';
 import {IDrainageBoundary, IDrainageBoundaryExport} from './DrainageBoundary.type';
 import LineBoundary from './LineBoundary';
@@ -106,7 +107,7 @@ export default class DrainageBoundary extends LineBoundary {
         this._class = DrainageBoundary;
     }
 
-    public toExport(): IDrainageBoundaryExport {
+    public toExport(stressPeriods: Stressperiods): IDrainageBoundaryExport {
         return {
             id: this.id,
             type: this.type,
@@ -116,7 +117,7 @@ export default class DrainageBoundary extends LineBoundary {
             ops: this.observationPoints.map((op) => ({
                     name: op.name,
                     geometry: op.geometry,
-                    sp_values: op.spValues
+                    sp_values: op.getSpValues(stressPeriods)
                 }
             ))
         };

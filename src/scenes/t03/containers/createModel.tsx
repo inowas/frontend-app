@@ -173,9 +173,28 @@ class CreateModel extends React.Component<IProps, IState> {
 
         if (type === 'blur') {
             const stressPeriods = Stressperiods.fromObject(this.state.stressperiods);
-            stressPeriods.startDateTime = moment.utc(this.state.stressperiodsLocal.start_date_time);
-            stressPeriods.endDateTime = moment.utc(this.state.stressperiodsLocal.start_date_time);
-            this.setState({stressperiods: stressPeriods.toObject()}, () => this.validate());
+            const first = stressPeriods.first;
+
+            const start = moment.utc(this.state.stressperiodsLocal.start_date_time);
+            const end = moment.utc(this.state.stressperiodsLocal.end_date_time);
+
+            first.startDateTime = start;
+            stressPeriods.updateStressperiodByIdx(0, first);
+            stressPeriods.startDateTime = start;
+
+            if (end.isSameOrBefore(start)) {
+                const test = moment(
+                    start.clone().add(1, TimeUnit.fromInt(this.state.timeUnit).toString()).format('YYYY-MM-DD')
+                );
+                stressPeriods.endDateTime = test.clone();
+            } else {
+                stressPeriods.endDateTime = end;
+            }
+
+            this.setState({
+                stressperiodsLocal: stressPeriods.toObject(),
+                stressperiods: stressPeriods.toObject()
+            }, () => this.validate());
         }
     };
 
@@ -213,7 +232,6 @@ class CreateModel extends React.Component<IProps, IState> {
             (validation) => this.setState({validation})
         );
     };
-
     public render() {
         return (
             <AppContainer navbarItems={navigation}>

@@ -143,7 +143,7 @@ export default class BoundaryImport extends React.Component<IProps, IState> {
 
     private download = () => {
         const filename = 'boundaries.json';
-        const boundaries: IBoundaryExport[] = this.props.boundaries.toExport();
+        const boundaries: IBoundaryExport[] = this.props.boundaries.toExport(this.props.model.stressperiods);
         const text = JSON.stringify(boundaries, null, 2);
 
         const element: HTMLAnchorElement = document.createElement('a');

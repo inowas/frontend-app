@@ -5,6 +5,7 @@ import BoundingBox from '../../geometry/BoundingBox';
 import {ICells} from '../../geometry/Cells.type';
 import GridSize from '../../geometry/GridSize';
 import {Cells, Geometry} from '../index';
+import Stressperiods from '../Stressperiods';
 import {ISpValues, IValueProperty} from './Boundary.type';
 import {IHeadObservationWell, IHeadObservationWellExport} from './HeadObservationWell.type';
 import PointBoundary from './PointBoundary';
@@ -68,13 +69,13 @@ export default class HeadObservationWell extends PointBoundary {
         this._class = HeadObservationWell;
     }
 
-    public toExport = (): IHeadObservationWellExport => ({
+    public toExport = (stressPeriods: Stressperiods): IHeadObservationWellExport => ({
         id: this.id,
         type: this.type,
         name: this.name,
         geometry: this.geometry.toObject() as Point,
         layers: this.layers,
-        sp_values: this.getSpValues()
+        sp_values: this.getSpValues(stressPeriods)
     });
 
     public toObject(): IHeadObservationWell {
