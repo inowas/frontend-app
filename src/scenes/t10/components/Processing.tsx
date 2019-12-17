@@ -1,18 +1,17 @@
 import React, {useEffect, useState} from 'react';
-import {Button, Dropdown, Grid, Header, Icon, Label, Popup, Segment, Table} from 'semantic-ui-react';
-import {DataSourceCollection, DataSourceFactory, Rtm} from '../../../core/model/rtm';
-import FileDataSource from '../../../core/model/rtm/FileDataSource';
-import PrometheusDataSource from '../../../core/model/rtm/PrometheusDataSource';
-import {DataSource, IDataSource, ISensorParameter} from '../../../core/model/rtm/Sensor.type';
-import SensorDataSource from '../../../core/model/rtm/SensorDataSource';
-import {colors, dataSourceList, parameterList} from '../defaults';
+import {Button, Dropdown, Grid, Header, Icon, Label, Segment, Table} from 'semantic-ui-react';
+import {DataSourceCollection, Rtm} from '../../../core/model/rtm';
+import {ProcessingFactory} from '../../../core/model/rtm/processing';
+import {IProcessing} from '../../../core/model/rtm/processing/Processing.type';
+import ProcessingCollection from '../../../core/model/rtm/processing/ProcessingCollection';
+import TimeProcessing from '../../../core/model/rtm/processing/TimeProcessing';
+import ValueProcessing from '../../../core/model/rtm/processing/ValueProcessing';
+import {ISensorParameter} from '../../../core/model/rtm/Sensor.type';
+import {parameterList, processingList} from '../defaults';
 import {
     DataSourcesChart,
-    DataSourceTimeRange,
-    FileDatasourceEditor,
-    PrometheusDatasourceEditor,
-    SensorDatasourceEditor,
-    TinyLineChart
+    ProcessingTimeRange,
+    ValueProcessingEditor
 } from './index';
 
 interface IProps {
@@ -39,36 +38,23 @@ const arrayMoveItems = (arr: any[], from: number, to: number) => {
     return arr;
 };
 
-const dataSources = (props: IProps) => {
-    const [addDatasource, setAddDatasource] = useState<string | null>(null);
-    const [editDatasource, setEditDatasource] = useState<DataSource | null>(null);
+const processing = (props: IProps) => {
+    const [addProcessing, setAddProcessing] = useState<string | null>(null);
+    const [editProcessing, setEditProcessing] = useState<ValueProcessing | TimeProcessing | null>(null);
 
     useEffect(() => {
         const dsc = DataSourceCollection.fromObject(props.parameter.dataSources);
         dsc.mergedData().then((() => handleUpdateDataSources(dsc)));
     }, []);
 
-    const getDsType = (ds: DataSource) => {
-        if (ds instanceof FileDataSource) {
-            return 'file';
-        }
-
-        if (ds instanceof PrometheusDataSource) {
-            return 'prometheus';
-        }
-
-        return 'online';
-    };
-
-    const handleAddDataSource = (ds: DataSource) => {
-
+    const handleAddProcessing = (p: ValueProcessing | TimeProcessing) => {
         const {parameter} = props;
         if (!parameter) {
             return;
         }
 
-        parameter.dataSources.push(ds.toObject());
-        setAddDatasource(null);
+        parameter.processings.push(p.toObject());
+        setAddProcessing(null);
         props.onChange(parameter);
     };
 
@@ -79,120 +65,85 @@ const dataSources = (props: IProps) => {
         }
 
         parameter.dataSources = dsc.toObject();
-        setEditDatasource(null);
+        setEditProcessing(null);
         props.onChange(parameter);
     };
 
-    const handleUpdateDataSource = (ds: DataSource) => {
+    const handleUpdateProcessing = (pInst: ValueProcessing | TimeProcessing) => {
         const {parameter} = props;
         if (!parameter) {
             return;
         }
 
-        parameter.dataSources = parameter.dataSources.map((d) => {
-            if (d.id === ds.id) {
-                return ds.toObject();
+        parameter.processings = parameter.processings.map((p) => {
+            if (p.id === pInst.id) {
+                return pInst.toObject();
             }
 
-            return d;
+            return p;
         });
 
-        setEditDatasource(null);
+        setEditProcessing(null);
         props.onChange(parameter);
     };
 
-    const handleAddDataSourceClick = (dsType: string) => () => {
-        setAddDatasource(dsType);
+    const handleAddProcessingClick = (dsType: string) => () => {
+        setAddProcessing(dsType);
     };
 
-    const handleCancelDataSourceClick = () => {
-        setAddDatasource(null);
-        setEditDatasource(null);
+    const handleCancelProcessingClick = () => {
+        setAddProcessing(null);
+        setEditProcessing(null);
     };
 
-    const handleDeleteDataSourceClick = (id: string) => () => {
+    const handleDeleteProcessingClick = (id: string) => () => {
         const {parameter} = props;
         if (!parameter) {
             return;
         }
 
-        parameter.dataSources = parameter.dataSources.filter((ds: IDataSource) => ds.id !== id);
+        parameter.processings = parameter.processings.filter((p: IProcessing) => p.id !== id);
         props.onChange(parameter);
     };
 
-    const handleEditDataSourceClick = (id: string) => () => {
+    const handleEditProcessingClick = (id: string) => () => {
         const {parameter} = props;
         if (!parameter) {
             return;
         }
 
-        const filteredDs = parameter.dataSources.filter((ds: IDataSource) => ds.id === id);
-        if (filteredDs.length === 0) {
+        const filteredP = parameter.processings.filter((p: IProcessing) => p.id === id);
+        if (filteredP.length === 0) {
             return;
         }
 
-        setEditDatasource(DataSourceFactory.fromObject(filteredDs[0]));
+        setEditProcessing(ProcessingFactory.fromObject(filteredP[0]));
     };
 
-    const handleMoveDataSourceClick = (from: number, to: number) => () => {
+    const handleMoveProcessingClick = (from: number, to: number) => () => {
         const {parameter} = props;
-        parameter.dataSources = arrayMoveItems(parameter.dataSources, from, to);
+        parameter.processings = arrayMoveItems(parameter.processings, from, to);
         props.onChange(parameter);
     };
 
     const renderDatasourceDetails = () => {
-        if (addDatasource) {
-            switch (addDatasource) {
-                case 'online':
-                    return (
-                        <SensorDatasourceEditor
-                            onCancel={handleCancelDataSourceClick}
-                            onSave={handleAddDataSource}
-                        />
-                    );
-                case 'prometheus':
-                    return (
-                        <PrometheusDatasourceEditor
-                            onCancel={handleCancelDataSourceClick}
-                            onSave={handleAddDataSource}
-                        />
-                    );
-                case 'file':
-                    return (
-                        <FileDatasourceEditor
-                            onCancel={handleCancelDataSourceClick}
-                            onSave={handleAddDataSource}
-                        />
-                    );
-            }
+        if (addProcessing && addProcessing === 'value') {
+            return (
+                <ValueProcessingEditor
+                    dsc={dataSourceCollection}
+                    onCancel={handleCancelProcessingClick}
+                    onSave={handleAddProcessing}
+                />
+            );
         }
 
-        if (editDatasource) {
-            if (editDatasource instanceof SensorDataSource) {
-                return (
-                    <SensorDatasourceEditor
-                        dataSource={editDatasource as SensorDataSource}
-                        onCancel={handleCancelDataSourceClick}
-                        onSave={handleUpdateDataSource}
-                    />
-                );
-            }
-
-            if (editDatasource instanceof PrometheusDataSource) {
-                return (
-                    <PrometheusDatasourceEditor
-                        dataSource={editDatasource as PrometheusDataSource}
-                        onCancel={handleCancelDataSourceClick}
-                        onSave={handleUpdateDataSource}
-                    />
-                );
-            }
-
+        if (editProcessing && editProcessing instanceof ValueProcessing) {
             return (
-                <FileDatasourceEditor
-                    dataSource={editDatasource as FileDataSource}
-                    onCancel={handleCancelDataSourceClick}
-                    onSave={handleUpdateDataSource}
+                <ValueProcessingEditor
+                    dsc={dataSourceCollection}
+                    processing={editProcessing as ValueProcessing}
+                    onCancel={handleCancelProcessingClick}
+                    onSave={handleUpdateProcessing}
                 />
             );
         }
@@ -205,6 +156,7 @@ const dataSources = (props: IProps) => {
     }
 
     const dataSourceCollection = DataSourceCollection.fromObject(props.parameter.dataSources);
+    const processingCollection = ProcessingCollection.fromObject(props.parameter.processings);
 
     return (
         <Grid>
@@ -215,7 +167,7 @@ const dataSources = (props: IProps) => {
                             {parameterList.filter((i) => i.parameter === props.parameter.type)[0].text}
                         </Header>
                         <Label color={'blue'} ribbon={true} size={'large'}>
-                            Data sources
+                            Processings
                         </Label>
                         <Table>
                             <Table.Header>
@@ -224,55 +176,37 @@ const dataSources = (props: IProps) => {
                                     <Table.HeaderCell>Time range</Table.HeaderCell>
                                     <Table.HeaderCell/>
                                     <Table.HeaderCell/>
-                                    <Table.HeaderCell/>
                                 </Table.Row>
                             </Table.Header>
                             <Table.Body>
-                                {dataSourceCollection.all.map((ds, key) => {
-                                    const dsInst = DataSourceFactory.fromObject(ds);
-                                    if (dsInst === null) {
+                                {processingCollection.all.map((p, key) => {
+                                    const pInst = ProcessingFactory.fromObject(p);
+                                    if (pInst === null) {
                                         return null;
                                     }
 
                                     return (
                                         <Table.Row key={key}>
-                                            <Table.Cell>{getDsType(dsInst)}</Table.Cell>
+                                            <Table.Cell>{pInst.type}</Table.Cell>
                                             <Table.Cell>
-                                                <DataSourceTimeRange datasource={dsInst}/>
+                                                <ProcessingTimeRange processing={pInst}/>
                                             </Table.Cell>
-                                            <Table.Cell>
-                                                <TinyLineChart
-                                                    datasource={dsInst}
-                                                    color={colors[key]}
-                                                    begin={dataSourceCollection.globalBegin()}
-                                                    end={dataSourceCollection.globalEnd()}
-                                                />
-                                            </Table.Cell>
-                                            <Table.Cell>
-                                                {
-                                                    ((dsInst instanceof PrometheusDataSource && !dsInst.end) ||
-                                                        (dsInst instanceof SensorDataSource && !dsInst.end)) &&
-                                                    <Popup
-                                                        content={'Automatic update'}
-                                                        trigger={<Icon name={'circle'} color={'red'}/>}
-                                                    />
-                                                }
-                                            </Table.Cell>
+                                            <Table.Cell/>
                                             <Table.Cell textAlign={'right'}>
                                                 {!props.rtm.readOnly &&
                                                 <div>
                                                     <Button.Group>
                                                         <Button
                                                             icon={true}
-                                                            onClick={handleMoveDataSourceClick(key, key - 1)}
+                                                            onClick={handleMoveProcessingClick(key, key - 1)}
                                                             disabled={key === 0}
                                                         >
                                                             <Icon name={'arrow up'}/>
                                                         </Button>
                                                         <Button
                                                             icon={true}
-                                                            onClick={handleMoveDataSourceClick(key, key + 1)}
-                                                            disabled={key === dataSourceCollection.length - 1}
+                                                            onClick={handleMoveProcessingClick(key, key + 1)}
+                                                            disabled={key === processingCollection.length - 1}
                                                         >
                                                             <Icon name={'arrow down'}/>
                                                         </Button>
@@ -281,13 +215,13 @@ const dataSources = (props: IProps) => {
                                                     <Button.Group>
                                                         <Button
                                                             icon={true}
-                                                            onClick={handleEditDataSourceClick(dsInst.id)}
+                                                            onClick={handleEditProcessingClick(pInst.id)}
                                                         >
                                                             <Icon name={'edit'}/>
                                                         </Button>
                                                         <Button
                                                             icon={true}
-                                                            onClick={handleDeleteDataSourceClick(dsInst.id)}
+                                                            onClick={handleDeleteProcessingClick(pInst.id)}
                                                         >
                                                             <Icon name={'trash'}/>
                                                         </Button>
@@ -318,11 +252,11 @@ const dataSources = (props: IProps) => {
                                             >
                                                 <Dropdown.Menu>
                                                     <Dropdown.Header>Choose type</Dropdown.Header>
-                                                    {dataSourceList.map((ds) =>
+                                                    {processingList.map((p) =>
                                                         <Dropdown.Item
-                                                            key={ds}
-                                                            text={ds}
-                                                            onClick={handleAddDataSourceClick(ds)}
+                                                            key={p}
+                                                            text={p}
+                                                            onClick={handleAddProcessingClick(p)}
                                                         />
                                                     )}
                                                 </Dropdown.Menu>
@@ -351,4 +285,4 @@ const dataSources = (props: IProps) => {
     );
 };
 
-export default dataSources;
+export default processing;

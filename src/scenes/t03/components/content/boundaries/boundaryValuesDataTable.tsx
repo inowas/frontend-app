@@ -1,4 +1,4 @@
-import { cloneDeep } from 'lodash';
+import {cloneDeep} from 'lodash';
 import moment from 'moment';
 import React, {ChangeEvent, useState} from 'react';
 import {Button, Icon, Input, Table} from 'semantic-ui-react';
@@ -54,14 +54,15 @@ const boundaryValuesDataTable = (props: IProps) => {
         setActiveInput(null);
 
         if (spValues) {
-            const updatedSpValues = props.stressperiods.getSpValues(spValues).map((spv, spvIdx) => {
-                const newRow = cloneDeep(spv);
-                if (row === spvIdx) {
-                    newRow[col] = parseFloat(value) || 0;
+            const updatedSpValues = Boundary.mergeStressperiodsWithSpValues(props.stressperiods, spValues)
+                .map((spv, spvIdx) => {
+                    const newRow = cloneDeep(spv);
+                    if (row === spvIdx) {
+                        newRow[col] = parseFloat(value) || 0;
+                        return newRow;
+                    }
                     return newRow;
-                }
-                return newRow;
-            });
+                });
             boundary.setSpValues(updatedSpValues as ISpValues, selectedOP);
         }
         return props.onChange(boundary);
@@ -172,7 +173,7 @@ const boundaryValuesDataTable = (props: IProps) => {
                     floated="right"
                     size="mini"
                 >
-                    <Icon name="upload" />
+                    <Icon name="upload"/>
                     Upload csv
                 </Button>
             </p>

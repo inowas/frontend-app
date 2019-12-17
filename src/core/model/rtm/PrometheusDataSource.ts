@@ -1,3 +1,4 @@
+import moment from 'moment';
 import {GenericObject} from '../genericObject/GenericObject';
 import {IPrometheusDataSource} from './Sensor.type';
 import {retrievePrometheusData} from './SensorDataHelper';
@@ -52,9 +53,16 @@ class PrometheusDataSource extends GenericObject<IPrometheusDataSource> {
         this._props.step = value;
     }
 
+    get error() {
+        return this._props.error;
+    }
+
     get url() {
         return `${this.protocol}://${this.hostname}/api/v1/query_range?` +
-            `query=${encodeURIComponent(this.query)}&start=${this.start}&end=${this.end}&step=${this.step}`;
+            `query=${encodeURIComponent(this.query)}&` +
+            `start=${this.start}&` +
+            `end=${this.end ? this.end : moment.utc().unix()}&` +
+            `step=${this.step}`;
     }
 
     get query() {
@@ -83,6 +91,7 @@ class PrometheusDataSource extends GenericObject<IPrometheusDataSource> {
 
         this._props.fetching = true;
         this._props.data = null;
+        this._props.error = undefined;
         try {
             const data = await retrievePrometheusData(this.url.toString());
             if (data && data.status && data.status === 'success') {

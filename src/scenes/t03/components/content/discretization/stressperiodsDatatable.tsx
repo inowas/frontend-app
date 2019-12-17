@@ -105,6 +105,7 @@ const stressPeriodsDataTable = (props: IProps) => {
         const stressperiods = props.stressperiods;
         const newStressperiod = stressperiods.last().clone();
         newStressperiod.startDateTime = moment.utc(stressperiods.last().startDateTime).add(value, unit);
+        newStressperiod.steady = false;
         stressperiods.addStressPeriod(newStressperiod);
         if (props.onChange) {
             props.onChange(stressperiods);

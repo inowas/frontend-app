@@ -4,16 +4,23 @@ import AbstractCommand from '../../core/model/command/AbstractCommand';
 import FlopyPackages from '../../core/model/flopy/packages/FlopyPackages';
 import {Array2D, Array3D} from '../../core/model/geometry/Array2D.type';
 import {ICalculation} from '../../core/model/modflow/Calculation.type';
+import {IDateTimeValue} from '../../core/model/rtm/Sensor.type';
 import {IMetaData, ISimpleTool} from '../../core/model/types';
 import {InterpolationType} from '../../scenes/shared/rasterData/types';
 import {CallbackFunction, ErrorCallbackFunction} from '../../scenes/types';
 import storeToCreate from '../../store';
 import {IBudgetData, IModflowFile, IRasterFileMetadata} from './types';
 
-export const {BASE_URL, DATADROPPER_URL, GEOPROCESSING_URL, MODFLOW_CALCULATION_URL, JSON_SCHEMA_URL} = getConfig();
+export const {
+    BASE_URL,
+    DATADROPPER_URL,
+    GEOPROCESSING_URL,
+    JSON_SCHEMA_URL,
+    MODFLOW_CALCULATION_URL,
+    TIMEPROCESSING_URL
+} = getConfig();
 
 // TODO: Check all callback function generics
-
 const getToken = () => {
     const store = storeToCreate();
     return store.getState().session.token;
@@ -132,6 +139,18 @@ export const fetchRasterMetaData = (
         data: {}
     }).then((response) => response.data).then(onSuccess).catch(onError);
 };
+
+export const makeTimeProcessingRequest = (data: IDateTimeValue[], rule: string, method: string) => (
+    axios.request({
+        method: 'GET',
+        url: `${TIMEPROCESSING_URL}?rule=${rule}&interpolation_method=${method}`,
+        headers: {
+            'Access-Control-Allow-Origin': '*',
+            'Content-Type': 'application/json'
+        },
+        data
+    }).then((r) => r.data)
+);
 
 export const fetchCalculationDetails = (
     calculationId: string,

@@ -1,6 +1,5 @@
 import {orderBy} from 'lodash';
 import moment, {Moment} from 'moment/moment';
-import {ISpValues} from './boundaries/Boundary.type';
 import {TimeUnit} from './index';
 import Stressperiod from './Stressperiod';
 import {IStressPeriod, IStressPeriodWithTotim} from './Stressperiod.type';
@@ -210,13 +209,6 @@ class Stressperiods {
     public toObject = () => {
         return this._props;
     };
-
-    public getSpValues = (spValues: ISpValues): ISpValues => this.stressperiods.map((sp, idx) => {
-        if (Array.isArray(spValues[idx])) {
-            return spValues[idx];
-        }
-        return spValues[spValues.length - 1];
-    });
 
     private totimFromDate(dateTime: Moment) {
         if (this.timeUnit.toInt() === ITimeUnit.days) {

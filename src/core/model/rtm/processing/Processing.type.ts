@@ -5,8 +5,16 @@ export interface IProcessing {
     type: string;
 }
 
+export type IValueProcessingOperator = '+' | '-' | '*' | '/' | '<' | '<=' | '>' | '>=' | '=';
+
 export interface IValueProcessing extends IProcessing {
     type: 'value';
-    comparison: 'lte' | 'le' | 'gt' | 'gte';
+    operator: IValueProcessingOperator;
     value: number;
+}
+
+export interface ITimeProcessing extends IProcessing {
+    type: 'time';
+    rule: string;
+    interpolationMethod: string;
 }

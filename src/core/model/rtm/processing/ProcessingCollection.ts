@@ -1,3 +1,4 @@
+import {cloneDeep} from 'lodash';
 import {Collection} from '../../collection/Collection';
 import {IDateTimeValue} from '../Sensor.type';
 import {IProcessing} from './Processing.type';
@@ -18,6 +19,10 @@ export class ProcessingCollection extends Collection<IProcessing> {
         }
 
         return data;
+    }
+
+    public toObject() {
+        return cloneDeep(this.all);
     }
 }
 

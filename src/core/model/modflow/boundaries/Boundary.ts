@@ -11,10 +11,6 @@ import {
 
 export default abstract class Boundary {
 
-    protected _props: any;
-
-    protected _class: any;
-
     abstract get type(): BoundaryType;
 
     abstract get id(): string;
@@ -36,6 +32,19 @@ export default abstract class Boundary {
     }
 
     abstract get valueProperties(): IValueProperty[];
+
+    public static mergeStressperiodsWithSpValues = (stressperiods: Stressperiods, spValues: ISpValues): ISpValues => {
+        return stressperiods.stressperiods.map((sp, idx) => {
+            if (Array.isArray(spValues[idx])) {
+                return spValues[idx];
+            }
+            return spValues[spValues.length - 1];
+        });
+    };
+
+    protected _props: any;
+
+    protected _class: any;
 
     public abstract getSpValues(stressPeriods: Stressperiods, opId?: string): ISpValues;
 

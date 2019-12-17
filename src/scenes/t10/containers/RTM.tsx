@@ -11,9 +11,10 @@ import AppContainer from '../../shared/AppContainer';
 import ToolNavigation from '../../shared/complexTools/toolNavigation';
 import SimpleToolsCommand from '../../shared/simpleTools/commands/SimpleToolsCommand';
 import ToolMetaData from '../../shared/simpleTools/ToolMetaData';
-import {DataSources, SensorMetaData, Sensors} from '../components/index';
+import {DataSources, Processing, SensorMetaData, Sensors} from '../components/index';
 
-export interface IProps extends RouteComponentProps<{ id: string, property: string, pid: string }> {}
+export interface IProps extends RouteComponentProps<{ id: string, property: string, pid: string }> {
+}
 
 const menuItems = [{
     header: 'Sensors',
@@ -168,13 +169,19 @@ const RTM = (props: IProps) => {
                     onChangeSelectedParameterId={setSelectedParameterId}
                 />
                 {parameter && property === 'sensor-processing' &&
-                <div>PROCESSING</div>
-                }
-                {parameter && property === 'sensor-setup' && <DataSources
+                <Processing
                     rtm={Rtm.fromObject(rtm)}
                     parameter={parameter}
                     onChange={handleUpdateParameter}
-                />}
+                />
+                }
+                {parameter && property === 'sensor-setup' &&
+                <DataSources
+                    rtm={Rtm.fromObject(rtm)}
+                    parameter={parameter}
+                    onChange={handleUpdateParameter}
+                />
+                }
             </Sensors>
         );
     };

@@ -33,7 +33,7 @@ export interface IPrometheusDataSource {
     hostname: string;
     query: string;
     start: number;
-    end: number;
+    end?: number;
     step: number;
     fetching?: boolean;
     fetched?: boolean;

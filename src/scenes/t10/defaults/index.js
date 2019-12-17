@@ -35,5 +35,6 @@ export const parameterList = [
 ];
 
 export const dataSourceList = ['file', 'online', 'prometheus'];
+export const processingList = ['value', 'time'];
 
 export const colors = ['red', 'green', 'brown', 'blue'];
