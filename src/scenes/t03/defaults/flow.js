@@ -375,6 +375,59 @@ export const documentation = {
         filenames: <div>TODO!</div>,
     },
 
+    // NWT
+    nwt: {
+        options: <div>SPECIFIED indicates that the optional solver input values listed for items 1 and 2 will be specified in the NWT input file by the user.<br/>
+                    SIMPLE indicates that default solver input values will be defined that work well for nearly linear models. This would be used for models that do not include nonlinear stress packages, and models that are either confined or consist of a single unconfined layer that is thick enough to contain the water table within a single layer.<br/>
+                    MODERATE indicates that default solver input values will be defined that work well for moderately nonlinear models. This would be used for models that include nonlinear stress packages, and models that consist of one or more unconfined layers. The MODERATE option should be used when the SIMPLE option does not result in successful convergence.<br/>
+                    COMPLEX indicates that default solver input values will be defined that work well for highly nonlinear models. This would be used for models that include nonlinear stress packages, and models that consist of one or more unconfined layers representing complex geology and sw/gw interaction. The COMPLEX option should be used when the MODERATE option does not result in successful convergence. (default is COMPLEX).</div>,
+        headtol: <div>is the maximum head change between outer iterations for solution of the nonlinear problem. (default is 1e-4)</div>,
+        fluxtol: <div>is the maximum root-mean-squared flux difference between outer iterations for solution of the nonlinear problem. (default is 500)</div>,
+        maxiterout: <div>is the maximum number of iterations to be allowed for solution of the outer (nonlinear) problem. (default is 100).</div>,
+        thickfact: <div>is the portion of the cell thickness (length) used for smoothly adjusting storage and conductance coefficients to zero. (default is 1e-5)</div>,
+        linmeth: <div>is a flag that determines which matrix solver will be used. A value of 1 indicates GMRES will be used A value of 2 indicates XMD will be used. (default is 1)</div>,
+        iprnwt: <div>is a flag that indicates whether additional information about solver convergence will be printed to the main listing file. (default is 0)</div>,
+        ibotav: <div>is a flag that indicates whether corrections will be made to groundwater head relative to the cell-bottom altitude if the cell is surrounded by dewatered cells (integer). A value of 1 indicates that a correction will be made and a value of 0 indicates no correction will be made. (default is 0)</div>,
+        Continue: <div>if the model fails to converge during a time step then it will continue to solve the following time step. (default is False). Note the capital C on this option so that it doesn’t conflict with a reserved Python language word.</div>,
+        dbdtheta: <div>is a coefficient used to reduce the weight applied to the head change between nonlinear iterations. <strong>dbdtheta</strong> is used to control oscillations in head. Values range between 0.0 and 1.0, and larger values increase the weight (decrease under-relaxation) applied to the head change. (default is 0.4)</div>,
+        dbdkappa: <div>is a coefficient used to increase the weight applied to the head change between nonlinear iterations. <strong>dbdkappa</strong> is used to control oscillations in head. Values range between 0.0 and 1.0, and larger values increase the weight applied to the head change. (default is 1.e-5)</div>,
+        dbdgamma: <div>is a factor used to weight the head change for the previous and current iteration. Values range between 0.0 and 1.0, and greater values apply more weight to the head change calculated during the current iteration. (default is 0)</div>,
+        momfact: <div>is the momentum coefficient and ranges between 0.0 and 1.0. Greater values apply more weight to the head change for the current iteration. (default is 0.1)</div>,
+        backflag: <div>is a flag used to specify whether residual control will be used. A value of 1 indicates that residual control is active and a value of 0 indicates residual control is inactive. (default is 1)</div>,
+        maxbackiter: <div>is the maximum number of reductions (backtracks) in the head change between nonlinear iterations (integer). A value between 10 and 50 works well. (default is 50)</div>,
+        backtol: <div>is the proportional decrease in the root-mean-squared error of the groundwater-flow equation used to determine if residual control is required at the end of a nonlinear iteration. (default is 1.1)</div>,
+        backreduce: <div>is a reduction factor used for residual control that reduces the head change between nonlinear iterations. Values should be between 0.0 and 1.0, where smaller values result in smaller head-change values. (default 0.7)</div>,
+        maxitinner: <div>is the maximum number of iterations for the linear solution. (default is 50)</div>,
+        ilumethod: <div>is the index for selection of the method for incomplete factorization (ILU) used as a preconditioner. (default is 2)<br/>
+                •	(1) ILU with drop tolerance and fill limit. Fill-in terms less than drop tolerance times the diagonal are discarded. The number of fill-in terms in each row of L and U is limited to the fill limit. The fill-limit largest elements are kept in the L and U factors.<br/>
+                •	(2) ILU(k), Order k incomplete LU factorization. Fill-in terms of higher order than k in the factorization are discarded.
+                </div>,
+        levfill: <div>is the fill limit for ILUMETHOD = 1 and is the level of fill for ilumethod = 2. Recommended values: 5-10 for method 1, 0-2 for method 2. (default is 5).</div>,
+        stoptol: <div>is the tolerance for convergence of the linear solver. This is the residual of the linear equations scaled by the norm of the root mean squared error. Usually 1.e-8 to 1.e-12 works well. (default is 1.e-10)</div>,
+        msdr: <div>is the number of iterations between restarts of the GMRES Solver. (default is 15)</div>,
+        iacl: <div>is a flag for the acceleration method:<br/>
+            •   0 is conjugate gradient,<br/>
+            •   1 is ORTHOMIN,<br/>
+            •   2 is Bi-CGSTAB. (default is 2)</div>,
+        norder: <div>is a flag for the scheme of ordering the unknowns: 0 is original ordering, 1 is RCM ordering, 2 is Minimum Degree ordering. (default is 1)</div>,
+        level: <div>is the level of fill for incomplete LU factorization. (default is 5)</div>,
+        north: <div>is the number of orthogonalization for the ORTHOMIN acceleration scheme. A number between 4 and 10 is appropriate. Small values require less storage but more iterations may be required. This number should equal 2 for the other acceleration methods. (default is 7)</div>,
+        iredsys: <div>is a flag for reduced system preconditioning (integer):<br/>
+            •   0-do not apply reduced system preconditioning,<br/>
+            •   1-apply reduced system preconditioning.<br/>
+            (default is 0)</div>,
+        rrctols: <div>is the residual reduction-convergence criteria. (default is 0)</div>,
+        idroptol: <div>is a flag for using drop tolerance in the preconditioning:<br/>
+            •   0-don’t use drop tolerance,<br/>
+            •   1-use drop tolerance. (default is 1)</div>,
+        epsrn: <div>is the drop tolerance for preconditioning. (default is 1.e-4)</div>,
+        hclosexmd: <div>is the head closure criteria for inner (linear) iterations. (default is 1.e-4)</div>,
+        mxiterxmd: <div>is the maximum number of iterations for the linear solution. (default is 50)</div>,
+        extension: <div>TODO!</div>,
+        unitnumber: <div>TODO!</div>,
+        filenames: <div>TODO!</div>
+    },
+
     // PCG
     pcg: {
         mxiter: <div>is the maximum number of outer iterations.<br/>
@@ -477,6 +530,19 @@ export const documentation = {
         extension: <div>Filename extension (default is ‘pcgn’)</div>,
         unitnumber: <div>File unit number (default is None).</div>,
         filenames: <div>Filenames to use for the package and the output files. If <strong>filenames</strong>=None the package name will be created using the model name and package extension and the PCGN output names will be created using the model name and .pcgni, .pcgnt, and .pcgno extensions. If a single string is passed the package will be set to the string and PCGN output names will be created using the model name and PCGN output extensions. To define the names for all package files (input and output) the length of the list of strings should be 4. Default is None.</div>,
+    },
+
+    // SIP
+    sip: {
+        mxiter: <div>The maximum number of times through the iteration loop in one time step in an attempt to solve the system of finite-difference equations. (default is 200)</div>,
+        nparm: <div>The number of iteration variables to be used. Five variables are generally sufficient. (default is 5)</div>,
+        accl: <div>The acceleration variable, which must be greater than zero and is generally equal to one. If a zero is entered, it is changed to one. (default is 1)</div>,
+        hclose: <div>The head change criterion for convergence. When the maximum absolute value of head change from all nodes during an iteration is less than or equal to <strong>hclose</strong>, iteration stops. (default is 1e-5)</div>,
+        ipcalc: <div>A flag indicating where the seed for calculating iteration variables will come from.<br/>
+                    0 is the seed entered by the user will be used.<br/>
+                    1 is the seed will be calculated at the start of the simulation from problem variables. (default is 0)</div>,
+        wseed: <div>The seed for calculating iteration variables. <strong>wseed</strong> is always read, but is used only if <strong>ipcalc</strong> is equal to zero. (default is 0)</div>,
+        iprsip: <div>if equal to zero, is changed to 999. The maximum head change (positive or negative) is printed for each iteration of a time step whenever the time step is an even multiple of <strong>iprsip</strong>. This printout also occurs at the end of each stress period regardless of the value of <strong>iprsip</strong>. (default is 0)</div>
     },
 
     // SMS

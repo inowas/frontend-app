@@ -10,11 +10,13 @@ import GhbPackageProperties from './ghbPackageProperties';
 import GmgPackageProperties from './gmgPackageProperties';
 import HobPackageProperties from './hobPackageProperties';
 import MfPackageProperties from './mfPackageProperties';
+import NwtPackageProperties from './nwtPackageProperties';
 import OcPackageProperties from './ocPackageProperties';
 import PcgPackageProperties from './pcgPackageProperties';
 import PcgnPackageProperties from './pcgnPackageProperties';
 import RchPackageProperties from './rchPackageProperties';
 import RivPackageProperties from './rivPackageProperties';
+import SipPackageProperties from './sipPackageProperties';
 import SmsPackageProperties from './smsPackageProperties';
 import SolverPackageProperties from './solverPackageProperties';
 import SorPackageProperties from './sorPackageProperties';
@@ -33,11 +35,13 @@ export {
     GmgPackageProperties,
     HobPackageProperties,
     MfPackageProperties,
+    NwtPackageProperties,
     OcPackageProperties,
     PcgPackageProperties,
     PcgnPackageProperties,
     RchPackageProperties,
     RivPackageProperties,
+    SipPackageProperties,
     SmsPackageProperties,
     SolverPackageProperties,
     SorPackageProperties,
