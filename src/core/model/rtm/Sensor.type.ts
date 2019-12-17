@@ -18,6 +18,7 @@ export interface ISensorParameter {
     type: string;
     description: string;
     dataSources: IDataSource[];
+    filter?: [];
     processings: IProcessing[];
 }
 

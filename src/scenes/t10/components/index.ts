@@ -11,6 +11,7 @@ import SensorList from './SensorList';
 import SensorMap from './SensorMap';
 import SensorMetaData from './SensorMetadata';
 import Sensors from './Sensors';
+import TimeProcessingEditor from './TimeProcessingEditor';
 import TinyLineChart from './TinyLineChart';
 import ValueProcessingEditor from './ValueProcessingEditor';
 
@@ -28,6 +29,7 @@ export {
     SensorMap,
     SensorMetaData,
     Sensors,
+    TimeProcessingEditor,
     TinyLineChart,
     ValueProcessingEditor
 };

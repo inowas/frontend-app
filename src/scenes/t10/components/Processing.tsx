@@ -11,6 +11,7 @@ import {parameterList, processingList} from '../defaults';
 import {
     DataSourcesChart,
     ProcessingTimeRange,
+    TimeProcessingEditor,
     ValueProcessingEditor
 } from './index';
 
@@ -51,6 +52,10 @@ const processing = (props: IProps) => {
         const {parameter} = props;
         if (!parameter) {
             return;
+        }
+
+        if (!parameter.processings) {
+            parameter.processings = [];
         }
 
         parameter.processings.push(p.toObject());
@@ -126,7 +131,17 @@ const processing = (props: IProps) => {
         props.onChange(parameter);
     };
 
-    const renderDatasourceDetails = () => {
+    const renderProcessingEditor = () => {
+        if (addProcessing && addProcessing === 'time') {
+            return (
+                <TimeProcessingEditor
+                    dsc={dataSourceCollection}
+                    onCancel={handleCancelProcessingClick}
+                    onSave={handleAddProcessing}
+                />
+            );
+        }
+
         if (addProcessing && addProcessing === 'value') {
             return (
                 <ValueProcessingEditor
@@ -137,6 +152,18 @@ const processing = (props: IProps) => {
             );
         }
 
+        if (editProcessing && editProcessing instanceof TimeProcessing) {
+            return (
+                <TimeProcessingEditor
+                    dsc={dataSourceCollection}
+                    processing={editProcessing as TimeProcessing}
+                    onCancel={handleCancelProcessingClick}
+                    onSave={handleUpdateProcessing}
+                />
+            );
+        }
+
+        // noinspection SuspiciousTypeOfGuard
         if (editProcessing && editProcessing instanceof ValueProcessing) {
             return (
                 <ValueProcessingEditor
@@ -174,7 +201,8 @@ const processing = (props: IProps) => {
                                 <Table.Row>
                                     <Table.HeaderCell>Type</Table.HeaderCell>
                                     <Table.HeaderCell>Time range</Table.HeaderCell>
-                                    <Table.HeaderCell/>
+                                    <Table.HeaderCell>Method</Table.HeaderCell>
+                                    <Table.HeaderCell>Value</Table.HeaderCell>
                                     <Table.HeaderCell/>
                                 </Table.Row>
                             </Table.Header>
@@ -191,7 +219,12 @@ const processing = (props: IProps) => {
                                             <Table.Cell>
                                                 <ProcessingTimeRange processing={pInst}/>
                                             </Table.Cell>
-                                            <Table.Cell/>
+                                            <Table.Cell textAlign={'center'}>
+                                                {pInst instanceof ValueProcessing ? pInst.operator : ''}
+                                            </Table.Cell>
+                                            <Table.Cell textAlign={'center'}>
+                                                {pInst instanceof ValueProcessing ? pInst.value : ''}
+                                            </Table.Cell>
                                             <Table.Cell textAlign={'right'}>
                                                 {!props.rtm.readOnly &&
                                                 <div>
@@ -274,13 +307,15 @@ const processing = (props: IProps) => {
                         <Label color={'blue'} ribbon={true} size={'large'}>
                             Chart
                         </Label>
-                        {dataSourceCollection.isFetched() && <DataSourcesChart dataSources={dataSourceCollection}/>}
+                        {dataSourceCollection.isFetched() &&
+                        <DataSourcesChart dataSources={dataSourceCollection} processings={processingCollection}/>
+                        }
                     </Segment>
                     }
 
                 </Grid.Column>
             </Grid.Row>
-            {renderDatasourceDetails()}
+            {renderProcessingEditor()}
         </Grid>
     );
 };

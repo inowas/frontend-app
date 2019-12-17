@@ -16,5 +16,5 @@ export interface IValueProcessing extends IProcessing {
 export interface ITimeProcessing extends IProcessing {
     type: 'time';
     rule: string;
-    interpolationMethod: string;
+    method: string;
 }
