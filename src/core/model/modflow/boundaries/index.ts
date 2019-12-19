@@ -4,6 +4,7 @@ import BoundaryFactory from './BoundaryFactory';
 import ConstantHeadBoundary from './ConstantHeadBoundary';
 import DrainageBoundary from './DrainageBoundary';
 import EvapotranspirationBoundary from './EvapotranspirationBoundary';
+import FlowAndHeadBoundary from './FlowAndHeadBoundary';
 import GeneralHeadBoundary from './GeneralHeadBoundary';
 import HeadObservationWell from './HeadObservationWell';
 import LineBoundary from './LineBoundary';
@@ -20,6 +21,7 @@ export {
     ConstantHeadBoundary,
     DrainageBoundary,
     EvapotranspirationBoundary,
+    FlowAndHeadBoundary,
     GeneralHeadBoundary,
     HeadObservationWell,
     LineBoundary,

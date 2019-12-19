@@ -126,6 +126,7 @@ class BoundaryList extends React.Component<IBoundaryListProps, IBoundaryListStat
             {key: 'chd', value: 'chd', text: 'CHD'},
             {key: 'drn', value: 'drn', text: 'DRN'},
             {key: 'evt', value: 'evt', text: 'EVT'},
+            {key: 'fhb', value: 'fhb', text: 'FHB'},
             {key: 'ghb', value: 'ghb', text: 'GHB'},
             {key: 'rch', value: 'rch', text: 'RCH'},
             {key: 'riv', value: 'riv', text: 'RIV'},

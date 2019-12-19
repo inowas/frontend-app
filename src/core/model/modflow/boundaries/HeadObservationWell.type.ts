@@ -5,9 +5,11 @@ export interface IHeadObservationWell extends IPointBoundary {
 }
 
 export interface IHeadObservationWellProperties extends IPointBoundaryProperties {
+    date_times: string[];
     type: 'hob';
 }
 
 export interface IHeadObservationWellExport extends IPointBoundaryExport {
+    date_times: string[];
     type: 'hob';
 }

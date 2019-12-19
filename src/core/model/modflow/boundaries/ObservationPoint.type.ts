@@ -6,7 +6,8 @@ export interface IObservationPoint {
     id: string;
     geometry: Point;
     properties: {
-        name: string
+        name: string;
+        date_times?: string[];
         sp_values: ISpValues;
         type: 'op';
         distance: number;
@@ -17,5 +18,6 @@ export interface IObservationPointExport {
     id?: string;
     name: string;
     geometry: Point;
+    date_times?: string[];
     sp_values: ISpValues;
 }

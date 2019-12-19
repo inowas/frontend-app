@@ -494,7 +494,7 @@ const soilmodelEditor = (props: IProps) => {
                             selection={true}
                             onChange={handleChangeParameterSet}
                             options={[
-                                {key: 'soilmodel', text: 'Soilmodel', value: 'soilmodel'},
+                                {key: 'soilmodel', text: 'Soil', value: 'soilmodel'},
                                 {key: 'bas', text: 'Basic', value: 'bas'},
                                 // {key: 'modpath', text: 'Modpath', value: 'modpath'}
                             ]}

@@ -16,6 +16,8 @@ import DrainageBoundary from './DrainageBoundary';
 import {IDrainageBoundary, IDrainageBoundaryExport} from './DrainageBoundary.type';
 import EvapotranspirationBoundary from './EvapotranspirationBoundary';
 import {IEvapotranspirationBoundary, IEvapotranspirationBoundaryExport} from './EvapotranspirationBoundary.type';
+import FlowAndHeadBoundary from './FlowAndHeadBoundary';
+import {IFlowAndHeadBoundary, IFlowAndHeadBoundaryExport} from './FlowAndHeadBoundary.type';
 import GeneralHeadBoundary from './GeneralHeadBoundary';
 import {IGeneralHeadBoundary, IGeneralHeadBoundaryExport} from './GeneralHeadBoundary.type';
 import HeadObservationWell from './HeadObservationWell';
@@ -31,7 +33,7 @@ import {IWellBoundary, IWellBoundaryExport} from './WellBoundary.type';
 
 export default abstract class BoundaryFactory {
 
-    public static availableTypes = ['chd', 'drn', 'evt', 'ghb', 'hob', 'rch', 'riv', 'wel'];
+    public static availableTypes = ['chd', 'drn', 'evt', 'fhb', 'ghb', 'hob', 'rch', 'riv', 'wel'];
 
     public static fromObject = (obj: IBoundary): Boundary => {
         let type;
@@ -54,6 +56,8 @@ export default abstract class BoundaryFactory {
                 return new DrainageBoundary(obj as IDrainageBoundary);
             case 'evt':
                 return new EvapotranspirationBoundary(obj as IEvapotranspirationBoundary);
+            case 'fhb':
+                return new FlowAndHeadBoundary(obj as IFlowAndHeadBoundary);
             case 'ghb':
                 return new GeneralHeadBoundary(obj as IGeneralHeadBoundary);
             case 'hob':
@@ -80,6 +84,8 @@ export default abstract class BoundaryFactory {
                 return EvapotranspirationBoundary.fromExport(
                     obj as IEvapotranspirationBoundaryExport, boundingBox, gridSize
                 );
+            case 'fhb':
+                return FlowAndHeadBoundary.fromExport(obj as IFlowAndHeadBoundaryExport, boundingBox, gridSize);
             case 'ghb':
                 return GeneralHeadBoundary.fromExport(obj as IGeneralHeadBoundaryExport, boundingBox, gridSize);
             case 'hob':
@@ -96,7 +102,7 @@ export default abstract class BoundaryFactory {
     };
 
     public static createNewFromProps(type: BoundaryType, id: string, geometry: GeoJson, name: string,
-                                     layers: number[], cells: ICells, spValues: ISpValues) {
+                                     layers: number[], cells: ICells, spValues: ISpValues, dateTimes: string[] = []) {
         switch (type) {
             case 'chd':
                 return ConstantHeadBoundary.create(id, geometry as LineString, name, layers, cells, spValues);
@@ -105,10 +111,12 @@ export default abstract class BoundaryFactory {
             case 'evt':
                 return EvapotranspirationBoundary.create(id, geometry as Polygon, name, layers,
                     cells, spValues, 1);
+            case 'fhb':
+                return FlowAndHeadBoundary.create(id, geometry as LineString, name, layers, cells, spValues);
             case 'ghb':
                 return GeneralHeadBoundary.create(id, geometry as LineString, name, layers, cells, spValues);
             case 'hob':
-                return HeadObservationWell.create(id, geometry as Point, name, layers, cells, spValues);
+                return HeadObservationWell.create(id, geometry as Point, name, layers, cells, dateTimes, spValues);
             case 'rch':
                 return RechargeBoundary.create(id, geometry as Polygon, name, layers, cells,
                     spValues, 1);
@@ -129,6 +137,8 @@ export default abstract class BoundaryFactory {
                 return DrainageBoundary.valueProperties();
             case 'evt':
                 return EvapotranspirationBoundary.valueProperties();
+            case 'fhb':
+                return FlowAndHeadBoundary.valueProperties();
             case 'ghb':
                 return GeneralHeadBoundary.valueProperties();
             case 'hob':
@@ -152,6 +162,8 @@ export default abstract class BoundaryFactory {
                 return DrainageBoundary.geometryType();
             case 'evt':
                 return EvapotranspirationBoundary.geometryType();
+            case 'fhb':
+                return FlowAndHeadBoundary.geometryType();
             case 'ghb':
                 return GeneralHeadBoundary.geometryType();
             case 'hob':

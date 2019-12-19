@@ -9,6 +9,11 @@ import {
     IEvapotranspirationBoundaryExport,
 } from './EvapotranspirationBoundary.type';
 import {
+    IFlowAndHeadBoundary,
+    IFlowAndHeadBoundaryExport,
+    IFlowAndHeadBoundaryFeature
+} from './FlowAndHeadBoundary.type';
+import {
     IGeneralHeadBoundary,
     IGeneralHeadBoundaryExport,
     IGeneralHeadBoundaryFeature
@@ -21,13 +26,14 @@ import {IWellBoundary, IWellBoundaryExport} from './WellBoundary.type';
 
 export type BoundaryType = 'evt' | 'rch' | 'wel' | 'hob' | LineBoundaryType;
 
-export type IBoundary = IConstantHeadBoundary | IGeneralHeadBoundary | IDrainageBoundary |
-    IEvapotranspirationBoundary | IHeadObservationWell | IRechargeBoundary | IRiverBoundary | IWellBoundary;
+export type IBoundary = IConstantHeadBoundary | IGeneralHeadBoundary | IDrainageBoundary | IEvapotranspirationBoundary |
+    IFlowAndHeadBoundary | IHeadObservationWell | IRechargeBoundary | IRiverBoundary | IWellBoundary;
 
 export type IBoundaryFeature =
     IConstantHeadBoundaryFeature
     | IDrainageBoundaryFeature
     | IGeneralHeadBoundaryFeature
+    | IFlowAndHeadBoundaryFeature
     | IRiverBoundaryFeature;
 
 export type IBoundaryExport =
@@ -35,6 +41,7 @@ export type IBoundaryExport =
     | IDrainageBoundaryExport
     | IGeneralHeadBoundaryExport
     | IRiverBoundaryExport
+    | IFlowAndHeadBoundaryExport
     | IEvapotranspirationBoundaryExport
     | IHeadObservationWellExport
     | IRechargeBoundaryExport

@@ -1,5 +1,6 @@
 import {Point} from 'geojson';
 import {cloneDeep} from 'lodash';
+import moment, {Moment} from 'moment';
 import Uuid from 'uuid';
 import BoundingBox from '../../geometry/BoundingBox';
 import {ICells} from '../../geometry/Cells.type';
@@ -12,8 +13,20 @@ import PointBoundary from './PointBoundary';
 
 export default class HeadObservationWell extends PointBoundary {
 
+    get dateTimes() {
+        return this._props.properties.date_times.map((dt: string) => moment.utc(dt));
+    }
+
+    set dateTimes(value: Moment[]) {
+        this._props.properties.date_times = value.map((dt) => dt.format('YYYY-MM-DD'));
+    }
+
     get geometryType() {
         return this._class.geometryType();
+    }
+
+    public get valueProperties(): IValueProperty[] {
+        return this._class.valueProperties();
     }
 
     public static geometryType() {
@@ -37,7 +50,7 @@ export default class HeadObservationWell extends PointBoundary {
     }
 
     public static create(id: string, geometry: Point, name: string, layers: number[], cells: ICells,
-                         spValues: ISpValues) {
+                         dateTimes: string[], spValues: ISpValues) {
         return new this({
             id,
             type: 'Feature',
@@ -47,6 +60,7 @@ export default class HeadObservationWell extends PointBoundary {
                 name,
                 layers,
                 cells,
+                date_times: dateTimes,
                 sp_values: spValues
             }
         });
@@ -59,6 +73,7 @@ export default class HeadObservationWell extends PointBoundary {
             obj.name,
             obj.layers,
             Cells.fromGeometry(Geometry.fromGeoJson(obj.geometry), boundingBox, gridSize).toObject(),
+            obj.date_times,
             obj.sp_values
         );
     }
@@ -69,20 +84,31 @@ export default class HeadObservationWell extends PointBoundary {
         this._class = HeadObservationWell;
     }
 
+    public getDateTimes = () => {
+        return this.dateTimes;
+    };
+
+    public getSpValues(stressperiods: Stressperiods): ISpValues {
+        const spValues = this._props.properties.sp_values;
+        return this.dateTimes.map((dt, idx) => {
+            if (Array.isArray(spValues[idx])) {
+                return spValues[idx];
+            }
+            return spValues[spValues.length - 1];
+        });
+    }
+
     public toExport = (stressPeriods: Stressperiods): IHeadObservationWellExport => ({
         id: this.id,
         type: this.type,
         name: this.name,
         geometry: this.geometry.toObject() as Point,
         layers: this.layers,
+        date_times: this.dateTimes.map((dt: Moment) => dt.format('YYYY-MM-DD')),
         sp_values: this.getSpValues(stressPeriods)
     });
 
     public toObject(): IHeadObservationWell {
         return this._props;
-    }
-
-    public get valueProperties(): IValueProperty[] {
-        return this._class.valueProperties();
     }
 }

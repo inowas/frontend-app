@@ -21,6 +21,7 @@ import {Array2D, Array3D} from '../../../core/model/geometry/Array2D.type';
 import {RasterParameter} from '../../../core/model/modflow/soilmodel';
 import {fetchRasterData, fetchRasterMetaData, uploadRasterfile} from '../../../services/api';
 import {IRasterFileMetadata} from '../../../services/api/types';
+import {RainbowOrLegend} from '../../../services/rainbowvis/types';
 import RasterDataImage from './rasterDataImage';
 import {InterpolationType} from './types';
 
@@ -42,6 +43,7 @@ interface IProps {
     onChange: (data: IData) => any;
     onSave?: (data: Array2D<number>) => any;
     parameter: RasterParameter;
+    legend?: RainbowOrLegend;
     discreteRescaling?: boolean;
 }
 
@@ -55,13 +57,6 @@ const rasterFileUploadModal = (props: IProps) => {
     const [errorFetching, setErrorFetching] = useState<string | null>(null);
     const [errorUploading, setErrorUploading] = useState<string | null>(null);
     const [errorGridSize, setErrorGridSize] = useState<boolean>(false);
-
-    const handleSave = () => {
-        if (data && data[selectedBand] && props.onSave) {
-            return props.onSave(data[selectedBand]);
-        }
-        return null;
-    };
 
     const handleChangeInterpolation = (e: SyntheticEvent<HTMLElement, Event>, {value}: DropdownProps) =>
         setInterpolation(value as InterpolationType);
@@ -253,6 +248,7 @@ const rasterFileUploadModal = (props: IProps) => {
                             <Segment color={'green'}>
                                 <RasterDataImage
                                     data={data[selectedBand]}
+                                    legend={props.legend}
                                     unit={props.parameter.unit}
                                     gridSize={props.gridSize}
                                 />

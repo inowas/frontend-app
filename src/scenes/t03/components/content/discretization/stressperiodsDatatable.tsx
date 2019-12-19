@@ -76,6 +76,13 @@ const stressPeriodsDataTable = (props: IProps) => {
             const edited = stressperiods.stressperiods[activeInput];
             edited.startDateTime = moment.utc(activeValue);
 
+            if (edited.startDateTime.isSameOrBefore(stressperiods.startDateTime)) {
+                setActiveValue('');
+                setActiveInput(null);
+                setStartDateError(true);
+                return;
+            }
+
             if (activeInput === 0) {
                 if (stressperiods.stressperiods.filter((sp) => sp.startDateTime.isBefore(moment.utc(activeValue))
                 ).length > 1) {
