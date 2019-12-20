@@ -125,5 +125,15 @@ export const menuItems: IMenu = [
                 disabled: true
             }
         ]
+    }, {
+        header: '',
+        items: [
+            {
+                name: 'Export',
+                property: 'export',
+                icon: <Icon name="download"/>,
+                disabled: false
+            }
+        ]
     }
 ];

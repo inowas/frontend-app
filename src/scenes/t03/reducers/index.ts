@@ -1,11 +1,12 @@
 import {combineReducers} from 'redux';
 import {IFlopyPackages} from '../../../core/model/flopy/packages/FlopyPackages.type';
+import {IBoundary} from '../../../core/model/modflow/boundaries/Boundary.type';
 import {ICalculation} from '../../../core/model/modflow/Calculation.type';
 import {IModflowModel} from '../../../core/model/modflow/ModflowModel.type';
 import {ISoilmodel} from '../../../core/model/modflow/soilmodel/Soilmodel.type';
 import {ITransport} from '../../../core/model/modflow/transport/Transport.type';
 import {IVariableDensity} from '../../../core/model/modflow/variableDensity/VariableDensity.type';
-import boundaries, {IBoundariesReducer} from './boundaries';
+import boundaries from './boundaries';
 import calculation from './calculation';
 import model from './model';
 import optimization from './optimization';
@@ -28,7 +29,7 @@ const T03 = combineReducers({
 export default T03;
 
 export interface IT03Reducer {
-    boundaries: IBoundariesReducer;
+    boundaries: IBoundary[];
     calculation: ICalculation;
     model: IModflowModel;
     optimization: any;
