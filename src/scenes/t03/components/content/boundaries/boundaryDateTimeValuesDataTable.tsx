@@ -89,7 +89,7 @@ const boundaryDateTimeValuesDataTable = (props: IProps) => {
 
     const handleImportCsv = (data: any[][]) => {
         const fData = cloneDeep(data).map((row) => {
-            return row.splice(-1, 1);
+            return row.splice(1, boundary.valueProperties.length);
         });
         const dateTimes = data.map((row) => {
             if (moment.isMoment(row[0])) {
