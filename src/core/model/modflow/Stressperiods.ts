@@ -210,7 +210,7 @@ class Stressperiods {
         return this._props;
     };
 
-    private totimFromDate(dateTime: Moment) {
+    public totimFromDate(dateTime: Moment) {
         if (this.timeUnit.toInt() === ITimeUnit.days) {
             return dateTime.diff(this.startDateTime, 'days');
         }
