@@ -84,6 +84,9 @@ const contentWrapper = (props: IProps) => {
     if (property === 'optimization') {
         return (<Content.Optimization/>);
     }
+    if (property === 'export') {
+        return (<Content.Export/>);
+    }
 
     const path = props.match.path;
     const basePath = path.split(':')[0];

@@ -4,21 +4,23 @@ import {CLEAR} from './model';
 
 export const UPDATE_BOUNDARIES = 'T03_UPDATE_BOUNDARIES';
 
-export type IBoundariesReducer = IBoundary[] | undefined;
+const initialState = () => ([]);
 
-const initialState: IBoundariesReducer = [];
-
-const boundaries = (state = initialState, action: { type: string, boundaries?: IBoundary[] }) => {
+const boundaries = (state: IBoundary[] = [], action: { type: string, boundaries?: IBoundary[] }) => {
     switch (action.type) {
         case CLEAR:
-            return initialState;
+            return initialState();
 
         case UPDATE_BOUNDARIES:
-            return action.boundaries;
+            if (Array.isArray(action.boundaries)) {
+                return action.boundaries;
+            }
+
+            return state;
 
         case UNAUTHORIZED:
         case LOGOUT: {
-            return initialState;
+            return initialState();
         }
 
         default:

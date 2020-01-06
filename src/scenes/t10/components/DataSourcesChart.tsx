@@ -4,10 +4,12 @@ import moment from 'moment';
 import React, {useEffect, useState} from 'react';
 import {ResponsiveContainer, Scatter, ScatterChart, XAxis, YAxis} from 'recharts';
 import {DataSourceCollection} from '../../../core/model/rtm';
+import ProcessingCollection from '../../../core/model/rtm/processing/ProcessingCollection';
 import {IDateTimeValue} from '../../../core/model/rtm/Sensor.type';
 
 interface IProps {
     dataSources: DataSourceCollection;
+    processings?: ProcessingCollection;
 }
 
 const dataSourcesChart = (props: IProps) => {
@@ -15,7 +17,19 @@ const dataSourcesChart = (props: IProps) => {
     const [data, setData] = useState<IDateTimeValue[] | null>(null);
 
     useEffect(() => {
-        props.dataSources.mergedData().then((d) => setData(d));
+
+        async function f() {
+            const mergedData = await props.dataSources.mergedData();
+
+            if (props.processings instanceof ProcessingCollection) {
+                return setData(await props.processings.apply(mergedData));
+            }
+
+            return setData(mergedData);
+        }
+
+        f();
+
     }, [props.dataSources]);
 
     const formatDateTimeTicks = (dt: number) => {

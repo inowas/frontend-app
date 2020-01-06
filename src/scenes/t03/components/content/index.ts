@@ -3,6 +3,7 @@ import CreateBoundary from './boundaries/createBoundary';
 import Calculation from './calculation/calculation';
 import ContentWrapper from './ContentWrapper';
 import Discretization from './discretization/discretization';
+import Export from './importExport/export';
 import Modflow from './modflow/flow';
 import {Modpath} from './modpath';
 import Mt3d from './mt3d/Mt3dProperties.js';
@@ -21,6 +22,7 @@ export {
     ContentWrapper,
     CreateBoundary,
     Discretization,
+    Export,
     FlowResults,
     Modflow,
     Modpath,

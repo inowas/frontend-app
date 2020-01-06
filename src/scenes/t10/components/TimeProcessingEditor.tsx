@@ -7,29 +7,32 @@ import {ResponsiveContainer, Scatter, ScatterChart, XAxis, YAxis} from 'recharts
 import {Button, DropdownProps, Form, Grid, Header, InputOnChangeData, Label, Modal, Segment} from 'semantic-ui-react';
 import uuid from 'uuid';
 import DataSourceCollection from '../../../core/model/rtm/DataSourceCollection';
-import {IValueProcessingOperator} from '../../../core/model/rtm/processing/Processing.type';
-import ValueProcessing, {operators} from '../../../core/model/rtm/processing/ValueProcessing';
+import TimeProcessing, {methods} from '../../../core/model/rtm/processing/TimeProcessing';
 import {IDateTimeValue} from '../../../core/model/rtm/Sensor.type';
 
 interface IProps {
     dsc: DataSourceCollection;
-    processing?: ValueProcessing;
-    onSave: (p: ValueProcessing) => void;
+    processing?: TimeProcessing;
+    onSave: (p: TimeProcessing) => void;
     onCancel: () => void;
 }
 
-const valueProcessingEditor = (props: IProps) => {
+const timeProcessingEditor = (props: IProps) => {
 
-    const [processing, setProcessing] = useState<ValueProcessing | null>(null);
+    const [processing, setProcessing] = useState<TimeProcessing | null>(null);
 
     const [processedData, setProcessedData] = useState<IDateTimeValue[] | null>(null);
     const [begin, setBegin] = useState<number>(moment().subtract(1, 'week').unix());
     const [end, setEnd] = useState<number>(moment().unix());
-    const [value, setValue] = useState<number>(1);
-    const [operator, setOperator] = useState<IValueProcessingOperator>('*');
+    const [error, setError] = useState<any | null>(null);
+
+    // RULES: 1d, 1w, 1y, 2w, 2d, ...
+    const [rule, setRule] = useState<string>('1d');
+
+    // METHODS: time, cubic, ...
+    const [method, setMethod] = useState<string>('time');
 
     useEffect(() => {
-
         if (props.processing === undefined) {
             props.dsc.mergedData().then((rawData) => {
                 if (!rawData) {
@@ -40,21 +43,21 @@ const valueProcessingEditor = (props: IProps) => {
                 setEnd(rawData[rawData.length - 1].timeStamp);
             });
 
-            return setProcessing(ValueProcessing.fromObject({
+            return setProcessing(TimeProcessing.fromObject({
                 id: uuid.v4(),
-                type: 'value',
+                type: 'time',
                 begin,
                 end,
-                operator,
-                value
+                rule,
+                method
             }));
         }
 
-        const p = ValueProcessing.fromObject(props.processing.toObject());
+        const p = TimeProcessing.fromObject(props.processing.toObject());
         setBegin(p.begin);
         setEnd(p.end);
-        setOperator(p.operator);
-        setValue(p.value);
+        setMethod(p.method);
+        setRule(p.rule);
         setProcessing(p);
     }, []);
 
@@ -91,7 +94,7 @@ const valueProcessingEditor = (props: IProps) => {
 
         return handleBlur();
 
-    }, [operator, begin, end, value]);
+    }, [begin, end, method, rule]);
 
     const handleSave = () => {
         if (processing) {
@@ -99,9 +102,16 @@ const valueProcessingEditor = (props: IProps) => {
         }
     };
 
-    const process = (p: ValueProcessing, dsc: DataSourceCollection) => {
+    const process = (p: TimeProcessing, dsc: DataSourceCollection) => {
         dsc.mergedData().then((rd) => {
-            p.apply(cloneDeep(rd)).then((d) => setProcessedData(d));
+            p.apply(cloneDeep(rd))
+                .then((d) => {
+                    setError(null);
+                    setProcessedData(d);
+                })
+                .catch((e) => {
+                    setError(e);
+                });
         });
     };
 
@@ -118,33 +128,28 @@ const valueProcessingEditor = (props: IProps) => {
         return f(e.target.value);
     };
 
-    const handleValueChange = (e: ChangeEvent<HTMLInputElement>, d: InputOnChangeData) => {
-        const v = parseFloat(d.value);
-        if (isNaN(v)) {
-            return setValue(0);
-        }
-
-        return setValue(v);
+    const handleChangeMethod = (e: SyntheticEvent<HTMLElement, Event>, d: DropdownProps) => {
+        setMethod(d.value as string);
     };
 
-    const handleChangeOperator = (e: SyntheticEvent<HTMLElement, Event>, d: DropdownProps) => {
-        setOperator(d.value as IValueProcessingOperator);
+    const handleChangeRule = (e: ChangeEvent<HTMLInputElement>, d: InputOnChangeData) => {
+        return setRule(d.value);
     };
 
     const handleBlur = () => {
-        if (!(processing instanceof ValueProcessing)) {
+        if (!(processing instanceof TimeProcessing)) {
             return;
         }
 
-        const p = ValueProcessing.fromObject(processing.toObject());
+        const p = TimeProcessing.fromObject(processing.toObject());
         p.begin = begin;
         p.end = end;
-        p.value = value;
-        p.operator = operator;
-        setProcessing(ValueProcessing.fromObject(p.toObject()));
+        p.rule = rule;
+        p.method = method;
+        setProcessing(TimeProcessing.fromObject(p.toObject()));
     };
 
-    const adding = () => !(props.processing instanceof ValueProcessing);
+    const adding = () => !(props.processing instanceof TimeProcessing);
 
     const formatDateTimeTicks = (dt: number) => {
         return moment.unix(dt).format('YYYY/MM/DD');
@@ -235,22 +240,22 @@ const valueProcessingEditor = (props: IProps) => {
                         </Grid.Column>
                         <Grid.Column width={8}>
                             <Segment raised={true}>
-                                <Label as={'div'} color={'blue'} ribbon={true}>Value processing</Label>
+                                <Label as={'div'} color={'blue'} ribbon={true}>Time processing</Label>
                                 <Form>
                                     <Form.Group widths={'equal'}>
                                         <Form.Select
                                             fluid={true}
                                             label={'Method'}
-                                            options={operators.map((o) => ({key: o, value: o, text: o}))}
-                                            value={operator}
-                                            onChange={handleChangeOperator}
+                                            options={methods.map((o) => ({key: o[0], value: o[0], text: o[0]}))}
+                                            value={method}
+                                            onChange={handleChangeMethod}
                                         />
                                         <Form.Input
                                             fluid={true}
-                                            label={'Value'}
-                                            type={'number'}
-                                            value={value}
-                                            onChange={handleValueChange}
+                                            error={!!error}
+                                            label={'Rule'}
+                                            value={rule}
+                                            onChange={handleChangeRule}
                                             onBlur={handleBlur}
                                         />
                                     </Form.Group>
@@ -282,4 +287,4 @@ const valueProcessingEditor = (props: IProps) => {
 
 };
 
-export default valueProcessingEditor;
+export default timeProcessingEditor;

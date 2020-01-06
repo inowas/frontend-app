@@ -51,57 +51,55 @@ class ValueProcessing extends GenericObject<IValueProcessing> {
     }
 
     public async apply(input: IDateTimeValue[]) {
-        let result = input;
-        if (this.operator) {
-            result = input.filter((i) => {
-                return i.timeStamp >= this.begin && i.timeStamp <= this.end;
-            }).map((i) => {
-                if (this.operator === '+') {
-                    i.value += this.value;
-                    return i;
-                }
 
-                if (this.operator === '-') {
-                    i.value -= this.value;
-                    return i;
-                }
+        return input.map((i) => {
+            if (i.timeStamp < this.begin || i.timeStamp > this.end) {
+                return i;
+            }
 
-                if (this.operator === '*') {
-                    i.value *= this.value;
-                    return i;
-                }
+            if (this.operator === '+') {
+                i.value += this.value;
+                return i;
+            }
 
-                if (this.operator === '/') {
-                    i.value /= this.value;
-                    return i;
-                }
+            if (this.operator === '-') {
+                i.value -= this.value;
+                return i;
+            }
 
-                if (this.operator === '<' && i.value < this.value) {
-                    return i;
-                }
+            if (this.operator === '*') {
+                i.value *= this.value;
+                return i;
+            }
 
-                if (this.operator === '<=' && i.value <= this.value) {
-                    return i;
-                }
+            if (this.operator === '/') {
+                i.value /= this.value;
+                return i;
+            }
 
-                if (this.operator === '>' && i.value > this.value) {
-                    return i;
-                }
+            if (this.operator === '<' && i.value < this.value) {
+                return i;
+            }
 
-                if (this.operator === '>=' && i.value >= this.value) {
-                    return i;
-                }
+            if (this.operator === '<=' && i.value <= this.value) {
+                return i;
+            }
 
-                if (this.operator === '=') {
-                    i.value = this.value;
-                    return i;
-                }
+            if (this.operator === '>' && i.value > this.value) {
+                return i;
+            }
 
-                return undefined;
-            }).filter((i) => i !== undefined) as IDateTimeValue[];
-        }
+            if (this.operator === '>=' && i.value >= this.value) {
+                return i;
+            }
 
-        return result;
+            if (this.operator === '=') {
+                i.value = this.value;
+                return i;
+            }
+
+            return undefined;
+        }).filter((i) => i !== undefined) as IDateTimeValue[];
     }
 }
 
