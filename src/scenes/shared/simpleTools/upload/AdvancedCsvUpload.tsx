@@ -47,9 +47,11 @@ const advancedCsvUpload = (props: IProps) => {
             if (!firstRowIsHeader || firstRowIsHeader && rKey > 0) {
                 const row = columns.map((c, cKey) => {
                     if (props.useDateTimes && cKey === 0) {
-                        return moment(r[parameterColumns[c.value]]);
+                        return moment.utc(r[parameterColumns[c.value]]);
                     }
-                    return r[parameterColumns[c.value]] || 0;
+                    if (!props.useDateTimes || cKey > 0) {
+                        return r[parameterColumns[c.value]] || 0;
+                    }
                 });
                 nData.push(row);
             }
