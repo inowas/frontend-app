@@ -1,5 +1,6 @@
 import {LineString} from 'geojson';
-import {cloneDeep} from 'lodash';
+import _, {cloneDeep} from 'lodash';
+import moment, {DurationInputArg1, DurationInputArg2, Moment} from 'moment';
 import Uuid from 'uuid';
 import BoundingBox from '../../geometry/BoundingBox';
 import {ICells} from '../../geometry/Cells.type';
@@ -18,6 +19,7 @@ export default class FlowAndHeadBoundary extends LineBoundary {
         name: string,
         layers: number[],
         cells: ICells,
+        dateTimes: string[],
         spValues: ISpValues
     ) {
         return new this({
@@ -43,7 +45,7 @@ export default class FlowAndHeadBoundary extends LineBoundary {
                     },
                     properties: {
                         name: 'OP1',
-                        date_times: [],
+                        date_times: dateTimes,
                         sp_values: spValues,
                         type: 'op',
                         distance: 0
@@ -60,6 +62,7 @@ export default class FlowAndHeadBoundary extends LineBoundary {
             obj.name,
             obj.layers,
             Cells.fromGeometry(Geometry.fromGeoJson(obj.geometry), boundingBox, gridSize).toObject(),
+            [],
             []
         );
 
@@ -112,6 +115,69 @@ export default class FlowAndHeadBoundary extends LineBoundary {
     public get valueProperties(): IValueProperty[] {
         return FlowAndHeadBoundary.valueProperties();
     }
+
+    public addDateTime(amount: DurationInputArg1, unit: DurationInputArg2, opId?: string,
+                       stressperiods?: Stressperiods) {
+        if (opId && stressperiods) {
+            const observationPoint = this.findObservationPointById(opId);
+            const dateTimes = observationPoint.dateTimes;
+            if (dateTimes.length > 0) {
+                const newDateTime = moment.utc(dateTimes[dateTimes.length - 1]).add(amount, unit);
+                observationPoint.addDateTimeValue(newDateTime, this.valueProperties.map((v) => v.default));
+                this.updateObservationPoint(opId, observationPoint.name, observationPoint.geometry,
+                    observationPoint.spValues, observationPoint.dateTimes);
+                return this;
+            }
+            observationPoint.addDateTimeValue(stressperiods.startDateTime, this.valueProperties.map((v) => v.default));
+            this.updateObservationPoint(opId, observationPoint.name, observationPoint.geometry,
+                observationPoint.spValues, observationPoint.dateTimes);
+        }
+
+        return this;
+    }
+
+    public changeDateTime(value: string, idx: number, opId?: string) {
+        if (opId) {
+            const observationPoint = this.findObservationPointById(opId);
+            if (observationPoint) {
+                observationPoint.updateDateTime(idx, moment.utc(value));
+            }
+            this.updateObservationPoint(opId, observationPoint.name, observationPoint.geometry,
+                observationPoint.spValues, _.orderBy(observationPoint.dateTimes, (o: Moment) => {
+                    return o.format('YYYYMMDD');
+                }, ['asc']));
+        }
+        return this;
+    }
+
+    public removeDateTime(id: number, opId?: string) {
+        if (opId) {
+            const observationPoint = this.findObservationPointById(opId);
+            if (observationPoint) {
+                const dateTimes: Moment[] = [];
+                const spValues: ISpValues = [];
+                observationPoint.dateTimes.forEach((dt: Moment, idx: number) => {
+                    if (id !== idx) {
+                        spValues.push(observationPoint.spValues[idx]);
+                        dateTimes.push(dt);
+                    }
+                });
+                observationPoint.dateTimes = dateTimes;
+                observationPoint.spValues = spValues;
+                this.updateObservationPoint(opId, observationPoint.name, observationPoint.geometry,
+                    observationPoint.spValues, observationPoint.dateTimes);
+            }
+        }
+        return this;
+    }
+
+    public getDateTimes = (opId?: string): Moment[] => {
+        if (this instanceof LineBoundary && opId) {
+            const observationPoint = this.findObservationPointById(opId);
+            return observationPoint.dateTimes;
+        }
+        return [];
+    };
 
     public toExport(stressperiods: Stressperiods): IFlowAndHeadBoundaryExport {
         return {

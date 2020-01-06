@@ -1,7 +1,7 @@
 import * as turf from '@turf/helpers';
 import {lineDistance, lineSlice} from '@turf/turf';
 import {LineString, Point} from 'geojson';
-import moment from 'moment';
+import moment, {Moment} from 'moment';
 import {Cells, Geometry} from '../index';
 import Stressperiods from '../Stressperiods';
 import {ISpValues} from './Boundary.type';
@@ -248,12 +248,16 @@ export default abstract class LineBoundary extends Boundary {
         });
     };
 
-    public updateObservationPoint = (id: string, name: string, geometry: Point, spValues: ISpValues) => {
+    public updateObservationPoint = (id: string, name: string, geometry: Point, spValues: ISpValues,
+                                     dateTimes?: Moment[]) => {
         this.observationPoints = this.observationPoints.map((op) => {
             if (op.id === id) {
                 op.name = name;
                 op.geometry = geometry;
                 op.spValues = spValues;
+                if (op.dateTimes && dateTimes) {
+                    op.dateTimes = dateTimes;
+                }
                 op.distance = distanceOnLine(this.geometry as LineString, geometry);
             }
             return op;

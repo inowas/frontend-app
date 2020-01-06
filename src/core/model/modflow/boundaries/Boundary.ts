@@ -59,7 +59,7 @@ export default abstract class Boundary {
 
     protected _class: any;
 
-    public getDateTimes = () => {
+    public getDateTimes = (opId?: string) => {
         return this.dateTimes;
     };
 
@@ -75,32 +75,40 @@ export default abstract class Boundary {
         return isEqual(simpleDiff(this.toExport(), b.toExport()), {});
     }*/
 
-    public addDateTime(amount: DurationInputArg1, unit: DurationInputArg2) {
-        const dateTimes = this._props.properties.date_times;
-        if (this._props.properties.date_times.length > 0) {
-            const newDateTime = moment.utc(dateTimes[dateTimes.length - 1]).add(amount, unit);
-            this._props.properties.date_times.push(newDateTime.format('YYYY-MM-DD'));
-            return this;
+    public addDateTime(amount: DurationInputArg1, unit: DurationInputArg2, opId?: string,
+                       stressperiods?: Stressperiods) {
+        if (stressperiods) {
+            const dateTimes = this._props.properties.date_times;
+            if (this._props.properties.date_times.length > 0) {
+                const newDateTime = moment.utc(dateTimes[dateTimes.length - 1]).add(amount, unit);
+                this._props.properties.date_times.push(newDateTime.format('YYYY-MM-DD'));
+                this._props.properties.sp_values.push(this.valueProperties.map((v) => v.default));
+                return this;
+            }
+            this._props.properties.date_times.push(stressperiods.startDateTime.format('YYYY-MM-DD'));
+            this._props.properties.sp_values.push(this.valueProperties.map((v) => v.default));
         }
-        this._props.properties.date_times.push(moment().format('YYYY-MM-DD'));
         return this;
     }
 
-    public changeDateTime(value: string, idx: number) {
+    public changeDateTime(value: string, idx: number, opId?: string) {
         if (this._props.properties.date_times.length > idx) {
             this._props.properties.date_times[idx] = value;
         }
         return this.reorderDateTimes();
     }
 
-    public removeDateTime(id: number) {
+    public removeDateTime(id: number, opId?: string) {
         const dateTimes: string[] = [];
+        const spValues: ISpValues = [];
         this._props.properties.date_times.forEach((dt: string, idx: number) => {
             if (id !== idx) {
+                spValues.push(this._props.properties.sp_values[idx]);
                 dateTimes.push(dt);
             }
         });
         this._props.properties.date_times = dateTimes;
+        this._props.properties.sp_values = spValues;
         return this;
     }
 

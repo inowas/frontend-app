@@ -45,7 +45,7 @@ const boundaryDateTimeValuesDataTable = (props: IProps) => {
 
     const handleChangeDateTime = () => {
         if (activeDateTime) {
-            props.onChange(boundary.changeDateTime(activeDateTime.value, activeDateTime.idx));
+            props.onChange(boundary.changeDateTime(activeDateTime.value, activeDateTime.idx, selectedOP));
         }
         return setActiveDateTime(null);
     };
@@ -111,10 +111,12 @@ const boundaryDateTimeValuesDataTable = (props: IProps) => {
     };
 
     const handleAddDateTime = (value: DurationInputArg1, unit: DurationInputArg2) => () => {
-        return props.onChange(boundary.addDateTime(value, unit));
+        return props.onChange(boundary.addDateTime(value, unit, selectedOP, props.stressperiods));
     };
 
-    const handleRemoveDateTime = (idx: number) => () => props.onChange(boundary.removeDateTime(idx));
+    const handleRemoveDateTime = (idx: number) => () => {
+        props.onChange(boundary.removeDateTime(idx, selectedOP));
+    };
 
     const getCellStyle = (numberOfCells: number) => {
         switch (numberOfCells) {
@@ -140,7 +142,7 @@ const boundaryDateTimeValuesDataTable = (props: IProps) => {
     };
 
     const body = () => {
-        const dateTimes = boundary.getDateTimes();
+        const dateTimes = boundary.getDateTimes(selectedOP);
 
         if (!spValues) {
             return (
@@ -243,7 +245,7 @@ const boundaryDateTimeValuesDataTable = (props: IProps) => {
                 </Table.Header>
                 <Table.Body>{spValues && body()}</Table.Body>
             </Table>
-            <Button.Group size={'small'}>
+            <Button.Group size="small">
                 <Button icon={true} onClick={handleAddDateTime(1, 'days')}>
                     <Icon name="add circle"/> 1 Day</Button>
                 <Button icon={true} onClick={handleAddDateTime(1, 'months')}>

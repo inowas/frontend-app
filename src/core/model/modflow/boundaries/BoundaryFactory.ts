@@ -112,7 +112,7 @@ export default abstract class BoundaryFactory {
                 return EvapotranspirationBoundary.create(id, geometry as Polygon, name, layers,
                     cells, spValues, 1);
             case 'fhb':
-                return FlowAndHeadBoundary.create(id, geometry as LineString, name, layers, cells, spValues);
+                return FlowAndHeadBoundary.create(id, geometry as LineString, name, layers, cells, dateTimes, spValues);
             case 'ghb':
                 return GeneralHeadBoundary.create(id, geometry as LineString, name, layers, cells, spValues);
             case 'hob':
