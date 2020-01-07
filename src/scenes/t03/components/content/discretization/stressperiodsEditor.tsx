@@ -94,6 +94,7 @@ const stressperiodsEditor = (props: IProps) => {
                         importButton={props.model.readOnly ||
                         <StressperiodsImport
                             onChange={handleChangeImport}
+                            stressperiods={iStressperiods}
                         />
                         }
                         onSave={handleSave}
