@@ -12,11 +12,6 @@ import {IHeadObservationWell, IHeadObservationWellExport} from './HeadObservatio
 import PointBoundary from './PointBoundary';
 
 export default class HeadObservationWell extends PointBoundary {
-
-    get dateTimes() {
-        return this._props.properties.date_times.map((dt: string) => moment.utc(dt));
-    }
-
     set dateTimes(value: Moment[]) {
         this._props.properties.date_times = value.map((dt) => dt.format('YYYY-MM-DD'));
     }
@@ -84,13 +79,18 @@ export default class HeadObservationWell extends PointBoundary {
         this._class = HeadObservationWell;
     }
 
-    public getDateTimes = () => {
-        return this.dateTimes;
+    public getDateTimes = (stressperiods: Stressperiods): Moment[] => {
+        if (!this._props.properties.date_times) {
+            this._props.properties.date_times = stressperiods.stressperiods.map((sp) =>
+                sp.startDateTime.format('YYYY-MM-DD'));
+        }
+        return this._props.properties.date_times.map((dt: string) => moment.utc(dt));
     };
 
     public getSpValues(stressperiods: Stressperiods): ISpValues {
         const spValues = this._props.properties.sp_values;
-        return this.dateTimes.map((dt, idx) => {
+
+        return this.getDateTimes(stressperiods).map((dt, idx) => {
             if (Array.isArray(spValues[idx])) {
                 return spValues[idx];
             }
@@ -104,7 +104,7 @@ export default class HeadObservationWell extends PointBoundary {
         name: this.name,
         geometry: this.geometry.toObject() as Point,
         layers: this.layers,
-        date_times: this.dateTimes.map((dt: Moment) => dt.format('YYYY-MM-DD')),
+        date_times: this.getDateTimes(stressPeriods).map((dt: Moment) => dt.format('YYYY-MM-DD')),
         sp_values: this.getSpValues(stressPeriods)
     });
 
