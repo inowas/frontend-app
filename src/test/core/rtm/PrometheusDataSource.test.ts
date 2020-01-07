@@ -47,14 +47,14 @@ test('Test PrometheusDataSource, loading from http-resource', async () => {
         protocol: 'https',
         hostname: 'prometheus.inowas.com',
         query: 'pegel_online_wsv_sensors{station="DRESDEN", type="waterlevel"}/100',
-        start: 1575534480,
-        end: 1575535440,
+        start: 1578310000,
+        end: 1578316200,
         step: 120
     };
 
     const ds = new PrometheusDataSource(obj);
     await ds.loadData();
     expect(ds.data).toBeTruthy();
-    expect(ds.data && ds.data.length).toEqual(9);
+    expect(ds.data && ds.data.length).toEqual(52);
     expect(ds.loadData().then(() => expect(ds.data).toEqual(ds.toObject().data)));
 });
