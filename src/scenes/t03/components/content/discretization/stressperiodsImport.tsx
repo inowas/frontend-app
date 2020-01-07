@@ -8,6 +8,7 @@ import {StressperiodsDatatable} from './index';
 
 interface IProps {
     onChange: (sp: Stressperiods) => any;
+    stressperiods: Stressperiods;
 }
 
 const stressperiodsImport = (props: IProps) => {
@@ -27,33 +28,7 @@ const stressperiodsImport = (props: IProps) => {
 
     const handleDownload = () => {
         const filename = 'stressperiods.csv';
-        const text = 'start_date_time;nstp;tsmult;steady\n' +
-            '2000-01-01;1;1;1\n' +
-            '2000-02-01;20;1;0\n' +
-            '2000-03-01;20;1;0\n' +
-            '2000-04-01;20;1;0\n' +
-            '2000-05-01;20;1;0\n' +
-            '2000-06-01;20;1;0\n' +
-            '2000-07-01;20;1;0\n' +
-            '2000-08-01;20;1;0\n' +
-            '2000-09-01;20;1;0\n' +
-            '2000-10-01;20;1;0\n' +
-            '2000-11-01;20;1;0\n' +
-            '2000-12-01;20;1;0\n' +
-            '2001-01-01;20;1;0\n' +
-            '2001-02-01;20;1;0\n' +
-            '2001-03-01;20;1;0\n' +
-            '2001-04-01;20;1;0\n' +
-            '2001-05-01;20;1;0\n' +
-            '2001-06-01;20;1;0\n' +
-            '2001-07-01;20;1;0\n' +
-            '2001-08-01;20;1;0\n' +
-            '2001-09-01;20;1;0\n' +
-            '2001-10-01;20;1;0\n' +
-            '2001-11-01;20;1;0\n' +
-            '2001-12-01;20;1;0\n' +
-            '2001-12-31;;;';
-
+        const text = props.stressperiods.toCsv();
         const element: HTMLAnchorElement = document.createElement('a');
         element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(text));
         element.setAttribute('download', filename);

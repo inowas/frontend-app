@@ -206,6 +206,15 @@ class Stressperiods {
         return this;
     }
 
+    public toCsv = () => {
+        let text = 'start_date_time;nstp;tsmult;steady\n';
+        this.stressperiods.forEach((sp) => {
+            text += (`${sp.startDateTime.format('YYYY-MM-DD')};${sp.nstp};${sp.tsmult};${sp.steady ? 1 : 0}\n`);
+        });
+        text += (`${this.endDateTime.format('YYYY-MM-DD')};;;`);
+        return text;
+    };
+
     public toObject = () => {
         return this._props;
     };
