@@ -10,7 +10,7 @@ import {
     nearestPointOnLine
 } from '@turf/turf';
 import {Feature, LineString} from 'geojson';
-import {cloneDeep, floor, isEqual} from 'lodash';
+import {cloneDeep, floor, isEqual, uniqWith} from 'lodash';
 import {LineBoundary} from '../modflow/boundaries';
 import {BoundingBox, Geometry, GridSize} from '../modflow/index';
 import {Array2D} from './Array2D.type';
@@ -255,7 +255,16 @@ export default class Cells {
         return cloneDeep(this._cells);
     }
 
+    public merge = (cells: Cells) => {
+        const allCellsWithoutValues = this.cells.concat(cells.cells).map((c) => [c[0], c[1]]) as ICell[];
+        return Cells.fromArray(uniqWith(allCellsWithoutValues, isEqual));
+    };
+
     public sameAs = (obj: Cells) => {
         return isEqual(obj.cells, this.cells);
+    };
+
+    public count = () => {
+        return this._cells.length;
     };
 }

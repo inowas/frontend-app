@@ -2,6 +2,7 @@ import {sortedUniq} from 'lodash';
 import {Moment} from 'moment';
 import {Array2D} from '../geometry/Array2D.type';
 import {ICell} from '../geometry/Cells.type';
+import {Cells} from '../modflow';
 import {
     EvapotranspirationBoundary,
     HeadObservationWell,
@@ -47,16 +48,6 @@ export const max = (a: Array2D<number> | number) => {
 
 const isValue = (data: Array2D<number> | number) => {
     return !isNaN(data as number);
-};
-
-export const minify2dGridIfPossible = (data: Array2D<number>) => {
-    const minValue = min(data);
-    const maxValue = max(data);
-    if (minValue === maxValue) {
-        return minValue;
-    }
-
-    return data;
 };
 
 export const convertArrayToDict = (arr: any[]) => {
@@ -166,8 +157,10 @@ export const calculateFlowAndHeadBoundarySpData = (boundaries: FlowAndHeadBounda
         return null;
     }
 
+    let c: Cells = Cells.fromArray([]);
     let dateTimes: Moment[] = [];
     boundaries.forEach((b) => {
+        c = c.merge(b.cells);
         b.observationPoints.forEach((op) => {
             dateTimes = dateTimes.concat(op.dateTimes);
         });
@@ -176,10 +169,8 @@ export const calculateFlowAndHeadBoundarySpData = (boundaries: FlowAndHeadBounda
     const totims: number[] = sortedUniq(dateTimes.map((dt) => stressperiods.totimFromDate(dt)));
     const bdtime = totims;
     const nbdtim = totims.length;
-
-    const nflw: number = 0;
-    const nhed: number = 0;
-
+    const nflw: number = c.count();
+    const nhed: number = c.count();
     const ds5: number[][] = [];
     const ds7: number[][] = [];
 
