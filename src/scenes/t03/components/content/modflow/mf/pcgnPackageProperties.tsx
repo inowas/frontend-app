@@ -1,5 +1,5 @@
 import React, {ChangeEvent, SyntheticEvent, useState} from 'react';
-import {DropdownProps, Form, Grid, Input, PopupProps, Segment} from 'semantic-ui-react';
+import {DropdownProps, Form, Grid, Header, Input, PopupProps, Segment} from 'semantic-ui-react';
 
 import {FlopyModflowMfpcgn} from '../../../../../../core/model/flopy/packages/mf';
 import {IFlopyModflowMfpcgn} from '../../../../../../core/model/flopy/packages/mf/FlopyModflowMfpcgn';
@@ -57,6 +57,9 @@ const pcgnPackageProperties = (props: IProps) => {
 
     return (
         <Form>
+            <Header as={'h3'}>
+                PCGN: Preconditioned Conjugate Gradient Solver with Improved Nonlinear Control Package
+            </Header>
             <Segment>
                 <label style={styles.headerLabel}>Basic</label>
                 <Form.Group widths="equal">

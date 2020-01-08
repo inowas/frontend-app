@@ -24,7 +24,7 @@ class FhbPackageProperties extends AbstractPackageProperties {
         return (
             <Form>
                 <Grid divided={'vertically'}>
-                    <Header as={'h2'}>Flow and Head Boundary Package</Header>
+                    <Header as={'h3'}>FHB: Flow and Head Boundary Package</Header>
                     <Grid.Row columns={2}>
                         {affectedCellsLayers.map((layer, idx) => (
                             <Grid.Column key={idx}>

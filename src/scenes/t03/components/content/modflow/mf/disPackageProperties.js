@@ -20,6 +20,7 @@ class DisPackageProperties extends AbstractPackageProperties {
 
         return (
             <Form>
+                <Header as={'h3'}>DIS: Discretization Package</Header>
                 <Accordion styled fluid>
                     <Accordion.Title active={activeIndex === 0} index={0} onClick={this.handleClickAccordion}>
                         <Icon name='dropdown'/>

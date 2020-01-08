@@ -1,5 +1,5 @@
 import React, {ChangeEvent, SyntheticEvent, useState} from 'react';
-import {DropdownProps, Form, Input, PopupProps} from 'semantic-ui-react';
+import {DropdownProps, Form, Header, Input, PopupProps} from 'semantic-ui-react';
 
 import {FlopyModflowMfde4} from '../../../../../../core/model/flopy/packages/mf';
 import {IFlopyModflowMfde4} from '../../../../../../core/model/flopy/packages/mf/FlopyModflowMfde4';
@@ -48,6 +48,7 @@ const de4PackageProperties = (props: IProps) => {
 
     return (
         <Form>
+            <Header as={'h3'}>DE4: Direct Solver Package</Header>
             <Form.Group widths="equal">
                 <Form.Field>
                     <label>Maximum number of iterations (itmx)</label>

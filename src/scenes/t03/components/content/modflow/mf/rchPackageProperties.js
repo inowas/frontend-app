@@ -25,7 +25,7 @@ class RchPackageProperties extends AbstractPackageProperties {
         return (
             <Form>
                 <Grid divided={'vertically'}>
-                    <Header as={'h2'}>Recharge Boundaries</Header>
+                    <Header as={'h3'}>RCH: Recharge Package</Header>
                     <Grid.Row columns={2}>
                         <Grid.Column>
                             <Header as={'p'}>Stress period data (SP1)</Header>

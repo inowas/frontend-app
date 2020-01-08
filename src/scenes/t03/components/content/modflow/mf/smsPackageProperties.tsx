@@ -1,5 +1,5 @@
 import React, {ChangeEvent, SyntheticEvent, useState} from 'react';
-import {Checkbox, DropdownProps, Form, Input, PopupProps, Segment} from 'semantic-ui-react';
+import {Checkbox, DropdownProps, Form, Header, Input, PopupProps, Segment} from 'semantic-ui-react';
 
 import {FlopyModflowMfsms} from '../../../../../../core/model/flopy/packages/mf';
 import {IFlopyModflowMfsms} from '../../../../../../core/model/flopy/packages/mf/FlopyModflowMfsms';
@@ -57,6 +57,7 @@ const smsPackageProperties = (props: IProps) => {
 
     return (
         <Form>
+            <Header as={'h3'}>SMS: Sparse Matrix Solver Package</Header>
             <Form.Group>
                 <Form.Field width={15}>
                     <label>Pre-defined input values (OPTIONS)</label>

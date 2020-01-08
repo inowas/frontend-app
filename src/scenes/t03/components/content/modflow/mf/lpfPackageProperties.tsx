@@ -43,6 +43,7 @@ const lpfPackageProperties = (props: IProps) => {
 
     return (
         <Form>
+            <Header as={'h3'}>LPF: Layer Property Flow Package</Header>
             <Table basic={true}>
                 <Table.Header>
                     <Table.Row>

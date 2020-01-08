@@ -28,7 +28,7 @@ class GhbPackageProperties extends AbstractPackageProperties {
         return (
             <Form>
                 <Grid divided={'vertically'}>
-                    <Header as={'h2'}>General Head Boundaries</Header>
+                    <Header as={'h3'}>GHB: General-Head Boundary Package</Header>
                     <Grid.Row columns={2}>
                         {affectedCellsLayers.map((layer, idx) => (
                             <Grid.Column key={idx}>
