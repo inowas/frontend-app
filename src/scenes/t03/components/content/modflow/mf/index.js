@@ -5,6 +5,7 @@ import De4PackageProperties from './de4PackageProperties';
 import DisPackageProperties from './disPackageProperties';
 import DrnPackageProperties from './drnPackageProperties';
 import EvtPackageProperties from './evtPackageProperties';
+import FhbPackageProperties from './fhbPackageProperties';
 import FlowPackageProperties from './flowPackageProperties';
 import GhbPackageProperties from './ghbPackageProperties';
 import GmgPackageProperties from './gmgPackageProperties';
@@ -30,6 +31,7 @@ export {
     DisPackageProperties,
     DrnPackageProperties,
     EvtPackageProperties,
+    FhbPackageProperties,
     FlowPackageProperties,
     GhbPackageProperties,
     GmgPackageProperties,
