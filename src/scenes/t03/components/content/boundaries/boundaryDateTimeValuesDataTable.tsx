@@ -142,7 +142,7 @@ const boundaryDateTimeValuesDataTable = (props: IProps) => {
     };
 
     const body = () => {
-        const dateTimes = boundary.getDateTimes(selectedOP);
+        const dateTimes = boundary.getDateTimes(props.stressperiods, selectedOP);
 
         if (!spValues) {
             return (

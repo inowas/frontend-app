@@ -59,7 +59,7 @@ export default abstract class Boundary {
 
     protected _class: any;
 
-    public getDateTimes = (opId?: string) => {
+    public getDateTimes = (stressperiods: Stressperiods, opId?: string) => {
         return this.dateTimes;
     };
 

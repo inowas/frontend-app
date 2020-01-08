@@ -171,7 +171,7 @@ export default class FlowAndHeadBoundary extends LineBoundary {
         return this;
     }
 
-    public getDateTimes = (opId?: string): Moment[] => {
+    public getDateTimes = (stressperiods: Stressperiods, opId?: string): Moment[] => {
         if (this instanceof LineBoundary && opId) {
             const observationPoint = this.findObservationPointById(opId);
             return observationPoint.dateTimes;
