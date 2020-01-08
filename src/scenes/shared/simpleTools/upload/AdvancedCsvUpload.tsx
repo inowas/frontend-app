@@ -8,13 +8,13 @@ interface IProps {
     columns: Array<{ key: number, value: string, text: string }>;
     onSave: (ds: any[][]) => void;
     onCancel: () => void;
+    useDateTimes?: boolean;
 }
 
 const advancedCsvUpload = (props: IProps) => {
     const [columns, setColumns] = useState<Array<{key: number, value: string, text: string}>>(props.columns);
     const [metadata, setMetadata] = useState<ParseResult | null>(null);
 
-    const [useDatetime, setUseDatetime] = useState<boolean>(false);
     const [dateTimeFormat, setDateTimeFormat] = useState<string>('DD.MM.YYYY H:i:s');
     const [firstRowIsHeader, setFirstRowIsHeader] = useState<boolean>(true);
 
@@ -26,7 +26,7 @@ const advancedCsvUpload = (props: IProps) => {
     const [isFetched] = useState<boolean>(false);
 
     useEffect(() => {
-        if (useDatetime) {
+        if (props.useDateTimes) {
             return setColumns([{
                 key: 0,
                 value: 'datetime',
@@ -34,11 +34,11 @@ const advancedCsvUpload = (props: IProps) => {
             }].concat(props.columns));
         }
         return setColumns(props.columns);
-    }, [props.columns, useDatetime]);
+    }, [props.columns, props.useDateTimes]);
 
     const handleSave = () => {
         if (!metadata || !parameterColumns ||
-            (parameterColumns && Object.keys(parameterColumns).length !== props.columns.length)) {
+            (parameterColumns && Object.keys(parameterColumns).length !== columns.length)) {
             return;
         }
 
@@ -46,10 +46,12 @@ const advancedCsvUpload = (props: IProps) => {
         metadata.data.forEach((r, rKey) => {
             if (!firstRowIsHeader || firstRowIsHeader && rKey > 0) {
                 const row = columns.map((c, cKey) => {
-                    if (useDatetime && cKey === 0) {
-                        return moment(r[parameterColumns[c.value]]);
+                    if (props.useDateTimes && cKey === 0) {
+                        return moment.utc(r[parameterColumns[c.value]]);
                     }
-                    return r[parameterColumns[c.value]] || 0;
+                    if (!props.useDateTimes || cKey > 0) {
+                        return r[parameterColumns[c.value]] || 0;
+                    }
                 });
                 nData.push(row);
             }
@@ -104,7 +106,7 @@ const advancedCsvUpload = (props: IProps) => {
                                     <Segment raised={true} loading={parsingData}>
                                         <Label as={'div'} color={'blue'} ribbon={true}>Upload File</Label>
                                         <Form.Group>
-                                            {useDatetime &&
+                                            {props.useDateTimes &&
                                             <Form.Input
                                                 onChange={handleChange(setDateTimeFormat)}
                                                 label="Datetime format"
@@ -112,16 +114,6 @@ const advancedCsvUpload = (props: IProps) => {
                                                 value={dateTimeFormat}
                                             />
                                             }
-                                            {/*
-                                                <Form.Checkbox
-                                                    style={{marginTop: '30px'}}
-                                                    toggle={true}
-                                                    onChange={handleChange(setUseDatetime)}
-                                                    checked={useDatetime}
-                                                    label="Use datetime."
-
-                                                />
-                                            */}
                                             <Form.Input
                                                 onChange={handleUploadFile}
                                                 label="File"

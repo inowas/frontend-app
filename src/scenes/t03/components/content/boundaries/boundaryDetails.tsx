@@ -2,11 +2,18 @@ import React, {ChangeEvent, SyntheticEvent, useEffect, useState} from 'react';
 import {Button, Dropdown, DropdownProps, Form, InputOnChangeData, List, Popup} from 'semantic-ui-react';
 import uuid from 'uuid';
 import {ModflowModel, Soilmodel} from '../../../../../core/model/modflow';
-import {Boundary, BoundaryCollection, LineBoundary} from '../../../../../core/model/modflow/boundaries';
+import {
+    Boundary,
+    BoundaryCollection,
+    HeadObservationWell,
+    LineBoundary, PointBoundary
+} from '../../../../../core/model/modflow/boundaries';
 import {RechargeBoundary, WellBoundary} from '../../../../../core/model/modflow/boundaries';
 import EvapotranspirationBoundary from '../../../../../core/model/modflow/boundaries/EvapotranspirationBoundary';
+import FlowAndHeadBoundary from '../../../../../core/model/modflow/boundaries/FlowAndHeadBoundary';
 import NoContent from '../../../../shared/complexTools/noContent';
 import BoundaryMap from '../../maps/boundaryMap';
+import BoundaryDateTimeValuesDataTable from './boundaryDateTimeValuesDataTable';
 import BoundaryGeometryEditor from './boundaryGeometryEditor';
 import BoundaryValuesDataTable from './boundaryValuesDataTable';
 import ObservationPointEditor from './observationPointEditor';
@@ -21,7 +28,13 @@ interface IProps {
     readOnly: boolean;
 }
 
+interface IActiveInput {
+    name: string;
+    value: string;
+}
+
 const boundaryDetails = (props: IProps) => {
+    const [activeInput, setActiveInput] = useState<IActiveInput | null>(null);
     const [showBoundaryEditor, setShowBoundaryEditor] = useState<boolean>(false);
     const [showObservationPointEditor, setShowObservationPointEditor] = useState<boolean>(false);
     const [observationPointId, setObservationPointId] = useState<string | undefined>(undefined);
@@ -60,6 +73,34 @@ const boundaryDetails = (props: IProps) => {
         }
     };
 
+    const handleLocalChange = (e: ChangeEvent<HTMLInputElement>, data: InputOnChangeData) => setActiveInput({
+        name: data.name,
+        value: data.value
+    });
+
+    const handleChangeGeometry = () => {
+        if (activeInput) {
+            const n = activeInput.name;
+            const v = activeInput.value;
+            const cBoundary = props.boundary;
+
+            if (n === 'lat') {
+                if (!isNaN(parseFloat(v))) {
+                    cBoundary.geometry.coordinates[1] = parseFloat(v);
+                }
+            }
+
+            if (n === 'lon') {
+                if (!isNaN(parseFloat(v))) {
+                    cBoundary.geometry.coordinates[0] = parseFloat(v);
+                }
+            }
+
+            setActiveInput(null);
+            props.onChange(cBoundary);
+        }
+    };
+
     const handleRemoveClick = () => {
         if (props.boundary instanceof LineBoundary && observationPointId) {
             const cBoundary = props.boundary;
@@ -77,6 +118,29 @@ const boundaryDetails = (props: IProps) => {
         return props.soilmodel.layersCollection.all.map((l, idx) => (
             {key: l.id, value: idx, text: l.name}
         ));
+    };
+
+    const renderDataTable = () => {
+        if (boundary instanceof HeadObservationWell || boundary instanceof FlowAndHeadBoundary) {
+            return (
+                <BoundaryDateTimeValuesDataTable
+                    boundary={boundary}
+                    onChange={props.onChange}
+                    readOnly={props.readOnly}
+                    selectedOP={observationPointId}
+                    stressperiods={stressperiods}
+                />
+            );
+        }
+        return (
+            <BoundaryValuesDataTable
+                boundary={boundary}
+                onChange={props.onChange}
+                readOnly={props.readOnly}
+                selectedOP={observationPointId}
+                stressperiods={stressperiods}
+            />
+        );
     };
 
     const renderLayerSelection = () => {
@@ -195,6 +259,32 @@ const boundaryDetails = (props: IProps) => {
                     />
                     }
                 </Form.Group>
+                {boundary instanceof PointBoundary &&
+                <Form.Group>
+                    <Form.Input
+                        width={8}
+                        label={'Lat'}
+                        name={'lat'}
+                        value={activeInput && activeInput.name === 'lat' ?
+                            activeInput.value : props.boundary.geometry.coordinates[1]}
+                        onBlur={handleChangeGeometry}
+                        onChange={handleLocalChange}
+                        type={'number'}
+                        disabled={props.model.readOnly}
+                    />
+                    <Form.Input
+                        width={8}
+                        label={'Lon'}
+                        name={'lon'}
+                        value={activeInput && activeInput.name === 'lon' ?
+                            activeInput.value : props.boundary.geometry.coordinates[0]}
+                        onBlur={handleChangeGeometry}
+                        onChange={handleLocalChange}
+                        type={'number'}
+                        disabled={props.model.readOnly}
+                    />
+                </Form.Group>
+                }
             </Form>
 
             {!props.readOnly &&
@@ -271,14 +361,7 @@ const boundaryDetails = (props: IProps) => {
                 </Button>
             </div>
             }
-            <BoundaryValuesDataTable
-                boundary={boundary}
-                onChange={props.onChange}
-                readOnly={props.readOnly}
-                selectedOP={observationPointId}
-                stressperiods={stressperiods}
-            />
-
+            {renderDataTable()}
             {showBoundaryEditor &&
             <BoundaryGeometryEditor
                 boundary={boundary}

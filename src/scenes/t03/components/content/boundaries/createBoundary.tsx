@@ -118,7 +118,8 @@ class CreateBoundary extends React.Component<Props, IState> {
             name,
             layers,
             cells,
-            new Array(stressperiods.count).fill(values) as ISpValues
+            new Array(stressperiods.count).fill(values) as ISpValues,
+            ['fhb', 'hob'].includes(type) ? [stressperiods.startDateTime.format('YYYY-MM-DD')] : undefined
         );
 
         return sendCommand(ModflowModelCommand.addBoundary(model.id, boundary),

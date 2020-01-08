@@ -1,9 +1,9 @@
 import {cloneDeep} from 'lodash';
-import moment from 'moment';
+import moment, {DurationInputArg1, DurationInputArg2} from 'moment';
 import React, {ChangeEvent, useState} from 'react';
-import {Button, Icon, Input, Table} from 'semantic-ui-react';
+import {Button, Icon, Input, InputOnChangeData, Table} from 'semantic-ui-react';
 import {Stressperiods} from '../../../../../core/model/modflow';
-import {Boundary, LineBoundary} from '../../../../../core/model/modflow/boundaries';
+import {Boundary, HeadObservationWell, LineBoundary} from '../../../../../core/model/modflow/boundaries';
 import {ISpValues} from '../../../../../core/model/modflow/boundaries/Boundary.type';
 import {AdvancedCsvUpload} from '../../../../shared/simpleTools/upload';
 
@@ -14,16 +14,22 @@ interface IActiveInput {
     value: string;
 }
 
+interface IActiveString {
+    idx: number;
+    value: string;
+}
+
 interface IProps {
-    boundary: Boundary;
+    boundary: HeadObservationWell | LineBoundary;
     onChange: (boundary: Boundary) => any;
     readOnly: boolean;
     selectedOP?: string;
     stressperiods: Stressperiods;
 }
 
-const boundaryValuesDataTable = (props: IProps) => {
+const boundaryDateTimeValuesDataTable = (props: IProps) => {
     const [activeInput, setActiveInput] = useState<IActiveInput | null>(null);
+    const [activeDateTime, setActiveDateTime] = useState<IActiveString | null>(null);
     const [showUploadModal, setShowUploadModal] = useState<boolean>(false);
 
     const {boundary, selectedOP} = props;
@@ -36,6 +42,20 @@ const boundaryValuesDataTable = (props: IProps) => {
     };
 
     const spValues: ISpValues | null = getSpValues();
+
+    const handleChangeDateTime = () => {
+        if (activeDateTime) {
+            props.onChange(boundary.changeDateTime(activeDateTime.value, activeDateTime.idx, selectedOP));
+        }
+        return setActiveDateTime(null);
+    };
+
+    const handleLocalChangeDateTime = (
+        e: ChangeEvent<HTMLInputElement>, {value, idx}: InputOnChangeData
+    ) => setActiveDateTime({
+        idx,
+        value
+    });
 
     const handleToggleUploadModal = () => setShowUploadModal(!showUploadModal);
 
@@ -54,28 +74,48 @@ const boundaryValuesDataTable = (props: IProps) => {
         setActiveInput(null);
 
         if (spValues) {
-            const updatedSpValues = Boundary.mergeStressperiodsWithSpValues(props.stressperiods, spValues)
-                .map((spv, spvIdx) => {
-                    const newRow = cloneDeep(spv);
-                    if (row === spvIdx) {
-                        newRow[col] = parseFloat(value) || 0;
-                        return newRow;
-                    }
+            const updatedSpValues = boundary.getSpValues(props.stressperiods, selectedOP).map((spv, spvIdx) => {
+                const newRow = cloneDeep(spv);
+                if (row === spvIdx) {
+                    newRow[col] = parseFloat(value) || 0;
                     return newRow;
-                });
+                }
+                return newRow;
+            });
             boundary.setSpValues(updatedSpValues as ISpValues, selectedOP);
         }
         return props.onChange(boundary);
     };
 
     const handleImportCsv = (data: any[][]) => {
-        if (spValues) {
-            const updatedSpValues = spValues.map((spv, key) => {
-                return data[key];
-            });
-            boundary.setSpValues(updatedSpValues, selectedOP);
+        const fData = cloneDeep(data).map((row) => {
+            return row.splice(1, boundary.valueProperties.length);
+        });
+        const dateTimes = data.map((row) => {
+            if (moment.isMoment(row[0])) {
+                return row.shift();
+            }
+            return moment();
+        });
+
+        if (boundary instanceof LineBoundary && selectedOP) {
+            boundary.updateDateTimeValues(selectedOP, fData, dateTimes);
+            return props.onChange(boundary);
         }
-        return props.onChange(boundary);
+
+        if (boundary instanceof HeadObservationWell) {
+            boundary.dateTimes = dateTimes;
+            boundary.setSpValues(fData);
+            return props.onChange(boundary);
+        }
+    };
+
+    const handleAddDateTime = (value: DurationInputArg1, unit: DurationInputArg2) => () => {
+        return props.onChange(boundary.addDateTime(value, unit, selectedOP, props.stressperiods));
+    };
+
+    const handleRemoveDateTime = (idx: number) => () => {
+        props.onChange(boundary.removeDateTime(idx, selectedOP));
     };
 
     const getCellStyle = (numberOfCells: number) => {
@@ -102,9 +142,7 @@ const boundaryValuesDataTable = (props: IProps) => {
     };
 
     const body = () => {
-        const {stressperiods} = props;
-
-        const dateTimes = stressperiods.dateTimes;
+        const dateTimes = boundary.getDateTimes(props.stressperiods, selectedOP);
 
         if (!spValues) {
             return (
@@ -114,22 +152,27 @@ const boundaryValuesDataTable = (props: IProps) => {
             );
         }
 
-        return spValues.map((spValue, spIdx) => (
+        return dateTimes.map((dt, spIdx) => (
             <Table.Row key={spIdx}>
                 <Table.Cell width={4}>
                     <Input
                         style={getCellStyle(1)}
-                        disabled={true}
-                        id={spIdx}
+                        disabled={props.readOnly}
+                        idx={spIdx}
                         name={'dateTime'}
+                        onBlur={handleChangeDateTime}
+                        onChange={handleLocalChangeDateTime}
                         type={'date'}
-                        value={moment(dateTimes[spIdx]).format('YYYY-MM-DD')}
+                        value={
+                            activeDateTime && activeDateTime.idx === spIdx ? activeDateTime.value :
+                                moment(dateTimes[spIdx]).format('YYYY-MM-DD')
+                        }
                     />
                 </Table.Cell>
-                {spValue.map((v, vIdx) => (
+                {spValues[spIdx].map((v, vIdx) => (
                     <Table.Cell key={vIdx}>
                         <Input
-                            style={getCellStyle(spValue.length)}
+                            style={getCellStyle(spValues[spIdx].length)}
                             disabled={props.readOnly}
                             id={spIdx}
                             col={vIdx}
@@ -142,6 +185,16 @@ const boundaryValuesDataTable = (props: IProps) => {
                         />
                     </Table.Cell>
                 ))}
+                <Table.Cell>
+                    {!props.readOnly &&
+                    <Button
+                        basic={true}
+                        floated={'right'}
+                        icon={'trash'}
+                        onClick={handleRemoveDateTime(spIdx)}
+                    />
+                    }
+                </Table.Cell>
             </Table.Row>
         ));
     };
@@ -161,7 +214,7 @@ const boundaryValuesDataTable = (props: IProps) => {
                 }
                 onCancel={handleToggleUploadModal}
                 onSave={handleImportCsv}
-                useDateTimes={false}
+                useDateTimes={true}
             />
             }
             <p style={{marginTop: '10px'}}>
@@ -185,12 +238,23 @@ const boundaryValuesDataTable = (props: IProps) => {
                         {boundary.valueProperties.map((p, idx) => (
                             <Table.HeaderCell key={idx}>{p.name} ({p.unit})</Table.HeaderCell>
                         ))}
+                        {!props.readOnly &&
+                        <Table.HeaderCell/>
+                        }
                     </Table.Row>
                 </Table.Header>
                 <Table.Body>{spValues && body()}</Table.Body>
             </Table>
+            <Button.Group size="small">
+                <Button icon={true} onClick={handleAddDateTime(1, 'days')}>
+                    <Icon name="add circle"/> 1 Day</Button>
+                <Button icon={true} onClick={handleAddDateTime(1, 'months')}>
+                    <Icon name="add circle"/> 1 Month</Button>
+                <Button icon={true} onClick={handleAddDateTime(1, 'years')}>
+                    <Icon name="add circle"/> 1 Year</Button>
+            </Button.Group>
         </div>
     );
 };
 
-export default boundaryValuesDataTable;
+export default boundaryDateTimeValuesDataTable;

@@ -1,6 +1,8 @@
 import {sortedUniq} from 'lodash';
+import {Moment} from 'moment';
 import {Array2D} from '../geometry/Array2D.type';
 import {ICell} from '../geometry/Cells.type';
+import {Cells} from '../modflow';
 import {
     EvapotranspirationBoundary,
     HeadObservationWell,
@@ -8,6 +10,7 @@ import {
     PointBoundary,
     RechargeBoundary
 } from '../modflow/boundaries';
+import FlowAndHeadBoundary from '../modflow/boundaries/FlowAndHeadBoundary';
 import Stressperiods from '../modflow/Stressperiods';
 import {IPropertyValueObject} from '../types';
 
@@ -45,16 +48,6 @@ export const max = (a: Array2D<number> | number) => {
 
 const isValue = (data: Array2D<number> | number) => {
     return !isNaN(data as number);
-};
-
-export const minify2dGridIfPossible = (data: Array2D<number>) => {
-    const minValue = min(data);
-    const maxValue = max(data);
-    if (minValue === maxValue) {
-        return minValue;
-    }
-
-    return data;
 };
 
 export const convertArrayToDict = (arr: any[]) => {
@@ -156,6 +149,101 @@ export const calculateLineBoundarySpData = (boundaries: LineBoundary[], stresspe
     });
 
     return convertArrayToDict(spData);
+};
+
+export const calculateFlowAndHeadBoundarySpData = (boundaries: FlowAndHeadBoundary[], stressperiods: Stressperiods) => {
+
+    if (boundaries.length === 0) {
+        return null;
+    }
+
+    let c: Cells = Cells.fromArray([]);
+    let dateTimes: Moment[] = [];
+    boundaries.forEach((b) => {
+        c = c.merge(b.cells);
+        b.observationPoints.forEach((op) => {
+            dateTimes = dateTimes.concat(op.dateTimes);
+        });
+    });
+
+    const totims: number[] = sortedUniq(dateTimes.map((dt) => stressperiods.totimFromDate(dt)));
+    const bdtime = totims;
+    const nbdtim = totims.length;
+    const nflw: number = c.count();
+    const nhed: number = c.count();
+    const ds5: number[][] = [];
+    const ds7: number[][] = [];
+
+    boundaries.forEach((b: FlowAndHeadBoundary) => {
+        const cells = b.cells.toObject();
+        const layers = b.layers;
+        const ops = b.observationPoints;
+
+        layers.forEach((lay: number) => {
+            cells.forEach((cell: ICell) => {
+                const col = cell[0];
+                const row = cell[1];
+                const value = cell[2] ? cell[2] : 0;
+                const sector = Math.trunc(value);
+                const factor = Number((value - sector).toFixed(4));
+
+                const prevOP = ops[sector];
+                if (!prevOP) {
+                    throw Error('PrevOp not found');
+                }
+
+                const prevOpValues = prevOP.getSpValues(stressperiods);
+                if (!prevOpValues) {
+                    return;
+                }
+
+                const prevFlowValues = prevOpValues.map((v) => v[1]);
+                const prevHeadValues = prevOpValues.map((v) => v[0]);
+
+                const ds5Temp = [lay, row, col, 0];
+                const ds7Temp = [lay, row, col, 0];
+                if (factor === 0) {
+                    ds5.push(ds5Temp.concat(prevFlowValues));
+                    ds7.push(ds7Temp.concat(prevHeadValues));
+                    return;
+                }
+
+                const nextOP = ops[sector + 1];
+                if (!nextOP) {
+                    throw Error('NextOp not found');
+                }
+
+                const nextOpValues = nextOP.getSpValues(stressperiods);
+                if (!nextOpValues) {
+                    return;
+                }
+
+                const nextFlowValues = nextOpValues.map((v) => v[1]);
+                const nextHeadValues = nextOpValues.map((v) => v[0]);
+
+                const flowValues = prevFlowValues.map((pfv, idx) => {
+                    if (nextFlowValues[idx]) {
+                        return pfv + ((nextFlowValues[idx] - pfv) * factor);
+                    }
+
+                    return pfv;
+                });
+
+                const headValues = prevHeadValues.map((phv, idx) => {
+                    if (nextHeadValues[idx]) {
+                        return phv + ((nextHeadValues[idx] - phv) * factor);
+                    }
+                    return phv;
+                });
+
+                ds5.push(ds5Temp.concat(flowValues));
+                ds7.push(ds7Temp.concat(headValues));
+                return;
+            });
+        });
+    });
+
+    return {bdtime, nbdtim, nflw, nhed, ds5, ds7};
 };
 
 export const calculatePointBoundarySpData = (boundaries: PointBoundary[], stressperiods: Stressperiods,

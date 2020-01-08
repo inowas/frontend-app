@@ -19,9 +19,11 @@ ds7 =
 ]
 */
 
+import {FlowAndHeadBoundary} from '../../../modflow/boundaries';
 import BoundaryCollection from '../../../modflow/boundaries/BoundaryCollection';
 import Stressperiods from '../../../modflow/Stressperiods';
 import {IPropertyValueObject} from '../../../types';
+import {calculateFlowAndHeadBoundarySpData} from '../../helpers';
 import FlopyModflowBoundary from './FlopyModflowBoundary';
 import FlopyModflowPackage from './FlopyModflowPackage';
 
@@ -86,8 +88,20 @@ export default class FlopyModflowMffhb extends FlopyModflowBoundary<IFlopyModflo
         return new this(d);
     }
 
-    // TODO
     public update = (boundaries: BoundaryCollection, stressperiods: Stressperiods) => {
+        const bd = boundaries.all.filter((b) => (b instanceof FlowAndHeadBoundary)) as FlowAndHeadBoundary[];
+
+        const spData = calculateFlowAndHeadBoundarySpData(bd, stressperiods);
+        if (!spData) {
+            return null;
+        }
+
+        this.nbdtim = spData.nbdtim;
+        this.nflw = spData.nflw;
+        this.nhed = spData.nhed;
+        this.bdtime = spData.bdtime;
+        this.ds5 = spData.ds5;
+        this.ds7 = spData.ds7;
         return this;
     };
 
