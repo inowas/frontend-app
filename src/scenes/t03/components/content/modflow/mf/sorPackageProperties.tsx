@@ -1,5 +1,5 @@
 import React, {ChangeEvent, useState} from 'react';
-import {Form, Input, PopupProps} from 'semantic-ui-react';
+import {Form, Header, Input, PopupProps} from 'semantic-ui-react';
 
 import {FlopyModflowMfsor} from '../../../../../../core/model/flopy/packages/mf';
 import {IFlopyModflowMfsor} from '../../../../../../core/model/flopy/packages/mf/FlopyModflowMfsor';
@@ -43,6 +43,7 @@ const sorPackageProperties = (props: IProps) => {
 
     return (
         <Form>
+            <Header as={'h3'}>SOR: Slice-successive overrelaxation Package</Header>
             <Form.Group widths="equal">
                 <Form.Field>
                     <label>Maximum iterations per time step (MXITER)</label>

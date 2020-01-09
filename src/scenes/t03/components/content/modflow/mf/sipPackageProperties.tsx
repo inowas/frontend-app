@@ -1,5 +1,5 @@
 import React, {ChangeEvent, useState} from 'react';
-import {Checkbox, Form, Grid, Input, PopupProps} from 'semantic-ui-react';
+import {Checkbox, Form, Grid, Header, Input, PopupProps} from 'semantic-ui-react';
 
 import {FlopyModflowMfsip} from '../../../../../../core/model/flopy/packages/mf';
 import {IFlopyModflowMfsip} from '../../../../../../core/model/flopy/packages/mf/FlopyModflowMfsip';
@@ -43,7 +43,8 @@ const sipPackageProperties = (props: IProps) => {
 
     return (
         <Form>
-            <Grid columns={2} divided>
+            <Header as={'h3'}>SIP: Strongly Implicit Procedure Package</Header>
+            <Grid columns={2} divided={true}>
                 <Grid.Row>
                     <Grid.Column>
                         <Form.Field>

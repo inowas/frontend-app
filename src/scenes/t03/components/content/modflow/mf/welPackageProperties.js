@@ -27,7 +27,7 @@ class WelPackageProperties extends AbstractPackageProperties {
         return (
             <Form>
                 <Grid divided={'vertically'}>
-                    <Header as={'h2'}>Well Boundaries</Header>
+                    <Header as={'h3'}>WEL: Well Package</Header>
                     <Grid.Row columns={2}>
                         {affectedCellsLayers.map((layer, idx) => (
                             <Grid.Column key={idx}>

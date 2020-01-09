@@ -27,7 +27,7 @@ class RivPackageProperties extends AbstractPackageProperties {
         return (
             <Form>
                 <Grid divided={'vertically'}>
-                    <Header as={'h2'}>River Boundaries</Header>
+                    <Header as={'h3'}>RIV: River Package</Header>
                     <Grid.Row columns={2}>
                         {affectedCellsLayers.map((layer, idx) => (
                             <Grid.Column key={idx}>

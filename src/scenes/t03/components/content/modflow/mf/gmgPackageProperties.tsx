@@ -1,5 +1,5 @@
 import React, {ChangeEvent, SyntheticEvent, useState} from 'react';
-import {DropdownProps, Form, Input, PopupProps, Segment} from 'semantic-ui-react';
+import {DropdownProps, Form, Header, Input, PopupProps, Segment} from 'semantic-ui-react';
 
 import {FlopyModflowMfgmg} from '../../../../../../core/model/flopy/packages/mf';
 import {IFlopyModflowMfgmg} from '../../../../../../core/model/flopy/packages/mf/FlopyModflowMfgmg';
@@ -48,6 +48,7 @@ const gmgPackageProperties = (props: IProps) => {
 
     return (
         <Form>
+            <Header as={'h3'}>GMG: Geometric Multigrid Solver Package</Header>
             <Segment>
                 <Form.Group widths="equal">
                     <Form.Field>

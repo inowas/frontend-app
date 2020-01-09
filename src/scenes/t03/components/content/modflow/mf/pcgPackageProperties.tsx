@@ -1,5 +1,5 @@
 import React, {ChangeEvent, SyntheticEvent, useState} from 'react';
-import {DropdownProps, Form, Input, PopupProps} from 'semantic-ui-react';
+import {DropdownProps, Form, Header, Input, PopupProps} from 'semantic-ui-react';
 
 import {FlopyModflowMfpcg} from '../../../../../../core/model/flopy/packages/mf';
 import {IFlopyModflowMfpcg} from '../../../../../../core/model/flopy/packages/mf/FlopyModflowMfpcg';
@@ -48,6 +48,7 @@ const pcgPackageProperties = (props: IProps) => {
 
     return (
         <Form>
+            <Header as={'h3'}>PCG: Preconditioned Conjugate-Gradient Package</Header>
             <Form.Group widths="equal">
                 <Form.Field>
                     <label>Maximum number of outer iterations (mxiter)</label>

@@ -23,6 +23,7 @@ class BcfPackageProperties extends AbstractPackageProperties {
 
         return (
             <Form>
+                <Header as={'h3'}>BCF: Block Centered Flow Package</Header>
                 <Table basic>
                     <Table.Header>
                         <Table.Row>
