@@ -1,7 +1,7 @@
 import {cloneDeep} from 'lodash';
 import moment, {DurationInputArg1, DurationInputArg2} from 'moment';
 import React, {ChangeEvent, useState} from 'react';
-import {Button, Icon, Input, InputOnChangeData, Table} from 'semantic-ui-react';
+import {Button, Checkbox, Icon, Input, InputOnChangeData, Table} from 'semantic-ui-react';
 import {Stressperiods} from '../../../../../core/model/modflow';
 import {
     Boundary,
@@ -122,6 +122,15 @@ const boundaryDateTimeValuesDataTable = (props: IProps) => {
         props.onChange(boundary.removeDateTime(idx, selectedOP));
     };
 
+    const handleEnableRowsClick = (idx: number) => () => {
+        if (boundary instanceof FlowAndHeadBoundary) {
+            const rd = cloneDeep(boundary.spValuesEnabled);
+            rd[idx] = !rd[idx];
+            boundary.spValuesEnabled = rd;
+            props.onChange(boundary);
+        }
+    };
+
     const getCellStyle = (numberOfCells: number) => {
         switch (numberOfCells) {
             case 2:
@@ -177,7 +186,10 @@ const boundaryDateTimeValuesDataTable = (props: IProps) => {
                     <Table.Cell key={vIdx}>
                         <Input
                             style={getCellStyle(spValues[spIdx].length)}
-                            disabled={props.readOnly}
+                            disabled={
+                                props.readOnly ||
+                                boundary instanceof FlowAndHeadBoundary && !boundary.spValuesEnabled[vIdx]
+                            }
                             id={spIdx}
                             col={vIdx}
                             name={'dateTimeValue'}
@@ -243,7 +255,14 @@ const boundaryDateTimeValuesDataTable = (props: IProps) => {
                     <Table.Row>
                         <Table.HeaderCell>Start Date</Table.HeaderCell>
                         {boundary.valueProperties.map((p, idx) => (
-                            <Table.HeaderCell key={idx}>{p.name} ({p.unit})</Table.HeaderCell>
+                            <Table.HeaderCell key={idx}>
+                                {p.name} ({p.unit})
+                                {p.canBeDisabled && !props.readOnly && <Checkbox
+                                    style={{position: 'relative', marginLeft: '10px'}}
+                                    checked={boundary instanceof FlowAndHeadBoundary && boundary.spValuesEnabled[idx]}
+                                    onChange={handleEnableRowsClick(idx)}
+                                />}
+                            </Table.HeaderCell>
                         ))}
                         {!props.readOnly &&
                         <Table.HeaderCell/>
@@ -252,14 +271,14 @@ const boundaryDateTimeValuesDataTable = (props: IProps) => {
                 </Table.Header>
                 <Table.Body>{spValues && body()}</Table.Body>
             </Table>
-            <Button.Group size="small">
+            {!props.readOnly && <Button.Group size="small">
                 <Button icon={true} onClick={handleAddDateTime(1, 'days')}>
                     <Icon name="add circle"/> 1 Day</Button>
                 <Button icon={true} onClick={handleAddDateTime(1, 'months')}>
                     <Icon name="add circle"/> 1 Month</Button>
                 <Button icon={true} onClick={handleAddDateTime(1, 'years')}>
                     <Icon name="add circle"/> 1 Year</Button>
-            </Button.Group>
+            </Button.Group>}
         </div>
     );
 };

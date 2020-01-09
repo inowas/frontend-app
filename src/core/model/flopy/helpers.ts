@@ -157,10 +157,18 @@ export const calculateFlowAndHeadBoundarySpData = (boundaries: FlowAndHeadBounda
         return null;
     }
 
-    let c: Cells = Cells.fromArray([]);
+    let flowCells: Cells = Cells.fromArray([]);
+    let headCells: Cells = Cells.fromArray([]);
+
     let dateTimes: Moment[] = [];
     boundaries.forEach((b) => {
-        c = c.merge(b.cells);
+        if (b.spValuesEnabled[1]) {
+            flowCells = flowCells.merge(b.cells);
+        }
+        if (b.spValuesEnabled[0]) {
+            headCells = headCells.merge(b.cells);
+        }
+
         b.observationPoints.forEach((op) => {
             dateTimes = dateTimes.concat(op.getDateTimes(stressperiods));
         });
@@ -173,8 +181,8 @@ export const calculateFlowAndHeadBoundarySpData = (boundaries: FlowAndHeadBounda
     const totims: number[] = dateTimes.map((dt) => stressperiods.totimFromDate(dt));
     const bdtime = totims;
     const nbdtim = totims.length;
-    const nflw: number = c.count();
-    const nhed: number = c.count();
+    const nflw: number = flowCells.count();
+    const nhed: number = headCells.count();
     const ds5: number[][] = [];
     const ds7: number[][] = [];
 
@@ -225,8 +233,14 @@ export const calculateFlowAndHeadBoundarySpData = (boundaries: FlowAndHeadBounda
                 const ds5Temp = [lay, row, col, 0];
                 const ds7Temp = [lay, row, col, 0];
                 if (factor === 0) {
-                    ds5.push(ds5Temp.concat(prevFlowValues));
-                    ds7.push(ds7Temp.concat(prevHeadValues));
+                    if (b.spValuesEnabled[1]) {
+                        ds5.push(ds5Temp.concat(prevFlowValues));
+                    }
+
+                    if (b.spValuesEnabled[0]) {
+                        ds7.push(ds7Temp.concat(prevHeadValues));
+                    }
+
                     return;
                 }
 
@@ -276,8 +290,13 @@ export const calculateFlowAndHeadBoundarySpData = (boundaries: FlowAndHeadBounda
                     return phv;
                 });
 
-                ds5.push(ds5Temp.concat(flowValues));
-                ds7.push(ds7Temp.concat(headValues));
+                if (b.spValuesEnabled[1]) {
+                    ds5.push(ds5Temp.concat(flowValues));
+                }
+
+                if (b.spValuesEnabled[0]) {
+                    ds7.push(ds7Temp.concat(headValues));
+                }
             });
         });
     });

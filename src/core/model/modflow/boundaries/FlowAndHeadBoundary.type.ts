@@ -17,6 +17,7 @@ export interface IFlowAndHeadBoundaryFeature extends ILineBoundaryFeature {
 
 export interface IFlowAndHeadBoundaryFeatureFeatureProperties extends ILineBoundaryFeatureProperties {
     type: 'fhb';
+    sp_values_enabled: boolean[];
 }
 
 export interface IFlowAndHeadBoundaryExport extends ILineBoundaryExport {

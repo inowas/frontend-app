@@ -8,8 +8,13 @@ import GridSize from '../../geometry/GridSize';
 import {Cells, Geometry} from '../index';
 import Stressperiods from '../Stressperiods';
 import {ISpValues, IValueProperty} from './Boundary.type';
-import {IFlowAndHeadBoundary, IFlowAndHeadBoundaryExport} from './FlowAndHeadBoundary.type';
+import {
+    IFlowAndHeadBoundary,
+    IFlowAndHeadBoundaryExport,
+    IFlowAndHeadBoundaryFeature
+} from './FlowAndHeadBoundary.type';
 import LineBoundary from './LineBoundary';
+import {IObservationPoint} from './ObservationPoint.type';
 
 export default class FlowAndHeadBoundary extends LineBoundary {
 
@@ -31,6 +36,7 @@ export default class FlowAndHeadBoundary extends LineBoundary {
                     geometry,
                     properties: {
                         type: 'fhb',
+                        sp_values_enabled: [true, true],
                         name,
                         layers,
                         cells
@@ -68,8 +74,9 @@ export default class FlowAndHeadBoundary extends LineBoundary {
 
         const opIdToRemove = boundary.observationPoints[0].id;
         obj.ops.forEach((op) => {
+            const id = op.id ? op.id : Uuid.v4();
             boundary.createObservationPoint(
-                op.id ? op.id : Uuid.v4(),
+                id,
                 op.name,
                 op.geometry,
                 op.sp_values,
@@ -92,14 +99,16 @@ export default class FlowAndHeadBoundary extends LineBoundary {
                 description: 'Head',
                 unit: 'm',
                 decimals: 2,
-                default: 0
+                default: 0,
+                canBeDisabled: true
             },
             {
                 name: 'Flow',
                 description: 'Flow',
                 unit: 'm³/day',
                 decimals: 2,
-                default: 0
+                default: 0,
+                canBeDisabled: true
             }
         ];
     }
@@ -110,6 +119,29 @@ export default class FlowAndHeadBoundary extends LineBoundary {
         super();
         this._props = cloneDeep(obj);
         this._class = FlowAndHeadBoundary;
+    }
+
+    public get spValuesEnabled(): boolean[] {
+        let spe;
+        this._props.features.forEach((f: IObservationPoint | IFlowAndHeadBoundaryFeature) => {
+            if (f.properties.type !== 'op') {
+                spe = f.properties.sp_values_enabled;
+            }
+        });
+
+        if (spe) {
+            return spe;
+        }
+
+        return [true, true];
+    }
+
+    public set spValuesEnabled(value) {
+        this._props.features.forEach((f: IObservationPoint | IFlowAndHeadBoundaryFeature) => {
+            if (f.properties.type !== 'op') {
+                f.properties.sp_values_enabled = value;
+            }
+        });
     }
 
     public get valueProperties(): IValueProperty[] {

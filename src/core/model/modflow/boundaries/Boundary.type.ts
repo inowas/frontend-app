@@ -57,4 +57,5 @@ export interface IValueProperty {
     unit: string;
     decimals: number;
     default: number;
+    canBeDisabled?: boolean;
 }
