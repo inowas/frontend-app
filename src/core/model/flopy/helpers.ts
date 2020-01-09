@@ -278,7 +278,6 @@ export const calculateFlowAndHeadBoundarySpData = (boundaries: FlowAndHeadBounda
 
                 ds5.push(ds5Temp.concat(flowValues));
                 ds7.push(ds7Temp.concat(headValues));
-                return;
             });
         });
     });
@@ -443,7 +442,7 @@ export const ffill = (arr: Array<number | null>) => {
             latestValue = v;
         }
 
-        if (!v && latestValue) {
+        if (v === null && latestValue !== null) {
             return latestValue;
         }
 
