@@ -154,6 +154,10 @@ export default class EvapotranspirationBoundary extends Boundary {
         return Boundary.mergeStressperiodsWithSpValues(stressperiods, this._props.properties.sp_values);
     }
 
+    public recalculateCells(boundingBox: BoundingBox, gridSize: GridSize): void {
+        this.cells = Cells.fromGeometry(this.geometry, boundingBox, gridSize);
+    }
+
     public setSpValues(spValues: ISpValues, opId?: string) {
         this._props.properties.sp_values = spValues;
     }

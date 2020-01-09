@@ -1,6 +1,6 @@
 import {Point} from 'geojson';
-import {cloneDeep} from 'lodash';
-import moment, {Moment} from 'moment';
+import {cloneDeep, orderBy} from 'lodash';
+import moment, {DurationInputArg1, DurationInputArg2, Moment} from 'moment';
 import Uuid from 'uuid';
 import BoundingBox from '../../geometry/BoundingBox';
 import {ICells} from '../../geometry/Cells.type';
@@ -86,6 +86,52 @@ export default class HeadObservationWell extends PointBoundary {
         }
         return this._props.properties.date_times.map((dt: string) => moment.utc(dt));
     };
+
+    public addDateTime(amount: DurationInputArg1, unit: DurationInputArg2, opId?: string,
+                       stressperiods?: Stressperiods) {
+        if (stressperiods) {
+            const dateTimes = this._props.properties.date_times;
+            if (this._props.properties.date_times.length > 0) {
+                const newDateTime = moment.utc(dateTimes[dateTimes.length - 1]).add(amount, unit);
+                this._props.properties.date_times.push(newDateTime.format('YYYY-MM-DD'));
+                this._props.properties.sp_values.push(
+                    this._props.properties.sp_values[this._props.properties.sp_values.length - 1]
+                );
+                return this;
+            }
+            this._props.properties.date_times.push(stressperiods.startDateTime.format('YYYY-MM-DD'));
+            this._props.properties.sp_values.push(this.valueProperties.map((v) => v.default));
+        }
+        return this;
+    }
+
+    public changeDateTime(value: string, idx: number, opId?: string) {
+        if (this._props.properties.date_times.length > idx) {
+            this._props.properties.date_times[idx] = value;
+        }
+        return this.reorderDateTimes();
+    }
+
+    public removeDateTime(id: number, opId?: string) {
+        const dateTimes: string[] = [];
+        const spValues: ISpValues = [];
+        this._props.properties.date_times.forEach((dt: string, idx: number) => {
+            if (id !== idx) {
+                spValues.push(this._props.properties.sp_values[idx]);
+                dateTimes.push(dt);
+            }
+        });
+        this._props.properties.date_times = dateTimes;
+        this._props.properties.sp_values = spValues;
+        return this;
+    }
+
+    public reorderDateTimes() {
+        this.dateTimes = orderBy(this.dateTimes, (o: Moment) => {
+            return o.format('YYYYMMDD');
+        }, ['asc']);
+        return this;
+    }
 
     public getSpValues(stressperiods: Stressperiods): ISpValues {
         const spValues = this._props.properties.sp_values;

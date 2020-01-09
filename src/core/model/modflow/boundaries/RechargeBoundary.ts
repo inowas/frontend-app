@@ -140,6 +140,10 @@ export default class RechargeBoundary extends Boundary {
         this._props.properties.sp_values = spValues;
     }
 
+    public recalculateCells(boundingBox: BoundingBox, gridSize: GridSize): void {
+        this.cells = Cells.fromGeometry(this.geometry, boundingBox, gridSize);
+    }
+
     public toExport = (stressPeriods: Stressperiods): IRechargeBoundaryExport => ({
         id: this.id,
         type: this.type,

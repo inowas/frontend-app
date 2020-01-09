@@ -3,7 +3,11 @@ import moment, {DurationInputArg1, DurationInputArg2} from 'moment';
 import React, {ChangeEvent, useState} from 'react';
 import {Button, Icon, Input, InputOnChangeData, Table} from 'semantic-ui-react';
 import {Stressperiods} from '../../../../../core/model/modflow';
-import {Boundary, HeadObservationWell, LineBoundary} from '../../../../../core/model/modflow/boundaries';
+import {
+    Boundary,
+    FlowAndHeadBoundary,
+    HeadObservationWell
+} from '../../../../../core/model/modflow/boundaries';
 import {ISpValues} from '../../../../../core/model/modflow/boundaries/Boundary.type';
 import {AdvancedCsvUpload} from '../../../../shared/simpleTools/upload';
 
@@ -20,7 +24,7 @@ interface IActiveString {
 }
 
 interface IProps {
-    boundary: HeadObservationWell | LineBoundary;
+    boundary: HeadObservationWell | FlowAndHeadBoundary;
     onChange: (boundary: Boundary) => any;
     readOnly: boolean;
     selectedOP?: string;
@@ -35,7 +39,7 @@ const boundaryDateTimeValuesDataTable = (props: IProps) => {
     const {boundary, selectedOP} = props;
 
     const getSpValues = () => {
-        if (boundary instanceof LineBoundary) {
+        if (boundary instanceof FlowAndHeadBoundary) {
             return selectedOP ? boundary.getSpValues(props.stressperiods, selectedOP) : null;
         }
         return boundary.getSpValues(props.stressperiods);
@@ -98,7 +102,7 @@ const boundaryDateTimeValuesDataTable = (props: IProps) => {
             return moment();
         });
 
-        if (boundary instanceof LineBoundary && selectedOP) {
+        if (boundary instanceof FlowAndHeadBoundary && selectedOP) {
             boundary.updateDateTimeValues(selectedOP, fData, dateTimes);
             return props.onChange(boundary);
         }
@@ -218,7 +222,10 @@ const boundaryDateTimeValuesDataTable = (props: IProps) => {
             />
             }
             <p style={{marginTop: '10px'}}>
-                <b>Time dependent boundary values{boundary instanceof LineBoundary ? ' observation point' : ''}</b>
+                <b>
+                    Time dependent boundary
+                    values{boundary instanceof FlowAndHeadBoundary ? ' observation point' : ''}
+                </b>
                 <Button
                     icon={true}
                     labelPosition="left"

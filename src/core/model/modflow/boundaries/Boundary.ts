@@ -1,6 +1,6 @@
-import _ from 'lodash';
-import moment, {DurationInputArg1, DurationInputArg2, Moment} from 'moment';
 import Uuid from 'uuid';
+import BoundingBox from '../../geometry/BoundingBox';
+import GridSize from '../../geometry/GridSize';
 import {Cells, Geometry} from '../index';
 import Stressperiods from '../Stressperiods';
 import {
@@ -18,17 +18,6 @@ export default abstract class Boundary {
     abstract get id(): string;
 
     abstract set id(id: string);
-
-    public get dateTimes() {
-        if (!this._props.properties || !this._props.properties.date_times) {
-            return [];
-        }
-        return this._props.properties.date_times.map((dt: string) => moment.utc(dt));
-    }
-
-    public set dateTimes(value: Moment[]) {
-        this._props.properties.date_times = value.map((dt) => dt.format('YYYY-MM-DD'));
-    }
 
     abstract get geometry(): Geometry;
 
@@ -59,65 +48,15 @@ export default abstract class Boundary {
 
     protected _class: any;
 
-    public getDateTimes = (stressperiods: Stressperiods, opId?: string) => {
-        return this.dateTimes;
-    };
-
     public abstract getSpValues(stressPeriods: Stressperiods, opId?: string): ISpValues;
+
+    public abstract recalculateCells(boundingBox: BoundingBox, gridSize: GridSize): void;
 
     public abstract setSpValues(spValues: ISpValues, opId?: string): void;
 
     public abstract toExport(stressPeriods: Stressperiods): IBoundaryExport;
 
     public abstract toObject(): IBoundary;
-
-    /*public sameAs(b: Boundary): boolean {
-        return isEqual(simpleDiff(this.toExport(), b.toExport()), {});
-    }*/
-
-    public addDateTime(amount: DurationInputArg1, unit: DurationInputArg2, opId?: string,
-                       stressperiods?: Stressperiods) {
-        if (stressperiods) {
-            const dateTimes = this._props.properties.date_times;
-            if (this._props.properties.date_times.length > 0) {
-                const newDateTime = moment.utc(dateTimes[dateTimes.length - 1]).add(amount, unit);
-                this._props.properties.date_times.push(newDateTime.format('YYYY-MM-DD'));
-                this._props.properties.sp_values.push(this.valueProperties.map((v) => v.default));
-                return this;
-            }
-            this._props.properties.date_times.push(stressperiods.startDateTime.format('YYYY-MM-DD'));
-            this._props.properties.sp_values.push(this.valueProperties.map((v) => v.default));
-        }
-        return this;
-    }
-
-    public changeDateTime(value: string, idx: number, opId?: string) {
-        if (this._props.properties.date_times.length > idx) {
-            this._props.properties.date_times[idx] = value;
-        }
-        return this.reorderDateTimes();
-    }
-
-    public removeDateTime(id: number, opId?: string) {
-        const dateTimes: string[] = [];
-        const spValues: ISpValues = [];
-        this._props.properties.date_times.forEach((dt: string, idx: number) => {
-            if (id !== idx) {
-                spValues.push(this._props.properties.sp_values[idx]);
-                dateTimes.push(dt);
-            }
-        });
-        this._props.properties.date_times = dateTimes;
-        this._props.properties.sp_values = spValues;
-        return this;
-    }
-
-    public reorderDateTimes() {
-        this.dateTimes = _.orderBy(this.dateTimes, (o: Moment) => {
-            return o.format('YYYYMMDD');
-        }, ['asc']);
-        return this;
-    }
 
     public clone() {
         const b = this._class.fromObject(this._props);

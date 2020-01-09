@@ -135,7 +135,6 @@ export default class Cells {
         });
 
         const {observationPoints} = boundary;
-
         if (observationPoints.length <= 1 || !boundary.geometry) {
             return;
         }
