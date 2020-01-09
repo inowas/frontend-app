@@ -1,5 +1,5 @@
 import {LineString} from 'geojson';
-import _, {cloneDeep} from 'lodash';
+import {cloneDeep, orderBy, sortedUniq} from 'lodash';
 import moment, {DurationInputArg1, DurationInputArg2, Moment} from 'moment';
 import Uuid from 'uuid';
 import BoundingBox from '../../geometry/BoundingBox';
@@ -120,12 +120,20 @@ export default class FlowAndHeadBoundary extends LineBoundary {
                        stressperiods?: Stressperiods) {
         if (opId && stressperiods) {
             const observationPoint = this.findObservationPointById(opId);
-            const dateTimes = observationPoint.dateTimes;
+            const dateTimes = observationPoint.getDateTimes(stressperiods);
             if (dateTimes.length > 0) {
                 const newDateTime = moment.utc(dateTimes[dateTimes.length - 1]).add(amount, unit);
-                observationPoint.addDateTimeValue(newDateTime, this.valueProperties.map((v) => v.default));
-                this.updateObservationPoint(opId, observationPoint.name, observationPoint.geometry,
-                    observationPoint.spValues, observationPoint.dateTimes);
+                observationPoint.addDateTimeValue(
+                    newDateTime,
+                    observationPoint.getSpValues(stressperiods)[observationPoint.getSpValues(stressperiods).length - 1]
+                );
+                this.updateObservationPoint(
+                    opId,
+                    observationPoint.name,
+                    observationPoint.geometry,
+                    observationPoint.spValues,
+                    observationPoint.dateTimes
+                );
                 return this;
             }
             observationPoint.addDateTimeValue(stressperiods.startDateTime, this.valueProperties.map((v) => v.default));
@@ -143,7 +151,7 @@ export default class FlowAndHeadBoundary extends LineBoundary {
                 observationPoint.updateDateTime(idx, moment.utc(value));
             }
             this.updateObservationPoint(opId, observationPoint.name, observationPoint.geometry,
-                observationPoint.spValues, _.orderBy(observationPoint.dateTimes, (o: Moment) => {
+                observationPoint.spValues, orderBy(observationPoint.dateTimes, (o: Moment) => {
                     return o.format('YYYYMMDD');
                 }, ['asc']));
         }
@@ -153,7 +161,7 @@ export default class FlowAndHeadBoundary extends LineBoundary {
     public removeDateTime(id: number, opId?: string) {
         if (opId) {
             const observationPoint = this.findObservationPointById(opId);
-            if (observationPoint) {
+            if (observationPoint && observationPoint.dateTimes) {
                 const dateTimes: Moment[] = [];
                 const spValues: ISpValues = [];
                 observationPoint.dateTimes.forEach((dt: Moment, idx: number) => {
@@ -172,11 +180,17 @@ export default class FlowAndHeadBoundary extends LineBoundary {
     }
 
     public getDateTimes = (stressperiods: Stressperiods, opId?: string): Moment[] => {
-        if (this instanceof LineBoundary && opId) {
+        if (opId) {
             const observationPoint = this.findObservationPointById(opId);
-            return observationPoint.dateTimes;
+            return observationPoint.getDateTimes(stressperiods);
         }
-        return [];
+
+        let dateTimeStamps: number[] = [];
+        this.observationPoints.forEach((op) => dateTimeStamps = dateTimeStamps.concat(
+            op.getDateTimes(stressperiods).map((dt) => dt.unix())
+        ));
+
+        return sortedUniq(dateTimeStamps).map((dts) => moment.unix(dts));
     };
 
     public toExport(stressperiods: Stressperiods): IFlowAndHeadBoundaryExport {
@@ -189,7 +203,7 @@ export default class FlowAndHeadBoundary extends LineBoundary {
             ops: this.observationPoints.map((op) => ({
                     name: op.name,
                     geometry: op.geometry,
-                    date_times: op.dateTimes.map((dt) => dt.format('YYYY-MM-DD')),
+                    date_times: op.getDateTimes(stressperiods).map((dt) => dt.format('YYYY-MM-DD')),
                     sp_values: op.getSpValues(stressperiods)
                 }
             ))

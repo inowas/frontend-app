@@ -137,6 +137,7 @@ class ObservationPointEditor extends React.Component<IProps, IState> {
     private handleApply = (op: ObservationPoint) => {
         const {boundary} = this.props;
         boundary.updateObservationPoint(op.id, op.name, op.geometry, op.spValues);
+        boundary.recalculateCellValues(this.props.model.boundingBox, this.props.model.gridSize);
         this.props.onChange(boundary);
     };
 

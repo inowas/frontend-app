@@ -21,13 +21,18 @@ export default class ObservationPoint {
 
     get dateTimes() {
         if (!this._props.properties.date_times) {
-            this._props.properties.date_times = [];
+            return undefined;
         }
         return this._props.properties.date_times.map((dt: string) => moment.utc(dt));
     }
 
-    set dateTimes(value: Moment[]) {
-        this._props.properties.date_times = value.map((dt) => dt.format('YYYY-MM-DD'));
+    set dateTimes(value: Moment[] | undefined) {
+        if (value) {
+            this._props.properties.date_times = value.map((dt) => dt.format('YYYY-MM-DD'));
+            return;
+        }
+
+        this._props.properties.date_times = value;
     }
 
     get distance() {
@@ -118,10 +123,18 @@ export default class ObservationPoint {
         return this;
     }
 
+    public getDateTimes(stressPeriods: Stressperiods) {
+        if (!this._props.properties.date_times) {
+            return stressPeriods.stressperiods.map((sp) => sp.startDateTime);
+        }
+
+        return this._props.properties.date_times.map((dt: string) => moment.utc(dt));
+    }
+
     public getSpValues(stressperiods: Stressperiods) {
         const spValues = this._props.properties.sp_values;
-        if (this.dateTimes.length > 0) {
-            return this.dateTimes.map((dt, idx) => {
+        if (this.getDateTimes(stressperiods).length > 0) {
+            return this.getDateTimes(stressperiods).map((dt, idx) => {
                 if (Array.isArray(spValues[idx])) {
                     return spValues[idx];
                 }
@@ -129,10 +142,6 @@ export default class ObservationPoint {
             });
         }
         return Boundary.mergeStressperiodsWithSpValues(stressperiods, spValues);
-    }
-
-    public setSpValues(spValues: ISpValues) {
-        this._props.properties.sp_values = spValues;
     }
 
     public toObject(): IObservationPoint {
@@ -143,7 +152,7 @@ export default class ObservationPoint {
             properties: {
                 name: this.name,
                 type: this.type,
-                date_times: this.dateTimes.map((dt) => dt.format('YYYY-MM-DD')),
+                date_times: this._props.properties.date_times,
                 sp_values: this.spValues,
                 distance: this.distance
             }

@@ -1,5 +1,6 @@
-import {sortedUniq} from 'lodash';
+import {sortedUniq, uniq} from 'lodash';
 import {Moment} from 'moment';
+import moment from 'moment';
 import {Array2D} from '../geometry/Array2D.type';
 import {ICell} from '../geometry/Cells.type';
 import {Cells} from '../modflow';
@@ -152,7 +153,6 @@ export const calculateLineBoundarySpData = (boundaries: LineBoundary[], stresspe
 };
 
 export const calculateFlowAndHeadBoundarySpData = (boundaries: FlowAndHeadBoundary[], stressperiods: Stressperiods) => {
-
     if (boundaries.length === 0) {
         return null;
     }
@@ -162,11 +162,15 @@ export const calculateFlowAndHeadBoundarySpData = (boundaries: FlowAndHeadBounda
     boundaries.forEach((b) => {
         c = c.merge(b.cells);
         b.observationPoints.forEach((op) => {
-            dateTimes = dateTimes.concat(op.dateTimes);
+            dateTimes = dateTimes.concat(op.getDateTimes(stressperiods));
         });
+
+        const timeStamps = dateTimes.map((dt) => dt.unix());
+        const sortedTimeStamps = uniq(timeStamps).sort();
+        dateTimes = sortedTimeStamps.map((dt) => moment.unix(dt));
     });
 
-    const totims: number[] = sortedUniq(dateTimes.map((dt) => stressperiods.totimFromDate(dt)));
+    const totims: number[] = dateTimes.map((dt) => stressperiods.totimFromDate(dt));
     const bdtime = totims;
     const nbdtim = totims.length;
     const nflw: number = c.count();
@@ -192,13 +196,31 @@ export const calculateFlowAndHeadBoundarySpData = (boundaries: FlowAndHeadBounda
                     throw Error('PrevOp not found');
                 }
 
+                const prevOpDateTimes = prevOP.getDateTimes(stressperiods);
+                const prevOpTotims = prevOpDateTimes.map((dt) => stressperiods.totimFromDate(dt));
                 const prevOpValues = prevOP.getSpValues(stressperiods);
-                if (!prevOpValues) {
+                if (!prevOpValues || prevOpTotims.length === 0) {
                     return;
                 }
 
-                const prevFlowValues = prevOpValues.map((v) => v[1]);
-                const prevHeadValues = prevOpValues.map((v) => v[0]);
+                let prevTotimValues: Array<{ totim: number; flow: null | number; head: null | number }> = totims
+                    .map((t) => ({
+                        totim: t,
+                        flow: null,
+                        head: null
+                    }));
+
+                prevOpTotims.forEach((totim, idx) => {
+                    prevTotimValues = prevTotimValues.map((ptv) => {
+                        if (ptv.totim === totim) {
+                            return {totim, flow: prevOpValues[idx][1], head: prevOpValues[idx][0]};
+                        }
+                        return ptv;
+                    });
+                });
+
+                const prevFlowValues = bfill(ffill(prevTotimValues.map((tv) => tv.flow))) as number[];
+                const prevHeadValues = bfill(ffill(prevTotimValues.map((tv) => tv.head))) as number[];
 
                 const ds5Temp = [lay, row, col, 0];
                 const ds7Temp = [lay, row, col, 0];
@@ -213,13 +235,31 @@ export const calculateFlowAndHeadBoundarySpData = (boundaries: FlowAndHeadBounda
                     throw Error('NextOp not found');
                 }
 
+                const nextOpDateTimes = nextOP.getDateTimes(stressperiods);
+                const nextOpTotims = nextOpDateTimes.map((dt) => stressperiods.totimFromDate(dt));
                 const nextOpValues = nextOP.getSpValues(stressperiods);
-                if (!nextOpValues) {
+                if (!nextOpValues || nextOpTotims.length === 0) {
                     return;
                 }
 
-                const nextFlowValues = nextOpValues.map((v) => v[1]);
-                const nextHeadValues = nextOpValues.map((v) => v[0]);
+                let nextTotimValues: Array<{ totim: number; flow: null | number; head: null | number }> = totims
+                    .map((t) => ({
+                        totim: t,
+                        flow: null,
+                        head: null
+                    }));
+
+                nextOpTotims.forEach((totim, idx) => {
+                    nextTotimValues = nextTotimValues.map((ptv) => {
+                        if (ptv.totim === totim) {
+                            return {totim, flow: nextOpValues[idx][1], head: nextOpValues[idx][0]};
+                        }
+                        return ptv;
+                    });
+                });
+
+                const nextFlowValues = bfill(ffill(nextTotimValues.map((tv) => tv.flow))) as number[];
+                const nextHeadValues = bfill(ffill(nextTotimValues.map((tv) => tv.head))) as number[];
 
                 const flowValues = prevFlowValues.map((pfv, idx) => {
                     if (nextFlowValues[idx]) {
@@ -394,4 +434,23 @@ export const calculateEvapotranspirationSpData = (
         surf: convertArrayToDict(surfData),
         exdp: convertArrayToDict(exdpData)
     };
+};
+
+export const ffill = (arr: Array<number | null>) => {
+    let latestValue: null | number = null;
+    return arr.map((v) => {
+        if (v !== null) {
+            latestValue = v;
+        }
+
+        if (!v && latestValue) {
+            return latestValue;
+        }
+
+        return v;
+    });
+};
+
+export const bfill = (arr: Array<number | null>) => {
+    return ffill(arr.reverse()).reverse();
 };

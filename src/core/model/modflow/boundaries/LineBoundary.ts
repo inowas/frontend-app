@@ -2,6 +2,8 @@ import * as turf from '@turf/helpers';
 import {lineDistance, lineSlice} from '@turf/turf';
 import {LineString, Point} from 'geojson';
 import moment, {Moment} from 'moment';
+import BoundingBox from '../../geometry/BoundingBox';
+import GridSize from '../../geometry/GridSize';
 import {Cells, Geometry} from '../index';
 import Stressperiods from '../Stressperiods';
 import {ISpValues} from './Boundary.type';
@@ -207,8 +209,13 @@ export default abstract class LineBoundary extends Boundary {
 
     public cloneObservationPoint = (id: string, newId: string, stressperiods: Stressperiods) => {
         const op = ObservationPoint.fromObject(this.findObservationPointById(id).toObject());
-        this.createObservationPoint(newId, op.name + ' (clone)', op.geometry as Point,
-            op.getSpValues(stressperiods), op.dateTimes.map((dt) => dt.format('YYYY-MM-DD')));
+        this.createObservationPoint(
+            newId,
+            op.name + ' (clone)',
+            op.geometry as Point,
+            op.getSpValues(stressperiods),
+            op.dateTimes && op.dateTimes.map((dt) => dt.format('YYYY-MM-DD'))
+        );
     };
 
     public findObservationPointById = (id: string) => {
@@ -262,5 +269,22 @@ export default abstract class LineBoundary extends Boundary {
             }
             return op;
         });
+    };
+
+    public recalculateCells = (boundingBox: BoundingBox, gridSize: GridSize) => {
+        const cells = Cells.fromGeometry(this.geometry, boundingBox, gridSize);
+        this.observationPoints = this.observationPoints.map((op) => {
+            op.distance = distanceOnLine(this.geometry as LineString, op.geometry);
+            return op;
+        });
+
+        cells.calculateValues(this, boundingBox, gridSize);
+        this.cells = cells;
+    };
+
+    public recalculateCellValues = (boundingBox: BoundingBox, gridSize: GridSize) => {
+        const cells = this.cells;
+        cells.calculateValues(this, boundingBox, gridSize);
+        this.cells = cells;
     };
 }
