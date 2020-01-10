@@ -13,6 +13,7 @@ import {
 import FlowAndHeadBoundary from '../modflow/boundaries/FlowAndHeadBoundary';
 import Stressperiods from '../modflow/Stressperiods';
 import {IPropertyValueObject} from '../types';
+import {IObsData} from './packages/mf/FlopyModflowMfhob';
 
 export const min = (a: Array2D<number> | number) => {
 
@@ -64,22 +65,34 @@ export const calculateHeadObservationData = (hobs: HeadObservationWell[], stress
         return null;
     }
 
-    const totims = stressperiods.totims;
+    let dateTimes: Moment[] = [];
+    hobs.forEach((b) => {
+        dateTimes = dateTimes.concat(b.getDateTimes(stressperiods));
+    });
 
-    return hobs.map((h) => {
+    const hobData: IObsData[] = [];
+    hobs.forEach((h) => {
         const layer = h.layers[0];
         const cell = h.cells.toObject()[0];
-        const timeSeriesData = h.getSpValues(stressperiods).map((spValue: number[], idx: number) => ([
-            totims[idx], spValue[0]
-        ]));
+        const hobTotims = h.getDateTimes(stressperiods).map((dt) => stressperiods.totimFromDate(dt));
+        const hobSpValues = h.getSpValues(stressperiods);
 
-        return {
+        const tsData = hobTotims.map((totim, idx) => {
+            if (totim < 0) {
+                return undefined;
+            }
+            return [totim, hobSpValues[idx][0]];
+        }).filter((i) => i !== undefined) as number[][];
+
+        hobData.push({
             layer,
             row: cell[1],
             column: cell[0],
-            time_series_data: timeSeriesData
-        };
+            time_series_data: tsData
+        });
     });
+
+    return hobData;
 };
 
 export const calculateLineBoundarySpData = (boundaries: LineBoundary[], stressperiods: Stressperiods) => {

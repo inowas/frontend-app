@@ -16,6 +16,10 @@ export default class HeadObservationWell extends PointBoundary {
         this._props.properties.date_times = value.map((dt) => dt.format('YYYY-MM-DD'));
     }
 
+    get dateTimes() {
+        return this._props.properties.date_times.map((dt: string) => moment.utc(dt));
+    }
+
     get geometryType() {
         return this._class.geometryType();
     }
@@ -106,10 +110,15 @@ export default class HeadObservationWell extends PointBoundary {
     }
 
     public changeDateTime(value: string, idx: number, opId?: string) {
-        if (this._props.properties.date_times.length > idx) {
-            this._props.properties.date_times[idx] = value;
+        const dateTimes = this.dateTimes;
+        if (dateTimes.length > idx) {
+            dateTimes[idx] = moment.utc(value);
         }
-        return this.reorderDateTimes();
+
+        this.dateTimes = dateTimes;
+        this.reorderDateTimes();
+
+        return this;
     }
 
     public removeDateTime(id: number, opId?: string) {
@@ -127,9 +136,7 @@ export default class HeadObservationWell extends PointBoundary {
     }
 
     public reorderDateTimes() {
-        this.dateTimes = orderBy(this.dateTimes, (o: Moment) => {
-            return o.format('YYYYMMDD');
-        }, ['asc']);
+        this.dateTimes = orderBy(this.dateTimes, (o: Moment) => o.unix(), ['asc']);
         return this;
     }
 
