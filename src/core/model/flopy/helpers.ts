@@ -1,6 +1,5 @@
 import {sortedUniq, uniq} from 'lodash';
 import {Moment} from 'moment';
-import moment from 'moment';
 import {Array2D} from '../geometry/Array2D.type';
 import {ICell} from '../geometry/Cells.type';
 import {Cells} from '../modflow';
@@ -172,13 +171,11 @@ export const calculateFlowAndHeadBoundarySpData = (boundaries: FlowAndHeadBounda
         b.observationPoints.forEach((op) => {
             dateTimes = dateTimes.concat(op.getDateTimes(stressperiods));
         });
-
-        const timeStamps = dateTimes.map((dt) => dt.unix());
-        const sortedTimeStamps = uniq(timeStamps).sort();
-        dateTimes = sortedTimeStamps.map((dt) => moment.unix(dt));
     });
 
-    const totims: number[] = dateTimes.map((dt) => stressperiods.totimFromDate(dt));
+    const totims: number[] = uniq(
+        dateTimes.map((dt) => stressperiods.totimFromDate(dt)).filter((t) => t >= 0)
+    ).sort((a, b) => a - b);
     const bdtime = totims;
     const nbdtim = totims.length;
     const nflw: number = flowCells.count();

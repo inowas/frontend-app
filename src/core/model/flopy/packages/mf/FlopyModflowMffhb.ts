@@ -102,6 +102,7 @@ export default class FlopyModflowMffhb extends FlopyModflowBoundary<IFlopyModflo
         this.bdtime = spData.bdtime;
         this.ds5 = spData.ds5.length === 0 ? null : spData.ds5;
         this.ds7 = spData.ds7.length === 0 ? null : spData.ds7;
+
         return this;
     };
 
