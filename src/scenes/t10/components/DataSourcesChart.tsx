@@ -30,7 +30,7 @@ const dataSourcesChart = (props: IProps) => {
 
         f();
 
-    }, [props.dataSources]);
+    }, [props.dataSources, props.processings]);
 
     const formatDateTimeTicks = (dt: number) => {
         return moment.unix(dt).format('YYYY/MM/DD');

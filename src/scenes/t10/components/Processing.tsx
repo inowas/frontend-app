@@ -307,9 +307,7 @@ const processing = (props: IProps) => {
                         <Label color={'blue'} ribbon={true} size={'large'}>
                             Chart
                         </Label>
-                        {dataSourceCollection.isFetched() &&
                         <DataSourcesChart dataSources={dataSourceCollection} processings={processingCollection}/>
-                        }
                     </Segment>
                     }
 

@@ -340,7 +340,7 @@ const dataSources = (props: IProps) => {
                         <Label color={'blue'} ribbon={true} size={'large'}>
                             Chart
                         </Label>
-                        {dataSourceCollection.isFetched() && <DataSourcesChart dataSources={dataSourceCollection}/>}
+                        <DataSourcesChart dataSources={dataSourceCollection}/>
                     </Segment>
                     }
 

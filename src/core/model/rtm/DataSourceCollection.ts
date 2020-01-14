@@ -1,11 +1,11 @@
-import {concat} from 'lodash';
+import {cloneDeep, concat} from 'lodash';
 import {Collection} from '../collection/Collection';
 import {DataSourceFactory} from './index';
 import {IDataSource, IDateTimeValue} from './Sensor.type';
 
 export class DataSourceCollection extends Collection<IDataSource> {
     public static fromObject(obj: IDataSource[]) {
-        return new DataSourceCollection(obj);
+        return new DataSourceCollection(cloneDeep(obj));
     }
 
     public globalBegin = () => {

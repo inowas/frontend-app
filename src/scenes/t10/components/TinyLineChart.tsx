@@ -17,12 +17,22 @@ const tinyLineChart = (props: IProps) => {
     const [data, setData] = useState<any>(null);
 
     useEffect(() => {
-        if (props.datasource && props.datasource.data) {
-            setData(props.datasource.data);
+        setData(null);
+        async function f() {
+            if (props.datasource) {
+                await props.datasource.loadData();
+                return setData(props.datasource.data);
+            }
+
+            return null;
         }
+
+        f();
+
     }, [props.datasource]);
 
     const {datasource} = props;
+
     if (!datasource) {
         return null;
     }
