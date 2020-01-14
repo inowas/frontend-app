@@ -134,7 +134,7 @@ const stressPeriodsDataTable = (props: IProps) => {
                             name={'startDateTime'}
                             idx={idx}
                             value={
-                                activeInput === idx ? activeValue : moment.utc(sp.startDateTime).format('YYYY-MM-DD')
+                                activeInput === idx ? activeValue : sp.startDateTime.format('YYYY-MM-DD')
                             }
                             onBlur={handleChange}
                             onChange={handleStressperiodChange}
