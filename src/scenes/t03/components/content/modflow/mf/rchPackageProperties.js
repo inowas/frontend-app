@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types';
 import React from 'react';
-import {Form, Grid, Header, Input} from 'semantic-ui-react';
+import {Form, Grid, Header, Input, Label} from 'semantic-ui-react';
 
 import AbstractPackageProperties from './AbstractPackageProperties';
 import {FlopyModflowMfrch} from '../../../../../../core/model/flopy/packages/mf';
@@ -24,11 +24,11 @@ class RchPackageProperties extends AbstractPackageProperties {
 
         return (
             <Form>
+                <Header as={'h3'} dividing={true}>RCH: Recharge Package</Header>
                 <Grid divided={'vertically'}>
-                    <Header as={'h3'}>RCH: Recharge Package</Header>
                     <Grid.Row columns={2}>
                         <Grid.Column>
-                            <Header as={'p'}>Stress period data (SP1)</Header>
+                            <Label>Stress period data (SP1)</Label>
                             <RasterDataImage
                                 data={spData2D}
                                 gridSize={GridSize.fromData(ibound[0])}

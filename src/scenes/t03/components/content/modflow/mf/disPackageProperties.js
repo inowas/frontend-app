@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types';
 import React from 'react';
-import {Accordion, Form, Grid, Header, Icon, Input, Segment, Table} from 'semantic-ui-react';
+import {Accordion, Form, Divider, Grid, Header, Icon, Input, List, Label, Segment, Table} from 'semantic-ui-react';
 
 import AbstractPackageProperties from './AbstractPackageProperties';
 import {FlopyModflowMfdis} from '../../../../../../core/model/flopy/packages/mf';
@@ -20,7 +20,7 @@ class DisPackageProperties extends AbstractPackageProperties {
 
         return (
             <Form>
-                <Header as={'h3'}>DIS: Discretization Package</Header>
+                <Header as={'h3'} dividing={true}>DIS: Discretization Package</Header>
                 <Accordion styled fluid>
                     <Accordion.Title active={activeIndex === 0} index={0} onClick={this.handleClickAccordion}>
                         <Icon name='dropdown'/>
@@ -109,7 +109,7 @@ class DisPackageProperties extends AbstractPackageProperties {
                         <Grid divided={'vertically'}>
                             <Grid.Row columns={2}>
                                 <Grid.Column>
-                                    <Header size='small' as={'label'}>Top Elevation</Header>
+                                    <Label>Top Elevation</Label>
                                     <RasterDataImage
                                         data={mfPackage.top}
                                         gridSize={GridSize.fromNxNy(mfPackage.ncol, mfPackage.nrow)}
@@ -120,7 +120,7 @@ class DisPackageProperties extends AbstractPackageProperties {
                             <Grid.Row columns={2}>
                                 {mfPackage.botm.map((layer, idx) => (
                                     <Grid.Column key={idx}>
-                                        <Header size='small' as={'label'}>Bottom Elevation Layer {idx + 1}</Header>
+                                        <Label>Bottom Elevation Layer {idx + 1}</Label>
                                         <RasterDataImage
                                             data={layer}
                                             gridSize={GridSize.fromNxNy(mfPackage.ncol, mfPackage.nrow)}
@@ -137,7 +137,40 @@ class DisPackageProperties extends AbstractPackageProperties {
                         Time Discretization
                     </Accordion.Title>
                     <Accordion.Content active={activeIndex === 2}>
-                        <Table basic>
+                        {mfPackage.perlen.map((perlen, idx) => (
+                            <List horizontal relaxed selection key={idx}>
+                                <List.Item>
+                                    {idx + 1}
+                                </List.Item>
+                                <List.Item>
+                                    <Label horizontal>
+                                        Perlen
+                                    </Label>
+                                    {perlen}
+                                </List.Item>
+                                <List.Item>
+                                    <Label horizontal>
+                                        Nstp
+                                    </Label>
+                                    {mfPackage.nstp[idx]}
+                                </List.Item>
+                                <List.Item>
+                                    <Label horizontal>
+                                        Tsmult
+                                    </Label>
+                                    {mfPackage.tsmult[idx]}
+                                </List.Item>
+                                <List.Item>
+                                    <Label horizontal>
+                                        Steady
+                                    </Label>
+                                    {mfPackage.steady[idx] ? 'true' : 'false'}
+                                </List.Item>
+                                <Divider fitted />
+                            </List>
+
+                        ))}
+                        {/*<Table basic>
                             <Table.Header>
                                 <Table.Row>
                                     <Table.HeaderCell>#</Table.HeaderCell>
@@ -158,7 +191,7 @@ class DisPackageProperties extends AbstractPackageProperties {
                                     </Table.Row>
                                 ))}
                             </Table.Body>
-                        </Table>
+                        </Table>*/}
                     </Accordion.Content>
                 </Accordion>
 

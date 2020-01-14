@@ -1,5 +1,5 @@
 import React, {ChangeEvent, SyntheticEvent, useState} from 'react';
-import {DropdownProps, Form, Grid, Header, Input, Table} from 'semantic-ui-react';
+import {DropdownProps, Form, Grid, Header, Input, Label, List, Segment, Table} from 'semantic-ui-react';
 
 import {FlopyModflowMfdis, FlopyModflowMflpf} from '../../../../../../core/model/flopy/packages/mf';
 import FlopyModflow from '../../../../../../core/model/flopy/packages/mf/FlopyModflow';
@@ -44,7 +44,47 @@ const lpfPackageProperties = (props: IProps) => {
     return (
         <Form>
             <Header as={'h3'}>LPF: Layer Property Flow Package</Header>
-            <Table basic={true}>
+            {Array.isArray(mfPackage.laytyp) && mfPackage.laytyp.map((laytyp, idx) => (
+                <List selection horizontal key={idx}>
+                    <List.Item>
+                        <Label horizontal>
+                            Layer
+                        </Label>
+                        {idx + 1}
+                    </List.Item>
+                    <List.Item>
+                        <Label horizontal>
+                            Laytyp
+                        </Label>
+                        {laytyp}
+                    </List.Item>
+                    <List.Item>
+                        <Label horizontal>
+                            Layavg
+                        </Label>
+                        {Array.isArray(mfPackage.layavg) ? mfPackage.layavg[idx] : mfPackage.layavg}
+                    </List.Item>
+                    <List.Item>
+                        <Label horizontal>
+                            Chani
+                        </Label>
+                        {Array.isArray(mfPackage.chani) ? mfPackage.chani[idx] : mfPackage.chani}
+                    </List.Item>
+                    <List.Item>
+                        <Label horizontal>
+                            Layvka
+                        </Label>
+                        {Array.isArray(mfPackage.layvka) ? mfPackage.layvka[idx] : mfPackage.layvka}
+                    </List.Item>
+                    <List.Item>
+                        <Label horizontal>
+                            Laywet
+                        </Label>
+                        {Array.isArray(mfPackage.laywet) ? mfPackage.laywet[idx] : mfPackage.laywet}
+                    </List.Item>
+                </List>
+            ))}
+            {/*<Table basic={true}>
                 <Table.Header>
                     <Table.Row>
                         <Table.HeaderCell>Layer</Table.HeaderCell>
@@ -75,73 +115,75 @@ const lpfPackageProperties = (props: IProps) => {
                         </Table.Row>
                     ))}
                 </Table.Body>
-            </Table>
+            </Table>*/}
 
-            <Form.Group widths="equal">
-                <Form.Field>
-                    <label>Cell-by-cell budget data (ipakcb)</label>
-                    <Form.Dropdown
-                        options={[
-                            {key: 0, value: 0, text: 'false'},
-                            {key: 1, value: 1, text: 'true'},
-                        ]}
-                        placeholder="Select ipakcb"
-                        name="ipakcb"
-                        selection={true}
-                        value={mfPackage.ipakcb}
-                        disabled={readonly}
-                        onChange={handleOnSelect}
-                    />
-                </Form.Field>
-                <Form.Field>
-                    <label>(hdry)</label>
-                    <Input
-                        readOnly={true}
-                        name="hdry"
-                        value={JSON.stringify(mfPackage.hdry)}
-                        icon={<InfoPopup description={documentation.hdry} title={'hdry'}/>}
-                    />
-                </Form.Field>
-                <Form.Field>
-                    <label>(iwdflg)</label>
-                    <Input
-                        readOnly={true}
-                        name="iwdflg"
-                        value={JSON.stringify(mfPackage.iwdflg)}
-                        icon={<InfoPopup description={documentation.iwdflg} title={'iwdflg'}/>}
-                    />
-                </Form.Field>
-            </Form.Group>
+            <Segment>
+                <Form.Group widths="equal">
+                    <Form.Field>
+                        <label>Cell-by-cell budget data (ipakcb)</label>
+                        <Form.Dropdown
+                            options={[
+                                {key: 0, value: 0, text: 'false'},
+                                {key: 1, value: 1, text: 'true'},
+                            ]}
+                            placeholder="Select ipakcb"
+                            name="ipakcb"
+                            selection={true}
+                            value={mfPackage.ipakcb}
+                            disabled={readonly}
+                            onChange={handleOnSelect}
+                        />
+                    </Form.Field>
+                    <Form.Field>
+                        <label>(hdry)</label>
+                        <Input
+                            readOnly={true}
+                            name="hdry"
+                            value={JSON.stringify(mfPackage.hdry)}
+                            icon={<InfoPopup description={documentation.hdry} title={'hdry'}/>}
+                        />
+                    </Form.Field>
+                    <Form.Field>
+                        <label>(iwdflg)</label>
+                        <Input
+                            readOnly={true}
+                            name="iwdflg"
+                            value={JSON.stringify(mfPackage.iwdflg)}
+                            icon={<InfoPopup description={documentation.iwdflg} title={'iwdflg'}/>}
+                        />
+                    </Form.Field>
+                </Form.Group>
 
-            <Form.Group widths="equal">
-                <Form.Field>
-                    <label>(wetfct)</label>
-                    <Input
-                        readOnly={true}
-                        name="wetfct"
-                        value={JSON.stringify(mfPackage.wetfct)}
-                        icon={<InfoPopup description={documentation.wetfct} title={'wetfct'}/>}
-                    />
-                </Form.Field>
-                <Form.Field>
-                    <label>(iwetit)</label>
-                    <Input
-                        readOnly={true}
-                        name="iwetit"
-                        value={JSON.stringify(mfPackage.iwetit)}
-                        icon={<InfoPopup description={documentation.iwetit} title={'iwetit'}/>}
-                    />
-                </Form.Field>
-                <Form.Field>
-                    <label>(ihdwet)</label>
-                    <Input
-                        readOnly={true}
-                        name="ihdwet"
-                        value={JSON.stringify(mfPackage.ihdwet)}
-                        icon={<InfoPopup description={documentation.ihdwet} title={'ihdwet'}/>}
-                    />
-                </Form.Field>
-            </Form.Group>
+                <Form.Group widths="equal">
+                    <Form.Field>
+                        <label>(wetfct)</label>
+                        <Input
+                            readOnly={true}
+                            name="wetfct"
+                            value={JSON.stringify(mfPackage.wetfct)}
+                            icon={<InfoPopup description={documentation.wetfct} title={'wetfct'}/>}
+                        />
+                    </Form.Field>
+                    <Form.Field>
+                        <label>(iwetit)</label>
+                        <Input
+                            readOnly={true}
+                            name="iwetit"
+                            value={JSON.stringify(mfPackage.iwetit)}
+                            icon={<InfoPopup description={documentation.iwetit} title={'iwetit'}/>}
+                        />
+                    </Form.Field>
+                    <Form.Field>
+                        <label>(ihdwet)</label>
+                        <Input
+                            readOnly={true}
+                            name="ihdwet"
+                            value={JSON.stringify(mfPackage.ihdwet)}
+                            icon={<InfoPopup description={documentation.ihdwet} title={'ihdwet'}/>}
+                        />
+                    </Form.Field>
+                </Form.Group>
+            </Segment>
 
             <Grid>
                 {Array.isArray(mfPackage.hk) && mfPackage.hk.map((hk, idx) => {
@@ -149,7 +191,7 @@ const lpfPackageProperties = (props: IProps) => {
                     return (
                         <Grid.Row key={idx} columns={2}>
                             <Grid.Column>
-                                <Header as={'p'}>Hk Layer {idx + 1}</Header>
+                                <Label>Hk Layer {idx + 1}</Label>
                                 <RasterDataImage
                                     data={hk}
                                     gridSize={GridSize.fromNxNy(ncol, nrow)}
@@ -162,7 +204,7 @@ const lpfPackageProperties = (props: IProps) => {
                                 />
                             </Grid.Column>
                             <Grid.Column>
-                                <Header as={'p'}>Horizontal anisotropy Layer {idx + 1}</Header>
+                                <Label>Horizontal anisotropy Layer {idx + 1}</Label>
                                 <RasterDataImage
                                     data={hani}
                                     gridSize={GridSize.fromNxNy(ncol, nrow)}
@@ -184,7 +226,7 @@ const lpfPackageProperties = (props: IProps) => {
                     return (
                         <Grid.Row key={idx} columns={2}>
                             <Grid.Column>
-                                <Header as={'p'}>Vka Layer {idx + 1}</Header>
+                                <Label>Vka Layer {idx + 1}</Label>
                                 <RasterDataImage
                                     data={vka}
                                     gridSize={GridSize.fromNxNy(ncol, nrow)}
@@ -208,7 +250,7 @@ const lpfPackageProperties = (props: IProps) => {
                     return (
                         <Grid.Row key={idx} columns={2}>
                             <Grid.Column>
-                                <Header as={'p'}>Specific storage Layer {idx + 1}</Header>
+                                <Label>Specific storage Layer {idx + 1}</Label>
                                 <RasterDataImage
                                     data={ss}
                                     gridSize={GridSize.fromNxNy(ncol, nrow)}
@@ -221,7 +263,7 @@ const lpfPackageProperties = (props: IProps) => {
                                 />
                             </Grid.Column>
                             <Grid.Column>
-                                <Header as={'p'}>Specific yield {idx + 1}</Header>
+                                <Label>Specific yield {idx + 1}</Label>
                                 <RasterDataImage
                                     data={sy}
                                     gridSize={GridSize.fromNxNy(ncol, nrow)}

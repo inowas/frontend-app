@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types';
 import React from 'react';
-import {Accordion, Form, Grid, Header, Icon, Input} from 'semantic-ui-react';
+import {Accordion, Form, Grid, Header, Icon, Input, Label} from 'semantic-ui-react';
 import AbstractPackageProperties from './AbstractPackageProperties';
 import {FlopyModflowMfbas} from '../../../../../../core/model/flopy/packages/mf';
 import {documentation} from '../../../../defaults/flow';
@@ -28,7 +28,7 @@ class BasPackageProperties extends AbstractPackageProperties {
                 return (
                     <Grid.Column key={idx}>
                         <div>
-                            <label style={{float: 'left'}}>{layers[idx].number}: {layers[idx].name}</label>
+                            <Label>{layers[idx].number}: {layers[idx].name}</Label>
                             <Icon
                                 link={true}
                                 style={{float: 'right', zIndex: 10000}}
@@ -82,7 +82,7 @@ class BasPackageProperties extends AbstractPackageProperties {
 
         return (
             <div>
-                <Header as={'h3'}>BAS: Basic Package</Header>
+                <Header as={'h3'} dividing={true}>BAS: Basic Package</Header>
                 <Accordion styled fluid>
                     <Accordion.Title active={activeIndex === 0} index={0} onClick={this.handleClickAccordion}>
                         <Icon name='dropdown'/>
