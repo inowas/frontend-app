@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types';
 import React from 'react';
-import {Form, Grid, Header, Input} from 'semantic-ui-react';
+import {Form, Grid, Header, Input, Label} from 'semantic-ui-react';
 
 import AbstractPackageProperties from './AbstractPackageProperties';
 import {FlopyModflowMfwel} from '../../../../../../core/model/flopy/packages/mf';
@@ -26,12 +26,12 @@ class WelPackageProperties extends AbstractPackageProperties {
 
         return (
             <Form>
+                <Header as={'h3'} dividing={true}>WEL: Well Package</Header>
                 <Grid divided={'vertically'}>
-                    <Header as={'h3'}>WEL: Well Package</Header>
                     <Grid.Row columns={2}>
                         {affectedCellsLayers.map((layer, idx) => (
                             <Grid.Column key={idx}>
-                                <Header as={'p'}>Layer {idx + 1}</Header>
+                                <Label>Layer {idx + 1}</Label>
                                 <RasterDataImage
                                     data={layer}
                                     gridSize={GridSize.fromData(layer)}
