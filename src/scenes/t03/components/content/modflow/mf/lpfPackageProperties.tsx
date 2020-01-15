@@ -36,8 +36,13 @@ const lpfPackageProperties = (props: IProps) => {
         return setMfPackage({...mfPackage, [name]: value});
     };
 
-    const handleOnBlur = (e: ChangeEvent<HTMLInputElement>) => {
-        const {name, value} = e.target;
+    const handleOnBlur = (cast?: (v: any) => any) => (e: ChangeEvent<HTMLInputElement>) => {
+        const {name} = e.target;
+        let {value} = e.target;
+
+        if (cast) {
+            value = cast(value);
+        }
         props.onChange(FlopyModflowMflpf.fromObject({...mfPackage, [name]: value}));
     };
 
@@ -253,10 +258,11 @@ const lpfPackageProperties = (props: IProps) => {
                     <Input
                         readOnly={readonly}
                         name="wetdry"
+                        type={'number'}
                         value={mfPackage.wetdry}
                         icon={<InfoPopup description={documentation.wetdry} title={'wetdry'}/>}
                         onChange={handleOnChange}
-                        onBlur={handleOnBlur}
+                        onBlur={handleOnBlur(parseFloat)}
                     />
                 </Form.Field>
             </Form.Group>

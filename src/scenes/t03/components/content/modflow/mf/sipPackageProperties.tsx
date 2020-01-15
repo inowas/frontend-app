@@ -21,8 +21,13 @@ const sipPackageProperties = (props: IProps) => {
         return setMfPackage({...mfPackage, [name]: value});
     };
 
-    const handleOnBlur = (e: ChangeEvent<HTMLInputElement>) => {
-        const {name, value} = e.target;
+    const handleOnBlur = (cast?: (v: any) => any) => (e: ChangeEvent<HTMLInputElement>) => {
+        const {name} = e.target;
+        let {value} = e.target;
+
+        if (cast) {
+            value = cast(value);
+        }
         props.onChange(FlopyModflowMfsip.fromObject({...mfPackage, [name]: value}));
     };
 
@@ -50,45 +55,48 @@ const sipPackageProperties = (props: IProps) => {
                         <Form.Field>
                             <label>Maximum iterations per time step (MXITER)</label>
                             <Input
-                                type={'number'}
-                                readOnly={readOnly}
                                 name={'mxiter'}
+                                readOnly={readOnly}
+                                type={'number'}
                                 value={mfPackage.mxiter}
                                 icon={renderInfoPopup(documentation.sip.mxiter, 'MXITER')}
-                                onBlur={handleOnBlur}
+                                onBlur={handleOnBlur(parseFloat)}
                                 onChange={handleOnChange}
                             />
                         </Form.Field>
                         <Form.Field>
                             <label>Number of iteration parameters (NPARM)</label>
                             <Input
-                                readOnly={readOnly}
                                 name="nparm"
+                                readOnly={readOnly}
+                                type={'number'}
                                 value={mfPackage.nparm}
                                 icon={renderInfoPopup(documentation.sip.nparm, 'NPARM')}
-                                onBlur={handleOnBlur}
+                                onBlur={handleOnBlur(parseFloat)}
                                 onChange={handleOnChange}
                             />
                         </Form.Field>
                         <Form.Field>
                             <label>Acceleration parameter (ACCL)</label>
                             <Input
-                                readOnly={readOnly}
                                 name="accl"
+                                readOnly={readOnly}
+                                type={'number'}
                                 value={mfPackage.accl}
                                 icon={renderInfoPopup(documentation.sip.accl, 'ACCL')}
-                                onBlur={handleOnBlur}
+                                onBlur={handleOnBlur(parseFloat)}
                                 onChange={handleOnChange}
                             />
                         </Form.Field>
                         <Form.Field>
                             <label>Head change criterion for convergence (HCLOSE)</label>
                             <Input
-                                readOnly={readOnly}
                                 name="hclose"
+                                readOnly={readOnly}
+                                type={'number'}
                                 value={mfPackage.hclose}
                                 icon={renderInfoPopup(documentation.sip.hclose, 'HCLOSE')}
-                                onBlur={handleOnBlur}
+                                onBlur={handleOnBlur(parseFloat)}
                                 onChange={handleOnChange}
                             />
                         </Form.Field>
@@ -109,24 +117,26 @@ const sipPackageProperties = (props: IProps) => {
                             </Form.Field>
                         </Form.Group>
                         <Form.Field>
-                            <label> (WSEED)</label>
+                            <label>(WSEED)</label>
                             <Input
                                 disabled={true}
                                 name="wseed"
                                 value={mfPackage.wseed}
+                                type={'number'}
                                 icon={renderInfoPopup(documentation.sip.wseed, 'WSEED')}
-                                onBlur={handleOnBlur}
+                                onBlur={handleOnBlur(parseFloat)}
                                 onChange={handleOnChange}
                             />
                         </Form.Field>
                         <Form.Field>
                             <label>Printout Interval (IPRSIP)</label>
                             <Input
-                                readOnly={readOnly}
                                 name="iprsip"
+                                readOnly={readOnly}
+                                type={'number'}
                                 value={mfPackage.iprsip}
                                 icon={renderInfoPopup(documentation.sip.iprsip, 'IPRSIP')}
-                                onBlur={handleOnBlur}
+                                onBlur={handleOnBlur(parseFloat)}
                                 onChange={handleOnChange}
                             />
                         </Form.Field>

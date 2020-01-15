@@ -26,8 +26,13 @@ const gmgPackageProperties = (props: IProps) => {
         return setMfPackage({...mfPackage, [name]: value});
     };
 
-    const handleOnBlur = (e: ChangeEvent<HTMLInputElement>) => {
-        const {name, value} = e.target;
+    const handleOnBlur = (cast?: (v: any) => any) => (e: ChangeEvent<HTMLInputElement>) => {
+        const {name} = e.target;
+        let {value} = e.target;
+
+        if (cast) {
+            value = cast(value);
+        }
         props.onChange(FlopyModflowMfgmg.fromObject({...mfPackage, [name]: value}));
     };
 
@@ -56,9 +61,10 @@ const gmgPackageProperties = (props: IProps) => {
                         <Input
                             readOnly={readOnly}
                             name="rclose"
+                            type={'number'}
                             value={mfPackage.rclose}
                             icon={renderInfoPopup(documentation.gmg.rclose, 'RCLOSE')}
-                            onBlur={handleOnBlur}
+                            onBlur={handleOnBlur(parseFloat)}
                             onChange={handleOnChange}
                         />
                     </Form.Field>
@@ -67,38 +73,40 @@ const gmgPackageProperties = (props: IProps) => {
                         <Input
                             readOnly={readOnly}
                             name={'iiter'}
+                            type={'number'}
                             value={mfPackage.iiter}
                             icon={renderInfoPopup(documentation.gmg.iiter, 'IITER')}
-                            onBlur={handleOnBlur}
+                            onBlur={handleOnBlur(parseFloat)}
                             onChange={handleOnChange}
                         />
                     </Form.Field>
                 </Form.Group>
                 <Form.Group widths="equal">
-                <Form.Field>
-                    <label>Outer convergence residual (HCLOSE)</label>
-                    <Input
-                        readOnly={readOnly}
-                        name="hclose"
-                        value={mfPackage.hclose}
-                        icon={renderInfoPopup(documentation.gmg.hclose, 'HCLOSE')}
-                        onBlur={handleOnBlur}
-                        onChange={handleOnChange}
-                    />
-                </Form.Field>
-                <Form.Field>
-                    <label>Maximum outer iterations (MXITER)</label>
-                    <Input
-                        type={'number'}
-                        readOnly={readOnly}
-                        name={'mxiter'}
-                        value={mfPackage.mxiter}
-                        icon={renderInfoPopup(documentation.gmg.mxiter, 'MXITER')}
-                        onBlur={handleOnBlur}
-                        onChange={handleOnChange}
-                    />
-                </Form.Field>
-            </Form.Group>
+                    <Form.Field>
+                        <label>Outer convergence residual (HCLOSE)</label>
+                        <Input
+                            readOnly={readOnly}
+                            name="hclose"
+                            type={'number'}
+                            value={mfPackage.hclose}
+                            icon={renderInfoPopup(documentation.gmg.hclose, 'HCLOSE')}
+                            onBlur={handleOnBlur(parseFloat)}
+                            onChange={handleOnChange}
+                        />
+                    </Form.Field>
+                    <Form.Field>
+                        <label>Maximum outer iterations (MXITER)</label>
+                        <Input
+                            name={'mxiter'}
+                            readOnly={readOnly}
+                            type={'number'}
+                            value={mfPackage.mxiter}
+                            icon={renderInfoPopup(documentation.gmg.mxiter, 'MXITER')}
+                            onBlur={handleOnBlur(parseFloat)}
+                            onChange={handleOnChange}
+                        />
+                    </Form.Field>
+                </Form.Group>
             </Segment>
             <Segment>
                 <Form.Group widths="equal">
@@ -107,9 +115,10 @@ const gmgPackageProperties = (props: IProps) => {
                         <Input
                             readOnly={readOnly}
                             name="damp"
+                            type={'number'}
                             value={mfPackage.damp}
                             icon={renderInfoPopup(documentation.gmg.damp, 'DAMP')}
-                            onBlur={handleOnBlur}
+                            onBlur={handleOnBlur(parseFloat)}
                             onChange={handleOnChange}
                         />
                     </Form.Field>
@@ -139,9 +148,10 @@ const gmgPackageProperties = (props: IProps) => {
                         <Input
                             readOnly={readOnly}
                             name="ioutgmg"
+                            type={'number'}
                             value={mfPackage.ioutgmg}
                             icon={renderInfoPopup(documentation.gmg.ioutgmg, 'IOUTGMG')}
-                            onBlur={handleOnBlur}
+                            onBlur={handleOnBlur(parseFloat)}
                             onChange={handleOnChange}
                         />
                     </Form.Field>
@@ -150,9 +160,10 @@ const gmgPackageProperties = (props: IProps) => {
                         <Input
                             readOnly={readOnly}
                             name="iunitmhc"
+                            type={'number'}
                             value={mfPackage.iunitmhc}
                             icon={renderInfoPopup(documentation.gmg.iunitmhc, 'IUNITMHC')}
-                            onBlur={handleOnBlur}
+                            onBlur={handleOnBlur(parseFloat)}
                             onChange={handleOnChange}
                         />
                     </Form.Field>
@@ -204,22 +215,24 @@ const gmgPackageProperties = (props: IProps) => {
                     <Form.Field>
                         <label>Maximum damping (DUP)</label>
                         <Input
-                            readOnly={readOnly}
                             name="dup"
+                            readOnly={readOnly}
+                            type={'number'}
                             value={mfPackage.dup}
                             icon={renderInfoPopup(documentation.gmg.dup, 'DUP')}
-                            onBlur={handleOnBlur}
+                            onBlur={handleOnBlur(parseFloat)}
                             onChange={handleOnChange}
                         />
                     </Form.Field>
                     <Form.Field>
                         <label>Minimum damping (DLOW)</label>
                         <Input
-                            readOnly={readOnly}
                             name="dlow"
+                            readOnly={readOnly}
+                            type={'number'}
                             value={mfPackage.dlow}
                             icon={renderInfoPopup(documentation.gmg.dlow, 'DLOW')}
-                            onBlur={handleOnBlur}
+                            onBlur={handleOnBlur(parseFloat)}
                             onChange={handleOnChange}
                         />
                     </Form.Field>
@@ -230,9 +243,10 @@ const gmgPackageProperties = (props: IProps) => {
                         <Input
                             readOnly={readOnly}
                             name="relax"
+                            type={'number'}
                             value={mfPackage.relax}
                             icon={renderInfoPopup(documentation.gmg.relax, 'RELAX')}
-                            onBlur={handleOnBlur}
+                            onBlur={handleOnBlur(parseFloat)}
                             onChange={handleOnChange}
                         />
                     </Form.Field>
@@ -241,9 +255,10 @@ const gmgPackageProperties = (props: IProps) => {
                         <Input
                             readOnly={readOnly}
                             name="chglimit"
+                            type={'number'}
                             value={mfPackage.chglimit}
                             icon={renderInfoPopup(documentation.gmg.chglimit, 'CHGLIMIT')}
-                            onBlur={handleOnBlur}
+                            onBlur={handleOnBlur(parseFloat)}
                             onChange={handleOnChange}
                         />
                     </Form.Field>

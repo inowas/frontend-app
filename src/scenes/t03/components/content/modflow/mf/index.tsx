@@ -13,8 +13,8 @@ import HobPackageProperties from './hobPackageProperties';
 import MfPackageProperties from './mfPackageProperties';
 import NwtPackageProperties from './nwtPackageProperties';
 import OcPackageProperties from './ocPackageProperties';
-import PcgPackageProperties from './pcgPackageProperties';
 import PcgnPackageProperties from './pcgnPackageProperties';
+import PcgPackageProperties from './pcgPackageProperties';
 import RchPackageProperties from './rchPackageProperties';
 import RivPackageProperties from './rivPackageProperties';
 import SipPackageProperties from './sipPackageProperties';
@@ -48,4 +48,4 @@ export {
     SolverPackageProperties,
     SorPackageProperties,
     WelPackageProperties
-}
+};

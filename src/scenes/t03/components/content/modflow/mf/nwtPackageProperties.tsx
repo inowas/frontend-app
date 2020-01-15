@@ -36,8 +36,13 @@ const nwtPackageProperties = (props: IProps) => {
         return setMfPackage({...mfPackage, [name]: value});
     };
 
-    const handleOnBlur = (e: ChangeEvent<HTMLInputElement>) => {
-        const {name, value} = e.target;
+    const handleOnBlur = (cast?: (v: any) => any) => (e: ChangeEvent<HTMLInputElement>) => {
+        const {name} = e.target;
+        let {value} = e.target;
+
+        if (cast) {
+            value = cast(value);
+        }
         props.onChange(FlopyModflowMfnwt.fromObject({...mfPackage, [name]: value}));
     };
 
@@ -58,9 +63,9 @@ const nwtPackageProperties = (props: IProps) => {
 
     return (
         <Form>
-            <Grid columns={2} divided>
+            <Grid columns={2} divided={true}>
                 <Grid.Row>
-                    <Grid.Column stretched>
+                    <Grid.Column stretched={true}>
                         <Form.Field>
                             <label>Max. head change between outer iterations (headtol)</label>
                             <Input
@@ -69,7 +74,7 @@ const nwtPackageProperties = (props: IProps) => {
                                 name={'headtol'}
                                 value={mfPackage.headtol}
                                 icon={renderInfoPopup(documentation.nwt.headtol, 'HEADTOL')}
-                                onBlur={handleOnBlur}
+                                onBlur={handleOnBlur(parseFloat)}
                                 onChange={handleOnChange}
                             />
                         </Form.Field>
@@ -81,7 +86,7 @@ const nwtPackageProperties = (props: IProps) => {
                                 name={'fluxtol'}
                                 value={mfPackage.fluxtol}
                                 icon={renderInfoPopup(documentation.nwt.fluxtol, 'FLUXTOL')}
-                                onBlur={handleOnBlur}
+                                onBlur={handleOnBlur(parseFloat)}
                                 onChange={handleOnChange}
                             />
                         </Form.Field>
@@ -93,7 +98,7 @@ const nwtPackageProperties = (props: IProps) => {
                                 name={'maxiterout'}
                                 value={mfPackage.maxiterout}
                                 icon={renderInfoPopup(documentation.nwt.maxiterout, 'MAXITEROUT')}
-                                onBlur={handleOnBlur}
+                                onBlur={handleOnBlur(parseFloat)}
                                 onChange={handleOnChange}
                             />
                         </Form.Field>
@@ -105,12 +110,12 @@ const nwtPackageProperties = (props: IProps) => {
                                 name={'thickfact'}
                                 value={mfPackage.thickfact}
                                 icon={renderInfoPopup(documentation.nwt.thickfact, 'THICKFACT')}
-                                onBlur={handleOnBlur}
+                                onBlur={handleOnBlur(parseFloat)}
                                 onChange={handleOnChange}
                             />
                         </Form.Field>
                     </Grid.Column>
-                    <Grid.Column stretched>
+                    <Grid.Column stretched={true}>
                         <Form.Group>
                             <Form.Field width={14}>
                                 <label>Matrix solver to be used (linmeth)</label>
@@ -149,7 +154,8 @@ const nwtPackageProperties = (props: IProps) => {
                         </Form.Group>
                         <Form.Group>
                             <Form.Field width={14}>
-                                <label>Correct head relative to cell-bottom if surrounded by dewatered cells (ibotav)</label>
+                                <label>Correct head relative to cell-bottom if surrounded by dewatered cells
+                                    (ibotav)</label>
                                 <Checkbox
                                     toggle={true}
                                     label={''}
@@ -190,9 +196,9 @@ const nwtPackageProperties = (props: IProps) => {
             </Grid>
             <Segment>
                 <label style={styles.headerLabel}>General Specified Options</label>
-                <Grid columns={2} divided>
+                <Grid columns={2} divided={true}>
                     <Grid.Row>
-                        <Grid.Column stretched>
+                        <Grid.Column stretched={true}>
                             <Form.Field>
                                 <label>Coefficient to reduce weight applied to head change (dbdtheta)</label>
                                 <Input
@@ -201,7 +207,7 @@ const nwtPackageProperties = (props: IProps) => {
                                     name={'dbdtheta'}
                                     value={mfPackage.dbdtheta}
                                     icon={renderInfoPopup(documentation.nwt.dbdtheta, 'DBDTHETA')}
-                                    onBlur={handleOnBlur}
+                                    onBlur={handleOnBlur(parseFloat)}
                                     onChange={handleOnChange}
                                 />
                             </Form.Field>
@@ -213,19 +219,20 @@ const nwtPackageProperties = (props: IProps) => {
                                     name={'dbdkappa'}
                                     value={mfPackage.dbdkappa}
                                     icon={renderInfoPopup(documentation.nwt.dbdkappa, 'DBDKAPPA')}
-                                    onBlur={handleOnBlur}
+                                    onBlur={handleOnBlur(parseFloat)}
                                     onChange={handleOnChange}
                                 />
                             </Form.Field>
                             <Form.Field>
-                                <label>Factor used to weight the head change for previous and current iteration (dbdgamma)</label>
+                                <label>Factor used to weight the head change for previous and current iteration
+                                    (dbdgamma)</label>
                                 <Input
                                     readOnly={readOnly}
                                     type={'number'}
                                     name={'dbdgamma'}
                                     value={mfPackage.dbdgamma}
                                     icon={renderInfoPopup(documentation.nwt.dbdgamma, 'DBGGAMMA')}
-                                    onBlur={handleOnBlur}
+                                    onBlur={handleOnBlur(parseFloat)}
                                     onChange={handleOnChange}
                                 />
                             </Form.Field>
@@ -237,12 +244,12 @@ const nwtPackageProperties = (props: IProps) => {
                                     name={'momfact'}
                                     value={mfPackage.momfact}
                                     icon={renderInfoPopup(documentation.nwt.momfact, 'MOMFACT')}
-                                    onBlur={handleOnBlur}
+                                    onBlur={handleOnBlur(parseFloat)}
                                     onChange={handleOnChange}
                                 />
                             </Form.Field>
                         </Grid.Column>
-                        <Grid.Column stretched>
+                        <Grid.Column stretched={true}>
                             <Form.Group>
                                 <Form.Field width={14}>
                                     <label>Use residual control (backflag)</label>
@@ -266,7 +273,7 @@ const nwtPackageProperties = (props: IProps) => {
                                     name={'maxbackiter'}
                                     value={mfPackage.maxbackiter}
                                     icon={renderInfoPopup(documentation.nwt.maxbackiter, 'MAXBACKITER')}
-                                    onBlur={handleOnBlur}
+                                    onBlur={handleOnBlur(parseFloat)}
                                     onChange={handleOnChange}
                                 />
                             </Form.Field>
@@ -278,19 +285,20 @@ const nwtPackageProperties = (props: IProps) => {
                                     name={'backtol'}
                                     value={mfPackage.backtol}
                                     icon={renderInfoPopup(documentation.nwt.backtol, 'BACKTOL')}
-                                    onBlur={handleOnBlur}
+                                    onBlur={handleOnBlur(parseFloat)}
                                     onChange={handleOnChange}
                                 />
                             </Form.Field>
                             <Form.Field>
-                                <label>Reduction factor for residual control that reduces head change (backreduce)</label>
+                                <label>Reduction factor for residual control that reduces head change
+                                    (backreduce)</label>
                                 <Input
                                     readOnly={readOnly}
                                     type={'number'}
                                     name={'backreduce'}
                                     value={mfPackage.backreduce}
                                     icon={renderInfoPopup(documentation.nwt.backreduce, 'BACKREDUCE')}
-                                    onBlur={handleOnBlur}
+                                    onBlur={handleOnBlur(parseFloat)}
                                     onChange={handleOnChange}
                                 />
                             </Form.Field>
@@ -331,7 +339,7 @@ const nwtPackageProperties = (props: IProps) => {
                             name={'maxitinner'}
                             value={mfPackage.maxitinner}
                             icon={renderInfoPopup(documentation.nwt.maxitinner, 'MAXITINNER')}
-                            onBlur={handleOnBlur}
+                            onBlur={handleOnBlur(parseFloat)}
                             onChange={handleOnChange}
                         />
                     </Form.Field>
@@ -343,7 +351,7 @@ const nwtPackageProperties = (props: IProps) => {
                             name={'levfill'}
                             value={mfPackage.levfill}
                             icon={renderInfoPopup(documentation.nwt.levfill, 'LEVFILL')}
-                            onBlur={handleOnBlur}
+                            onBlur={handleOnBlur(parseFloat)}
                             onChange={handleOnChange}
                         />
                     </Form.Field>
@@ -357,7 +365,7 @@ const nwtPackageProperties = (props: IProps) => {
                             name={'stoptol'}
                             value={mfPackage.stoptol}
                             icon={renderInfoPopup(documentation.nwt.stoptol, 'STOPTOL')}
-                            onBlur={handleOnBlur}
+                            onBlur={handleOnBlur(parseFloat)}
                             onChange={handleOnChange}
                         />
                     </Form.Field>
@@ -369,7 +377,7 @@ const nwtPackageProperties = (props: IProps) => {
                             name={'msdr'}
                             value={mfPackage.msdr}
                             icon={renderInfoPopup(documentation.nwt.msdr, 'MSDR')}
-                            onBlur={handleOnBlur}
+                            onBlur={handleOnBlur(parseFloat)}
                             onChange={handleOnChange}
                         />
                     </Form.Field>
@@ -421,9 +429,9 @@ const nwtPackageProperties = (props: IProps) => {
                         {renderInfoPopup(documentation.nwt.norder, 'NORDER', 'top left', true)}
                     </Form.Field>
                 </Form.Group>
-                <Grid columns={2} divided>
+                <Grid columns={2} divided={true}>
                     <Grid.Row>
-                        <Grid.Column stretched>
+                        <Grid.Column stretched={true}>
                             <Form.Field>
                                 <label>Level of fill for incomplete LU factorization (level)</label>
                                 <Input
@@ -432,7 +440,7 @@ const nwtPackageProperties = (props: IProps) => {
                                     name={'level'}
                                     value={mfPackage.level}
                                     icon={renderInfoPopup(documentation.nwt.level, 'LEVEL')}
-                                    onBlur={handleOnBlur}
+                                    onBlur={handleOnBlur(parseFloat)}
                                     onChange={handleOnChange}
                                 />
                             </Form.Field>
@@ -444,7 +452,7 @@ const nwtPackageProperties = (props: IProps) => {
                                     name={'north'}
                                     value={mfPackage.north}
                                     icon={renderInfoPopup(documentation.nwt.north, 'NORTH')}
-                                    onBlur={handleOnBlur}
+                                    onBlur={handleOnBlur(parseFloat)}
                                     onChange={handleOnChange}
                                 />
                             </Form.Field>
@@ -477,7 +485,7 @@ const nwtPackageProperties = (props: IProps) => {
                                 </Form.Field>
                             </Form.Group>
                         </Grid.Column>
-                        <Grid.Column stretched>
+                        <Grid.Column stretched={true}>
                             <Form.Field>
                                 <label>Residual reduction-convergence criteria (rrctols)</label>
                                 <Input
@@ -486,7 +494,7 @@ const nwtPackageProperties = (props: IProps) => {
                                     name={'rrctols'}
                                     value={mfPackage.rrctols}
                                     icon={renderInfoPopup(documentation.nwt.rrctols, 'RRCTOLS')}
-                                    onBlur={handleOnBlur}
+                                    onBlur={handleOnBlur(parseFloat)}
                                     onChange={handleOnChange}
                                 />
                             </Form.Field>
@@ -498,7 +506,7 @@ const nwtPackageProperties = (props: IProps) => {
                                     name={'epsrn'}
                                     value={mfPackage.epsrn}
                                     icon={renderInfoPopup(documentation.nwt.epsrn, 'EPSRN')}
-                                    onBlur={handleOnBlur}
+                                    onBlur={handleOnBlur(parseFloat)}
                                     onChange={handleOnChange}
                                 />
                             </Form.Field>
@@ -510,7 +518,7 @@ const nwtPackageProperties = (props: IProps) => {
                                     name={'hclosexmd'}
                                     value={mfPackage.hclosexmd}
                                     icon={renderInfoPopup(documentation.nwt.hclosexmd, 'HCLOSEXMD')}
-                                    onBlur={handleOnBlur}
+                                    onBlur={handleOnBlur(parseFloat)}
                                     onChange={handleOnChange}
                                 />
                             </Form.Field>
@@ -522,7 +530,7 @@ const nwtPackageProperties = (props: IProps) => {
                                     name={'mxiterxmd'}
                                     value={mfPackage.mxiterxmd}
                                     icon={renderInfoPopup(documentation.nwt.mxiterxmd, 'MXITERXMD')}
-                                    onBlur={handleOnBlur}
+                                    onBlur={handleOnBlur(parseFloat)}
                                     onChange={handleOnChange}
                                 />
                             </Form.Field>
