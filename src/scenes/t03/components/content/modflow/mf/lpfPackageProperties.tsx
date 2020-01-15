@@ -1,5 +1,5 @@
 import React, {ChangeEvent, SyntheticEvent, useState} from 'react';
-import {DropdownProps, Form, Grid, Header, Input, Label, List, Segment} from 'semantic-ui-react';
+import {DropdownProps, Form, Grid, Header, Input, Label, Segment, Table} from 'semantic-ui-react';
 
 import {FlopyModflowMfdis, FlopyModflowMflpf} from '../../../../../../core/model/flopy/packages/mf';
 import FlopyModflow from '../../../../../../core/model/flopy/packages/mf/FlopyModflow';
@@ -49,47 +49,7 @@ const lpfPackageProperties = (props: IProps) => {
     return (
         <Form>
             <Header as={'h3'}>LPF: Layer Property Flow Package</Header>
-            {Array.isArray(mfPackage.laytyp) && mfPackage.laytyp.map((laytyp, idx) => (
-                <List selection={true} horizontal={true} key={idx}>
-                    <List.Item>
-                        <Label horizontal={true}>
-                            Layer
-                        </Label>
-                        {idx + 1}
-                    </List.Item>
-                    <List.Item>
-                        <Label horizontal={true}>
-                            Laytyp
-                        </Label>
-                        {laytyp}
-                    </List.Item>
-                    <List.Item>
-                        <Label horizontal={true}>
-                            Layavg
-                        </Label>
-                        {Array.isArray(mfPackage.layavg) ? mfPackage.layavg[idx] : mfPackage.layavg}
-                    </List.Item>
-                    <List.Item>
-                        <Label horizontal={true}>
-                            Chani
-                        </Label>
-                        {Array.isArray(mfPackage.chani) ? mfPackage.chani[idx] : mfPackage.chani}
-                    </List.Item>
-                    <List.Item>
-                        <Label horizontal={true}>
-                            Layvka
-                        </Label>
-                        {Array.isArray(mfPackage.layvka) ? mfPackage.layvka[idx] : mfPackage.layvka}
-                    </List.Item>
-                    <List.Item>
-                        <Label horizontal={true}>
-                            Laywet
-                        </Label>
-                        {Array.isArray(mfPackage.laywet) ? mfPackage.laywet[idx] : mfPackage.laywet}
-                    </List.Item>
-                </List>
-            ))}
-            {/*<Table basic={true}>
+            <Table basic={true}>
                 <Table.Header>
                     <Table.Row>
                         <Table.HeaderCell>Layer</Table.HeaderCell>
@@ -120,8 +80,7 @@ const lpfPackageProperties = (props: IProps) => {
                         </Table.Row>
                     ))}
                 </Table.Body>
-            </Table>*/}
-
+            </Table>
             <Segment>
                 <Form.Group widths="equal">
                     <Form.Field>

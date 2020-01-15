@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types';
 import React from 'react';
-import {Form, Input, Header, Label, List, Grid} from 'semantic-ui-react';
+import {Form, Grid, Input, Header, Label, Table} from 'semantic-ui-react';
 
 import AbstractPackageProperties from './AbstractPackageProperties';
 import {FlopyModflowMfbcf} from '../../../../../../core/model/flopy/packages/mf';
@@ -24,35 +24,7 @@ class BcfPackageProperties extends AbstractPackageProperties {
         return (
             <Form>
                 <Header as={'h3'}>BCF: Block Centered Flow Package</Header>
-                {mfPackage.laycon.map((laycon, idx) => (
-                    <List selection horizontal key={idx}>
-                        <List.Item>
-                            <Label horizontal>
-                                Layer
-                            </Label>
-                            {idx + 1}
-                        </List.Item>
-                        <List.Item>
-                            <Label horizontal>
-                                Laycon
-                            </Label>
-                            {laycon}
-                        </List.Item>
-                        <List.Item>
-                            <Label horizontal>
-                                intercellt
-                            </Label>
-                            {mfPackage.intercellt[idx]}
-                        </List.Item>
-                        <List.Item>
-                            <Label horizontal>
-                                Laywet
-                            </Label>
-                            {mfPackage.iwdflg[idx]}
-                        </List.Item>
-                    </List>
-                ))}
-                {/*<Table basic>
+                <Table basic>
                     <Table.Header>
                         <Table.Row>
                             <Table.HeaderCell>Layer</Table.HeaderCell>
@@ -71,8 +43,7 @@ class BcfPackageProperties extends AbstractPackageProperties {
                             </Table.Row>
                         ))}
                     </Table.Body>
-                </Table>*/}
-
+                </Table>
                 <Grid>
                     {mfPackage.tran.map((tran, idx) => {
                         const trpy = mfPackage.trpy[idx];
