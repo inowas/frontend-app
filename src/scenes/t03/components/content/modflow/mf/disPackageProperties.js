@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types';
 import React from 'react';
-import {Accordion, Form, Divider, Grid, Header, Icon, Input, List, Label, Segment, Table} from 'semantic-ui-react';
+import {Accordion, Form, Divider, Grid, Header, Icon, Input, List, Label, Segment} from 'semantic-ui-react';
 
 import AbstractPackageProperties from './AbstractPackageProperties';
 import {FlopyModflowMfdis} from '../../../../../../core/model/flopy/packages/mf';
@@ -166,7 +166,7 @@ class DisPackageProperties extends AbstractPackageProperties {
                                     </Label>
                                     {mfPackage.steady[idx] ? 'true' : 'false'}
                                 </List.Item>
-                                <Divider fitted />
+                                <Divider fitted/>
                             </List>
 
                         ))}
