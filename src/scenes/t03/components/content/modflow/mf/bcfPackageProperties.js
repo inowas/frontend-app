@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types';
 import React from 'react';
-import {Form, Input, Header, Table, Grid} from 'semantic-ui-react';
+import {Form, Input, Header, Label, List, Table, Grid} from 'semantic-ui-react';
 
 import AbstractPackageProperties from './AbstractPackageProperties';
 import {FlopyModflowMfbcf} from '../../../../../../core/model/flopy/packages/mf';
@@ -24,7 +24,35 @@ class BcfPackageProperties extends AbstractPackageProperties {
         return (
             <Form>
                 <Header as={'h3'}>BCF: Block Centered Flow Package</Header>
-                <Table basic>
+                {mfPackage.laycon.map((laycon, idx) => (
+                    <List selection horizontal>
+                        <List.Item>
+                            <Label horizontal>
+                                Layer
+                            </Label>
+                            {idx + 1}
+                        </List.Item>
+                        <List.Item>
+                            <Label horizontal>
+                                Laycon
+                            </Label>
+                            {laycon}
+                        </List.Item>
+                        <List.Item>
+                            <Label horizontal>
+                                intercellt
+                            </Label>
+                            {mfPackage.intercellt[idx]}
+                        </List.Item>
+                        <List.Item>
+                            <Label horizontal>
+                                Laywet
+                            </Label>
+                            {mfPackage.iwdflg[idx]}
+                        </List.Item>
+                    </List>
+                ))}
+                {/*<Table basic>
                     <Table.Header>
                         <Table.Row>
                             <Table.HeaderCell>Layer</Table.HeaderCell>
@@ -43,7 +71,7 @@ class BcfPackageProperties extends AbstractPackageProperties {
                             </Table.Row>
                         ))}
                     </Table.Body>
-                </Table>
+                </Table>*/}
 
                 <Grid>
                     {mfPackage.tran.map((tran, idx) => {
@@ -51,7 +79,7 @@ class BcfPackageProperties extends AbstractPackageProperties {
                         return (
                             <Grid.Row key={idx} columns={2}>
                                 <Grid.Column>
-                                    <Header as={'p'}>Hk Layer {idx + 1}</Header>
+                                    <Label>Hk Layer {idx + 1}</Label>
                                     <RasterDataImage
                                         data={tran}
                                         gridSize={GridSize.fromNxNy(ncol, nrow)}
@@ -64,7 +92,7 @@ class BcfPackageProperties extends AbstractPackageProperties {
                                     />
                                 </Grid.Column>
                                 <Grid.Column>
-                                    <Header as={'p'}>Horizontal anisotropy Layer {idx + 1}</Header>
+                                    <Label>Horizontal anisotropy Layer {idx + 1}</Label>
                                     <RasterDataImage
                                         data={trpy}
                                         gridSize={GridSize.fromNxNy(ncol, nrow)}
@@ -131,7 +159,7 @@ class BcfPackageProperties extends AbstractPackageProperties {
                         return (
                             <Grid.Row key={idx} columns={2}>
                                 <Grid.Column>
-                                    <Header as={'p'}>Specific storage Layer {idx + 1}</Header>
+                                    <Label>Specific storage Layer {idx + 1}</Label>
                                     <RasterDataImage
                                         data={sf1}
                                         gridSize={GridSize.fromNxNy(ncol, nrow)}
@@ -144,7 +172,7 @@ class BcfPackageProperties extends AbstractPackageProperties {
                                     />
                                 </Grid.Column>
                                 <Grid.Column>
-                                    <Header as={'p'}>Specific yield {idx + 1}</Header>
+                                    <Label>Specific yield {idx + 1}</Label>
                                     <RasterDataImage
                                         data={sf2}
                                         gridSize={GridSize.fromNxNy(ncol, nrow)}
