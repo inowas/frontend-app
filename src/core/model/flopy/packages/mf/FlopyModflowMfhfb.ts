@@ -61,8 +61,12 @@ export default class FlopyModflowMfhfb extends FlopyModflowBoundary<IFlopyModflo
         return new this(d);
     }
 
-    // TODO
     public update = (boundaries: BoundaryCollection, nper: number) => {
+        const bd = boundaries.all.filter((b) => b.type === 'hfb');
+        if (bd.length === 0) {
+            return null;
+        }
+
         return this;
     };
 

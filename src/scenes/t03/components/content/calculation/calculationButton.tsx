@@ -26,7 +26,9 @@ const calculationButton = () => {
         <Button
             positive={true}
             fluid={true}
-            onClick={dispatch(startCalculation)}
+            onClick={() => {
+                dispatch(startCalculation());
+            }}
             disabled={model.readOnly}
             loading={calculation ? calculation.state < CALCULATION_STATE_FINISHED : false}
         >

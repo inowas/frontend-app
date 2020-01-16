@@ -65,8 +65,12 @@ export default class FlopyModflowMflak extends FlopyModflowBoundary<IFlopyModflo
         return new this(d);
     }
 
-    // TODO
     public update = (boundaries: BoundaryCollection, stressPeriods: Stressperiods) => {
+        const bd = boundaries.all.filter((b) => b.type === 'lak');
+        if (bd.length === 0) {
+            return null;
+        }
+
         return this;
     };
 

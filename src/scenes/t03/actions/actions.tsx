@@ -184,6 +184,8 @@ export function updateLayer(layer: SoilmodelLayer) {
     };
 }
 
-export const startCalculation = () => ({
-    type: START_CALCULATION
-});
+export function startCalculation() {
+    return {
+        type: START_CALCULATION
+    };
+}

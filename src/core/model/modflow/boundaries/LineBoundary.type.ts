@@ -3,7 +3,7 @@ import {ICells} from '../../geometry/Cells.type';
 import {IBoundaryFeature} from './Boundary.type';
 import {IObservationPoint, IObservationPointExport} from './ObservationPoint.type';
 
-export type LineBoundaryType = 'chd' | 'fhb' | 'ghb' | 'riv' | 'drn';
+export type LineBoundaryType = 'chd' | 'fhb' | 'ghb' | 'riv' | 'drn' | 'hfb' | 'str';
 
 export interface ILineBoundaryFeatureCollection {
     type: 'FeatureCollection';

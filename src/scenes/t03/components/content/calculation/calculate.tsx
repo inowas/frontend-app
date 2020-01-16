@@ -1,6 +1,6 @@
 import React, {useState} from 'react';
 import {useDispatch, useSelector} from 'react-redux';
-import {Button, Grid, Header, Segment} from 'semantic-ui-react';
+import {Grid, Header, Segment} from 'semantic-ui-react';
 import FlopyPackages from '../../../../../core/model/flopy/packages/FlopyPackages';
 import {Calculation, ModflowModel} from '../../../../../core/model/modflow';
 import {IRootReducer} from '../../../../../reducers';
@@ -10,6 +10,7 @@ import {updateCalculation} from '../../../actions/actions';
 import ModflowModelCommand from '../../../commands/modflowModelCommand';
 import RunModelOverviewMap from '../../maps/runModelOverviewMap';
 import CalculationStatus, {CALCULATION_STATE_NEW} from './CalculationStatus';
+import {CalculationButton} from './index';
 
 const calculate = () => {
 
@@ -41,16 +42,16 @@ const calculate = () => {
         }
 
         if (calculation instanceof Calculation) {
-            if (calculation.state > 0 && calculation.state < 100) {
+            if (calculation.state > 0 && calculation.state < 100 && canBeCalculated) {
                 setCanBeCalculated(false);
             }
 
-            if (calculation.state >= 0 && calculation.state < 100) {
+            if (calculation.state >= 0 && calculation.state < 100 && !isCalculating) {
                 setIsCalculating(true);
             }
         }
 
-        if (calculationId === packages.calculation_id) {
+        if (calculationId === packages.calculation_id && canBeCalculated) {
             setCanBeCalculated(false);
         }
 
@@ -76,51 +77,14 @@ const calculate = () => {
             );
         };
 
-        const renderCalculationButton = () => {
-            if (canBeCalculated) {
-                return (
-                    <Button
-                        positive={true}
-                        fluid={true}
-                        onClick={onStartCalculationClick}
-                        loading={sending}
-                    >
-                        Calculate
-                    </Button>
-                );
-            }
-
-            if (isCalculating) {
-                return (
-                    <Button
-                        positive={true}
-                        disabled={true}
-                        fluid={true}
-                    >
-                        Calculating
-                    </Button>
-                );
-            }
-
-            return (
-                <Button
-                    color={'green'}
-                    disabled={true}
-                    fluid={true}
-                >
-                    Calculation finished
-                </Button>
-            );
-        };
-
         const renderCalculationProgress = () => {
             if (calculation instanceof Calculation) {
-                if (calculation.state > 0 && calculation.state < 100) {
+                if (calculation.state > 0 && calculation.state < 100 && !showProgress) {
                     setShowProgress(true);
                 }
             }
 
-            if (calculationId === packages.calculation_id) {
+            if (calculationId === packages.calculation_id && !showProgress) {
                 setShowProgress(true);
             }
 
@@ -161,11 +125,11 @@ const calculate = () => {
         };
 
         return (
-            <Grid paddled={true}>
+            <Grid padded={true}>
                 <Grid.Row>
                     <Grid.Column width={6}>
                         <Header as={'h3'}>Calculation</Header>
-                        {!model.readOnly && renderCalculationButton()}
+                        <CalculationButton/>
                         {!model.readOnly && renderCalculationProgress()}
 
                     </Grid.Column>

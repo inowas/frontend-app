@@ -4,8 +4,9 @@ import Calculation from '../../../../../core/model/modflow/Calculation';
 
 export const CALCULATION_STATE_NEW = 0;
 export const CALCULATION_STATE_PREPROCESSING = 1;
-export const CALCULATION_STATE_SENDING = 2;
-export const CALCULATION_STATE_QUEUED = 3;
+export const CALCULATION_STATE_PREPROCESSING_FINISHED = 2;
+export const CALCULATION_STATE_SENDING = 3;
+export const CALCULATION_STATE_QUEUED = 4;
 export const CALCULATION_STATE_CALCULATING = 100;
 export const CALCULATION_STATE_FINISHED = 200;
 export const CALCULATION_STATE_ERROR_MODEL = 400;
