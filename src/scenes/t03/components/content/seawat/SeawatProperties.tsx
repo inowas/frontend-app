@@ -211,7 +211,7 @@ class SeawatProperties extends React.Component<Props, ISeawatPropertiesState> {
 const mapStateToProps = (state: any) => ({
     boundaries: BoundaryCollection.fromObject(state.T03.boundaries),
     model: ModflowModel.fromObject(state.T03.model),
-    packages: FlopyPackages.fromObject(state.T03.packages),
+    packages: FlopyPackages.fromObject(state.T03.packages.data),
     transport: Transport.fromObject(state.T03.transport),
     variableDensity: VariableDensity.fromObject(state.T03.variableDensity)
 });

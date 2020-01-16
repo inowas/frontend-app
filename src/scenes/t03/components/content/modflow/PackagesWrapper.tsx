@@ -22,7 +22,7 @@ const packagesWrapper = (props: IProps) => {
     const model = T03.model ? ModflowModel.fromObject(T03.model) : null;
     const boundaries = T03.boundaries ? BoundaryCollection.fromObject(T03.boundaries) : null;
     const soilmodel = T03.soilmodel ? Soilmodel.fromObject(T03.soilmodel) : null;
-    const packages = T03.packages ? FlopyPackages.fromObject(T03.packages) : null;
+    const packages = T03.packages.data ? FlopyPackages.fromObject(T03.packages.data) : null;
 
     if (!model || !boundaries || !soilmodel) {
         return null;

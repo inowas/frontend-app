@@ -57,6 +57,7 @@ const boundaries = (props: Props) => {
     };
 
     useEffect(() => {
+        console.log('[]');
         if (!props.match.params.pid) {
             setIsLoading(true);
             return redirectToFirstBoundary();
@@ -64,6 +65,7 @@ const boundaries = (props: Props) => {
     }, []);
 
     useEffect(() => {
+        console.log('[props.types]', props.types);
         if (prevTypes && JSON.stringify(props.types) !== JSON.stringify(prevTypes)) {
             setSelectedBoundary(null);
             setIsLoading(true);
@@ -74,6 +76,7 @@ const boundaries = (props: Props) => {
     }, [props.types]);
 
     useEffect(() => {
+        console.log('[props.boundaries]', props.boundaries);
         setIsLoading(true);
         if (!props.match.params.pid) {
             return redirectToFirstBoundary();

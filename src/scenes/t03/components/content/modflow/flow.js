@@ -84,7 +84,7 @@ class Flow extends React.Component {
         }
 
         const packages = FlopyPackages.fromObject(this.props.packages.toObject());
-        packages.mf.recalculate(model, soilmodel, boundaries);
+        //packages.mf.recalculate(model, soilmodel, boundaries);
         this.setState({
             isLoading: false
         }, this.props.updatePackages(packages));
@@ -366,7 +366,7 @@ class Flow extends React.Component {
 const mapStateToProps = (state) => ({
     boundaries: state.T03.boundaries ? BoundaryCollection.fromObject(state.T03.boundaries) : null,
     model: state.T03.model ? ModflowModel.fromObject(state.T03.model) : null,
-    packages: state.T03.packages ? FlopyPackages.fromObject(state.T03.packages) : null,
+    packages: state.T03.packages.data ? FlopyPackages.fromObject(state.T03.packages.data) : null,
     soilmodel: state.T03.soilmodel ? Soilmodel.fromObject(state.T03.soilmodel) : null,
 });
 

@@ -3,7 +3,9 @@ import {Progress} from 'semantic-ui-react';
 import Calculation from '../../../../../core/model/modflow/Calculation';
 
 export const CALCULATION_STATE_NEW = 0;
-export const CALCULATION_STATE_QUEUED = 1;
+export const CALCULATION_STATE_PREPROCESSING = 1;
+export const CALCULATION_STATE_SENDING = 2;
+export const CALCULATION_STATE_QUEUED = 3;
 export const CALCULATION_STATE_CALCULATING = 100;
 export const CALCULATION_STATE_FINISHED = 200;
 export const CALCULATION_STATE_ERROR_MODEL = 400;
@@ -14,8 +16,14 @@ interface IProps {
 }
 
 const calculationStatus = (props: IProps) => (
-    <Progress value={props.calculation.state} total={4} success={props.calculation.state === 200}>
-        {props.calculation.state === CALCULATION_STATE_NEW && 'Sending data...'}
+    <Progress
+        value={props.calculation.state}
+        total={6}
+        success={props.calculation.state === CALCULATION_STATE_FINISHED}
+    >
+        {props.calculation.state === CALCULATION_STATE_NEW && 'Calculation Process started.'}
+        {props.calculation.state === CALCULATION_STATE_PREPROCESSING && 'Preprocessing...'}
+        {props.calculation.state === CALCULATION_STATE_SENDING && 'Sending Data...'}
         {props.calculation.state === CALCULATION_STATE_QUEUED && 'Queued...'}
         {props.calculation.state === CALCULATION_STATE_CALCULATING && 'Calculating...'}
         {props.calculation.state === CALCULATION_STATE_FINISHED && 'Finished successfully!'}

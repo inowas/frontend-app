@@ -145,7 +145,7 @@ const boundaryDetails = (props: IProps) => {
 
     const renderLayerSelection = () => {
         const cBoundary = props.boundary;
-        const multipleLayers = ['chd', 'ghb'].includes(cBoundary.type);
+        const multipleLayers = ['chd', 'ghb', 'fhb'].includes(cBoundary.type);
 
         let options;
 

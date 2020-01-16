@@ -157,7 +157,7 @@ const mapStateToProps = (state: any) => ({
     model: state.T03.model ? ModflowModel.fromObject(state.T03.model) : null,
     boundaries: state.T03.boundaries ? BoundaryCollection.fromObject(state.T03.boundaries) : null,
     calculation: state.T03.calculation ? Calculation.fromObject(state.T03.calculation) : null,
-    packages: state.T03.packages ? FlopyPackages.fromObject(state.T03.packages) : null,
+    packages: state.T03.packages.data ? FlopyPackages.fromObject(state.T03.packages.data) : null,
     soilmodel: state.T03.soilmodel ? Soilmodel.fromObject(state.T03.soilmodel) : null,
     transport: state.T03.transport ? Transport.fromObject(state.T03.transport) : null,
     variableDensity: state.T03.variableDensity ? VariableDensity.fromObject(state.T03.variableDensity) : null

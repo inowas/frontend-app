@@ -1,5 +1,6 @@
-import {useEffect} from 'react';
+import React, {useEffect, useState} from 'react';
 import {useDispatch, useSelector} from 'react-redux';
+import {Button, Message} from 'semantic-ui-react';
 import FlopyPackages from '../../../../../core/model/flopy/packages/FlopyPackages';
 import FlopyModflow from '../../../../../core/model/flopy/packages/mf/FlopyModflow';
 import FlopyModpath from '../../../../../core/model/flopy/packages/mp/FlopyModpath';
@@ -11,25 +12,46 @@ import Soilmodel from '../../../../../core/model/modflow/soilmodel/Soilmodel';
 import Transport from '../../../../../core/model/modflow/transport/Transport';
 import VariableDensity from '../../../../../core/model/modflow/variableDensity/VariableDensity';
 import {IRootReducer} from '../../../../../reducers';
-import {updatePackages} from '../../../actions/actions';
+import {
+    updateProcessedPackages,
+    updateProcessingPackages
+} from '../../../actions/actions';
 
 const packagesUpdater = () => {
     const T03 = useSelector((state: IRootReducer) => state.T03);
     const dispatch = useDispatch();
 
-    useEffect(() => {
-        const model = T03.model ? ModflowModel.fromObject(T03.model) : null;
-        const boundaries = T03.boundaries ? BoundaryCollection.fromObject(T03.boundaries) : null;
-        const soilmodel = T03.soilmodel ? Soilmodel.fromObject(T03.soilmodel) : null;
-        const transport = T03.transport ? Transport.fromObject(T03.transport) : null;
-        const variableDensity = T03.variableDensity ? VariableDensity.fromObject(T03.variableDensity) : null;
-        const packages = T03.packages ? FlopyPackages.fromObject(T03.packages) : null;
+    const modelObj = useSelector((state: IRootReducer) => state.T03.model);
+    const boundariesObj = useSelector((state: IRootReducer) => state.T03.boundaries);
+    const soilmodelObj = useSelector((state: IRootReducer) => state.T03.soilmodel);
+    const transportObj = useSelector((state: IRootReducer) => state.T03.transport);
+    const variableDensityObj = useSelector((state: IRootReducer) => state.T03.variableDensity);
 
+    const model = modelObj ? ModflowModel.fromObject(modelObj) : null;
+    const boundaries = boundariesObj ? BoundaryCollection.fromObject(boundariesObj) : null;
+    const soilmodel = soilmodelObj ? Soilmodel.fromObject(soilmodelObj) : null;
+    const transport = transportObj ? Transport.fromObject(transportObj) : null;
+    const variableDensity = variableDensityObj ? VariableDensity.fromObject(variableDensityObj) : null;
+    const packages = T03.packages.data ? FlopyPackages.fromObject(T03.packages.data) : null;
+
+    const [isProcessing, setIsProcessing] = useState<boolean>(false);
+
+    useEffect(() => {
+        if (isProcessing) {
+            recalculate();
+        }
+    }, [isProcessing]);
+
+    const recalculate = () => {
         if (model && boundaries && soilmodel && transport && variableDensity) {
+            dispatch(updateProcessingPackages());
+            setIsProcessing(true);
+
             let p;
             if (packages) {
                 p = packages.update(model, soilmodel, boundaries, transport, variableDensity);
-                dispatch(updatePackages(p));
+                dispatch(updateProcessedPackages(p));
+                setIsProcessing(false);
                 return;
             }
 
@@ -41,11 +63,27 @@ const packagesUpdater = () => {
                 FlopySeawat.createFromVariableDensity(variableDensity)
             );
 
-            dispatch(updatePackages(p));
+            dispatch(updateProcessedPackages(p));
+            setIsProcessing(false);
         }
-    }, [T03.model, T03.soilmodel, T03.boundaries, T03.transport, T03.variableDensity]);
+    };
 
-    return null;
+    return (
+        <Message color={'blue'}>
+            <Message.Header as={'h4'}>Packages Updater</Message.Header>
+            <Message.Content>
+                {isProcessing && 'PROCESSING'}
+                <Button
+                    positive={true}
+                    fluid={true}
+                    onClick={() => setIsProcessing(true)}
+                    disabled={model ? model.readOnly : true}
+                >
+                    Process
+                </Button>
+            </Message.Content>
+        </Message>
+    );
 };
 
 export default packagesUpdater;

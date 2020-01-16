@@ -23,8 +23,7 @@ const calculationProgressBar = () => {
         const calculation = T03.calculation ? Calculation.fromObject(T03.calculation) : null;
 
         useEffect(() => {
-
-            if (!model || !calculation) {
+            if (!model || model.readOnly || !calculation) {
                 return setVisible(false);
             }
 
@@ -63,28 +62,28 @@ const calculationProgressBar = () => {
 
         const fetchCalculation = () => {
             if (!(model instanceof ModflowModel)) {
-                return;
+                return stopPolling();
             }
 
             if (!(calculation instanceof Calculation)) {
-                return;
+                return stopPolling();
             }
 
             const {state} = calculation;
             if (state < CALCULATION_STATE_NEW || state >= CALCULATION_STATE_FINISHED) {
-                return;
+                return stopPolling();
             }
 
             setFetching(true);
-            fetchCalculationDetails(
-                calculation.id,
-                (data: ICalculation) => {
-                    const c = Calculation.fromQuery(data);
+            fetchCalculationDetails(calculation.id)
+                .then((data: ICalculation) => {
                     setFetching(false);
-                    dispatch(updateCalculation(c));
-                },
-                (e: string) => setError(e)
-            );
+                    dispatch(updateCalculation(Calculation.fromQuery(data)));
+                })
+                .catch((e) => {
+                    setError(e);
+                    stopPolling();
+                });
         };
 
         if (visible && calculation) {

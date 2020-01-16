@@ -102,16 +102,14 @@ export const calculateLineBoundarySpData = (boundaries: LineBoundary[], stresspe
     }
 
     const spData: number[][][] = [];
-    for (let per = 0; per < stressperiods.count; per++) {
-        spData[per] = [];
-    }
 
     boundaries.forEach((b: LineBoundary) => {
         const cells = b.cells.toObject();
         const layers = b.layers;
-        const ops = b.observationPoints;
+        const ops = b.observationPoints.map((o) => ({spValues: o.getSpValues(stressperiods)}));
 
         for (let per = 0; per < stressperiods.count; per++) {
+            spData[per] = [];
             layers.forEach((lay: number) => {
                 cells.forEach((cell: ICell) => {
                     const col = cell[0];
@@ -125,7 +123,7 @@ export const calculateLineBoundarySpData = (boundaries: LineBoundary[], stresspe
                         throw Error('PrevOp not found');
                     }
 
-                    const prevSpValues = prevOP.getSpValues(stressperiods);
+                    const prevSpValues = prevOP.spValues;
                     if (!prevSpValues) {
                         return;
                     }
@@ -143,7 +141,7 @@ export const calculateLineBoundarySpData = (boundaries: LineBoundary[], stresspe
                         throw Error('NextOp not found');
                     }
 
-                    const nextSpValues = nextOP.getSpValues(stressperiods);
+                    const nextSpValues = nextOP.spValues;
                     if (!nextSpValues) {
                         return;
                     }

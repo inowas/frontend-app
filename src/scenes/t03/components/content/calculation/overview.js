@@ -6,7 +6,7 @@ import {Button, Grid, Header, Segment} from 'semantic-ui-react';
 import RunModelOverviewMap from '../../maps/runModelOverviewMap';
 import {connect} from 'react-redux';
 import CalculationStatus, {CALCULATION_STATE_NEW} from './CalculationStatus';
-import {sendCalculationRequest, sendCommand} from '../../../../../services/api';
+import {sendModflowCalculationRequest, sendCommand} from '../../../../../services/api';
 import {updateCalculation, updatePackages} from '../../../actions/actions';
 import FlopyPackages from '../../../../../core/model/flopy/packages/FlopyPackages';
 import ModflowModelCommand from '../../../commands/modflowModelCommand';
@@ -31,14 +31,14 @@ class Overview extends React.Component {
     componentDidMount() {
         const {boundaries, model, soilmodel, transport, variableDensity} = this.props;
         const packages = FlopyPackages.fromObject(this.props.packages.toObject());
-        packages.mf.recalculate(model, soilmodel, boundaries);
+        //packages.mf.recalculate(model, soilmodel, boundaries);
 
         if (transport.enabled) {
-            packages.mt.recalculate(transport, boundaries);
+            //packages.mt.recalculate(transport, boundaries);
         }
 
         if (variableDensity.enabled) {
-            packages.swt.recalculate(variableDensity);
+            //packages.swt.recalculate(variableDensity);
         }
 
         this.props.updatePackages(packages);
@@ -47,7 +47,7 @@ class Overview extends React.Component {
     onStartCalculationClick = () => {
         const calculationId = this.props.packages.calculation_id;
         this.setState({sending: true},
-            () => sendCalculationRequest(this.props.packages,
+            () => sendModflowCalculationRequest(this.props.packages,
                 () => {
                     sendCommand(ModflowModelCommand.updateModflowModelCalculationId(this.props.model.id, calculationId),
                         () => this.props.updateCalculation(Calculation.fromCalculationIdAndState(calculationId, CALCULATION_STATE_NEW)),
@@ -201,7 +201,7 @@ const mapStateToProps = state => ({
     boundaries: BoundaryCollection.fromObject(state.T03.boundaries),
     calculation: state.T03.calculation ? Calculation.fromObject(state.T03.calculation) : null,
     model: ModflowModel.fromObject(state.T03.model),
-    packages: FlopyPackages.fromObject(state.T03.packages),
+    packages: FlopyPackages.fromObject(state.T03.packages.data),
     soilmodel: Soilmodel.fromObject(state.T03.soilmodel),
     transport: Transport.fromObject(state.T03.transport),
     variableDensity: VariableDensity.fromObject(state.T03.variableDensity)
