@@ -46,10 +46,7 @@ class Mt3dProperties extends React.Component {
     }
 
     componentDidMount() {
-        const {boundaries, model, soilmodel, transport} = this.props;
         const packages = FlopyPackages.fromObject(this.props.packages.toObject());
-        //packages.mf.recalculate(model, soilmodel, boundaries);
-        //packages.mt.recalculate(transport, boundaries);
         this.props.updatePackages(packages);
     }
 
