@@ -1,5 +1,5 @@
 import React, {ChangeEvent, SyntheticEvent, useState} from 'react';
-import {DropdownProps, Form, Grid, Header, Input, Label, List, Segment, Table} from 'semantic-ui-react';
+import {DropdownProps, Form, Grid, Header, Input, Label, List, Segment} from 'semantic-ui-react';
 
 import {FlopyModflowMfdis, FlopyModflowMflpf} from '../../../../../../core/model/flopy/packages/mf';
 import FlopyModflow from '../../../../../../core/model/flopy/packages/mf/FlopyModflow';
@@ -36,8 +36,13 @@ const lpfPackageProperties = (props: IProps) => {
         return setMfPackage({...mfPackage, [name]: value});
     };
 
-    const handleOnBlur = (e: ChangeEvent<HTMLInputElement>) => {
-        const {name, value} = e.target;
+    const handleOnBlur = (cast?: (v: any) => any) => (e: ChangeEvent<HTMLInputElement>) => {
+        const {name} = e.target;
+        let {value} = e.target;
+
+        if (cast) {
+            value = cast(value);
+        }
         props.onChange(FlopyModflowMflpf.fromObject({...mfPackage, [name]: value}));
     };
 
@@ -45,39 +50,39 @@ const lpfPackageProperties = (props: IProps) => {
         <Form>
             <Header as={'h3'}>LPF: Layer Property Flow Package</Header>
             {Array.isArray(mfPackage.laytyp) && mfPackage.laytyp.map((laytyp, idx) => (
-                <List selection horizontal key={idx}>
+                <List selection={true} horizontal={true} key={idx}>
                     <List.Item>
-                        <Label horizontal>
+                        <Label horizontal={true}>
                             Layer
                         </Label>
                         {idx + 1}
                     </List.Item>
                     <List.Item>
-                        <Label horizontal>
+                        <Label horizontal={true}>
                             Laytyp
                         </Label>
                         {laytyp}
                     </List.Item>
                     <List.Item>
-                        <Label horizontal>
+                        <Label horizontal={true}>
                             Layavg
                         </Label>
                         {Array.isArray(mfPackage.layavg) ? mfPackage.layavg[idx] : mfPackage.layavg}
                     </List.Item>
                     <List.Item>
-                        <Label horizontal>
+                        <Label horizontal={true}>
                             Chani
                         </Label>
                         {Array.isArray(mfPackage.chani) ? mfPackage.chani[idx] : mfPackage.chani}
                     </List.Item>
                     <List.Item>
-                        <Label horizontal>
+                        <Label horizontal={true}>
                             Layvka
                         </Label>
                         {Array.isArray(mfPackage.layvka) ? mfPackage.layvka[idx] : mfPackage.layvka}
                     </List.Item>
                     <List.Item>
-                        <Label horizontal>
+                        <Label horizontal={true}>
                             Laywet
                         </Label>
                         {Array.isArray(mfPackage.laywet) ? mfPackage.laywet[idx] : mfPackage.laywet}
@@ -295,10 +300,11 @@ const lpfPackageProperties = (props: IProps) => {
                     <Input
                         readOnly={readonly}
                         name="wetdry"
+                        type={'number'}
                         value={mfPackage.wetdry}
                         icon={<InfoPopup description={documentation.wetdry} title={'wetdry'}/>}
                         onChange={handleOnChange}
-                        onBlur={handleOnBlur}
+                        onBlur={handleOnBlur(parseFloat)}
                     />
                 </Form.Field>
             </Form.Group>

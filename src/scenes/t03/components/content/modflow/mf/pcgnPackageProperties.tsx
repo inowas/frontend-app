@@ -35,8 +35,13 @@ const pcgnPackageProperties = (props: IProps) => {
         return setMfPackage({...mfPackage, [name]: value});
     };
 
-    const handleOnBlur = (e: ChangeEvent<HTMLInputElement>) => {
-        const {name, value} = e.target;
+    const handleOnBlur = (cast?: (v: any) => any) => (e: ChangeEvent<HTMLInputElement>) => {
+        const {name} = e.target;
+        let {value} = e.target;
+
+        if (cast) {
+            value = cast(value);
+        }
         props.onChange(FlopyModflowMfpcgn.fromObject({...mfPackage, [name]: value}));
     };
 
@@ -71,7 +76,7 @@ const pcgnPackageProperties = (props: IProps) => {
                             type={'number'}
                             value={mfPackage.iter_mo}
                             icon={renderInfoPopup(documentation.pcgn.iter_mo, 'ITER_MO')}
-                            onBlur={handleOnBlur}
+                            onBlur={handleOnBlur(parseFloat)}
                             onChange={handleOnChange}
                         />
                     </Form.Field>
@@ -83,7 +88,7 @@ const pcgnPackageProperties = (props: IProps) => {
                             type={'number'}
                             value={mfPackage.iter_mi}
                             icon={renderInfoPopup(documentation.pcgn.iter_mi, 'ITER_MI')}
-                            onBlur={handleOnBlur}
+                            onBlur={handleOnBlur(parseFloat)}
                             onChange={handleOnChange}
                         />
                     </Form.Field>
@@ -97,7 +102,7 @@ const pcgnPackageProperties = (props: IProps) => {
                             type={'number'}
                             value={mfPackage.close_r}
                             icon={renderInfoPopup(documentation.pcgn.close_r, 'CLOSE_R')}
-                            onBlur={handleOnBlur}
+                            onBlur={handleOnBlur(parseFloat)}
                             onChange={handleOnChange}
                         />
                     </Form.Field>
@@ -109,7 +114,7 @@ const pcgnPackageProperties = (props: IProps) => {
                             type={'number'}
                             value={mfPackage.close_h}
                             icon={renderInfoPopup(documentation.pcgn.close_h, 'CLOSE_H')}
-                            onBlur={handleOnBlur}
+                            onBlur={handleOnBlur(parseFloat)}
                             onChange={handleOnChange}
                         />
                     </Form.Field>
@@ -123,7 +128,7 @@ const pcgnPackageProperties = (props: IProps) => {
                             type={'number'}
                             value={mfPackage.relax}
                             icon={renderInfoPopup(documentation.pcgn.relax, 'RELAX')}
-                            onBlur={handleOnBlur}
+                            onBlur={handleOnBlur(parseFloat)}
                             onChange={handleOnChange}
                         />
                     </Form.Field>
@@ -155,7 +160,7 @@ const pcgnPackageProperties = (props: IProps) => {
                             type={'number'}
                             value={mfPackage.unit_pc}
                             icon={renderInfoPopup(documentation.pcgn.unit_pc, 'UNIT_PC')}
-                            onBlur={handleOnBlur}
+                            onBlur={handleOnBlur(parseFloat)}
                             onChange={handleOnChange}
                         />
                     </Form.Field>
@@ -167,7 +172,7 @@ const pcgnPackageProperties = (props: IProps) => {
                             type={'number'}
                             value={mfPackage.unit_ts}
                             icon={renderInfoPopup(documentation.pcgn.unit_ts, 'UNIT_PC')}
-                            onBlur={handleOnBlur}
+                            onBlur={handleOnBlur(parseFloat)}
                             onChange={handleOnChange}
                         />
                     </Form.Field>
@@ -178,25 +183,25 @@ const pcgnPackageProperties = (props: IProps) => {
                 <Grid columns={'2'}>
                     <Grid.Column>
                         <Form.Group>
-                        <Form.Field width={14}>
-                        <label>Damping mode (ADAMP)</label>
-                        <Form.Dropdown
-                            options={[
-                                {key: 0, value: 0, text: '(0) Ordinary'},
-                                {key: 1, value: 1, text: '(1) Adaptive'},
-                                {key: 2, value: 2, text: '(2) Enhanced'}
-                            ]}
-                            selection={true}
-                            name={'adamp'}
-                            value={mfPackage.adamp}
-                            onChange={handleOnSelect}
-                            disabled={readOnly}
-                        />
-                        </Form.Field>
-                        <Form.Field width={1}>
-                            <label>&nbsp;</label>
-                            {renderInfoPopup(documentation.pcgn.adamp, 'ADAMP', 'top left', true)}
-                        </Form.Field>
+                            <Form.Field width={14}>
+                                <label>Damping mode (ADAMP)</label>
+                                <Form.Dropdown
+                                    options={[
+                                        {key: 0, value: 0, text: '(0) Ordinary'},
+                                        {key: 1, value: 1, text: '(1) Adaptive'},
+                                        {key: 2, value: 2, text: '(2) Enhanced'}
+                                    ]}
+                                    selection={true}
+                                    name={'adamp'}
+                                    value={mfPackage.adamp}
+                                    onChange={handleOnSelect}
+                                    disabled={readOnly}
+                                />
+                            </Form.Field>
+                            <Form.Field width={1}>
+                                <label>&nbsp;</label>
+                                {renderInfoPopup(documentation.pcgn.adamp, 'ADAMP', 'top left', true)}
+                            </Form.Field>
                         </Form.Group>
                         <Form.Field>
                             <label>Damping restriction (DAMP) </label>
@@ -206,7 +211,7 @@ const pcgnPackageProperties = (props: IProps) => {
                                 type={'number'}
                                 value={mfPackage.damp}
                                 icon={renderInfoPopup(documentation.pcgn.damp, 'DAMP')}
-                                onBlur={handleOnBlur}
+                                onBlur={handleOnBlur(parseFloat)}
                                 onChange={handleOnChange}
                             />
                         </Form.Field>
@@ -230,7 +235,7 @@ const pcgnPackageProperties = (props: IProps) => {
                                 type={'number'}
                                 value={mfPackage.rate_d}
                                 icon={renderInfoPopup(documentation.pcgn.rate_d, 'RATE_D')}
-                                onBlur={handleOnBlur}
+                                onBlur={handleOnBlur(parseFloat)}
                                 onChange={handleOnChange}
                             />
                         </Form.Field>
@@ -242,7 +247,7 @@ const pcgnPackageProperties = (props: IProps) => {
                                 type={'number'}
                                 value={mfPackage.chglimit}
                                 icon={renderInfoPopup(documentation.pcgn.chglimit, 'CHGLIMIT')}
-                                onBlur={handleOnBlur}
+                                onBlur={handleOnBlur(parseFloat)}
                                 onChange={handleOnChange}
                             />
                         </Form.Field>
@@ -277,7 +282,7 @@ const pcgnPackageProperties = (props: IProps) => {
                                 type={'number'}
                                 value={mfPackage.cnvg_lb}
                                 icon={renderInfoPopup(documentation.pcgn.cnvg_lb, 'CNVG_LB')}
-                                onBlur={handleOnBlur}
+                                onBlur={handleOnBlur(parseFloat)}
                                 onChange={handleOnChange}
                             />
                         </Form.Field>
@@ -289,7 +294,7 @@ const pcgnPackageProperties = (props: IProps) => {
                                 type={'number'}
                                 value={mfPackage.mcnvg}
                                 icon={renderInfoPopup(documentation.pcgn.mcnvg, 'MCNVG')}
-                                onBlur={handleOnBlur}
+                                onBlur={handleOnBlur(parseFloat)}
                                 onChange={handleOnChange}
                             />
                         </Form.Field>
@@ -301,7 +306,7 @@ const pcgnPackageProperties = (props: IProps) => {
                                 type={'number'}
                                 value={mfPackage.rate_c}
                                 icon={renderInfoPopup(documentation.pcgn.rate_c, 'RATE_C')}
-                                onBlur={handleOnBlur}
+                                onBlur={handleOnBlur(parseFloat)}
                                 onChange={handleOnChange}
                             />
                         </Form.Field>

@@ -1,6 +1,6 @@
 import React, {SyntheticEvent} from 'react';
 import {DropdownProps, Form} from 'semantic-ui-react';
-import {FlopyModflowMflpf} from '../../../../../../core/model/flopy/packages/mf';
+import {FlopyModflowMfbcf, FlopyModflowMflpf} from '../../../../../../core/model/flopy/packages/mf';
 import FlopyModflow, {flowPackages} from '../../../../../../core/model/flopy/packages/mf/FlopyModflow';
 import FlopyModflowFlowPackage from '../../../../../../core/model/flopy/packages/mf/FlopyModflowFlowPackage';
 
@@ -37,7 +37,7 @@ const flowPackageProperties = (props: IProps) => {
             case 'bcf':
                 return (
                     <BcfPackageProperties
-                        mfPackage={mf.getPackage(type)}
+                        mfPackage={mf.getPackage(type) as FlopyModflowMfbcf}
                         mfPackages={mf}
                         onChange={props.onChange}
                         readonly={readOnly}

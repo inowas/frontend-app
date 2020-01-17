@@ -26,8 +26,13 @@ const de4PackageProperties = (props: IProps) => {
         return setMfPackage({...mfPackage, [name]: value});
     };
 
-    const handleOnBlur = (e: ChangeEvent<HTMLInputElement>) => {
-        const {name, value} = e.target;
+    const handleOnBlur = (cast?: (v: any) => any) => (e: ChangeEvent<HTMLInputElement>) => {
+        const {name} = e.target;
+        let {value} = e.target;
+
+        if (cast) {
+            value = cast(value);
+        }
         props.onChange(FlopyModflowMfde4.fromObject({...mfPackage, [name]: value}));
     };
 
@@ -58,7 +63,7 @@ const de4PackageProperties = (props: IProps) => {
                         name={'itmx'}
                         value={mfPackage.itmx}
                         icon={renderInfoPopup(documentation.itmx, 'ITMX')}
-                        onBlur={handleOnBlur}
+                        onBlur={handleOnBlur(parseFloat)}
                         onChange={handleOnChange}
                     />
                 </Form.Field>
@@ -67,9 +72,10 @@ const de4PackageProperties = (props: IProps) => {
                     <Input
                         readOnly={readOnly}
                         name={'mxup'}
+                        type={'number'}
                         value={mfPackage.mxup}
                         icon={renderInfoPopup(documentation.mxup, 'MXUP')}
-                        onBlur={handleOnBlur}
+                        onBlur={handleOnBlur(parseFloat)}
                         onChange={handleOnChange}
                     />
                 </Form.Field>
@@ -81,9 +87,10 @@ const de4PackageProperties = (props: IProps) => {
                     <Input
                         readOnly={readOnly}
                         name="mxlow"
+                        type={'number'}
                         value={mfPackage.mxlow}
                         icon={renderInfoPopup(documentation.mxlow, 'MXLOW')}
-                        onBlur={handleOnBlur}
+                        onBlur={handleOnBlur(parseFloat)}
                         onChange={handleOnChange}
                     />
                 </Form.Field>
@@ -92,9 +99,10 @@ const de4PackageProperties = (props: IProps) => {
                     <Input
                         readOnly={readOnly}
                         name="mxbw"
+                        type={'number'}
                         value={mfPackage.mxbw}
                         icon={renderInfoPopup(documentation.mxbw, 'MXBW')}
-                        onBlur={handleOnBlur}
+                        onBlur={handleOnBlur(parseFloat)}
                         onChange={handleOnChange}
                     />
                 </Form.Field>
@@ -150,9 +158,10 @@ const de4PackageProperties = (props: IProps) => {
                     <Input
                         readOnly={readOnly}
                         name="accl"
+                        type={'number'}
                         value={mfPackage.accl}
                         icon={renderInfoPopup(documentation.accl, 'ACCL')}
-                        onBlur={handleOnBlur}
+                        onBlur={handleOnBlur(parseFloat)}
                         onChange={handleOnChange}
                     />
                 </Form.Field>
@@ -162,8 +171,9 @@ const de4PackageProperties = (props: IProps) => {
                         readOnly={readOnly}
                         name="hclose"
                         value={mfPackage.hclose}
+                        type={'number'}
                         icon={renderInfoPopup(documentation.hclose, 'HCLOSE')}
-                        onBlur={handleOnBlur}
+                        onBlur={handleOnBlur(parseFloat)}
                         onChange={handleOnChange}
                     />
                 </Form.Field>
@@ -172,9 +182,10 @@ const de4PackageProperties = (props: IProps) => {
                     <Input
                         readOnly={readOnly}
                         name="iprd4"
+                        type={'number'}
                         value={mfPackage.iprd4}
                         icon={renderInfoPopup(documentation.iprd4, 'IPRD4')}
-                        onBlur={handleOnBlur}
+                        onBlur={handleOnBlur(parseFloat)}
                         onChange={handleOnChange}
                     />
                 </Form.Field>

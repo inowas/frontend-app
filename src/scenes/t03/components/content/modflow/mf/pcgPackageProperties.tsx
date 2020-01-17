@@ -26,8 +26,13 @@ const pcgPackageProperties = (props: IProps) => {
         return setMfPackage({...mfPackage, [name]: value});
     };
 
-    const handleOnBlur = (e: ChangeEvent<HTMLInputElement>) => {
-        const {name, value} = e.target;
+    const handleOnBlur = (cast?: (v: any) => any) => (e: ChangeEvent<HTMLInputElement>) => {
+        const {name} = e.target;
+        let {value} = e.target;
+
+        if (cast) {
+            value = cast(value);
+        }
         props.onChange(FlopyModflowMfpcg.fromObject({...mfPackage, [name]: value}));
     };
 
@@ -58,7 +63,7 @@ const pcgPackageProperties = (props: IProps) => {
                         type={'number'}
                         value={mfPackage.mxiter}
                         icon={renderInfoPopup(documentation.pcg.mxiter, 'mxiter')}
-                        onBlur={handleOnBlur}
+                        onBlur={handleOnBlur(parseFloat)}
                         onChange={handleOnChange}
                     />
                 </Form.Field>
@@ -70,7 +75,7 @@ const pcgPackageProperties = (props: IProps) => {
                         type={'number'}
                         value={mfPackage.iter1}
                         icon={renderInfoPopup(documentation.pcg.iter1, 'iter1')}
-                        onBlur={handleOnBlur}
+                        onBlur={handleOnBlur(parseFloat)}
                         onChange={handleOnChange}
                     />
                 </Form.Field>
@@ -123,7 +128,7 @@ const pcgPackageProperties = (props: IProps) => {
                         type={'number'}
                         value={mfPackage.hclose}
                         icon={renderInfoPopup(documentation.pcg.hclose, 'hclose')}
-                        onBlur={handleOnBlur}
+                        onBlur={handleOnBlur(parseFloat)}
                         onChange={handleOnChange}
                     />
                 </Form.Field>
@@ -135,7 +140,7 @@ const pcgPackageProperties = (props: IProps) => {
                         type={'number'}
                         value={mfPackage.rclose}
                         icon={renderInfoPopup(documentation.pcg.rclose, 'rclose')}
-                        onBlur={handleOnBlur}
+                        onBlur={handleOnBlur(parseFloat)}
                         onChange={handleOnChange}
                     />
                 </Form.Field>
@@ -149,7 +154,7 @@ const pcgPackageProperties = (props: IProps) => {
                         type={'number'}
                         value={mfPackage.relax}
                         icon={renderInfoPopup(documentation.pcg.relax, 'relax')}
-                        onBlur={handleOnBlur}
+                        onBlur={handleOnBlur(parseFloat)}
                         onChange={handleOnChange}
                     />
                 </Form.Field>
@@ -161,7 +166,7 @@ const pcgPackageProperties = (props: IProps) => {
                         type={'number'}
                         value={mfPackage.nbpol}
                         icon={renderInfoPopup(documentation.pcg.nbpol, 'nbpol')}
-                        onBlur={handleOnBlur}
+                        onBlur={handleOnBlur(parseFloat)}
                         onChange={handleOnChange}
                     />
                 </Form.Field>
@@ -175,7 +180,7 @@ const pcgPackageProperties = (props: IProps) => {
                         type={'number'}
                         value={mfPackage.iprpcg}
                         icon={renderInfoPopup(documentation.pcg.iprpcg, 'iprpcg')}
-                        onBlur={handleOnBlur}
+                        onBlur={handleOnBlur(parseFloat)}
                         onChange={handleOnChange}
                     />
                 </Form.Field>
@@ -209,7 +214,7 @@ const pcgPackageProperties = (props: IProps) => {
                         name="damp"
                         value={mfPackage.damp}
                         icon={renderInfoPopup(documentation.pcg.damp, 'damp')}
-                        onBlur={handleOnBlur}
+                        onBlur={handleOnBlur(parseFloat)}
                         onChange={handleOnChange}
                     />
                 </Form.Field>
@@ -218,9 +223,10 @@ const pcgPackageProperties = (props: IProps) => {
                     <Input
                         readOnly={readOnly}
                         name="dampt"
+                        type={'number'}
                         value={mfPackage.dampt}
                         icon={renderInfoPopup(documentation.pcg.dampt, 'dampt')}
-                        onBlur={handleOnBlur}
+                        onBlur={handleOnBlur(parseFloat)}
                         onChange={handleOnChange}
                     />
                 </Form.Field>

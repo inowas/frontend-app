@@ -35,8 +35,13 @@ const smsPackageProperties = (props: IProps) => {
         return setMfPackage({...mfPackage, [name]: value});
     };
 
-    const handleOnBlur = (e: ChangeEvent<HTMLInputElement>) => {
-        const {name, value} = e.target;
+    const handleOnBlur = (cast?: (v: any) => any) => (e: ChangeEvent<HTMLInputElement>) => {
+        const {name} = e.target;
+        let {value} = e.target;
+
+        if (cast) {
+            value = cast(value);
+        }
         props.onChange(FlopyModflowMfsms.fromObject({...mfPackage, [name]: value}));
     };
 
@@ -86,26 +91,26 @@ const smsPackageProperties = (props: IProps) => {
             </Form.Group>
             <Form.Group widths="equal">
                 <Form.Field>
-                    <label>Head change criterion(HCLOSE)</label>
+                    <label>Head change criterion (HCLOSE)</label>
                     <Input
-                        type={'number'}
-                        readOnly={readOnly}
                         name={'hclose'}
+                        readOnly={readOnly}
+                        type={'number'}
                         value={mfPackage.hclose}
                         icon={renderInfoPopup(documentation.sms.hclose, 'HCLOSE')}
-                        onBlur={handleOnBlur}
+                        onBlur={handleOnBlur(parseFloat)}
                         onChange={handleOnChange}
                     />
                 </Form.Field>
                 <Form.Field>
                     <label>Head change criterion for convergence (HICLOSE)</label>
                     <Input
-                        type={'number'}
-                        readOnly={readOnly}
                         name={'hiclose'}
+                        readOnly={readOnly}
+                        type={'number'}
                         value={mfPackage.hiclose}
                         icon={renderInfoPopup(documentation.sms.hiclose, 'HICLOSE')}
-                        onBlur={handleOnBlur}
+                        onBlur={handleOnBlur(parseFloat)}
                         onChange={handleOnChange}
                     />
                 </Form.Field>
@@ -114,24 +119,24 @@ const smsPackageProperties = (props: IProps) => {
                 <Form.Field>
                     <label>Max. outer iterations (MXITER)</label>
                     <Input
-                        type={'number'}
-                        readOnly={readOnly}
                         name={'mxiter'}
+                        readOnly={readOnly}
+                        type={'number'}
                         value={mfPackage.mxiter}
                         icon={renderInfoPopup(documentation.sms.mxiter, 'MXITER')}
-                        onBlur={handleOnBlur}
+                        onBlur={handleOnBlur(parseFloat)}
                         onChange={handleOnChange}
                     />
                 </Form.Field>
                 <Form.Field>
                     <label>Max. inner iterations (ITER1)</label>
                     <Input
-                        type={'number'}
-                        readOnly={readOnly}
                         name={'iter1'}
+                        readOnly={readOnly}
+                        type={'number'}
                         value={mfPackage.iter1}
                         icon={renderInfoPopup(documentation.sms.iter1, 'ITER1')}
-                        onBlur={handleOnBlur}
+                        onBlur={handleOnBlur(parseFloat)}
                         onChange={handleOnChange}
                     />
                 </Form.Field>

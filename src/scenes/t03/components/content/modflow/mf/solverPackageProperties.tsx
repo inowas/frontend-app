@@ -13,7 +13,16 @@ import FlopyModflowMfsor from '../../../../../../core/model/flopy/packages/mf/Fl
 import FlopyModflowSolverPackage from '../../../../../../core/model/flopy/packages/mf/FlopyModflowSolverPackage';
 import InfoPopup from '../../../../../shared/InfoPopup';
 import {documentation} from '../../../../defaults/flow';
-import {De4PackageProperties, GmgPackageProperties, NwtPackageProperties, PcgPackageProperties, PcgnPackageProperties, SipPackageProperties, SmsPackageProperties, SorPackageProperties} from './index';
+import {
+    De4PackageProperties,
+    GmgPackageProperties,
+    NwtPackageProperties,
+    PcgnPackageProperties,
+    PcgPackageProperties,
+    SipPackageProperties,
+    SmsPackageProperties,
+    SorPackageProperties
+} from './index';
 
 interface IProps {
     mfPackages: FlopyModflow;

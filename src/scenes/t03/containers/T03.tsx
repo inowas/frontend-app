@@ -30,8 +30,7 @@ import {
 } from '../actions/actions';
 import ModflowModelCommand from '../commands/modflowModelCommand';
 import {DataFetcherWrapper} from '../components';
-import {PackagesUpdater} from '../components/content/calculation';
-import CalculationProgressBar from '../components/content/calculation/calculationProgressBar';
+import {CalculationProcess} from '../components/content/calculation';
 import {ContentWrapper} from '../components/content/index';
 import OptimizationProgressBar from '../components/content/optimization/optimizationProgressBar';
 import Navigation from './navigation';
@@ -138,8 +137,7 @@ const t03 = (props: IProps) => {
                         <Grid.Row>
                             <Grid.Column width={3}>
                                 <Navigation/>
-                                <PackagesUpdater/>
-                                <CalculationProgressBar/>
+                                <CalculationProcess/>
                                 <OptimizationProgressBar/>
                             </Grid.Column>
                             <Grid.Column width={13}>
@@ -157,7 +155,7 @@ const mapStateToProps = (state: any) => ({
     model: state.T03.model ? ModflowModel.fromObject(state.T03.model) : null,
     boundaries: state.T03.boundaries ? BoundaryCollection.fromObject(state.T03.boundaries) : null,
     calculation: state.T03.calculation ? Calculation.fromObject(state.T03.calculation) : null,
-    packages: state.T03.packages ? FlopyPackages.fromObject(state.T03.packages) : null,
+    packages: state.T03.packages.data ? FlopyPackages.fromObject(state.T03.packages.data) : null,
     soilmodel: state.T03.soilmodel ? Soilmodel.fromObject(state.T03.soilmodel) : null,
     transport: state.T03.transport ? Transport.fromObject(state.T03.transport) : null,
     variableDensity: state.T03.variableDensity ? VariableDensity.fromObject(state.T03.variableDensity) : null

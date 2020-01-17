@@ -21,8 +21,13 @@ const sorPackageProperties = (props: IProps) => {
         return setMfPackage({...mfPackage, [name]: value});
     };
 
-    const handleOnBlur = (e: ChangeEvent<HTMLInputElement>) => {
-        const {name, value} = e.target;
+    const handleOnBlur = (cast?: (v: any) => any) => (e: ChangeEvent<HTMLInputElement>) => {
+        const {name} = e.target;
+        let {value} = e.target;
+
+        if (cast) {
+            value = cast(value);
+        }
         props.onChange(FlopyModflowMfsor.fromObject({...mfPackage, [name]: value}));
     };
 
@@ -48,23 +53,24 @@ const sorPackageProperties = (props: IProps) => {
                 <Form.Field>
                     <label>Maximum iterations per time step (MXITER)</label>
                     <Input
-                        type={'number'}
-                        readOnly={readOnly}
                         name={'mxiter'}
+                        readOnly={readOnly}
+                        type={'number'}
                         value={mfPackage.mxiter}
                         icon={renderInfoPopup(documentation.sor.mxiter, 'MXITER')}
-                        onBlur={handleOnBlur}
+                        onBlur={handleOnBlur(parseFloat)}
                         onChange={handleOnChange}
                     />
                 </Form.Field>
                 <Form.Field>
                     <label>Head change multiplier (ACCL)</label>
                     <Input
-                        readOnly={readOnly}
                         name="accl"
+                        readOnly={readOnly}
+                        type={'number'}
                         value={mfPackage.accl}
                         icon={renderInfoPopup(documentation.sor.accl, 'ACCL')}
-                        onBlur={handleOnBlur}
+                        onBlur={handleOnBlur(parseFloat)}
                         onChange={handleOnChange}
                     />
                 </Form.Field>
@@ -75,9 +81,10 @@ const sorPackageProperties = (props: IProps) => {
                     <Input
                         readOnly={readOnly}
                         name="hclose"
+                        type={'number'}
                         value={mfPackage.hclose}
                         icon={renderInfoPopup(documentation.sor.hclose, 'HCLOSE')}
-                        onBlur={handleOnBlur}
+                        onBlur={handleOnBlur(parseFloat)}
                         onChange={handleOnChange}
                     />
                 </Form.Field>
@@ -86,9 +93,10 @@ const sorPackageProperties = (props: IProps) => {
                     <Input
                         readOnly={readOnly}
                         name="iprsor"
+                        type={'number'}
                         value={mfPackage.iprsor}
                         icon={renderInfoPopup(documentation.sor.iprsor, 'IPRSOR')}
-                        onBlur={handleOnBlur}
+                        onBlur={handleOnBlur(parseFloat)}
                         onChange={handleOnChange}
                     />
                 </Form.Field>

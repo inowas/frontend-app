@@ -3,7 +3,6 @@ import getConfig from '../../config.default.js';
 import AbstractCommand from '../../core/model/command/AbstractCommand';
 import FlopyPackages from '../../core/model/flopy/packages/FlopyPackages';
 import {Array2D, Array3D} from '../../core/model/geometry/Array2D.type';
-import {ICalculation} from '../../core/model/modflow/Calculation.type';
 import {IDateTimeValue} from '../../core/model/rtm/Sensor.type';
 import {IMetaData, ISimpleTool} from '../../core/model/types';
 import {InterpolationType} from '../../scenes/shared/rasterData/types';
@@ -53,6 +52,11 @@ export const sendCommand = (
         .catch(onError);
 };
 
+export const sendCommandAsync = async (command: AbstractCommand) => {
+    const api = createApi(getToken());
+    return await api.post('messagebox', command.toObject()).then((response) => response.data);
+};
+
 export const uploadRasterfile = (
     file: File,
     onSuccess: CallbackFunction<{ hash: string }, void>,
@@ -71,23 +75,16 @@ export const uploadRasterfile = (
     }).then((response) => response.data).then(onSuccess).catch(onError);
 };
 
-export const sendCalculationRequest = (
-    flopyPackages: FlopyPackages,
-    onSuccess: CallbackFunction<undefined, void>,
-    onError: ErrorCallbackFunction
-) => {
-    flopyPackages.validate(true).then(
-        () => axios.request({
-            method: 'POST',
-            url: MODFLOW_CALCULATION_URL,
-            data: flopyPackages.toFlopyCalculation(),
-            headers: {
-                'Access-Control-Allow-Origin': '*',
-                'Content-Type': 'application/json',
-            }
-        }).then((response) => response.data).then(onSuccess).catch(onError),
-    ).catch((e) => console.log(e));
-};
+export const sendModflowCalculationRequest = (flopyPackages: FlopyPackages) =>
+    axios.request({
+        method: 'POST',
+        url: MODFLOW_CALCULATION_URL,
+        data: flopyPackages.toFlopyCalculation(),
+        headers: {
+            'Access-Control-Allow-Origin': '*',
+            'Content-Type': 'application/json',
+        }
+    });
 
 interface IFetchRasterData {
     hash: string;
@@ -152,22 +149,16 @@ export const makeTimeProcessingRequest = (data: IDateTimeValue[], rule: string, 
     }).then((r) => r.data)
 );
 
-export const fetchCalculationDetails = (
-    calculationId: string,
-    onSuccess: CallbackFunction<ICalculation, void>,
-    onError: ErrorCallbackFunction
-) => {
-    const url = `${MODFLOW_CALCULATION_URL}/${calculationId}`;
-
+export const fetchCalculationDetails = (calculationId: string) => {
     return axios.request({
         method: 'GET',
-        url,
+        url: `${MODFLOW_CALCULATION_URL}/${calculationId}`,
         headers: {
             'Access-Control-Allow-Origin': '*',
             'Content-Type': 'application/json'
         },
         data: {}
-    }).then((response) => response.data).then(onSuccess).catch(onError);
+    }).then((r) => r.data);
 };
 
 export const fetchCalculationResultsBudget = (

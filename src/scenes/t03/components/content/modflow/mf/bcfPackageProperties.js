@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types';
 import React from 'react';
-import {Form, Input, Header, Label, List, Table, Grid} from 'semantic-ui-react';
+import {Form, Input, Header, Label, List, Grid} from 'semantic-ui-react';
 
 import AbstractPackageProperties from './AbstractPackageProperties';
 import {FlopyModflowMfbcf} from '../../../../../../core/model/flopy/packages/mf';
@@ -25,7 +25,7 @@ class BcfPackageProperties extends AbstractPackageProperties {
             <Form>
                 <Header as={'h3'}>BCF: Block Centered Flow Package</Header>
                 {mfPackage.laycon.map((laycon, idx) => (
-                    <List selection horizontal>
+                    <List selection horizontal key={idx}>
                         <List.Item>
                             <Label horizontal>
                                 Layer
