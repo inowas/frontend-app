@@ -23,7 +23,7 @@ const initialState: () => IPackagesReducer = () => ({
 
 const packages = (
     state: IPackagesReducer = initialState(),
-    action: { type: string, payload: IFlopyPackages }
+    action: { type: string, payload: IFlopyPackages, setIsDirty?: boolean }
 ) => {
     switch (action.type) {
         case CLEAR:

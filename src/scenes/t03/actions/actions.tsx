@@ -45,10 +45,11 @@ export function updateStressperiods(stressperiods: Stressperiods) {
     };
 }
 
-export function updateBoundaries(boundaryCollection: BoundaryCollection) {
+export function updateBoundaries(boundaryCollection: BoundaryCollection, setIsDirty: boolean = false) {
     return {
         type: UPDATE_BOUNDARIES,
-        boundaries: boundaryCollection.toObject()
+        boundaries: boundaryCollection.toObject(),
+        setIsDirty
     };
 }
 

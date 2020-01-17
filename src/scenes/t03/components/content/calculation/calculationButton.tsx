@@ -1,36 +1,26 @@
 import React from 'react';
-import {useDispatch, useSelector} from 'react-redux';
 import {Button} from 'semantic-ui-react';
-import {Calculation, ModflowModel} from '../../../../../core/model/modflow';
-import {IRootReducer} from '../../../../../reducers';
-import {startCalculation} from '../../../actions/actions';
-import {CALCULATION_STATE_FINISHED} from './CalculationStatus';
 
-const calculationButton = () => {
+interface IProps {
+    visible: boolean;
+    disabled: boolean;
+    loading: boolean;
+    onClick: () => any;
+}
 
-    const model: null | ModflowModel = useSelector(
-        (state: IRootReducer) => state.T03.model ? ModflowModel.fromObject(state.T03.model) : null
-    );
+const calculationButton = (props: IProps) => {
 
-    if (!model || model.readOnly) {
+    if (!props.visible) {
         return null;
     }
-
-    const calculation: null | Calculation = useSelector(
-        (state: IRootReducer) => state.T03.calculation ? Calculation.fromObject(state.T03.calculation) : null
-    );
-
-    const dispatch = useDispatch();
 
     return (
         <Button
             positive={true}
             fluid={true}
-            onClick={() => {
-                dispatch(startCalculation());
-            }}
-            disabled={model.readOnly}
-            loading={calculation ? calculation.state < CALCULATION_STATE_FINISHED : false}
+            onClick={props.onClick}
+            disabled={props.disabled}
+            loading={props.loading}
         >
             Calculate
         </Button>

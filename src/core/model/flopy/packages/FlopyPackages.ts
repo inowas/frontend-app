@@ -126,7 +126,7 @@ export default class FlopyPackages {
     }
 
     public static fromQuery(obj: any) {
-        if (obj === []) {
+        if (Array.isArray(obj) && obj.length === 0) {
             return null;
         }
 

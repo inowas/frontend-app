@@ -30,8 +30,7 @@ import {
 } from '../actions/actions';
 import ModflowModelCommand from '../commands/modflowModelCommand';
 import {DataFetcherWrapper} from '../components';
-import {PackagesUpdater} from '../components/content/calculation';
-import CalculationProgressBar from '../components/content/calculation/calculationProgressBar';
+import {CalculationProcess} from '../components/content/calculation';
 import {ContentWrapper} from '../components/content/index';
 import OptimizationProgressBar from '../components/content/optimization/optimizationProgressBar';
 import Navigation from './navigation';
@@ -138,8 +137,7 @@ const t03 = (props: IProps) => {
                         <Grid.Row>
                             <Grid.Column width={3}>
                                 <Navigation/>
-                                <PackagesUpdater/>
-                                <CalculationProgressBar/>
+                                <CalculationProcess/>
                                 <OptimizationProgressBar/>
                             </Grid.Column>
                             <Grid.Column width={13}>

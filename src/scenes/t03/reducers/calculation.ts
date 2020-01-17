@@ -1,7 +1,7 @@
 import {Calculation} from '../../../core/model/modflow';
 import {ICalculation} from '../../../core/model/modflow/Calculation.type';
 import {LOGOUT, UNAUTHORIZED} from '../../user/actions/actions';
-import {CALCULATION_STATE_NEW} from '../components/content/calculation/CalculationStatus';
+import {CALCULATION_STARTED} from '../components/content/calculation/CalculationProgress';
 import {CLEAR} from './model';
 
 export const START_CALCULATION = 'T03_START_CALCULATION';
@@ -15,7 +15,7 @@ const calculation = (state: ICalculation | null = initialState, action: { type: 
             return initialState;
 
         case START_CALCULATION:
-            return Calculation.fromCalculationIdAndState('', CALCULATION_STATE_NEW).toObject();
+            return Calculation.fromCalculationIdAndState('', CALCULATION_STARTED).toObject();
 
         case UPDATE_CALCULATION:
             return action.payload;

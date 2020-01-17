@@ -1,109 +1,80 @@
-import React, {useState} from 'react';
-import {useDispatch, useSelector} from 'react-redux';
+import React, {useEffect, useState} from 'react';
+import {useDispatch} from 'react-redux';
 import {Grid, Header, Segment} from 'semantic-ui-react';
 import FlopyPackages from '../../../../../core/model/flopy/packages/FlopyPackages';
 import {Calculation, ModflowModel} from '../../../../../core/model/modflow';
-import {IRootReducer} from '../../../../../reducers';
-import {sendCommand, sendModflowCalculationRequest} from '../../../../../services/api';
 import Terminal from '../../../../shared/complexTools/Terminal';
-import {updateCalculation} from '../../../actions/actions';
-import ModflowModelCommand from '../../../commands/modflowModelCommand';
+import {startCalculation} from '../../../actions/actions';
 import RunModelOverviewMap from '../../maps/runModelOverviewMap';
-import CalculationStatus, {CALCULATION_STATE_NEW} from './CalculationStatus';
-import {CalculationButton} from './index';
+import {
+    CALCULATION_STARTED,
+    CALCULATION_STATE_CALCULATING,
+    CALCULATION_STATE_CALCULATION_FINISHED
+} from './CalculationProgress';
+import {CalculationButton, CalculationProgress} from './index';
 
-const calculate = () => {
+interface IProps {
+    model: ModflowModel;
+    packages: FlopyPackages | null;
+    calculation: Calculation | null;
+}
 
-        const [canBeCalculated, setCanBeCalculated] = useState<boolean>(true);
-        const [isCalculating, setIsCalculating] = useState<boolean>(true);
-        const [sending, setSending] = useState<boolean>(false);
-        const [showProgress, setShowProgress] = useState<boolean>(false);
+const calculate = (props: IProps) => {
 
-        const dispatch = useDispatch();
+    const [canBeCalculated, setCanBeCalculated] = useState<boolean>(true);
+    const [isCalculating, setIsCalculating] = useState<boolean>(false);
+    const [showProgress, setShowProgress] = useState<boolean>(false);
 
-        const model = useSelector(
-            (state: IRootReducer) => state.T03.model ? ModflowModel.fromObject(state.T03.model) : null
-        );
-        const packages = useSelector(
-            (state: IRootReducer) => state.T03.packages.data ? FlopyPackages.fromObject(state.T03.packages.data) : null
-        );
-        const calculation = useSelector(
-            (state: IRootReducer) => state.T03.calculation ? Calculation.fromObject(state.T03.calculation) : null
-        );
+    const dispatch = useDispatch();
 
-        if (!(model instanceof ModflowModel)) {
-            return null;
-        }
+    useEffect(() => {
 
-        const {calculationId} = model;
+        const {calculation, model, packages} = props;
 
-        if (!(packages instanceof FlopyPackages)) {
-            return null;
-        }
-
-        if (calculation instanceof Calculation) {
-            if (calculation.state > 0 && calculation.state < 100 && canBeCalculated) {
-                setCanBeCalculated(false);
-            }
-
-            if (calculation.state >= 0 && calculation.state < 100 && !isCalculating) {
-                setIsCalculating(true);
-            }
-        }
-
-        if (calculationId === packages.calculation_id && canBeCalculated) {
+        if (model.readOnly) {
             setCanBeCalculated(false);
+            setShowProgress(false);
+            return;
         }
 
-        const onStartCalculationClick = async () => {
-            setSending(true);
-            const packagesValidation = await packages.validate(true);
-            if (packagesValidation[0] === false) {
-                return;
-            }
+        if (!calculation || !packages) {
+            setCanBeCalculated(true);
+            setShowProgress(false);
+            return;
+        }
 
-            const response = await sendModflowCalculationRequest(packages);
-            if (response.status !== 200) {
-                return;
-            }
+        if (calculation.state > CALCULATION_STARTED && calculation.state < CALCULATION_STATE_CALCULATING) {
+            setCanBeCalculated(false);
+            setShowProgress(true);
+        }
 
-            sendCommand(
-                ModflowModelCommand.updateModflowModelCalculationId(model.id, calculationId),
-                () => dispatch(
-                    updateCalculation(Calculation.fromCalculationIdAndState(calculationId, CALCULATION_STATE_NEW))
-                ),
-                () => {
-                }
-            );
-        };
+        if (calculation.state > CALCULATION_STARTED && calculation.state < CALCULATION_STATE_CALCULATION_FINISHED) {
+            setIsCalculating(true);
+        }
 
-        const renderCalculationProgress = () => {
-            if (calculation instanceof Calculation) {
-                if (calculation.state > 0 && calculation.state < 100 && !showProgress) {
-                    setShowProgress(true);
-                }
-            }
+        if (calculation.state <= CALCULATION_STARTED || calculation.state >= CALCULATION_STATE_CALCULATION_FINISHED) {
+            setIsCalculating(false);
+        }
 
-            if (calculationId === packages.calculation_id && !showProgress) {
-                setShowProgress(true);
-            }
+        if (model.calculationId === packages.calculation_id) {
+            setCanBeCalculated(false);
+            setShowProgress(true);
+        }
 
-            if (showProgress) {
-                return (
-                    <div style={{marginTop: 20}}>
-                        <Header as={'h3'}>Progress</Header>
-                        <Segment>
-                            {calculation && <CalculationStatus calculation={calculation}/>}
-                        </Segment>
-                    </div>
-                );
-            }
+        if (model.readOnly) {
+            setCanBeCalculated(false);
+            setShowProgress(false);
+        }
 
-            return null;
-        };
+    }, [props.calculation, props.model, props.packages]);
 
-        const renderMapOrLog = () => {
-            if (calculationId === packages.calculation_id && calculation && calculation.state >= 200) {
+    const renderMapOrLog = () => {
+
+        const {calculation, model, packages} = props;
+
+        if (packages && calculation) {
+            if (calculation.id === packages.calculation_id
+                && calculation.state >= CALCULATION_STATE_CALCULATION_FINISHED) {
                 return (
                     <div>
                         <Header as={'h3'}>Log</Header>
@@ -113,36 +84,48 @@ const calculate = () => {
                     </div>
                 );
             }
-
-            return (
-                <div>
-                    <Header as={'h3'}>Map</Header>
-                    <Segment color={'red'}>
-                        <RunModelOverviewMap model={model}/>
-                    </Segment>
-                </div>
-            );
-        };
+        }
 
         return (
-            <Grid padded={true}>
-                <Grid.Row>
-                    <Grid.Column width={6}>
-                        <Header as={'h3'}>Calculation</Header>
-                        <CalculationButton/>
-                        {!model.readOnly && renderCalculationProgress()}
-
-                    </Grid.Column>
-                    <Grid.Column width={10}>
-                        {renderMapOrLog()}
-                    </Grid.Column>
-                </Grid.Row>
-                <Grid.Row>
-                    <Grid.Column width={16}/>
-                </Grid.Row>
-            </Grid>
+            <div>
+                <Header as={'h3'}>Map</Header>
+                <Segment color={'red'}>
+                    <RunModelOverviewMap model={model}/>
+                </Segment>
+            </div>
         );
-    }
-;
+    };
+
+    return (
+        <Grid padded={true}>
+            <Grid.Row>
+                <Grid.Column width={6}>
+                    <Header as={'h3'}>Calculation</Header>
+                    <CalculationButton
+                        disabled={false}
+                        loading={isCalculating}
+                        onClick={() => dispatch(startCalculation())}
+                        visible={!props.model.readOnly}
+                    />
+
+                    {showProgress &&
+                    <div style={{marginTop: 20}}>
+                        <Header as={'h3'}>Progress</Header>
+                        <Segment>
+                            {props.calculation && <CalculationProgress calculation={props.calculation}/>}
+                        </Segment>
+                    </div>
+                    }
+                </Grid.Column>
+                <Grid.Column width={10}>
+                    {renderMapOrLog()}
+                </Grid.Column>
+            </Grid.Row>
+            <Grid.Row>
+                <Grid.Column width={16}/>
+            </Grid.Row>
+        </Grid>
+    );
+};
 
 export default calculate;

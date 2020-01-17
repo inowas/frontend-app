@@ -3,7 +3,6 @@ import getConfig from '../../config.default.js';
 import AbstractCommand from '../../core/model/command/AbstractCommand';
 import FlopyPackages from '../../core/model/flopy/packages/FlopyPackages';
 import {Array2D, Array3D} from '../../core/model/geometry/Array2D.type';
-import {ICalculation} from '../../core/model/modflow/Calculation.type';
 import {IDateTimeValue} from '../../core/model/rtm/Sensor.type';
 import {IMetaData, ISimpleTool} from '../../core/model/types';
 import {InterpolationType} from '../../scenes/shared/rasterData/types';
@@ -51,6 +50,11 @@ export const sendCommand = (
         .then((response) => response.data)
         .then(onSuccess)
         .catch(onError);
+};
+
+export const sendCommandAsync = async (command: AbstractCommand) => {
+    const api = createApi(getToken());
+    return await api.post('messagebox', command.toObject()).then((response) => response.data);
 };
 
 export const uploadRasterfile = (

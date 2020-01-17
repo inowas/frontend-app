@@ -189,15 +189,17 @@ export const calculateFlowAndHeadBoundarySpData = (boundaries: FlowAndHeadBounda
     ).sort((a, b) => a - b);
     const bdtime = totims;
     const nbdtim = totims.length;
-    const nflw: number = flowCells.count();
-    const nhed: number = headCells.count();
     const ds5: number[][] = [];
     const ds7: number[][] = [];
 
     boundaries.forEach((b: FlowAndHeadBoundary) => {
         const cells = b.cells.toObject();
         const layers = b.layers;
-        const ops = b.observationPoints;
+        const ops = b.observationPoints.map((op) => ({
+            dateTimes: op.getDateTimes(stressperiods),
+            spValues: op.getSpValues(stressperiods),
+            totims: op.getDateTimes(stressperiods).map((dt) => stressperiods.totimFromDate(dt))
+        }));
 
         layers.forEach((lay: number) => {
             cells.forEach((cell: ICell) => {
@@ -212,9 +214,8 @@ export const calculateFlowAndHeadBoundarySpData = (boundaries: FlowAndHeadBounda
                     throw Error('PrevOp not found');
                 }
 
-                const prevOpDateTimes = prevOP.getDateTimes(stressperiods);
-                const prevOpTotims = prevOpDateTimes.map((dt) => stressperiods.totimFromDate(dt));
-                const prevOpValues = prevOP.getSpValues(stressperiods);
+                const prevOpTotims = prevOP.totims;
+                const prevOpValues = prevOP.spValues;
                 if (!prevOpValues || prevOpTotims.length === 0) {
                     return;
                 }
@@ -257,9 +258,8 @@ export const calculateFlowAndHeadBoundarySpData = (boundaries: FlowAndHeadBounda
                     throw Error('NextOp not found');
                 }
 
-                const nextOpDateTimes = nextOP.getDateTimes(stressperiods);
-                const nextOpTotims = nextOpDateTimes.map((dt) => stressperiods.totimFromDate(dt));
-                const nextOpValues = nextOP.getSpValues(stressperiods);
+                const nextOpTotims = nextOP.totims;
+                const nextOpValues = nextOP.spValues;
                 if (!nextOpValues || nextOpTotims.length === 0) {
                     return;
                 }
@@ -308,6 +308,9 @@ export const calculateFlowAndHeadBoundarySpData = (boundaries: FlowAndHeadBounda
             });
         });
     });
+
+    const nflw: number = ds5.length;
+    const nhed: number = ds7.length;
 
     return {bdtime, nbdtim, nflw, nhed, ds5, ds7};
 };

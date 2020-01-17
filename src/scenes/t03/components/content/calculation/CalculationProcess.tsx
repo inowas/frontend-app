@@ -13,17 +13,22 @@ import Soilmodel from '../../../../../core/model/modflow/soilmodel/Soilmodel';
 import Transport from '../../../../../core/model/modflow/transport/Transport';
 import VariableDensity from '../../../../../core/model/modflow/variableDensity';
 import {IRootReducer} from '../../../../../reducers';
-import {fetchCalculationDetails, sendModflowCalculationRequest} from '../../../../../services/api';
+import {
+    fetchCalculationDetails,
+    sendCommand,
+    sendModflowCalculationRequest
+} from '../../../../../services/api';
 import {updateCalculation, updateProcessedPackages, updateProcessingPackages} from '../../../actions/actions';
+import ModflowModelCommand from '../../../commands/modflowModelCommand';
 import CalculationStatus, {
-    CALCULATION_STATE_FINISHED,
-    CALCULATION_STATE_NEW,
-    CALCULATION_STATE_PREPROCESSING_FINISHED,
-    CALCULATION_STATE_QUEUED,
-    CALCULATION_STATE_SENDING
-} from './CalculationStatus';
+    CALCULATION_STARTED,
+    CALCULATION_STATE_CALCULATION_FINISHED,
+    CALCULATION_STATE_SENDING_DATA,
+    CALCULATION_STATE_UPDATING_PACKAGES,
+    CALCULATION_STATE_WAITING_FOR_CALCULATION
+} from './CalculationProgress';
 
-const calculationProgressBar = () => {
+const calculationProcess = () => {
 
         const [fetching, setFetching] = useState<boolean>(false);
         const [polling, setPolling] = useState<boolean>(false);
@@ -50,20 +55,20 @@ const calculationProgressBar = () => {
             }
 
             const {state} = calculation;
-            if (state >= CALCULATION_STATE_FINISHED) {
+            if (state >= CALCULATION_STATE_CALCULATION_FINISHED) {
                 return stopPolling();
             }
 
-            if (state < CALCULATION_STATE_NEW || state > CALCULATION_STATE_FINISHED) {
+            if (state < CALCULATION_STARTED || state > CALCULATION_STATE_CALCULATION_FINISHED) {
                 return setVisible(false);
             }
 
-            if (state > CALCULATION_STATE_SENDING && state < CALCULATION_STATE_FINISHED) {
+            if (state > CALCULATION_STATE_SENDING_DATA && state < CALCULATION_STATE_CALCULATION_FINISHED) {
                 startPolling();
                 return setVisible(true);
             }
 
-            if (state === CALCULATION_STATE_NEW) {
+            if (state === CALCULATION_STARTED) {
                 setVisible(true);
                 setIsProcessing(true);
             }
@@ -71,20 +76,36 @@ const calculationProgressBar = () => {
         }, [T03.model, T03.calculation]);
 
         useEffect(() => {
-            if (isProcessing && calculation) {
+            if (isProcessing && calculation && model) {
                 const p = recalculatePackages();
                 setIsProcessing(false);
                 if (p) {
                     const hash = p.hash(p.getData());
-                    dispatch(updateCalculation(Calculation.fromCalculationIdAndState(
-                        hash,
-                        CALCULATION_STATE_PREPROCESSING_FINISHED)
+                    dispatch(updateCalculation(
+                        Calculation.fromCalculationIdAndState(hash, CALCULATION_STATE_UPDATING_PACKAGES)
                     ));
 
-                    sendModflowCalculationRequest(p).then(() =>
-                        dispatch(updateCalculation(Calculation.fromCalculationIdAndState(
-                            hash, CALCULATION_STATE_QUEUED
-                        ))));
+                    sendCommand(
+                        ModflowModelCommand.updateFlopyPackages(model.id, p),
+                        () => {
+                            dispatch(updateProcessedPackages(p));
+                            sendCommand(
+                                ModflowModelCommand.updateModflowModelCalculationId(model.id, hash),
+                                () => {
+                                    dispatch(updateCalculation(
+                                        Calculation.fromCalculationIdAndState(hash, CALCULATION_STATE_SENDING_DATA)
+                                    ));
+                                    sendModflowCalculationRequest(p).then(() =>
+                                        dispatch(updateCalculation(Calculation.fromCalculationIdAndState(
+                                            hash, CALCULATION_STATE_WAITING_FOR_CALCULATION
+                                        ))));
+                                },
+                                () => ({})
+                            );
+
+                        },
+                        () => ({})
+                    );
                 }
             }
         }, [isProcessing]);
@@ -123,7 +144,7 @@ const calculationProgressBar = () => {
                     model.id,
                     FlopyModflow.create(model, soilmodel, boundaries),
                     FlopyModpath.create(),
-                    FlopyMt3d.createFromTransport(transport),
+                    FlopyMt3d.createFromTransport(transport, boundaries),
                     FlopySeawat.createFromVariableDensity(variableDensity)
                 );
 
@@ -145,7 +166,7 @@ const calculationProgressBar = () => {
             }
 
             const {state} = calculation;
-            if (state < CALCULATION_STATE_NEW || state >= CALCULATION_STATE_FINISHED) {
+            if (state < CALCULATION_STARTED || state >= CALCULATION_STATE_CALCULATION_FINISHED) {
                 return stopPolling();
             }
 
@@ -182,4 +203,4 @@ const calculationProgressBar = () => {
     }
 ;
 
-export default calculationProgressBar;
+export default calculationProcess;
