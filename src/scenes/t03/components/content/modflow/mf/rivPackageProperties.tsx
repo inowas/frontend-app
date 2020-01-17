@@ -1,29 +1,25 @@
-import React, {SyntheticEvent, useState} from 'react';
-import {DropdownProps, Form, Grid, Header, Input, Label} from 'semantic-ui-react';
-import FlopyModflow from '../../../../../../core/model/flopy/packages/mf/FlopyModflow';
-import {IFlopyModflowMfwel} from '../../../../../../core/model/flopy/packages/mf/FlopyModflowMfwel';
-import {RainbowOrLegend} from '../../../../../../services/rainbowvis/types';
-
-import {
-    FlopyModflowMfdis,
-    FlopyModflowMfwel
-} from '../../../../../../core/model/flopy/packages/mf';
+import React, {useState} from 'react';
+import {Checkbox, Form, Grid, Header, Input, Label} from 'semantic-ui-react';
+import {FlopyModflowMfdis, FlopyModflowMfriv} from '../../../../../../core/model/flopy/packages/mf';
 import {GridSize} from '../../../../../../core/model/modflow';
-import {InfoPopup} from '../../../../../shared';
-import {RasterDataImage} from '../../../../../shared/rasterData';
 import {documentation} from '../../../../defaults/flow';
+import {RasterDataImage} from '../../../../../shared/rasterData';
+import FlopyModflow from "../../../../../../core/model/flopy/packages/mf/FlopyModflow";
+import {IFlopyModflowMfriv} from "../../../../../../core/model/flopy/packages/mf/FlopyModflowMfriv";
+import {InfoPopup} from "../../../../../shared";
+import {RainbowOrLegend} from "../../../../../../services/rainbowvis/types";
 
 interface IProps {
-    mfPackage: FlopyModflowMfwel;
+    mfPackage: FlopyModflowMfriv;
     mfPackages: FlopyModflow;
-    onChange: (pck: FlopyModflowMfwel) => void;
+    onChange: (pck: FlopyModflowMfriv) => void;
     readonly: boolean;
 }
 
-const welPackageProperties = (props: IProps) => {
-
-    const [mfPackage, setMfPackage] = useState<IFlopyModflowMfwel>(props.mfPackage.toObject());
+const rivPackageProperties = (props: IProps) => {
+    const [mfPackage] = useState<IFlopyModflowMfriv>(props.mfPackage.toObject());
     const {mfPackages, readonly} = props;
+
     const disPackage: FlopyModflowMfdis = mfPackages.getPackage('dis') as FlopyModflowMfdis;
 
     const affectedCellsLayers: number[][][] = [];
@@ -44,11 +40,15 @@ const welPackageProperties = (props: IProps) => {
         });
     }
 
-    const handleOnSelect = (e: SyntheticEvent<HTMLElement, Event>, data: DropdownProps) => {
-        const {name, value} = data;
-        setMfPackage({...mfPackage, [name]: value});
-        props.onChange(FlopyModflowMfwel.fromObject({...mfPackage, [name]: value}));
-    };
+    /*
+    const basPackage = mfPackages.getPackage('bas');
+    const {ibound} = basPackage;
+    const affectedCellsLayers = ibound.map(l => l.map(r => r.map(() => 0)));
+    Object.values(mfPackage.stress_period_data)[0].forEach(spv => {
+        const [lay, row, col] = spv;
+        affectedCellsLayers[lay][row][col] = 1;
+    });
+    */
 
     const renderInfoPopup = (description: string | JSX.Element, title: string) => (
         <InfoPopup description={description} title={title}/>
@@ -56,7 +56,7 @@ const welPackageProperties = (props: IProps) => {
 
     return (
         <Form>
-            <Header as={'h3'} dividing={true}>WEL: Well Package</Header>
+            <Header as={'h3'} dividing={true}>RIV: River Package</Header>
             <Grid divided={'vertically'}>
                 <Grid.Row columns={2}>
                     {affectedCellsLayers.map((layer: any, idx) => (
@@ -67,7 +67,7 @@ const welPackageProperties = (props: IProps) => {
                                 gridSize={GridSize.fromData(layer)}
                                 unit={''}
                                 legend={[
-                                    {value: 1, color: 'blue', label: 'WEL affected cells'}
+                                    {value: 1, color: 'blue', label: 'RIV affected cells'}
                                 ] as RainbowOrLegend}
                                 border={'1px dotted black'}
                             />
@@ -75,60 +75,55 @@ const welPackageProperties = (props: IProps) => {
                     ))}
                 </Grid.Row>
             </Grid>
-
-            <Form.Group widths={'equal'}>
+            <Form.Group widths='equal'>
                 <Form.Field>
                     <label>Save cell-by-cell budget data (ipakcb)</label>
-                    <Form.Dropdown
-                        options={[
-                            {key: 0, value: 0, text: 'false'},
-                            {key: 1, value: 1, text: 'true'},
-                        ]}
-                        placeholder="Select ipakcb"
-                        name="ipakcb"
-                        selection={true}
-                        value={mfPackage.ipakcb || 0}
+                    <Checkbox
+                        toggle
                         disabled={readonly}
-                        onChange={handleOnSelect}
+                        name='ipakcb'
+                        value={mfPackage.ipakcb || 0}
+                        icon={renderInfoPopup(documentation.ipakcb, 'IPAKCB')}
                     />
                 </Form.Field>
                 <Form.Field>
                     <label>Package options (options)</label>
                     <Input
-                        readOnly={true}
-                        name="options"
+                        readOnly
+                        name='options'
                         value={mfPackage.options || ''}
-                        icon={renderInfoPopup(documentation.options, 'options')}
+                        icon={renderInfoPopup(documentation.options, 'OPTIONS')}
                     />
                 </Form.Field>
             </Form.Group>
 
-            <Form.Group widths="equal">
+            <Form.Group widths='equal'>
                 <Form.Field>
                     <label>Filename extension (extension)</label>
                     <Input
-                        readOnly={true}
-                        name="extension"
+                        readOnly
+                        name='extension'
                         value={mfPackage.extension || ''}
-                        icon={renderInfoPopup(documentation.extension, 'extension')}
+                        icon={renderInfoPopup(documentation.extension, 'EXTENSION')}
                     />
                 </Form.Field>
                 <Form.Field>
                     <label>File unit number (unitnumber)</label>
                     <Input
-                        readOnly={true}
-                        name="unitnumber"
+                        readOnly
+                        type={'number'}
+                        name='unitnumber'
                         value={mfPackage.unitnumber || ''}
-                        icon={renderInfoPopup(documentation.unitnumber, 'unitnumber')}
+                        icon={renderInfoPopup(documentation.unitnumber, 'UNITNUMBER')}
                     />
                 </Form.Field>
                 <Form.Field>
-                    <label>Filename (filenames)</label>
+                    <label>Filenames (filenames)</label>
                     <Input
-                        readOnly={true}
-                        name="filenames"
+                        readOnly
+                        name='filenames'
                         value={mfPackage.filenames || ''}
-                        icon={renderInfoPopup(documentation.filenames, 'filenames')}
+                        icon={renderInfoPopup(documentation.filenames, 'FILENAMES')}
                     />
                 </Form.Field>
             </Form.Group>
@@ -136,4 +131,4 @@ const welPackageProperties = (props: IProps) => {
     );
 };
 
-export default welPackageProperties;
+export default rivPackageProperties;

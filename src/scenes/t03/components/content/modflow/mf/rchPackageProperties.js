@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types';
 import React from 'react';
-import {Form, Grid, Header, Input, Label} from 'semantic-ui-react';
+import {Checkbox, Form, Grid, Header, Input, Label} from 'semantic-ui-react';
 
 import AbstractPackageProperties from './AbstractPackageProperties';
 import {FlopyModflowMfrch} from '../../../../../../core/model/flopy/packages/mf';
@@ -41,8 +41,15 @@ class RchPackageProperties extends AbstractPackageProperties {
 
                 <Form.Group widths='equal'>
                     <Form.Field>
-                        <label>Cell-by-cell budget data (ipakcb)</label>
-                        <Form.Dropdown
+                        <label>Save cell-by-cell budget data (ipakcb)</label>
+                        <Checkbox
+                            toggle
+                            readOnly={true}
+                            name='ipakcb'
+                            value={mfPackage.ipakcb || 0}
+                            icon={this.renderInfoPopup(documentation.ipakcb, 'IPAKCB')}
+                        />
+                        {/*<Form.Dropdown
                             options={[
                                 {key: 0, value: 0, text: 'false'},
                                 {key: 1, value: 1, text: 'true'},
@@ -53,7 +60,7 @@ class RchPackageProperties extends AbstractPackageProperties {
                             value={mfPackage.ipakcb}
                             disabled={readonly}
                             onChange={this.handleOnSelect}
-                        />
+                        />*/}
                     </Form.Field>
                 </Form.Group>
 
