@@ -31,6 +31,7 @@ const dataFetcherWrapper = (props: IProps) => {
     const dispatch = useDispatch();
 
     const [modelId, setModelId] = useState<string | null>(null);
+    const [soilmodelFetched, setSoilmodelFetched] = useState<boolean>(false);
 
     const [fetchingModel, setFetchingModel] = useState<boolean>(false);
     const [fetchingModelSuccess, setFetchingModelSuccess] = useState<boolean | null>(null);
@@ -75,10 +76,12 @@ const dataFetcherWrapper = (props: IProps) => {
 
     useEffect(() => {
         fetchModel(props.match.params.id);
+        setSoilmodelFetched(false);
     }, [modelId]);
 
     useEffect(() => {
-        if (model) {
+        if (model && !soilmodelFetched) {
+            setSoilmodelFetched(true);
             fetchAndUpdateSoilmodel(model.id);
         }
     }, [model]);
