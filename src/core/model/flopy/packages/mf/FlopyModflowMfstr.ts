@@ -62,6 +62,11 @@ export default class FlopyModflowMfstr extends FlopyModflowLineBoundary<IFlopyMo
     }
 
     public update = (boundaries: BoundaryCollection, stressperiods: Stressperiods) => {
+        const bd = boundaries.all.filter((b) => b.type === 'str');
+        if (bd.length === 0) {
+            return null;
+        }
+
         return this;
     };
 

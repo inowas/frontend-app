@@ -220,7 +220,7 @@ const mapDispatchToProps = (dispatch: any): IDispatchProps => ({
 const mapStateToProps = (state: any) => ({
     boundaries: BoundaryCollection.fromObject(state.T03.boundaries),
     model: ModflowModel.fromObject(state.T03.model),
-    packages: FlopyPackages.fromObject(state.T03.packages),
+    packages: FlopyPackages.fromObject(state.T03.packages.data),
     soilmodel: Soilmodel.fromObject(state.T03.soilmodel)
 });
 

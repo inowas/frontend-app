@@ -24,7 +24,7 @@ import {IRechargeBoundary, IRechargeBoundaryExport} from './RechargeBoundary.typ
 import {IRiverBoundary, IRiverBoundaryExport, IRiverBoundaryFeature} from './RiverBoundary.type';
 import {IWellBoundary, IWellBoundaryExport} from './WellBoundary.type';
 
-export type BoundaryType = 'evt' | 'rch' | 'wel' | 'hob' | LineBoundaryType;
+export type BoundaryType = 'evt' | 'rch' | 'wel' | 'hob' | 'lak' | LineBoundaryType;
 
 export type IBoundary = IConstantHeadBoundary | IGeneralHeadBoundary | IDrainageBoundary | IEvapotranspirationBoundary |
     IFlowAndHeadBoundary | IHeadObservationWell | IRechargeBoundary | IRiverBoundary | IWellBoundary;

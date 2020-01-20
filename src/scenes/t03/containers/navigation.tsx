@@ -3,7 +3,7 @@ import {connect} from 'react-redux';
 import {RouteComponentProps, withRouter} from 'react-router';
 import {Calculation, ModflowModel, Transport, VariableDensity} from '../../../core/model/modflow';
 import {ToolNavigation} from '../../shared/complexTools';
-import {CALCULATION_STATE_FINISHED} from '../components/content/calculation/CalculationStatus';
+import {CALCULATION_STATE_CALCULATION_FINISHED} from '../components/content/calculation/CalculationProgress';
 import {IMenu, menuItems} from '../defaults/menuItems';
 
 interface IStateProps {
@@ -38,21 +38,21 @@ const t03Navigation = (props: IProps) => {
             }
 
             if (i.property === 'flow') {
-                i.disabled = calculationState !== CALCULATION_STATE_FINISHED ||
+                i.disabled = calculationState !== CALCULATION_STATE_CALCULATION_FINISHED ||
                     !calculationResults.includes('head') ||
                     totalTimes.length === 0;
                 return i;
             }
 
             if (i.property === 'budget') {
-                i.disabled = calculationState !== CALCULATION_STATE_FINISHED ||
+                i.disabled = calculationState !== CALCULATION_STATE_CALCULATION_FINISHED ||
                     !calculationResults.includes('budget') ||
                     totalTimes.length === 0;
                 return i;
             }
 
             if (i.property === 'concentration') {
-                i.disabled = calculationState !== CALCULATION_STATE_FINISHED ||
+                i.disabled = calculationState !== CALCULATION_STATE_CALCULATION_FINISHED ||
                     !calculationResults.includes('concentration') ||
                     totalTimes.length === 0;
                 return i;

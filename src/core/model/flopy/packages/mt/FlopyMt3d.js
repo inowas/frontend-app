@@ -153,7 +153,7 @@ class FlopyMt3d {
         return this._packages[name];
     }
 
-    toObject() {
+    toObject = () => {
         const obj = {
             enabled: this.enabled
         };
@@ -165,7 +165,7 @@ class FlopyMt3d {
         }
 
         return obj;
-    }
+    };
 
     toFlopyCalculation = () => {
         if (!this.enabled) {

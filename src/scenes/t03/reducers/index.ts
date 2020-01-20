@@ -1,5 +1,4 @@
 import {combineReducers} from 'redux';
-import {IFlopyPackages} from '../../../core/model/flopy/packages/FlopyPackages.type';
 import {IBoundary} from '../../../core/model/modflow/boundaries/Boundary.type';
 import {ICalculation} from '../../../core/model/modflow/Calculation.type';
 import {IModflowModel} from '../../../core/model/modflow/ModflowModel.type';
@@ -10,7 +9,7 @@ import boundaries from './boundaries';
 import calculation from './calculation';
 import model from './model';
 import optimization from './optimization';
-import packages from './packages';
+import packages, {IPackagesReducer} from './packages';
 import soilmodel from './soilmodel';
 import transport from './transport';
 import variableDensity from './variableDensity';
@@ -30,10 +29,10 @@ export default T03;
 
 export interface IT03Reducer {
     boundaries: IBoundary[];
-    calculation: ICalculation;
+    calculation: ICalculation | null | undefined;
     model: IModflowModel;
     optimization: any;
-    packages: IFlopyPackages;
+    packages: IPackagesReducer;
     soilmodel: ISoilmodel;
     transport: ITransport | undefined;
     variableDensity: IVariableDensity;
