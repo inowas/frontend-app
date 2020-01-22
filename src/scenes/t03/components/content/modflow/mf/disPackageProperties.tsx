@@ -1,4 +1,4 @@
-import React, {ChangeEvent, useState} from 'react';
+import React, {useState} from 'react';
 import {
     Accordion, Checkbox,
     Form,
@@ -24,7 +24,7 @@ interface IProps {
 }
 
 const disPackageProperties = (props: IProps) => {
-    const [mfPackage, setMfPackage] = useState<IFlopyModflowMfdis>(props.mfPackage.toObject());
+    const [mfPackage] = useState<IFlopyModflowMfdis>(props.mfPackage.toObject());
     const [activeIndex, setActiveIndex] = useState<number>(0);
     const {readonly} = props;
 
@@ -166,7 +166,7 @@ const disPackageProperties = (props: IProps) => {
                     Time Discretization
                 </Accordion.Title>
                 <Accordion.Content active={activeIndex === 2}>
-                    <Table basic={true}>
+                    <Table  collapsing size={'small'} className={'packages'}>
                         <Table.Header>
                             <Table.Row>
                                 <Table.HeaderCell>#</Table.HeaderCell>

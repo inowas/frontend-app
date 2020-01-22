@@ -59,7 +59,7 @@ const gmgPackageProperties = (props: IProps) => {
                     <Form.Field>
                         <label>Inner convergence residual (RCLOSE)</label>
                         <Input
-                            readOnly={readOnly}
+                            readOnly={true}
                             name="rclose"
                             type={'number'}
                             value={mfPackage.rclose}
@@ -71,7 +71,7 @@ const gmgPackageProperties = (props: IProps) => {
                     <Form.Field>
                         <label>Maximum inner iterations (IITER)</label>
                         <Input
-                            readOnly={readOnly}
+                            readOnly={true}
                             name={'iiter'}
                             type={'number'}
                             value={mfPackage.iiter}
@@ -85,7 +85,7 @@ const gmgPackageProperties = (props: IProps) => {
                     <Form.Field>
                         <label>Outer convergence residual (HCLOSE)</label>
                         <Input
-                            readOnly={readOnly}
+                            readOnly={true}
                             name="hclose"
                             type={'number'}
                             value={mfPackage.hclose}
@@ -98,7 +98,7 @@ const gmgPackageProperties = (props: IProps) => {
                         <label>Maximum outer iterations (MXITER)</label>
                         <Input
                             name={'mxiter'}
-                            readOnly={readOnly}
+                            readOnly={true}
                             type={'number'}
                             value={mfPackage.mxiter}
                             icon={renderInfoPopup(documentation.gmg.mxiter, 'MXITER')}
@@ -113,7 +113,7 @@ const gmgPackageProperties = (props: IProps) => {
                     <Form.Field>
                         <label>Damping parameter (DAMP)</label>
                         <Input
-                            readOnly={readOnly}
+                            readOnly={true}
                             name="damp"
                             type={'number'}
                             value={mfPackage.damp}
@@ -126,12 +126,12 @@ const gmgPackageProperties = (props: IProps) => {
                         <label>Damping option (IADAMP)</label>
                         <Form.Dropdown
                             options={[
-                                {key: 0, value: 1, text: '(0) Constant'},
-                                {key: 1, value: 2, text: '(1) Cooley adaptive'},
-                                {key: 2, value: 3, text: '(2) RRR adaptive'},
+                                {key: 0, value: 0, text: '(0) Constant'},
+                                {key: 1, value: 1, text: '(1) Cooley adaptive'},
+                                {key: 2, value: 2, text: '(2) RRR adaptive'},
                             ]}
                             selection={true}
-                            disabled={readOnly}
+                            disable={readOnly}
                             name="iadamp"
                             value={mfPackage.iadamp}
                             onChange={handleOnSelect}
@@ -146,7 +146,7 @@ const gmgPackageProperties = (props: IProps) => {
                     <Form.Field>
                         <label>Output flag (IOUTGMG)</label>
                         <Input
-                            readOnly={readOnly}
+                            readOnly={true}
                             name="ioutgmg"
                             type={'number'}
                             value={mfPackage.ioutgmg}
@@ -158,7 +158,7 @@ const gmgPackageProperties = (props: IProps) => {
                     <Form.Field>
                         <label>Maximum head output (IUNITMHC)</label>
                         <Input
-                            readOnly={readOnly}
+                            readOnly={true}
                             name="iunitmhc"
                             type={'number'}
                             value={mfPackage.iunitmhc}
@@ -175,8 +175,8 @@ const gmgPackageProperties = (props: IProps) => {
                         <label>Multi-grid preconditioner smoothing (ISM)</label>
                         <Form.Dropdown
                             options={[
-                                {key: 0, value: 1, text: '(0) ILU smoothing'},
-                                {key: 1, value: 2, text: '(1) SGS smoothing'}
+                                {key: 0, value: 0, text: '(0) ILU smoothing'},
+                                {key: 1, value: 1, text: '(1) SGS smoothing'}
                             ]}
                             selection={true}
                             disabled={readOnly}
@@ -193,11 +193,11 @@ const gmgPackageProperties = (props: IProps) => {
                         <label>Multi-grid preconditioner coarsening (ISC)</label>
                         <Form.Dropdown
                             options={[
-                                {key: 0, value: 1, text: '(0) Row, Col., Layer'},
-                                {key: 1, value: 2, text: '(1) Row, Col.'},
-                                {key: 2, value: 3, text: '(2) Col., Layer'},
-                                {key: 3, value: 4, text: '(3) Row, Layer'},
-                                {key: 4, value: 5, text: '(4) None'}
+                                {key: 0, value: 0, text: '(0) Row, Col., Layer'},
+                                {key: 1, value: 1, text: '(1) Row, Col.'},
+                                {key: 2, value: 2, text: '(2) Col., Layer'},
+                                {key: 3, value: 3, text: '(3) Row, Layer'},
+                                {key: 4, value: 4, text: '(4) None'}
                             ]}
                             selection={true}
                             disabled={readOnly}
@@ -216,7 +216,7 @@ const gmgPackageProperties = (props: IProps) => {
                         <label>Maximum damping (DUP)</label>
                         <Input
                             name="dup"
-                            readOnly={readOnly}
+                            readOnly={true}
                             type={'number'}
                             value={mfPackage.dup}
                             icon={renderInfoPopup(documentation.gmg.dup, 'DUP')}
@@ -228,7 +228,7 @@ const gmgPackageProperties = (props: IProps) => {
                         <label>Minimum damping (DLOW)</label>
                         <Input
                             name="dlow"
-                            readOnly={readOnly}
+                            readOnly={true}
                             type={'number'}
                             value={mfPackage.dlow}
                             icon={renderInfoPopup(documentation.gmg.dlow, 'DLOW')}
@@ -241,7 +241,7 @@ const gmgPackageProperties = (props: IProps) => {
                     <Form.Field>
                         <label>Relocation parameter (RELAX)</label>
                         <Input
-                            readOnly={readOnly}
+                            readOnly={true}
                             name="relax"
                             type={'number'}
                             value={mfPackage.relax}
@@ -253,7 +253,7 @@ const gmgPackageProperties = (props: IProps) => {
                     <Form.Field>
                         <label>Minimum damping (CHGLIMIT)</label>
                         <Input
-                            readOnly={readOnly}
+                            readOnly={true}
                             name="chglimit"
                             type={'number'}
                             value={mfPackage.chglimit}

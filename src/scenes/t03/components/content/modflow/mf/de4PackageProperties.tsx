@@ -1,5 +1,5 @@
 import React, {ChangeEvent, SyntheticEvent, useState} from 'react';
-import {DropdownProps, Form, Header, Input, PopupProps} from 'semantic-ui-react';
+import {DropdownProps, Form, Header, Input, PopupProps, Segment} from 'semantic-ui-react';
 
 import {FlopyModflowMfde4} from '../../../../../../core/model/flopy/packages/mf';
 import {IFlopyModflowMfde4} from '../../../../../../core/model/flopy/packages/mf/FlopyModflowMfde4';
@@ -54,12 +54,13 @@ const de4PackageProperties = (props: IProps) => {
     return (
         <Form>
             <Header as={'h3'}>DE4: Direct Solver Package</Header>
+            <Segment>
             <Form.Group widths="equal">
                 <Form.Field>
                     <label>Maximum number of iterations (itmx)</label>
                     <Input
                         type={'number'}
-                        readOnly={readOnly}
+                        readOnly={true}
                         name={'itmx'}
                         value={mfPackage.itmx}
                         icon={renderInfoPopup(documentation.itmx, 'ITMX')}
@@ -70,7 +71,7 @@ const de4PackageProperties = (props: IProps) => {
                 <Form.Field>
                     <label>Maximum number of upper equations (mxup)</label>
                     <Input
-                        readOnly={readOnly}
+                        readOnly={true}
                         name={'mxup'}
                         type={'number'}
                         value={mfPackage.mxup}
@@ -85,7 +86,7 @@ const de4PackageProperties = (props: IProps) => {
                 <Form.Field>
                     <label>Maximum number of lower equations (mxlow)</label>
                     <Input
-                        readOnly={readOnly}
+                        readOnly={true}
                         name="mxlow"
                         type={'number'}
                         value={mfPackage.mxlow}
@@ -97,7 +98,7 @@ const de4PackageProperties = (props: IProps) => {
                 <Form.Field>
                     <label>Maximum bandwidth (mxbw)</label>
                     <Input
-                        readOnly={readOnly}
+                        readOnly={true}
                         name="mxbw"
                         type={'number'}
                         value={mfPackage.mxbw}
@@ -107,7 +108,9 @@ const de4PackageProperties = (props: IProps) => {
                     />
                 </Form.Field>
             </Form.Group>
+            </Segment>
 
+            <Segment>
             <Form.Group widths="equal">
                 <Form.Field>
                     <label>Frequency of change (ifreq)</label>
@@ -156,7 +159,7 @@ const de4PackageProperties = (props: IProps) => {
                 <Form.Field width={12}>
                     <label>Head change multiplier (accl)</label>
                     <Input
-                        readOnly={readOnly}
+                        readOnly={true}
                         name="accl"
                         type={'number'}
                         value={mfPackage.accl}
@@ -168,7 +171,7 @@ const de4PackageProperties = (props: IProps) => {
                 <Form.Field>
                     <label>Head change closure criterion (hclose)</label>
                     <Input
-                        readOnly={readOnly}
+                        readOnly={true}
                         name="hclose"
                         value={mfPackage.hclose}
                         type={'number'}
@@ -178,9 +181,9 @@ const de4PackageProperties = (props: IProps) => {
                     />
                 </Form.Field>
                 <Form.Field>
-                    <label>Interval for time step printing (iprd4)</label>
+                    <label>Time step interval for printing (iprd4)</label>
                     <Input
-                        readOnly={readOnly}
+                        readOnly={true}
                         name="iprd4"
                         type={'number'}
                         value={mfPackage.iprd4}
@@ -190,6 +193,7 @@ const de4PackageProperties = (props: IProps) => {
                     />
                 </Form.Field>
             </Form.Group>
+            </Segment>
 
             <Form.Group widths="equal">
                 <Form.Field>

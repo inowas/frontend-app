@@ -1,5 +1,5 @@
-import React, {ChangeEvent, SyntheticEvent, useState} from 'react';
-import {Checkbox, DropdownProps, Form, Grid, Header, Input, Label, Segment, Table} from 'semantic-ui-react';
+import React, {ChangeEvent, useState} from 'react';
+import {Checkbox, Form, Grid, Header, Input, Label, Segment, Table} from 'semantic-ui-react';
 
 import {FlopyModflowMfdis, FlopyModflowMflpf} from '../../../../../../core/model/flopy/packages/mf';
 import FlopyModflow from '../../../../../../core/model/flopy/packages/mf/FlopyModflow';
@@ -76,71 +76,80 @@ const lpfPackageProperties = (props: IProps) => {
                 </Table.Body>
             </Table>
             <Segment basic={true}>
-                <Form.Group widths="equal">
-                    <Form.Field>
-                        <label>Save cell-by-cell budget data (ipakcb)</label>
-                        <Checkbox
-                            toggle
-                            disabled={readonly}
-                            name='ipakcb'
-                            value={mfPackage.ipakcb || 0}
-                        />
-                    </Form.Field>
-                    <Form.Field width={1}>
-                        {<InfoPopup description={documentation.ipakcb} title={'IPAKCB'} position={'top right'} iconOutside={true}/>}
-                    </Form.Field>
-                    <Form.Field>
-                        <label>Wetting capability (iwdflg)</label>
-                        <Checkbox
-                            toggle
-                            disabled={readonly}
-                            name='iwdflg'
-                            value={JSON.stringify(mfPackage.iwdflg) || 0}
-                        />
-                    </Form.Field>
-                    <Form.Field width={1}>
-                        {<InfoPopup description={documentation.iwdflg} title={'IWDFLG'} position={'top right'} iconOutside={true}/>}
-                    </Form.Field>
-                    <Form.Field>
-                        <label>Dry cells head (hdry)</label>
-                        <Input
-                            readOnly={true}
-                            name="hdry"
-                            value={JSON.stringify(mfPackage.hdry)}
-                            icon={<InfoPopup description={documentation.hdry} title={'hdry'}/>}
-                        />
-                    </Form.Field>
-                </Form.Group>
-
-                <Form.Group widths="equal">
-                    <Form.Field>
-                        <label>Wetting factor (wetfct)</label>
-                        <Input
-                            readOnly={true}
-                            name="wetfct"
-                            value={JSON.stringify(mfPackage.wetfct)}
-                            icon={<InfoPopup description={documentation.wetfct} title={'wetfct'}/>}
-                        />
-                    </Form.Field>
-                    <Form.Field>
-                        <label>Wetting interval (iwetit)</label>
-                        <Input
-                            readOnly={true}
-                            name="iwetit"
-                            value={JSON.stringify(mfPackage.iwetit)}
-                            icon={<InfoPopup description={documentation.iwetit} title={'iwetit'}/>}
-                        />
-                    </Form.Field>
-                    <Form.Field>
-                        <label>Equation (ihdwet)</label>
-                        <Input
-                            readOnly={true}
-                            name="ihdwet"
-                            value={JSON.stringify(mfPackage.ihdwet)}
-                            icon={<InfoPopup description={documentation.ihdwet} title={'ihdwet'}/>}
-                        />
-                    </Form.Field>
-                </Form.Group>
+                <Grid>
+                    <Grid.Row columns={3} stretched={true}>
+                        <Grid.Column>
+                            <Form.Group>
+                                <Form.Field width={11}>
+                                    <label>Save cell-by-cell budget data (ipakcb)</label>
+                                    <Checkbox
+                                        toggle
+                                        disabled={readonly}
+                                        name='ipakcb'
+                                        value={mfPackage.ipakcb || 0}
+                                    />
+                                </Form.Field>
+                                <Form.Field width={1}>
+                                    {<InfoPopup description={documentation.ipakcb} title={'IPAKCB'} position={'top right'} iconOutside={true}/>}
+                                </Form.Field>
+                            </Form.Group>
+                            <Form.Group>
+                                <Form.Field>
+                                    <label>Wetting capability (iwdflg)</label>
+                                    <Checkbox
+                                        toggle
+                                        disabled={readonly}
+                                        name='iwdflg'
+                                        value={JSON.stringify(mfPackage.iwdflg) || 0}
+                                    />
+                                </Form.Field>
+                                <Form.Field width={1}>
+                                    {<InfoPopup description={documentation.iwdflg} title={'IWDFLG'} position={'top right'} iconOutside={true}/>}
+                                </Form.Field>
+                            </Form.Group>
+                        </Grid.Column>
+                        <Grid.Column>
+                            <Form.Field>
+                                <label>Dry cells head (hdry)</label>
+                                <Input
+                                    readOnly={true}
+                                    name="hdry"
+                                    value={JSON.stringify(mfPackage.hdry)}
+                                    icon={<InfoPopup description={documentation.hdry} title={'hdry'}/>}
+                                />
+                            </Form.Field>
+                            <Form.Field>
+                                <label>Wetting factor (wetfct)</label>
+                                <Input
+                                    readOnly={true}
+                                    name="wetfct"
+                                    value={JSON.stringify(mfPackage.wetfct)}
+                                    icon={<InfoPopup description={documentation.wetfct} title={'wetfct'}/>}
+                                />
+                            </Form.Field>
+                        </Grid.Column>
+                        <Grid.Column>
+                            <Form.Field>
+                                <label>Wetting interval (iwetit)</label>
+                                <Input
+                                    readOnly={true}
+                                    name="iwetit"
+                                    value={JSON.stringify(mfPackage.iwetit)}
+                                    icon={<InfoPopup description={documentation.iwetit} title={'iwetit'}/>}
+                                />
+                            </Form.Field>
+                            <Form.Field>
+                                <label>Equation (ihdwet)</label>
+                                <Input
+                                    readOnly={true}
+                                    name="ihdwet"
+                                    value={JSON.stringify(mfPackage.ihdwet)}
+                                    icon={<InfoPopup description={documentation.ihdwet} title={'ihdwet'}/>}
+                                />
+                            </Form.Field>
+                        </Grid.Column>
+                    </Grid.Row>
+                </Grid>
             </Segment>
 
             <Grid>
@@ -311,6 +320,8 @@ const lpfPackageProperties = (props: IProps) => {
                             {<InfoPopup description={documentation.thickstrt} title={'THICKSTRT'} position={'top right'} iconOutside={true}/>}
                         </Form.Field>
                         </Form.Group>
+                    </Grid.Column>
+                    <Grid.Column>
                         <Form.Group>
                             <Form.Field>
                                 <label>Vertical conductance correction (nocvcorrection)</label>
