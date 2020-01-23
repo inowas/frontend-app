@@ -1,6 +1,5 @@
 import React, {SyntheticEvent, useEffect, useState} from 'react';
 import {
-    Checkbox,
     Dropdown,
     Grid,
     Segment
@@ -21,7 +20,6 @@ const visualization = (props: IProps) => {
     }>>([]);
     const [selectedParameter, setSelectedParameter] = useState<string | null>(null);
     const [parameters, setParameters] = useState<IParameterWithMetaData[]>([]);
-    const [showScale, setShowScale] = useState<boolean>(false);
 
     useEffect(() => {
         if (selectedParameter) {
@@ -77,7 +75,6 @@ const visualization = (props: IProps) => {
                 <VisualizationParameter
                     parameters={parameters}
                     rtm={props.rtm}
-                    showScale={showScale}
                 />
             );
         }
@@ -103,11 +100,6 @@ const visualization = (props: IProps) => {
                             parameters={parameters}
                         />
                         }
-                        <Checkbox
-                            checked={showScale}
-                            label="Show color scale"
-                            onChange={() => setShowScale(!showScale)}
-                        />
                     </Grid.Column>
                     <Grid.Column width={12}>
                         <Grid>
