@@ -122,7 +122,7 @@ export const menuItems: IMenu = [
                 name: 'Optimization',
                 property: 'optimization',
                 icon: <Icon name="sliders horizontal"/>,
-                disabled: true
+                disabled: false
             }
         ]
     }, {
