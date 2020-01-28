@@ -8,8 +8,7 @@ test:
   stage: test
 
   script:
-    - npm uninstall -g yarn
-    - npm install -g yarn@1.19 --force
+    - yarn config set unsafe-disable-integrity-migration true -g
     - yarn install
     - CI=true yarn test --all --colors
 
