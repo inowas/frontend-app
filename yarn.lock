@@ -12080,9 +12080,10 @@ vinyl@^2.0.0, vinyl@^2.1.0:
     remove-trailing-separator "^1.0.1"
     replace-ext "^1.0.0"
 
-vis-react@0.4.5:
-  version "0.4.5"
-  resolved "https://registry.yarnpkg.com/vis-react/-/vis-react-0.4.5.tgz#ea53212730c96796d12a3241b0d23249577545e8"
+vis-react@0.4.8:
+  version "0.4.8"
+  resolved "https://registry.yarnpkg.com/vis-react/-/vis-react-0.4.8.tgz#00576373abc33e304a86aa022527773973422917"
+  integrity sha512-2W8DA/lbdL4O0c234bvaStorKmoahc4N7poYasQzg9zoINIOpdGTK4aZPPGgrGox8NoaNPQzCtTVHQpxnGz69w==
   dependencies:
     lodash "^4.17.4"
     uuid "^2.0.1"

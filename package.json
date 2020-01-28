@@ -48,7 +48,7 @@
     "scheduler": "^0.18.0",
     "semantic-ui-react": "0.88.1",
     "uuid": "3.3.2",
-    "vis-react": "0.4.5"
+    "vis-react": "0.4.8"
   },
   "devDependencies": {
     "@types/geojson": "7946.0.7",
