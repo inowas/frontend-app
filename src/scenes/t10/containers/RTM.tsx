@@ -11,7 +11,7 @@ import AppContainer from '../../shared/AppContainer';
 import ToolNavigation from '../../shared/complexTools/toolNavigation';
 import SimpleToolsCommand from '../../shared/simpleTools/commands/SimpleToolsCommand';
 import ToolMetaData from '../../shared/simpleTools/ToolMetaData';
-import {DataSources, Processing, SensorMetaData, Sensors} from '../components/index';
+import {DataSources, Processing, SensorMetaData, Sensors, Visualization} from '../components/index';
 
 export interface IProps extends RouteComponentProps<{ id: string, property: string, pid: string }> {
 }
@@ -151,6 +151,14 @@ const RTM = (props: IProps) => {
             return (
                 <Redirect
                     to={basePath + props.match.params.id + '/sensor-setup' + props.location.search}
+                />
+            );
+        }
+
+        if (property === 'sensor-visualization') {
+            return (
+                <Visualization
+                    rtm={Rtm.fromObject(rtm)}
                 />
             );
         }
