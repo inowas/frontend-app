@@ -48,6 +48,7 @@
     "scheduler": "^0.18.0",
     "semantic-ui-react": "0.88.1",
     "uuid": "3.3.2",
+    "vis": "^4.21.0-EOL",
     "vis-react": "0.4.8"
   },
   "devDependencies": {
