@@ -9,7 +9,7 @@ test:
 
   script:
     - npm uninstall -g yarn
-    - npm install -g yarn@1.21 --force
+    - npm install -g yarn@1.19 --force
     - yarn install
     - CI=true yarn test --all --colors
 
