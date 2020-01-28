@@ -9,7 +9,7 @@ test:
 
   script:
     - yarn config set unsafe-disable-integrity-migration true -g
-    - yarn install
+    - yarn install --update-checksums
     - CI=true yarn test --all --colors
 
 build:dev:
