@@ -89,7 +89,7 @@ const rivPackageProperties = (props: IProps) => {
                 <Form.Field>
                     <label>Package options (options)</label>
                     <Input
-                        readOnly
+                        readOnly={true}
                         name='options'
                         value={mfPackage.options || ''}
                         icon={renderInfoPopup(documentation.options, 'OPTIONS')}
@@ -101,7 +101,7 @@ const rivPackageProperties = (props: IProps) => {
                 <Form.Field>
                     <label>Filename extension (extension)</label>
                     <Input
-                        readOnly
+                        readOnly={true}
                         name='extension'
                         value={mfPackage.extension || ''}
                         icon={renderInfoPopup(documentation.extension, 'EXTENSION')}
@@ -110,7 +110,7 @@ const rivPackageProperties = (props: IProps) => {
                 <Form.Field>
                     <label>File unit number (unitnumber)</label>
                     <Input
-                        readOnly
+                        readOnly={true}
                         type={'number'}
                         name='unitnumber'
                         value={mfPackage.unitnumber || ''}
@@ -120,7 +120,7 @@ const rivPackageProperties = (props: IProps) => {
                 <Form.Field>
                     <label>Filenames (filenames)</label>
                     <Input
-                        readOnly
+                        readOnly={true}
                         name='filenames'
                         value={mfPackage.filenames || ''}
                         icon={renderInfoPopup(documentation.filenames, 'FILENAMES')}

@@ -97,7 +97,7 @@ const smsPackageProperties = (props: IProps) => {
                                 <label>Head change criterion (HCLOSE)</label>
                                 <Input
                                     name={'hclose'}
-                                    readOnly={readOnly}
+                                    readOnly={true}
                                     type={'number'}
                                     value={mfPackage.hclose}
                                     icon={renderInfoPopup(documentation.sms.hclose, 'HCLOSE')}
@@ -109,7 +109,7 @@ const smsPackageProperties = (props: IProps) => {
                                 <label>Head change criterion for convergence (HICLOSE)</label>
                                 <Input
                                     name={'hiclose'}
-                                    readOnly={readOnly}
+                                    readOnly={true}
                                     type={'number'}
                                     value={mfPackage.hiclose}
                                     icon={renderInfoPopup(documentation.sms.hiclose, 'HICLOSE')}
@@ -121,7 +121,7 @@ const smsPackageProperties = (props: IProps) => {
                                 <label>Max. outer iterations (MXITER)</label>
                                 <Input
                                     name={'mxiter'}
-                                    readOnly={readOnly}
+                                    readOnly={true}
                                     type={'number'}
                                     value={mfPackage.mxiter}
                                     icon={renderInfoPopup(documentation.sms.mxiter, 'MXITER')}
@@ -133,7 +133,7 @@ const smsPackageProperties = (props: IProps) => {
                                 <label>Max. inner iterations (ITER1)</label>
                                 <Input
                                     name={'iter1'}
-                                    readOnly={readOnly}
+                                    readOnly={true}
                                     type={'number'}
                                     value={mfPackage.iter1}
                                     icon={renderInfoPopup(documentation.sms.iter1, 'ITER1')}
@@ -344,7 +344,7 @@ const smsPackageProperties = (props: IProps) => {
                         <Input
                             readOnly={true}
                             name="level"
-                            value={mfPackage.level || ''}
+                            value={mfPackage.level}
                             icon={renderInfoPopup(documentation.sms.level, 'LEVEL')}
                         />
                     </Form.Field>
@@ -353,7 +353,7 @@ const smsPackageProperties = (props: IProps) => {
                         <Input
                             readOnly={true}
                             name="north"
-                            value={mfPackage.north || ''}
+                            value={mfPackage.north}
                             icon={renderInfoPopup(documentation.sms.north, 'NORTH')}
                         />
                     </Form.Field>
@@ -374,7 +374,7 @@ const smsPackageProperties = (props: IProps) => {
                         <Input
                             readOnly={true}
                             name="rrctol"
-                            value={mfPackage.rrctol || ''}
+                            value={mfPackage.rrctol}
                             icon={renderInfoPopup(documentation.sms.rrctol, 'RRCTOL')}
                         />
                     </Form.Field>
@@ -395,7 +395,7 @@ const smsPackageProperties = (props: IProps) => {
                         <Input
                             readOnly={true}
                             name="epsrn"
-                            value={mfPackage.epsrn || ''}
+                            value={mfPackage.epsrn}
                             icon={renderInfoPopup(documentation.sms.epsrn, 'EPSRN')}
                         />
                     </Form.Field>
@@ -409,7 +409,7 @@ const smsPackageProperties = (props: IProps) => {
                         <Input
                             readOnly={true}
                             name="clin"
-                            value={mfPackage.clin || ''}
+                            value={mfPackage.clin}
                             icon={renderInfoPopup(documentation.sms.clin, 'CLIN')}
                         />
                     </Form.Field>
@@ -480,7 +480,7 @@ const smsPackageProperties = (props: IProps) => {
                         <Input
                             readOnly={true}
                             name="rclosepcgu"
-                            value={mfPackage.rclosepcgu || ''}
+                            value={mfPackage.rclosepcgu}
                             icon={renderInfoPopup(documentation.sms.rclosepcgu, 'RCLOSEPCGU')}
                         />
                     </Form.Field>
@@ -489,7 +489,7 @@ const smsPackageProperties = (props: IProps) => {
                         <Input
                             readOnly={true}
                             name="relaxpcgu"
-                            value={mfPackage.relaxpcgu || ''}
+                            value={mfPackage.relaxpcgu}
                             icon={renderInfoPopup(documentation.sms.relaxpcgu, 'RELAXPCGU')}
                         />
                     </Form.Field>

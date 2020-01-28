@@ -59,8 +59,8 @@ const de4PackageProperties = (props: IProps) => {
                 <Form.Field>
                     <label>Maximum number of iterations (itmx)</label>
                     <Input
-                        type={'number'}
                         readOnly={true}
+                        type={'number'}
                         name={'itmx'}
                         value={mfPackage.itmx}
                         icon={renderInfoPopup(documentation.itmx, 'ITMX')}
@@ -72,8 +72,8 @@ const de4PackageProperties = (props: IProps) => {
                     <label>Maximum number of upper equations (mxup)</label>
                     <Input
                         readOnly={true}
-                        name={'mxup'}
                         type={'number'}
+                        name={'mxup'}
                         value={mfPackage.mxup}
                         icon={renderInfoPopup(documentation.mxup, 'MXUP')}
                         onBlur={handleOnBlur(parseFloat)}
@@ -87,8 +87,8 @@ const de4PackageProperties = (props: IProps) => {
                     <label>Maximum number of lower equations (mxlow)</label>
                     <Input
                         readOnly={true}
-                        name="mxlow"
                         type={'number'}
+                        name="mxlow"
                         value={mfPackage.mxlow}
                         icon={renderInfoPopup(documentation.mxlow, 'MXLOW')}
                         onBlur={handleOnBlur(parseFloat)}
@@ -99,8 +99,8 @@ const de4PackageProperties = (props: IProps) => {
                     <label>Maximum bandwidth (mxbw)</label>
                     <Input
                         readOnly={true}
-                        name="mxbw"
                         type={'number'}
+                        name="mxbw"
                         value={mfPackage.mxbw}
                         icon={renderInfoPopup(documentation.mxbw, 'MXBW')}
                         onBlur={handleOnBlur(parseFloat)}

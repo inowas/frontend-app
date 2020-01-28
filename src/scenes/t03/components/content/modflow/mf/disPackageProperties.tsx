@@ -102,6 +102,7 @@ const disPackageProperties = (props: IProps) => {
                                     <label>Row spacing (delr)</label>
                                     <Input
                                         readOnly={true}
+                                        type={'number'}
                                         name="delr"
                                         value={JSON.stringify(mfPackage.delr)}
                                         icon={renderInfoPopup(documentation.delr, 'delr')}
@@ -111,6 +112,7 @@ const disPackageProperties = (props: IProps) => {
                                     <label>Column spacing (delc)</label>
                                     <Input
                                         readOnly={true}
+                                        type={'number'}
                                         name="delc"
                                         value={JSON.stringify(mfPackage.delc)}
                                         icon={renderInfoPopup(documentation.delc, 'delc')}
@@ -166,7 +168,7 @@ const disPackageProperties = (props: IProps) => {
                     Time Discretization
                 </Accordion.Title>
                 <Accordion.Content active={activeIndex === 2}>
-                    <Table  collapsing size={'small'} className={'packages'}>
+                    <Table collapsing size={'small'} className={'packages'}>
                         <Table.Header>
                             <Table.Row>
                                 <Table.HeaderCell>#</Table.HeaderCell>

@@ -16,7 +16,7 @@ interface IProps {
 const rchPackageProperties = (props: IProps) => {
 
     const [mfPackage] = useState<IFlopyModflowMfrch>(props.mfPackage.toObject());
-    const {mfPackages, readonly} = props;
+    const {readonly} = props;
 
     const spData2D = Object.values(mfPackage.rech)[0];
     // TODO : implement ibound
@@ -54,7 +54,7 @@ const rchPackageProperties = (props: IProps) => {
                 </Grid.Row>
             </Grid>
 
-            <Form.Group widths='equal'>
+            <Form.Group>
                 <Form.Field>
                     <label>Cell-by-cell budget data (ipakcb)</label>
                     <Checkbox
@@ -73,28 +73,28 @@ const rchPackageProperties = (props: IProps) => {
                 <Form.Field>
                     <label>Filename extension</label>
                     <Input
-                        readOnly
+                        readOnly={true}
                         name='extension'
-                        value={mfPackage.extension || ''}
+                        value={mfPackage.extension}
                         icon={<InfoPopup description={documentation.extension} title={'extension'}/>}
                     />
                 </Form.Field>
                 <Form.Field>
                     <label>File unit number</label>
                     <Input
-                        readOnly
+                        readOnly={true}
                         type={'number'}
                         name='unitnumber'
-                        value={mfPackage.unitnumber || ''}
+                        value={mfPackage.unitnumber}
                         icon={<InfoPopup description={documentation.unitnumber} title={'unitnumber'}/>}
                     />
                 </Form.Field>
                 <Form.Field>
                     <label>Filenames</label>
                     <Input
-                        readOnly
+                        readOnly={true}
                         name='filenames'
-                        value={mfPackage.filenames || ''}
+                        value={mfPackage.filenames}
                         icon={<InfoPopup description={documentation.filenames} title={'filenames'}/>}
                     />
                 </Form.Field>

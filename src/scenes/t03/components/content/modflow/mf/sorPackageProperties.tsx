@@ -54,7 +54,7 @@ const sorPackageProperties = (props: IProps) => {
                     <label>Maximum iterations per time step (MXITER)</label>
                     <Input
                         name={'mxiter'}
-                        readOnly={readOnly}
+                        readOnly={true}
                         type={'number'}
                         value={mfPackage.mxiter}
                         icon={renderInfoPopup(documentation.sor.mxiter, 'MXITER')}
@@ -66,7 +66,7 @@ const sorPackageProperties = (props: IProps) => {
                     <label>Head change multiplier (ACCL)</label>
                     <Input
                         name="accl"
-                        readOnly={readOnly}
+                        readOnly={true}
                         type={'number'}
                         value={mfPackage.accl}
                         icon={renderInfoPopup(documentation.sor.accl, 'ACCL')}
@@ -79,7 +79,7 @@ const sorPackageProperties = (props: IProps) => {
                 <Form.Field>
                     <label>Head change closure criterion (HCLOSE)</label>
                     <Input
-                        readOnly={readOnly}
+                        readOnly={true}
                         name="hclose"
                         type={'number'}
                         value={mfPackage.hclose}
@@ -91,7 +91,7 @@ const sorPackageProperties = (props: IProps) => {
                 <Form.Field>
                     <label>Print out interval (IPRSOR)</label>
                     <Input
-                        readOnly={readOnly}
+                        readOnly={true}
                         name="iprsor"
                         type={'number'}
                         value={mfPackage.iprsor}

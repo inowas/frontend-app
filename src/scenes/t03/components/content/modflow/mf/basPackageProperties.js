@@ -131,7 +131,7 @@ class BasPackageProperties extends AbstractPackageProperties {
                                     </Form.Field>
                                     <Form.Field>
                                         <label>&nbsp;</label>
-                                        {this.renderInfoPopup(documentation.ichflg, 'ichflg', 'top left', true)}
+                                        {this.renderInfoPopup(documentation.ichflg, 'ICHFLG', 'top left', true)}
                                     </Form.Field>
                                     <Form.Field>
                                         <label>hnoflo</label>
@@ -140,7 +140,7 @@ class BasPackageProperties extends AbstractPackageProperties {
                                             type={'number'}
                                             name='hnoflo'
                                             value={mfPackage.hnoflo}
-                                            icon={this.renderInfoPopup(documentation.hnoflo, 'hnoflo')}
+                                            icon={this.renderInfoPopup(documentation.hnoflo, 'HNOFLO')}
                                         />
                                     </Form.Field>
                                     <Form.Field>
@@ -149,7 +149,7 @@ class BasPackageProperties extends AbstractPackageProperties {
                                             readOnly
                                             name='stoper'
                                             value={mfPackage.stoper || ''}
-                                            icon={this.renderInfoPopup(documentation.stoper, 'stoper')}
+                                            icon={this.renderInfoPopup(documentation.stoper, 'STOPER')}
                                         />
                                     </Form.Field>
                                 </Form.Group>
