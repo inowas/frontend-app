@@ -184,7 +184,7 @@ export default class FlopyModflow extends GenericObject<IFlopyModflow> {
         riv ? this._props.riv = riv.toObject() : delete this._props.riv;
 
         const str = FlopyModflowMfstr.create(boundaries, model.stressperiods);
-        str ? this._props.str = str.toObject() : delete this._props.riv;
+        str ? this._props.str = str.toObject() : delete this._props.str;
 
         const wel = FlopyModflowMfwel.create(boundaries, model.stressperiods);
         wel ? this._props.wel = wel.toObject() : delete this._props.wel;
