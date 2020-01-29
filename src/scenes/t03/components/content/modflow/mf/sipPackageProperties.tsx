@@ -28,6 +28,8 @@ const sipPackageProperties = (props: IProps) => {
         if (cast) {
             value = cast(value);
         }
+
+        setMfPackage({...mfPackage, [name]: value});
         props.onChange(FlopyModflowMfsip.fromObject({...mfPackage, [name]: value}));
     };
 

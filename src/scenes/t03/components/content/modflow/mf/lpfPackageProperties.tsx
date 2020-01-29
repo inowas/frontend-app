@@ -43,6 +43,8 @@ const lpfPackageProperties = (props: IProps) => {
         if (cast) {
             value = cast(value);
         }
+
+        setMfPackage({...mfPackage, [name]: value});
         props.onChange(FlopyModflowMflpf.fromObject({...mfPackage, [name]: value}));
     };
 

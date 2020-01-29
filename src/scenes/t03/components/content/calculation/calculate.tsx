@@ -43,16 +43,16 @@ const calculate = (props: IProps) => {
             return;
         }
 
-        if (calculation.state > CALCULATION_STARTED && calculation.state < CALCULATION_STATE_CALCULATING) {
+        if (calculation.state >= CALCULATION_STARTED && calculation.state < CALCULATION_STATE_CALCULATING) {
             setCanBeCalculated(false);
             setShowProgress(true);
         }
 
-        if (calculation.state > CALCULATION_STARTED && calculation.state < CALCULATION_STATE_CALCULATION_FINISHED) {
+        if (calculation.state >= CALCULATION_STARTED && calculation.state < CALCULATION_STATE_CALCULATION_FINISHED) {
             setIsCalculating(true);
         }
 
-        if (calculation.state <= CALCULATION_STARTED || calculation.state >= CALCULATION_STATE_CALCULATION_FINISHED) {
+        if (calculation.state < CALCULATION_STARTED || calculation.state >= CALCULATION_STATE_CALCULATION_FINISHED) {
             setIsCalculating(false);
         }
 
