@@ -3,7 +3,11 @@ export enum EOptimizationMethod {
     SIMPLEX = 'Simplex'
 }
 
-export interface IOptimizationParameters {
+interface IIndexSignature {
+    [index: string]: any;
+}
+
+export interface IOptimizationParameters extends IIndexSignature {
     method: EOptimizationMethod;
     ngen: number;
     ncls: number;

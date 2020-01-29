@@ -1,3 +1,4 @@
+import {IPropertyValueObject} from '../../types';
 import {IOptimizationObject} from './OptimizationObject.type';
 
 interface IMinMaxResult {
@@ -11,7 +12,7 @@ export enum ELocationType {
     OBJECT = 'object'
 }
 
-export interface IOptimizationLocation {
+export interface IOptimizationLocation extends IPropertyValueObject {
     lay: IMinMaxResult;
     row: IMinMaxResult;
     col: IMinMaxResult;

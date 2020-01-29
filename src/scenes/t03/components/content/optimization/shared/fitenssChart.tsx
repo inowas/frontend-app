@@ -1,6 +1,4 @@
 import React from 'react';
-import PropTypes from 'prop-types';
-
 import {
     CartesianGrid, Legend,
     Line,
@@ -10,11 +8,19 @@ import {
     YAxis,
 } from 'recharts';
 
-const Chart = ({data}) => {
+interface IProps {
+    data: Array<{name: number, log: string}>;
+}
+
+const fitnessChart = (props: IProps) => {
     return (
         <ResponsiveContainer width={'100%'} aspect={2.0}>
-            <LineChart width={632} height={250} data={data}
-                       margin={{top: 5, right: 20, left: 20, bottom: 5}}>
+            <LineChart
+                width={632}
+                height={250}
+                data={props.data}
+                margin={{top: 5, right: 20, left: 20, bottom: 5}}
+            >
                 <CartesianGrid strokeDasharray="3 3"/>
                 <XAxis dataKey="name"/>
                 <YAxis
@@ -33,8 +39,4 @@ const Chart = ({data}) => {
     );
 };
 
-Chart.propTypes = {
-    data: PropTypes.array.isRequired
-};
-
-export default Chart;
+export default fitnessChart;
