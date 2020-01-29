@@ -18,7 +18,7 @@ interface IProps {
 
 const bcfPackageProperties = (props: IProps) => {
 
-    const [mfPackage, setMfPackage] = useState<IFlopyModflowMfbcf>(props.mfPackage.toObject());
+    const [mfPackage] = useState<IFlopyModflowMfbcf>(props.mfPackage.toObject());
     const {mfPackages, readonly} = props;
     const disPackage: FlopyModflowMfdis = mfPackages.getPackage('dis') as FlopyModflowMfdis;
     const {nrow, ncol} = disPackage;
@@ -54,6 +54,50 @@ const bcfPackageProperties = (props: IProps) => {
                     ))}
                 </Table.Body>
             </Table>
+
+            <Segment basic={true}>
+                <Form.Group widths="equal">
+                    <Form.Field>
+                        <label>Rewetting factor (WETFCT)</label>
+                        <Input
+                            readOnly={true}
+                            name="wetfct"
+                            value={JSON.stringify(mfPackage.wetfct)}
+                            icon={<InfoPopup description={documentation.wetfct} title={'WETFCT'}/>}
+                        />
+                    </Form.Field>
+                    <Form.Field>
+                        <label>Iteration interval (IWETIT)</label>
+                        <Input
+                            readOnly={true}
+                            name="iwetit"
+                            value={mfPackage.iwetit}
+                            icon={<InfoPopup description={documentation.iwetit} title={'IWETIT'}/>}
+                        />
+                    </Form.Field>
+                </Form.Group>
+                <Form.Group widths="equal">
+                    <Form.Field>
+                        <label>Rewetting equation (IHDWET)</label>
+                        <Input
+                            readOnly={true}
+                            name="ihdwet"
+                            value={JSON.stringify(mfPackage.ihdwet)}
+                            icon={<InfoPopup description={documentation.ihdwet} title={'IHDWET'}/>}
+                        />
+                    </Form.Field>
+                    <Form.Field>
+                        <label>Dry cell head (HDRY)</label>
+                        <Input
+                            readOnly={true}
+                            name="hdry"
+                            value={JSON.stringify(mfPackage.hdry)}
+                            icon={<InfoPopup description={documentation.hdry} title={'HDRY'}/>}
+                        />
+                    </Form.Field>
+                </Form.Group>
+            </Segment>
+
             <Grid>
                 {Array.isArray(mfPackage.tran) && mfPackage.tran.map((tran, idx) => {
                     const trpy = Array.isArray(mfPackage.trpy) ? mfPackage.trpy[idx] : mfPackage.trpy;
@@ -89,45 +133,6 @@ const bcfPackageProperties = (props: IProps) => {
                     );
                 })}
             </Grid>
-            <Segment basic={true}>
-                <Form.Group widths="equal">
-                    <Form.Field>
-                        <label>Save cell-by-cell budget data (ipakcb)</label>
-                        <Checkbox
-                            toggle={true}
-                            disabled={readonly}
-                            name="ipakcb"
-                            value={mfPackage.ipakcb || 0}
-                        />
-                    </Form.Field>
-                    <Form.Field width={1}>
-                        <InfoPopup
-                            description={documentation.ipakcb}
-                            title={'IPAKCB'}
-                            position={'top right'}
-                            iconOutside={true}
-                        />
-                    </Form.Field>
-                    <Form.Field>
-                        <label>Dry cell head (hdry)</label>
-                        <Input
-                            readOnly={true}
-                            name="hdry"
-                            value={JSON.stringify(mfPackage.hdry)}
-                            icon={<InfoPopup description={documentation.hdry} title={'hdry'}/>}
-                        />
-                    </Form.Field>
-                    <Form.Field>
-                        <label>Rewetting factor (wetfct)</label>
-                        <Input
-                            readOnly={true}
-                            name="wetfct"
-                            value={JSON.stringify(mfPackage.wetfct)}
-                            icon={<InfoPopup description={documentation.wetfct} title={'wetfct'}/>}
-                        />
-                    </Form.Field>
-                </Form.Group>
-            </Segment>
 
             <Grid>
                 {Array.isArray(mfPackage.sf1) && mfPackage.sf1.map((sf1, idx) => {
@@ -168,30 +173,29 @@ const bcfPackageProperties = (props: IProps) => {
             <Segment basic={true}>
                 <Form.Group widths="equal">
                     <Form.Field>
-                        <label>Iteration interval (iwetit)</label>
-                        <Input
-                            readOnly={true}
-                            name="iwetit"
-                            value={mfPackage.iwetit}
-                            icon={<InfoPopup description={documentation.iwetit} title={'iwetit'}/>}
+                        <label>Save cell-by-cell budget data (IPAKCB)</label>
+                        <Checkbox
+                            toggle={true}
+                            disabled={readonly}
+                            name="ipakcb"
+                            value={mfPackage.ipakcb || 0}
+                        />
+                    </Form.Field>
+                    <Form.Field width={1}>
+                        <InfoPopup
+                            description={documentation.ipakcb}
+                            title={'IPAKCB'}
+                            position={'top right'}
+                            iconOutside={true}
                         />
                     </Form.Field>
                     <Form.Field>
-                        <label>Rewetting equation (ihdwet)</label>
-                        <Input
-                            readOnly={true}
-                            name="ihdwet"
-                            value={JSON.stringify(mfPackage.ihdwet)}
-                            icon={<InfoPopup description={documentation.ihdwet} title={'ihdwet'}/>}
-                        />
-                    </Form.Field>
-                    <Form.Field>
-                        <label>Wetting threshold (wetdry)</label>
+                        <label>Wetting threshold (WETDRY)</label>
                         <Input
                             readOnly={true}
                             name="wetdry"
                             value={mfPackage.wetdry}
-                            icon={<InfoPopup description={documentation.wetdry} title={'wetdry'}/>}
+                            icon={<InfoPopup description={documentation.wetdry} title={'WETDRY'}/>}
                         />
                     </Form.Field>
                 </Form.Group>
