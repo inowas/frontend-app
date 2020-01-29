@@ -197,7 +197,7 @@ const mapDispatchToProps = {
     setActiveTool, setPublic
 };
 
-Dashboard.proptypes = {
+Dashboard.propTypes = {
     activeTool: PropTypes.object.isRequired,
     roles: PropTypes.array.isRequired,
     setActiveTool: PropTypes.func.isRequired,
