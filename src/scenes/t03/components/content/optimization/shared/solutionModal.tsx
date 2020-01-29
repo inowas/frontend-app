@@ -72,7 +72,7 @@ const optimizationSolutionModal = (props: IProps) => {
                                         bbox={props.model.boundingBox}
                                         objects={props.solution.objects}
                                         selectedObject={OptimizationObject.fromObject(selectedObject)}
-                                        readOnly={true}
+                                        readonly={true}
                                         gridSize={props.model.gridSize}
                                     />
                                 </Grid.Column>
@@ -149,9 +149,9 @@ const optimizationSolutionModal = (props: IProps) => {
                             </Accordion.Title>
                             <Accordion.Content active={activeIndex === 2}>
                                 <SubstanceEditor
-                                    object={selectedObject}
+                                    object={OptimizationObject.fromObject(selectedObject)}
+                                    onChange={() => null}
                                     model={props.model}
-                                    substances={[]}
                                     stressPeriods={props.stressPeriods}
                                     showResults={true}
                                     readOnly={true}

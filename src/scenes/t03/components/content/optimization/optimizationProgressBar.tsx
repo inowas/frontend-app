@@ -1,25 +1,28 @@
 import React, {useEffect, useRef, useState} from 'react';
 import {connect} from 'react-redux';
+import {RouteComponentProps, withRouter} from 'react-router-dom';
 import {Message} from 'semantic-ui-react';
-import {ModflowModel, Optimization} from '../../../../../core/model/modflow';
+import {
+    ModflowModel,
+    Optimization
+} from '../../../../../core/model/modflow';
 import {fetchUrl} from '../../../../../services/api';
+import {
+    updateOptimization
+} from '../../../actions/actions';
 import {OPTIMIZATION_STATE_FINISHED, OPTIMIZATION_STATE_STARTED} from '../../../defaults/optimization';
 import OptimizationStatus from './optimizationStatus';
 
 interface IStateProps {
     model: ModflowModel;
-    optimization: Optimization;
+    optimization: Optimization | null;
 }
 
 interface IDispatchProps {
-    updateCalculation: () => any;
-}
-
-interface IOwnProps {
     updateOptimization: (optimization: Optimization) => any;
 }
 
-type IProps = IOwnProps & IStateProps & IDispatchProps;
+type IProps = IStateProps & IDispatchProps & RouteComponentProps<any>;
 
 const optimizationProgressBar = (props: IProps) => {
     const [isFetching, setIsFetching] = useState<boolean>(false);
@@ -68,19 +71,19 @@ const optimizationProgressBar = (props: IProps) => {
     };
 
     const fetchOptimization = () => {
-        const model = props.model;
-        const {calculation} = model;
-
-        const {state} = calculation;
+        if (!props.optimization) {
+            return null;
+        }
+        const {state} = props.optimization;
         if (state < OPTIMIZATION_STATE_STARTED || state >= OPTIMIZATION_STATE_FINISHED) {
             return;
         }
 
         setIsFetching(true);
-        fetchUrl(`modflowmodels/${model.id}/optimization`,
+        fetchUrl(`modflowmodels/${props.model.id}/optimization`,
             (data) => {
                 setIsError(false);
-                props.updateOptimization(Optimization.fromQuery(data));
+                props.updateOptimization(Optimization.fromObject(data));
             },
             (rError) => {
                 setIsError(true);
@@ -89,7 +92,7 @@ const optimizationProgressBar = (props: IProps) => {
         );
     };
 
-    if (!isVisible) {
+    if (!isVisible || !props.optimization) {
         return null;
     }
 
@@ -106,4 +109,16 @@ const optimizationProgressBar = (props: IProps) => {
     );
 };
 
-export default connect(mapStateToProps, mapDispatchToProps)(optimizationProgressBar);
+const mapStateToProps = (state: any) => ({
+    model: ModflowModel.fromObject(state.T03.model),
+    optimization: state.T03.optimization ? Optimization.fromObject(state.T03.optimization) : null
+});
+
+const mapDispatchToProps = (dispatch: any): IDispatchProps => ({
+    updateOptimization: (o: Optimization) => dispatch(updateOptimization(o))
+});
+
+export default withRouter(connect<IStateProps, IDispatchProps>(
+    mapStateToProps,
+    mapDispatchToProps)
+(optimizationProgressBar));

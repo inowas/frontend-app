@@ -8,7 +8,7 @@ import Modflow from './modflow/flow';
 import {Modpath} from './modpath';
 import Mt3d from './mt3d/Mt3dProperties.js';
 import Observations from './observations';
-import Optimization from './optimization/optimization.js';
+import Optimization from './optimization/optimization';
 import {BudgetResults, FlowResults, TransportResults} from './results';
 import Seawat from './seawat/SeawatProperties';
 import SoilmodelEditor from './soilmodel/soilmodelEditor';

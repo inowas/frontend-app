@@ -1,11 +1,12 @@
 import {EConstraintType} from './OptimizationConstraint.type';
 import {IOptimizationLocation} from './OptimizationLocation.type';
+import {IPropertyValueObject} from "../../types";
 
 export enum ESummaryMethod {
     MEAN = 'mean'
 }
 
-export interface IOptimizationObjective {
+export interface IOptimizationObjective extends IPropertyValueObject {
     id: string;
     name: string;
     type: EConstraintType;

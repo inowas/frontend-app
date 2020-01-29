@@ -10,9 +10,8 @@ import {
 
 import FlopyPackages from '../../../core/model/flopy/packages/FlopyPackages';
 import {FlopyMt3d} from '../../../core/model/flopy/packages/mt';
-import {Calculation, ModflowModel, Stressperiods, Transport, VariableDensity} from '../../../core/model/modflow';
+import {Calculation, ModflowModel, Optimization, Stressperiods, Transport, VariableDensity} from '../../../core/model/modflow';
 import {BoundaryCollection} from '../../../core/model/modflow/boundaries';
-import {Optimization} from '../../../core/model/modflow/optimization';
 import {Soilmodel, SoilmodelLayer} from '../../../core/model/modflow/soilmodel';
 import {Zone} from '../../../core/model/modflow/soilmodel';
 import LayerParameterZonesCollection from '../../../core/model/modflow/soilmodel/LayerParameterZonesCollection';
@@ -87,12 +86,12 @@ export function updateProcessingPackages() {
     };
 }
 
-export function updateProcessedPackages(packages: FlopyPackages) {
+export const updateProcessedPackages = (packages: FlopyPackages) => {
     return {
         type: UPDATE_PROCESSED_PACKAGES,
         payload: packages.toObject()
     };
-}
+};
 
 export function recalculatePackages() {
     return {

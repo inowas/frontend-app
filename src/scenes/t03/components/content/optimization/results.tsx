@@ -21,8 +21,8 @@ import {FitnessChart, LocalOptimizationModal, OptimizationSolutionModal} from '.
 interface IProps {
     onApplySolution: (boundaries: BoundaryCollection) => any;
     optimization: Optimization;
-    onChange: () => any;
-    onChangeInput: (input: { key: string, value: any }) => any;
+    onChange: (result: { key: string, value: any }) => any;
+    onChangeInput: (optimizationInput: OptimizationInput, save: boolean) => any;
     onCalculationClick: () => any;
     onGoToBoundaryClick: () => any;
     model: ModflowModel;
@@ -79,10 +79,7 @@ const optimizationResultsComponent = (props: IProps) => {
 
     const handleCalculationStart = (input: OptimizationInput) => {
         handleCancelModal();
-        props.onChangeInput({
-            key: 'input',
-            value: input
-        });
+        props.onChangeInput(input, true);
         return props.onCalculationClick();
     };
 

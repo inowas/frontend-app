@@ -2,6 +2,7 @@ import {IOptimization} from './Optimization.type';
 import OptimizationInput from './OptimizationInput';
 import OptimizationMethod from './OptimizationMethod';
 import {IOptimizationSolution} from './OptimizationSolution.type';
+import {ErrorObject} from "ajv";
 
 class Optimization {
 
@@ -73,6 +74,10 @@ class Optimization {
     public addMethod(method: OptimizationMethod) {
         this._props.methods.push(method.toObject());
         return this;
+    }
+
+    public validate(): [boolean, ErrorObject[]] {
+        return [true, []];
     }
 }
 

@@ -129,11 +129,11 @@ const optimizationMap = (props: IProps) => {
             <Rectangle
                 key={uniqueId()}
                 bounds={[
-                    {lng: cXmin, lat: cYmin},
-                    {lng: cXmin, lat: cYmax},
-                    {lng: cXmax, lat: cYmax},
-                    {lng: cXmax, lat: cYmin},
-                ]}
+                    [cXmin, cYmin],
+                    [cXmin, cYmax],
+                    [cXmax, cYmax],
+                    [cXmax, cYmin]]
+                }
                 {...dStyles.line}
             />
         );

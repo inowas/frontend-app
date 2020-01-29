@@ -1,13 +1,12 @@
 import FitnessChart from './fitenssChart';
 import FluxDataTable from './fluxDataTable';
 import InputObjectList from './inputObjectList';
-import InputRange from './inputRange';
+import {InputRange} from './inputRange';
+import LocalOptimizationModal from './localOptimizationModal';
 import OptimizationMap from './map';
 import OptimizationResultsMap from './resultsMap';
 import OptimizationSolutionModal from './solutionModal';
-import OptimizationToolbar from './toolbar';
 import SubstanceEditor from './substanceEditor';
-import LocalOptimizationModal from './localOptimizationModal';
 
 export {
     FitnessChart,
@@ -18,6 +17,5 @@ export {
     OptimizationMap,
     OptimizationResultsMap,
     OptimizationSolutionModal,
-    OptimizationToolbar,
     SubstanceEditor
-}
+};

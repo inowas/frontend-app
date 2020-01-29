@@ -5,6 +5,7 @@ import {List, Message, Modal} from 'semantic-ui-react';
 import FlopyPackages from '../../../core/model/flopy/packages/FlopyPackages';
 import {Calculation, ModflowModel, Soilmodel, Transport, VariableDensity} from '../../../core/model/modflow';
 import {BoundaryCollection} from '../../../core/model/modflow/boundaries';
+import Optimization from '../../../core/model/modflow/optimization/Optimization';
 import {fetchSoilmodel} from '../../../core/model/modflow/soilmodel/updater/services';
 import updater from '../../../core/model/modflow/soilmodel/updater/updater';
 import {IRootReducer} from '../../../reducers';
@@ -13,7 +14,7 @@ import {
     clear,
     updateBoundaries,
     updateCalculation,
-    updateModel,
+    updateModel, updateOptimization,
     updatePackages,
     updateSoilmodel,
     updateTransport,
@@ -39,6 +40,9 @@ const dataFetcherWrapper = (props: IProps) => {
     const [fetchingBoundaries, setFetchingBoundaries] = useState<boolean>(false);
     const [fetchingBoundariesSuccess, setFetchingBoundariesSuccess] = useState<boolean | null>(null);
 
+    const [fetchingOptimization, setFetchingOptimization] = useState<boolean>(false);
+    const [fetchingOptimizationSuccess, setFetchingOptimizationSuccess] = useState<boolean | null>(null);
+
     const [fetchingPackages, setFetchingPackages] = useState<boolean>(false);
     const [fetchingPackagesSuccess, setFetchingPackagesSuccess] = useState<boolean | null>(null);
 
@@ -62,7 +66,7 @@ const dataFetcherWrapper = (props: IProps) => {
     });
 
     const T03 = useSelector((state: IRootReducer) => state.T03);
-    const {model, soilmodel, boundaries, packages, variableDensity, transport} = T03;
+    const {model, soilmodel, boundaries, optimization, packages, variableDensity, transport} = T03;
 
     useEffect(() => {
         dispatch(clear());
@@ -98,6 +102,7 @@ const dataFetcherWrapper = (props: IProps) => {
                     setFetchingModelSuccess(true);
 
                     fetchBoundaries(id);
+                    fetchOptimization(id);
                     fetchPackages(id);
                     fetchTransport(id);
                     fetchVariableDensity(id);
@@ -128,6 +133,21 @@ const dataFetcherWrapper = (props: IProps) => {
             (cError) => {
                 setFetchingBoundaries(false);
                 setFetchingBoundariesSuccess(false);
+                return handleError(cError);
+            });
+    };
+
+    const fetchOptimization = (id: string) => {
+        setFetchingOptimization(true);
+        fetchUrl(`modflowmodels/${id}/optimization`,
+            (data) => {
+                dispatch(updateOptimization(Optimization.fromObject(data)));
+                setFetchingOptimization(false);
+                setFetchingOptimizationSuccess(true);
+            },
+            (cError) => {
+                setFetchingOptimization(false);
+                setFetchingOptimizationSuccess(false);
                 return handleError(cError);
             });
     };
@@ -267,7 +287,8 @@ const dataFetcherWrapper = (props: IProps) => {
     );
 
     const everythingIsLoaded = () => {
-        const eil: boolean = !!model && !!boundaries && !!soilmodel && !!transport && !!variableDensity && !!packages;
+        const eil: boolean = !!model && !!boundaries && !!soilmodel && !!optimization && !!transport &&
+            !!variableDensity && !!packages;
         if (eil) {
             setTimeout(() => setShowModal(false), 1000);
         }
@@ -296,6 +317,7 @@ const dataFetcherWrapper = (props: IProps) => {
                             {name: 'Main model', loading: fetchingModel, success: fetchingModelSuccess},
                             {name: 'Boundaries', loading: fetchingBoundaries, success: fetchingBoundariesSuccess},
                             {name: renderSoilmodel(), loading: fetchingSoilmodel, success: fetchingSoilmodelSuccess},
+                            {name: 'Optimization', loading: fetchingOptimization, success: fetchingOptimizationSuccess},
                             {name: 'Transport', loading: fetchingTransport, success: fetchingTransportSuccess},
                             {
                                 name: 'Variable Density',

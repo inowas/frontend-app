@@ -1,3 +1,4 @@
+import {ErrorObject} from 'ajv';
 import React, {MouseEvent, useEffect, useState} from 'react';
 import {connect} from 'react-redux';
 import {RouteComponentProps, withRouter} from 'react-router-dom';
@@ -7,9 +8,9 @@ import {BoundaryCollection} from '../../../../../core/model/modflow/boundaries';
 import {IBoundary} from '../../../../../core/model/modflow/boundaries/Boundary.type';
 import {IOptimization} from '../../../../../core/model/modflow/optimization/Optimization.type';
 import OptimizationInput from '../../../../../core/model/modflow/optimization/OptimizationInput';
+import OptimizationProgress from '../../../../../core/model/modflow/optimization/OptimizationProgress';
 import {sendCommand} from '../../../../../services/api';
-import {fetchUrl} from '../../../../../services/api';
-import {updateOptimization,} from '../../../actions/actions';
+import {updateOptimization} from '../../../actions/actions';
 import Command from '../../../commands/modflowModelCommand';
 import {
     getMessage, OPTIMIZATION_STATE_CANCELLED, OPTIMIZATION_STATE_CANCELLING,
@@ -23,7 +24,6 @@ import {
     OptimizationParametersComponent,
     OptimizationResultsComponent
 } from './index';
-import {ErrorObject} from "ajv";
 
 interface IDispatchProps {
     updateOptimization: (optimization: Optimization) => any;
@@ -32,10 +32,14 @@ interface IDispatchProps {
 interface IStateProps {
     boundaries: BoundaryCollection;
     model: ModflowModel;
-    optimization: Optimization;
+    optimization: Optimization | null;
 }
 
-type IProps = IDispatchProps & IStateProps & RouteComponentProps;
+type IProps = IDispatchProps & IStateProps & RouteComponentProps<{
+    id: string;
+    property?: string;
+    type?: string;
+}>;
 
 const optimizationContainer = (props: IProps) => {
     const [activeItem, setActiveItem] = useState<string>(props.match.params.type || 'parameters');
@@ -46,20 +50,6 @@ const optimizationContainer = (props: IProps) => {
     const [isError, setIsError] = useState<boolean>(false);
     const [isLoading, setIsLoading] = useState<boolean>(true);
     const [isPolling, setIsPolling] = useState<boolean>(false);
-
-    useEffect(() => {
-        fetchUrl(`modflowmodels/${props.model.id}/optimization`,
-            (data) => {
-                setIsError(false);
-                setIsLoading(false);
-                props.updateOptimization(Optimization.fromObject(data));
-            },
-            (error) => {
-                setIsError(true);
-                setErrors([error]);
-            }
-        );
-    }, []);
 
     useEffect(() => {
         if (props.optimization) {
@@ -121,9 +111,8 @@ const optimizationContainer = (props: IProps) => {
     };
 
     const handleClickBack = () => {
-        const {path, type} = props.match;
-        const basePath = path.split(':')[0];
-        props.history.push(basePath + props.model.id + '/optimization/' + type);
+        const basePath = props.match.path.split(':')[0];
+        props.history.push(basePath + props.model.id + '/optimization/' + props.match.params.type);
     };
 
     const handleCancelCalculationClick = () => {
@@ -212,7 +201,7 @@ const optimizationContainer = (props: IProps) => {
     const renderProperties = () => {
         const {model} = props;
 
-        if (!model) {
+        if (!model || !optimization) {
             return null;
         }
 
@@ -281,9 +270,9 @@ const optimizationContainer = (props: IProps) => {
         }
         const iOptimization = Optimization.fromObject(optimization);
 
-        const [result, errors] = iOptimization.validate();
+        const [result, vErrors] = iOptimization.validate();
 
-        const errorMsg = getValidationMessage(errors);
+        const errorMsg = getValidationMessage(vErrors);
 
         let customErrors = false;
 
@@ -386,12 +375,16 @@ const optimizationContainer = (props: IProps) => {
         }
 
         const progress = optimization.input.parameters.method === 'GA' && methodGA
-            ? methodGA.progress : methodSimplex.progress;
+            ? methodGA.progress : methodSimplex ? methodSimplex.progress : null;
+
+        if (!progress) {
+            return null;
+        }
 
         return (
             <Menu.Item>
                 <Progress
-                    percent={progress.final ? 100 : progress.calculate()}
+                    percent={progress.final ? 100 : OptimizationProgress.fromObject(progress).calculate()}
                     progress={true}
                     indicating={!progress.final && optimizationInProgress(iOptimization.state)}
                     success={progress.final && iOptimization.state === OPTIMIZATION_STATE_FINISHED}
@@ -422,12 +415,14 @@ const optimizationContainer = (props: IProps) => {
                                 <Menu.Item
                                     name="parameters"
                                     active={activeItem === 'parameters'}
-                                    onClick={handleMenuClick}/>
+                                    onClick={handleMenuClick}
+                                />
                                 <Menu.Item
                                     name="objects"
                                     active={activeItem === 'objects'}
                                     onClick={handleMenuClick}
-                                    content="Decision Variables"/>
+                                    content="Decision Variables"
+                                />
                                 <Menu.Item
                                     name="objectives"
                                     active={activeItem === 'objectives'}

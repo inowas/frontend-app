@@ -71,10 +71,12 @@ const optimizationObjectsComponent = (props: IProps) => {
     };
 
     const handleChangeLocation = (result: {name: string, value: OptimizationLocation}) => {
-        return setSelectedObject({
-            ...selectedObject,
-            position: result.value.toObject()
-        });
+        if (selectedObject) {
+            return setSelectedObject({
+                ...selectedObject,
+                position: result.value.toObject()
+            });
+        }
     };
 
     const handleChangeSubstances = (substances: SubstanceCollection) => {
@@ -128,9 +130,11 @@ const optimizationObjectsComponent = (props: IProps) => {
     };
 
     const handleLocalChange = (e: SyntheticEvent, {name, value}: InputOnChangeData | DropdownProps) => {
-        const object = selectedObject;
-        object[name] = value;
-        return setSelectedObject(object);
+        if (selectedObject) {
+            const object = selectedObject;
+            object[name] = value;
+            return setSelectedObject(object);
+        }
     };
 
     const typeOptions = [
@@ -142,10 +146,9 @@ const optimizationObjectsComponent = (props: IProps) => {
     if (selectedObject) {
         fluxRows = props.model.stressperiods.dateTimes.map((dt, key) => {
             return {
-                id: key,
-                date_time: dt,
                 min: selectedObject.flux[key] ? selectedObject.flux[key].min : 0,
-                max: selectedObject.flux[key] ? selectedObject.flux[key].max : 0
+                max: selectedObject.flux[key] ? selectedObject.flux[key].max : 0,
+                result: null
             };
         });
     }
@@ -268,7 +271,7 @@ const optimizationObjectsComponent = (props: IProps) => {
                                     <Accordion.Content active={activeIndex === 1}>
                                         <FluxDataTable
                                             readOnly={props.model.readOnly}
-                                            rows={fluxRows}
+                                            rows={fluxRows || []}
                                             onChange={handleChangeFlux}
                                         />
                                     </Accordion.Content>

@@ -9,7 +9,7 @@ import {BoundaryFactory} from '../boundaries';
 import {IWellBoundary} from '../boundaries/WellBoundary.type';
 import Stressperiods from '../Stressperiods';
 import SubstanceCollection from '../transport/SubstanceCollection';
-import ObjectPosition from './ObjectPosition';
+import OptimizationLocation from './OptimizationLocation';
 import {EObjectType, IFluxObject, IMinMaxResult, IOptimizationObject} from './OptimizationObject.type';
 
 class OptimizationObject {
@@ -40,11 +40,11 @@ class OptimizationObject {
     }
 
     get position() {
-        return ObjectPosition.fromObject(this._props.position);
+        return OptimizationLocation.fromObject(this._props.position);
     }
 
     set position(value) {
-        this._props.position = value ? value.toObject() : ObjectPosition.fromDefaults().toObject();
+        this._props.position = value ? value.toObject() : OptimizationLocation.fromDefaults().toObject();
     }
 
     get flux() {
@@ -89,7 +89,7 @@ class OptimizationObject {
         return new OptimizationObject({
             id: uuidv4(),
             type,
-            position: ObjectPosition.fromDefaults().toObject(),
+            position: OptimizationLocation.fromDefaults().toObject(),
             flux,
             meta: {
                 name: 'New Optimization Object',

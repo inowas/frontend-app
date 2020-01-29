@@ -1,5 +1,5 @@
-import React, {useEffect, useState} from 'react';
-import {Button, Divider, Dropdown, Form, Icon, List, Modal} from 'semantic-ui-react';
+import React, {SyntheticEvent, useEffect, useState} from 'react';
+import {Button, Divider, Dropdown, DropdownProps, Form, Icon, List, Modal} from 'semantic-ui-react';
 import {ModflowModel} from '../../../../../../core/model/modflow';
 import OptimizationObject from '../../../../../../core/model/modflow/optimization/OptimizationObject';
 import Stressperiods from '../../../../../../core/model/modflow/Stressperiods';
@@ -18,10 +18,10 @@ interface IProps {
 
 const substanceEditor = (props: IProps) => {
     const [addedSubstance, setAddedSubstance] = useState<ISubstance[]>();
-    const [selectedSubstance, setSelectedSubstance] = useState<null>(null);
+    const [selectedSubstance, setSelectedSubstance] = useState<ISubstance | null>(null);
 
     useEffect(() => {
-        setAddedSubstance(props.object.substances.all.map((s) => {
+        /*setAddedSubstance(props.object.substances.all.map((s) => {
             if (!s.data) {
                 s.data = (new Array(props.stressPeriods.dateTimes.length)).fill(0).map(() => {
                     return {
@@ -32,11 +32,11 @@ const substanceEditor = (props: IProps) => {
                 });
             }
             return s;
-        }));
+        }));*/
     }, [props.object, props.stressPeriods]);
 
-    const handleChangeSubstanceData = (rows) => {
-        const cSubstance = substance;
+    const handleChangeSubstanceData = (rows: any[]) => {
+        /*const cSubstance = substance;
         cSubstance.data = rows.map((row, key) => {
             return {
                 id: key,
@@ -44,11 +44,11 @@ const substanceEditor = (props: IProps) => {
                 max: parseFloat(row.max)
             };
         });
-        return setSelectedSubstance(cSubstance);
+        return setSelectedSubstance(cSubstance);*/
     };
 
-    const addSubstance = (e, {value}) => {
-        const substances = props.model.mt3dms.packages.ssm._meta.substances;
+    const addSubstance = (e: SyntheticEvent, {value}: DropdownProps) => {
+        /*const substances = props.model.mt3dms.packages.ssm._meta.substances;
         const substance = substances.filter((s) => s.id === value)[0];
 
         if (substance) {
@@ -60,17 +60,17 @@ const substanceEditor = (props: IProps) => {
                 };
             });
             return setSelectedSubstance(substance);
-        }
+        }*/
     };
 
     const removeSubstance = (id: string) => {
-        const substances = addedSubstances.filter((s) => s.id !== id);
-        return props.onChange(substances);
+        //const substances = addedSubstances.filter((s) => s.id !== id);
+        //return props.onChange(substances);
     };
 
     const editSubstance = (id: string) => {
-        const substance = addedSubstances.filter((s) => s.id === id)[0];
-        return setSelectedSubstance(substance);
+        //const substance = addedSubstances.filter((s) => s.id === id)[0];
+        //return setSelectedSubstance(substance);
     };
 
     const handleCancelModal = () => setSelectedSubstance(null);
@@ -79,7 +79,7 @@ const substanceEditor = (props: IProps) => {
         const substance = selectedSubstance;
         let substanceHasBeenAdded = false;
 
-        const addedSubstances = addedSubstances.map((s) => {
+        /*const addedSubstances = addedSubstances.map((s) => {
             if (s.id === substance.id) {
                 substanceHasBeenAdded = true;
                 return substance;
@@ -89,13 +89,13 @@ const substanceEditor = (props: IProps) => {
 
         if (!substanceHasBeenAdded) {
             addedSubstances.push(substance);
-        }
+        }*/
 
         setSelectedSubstance(null);
-        return props.onChange(addedSubstances);
+        //return props.onChange(addedSubstances);
     };
 
-    const mSubstances = props.model.mt3dms.packages.ssm._meta.substances;
+    //const mSubstances = props.model.mt3dms.packages.ssm._meta.substances;
 
     const styles = {
         dropDownWithButtons: {
@@ -116,8 +116,8 @@ const substanceEditor = (props: IProps) => {
     }
 
     // Only show substances in dropdown, which hasn't already been added.
-    const addableSubstances: ISubstance[] = [];
-    substances.forEach((value) => {
+    /*const addableSubstances: ISubstance[] = [];
+    mSubstances.forEach((value) => {
         const added = addedSubstances.filter((s) => s.id === value.id).length > 0;
 
         if (!added) {
@@ -135,34 +135,34 @@ const substanceEditor = (props: IProps) => {
             return {
                 id: key,
                 date_time: dt,
-                min: selectedSubstance.data[key] ? selectedSubstance.data[key].min : 0,
-                max: selectedSubstance.data[key] ? selectedSubstance.data[key].max : 0,
-                result: selectedSubstance.data[key] ? selectedSubstance.data[key].result : 0
+                min: 0,
+                max: 0,
+                result: 0
             };
         });
-    }
+    }*/
 
     return (
         <div>
             <Form.Group style={styles.dropDownWithButtons}>
-                <Dropdown
+                {/*<Dropdown
                     placeholder={addableSubstances.length < 1 ?
                         'Add Substances in Transport -> Source/Sink Package' : 'Select Substance'}
                     fluid={true}
                     search={true}
                     selection={true}
                     options={addableSubstances}
-                    onChange={addSubstance}
+                    onChange={() => null}
                     disabled={addableSubstances.length < 1}
-                    value={selectedSubstance ? selectedSubstance.id : null}
-                />
+                    value={selectedSubstance ? selectedSubstance.id : undefined}
+                />*/}
             </Form.Group>
             {!props.readOnly &&
             <div>
-                {addedSubstances && addedSubstances.length > 0
+                {addedSubstance && addedSubstance.length > 0
                     ?
                     <List divided={true} verticalAlign="middle">
-                        {addedSubstances.map((s) => (
+                        {addedSubstance.map((s) => (
                             <List.Item key={s.id}>
                                 <List.Content floated="right">
                                     <Button.Group>
@@ -199,17 +199,17 @@ const substanceEditor = (props: IProps) => {
                 <FluxDataTable
                     onChange={handleChangeSubstanceData}
                     readOnly={props.readOnly}
-                    rows={substanceRows}
+                    rows={[]}
                 />
             </div>
             }
             {selectedSubstance && !props.readOnly &&
-            <Modal size={'large'} open={true} onClose={this.onCancelModal} dimmer={'inverted'}>
+            <Modal size={'large'} open={true} onClose={handleCancelModal} dimmer={'inverted'}>
                 <Modal.Header>{selectedSubstance.name}</Modal.Header>
                 <Modal.Content>
                     <FluxDataTable
                         readOnly={props.readOnly}
-                        rows={substanceRows}
+                        rows={[]}
                         onChange={handleChangeSubstanceData}
                     />
                 </Modal.Content>
