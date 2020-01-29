@@ -28038,6 +28038,10 @@ Floated Menu / Item
   left: -50px;
   width: 0px;
 }
+
+.ui.small.table.packages thead th {
+  border-bottom: 1px solid rgba(34, 36, 38, 0.1);
+}
 /*!
  * # Semantic UI undefined - Ad
  * http://github.com/semantic-org/semantic-ui/

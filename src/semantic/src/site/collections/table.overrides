@@ -11,3 +11,6 @@
     left: -50px;
     width: 0px;
 }
+.ui.small.table.packages thead th {
+    border-bottom: 1px solid rgba(34,36,38,.1);
+}
