@@ -25,6 +25,7 @@ export async function retrieveData(file: IDataDropperFile) {
     const url = new URL(`${file.server}/${file.filename}`);
 
     const localStorageObj = sessionStorage.getItem(file.filename);
+
     if (localStorageObj) {
         return JSON.parse(localStorageObj);
     }
