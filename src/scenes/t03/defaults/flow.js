@@ -47,6 +47,14 @@ export const documentation = {
     wetdry: <div>a combination of the wetting threshold and a flag to indicate which neighboring cells can cause a cell
         to become wet (default is -0.01)</div>,
 
+    // BCF
+    storagecoefficient: <div>TODO!!</div>,
+    constantcv: <div></div>,
+    thickstrt: <div></div>,
+    nocvcorrection: <div></div>,
+    novfc: <div></div>,
+
+
     // DIS
     nlay: <div>Number of model layers (the default is 1).</div>,
     nrow: <div>Number of model rows (the default is 2).</div>,
