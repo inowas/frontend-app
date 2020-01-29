@@ -33,6 +33,7 @@ const de4PackageProperties = (props: IProps) => {
         if (cast) {
             value = cast(value);
         }
+        setMfPackage({...mfPackage, [name]: value});
         props.onChange(FlopyModflowMfde4.fromObject({...mfPackage, [name]: value}));
     };
 
