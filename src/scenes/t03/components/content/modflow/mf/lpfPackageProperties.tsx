@@ -1,5 +1,5 @@
-import React, {ChangeEvent, SyntheticEvent, useState} from 'react';
-import {Checkbox, DropdownProps, Form, Grid, Header, Input, Label, Segment, Table} from 'semantic-ui-react';
+import React, {ChangeEvent, useState} from 'react';
+import {Checkbox, Form, Grid, Header, Input, Label, Segment, Table} from 'semantic-ui-react';
 
 import {FlopyModflowMfdis, FlopyModflowMflpf} from '../../../../../../core/model/flopy/packages/mf';
 import FlopyModflow from '../../../../../../core/model/flopy/packages/mf/FlopyModflow';
@@ -43,7 +43,7 @@ const lpfPackageProperties = (props: IProps) => {
     return (
         <Form>
             <Header as={'h3'}>LPF: Layer Property Flow Package</Header>
-            <Table collapsing size={'small'} className={'packages'}>
+            <Table collapsing={true} size={'small'} className={'packages'}>
                 <Table.Header>
                     <Table.Row>
                         <Table.HeaderCell><Label>Layer</Label></Table.HeaderCell>
@@ -80,26 +80,36 @@ const lpfPackageProperties = (props: IProps) => {
                     <Form.Field>
                         <label>Save cell-by-cell budget data (ipakcb)</label>
                         <Checkbox
-                            toggle
+                            toggle={true}
                             disabled={readonly}
-                            name='ipakcb'
+                            name="ipakcb"
                             value={mfPackage.ipakcb || 0}
                         />
                     </Form.Field>
                     <Form.Field width={1}>
-                        {<InfoPopup description={documentation.ipakcb} title={'IPAKCB'} position={'top right'} iconOutside={true}/>}
+                        <InfoPopup
+                            description={documentation.ipakcb}
+                            title={'IPAKCB'}
+                            position={'top right'}
+                            iconOutside={true}
+                        />
                     </Form.Field>
                     <Form.Field>
                         <label>Wetting capability (iwdflg)</label>
                         <Checkbox
-                            toggle
+                            toggle={true}
                             disabled={readonly}
-                            name='iwdflg'
+                            name="iwdflg"
                             value={JSON.stringify(mfPackage.iwdflg) || 0}
                         />
                     </Form.Field>
                     <Form.Field width={1}>
-                        {<InfoPopup description={documentation.iwdflg} title={'IWDFLG'} position={'top right'} iconOutside={true}/>}
+                        <InfoPopup
+                            description={documentation.iwdflg}
+                            title={'IWDFLG'}
+                            position={'top right'}
+                            iconOutside={true}
+                        />
                     </Form.Field>
                     <Form.Field>
                         <label>Dry cells head (hdry)</label>
@@ -273,70 +283,95 @@ const lpfPackageProperties = (props: IProps) => {
                             <Form.Field>
                                 <label>Storage coefficient (storagecoefficient)</label>
                                 <Checkbox
-                                    toggle
+                                    toggle={true}
                                     disabled={readonly}
-                                    name='storagecoefficient'
+                                    name="storagecoefficient"
                                     value={JSON.stringify(mfPackage.storagecoefficient) || 0}
                                 />
                             </Form.Field>
                             <Form.Field width={1}>
-                                {<InfoPopup description={documentation.storagecoefficient} title={'STORAGECOEFFICIENT'} position={'top right'} iconOutside={true}/>}
+                                <InfoPopup
+                                    description={documentation.storagecoefficient}
+                                    title={'STORAGECOEFFICIENT'}
+                                    position={'top right'}
+                                    iconOutside={true}
+                                />
                             </Form.Field>
                         </Form.Group>
                         <Form.Group>
                             <Form.Field>
                                 <label>Vertical conductance (constantcv)</label>
                                 <Checkbox
-                                    toggle
+                                    toggle={true}
                                     disabled={readonly}
-                                    name='constantcv'
+                                    name="constantcv"
                                     value={JSON.stringify(mfPackage.constantcv) || 0}
                                 />
                             </Form.Field>
                             <Form.Field width={1}>
-                                {<InfoPopup description={documentation.constantcv} title={'CONSTANTCV'} position={'top right'} iconOutside={true}/>}
+                                <InfoPopup
+                                    description={documentation.constantcv}
+                                    title={'CONSTANTCV'}
+                                    position={'top right'}
+                                    iconOutside={true}
+                                />
                             </Form.Field>
                         </Form.Group>
                         <Form.Group>
                             <Form.Field>
                                 <label>Computed cell thickness (thickstrt)</label>
                                 <Checkbox
-                                    toggle
+                                    toggle={true}
                                     disabled={readonly}
-                                    name='thickstrt'
+                                    name="thickstrt"
                                     value={JSON.stringify(mfPackage.thickstrt) || 0}
                                 />
                             </Form.Field>
                             <Form.Field width={1}>
-                            {<InfoPopup description={documentation.thickstrt} title={'THICKSTRT'} position={'top right'} iconOutside={true}/>}
+                            <InfoPopup
+                                description={documentation.thickstrt}
+                                title={'THICKSTRT'}
+                                position={'top right'}
+                                iconOutside={true}
+                            />
                         </Form.Field>
                         </Form.Group>
                         <Form.Group>
                             <Form.Field>
                                 <label>Vertical conductance correction (nocvcorrection)</label>
                                 <Checkbox
-                                    toggle
+                                    toggle={true}
                                     disabled={readonly}
-                                    name='nocvcorrection'
+                                    name="nocvcorrection"
                                     value={JSON.stringify(mfPackage.nocvcorrection) || 0}
                                 />
                             </Form.Field>
                             <Form.Field width={1}>
-                                {<InfoPopup description={documentation.nocvcorrection} title={'NOCVCORRECTION'} position={'top right'} iconOutside={true}/>}
+                                <InfoPopup
+                                    description={documentation.nocvcorrection}
+                                    title={'NOCVCORRECTION'}
+                                    position={'top right'}
+                                    iconOutside={true}
+                                />
                             </Form.Field>
                         </Form.Group>
                         <Form.Group>
                             <Form.Field>
                                 <label>Vertical flow correction (novfc)</label>
                                 <Checkbox
-                                    toggle
+                                    toggle={true}
                                     disabled={readonly}
-                                    name='novfc'
+                                    name="novfc"
                                     value={JSON.stringify(mfPackage.novfc) || 0}
                                 />
                             </Form.Field>
                             <Form.Field width={1}>
-                                {<InfoPopup description={documentation.novfc} title={'NOVFC'} position={'top right'} iconOutside={true}/>}
+                                <InfoPopup
+                                    description={documentation.novfc}
+                                    title={'NOVFC'}
+                                    position={'top right'}
+                                    iconOutside={true}
+                                />
                             </Form.Field>
                         </Form.Group>
                     </Grid.Column>

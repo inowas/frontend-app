@@ -1,4 +1,4 @@
-import React, {ChangeEvent, useState} from 'react';
+import React, {useState} from 'react';
 import {
     Accordion, Checkbox,
     Form,
@@ -121,7 +121,8 @@ const disPackageProperties = (props: IProps) => {
                                     <Checkbox
                                         toggle={true}
                                         disabled={readonly}
-                                        name="laycbd"// TODO
+                                        name="laycbd"
+                                        checked={mfPackage.laycbd !== 0}
                                         icon={renderInfoPopup(documentation.laycbd, 'LAYCBD')}
                                     />
                                 </Form.Field>

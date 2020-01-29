@@ -1,17 +1,16 @@
 import React, {ChangeEvent, useState} from 'react';
-import {Form, Grid, Header, Input, PopupProps} from 'semantic-ui-react';
-import {documentation} from "../../../../defaults/flow";
-import {GridSize} from "../../../../../../core/model/modflow";
-import RasterDataImage from "../../../../../shared/rasterData/rasterDataImage";
+import {Form, Grid, Header, Input, InputOnChangeData, PopupProps} from 'semantic-ui-react';
 import {
-    FlopyModflowMfbas,
     FlopyModflowMfdis,
     FlopyModflowMfhob
-} from "../../../../../../core/model/flopy/packages/mf";
-import FlopyModflow from "../../../../../../core/model/flopy/packages/mf/FlopyModflow";
-import {IFlopyModflowMfhob} from "../../../../../../core/model/flopy/packages/mf/FlopyModflowMfhob";
-import {InfoPopup} from "../../../../../shared";
-import {RainbowOrLegend} from "../../../../../../services/rainbowvis/types";
+} from '../../../../../../core/model/flopy/packages/mf';
+import FlopyModflow from '../../../../../../core/model/flopy/packages/mf/FlopyModflow';
+import {IFlopyModflowMfhob, IObsData} from '../../../../../../core/model/flopy/packages/mf/FlopyModflowMfhob';
+import {GridSize} from '../../../../../../core/model/modflow';
+import {RainbowOrLegend} from '../../../../../../services/rainbowvis/types';
+import {InfoPopup} from '../../../../../shared';
+import RasterDataImage from '../../../../../shared/rasterData/rasterDataImage';
+import {documentation} from '../../../../defaults/flow';
 
 interface IProps {
     mfPackage: FlopyModflowMfhob;
@@ -23,9 +22,6 @@ interface IProps {
 const hobPackageProperties = (props: IProps) => {
     const [mfPackage, setMfPackage] = useState<IFlopyModflowMfhob>(props.mfPackage.toObject());
     const {mfPackages, readonly} = props;
-
-    const basPackage: FlopyModflowMfbas = mfPackages.getPackage('bas') as FlopyModflowMfbas;
-    const {ibound} = basPackage;
     const disPackage: FlopyModflowMfdis = mfPackages.getPackage('dis') as FlopyModflowMfdis;
 
     const affectedCellsLayers: number[][][] = [];
@@ -38,39 +34,20 @@ const hobPackageProperties = (props: IProps) => {
             }
         }
     }
-// TODO: adjust code for affectedCellsLayers
-    /*class HobPackageProperties extends AbstractPackageProperties {
-    render() {
-        if (!this.state.mfPackage) {
-            return null;
-        }
 
-        const {mfPackages, readonly} = this.props;
-        const {mfPackage} = this.state;
-
-        const basPackage = mfPackages.getPackage('bas');
-        const {ibound} = basPackage;
-        const affectedCellsLayers = ibound.map(l => l.map(r => r.map(() => 0)));
-        mfPackage.obs_data.forEach(obs => {
-            affectedCellsLayers[obs.layer][obs.row][obs.column] = 1;
+    if (mfPackage.obs_data) {
+        Object.values(mfPackage.obs_data).forEach((spv: IObsData) => {
+            const {layer, row, column} = spv;
+            affectedCellsLayers[layer][row][column] = 1;
         });
-
-
     }
-}*/
-    const handleOnChange = (e: ChangeEvent<HTMLInputElement>) => {
-        const {name, value} = e.target;
+
+    const handleOnChange = (e: ChangeEvent<HTMLInputElement>, {name, value}: InputOnChangeData) => {
         return setMfPackage({...mfPackage, [name]: value});
     };
 
-    const handleOnBlur = (cast?: (v: any) => any) => (e: ChangeEvent<HTMLInputElement>) => {
-        const {name} = e.target;
-        let {value} = e.target;
-
-        if (cast) {
-            value = cast(value);
-        }
-        props.onChange(FlopyModflowMfhob.fromObject({...mfPackage, [name]: value}));
+    const handleOnBlur = () => {
+        return props.onChange(FlopyModflowMfhob.fromObject(mfPackage));
     };
 
     const renderInfoPopup = (
@@ -104,13 +81,13 @@ const hobPackageProperties = (props: IProps) => {
                 </Grid.Row>
             </Grid>
 
-            <Form.Group widths='equal'>
+            <Form.Group widths="equal">
                 <Form.Field>
                     <label>Unit number (iuhobsv)</label>
                     <Input
                         readOnly={readonly}
-                        name='iuhobsv'
-                        type='number'
+                        name="iuhobsv"
+                        type="number"
                         value={mfPackage.iuhobsv || ''}
                         icon={renderInfoPopup(documentation.iuhobsv, 'iuhobsv')}
                         onBlur={handleOnBlur}
@@ -121,8 +98,8 @@ const hobPackageProperties = (props: IProps) => {
                     <label>Dry cell equivalent (hobdry)</label>
                     <Input
                         readOnly={readonly}
-                        name='hobdry'
-                        type='number'
+                        name="hobdry"
+                        type="number"
                         value={mfPackage.hobdry || ''}
                         icon={renderInfoPopup(documentation.hobdry, 'hobdry')}
                         onBlur={handleOnBlur}
@@ -133,8 +110,8 @@ const hobPackageProperties = (props: IProps) => {
                     <label>Time step multiplier (tomulth)</label>
                     <Input
                         readOnly={readonly}
-                        name='tomulth'
-                        type='number'
+                        name="tomulth"
+                        type="number"
                         value={mfPackage.tomulth || ''}
                         icon={renderInfoPopup(documentation.tomulth, 'tomulth')}
                         onBlur={handleOnBlur}

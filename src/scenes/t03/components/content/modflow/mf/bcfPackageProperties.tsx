@@ -1,13 +1,13 @@
 import React, {useState} from 'react';
-import {Form, Grid, Input, Header, Label, Table, Checkbox, Segment} from 'semantic-ui-react';
+import {Checkbox, Form, Grid, Header, Input, Label, Segment, Table} from 'semantic-ui-react';
 import {FlopyModflowMfbcf, FlopyModflowMfdis} from '../../../../../../core/model/flopy/packages/mf';
-import InfoPopup from '../../../../../shared/InfoPopup';
-import {documentation} from '../../../../defaults/flow';
-import {RasterDataImage} from '../../../../../shared/rasterData';
-import {GridSize} from '../../../../../../core/model/modflow';
 import FlopyModflow from '../../../../../../core/model/flopy/packages/mf/FlopyModflow';
-import {IFlopyModflowMfbcf} from "../../../../../../core/model/flopy/packages/mf/FlopyModflowMfbcf";
-import {ILegendItemDiscrete} from "../../../../../../services/rainbowvis/types";
+import {IFlopyModflowMfbcf} from '../../../../../../core/model/flopy/packages/mf/FlopyModflowMfbcf';
+import {GridSize} from '../../../../../../core/model/modflow';
+import {ILegendItemDiscrete} from '../../../../../../services/rainbowvis/types';
+import InfoPopup from '../../../../../shared/InfoPopup';
+import {RasterDataImage} from '../../../../../shared/rasterData';
+import {documentation} from '../../../../defaults/flow';
 
 interface IProps {
     mfPackage: FlopyModflowMfbcf;
@@ -23,27 +23,14 @@ const bcfPackageProperties = (props: IProps) => {
     const disPackage: FlopyModflowMfdis = mfPackages.getPackage('dis') as FlopyModflowMfdis;
     const {nrow, ncol} = disPackage;
 
-   /*
-   class BcfPackageProperties extends AbstractPackageProperties {
-
-        render() {
-            if (!this.state.mfPackage) {
-                return null;
-            }
-
-            const mfPackage = FlopyModflowMfbcf.fromObject(this.state.mfPackage);
-            const {mfPackages, readonly} = this.props;
-            const disPackage = mfPackages.getPackage('dis');
-            const {nrow, ncol} = disPackage;
-
-
-        }
-    }*/
+    if (!mfPackage) {
+        return null;
+    }
 
     return (
         <Form>
             <Header as={'h3'}>BCF: Block Centered Flow Package</Header>
-            <Table collapsing size={'small'} className={'packages'}>
+            <Table collapsing={true} size={'small'} className={'packages'}>
                 <Table.Header>
                     <Table.Row>
                         <Table.HeaderCell><Label>Layer</Label></Table.HeaderCell>
@@ -57,8 +44,12 @@ const bcfPackageProperties = (props: IProps) => {
                         <Table.Row key={idx}>
                             <Table.Cell>{idx + 1}</Table.Cell>
                             <Table.Cell>{laycon}</Table.Cell>
-                            <Table.Cell>{Array.isArray(mfPackage.intercellt) ? mfPackage.intercellt[idx] : mfPackage.intercellt}</Table.Cell>
-                            <Table.Cell>{Array.isArray(mfPackage.iwdflg) ? mfPackage.iwdflg[idx] : mfPackage.iwdflg}</Table.Cell>
+                            <Table.Cell>
+                                {Array.isArray(mfPackage.intercellt) ? mfPackage.intercellt[idx] : mfPackage.intercellt}
+                            </Table.Cell>
+                            <Table.Cell>
+                                {Array.isArray(mfPackage.iwdflg) ? mfPackage.iwdflg[idx] : mfPackage.iwdflg}
+                            </Table.Cell>
                         </Table.Row>
                     ))}
                 </Table.Body>
@@ -95,28 +86,33 @@ const bcfPackageProperties = (props: IProps) => {
                                 />
                             </Grid.Column>
                         </Grid.Row>
-                    )
+                    );
                 })}
             </Grid>
             <Segment basic={true}>
-                <Form.Group widths='equal'>
+                <Form.Group widths="equal">
                     <Form.Field>
                         <label>Save cell-by-cell budget data (ipakcb)</label>
                         <Checkbox
-                            toggle
+                            toggle={true}
                             disabled={readonly}
-                            name='ipakcb'
+                            name="ipakcb"
                             value={mfPackage.ipakcb || 0}
                         />
                     </Form.Field>
                     <Form.Field width={1}>
-                        {<InfoPopup description={documentation.ipakcb} title={'IPAKCB'} position={'top right'} iconOutside={true}/>}
+                        <InfoPopup
+                            description={documentation.ipakcb}
+                            title={'IPAKCB'}
+                            position={'top right'}
+                            iconOutside={true}
+                        />
                     </Form.Field>
                     <Form.Field>
                         <label>Dry cell head (hdry)</label>
                         <Input
-                            readOnly
-                            name='hdry'
+                            readOnly={true}
+                            name="hdry"
                             value={JSON.stringify(mfPackage.hdry)}
                             icon={<InfoPopup description={documentation.hdry} title={'hdry'}/>}
                         />
@@ -124,15 +120,14 @@ const bcfPackageProperties = (props: IProps) => {
                     <Form.Field>
                         <label>Rewetting factor (wetfct)</label>
                         <Input
-                            readOnly
-                            name='wetfct'
+                            readOnly={true}
+                            name="wetfct"
                             value={JSON.stringify(mfPackage.wetfct)}
                             icon={<InfoPopup description={documentation.wetfct} title={'wetfct'}/>}
                         />
                     </Form.Field>
                 </Form.Group>
             </Segment>
-
 
             <Grid>
                 {Array.isArray(mfPackage.sf1) && mfPackage.sf1.map((sf1, idx) => {
@@ -166,17 +161,17 @@ const bcfPackageProperties = (props: IProps) => {
                                 />
                             </Grid.Column>
                         </Grid.Row>
-                    )
+                    );
                 })}
             </Grid>
 
             <Segment basic={true}>
-                <Form.Group widths='equal'>
+                <Form.Group widths="equal">
                     <Form.Field>
                         <label>Iteration interval (iwetit)</label>
                         <Input
-                            readOnly
-                            name='iwetit'
+                            readOnly={true}
+                            name="iwetit"
                             value={mfPackage.iwetit}
                             icon={<InfoPopup description={documentation.iwetit} title={'iwetit'}/>}
                         />
@@ -184,8 +179,8 @@ const bcfPackageProperties = (props: IProps) => {
                     <Form.Field>
                         <label>Rewetting equation (ihdwet)</label>
                         <Input
-                            readOnly
-                            name='ihdwet'
+                            readOnly={true}
+                            name="ihdwet"
                             value={JSON.stringify(mfPackage.ihdwet)}
                             icon={<InfoPopup description={documentation.ihdwet} title={'ihdwet'}/>}
                         />
@@ -193,20 +188,20 @@ const bcfPackageProperties = (props: IProps) => {
                     <Form.Field>
                         <label>Wetting threshold (wetdry)</label>
                         <Input
-                            readOnly
-                            name='wetdry'
+                            readOnly={true}
+                            name="wetdry"
                             value={mfPackage.wetdry}
                             icon={<InfoPopup description={documentation.wetdry} title={'wetdry'}/>}
                         />
                     </Form.Field>
                 </Form.Group>
 
-                <Form.Group widths='equal'>
+                <Form.Group widths="equal">
                     <Form.Field>
                         <label>Filename extension (extension)</label>
                         <Input
-                            readOnly
-                            name='extension'
+                            readOnly={true}
+                            name="extension"
                             value={mfPackage.extension || ''}
                             icon={<InfoPopup description={documentation.extension} title={'extension'}/>}
                         />
@@ -214,8 +209,8 @@ const bcfPackageProperties = (props: IProps) => {
                     <Form.Field>
                         <label>File unit number (unitnumber)</label>
                         <Input
-                            readOnly
-                            name='unitnumber'
+                            readOnly={true}
+                            name="unitnumber"
                             value={mfPackage.unitnumber || ''}
                             icon={<InfoPopup description={documentation.unitnumber} title={'unitnumber'}/>}
                         />
@@ -223,8 +218,8 @@ const bcfPackageProperties = (props: IProps) => {
                     <Form.Field>
                         <label>Filenames (filenames)</label>
                         <Input
-                            readOnly
-                            name='filenames'
+                            readOnly={true}
+                            name="filenames"
                             value={mfPackage.filenames || ''}
                             icon={<InfoPopup description={documentation.filenames} title={'filenames'}/>}
                         />
