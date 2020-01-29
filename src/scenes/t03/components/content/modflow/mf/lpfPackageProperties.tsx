@@ -1,5 +1,5 @@
-import React, {ChangeEvent, useState} from 'react';
-import {Checkbox, Form, Grid, Header, Input, Label, Segment, Table} from 'semantic-ui-react';
+import React, {ChangeEvent, SyntheticEvent, useState} from 'react';
+import {Checkbox, DropdownProps, Form, Grid, Header, Input, Label, Segment, Table} from 'semantic-ui-react';
 
 import {FlopyModflowMfdis, FlopyModflowMflpf} from '../../../../../../core/model/flopy/packages/mf';
 import FlopyModflow from '../../../../../../core/model/flopy/packages/mf/FlopyModflow';
@@ -38,6 +38,12 @@ const lpfPackageProperties = (props: IProps) => {
             value = cast(value);
         }
 
+        setMfPackage({...mfPackage, [name]: value});
+        props.onChange(FlopyModflowMflpf.fromObject({...mfPackage, [name]: value}));
+    };
+
+    const handleOnSelect = (e: SyntheticEvent<HTMLElement, Event>, data: DropdownProps) => {
+        const {name, value} = data;
         setMfPackage({...mfPackage, [name]: value});
         props.onChange(FlopyModflowMflpf.fromObject({...mfPackage, [name]: value}));
     };
@@ -85,7 +91,7 @@ const lpfPackageProperties = (props: IProps) => {
                             toggle={true}
                             disabled={readonly}
                             name="ipakcb"
-                            value={mfPackage.ipakcb || 0}
+                            value={mfPackage.ipakcb ? 1 : 0}
                         />
                     </Form.Field>
                     <Form.Field width={1}>
@@ -102,7 +108,7 @@ const lpfPackageProperties = (props: IProps) => {
                             toggle={true}
                             disabled={readonly}
                             name="iwdflg"
-                            value={JSON.stringify(mfPackage.iwdflg) || 0}
+                            value={mfPackage.iwdflg}
                         />
                     </Form.Field>
                     <Form.Field width={1}>
@@ -128,28 +134,39 @@ const lpfPackageProperties = (props: IProps) => {
                     <Form.Field>
                         <label>Wetting factor (wetfct)</label>
                         <Input
-                            readOnly={true}
-                            name="wetfct"
-                            value={JSON.stringify(mfPackage.wetfct)}
+                            readOnly={readonly}
+                            name={'wetfct'}
+                            type={'number'}
+                            value={mfPackage.wetfct}
+                            onChange={handleOnChange}
+                            onBlur={handleOnBlur(parseFloat)}
                             icon={<InfoPopup description={documentation.wetfct} title={'wetfct'}/>}
                         />
                     </Form.Field>
                     <Form.Field>
                         <label>Wetting interval (iwetit)</label>
                         <Input
-                            readOnly={true}
-                            name="iwetit"
-                            value={JSON.stringify(mfPackage.iwetit)}
+                            readOnly={readonly}
+                            name={'iwetit'}
+                            type={'number'}
+                            value={mfPackage.iwetit}
+                            onChange={handleOnChange}
+                            onBlur={handleOnBlur(parseFloat)}
                             icon={<InfoPopup description={documentation.iwetit} title={'iwetit'}/>}
                         />
                     </Form.Field>
                     <Form.Field>
                         <label>Equation (ihdwet)</label>
-                        <Input
-                            readOnly={true}
-                            name="ihdwet"
-                            value={JSON.stringify(mfPackage.ihdwet)}
-                            icon={<InfoPopup description={documentation.ihdwet} title={'ihdwet'}/>}
+                        <Form.Dropdown
+                            options={[
+                                {key: 0, value: 0, text: '(0) h = BOT + WETFCT (hn - BOT) (eq 33A)'},
+                                {key: 1, value: 1, text: '(1) h = BOT + WETFCT(THRESH), (eq 33B)'},
+                            ]}
+                            name={'ihdwet'}
+                            selection={true}
+                            value={mfPackage.ihdwet ? 1 : 0}
+                            disabled={readonly}
+                            onChange={handleOnSelect}
                         />
                     </Form.Field>
                 </Form.Group>
@@ -250,166 +267,166 @@ const lpfPackageProperties = (props: IProps) => {
                 })}
             </Grid>
 
-        <Segment basic={true}>
-            <Form.Group widths="equal">
-                <Form.Field>
-                    <label>Vertical hydraulic conductivity (vkcb)</label>
-                    <Input
-                        readOnly={true}
-                        name="vkcb"
-                        type={'number'}
-                        value={mfPackage.vkcb}
-                        icon={<InfoPopup description={documentation.vkcb} title={'vkcb'}/>}
-                        onBlur={handleOnBlur(parseFloat)}
-                        onChange={handleOnChange}
-                    />
-                </Form.Field>
-                <Form.Field>
-                    <label>Wetting threshold and flag (wetdry)</label>
-                    <Input
-                        readOnly={true}
-                        name="wetdry"
-                        type={'number'}
-                        value={mfPackage.wetdry}
-                        icon={<InfoPopup description={documentation.wetdry} title={'wetdry'}/>}
-                        onChange={handleOnChange}
-                        onBlur={handleOnBlur(parseFloat)}
-                    />
-                </Form.Field>
-            </Form.Group>
+            <Segment basic={true}>
+                <Form.Group widths="equal">
+                    <Form.Field>
+                        <label>Vertical hydraulic conductivity (vkcb)</label>
+                        <Input
+                            readOnly={true}
+                            name="vkcb"
+                            type={'number'}
+                            value={mfPackage.vkcb}
+                            icon={<InfoPopup description={documentation.vkcb} title={'vkcb'}/>}
+                            onBlur={handleOnBlur(parseFloat)}
+                            onChange={handleOnChange}
+                        />
+                    </Form.Field>
+                    <Form.Field>
+                        <label>Wetting threshold and flag (wetdry)</label>
+                        <Input
+                            readOnly={true}
+                            name="wetdry"
+                            type={'number'}
+                            value={mfPackage.wetdry}
+                            icon={<InfoPopup description={documentation.wetdry} title={'wetdry'}/>}
+                            onChange={handleOnChange}
+                            onBlur={handleOnBlur(parseFloat)}
+                        />
+                    </Form.Field>
+                </Form.Group>
 
-            <Grid columns={2} divided={true}>
-                <Grid.Row>
-                    <Grid.Column>
-                        <Form.Group>
-                            <Form.Field>
-                                <label>Storage coefficient (storagecoefficient)</label>
-                                <Checkbox
-                                    toggle={true}
-                                    disabled={readonly}
-                                    name="storagecoefficient"
-                                    value={JSON.stringify(mfPackage.storagecoefficient) || 0}
-                                />
-                            </Form.Field>
-                            <Form.Field width={1}>
-                                <InfoPopup
-                                    description={documentation.storagecoefficient}
-                                    title={'STORAGECOEFFICIENT'}
-                                    position={'top right'}
-                                    iconOutside={true}
-                                />
-                            </Form.Field>
-                        </Form.Group>
-                        <Form.Group>
-                            <Form.Field>
-                                <label>Vertical conductance (constantcv)</label>
-                                <Checkbox
-                                    toggle={true}
-                                    disabled={readonly}
-                                    name="constantcv"
-                                    value={JSON.stringify(mfPackage.constantcv) || 0}
-                                />
-                            </Form.Field>
-                            <Form.Field width={1}>
-                                <InfoPopup
-                                    description={documentation.constantcv}
-                                    title={'CONSTANTCV'}
-                                    position={'top right'}
-                                    iconOutside={true}
-                                />
-                            </Form.Field>
-                        </Form.Group>
-                        <Form.Group>
-                            <Form.Field>
-                                <label>Computed cell thickness (thickstrt)</label>
-                                <Checkbox
-                                    toggle={true}
-                                    disabled={readonly}
-                                    name="thickstrt"
-                                    value={JSON.stringify(mfPackage.thickstrt) || 0}
-                                />
-                            </Form.Field>
-                            <Form.Field width={1}>
-                            <InfoPopup
-                                description={documentation.thickstrt}
-                                title={'THICKSTRT'}
-                                position={'top right'}
-                                iconOutside={true}
-                            />
-                        </Form.Field>
-                        </Form.Group>
-                        <Form.Group>
-                            <Form.Field>
-                                <label>Vertical conductance correction (nocvcorrection)</label>
-                                <Checkbox
-                                    toggle={true}
-                                    disabled={readonly}
-                                    name="nocvcorrection"
-                                    value={JSON.stringify(mfPackage.nocvcorrection) || 0}
-                                />
-                            </Form.Field>
-                            <Form.Field width={1}>
-                                <InfoPopup
-                                    description={documentation.nocvcorrection}
-                                    title={'NOCVCORRECTION'}
-                                    position={'top right'}
-                                    iconOutside={true}
-                                />
-                            </Form.Field>
-                        </Form.Group>
-                        <Form.Group>
-                            <Form.Field>
-                                <label>Vertical flow correction (novfc)</label>
-                                <Checkbox
-                                    toggle={true}
-                                    disabled={readonly}
-                                    name="novfc"
-                                    value={JSON.stringify(mfPackage.novfc) || 0}
-                                />
-                            </Form.Field>
-                            <Form.Field width={1}>
-                                <InfoPopup
-                                    description={documentation.novfc}
-                                    title={'NOVFC'}
-                                    position={'top right'}
-                                    iconOutside={true}
-                                />
-                            </Form.Field>
-                        </Form.Group>
-                    </Grid.Column>
-                </Grid.Row>
-            </Grid>
+                <Grid columns={2} divided={true}>
+                    <Grid.Row>
+                        <Grid.Column>
+                            <Form.Group>
+                                <Form.Field>
+                                    <label>Storage coefficient (storagecoefficient)</label>
+                                    <Checkbox
+                                        toggle={true}
+                                        disabled={readonly}
+                                        name="storagecoefficient"
+                                        value={JSON.stringify(mfPackage.storagecoefficient) || 0}
+                                    />
+                                </Form.Field>
+                                <Form.Field width={1}>
+                                    <InfoPopup
+                                        description={documentation.storagecoefficient}
+                                        title={'STORAGECOEFFICIENT'}
+                                        position={'top right'}
+                                        iconOutside={true}
+                                    />
+                                </Form.Field>
+                            </Form.Group>
+                            <Form.Group>
+                                <Form.Field>
+                                    <label>Vertical conductance (constantcv)</label>
+                                    <Checkbox
+                                        toggle={true}
+                                        disabled={readonly}
+                                        name="constantcv"
+                                        value={mfPackage.constantcv ? 1 : 0}
+                                    />
+                                </Form.Field>
+                                <Form.Field width={1}>
+                                    <InfoPopup
+                                        description={documentation.constantcv}
+                                        title={'CONSTANTCV'}
+                                        position={'top right'}
+                                        iconOutside={true}
+                                    />
+                                </Form.Field>
+                            </Form.Group>
+                            <Form.Group>
+                                <Form.Field>
+                                    <label>Computed cell thickness (thickstrt)</label>
+                                    <Checkbox
+                                        toggle={true}
+                                        disabled={readonly}
+                                        name="thickstrt"
+                                        value={JSON.stringify(mfPackage.thickstrt) || 0}
+                                    />
+                                </Form.Field>
+                                <Form.Field width={1}>
+                                    <InfoPopup
+                                        description={documentation.thickstrt}
+                                        title={'THICKSTRT'}
+                                        position={'top right'}
+                                        iconOutside={true}
+                                    />
+                                </Form.Field>
+                            </Form.Group>
+                            <Form.Group>
+                                <Form.Field>
+                                    <label>Vertical conductance correction (nocvcorrection)</label>
+                                    <Checkbox
+                                        toggle={true}
+                                        disabled={readonly}
+                                        name="nocvcorrection"
+                                        value={JSON.stringify(mfPackage.nocvcorrection) || 0}
+                                    />
+                                </Form.Field>
+                                <Form.Field width={1}>
+                                    <InfoPopup
+                                        description={documentation.nocvcorrection}
+                                        title={'NOCVCORRECTION'}
+                                        position={'top right'}
+                                        iconOutside={true}
+                                    />
+                                </Form.Field>
+                            </Form.Group>
+                            <Form.Group>
+                                <Form.Field>
+                                    <label>Vertical flow correction (novfc)</label>
+                                    <Checkbox
+                                        toggle={true}
+                                        disabled={readonly}
+                                        name="novfc"
+                                        value={JSON.stringify(mfPackage.novfc) || 0}
+                                    />
+                                </Form.Field>
+                                <Form.Field width={1}>
+                                    <InfoPopup
+                                        description={documentation.novfc}
+                                        title={'NOVFC'}
+                                        position={'top right'}
+                                        iconOutside={true}
+                                    />
+                                </Form.Field>
+                            </Form.Group>
+                        </Grid.Column>
+                    </Grid.Row>
+                </Grid>
 
-            <Form.Group widths="equal">
-                <Form.Field>
-                    <label>File extension (extension)</label>
-                    <Input
-                        readOnly={true}
-                        name="extension"
-                        value={mfPackage.extension || ''}
-                        icon={<InfoPopup description={documentation.extension} title={'extension'}/>}
-                    />
-                </Form.Field>
-                <Form.Field>
-                    <label>File unit number (unitnumber)</label>
-                    <Input
-                        readOnly={true}
-                        name="unitnumber"
-                        value={mfPackage.unitnumber || ''}
-                        icon={<InfoPopup description={documentation.unitnumber} title={'unitnumber'}/>}
-                    />
-                </Form.Field>
-                <Form.Field>
-                    <label>File names (filenames)</label>
-                    <Input
-                        readOnly={true}
-                        name="filenames"
-                        value={mfPackage.filenames || ''}
-                        icon={<InfoPopup description={documentation.filenames} title={'filenames'}/>}
-                    />
-                </Form.Field>
-            </Form.Group>
-        </Segment>
+                <Form.Group widths="equal">
+                    <Form.Field>
+                        <label>File extension (extension)</label>
+                        <Input
+                            readOnly={true}
+                            name="extension"
+                            value={mfPackage.extension || ''}
+                            icon={<InfoPopup description={documentation.extension} title={'extension'}/>}
+                        />
+                    </Form.Field>
+                    <Form.Field>
+                        <label>File unit number (unitnumber)</label>
+                        <Input
+                            readOnly={true}
+                            name="unitnumber"
+                            value={mfPackage.unitnumber || ''}
+                            icon={<InfoPopup description={documentation.unitnumber} title={'unitnumber'}/>}
+                        />
+                    </Form.Field>
+                    <Form.Field>
+                        <label>File names (filenames)</label>
+                        <Input
+                            readOnly={true}
+                            name="filenames"
+                            value={mfPackage.filenames || ''}
+                            icon={<InfoPopup description={documentation.filenames} title={'filenames'}/>}
+                        />
+                    </Form.Field>
+                </Form.Group>
+            </Segment>
         </Form>
     );
 };
