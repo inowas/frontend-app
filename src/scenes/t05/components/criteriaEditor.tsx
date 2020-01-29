@@ -1,4 +1,4 @@
-import React, {ChangeEvent, SyntheticEvent, useEffect, useRef, useState} from 'react';
+import React, {ChangeEvent, SyntheticEvent, useEffect, useState} from 'react';
 import {
     Button,
     DropdownProps,
@@ -13,8 +13,7 @@ import {
     Select,
     Table
 } from 'semantic-ui-react';
-// @ts-ignore
-import Graph from 'vis-react';
+// import Graph from 'vis-react';
 import {MCDA} from '../../../core/model/mcda';
 import {CriteriaCollection, Criterion} from '../../../core/model/mcda/criteria';
 import {CriteriaType, CriterionIndex, ICriterion} from '../../../core/model/mcda/criteria/Criterion.type';
@@ -51,7 +50,7 @@ interface IProps {
 const criteriaEditor = (props: IProps) => {
     const [criteria, setCriteria] = useState<ICriterion[]>(props.mcda.criteriaCollection.toObject());
     const [showInfo, setShowInfo] = useState<boolean>(true);
-    const network = useRef<any>(null);
+    // const network = useRef<any>(null);
 
     useEffect(() => {
         setCriteria(props.mcda.criteriaCollection.toObject());
@@ -137,46 +136,46 @@ const criteriaEditor = (props: IProps) => {
         mainCriteria = criteria.filter((c) => !c.parent);
     }
 
-    const options = {
-        height: '500px',
-        interaction: {
-            dragNodes: true,
-            dragView: true
-        },
-        manipulation: {
-            enabled: false
-        },
-        nodes: styles.nodes,
-        layout: {
-            hierarchical: {
-                direction: 'UD'
-            }
-        },
-        edges: {
-            color: '#000000'
-        },
-        physics: false
-    };
-
-    const graph = {
-        nodes: [{id: '0', label: props.toolName, level: 0}].concat(
-            criteria.map((c) => {
-                    return {
-                        id: c.id,
-                        label: c.name,
-                        level: !c.parent ? 1 : 2
-                    };
-                }
-            )
-        ),
-        edges: criteria.map((c, key) => {
-            return {
-                id: key,
-                from: c.parent || 0,
-                to: c.id
-            };
-        })
-    };
+    // const options = {
+    //     height: '500px',
+    //     interaction: {
+    //         dragNodes: true,
+    //         dragView: true
+    //     },
+    //     manipulation: {
+    //         enabled: false
+    //     },
+    //     nodes: styles.nodes,
+    //     layout: {
+    //         hierarchical: {
+    //             direction: 'UD'
+    //         }
+    //     },
+    //     edges: {
+    //         color: '#000000'
+    //     },
+    //     physics: false
+    // };
+    //
+    // const graph = {
+    //     nodes: [{id: '0', label: props.toolName, level: 0}].concat(
+    //         criteria.map((c) => {
+    //                 return {
+    //                     id: c.id,
+    //                     label: c.name,
+    //                     level: !c.parent ? 1 : 2
+    //                 };
+    //             }
+    //         )
+    //     ),
+    //     edges: criteria.map((c, key) => {
+    //         return {
+    //             id: key,
+    //             from: c.parent || 0,
+    //             to: c.id
+    //         };
+    //     })
+    // };
 
     const handleClickRouteToT04 = (route: string) => () => {
         return props.routeTo(route);
@@ -362,18 +361,18 @@ const criteriaEditor = (props: IProps) => {
                     }
                 </Grid.Column>
             </Grid.Row>
-            {props.mcda.withAhp &&
-            <Grid.Row>
-                <Grid.Column with={16}>
-                    <Graph
-                        ref={network}
-                        graph={graph}
-                        options={options}
-                        style={styles.graph}
-                    />
-                </Grid.Column>
-            </Grid.Row>
-            }
+            {/*{props.mcda.withAhp &&*/}
+            {/*<Grid.Row>*/}
+            {/*    <Grid.Column with={16}>*/}
+            {/*        <Graph*/}
+            {/*            ref={network}*/}
+            {/*            graph={graph}*/}
+            {/*            options={options}*/}
+            {/*            style={styles.graph}*/}
+            {/*        />*/}
+            {/*    </Grid.Column>*/}
+            {/*</Grid.Row>*/}
+            {/*}*/}
         </Grid>
     );
 };
