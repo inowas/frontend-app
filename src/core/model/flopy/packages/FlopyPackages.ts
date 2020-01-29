@@ -98,6 +98,20 @@ export default class FlopyPackages {
         this._swt = value;
     }
 
+    public static createFromModelInstances(
+        model: ModflowModel,
+        soilmodel: Soilmodel,
+        boundaries: BoundaryCollection,
+        transport: Transport,
+        variableDensity: VariableDensity
+    ) {
+        const mf = FlopyModflow.create(model, soilmodel, boundaries);
+        const modpath = new FlopyModpath();
+        const mt = FlopyMt3d.createFromTransport(transport, boundaries);
+        const swt = FlopySeawat.createFromVariableDensity(variableDensity);
+        return FlopyPackages.create(model.id, mf, modpath, mt, swt);
+    }
+
     public static create(modelId: string, mf: FlopyModflow, mp: FlopyModpath, mt: FlopyMt3d, swt: FlopySeawat) {
 
         const self = new this();
@@ -112,7 +126,7 @@ export default class FlopyPackages {
     }
 
     public static fromQuery(obj: any) {
-        if (obj === []) {
+        if (Array.isArray(obj) && obj.length === 0) {
             return null;
         }
 

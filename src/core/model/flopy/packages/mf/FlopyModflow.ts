@@ -174,9 +174,6 @@ export default class FlopyModflow extends GenericObject<IFlopyModflow> {
         const hfb = FlopyModflowMfhfb.create(boundaries, model.stressperiods);
         hfb ? this._props.hfb = hfb.toObject() : delete this._props.hfb;
 
-        const hob = FlopyModflowMfhob.create(boundaries, model.stressperiods);
-        hob ? this._props.hob = hob.toObject() : delete this._props.hob;
-
         const lak = FlopyModflowMflak.create(boundaries, model.stressperiods);
         lak ? this._props.lak = lak.toObject() : delete this._props.lak;
 
@@ -187,10 +184,23 @@ export default class FlopyModflow extends GenericObject<IFlopyModflow> {
         riv ? this._props.riv = riv.toObject() : delete this._props.riv;
 
         const str = FlopyModflowMfstr.create(boundaries, model.stressperiods);
-        str ? this._props.str = str.toObject() : delete this._props.riv;
+        str ? this._props.str = str.toObject() : delete this._props.str;
 
         const wel = FlopyModflowMfwel.create(boundaries, model.stressperiods);
         wel ? this._props.wel = wel.toObject() : delete this._props.wel;
+
+        // Recalculate Head Observations
+        const hob = FlopyModflowMfhob.create(boundaries, model.stressperiods);
+        hob ? this._props.hob = hob.toObject() : delete this._props.hob;
+
+        // Recalculate Flow Packages
+        if (this._props.lpf) {
+            this._props.lpf = FlopyModflowMflpf.create(soilmodel).toObject();
+        }
+
+        if (this._props.bcf) {
+            this._props.bcf = FlopyModflowMfbcf.create(soilmodel).toObject();
+        }
 
         return this;
     };

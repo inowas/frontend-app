@@ -122,7 +122,7 @@ class T07 extends React.Component {
                     this.fetchBoundaries(id);
                     this.fetchSoilmodel(id);
                     if (modflow.calculationId) {
-                        this.fetchCalculationDetails(id, modflow.calculationId);
+                        this.fetchCalculation(id, modflow.calculationId);
                     }
                 });
             },
@@ -159,18 +159,14 @@ class T07 extends React.Component {
         );
     };
 
-    fetchCalculationDetails(id, calculationId) {
-        fetchCalculationDetails(calculationId,
-            data => {
-                const calculation = Calculation.fromQuery(data);
-                this.setState({
-                    calculations: {
-                        ...this.state.calculations, [id]: calculation.toObject()
-                    }
-                });
-            },
-            error => console.log(error)
-        )
+    fetchCalculation(id, calculationId) {
+        fetchCalculationDetails(calculationId)
+            .then((data) => this.setState({
+                calculations: {
+                    ...this.state.calculations, [id]: Calculation.fromQuery(data).toObject()
+                }
+            }))
+            .catch((e) => console.log(e))
     }
 
     handleError = error => {

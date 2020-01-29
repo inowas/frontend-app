@@ -12,7 +12,7 @@ export interface IFlopyModflowMflpf extends IPropertyValueObject {
     laywet: number | number[];
     ipakcb: number;
     hdry: number;
-    iwdflg: number | number[];
+    iwdflg: number;
     wetfct: number;
     iwetit: number;
     ihdwet: number;

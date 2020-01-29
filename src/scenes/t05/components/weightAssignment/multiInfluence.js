@@ -1,25 +1,25 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import {Button, Form, Grid, Message, Segment, Table} from 'semantic-ui-react';
-import Graph from 'vis-react';
+// import Graph from 'vis-react';
 import {CriteriaCollection, WeightAssignment} from '../../../../core/model/mcda/criteria';
 
-const styles = {
-    graph: {
-        minHeight: '300px'
-    },
-    nodes: {
-        color: {
-            background: '#ffffff',
-            border: '#000000'
-        },
-        shadow: true,
-        shape: 'box',
-        shapeProperties: {
-            borderRadius: 0
-        }
-    }
-};
+// const styles = {
+//     graph: {
+//         minHeight: '300px'
+//     },
+//     nodes: {
+//         color: {
+//             background: '#ffffff',
+//             border: '#000000'
+//         },
+//         shadow: true,
+//         shape: 'box',
+//         shapeProperties: {
+//             borderRadius: 0
+//         }
+//     }
+// };
 
 class MultiInfluence extends React.Component {
     constructor(props) {
@@ -162,59 +162,59 @@ class MultiInfluence extends React.Component {
         const {readOnly} = this.props;
         const weights = this.props.weightAssignment.weightsCollection;
 
-        const graph = {
-            nodes: this.state.nodes,
-            edges: this.state.edges
-        };
-
-        const options = {
-            height: '500px',
-            interaction: {
-                dragNodes: !this.state.editEdgeMode,
-                dragView: !this.state.editEdgeMode
-            },
-            manipulation: {
-                enabled: this.state.editEdgeMode,
-                addEdge: (data, callback) => {
-                    if (data.from !== data.to) {
-                        callback(data);
-                        this.addEdge(data)
-                    }
-                }
-            },
-            nodes: styles.nodes,
-            layout: {
-                improvedLayout: true,
-                hierarchical: false
-            },
-            edges: {
-                color: '#000000',
-                smooth: true
-            },
-            physics: {
-                forceAtlas2Based: {
-                    gravitationalConstant: -26,
-                    centralGravity: 0.005,
-                    springLength: 230,
-                    springConstant: 0.18,
-                    avoidOverlap: 1.5
-                },
-                maxVelocity: 146,
-                solver: 'forceAtlas2Based',
-                timestep: 0.35,
-                stabilization: {
-                    enabled: true,
-                    iterations: 1000,
-                    updateInterval: 25
-                }
-            }
-        };
-
-        const events = {
-            click: this.onClickNode,
-            deselectEdge: this.onDeselectEdge,
-            selectEdge: this.onSelectEdge
-        };
+        // const graph = {
+        //     nodes: this.state.nodes,
+        //     edges: this.state.edges
+        // };
+        //
+        // const options = {
+        //     height: '500px',
+        //     interaction: {
+        //         dragNodes: !this.state.editEdgeMode,
+        //         dragView: !this.state.editEdgeMode
+        //     },
+        //     manipulation: {
+        //         enabled: this.state.editEdgeMode,
+        //         addEdge: (data, callback) => {
+        //             if (data.from !== data.to) {
+        //                 callback(data);
+        //                 this.addEdge(data)
+        //             }
+        //         }
+        //     },
+        //     nodes: styles.nodes,
+        //     layout: {
+        //         improvedLayout: true,
+        //         hierarchical: false
+        //     },
+        //     edges: {
+        //         color: '#000000',
+        //         smooth: true
+        //     },
+        //     physics: {
+        //         forceAtlas2Based: {
+        //             gravitationalConstant: -26,
+        //             centralGravity: 0.005,
+        //             springLength: 230,
+        //             springConstant: 0.18,
+        //             avoidOverlap: 1.5
+        //         },
+        //         maxVelocity: 146,
+        //         solver: 'forceAtlas2Based',
+        //         timestep: 0.35,
+        //         stabilization: {
+        //             enabled: true,
+        //             iterations: 1000,
+        //             updateInterval: 25
+        //         }
+        //     }
+        // };
+        //
+        // const events = {
+        //     click: this.onClickNode,
+        //     deselectEdge: this.onDeselectEdge,
+        //     selectEdge: this.onSelectEdge
+        // };
 
         return (
             <div style={{marginTop: '30px'}}>
@@ -243,10 +243,10 @@ class MultiInfluence extends React.Component {
                         <Segment textAlign='center' inverted color='grey' secondary>
                             Influence Chart
                         </Segment>
-                        <Segment>
-                            <Graph getNetwork={this.setNetworkInstance} graph={graph} options={options} events={events}
-                                   style={styles.graph}/>
-                        </Segment>
+                        {/*<Segment>*/}
+                        {/*    <Graph getNetwork={this.setNetworkInstance} graph={graph} options={options} events={events}*/}
+                        {/*           style={styles.graph}/>*/}
+                        {/*</Segment>*/}
                         {!this.state.editEdgeMode
                             ?
                             <Button fluid disabled={readOnly} onClick={this.onToggleEditMode}>

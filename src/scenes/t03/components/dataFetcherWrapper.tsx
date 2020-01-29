@@ -3,16 +3,12 @@ import {useDispatch, useSelector} from 'react-redux';
 import {RouteComponentProps, withRouter} from 'react-router-dom';
 import {List, Message, Modal} from 'semantic-ui-react';
 import FlopyPackages from '../../../core/model/flopy/packages/FlopyPackages';
-import FlopyModflow from '../../../core/model/flopy/packages/mf/FlopyModflow';
-import FlopyModpath from '../../../core/model/flopy/packages/mp/FlopyModpath';
-import FlopyMt3d from '../../../core/model/flopy/packages/mt/FlopyMt3d';
-import FlopySeawat from '../../../core/model/flopy/packages/swt/FlopySeawat';
 import {Calculation, ModflowModel, Soilmodel, Transport, VariableDensity} from '../../../core/model/modflow';
 import {BoundaryCollection} from '../../../core/model/modflow/boundaries';
 import {fetchSoilmodel} from '../../../core/model/modflow/soilmodel/updater/services';
 import updater from '../../../core/model/modflow/soilmodel/updater/updater';
 import {IRootReducer} from '../../../reducers';
-import {fetchCalculationDetails, fetchUrl, sendCommand} from '../../../services/api';
+import {fetchCalculationDetails, fetchUrl} from '../../../services/api';
 import {
     clear,
     updateBoundaries,
@@ -23,7 +19,6 @@ import {
     updateTransport,
     updateVariableDensity
 } from '../actions/actions';
-import ModflowModelCommand from '../commands/modflowModelCommand';
 
 interface IOwnProps {
     children: ReactNode;
@@ -36,6 +31,7 @@ const dataFetcherWrapper = (props: IProps) => {
     const dispatch = useDispatch();
 
     const [modelId, setModelId] = useState<string | null>(null);
+    const [soilmodelFetched, setSoilmodelFetched] = useState<boolean>(false);
 
     const [fetchingModel, setFetchingModel] = useState<boolean>(false);
     const [fetchingModelSuccess, setFetchingModelSuccess] = useState<boolean | null>(null);
@@ -54,8 +50,6 @@ const dataFetcherWrapper = (props: IProps) => {
 
     const [fetchingVariableDensity, setFetchingVariableDensity] = useState<boolean>(false);
     const [fetchingVariableDensitySuccess, setFetchingVariableDensitySuccess] = useState<boolean | null>(null);
-
-    const [calculatePackages, setCalculatePackages] = useState<boolean | string>(false);
 
     const [showModal, setShowModal] = useState<boolean>(true);
 
@@ -82,10 +76,12 @@ const dataFetcherWrapper = (props: IProps) => {
 
     useEffect(() => {
         fetchModel(props.match.params.id);
+        setSoilmodelFetched(false);
     }, [modelId]);
 
     useEffect(() => {
-        if (model) {
+        if (model && !soilmodelFetched) {
+            setSoilmodelFetched(true);
             fetchAndUpdateSoilmodel(model.id);
         }
     }, [model]);
@@ -102,18 +98,15 @@ const dataFetcherWrapper = (props: IProps) => {
                     setFetchingModelSuccess(true);
 
                     fetchBoundaries(id);
-
                     fetchPackages(id);
                     fetchTransport(id);
-
                     fetchVariableDensity(id);
 
                     if (mfModel.calculationId) {
-                        fetchCalculationDetails(mfModel.calculationId,
-                            (cData) => dispatch(updateCalculation(Calculation.fromQuery(cData))),
+                        fetchCalculationDetails(mfModel.calculationId)
+                            .then((cData) => dispatch(updateCalculation(Calculation.fromQuery(cData))))
                             // tslint:disable-next-line:no-console
-                            (cError) => console.log(cError)
-                        );
+                            .catch((cError) => console.log(cError));
                     }
                 },
                 (cError) => {
@@ -205,11 +198,6 @@ const dataFetcherWrapper = (props: IProps) => {
             (data) => {
                 setFetchingPackages(false);
                 setFetchingPackagesSuccess(true);
-
-                if (Array.isArray(data) && data.length === 0) {
-                    return setCalculatePackages(true);
-                }
-
                 const p = FlopyPackages.fromQuery(data);
                 if (p) {
                     return dispatch(updatePackages(p));
@@ -262,41 +250,6 @@ const dataFetcherWrapper = (props: IProps) => {
         }
     };
 
-    const calculatePackagesFunction = () => {
-        return new Promise((resolve, reject) => {
-            if (!model || !soilmodel ||
-                !Soilmodel.fromObject(soilmodel).checkVersion() ||
-                !boundaries || !transport || !variableDensity) {
-                return;
-            }
-
-            setCalculatePackages('calculation');
-            const mf = FlopyModflow.create(
-                ModflowModel.fromObject(model),
-                Soilmodel.fromObject(soilmodel),
-                BoundaryCollection.fromObject(boundaries)
-            );
-
-            const modpath = new FlopyModpath();
-            const mt = FlopyMt3d.createFromTransport(
-                Transport.fromObject(transport),
-                BoundaryCollection.fromObject(boundaries)
-            );
-
-            const swt = FlopySeawat.createFromVariableDensity(VariableDensity.fromObject(variableDensity));
-            if (model && modelId) {
-                const flopyPackages = FlopyPackages.create(modelId, mf, modpath, mt, swt);
-                if (flopyPackages instanceof FlopyPackages) {
-                    setCalculatePackages(false);
-                    resolve(flopyPackages);
-                }
-
-                setCalculatePackages('error');
-                reject('Error creating instance of FlopyPackages.');
-            }
-        });
-    };
-
     const renderList = (listItems: Array<{ name: string, loading: boolean, success: boolean | null }>) => (
         listItems.map((item, idx) => (
             <List.Item key={idx}>
@@ -320,17 +273,6 @@ const dataFetcherWrapper = (props: IProps) => {
         }
         return eil;
     };
-
-    if (calculatePackages === true) {
-        calculatePackagesFunction().then((p) => {
-            if (modelId) {
-                return sendCommand(
-                    ModflowModelCommand.updateFlopyPackages(modelId, p),
-                    () => dispatch(updatePackages(p as FlopyPackages))
-                );
-            }
-        });
-    }
 
     if (soilmodel && !Soilmodel.fromObject(soilmodel).checkVersion()) {
         return (

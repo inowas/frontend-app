@@ -249,7 +249,7 @@ const mapStateToProps = (state: any) => {
 };
 
 const mapDispatchToProps = (dispatch: any): IDispatchProps => ({
-    updateBoundaries: (cBoundaries: BoundaryCollection) => dispatch(updateBoundaries(cBoundaries)),
+    updateBoundaries: (cBoundaries: BoundaryCollection) => dispatch(updateBoundaries(cBoundaries, true)),
     updateModel: (model: ModflowModel) => dispatch(updateModel(model))
 });
 

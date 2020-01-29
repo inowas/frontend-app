@@ -17,7 +17,6 @@ const dataSourcesChart = (props: IProps) => {
     const [data, setData] = useState<IDateTimeValue[] | null>(null);
 
     useEffect(() => {
-
         async function f() {
             const mergedData = await props.dataSources.mergedData();
 

@@ -1,10 +1,21 @@
 import AbstractCommand from '../../../core/model/command/AbstractCommand';
-import {JSON_SCHEMA_URL} from '../../../services/api';
 import FlopyPackages from '../../../core/model/flopy/packages/FlopyPackages';
+import BoundingBox from '../../../core/model/geometry/BoundingBox';
+import {IBoundingBox} from '../../../core/model/geometry/BoundingBox.type';
+import {GeoJson, IGeometry} from '../../../core/model/geometry/Geometry.type';
+import GridSize from '../../../core/model/geometry/GridSize';
+import {IGridSize} from '../../../core/model/geometry/GridSize.type';
+import {Cells, LengthUnit, TimeUnit} from '../../../core/model/modflow';
+import {Boundary} from '../../../core/model/modflow/boundaries';
+import SoilmodelLayer from '../../../core/model/modflow/soilmodel/SoilmodelLayer';
+import Stressperiods from '../../../core/model/modflow/Stressperiods';
+import {IStressPeriods} from '../../../core/model/modflow/Stressperiods.type';
+import {JSON_SCHEMA_URL} from '../../../services/api';
+import {ICells} from '../../../core/model/geometry/Cells.type';
 
 class ModflowModelCommand extends AbstractCommand {
 
-    static addBoundary(modelId, boundary) {
+    public static addBoundary(modelId: string, boundary: Boundary) {
         const name = 'addBoundary';
         return new ModflowModelCommand(
             name,
@@ -13,7 +24,7 @@ class ModflowModelCommand extends AbstractCommand {
         );
     }
 
-    static addLayer(modelId, layer) {
+    public static addLayer(modelId: string, layer: SoilmodelLayer) {
         const name = 'addLayer';
         return new ModflowModelCommand(
             name,
@@ -22,22 +33,22 @@ class ModflowModelCommand extends AbstractCommand {
         );
     }
 
-    static calculateModflowModel(id) {
+    public static calculateModflowModel(id: string) {
         const name = 'calculateModflowModel';
         return new ModflowModelCommand(name, {id}, JSON_SCHEMA_URL + '/commands/' + name);
     }
 
-    static calculateOptimization(payload) {
+    public static calculateOptimization(payload: any) {
         const name = 'calculateOptimization';
         return new ModflowModelCommand(name, payload, JSON_SCHEMA_URL + '/commands/' + name);
     }
 
-    static cancelOptimizationCalculation(payload) {
+    public static cancelOptimizationCalculation(payload: any) {
         const name = 'cancelOptimizationCalculation';
         return new ModflowModelCommand(name, payload, JSON_SCHEMA_URL + '/commands/' + name);
     }
 
-    static cloneModflowModel({id, newId, isTool}) {
+    public static cloneModflowModel({id, newId, isTool}: { id: string, newId: string, isTool: boolean }) {
         const name = 'cloneModflowModel';
         return new ModflowModelCommand(name, {
             id,
@@ -46,34 +57,34 @@ class ModflowModelCommand extends AbstractCommand {
         }, JSON_SCHEMA_URL + '/commands/' + name);
     }
 
-    static createModflowModel(payload) {
+    public static createModflowModel(payload: any) {
         const name = 'createModflowModel';
         return new ModflowModelCommand(name, payload, JSON_SCHEMA_URL + '/commands/' + name);
     }
 
-    static deleteModflowModel({id}) {
+    public static deleteModflowModel({id}: { id: string }) {
         const name = 'deleteModflowModel';
         return new ModflowModelCommand(name, {id}, JSON_SCHEMA_URL + '/commands/' + name);
     }
 
-    static importModflowModel(payload) {
+    public static importModflowModel(payload: any) {
         const name = 'importModflowModel';
         return new ModflowModelCommand(name, payload, JSON_SCHEMA_URL + '/commands/' + name);
     }
 
-    static removeLayer(payload) {
+    public static removeLayer(payload: any) {
         const name = 'removeLayer';
         return new ModflowModelCommand(name, payload, JSON_SCHEMA_URL + '/commands/' + name);
     }
 
-    static removeBoundary(modelId, boundaryId) {
+    public static removeBoundary(modelId: string, boundaryId: string) {
         const name = 'removeBoundary';
         return new ModflowModelCommand(
             name, {id: modelId, boundary_id: boundaryId}, JSON_SCHEMA_URL + '/commands/' + name
         );
     }
 
-    static updateBoundary(modelId, boundary) {
+    public static updateBoundary(modelId: string, boundary: Boundary) {
         const name = 'updateBoundary';
         return new ModflowModelCommand(
             name,
@@ -82,7 +93,7 @@ class ModflowModelCommand extends AbstractCommand {
         );
     }
 
-    static updateModflowModelMetadata(id, name, description, isPublic) {
+    public static updateModflowModelMetadata(id: string, name: string, description: string, isPublic: boolean) {
         const commandName = 'updateModflowModelMetadata';
         return new ModflowModelCommand(
             commandName,
@@ -90,7 +101,7 @@ class ModflowModelCommand extends AbstractCommand {
             JSON_SCHEMA_URL + '/commands/' + commandName);
     }
 
-    static updateModflowModelCalculationId(id, calculationId) {
+    public static updateModflowModelCalculationId(id: string, calculationId: string) {
         const commandName = 'updateModflowModelCalculationId';
         return new ModflowModelCommand(
             commandName,
@@ -98,7 +109,16 @@ class ModflowModelCommand extends AbstractCommand {
             JSON_SCHEMA_URL + '/commands/' + commandName);
     }
 
-    static updateModflowModelDiscretization(id, geometry, boundingBox, gridSize, cells, stressperiods, lengthUnit, timeUnit) {
+    public static updateModflowModelDiscretization(
+        id: string,
+        geometry: IGeometry,
+        boundingBox: IBoundingBox,
+        gridSize: IGridSize,
+        cells: ICells,
+        stressperiods: IStressPeriods,
+        lengthUnit: number,
+        timeUnit: number
+    ) {
         const commandName = 'updateModflowModelDiscretization';
         const payload = {
             id, geometry, bounding_box: boundingBox,
@@ -109,41 +129,38 @@ class ModflowModelCommand extends AbstractCommand {
         return new ModflowModelCommand(commandName, payload, JSON_SCHEMA_URL + '/commands/' + commandName);
     }
 
-    static updateFlopyPackages(id, packages) {
-        if (!(packages instanceof FlopyPackages)) {
-            throw new Error('Expecting instance of FlopyPackages');
-        }
+    public static updateFlopyPackages(id: string, packages: FlopyPackages) {
         const name = 'updateFlopyPackages';
         const payload = {id, packages: packages.toObject()};
         return new ModflowModelCommand(name, payload, JSON_SCHEMA_URL + '/commands/' + name);
     }
 
-    static updateOptimizationInput(payload) {
+    public static updateOptimizationInput(payload: any) {
         const name = 'updateOptimizationInput';
         return new ModflowModelCommand(name, payload, JSON_SCHEMA_URL + '/commands/' + name);
     }
 
-    static updateLayer(payload) {
+    public static updateLayer(payload: any) {
         const name = 'updateLayer';
         return new ModflowModelCommand(name, payload, JSON_SCHEMA_URL + '/commands/' + name);
     }
 
-    static updateTransport(payload) {
+    public static updateTransport(payload: any) {
         const name = 'updateTransport';
         return new ModflowModelCommand(name, payload, JSON_SCHEMA_URL + '/commands/' + name);
     }
 
-    static updateSoilmodelProperties(payload) {
+    public static updateSoilmodelProperties(payload: any) {
         const name = 'updateSoilmodelProperties';
         return new ModflowModelCommand(name, payload, JSON_SCHEMA_URL + '/commands/' + name);
     }
 
-    static updateStressperiods(payload) {
+    public static updateStressperiods(payload: any) {
         const name = 'updateStressperiods';
         return new ModflowModelCommand(name, payload, JSON_SCHEMA_URL + '/commands/' + name);
     }
 
-    static updateVariableDensity(payload) {
+    public static updateVariableDensity(payload: any) {
         const name = 'updateVariableDensity';
         return new ModflowModelCommand(name, payload, JSON_SCHEMA_URL + '/commands/' + name);
     }
