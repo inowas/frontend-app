@@ -84,9 +84,9 @@ const lpfPackageProperties = (props: IProps) => {
                 </Table.Body>
             </Table>
             <Segment basic={true}>
-                <Form.Group widths="equal">
+                <Form.Group widths={'equal'}>
                     <Form.Field>
-                        <label>Save cell-by-cell budget data (ipakcb)</label>
+                        <label>Save cell-by-cell budget data (IPAKCB)</label>
                         <Checkbox
                             toggle={true}
                             disabled={readonly}
@@ -103,12 +103,12 @@ const lpfPackageProperties = (props: IProps) => {
                         />
                     </Form.Field>
                     <Form.Field>
-                        <label>Wetting capability (iwdflg)</label>
+                        <label>Wetting capability (IWDFLG)</label>
                         <Checkbox
                             toggle={true}
                             disabled={readonly}
                             name="iwdflg"
-                            value={mfPackage.iwdflg}
+                            value={mfPackage.iwdflg ? 1 : 0}
                         />
                     </Form.Field>
                     <Form.Field width={1}>
@@ -119,20 +119,10 @@ const lpfPackageProperties = (props: IProps) => {
                             iconOutside={true}
                         />
                     </Form.Field>
-                    <Form.Field>
-                        <label>Dry cells head (hdry)</label>
-                        <Input
-                            readOnly={true}
-                            name="hdry"
-                            value={JSON.stringify(mfPackage.hdry)}
-                            icon={<InfoPopup description={documentation.hdry} title={'hdry'}/>}
-                        />
-                    </Form.Field>
                 </Form.Group>
-
-                <Form.Group widths="equal">
+                <Form.Group widths={'equal'}>
                     <Form.Field>
-                        <label>Wetting factor (wetfct)</label>
+                        <label>Wetting factor (WETFCT)</label>
                         <Input
                             readOnly={readonly}
                             name={'wetfct'}
@@ -140,11 +130,11 @@ const lpfPackageProperties = (props: IProps) => {
                             value={mfPackage.wetfct}
                             onChange={handleOnChange}
                             onBlur={handleOnBlur(parseFloat)}
-                            icon={<InfoPopup description={documentation.wetfct} title={'wetfct'}/>}
+                            icon={<InfoPopup description={documentation.wetfct} title={'WETFCT'}/>}
                         />
                     </Form.Field>
                     <Form.Field>
-                        <label>Wetting interval (iwetit)</label>
+                        <label>Wetting interval (IWETIT)</label>
                         <Input
                             readOnly={readonly}
                             name={'iwetit'}
@@ -152,11 +142,26 @@ const lpfPackageProperties = (props: IProps) => {
                             value={mfPackage.iwetit}
                             onChange={handleOnChange}
                             onBlur={handleOnBlur(parseFloat)}
-                            icon={<InfoPopup description={documentation.iwetit} title={'iwetit'}/>}
+                            icon={<InfoPopup description={documentation.iwetit} title={'IWETIT'}/>}
+                        />
+                    </Form.Field>
+                </Form.Group>
+
+                <Form.Group widths={'equal'}>
+                    <Form.Field>
+                        <label>Dry cells head (HDRY)</label>
+                        <Input
+                            readOnly={true}
+                            name={'hdry'}
+                            type={'number'}
+                            value={mfPackage.hdry}
+                            onChange={handleOnChange}
+                            onBlur={handleOnBlur(parseFloat)}
+                            icon={<InfoPopup description={documentation.hdry} title={'HDRY'}/>}
                         />
                     </Form.Field>
                     <Form.Field>
-                        <label>Equation (ihdwet)</label>
+                        <label>Rewetting equation (IHDWET)</label>
                         <Form.Dropdown
                             options={[
                                 {key: 0, value: 0, text: '(0) h = BOT + WETFCT (hn - BOT) (eq 33A)'},
@@ -270,27 +275,27 @@ const lpfPackageProperties = (props: IProps) => {
             <Segment basic={true}>
                 <Form.Group widths="equal">
                     <Form.Field>
-                        <label>Vertical hydraulic conductivity (vkcb)</label>
+                        <label>Vertical hydraulic conductivity (VKCB)</label>
                         <Input
                             readOnly={true}
-                            name="vkcb"
+                            name={'vkcb'}
                             type={'number'}
                             value={mfPackage.vkcb}
-                            icon={<InfoPopup description={documentation.vkcb} title={'vkcb'}/>}
                             onBlur={handleOnBlur(parseFloat)}
                             onChange={handleOnChange}
+                            icon={<InfoPopup description={documentation.vkcb} title={'VKCB'}/>}
                         />
                     </Form.Field>
                     <Form.Field>
-                        <label>Wetting threshold and flag (wetdry)</label>
+                        <label>Wetting threshold and flag (WETDRY)</label>
                         <Input
                             readOnly={true}
-                            name="wetdry"
+                            name={'wetdry'}
                             type={'number'}
                             value={mfPackage.wetdry}
-                            icon={<InfoPopup description={documentation.wetdry} title={'wetdry'}/>}
                             onChange={handleOnChange}
                             onBlur={handleOnBlur(parseFloat)}
+                            icon={<InfoPopup description={documentation.wetdry} title={'WETDRY'}/>}
                         />
                     </Form.Field>
                 </Form.Group>
@@ -299,13 +304,13 @@ const lpfPackageProperties = (props: IProps) => {
                     <Grid.Row>
                         <Grid.Column>
                             <Form.Group>
-                                <Form.Field>
-                                    <label>Storage coefficient (storagecoefficient)</label>
+                                <Form.Field width={14}>
+                                    <label>Storage coefficient (STORAGECOEFFICIENT)</label>
                                     <Checkbox
                                         toggle={true}
                                         disabled={readonly}
-                                        name="storagecoefficient"
-                                        value={JSON.stringify(mfPackage.storagecoefficient) || 0}
+                                        name={'storagecoefficient'}
+                                        value={mfPackage.storagecoefficient ? 1 : 0}
                                     />
                                 </Form.Field>
                                 <Form.Field width={1}>
@@ -318,12 +323,12 @@ const lpfPackageProperties = (props: IProps) => {
                                 </Form.Field>
                             </Form.Group>
                             <Form.Group>
-                                <Form.Field>
-                                    <label>Vertical conductance (constantcv)</label>
+                                <Form.Field width={14}>
+                                    <label>Vertical conductance (CONSTANTCV)</label>
                                     <Checkbox
                                         toggle={true}
                                         disabled={readonly}
-                                        name="constantcv"
+                                        name={'constantcv'}
                                         value={mfPackage.constantcv ? 1 : 0}
                                     />
                                 </Form.Field>
@@ -337,13 +342,13 @@ const lpfPackageProperties = (props: IProps) => {
                                 </Form.Field>
                             </Form.Group>
                             <Form.Group>
-                                <Form.Field>
-                                    <label>Computed cell thickness (thickstrt)</label>
+                                <Form.Field width={14}>
+                                    <label>Computed cell thickness (THICKSTRT)</label>
                                     <Checkbox
                                         toggle={true}
                                         disabled={readonly}
-                                        name="thickstrt"
-                                        value={JSON.stringify(mfPackage.thickstrt) || 0}
+                                        name={'thickstrt'}
+                                        value={mfPackage.thickstrt ? 1 : 0}
                                     />
                                 </Form.Field>
                                 <Form.Field width={1}>
@@ -356,13 +361,13 @@ const lpfPackageProperties = (props: IProps) => {
                                 </Form.Field>
                             </Form.Group>
                             <Form.Group>
-                                <Form.Field>
-                                    <label>Vertical conductance correction (nocvcorrection)</label>
+                                <Form.Field width={14}>
+                                    <label>Vertical conductance correction (NOCVCORRECTION)</label>
                                     <Checkbox
                                         toggle={true}
                                         disabled={readonly}
-                                        name="nocvcorrection"
-                                        value={JSON.stringify(mfPackage.nocvcorrection) || 0}
+                                        name={'nocvcorrection'}
+                                        value={mfPackage.nocvcorrection ? 1 : 0}
                                     />
                                 </Form.Field>
                                 <Form.Field width={1}>
@@ -375,13 +380,13 @@ const lpfPackageProperties = (props: IProps) => {
                                 </Form.Field>
                             </Form.Group>
                             <Form.Group>
-                                <Form.Field>
-                                    <label>Vertical flow correction (novfc)</label>
+                                <Form.Field width={14}>
+                                    <label>Vertical flow correction (NOVFC)</label>
                                     <Checkbox
                                         toggle={true}
                                         disabled={readonly}
-                                        name="novfc"
-                                        value={JSON.stringify(mfPackage.novfc) || 0}
+                                        name={'novfc'}
+                                        value={mfPackage.novfc ? 1 : 0}
                                     />
                                 </Form.Field>
                                 <Form.Field width={1}>

@@ -134,7 +134,7 @@ class BasPackageProperties extends AbstractPackageProperties {
                                         {this.renderInfoPopup(documentation.ichflg, 'ICHFLG', 'top left', true)}
                                     </Form.Field>
                                     <Form.Field>
-                                        <label>hnoflo</label>
+                                        <label>Head assigned to all no flow cells (hnoflo)</label>
                                         <Form.Input
                                             readOnly
                                             type={'number'}
