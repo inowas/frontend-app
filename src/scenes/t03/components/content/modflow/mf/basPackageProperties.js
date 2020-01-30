@@ -115,7 +115,7 @@ class BasPackageProperties extends AbstractPackageProperties {
                             <Form>
                                 <Form.Group>
                                     <Form.Field>
-                                        <label>Flow between chd cells (ichflg)</label>
+                                        <label>Flow between chd cells (ICHFLG)</label>
                                         <Form.Dropdown
                                             options={[
                                                 {key: 0, value: true, text: 'true'},
@@ -131,25 +131,25 @@ class BasPackageProperties extends AbstractPackageProperties {
                                     </Form.Field>
                                     <Form.Field>
                                         <label>&nbsp;</label>
-                                        {this.renderInfoPopup(documentation.ichflg, 'ICHFLG', 'top left', true)}
+                                        {this.renderInfoPopup(documentation.bas.ichflg, 'ICHFLG', 'top left', true)}
                                     </Form.Field>
                                     <Form.Field>
-                                        <label>Head assigned to all no flow cells (hnoflo)</label>
+                                        <label>Head assigned to all no flow cells (HNOFLO)</label>
                                         <Form.Input
                                             readOnly
                                             type={'number'}
                                             name='hnoflo'
                                             value={mfPackage.hnoflo}
-                                            icon={this.renderInfoPopup(documentation.hnoflo, 'HNOFLO')}
+                                            icon={this.renderInfoPopup(documentation.bas.hnoflo, 'HNOFLO')}
                                         />
                                     </Form.Field>
                                     <Form.Field>
-                                        <label>Budget percent discrepancy (stoper)</label>
+                                        <label>Budget percent discrepancy (STOPER)</label>
                                         <Input
                                             readOnly
                                             name='stoper'
                                             value={mfPackage.stoper || ''}
-                                            icon={this.renderInfoPopup(documentation.stoper, 'STOPER')}
+                                            icon={this.renderInfoPopup(documentation.bas.stoper, 'STOPER')}
                                         />
                                     </Form.Field>
                                 </Form.Group>

@@ -15,15 +15,17 @@ export const documentation = {
     verbose: <div>Print additional information to the screen (default is False).</div>,
 
     // BAS
-    ibound: <div>The ibound array (the default is 1).</div>,
-    strt: <div>An array of starting heads (the default is 1.0).</div>,
-    ifrefm: <div>Indication if data should be read using free format (the default is True).</div>,
-    ichflg: <div>Flag indicating that flows between constant head cells should be calculated (the default is
-        False).</div>,
-    stoper: <div>Percent discrepancy that is compared to the budget percent discrepancy continue when the solver
-        convergence criteria are not met. Execution will unless the budget percent discrepancy is greater than stoper
-        (default is None). MODFLOW-2005 only</div>,
-    hnoflo: <div>Head value assigned to inactive cells (default is -999.99).</div>,
+    bas: {
+        ibound: <div>The ibound array (the default is 1).</div>,
+        strt: <div>An array of starting heads (the default is 1.0).</div>,
+        ifrefm: <div>Indication if data should be read using free format (the default is True).</div>,
+        ichflg: <div>Flag indicating that flows between constant head cells should be calculated (the default is
+            False).</div>,
+        stoper: <div>Percent discrepancy that is compared to the budget percent discrepancy continue when the solver
+            convergence criteria are not met. Execution will unless the budget percent discrepancy is greater than stoper
+            (default is None). MODFLOW-2005 only</div>,
+        hnoflo: <div>Head value assigned to inactive cells (default is -999.99).</div>,
+    },
 
     // BCF
     bcf: {
