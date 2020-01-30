@@ -1,41 +1,36 @@
 import React, {useState} from 'react';
 import {Checkbox, Form, Grid, Header, Input, Label} from 'semantic-ui-react';
 import {FlopyModflowMfrch} from '../../../../../../core/model/flopy/packages/mf';
-import {documentation} from '../../../../defaults/flow';
 import FlopyModflow from '../../../../../../core/model/flopy/packages/mf/FlopyModflow';
-import {IFlopyModflowMfrch} from "../../../../../../core/model/flopy/packages/mf/FlopyModflowMfrch";
-import InfoPopup from "../../../../../shared/InfoPopup";
+import FlopyModflowMfbas from '../../../../../../core/model/flopy/packages/mf/FlopyModflowMfbas';
+import {IFlopyModflowMfrch} from '../../../../../../core/model/flopy/packages/mf/FlopyModflowMfrch';
+import {GridSize} from '../../../../../../core/model/modflow';
+import renderInfoPopup from '../../../../../shared/complexTools/InfoPopup';
+import {RasterDataImage} from '../../../../../shared/rasterData';
+import {documentation} from '../../../../defaults/flow';
 
 interface IProps {
     mfPackage: FlopyModflowMfrch;
     mfPackages: FlopyModflow;
-    onChange: (pck: FlopyModflowMfrch) => void;
+    onChange: () => any;
     readonly: boolean;
 }
 
 const rchPackageProperties = (props: IProps) => {
+    const [mfPackage, setMfPackage] = useState<IFlopyModflowMfrch>(props.mfPackage.toObject());
 
-    const [mfPackage] = useState<IFlopyModflowMfrch>(props.mfPackage.toObject());
-    const {readonly} = props;
+    if (!mfPackage) {
+        return null;
+    }
 
+    const {mfPackages} = props;
     const spData2D = Object.values(mfPackage.rech)[0];
-    // TODO : implement ibound
-    /*
-        class RchPackageProperties extends AbstractPackageProperties {
 
-            render() {
-                if (!this.state.mfPackage) {
-                    return null;
-                }
-
-                const {mfPackage, mfPackages, readonly} = this.props;
-                const spData2D = Object.values(mfPackage.stress_period_data)[0];
-
-                const basPackage = mfPackages.getPackage('bas');
-                const {ibound} = basPackage;
-            }
-        }
-    */
+    const basPackage = mfPackages.getPackage('bas');
+    if (!basPackage || !(basPackage instanceof FlopyModflowMfbas)) {
+        return null;
+    }
+    const {ibound} = basPackage;
 
     return (
         <Form>
@@ -44,39 +39,49 @@ const rchPackageProperties = (props: IProps) => {
                 <Grid.Row columns={2}>
                     <Grid.Column>
                         <Label>Stress period data (SP1)</Label>
-                        {/*<RasterDataImage
+                        <RasterDataImage
                             data={spData2D}
-                            gridSize={GridSize.fromData(ibound[0])}
+                            gridSize={GridSize.fromArray([0, 0])/*GridSize.fromData(ibound)*/}
                             unit={''}
                             border={'1px dotted black'}
-                        />*/}
+                        />
                     </Grid.Column>
                 </Grid.Row>
             </Grid>
 
-            <Form.Group>
+            <Form.Group widths="equal">
                 <Form.Field>
-                    <label>Cell-by-cell budget data (ipakcb)</label>
+                    <label>Save cell-by-cell budget data (ipakcb)</label>
                     <Checkbox
-                        toggle
-                        disabled={readonly}
-                        name='ipakcb'
+                        toggle={true}
+                        readOnly={true}
+                        name="ipakcb"
                         value={mfPackage.ipakcb || 0}
+                        icon={renderInfoPopup(documentation.ipakcb, 'IPAKCB')}
                     />
-                </Form.Field>
-                <Form.Field width={1}>
-                    {<InfoPopup description={documentation.ipakcb} title={'IPAKCB'} position={'top right'} iconOutside={true}/>}
+                    {/*<Form.Dropdown
+                            options={[
+                                {key: 0, value: 0, text: 'false'},
+                                {key: 1, value: 1, text: 'true'},
+                            ]}
+                            placeholder='Select ipakcb'
+                            name='ipakcb'
+                            selection
+                            value={mfPackage.ipakcb}
+                            disabled={readonly}
+                            onChange={this.handleOnSelect}
+                        />*/}
                 </Form.Field>
             </Form.Group>
 
-            <Form.Group widths='equal'>
+            <Form.Group widths="equal">
                 <Form.Field>
                     <label>Filename extension</label>
                     <Input
                         readOnly={true}
-                        name='extension'
-                        value={mfPackage.extension}
-                        icon={<InfoPopup description={documentation.extension} title={'extension'}/>}
+                        name="extension"
+                        value={mfPackage.extension || ''}
+                        icon={renderInfoPopup(documentation.extension, 'extension')}
                     />
                 </Form.Field>
                 <Form.Field>
@@ -84,18 +89,18 @@ const rchPackageProperties = (props: IProps) => {
                     <Input
                         readOnly={true}
                         type={'number'}
-                        name='unitnumber'
-                        value={mfPackage.unitnumber}
-                        icon={<InfoPopup description={documentation.unitnumber} title={'unitnumber'}/>}
+                        name="unitnumber"
+                        value={mfPackage.unitnumber || ''}
+                        icon={renderInfoPopup(documentation.unitnumber, 'unitnumber')}
                     />
                 </Form.Field>
                 <Form.Field>
                     <label>Filenames</label>
                     <Input
                         readOnly={true}
-                        name='filenames'
-                        value={mfPackage.filenames}
-                        icon={<InfoPopup description={documentation.filenames} title={'filenames'}/>}
+                        name="filenames"
+                        value={mfPackage.filenames || ''}
+                        icon={renderInfoPopup(documentation.filenames, 'filenames')}
                     />
                 </Form.Field>
             </Form.Group>

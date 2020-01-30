@@ -24,7 +24,7 @@ interface IProps {
 }
 
 const disPackageProperties = (props: IProps) => {
-    const [mfPackage] = useState<IFlopyModflowMfdis>(props.mfPackage.toObject());
+    const [mfPackage, setMfPackage] = useState<IFlopyModflowMfdis>(props.mfPackage.toObject());
     const [activeIndex, setActiveIndex] = useState<number>(0);
     const {readonly} = props;
 
@@ -102,7 +102,6 @@ const disPackageProperties = (props: IProps) => {
                                     <label>Row spacing (delr)</label>
                                     <Input
                                         readOnly={true}
-                                        type={'number'}
                                         name="delr"
                                         value={JSON.stringify(mfPackage.delr)}
                                         icon={renderInfoPopup(documentation.delr, 'delr')}
@@ -112,7 +111,6 @@ const disPackageProperties = (props: IProps) => {
                                     <label>Column spacing (delc)</label>
                                     <Input
                                         readOnly={true}
-                                        type={'number'}
                                         name="delc"
                                         value={JSON.stringify(mfPackage.delc)}
                                         icon={renderInfoPopup(documentation.delc, 'delc')}
@@ -123,7 +121,8 @@ const disPackageProperties = (props: IProps) => {
                                     <Checkbox
                                         toggle={true}
                                         disabled={readonly}
-                                        name="laycbd"// TODO
+                                        name="laycbd"
+                                        checked={mfPackage.laycbd !== 0}
                                         icon={renderInfoPopup(documentation.laycbd, 'LAYCBD')}
                                     />
                                 </Form.Field>

@@ -53,9 +53,17 @@ const boundaryDetails = (props: IProps) => {
                           data: DropdownProps | InputOnChangeData) => {
         let value = data.value;
         const name = data.name;
-        if (name === 'layers' && data.value !== null && typeof data.value === 'number') {
-            value = [data.value];
+
+        if (name === 'layers') {
+            if (typeof data.value === 'number') {
+                value = [data.value];
+            }
+
+            if (Array.isArray(data.value) && data.value.length === 0) {
+                value = [0];
+            }
         }
+
         const cBoundary = props.boundary;
         // @ts-ignore
         cBoundary[name] = value;
@@ -145,7 +153,7 @@ const boundaryDetails = (props: IProps) => {
 
     const renderLayerSelection = () => {
         const cBoundary = props.boundary;
-        const multipleLayers = ['chd', 'ghb', 'fhb'].includes(cBoundary.type);
+        const multipleLayers = ['chd', 'ghb', 'fhb', 'riv'].includes(cBoundary.type);
 
         let options;
 
@@ -161,7 +169,7 @@ const boundaryDetails = (props: IProps) => {
                 break;
         }
 
-        if (!cBoundary.layers || ['riv'].includes(cBoundary.type)) {
+        if (!cBoundary.layers) {
             return null;
         }
 

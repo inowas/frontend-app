@@ -28,6 +28,8 @@ const sorPackageProperties = (props: IProps) => {
         if (cast) {
             value = cast(value);
         }
+
+        setMfPackage({...mfPackage, [name]: value});
         props.onChange(FlopyModflowMfsor.fromObject({...mfPackage, [name]: value}));
     };
 

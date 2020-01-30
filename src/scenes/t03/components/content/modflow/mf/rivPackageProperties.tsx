@@ -1,13 +1,13 @@
 import React, {useState} from 'react';
 import {Checkbox, Form, Grid, Header, Input, Label} from 'semantic-ui-react';
 import {FlopyModflowMfdis, FlopyModflowMfriv} from '../../../../../../core/model/flopy/packages/mf';
+import FlopyModflow from '../../../../../../core/model/flopy/packages/mf/FlopyModflow';
+import {IFlopyModflowMfriv} from '../../../../../../core/model/flopy/packages/mf/FlopyModflowMfriv';
 import {GridSize} from '../../../../../../core/model/modflow';
-import {documentation} from '../../../../defaults/flow';
+import {RainbowOrLegend} from '../../../../../../services/rainbowvis/types';
+import {InfoPopup} from '../../../../../shared';
 import {RasterDataImage} from '../../../../../shared/rasterData';
-import FlopyModflow from "../../../../../../core/model/flopy/packages/mf/FlopyModflow";
-import {IFlopyModflowMfriv} from "../../../../../../core/model/flopy/packages/mf/FlopyModflowMfriv";
-import {InfoPopup} from "../../../../../shared";
-import {RainbowOrLegend} from "../../../../../../services/rainbowvis/types";
+import {documentation} from '../../../../defaults/flow';
 
 interface IProps {
     mfPackage: FlopyModflowMfriv;
@@ -75,13 +75,13 @@ const rivPackageProperties = (props: IProps) => {
                     ))}
                 </Grid.Row>
             </Grid>
-            <Form.Group widths='equal'>
+            <Form.Group widths="equal">
                 <Form.Field>
                     <label>Save cell-by-cell budget data (ipakcb)</label>
                     <Checkbox
-                        toggle
+                        toggle={true}
                         disabled={readonly}
-                        name='ipakcb'
+                        name="ipakcb"
                         value={mfPackage.ipakcb || 0}
                         icon={renderInfoPopup(documentation.ipakcb, 'IPAKCB')}
                     />
@@ -90,19 +90,19 @@ const rivPackageProperties = (props: IProps) => {
                     <label>Package options (options)</label>
                     <Input
                         readOnly={true}
-                        name='options'
+                        name="options"
                         value={mfPackage.options || ''}
                         icon={renderInfoPopup(documentation.options, 'OPTIONS')}
                     />
                 </Form.Field>
             </Form.Group>
 
-            <Form.Group widths='equal'>
+            <Form.Group widths="equal">
                 <Form.Field>
                     <label>Filename extension (extension)</label>
                     <Input
                         readOnly={true}
-                        name='extension'
+                        name="extension"
                         value={mfPackage.extension || ''}
                         icon={renderInfoPopup(documentation.extension, 'EXTENSION')}
                     />
@@ -112,7 +112,7 @@ const rivPackageProperties = (props: IProps) => {
                     <Input
                         readOnly={true}
                         type={'number'}
-                        name='unitnumber'
+                        name="unitnumber"
                         value={mfPackage.unitnumber || ''}
                         icon={renderInfoPopup(documentation.unitnumber, 'UNITNUMBER')}
                     />
@@ -121,7 +121,7 @@ const rivPackageProperties = (props: IProps) => {
                     <label>Filenames (filenames)</label>
                     <Input
                         readOnly={true}
-                        name='filenames'
+                        name="filenames"
                         value={mfPackage.filenames || ''}
                         icon={renderInfoPopup(documentation.filenames, 'FILENAMES')}
                     />

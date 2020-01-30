@@ -1,12 +1,12 @@
 import React, {useState} from 'react';
 import {Checkbox, Form, Grid, Header, Input, Label, Segment} from 'semantic-ui-react';
 import {FlopyModflowMfdis, FlopyModflowMffhb} from '../../../../../../core/model/flopy/packages/mf';
-import {documentation} from '../../../../defaults/flow';
-import {RasterDataImage} from '../../../../../shared/rasterData';
+import FlopyModflow from '../../../../../../core/model/flopy/packages/mf/FlopyModflow';
+import {IFlopyModflowMffhb} from '../../../../../../core/model/flopy/packages/mf/FlopyModflowMffhb';
 import {GridSize} from '../../../../../../core/model/modflow';
 import {InfoPopup} from '../../../../../shared';
-import FlopyModflow from '../../../../../../core/model/flopy/packages/mf/FlopyModflow';
-import {IFlopyModflowMffhb} from "../../../../../../core/model/flopy/packages/mf/FlopyModflowMffhb";
+import {RasterDataImage} from '../../../../../shared/rasterData';
+import {documentation} from '../../../../defaults/flow';
 
 interface IProps {
     mfPackage: FlopyModflowMffhb;
@@ -16,9 +16,12 @@ interface IProps {
 }
 
 const fhbPackageProperties = (props: IProps) => {
-
     const [mfPackage] = useState<IFlopyModflowMffhb>(props.mfPackage.toObject());
     const {mfPackages, readonly} = props;
+
+    if (!mfPackage) {
+        return null;
+    }
 
     const disPackage: FlopyModflowMfdis = mfPackages.getPackage('dis') as FlopyModflowMfdis;
     const affectedCellsLayers: number[][][] = [];
@@ -31,21 +34,6 @@ const fhbPackageProperties = (props: IProps) => {
             }
         }
     }
-
-    /*
-   class FhbPackageProperties extends AbstractPackageProperties {
-
-        render() {
-            if (!this.state.mfPackage) {
-                return null;
-            }
-
-            const {mfPackage, mfPackages} = this.props;
-            const basPackage = mfPackages.getPackage('bas');
-            const {ibound} = basPackage;
-            const affectedCellsLayers = ibound.map(l => l.map(r => r.map(() => 0)));
-        }
-    }*/
 
     return (
         <Form>
@@ -73,8 +61,8 @@ const fhbPackageProperties = (props: IProps) => {
                             <Form.Field>
                                 <label>No. of times flow and head are specified (NBDTIM)</label>
                                 <Input
-                                    readOnly
-                                    name='nbdtim'
+                                    readOnly={true}
+                                    name="nbdtim"
                                     value={mfPackage.nbdtim}
                                     icon={<InfoPopup description={documentation.nbdtim} title={'NBDTIM'}/>}
                                 />
@@ -82,8 +70,8 @@ const fhbPackageProperties = (props: IProps) => {
                             <Form.Field>
                                 <label>Cells with specified flow (NFLW)</label>
                                 <Input
-                                    readOnly
-                                    name='nflw'
+                                    readOnly={true}
+                                    name="nflw"
                                     value={mfPackage.nflw}
                                     icon={<InfoPopup description={documentation.nflw} title={'NFLW'}/>}
                                 />
@@ -91,18 +79,18 @@ const fhbPackageProperties = (props: IProps) => {
                             <Form.Field>
                                 <label>Cells with specified head (NHED)</label>
                                 <Input
-                                    readOnly
-                                    name='nhed'
+                                    readOnly={true}
+                                    name="nhed"
                                     value={mfPackage.nhed}
                                     icon={<InfoPopup description={documentation.nhed} title={'NHED'}/>}
                                 />
                             </Form.Field>
-                            <Form.Group widths='equal'>
+                            <Form.Group widths="equal">
                                 <Form.Field>
                                     <label>Auxiliary variables for each flow cell (NFHBX1)</label>
                                     <Input
-                                        readOnly
-                                        name='nfhbx1'
+                                        readOnly={true}
+                                        name="nfhbx1"
                                         value={mfPackage.nfhbx1}
                                         icon={<InfoPopup description={documentation.nfhbx1} title={'NFHBX1'}/>}
                                     />
@@ -110,8 +98,8 @@ const fhbPackageProperties = (props: IProps) => {
                                 <Form.Field>
                                     <label>Auxiliary variables for each head cell (NFHBX2)</label>
                                     <Input
-                                        readOnly
-                                        name='nfhbx2'
+                                        readOnly={true}
+                                        name="nfhbx2"
                                         value={mfPackage.nfhbx2}
                                         icon={<InfoPopup description={documentation.nfhbx1} title={'NFHBX2'}/>}
                                     />
@@ -122,9 +110,9 @@ const fhbPackageProperties = (props: IProps) => {
                             <Form.Field>
                                 <label>Steady-state option (IFHBSS)</label>
                                 <Checkbox
-                                    toggle
+                                    toggle={true}
                                     disabled={readonly}
-                                    name='ifhbss'
+                                    name="ifhbss"
                                     value={mfPackage.ifhbss}
                                     icon={<InfoPopup description={documentation.ifhbss} title={'IFHBSS'}/>}
                                 />
@@ -132,10 +120,10 @@ const fhbPackageProperties = (props: IProps) => {
                             <Form.Field>
                                 <label>Save cell-by-cell data (IPAKCB)</label>
                                 <Checkbox
-                                    toggle
+                                    toggle={true}
                                     disabled={readonly}
-                                    name='ipakcb'
-                                    value={mfPackage.ipakcb|| ''}
+                                    name="ipakcb"
+                                    value={mfPackage.ipakcb || ''}
                                     icon={<InfoPopup description={documentation.ipakcb} title={'IPAKCB'}/>}
                                 />
                             </Form.Field>
@@ -151,8 +139,8 @@ const fhbPackageProperties = (props: IProps) => {
                             <Form.Field>
                                 <label>Constant multiplier for bdtime (BDTIMECNSTM)</label>
                                 <Input
-                                    readOnly
-                                    name='bdtimecnstm'
+                                    readOnly={true}
+                                    name="bdtimecnstm"
                                     value={mfPackage.bdtimecnstm}
                                     icon={<InfoPopup description={documentation.bdtimecnstm} title={'BDTIMECNSTM'}/>}
                                 />
@@ -160,8 +148,8 @@ const fhbPackageProperties = (props: IProps) => {
                             <Form.Field>
                                 <label>Simulation time (BDTIME)</label>
                                 <Input
-                                    readOnly
-                                    name='bdtime'
+                                    readOnly={true}
+                                    name="bdtime"
                                     value={mfPackage.bdtime}
                                     icon={<InfoPopup description={documentation.bdtime} title={'BDTIME'}/>}
                                 />
@@ -172,7 +160,7 @@ const fhbPackageProperties = (props: IProps) => {
                                 <label>Print data list (IFHBUN)</label>
                                 <Checkbox
                                     toggle={true}
-                                    name='ifhbpt'
+                                    name="ifhbpt"
                                     value={mfPackage.ifhbpt}
                                     icon={<InfoPopup description={documentation.ifhbpt} title={'IFHBUN'}/>}
                                 />
@@ -182,12 +170,12 @@ const fhbPackageProperties = (props: IProps) => {
                 </Grid>
             </Segment>
 
-            <Form.Group widths='equal'>
+            <Form.Group widths="equal">
                 <Form.Field>
                     <label>Constant multiplier for flwrat (CNSTM5)</label>
                     <Input
-                        readOnly
-                        name='cnstm5'
+                        readOnly={true}
+                        name="cnstm5"
                         value={mfPackage.cnstm5}
                         icon={<InfoPopup description={documentation.cnstm5} title={'CNSTM5'}/>}
                     />
@@ -195,20 +183,20 @@ const fhbPackageProperties = (props: IProps) => {
                 <Form.Field>
                     <label>Dataset 5 (DS5)</label>
                     <Input
-                        readOnly
-                        name='ds5'
+                        readOnly={true}
+                        name="ds5"
                         value={mfPackage.ds5}
                         icon={<InfoPopup description={documentation.ds5} title={'DS5'}/>}
                     />
                 </Form.Field>
             </Form.Group>
 
-            <Form.Group widths='equal'>
+            <Form.Group widths="equal">
                 <Form.Field>
                     <label>Constant multiplier for sbhedt (CNSTM7)</label>
                     <Input
-                        readOnly
-                        name='cnstm7'
+                        readOnly={true}
+                        name="cnstm7"
                         value={mfPackage.cnstm7}
                         icon={<InfoPopup description={documentation.cnstm7} title={'CNSTM7'}/>}
                     />
@@ -216,20 +204,20 @@ const fhbPackageProperties = (props: IProps) => {
                 <Form.Field>
                     <label>Dataset 7 (DS7)</label>
                     <Input
-                        readOnly
-                        name='ds7'
+                        readOnly={true}
+                        name="ds7"
                         value={mfPackage.ds7}
                         icon={<InfoPopup description={documentation.ds7} title={'DS7'}/>}
                     />
                 </Form.Field>
             </Form.Group>
 
-            <Form.Group widths='equal'>
+            <Form.Group widths="equal">
                 <Form.Field>
                     <label>Filename extension (extension)</label>
                     <Input
-                        readOnly
-                        name='extension'
+                        readOnly={true}
+                        name="extension"
                         value={mfPackage.extension}
                         icon={<InfoPopup description={documentation.extension} title={'extension'}/>}
                     />
@@ -237,8 +225,8 @@ const fhbPackageProperties = (props: IProps) => {
                 <Form.Field>
                     <label>File unit number (unitnumber)</label>
                     <Input
-                        readOnly
-                        name='unitnumber'
+                        readOnly={true}
+                        name="unitnumber"
                         value={mfPackage.unitnumber || ''}
                         icon={<InfoPopup description={documentation.unitnumber} title={'unitnumber'}/>}
                     />
@@ -246,8 +234,8 @@ const fhbPackageProperties = (props: IProps) => {
                 <Form.Field>
                     <label>Filenames (filenames)</label>
                     <Input
-                        readOnly
-                        name='filenames'
+                        readOnly={true}
+                        name="filenames"
                         value={mfPackage.filenames || ''}
                         icon={<InfoPopup description={documentation.filenames} title={'filenames'}/>}
                     />

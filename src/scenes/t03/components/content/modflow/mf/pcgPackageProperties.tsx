@@ -33,6 +33,8 @@ const pcgPackageProperties = (props: IProps) => {
         if (cast) {
             value = cast(value);
         }
+
+        setMfPackage({...mfPackage, [name]: value});
         props.onChange(FlopyModflowMfpcg.fromObject({...mfPackage, [name]: value}));
     };
 

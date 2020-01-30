@@ -37,7 +37,7 @@
     "react-pivottable": "0.9.0",
     "react-redux": "7.1.1",
     "react-router-dom": "5.1.2",
-    "react-scripts": "2.1.0",
+    "react-scripts": "2.1.8",
     "react-xml-parser": "1.0.8",
     "recharts": "1.6.2",
     "recompose": "0.30.0",
@@ -47,8 +47,7 @@
     "reproject": "1.2.4",
     "scheduler": "^0.18.0",
     "semantic-ui-react": "0.88.1",
-    "uuid": "3.3.2",
-    "vis-react": "0.4.5"
+    "uuid": "3.3.2"
   },
   "devDependencies": {
     "@types/geojson": "7946.0.7",
