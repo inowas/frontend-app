@@ -3,7 +3,7 @@ import {Stressperiod} from '../../../../core/model/modflow';
 
 test('Stressperiod constructor', () => {
 
-    const dateTime = moment('2013-02-04T22:44:30.652Z');
+    const dateTime = moment.utc('2013-02-04T22:44:30.652Z');
     const obj = {
         start_date_time: dateTime.toISOString(),
         nstp: 10,
@@ -23,7 +23,7 @@ test('Stressperiod constructor', () => {
 
 test('Stressperiod need to clone?', () => {
 
-    const dateTime = moment('2013-02-04T22:44:30.652Z');
+    const dateTime = moment.utc('2013-02-04T22:44:30.652Z');
     const obj = {
         start_date_time: dateTime.toISOString(),
         nstp: 10,
