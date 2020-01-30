@@ -12,7 +12,7 @@ import {documentation} from '../../../../defaults/flow';
 interface IProps {
     mfPackage: FlopyModflowMfrch;
     mfPackages: FlopyModflow;
-    onChange: () => any;
+    onChange: (pck: FlopyModflowMfrch) => any;
     readonly: boolean;
 }
 
