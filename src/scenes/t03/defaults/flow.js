@@ -26,34 +26,83 @@ export const documentation = {
     hnoflo: <div>Head value assigned to inactive cells (default is -999.99).</div>,
 
     // BCF
-    intercellt: <div>Intercell transmissivities, harmonic mean (0), arithmetic mean (1), logarithmetic mean (2),
-        combination (3). (default is 0)</div>,
-    laycon: <div>Layer type, confined (0), unconfined (1), constant T, variable S (2), variable T, variable S (default
-        is 3)</div>,
-    trpy: <div>Horizontal anisotropy ratio (default is 1.0)</div>,
-    hdry: <div>Head assigned when cell is dry - used as indicator(default is -1E+30)</div>,
-    iwdflg: <div>Flag to indicate if wetting is inactive (0) or not (non zero) (default is 0)</div>,
-    wetfct: <div>Factor used when cell is converted from dry to wet (default is 0.1)</div>,
-    iwetit: <div>iteration interval in wetting/drying algorithm (default is 1)</div>,
-    ihdwet: <div>flag to indicate how initial head is computd for cells that become wet (default is 0)</div>,
-    tran: <div>transmissivity (only read if laycon is 0 or 2) (default is 1.0)</div>,
-    hy: <div>hydraulic conductivity (only read if laycon is 1 or 3) (default is 1.0)</div>,
-    vcont: <div>vertical leakance between layers (default is 1.0)</div>,
-    sf1: <div>specific storage (confined) or storage coefficient (unconfined), read when there is at least one transient
-        stress period. (default is 1e-5)</div>,
-    sf2: <div>specific yield, only read when laycon is 2 or 3 and there is at least one transient stress period (default
-        is 0.15)</div>,
-    vkcb: <div>TODO!!</div>,
-    wetdry: <div>a combination of the wetting threshold and a flag to indicate which neighboring cells can cause a cell
-        to become wet (default is -0.01)</div>,
+    bcf: {
+        ipakcb: <div>A flag that is used to determine if cell-by-cell budget data should be saved.
+            If ipakcb is non-zero cell-by-cell budget data will be saved. (default is 53)</div>,
+        intercellt: <div>Intercell transmissivities, harmonic mean (0), arithmetic mean (1), logarithmetic mean (2),
+            combination (3). (default is 0)</div>,
+        laycon: <div>Layer type, confined (0), unconfined (1), constant T, variable S (2), variable T, variable S
+            (default
+            is 3)</div>,
+        trpy: <div>Horizontal anisotropy ratio (default is 1.0)</div>,
+        hdry: <div>Head assigned when cell is dry - used as indicator(default is -1E+30)</div>,
+        iwdflg: <div>Flag to indicate if wetting is inactive (0) or not (non zero) (default is 0)</div>,
+        wetfct: <div>Factor used when cell is converted from dry to wet (default is 0.1)</div>,
+        iwetit: <div>iteration interval in wetting/drying algorithm (default is 1)</div>,
+        ihdwet: <div>flag to indicate how initial head is computd for cells that become wet (default is 0)</div>,
+        tran: <div>transmissivity (only read if laycon is 0 or 2) (default is 1.0)</div>,
+        hy: <div>hydraulic conductivity (only read if laycon is 1 or 3) (default is 1.0)</div>,
+        vcont: <div>vertical leakance between layers (default is 1.0)</div>,
+        sf1: <div>specific storage (confined) or storage coefficient (unconfined), read when there is at least one
+            transient
+            stress period. (default is 1e-5)</div>,
+        sf2: <div>specific yield, only read when laycon is 2 or 3 and there is at least one transient stress period
+            (default
+            is 0.15)</div>,
+        vkcb: <div>TODO!!</div>,
+        wetdry: <div>a combination of the wetting threshold and a flag to indicate which neighboring cells can cause a
+            cell
+            to become wet (default is -0.01)</div>,
+        extension: <div>Filename extension (default is ‘bcf’)</div>,
+        unitnumber: <div>File unit number (default is None).</div>,
+        filenames: <div>Filenames to use for the package and the output files. If filenames=None the package name will
+            be created using the model name and package extension and the cbc output name will be created using the
+            model name and .cbc extension (for example, modflowtest.cbc), if ipakcbc is a number greater than zero.
+            If a single string is passed the package will be set to the string and cbc output name will be created
+            using the model name and .cbc extension, if ipakcbc is a number greater than zero. To define the names for
+            all package files (input and output) the length of the list of strings should be 2. Default is None.</div>
+    },
 
-    // BCF
-    storagecoefficient: <div>TODO!!</div>,
-    constantcv: <div/>,
-    thickstrt: <div/>,
-    nocvcorrection: <div/>,
-    novfc: <div/>,
-
+    // LPF
+    lpf: {
+        ipakcb: <div>A flag that is used to determine if cell-by-cell budget data should be saved.
+            If ipakcb is non-zero cell-by-cell budget data will be saved. (default is 53)</div>,
+        hdry: <div>Is the head that is assigned to cells that are converted to dry during a simulation.
+            Although this value plays no role in the model calculations, it is useful as an indicator when looking
+            at the resulting heads that are output from the model. HDRY is thus similar to HNOFLO in the Basic Package,
+            which is the value assigned to cells that are no-flow cells at the start of a model simulation.
+            (default is -1.e30).</div>,
+        iwdflg: <div>Flag to indicate if wetting is inactive (0) or not (non zero) (default is 0)</div>,
+        wetfct: <div>is a factor that is included in the calculation of the head that is initially established at a
+            cell when it is converted from dry to wet. (default is 0.1).</div>,
+        iwetit: <div>is the iteration interval for attempting to wet cells. Wetting is attempted every IWETIT iteration.
+            If using the PCG solver (Hill, 1990), this applies to outer iterations, not inner iterations.
+            If IWETIT less than or equal to 0, it is changed to 1. (default is 1).</div>,
+        ihdwet: <div>is a flag that determines which equation is used to define the initial head at cells that become wet.
+            (default is 0)</div>,
+        wetdry: <div>is a combination of the wetting threshold and a flag to indicate which neighboring cells can cause
+            a cell to become wet. (default is -0.01).</div>,
+        storagecoefficient: <div>indicates that variable Ss and SS parameters are read as storage coefficient rather
+            than specific storage. (default is False).</div>,
+        constantcv: <div>indicates that vertical conductance for an unconfined cell is computed from the cell thickness
+            rather than the saturated thickness. The CONSTANTCV option automatically invokes the NOCVCORRECTION option.
+            (default is False).</div>,
+        thickstrt: <div>indicates that layers having a negative LAYTYP are confined, and their cell thickness for
+            conductance calculations will be computed as STRT-BOT rather than TOP-BOT. (default is False).</div>,
+        nocvcorrection: <div>indicates that vertical conductance is not corrected when the vertical flow correction
+            is applied. (default is False).</div>,
+        novfc: <div>turns off the vertical flow correction under dewatered conditions. This option turns off the
+            vertical flow calculation described on p. 5-8 of USGS Techniques and Methods Report 6-A16 and the vertical
+            conductance correction described on p. 5-18 of that report. (default is False).</div>,
+        extension: <div>Filename extension (default is ‘lpf’)</div>,
+        unitnumber: <div>File unit number (default is None).</div>,
+        filenames: <div>Filenames to use for the package and the output files. If filenames=None the package name will
+            be created using the model name and package extension and the cbc output name will be created using the
+            model name and .cbc extension (for example, modflowtest.cbc), if ipakcbc is a number greater than zero.
+            If a single string is passed the package will be set to the string and cbc output name will be created
+            using the model name and .cbc extension, if ipakcbc is a number greater than zero. To define the names for
+            all package files (input and output) the length of the list of strings should be 2. Default is None.</div>
+    },
 
     // DIS
     nlay: <div>Number of model layers (the default is 1).</div>,

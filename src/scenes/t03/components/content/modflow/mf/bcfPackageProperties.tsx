@@ -78,7 +78,7 @@ const bcfPackageProperties = (props: IProps) => {
                 </Table.Body>
             </Table>
             <Segment basic={true}>
-                <Form.Group widths="equal">
+                <Form.Group>
                     <Form.Field>
                         <label>Save cell-by-cell budget data (IPAKCB)</label>
                         <Checkbox
@@ -90,12 +90,14 @@ const bcfPackageProperties = (props: IProps) => {
                     </Form.Field>
                     <Form.Field width={1}>
                         <InfoPopup
-                            description={documentation.ipakcb}
+                            description={documentation.bcf.ipakcb}
                             title={'IPAKCB'}
                             position={'top right'}
                             iconOutside={true}
                         />
                     </Form.Field>
+                </Form.Group>
+                <Form.Group widths={'equal'}>
                     <Form.Field>
                         <label>Wetting capability (IWDFLG)</label>
                         <Checkbox
@@ -107,8 +109,31 @@ const bcfPackageProperties = (props: IProps) => {
                     </Form.Field>
                     <Form.Field width={1}>
                         <InfoPopup
-                            description={documentation.iwdflg}
+                            description={documentation.bcf.iwdflg}
                             title={'IWDFLG'}
+                            position={'top right'}
+                            iconOutside={true}
+                        />
+                    </Form.Field>
+                    <Form.Field>
+                        <label>Rewetting equation (IHDWET)</label>
+                        <Form.Dropdown
+                            options={[
+                                {key: 0, value: 0, text: '(0) h = BOT + WETFCT(hn - BOT) (eq 33A)'},
+                                {key: 1, value: 1, text: '(1) h = BOT + WETFCT(THRESH), (eq 33B)'},
+                            ]}
+                            name={'ihdwet'}
+                            selection={true}
+                            value={mfPackage.ihdwet ? 1 : 0}
+                            disabled={readonly}
+                            onChange={handleOnSelect}
+                        />
+                    </Form.Field>
+                    <Form.Field width={1}>
+                        <label>&nbsp;</label>
+                        <InfoPopup
+                            description={documentation.bcf.ihdwet}
+                            title={'IHDWET'}
                             position={'top right'}
                             iconOutside={true}
                         />
@@ -116,7 +141,7 @@ const bcfPackageProperties = (props: IProps) => {
                 </Form.Group>
                 <Form.Group widths="equal">
                     <Form.Field>
-                        <label>Rewetting factor (WETFCT)</label>
+                        <label>Wetting factor (WETFCT)</label>
                         <Input
                             readOnly={readonly}
                             name={'wetfct'}
@@ -124,11 +149,11 @@ const bcfPackageProperties = (props: IProps) => {
                             value={mfPackage.wetfct}
                             onChange={handleOnChange}
                             onBlur={handleOnBlur(parseFloat)}
-                            icon={<InfoPopup description={documentation.wetfct} title={'WETFCT'}/>}
+                            icon={<InfoPopup description={documentation.bcf.wetfct} title={'WETFCT'}/>}
                         />
                     </Form.Field>
                     <Form.Field>
-                        <label>Iteration interval (IWETIT)</label>
+                        <label>Wetting interval (IWETIT)</label>
                         <Input
                             readOnly={readonly}
                             name={'iwetit'}
@@ -136,46 +161,36 @@ const bcfPackageProperties = (props: IProps) => {
                             value={mfPackage.iwetit}
                             onChange={handleOnChange}
                             onBlur={handleOnBlur(parseFloat)}
-                            icon={<InfoPopup description={documentation.iwetit} title={'IWETIT'}/>}
+                            icon={<InfoPopup description={documentation.bcf.iwetit} title={'IWETIT'}/>}
                         />
                     </Form.Field>
                 </Form.Group>
-                <Form.Group widths="equal">
+                <Form.Group widths={'equal'}>
                     <Form.Field>
-                        <label>Dry cell head (HDRY)</label>
-                        <Input
-                            readOnly={true}
-                            name={'hdry'}
-                            value={mfPackage.hdry}
-                            onChange={handleOnChange}
-                            onBlur={handleOnBlur(parseFloat)}
-                            icon={<InfoPopup description={documentation.hdry} title={'HDRY'}/>}
-                        />
-                    </Form.Field>
-                    <Form.Field>
-                        <label>Wetting threshold (WETDRY)</label>
+                        <label>Wetting threshold and flag (WETDRY)</label>
                         <Input
                             readOnly={true}
                             name={'wetdry'}
+                            type={'number'}
                             value={mfPackage.wetdry}
-                            icon={<InfoPopup description={documentation.wetdry} title={'WETDRY'}/>}
+                            onChange={handleOnChange}
+                            onBlur={handleOnBlur(parseFloat)}
+                            icon={<InfoPopup description={documentation.bcf.wetdry} title={'WETDRY'}/>}
+                        />
+                    </Form.Field>
+                    <Form.Field>
+                        <label>Head assigned to dry cells (HDRY)</label>
+                        <Input
+                            readOnly={true}
+                            name={'hdry'}
+                            type={'number'}
+                            value={mfPackage.hdry}
+                            onChange={handleOnChange}
+                            onBlur={handleOnBlur(parseFloat)}
+                            icon={<InfoPopup description={documentation.bcf.hdry} title={'HDRY'}/>}
                         />
                     </Form.Field>
                 </Form.Group>
-                <Form.Field>
-                    <label>Rewetting equation (IHDWET)</label>
-                    <Form.Dropdown
-                        options={[
-                            {key: 0, value: 0, text: '(0) h = BOT + WETFCT (hn - BOT) (eq 33A)'},
-                            {key: 1, value: 1, text: '(1) h = BOT + WETFCT(THRESH), (eq 33B)'},
-                        ]}
-                        name={'ihdwet'}
-                        selection={true}
-                        value={mfPackage.ihdwet ? 1 : 0}
-                        disabled={readonly}
-                        onChange={handleOnSelect}
-                    />
-                </Form.Field>
         </Segment>
             <Grid>
                 {Array.isArray(mfPackage.tran) && mfPackage.tran.map((tran, idx) => {
@@ -256,7 +271,7 @@ const bcfPackageProperties = (props: IProps) => {
                             readOnly={true}
                             name="extension"
                             value={mfPackage.extension || ''}
-                            icon={<InfoPopup description={documentation.extension} title={'extension'}/>}
+                            icon={<InfoPopup description={documentation.bcf.extension} title={'extension'}/>}
                         />
                     </Form.Field>
                     <Form.Field>
@@ -265,7 +280,7 @@ const bcfPackageProperties = (props: IProps) => {
                             readOnly={true}
                             name="unitnumber"
                             value={mfPackage.unitnumber || ''}
-                            icon={<InfoPopup description={documentation.unitnumber} title={'unitnumber'}/>}
+                            icon={<InfoPopup description={documentation.bcf.unitnumber} title={'unitnumber'}/>}
                         />
                     </Form.Field>
                     <Form.Field>
@@ -274,7 +289,7 @@ const bcfPackageProperties = (props: IProps) => {
                             readOnly={true}
                             name="filenames"
                             value={mfPackage.filenames || ''}
-                            icon={<InfoPopup description={documentation.filenames} title={'filenames'}/>}
+                            icon={<InfoPopup description={documentation.bcf.filenames} title={'filenames'}/>}
                         />
                     </Form.Field>
                 </Form.Group>
