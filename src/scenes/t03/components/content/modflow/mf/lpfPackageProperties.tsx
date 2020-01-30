@@ -96,23 +96,6 @@ const lpfPackageProperties = (props: IProps) => {
                     </Form.Field>
                     <Form.Field width={1}>
                         <InfoPopup
-                            description={documentation.ipakcb}
-                            title={'IPAKCB'}
-                            position={'top right'}
-                            iconOutside={true}
-                        />
-                    </Form.Field>
-                    <Form.Field>
-                        <label>Wetting capability (iwdflg)</label>
-                        <Checkbox
-                            toggle={true}
-                            disabled={readonly}
-                            name="iwdflg"
-                            value={mfPackage.iwdflg}
-                        />
-                    </Form.Field>
-                    <Form.Field width={1}>
-                        <InfoPopup
                             description={documentation.iwdflg}
                             title={'IWDFLG'}
                             position={'top right'}

@@ -64,6 +64,7 @@ class Flow extends React.Component {
     }
 
     componentDidMount() {
+
         this.recalculate(this.props);
     }
 
@@ -84,7 +85,7 @@ class Flow extends React.Component {
         }
 
         const packages = FlopyPackages.fromObject(this.props.packages.toObject());
-        //packages.mf.recalculate(model, soilmodel, boundaries);
+        packages.mf.recalculate(model, soilmodel, boundaries);
         this.setState({
             isLoading: false
         }, this.props.updatePackages(packages));
