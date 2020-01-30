@@ -1,5 +1,5 @@
 import React, {ChangeEvent, useState} from 'react';
-import {Form, Header, Input, PopupProps} from 'semantic-ui-react';
+import {Form, Header, Input} from 'semantic-ui-react';
 
 import {FlopyModflowMfsor} from '../../../../../../core/model/flopy/packages/mf';
 import {IFlopyModflowMfsor} from '../../../../../../core/model/flopy/packages/mf/FlopyModflowMfsor';
@@ -15,6 +15,7 @@ interface IProps {
 const sorPackageProperties = (props: IProps) => {
 
     const [mfPackage, setMfPackage] = useState<IFlopyModflowMfsor>(props.mfPackage.toObject());
+    const {readonly} = props;
 
     const handleOnChange = (e: ChangeEvent<HTMLInputElement>) => {
         const {name, value} = e.target;
@@ -33,33 +34,22 @@ const sorPackageProperties = (props: IProps) => {
         props.onChange(FlopyModflowMfsor.fromObject({...mfPackage, [name]: value}));
     };
 
-    const renderInfoPopup = (
-        description: string | JSX.Element,
-        title: string,
-        position: PopupProps['position'] | undefined = undefined,
-        iconOutside: boolean | undefined = undefined
-    ) => (
-        <InfoPopup description={description} title={title} position={position} iconOutside={iconOutside}/>
-    );
-
-    const readOnly = props.readonly;
-
-    if (!props.mfPackage) {
+    if (!mfPackage) {
         return null;
     }
 
     return (
         <Form>
             <Header as={'h3'}>SOR: Slice-successive overrelaxation Package</Header>
-            <Form.Group widths="equal">
+            <Form.Group widths={'equal'}>
                 <Form.Field>
                     <label>Maximum iterations per time step (MXITER)</label>
                     <Input
                         name={'mxiter'}
-                        readOnly={true}
+                        readOnly={readonly}
                         type={'number'}
                         value={mfPackage.mxiter}
-                        icon={renderInfoPopup(documentation.sor.mxiter, 'MXITER')}
+                        icon={<InfoPopup description={documentation.sor.mxiter} title={'MXITER'}/>}
                         onBlur={handleOnBlur(parseFloat)}
                         onChange={handleOnChange}
                     />
@@ -67,25 +57,25 @@ const sorPackageProperties = (props: IProps) => {
                 <Form.Field>
                     <label>Head change multiplier (ACCL)</label>
                     <Input
-                        name="accl"
-                        readOnly={true}
+                        name={'accl'}
+                        readOnly={readonly}
                         type={'number'}
                         value={mfPackage.accl}
-                        icon={renderInfoPopup(documentation.sor.accl, 'ACCL')}
+                        icon={<InfoPopup description={documentation.sor.accl} title={'ACCL'}/>}
                         onBlur={handleOnBlur(parseFloat)}
                         onChange={handleOnChange}
                     />
                 </Form.Field>
             </Form.Group>
-            <Form.Group widths="equal">
+            <Form.Group widths={'equal'}>
                 <Form.Field>
                     <label>Head change closure criterion (HCLOSE)</label>
                     <Input
-                        readOnly={true}
-                        name="hclose"
+                        readOnly={readonly}
+                        name={'hclose'}
                         type={'number'}
                         value={mfPackage.hclose}
-                        icon={renderInfoPopup(documentation.sor.hclose, 'HCLOSE')}
+                        icon={<InfoPopup description={documentation.sor.hclose} title={'HCLOSE'}/>}
                         onBlur={handleOnBlur(parseFloat)}
                         onChange={handleOnChange}
                     />
@@ -93,13 +83,43 @@ const sorPackageProperties = (props: IProps) => {
                 <Form.Field>
                     <label>Print out interval (IPRSOR)</label>
                     <Input
-                        readOnly={true}
-                        name="iprsor"
+                        readOnly={readonly}
+                        name={'iprsor'}
                         type={'number'}
                         value={mfPackage.iprsor}
-                        icon={renderInfoPopup(documentation.sor.iprsor, 'IPRSOR')}
+                        icon={<InfoPopup description={documentation.sor.iprsor} title={'IPRSOR'}/>}
                         onBlur={handleOnBlur(parseFloat)}
                         onChange={handleOnChange}
+                    />
+                </Form.Field>
+            </Form.Group>
+            <Form.Group widths={'equal'}>
+                <Form.Field>
+                    <label>Filename extension (EXTENSION)</label>
+                    <Input
+                        readOnly={readonly}
+                        name={'extension'}
+                        value={mfPackage.extension}
+                        icon={<InfoPopup description={documentation.sor.extension} title={'EXTENSION'}/>}
+                    />
+                </Form.Field>
+                <Form.Field>
+                    <label>File unit number (UNITNUMBER)</label>
+                    <Input
+                        readOnly={readonly}
+                        name={'unitnumber'}
+                        type={'number'}
+                        value={mfPackage.unitnumber || ''}
+                        icon={<InfoPopup description={documentation.sor.unitnumber} title={'UNITNUMBER'}/>}
+                    />
+                </Form.Field>
+                <Form.Field>
+                    <label>Filenames (FILENAMES)</label>
+                    <Input
+                        readOnly={readonly}
+                        name={'filenames'}
+                        value={mfPackage.filenames || ''}
+                        icon={<InfoPopup description={documentation.sor.filenames} title={'FILENAMES'}/>}
                     />
                 </Form.Field>
             </Form.Group>

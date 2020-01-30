@@ -515,9 +515,15 @@ export const documentation = {
             The effect of <strong>chglimit</strong> is to determine a damping value that, when applied to all elements
             of the head-change vector, will produce an absolute maximum head change equal to <strong>chglimit</strong>.
         </div>,
-        extension: <div>TODO!</div>,
-        unitnumber: <div>TODO!</div>,
-        filenames: <div>TODO!</div>,
+        extension: <div>Filename extension (default is ‘gmg’)</div>,
+        unitnumber: <div>File unit number (default is None).</div>,
+        filenames: <div>Filenames to use for the package and the output files. If filenames=None the package name will
+            be created using the model name and package extension and the gmg output name will be created using the
+            model name and .cbc extension (for example, modflowtest.gmg.out), if iunitmhc is a number greater than zero.
+            If a single string is passed the package will be set to the string and gmg output names will be created
+            using the model name and .gmg.out extension, if iunitmhc is a number greater than zero. To define the names
+            for all package files (input and output) the length of the list of strings should be 2.
+            Default is None.</div>,
     },
 
     // NWT
@@ -1029,8 +1035,10 @@ export const documentation = {
             999. The maximum head change (positive or negative) is printed for each iteration of a time step whenever
             the time step is an even multiple of <strong>iprsor</strong>. This printout also occurs at the end of each
             stress period regardless of the value of <strong>iprsor</strong>.</div>,
-        extension: <div>TODO!</div>,
-        unitnumber: <div>TODO!</div>,
-        filenames: <div>TODO!</div>,
+        extension: <div>Filename extension (default is ‘sor’)</div>,
+        unitnumber: <div>File unit number (default is None).</div>,
+        filenames: <div>Filenames to use for the package. If filenames=None the package name will be created using the
+            model name and package extension. If a single string is passed the package will be set to the string.
+            Default is None.</div>,
     }
 };

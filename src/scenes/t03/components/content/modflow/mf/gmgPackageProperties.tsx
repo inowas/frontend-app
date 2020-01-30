@@ -1,5 +1,5 @@
 import React, {ChangeEvent, SyntheticEvent, useState} from 'react';
-import {DropdownProps, Form, Header, Input, PopupProps, Segment} from 'semantic-ui-react';
+import {DropdownProps, Form, Header, Input, Segment} from 'semantic-ui-react';
 
 import {FlopyModflowMfgmg} from '../../../../../../core/model/flopy/packages/mf';
 import {IFlopyModflowMfgmg} from '../../../../../../core/model/flopy/packages/mf/FlopyModflowMfgmg';
@@ -15,6 +15,8 @@ interface IProps {
 const gmgPackageProperties = (props: IProps) => {
 
     const [mfPackage, setMfPackage] = useState<IFlopyModflowMfgmg>(props.mfPackage.toObject());
+    const {readonly} = props;
+
     const handleOnSelect = (e: SyntheticEvent<HTMLElement, Event>, data: DropdownProps) => {
         const {name, value} = data;
         setMfPackage({...mfPackage, [name]: value});
@@ -37,16 +39,6 @@ const gmgPackageProperties = (props: IProps) => {
         setMfPackage({...mfPackage, [name]: value});
         props.onChange(FlopyModflowMfgmg.fromObject({...mfPackage, [name]: value}));
     };
-
-    const renderInfoPopup = (
-        description: string | JSX.Element,
-        title: string,
-        position: PopupProps['position'] | undefined = undefined,
-        iconOutside: boolean | undefined = undefined
-    ) => (
-        <InfoPopup description={description} title={title} position={position} iconOutside={iconOutside}/>
-    );
-
     const readOnly = props.readonly;
 
     if (!props.mfPackage) {
@@ -57,15 +49,15 @@ const gmgPackageProperties = (props: IProps) => {
         <Form>
             <Header as={'h3'}>GMG: Geometric Multigrid Solver Package</Header>
             <Segment>
-                <Form.Group widths="equal">
+                <Form.Group widths={'equal'}>
                     <Form.Field>
                         <label>Inner convergence residual (RCLOSE)</label>
                         <Input
-                            readOnly={true}
-                            name="rclose"
+                            readOnly={readonly}
+                            name={'rclose'}
                             type={'number'}
                             value={mfPackage.rclose}
-                            icon={renderInfoPopup(documentation.gmg.rclose, 'RCLOSE')}
+                            icon={<InfoPopup description={documentation.gmg.rclose} title={'RCLOSE'}/>}
                             onBlur={handleOnBlur(parseFloat)}
                             onChange={handleOnChange}
                         />
@@ -73,25 +65,25 @@ const gmgPackageProperties = (props: IProps) => {
                     <Form.Field>
                         <label>Maximum inner iterations (IITER)</label>
                         <Input
-                            readOnly={true}
+                            readOnly={readonly}
                             name={'iiter'}
                             type={'number'}
                             value={mfPackage.iiter}
-                            icon={renderInfoPopup(documentation.gmg.iiter, 'IITER')}
+                            icon={<InfoPopup description={documentation.gmg.iiter} title={'IITER'}/>}
                             onBlur={handleOnBlur(parseFloat)}
                             onChange={handleOnChange}
                         />
                     </Form.Field>
                 </Form.Group>
-                <Form.Group widths="equal">
+                <Form.Group widths={'equal'}>
                     <Form.Field>
                         <label>Outer convergence residual (HCLOSE)</label>
                         <Input
-                            readOnly={true}
-                            name="hclose"
+                            readOnly={readonly}
+                            name={'hclose'}
                             type={'number'}
                             value={mfPackage.hclose}
-                            icon={renderInfoPopup(documentation.gmg.hclose, 'HCLOSE')}
+                            icon={<InfoPopup description={documentation.gmg.hclose} title={'HCLOSE'}/>}
                             onBlur={handleOnBlur(parseFloat)}
                             onChange={handleOnChange}
                         />
@@ -99,27 +91,25 @@ const gmgPackageProperties = (props: IProps) => {
                     <Form.Field>
                         <label>Maximum outer iterations (MXITER)</label>
                         <Input
+                            readOnly={readonly}
                             name={'mxiter'}
-                            readOnly={true}
                             type={'number'}
                             value={mfPackage.mxiter}
-                            icon={renderInfoPopup(documentation.gmg.mxiter, 'MXITER')}
+                            icon={<InfoPopup description={documentation.gmg.mxiter} title={'MXITER'}/>}
                             onBlur={handleOnBlur(parseFloat)}
                             onChange={handleOnChange}
                         />
                     </Form.Field>
                 </Form.Group>
-            </Segment>
-            <Segment>
-                <Form.Group widths="equal">
+                <Form.Group widths={'equal'}>
                     <Form.Field>
-                        <label>Damping parameter (DAMP)</label>
+                        <label>Relocation parameter (RELAX)</label>
                         <Input
-                            readOnly={true}
-                            name="damp"
+                            readOnly={readonly}
+                            name={'relax'}
                             type={'number'}
-                            value={mfPackage.damp}
-                            icon={renderInfoPopup(documentation.gmg.damp, 'DAMP')}
+                            value={mfPackage.relax}
+                            icon={<InfoPopup description={documentation.gmg.relax} title={'RELAX'}/>}
                             onBlur={handleOnBlur(parseFloat)}
                             onChange={handleOnChange}
                         />
@@ -133,26 +123,33 @@ const gmgPackageProperties = (props: IProps) => {
                                 {key: 2, value: 2, text: '(2) RRR adaptive'},
                             ]}
                             selection={true}
-                            disable={readOnly}
-                            name="iadamp"
+                            disabled={readonly}
+                            name={'iadamp'}
                             value={mfPackage.iadamp}
                             onChange={handleOnSelect}
                         />
                     </Form.Field>
                     <Form.Field width={1}>
                         <label>&nbsp;</label>
-                        {renderInfoPopup(documentation.gmg.iadamp, 'IADAMP', 'top left', true)}
+                        <InfoPopup
+                            description={documentation.gmg.iadamp}
+                            title={'IADAMP'}
+                            position={'top left'}
+                            iconOutside={true}
+                        />
                     </Form.Field>
                 </Form.Group>
-                <Form.Group widths="equal">
+            </Segment>
+            <Segment>
+                <Form.Group widths={'equal'}>
                     <Form.Field>
                         <label>Output flag (IOUTGMG)</label>
                         <Input
-                            readOnly={true}
-                            name="ioutgmg"
+                            readOnly={readonly}
+                            name={'ioutgmg'}
                             type={'number'}
                             value={mfPackage.ioutgmg}
-                            icon={renderInfoPopup(documentation.gmg.ioutgmg, 'IOUTGMG')}
+                            icon={<InfoPopup description={documentation.gmg.ioutgmg} title={'IOUTGMG'}/>}
                             onBlur={handleOnBlur(parseFloat)}
                             onChange={handleOnChange}
                         />
@@ -160,19 +157,17 @@ const gmgPackageProperties = (props: IProps) => {
                     <Form.Field>
                         <label>Maximum head output (IUNITMHC)</label>
                         <Input
-                            readOnly={true}
-                            name="iunitmhc"
+                            readOnly={readonly}
+                            name={'iunitmhc'}
                             type={'number'}
-                            value={mfPackage.iunitmhc}
-                            icon={renderInfoPopup(documentation.gmg.iunitmhc, 'IUNITMHC')}
+                            value={mfPackage.iunitmhc || 0}
+                            icon={<InfoPopup description={documentation.gmg.iunitmhc} title={'IUNITMHC'}/>}
                             onBlur={handleOnBlur(parseFloat)}
                             onChange={handleOnChange}
                         />
                     </Form.Field>
                 </Form.Group>
-            </Segment>
-            <Segment>
-                <Form.Group widths="equal">
+                <Form.Group widths={'equal'}>
                     <Form.Field>
                         <label>Multi-grid preconditioner smoothing (ISM)</label>
                         <Form.Dropdown
@@ -182,14 +177,19 @@ const gmgPackageProperties = (props: IProps) => {
                             ]}
                             selection={true}
                             disabled={readOnly}
-                            name="ism"
+                            name={'ism'}
                             value={mfPackage.ism}
                             onChange={handleOnSelect}
                         />
                     </Form.Field>
                     <Form.Field width={1}>
                         <label>&nbsp;</label>
-                        {renderInfoPopup(documentation.gmg.ism, 'ISM', 'top left', true)}
+                        <InfoPopup
+                            description={documentation.gmg.ism}
+                            title={'ISM'}
+                            position={'top left'}
+                            iconOutside={true}
+                        />
                     </Form.Field>
                     <Form.Field>
                         <label>Multi-grid preconditioner coarsening (ISC)</label>
@@ -202,26 +202,31 @@ const gmgPackageProperties = (props: IProps) => {
                                 {key: 4, value: 4, text: '(4) None'}
                             ]}
                             selection={true}
-                            disabled={readOnly}
-                            name="isc"
+                            disabled={readonly}
+                            name={'isc'}
                             value={mfPackage.isc}
                             onChange={handleOnSelect}
                         />
                     </Form.Field>
                     <Form.Field width={1}>
                         <label>&nbsp;</label>
-                        {renderInfoPopup(documentation.gmg.isc, 'ISC', 'top left', true)}
+                        <InfoPopup
+                            description={documentation.gmg.isc}
+                            title={'ISC'}
+                            position={'top left'}
+                            iconOutside={true}
+                        />
                     </Form.Field>
                 </Form.Group>
-                <Form.Group widths="equal">
+                <Form.Group widths={'equal'}>
                     <Form.Field>
                         <label>Maximum damping (DUP)</label>
                         <Input
-                            name="dup"
-                            readOnly={true}
+                            name={'dup'}
+                            readOnly={readonly}
                             type={'number'}
                             value={mfPackage.dup}
-                            icon={renderInfoPopup(documentation.gmg.dup, 'DUP')}
+                            icon={<InfoPopup description={documentation.gmg.dup} title={'DUP'}/>}
                             onBlur={handleOnBlur(parseFloat)}
                             onChange={handleOnChange}
                         />
@@ -229,25 +234,25 @@ const gmgPackageProperties = (props: IProps) => {
                     <Form.Field>
                         <label>Minimum damping (DLOW)</label>
                         <Input
-                            name="dlow"
-                            readOnly={true}
+                            name={'dlow'}
+                            readOnly={readonly}
                             type={'number'}
                             value={mfPackage.dlow}
-                            icon={renderInfoPopup(documentation.gmg.dlow, 'DLOW')}
+                            icon={<InfoPopup description={documentation.gmg.dlow} title={'DLOW'}/>}
                             onBlur={handleOnBlur(parseFloat)}
                             onChange={handleOnChange}
                         />
                     </Form.Field>
                 </Form.Group>
-                <Form.Group widths="equal">
+                <Form.Group widths={'equal'}>
                     <Form.Field>
-                        <label>Relocation parameter (RELAX)</label>
+                        <label>Damping parameter (DAMP)</label>
                         <Input
-                            readOnly={true}
-                            name="relax"
+                            readOnly={readonly}
+                            name={'damp'}
                             type={'number'}
-                            value={mfPackage.relax}
-                            icon={renderInfoPopup(documentation.gmg.relax, 'RELAX')}
+                            value={mfPackage.damp}
+                            icon={<InfoPopup description={documentation.gmg.damp} title={'DAMP'}/>}
                             onBlur={handleOnBlur(parseFloat)}
                             onChange={handleOnChange}
                         />
@@ -255,11 +260,11 @@ const gmgPackageProperties = (props: IProps) => {
                     <Form.Field>
                         <label>Minimum damping (CHGLIMIT)</label>
                         <Input
-                            readOnly={true}
-                            name="chglimit"
+                            readOnly={readonly}
+                            name={'chglimit'}
                             type={'number'}
                             value={mfPackage.chglimit}
-                            icon={renderInfoPopup(documentation.gmg.chglimit, 'CHGLIMIT')}
+                            icon={<InfoPopup description={documentation.gmg.chglimit} title={'CHGLIMIT'}/>}
                             onBlur={handleOnBlur(parseFloat)}
                             onChange={handleOnChange}
                         />
@@ -267,32 +272,33 @@ const gmgPackageProperties = (props: IProps) => {
                 </Form.Group>
             </Segment>
             <Segment>
-                <Form.Group widths="equal">
+                <Form.Group widths={'equal'}>
                     <Form.Field>
-                        <label>Filename extension (extension)</label>
+                        <label>Filename extension (EXTENSION)</label>
                         <Input
-                            readOnly={true}
-                            name="extension"
-                            value={mfPackage.extension || ''}
-                            icon={renderInfoPopup(documentation.extension, 'extension')}
+                            readOnly={readonly}
+                            name={'extension'}
+                            value={mfPackage.extension}
+                            icon={<InfoPopup description={documentation.gmg.extension} title={'EXTENSION'}/>}
                         />
                     </Form.Field>
                     <Form.Field>
-                        <label>File unit number (unitnumber)</label>
+                        <label>File unit number (UNITNUMBER)</label>
                         <Input
-                            readOnly={true}
-                            name="unitnumber"
+                            readOnly={readonly}
+                            name={'unitnumber'}
+                            type={'number'}
                             value={mfPackage.unitnumber || ''}
-                            icon={renderInfoPopup(documentation.unitnumber, 'unitnumber')}
+                            icon={<InfoPopup description={documentation.gmg.unitnumber} title={'UNITNUMBER'}/>}
                         />
                     </Form.Field>
                     <Form.Field>
-                        <label>Filenames (filenames)</label>
+                        <label>Filenames (FILENAMES)</label>
                         <Input
-                            readOnly={true}
-                            name="filenames"
+                            readOnly={readonly}
+                            name={'filenames'}
                             value={mfPackage.filenames || ''}
-                            icon={renderInfoPopup(documentation.filenames, 'filenames')}
+                            icon={<InfoPopup description={documentation.gmg.filenames} title={'FILENAMES'}/>}
                         />
                     </Form.Field>
                 </Form.Group>
