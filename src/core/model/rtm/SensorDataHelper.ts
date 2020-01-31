@@ -6,7 +6,10 @@ export async function retrieveData(sensorData: ISensorData, caching: boolean = f
 
     const localStorageObj = sessionStorage.getItem(url.toString());
     if (localStorageObj) {
-        return JSON.parse(localStorageObj);
+        const obj = JSON.parse(localStorageObj);
+        if (obj.TTL && obj.TTL > moment.utc().unix()) {
+            return obj.data;
+        }
     }
 
     const response = await fetch(
@@ -29,9 +32,13 @@ export async function retrieveData(sensorData: ISensorData, caching: boolean = f
             };
         });
 
+        let TTL = moment.utc().unix() + 10 * 60; // 10 minutes
+
         if (caching) {
-            sessionStorage.setItem(url.toString(), JSON.stringify(data));
+            TTL = moment.utc().unix() + 60 * 60; // 24 hours
         }
+
+        sessionStorage.setItem(url.toString(), JSON.stringify({data, TTL}));
 
         return data;
     } catch (e) {

@@ -1,3 +1,4 @@
+import {LTOB} from 'downsample';
 import {XYDataPoint} from 'downsample/dist/types';
 import {LatLngExpression} from 'leaflet';
 import {cloneDeep} from 'lodash';
@@ -381,7 +382,7 @@ const visualizationParameter = (props: IProps) => {
                                 content="Selected time"
                                 trigger={
                                     <Input
-                                        value={moment.unix(timestamp).format('YYYY-MM-DD HH:mm:ss')}
+                                        value={moment.unix(timestamp).utc().format('YYYY-MM-DD HH:mm:ss')}
                                         readOnly={true}
                                     />
                                 }
@@ -396,21 +397,23 @@ const visualizationParameter = (props: IProps) => {
                                         dataKey={'x'}
                                         domain={[filteredTsData.minT, filteredTsData.maxT]}
                                         name={'Date Time'}
-                                        tickFormatter={(dt) => moment.unix(dt).format('YYYY/MM/DD')}
+                                        tickFormatter={(dt) => moment.unix(dt).utc().format('YYYY/MM/DD')}
                                         type={'number'}
                                     />
                                     <YAxis dataKey={'y'} name={''} domain={[filteredTsData.minV, filteredTsData.maxV]}/>
-                                    {filteredData.filter((r) => r.meta.active).map((row, idx) => (
-                                        <Scatter
-                                            key={idx}
-                                            data={row.data}
-                                            fill={row.meta.color}
-                                            line={withLines ? {strokeWidth: 2, stroke: row.meta.color} : false}
-                                            lineType={'joint'}
-                                            name={'p'}
-                                            shape={withLines ? <RenderNoShape/> : 'cross'}
-                                        />
-                                    ))}
+                                    {filteredData.filter((r) => r.meta.active).map((row, idx) => {
+                                        return (
+                                            <Scatter
+                                                key={idx}
+                                                data={LTOB(row.data, 100)}
+                                                fill={row.meta.color}
+                                                line={withLines ? {strokeWidth: 2, stroke: row.meta.color} : false}
+                                                lineType={'joint'}
+                                                name={'p'}
+                                                shape={withLines ? <RenderNoShape/> : 'cross'}
+                                            />
+                                        );
+                                    })}
                                     <ReferenceLine
                                         x={isAnimated ? filteredTsData.timestamps[timeRef.current] : timestamp}
                                         stroke="#000"
