@@ -21,7 +21,6 @@ interface IProps {
 }
 
 const welPackageProperties = (props: IProps) => {
-
     const [mfPackage, setMfPackage] = useState<IFlopyModflowMfwel>(props.mfPackage.toObject());
     const {mfPackages, readonly} = props;
     const disPackage: FlopyModflowMfdis = mfPackages.getPackage('dis') as FlopyModflowMfdis;
