@@ -74,11 +74,15 @@ type IProps = IStateProps & IDispatchProps & RouteComponentProps<{
 
 const flow = (props: IProps) => {
     const [mf, setMf] = useState<IFlopyModflow | null>(
-        props.packages && props.packages.mf ? props.packages.mf.toObject() : null
+        props.packages ? props.packages.mf.toObject() : null
     );
-    const [isError, setIsError] = useState<boolean>(false);
     const [isDirty, setIsDirty] = useState<boolean>(false);
     const [isLoading, setIsLoading] = useState<boolean>(false);
+
+    useEffect(() => {
+        setIsLoading(true);
+        return recalculate();
+    }, []);
 
     useEffect(() => {
         if (!props.packages) {
@@ -159,7 +163,7 @@ const flow = (props: IProps) => {
         props.updatePackages(packages);
     };
 
-    const handleMenuClick = (type: string) => () => {
+    const handleMenuClick = (type: string | undefined) => () => {
         if (!props.model) {
             return null;
         }
@@ -344,12 +348,12 @@ const flow = (props: IProps) => {
             <div>
                 <Menu fluid={true} vertical={true} tabular={true}>
                     {sideBar(props.boundaries).map((item, key) => {
-                        if (item.enabled && item.id) {
+                        if (item.enabled) {
                             return (
                                 <Menu.Item
                                     key={key}
                                     name={item.name}
-                                    active={type === item.id}
+                                    active={type === item.id || (!item.id && !type)}
                                     onClick={handleMenuClick(item.id)}
                                 />
                             );
@@ -372,7 +376,7 @@ const flow = (props: IProps) => {
                     <Grid.Row>
                         <Grid.Column width={4}/>
                         <Grid.Column width={12}>
-                            <ContentToolBar isDirty={isDirty} isError={isError} save={true} onSave={handleSave}/>
+                            <ContentToolBar isDirty={isDirty} isError={false} save={true} onSave={handleSave}/>
                         </Grid.Column>
                     </Grid.Row>
                     <Grid.Row>
