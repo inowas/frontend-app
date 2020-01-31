@@ -72,8 +72,8 @@ class Observations extends React.Component {
     chartObservedVsCalculatedHeads = ({simulated, observed, deltaStd}) => {
         const data = simulated.map((s, i) => ({y: s, x: observed[i]}));
 
-        const min = Math.floor(Math.min(...observed, ...simulated) / 10) * 10;
-        const max = Math.ceil(Math.max(...observed, ...simulated) / 10) * 10;
+        const min = Math.floor(Math.min(...observed, ...simulated));
+        const max = Math.ceil(Math.max(...observed, ...simulated));
         const line = [{x: min, y: min}, {x: max, y: max}];
         const linePlusDelta = [{x: min, y: min + deltaStd}, {x: max, y: max + deltaStd}];
         const lineMinusDelta = [{x: min, y: min - deltaStd}, {x: max, y: max - deltaStd}];
@@ -112,10 +112,10 @@ class Observations extends React.Component {
 
     chartWeightedResidualsVsSimulatedHeads = ({simulated, weightedResiduals, linRegressSW}) => {
         const data = simulated.map((s, i) => ({x: s, y: weightedResiduals[i]}));
-        const xMin = Math.floor(Math.min(...simulated) / 10) * 10;
-        const xMax = Math.ceil(Math.max(...simulated) / 10) * 10;
-        const yMin = Math.floor(Math.min(...weightedResiduals) / 10) * 10;
-        const yMax = Math.ceil(Math.max(...weightedResiduals) / 10) * 10;
+        const xMin = Math.floor(Math.min(...simulated));
+        const xMax = Math.ceil(Math.max(...simulated));
+        const yMin = Math.floor(Math.min(...weightedResiduals));
+        const yMax = Math.ceil(Math.max(...weightedResiduals));
 
         // noinspection JSSuspiciousNameCombination
         const domainY = Math.ceil(Math.max(yMax, yMin));
@@ -163,10 +163,8 @@ class Observations extends React.Component {
 
     chartRankedResidualsAgainstNormalProbability = ({npf, rankedResiduals, linRegressRN}) => {
         const data = npf.map((n, i) => ({y: n, x: rankedResiduals[i]}));
-        const xMin = Math.floor(Math.min(...rankedResiduals) / 5) * 5;
-        const xMax = Math.ceil(Math.max(...rankedResiduals) / 5) * 5;
-        const yMin = Math.floor(Math.min(...npf) / 5) * 5;
-        const yMax = Math.ceil(Math.max(...npf) / 5) * 5;
+        const xMin = Math.floor(Math.min(...rankedResiduals));
+        const xMax = Math.ceil(Math.max(...rankedResiduals));
 
         const line = [{
             x: xMin,
@@ -176,7 +174,6 @@ class Observations extends React.Component {
             y: linRegressRN[0] * xMax + linRegressRN[1]
         }];
 
-        const yDomain = [yMin, yMax];
         const xDomain = [xMin, xMax];
 
         return (
@@ -189,14 +186,15 @@ class Observations extends React.Component {
                         <XAxis
                             dataKey={'x'}
                             type="number"
-                            name={'npf'} domain={xDomain}
+                            name={'npf'}
+                            domain={xDomain}
                             label={{value: 'Residual', angle: 0, position: 'bottom'}}
                         />
                         <YAxis
                             dataKey={'y'}
                             type="number"
                             name={'ranked residuals'}
-                            domain={yDomain}
+                            domain={['auto', 'auto']}
                             label={{value: 'Normal Probability Function', angle: -90, position: 'left'}}
                         />
                         <Scatter name={'NPF vs. ranked residuals'} data={data} fill={'black'}/>
