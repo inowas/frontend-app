@@ -195,11 +195,11 @@ export default class FlopyModflow extends GenericObject<IFlopyModflow> {
 
         // Recalculate Flow Packages
         if (this._props.lpf) {
-            this._props.lpf = FlopyModflowMflpf.create(soilmodel).toObject();
+            this._props.lpf = FlopyModflowMflpf.fromObject(this._props.lpf).update(soilmodel).toObject();
         }
 
         if (this._props.bcf) {
-            this._props.bcf = FlopyModflowMfbcf.create(soilmodel).toObject();
+            this._props.bcf = FlopyModflowMfbcf.fromObject(this._props.bcf).update(soilmodel).toObject();
         }
 
         return this;
