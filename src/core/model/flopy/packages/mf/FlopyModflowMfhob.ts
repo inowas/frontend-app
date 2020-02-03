@@ -13,6 +13,7 @@ export interface IFlopyModflowMfhob {
 }
 
 export interface IObsData {
+    obsname: string;
     layer: number;
     row: number;
     column: number;
@@ -54,7 +55,6 @@ export default class FlopyModflowMfhob extends FlopyModflowBoundary<IFlopyModflo
         }
 
         const spData = calculateHeadObservationData(bd, stressperiods);
-
         if (!spData) {
             return null;
         }

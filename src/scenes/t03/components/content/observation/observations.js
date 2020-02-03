@@ -11,9 +11,9 @@ import {
     XAxis,
     YAxis
 } from 'recharts';
-import {Calculation} from '../../../../core/model/modflow';
+import {Calculation} from '../../../../../core/model/modflow';
 import {connect} from 'react-redux';
-import {fetchModflowFile} from '../../../../services/api';
+import {fetchModflowFile} from '../../../../../services/api';
 
 class Observations extends React.Component {
 
