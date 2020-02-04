@@ -1,14 +1,17 @@
 import React from 'react';
-import {CircleMarker, FeatureGroup, GeoJSON, Map} from 'react-leaflet';
+import {CircleMarker, FeatureGroup, GeoJSON, LayersControl, Map} from 'react-leaflet';
 import {EditControl} from 'react-leaflet-draw';
 import {Geometry} from '../../../../core/model/modflow';
 import {BoundaryFactory} from '../../../../core/model/modflow/boundaries';
 import {BoundaryType} from '../../../../core/model/modflow/boundaries/Boundary.type';
+import BoundaryCollection from '../../../../core/model/modflow/boundaries/BoundaryCollection';
 import {BasicTileLayer} from '../../../../services/geoTools/tileLayers';
 import CenterControl from '../../../shared/leaflet/CenterControl';
+import {renderBoundaryOverlays} from '../../../shared/rasterData/helpers';
 import {getStyle} from './index';
 
 interface IProps {
+    boundaries: BoundaryCollection;
     geometry: Geometry;
     onChangeGeometry: (geometry: Geometry) => any;
     onToggleEditMode?: () => any;
@@ -125,6 +128,9 @@ class CreateBoundaryMap extends React.Component<IProps, IState> {
                     bounds={geometry.getBoundsLatLng()}
                 />
                 <BasicTileLayer/>
+                <LayersControl position="topright">
+                    {renderBoundaryOverlays(this.props.boundaries)}
+                </LayersControl>
                 {this.editControl()}
                 <GeoJSON
                     key={geometry.hash()}
