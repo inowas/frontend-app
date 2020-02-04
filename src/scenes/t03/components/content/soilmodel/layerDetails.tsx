@@ -10,6 +10,7 @@ import {
     TextAreaProps
 } from 'semantic-ui-react';
 import {ModflowModel, Soilmodel} from '../../../../../core/model/modflow';
+import BoundaryCollection from '../../../../../core/model/modflow/boundaries/BoundaryCollection';
 import {RasterParameter} from '../../../../../core/model/modflow/soilmodel';
 import {ILayerParameter} from '../../../../../core/model/modflow/soilmodel/LayerParameter.type';
 import {ILayerParameterZone} from '../../../../../core/model/modflow/soilmodel/LayerParameterZone.type';
@@ -22,6 +23,7 @@ import ZonesEditor from './zones/zonesEditor';
 
 interface IProps {
     activeParam: string | null;
+    boundaries: BoundaryCollection;
     layer: SoilmodelLayer;
     model: ModflowModel;
     onChange: (layer: SoilmodelLayer) => any;
@@ -168,6 +170,7 @@ const layerDetails = (props: IProps) => {
                 return (
                     <ZonesEditor
                         boundingBox={props.model.boundingBox}
+                        boundaries={props.boundaries}
                         layer={SoilmodelLayer.fromObject(layer)}
                         gridSize={props.model.gridSize}
                         onAddRelation={handleAddRelation}
@@ -188,6 +191,7 @@ const layerDetails = (props: IProps) => {
                     case 'ibound':
                         return (
                             <Ibound
+                                boundaries={props.boundaries}
                                 model={props.model}
                                 layer={SoilmodelLayer.fromObject(layer)}
                                 onChange={props.onChange}
@@ -197,6 +201,7 @@ const layerDetails = (props: IProps) => {
                     case 'strt':
                         return (
                             <Regular
+                                boundaries={props.boundaries}
                                 defaultData={props.soilmodel.top}
                                 layer={SoilmodelLayer.fromObject(layer)}
                                 model={props.model}

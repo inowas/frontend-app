@@ -5,6 +5,7 @@ import {Cells} from '../../../../../../core/model/geometry';
 import {Array2D} from '../../../../../../core/model/geometry/Array2D.type';
 import {ICell} from '../../../../../../core/model/geometry/Cells.type';
 import {ModflowModel} from '../../../../../../core/model/modflow';
+import BoundaryCollection from '../../../../../../core/model/modflow/boundaries/BoundaryCollection';
 import {RasterParameter} from '../../../../../../core/model/modflow/soilmodel';
 import SoilmodelLayer from '../../../../../../core/model/modflow/soilmodel/SoilmodelLayer';
 import {IRasterFileMetadata} from '../../../../../../services/api/types';
@@ -13,6 +14,7 @@ import RasterDataImage from '../../../../../shared/rasterData/rasterDataImage';
 import {DiscretizationMap} from '../../discretization';
 
 interface IProps {
+    boundaries: BoundaryCollection;
     model: ModflowModel;
     layer: SoilmodelLayer;
     onChange: (layer: SoilmodelLayer) => any;
@@ -96,6 +98,7 @@ const ibound = (props: IProps) => {
                 <DiscretizationMap
                     cells={cells}
                     boundingBox={props.model.boundingBox}
+                    boundaries={props.boundaries}
                     geometry={props.model.geometry}
                     gridSize={props.model.gridSize}
                     onChangeCells={handleChangeCells}

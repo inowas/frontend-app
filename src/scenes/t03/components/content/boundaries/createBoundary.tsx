@@ -195,6 +195,7 @@ class CreateBoundary extends React.Component<Props, IState> {
                                 saveButton={!readOnly && !this.state.isEditing}
                             />
                             <CreateBoundaryMap
+                                boundaries={this.props.boundaries}
                                 type={type}
                                 geometry={model.geometry}
                                 onChangeGeometry={this.onChangeGeometry}

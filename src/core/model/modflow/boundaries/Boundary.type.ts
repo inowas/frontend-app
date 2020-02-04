@@ -59,3 +59,14 @@ export interface IValueProperty {
     default: number;
     canBeDisabled?: boolean;
 }
+
+export enum EBoundaryType {
+    CHD = 'chd',
+    DRN = 'drn',
+    EVT = 'evt',
+    FHB = 'fhb',
+    GHB = 'ghb',
+    RCH = 'rch',
+    RIV = 'riv',
+    WEL = 'wel'
+}
