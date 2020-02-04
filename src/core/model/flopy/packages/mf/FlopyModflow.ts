@@ -156,50 +156,88 @@ export default class FlopyModflow extends GenericObject<IFlopyModflow> {
         this._props.oc = FlopyModflowMfoc.create(model.stressperiods.count).toObject();
 
         // Recalculate Boundaries
-        const chd = FlopyModflowMfchd.create(boundaries, model.stressperiods);
+        let chd;
+        this._props.chd ?
+            chd = FlopyModflowMfchd.fromObject(this._props.chd).update(boundaries, model.stressperiods) :
+            chd = FlopyModflowMfchd.create(boundaries, model.stressperiods);
         chd ? this._props.chd = chd.toObject() : delete this._props.chd;
 
-        const ghb = FlopyModflowMfghb.create(boundaries, model.stressperiods);
+        let ghb;
+        this._props.ghb ?
+            ghb = FlopyModflowMfghb.fromObject(this._props.ghb).update(boundaries, model.stressperiods) :
+            ghb = FlopyModflowMfghb.create(boundaries, model.stressperiods);
         ghb ? this._props.ghb = ghb.toObject() : delete this._props.ghb;
 
-        const drn = FlopyModflowMfdrn.create(boundaries, model.stressperiods);
+        let drn;
+        this._props.drn ?
+            drn = FlopyModflowMfdrn.fromObject(this._props.drn).update(boundaries, model.stressperiods) :
+            drn = FlopyModflowMfdrn.create(boundaries, model.stressperiods);
         drn ? this._props.drn = drn.toObject() : delete this._props.drn;
 
-        const evt = FlopyModflowMfevt.create(boundaries, model.stressperiods, model.gridSize);
+        let evt;
+        this._props.evt ?
+            evt = FlopyModflowMfevt.fromObject(this._props.evt)
+                .update(boundaries, model.stressperiods, model.gridSize.nY, model.gridSize.nX) :
+            evt = FlopyModflowMfevt.create(boundaries, model.stressperiods, model.gridSize);
         evt ? this._props.evt = evt.toObject() : delete this._props.evt;
 
-        const fhb = FlopyModflowMffhb.create(boundaries, model.stressperiods);
+        let fhb;
+        this._props.fhb ?
+            fhb = FlopyModflowMffhb.fromObject(this._props.fhb).update(boundaries, model.stressperiods) :
+            fhb = FlopyModflowMffhb.create(boundaries, model.stressperiods);
         fhb ? this._props.fhb = fhb.toObject() : delete this._props.fhb;
 
-        const hfb = FlopyModflowMfhfb.create(boundaries, model.stressperiods);
+        let hfb;
+        this._props.hfb ?
+            hfb = FlopyModflowMfhfb.fromObject(this._props.hfb).update(boundaries, model.stressperiods.count) :
+            hfb = FlopyModflowMfhfb.create(boundaries, model.stressperiods);
         hfb ? this._props.hfb = hfb.toObject() : delete this._props.hfb;
 
-        const lak = FlopyModflowMflak.create(boundaries, model.stressperiods);
+        let lak;
+        this._props.lak ?
+            lak = FlopyModflowMflak.fromObject(this._props.lak).update(boundaries, model.stressperiods) :
+            lak = FlopyModflowMflak.create(boundaries, model.stressperiods);
         lak ? this._props.lak = lak.toObject() : delete this._props.lak;
 
-        const rch = FlopyModflowMfrch.create(boundaries, model.stressperiods, model.gridSize);
+        let rch;
+        this._props.rch ?
+            rch = FlopyModflowMfrch.fromObject(this._props.rch)
+                .update(boundaries, model.stressperiods, model.gridSize.nY, model.gridSize.nX) :
+            rch = FlopyModflowMfrch.create(boundaries, model.stressperiods, model.gridSize);
         rch ? this._props.rch = rch.toObject() : delete this._props.rch;
 
-        const riv = FlopyModflowMfriv.create(boundaries, model.stressperiods);
+        let riv;
+        this._props.riv ?
+            riv = FlopyModflowMfriv.fromObject(this._props.riv).update(boundaries, model.stressperiods) :
+            riv = FlopyModflowMfriv.create(boundaries, model.stressperiods);
         riv ? this._props.riv = riv.toObject() : delete this._props.riv;
 
-        const str = FlopyModflowMfstr.create(boundaries, model.stressperiods);
+        let str;
+        this._props.str ?
+            str = FlopyModflowMfstr.fromObject(this._props.str).update(boundaries, model.stressperiods) :
+            str = FlopyModflowMfstr.create(boundaries, model.stressperiods);
         str ? this._props.str = str.toObject() : delete this._props.str;
 
-        const wel = FlopyModflowMfwel.create(boundaries, model.stressperiods);
+        let wel;
+        this._props.wel ?
+            wel = FlopyModflowMfwel.fromObject(this._props.wel).update(boundaries, model.stressperiods) :
+            wel = FlopyModflowMfwel.create(boundaries, model.stressperiods);
         wel ? this._props.wel = wel.toObject() : delete this._props.wel;
 
         // Recalculate Head Observations
-        const hob = FlopyModflowMfhob.create(boundaries, model.stressperiods);
+        let hob;
+        this._props.hob ?
+            hob = FlopyModflowMfhob.fromObject(this._props.hob).update(boundaries, model.stressperiods) :
+            hob = FlopyModflowMfhob.create(boundaries, model.stressperiods);
         hob ? this._props.hob = hob.toObject() : delete this._props.hob;
 
         // Recalculate Flow Packages
         if (this._props.lpf) {
-            this._props.lpf = FlopyModflowMflpf.create(soilmodel).toObject();
+            this._props.lpf = FlopyModflowMflpf.fromObject(this._props.lpf).update(soilmodel).toObject();
         }
 
         if (this._props.bcf) {
-            this._props.bcf = FlopyModflowMfbcf.create(soilmodel).toObject();
+            this._props.bcf = FlopyModflowMfbcf.fromObject(this._props.bcf).update(soilmodel).toObject();
         }
 
         return this;
