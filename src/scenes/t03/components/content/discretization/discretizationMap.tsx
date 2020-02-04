@@ -1,16 +1,19 @@
 import {DrawEvents, LatLngBoundsExpression, LatLngExpression} from 'leaflet';
 import {uniqueId} from 'lodash';
 import React, {useEffect, useRef, useState} from 'react';
-import {FeatureGroup, GeoJSON, Map, Polygon} from 'react-leaflet';
+import {FeatureGroup, GeoJSON, LayersControl, Map, Polygon} from 'react-leaflet';
 import {EditControl} from 'react-leaflet-draw';
 import {BoundingBox, Cells, Geometry, GridSize} from '../../../../../core/model/geometry';
 import {IGeometry} from '../../../../../core/model/geometry/Geometry.type';
+import BoundaryCollection from '../../../../../core/model/modflow/boundaries/BoundaryCollection';
 import ActiveCellsLayer from '../../../../../services/geoTools/activeCellsLayer';
 import {BasicTileLayer} from '../../../../../services/geoTools/tileLayers';
+import {renderBoundaryOverlays} from '../../../../shared/rasterData/helpers';
 import {getStyle} from '../../maps';
 
 interface IProps {
     boundingBox: BoundingBox;
+    boundaries: BoundaryCollection;
     cells: Cells | null;
     geometry: Geometry | null;
     gridSize: GridSize;
@@ -159,7 +162,9 @@ const discretizationMap = (props: IProps) => {
                 data={props.boundingBox.geoJson}
                 style={getStyle('bounding_box')}
             />}
-
+            <LayersControl position="topright">
+                {renderBoundaryOverlays(props.boundaries)}
+            </LayersControl>
             {props.cells &&
             <ActiveCellsLayer
                 boundingBox={props.boundingBox}

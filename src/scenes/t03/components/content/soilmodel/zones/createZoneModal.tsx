@@ -4,6 +4,7 @@ import React, {ChangeEvent, useState} from 'react';
 import {Button, Form, InputOnChangeData, Modal} from 'semantic-ui-react';
 import uuidv4 from 'uuid/v4';
 import {BoundingBox, Geometry, GridSize} from '../../../../../../core/model/geometry';
+import BoundaryCollection from '../../../../../../core/model/modflow/boundaries/BoundaryCollection';
 import {Zone, ZonesCollection} from '../../../../../../core/model/modflow/soilmodel';
 import {calculateActiveCells} from '../../../../../../services/geoTools';
 import {ZonesMap} from './index';
@@ -11,6 +12,7 @@ import {ZonesMap} from './index';
 interface IProps {
     onCancel: () => any;
     onChange: (zone: Zone) => any;
+    boundaries: BoundaryCollection;
     boundingBox: BoundingBox;
     gridSize: GridSize;
     zones: ZonesCollection;
@@ -76,6 +78,7 @@ const createZoneModal = (props: IProps) => {
                         <label>Geometry</label>
                         <ZonesMap
                             boundingBox={props.boundingBox}
+                            boundaries={props.boundaries}
                             geometry={geometry ? Geometry.fromObject(geometry) : undefined}
                             zones={props.zones}
                             onCreatePath={handleCreatePath}

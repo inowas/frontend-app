@@ -21,22 +21,52 @@ const styles: IMapStyles = {
         weight: 0.5,
         fill: false
     },
-    grid: {
-        weight: 1,
-        opacity: 1,
-        color: '#1D7FED',
-        fill: false
-    },
     chd: {
         weight: 5,
         color: '#ED8D05',
         opacity: 1,
         fill: false
     },
+    drn: {
+        weight: 5,
+        color: '#1D7FED',
+        opacity: 1
+    },
+    drn_op: {
+        radius: 5,
+        color: '#4C4C4C',
+        weight: 2,
+        fillColor: '#1EB1ED',
+        fillOpacity: 0.7
+    },
+    evt: {
+        weight: 2,
+        color: '#95549f',
+        opacity: 0.7,
+        fillOpacity: 0.3
+    },
     ghb: {
         weight: 5,
         color: '#ED8D05',
         opacity: 1,
+        fill: false
+    },
+    fhb: {
+        weight: 5,
+        color: '#1D7FED',
+        opacity: 1
+    },
+    fhb_op: {
+        radius: 5,
+        color: '#4C4C4C',
+        weight: 2,
+        fillColor: '#1EB1ED',
+        fillOpacity: 0.7
+    },
+    grid: {
+        weight: 1,
+        opacity: 1,
+        color: '#1D7FED',
         fill: false
     },
     hob: {

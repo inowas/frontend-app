@@ -171,6 +171,7 @@ const gridEditor = (props: IProps) => {
                     <DiscretizationMap
                         cells={props.model.cells}
                         boundingBox={boundingBox}
+                        boundaries={props.boundaries}
                         geometry={geometry}
                         gridSize={gridSize}
                         onChangeGeometry={handleChangeGeometry}

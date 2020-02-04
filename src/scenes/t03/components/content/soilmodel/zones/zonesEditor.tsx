@@ -2,6 +2,7 @@ import React, {ChangeEvent, MouseEvent, useState} from 'react';
 import {Accordion, AccordionTitleProps, Form, Header, Icon, InputOnChangeData, Loader} from 'semantic-ui-react';
 import {BoundingBox, GridSize} from '../../../../../../core/model/geometry';
 import {Array2D} from '../../../../../../core/model/geometry/Array2D.type';
+import BoundaryCollection from '../../../../../../core/model/modflow/boundaries/BoundaryCollection';
 import {
     LayerParameterZonesCollection,
     RasterParameter,
@@ -20,6 +21,7 @@ interface IUploadData {
 
 interface IProps {
     boundingBox: BoundingBox;
+    boundaries?: BoundaryCollection;
     layer: SoilmodelLayer;
     gridSize: GridSize;
     onAddRelation: (relation: ILayerParameterZone, parameterId?: string) => any;
@@ -114,6 +116,7 @@ const zonesEditor = (props: IProps) => {
         return (
             <RasterDataMap
                 boundingBox={props.boundingBox}
+                boundaries={props.boundaries}
                 data={data as Array2D<number> | number}
                 gridSize={props.gridSize}
                 unit={props.parameter.unit}

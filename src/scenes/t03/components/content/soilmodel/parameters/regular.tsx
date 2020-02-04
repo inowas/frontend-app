@@ -4,6 +4,7 @@ import {Checkbox, Header} from 'semantic-ui-react';
 import uuidv4 from 'uuid/v4';
 import {Array2D} from '../../../../../../core/model/geometry/Array2D.type';
 import {ModflowModel} from '../../../../../../core/model/modflow';
+import BoundaryCollection from '../../../../../../core/model/modflow/boundaries/BoundaryCollection';
 import {LayerParameterZonesCollection, RasterParameter} from '../../../../../../core/model/modflow/soilmodel';
 import {ILayerParameterZone} from '../../../../../../core/model/modflow/soilmodel/LayerParameterZone.type';
 import Soilmodel from '../../../../../../core/model/modflow/soilmodel/Soilmodel';
@@ -12,6 +13,7 @@ import RasterDataImage from '../../../../../shared/rasterData/rasterDataImage';
 import ZonesEditor from '../zones/zonesEditor';
 
 interface IProps {
+    boundaries: BoundaryCollection;
     defaultData: number | Array2D<number>;
     model: ModflowModel;
     layer: SoilmodelLayer;
@@ -111,6 +113,7 @@ const regular = (props: IProps) => {
             return (
                 <ZonesEditor
                     boundingBox={props.model.boundingBox}
+                    boundaries={props.boundaries}
                     layer={props.layer}
                     gridSize={props.model.gridSize}
                     onAddRelation={handleAddRelation}

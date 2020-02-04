@@ -15,6 +15,7 @@ import {
 } from 'semantic-ui-react';
 import {Geometry} from '../../../../../../core/model/geometry';
 import {ModflowModel} from '../../../../../../core/model/modflow';
+import BoundaryCollection from '../../../../../../core/model/modflow/boundaries/BoundaryCollection';
 import {Zone, ZonesCollection} from '../../../../../../core/model/modflow/soilmodel';
 import LayersCollection from '../../../../../../core/model/modflow/soilmodel/LayersCollection';
 import {IZone} from '../../../../../../core/model/modflow/soilmodel/Zone.type';
@@ -22,6 +23,7 @@ import {calculateActiveCells} from '../../../../../../services/geoTools';
 import {ZonesMap} from './index';
 
 interface IProps {
+    boundaries: BoundaryCollection;
     onChange: (zone: Zone) => any;
     layers: LayersCollection;
     model: ModflowModel;
@@ -171,6 +173,7 @@ const zoneDetails = (props: IProps) => {
                                             <label>Geometry</label>
                                             <ZonesMap
                                                 boundingBox={props.model.boundingBox}
+                                                boundaries={props.boundaries}
                                                 zone={Zone.fromObject(zone)}
                                                 zones={ZonesCollection.fromObject(
                                                     visibleZones.filter((z) => z.isActive))

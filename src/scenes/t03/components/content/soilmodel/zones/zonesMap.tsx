@@ -1,11 +1,13 @@
 import {DrawEvents, LatLngExpression} from 'leaflet';
 import {uniqueId} from 'lodash';
 import React from 'react';
-import {FeatureGroup, GeoJSON, Map, Polygon} from 'react-leaflet';
+import {FeatureGroup, GeoJSON, LayersControl, Map, Polygon} from 'react-leaflet';
 import {EditControl} from 'react-leaflet-draw';
 import {BoundingBox, Geometry} from '../../../../../../core/model/geometry';
+import BoundaryCollection from '../../../../../../core/model/modflow/boundaries/BoundaryCollection';
 import {Zone, ZonesCollection} from '../../../../../../core/model/modflow/soilmodel';
 import {BasicTileLayer} from '../../../../../../services/geoTools/tileLayers';
+import {renderBoundaryOverlays} from '../../../../../shared/rasterData/helpers';
 import {getStyle} from '../../../maps';
 
 const styles = {
@@ -16,6 +18,7 @@ const styles = {
 };
 
 interface IProps {
+    boundaries: BoundaryCollection;
     boundingBox: BoundingBox;
     geometry?: Geometry;
     zone?: Zone;
@@ -76,6 +79,9 @@ const zonesMap = (props: IProps) => {
                 data={boundingBox.geoJson}
                 style={getStyle('area')}
             />
+            <LayersControl position="topright">
+                {renderBoundaryOverlays(props.boundaries)}
+            </LayersControl>
             {bgZones.length > 0 ?
                 <FeatureGroup>
                     {bgZones.map((z) => {
