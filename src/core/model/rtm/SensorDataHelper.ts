@@ -35,7 +35,7 @@ export async function retrieveData(sensorData: ISensorData, caching: boolean = f
         let TTL = moment.utc().unix() + 10 * 60; // 10 minutes
 
         if (caching) {
-            TTL = moment.utc().unix() + 60 * 60; // 24 hours
+            TTL = moment.utc().unix() + 60 * 60 * 24; // 24 hours
         }
 
         sessionStorage.setItem(url.toString(), JSON.stringify({data, TTL}));
