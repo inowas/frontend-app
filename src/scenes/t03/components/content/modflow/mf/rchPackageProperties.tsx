@@ -18,6 +18,7 @@ interface IProps {
 
 const rchPackageProperties = (props: IProps) => {
     const [mfPackage, setMfPackage] = useState<IFlopyModflowMfrch>(props.mfPackage.toObject());
+    const {readonly} = props;
 
     if (!mfPackage) {
         return null;
@@ -54,23 +55,11 @@ const rchPackageProperties = (props: IProps) => {
                     <label>Save cell-by-cell budget data (ipakcb)</label>
                     <Checkbox
                         toggle={true}
-                        readOnly={true}
-                        name="ipakcb"
-                        value={mfPackage.ipakcb || 0}
-                        icon={renderInfoPopup(documentation.ipakcb, 'IPAKCB')}
+                        readOnly={readonly}
+                        name={'ipakcb'}
+                        value={mfPackage.ipakcb ? 1 : 0}
+                        icon={renderInfoPopup(documentation.rch.ipakcb, 'IPAKCB')}
                     />
-                    {/*<Form.Dropdown
-                            options={[
-                                {key: 0, value: 0, text: 'false'},
-                                {key: 1, value: 1, text: 'true'},
-                            ]}
-                            placeholder='Select ipakcb'
-                            name='ipakcb'
-                            selection
-                            value={mfPackage.ipakcb}
-                            disabled={readonly}
-                            onChange={this.handleOnSelect}
-                        />*/}
                 </Form.Field>
             </Form.Group>
 
@@ -78,29 +67,29 @@ const rchPackageProperties = (props: IProps) => {
                 <Form.Field>
                     <label>Filename extension</label>
                     <Input
-                        readOnly={true}
+                        readOnly={readonly}
                         name="extension"
                         value={mfPackage.extension || ''}
-                        icon={renderInfoPopup(documentation.extension, 'extension')}
+                        icon={renderInfoPopup(documentation.rch.extension, 'extension')}
                     />
                 </Form.Field>
                 <Form.Field>
                     <label>File unit number</label>
                     <Input
-                        readOnly={true}
+                        readOnly={readonly}
                         type={'number'}
                         name="unitnumber"
                         value={mfPackage.unitnumber || ''}
-                        icon={renderInfoPopup(documentation.unitnumber, 'unitnumber')}
+                        icon={renderInfoPopup(documentation.rch.unitnumber, 'unitnumber')}
                     />
                 </Form.Field>
                 <Form.Field>
                     <label>Filenames</label>
                     <Input
-                        readOnly={true}
+                        readOnly={readonly}
                         name="filenames"
                         value={mfPackage.filenames || ''}
-                        icon={renderInfoPopup(documentation.filenames, 'filenames')}
+                        icon={renderInfoPopup(documentation.rch.filenames, 'filenames')}
                     />
                 </Form.Field>
             </Form.Group>

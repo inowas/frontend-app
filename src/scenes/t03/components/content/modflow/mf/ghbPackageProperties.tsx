@@ -150,29 +150,4 @@ const ghbPackageProperties = (props: IProps) => {
     );
 };
 
-/*class GhbPackageProperties extends AbstractPackageProperties {
-
-    render() {
-        if (!this.state.mfPackage) {
-            return null;
-        }
-
-        const {mfPackage, mfPackages, readonly} = this.props;
-        const basPackage = mfPackages.getPackage('bas');
-        const {ibound} = basPackage;
-        const affectedCellsLayers = ibound.map(l => l.map(r => r.map(() => 0)));
-        Object.values(mfPackage.stress_period_data)[0].forEach(spv => {
-            const [lay, row, col] = spv;
-            affectedCellsLayers[lay][row][col] = 1;
-        });
-    }
-}
-
-GhbPackageProperties.propTypes = {
-    mfPackage: PropTypes.instanceOf(FlopyModflowMfghb),
-    mfPackages: PropTypes.instanceOf(FlopyModflow),
-    onChange: PropTypes.func.isRequired,
-    readonly: PropTypes.bool.isRequired
-};*/
-
 export default ghbPackageProperties;
