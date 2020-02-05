@@ -5,7 +5,7 @@ import {Grid, Menu, Segment} from 'semantic-ui-react';
 import FlopyPackages from '../../../../../core/model/flopy/packages/FlopyPackages';
 import {
     FlopyModflowMfdis,
-    FlopyModflowMffhb,
+    FlopyModflowMffhb, FlopyModflowMfghb,
     FlopyModflowMfhob,
     FlopyModflowMfrch,
     FlopyModflowMfriv, FlopyModflowMfwel
@@ -258,7 +258,7 @@ const flow = (props: IProps) => {
             case 'ghb':
                 return (
                     <GhbPackageProperties
-                        mfPackage={iMf.getPackage(type)}
+                        mfPackage={iMf.getPackage(type) as FlopyModflowMfghb}
                         mfPackages={iMf}
                         onChange={handleChangePackage}
                         readonly={readOnly}

@@ -1,14 +1,13 @@
-import React, {SyntheticEvent, useState} from 'react';
-import {DropdownProps, Form, Grid, Header, Input, Label} from 'semantic-ui-react';
-
+import React, {ChangeEvent, useState} from 'react';
+import {Checkbox, Form, Grid, Header, Input, Label} from 'semantic-ui-react';
 import {FlopyModflowMfdis, FlopyModflowMfghb} from '../../../../../../core/model/flopy/packages/mf';
-import {documentation} from '../../../../defaults/flow';
-import {RasterDataImage} from '../../../../../shared/rasterData';
-import {GridSize} from '../../../../../../core/model/modflow';
 import FlopyModflow from '../../../../../../core/model/flopy/packages/mf/FlopyModflow';
-import {IFlopyModflowMfghb} from "../../../../../../core/model/flopy/packages/mf/FlopyModflowMfghb";
-import {RainbowOrLegend} from "../../../../../../services/rainbowvis/types";
-import InfoPopup from "../../../../../shared/InfoPopup";
+import {IFlopyModflowMfghb} from '../../../../../../core/model/flopy/packages/mf/FlopyModflowMfghb';
+import {GridSize} from '../../../../../../core/model/modflow';
+import {RainbowOrLegend} from '../../../../../../services/rainbowvis/types';
+import InfoPopup from '../../../../../shared/InfoPopup';
+import {RasterDataImage} from '../../../../../shared/rasterData';
+import {documentation} from '../../../../defaults/flow';
 
 interface IProps {
     mfPackage: FlopyModflowMfghb;
@@ -20,6 +19,23 @@ interface IProps {
 const ghbPackageProperties = (props: IProps) => {
     const [mfPackage, setMfPackage] = useState<IFlopyModflowMfghb>(props.mfPackage.toObject());
     const {mfPackages, readonly} = props;
+
+    const handleOnChange = (e: ChangeEvent<HTMLInputElement>) => {
+        const {name, value} = e.target;
+        return setMfPackage({...mfPackage, [name]: value});
+    };
+
+    const handleOnBlur = (cast?: (v: any) => any) => (e: ChangeEvent<HTMLInputElement>) => {
+        const {name} = e.target;
+        let {value} = e.target;
+
+        if (cast) {
+            value = cast(value);
+        }
+
+        setMfPackage({...mfPackage, [name]: value});
+        props.onChange(FlopyModflowMfghb.fromObject({...mfPackage, [name]: value}));
+    };
 
     const disPackage: FlopyModflowMfdis = mfPackages.getPackage('dis') as FlopyModflowMfdis;
 
@@ -40,12 +56,6 @@ const ghbPackageProperties = (props: IProps) => {
             affectedCellsLayers[lay][row][col] = 1;
         });
     }
-
-    const handleOnSelect = (e: SyntheticEvent<HTMLElement, Event>, data: DropdownProps) => {
-        const {name, value} = data;
-        setMfPackage({...mfPackage, [name]: value});
-        props.onChange(FlopyModflowMfghb.fromObject({...mfPackage, [name]: value}));
-    };
 
     return (
         <Form>
@@ -69,60 +79,70 @@ const ghbPackageProperties = (props: IProps) => {
                 </Grid.Row>
             </Grid>
 
-            <Form.Group widths='equal'>
-                <Form.Field>
-                    <label>Cell-by-cell budget data (ipakcb)</label>
-                    <Form.Dropdown
-                        options={[
-                            {key: 0, value: 0, text: 'false'},
-                            {key: 1, value: 1, text: 'true'},
-                        ]}
-                        placeholder='Select ipakcb'
-                        name='ipakcb'
-                        selection
-                        value={mfPackage.ipakcb}
+            <Form.Group widths={'equal'}>
+                <Form.Field width={14}>
+                    <label>Save cell-by-cell budget data (IPAKCB)</label>
+                    <Checkbox
+                        toggle={true}
                         disabled={readonly}
-                        onChange={handleOnSelect}
+                        name={'ipakcb'}
+                        value={mfPackage.ipakcb ? 1 : 0}
                     />
                 </Form.Field>
-
+                <Form.Field width={1}>
+                    <InfoPopup
+                        description={documentation.ghb.ipakcb}
+                        title={'IPAKCB'}
+                        position={'top right'}
+                        iconOutside={true}
+                    />
+                </Form.Field>
                 <Form.Field>
-                    <label>Package Options</label>
+                    <label>Package Options (OPTIONS)</label>
                     <Input
-                        readOnly
-                        name='options'
+                        readOnly={readonly}
+                        name={'options'}
                         value={mfPackage.options || ''}
-                        icon={<InfoPopup description={documentation.options} title={'options'}/>}
+                        onChange={handleOnChange}
+                        onBlur={handleOnBlur(parseFloat)}
+                        icon={<InfoPopup description={documentation.ghb.options} title={'OPTIONS'}/>}
                     />
                 </Form.Field>
             </Form.Group>
 
-            <Form.Group widths='equal'>
+            <Form.Group widths={'equal'}>
                 <Form.Field>
-                    <label>Filename extension (extension)</label>
+                    <label>Filename extension (EXTENSION)</label>
                     <Input
-                        readOnly
-                        name='extension'
+                        readOnly={readonly}
+                        name={'extension'}
                         value={mfPackage.extension}
-                        icon={<InfoPopup description={documentation.extension} title={'extension'}/>}
+                        onChange={handleOnChange}
+                        onBlur={handleOnBlur(parseFloat)}
+                        icon={<InfoPopup description={documentation.ghb.extension} title={'EXTENSION'}/>}
                     />
                 </Form.Field>
                 <Form.Field>
-                    <label>File unit number (unitnumber)</label>
+                    <label>File unit number (UNITNUMBER)</label>
                     <Input
-                        readOnly
-                        name='unitnumber'
+                        readOnly={readonly}
+                        type={'number'}
+                        name={'unitnumber'}
                         value={mfPackage.unitnumber || ''}
-                        icon={<InfoPopup description={documentation.unitnumber} title={'unitnumber'}/>}
+                        onChange={handleOnChange}
+                        onBlur={handleOnBlur(parseFloat)}
+                        icon={<InfoPopup description={documentation.ghb.unitnumber} title={'UNITNUMBER'}/>}
                     />
                 </Form.Field>
                 <Form.Field>
-                    <label>Filenames (filenames)</label>
+                    <label>Filenames (FILENAMES)</label>
                     <Input
-                        readOnly
-                        name='filenames'
+                        readOnly={readonly}
+                        name={'filenames'}
                         value={mfPackage.filenames || ''}
-                        icon={<InfoPopup description={documentation.filenames} title={'filenames'}/>}
+                        onChange={handleOnChange}
+                        onBlur={handleOnBlur(parseFloat)}
+                        icon={<InfoPopup description={documentation.ghb.filenames} title={'FILENAMES'}/>}
                     />
                 </Form.Field>
             </Form.Group>
@@ -154,6 +174,5 @@ GhbPackageProperties.propTypes = {
     onChange: PropTypes.func.isRequired,
     readonly: PropTypes.bool.isRequired
 };*/
-
 
 export default ghbPackageProperties;

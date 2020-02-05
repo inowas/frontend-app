@@ -22,8 +22,8 @@ export const documentation = {
         ichflg: <div>Flag indicating that flows between constant head cells should be calculated (the default is
             False).</div>,
         stoper: <div>Percent discrepancy that is compared to the budget percent discrepancy continue when the solver
-            convergence criteria are not met. Execution will unless the budget percent discrepancy is greater than stoper
-            (default is None). MODFLOW-2005 only</div>,
+            convergence criteria are not met. Execution will unless the budget percent discrepancy is greater than
+            stoper (default is None). MODFLOW-2005 only</div>,
         hnoflo: <div>Head value assigned to inactive cells (default is -999.99).</div>,
     },
 
@@ -80,8 +80,8 @@ export const documentation = {
         iwetit: <div>is the iteration interval for attempting to wet cells. Wetting is attempted every IWETIT iteration.
             If using the PCG solver (Hill, 1990), this applies to outer iterations, not inner iterations.
             If IWETIT less than or equal to 0, it is changed to 1. (default is 1).</div>,
-        ihdwet: <div>is a flag that determines which equation is used to define the initial head at cells that become wet.
-            (default is 0)</div>,
+        ihdwet: <div>is a flag that determines which equation is used to define the initial head at cells that become
+            wet. (default is 0)</div>,
         wetdry: <div>is a combination of the wetting threshold and a flag to indicate which neighboring cells can cause
             a cell to become wet. (default is -0.01).</div>,
         storagecoefficient: <div>indicates that variable Ss and SS parameters are read as storage coefficient rather
@@ -134,35 +134,47 @@ export const documentation = {
     start_datetime: <div>Starting datetime of the simulation. default is ‘1/1/1970’</div>,
 
     // FHB
-    nbdtim: <div>The number of times at which flow and head will be specified for all selected cells. (default is
-        1)</div>,
-    nflw: <div>Number of cells at which flows will be specified. (default is 0)</div>,
-    nhed: <div>Number of cells at which heads will be specified. (default is 0)</div>,
-    ifhbss: <div>FHB steady-state option flag. If the simulation includes any transient-state stress periods, the flag
-        is read but not used; in this case, specified-flow, specified-head, and auxiliary-variable values will be
-        interpolated for steady-state stress periods in the same way that values are interpolated for transient stress
-        periods. If the simulation includes only steady-state stress periods, the flag controls how flow, head, and
-        auxiliary-variable values will be computed for each steady-state solution. (default is 0)</div>,
-    nfhbx1: <div>Number of auxiliary variables whose values will be computed for each time step for each specified-flow
-        cell. Auxiliary variables are currently not supported. (default is 0)</div>,
-    nfhbx2: <div>Number of auxiliary variables whose values will be computed for each time step for each specified-head
-        cell. Auxiliary variables are currently not supported. (default is 0)</div>,
-    ifhbpt: <div>Flag for printing values of data list. Applies to datasets 4b, 5b, 6b, 7b, and 8b. If ifhbpt > 0,
-        datasets read at the beginning of the simulation will be printed. Otherwise, the datasets will not be printed.
-        (default is 0).</div>,
-    bdtimecnstm: <div>A constant multiplier for data list bdtime. (default is 1.0)</div>,
-    bdtime: <div>Simulation time at which values of specified flow and (or) values of specified head will be read.
-        nbdtim values are required. (default is 0.0)</div>,
-    cnstm5: <div>A constant multiplier for data list flwrat. (default is 1.0)</div>,
-    ds5: <div>Each FHB flwrat cell (dataset 5) is defined through definition of layer(int), row(int), column(int),
-        iaux(int), flwrat[nbdtime](float). There are nflw entries. (default is None) The simplest form is a list of
-        lists with the FHB flow boundaries.<br/>
-        Note there should be nflw rows in ds7.</div>,
-    cnstm7: <div>A constant multiplier for data list sbhedt. (default is 1.0)</div>,
-    ds7: <div>Each FHB sbhed cell (dataset 7) is defined through definition of layer(int), row(int), column(int),
-        iaux(int), sbhed[nbdtime](float). There are nflw entries. (default is None) The simplest form is a list of lists
-        with the FHB flow boundaries.<br/>
-        Note there should be nhed rows in ds7.</div>,
+    fhb: {
+        nbdtim: <div>The number of times at which flow and head will be specified for all selected cells. (default is
+            1)</div>,
+        nflw: <div>Number of cells at which flows will be specified. (default is 0)</div>,
+        nhed: <div>Number of cells at which heads will be specified. (default is 0)</div>,
+        ifhbss: <div>FHB steady-state option flag. If the simulation includes any transient-state stress periods, the
+            flag is read but not used; in this case, specified-flow, specified-head, and auxiliary-variable values will
+            be interpolated for steady-state stress periods in the same way that values are interpolated for transient
+            stress periods. If the simulation includes only steady-state stress periods, the flag controls how flow,
+            head, and auxiliary-variable values will be computed for each steady-state solution. (default is 0)</div>,
+        ipakcb:<div>A flag that is used to determine if cell-by-cell budget data should be saved. If ipakcb is non-zero
+            cell-by-cell budget data will be saved. (default is None).</div>,
+        nfhbx1: <div>Number of auxiliary variables whose values will be computed for each time step for each
+            specified-flow cell. Auxiliary variables are currently not supported. (default is 0)</div>,
+        nfhbx2: <div>Number of auxiliary variables whose values will be computed for each time step for each
+            specified-head cell. Auxiliary variables are currently not supported. (default is 0)</div>,
+        ifhbpt: <div>Flag for printing values of data list. Applies to datasets 4b, 5b, 6b, 7b, and 8b. If ifhbpt > 0,
+            datasets read at the beginning of the simulation will be printed. Otherwise, the datasets will not be
+            printed. (default is 0).</div>,
+        bdtimecnstm: <div>A constant multiplier for data list bdtime. (default is 1.0)</div>,
+        bdtime: <div>Simulation time at which values of specified flow and (or) values of specified head will be read.
+            nbdtim values are required. (default is 0.0)</div>,
+        cnstm5: <div>A constant multiplier for data list flwrat. (default is 1.0)</div>,
+        ds5: <div>Each FHB flwrat cell (dataset 5) is defined through definition of layer(int), row(int), column(int),
+            iaux(int), flwrat[nbdtime](float). There are nflw entries. (default is None) The simplest form is a list of
+            lists with the FHB flow boundaries.<br/>
+            Note there should be nflw rows in ds7.</div>,
+        cnstm7: <div>A constant multiplier for data list sbhedt. (default is 1.0)</div>,
+        ds7: <div>Each FHB sbhed cell (dataset 7) is defined through definition of layer(int), row(int), column(int),
+            iaux(int), sbhed[nbdtime](float). There are nflw entries. (default is None) The simplest form is a list of
+            lists with the FHB flow boundaries.<br/>
+            Note there should be nhed rows in ds7.</div>,
+        extension: <div>Filename extension (default is ‘fhb’)</div>,
+        unitnumber: <div>File unit number (default is None).</div>,
+        filenames: <div>Filenames to use for the package and the output files. If filenames=None the package name will
+            be created using the model name and package extension and the cbc output name will be created using the
+            model name and .cbc extension (for example, modflowtest.cbc), if ipakcbc is a number greater than zero.
+            If a single string is passed the package will be set to the string and cbc output names will be created
+            using the model name and .cbc extension, if ipakcbc is a number greater than zero. To define the names for
+            all package files (input and output) the length of the list of strings should be 2. Default is None.</div>
+    },
 
     // FLWOB
 
@@ -195,14 +207,26 @@ export const documentation = {
         RIV)</div>,
 
     // GHB
-    ipakcb: <div>A flag that is used to determine if cell-by-cell budget data should be saved. If ipakcb is non-zero
-        cell-by-cell budget data will be saved. (default is 0).</div>,
-    stress_period_data: <div>Dictionary of boundaries.<br/>
-        Each ghb cell is defined through definition of layer(int), row(int), column(int), stage(float),
-        conductance(float) The simplest form is a dictionary with a lists of boundaries for each stress period, where
-        each list of boundaries itself is a list of boundaries. Indices of the dictionary are the numbers of the stress
-        period.</div>,
-    dtype: <div>if data type is different from default</div>,
+    ghb: {
+        ipakcb: <div>A flag that is used to determine if cell-by-cell budget data should be saved. If ipakcb is non-zero
+            cell-by-cell budget data will be saved. (default is 0).</div>,
+        stress_period_data: <div>Dictionary of boundaries.<br/>
+            Each ghb cell is defined through definition of layer(int), row(int), column(int), stage(float),
+            conductance(float) The simplest form is a dictionary with a lists of boundaries for each stress period,
+            where each list of boundaries itself is a list of boundaries. Indices of the dictionary are the numbers of
+            the stress period.</div>,
+        no_print: <div>TODO!!</div>,
+        options: <div>Package options. (default is None).</div>,
+        extension: <div>Filename extension (default is ‘ghb’)</div>,
+        unitnumber: <div>File unit number (default is None).</div>,
+        filenames: <div>Filenames to use for the package and the output files. If filenames=None the package name will
+            be created using the model name and package extension and the cbc output name will be created using the
+            model name and .cbc extension (for example, modflowtest.cbc), if ipakcbc is a number greater than zero.
+            If a single string is passed the package will be set to the string and cbc output names will be created
+            using the model name and .cbc extension, if ipakcbc is a number greater than zero. To define the names for
+            all package files (input and output) the length of the list of strings should be 2. Default is None.</div>
+    },
+
 
     // HFB
 
@@ -272,6 +296,7 @@ export const documentation = {
     rech: <div>Is the recharge flux. (default is 1.e-3)</div>,
     irch: <div>Is the layer to which recharge is applied in each vertical column (only used when nrchop=2). (default is
         0).</div>,
+    ipakcb: <div>TODO!!</div>,
 
     // SOL
 
