@@ -106,6 +106,15 @@ export const documentation = {
             all package files (input and output) the length of the list of strings should be 2. Default is None.</div>
     },
 
+    //CHD
+    chd: {
+        extension: <div>Filename extension (default is ‘chd’)</div>,
+        unitnumber: <div>File unit number (default is None).</div>,
+        filenames: <div>Filenames to use for the package. If filenames=None the package name will be created using the
+            model name and package extension. If a single string is passed the package will be set to the string.
+            Default is None.</div>
+    },
+
     // DIS
     nlay: <div>Number of model layers (the default is 1).</div>,
     nrow: <div>Number of model rows (the default is 2).</div>,
