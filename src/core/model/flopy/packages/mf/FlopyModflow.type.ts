@@ -34,7 +34,13 @@ export interface IStressPeriodData<T> {
     [key: number]: T;
 }
 
-type IPackage = IFlopyModflowMf | IFlopyModflowMfbas | IFlopyModflowMfbcf | IFlopyModflowMfchd;
+export type IFlopyModflowPackage = IFlopyModflowMf | IFlopyModflowMfbas | IFlopyModflowMfdis | IFlopyModflowMfoc |
+    IFlopyModflowMfbcf | IFlopyModflowMfchd | IFlopyModflowMfde4 | IFlopyModflowMfdrn | IFlopyModflowMfevt |
+    IFlopyModflowMffhb | IFlopyModflowMfghb | IFlopyModflowMfgmg | IFlopyModflowMfhfb | IFlopyModflowMfhob |
+    IFlopyModflowMflak | IFlopyModflowMflmt | IFlopyModflowMflpf | IFlopyModflowMfnwt | IFlopyModflowMfpcg |
+    IFlopyModflowMfpcgn | IFlopyModflowMfrch | IFlopyModflowMfriv | IFlopyModflowMfsip | IFlopyModflowMfsms |
+    IFlopyModflowMfsor | IFlopyModflowMfstr | IFlopyModflowMfswi2 | IFlopyModflowMfupw | IFlopyModflowMfuzf1 |
+    IFlopyModflowMfwel;
 
 export interface IFlopyModflow extends IPropertyValueObject {
     mf: IFlopyModflowMf;

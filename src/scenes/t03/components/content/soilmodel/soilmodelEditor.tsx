@@ -16,6 +16,7 @@ import {
 } from 'semantic-ui-react';
 import Uuid from 'uuid';
 import {ModflowModel} from '../../../../../core/model/modflow';
+import BoundaryCollection from '../../../../../core/model/modflow/boundaries/BoundaryCollection';
 import {Soilmodel, SoilmodelLayer} from '../../../../../core/model/modflow/soilmodel';
 import {Zone, ZonesCollection} from '../../../../../core/model/modflow/soilmodel';
 import LayerParameterZonesCollection from '../../../../../core/model/modflow/soilmodel/LayerParameterZonesCollection';
@@ -57,6 +58,7 @@ interface IOwnProps {
 
 interface IStateProps {
     model: ModflowModel;
+    boundaries: BoundaryCollection;
     soilmodel: Soilmodel;
 }
 
@@ -527,6 +529,7 @@ const soilmodelEditor = (props: IProps) => {
                         {!isLoading && type === nav.LAYERS && selectedLayer &&
                         <LayerDetails
                             activeParam={activeParam}
+                            boundaries={props.boundaries}
                             onChange={handleChangeLayer}
                             onChangeTab={handleChangeTab}
                             parameters={getParameters(activeParamType)}
@@ -538,6 +541,7 @@ const soilmodelEditor = (props: IProps) => {
                         }
                         {!isLoading && type === nav.ZONES && selectedZone &&
                         <ZoneDetails
+                            boundaries={props.boundaries}
                             onChange={handleChangeZone}
                             model={props.model}
                             layers={props.soilmodel.layersCollection}
@@ -553,6 +557,7 @@ const soilmodelEditor = (props: IProps) => {
             </Grid>
             {createZoneModal && !readOnly &&
             <CreateZoneModal
+                boundaries={props.boundaries}
                 onCancel={handleCancelModals}
                 onChange={handleAddZone}
                 boundingBox={props.model.boundingBox}
@@ -566,6 +571,7 @@ const soilmodelEditor = (props: IProps) => {
 
 const mapStateToProps = (state: any) => {
     return ({
+        boundaries: BoundaryCollection.fromObject(state.T03.boundaries),
         model: ModflowModel.fromObject(state.T03.model),
         soilmodel: Soilmodel.fromObject(state.T03.soilmodel)
     });

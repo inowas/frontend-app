@@ -9,19 +9,19 @@ import {ITimeUnit} from './TimeUnit.type';
 class Stressperiods {
 
     get startDateTime(): Moment {
-        return moment(this._props.start_date_time);
+        return moment.utc(this._props.start_date_time);
     }
 
     set startDateTime(value: Moment) {
-        this._props.start_date_time = value.toISOString();
+        this._props.start_date_time = value.utc().toISOString();
     }
 
     get endDateTime(): Moment {
-        return moment(this._props.end_date_time);
+        return moment.utc(this._props.end_date_time);
     }
 
     set endDateTime(value: Moment) {
-        this._props.end_date_time = value.toISOString();
+        this._props.end_date_time = value.utc().toISOString();
     }
 
     set stressperiods(stressperiods: Stressperiod[]) {
@@ -221,7 +221,7 @@ class Stressperiods {
 
     public totimFromDate(dateTime: Moment) {
         if (this.timeUnit.toInt() === ITimeUnit.days) {
-            return dateTime.diff(this.startDateTime, 'days');
+            return dateTime.diff(this.startDateTime, 'days', true);
         }
 
         throw new Error(`TimeUnit ${this.timeUnit.toInt()} not implemented yet.`);

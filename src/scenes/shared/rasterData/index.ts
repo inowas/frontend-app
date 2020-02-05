@@ -12,4 +12,4 @@ export {
     rasterDataMap as RasterDataMap,
     RasterfileUploadModal,
     ReactLeafletHeatMapCanvasOverlay
-}
+};

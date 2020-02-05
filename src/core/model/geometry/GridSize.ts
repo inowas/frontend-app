@@ -48,7 +48,7 @@ class GridSize extends GenericObject<IGridSize> {
     };
 
     public isWithIn = (x: number, y: number) => {
-        return (x >= 0 && x <= this.nX && y >= 0 && y <= this.nY);
+        return (x >= 0 && x <= (this.nX - 1) && y >= 0 && y <= (this.nY - 1));
     };
 }
 

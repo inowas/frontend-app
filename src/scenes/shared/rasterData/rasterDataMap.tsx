@@ -1,18 +1,17 @@
 import React from 'react';
-import {GeoJSON, Map, MapLayerProps} from 'react-leaflet';
+import {GeoJSON, LayersControl, Map, MapLayerProps} from 'react-leaflet';
 import {Array2D} from '../../../core/model/geometry/Array2D.type';
 import BoundingBox from '../../../core/model/geometry/BoundingBox';
 import GridSize from '../../../core/model/geometry/GridSize';
+import BoundaryCollection from '../../../core/model/modflow/boundaries/BoundaryCollection';
 import {BasicTileLayer} from '../../../services/geoTools/tileLayers';
 import {createGridData, rainbowFactory} from '../../../services/rainbowvis/helpers';
 import Rainbow from '../../../services/rainbowvis/Rainbowvis';
 import {ILegendItem} from '../../../services/rainbowvis/types';
 import ColorLegend from './ColorLegend';
 import {
-    disableMap,
-    invalidateSize,
     max,
-    min
+    min, renderBoundaryOverlays
 } from './helpers';
 import CanvasHeatMapOverlay from './ReactLeafletHeatMapCanvasOverlay';
 
@@ -46,6 +45,7 @@ const renderLegend = (rainbow: Rainbow, unit: string = '') => {
 
 interface IProps {
     boundingBox: BoundingBox;
+    boundaries?: BoundaryCollection;
     data: number | Array2D<number>;
     gridSize: GridSize;
     unit: string;
@@ -70,10 +70,6 @@ const rasterDataMap = (props: IProps) => {
         <Map
             style={styles.map}
             zoomControl={false}
-            ref={(map) => {
-                invalidateSize(map);
-                disableMap(map);
-            }}
             bounds={boundingBox.getBoundsLatLng()}
         >
             <BasicTileLayer/>
@@ -82,6 +78,11 @@ const rasterDataMap = (props: IProps) => {
                 data={boundingBox.geoJson}
                 style={styles.area}
             />
+            {props.boundaries && props.boundaries.length > 0 &&
+            <LayersControl position="topright">
+                {renderBoundaryOverlays(props.boundaries)}
+            </LayersControl>
+            }
             <CanvasHeatMapOverlay
                 {
                     ...mapProps

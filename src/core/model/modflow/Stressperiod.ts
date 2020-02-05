@@ -4,11 +4,11 @@ import {IStressPeriod} from './Stressperiod.type';
 class Stressperiod {
 
     get startDateTime(): Moment {
-        return moment(this._props.start_date_time);
+        return moment.utc(this._props.start_date_time);
     }
 
     set startDateTime(value: Moment) {
-        this._props.start_date_time = value.toISOString();
+        this._props.start_date_time = value.utc().toISOString();
     }
 
     get nstp() {
