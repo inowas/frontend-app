@@ -85,6 +85,7 @@ export const calculateHeadObservationData = (hobs: HeadObservationWell[], stress
         }).filter((i) => i !== undefined) as number[][];
 
         hobData.push({
+            obsname: h.name,
             layer,
             row: cell[1],
             column: cell[0],
