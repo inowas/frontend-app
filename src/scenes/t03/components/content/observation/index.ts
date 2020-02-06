@@ -1,5 +1,5 @@
-import Observations from './observations';
+import Statistics from './statistics';
 
 export {
-    Observations
+    Statistics
 };
