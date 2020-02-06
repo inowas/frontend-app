@@ -7,6 +7,7 @@ import {
     FlopyModflowMfchd,
     FlopyModflowMfdis,
     FlopyModflowMfdrn,
+    FlopyModflowMfevt,
     FlopyModflowMffhb,
     FlopyModflowMfghb,
     FlopyModflowMfhob,
@@ -235,7 +236,7 @@ const flow = (props: IProps) => {
             case 'evt':
                 return (
                     <EvtPackageProperties
-                        mfPackage={iMf.getPackage(type)}
+                        mfPackage={iMf.getPackage(type)as FlopyModflowMfevt}
                         mfPackages={iMf}
                         onChange={handleChangePackage}
                         readonly={readOnly}
