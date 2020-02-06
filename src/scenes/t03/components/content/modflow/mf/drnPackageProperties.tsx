@@ -1,8 +1,8 @@
 import React, {ChangeEvent, useState} from 'react';
 import {Checkbox, Form, Grid, Header, Input, Label} from 'semantic-ui-react';
-import {FlopyModflowMfdis, FlopyModflowMfghb} from '../../../../../../core/model/flopy/packages/mf';
+import {FlopyModflowMfdis, FlopyModflowMfdrn, FlopyModflowMfghb} from '../../../../../../core/model/flopy/packages/mf';
 import FlopyModflow from '../../../../../../core/model/flopy/packages/mf/FlopyModflow';
-import {IFlopyModflowMfghb} from '../../../../../../core/model/flopy/packages/mf/FlopyModflowMfghb';
+import {IFlopyModflowMfdrn} from '../../../../../../core/model/flopy/packages/mf/FlopyModflowMfdrn';
 import {GridSize} from '../../../../../../core/model/modflow';
 import {RainbowOrLegend} from '../../../../../../services/rainbowvis/types';
 import InfoPopup from '../../../../../shared/InfoPopup';
@@ -10,14 +10,14 @@ import {RasterDataImage} from '../../../../../shared/rasterData';
 import {documentation} from '../../../../defaults/flow';
 
 interface IProps {
-    mfPackage: FlopyModflowMfghb;
+    mfPackage: FlopyModflowMfdrn;
     mfPackages: FlopyModflow;
-    onChange: (pck: FlopyModflowMfghb) => void;
+    onChange: (pck: FlopyModflowMfdrn) => void;
     readonly: boolean;
 }
 
-const ghbPackageProperties = (props: IProps) => {
-    const [mfPackage, setMfPackage] = useState<IFlopyModflowMfghb>(props.mfPackage.toObject());
+const drnPackageProperties = (props: IProps) => {
+    const [mfPackage, setMfPackage] = useState<IFlopyModflowMfdrn>(props.mfPackage.toObject());
     const {mfPackages, readonly} = props;
 
     const handleOnChange = (e: ChangeEvent<HTMLInputElement>) => {
@@ -59,7 +59,7 @@ const ghbPackageProperties = (props: IProps) => {
 
     return (
         <Form>
-            <Header as={'h3'} dividing={true}>GHB: General-Head Boundary Package</Header>
+            <Header as={'h3'} dividing={true}>DRN: Drain Package</Header>
             <Grid divided={'vertically'}>
                 <Grid.Row columns={2}>
                     {affectedCellsLayers.map((layer: any, idx) => (
@@ -70,7 +70,7 @@ const ghbPackageProperties = (props: IProps) => {
                                 gridSize={GridSize.fromData(layer)}
                                 unit={''}
                                 legend={[
-                                    {value: 1, color: 'blue', label: 'GHB affected cells'},
+                                    {value: 1, color: 'blue', label: 'DRN affected cells'},
                                 ] as RainbowOrLegend}
                                 border={'1px dotted black'}
                             />
@@ -90,21 +90,21 @@ const ghbPackageProperties = (props: IProps) => {
                 </Form.Field>
                 <Form.Field width={1}>
                     <InfoPopup
-                        description={documentation.ghb.ipakcb}
+                        description={documentation.drn.ipakcb}
                         title={'IPAKCB'}
                         position={'top right'}
                         iconOutside={true}
                     />
                 </Form.Field>
                 <Form.Field>
-                    <label>Package Options (OPTIONS)</label>
+                    <label>Package options (OPTIONS)</label>
                     <Input
                         readOnly={readonly}
-                        name={'options'}
+                        name="options"
                         value={mfPackage.options || ''}
                         onChange={handleOnChange}
                         onBlur={handleOnBlur(parseFloat)}
-                        icon={<InfoPopup description={documentation.ghb.options} title={'OPTIONS'}/>}
+                        icon={<InfoPopup description={documentation.drn.options} title={'OPTIONS'}/>}
                     />
                 </Form.Field>
             </Form.Group>
@@ -116,9 +116,7 @@ const ghbPackageProperties = (props: IProps) => {
                         readOnly={readonly}
                         name={'extension'}
                         value={mfPackage.extension}
-                        onChange={handleOnChange}
-                        onBlur={handleOnBlur(parseFloat)}
-                        icon={<InfoPopup description={documentation.ghb.extension} title={'EXTENSION'}/>}
+                        icon={<InfoPopup description={documentation.drn.extension} title={'EXTENSION'}/>}
                     />
                 </Form.Field>
                 <Form.Field>
@@ -130,7 +128,7 @@ const ghbPackageProperties = (props: IProps) => {
                         value={mfPackage.unitnumber || ''}
                         onChange={handleOnChange}
                         onBlur={handleOnBlur(parseFloat)}
-                        icon={<InfoPopup description={documentation.ghb.unitnumber} title={'UNITNUMBER'}/>}
+                        icon={<InfoPopup description={documentation.drn.unitnumber} title={'UNITNUMBER'}/>}
                     />
                 </Form.Field>
                 <Form.Field>
@@ -139,9 +137,7 @@ const ghbPackageProperties = (props: IProps) => {
                         readOnly={readonly}
                         name={'filenames'}
                         value={mfPackage.filenames || ''}
-                        onChange={handleOnChange}
-                        onBlur={handleOnBlur(parseFloat)}
-                        icon={<InfoPopup description={documentation.ghb.filenames} title={'FILENAMES'}/>}
+                        icon={<InfoPopup description={documentation.drn.filenames} title={'FILENAMES'}/>}
                     />
                 </Form.Field>
             </Form.Group>
@@ -149,4 +145,4 @@ const ghbPackageProperties = (props: IProps) => {
     );
 };
 
-export default ghbPackageProperties;
+export default drnPackageProperties;

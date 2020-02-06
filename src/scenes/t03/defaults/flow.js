@@ -70,6 +70,21 @@ export const documentation = {
         start_datetime: <div>Starting datetime of the simulation. default is ‘1/1/1970’</div>
     },
 
+    // DRN
+    drn: {
+        ipakcb: <div>A flag that is used to determine if cell-by-cell budget data should be saved. If ipakcb is
+            non-zero cell-by-cell budget data will be saved. (default is None).</div>,
+        options: <div>Package options. (default is None).</div>,
+        extension: <div>Filename extension (default is ‘d’)</div>,
+        unitnumber: <div>File unit number (default is None).</div>,
+        filenames: <div>Filenames to use for the package and the output files. If filenames=None the package name will
+            be created using the model name and package extension and the cbc output name will be created using the
+            model name and .cbc extension (for example, modflowtest.cbc), if ipakcbc is a number greater than zero.
+            If a single string is passed the package will be set to the string and cbc output names will be created
+            using the model name and .cbc extension, if ipakcbc is a number greater than zero. To define the names for
+            all package files (input and output) the length of the list of strings should be 2. Default is None.</div>
+    },
+
     // FHB
     fhb: {
         nbdtim: <div>The number of times at which flow and head will be specified for all selected cells. (default is

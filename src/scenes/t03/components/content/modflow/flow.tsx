@@ -6,6 +6,7 @@ import FlopyPackages from '../../../../../core/model/flopy/packages/FlopyPackage
 import {
     FlopyModflowMfchd,
     FlopyModflowMfdis,
+    FlopyModflowMfdrn,
     FlopyModflowMffhb,
     FlopyModflowMfghb,
     FlopyModflowMfhob,
@@ -225,7 +226,7 @@ const flow = (props: IProps) => {
             case 'drn':
                 return (
                     <DrnPackageProperties
-                        mfPackage={iMf.getPackage(type)}
+                        mfPackage={iMf.getPackage(type) as FlopyModflowMfdrn}
                         mfPackages={iMf}
                         onChange={handleChangePackage}
                         readonly={readOnly}
