@@ -1,5 +1,5 @@
-import React, {SyntheticEvent, useState} from 'react';
-import {DropdownProps, Form, Grid, Header, Input, Label} from 'semantic-ui-react';
+import React, {useState} from 'react';
+import {Checkbox, Form, Grid, Header, Input, Label} from 'semantic-ui-react';
 import FlopyModflow from '../../../../../../core/model/flopy/packages/mf/FlopyModflow';
 import {IFlopyModflowMfwel} from '../../../../../../core/model/flopy/packages/mf/FlopyModflowMfwel';
 import {RainbowOrLegend} from '../../../../../../services/rainbowvis/types';
@@ -21,7 +21,7 @@ interface IProps {
 }
 
 const welPackageProperties = (props: IProps) => {
-    const [mfPackage, setMfPackage] = useState<IFlopyModflowMfwel>(props.mfPackage.toObject());
+    const [mfPackage] = useState<IFlopyModflowMfwel>(props.mfPackage.toObject());
     const {mfPackages, readonly} = props;
     const disPackage: FlopyModflowMfdis = mfPackages.getPackage('dis') as FlopyModflowMfdis;
 
@@ -42,12 +42,6 @@ const welPackageProperties = (props: IProps) => {
             affectedCellsLayers[lay][row][col] = 1;
         });
     }
-
-    const handleOnSelect = (e: SyntheticEvent<HTMLElement, Event>, data: DropdownProps) => {
-        const {name, value} = data;
-        setMfPackage({...mfPackage, [name]: value});
-        props.onChange(FlopyModflowMfwel.fromObject({...mfPackage, [name]: value}));
-    };
 
     const renderInfoPopup = (description: string | JSX.Element, title: string) => (
         <InfoPopup description={description} title={title}/>
@@ -76,58 +70,60 @@ const welPackageProperties = (props: IProps) => {
             </Grid>
 
             <Form.Group widths={'equal'}>
-                <Form.Field>
-                    <label>Save cell-by-cell budget data (ipakcb)</label>
-                    <Form.Dropdown
-                        options={[
-                            {key: 0, value: 0, text: 'false'},
-                            {key: 1, value: 1, text: 'true'},
-                        ]}
-                        placeholder="Select ipakcb"
-                        name="ipakcb"
-                        selection={true}
-                        value={mfPackage.ipakcb || 0}
+                <Form.Field width={14}>
+                    <label>Save cell-by-cell budget data (IPAKCB)</label>
+                    <Checkbox
+                        toggle={true}
                         disabled={readonly}
-                        onChange={handleOnSelect}
+                        name={'ipakcb'}
+                        value={mfPackage.ipakcb ? 1 : 0}
+                    />
+                </Form.Field>
+                <Form.Field width={1}>
+                    <InfoPopup
+                        description={documentation.wel.ipakcb}
+                        title={'IPAKCB'}
+                        position={'top right'}
+                        iconOutside={true}
                     />
                 </Form.Field>
                 <Form.Field>
-                    <label>Package options (options)</label>
+                    <label>Package options (OPTIONS)</label>
                     <Input
                         readOnly={true}
-                        name="options"
+                        name={'options'}
                         value={mfPackage.options || ''}
-                        icon={renderInfoPopup(documentation.options, 'options')}
+                        icon={renderInfoPopup(documentation.wel.options, 'OPTIONS')}
                     />
                 </Form.Field>
             </Form.Group>
 
-            <Form.Group widths="equal">
+            <Form.Group widths={'equal'}>
                 <Form.Field>
-                    <label>Filename extension (extension)</label>
+                    <label>Filename extension (EXTENSION)</label>
                     <Input
-                        readOnly={true}
-                        name="extension"
-                        value={mfPackage.extension || ''}
-                        icon={renderInfoPopup(documentation.extension, 'extension')}
+                        readOnly={readonly}
+                        name={'extension'}
+                        value={mfPackage.extension}
+                        icon={renderInfoPopup(documentation.wel.extension, 'EXTENSION')}
                     />
                 </Form.Field>
                 <Form.Field>
-                    <label>File unit number (unitnumber)</label>
+                    <label>File unit number (UNITNUMBER)</label>
                     <Input
-                        readOnly={true}
-                        name="unitnumber"
+                        readOnly={readonly}
+                        name={'unitnumber'}
                         value={mfPackage.unitnumber || ''}
-                        icon={renderInfoPopup(documentation.unitnumber, 'unitnumber')}
+                        icon={renderInfoPopup(documentation.wel.unitnumber, 'UNITNUMBER')}
                     />
                 </Form.Field>
                 <Form.Field>
-                    <label>Filename (filenames)</label>
+                    <label>Filename (FILENAMES)</label>
                     <Input
-                        readOnly={true}
-                        name="filenames"
+                        readOnly={readonly}
+                        name={'filenames'}
                         value={mfPackage.filenames || ''}
-                        icon={renderInfoPopup(documentation.filenames, 'filenames')}
+                        icon={renderInfoPopup(documentation.wel.filenames, 'FILENAMES')}
                     />
                 </Form.Field>
             </Form.Group>

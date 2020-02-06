@@ -4,11 +4,14 @@ import {RouteComponentProps, withRouter} from 'react-router-dom';
 import {Grid, Menu, Segment} from 'semantic-ui-react';
 import FlopyPackages from '../../../../../core/model/flopy/packages/FlopyPackages';
 import {
+    FlopyModflowMfchd,
     FlopyModflowMfdis,
     FlopyModflowMffhb,
+    FlopyModflowMfghb,
     FlopyModflowMfhob,
     FlopyModflowMfrch,
-    FlopyModflowMfriv, FlopyModflowMfwel
+    FlopyModflowMfriv,
+    FlopyModflowMfwel
 } from '../../../../../core/model/flopy/packages/mf';
 import FlopyModflow, {flowPackages, packagesMap} from '../../../../../core/model/flopy/packages/mf/FlopyModflow';
 import {IFlopyModflow, IFlopyModflowPackage} from '../../../../../core/model/flopy/packages/mf/FlopyModflow.type';
@@ -205,7 +208,7 @@ const flow = (props: IProps) => {
             case 'chd':
                 return (
                     <ChdPackageProperties
-                        mfPackage={iMf.getPackage(type)}
+                        mfPackage={iMf.getPackage(type) as FlopyModflowMfchd}
                         mfPackages={iMf}
                         onChange={handleChangePackage}
                         readonly={readOnly}
@@ -258,7 +261,7 @@ const flow = (props: IProps) => {
             case 'ghb':
                 return (
                     <GhbPackageProperties
-                        mfPackage={iMf.getPackage(type)}
+                        mfPackage={iMf.getPackage(type) as FlopyModflowMfghb}
                         mfPackages={iMf}
                         onChange={handleChangePackage}
                         readonly={readOnly}
