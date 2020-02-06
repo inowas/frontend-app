@@ -1,5 +1,5 @@
 import React, {ChangeEvent, useState} from 'react';
-import {Form, Grid, Header, Input, InputOnChangeData, PopupProps} from 'semantic-ui-react';
+import {Form, Grid, Header, Input, Label, PopupProps} from 'semantic-ui-react';
 import {
     FlopyModflowMfdis,
     FlopyModflowMfhob
@@ -42,12 +42,21 @@ const hobPackageProperties = (props: IProps) => {
         });
     }
 
-    const handleOnChange = (e: ChangeEvent<HTMLInputElement>, {name, value}: InputOnChangeData) => {
+    const handleOnChange = (e: ChangeEvent<HTMLInputElement>) => {
+        const {name, value} = e.target;
         return setMfPackage({...mfPackage, [name]: value});
     };
 
-    const handleOnBlur = () => {
-        return props.onChange(FlopyModflowMfhob.fromObject(mfPackage));
+    const handleOnBlur = (cast?: (v: any) => any) => (e: ChangeEvent<HTMLInputElement>) => {
+        const {name} = e.target;
+        let {value} = e.target;
+
+        if (cast) {
+            value = cast(value);
+        }
+
+        setMfPackage({...mfPackage, [name]: value});
+        props.onChange(FlopyModflowMfhob.fromObject({...mfPackage, [name]: value}));
     };
 
     const renderInfoPopup = (
@@ -61,12 +70,12 @@ const hobPackageProperties = (props: IProps) => {
 
     return (
         <Form>
+            <Header as={'h3'} dividing={true}>HOB: Head Observation Package</Header>
             <Grid divided={'vertically'}>
-                <Header as={'h2'}>Head Observation Package</Header>
                 <Grid.Row columns={2}>
                     {affectedCellsLayers.map((layer: any, idx) => (
                         <Grid.Column key={idx}>
-                            <Header as={'p'}>Layer {idx + 1}</Header>
+                            <Label>Layer {idx + 1}</Label>
                             <RasterDataImage
                                 data={layer}
                                 gridSize={GridSize.fromData(layer)}
@@ -81,41 +90,41 @@ const hobPackageProperties = (props: IProps) => {
                 </Grid.Row>
             </Grid>
 
-            <Form.Group widths="equal">
+            <Form.Group widths={'equal'}>
                 <Form.Field>
-                    <label>Unit number (iuhobsv)</label>
+                    <label>Unit number (IUHOBSV)</label>
                     <Input
                         readOnly={readonly}
-                        name="iuhobsv"
-                        type="number"
-                        value={mfPackage.iuhobsv || ''}
-                        icon={renderInfoPopup(documentation.iuhobsv, 'iuhobsv')}
-                        onBlur={handleOnBlur}
+                        name={'iuhobsv'}
+                        type={'number'}
+                        value={mfPackage.iuhobsv}
+                        icon={<InfoPopup description={documentation.hob.iuhobsv} title={'IUHOBSV'}/>}
                         onChange={handleOnChange}
+                        onBlur={handleOnBlur(parseFloat)}
                     />
                 </Form.Field>
                 <Form.Field>
-                    <label>Dry cell equivalent (hobdry)</label>
+                    <label>Dry cell equivalent (HOBDRY)</label>
                     <Input
                         readOnly={readonly}
-                        name="hobdry"
-                        type="number"
-                        value={mfPackage.hobdry || ''}
-                        icon={renderInfoPopup(documentation.hobdry, 'hobdry')}
-                        onBlur={handleOnBlur}
+                        name={'hobdry'}
+                        type={'number'}
+                        value={mfPackage.hobdry}
+                        icon={<InfoPopup description={documentation.hob.hobdry} title={'HOBDRY'}/>}
                         onChange={handleOnChange}
+                        onBlur={handleOnBlur(parseFloat)}
                     />
                 </Form.Field>
                 <Form.Field>
-                    <label>Time step multiplier (tomulth)</label>
+                    <label>Time step multiplier (TOMULTH)</label>
                     <Input
                         readOnly={readonly}
-                        name="tomulth"
-                        type="number"
-                        value={mfPackage.tomulth || ''}
-                        icon={renderInfoPopup(documentation.tomulth, 'tomulth')}
-                        onBlur={handleOnBlur}
+                        name={'tomulth'}
+                        type={'number'}
+                        value={mfPackage.tomulth}
+                        icon={<InfoPopup description={documentation.hob.tomulth} title={'TOMULTH'}/>}
                         onChange={handleOnChange}
+                        onBlur={handleOnBlur(parseFloat)}
                     />
                 </Form.Field>
             </Form.Group>
