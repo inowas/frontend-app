@@ -50,7 +50,7 @@ const contentWrapper = (props: IProps) => {
     }
 
     if (property === 'observations') {
-        return (<Content.Observations/>);
+        return (<Content.Statistics/>);
     }
 
     if (property === 'modflow') {
