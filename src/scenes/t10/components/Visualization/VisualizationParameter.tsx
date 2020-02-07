@@ -123,8 +123,6 @@ const visualizationParameter = (props: IProps) => {
     const [data, setData] = useState<IParameterWithMetaData[]>([]);
     const [filteredData, setFilteredData] = useState<IParameterWithMetaData[]>([]);
 
-    const [showScale, setShowScale] = useState<boolean>(false);
-
     const [tsData, setTsData] = useState<ITimeStamps>({
         minT: 0, maxT: 0, left: {min: 0, max: 0}, right: {min: 0, max: 0}, timestamps: []
     });
@@ -232,7 +230,9 @@ const visualizationParameter = (props: IProps) => {
     };
 
     const handleClickChart = (e: any) => {
-        return setTimestamp(getClosestValue(filteredTsData.timestamps, e.xValue));
+        if (e) {
+            return setTimestamp(getClosestValue(filteredTsData.timestamps, e.xValue));
+        }
     };
 
     const handleBlurRange = (range: [number, number]) => {
@@ -253,8 +253,6 @@ const visualizationParameter = (props: IProps) => {
     };
 
     const handleTogglePlay = () => setIsAnimated(!isAnimated);
-
-    const handleToggleScale = () => setShowScale(!showScale);
 
     if (filteredData.length === 0) {
         return (
@@ -401,38 +399,15 @@ const visualizationParameter = (props: IProps) => {
                 </Grid>
             </Segment>
             <Segment color={'grey'} raised={true}>
-                <Grid>
-                    <Grid.Row>
-                        <Grid.Column>
-                            <Button.Group>
-                                <Popup
-                                    content="Show color scale"
-                                    trigger={
-                                        <Button
-                                            onClick={handleToggleScale}
-                                            icon="chart pie"
-                                            primary={showScale}
-                                        />
-                                    }
-                                />
-                            </Button.Group>
-                        </Grid.Column>
-                    </Grid.Row>
-                    <Grid.Row>
-                        <Grid.Column>
-                            <VisualizationMap
-                                showScale={showScale}
-                                timestamp={timestamp}
-                                timeRef={timeRef.current}
-                                tsData={tsData}
-                                parameters={props.parameters}
-                                data={data}
-                                rtm={props.rtm}
-                                isAnimated={isAnimated}
-                            />
-                        </Grid.Column>
-                    </Grid.Row>
-                </Grid>
+                <VisualizationMap
+                    timestamp={timestamp}
+                    timeRef={timeRef.current}
+                    tsData={tsData}
+                    parameters={props.parameters}
+                    data={data}
+                    rtm={props.rtm}
+                    isAnimated={isAnimated}
+                />
             </Segment>
         </div>
     );

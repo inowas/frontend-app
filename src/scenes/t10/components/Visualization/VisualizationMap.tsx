@@ -1,8 +1,10 @@
 import {LatLngExpression} from 'leaflet';
-import React from 'react';
+import _ from 'lodash';
+import React, {SyntheticEvent, useState} from 'react';
 import {CircleMarker, Map, Tooltip} from 'react-leaflet';
+import {Button, Dropdown, DropdownProps, Grid, Popup} from 'semantic-ui-react';
 import {BoundingBox} from '../../../../core/model/geometry';
-import { Rtm } from '../../../../core/model/rtm';
+import {Rtm} from '../../../../core/model/rtm';
 import {ISensor} from '../../../../core/model/rtm/Sensor.type';
 import {BasicTileLayer} from '../../../../services/geoTools/tileLayers';
 import {ColorLegend} from '../../../shared/rasterData';
@@ -15,17 +17,44 @@ interface IProps {
     isAnimated: boolean;
     parameters: IParameterWithMetaData[];
     rtm: Rtm;
-    showScale: boolean;
     timeRef: number;
     timestamp: number;
     tsData: ITimeStamps;
 }
 
 const visualizationMap = (props: IProps) => {
-    const rainbow = rainbowFactory({
-        min: Math.min(props.tsData.left.min, props.tsData.right.min),
-        max: Math.max(props.tsData.left.max, props.tsData.right.max)
-    }, heatMapColors.default);
+    const [selectedParameter, setSelectedParameter] = useState<string | undefined>(undefined);
+    const [showScale, setShowScale] = useState<boolean>(false);
+
+    const getMinMax = () => {
+        const params = props.parameters.filter((p) => p.parameter.type === selectedParameter);
+        const left = params.filter((p) => p.meta.axis === 'left');
+        const right = params.filter((p) => p.meta.axis === 'right');
+        if (left.length > 0 && right.length > 0) {
+            return {
+                min: Math.min(props.tsData.left.min, props.tsData.right.min),
+                max: Math.max(props.tsData.left.max, props.tsData.right.max)
+            };
+        }
+        if (left.length > 0) {
+            return {
+                min: props.tsData.left.min,
+                max: props.tsData.left.max
+            };
+        }
+        if (right.length > 0) {
+            return {
+                min: props.tsData.right.min,
+                max: props.tsData.right.max
+            };
+        }
+        return {
+            min: 0,
+            max: 0
+        };
+    };
+
+    const rainbow = rainbowFactory(getMinMax(), heatMapColors.default);
 
     const calculateBoundingBox = () => {
         return BoundingBox.fromPoints(
@@ -39,6 +68,8 @@ const visualizationMap = (props: IProps) => {
             })
         );
     };
+
+    const handleToggleScale = () => setShowScale(!showScale);
 
     const renderLegend = () => {
         const gradients = rainbow.gradients.slice().reverse();
@@ -62,7 +93,7 @@ const visualizationMap = (props: IProps) => {
             let fillOpacity = 0.8;
             let value = null;
 
-            if (props.showScale && props.tsData) {
+            if (showScale && props.tsData) {
                 const row = parameter[0].data.filter((r) => r.x === (props.isAnimated ? props.tsData.timestamps[
                     props.timeRef] : props.timestamp));
                 if (row.length > 0) {
@@ -97,25 +128,66 @@ const visualizationMap = (props: IProps) => {
         return null;
     };
 
+    const handleChangeParameter = (e: SyntheticEvent, {value}: DropdownProps) => {
+        if (typeof value === 'string') {
+            return setSelectedParameter(value);
+        }
+    };
+
+    const selectOptions = _.uniq(props.parameters.map((p) => p.parameter.type)).map((p) => {
+        return {key: p, value: p, text: p};
+    });
+
     return (
-        <Map
-            maxZoom={19}
-            bounds={calculateBoundingBox().getBoundsLatLng()}
-            style={{
-                height: '400px',
-                width: '100%'
-            }}
-        >
-            <BasicTileLayer/>
-            {props.rtm.sensors.all.filter(
-                (s) => props.parameters.filter(
-                    (p) => p.meta.active && p.sensor.id === s.id
-                ).length > 0
-            ).map((s, sKey) => {
-                return renderMarker(sKey, s.toObject());
-            })}
-            {props.showScale && renderLegend()}
-        </Map>
+        <Grid>
+            <Grid.Row>
+                <Grid.Column>
+                        <Popup
+                            content="Show color scale"
+                            trigger={
+                                <Button
+                                    onClick={handleToggleScale}
+                                    icon="chart pie"
+                                    primary={showScale}
+                                />
+                            }
+                        />
+                        <Dropdown
+                            search={true}
+                            selection={true}
+                            onChange={handleChangeParameter}
+                            options={selectOptions}
+                            placeholder="Select parameter"
+                            value={selectedParameter}
+                        />
+                </Grid.Column>
+            </Grid.Row>
+            <Grid.Row>
+                <Grid.Column>
+                    {selectedParameter &&
+                    <Map
+                        maxZoom={19}
+                        bounds={calculateBoundingBox().getBoundsLatLng()}
+                        style={{
+                            height: '400px',
+                            width: '100%',
+                            zIndex: 1
+                        }}
+                    >
+                        <BasicTileLayer/>
+                        {props.rtm.sensors.all.filter(
+                            (s) => props.parameters.filter(
+                                (p) => p.meta.active && p.sensor.id === s.id && p.parameter.type === selectedParameter
+                            ).length > 0
+                        ).map((s, sKey) => {
+                            return renderMarker(sKey, s.toObject());
+                        })}
+                        {showScale && renderLegend()}
+                    </Map>
+                    }
+                </Grid.Column>
+            </Grid.Row>
+        </Grid>
     );
 };
 
