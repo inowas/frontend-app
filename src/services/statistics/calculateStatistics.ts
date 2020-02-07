@@ -1,5 +1,5 @@
 import gaussian from 'gaussian';
-import {cloneDeep} from 'lodash';
+import {sortBy, uniq} from 'lodash';
 import math from 'mathjs';
 import {IHobData, IStatistics} from '../../scenes/t03/components/content/observation/statistics';
 
@@ -14,6 +14,8 @@ export interface ILinearRegression {
     sy: number;
     sx: number;
     see: number;
+    eq: string;
+    exec: (v: number) => number;
 }
 
 /**
@@ -21,7 +23,7 @@ export interface ILinearRegression {
  *
  * https://stackoverflow.com/a/42594819/4908723
  */
-const linearRegression = (x: number[], y: number[]) => {
+const linearRegression = (x: number[], y: number[]): ILinearRegression => {
     const n = y.length;
     let sx = 0;
     let sy = 0;
@@ -61,7 +63,10 @@ const linearRegression = (x: number[], y: number[]) => {
         sst: math.round(sst, 4) as number,
         sy: math.round(sy, 4) as number,
         sx: math.round(sx, 4) as number,
-        see: math.round(see, 4) as number
+        see: math.round(see, 4) as number,
+        eq: `f(x) = ${math.round(slope, 3)}x ${intercept < 0 ? '-' : '+'}` +
+            ` ${math.abs(math.round(intercept, 3) as number)}`,
+        exec: (v: number) => v * slope + intercept,
     } as ILinearRegression;
 };
 
@@ -75,76 +80,93 @@ const calculateNpf = (x: number, n: number) => {
     return distribution.ppf((x - a) / (n + 1 - 2 * a));
 };
 
-const calculateStatistics = (data: IHobData): IStatistics | null => {
+const calculateResidualStats = (residuals: number[], observed: number[]) => {
+    const rmse = math.sqrt(residuals.map((r) => r * r).reduce((a, b) => a + b) / residuals.length);
+    return {
+        std: math.std(residuals, 'uncorrected'),
+        sse: math.std(residuals, 'uncorrected') / math.sqrt(residuals.length),
+        rmse,
+        nrmse: rmse / (math.max(observed) - math.min(observed)),
+        max: math.max(residuals),
+        mean: math.mean(residuals),
+        min: math.min(residuals),
+    };
+};
 
-    const n = data.length;
+export const calculateStatistics = (data: IHobData, exclude: string[] = []): IStatistics | null => {
+
+    const recalculatedData = data
+        .filter((d) => {
+            let excluded = false;
+            exclude.forEach((e) => {
+                if (d.name.indexOf(e) > -1) {
+                    excluded = true;
+                }
+            });
+
+            return !excluded;
+        })
+        .map((d) => ({
+            ...d,
+            residual: d.simulated - d.observed,
+            absResidual: Math.abs(d.simulated - d.observed)
+        }));
+
+    const n = recalculatedData.length;
 
     if (n < 2) {
         return null;
     }
 
-    const simulated = data.map((d) => d.simulated);
-    const observed = data.map((d) => d.observed);
-    const oMean = observed.reduce((a, b) => a + b) / n;
+    recalculatedData.sort((a, b) => a.residual - b.residual);
+    const recalculatedDataWithNpf = recalculatedData.map((d, idx) => (
+        {...d, npf: math.round(calculateNpf(idx + 1, n), 3) as number}
+    ));
 
-    const residuals = data.map((d) => d.simulated - d.observed);
-    const rMean = residuals.reduce((a, b) => a + b) / n;
-
-    const rAbs = residuals.map((d) => Math.abs(d));
-    const rAbsMean = (rAbs.reduce((a, b) => a + b)) / rAbs.length;
-    const rAbsMin = Math.min(...rAbs);
-    const rAbsMax = Math.max(...rAbs);
-
-    // standard deviation
-    const std = math.std(residuals, 'uncorrected');
-
-    // standard error
-    const sse = std / math.sqrt(n);
-
-    // root mean square error
-    const rmse = math.sqrt(residuals.map((d) => d * d).reduce((a, b) => a + b) / n);
-
-    const R = linearRegression(observed, simulated).r;
-    const R2 = linearRegression(observed, simulated).r2;
-
-    const nrmse = rmse / (math.max(observed) - math.min(observed));
-
-    const Z = 1.96;
-
-    const stdObserved = Math.sqrt(observed.map((o) => Math.pow(o - oMean, 2)).reduce((a, b) => a + b) / n);
-    const stdSimulated = math.std(simulated, 'uncorrected');
-
-    const deltaStd = Z * stdObserved / math.sqrt(n);
-
-    const rankedResiduals = cloneDeep(residuals).sort((a, b) => a - b).map((r) => math.round(r, 2)) as number[];
-
-    const npf = new Array(n).fill(1)
-        .map((v, idx) => idx + 1)
-        .map((x) => calculateNpf(x, n))
-        .map((v) => math.round(v, 3)) as number[];
+    recalculatedDataWithNpf.sort((a, b) => ('' + a.name).localeCompare(b.name));
 
     return {
-        observed,
-        simulated,
-        n,
-        rMax: rAbsMax,
-        rMean,
-        rMin: rAbsMin,
-        absRMean: rAbsMean,
-        sse,
-        rmse,
-        R,
-        R2,
-        nrmse,
-        Z,
-        stdObserved,
-        stdSimulated,
-        deltaStd,
-        weightedResiduals: residuals.map((r) => math.round(r, 2) as number),
-        linearRegressionOS: linearRegression(observed, simulated),
-        rankedResiduals,
-        npf,
-        linearRegressionRN: linearRegression(rankedResiduals, npf),
+        names: uniq(data.map((d) => {
+            let {name} = d;
+            name = name.replace(/\d+$/, '');
+            if (name.endsWith('.') || name.endsWith('_')) {
+                return name.substr(0, name.length - 1);
+            }
+
+            return name;
+        })),
+        data: recalculatedDataWithNpf,
+        stats: {
+            observed: {
+                std: math.std(recalculatedData.map((d) => d.observed), 'uncorrected'),
+                z: 1.96,
+                deltaStd: 1.96 * math.std(recalculatedData.map((d) => d.observed), 'uncorrected') / math.sqrt(n)
+            },
+            simulated: {
+                std: math.std(recalculatedData.map((d) => d.simulated), 'uncorrected'),
+            },
+            residual: calculateResidualStats(
+                recalculatedData.map((d) => d.residual),
+                recalculatedData.map((d) => d.observed)
+            ),
+            absResidual: {
+                min: math.min(recalculatedData.map((d) => d.absResidual)),
+                max: math.max(recalculatedData.map((d) => d.absResidual)),
+                mean: math.mean(recalculatedData.map((d) => d.absResidual))
+            }
+        },
+        linRegObsSim: linearRegression(
+            recalculatedData.map((d) => d.observed),
+            recalculatedData.map((d) => d.simulated)
+        ),
+        linRegResSim: linearRegression(
+            recalculatedData.map((d) => d.simulated),
+            recalculatedData.map((d) => d.residual)
+        ),
+        linRegObsRResNpf: linearRegression(
+            sortBy(recalculatedDataWithNpf.map((d) => d.residual), ['npf']),
+            sortBy(recalculatedDataWithNpf.map((d) => d.npf), ['npf']) as number[],
+        )
     };
 };
 

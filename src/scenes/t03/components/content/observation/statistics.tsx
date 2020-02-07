@@ -1,4 +1,5 @@
-import React, {useEffect, useState} from 'react';
+import math from 'mathjs';
+import React, {ReactNode, useEffect, useState} from 'react';
 import {useSelector} from 'react-redux';
 import {
     CartesianGrid,
@@ -23,28 +24,76 @@ export type IHobData = Array<{
 }>;
 
 export interface IStatistics {
-    observed: number[];
-    simulated: number[];
-    n: number;
-    rMax: number;
-    rMin: number;
-    rMean: number;
-    absRMean: number;
-    sse: number;
-    rmse: number;
-    nrmse: number;
-    R: number;
-    R2: number;
-    Z: number;
-    stdObserved: number;
-    stdSimulated: number;
-    deltaStd: number;
-    weightedResiduals: number[];
-    linearRegressionOS: ILinearRegression;
-    rankedResiduals: number[];
-    npf: number[];
-    linearRegressionRN: ILinearRegression;
+    names: string[];
+    data: Array<{
+        name: string;
+        simulated: number;
+        observed: number;
+        residual: number;
+        absResidual: number;
+        npf: number
+    }>;
+    stats: {
+        observed: {
+            std: number;
+            z: number;
+            deltaStd: number;
+        };
+        simulated: {
+            std: number;
+        };
+        residual: {
+            std: number;
+            sse: number;
+            rmse: number;
+            nrmse: number;
+            min: number;
+            max: number;
+            mean: number;
+        },
+        absResidual: {
+            max: number;
+            mean: number
+            min: number;
+        }
+    };
+    linRegObsSim: ILinearRegression;
+    linRegResSim: ILinearRegression;
+    linRegObsRResNpf: ILinearRegression;
 }
+
+const convenientColors = [
+    '#e6194B',
+    '#3cb44b',
+    '#ffe119',
+    '#4363d8',
+    '#f58231',
+    '#911eb4',
+    '#42d4f4',
+    '#f032e6',
+    '#bfef45',
+    '#fabebe',
+    '#469990',
+    '#e6beff',
+    '#9A6324',
+    '#fffac8',
+    '#800000',
+    '#aaffc3',
+    '#808000',
+    '#ffd8b1',
+    '#000075',
+    '#a9a9a9',
+    '#ffffff',
+    '#000000',
+];
+
+const diagramLabel = (content: ReactNode) => (
+    <div style={{position: 'absolute', bottom: 100, right: 80}}>
+        <div style={{color: 'red', padding: 20, border: '1px solid red', backgroundColor: 'white'}}>
+            {content}
+        </div>
+    </div>
+);
 
 const observationStatistics = () => {
 
@@ -76,8 +125,14 @@ const observationStatistics = () => {
         }
     }, [hobData]);
 
-    const chartObservedVsCalculatedHeads = (simulated: number[], observed: number[], deltaStd: number) => {
-        const data = simulated.map((s, i) => ({y: s, x: observed[i]}));
+    const chartObservedVsCalculatedHeads = (stats: IStatistics) => {
+
+        const simulated = stats.data.map((d) => d.simulated);
+        const observed = stats.data.map((d) => d.observed);
+        const deltaStd = stats.stats.observed.deltaStd;
+        const {linRegObsSim, names} = stats;
+
+        const data = stats.data.map((d) => ({x: d.observed, y: d.simulated, name: d.name}));
 
         const min = Math.floor(Math.min(...observed, ...simulated));
         const max = Math.ceil(Math.max(...observed, ...simulated));
@@ -106,23 +161,35 @@ const observationStatistics = () => {
                             domain={['auto', 'auto']}
                             label={{value: 'Simulated Head [m]', angle: -90, position: 'left'}}
                         />
-                        <Scatter name={'Observed vs. calculated Heads'} data={data} fill={'#8884d8'}/>
+
+                        {names.map((n) => data.filter((d) => d.name.startsWith(n)))
+                            .map((d, idx) => (
+                                <Scatter name={d[0].name} key={idx} data={d} fill={convenientColors[idx]}/>
+                            ))
+                        }
                         <Scatter data={line} line={{stroke: 'black', strokeWidth: 2}} shape={() => null}/>
                         <Scatter data={linePlusDelta} line={{stroke: 'red', strokeWidth: 2}} shape={() => null}/>
                         <Scatter data={lineMinusDelta} line={{stroke: 'red', strokeWidth: 2}} shape={() => null}/>
                         <Tooltip cursor={{strokeDasharray: '3 3'}}/>
                     </ScatterChart>
                 </ResponsiveContainer>
+                {diagramLabel(
+                    <div>
+                        <p>{linRegObsSim.eq}</p>
+                        <p>R<sup>2</sup> = {linRegObsSim.r}</p>
+                    </div>
+                )}
             </Segment>
         );
     };
 
-    const chartWeightedResidualsVsSimulatedHeads = (
-        simulated: number[],
-        weightedResiduals: number[],
-        linRegressSW: ILinearRegression
-    ) => {
-        const data = simulated.map((s, i) => ({x: s, y: weightedResiduals[i]}));
+    const chartWeightedResidualsVsSimulatedHeads = (stats: IStatistics) => {
+        const simulated = stats.data.map((d) => d.simulated);
+        const weightedResiduals = stats.data.map((d) => d.residual);
+        const {linRegResSim, names} = stats;
+
+        const data = stats.data.map((d) => ({x: d.simulated, y: d.residual, name: d.name}));
+
         const xMin = Math.floor(Math.min(...simulated));
         const xMax = Math.ceil(Math.max(...simulated));
         const yMin = Math.floor(Math.min(...weightedResiduals));
@@ -130,7 +197,13 @@ const observationStatistics = () => {
 
         // noinspection JSSuspiciousNameCombination
         const domainY = Math.ceil(Math.max(yMax, yMin));
-        const line = [{x: xMin, y: yMin}, {x: xMax, y: yMax}];
+        const line = [{
+            x: xMin,
+            y: linRegResSim.exec(xMin)
+        }, {
+            x: xMax,
+            y: linRegResSim.exec(xMax)
+        }];
 
         return (
             <Segment raised={true}>
@@ -153,36 +226,40 @@ const observationStatistics = () => {
                             domain={[-domainY, domainY]}
                             label={{value: 'Residual', angle: -90, position: 'left'}}
                         />
-                        <Scatter name={'Weighted residuals vs. simulated heads'} data={data} fill={'black'}/>
+                        {names.map((n) => data.filter((d) => d.name.startsWith(n)))
+                            .map((d, idx) => (
+                                <Scatter name={d[0].name} key={idx} data={d} fill={convenientColors[idx]}/>
+                            ))
+                        }
                         <Scatter data={line} line={{stroke: 'red', strokeWidth: 2}} shape={() => null}/>
                         <ReferenceLine y={0} stroke="blue" strokeWidth={2}/>
                         <Tooltip cursor={{strokeDasharray: '3 3'}}/>
                     </ScatterChart>
                 </ResponsiveContainer>
-                <div className="diagram-labels-right">
-                    <div className="diagram-label" style={{color: 'red'}}>
-                        {<p>f(x) = {linRegressSW.slope.toFixed(3)}x + {linRegressSW.intercept.toFixed(3)}</p>}
+                {diagramLabel(
+                    <div>
+                        <p>{linRegResSim.eq}</p>
+                        <p>R<sup>2</sup> = {linRegResSim.r}</p>
                     </div>
-                </div>
+                )}
             </Segment>
         );
     };
 
-    const chartRankedResidualsAgainstNormalProbability = (
-        npf: number[],
-        rankedResiduals: number[],
-        linRegressRN: ILinearRegression
-    ) => {
-        const data = npf.map((n, i) => ({y: n, x: rankedResiduals[i]}));
-        const xMin = Math.floor(Math.min(...rankedResiduals));
-        const xMax = Math.ceil(Math.max(...rankedResiduals));
+    const chartRankedResidualsAgainstNormalProbability = (stats: IStatistics) => {
+
+        const {linRegObsRResNpf, names} = stats;
+
+        const data = stats.data.map((d) => ({x: d.residual, y: d.npf, name: d.name}));
+        const xMin = math.floor(stats.stats.residual.min);
+        const xMax = math.ceil(stats.stats.residual.max);
 
         const line = [{
             x: xMin,
-            y: linRegressRN.slope * xMin + linRegressRN.intercept
+            y: linRegObsRResNpf.exec(xMin)
         }, {
             x: xMax,
-            y: linRegressRN.slope * xMax + linRegressRN.intercept
+            y: linRegObsRResNpf.exec(xMax)
         }];
 
         return (
@@ -206,16 +283,21 @@ const observationStatistics = () => {
                             domain={['auto', 'auto']}
                             label={{value: 'Normal Probability Function', angle: -90, position: 'left'}}
                         />
-                        <Scatter name={'NPF vs. ranked residuals'} data={data} fill={'black'}/>
+                        {names.map((n) => data.filter((d) => d.name.startsWith(n)))
+                            .map((d, idx) => (
+                                <Scatter name={d[0].name} key={idx} data={d} fill={convenientColors[idx]}/>
+                            ))
+                        }
                         <Scatter data={line} line={{stroke: 'red', strokeWidth: 2}} shape={() => null}/>
                         <Tooltip cursor={{strokeDasharray: '3 3'}}/>
                     </ScatterChart>
                 </ResponsiveContainer>
-                <div className="diagram-labels-right">
-                    <div className="diagram-label" style={{color: 'red'}}>
-                        <p>f(x) = {linRegressRN.slope.toFixed(3)}x + {linRegressRN.intercept.toFixed(3)}</p>
+                {diagramLabel(
+                    <div>
+                        <p>{linRegObsRResNpf.eq}</p>
+                        <p>R<sup>2</sup> = {linRegObsRResNpf.r}</p>
                     </div>
-                </div>
+                )}
             </Segment>
         );
     };
@@ -244,61 +326,61 @@ const observationStatistics = () => {
                                         <Table.Row>
                                             <Table.Cell>Number of data points</Table.Cell>
                                             <Table.Cell>n [-]</Table.Cell>
-                                            <Table.Cell>{statistics.n}</Table.Cell>
+                                            <Table.Cell>{statistics.data.length}</Table.Cell>
                                             <Table.Cell>-</Table.Cell>
                                         </Table.Row>
                                         <Table.Row>
                                             <Table.Cell>Maximum Absolute Residual</Table.Cell>
                                             <Table.Cell>R<sub>MAX</sub> </Table.Cell>
-                                            <Table.Cell>{statistics.rMax.toFixed(3)}</Table.Cell>
+                                            <Table.Cell>{statistics.stats.absResidual.max.toFixed(3)}</Table.Cell>
                                             <Table.Cell>m</Table.Cell>
                                         </Table.Row>
                                         <Table.Row>
                                             <Table.Cell>Minimum Absolute Residual</Table.Cell>
                                             <Table.Cell>R<sub>MIN</sub></Table.Cell>
-                                            <Table.Cell>{statistics.rMin.toFixed(3)}</Table.Cell>
+                                            <Table.Cell>{statistics.stats.absResidual.min.toFixed(3)}</Table.Cell>
                                             <Table.Cell>m</Table.Cell>
                                         </Table.Row>
                                         <Table.Row>
                                             <Table.Cell>Residual Mean</Table.Cell>
                                             <Table.Cell>R<sub>MEAN</sub></Table.Cell>
-                                            <Table.Cell>{statistics.rMean.toFixed(3)}</Table.Cell>
+                                            <Table.Cell>{statistics.stats.residual.mean.toFixed(3)}</Table.Cell>
                                             <Table.Cell>m</Table.Cell>
                                         </Table.Row>
                                         <Table.Row>
                                             <Table.Cell>Absolute residual Mean</Table.Cell>
                                             <Table.Cell>|R<sub>MEAN</sub>|</Table.Cell>
-                                            <Table.Cell>{statistics.absRMean.toFixed(3)}</Table.Cell>
+                                            <Table.Cell>{statistics.stats.residual.mean.toFixed(3)}</Table.Cell>
                                             <Table.Cell>m</Table.Cell>
                                         </Table.Row>
                                         <Table.Row>
                                             <Table.Cell>Standard error of estimation</Table.Cell>
                                             <Table.Cell>SSE</Table.Cell>
-                                            <Table.Cell>{statistics.sse.toFixed(3)}</Table.Cell>
+                                            <Table.Cell>{statistics.stats.residual.sse.toFixed(3)}</Table.Cell>
                                             <Table.Cell>-</Table.Cell>
                                         </Table.Row>
                                         <Table.Row>
                                             <Table.Cell>Root Mean Squared Error</Table.Cell>
                                             <Table.Cell>RMSE</Table.Cell>
-                                            <Table.Cell>{statistics.rmse.toFixed(3)}</Table.Cell>
+                                            <Table.Cell>{statistics.stats.residual.rmse.toFixed(3)}</Table.Cell>
                                             <Table.Cell>m</Table.Cell>
                                         </Table.Row>
                                         <Table.Row>
                                             <Table.Cell>Normalized Root Mean Squared Error</Table.Cell>
                                             <Table.Cell>NRMSE</Table.Cell>
-                                            <Table.Cell>{statistics.nrmse.toFixed(3)}</Table.Cell>
+                                            <Table.Cell>{statistics.stats.residual.nrmse.toFixed(3)}</Table.Cell>
                                             <Table.Cell>-</Table.Cell>
                                         </Table.Row>
                                         <Table.Row>
                                             <Table.Cell>Correlation Coefficient Pearson R</Table.Cell>
                                             <Table.Cell>R</Table.Cell>
-                                            <Table.Cell>{statistics.R.toFixed(3)}</Table.Cell>
+                                            <Table.Cell>{statistics.linRegObsSim.r.toFixed(3)}</Table.Cell>
                                             <Table.Cell>-</Table.Cell>
                                         </Table.Row>
                                         <Table.Row>
                                             <Table.Cell>Coefficient of determination</Table.Cell>
                                             <Table.Cell>R<sup>2</sup></Table.Cell>
-                                            <Table.Cell>{statistics.R2.toFixed(3)}</Table.Cell>
+                                            <Table.Cell>{statistics.linRegObsSim.r2.toFixed(3)}</Table.Cell>
                                             <Table.Cell>-</Table.Cell>
                                         </Table.Row>
                                     </Table.Body>
@@ -306,25 +388,13 @@ const observationStatistics = () => {
                             </Segment>
 
                             <Header size={'large'}>Simulated vs. Observed Values</Header>
-                            {chartObservedVsCalculatedHeads(
-                                statistics.simulated,
-                                statistics.observed,
-                                statistics.deltaStd
-                            )}
+                            {chartObservedVsCalculatedHeads(statistics)}
 
                             <Header size={'large'}>Weighted residuals vs. simulated heads</Header>
-                            {chartWeightedResidualsVsSimulatedHeads(
-                                statistics.simulated,
-                                statistics.weightedResiduals,
-                                statistics.linearRegressionOS
-                            )}
+                            {chartWeightedResidualsVsSimulatedHeads(statistics)}
 
                             <Header size={'large'}>Ranked residuals against normal probability</Header>
-                            {chartRankedResidualsAgainstNormalProbability(
-                                statistics.npf,
-                                statistics.rankedResiduals,
-                                statistics.linearRegressionRN
-                            )}
+                            {chartRankedResidualsAgainstNormalProbability(statistics)}
                         </Container>
                         }
                     </Grid.Column>
