@@ -20,6 +20,7 @@ export interface ISensorParameter {
     dataSources: IDataSource[];
     filter?: [];
     processings: IProcessing[];
+    unit?: string;
 }
 
 export type DataSource = FileDataSource | PrometheusDataSource | SensorDataSource;

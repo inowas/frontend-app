@@ -7,7 +7,7 @@ import ProcessingCollection from '../../../core/model/rtm/processing/ProcessingC
 import TimeProcessing from '../../../core/model/rtm/processing/TimeProcessing';
 import ValueProcessing from '../../../core/model/rtm/processing/ValueProcessing';
 import {ISensorParameter} from '../../../core/model/rtm/Sensor.type';
-import {parameterList, processingList} from '../defaults';
+import {processingList} from '../defaults';
 import {
     DataSourcesChart,
     ProcessingTimeRange,
@@ -191,7 +191,7 @@ const processing = (props: IProps) => {
                 <Grid.Column>
                     <Segment color={'red'} raised={true}>
                         <Header as={'h2'} dividing={true}>
-                            {parameterList.filter((i) => i.parameter === props.parameter.type)[0].text}
+                            {props.parameter.description}
                         </Header>
                         <Label color={'blue'} ribbon={true} size={'large'}>
                             Processings
@@ -307,7 +307,11 @@ const processing = (props: IProps) => {
                         <Label color={'blue'} ribbon={true} size={'large'}>
                             Chart
                         </Label>
-                        <DataSourcesChart dataSources={dataSourceCollection} processings={processingCollection}/>
+                        <DataSourcesChart
+                            dataSources={dataSourceCollection}
+                            processings={processingCollection}
+                            unit={props.parameter.unit !== '' ? props.parameter.unit : undefined}
+                        />
                     </Segment>
                     }
 

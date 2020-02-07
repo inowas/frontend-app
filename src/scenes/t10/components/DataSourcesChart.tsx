@@ -10,6 +10,7 @@ import {IDateTimeValue} from '../../../core/model/rtm/Sensor.type';
 interface IProps {
     dataSources: DataSourceCollection;
     processings?: ProcessingCollection;
+    unit?: string;
 }
 
 const dataSourcesChart = (props: IProps) => {
@@ -57,8 +58,12 @@ const dataSourcesChart = (props: IProps) => {
                     tickFormatter={formatDateTimeTicks}
                     type={'number'}
                 />
-                <YAxis dataKey={'y'} name={''} domain={['auto', 'auto']}/>
-
+                <YAxis
+                    label={props.unit ? { value: props.unit, angle: -90, position: 'insideLeft' } : undefined}
+                    dataKey={'y'}
+                    name={''}
+                    domain={['auto', 'auto']}
+                />
                 <Scatter
                     data={downSampledDataLTOB}
                     line={{strokeWidth: 2, stroke: '#3498DB'}}
