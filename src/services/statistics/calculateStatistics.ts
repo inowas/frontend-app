@@ -1,5 +1,5 @@
 import gaussian from 'gaussian';
-import {sortBy} from 'lodash';
+import {sortBy, uniq} from 'lodash';
 import math from 'mathjs';
 import {IHobData, IStatistics} from '../../scenes/t03/components/content/observation/statistics';
 
@@ -65,7 +65,7 @@ const linearRegression = (x: number[], y: number[]): ILinearRegression => {
         sx: math.round(sx, 4) as number,
         see: math.round(see, 4) as number,
         eq: `f(x) = ${math.round(slope, 3)}x ${intercept < 0 ? '-' : '+'}` +
-            `${math.abs(math.round(intercept, 3) as number)}`,
+            ` ${math.abs(math.round(intercept, 3) as number)}`,
         exec: (v: number) => v * slope + intercept,
     } as ILinearRegression;
 };
@@ -126,6 +126,15 @@ export const calculateStatistics = (data: IHobData, exclude: string[] = []): ISt
     recalculatedDataWithNpf.sort((a, b) => ('' + a.name).localeCompare(b.name));
 
     return {
+        names: uniq(data.map((d) => {
+            let {name} = d;
+            name = name.replace(/\d+$/, '');
+            if (name.endsWith('.') || name.endsWith('_')) {
+                return name.substr(0, name.length - 1);
+            }
+
+            return name;
+        })),
         data: recalculatedDataWithNpf,
         stats: {
             observed: {

@@ -10,6 +10,8 @@ test('Calculate Statistics', () => {
         return;
     }
 
+    expect(stats.names).toEqual(expectedStatistics.names);
+
     const observed = stats.data.map((d) => d.observed);
     expect(observed.sort()).toEqual(expectedStatistics.observed.sort());
 

@@ -24,7 +24,9 @@ export type IHobData = Array<{
 }>;
 
 export interface IStatistics {
+    names: string[];
     data: Array<{
+        name: string;
         simulated: number;
         observed: number;
         residual: number;
@@ -59,6 +61,31 @@ export interface IStatistics {
     linRegResSim: ILinearRegression;
     linRegObsRResNpf: ILinearRegression;
 }
+
+const convenientColors = [
+    '#e6194B',
+    '#3cb44b',
+    '#ffe119',
+    '#4363d8',
+    '#f58231',
+    '#911eb4',
+    '#42d4f4',
+    '#f032e6',
+    '#bfef45',
+    '#fabebe',
+    '#469990',
+    '#e6beff',
+    '#9A6324',
+    '#fffac8',
+    '#800000',
+    '#aaffc3',
+    '#808000',
+    '#ffd8b1',
+    '#000075',
+    '#a9a9a9',
+    '#ffffff',
+    '#000000',
+];
 
 const diagramLabel = (content: ReactNode) => (
     <div style={{position: 'absolute', bottom: 100, right: 80}}>
@@ -103,9 +130,9 @@ const observationStatistics = () => {
         const simulated = stats.data.map((d) => d.simulated);
         const observed = stats.data.map((d) => d.observed);
         const deltaStd = stats.stats.observed.deltaStd;
-        const {linRegObsSim} = stats;
+        const {linRegObsSim, names} = stats;
 
-        const data = simulated.map((s, i) => ({y: s, x: observed[i]}));
+        const data = stats.data.map((d) => ({x: d.observed, y: d.simulated, name: d.name}));
 
         const min = Math.floor(Math.min(...observed, ...simulated));
         const max = Math.ceil(Math.max(...observed, ...simulated));
@@ -134,7 +161,12 @@ const observationStatistics = () => {
                             domain={['auto', 'auto']}
                             label={{value: 'Simulated Head [m]', angle: -90, position: 'left'}}
                         />
-                        <Scatter name={'Observed vs. calculated Heads'} data={data} fill={'#8884d8'}/>
+
+                        {names.map((n) => data.filter((d) => d.name.startsWith(n)))
+                            .map((d, idx) => (
+                                <Scatter name={d[0].name} key={idx} data={d} fill={convenientColors[idx]}/>
+                            ))
+                        }
                         <Scatter data={line} line={{stroke: 'black', strokeWidth: 2}} shape={() => null}/>
                         <Scatter data={linePlusDelta} line={{stroke: 'red', strokeWidth: 2}} shape={() => null}/>
                         <Scatter data={lineMinusDelta} line={{stroke: 'red', strokeWidth: 2}} shape={() => null}/>
@@ -154,9 +186,10 @@ const observationStatistics = () => {
     const chartWeightedResidualsVsSimulatedHeads = (stats: IStatistics) => {
         const simulated = stats.data.map((d) => d.simulated);
         const weightedResiduals = stats.data.map((d) => d.residual);
-        const {linRegResSim} = stats;
+        const {linRegResSim, names} = stats;
 
-        const data = simulated.map((s, i) => ({x: s, y: weightedResiduals[i]}));
+        const data = stats.data.map((d) => ({x: d.simulated, y: d.residual, name: d.name}));
+
         const xMin = Math.floor(Math.min(...simulated));
         const xMax = Math.ceil(Math.max(...simulated));
         const yMin = Math.floor(Math.min(...weightedResiduals));
@@ -193,7 +226,11 @@ const observationStatistics = () => {
                             domain={[-domainY, domainY]}
                             label={{value: 'Residual', angle: -90, position: 'left'}}
                         />
-                        <Scatter name={'Weighted residuals vs. simulated heads'} data={data} fill={'black'}/>
+                        {names.map((n) => data.filter((d) => d.name.startsWith(n)))
+                            .map((d, idx) => (
+                                <Scatter name={d[0].name} key={idx} data={d} fill={convenientColors[idx]}/>
+                            ))
+                        }
                         <Scatter data={line} line={{stroke: 'red', strokeWidth: 2}} shape={() => null}/>
                         <ReferenceLine y={0} stroke="blue" strokeWidth={2}/>
                         <Tooltip cursor={{strokeDasharray: '3 3'}}/>
@@ -211,11 +248,9 @@ const observationStatistics = () => {
 
     const chartRankedResidualsAgainstNormalProbability = (stats: IStatistics) => {
 
-        const npf = stats.data.map((d) => d.npf);
-        const residuals = stats.data.map((d) => d.residual);
-        const {linRegObsRResNpf} = stats;
+        const {linRegObsRResNpf, names} = stats;
 
-        const data = npf.map((n, i) => ({y: n, x: residuals[i]}));
+        const data = stats.data.map((d) => ({x: d.residual, y: d.npf, name: d.name}));
         const xMin = math.floor(stats.stats.residual.min);
         const xMax = math.ceil(stats.stats.residual.max);
 
@@ -248,7 +283,11 @@ const observationStatistics = () => {
                             domain={['auto', 'auto']}
                             label={{value: 'Normal Probability Function', angle: -90, position: 'left'}}
                         />
-                        <Scatter name={'NPF vs. ranked residuals'} data={data} fill={'black'}/>
+                        {names.map((n) => data.filter((d) => d.name.startsWith(n)))
+                            .map((d, idx) => (
+                                <Scatter name={d[0].name} key={idx} data={d} fill={convenientColors[idx]}/>
+                            ))
+                        }
                         <Scatter data={line} line={{stroke: 'red', strokeWidth: 2}} shape={() => null}/>
                         <Tooltip cursor={{strokeDasharray: '3 3'}}/>
                     </ScatterChart>
