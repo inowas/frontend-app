@@ -1,5 +1,5 @@
 import React, {ChangeEvent, SyntheticEvent, useState} from 'react';
-import {Checkbox, DropdownProps, Form, Header, Input, PopupProps, Segment} from 'semantic-ui-react';
+import {Checkbox, DropdownProps, Form, Grid, Header, Input, PopupProps, Segment} from 'semantic-ui-react';
 
 import {FlopyModflowMfsms} from '../../../../../../core/model/flopy/packages/mf';
 import {IFlopyModflowMfsms} from '../../../../../../core/model/flopy/packages/mf/FlopyModflowMfsms';
@@ -91,119 +91,130 @@ const smsPackageProperties = (props: IProps) => {
                     />
             </Form.Field>
             </Form.Group>
-            <Form.Group widths="equal">
-                <Form.Field>
-                    <label>Head change criterion (HCLOSE)</label>
-                    <Input
-                        name={'hclose'}
-                        readOnly={readOnly}
-                        type={'number'}
-                        value={mfPackage.hclose}
-                        icon={renderInfoPopup(documentation.sms.hclose, 'HCLOSE')}
-                        onBlur={handleOnBlur(parseFloat)}
-                        onChange={handleOnChange}
-                    />
-                </Form.Field>
-                <Form.Field>
-                    <label>Head change criterion for convergence (HICLOSE)</label>
-                    <Input
-                        name={'hiclose'}
-                        readOnly={readOnly}
-                        type={'number'}
-                        value={mfPackage.hiclose}
-                        icon={renderInfoPopup(documentation.sms.hiclose, 'HICLOSE')}
-                        onBlur={handleOnBlur(parseFloat)}
-                        onChange={handleOnChange}
-                    />
-                </Form.Field>
-            </Form.Group>
-            <Form.Group widths="equal">
-                <Form.Field>
-                    <label>Max. outer iterations (MXITER)</label>
-                    <Input
-                        name={'mxiter'}
-                        readOnly={readOnly}
-                        type={'number'}
-                        value={mfPackage.mxiter}
-                        icon={renderInfoPopup(documentation.sms.mxiter, 'MXITER')}
-                        onBlur={handleOnBlur(parseFloat)}
-                        onChange={handleOnChange}
-                    />
-                </Form.Field>
-                <Form.Field>
-                    <label>Max. inner iterations (ITER1)</label>
-                    <Input
-                        name={'iter1'}
-                        readOnly={readOnly}
-                        type={'number'}
-                        value={mfPackage.iter1}
-                        icon={renderInfoPopup(documentation.sms.iter1, 'ITER1')}
-                        onBlur={handleOnBlur(parseFloat)}
-                        onChange={handleOnChange}
-                    />
-                </Form.Field>
-                <Form.Field>
-                    <label>Print convergence info (IPRSMS)</label>
-                    <Form.Dropdown
-                        options={[
-                            {key: 0, value: 0, text: '(0) Print nothing'},
-                            {key: 1, value: 1, text: '(1) Print summary'},
-                            {key: 2, value: 2, text: '(2) Print detail'},
-                        ]}
-                        selection={true}
-                        disabled={readOnly}
-                        name={'iprsms'}
-                        value={mfPackage.iprsms}
-                        onChange={handleOnSelect}
-                    />
-                </Form.Field>
-                <Form.Field width={1}>
-                    <label>&nbsp;</label>
-                    {renderInfoPopup(documentation.sms.iprsms, 'IPRSMS', 'top left', true)}
-                </Form.Field>
-            </Form.Group>
-            <Form.Group widths="equal">
-                <Form.Field>
-                    <label>Nonlinear solution method (NONLINMETH)</label>
-                    <Form.Dropdown
-                        options={[
-                            {key: -2, value: -2, text: '(-2) Picard with Cooley'},
-                            {key: -1, value: -1, text: '(-1) Picard with Delta-Bar-Delta'},
-                            {key: 0, value: 0, text: '(0) Picard'},
-                            {key: 1, value: 1, text: '(1) Newton with Delta-Bar-Delta'},
-                            {key: 2, value: 2, text: '(2) Newton and Cooley'}
-                        ]}
-                        selection={true}
-                        disabled={readOnly}
-                        name={'nonlinmeth'}
-                        value={mfPackage.nonlinmeth}
-                        onChange={handleOnSelect}
-                    />
-                </Form.Field>
-                <Form.Field width={1}>
-                    <label>&nbsp;</label>
-                    {renderInfoPopup(documentation.sms.nonlinmeth, 'NONLINMETH', 'top left', true)}
-                </Form.Field>
-                <Form.Field>
-                    <label>Linear matrix solver (LINMETH)</label>
-                    <Form.Dropdown
-                        options={[
-                            {key: 0, value: 0, text: '(0) χMD'},
-                            {key: 1, value: 1, text: '(1) PCGU'},
-                            {key: 2, value: 2, text: '(2) SAMG'},
-                        ]}
-                        selection={true}
-                        disabled={readOnly}
-                        name={'linmeth'}
-                        value={mfPackage.linmeth}
-                        onChange={handleOnSelect}
-                    />
-                </Form.Field>
-                <Form.Field width={1}>
-                    <label>&nbsp;</label>
-                    {renderInfoPopup(documentation.sms.linmeth, 'LINMETH', 'top left', true)}
-                </Form.Field>
-            </Form.Group>
+            <Segment>
+                <Grid>
+                    <Grid.Row columns={2} divided={true}>
+                        <Grid.Column>
+                            <Form.Field>
+                                <label>Head change criterion (HCLOSE)</label>
+                                <Input
+                                    name={'hclose'}
+                                    readOnly={true}
+                                    type={'number'}
+                                    value={mfPackage.hclose}
+                                    icon={renderInfoPopup(documentation.sms.hclose, 'HCLOSE')}
+                                    onBlur={handleOnBlur(parseFloat)}
+                                    onChange={handleOnChange}
+                                />
+                            </Form.Field>
+                            <Form.Field>
+                                <label>Head change criterion for convergence (HICLOSE)</label>
+                                <Input
+                                    name={'hiclose'}
+                                    readOnly={true}
+                                    type={'number'}
+                                    value={mfPackage.hiclose}
+                                    icon={renderInfoPopup(documentation.sms.hiclose, 'HICLOSE')}
+                                    onBlur={handleOnBlur(parseFloat)}
+                                    onChange={handleOnChange}
+                                />
+                            </Form.Field>
+                            <Form.Field>
+                                <label>Max. outer iterations (MXITER)</label>
+                                <Input
+                                    name={'mxiter'}
+                                    readOnly={true}
+                                    type={'number'}
+                                    value={mfPackage.mxiter}
+                                    icon={renderInfoPopup(documentation.sms.mxiter, 'MXITER')}
+                                    onBlur={handleOnBlur(parseFloat)}
+                                    onChange={handleOnChange}
+                                />
+                            </Form.Field>
+                            <Form.Field>
+                                <label>Max. inner iterations (ITER1)</label>
+                                <Input
+                                    name={'iter1'}
+                                    readOnly={true}
+                                    type={'number'}
+                                    value={mfPackage.iter1}
+                                    icon={renderInfoPopup(documentation.sms.iter1, 'ITER1')}
+                                    onBlur={handleOnBlur(parseFloat)}
+                                    onChange={handleOnChange}
+                                />
+                            </Form.Field>
+                        </Grid.Column>
+                        <Grid.Column>
+                            <Form.Group>
+                                <Form.Field width={14}>
+                                    <label>Print convergence info (IPRSMS)</label>
+                                    <Form.Dropdown
+                                        options={[
+                                            {key: 0, value: 0, text: '(0) Print nothing'},
+                                            {key: 1, value: 1, text: '(1) Print summary'},
+                                            {key: 2, value: 2, text: '(2) Print detail'},
+                                        ]}
+                                        selection={true}
+                                        disabled={readOnly}
+                                        name={'iprsms'}
+                                        value={mfPackage.iprsms}
+                                        onChange={handleOnSelect}
+                                    />
+                                </Form.Field>
+                                <Form.Field width={1}>
+                                    <label>&nbsp;</label>
+                                    {renderInfoPopup(documentation.sms.iprsms, 'IPRSMS', 'top left', true)}
+                                </Form.Field>
+                            </Form.Group>
+                            <Form.Group>
+                                <Form.Field width={14}>
+                                    <label>Nonlinear solution method (NONLINMETH)</label>
+                                    <Form.Dropdown
+                                        options={[
+                                            {key: -2, value: -2, text: '(-2) Picard with Cooley'},
+                                            {key: -1, value: -1, text: '(-1) Picard with Delta-Bar-Delta'},
+                                            {key: 0, value: 0, text: '(0) Picard'},
+                                            {key: 1, value: 1, text: '(1) Newton with Delta-Bar-Delta'},
+                                            {key: 2, value: 2, text: '(2) Newton and Cooley'}
+                                        ]}
+                                        selection={true}
+                                        disabled={readOnly}
+                                        name={'nonlinmeth'}
+                                        value={mfPackage.nonlinmeth}
+                                        onChange={handleOnSelect}
+                                    />
+                                </Form.Field>
+                                <Form.Field width={1}>
+                                    <label>&nbsp;</label>
+                                    {renderInfoPopup(documentation.sms.nonlinmeth, 'NONLINMETH', 'top left', true)}
+                                </Form.Field>
+                            </Form.Group>
+                            <Form.Group>
+                                <Form.Field width={14}>
+                                    <label>Linear matrix solver (LINMETH)</label>
+                                    <Form.Dropdown
+                                        options={[
+                                            {key: 0, value: 0, text: '(0) χMD'},
+                                            {key: 1, value: 1, text: '(1) PCGU'},
+                                            {key: 2, value: 2, text: '(2) SAMG'},
+                                        ]}
+                                        selection={true}
+                                        disabled={readOnly}
+                                        name={'linmeth'}
+                                        value={mfPackage.linmeth}
+                                        onChange={handleOnSelect}
+                                    />
+                                </Form.Field>
+                                <Form.Field width={1}>
+                                    <label>&nbsp;</label>
+                                    {renderInfoPopup(documentation.sms.linmeth, 'LINMETH', 'top left', true)}
+                                </Form.Field>
+                            </Form.Group>
+                        </Grid.Column>
+                    </Grid.Row>
+                </Grid>
+            </Segment>
+
             <Segment>
                 <label style={styles.headerLabel}>Nonlinear Solution Method Options</label>
                 <Form.Group widths="equal">
@@ -335,7 +346,7 @@ const smsPackageProperties = (props: IProps) => {
                         <Input
                             readOnly={true}
                             name="level"
-                            value={mfPackage.level || ''}
+                            value={mfPackage.level}
                             icon={renderInfoPopup(documentation.sms.level, 'LEVEL')}
                         />
                     </Form.Field>
@@ -344,7 +355,7 @@ const smsPackageProperties = (props: IProps) => {
                         <Input
                             readOnly={true}
                             name="north"
-                            value={mfPackage.north || ''}
+                            value={mfPackage.north}
                             icon={renderInfoPopup(documentation.sms.north, 'NORTH')}
                         />
                     </Form.Field>
@@ -365,7 +376,7 @@ const smsPackageProperties = (props: IProps) => {
                         <Input
                             readOnly={true}
                             name="rrctol"
-                            value={mfPackage.rrctol || ''}
+                            value={mfPackage.rrctol}
                             icon={renderInfoPopup(documentation.sms.rrctol, 'RRCTOL')}
                         />
                     </Form.Field>
@@ -386,7 +397,7 @@ const smsPackageProperties = (props: IProps) => {
                         <Input
                             readOnly={true}
                             name="epsrn"
-                            value={mfPackage.epsrn || ''}
+                            value={mfPackage.epsrn}
                             icon={renderInfoPopup(documentation.sms.epsrn, 'EPSRN')}
                         />
                     </Form.Field>
@@ -400,7 +411,7 @@ const smsPackageProperties = (props: IProps) => {
                         <Input
                             readOnly={true}
                             name="clin"
-                            value={mfPackage.clin || ''}
+                            value={mfPackage.clin}
                             icon={renderInfoPopup(documentation.sms.clin, 'CLIN')}
                         />
                     </Form.Field>
@@ -426,7 +437,7 @@ const smsPackageProperties = (props: IProps) => {
                     </Form.Field>
                 </Form.Group>
                 <Form.Group widths="equal">
-                    <Form.Field>
+                    <Form.Field width={14}>
                         <label>Matrix scaling approach (ISCL)</label>
                         <Form.Dropdown
                             options={[
@@ -471,7 +482,7 @@ const smsPackageProperties = (props: IProps) => {
                         <Input
                             readOnly={true}
                             name="rclosepcgu"
-                            value={mfPackage.rclosepcgu || ''}
+                            value={mfPackage.rclosepcgu}
                             icon={renderInfoPopup(documentation.sms.rclosepcgu, 'RCLOSEPCGU')}
                         />
                     </Form.Field>
@@ -480,7 +491,7 @@ const smsPackageProperties = (props: IProps) => {
                         <Input
                             readOnly={true}
                             name="relaxpcgu"
-                            value={mfPackage.relaxpcgu || ''}
+                            value={mfPackage.relaxpcgu}
                             icon={renderInfoPopup(documentation.sms.relaxpcgu, 'RELAXPCGU')}
                         />
                     </Form.Field>

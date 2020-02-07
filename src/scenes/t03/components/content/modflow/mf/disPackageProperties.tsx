@@ -63,7 +63,7 @@ const disPackageProperties = (props: IProps) => {
                                         type={'number'}
                                         name="nlay"
                                         value={mfPackage.nlay}
-                                        icon={renderInfoPopup(documentation.nlay, 'nlay')}
+                                        icon={renderInfoPopup(documentation.dis.nlay, 'nlay')}
                                     />
                                 </Form.Field>
                                 <Form.Field>
@@ -73,7 +73,7 @@ const disPackageProperties = (props: IProps) => {
                                         type={'number'}
                                         name="nrow"
                                         value={mfPackage.nrow}
-                                        icon={renderInfoPopup(documentation.nrow, 'nrow')}
+                                        icon={renderInfoPopup(documentation.dis.nrow, 'nrow')}
                                     />
                                 </Form.Field>
                                 <Form.Field>
@@ -83,7 +83,7 @@ const disPackageProperties = (props: IProps) => {
                                         type={'number'}
                                         name="ncol"
                                         value={mfPackage.ncol}
-                                        icon={renderInfoPopup(documentation.ncol, 'ncol')}
+                                        icon={renderInfoPopup(documentation.dis.ncol, 'ncol')}
                                     />
                                 </Form.Field>
                                 <Form.Field>
@@ -93,7 +93,7 @@ const disPackageProperties = (props: IProps) => {
                                         type={'number'}
                                         name="nper"
                                         value={mfPackage.nper}
-                                        icon={renderInfoPopup(documentation.nper, 'nper')}
+                                        icon={renderInfoPopup(documentation.dis.nper, 'nper')}
                                     />
                                 </Form.Field>
                             </Grid.Column>
@@ -104,7 +104,7 @@ const disPackageProperties = (props: IProps) => {
                                         readOnly={true}
                                         name="delr"
                                         value={JSON.stringify(mfPackage.delr)}
-                                        icon={renderInfoPopup(documentation.delr, 'delr')}
+                                        icon={renderInfoPopup(documentation.dis.delr, 'delr')}
                                     />
                                 </Form.Field>
                                 <Form.Field>
@@ -113,7 +113,7 @@ const disPackageProperties = (props: IProps) => {
                                         readOnly={true}
                                         name="delc"
                                         value={JSON.stringify(mfPackage.delc)}
-                                        icon={renderInfoPopup(documentation.delc, 'delc')}
+                                        icon={renderInfoPopup(documentation.dis.delc, 'delc')}
                                     />
                                 </Form.Field>
                                 <Form.Field>
@@ -123,7 +123,7 @@ const disPackageProperties = (props: IProps) => {
                                         disabled={readonly}
                                         name="laycbd"
                                         checked={mfPackage.laycbd !== 0}
-                                        icon={renderInfoPopup(documentation.laycbd, 'LAYCBD')}
+                                        icon={renderInfoPopup(documentation.dis.laycbd, 'LAYCBD')}
                                     />
                                 </Form.Field>
                             </Grid.Column>
@@ -167,7 +167,7 @@ const disPackageProperties = (props: IProps) => {
                     Time Discretization
                 </Accordion.Title>
                 <Accordion.Content active={activeIndex === 2}>
-                    <Table basic={true}>
+                    <Table collapsing={true} size={'small'} className={'packages'}>
                         <Table.Header>
                             <Table.Row>
                                 <Table.HeaderCell>#</Table.HeaderCell>
@@ -202,7 +202,7 @@ const disPackageProperties = (props: IProps) => {
                             type={'number'}
                             name="itmuni"
                             value={mfPackage.itmuni}
-                            icon={renderInfoPopup(documentation.itmuni, 'itmuni')}
+                            icon={renderInfoPopup(documentation.dis.itmuni, 'itmuni')}
                         />
                     </Form.Field>
                     <Form.Field width={4}>
@@ -212,7 +212,7 @@ const disPackageProperties = (props: IProps) => {
                             type={'number'}
                             name="lenuni"
                             value={mfPackage.lenuni}
-                            icon={renderInfoPopup(documentation.lenuni, 'lenuni')}
+                            icon={renderInfoPopup(documentation.dis.lenuni, 'lenuni')}
                         />
                     </Form.Field>
                     <Form.Field width={4}>
@@ -221,7 +221,7 @@ const disPackageProperties = (props: IProps) => {
                             readOnly={true}
                             name="extension"
                             value={mfPackage.extension || ''}
-                            icon={renderInfoPopup(documentation.extension, 'extension')}
+                            icon={renderInfoPopup(documentation.dis.extension, 'extension')}
                         />
                     </Form.Field>
                     <Form.Field width={4}>
@@ -231,7 +231,7 @@ const disPackageProperties = (props: IProps) => {
                             type={'number'}
                             name="unitnumber"
                             value={mfPackage.unitnumber || ''}
-                            icon={renderInfoPopup(documentation.unitnumber, 'unitnumber')}
+                            icon={renderInfoPopup(documentation.dis.unitnumber, 'unitnumber')}
                         />
                     </Form.Field>
                 </Form.Group>
@@ -244,7 +244,7 @@ const disPackageProperties = (props: IProps) => {
                             type={'number'}
                             name="xul"
                             value={mfPackage.xul || ''}
-                            icon={renderInfoPopup(documentation.xul, 'xul')}
+                            icon={renderInfoPopup(documentation.dis.xul, 'xul')}
                         />
                     </Form.Field>
                     <Form.Field>
@@ -254,7 +254,7 @@ const disPackageProperties = (props: IProps) => {
                             type={'number'}
                             name="yul"
                             value={mfPackage.yul || ''}
-                            icon={renderInfoPopup(documentation.yul, 'yul')}
+                            icon={renderInfoPopup(documentation.dis.yul, 'yul')}
                         />
                     </Form.Field>
                     <Form.Field>
@@ -264,7 +264,7 @@ const disPackageProperties = (props: IProps) => {
                             type={'number'}
                             name="rotation"
                             value={mfPackage.rotation || 0}
-                            icon={renderInfoPopup(documentation.rotation, 'rotation')}
+                            icon={renderInfoPopup(documentation.dis.rotation, 'rotation')}
                         />
                     </Form.Field>
                 </Form.Group>
@@ -276,7 +276,7 @@ const disPackageProperties = (props: IProps) => {
                             readOnly={true}
                             name="proj4_str"
                             value={mfPackage.proj4_str || ''}
-                            icon={renderInfoPopup(documentation.proj4_str, 'proj4_str')}
+                            icon={renderInfoPopup(documentation.dis.proj4_str, 'proj4_str')}
                         />
                     </Form.Field>
                     <Form.Field>
@@ -286,7 +286,7 @@ const disPackageProperties = (props: IProps) => {
                             type={'date'}
                             name="start_dateteim"
                             value={mfPackage.start_datetime || ''}
-                            icon={renderInfoPopup(documentation.start_datetime, 'start_datetime')}
+                            icon={renderInfoPopup(documentation.dis.start_datetime, 'start_datetime')}
                         />
                     </Form.Field>
                 </Form.Group>

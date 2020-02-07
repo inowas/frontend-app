@@ -83,7 +83,7 @@ const rivPackageProperties = (props: IProps) => {
                         disabled={readonly}
                         name="ipakcb"
                         value={mfPackage.ipakcb || 0}
-                        icon={renderInfoPopup(documentation.ipakcb, 'IPAKCB')}
+                        icon={renderInfoPopup(documentation.riv.ipakcb, 'IPAKCB')}
                     />
                 </Form.Field>
                 <Form.Field>
@@ -92,7 +92,7 @@ const rivPackageProperties = (props: IProps) => {
                         readOnly={true}
                         name="options"
                         value={mfPackage.options || ''}
-                        icon={renderInfoPopup(documentation.options, 'OPTIONS')}
+                        icon={renderInfoPopup(documentation.riv.options, 'OPTIONS')}
                     />
                 </Form.Field>
             </Form.Group>
@@ -104,7 +104,7 @@ const rivPackageProperties = (props: IProps) => {
                         readOnly={true}
                         name="extension"
                         value={mfPackage.extension || ''}
-                        icon={renderInfoPopup(documentation.extension, 'EXTENSION')}
+                        icon={renderInfoPopup(documentation.riv.extension, 'EXTENSION')}
                     />
                 </Form.Field>
                 <Form.Field>
@@ -114,7 +114,7 @@ const rivPackageProperties = (props: IProps) => {
                         type={'number'}
                         name="unitnumber"
                         value={mfPackage.unitnumber || ''}
-                        icon={renderInfoPopup(documentation.unitnumber, 'UNITNUMBER')}
+                        icon={renderInfoPopup(documentation.riv.unitnumber, 'UNITNUMBER')}
                     />
                 </Form.Field>
                 <Form.Field>
@@ -123,7 +123,7 @@ const rivPackageProperties = (props: IProps) => {
                         readOnly={true}
                         name="filenames"
                         value={mfPackage.filenames || ''}
-                        icon={renderInfoPopup(documentation.filenames, 'FILENAMES')}
+                        icon={renderInfoPopup(documentation.riv.filenames, 'FILENAMES')}
                     />
                 </Form.Field>
             </Form.Group>

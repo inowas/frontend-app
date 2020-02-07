@@ -1,28 +1,42 @@
-import React, {useState} from 'react';
+import React, {ChangeEvent, useState} from 'react';
 import {Checkbox, Form, Grid, Header, Input, Label} from 'semantic-ui-react';
+import {FlopyModflowMfdis, FlopyModflowMfghb} from '../../../../../../core/model/flopy/packages/mf';
 import FlopyModflow from '../../../../../../core/model/flopy/packages/mf/FlopyModflow';
-import {IFlopyModflowMfwel} from '../../../../../../core/model/flopy/packages/mf/FlopyModflowMfwel';
-import {RainbowOrLegend} from '../../../../../../services/rainbowvis/types';
-
-import {
-    FlopyModflowMfdis,
-    FlopyModflowMfwel
-} from '../../../../../../core/model/flopy/packages/mf';
+import {IFlopyModflowMfghb} from '../../../../../../core/model/flopy/packages/mf/FlopyModflowMfghb';
 import {GridSize} from '../../../../../../core/model/modflow';
-import {InfoPopup} from '../../../../../shared';
+import {RainbowOrLegend} from '../../../../../../services/rainbowvis/types';
+import InfoPopup from '../../../../../shared/InfoPopup';
 import {RasterDataImage} from '../../../../../shared/rasterData';
 import {documentation} from '../../../../defaults/flow';
 
 interface IProps {
-    mfPackage: FlopyModflowMfwel;
+    mfPackage: FlopyModflowMfghb;
     mfPackages: FlopyModflow;
-    onChange: (pck: FlopyModflowMfwel) => void;
+    onChange: (pck: FlopyModflowMfghb) => void;
     readonly: boolean;
 }
 
-const welPackageProperties = (props: IProps) => {
-    const [mfPackage] = useState<IFlopyModflowMfwel>(props.mfPackage.toObject());
+const ghbPackageProperties = (props: IProps) => {
+    const [mfPackage, setMfPackage] = useState<IFlopyModflowMfghb>(props.mfPackage.toObject());
     const {mfPackages, readonly} = props;
+
+    const handleOnChange = (e: ChangeEvent<HTMLInputElement>) => {
+        const {name, value} = e.target;
+        return setMfPackage({...mfPackage, [name]: value});
+    };
+
+    const handleOnBlur = (cast?: (v: any) => any) => (e: ChangeEvent<HTMLInputElement>) => {
+        const {name} = e.target;
+        let {value} = e.target;
+
+        if (cast) {
+            value = cast(value);
+        }
+
+        setMfPackage({...mfPackage, [name]: value});
+        props.onChange(FlopyModflowMfghb.fromObject({...mfPackage, [name]: value}));
+    };
+
     const disPackage: FlopyModflowMfdis = mfPackages.getPackage('dis') as FlopyModflowMfdis;
 
     const affectedCellsLayers: number[][][] = [];
@@ -43,13 +57,9 @@ const welPackageProperties = (props: IProps) => {
         });
     }
 
-    const renderInfoPopup = (description: string | JSX.Element, title: string) => (
-        <InfoPopup description={description} title={title}/>
-    );
-
     return (
         <Form>
-            <Header as={'h3'} dividing={true}>WEL: Well Package</Header>
+            <Header as={'h3'} dividing={true}>GHB: General-Head Boundary Package</Header>
             <Grid divided={'vertically'}>
                 <Grid.Row columns={2}>
                     {affectedCellsLayers.map((layer: any, idx) => (
@@ -60,7 +70,7 @@ const welPackageProperties = (props: IProps) => {
                                 gridSize={GridSize.fromData(layer)}
                                 unit={''}
                                 legend={[
-                                    {value: 1, color: 'blue', label: 'WEL affected cells'}
+                                    {value: 1, color: 'blue', label: 'GHB affected cells'},
                                 ] as RainbowOrLegend}
                                 border={'1px dotted black'}
                             />
@@ -68,7 +78,6 @@ const welPackageProperties = (props: IProps) => {
                     ))}
                 </Grid.Row>
             </Grid>
-
             <Form.Group widths={'equal'}>
                 <Form.Field width={14}>
                     <label>Save cell-by-cell budget data (IPAKCB)</label>
@@ -81,19 +90,21 @@ const welPackageProperties = (props: IProps) => {
                 </Form.Field>
                 <Form.Field width={1}>
                     <InfoPopup
-                        description={documentation.wel.ipakcb}
+                        description={documentation.ghb.ipakcb}
                         title={'IPAKCB'}
                         position={'top right'}
                         iconOutside={true}
                     />
                 </Form.Field>
                 <Form.Field>
-                    <label>Package options (OPTIONS)</label>
+                    <label>Package Options (OPTIONS)</label>
                     <Input
-                        readOnly={true}
+                        readOnly={readonly}
                         name={'options'}
                         value={mfPackage.options || ''}
-                        icon={renderInfoPopup(documentation.wel.options, 'OPTIONS')}
+                        onChange={handleOnChange}
+                        onBlur={handleOnBlur(parseFloat)}
+                        icon={<InfoPopup description={documentation.ghb.options} title={'OPTIONS'}/>}
                     />
                 </Form.Field>
             </Form.Group>
@@ -105,25 +116,32 @@ const welPackageProperties = (props: IProps) => {
                         readOnly={readonly}
                         name={'extension'}
                         value={mfPackage.extension}
-                        icon={renderInfoPopup(documentation.wel.extension, 'EXTENSION')}
+                        onChange={handleOnChange}
+                        onBlur={handleOnBlur(parseFloat)}
+                        icon={<InfoPopup description={documentation.ghb.extension} title={'EXTENSION'}/>}
                     />
                 </Form.Field>
                 <Form.Field>
                     <label>File unit number (UNITNUMBER)</label>
                     <Input
                         readOnly={readonly}
+                        type={'number'}
                         name={'unitnumber'}
                         value={mfPackage.unitnumber || ''}
-                        icon={renderInfoPopup(documentation.wel.unitnumber, 'UNITNUMBER')}
+                        onChange={handleOnChange}
+                        onBlur={handleOnBlur(parseFloat)}
+                        icon={<InfoPopup description={documentation.ghb.unitnumber} title={'UNITNUMBER'}/>}
                     />
                 </Form.Field>
                 <Form.Field>
-                    <label>Filename (FILENAMES)</label>
+                    <label>Filenames (FILENAMES)</label>
                     <Input
                         readOnly={readonly}
                         name={'filenames'}
                         value={mfPackage.filenames || ''}
-                        icon={renderInfoPopup(documentation.wel.filenames, 'FILENAMES')}
+                        onChange={handleOnChange}
+                        onBlur={handleOnBlur(parseFloat)}
+                        icon={<InfoPopup description={documentation.ghb.filenames} title={'FILENAMES'}/>}
                     />
                 </Form.Field>
             </Form.Group>
@@ -131,4 +149,4 @@ const welPackageProperties = (props: IProps) => {
     );
 };
 
-export default welPackageProperties;
+export default ghbPackageProperties;
