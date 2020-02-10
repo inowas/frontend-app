@@ -44,7 +44,7 @@ class Observations extends React.Component {
         }
 
         const calculationId = calculation.id;
-        if (!calculationId || calculationId === '') {
+        if (!calculationId) {
             return;
         }
 

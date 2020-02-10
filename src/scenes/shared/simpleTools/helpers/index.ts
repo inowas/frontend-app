@@ -94,7 +94,7 @@ export const buildPayloadUpdateData = (id: string, data: any) => ({
     }
 });
 
-const downloadFile = (name: string, uri: string) => {
+export const downloadFile = (name: string, uri: string) => {
     const downloadLink = document.createElement('a');
     downloadLink.href = uri;
     downloadLink.download = name;

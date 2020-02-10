@@ -137,7 +137,18 @@ const visualization = (props: IProps) => {
     const renderParameter = (parameter: ISelectedParameter, key: number) => {
         return (
             <Segment color={'blue'} key={key}>
-                <Button onClick={handleRemoveParameter(parameter.type)} icon="trash" />
+                <Button
+                    onClick={handleRemoveParameter(parameter.type)}
+                    icon="close"
+                    compact={true}
+                    basic={true}
+                    style={{
+                        position: 'absolute',
+                        top: '0',
+                        right: '0',
+                    }}
+                    size="tiny"
+                />
                 <Form>
                     <Form.Select
                         label="Parameter"

@@ -23,7 +23,7 @@ import Uuid from 'uuid';
 import {DataSourceCollection, Rtm} from '../../../../core/model/rtm';
 import {ProcessingCollection} from '../../../../core/model/rtm/processing';
 import {IPropertyValueObject} from '../../../../core/model/types';
-import {exportChartData, exportChartImage} from '../../../shared/simpleTools/helpers';
+import {downloadFile, exportChartImage} from '../../../shared/simpleTools/helpers';
 import TimeSlider from './TimeSlider';
 import {IParameterWithMetaData, ITimeStamps} from './types';
 import VisualizationMap from './VisualizationMap';
@@ -280,9 +280,21 @@ const visualizationParameter = (props: IProps) => {
         return rowObject;
     });
 
-    const handleExportChartData = () => chartRef.current ? exportChartData(chartRef.current) : null;
-
     const handleExportChartImage = () => chartRef.current ? exportChartImage(chartRef.current) : null;
+
+    const handleExportChartData = () => {
+        const rows = generateDataArray();
+        const keys = Object.keys(rows[0]);
+        let csvContent = 'data:text/csv;charset=utf-8,';
+        csvContent += keys.join(',');
+        csvContent += '\r\n';
+        rows.forEach((row) => {
+            csvContent += Object.values(row).join(',');
+            csvContent += '\r\n';
+        });
+        const encodedUri = encodeURI(csvContent);
+        downloadFile('chart.csv', encodedUri);
+    };
 
     return (
         <div>
@@ -322,13 +334,32 @@ const visualizationParameter = (props: IProps) => {
                                     />
                                 }
                             />
+                            <div className="downloadButtons">
+                                <Button
+                                    compact={true}
+                                    basic={true}
+                                    icon={true}
+                                    size={'small'}
+                                    onClick={handleExportChartImage}
+                                >
+                                    <Icon name="download"/> JPG
+                                </Button>
+                                <Button
+                                    compact={true}
+                                    basic={true}
+                                    icon={true}
+                                    size={'small'}
+                                    onClick={handleExportChartData}
+                                >
+                                    <Icon name="download"/> CSV
+                                </Button>
+                            </div>
                         </Grid.Column>
                     </Grid.Row>
                     <Grid.Row>
                         <Grid.Column>
                             <ResponsiveContainer height={300}>
                                 <ScatterChart
-                                    data={generateDataArray()}
                                     onClick={handleClickChart}
                                     ref={chartRef}
                                 >
@@ -345,7 +376,8 @@ const visualizationParameter = (props: IProps) => {
                                         dataKey="y"
                                         name=""
                                         domain={[filteredTsData.left.min, filteredTsData.left.max]}
-                                        label={{value: leftAxis, angle: -90, position: 'insideLeft'}}
+                                        label={{value: leftAxis, angle: -90, position: 'left'}}
+                                        tickFormatter={(v) => v.toExponential(2)}
                                     />
                                     }
                                     {filteredData.filter((p) => p.meta.axis === 'right').length > 0 &&
@@ -355,7 +387,8 @@ const visualizationParameter = (props: IProps) => {
                                         name=""
                                         orientation="right"
                                         domain={[filteredTsData.right.min, filteredTsData.right.max]}
-                                        label={{value: rightAxis, angle: -90, position: 'insideRight'}}
+                                        label={{value: rightAxis, angle: -90, position: 'right'}}
+                                        tickFormatter={(v) => v.toExponential(2)}
                                     />
                                     }
                                     {filteredData.filter((r) => r.meta.active).map((row, idx) => {
@@ -394,26 +427,6 @@ const visualizationParameter = (props: IProps) => {
                                     }
                                 </ScatterChart>
                             </ResponsiveContainer>
-                            <div className="downloadButtons">
-                                <Button
-                                    compact={true}
-                                    basic={true}
-                                    icon={true}
-                                    size={'small'}
-                                    onClick={handleExportChartImage}
-                                >
-                                    <Icon name="download"/> JPG
-                                </Button>
-                                <Button
-                                    compact={true}
-                                    basic={true}
-                                    icon={true}
-                                    size={'small'}
-                                    onClick={handleExportChartData}
-                                >
-                                    <Icon name="download"/> CSV
-                                </Button>
-                            </div>
                             <Grid>
                                 <Grid.Row>
                                     <Grid.Column width={1}>
