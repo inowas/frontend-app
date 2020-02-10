@@ -94,7 +94,6 @@ const calculateResidualStats = (residuals: number[], observed: number[]) => {
 };
 
 export const calculateStatistics = (data: IHobData, exclude: string[] = []): IStatistics | null => {
-
     const recalculatedData = data
         .filter((d) => {
             let excluded = false;
@@ -123,7 +122,7 @@ export const calculateStatistics = (data: IHobData, exclude: string[] = []): ISt
         {...d, npf: math.round(calculateNpf(idx + 1, n), 3) as number}
     ));
 
-    recalculatedDataWithNpf.sort((a, b) => ('' + a.name).localeCompare(b.name));
+    recalculatedDataWithNpf.sort((a, b) => (a.name).localeCompare(b.name));
 
     return {
         names: uniq(data.map((d) => {
@@ -134,7 +133,7 @@ export const calculateStatistics = (data: IHobData, exclude: string[] = []): ISt
             }
 
             return name;
-        })),
+        })).sort((a: string, b: string) => a.localeCompare(b)),
         data: recalculatedDataWithNpf,
         stats: {
             observed: {
