@@ -1,24 +1,46 @@
 import * as ReactDOM from 'react-dom';
+import {
+    AreaChart,
+    BarChart,
+    ComposedChart,
+    LineChart,
+    PieChart,
+    RadarChart,
+    RadialBarChart,
+    ScatterChart
+} from 'recharts';
+import {IPropertyValueObject} from '../../../../core/model/types';
+import {IToolMetaData} from '../ToolMetaData/ToolMetaData.type';
 
-export const getParameterValues = (arr) => {
-    const parameters = {};
-    arr.forEach(item => {
-        parameters[item.id] = item.value
+type TChart = ScatterChart | LineChart | BarChart | AreaChart | ComposedChart | PieChart |
+    RadarChart | RadialBarChart;
+
+interface IMinMaxDataObject {
+    id: string;
+    min: number;
+    max: number;
+    value: number;
+}
+
+export const getParameterValues = (arr: any[]) => {
+    const parameters: IPropertyValueObject = {};
+    arr.forEach((item) => {
+        parameters[item.id] = item.value;
     });
 
     return parameters;
 };
 
-export const deepMerge = (state, fetched) => {
+export const deepMerge = (state: IToolMetaData, fetched: IToolMetaData) => {
         let parameters = null;
 
         if (state.data.parameters) {
             const fetchedParams = fetched.data.parameters;
 
             parameters = state.data.parameters.map(
-                mergedParam => {
-                    const fetchedParam = fetchedParams.find(fp => fp.id === mergedParam.id);
-                    return {...mergedParam, ...fetchedParam}
+                (mergedParam: IMinMaxDataObject) => {
+                    const fetchedParam = fetchedParams.find((fp: IMinMaxDataObject) => fp.id === mergedParam.id);
+                    return {...mergedParam, ...fetchedParam};
                 }
             );
         }
@@ -38,7 +60,7 @@ export const deepMerge = (state, fetched) => {
     }
 ;
 
-export const buildPayloadToolInstance = (toolInstance) => ({
+export const buildPayloadToolInstance = (toolInstance: IToolMetaData) => ({
     id: toolInstance.id,
     name: toolInstance.name,
     description: toolInstance.description,
@@ -46,7 +68,7 @@ export const buildPayloadToolInstance = (toolInstance) => ({
     tool: toolInstance.tool,
     data: {
         ...toolInstance.data,
-        parameters: toolInstance.data.parameters.map(p => ({
+        parameters: toolInstance.data.parameters.map((p: IMinMaxDataObject) => ({
             id: p.id,
             max: p.max,
             min: p.min,
@@ -55,15 +77,15 @@ export const buildPayloadToolInstance = (toolInstance) => ({
     }
 });
 
-export const buildPayloadUpdateMetadata = (id, name, description, isPublic) => ({
+export const buildPayloadUpdateMetadata = (id: string, name: string, description: string, isPublic: boolean) => ({
     id, name, description, public: isPublic
 });
 
-export const buildPayloadUpdateData = (id, data) => ({
+export const buildPayloadUpdateData = (id: string, data: any) => ({
     id,
     data: {
         ...data,
-        parameters: data.parameters.map(p => ({
+        parameters: data.parameters.map((p: IMinMaxDataObject) => ({
             id: p.id,
             max: p.max,
             min: p.min,
@@ -72,7 +94,7 @@ export const buildPayloadUpdateData = (id, data) => ({
     }
 });
 
-const downloadFile = (name, uri) => {
+const downloadFile = (name: string, uri: string) => {
     const downloadLink = document.createElement('a');
     downloadLink.href = uri;
     downloadLink.download = name;
@@ -81,8 +103,14 @@ const downloadFile = (name, uri) => {
     document.body.removeChild(downloadLink);
 };
 
-export const exportChartData = (ref) => {
+export const exportChartData = (ref: TChart | null) => {
+    if (!ref) {
+        return null;
+    }
     const rows = ref.props.data;
+    if (!rows) {
+        return null;
+    }
     const keys = Object.keys(rows[0]);
 
     let csvContent = 'data:text/csv;charset=utf-8,';
@@ -99,9 +127,15 @@ export const exportChartData = (ref) => {
     downloadFile('chart.csv', encodedUri);
 };
 
-export const exportChartImage = (ref) => {
-    const svg = ReactDOM.findDOMNode(ref).children[0];
-
+export const exportChartImage = (ref: TChart | null) => {
+    if (!ref) {
+        return null;
+    }
+    const domNode = ReactDOM.findDOMNode(ref);
+    if (!(domNode instanceof Element)) {
+        return null;
+    }
+    const svg = domNode.children[0] as SVGGraphicsElement;
     svg.setAttribute('xmlns', 'http://www.w3.org/2000/svg');
     const svgData = svg.outerHTML;
     const preface = '<?xml version="1.0" standalone="no"?>\r\n';
@@ -114,6 +148,9 @@ export const exportChartImage = (ref) => {
     canvas.height = bbox.height + 50;
 
     const ctx = canvas.getContext('2d');
+    if (!ctx) {
+        return null;
+    }
     ctx.clearRect(0, 0, bbox.width, bbox.height);
 
     const img = new Image();

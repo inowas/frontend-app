@@ -23,7 +23,7 @@ interface IProps {
 }
 
 const visualizationMap = (props: IProps) => {
-    const [selectedParameter, setSelectedParameter] = useState<string | undefined>(undefined);
+    const [selectedParameter, setSelectedParameter] = useState<string | undefined>(props.parameters[0].parameter.type);
     const [showScale, setShowScale] = useState<boolean>(false);
 
     const getMinMax = () => {

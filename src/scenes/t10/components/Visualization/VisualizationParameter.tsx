@@ -15,13 +15,15 @@ import {
 import {
     Button,
     Dimmer,
-    Grid, Input,
+    Grid, Icon, Input,
     Loader, Popup,
     Segment
 } from 'semantic-ui-react';
 import Uuid from 'uuid';
 import {DataSourceCollection, Rtm} from '../../../../core/model/rtm';
 import {ProcessingCollection} from '../../../../core/model/rtm/processing';
+import {IPropertyValueObject} from '../../../../core/model/types';
+import {exportChartData, exportChartImage} from '../../../shared/simpleTools/helpers';
 import TimeSlider from './TimeSlider';
 import {IParameterWithMetaData, ITimeStamps} from './types';
 import VisualizationMap from './VisualizationMap';
@@ -84,7 +86,7 @@ const getData = (
                     }
                     return {
                         x: row.timeStamp,
-                        y: row.value
+                        y: row.value || NaN
                     };
                 });
                 key++;
@@ -136,6 +138,7 @@ const visualizationParameter = (props: IProps) => {
     const [timeRange, setTimeRange] = useState<[number, number] | null>(null);
     const [timeSlideId, setTimeSliderId] = useState<string>(Uuid.v4());
 
+    const chartRef = useRef<ScatterChart>(null);
     const timeRef = useRef<number>(0);
 
     const handleMoveTimeSlider = (result: [number, number]) => setTimeRange(
@@ -262,6 +265,25 @@ const visualizationParameter = (props: IProps) => {
         );
     }
 
+    const generateDataArray = () => filteredTsData.timestamps.map((ts) => {
+        const rowObject: IPropertyValueObject = {
+            x: ts
+        };
+        filteredData.forEach((p) => {
+            const row = p.data.filter((r) => r.x === ts);
+            if (row.length > 0) {
+                rowObject[p.parameter.type] = row[0].y;
+            } else {
+                rowObject[p.parameter.type] = NaN;
+            }
+        });
+        return rowObject;
+    });
+
+    const handleExportChartData = () => chartRef.current ? exportChartData(chartRef.current) : null;
+
+    const handleExportChartImage = () => chartRef.current ? exportChartImage(chartRef.current) : null;
+
     return (
         <div>
             <Segment color={'grey'} raised={true}>
@@ -306,8 +328,9 @@ const visualizationParameter = (props: IProps) => {
                         <Grid.Column>
                             <ResponsiveContainer height={300}>
                                 <ScatterChart
-                                    data={tsData.timestamps.map((ts) => ({x: ts}))}
+                                    data={generateDataArray()}
                                     onClick={handleClickChart}
+                                    ref={chartRef}
                                 >
                                     <XAxis
                                         dataKey="x"
@@ -371,6 +394,26 @@ const visualizationParameter = (props: IProps) => {
                                     }
                                 </ScatterChart>
                             </ResponsiveContainer>
+                            <div className="downloadButtons">
+                                <Button
+                                    compact={true}
+                                    basic={true}
+                                    icon={true}
+                                    size={'small'}
+                                    onClick={handleExportChartImage}
+                                >
+                                    <Icon name="download"/> JPG
+                                </Button>
+                                <Button
+                                    compact={true}
+                                    basic={true}
+                                    icon={true}
+                                    size={'small'}
+                                    onClick={handleExportChartData}
+                                >
+                                    <Icon name="download"/> CSV
+                                </Button>
+                            </div>
                             <Grid>
                                 <Grid.Row>
                                     <Grid.Column width={1}>
