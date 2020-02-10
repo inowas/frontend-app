@@ -149,6 +149,16 @@ export const makeTimeProcessingRequest = (data: IDateTimeValue[], rule: string, 
     }).then((r) => r.data)
 );
 
+export const fetchCalculationObservations = (calculationId: string) => (
+    axios.request({
+        method: 'GET',
+        url: `${MODFLOW_CALCULATION_URL}/${calculationId}/results/types/observations`,
+        headers: {
+            'Access-Control-Allow-Origin': '*',
+            'Content-Type': 'application/json'
+        }
+    }).then((r) => r.data));
+
 export const fetchCalculationDetails = (calculationId: string) => {
     return axios.request({
         method: 'GET',

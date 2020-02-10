@@ -11,6 +11,7 @@
     "axios": "0.19.0",
     "downsample": "^1.0.3",
     "epsg": "0.5.0",
+    "gaussian": "^1.1.0",
     "gulp": "3.9.1",
     "gwflowjs": "https://github.com/inowas/gwflowjs.git#master",
     "history": "4.7.2",
@@ -50,6 +51,7 @@
     "uuid": "3.3.2"
   },
   "devDependencies": {
+    "@types/gaussian": "^1.1.1",
     "@types/geojson": "7946.0.7",
     "@types/jest": "24.0.12",
     "@types/leaflet-draw": "^0.4.14",
@@ -57,7 +59,7 @@
     "@types/mathjs": "5.0.1",
     "@types/md5": "2.1.33",
     "@types/node": "12.0.0",
-    "@types/papaparse": "4.5.9",
+    "@types/papaparse": "4.5.11",
     "@types/rc-slider": "^8.6.4",
     "@types/react": "16.8.17",
     "@types/react-beautiful-dnd": "^11.0.3",
@@ -67,6 +69,7 @@
     "@types/react-router-dom": "^4.3.4",
     "@types/recharts": "^1.8.5",
     "@types/recompose": "0.30.6",
+    "@types/regression": "^2.0.0",
     "@types/scheduler": "^0.16.1",
     "@types/uuid": "3.4.4",
     "better-console": "1.0.1",

@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types';
 import React from 'react';
-import {Checkbox, Form, Input, Table} from 'semantic-ui-react';
+import {Checkbox, Form, Grid, Header, Input, Segment, Table} from 'semantic-ui-react';
 
 import AbstractPackageProperties from './AbstractPackageProperties';
 import {FlopyModflowMfoc} from '../../../../../../core/model/flopy/packages/mf';
@@ -77,7 +77,7 @@ class OcPackageProperties extends AbstractPackageProperties {
         });
 
         return (
-            <Table basic>
+            <Table collapsing size={'small'} className={'packages'}>
                 <Table.Header>
                     <Table.Row>
                         <Table.HeaderCell>SP</Table.HeaderCell>
@@ -135,129 +135,133 @@ class OcPackageProperties extends AbstractPackageProperties {
 
         return (
             <Form>
-                <Form.Group widths='equal'>
-                    <Form.Field>
-                        <label>Format for printing head (ihedfm)</label>
-                        <Form.Dropdown
-                            options={formats.map(f => ({
-                                key: f[0], value: f[0], text: `${f[0]}: ${f[1]}`
-                            }))}
-                            placeholder='Select ihedfm'
-                            name='ihedfm'
-                            selection
-                            value={mfPackage.ihedfm}
-                            disabled={readOnly}
-                            onChange={this.handleOnSelect}
-                        />
-                    </Form.Field>
-                    <Form.Field width={1}>
-                        <label>&nbsp;</label>
-                        {this.renderInfoPopup(documentation.ihedfm, 'ihedfm', 'top left', true)}
-                    </Form.Field>
+                <Header as={'h3'}>OC: Output Control Package</Header>
+                <Segment>
+                    <Grid>
+                        <Grid.Row columns={2}>
+                            <Grid.Column>
+                                <Form.Group>
+                                    <Form.Field width={14}>
+                                        <label>Format for printing heads (ihedfm)</label>
+                                        <Form.Dropdown
+                                            options={formats.map(f => ({
+                                                key: f[0], value: f[0], text: `${f[0]}: ${f[1]}`
+                                            }))}
+                                            placeholder='Select ihedfm'
+                                            name='ihedfm'
+                                            selection
+                                            value={mfPackage.ihedfm}
+                                            disabled={readOnly}
+                                            onChange={this.handleOnSelect}
+                                        />
+                                    </Form.Field>
+                                    <Form.Field width={1}>
+                                        <label>&nbsp;</label>
+                                        {this.renderInfoPopup(documentation.ihedfm, 'ihedfm', 'top left', true)}
+                                    </Form.Field>
+                                </Form.Group>
+                                <Form.Group>
+                                    <Form.Field width={14}>
+                                        <label>Format for printing drawdowns (iddnfm)</label>
+                                        <Form.Dropdown
+                                            options={formats.map(f => ({
+                                                key: f[0], value: f[0], text: `${f[0]}: ${f[1]}`
+                                            }))}
+                                            placeholder='Select iddnfm'
+                                            name='iddnfm'
+                                            selection
+                                            value={mfPackage.iddnfm}
+                                            disabled={readOnly}
+                                            onChange={this.handleOnSelect}
+                                        />
+                                    </Form.Field>
+                                    <Form.Field width={1}>
+                                        <label>&nbsp;</label>
+                                        {this.renderInfoPopup(documentation.iddnfm, 'iddnfm', 'top left', true)}
+                                    </Form.Field>
+                                </Form.Group>
+                                <Form.Group>
+                                    <Form.Field width={14}>
+                                        <label>Compact budget form (compact)</label>
+                                        <Checkbox
+                                            toggle
+                                            disabled={readOnly}
+                                            name='compact'
+                                            value={mfPackage.compact || 0}
+                                        />
+                                    </Form.Field>
+                                    <Form.Field width={1}>
+                                        <label></label>
+                                        {this.renderInfoPopup(documentation.compact, 'compact', 'top left', true)}
+                                    </Form.Field>
+                                </Form.Group>
+                            </Grid.Column>
+                            <Grid.Column>
+                                <Form.Field>
+                                    <label>Format for saving heads (chedfm)</label>
+                                    <Input
+                                        readOnly={readOnly}
+                                        name='chedfm'
+                                        value={mfPackage.chedfm || ''}
+                                        icon={this.renderInfoPopup(documentation.chedfm, 'chedfm')}
+                                        onBlur={this.handleOnBlur}
+                                        onChange={this.handleOnChange}
+                                    />
+                                </Form.Field>
+                                <Form.Field>
+                                    <label>Format for saving drawdowns (cddnfm)</label>
+                                    <Input
+                                        readOnly={readOnly}
+                                        name='cddnfm'
+                                        value={mfPackage.cddnfm || ''}
+                                        icon={this.renderInfoPopup(documentation.cddnfm, 'cddnfm')}
+                                        onBlur={this.handleOnBlur}
+                                        onChange={this.handleOnChange}
+                                    />
+                                </Form.Field>
+                                <Form.Field>
+                                    <label>Format for saving ibound (cboufm)</label>
+                                    <Input
+                                        readOnly={readOnly}
+                                        name='cboufm'
+                                        value={mfPackage.cboufm || ''}
+                                        icon={this.renderInfoPopup(documentation.cboufm, 'cboufm')}
+                                        onBlur={this.handleOnBlur}
+                                        onChange={this.handleOnChange}
+                                    />
+                                </Form.Field>
+                            </Grid.Column>
+                        </Grid.Row>
+                    </Grid>
 
-                    <Form.Field>
-                        <label>Format for printing drawdown (iddnfm)</label>
-                        <Form.Dropdown
-                            options={formats.map(f => ({
-                                key: f[0], value: f[0], text: `${f[0]}: ${f[1]}`
-                            }))}
-                            placeholder='Select iddnfm'
-                            name='iddnfm'
-                            selection
-                            value={mfPackage.iddnfm}
-                            disabled={readOnly}
-                            onChange={this.handleOnSelect}
-                        />
-                    </Form.Field>
-                    <Form.Field width={1}>
-                        <label>&nbsp;</label>
-                        {this.renderInfoPopup(documentation.iddnfm, 'iddnfm', 'top left', true)}
-                    </Form.Field>
-                </Form.Group>
+                </Segment>
 
-                <Form.Group widths='equal'>
-                    <Form.Field>
-                        <label>Format saving head (chedfm)</label>
-                        <Input
-                            readOnly={readOnly}
-                            name='chedfm'
-                            value={mfPackage.chedfm || ''}
-                            icon={this.renderInfoPopup(documentation.chedfm, 'chedfm')}
-                            onBlur={this.handleOnBlur}
-                            onChange={this.handleOnChange}
-                        />
-                    </Form.Field>
-                    <Form.Field>
-                        <label>Format saving drawdown (cddnfm)</label>
-                        <Input
-                            readOnly={readOnly}
-                            name='cddnfm'
-                            value={mfPackage.cddnfm || ''}
-                            icon={this.renderInfoPopup(documentation.cddnfm, 'cddnfm')}
-                            onBlur={this.handleOnBlur}
-                            onChange={this.handleOnChange}
-                        />
-                    </Form.Field>
-                    <Form.Field>
-                        <label>Format saving ibound (cboufm)</label>
-                        <Input
-                            readOnly={readOnly}
-                            name='cboufm'
-                            value={mfPackage.cboufm || ''}
-                            icon={this.renderInfoPopup(documentation.cboufm, 'cboufm')}
-                            onBlur={this.handleOnBlur}
-                            onChange={this.handleOnChange}
-                        />
-                    </Form.Field>
-                </Form.Group>
+                <Segment>
+                    {this.renderOCDataTable(mfPackage.stress_period_data)}
 
-                {this.renderOCDataTable(mfPackage.stress_period_data)}
-
-                <Form.Group widths='equal'>
-                    <Form.Field>
-                        <label>List of boundaries (stress_period_data)</label>
-                        <Input
-                            readOnly={readOnly}
-                            name='stress_period_data'
-                            value={JSON.stringify(mfPackage.stress_period_data)}
-                            icon={this.renderInfoPopup(documentation.stress_period_data, 'stress_period_data')}
-                        />
-                    </Form.Field>
-                </Form.Group>
-
-                <Form.Group widths='equal'>
-                    <Form.Field>
-                        <label>Compact budget form (compact)</label>
-                        <Form.Dropdown
-                            options={[
-                                {key: 0, value: false, text: 'false'},
-                                {key: 1, value: true, text: 'true'},
-                            ]}
-                            placeholder='Select compact'
-                            name='compact'
-                            selection
-                            value={mfPackage.compact}
-                            disabled={readOnly}
-                            onChange={this.handleOnSelect}
-                        />
-                    </Form.Field>
-                    <Form.Field width={1}>
-                        <label>&nbsp;</label>
-                        {this.renderInfoPopup(documentation.compact, 'compact', 'top left', true)}
-                    </Form.Field>
-
-                    <Form.Field>
-                        <label>Label (label)</label>
-                        <Input
-                            readOnly={readOnly}
-                            name='label'
-                            value={mfPackage.label}
-                            icon={this.renderInfoPopup(documentation.label, 'label')}
-                            onBlur={this.handleOnChange}
-                            onChange={this.handleOnChange}
-                        />
-                    </Form.Field>
-                </Form.Group>
+                    <Form.Group widths='equal'>
+                        <Form.Field>
+                            <label>List of boundaries (stress_period_data)</label>
+                            <Input
+                                readOnly={readOnly}
+                                name='stress_period_data'
+                                value={JSON.stringify(mfPackage.stress_period_data)}
+                                icon={this.renderInfoPopup(documentation.stress_period_data, 'stress_period_data')}
+                            />
+                        </Form.Field>
+                        <Form.Field>
+                            <label>Label (label)</label>
+                            <Input
+                                readOnly={readOnly}
+                                name='label'
+                                value={mfPackage.label}
+                                icon={this.renderInfoPopup(documentation.label, 'label')}
+                                onBlur={this.handleOnChange}
+                                onChange={this.handleOnChange}
+                            />
+                        </Form.Field>
+                    </Form.Group>
+                </Segment>
 
                 <Form.Group widths='equal'>
                     <Form.Field>
