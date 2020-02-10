@@ -66,6 +66,7 @@ export enum EBoundaryType {
     EVT = 'evt',
     FHB = 'fhb',
     GHB = 'ghb',
+    HOB = 'hob',
     RCH = 'rch',
     RIV = 'riv',
     WEL = 'wel'
