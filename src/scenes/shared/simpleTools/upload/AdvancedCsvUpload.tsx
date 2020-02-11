@@ -190,9 +190,9 @@ const advancedCsvUpload = (props: IProps) => {
                                 <Segment
                                     raised={true}
                                     loading={parsingData}
-                                    color={metadata && metadata.errors.length > 0 ? 'red' : undefined}
+                                    color={metadata.errors.length > 0 ? 'red' : undefined}
                                 >
-                                    {metadata && metadata.errors.length > 0 &&
+                                    {metadata.errors.length > 0 &&
                                     <div>
                                         <List divided={true} relaxed={true}/>
                                         {metadata.errors.map((e, key) => (
@@ -206,7 +206,7 @@ const advancedCsvUpload = (props: IProps) => {
                                         ))}
                                     </div>
                                     }
-                                    {metadata && metadata.errors.length === 0 &&
+                                    {metadata.errors.length === 0 &&
                                     <div>
                                         <Form>
                                             <Form.Group>
