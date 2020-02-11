@@ -1,8 +1,9 @@
-import {DrawEvents, LatLngBoundsExpression, LatLngExpression} from 'leaflet';
-import {uniqueId} from 'lodash';
+import {Control, DrawEvents, LatLngBoundsExpression, LatLngExpression} from 'leaflet';
+import _, {uniqueId} from 'lodash';
 import React, {useEffect, useRef, useState} from 'react';
 import {FeatureGroup, GeoJSON, LayersControl, Map, Polygon} from 'react-leaflet';
 import {EditControl} from 'react-leaflet-draw';
+import {Button} from 'semantic-ui-react';
 import {BoundingBox, Cells, Geometry, GridSize} from '../../../../../core/model/geometry';
 import {IGeometry} from '../../../../../core/model/geometry/Geometry.type';
 import BoundaryCollection from '../../../../../core/model/modflow/boundaries/BoundaryCollection';
@@ -33,7 +34,10 @@ const discretizationMap = (props: IProps) => {
     const cellsRef = useRef<Cells | null>(null);
     const mapRef = useRef<Map>(null);
     const readOnlyRef = useRef<boolean>(true);
+    const isDrawingRef = useRef<boolean>(false);
+    const refDrawControl = useRef<Control>(null);
     const [geometry, setGeometry] = useState<IGeometry | null>(null);
+    const [isDrawing, setIsDrawing] = useState<boolean>(false);
 
     useEffect(() => {
         if (props.cells) {
@@ -56,6 +60,15 @@ const discretizationMap = (props: IProps) => {
     useEffect(() => {
         readOnlyRef.current = props.readOnly;
     }, [props.readOnly]);
+
+    useEffect(() => {
+        isDrawingRef.current = isDrawing;
+        if (refDrawControl.current && isDrawing) {
+            // @ts-ignore
+            const drawControl = refDrawControl.current.leafletElement;
+            drawControl._toolbars.draw._modes.rectangle.handler.enable();
+        }
+    }, [isDrawing]);
 
     const onCreated = (e: DrawEvents.Created) => {
         if (e.layerType === 'rectangle') {
@@ -105,7 +118,7 @@ const discretizationMap = (props: IProps) => {
     };
 
     const handleClickOnMap = ({latlng}: { latlng: any }) => {
-        if (readOnlyRef.current || !cellsRef.current || !props.boundingBox || !props.gridSize) {
+        if (isDrawingRef.current || readOnlyRef.current || !cellsRef.current || !props.boundingBox || !props.gridSize) {
             return null;
         }
 
@@ -114,65 +127,75 @@ const discretizationMap = (props: IProps) => {
 
         const c: Cells = cellsRef.current;
         c.toggle([x, y], props.boundingBox, props.gridSize);
-        cellsRef.current = c;
+        cellsRef.current = _.cloneDeep(c);
         props.onChangeCells(c);
     };
 
+    const handleToggleDrawing = () => setIsDrawing(!isDrawing);
+
     return (
-        // @ts-ignore
-        <Map
-            style={style.map}
-            bounds={getBoundsLatLng() as LatLngBoundsExpression}
-            onClick={handleClickOnMap}
-            ref={mapRef}
-        >
-            <BasicTileLayer/>
+        <React.Fragment>
+            {!props.readOnly &&
+            <Button.Group attached="top">
+                <Button primary={!isDrawing} onClick={handleToggleDrawing}>Single Selection</Button>
+                <Button primary={isDrawing} onClick={handleToggleDrawing}>Multi-Selection</Button>
+            </Button.Group>
+            }
+            <Map
+                style={style.map}
+                bounds={getBoundsLatLng() as LatLngBoundsExpression}
+                onclick={handleClickOnMap}
+                ref={mapRef}
+            >
+                <BasicTileLayer/>
 
-            {/* EDIT CONTROL */}
-            {!props.readOnly && <FeatureGroup>
-                <EditControl
-                    position="topright"
-                    draw={{
-                        circle: false,
-                        circlemarker: false,
-                        marker: false,
-                        polyline: false,
-                        rectangle: geometry != null,
-                        polygon: geometry == null
-                    }}
-                    edit={{
-                        edit: geometry != null && !!props.onChangeGeometry,
-                        remove: false
-                    }}
-                    onCreated={onCreated}
-                    onEdited={onEdited}
-                />
+                {/* EDIT CONTROL */}
+                {!props.readOnly && <FeatureGroup>
+                    <EditControl
+                        position="topright"
+                        draw={{
+                            circle: false,
+                            circlemarker: false,
+                            marker: false,
+                            polyline: false,
+                            rectangle: isDrawing && geometry != null,
+                            polygon: geometry == null
+                        }}
+                        edit={{
+                            edit: geometry != null && !!props.onChangeGeometry,
+                            remove: false
+                        }}
+                        onCreated={onCreated}
+                        onEdited={onEdited}
+                        ref={refDrawControl}
+                    />
 
-                {geometry &&
-                <Polygon
+                    {geometry &&
+                    <Polygon
+                        key={uniqueId()}
+                        positions={Geometry.fromObject(geometry).coordinatesLatLng as LatLngExpression[]}
+                    />}
+
+                </FeatureGroup>}
+
+                {props.boundingBox &&
+                <GeoJSON
                     key={uniqueId()}
-                    positions={Geometry.fromObject(geometry).coordinatesLatLng as LatLngExpression[]}
+                    data={props.boundingBox.geoJson}
+                    style={getStyle('bounding_box')}
                 />}
-
-            </FeatureGroup>}
-
-            {props.boundingBox &&
-            <GeoJSON
-                key={uniqueId()}
-                data={props.boundingBox.geoJson}
-                style={getStyle('bounding_box')}
-            />}
-            <LayersControl position="topright">
-                {renderBoundaryOverlays(props.boundaries)}
-            </LayersControl>
-            {props.cells &&
-            <ActiveCellsLayer
-                boundingBox={props.boundingBox}
-                gridSize={props.gridSize}
-                cells={props.cells}
-                styles={getStyle('active_cells')}
-            />}
-        </Map>
+                <LayersControl position="topright">
+                    {renderBoundaryOverlays(props.boundaries)}
+                </LayersControl>
+                {props.cells &&
+                <ActiveCellsLayer
+                    boundingBox={props.boundingBox}
+                    gridSize={props.gridSize}
+                    cells={props.cells}
+                    styles={getStyle('active_cells')}
+                />}
+            </Map>
+        </React.Fragment>
     );
 };
 
