@@ -1,5 +1,5 @@
 import axios from 'axios';
-import getConfig from '../../config.default.js';
+import getConfig from '../../config.default';
 import AbstractCommand from '../../core/model/command/AbstractCommand';
 import FlopyPackages from '../../core/model/flopy/packages/FlopyPackages';
 import {Array2D, Array3D} from '../../core/model/geometry/Array2D.type';

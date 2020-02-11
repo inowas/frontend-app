@@ -1,10 +1,11 @@
 import Ajv from 'ajv';
-import jsrp from 'json-schema-ref-parser'
+import jsrp from 'json-schema-ref-parser';
 
-export const validate = (data, schema) => {
+export const validate = (data: any, schema?: any) => {
     return new Promise((resolve) => {
         if (!schema) {
             const message = 'No schema given for validation';
+            // tslint:disable-next-line:no-console
             console.warn(message);
             resolve([false, message]);
             return;
@@ -12,19 +13,21 @@ export const validate = (data, schema) => {
 
         const ajv = new Ajv({schemaId: 'auto'});
 
-        jsrp.dereference({'$ref': schema})
-            .then(schema => {
-                const val = ajv.compile(schema);
+        jsrp.dereference({$ref: schema})
+            .then((s) => {
+                const val = ajv.compile(s);
                 const isValid = val(data);
                 const errors = val.errors;
 
                 if (!isValid) {
-                    console.warn('Invalid ' + data, schema, JSON.stringify(errors));
+                    // tslint:disable-next-line:no-console
+                    console.warn('Invalid ' + data, s, JSON.stringify(errors));
                 }
 
                 resolve([isValid, errors]);
             })
-            .catch(e => {
+            .catch((e) => {
+                // tslint:disable-next-line:no-console
                 console.log(e);
                 resolve([false, e]);
             });
