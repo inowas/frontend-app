@@ -40,6 +40,35 @@ const ibound = (props: IProps) => {
         return props.onChange(SoilmodelLayer.fromObject(cLayer));
     };
 
+    const handleDownloadRaster = () => {
+        const param = props.layer.parameters.filter((p) => p.id === props.parameter.id);
+        if (param.length === 0 || !param[0].data.data) {
+            return;
+        }
+
+        const cellSize = (props.model.boundingBox.yMax - props.model.boundingBox.yMin) / props.model.gridSize.nY;
+
+        let content = `NCOLS ${props.model.gridSize.nX}
+NROWS ${props.model.gridSize.nY}
+XLLCORNER ${props.model.boundingBox.xMin}
+YLLCORNER ${props.model.boundingBox.yMin}
+CELLSIZE ${cellSize}
+NODATA_VALUE -9999
+`;
+
+        param[0].data.data.forEach((row) => {
+            content += row.join(' ');
+            content += '\n';
+
+        });
+
+        const file = new Blob([content], {type: 'text/plain'});
+        const element = document.createElement('a');
+        element.href = URL.createObjectURL(file);
+        element.download = `ibound_${props.layer.id}.txt`;
+        element.click();
+    };
+
     const handleToggleDefault = () => {
         const cParameters = cloneDeep(props.layer.toObject().parameters);
 
@@ -151,16 +180,25 @@ const ibound = (props: IProps) => {
             ).length > 0 &&
             <Grid.Row>
                 <Grid.Column>
-                <Button
-                    icon={true}
-                    labelPosition="left"
-                    onClick={toggleRasterUploadModal}
-                    primary={true}
-                    floated="right"
-                >
-                    <Icon name="upload"/>
-                    Upload Raster
-                </Button>
+                    <Button
+                        icon={true}
+                        labelPosition="left"
+                        onClick={handleDownloadRaster}
+                        floated="right"
+                    >
+                        <Icon name="download"/>
+                        Download Raster
+                    </Button>
+                    <Button
+                        icon={true}
+                        labelPosition="left"
+                        onClick={toggleRasterUploadModal}
+                        primary={true}
+                        floated="right"
+                    >
+                        <Icon name="upload"/>
+                        Upload Raster
+                    </Button>
                 </Grid.Column>
             </Grid.Row>
             }
