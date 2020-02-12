@@ -1,4 +1,4 @@
-import {cloneDeep} from 'lodash';
+import _, {cloneDeep} from 'lodash';
 import React, {MouseEvent, SyntheticEvent, useEffect, useState} from 'react';
 import {connect} from 'react-redux';
 import {withRouter} from 'react-router-dom';
@@ -124,7 +124,7 @@ const soilmodelEditor = (props: IProps) => {
     useEffect(() => {
         const sLayer = props.soilmodel.layersCollection.findById(pid);
         if (selectedLayer) {
-            setSelectedLayer(sLayer);
+            setSelectedLayer(_.cloneDeep(sLayer));
         }
 
         if (pid && pid !== prevPid) {
