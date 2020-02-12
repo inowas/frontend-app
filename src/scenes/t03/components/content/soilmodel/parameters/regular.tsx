@@ -1,6 +1,6 @@
 import {cloneDeep} from 'lodash';
 import React from 'react';
-import {Checkbox, Header} from 'semantic-ui-react';
+import {Checkbox, Grid, Header} from 'semantic-ui-react';
 import uuidv4 from 'uuid/v4';
 import {Array2D} from '../../../../../../core/model/geometry/Array2D.type';
 import {ModflowModel} from '../../../../../../core/model/modflow';
@@ -111,44 +111,57 @@ const regular = (props: IProps) => {
     const renderData = () => {
         if (!isDefault) {
             return (
-                <ZonesEditor
-                    boundingBox={props.model.boundingBox}
-                    boundaries={props.boundaries}
-                    layer={props.layer}
-                    gridSize={props.model.gridSize}
-                    onAddRelation={handleAddRelation}
-                    onChange={handleChangeRelations}
-                    onRemoveRelation={handleRemoveRelation}
-                    onSmoothLayer={handleSmoothLayer}
-                    parameter={props.parameter}
-                    readOnly={props.model.readOnly}
-                    zones={props.soilmodel.zonesCollection}
-                />
+                <Grid.Row columns={1}>
+                    <Grid.Column>
+                        <ZonesEditor
+                            boundingBox={props.model.boundingBox}
+                            boundaries={props.boundaries}
+                            layer={props.layer}
+                            gridSize={props.model.gridSize}
+                            onAddRelation={handleAddRelation}
+                            onChange={handleChangeRelations}
+                            onRemoveRelation={handleRemoveRelation}
+                            onSmoothLayer={handleSmoothLayer}
+                            parameter={props.parameter}
+                            readOnly={props.model.readOnly}
+                            zones={props.soilmodel.zonesCollection}
+                        />
+                    </Grid.Column>
+                </Grid.Row>
             );
         }
         return (
-            <RasterDataImage
-                data={props.defaultData}
-                gridSize={props.model.gridSize}
-                unit={props.parameter.unit}
-            />
+            <Grid.Row centered={true} columns={1}>
+                <Grid.Column width={8}>
+                    <RasterDataImage
+                        data={props.defaultData}
+                        gridSize={props.model.gridSize}
+                        unit={props.parameter.unit}
+                    />
+                </Grid.Column>
+            </Grid.Row>
         );
     };
 
     return (
-        <div>
-            <Header as="h4">{props.parameter.title}, {props.parameter.id} [{props.parameter.unit}]
-                <Checkbox
-                    checked={isDefault}
-                    disabled={props.model.readOnly}
-                    label="Use default value."
-                    onChange={handleToggleDefault}
-                    style={{float: 'right'}}
-                    toggle={true}
-                />
-            </Header>
+        <Grid>
+            <Grid.Row>
+                <Grid.Column width={8}>
+                    <Header as="h4">{props.parameter.title}, {props.parameter.id} [{props.parameter.unit}]</Header>
+                </Grid.Column>
+                <Grid.Column textAlign="right" width={8}>
+                    <Checkbox
+                        checked={isDefault}
+                        disabled={props.model.readOnly}
+                        label="Use default value."
+                        onChange={handleToggleDefault}
+                        style={{float: 'right'}}
+                        toggle={true}
+                    />
+                </Grid.Column>
+            </Grid.Row>
             {renderData()}
-        </div>
+        </Grid>
     );
 };
 
