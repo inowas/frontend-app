@@ -1,8 +1,8 @@
 import Ajv from 'ajv';
 import jsrp from 'json-schema-ref-parser';
 
-export const validate = (data: any, schema?: any) => {
-    return new Promise((resolve) => {
+export const validate = (data: any, schema?: any): PromiseLike<[boolean, any]> => {
+    return new Promise((resolve: any) => {
         if (!schema) {
             const message = 'No schema given for validation';
             // tslint:disable-next-line:no-console

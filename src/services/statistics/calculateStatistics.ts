@@ -15,7 +15,6 @@ export interface ILinearRegression {
     sx: number;
     see: number;
     eq: string;
-    exec: (v: number) => number;
 }
 
 /**
@@ -65,8 +64,7 @@ const linearRegression = (x: number[], y: number[]): ILinearRegression => {
         sx: math.round(sx, 4) as number,
         see: math.round(see, 4) as number,
         eq: `f(x) = ${math.round(slope, 3)}x ${intercept < 0 ? '-' : '+'}` +
-            ` ${math.abs(math.round(intercept, 3) as number)}`,
-        exec: (v: number) => v * slope + intercept,
+            ` ${math.abs(math.round(intercept, 3) as number)}`
     } as ILinearRegression;
 };
 
