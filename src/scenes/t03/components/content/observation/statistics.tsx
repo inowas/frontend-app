@@ -52,7 +52,7 @@ export interface IStatistics {
         },
         absResidual: {
             max: number;
-            mean: number
+            mean: number;
             min: number;
         }
     };
