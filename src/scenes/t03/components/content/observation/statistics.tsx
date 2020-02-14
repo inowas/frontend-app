@@ -6,22 +6,13 @@ import {IRootReducer} from '../../../../../reducers';
 import {fetchCalculationObservations} from '../../../../../services/api';
 import {ILinearRegression} from '../../../../../services/statistics/calculateStatistics';
 
+import {loadWorker} from '../../../../../services/worker/workerHelper';
+
 import {
     ChartObservedVsCalculatedHeads,
     ChartRankedResidualsAgainstNormalProbability,
     ChartWeightedResidualsVsSimulatedHeads
 } from './charts';
-
-/* eslint import/no-webpack-loader-syntax:0 */
-// tslint:disable-next-line:no-var-requires variable-name
-// @ts-ignore
-// tslint:disable-next-line:variable-name
-let Wrkr;
-try {
-    // tslint:disable-next-line:no-var-requires
-    Wrkr = require('worker-loader!./observation.worker');
-} catch (e) {
-}
 
 export type IHobData = Array<{
     simulated: number;
@@ -94,11 +85,8 @@ const observationStatistics = () => {
                     setHobData([]);
                 });
 
-            // @ts-ignore
-            w = Wrkr ? new Wrkr() : undefined;
-            if (w) {
-                w.addEventListener('message', handleMessage);
-            }
+            w = loadWorker('./observation.worker');
+            w.addEventListener('message', handleMessage);
 
             return () => {
                 if (w) {
