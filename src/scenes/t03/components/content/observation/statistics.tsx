@@ -12,6 +12,8 @@ import {
     ChartWeightedResidualsVsSimulatedHeads
 } from './charts';
 
+import {CALCULATE_STATISTICS_INPUT, CALCULATE_STATISTICS_RESULT} from './observation.worker';
+
 export type IHobData = Array<{
     simulated: number;
     observed: number;
@@ -115,7 +117,7 @@ const observationStatistics = () => {
             if (w) {
                 setIsCalculating(true);
                 w.postMessage({
-                    type: 'CALCULATE_STATISTICS_INPUT',
+                    type: CALCULATE_STATISTICS_INPUT,
                     data: {
                         data: hobData,
                         exclude: excludedWells
@@ -147,7 +149,7 @@ const observationStatistics = () => {
 
     const handleMessage = (m: any) => {
         const message: any = m.data;
-        if (message && message.type === 'CALCULATE_STATISTICS_RESULT') {
+        if (message && message.type === CALCULATE_STATISTICS_RESULT) {
             setIsCalculating(false);
             setStatistics(message.data);
         }
