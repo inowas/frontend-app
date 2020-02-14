@@ -1,7 +1,7 @@
 import {applyMiddleware, compose, createStore} from 'redux';
-import rootReducer from './reducers';
 import {composeWithDevTools} from 'redux-devtools-extension';
 import thunk from 'redux-thunk';
+import rootReducer from './reducers';
 
 // middleware always needed
 const middlewares = [
@@ -11,7 +11,9 @@ const middlewares = [
 
 let appliedCompose = compose;
 if (process.env.NODE_ENV === 'development') {
+    // @ts-ignore
     appliedCompose = composeWithDevTools;
+    // tslint:disable-next-line:no-var-requires
     const {logger} = require('redux-logger');
     middlewares.push(logger);
 }
@@ -26,11 +28,14 @@ export default function configureStore() {
 }
 
 function unauthorizedMiddleware() {
-    return ref => {
+    return (ref: any) => {
         const {dispatch} = ref;
 
-        return next => action => {
-            if (action.payload && action.payload instanceof Error && action.payload.response && action.payload.response.status === 401) {
+        return (next: any) => (action: any) => {
+            if (
+                action.payload && action.payload instanceof Error &&
+                action.payload.response && action.payload.response.status === 401
+            ) {
                 dispatch({
                     type: 'UNAUTHORIZED'
                 });
