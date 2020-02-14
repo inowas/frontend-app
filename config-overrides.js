@@ -3,7 +3,7 @@ module.exports = function override(config, env) {
     config.module.rules.push({
         test: /\.worker\.js$/,
         use: [
-            {loader: 'worker-loader'},
+            {loader: 'worker-loader', options: {inline: true}},
             {loader: 'babel-loader'}
         ]
     });

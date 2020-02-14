@@ -13,8 +13,15 @@ import {
 } from './charts';
 
 /* eslint import/no-webpack-loader-syntax:0 */
+// tslint:disable-next-line:no-var-requires variable-name
 // @ts-ignore
-import Wrkr from 'worker-loader!./observation.worker';
+// tslint:disable-next-line:variable-name
+let Wrkr;
+try {
+    // tslint:disable-next-line:no-var-requires
+    Wrkr = require('worker-loader!./observation.worker');
+} catch (e) {
+}
 
 export type IHobData = Array<{
     simulated: number;
@@ -88,9 +95,10 @@ const observationStatistics = () => {
                 });
 
             // @ts-ignore
-            w = new Wrkr() as Worker;
-            // @ts-ignore
-            w.addEventListener('message', handleMessage);
+            w = Wrkr ? new Wrkr() : undefined;
+            if (w) {
+                w.addEventListener('message', handleMessage);
+            }
 
             return () => {
                 if (w) {
