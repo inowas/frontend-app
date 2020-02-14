@@ -1,5 +1,8 @@
-// @ts-ignore
 import calculateStatistics from '../../../../../services/statistics/calculateStatistics';
+import {IObservationWorkerInput, IObservationWorkerResult} from './observation.worker.type';
+
+export const CALCULATE_STATISTICS_INPUT = 'CALCULATE_STATISTICS_INPUT';
+export const CALCULATE_STATISTICS_RESULT = 'CALCULATE_STATISTICS_RESULT';
 
 const ctx: Worker = self as any;
 
@@ -9,15 +12,16 @@ ctx.addEventListener('message', (e) => {
         return;
     }
 
-    const message: any = e.data;
+    const message: IObservationWorkerInput = e.data;
     const {type, data} = message;
 
-    if (type === 'CALCULATE_STATISTICS_INPUT') {
-        const statistics = calculateStatistics(data.data, data.exclude);
+    if (type === CALCULATE_STATISTICS_INPUT) {
+        const m: IObservationWorkerResult = {
+            type: CALCULATE_STATISTICS_RESULT,
+            data: calculateStatistics(data.data, data.exclude)
+        };
+
         // @ts-ignore
-        postMessage({
-            type: 'CALCULATE_STATISTICS_RESULT',
-            data: statistics
-        });
+        postMessage(m);
     }
 });

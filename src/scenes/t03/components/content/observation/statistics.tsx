@@ -12,16 +12,8 @@ import {
     ChartWeightedResidualsVsSimulatedHeads
 } from './charts';
 
-/* eslint import/no-webpack-loader-syntax:0 */
-// tslint:disable-next-line:no-var-requires variable-name
-// @ts-ignore
-// tslint:disable-next-line:variable-name
-let Wrkr;
-try {
-    // tslint:disable-next-line:no-var-requires
-    Wrkr = require('worker-loader!./observation.worker');
-} catch (e) {
-}
+import {CALCULATE_STATISTICS_INPUT, CALCULATE_STATISTICS_RESULT} from './observation.worker';
+import {IObservationWorkerResult} from './observation.worker.type';
 
 export type IHobData = Array<{
     simulated: number;
@@ -70,6 +62,20 @@ export interface IStatistics {
 
 let w: Worker | undefined;
 
+const loadWorker = () => {
+    let worker;
+    try {
+        // tslint:disable-next-line:no-var-requires
+        worker = require('worker-loader!./observation.worker');
+    } catch (e) {
+        if (process.env.NODE_ENV !== 'test') {
+            throw e;
+        }
+    }
+
+    return new worker() as Worker;
+};
+
 const observationStatistics = () => {
     const [isLoading, setIsLoading] = useState<boolean>(false);
     const [isCalculating, setIsCalculating] = useState<boolean>(false);
@@ -94,11 +100,8 @@ const observationStatistics = () => {
                     setHobData([]);
                 });
 
-            // @ts-ignore
-            w = Wrkr ? new Wrkr() : undefined;
-            if (w) {
-                w.addEventListener('message', handleMessage);
-            }
+            w = loadWorker();
+            w.addEventListener('message', handleMessage);
 
             return () => {
                 if (w) {
@@ -111,17 +114,15 @@ const observationStatistics = () => {
     }, []);
 
     useEffect(() => {
-        if (hobData && Array.isArray(hobData)) {
-            if (w) {
-                setIsCalculating(true);
-                w.postMessage({
-                    type: 'CALCULATE_STATISTICS_INPUT',
-                    data: {
-                        data: hobData,
-                        exclude: excludedWells
-                    }
-                });
-            }
+        if (hobData && Array.isArray(hobData) && w) {
+            setIsCalculating(true);
+            w.postMessage({
+                type: CALCULATE_STATISTICS_INPUT,
+                data: {
+                    data: hobData,
+                    exclude: excludedWells
+                }
+            });
         }
     }, [hobData, excludedWells]);
 
@@ -146,8 +147,8 @@ const observationStatistics = () => {
     }, [statistics]);
 
     const handleMessage = (m: any) => {
-        const message: any = m.data;
-        if (message && message.type === 'CALCULATE_STATISTICS_RESULT') {
+        const message: IObservationWorkerResult = m.data;
+        if (message && message.type === CALCULATE_STATISTICS_RESULT) {
             setIsCalculating(false);
             setStatistics(message.data);
         }
