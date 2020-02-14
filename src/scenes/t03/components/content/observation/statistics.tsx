@@ -6,8 +6,6 @@ import {IRootReducer} from '../../../../../reducers';
 import {fetchCalculationObservations} from '../../../../../services/api';
 import {ILinearRegression} from '../../../../../services/statistics/calculateStatistics';
 
-import {loadWorker} from '../../../../../services/worker/workerHelper';
-
 import {
     ChartObservedVsCalculatedHeads,
     ChartRankedResidualsAgainstNormalProbability,
@@ -61,6 +59,20 @@ export interface IStatistics {
 
 let w: Worker | undefined;
 
+const loadWorker = () => {
+    let worker;
+    try {
+        // tslint:disable-next-line:no-var-requires
+        worker = require('worker-loader!./observation.worker');
+    } catch (e) {
+        if (process.env.NODE_ENV !== 'test') {
+            throw e;
+        }
+    }
+
+    return new worker() as Worker;
+};
+
 const observationStatistics = () => {
     const [isLoading, setIsLoading] = useState<boolean>(false);
     const [isCalculating, setIsCalculating] = useState<boolean>(false);
@@ -85,7 +97,7 @@ const observationStatistics = () => {
                     setHobData([]);
                 });
 
-            w = loadWorker('./observation.worker');
+            w = loadWorker();
             w.addEventListener('message', handleMessage);
 
             return () => {
