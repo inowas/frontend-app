@@ -5,13 +5,15 @@ import {Grid, Menu, Segment} from 'semantic-ui-react';
 import FlopyPackages from '../../../../../core/model/flopy/packages/FlopyPackages';
 import {
     FlopyModflowMf,
+    FlopyModflowMfbas,
     FlopyModflowMfchd,
     FlopyModflowMfdis,
     FlopyModflowMfdrn,
     FlopyModflowMfevt,
     FlopyModflowMffhb,
     FlopyModflowMfghb,
-    FlopyModflowMfhob, FlopyModflowMfoc,
+    FlopyModflowMfhob,
+    FlopyModflowMfoc,
     FlopyModflowMfrch,
     FlopyModflowMfriv,
     FlopyModflowMfwel
@@ -191,21 +193,26 @@ const flow = (props: IProps) => {
 
         const readOnly = props.model.readOnly;
         const {type} = props.match.params;
+        const soilmodel = props.soilmodel;
 
         if (type && !['flow', 'solver'].includes(type) && !iMf.getPackage(type)) {
             return <div>Package not found!</div>;
+        }
+
+        if (!soilmodel) {
+            return <div>Soilmodel not found!</div>;
         }
 
         switch (type) {
             case 'bas':
                 return (
                     <BasPackageProperties
-                        mfPackage={iMf.getPackage(type)}
-                        mfPackages={iMf}
+                        mfPackage={iMf.getPackage(type) as FlopyModflowMfbas}
                         onChange={handleChangePackage}
                         onClickEdit={handleClickEdit}
                         readonly={readOnly}
-                        soilmodel={props.soilmodel}
+                        gridSize={props.model.gridSize}
+                        soilmodel={soilmodel}
                     />
                 );
             case 'chd':

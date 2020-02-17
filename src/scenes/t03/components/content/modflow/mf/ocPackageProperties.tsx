@@ -79,8 +79,10 @@ const ocPackageProperties = (props: IProps) => {
 
     const handleOnSelect = (e: SyntheticEvent, {name, value}: DropdownProps) => {
         const cMfPackage = props.mfPackage.toObject();
-        cMfPackage[name] = value;
-        return props.onChange(FlopyModflowMfoc.fromObject(cMfPackage));
+        if (cMfPackage.hasOwnProperty(name)) {
+            cMfPackage[name] = value;
+            return props.onChange(FlopyModflowMfoc.fromObject(cMfPackage));
+        }
     };
 
     const handleChangeCompact = () => {
