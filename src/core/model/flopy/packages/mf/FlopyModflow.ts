@@ -155,7 +155,8 @@ export default class FlopyModflow extends GenericObject<IFlopyModflow> {
         // Recalculate Output Control
         let oc;
         this._props.oc ?
-            oc = FlopyModflowMfoc.fromObject(this._props.oc) :
+            oc = FlopyModflowMfoc.fromObject(this._props.oc).update(model.stressperiods.stressperiods.length,
+                this._props.oc.stress_period_data) :
             oc = FlopyModflowMfoc.create(model.stressperiods.stressperiods.length);
         oc ? this._props.oc = oc.toObject() : delete this._props.oc;
 

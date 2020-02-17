@@ -50,10 +50,14 @@ export default class FlopyModflowMfoc extends FlopyModflowPackage<IFlopyModflowM
         return new this(d);
     }
 
-    public update(nper: number) {
+    public update(nper: number, data?: Array<[[number, number], string[]]>) {
         const spData: IFlopyModflowMfoc['stress_period_data'] = [];
         for (let per = 0; per < nper; per++) {
-            spData.push([[per, 0], ['save head', 'save drawdown', 'save budget']]);
+            if (data && data[per]) {
+                spData.push(data[per]);
+            } else {
+                spData.push([[per, 0], ['save head', 'save drawdown', 'save budget']]);
+            }
         }
 
         this.stress_period_data = spData;

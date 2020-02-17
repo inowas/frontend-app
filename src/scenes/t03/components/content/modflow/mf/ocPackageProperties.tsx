@@ -89,6 +89,23 @@ const ocPackageProperties = (props: IProps) => {
         return props.onChange(FlopyModflowMfoc.fromObject(cMfPackage));
     };
 
+    const handleToggleAll = (text: string) => {
+        const cMfPackage = props.mfPackage.toObject();
+        let {stress_period_data} = cMfPackage;
+        const activateAll = stress_period_data.filter((row) => !row[1].includes(text)).length > 0;
+        stress_period_data = stress_period_data.map((row) => {
+            if (row[1].includes(text) && !activateAll) {
+                row[1] = row[1].filter((t) => t !== text);
+            }
+            if (!row[1].includes(text) && activateAll) {
+                row[1].push(text);
+            }
+            return row;
+        });
+        cMfPackage.stress_period_data = stress_period_data;
+        return props.onChange(FlopyModflowMfoc.fromObject(cMfPackage));
+    };
+
     const handleToggleCheckBox = (per: number, stp: number, text: string) => {
         const cMfPackage = props.mfPackage.toObject();
         let {stress_period_data} = cMfPackage;
@@ -112,6 +129,7 @@ const ocPackageProperties = (props: IProps) => {
     const renderOCDataTable = () => {
         const stressPeriodData = props.mfPackage.stress_period_data;
         const disPackage = props.mfPackages.getPackage('dis');
+
         if (!(disPackage instanceof FlopyModflowMfdis)) {
             return null;
         }
@@ -120,7 +138,7 @@ const ocPackageProperties = (props: IProps) => {
 
         let tableData: Array<[[number, number], string[]]> = [];
         for (let per = 0; per < nper; per++) {
-            for (let stp = 0; stp < nstp; stp++) {
+            for (let stp = 0; stp < (Array.isArray(nstp) ? nstp[per] : nstp); stp++) {
                 tableData.push([[per, stp], []]);
             }
         }
@@ -135,17 +153,44 @@ const ocPackageProperties = (props: IProps) => {
         });
 
         return (
-            <Table collapsing={true} size={'small'} className={'packages'}>
+            <Table size={'small'} className={'packages'}>
                 <Table.Header>
                     <Table.Row>
                         <Table.HeaderCell>SP</Table.HeaderCell>
                         <Table.HeaderCell>TS</Table.HeaderCell>
-                        <Table.HeaderCell>Save Head</Table.HeaderCell>
-                        <Table.HeaderCell>Save Drawdown</Table.HeaderCell>
-                        <Table.HeaderCell>Save Budget</Table.HeaderCell>
+                        <Table.HeaderCell textAlign="center">Save Head</Table.HeaderCell>
+                        <Table.HeaderCell textAlign="center">Save Drawdown</Table.HeaderCell>
+                        <Table.HeaderCell textAlign="center">Save Budget</Table.HeaderCell>
                     </Table.Row>
                 </Table.Header>
                 <Table.Body>
+                    {tableData.length > 1 &&
+                    <Table.Row>
+                        <Table.Cell/>
+                        <Table.Cell/>
+                        <Table.Cell textAlign="center">
+                            <Checkbox
+                                onChange={() => handleToggleAll('save head')}
+                                checked={tableData.filter((row) => !row[1].includes('save head')).length === 0}
+                                disabled={props.readonly}
+                            />
+                        </Table.Cell>
+                        <Table.Cell textAlign="center">
+                            <Checkbox
+                                onChange={() => handleToggleAll('save drawdown')}
+                                checked={tableData.filter((row) => !row[1].includes('save drawdown')).length === 0}
+                                disabled={props.readonly}
+                            />
+                        </Table.Cell>
+                        <Table.Cell textAlign="center">
+                            <Checkbox
+                                onChange={() => handleToggleAll('save budget')}
+                                checked={tableData.filter((row) => !row[1].includes('save budget')).length === 0}
+                                disabled={props.readonly}
+                            />
+                        </Table.Cell>
+                    </Table.Row>
+                    }
                     {tableData.map((d, idx) => {
                         const [per, stp] = d[0];
 
@@ -153,21 +198,21 @@ const ocPackageProperties = (props: IProps) => {
                             <Table.Row key={idx}>
                                 <Table.Cell>{per}</Table.Cell>
                                 <Table.Cell>{stp}</Table.Cell>
-                                <Table.Cell>
+                                <Table.Cell textAlign="center">
                                     <Checkbox
                                         onChange={() => handleToggleCheckBox(per, stp, 'save head')}
                                         checked={d[1].includes('save head')}
                                         disabled={props.readonly}
                                     />
                                 </Table.Cell>
-                                <Table.Cell>
+                                <Table.Cell textAlign="center">
                                     <Checkbox
                                         onChange={() => handleToggleCheckBox(per, stp, 'save drawdown')}
                                         checked={d[1].includes('save drawdown')}
                                         disabled={props.readonly}
                                     />
                                 </Table.Cell>
-                                <Table.Cell>
+                                <Table.Cell textAlign="center">
                                     <Checkbox
                                         onChange={() => handleToggleCheckBox(per, stp, 'save budget')}
                                         checked={d[1].includes('save budget')}
