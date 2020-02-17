@@ -1,7 +1,7 @@
 import {IPropertyValueObject} from '../../../types';
 import FlopyModflowPackage from './FlopyModflowPackage';
 
-export interface IFlopyModflowMfoc {
+export interface IFlopyModflowMfoc extends IPropertyValueObject {
     ihedfm: number;
     iddnfm: number;
     chedfm: string | null;
