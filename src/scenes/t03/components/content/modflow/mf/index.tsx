@@ -1,4 +1,3 @@
-import AbstractPackageProperties from './AbstractPackageProperties';
 import BasPackageProperties from './basPackageProperties';
 import ChdPackageProperties from './chdPackageProperties';
 import De4PackageProperties from './de4PackageProperties';
@@ -24,7 +23,6 @@ import SorPackageProperties from './sorPackageProperties';
 import WelPackageProperties from './welPackageProperties';
 
 export {
-    AbstractPackageProperties,
     BasPackageProperties,
     ChdPackageProperties,
     De4PackageProperties,

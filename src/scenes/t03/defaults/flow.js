@@ -259,6 +259,8 @@ export const documentation = {
         transportable among different computer operating systems or different Fortran compilers. (default is
         None)</div>,
     compact: <div>Save results in compact budget form.</div>,
+    stress_period_data: <div>TODO!!</div>,
+    label: <div>TODO!!</div>,
 
     // RIV
     riv: {

@@ -3,6 +3,7 @@ import {useDispatch, useSelector} from 'react-redux';
 import {Grid, Menu, Segment} from 'semantic-ui-react';
 import {ModflowModel} from '../../../../../core/model/modflow';
 import {BoundaryCollection} from '../../../../../core/model/modflow/boundaries';
+import {IRootReducer} from '../../../../../reducers';
 import {sendCommand} from '../../../../../services/api';
 import {updateModel} from '../../../actions/actions';
 import ModflowModelCommand from '../../../commands/modflowModelCommand';
@@ -30,7 +31,7 @@ const discretization = () => {
 
         const handleChangeSelected = (id: string) => () => setSelected(id);
 
-        const T03 = useSelector((state: any) => state.T03);
+        const T03 = useSelector((state: IRootReducer) => state.T03);
         const model = T03.model ? ModflowModel.fromObject(T03.model) : null;
         const boundaries = T03.boundaries ? BoundaryCollection.fromObject(T03.boundaries) : null;
 
