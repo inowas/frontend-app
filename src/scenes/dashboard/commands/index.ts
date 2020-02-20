@@ -7,7 +7,8 @@ export const createToolInstance = (tool: string, payload: any) => {
         case 'T03':
             return (ModflowModelCommand.createModflowModel(payload));
         case 'T07':
-            return (ScenarioAnalysisCommand.createScenarioAnalysis(payload));
+            return (ScenarioAnalysisCommand.createScenarioAnalysis(payload.scenarioanalysisId, payload.modelToCloneId,
+                payload.name, payload.description, payload.isPublic));
         default:
             return (SimpleToolCommand.createToolInstance(payload));
     }
@@ -42,7 +43,8 @@ export const updateToolInstance = (tool: string, payload: any) => {
                 payload.id, payload.name, payload.description, payload.isPublic
             ));
         case 'T07':
-            return (ScenarioAnalysisCommand.updateScenarioAnalysis(payload));
+            return (ScenarioAnalysisCommand.updateScenarioAnalysis(payload.scenarioanalysisId, payload.name,
+                payload.description, payload.isPublic));
         default:
             return (SimpleToolCommand.updateToolInstance(payload));
     }

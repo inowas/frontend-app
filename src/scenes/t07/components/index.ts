@@ -4,4 +4,4 @@ import Difference from './Difference';
 export {
     CrossSection,
     Difference
-}
+};
