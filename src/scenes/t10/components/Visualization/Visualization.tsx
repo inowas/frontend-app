@@ -1,8 +1,10 @@
+import _ from 'lodash';
 import React, {SyntheticEvent, useEffect, useState} from 'react';
 import {
-    Dropdown,
+    Button,
+    Form,
     Grid,
-    Segment
+    Icon, Segment
 } from 'semantic-ui-react';
 import {Rtm} from '../../../../core/model/rtm';
 import {ISensorParameter} from '../../../../core/model/rtm/Sensor.type';
@@ -14,33 +16,41 @@ interface IProps {
     rtm: Rtm;
 }
 
+interface ISelectedParameter {
+    type: string;
+    axis: 'left' | 'right';
+}
+
 const visualization = (props: IProps) => {
     const [dropdownData, setDropdownData] = useState<Array<{
         key: string, text: string, value: string
     }>>([]);
-    const [selectedParameter, setSelectedParameter] = useState<string | null>(null);
+    const [selectedParameters, setSelectedParameters] = useState<ISelectedParameter[]>([]);
     const [parameters, setParameters] = useState<IParameterWithMetaData[]>([]);
 
     useEffect(() => {
-        if (selectedParameter) {
+        if (selectedParameters.length > 0) {
             const cParameters: IParameterWithMetaData[] = [];
-            props.rtm.sensors.all.forEach((s, sIdx) => {
-                s.parameters.findBy('type', selectedParameter).forEach((p, pIdx) => {
-                    cParameters.push({
-                        data: [],
-                        parameter: p,
-                        sensor: s.toObject(),
-                        meta: {
-                            active: true,
-                            color: (heatMapColors.discrete.length >= 4 * sIdx + pIdx) ?
-                                heatMapColors.discrete[4 * sIdx + pIdx] : '#000000'
-                        }
+            selectedParameters.forEach((selectedParameter) => {
+                props.rtm.sensors.all.forEach((s, sIdx) => {
+                    s.parameters.findBy('type', selectedParameter.type).forEach((p, pIdx) => {
+                        cParameters.push({
+                            data: [],
+                            parameter: p,
+                            sensor: s.toObject(),
+                            meta: {
+                                active: true,
+                                color: (heatMapColors.discrete.length >= 4 * sIdx + pIdx) ?
+                                    heatMapColors.discrete[4 * sIdx + pIdx] : '#000000',
+                                axis: selectedParameter.axis
+                            }
+                        });
                     });
                 });
             });
             return setParameters(cParameters);
         }
-    }, [selectedParameter]);
+    }, [selectedParameters]);
 
     useEffect(() => {
         const cParameters: ISensorParameter[] = [];
@@ -52,25 +62,68 @@ const visualization = (props: IProps) => {
             });
         });
         if (cParameters.length > 0) {
-            setSelectedParameter(cParameters[0].type);
+            setSelectedParameters([{
+                axis: 'left',
+                type: cParameters[0].type
+            }]);
         }
         return setDropdownData(
-            cParameters.map((p) => {
-                return {key: p.type, text: p.type, value: p.type};
+            props.rtm.parameterTypes.map((p) => {
+                return {key: p, text: p, value: p};
             })
         );
     }, []);
 
-    const handleChangeDropdown = (e: SyntheticEvent<HTMLElement, Event>, {value}: any) => {
-        return setSelectedParameter(value);
+    const handleChangeAxis = (type: string) => (e: SyntheticEvent<HTMLElement, Event>, {value}: any) => {
+        return setSelectedParameters(selectedParameters.map((p) => {
+            if (p.type === type) {
+                p.axis = value;
+            }
+            return p;
+        }));
     };
 
-    const handleChangeParameters = (cParameters: IParameterWithMetaData[]) => {
+    const handleChangeParameter = (type: string) => (e: SyntheticEvent<HTMLElement, Event>, {value}: any) => {
+        return setSelectedParameters(selectedParameters.map((p) => {
+            if (p.type === type) {
+                p.type = value;
+            }
+            return p;
+        }));
+    };
+
+    const handleRemoveParameter = (type: string) => () => {
+        return setSelectedParameters(selectedParameters.filter((p) => p.type !== type));
+    };
+
+    const handleChangeParameters = (result: IParameterWithMetaData[]) => {
+        const cParameters: IParameterWithMetaData[] = result;
+        parameters.forEach((p) => {
+            if (cParameters.filter((cp) => cp.parameter.type === p.parameter.type).length === 0) {
+                cParameters.push(p);
+            }
+        });
         return setParameters(cParameters);
     };
 
+    const handleAddParameter = () => {
+        const nextParameter = dropdownData.filter(
+            (r) => selectedParameters.filter(
+                (p) => p.type === r.value
+            ).length === 0
+        );
+        if (nextParameter.length > 0) {
+            const cParameters = _.cloneDeep(selectedParameters);
+            cParameters.push({
+                type: nextParameter[0].value,
+                axis: 'left'
+            });
+            return setSelectedParameters(cParameters);
+        }
+    };
+
     const renderContent = () => {
-        if (selectedParameter) {
+        if (selectedParameters.length > 0) {
             return (
                 <VisualizationParameter
                     parameters={parameters}
@@ -81,25 +134,72 @@ const visualization = (props: IProps) => {
         return null;
     };
 
+    const renderParameter = (parameter: ISelectedParameter, key: number) => {
+        return (
+            <Segment color={'blue'} key={key}>
+                <Button
+                    onClick={handleRemoveParameter(parameter.type)}
+                    icon="close"
+                    compact={true}
+                    basic={true}
+                    style={{
+                        position: 'absolute',
+                        top: '0',
+                        right: '0',
+                    }}
+                    size="tiny"
+                />
+                <Form>
+                    <Form.Select
+                        label="Parameter"
+                        fluid={true}
+                        search={true}
+                        selection={true}
+                        onChange={handleChangeParameter(parameter.type)}
+                        options={dropdownData.filter(
+                            (r) => parameter.type === r.value || selectedParameters.filter(
+                                (p) => p.type === r.value
+                            ).length === 0
+                        )}
+                        value={parameter.type}
+                    />
+                    <Form.Select
+                        label="Y-Axis"
+                        fluid={true}
+                        selection={true}
+                        onChange={handleChangeAxis(parameter.type)}
+                        options={[
+                            {key: 'left', value: 'left', text: 'Left'},
+                            {key: 'right', value: 'right', text: 'Right'}
+                        ]}
+                        value={parameter.axis}
+                    />
+                </Form>
+                <ToggleableSensorList
+                    onChange={handleChangeParameters}
+                    parameters={parameters.filter((p) => p.parameter.type === parameter.type)}
+                />
+            </Segment>
+        );
+    };
+
     return (
         <Segment color={'grey'}>
             <Grid>
                 <Grid.Row>
                     <Grid.Column width={4}>
-                        <Dropdown
+                        <Button
+                            disabled={selectedParameters.length >= dropdownData.length}
+                            labelPosition="left"
+                            onClick={handleAddParameter}
+                            primary={true}
+                            icon={true}
                             fluid={true}
-                            search={true}
-                            selection={true}
-                            onChange={handleChangeDropdown}
-                            options={dropdownData}
-                            value={selectedParameter ? selectedParameter : undefined}
-                        />
-                        {selectedParameter &&
-                        <ToggleableSensorList
-                            onChange={handleChangeParameters}
-                            parameters={parameters}
-                        />
-                        }
+                        >
+                            <Icon name="plus"/>
+                            Add Parameter
+                        </Button>
+                        {selectedParameters.map((p, key) => renderParameter(p, key))}
                     </Grid.Column>
                     <Grid.Column width={12}>
                         <Grid>

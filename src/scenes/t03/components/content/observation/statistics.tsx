@@ -1,21 +1,18 @@
-import math from 'mathjs';
-import React, {ReactNode, useEffect, useState} from 'react';
+import React, {SyntheticEvent, useEffect, useMemo, useState} from 'react';
 import {useSelector} from 'react-redux';
-import {
-    CartesianGrid,
-    ReferenceLine,
-    ResponsiveContainer,
-    Scatter,
-    ScatterChart,
-    Tooltip,
-    XAxis,
-    YAxis
-} from 'recharts';
-import {Container, Grid, Header, Segment, Table} from 'semantic-ui-react';
+import {Container, DropdownProps, Form, Grid, Header, Segment, Table} from 'semantic-ui-react';
 import {ModflowModel} from '../../../../../core/model/modflow';
 import {IRootReducer} from '../../../../../reducers';
 import {fetchCalculationObservations} from '../../../../../services/api';
-import calculateStatistics, {ILinearRegression} from '../../../../../services/statistics/calculateStatistics';
+import {ILinearRegression} from '../../../../../services/statistics/calculateStatistics';
+
+import {
+    ChartObservedVsCalculatedHeads,
+    ChartRankedResidualsAgainstNormalProbability,
+    ChartWeightedResidualsVsSimulatedHeads
+} from './charts';
+
+import {CALCULATE_STATISTICS_INPUT, CALCULATE_STATISTICS_RESULT} from './observation.worker';
 
 export type IHobData = Array<{
     simulated: number;
@@ -53,7 +50,7 @@ export interface IStatistics {
         },
         absResidual: {
             max: number;
-            mean: number
+            mean: number;
             min: number;
         }
     };
@@ -62,44 +59,29 @@ export interface IStatistics {
     linRegObsRResNpf: ILinearRegression;
 }
 
-const convenientColors = [
-    '#e6194B',
-    '#3cb44b',
-    '#ffe119',
-    '#4363d8',
-    '#f58231',
-    '#911eb4',
-    '#42d4f4',
-    '#f032e6',
-    '#bfef45',
-    '#fabebe',
-    '#469990',
-    '#e6beff',
-    '#9A6324',
-    '#fffac8',
-    '#800000',
-    '#aaffc3',
-    '#808000',
-    '#ffd8b1',
-    '#000075',
-    '#a9a9a9',
-    '#ffffff',
-    '#000000',
-];
+let w: Worker | undefined;
 
-const diagramLabel = (content: ReactNode) => (
-    <div style={{position: 'absolute', bottom: 100, right: 80}}>
-        <div style={{color: 'red', padding: 20, border: '1px solid red', backgroundColor: 'white'}}>
-            {content}
-        </div>
-    </div>
-);
+const loadWorker = () => {
+    let worker;
+    try {
+        // tslint:disable-next-line:no-var-requires
+        worker = require('worker-loader!./observation.worker');
+    } catch (e) {
+        if (process.env.NODE_ENV !== 'test') {
+            throw e;
+        }
+    }
+
+    return new worker() as Worker;
+};
 
 const observationStatistics = () => {
-
     const [isLoading, setIsLoading] = useState<boolean>(false);
+    const [isCalculating, setIsCalculating] = useState<boolean>(false);
+
     const [hobData, setHobData] = useState<IHobData | null>(null);
     const [statistics, setStatistics] = useState<IStatistics | null>(null);
+    const [excludedWells, setExcludedWells] = useState<string[]>([]);
 
     const T03 = useSelector((state: IRootReducer) => state.T03);
     const model = T03.model ? ModflowModel.fromObject(T03.model) : null;
@@ -116,190 +98,66 @@ const observationStatistics = () => {
                     setIsLoading(false);
                     setHobData([]);
                 });
+
+            w = loadWorker();
+            w.addEventListener('message', handleMessage);
+
+            return () => {
+                if (w) {
+                    // @ts-ignore
+                    w.removeEventListener('message');
+                    w.terminate();
+                }
+            };
         }
     }, []);
 
     useEffect(() => {
         if (hobData && Array.isArray(hobData)) {
-            setStatistics(calculateStatistics(hobData));
+            if (w) {
+                setIsCalculating(true);
+                w.postMessage({
+                    type: CALCULATE_STATISTICS_INPUT,
+                    data: {
+                        data: hobData,
+                        exclude: excludedWells
+                    }
+                });
+            }
         }
-    }, [hobData]);
+    }, [hobData, excludedWells]);
 
-    const chartObservedVsCalculatedHeads = (stats: IStatistics) => {
-
-        const simulated = stats.data.map((d) => d.simulated);
-        const observed = stats.data.map((d) => d.observed);
-        const deltaStd = stats.stats.observed.deltaStd;
-        const {linRegObsSim, names} = stats;
-
-        const data = stats.data.map((d) => ({x: d.observed, y: d.simulated, name: d.name}));
-
-        const min = Math.floor(Math.min(...observed, ...simulated));
-        const max = Math.ceil(Math.max(...observed, ...simulated));
-        const line = [{x: min, y: min}, {x: max, y: max}];
-        const linePlusDelta = [{x: min, y: min + deltaStd}, {x: max, y: max + deltaStd}];
-        const lineMinusDelta = [{x: min, y: min - deltaStd}, {x: max, y: max - deltaStd}];
+    const memoizedCharts = useMemo(() => {
+        if (!statistics) {
+            return null;
+        }
 
         return (
-            <Segment raised={true}>
-                <ResponsiveContainer width={'100%'} aspect={2.0}>
-                    <ScatterChart
-                        margin={{top: 20, right: 20, bottom: 20, left: 20}}
-                    >
-                        <CartesianGrid/>
-                        <XAxis
-                            dataKey={'x'}
-                            type="number"
-                            name={'observed'}
-                            domain={[min, max]}
-                            label={{value: 'Observed Head [m]', angle: 0, position: 'bottom'}}
-                        />
-                        <YAxis
-                            dataKey={'y'}
-                            type="number"
-                            name={'simulated'}
-                            domain={['auto', 'auto']}
-                            label={{value: 'Simulated Head [m]', angle: -90, position: 'left'}}
-                        />
+            <div>
+                <Header size={'large'}>Simulated vs. Observed Values</Header>
+                <ChartObservedVsCalculatedHeads statistics={statistics}/>
 
-                        {names.map((n) => data.filter((d) => d.name.startsWith(n)))
-                            .map((d, idx) => (
-                                <Scatter name={d[0].name} key={idx} data={d} fill={convenientColors[idx]}/>
-                            ))
-                        }
-                        <Scatter data={line} line={{stroke: 'black', strokeWidth: 2}} shape={() => null}/>
-                        <Scatter data={linePlusDelta} line={{stroke: 'red', strokeWidth: 2}} shape={() => null}/>
-                        <Scatter data={lineMinusDelta} line={{stroke: 'red', strokeWidth: 2}} shape={() => null}/>
-                        <Tooltip cursor={{strokeDasharray: '3 3'}}/>
-                    </ScatterChart>
-                </ResponsiveContainer>
-                {diagramLabel(
-                    <div>
-                        <p>{linRegObsSim.eq}</p>
-                        <p>R<sup>2</sup> = {linRegObsSim.r}</p>
-                    </div>
-                )}
-            </Segment>
+                <Header size={'large'}>Weighted residuals vs. simulated heads</Header>
+                <ChartWeightedResidualsVsSimulatedHeads statistics={statistics}/>
+
+                <Header size={'large'}>Ranked residuals against normal probability</Header>
+                <ChartRankedResidualsAgainstNormalProbability statistics={statistics}/>
+            </div>
         );
+
+    }, [statistics]);
+
+    const handleMessage = (m: any) => {
+        const message: any = m.data;
+        if (message && message.type === CALCULATE_STATISTICS_RESULT) {
+            setIsCalculating(false);
+            setStatistics(message.data);
+        }
     };
 
-    const chartWeightedResidualsVsSimulatedHeads = (stats: IStatistics) => {
-        const simulated = stats.data.map((d) => d.simulated);
-        const weightedResiduals = stats.data.map((d) => d.residual);
-        const {linRegResSim, names} = stats;
-
-        const data = stats.data.map((d) => ({x: d.simulated, y: d.residual, name: d.name}));
-
-        const xMin = Math.floor(Math.min(...simulated));
-        const xMax = Math.ceil(Math.max(...simulated));
-        const yMin = Math.floor(Math.min(...weightedResiduals));
-        const yMax = Math.ceil(Math.max(...weightedResiduals));
-
-        // noinspection JSSuspiciousNameCombination
-        const domainY = Math.ceil(Math.max(yMax, yMin));
-        const line = [{
-            x: xMin,
-            y: linRegResSim.exec(xMin)
-        }, {
-            x: xMax,
-            y: linRegResSim.exec(xMax)
-        }];
-
-        return (
-            <Segment raised={true}>
-                <ResponsiveContainer width={'100%'} aspect={2.0}>
-                    <ScatterChart
-                        margin={{top: 20, right: 20, bottom: 20, left: 20}}
-                    >
-                        <CartesianGrid/>
-                        <XAxis
-                            dataKey={'x'}
-                            type="number"
-                            name={'simulated'}
-                            domain={[xMin, xMax]}
-                            label={{value: 'Simulated Head [m a.s.l.]', angle: 0, position: 'bottom'}}
-                        />
-                        <YAxis
-                            dataKey={'y'}
-                            type="number"
-                            name={'weighted'}
-                            domain={[-domainY, domainY]}
-                            label={{value: 'Residual', angle: -90, position: 'left'}}
-                        />
-                        {names.map((n) => data.filter((d) => d.name.startsWith(n)))
-                            .map((d, idx) => (
-                                <Scatter name={d[0].name} key={idx} data={d} fill={convenientColors[idx]}/>
-                            ))
-                        }
-                        <Scatter data={line} line={{stroke: 'red', strokeWidth: 2}} shape={() => null}/>
-                        <ReferenceLine y={0} stroke="blue" strokeWidth={2}/>
-                        <Tooltip cursor={{strokeDasharray: '3 3'}}/>
-                    </ScatterChart>
-                </ResponsiveContainer>
-                {diagramLabel(
-                    <div>
-                        <p>{linRegResSim.eq}</p>
-                        <p>R<sup>2</sup> = {linRegResSim.r}</p>
-                    </div>
-                )}
-            </Segment>
-        );
-    };
-
-    const chartRankedResidualsAgainstNormalProbability = (stats: IStatistics) => {
-
-        const {linRegObsRResNpf, names} = stats;
-
-        const data = stats.data.map((d) => ({x: d.residual, y: d.npf, name: d.name}));
-        const xMin = math.floor(stats.stats.residual.min);
-        const xMax = math.ceil(stats.stats.residual.max);
-
-        const line = [{
-            x: xMin,
-            y: linRegObsRResNpf.exec(xMin)
-        }, {
-            x: xMax,
-            y: linRegObsRResNpf.exec(xMax)
-        }];
-
-        return (
-            <Segment raised={true}>
-                <ResponsiveContainer width={'100%'} aspect={2.0}>
-                    <ScatterChart
-                        margin={{top: 20, right: 20, bottom: 20, left: 20}}
-                    >
-                        <CartesianGrid/>
-                        <XAxis
-                            dataKey={'x'}
-                            type="number"
-                            name={'npf'}
-                            domain={[xMin, xMax]}
-                            label={{value: 'Residual', angle: 0, position: 'bottom'}}
-                        />
-                        <YAxis
-                            dataKey={'y'}
-                            type="number"
-                            name={'ranked residuals'}
-                            domain={['auto', 'auto']}
-                            label={{value: 'Normal Probability Function', angle: -90, position: 'left'}}
-                        />
-                        {names.map((n) => data.filter((d) => d.name.startsWith(n)))
-                            .map((d, idx) => (
-                                <Scatter name={d[0].name} key={idx} data={d} fill={convenientColors[idx]}/>
-                            ))
-                        }
-                        <Scatter data={line} line={{stroke: 'red', strokeWidth: 2}} shape={() => null}/>
-                        <Tooltip cursor={{strokeDasharray: '3 3'}}/>
-                    </ScatterChart>
-                </ResponsiveContainer>
-                {diagramLabel(
-                    <div>
-                        <p>{linRegObsRResNpf.eq}</p>
-                        <p>R<sup>2</sup> = {linRegObsRResNpf.r}</p>
-                    </div>
-                )}
-            </Segment>
-        );
+    const handleChangeExcludesWells = (e: SyntheticEvent<HTMLElement, Event>, data: DropdownProps) => {
+        const value: string[] = data.value as string[];
+        setExcludedWells(value);
     };
 
     return (
@@ -311,90 +169,127 @@ const observationStatistics = () => {
                         {hobData && hobData.length === 0 && <span>No observation data available</span>}
                         {hobData && hobData.length > 0 && statistics &&
                         <Container fluid={true}>
-                            <Header size={'large'}>Calculate statistics</Header>
-                            <Segment raised={true}>
-                                <Table celled={true}>
-                                    <Table.Header>
-                                        <Table.Row>
-                                            <Table.HeaderCell>Name</Table.HeaderCell>
-                                            <Table.HeaderCell>Symbol</Table.HeaderCell>
-                                            <Table.HeaderCell>Value</Table.HeaderCell>
-                                            <Table.HeaderCell>Unit</Table.HeaderCell>
-                                        </Table.Row>
-                                    </Table.Header>
-                                    <Table.Body style={{overflowY: 'auto'}}>
-                                        <Table.Row>
-                                            <Table.Cell>Number of data points</Table.Cell>
-                                            <Table.Cell>n [-]</Table.Cell>
-                                            <Table.Cell>{statistics.data.length}</Table.Cell>
-                                            <Table.Cell>-</Table.Cell>
-                                        </Table.Row>
-                                        <Table.Row>
-                                            <Table.Cell>Maximum Absolute Residual</Table.Cell>
-                                            <Table.Cell>R<sub>MAX</sub> </Table.Cell>
-                                            <Table.Cell>{statistics.stats.absResidual.max.toFixed(3)}</Table.Cell>
-                                            <Table.Cell>m</Table.Cell>
-                                        </Table.Row>
-                                        <Table.Row>
-                                            <Table.Cell>Minimum Absolute Residual</Table.Cell>
-                                            <Table.Cell>R<sub>MIN</sub></Table.Cell>
-                                            <Table.Cell>{statistics.stats.absResidual.min.toFixed(3)}</Table.Cell>
-                                            <Table.Cell>m</Table.Cell>
-                                        </Table.Row>
-                                        <Table.Row>
-                                            <Table.Cell>Residual Mean</Table.Cell>
-                                            <Table.Cell>R<sub>MEAN</sub></Table.Cell>
-                                            <Table.Cell>{statistics.stats.residual.mean.toFixed(3)}</Table.Cell>
-                                            <Table.Cell>m</Table.Cell>
-                                        </Table.Row>
-                                        <Table.Row>
-                                            <Table.Cell>Absolute residual Mean</Table.Cell>
-                                            <Table.Cell>|R<sub>MEAN</sub>|</Table.Cell>
-                                            <Table.Cell>{statistics.stats.residual.mean.toFixed(3)}</Table.Cell>
-                                            <Table.Cell>m</Table.Cell>
-                                        </Table.Row>
-                                        <Table.Row>
-                                            <Table.Cell>Standard error of estimation</Table.Cell>
-                                            <Table.Cell>SSE</Table.Cell>
-                                            <Table.Cell>{statistics.stats.residual.sse.toFixed(3)}</Table.Cell>
-                                            <Table.Cell>-</Table.Cell>
-                                        </Table.Row>
-                                        <Table.Row>
-                                            <Table.Cell>Root Mean Squared Error</Table.Cell>
-                                            <Table.Cell>RMSE</Table.Cell>
-                                            <Table.Cell>{statistics.stats.residual.rmse.toFixed(3)}</Table.Cell>
-                                            <Table.Cell>m</Table.Cell>
-                                        </Table.Row>
-                                        <Table.Row>
-                                            <Table.Cell>Normalized Root Mean Squared Error</Table.Cell>
-                                            <Table.Cell>NRMSE</Table.Cell>
-                                            <Table.Cell>{statistics.stats.residual.nrmse.toFixed(3)}</Table.Cell>
-                                            <Table.Cell>-</Table.Cell>
-                                        </Table.Row>
-                                        <Table.Row>
-                                            <Table.Cell>Correlation Coefficient Pearson R</Table.Cell>
-                                            <Table.Cell>R</Table.Cell>
-                                            <Table.Cell>{statistics.linRegObsSim.r.toFixed(3)}</Table.Cell>
-                                            <Table.Cell>-</Table.Cell>
-                                        </Table.Row>
-                                        <Table.Row>
-                                            <Table.Cell>Coefficient of determination</Table.Cell>
-                                            <Table.Cell>R<sup>2</sup></Table.Cell>
-                                            <Table.Cell>{statistics.linRegObsSim.r2.toFixed(3)}</Table.Cell>
-                                            <Table.Cell>-</Table.Cell>
-                                        </Table.Row>
-                                    </Table.Body>
-                                </Table>
-                            </Segment>
-
-                            <Header size={'large'}>Simulated vs. Observed Values</Header>
-                            {chartObservedVsCalculatedHeads(statistics)}
-
-                            <Header size={'large'}>Weighted residuals vs. simulated heads</Header>
-                            {chartWeightedResidualsVsSimulatedHeads(statistics)}
-
-                            <Header size={'large'}>Ranked residuals against normal probability</Header>
-                            {chartRankedResidualsAgainstNormalProbability(statistics)}
+                            <Grid>
+                                <Grid.Row>
+                                    <Grid.Column width={12}>
+                                        <Header size={'large'}>Calculate statistics</Header>
+                                        <Segment raised={true}>
+                                            <Table celled={true}>
+                                                <Table.Header>
+                                                    <Table.Row>
+                                                        <Table.HeaderCell>Name</Table.HeaderCell>
+                                                        <Table.HeaderCell>Symbol</Table.HeaderCell>
+                                                        <Table.HeaderCell>Value</Table.HeaderCell>
+                                                        <Table.HeaderCell>Unit</Table.HeaderCell>
+                                                    </Table.Row>
+                                                </Table.Header>
+                                                <Table.Body style={{overflowY: 'auto'}}>
+                                                    <Table.Row>
+                                                        <Table.Cell>Number of data points</Table.Cell>
+                                                        <Table.Cell>n [-]</Table.Cell>
+                                                        <Table.Cell>{statistics.data.length}</Table.Cell>
+                                                        <Table.Cell>-</Table.Cell>
+                                                    </Table.Row>
+                                                    <Table.Row>
+                                                        <Table.Cell>Maximum Absolute Residual</Table.Cell>
+                                                        <Table.Cell>R<sub>MAX</sub> </Table.Cell>
+                                                        <Table.Cell>
+                                                            {statistics.stats.absResidual.max.toFixed(3)}
+                                                        </Table.Cell>
+                                                        <Table.Cell>m</Table.Cell>
+                                                    </Table.Row>
+                                                    <Table.Row>
+                                                        <Table.Cell>Minimum Absolute Residual</Table.Cell>
+                                                        <Table.Cell>R<sub>MIN</sub></Table.Cell>
+                                                        <Table.Cell>
+                                                            {statistics.stats.absResidual.min.toFixed(3)}
+                                                        </Table.Cell>
+                                                        <Table.Cell>m</Table.Cell>
+                                                    </Table.Row>
+                                                    <Table.Row>
+                                                        <Table.Cell>Residual Mean</Table.Cell>
+                                                        <Table.Cell>R<sub>MEAN</sub></Table.Cell>
+                                                        <Table.Cell>
+                                                            {statistics.stats.residual.mean.toFixed(3)}
+                                                        </Table.Cell>
+                                                        <Table.Cell>m</Table.Cell>
+                                                    </Table.Row>
+                                                    <Table.Row>
+                                                        <Table.Cell>Absolute residual Mean</Table.Cell>
+                                                        <Table.Cell>|R<sub>MEAN</sub>|</Table.Cell>
+                                                        <Table.Cell>
+                                                            {statistics.stats.residual.mean.toFixed(3)}
+                                                        </Table.Cell>
+                                                        <Table.Cell>m</Table.Cell>
+                                                    </Table.Row>
+                                                    <Table.Row>
+                                                        <Table.Cell>Standard error of estimation</Table.Cell>
+                                                        <Table.Cell>SSE</Table.Cell>
+                                                        <Table.Cell>
+                                                            {statistics.stats.residual.sse.toFixed(3)}
+                                                        </Table.Cell>
+                                                        <Table.Cell>-</Table.Cell>
+                                                    </Table.Row>
+                                                    <Table.Row>
+                                                        <Table.Cell>Root Mean Squared Error</Table.Cell>
+                                                        <Table.Cell>RMSE</Table.Cell>
+                                                        <Table.Cell>
+                                                            {statistics.stats.residual.rmse.toFixed(3)}
+                                                        </Table.Cell>
+                                                        <Table.Cell>m</Table.Cell>
+                                                    </Table.Row>
+                                                    <Table.Row>
+                                                        <Table.Cell>Normalized Root Mean Squared Error</Table.Cell>
+                                                        <Table.Cell>NRMSE</Table.Cell>
+                                                        <Table.Cell>
+                                                            {statistics.stats.residual.nrmse.toFixed(3)}
+                                                        </Table.Cell>
+                                                        <Table.Cell>-</Table.Cell>
+                                                    </Table.Row>
+                                                    <Table.Row>
+                                                        <Table.Cell>Correlation Coefficient Pearson R</Table.Cell>
+                                                        <Table.Cell>R</Table.Cell>
+                                                        <Table.Cell>
+                                                            {statistics.linRegObsSim.r.toFixed(3)}
+                                                        </Table.Cell>
+                                                        <Table.Cell>-</Table.Cell>
+                                                    </Table.Row>
+                                                    <Table.Row>
+                                                        <Table.Cell>Coefficient of determination</Table.Cell>
+                                                        <Table.Cell>R<sup>2</sup></Table.Cell>
+                                                        <Table.Cell>
+                                                            {statistics.linRegObsSim.r2.toFixed(3)}
+                                                        </Table.Cell>
+                                                        <Table.Cell>-</Table.Cell>
+                                                    </Table.Row>
+                                                </Table.Body>
+                                            </Table>
+                                        </Segment>
+                                    </Grid.Column>
+                                    <Grid.Column width={4}>
+                                        <Header size={'large'}>Exclude Wells</Header>
+                                        <Segment raised={true}>
+                                            <Form>
+                                                <Form.Dropdown
+                                                    closeOnChange={true}
+                                                    loading={isCalculating}
+                                                    name={'excludedWells'}
+                                                    onChange={handleChangeExcludesWells}
+                                                    options={statistics.names.map((n) => ({key: n, value: n, text: n}))}
+                                                    multiple={true}
+                                                    selection={true}
+                                                    value={excludedWells}
+                                                />
+                                            </Form>
+                                        </Segment>
+                                    </Grid.Column>
+                                </Grid.Row>
+                                <Grid.Row>
+                                    <Grid.Column>
+                                        {memoizedCharts}
+                                    </Grid.Column>
+                                </Grid.Row>
+                            </Grid>
                         </Container>
                         }
                     </Grid.Column>
@@ -402,7 +297,6 @@ const observationStatistics = () => {
             </Grid>
         </Segment>
     );
-
 };
 
 export default observationStatistics;

@@ -6,7 +6,22 @@ export interface IParameterWithMetaData {
     meta: {
         active: boolean;
         color: string;
+        axis: 'left' | 'right';
     };
     parameter: ISensorParameter;
     sensor: ISensor;
+}
+
+export interface ITimeStamps {
+    minT: number;
+    maxT: number;
+    left: {
+        min: number;
+        max: number;
+    };
+    right: {
+        min: number;
+        max: number;
+    };
+    timestamps: number[];
 }

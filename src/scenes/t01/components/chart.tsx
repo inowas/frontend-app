@@ -130,7 +130,7 @@ const chart = (props: IProps) => {
                             basic={true}
                             icon={true}
                             size={'small'}
-                            onClick={() => exportChartImage(chartRef.current)}
+                            onClick={() => chartRef.current ? exportChartImage(chartRef.current) : null}
                         >
                             <Icon name="download"/> JPG
                         </Button>
@@ -139,7 +139,7 @@ const chart = (props: IProps) => {
                             basic={true}
                             icon={true}
                             size={'small'}
-                            onClick={() => exportChartData(chartRef.current)}
+                            onClick={() => chartRef.current ? exportChartData(chartRef.current) : null}
                         >
                             <Icon name="download"/> CSV
                         </Button>

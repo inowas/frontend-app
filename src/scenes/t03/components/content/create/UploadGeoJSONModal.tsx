@@ -56,7 +56,7 @@ const uploadGeoJSONModal = (props: IProps) => {
         try {
             const parsedJSON = JSON.parse(value);
             validate(parsedJSON, `${JSON_SCHEMA_URL}/geojson/polygon.json`).then((r) => {
-                if (r[0] === false) {
+                if (!r[0]) {
                     return setIsValid(false);
                 }
 

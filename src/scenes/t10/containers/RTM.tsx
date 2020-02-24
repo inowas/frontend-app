@@ -1,6 +1,5 @@
 import React, {useEffect, useState} from 'react';
 import {Redirect, RouteComponentProps, withRouter} from 'react-router-dom';
-
 import {Grid, Icon, Message} from 'semantic-ui-react';
 import {Rtm, Sensor} from '../../../core/model/rtm';
 import {IRtm} from '../../../core/model/rtm/Rtm.type';
@@ -145,7 +144,7 @@ const RTM = (props: IProps) => {
             parameter = sensor.parameters.findById(selectedParameterId);
         }
 
-        if (!['sensor-setup', 'sensor-processing', 'sensor-visualization'].includes(property)) {
+        if (!['sensor-parameters', 'sensor-setup', 'sensor-processing', 'sensor-visualization'].includes(property)) {
             const path = props.match.path;
             const basePath = path.split(':')[0];
             return (

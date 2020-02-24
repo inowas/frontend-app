@@ -5,7 +5,7 @@ import FileDataSource from '../../../core/model/rtm/FileDataSource';
 import PrometheusDataSource from '../../../core/model/rtm/PrometheusDataSource';
 import {DataSource, IDataSource, ISensorParameter} from '../../../core/model/rtm/Sensor.type';
 import SensorDataSource from '../../../core/model/rtm/SensorDataSource';
-import {colors, dataSourceList, parameterList} from '../defaults';
+import {colors, dataSourceList} from '../defaults';
 import {
     DataSourcesChart,
     DataSourceTimeRange,
@@ -212,7 +212,7 @@ const dataSources = (props: IProps) => {
                 <Grid.Column>
                     <Segment color={'red'} raised={true}>
                         <Header as={'h2'} dividing={true}>
-                            {parameterList.filter((i) => i.parameter === props.parameter.type)[0].text}
+                            {props.parameter.description}
                         </Header>
                         <Label color={'blue'} ribbon={true} size={'large'}>
                             Data sources
@@ -340,7 +340,10 @@ const dataSources = (props: IProps) => {
                         <Label color={'blue'} ribbon={true} size={'large'}>
                             Chart
                         </Label>
-                        <DataSourcesChart dataSources={dataSourceCollection}/>
+                        <DataSourcesChart
+                            dataSources={dataSourceCollection}
+                            unit={props.parameter.unit !== '' ? props.parameter.unit : undefined}
+                        />
                     </Segment>
                     }
 

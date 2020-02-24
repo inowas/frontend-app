@@ -1,3 +1,4 @@
+import _ from 'lodash';
 import {makeTimeProcessingRequest} from '../../../../services/api';
 import {GenericObject} from '../../genericObject/GenericObject';
 import {IDateTimeValue} from '../Sensor.type';
@@ -81,7 +82,8 @@ class TimeProcessing extends GenericObject<ITimeProcessing> {
     }
 
     public async apply(input: IDateTimeValue[]) {
-        const dataToProcess = input.filter((i) => i.timeStamp >= this.begin && i.timeStamp <= this.end);
+        const dataToProcess = _.uniqBy(
+            input.filter((i) => i.timeStamp >= this.begin && i.timeStamp <= this.end), 'timeStamp');
 
         try {
             const processedData = await makeTimeProcessingRequest(dataToProcess, this.rule, this.method);
