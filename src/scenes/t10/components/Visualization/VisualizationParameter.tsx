@@ -1,40 +1,36 @@
 import {LTOB} from 'downsample';
 import {XYDataPoint} from 'downsample/dist/types';
-import {LatLngExpression} from 'leaflet';
 import {cloneDeep} from 'lodash';
 import moment from 'moment';
-import React, {MouseEvent, useEffect, useRef, useState} from 'react';
-import {CircleMarker, Map, Tooltip} from 'react-leaflet';
-import {ReferenceLine, ResponsiveContainer, Scatter, ScatterChart, XAxis, YAxis} from 'recharts';
+import React, {useEffect, useRef, useState} from 'react';
+import {
+    ReferenceArea,
+    ReferenceLine,
+    ResponsiveContainer,
+    Scatter,
+    ScatterChart,
+    XAxis,
+    YAxis,
+} from 'recharts';
 import {
     Button,
-    ButtonProps,
     Dimmer,
-    Grid, Input,
+    Grid, Icon, Input,
     Loader, Popup,
     Segment
 } from 'semantic-ui-react';
-import {BoundingBox} from '../../../../core/model/geometry';
+import Uuid from 'uuid';
 import {DataSourceCollection, Rtm} from '../../../../core/model/rtm';
 import {ProcessingCollection} from '../../../../core/model/rtm/processing';
-import {ISensor} from '../../../../core/model/rtm/Sensor.type';
-import {BasicTileLayer} from '../../../../services/geoTools/tileLayers';
-import {ColorLegend} from '../../../shared/rasterData';
-import {rainbowFactory} from '../../../shared/rasterData/helpers';
-import {heatMapColors} from '../../../t05/defaults/gis';
-import {IParameterWithMetaData} from './types';
+import {IPropertyValueObject} from '../../../../core/model/types';
+import {downloadFile, exportChartImage} from '../../../shared/simpleTools/helpers';
+import TimeSlider from './TimeSlider';
+import {IParameterWithMetaData, ITimeStamps} from './types';
+import VisualizationMap from './VisualizationMap';
 
 interface IProps {
     parameters: IParameterWithMetaData[];
     rtm: Rtm;
-}
-
-interface ITimeStamps {
-    minT: number;
-    maxT: number;
-    minV: number;
-    maxV: number;
-    timestamps: number[];
 }
 
 const getClosestValue = (array: number[], value: number) => {
@@ -50,7 +46,9 @@ const getData = (
     parameters: IParameterWithMetaData[],
     onFinished: (data: IParameterWithMetaData[], tsData: ITimeStamps) => any,
     data: IParameterWithMetaData[] = [],
-    tsData: ITimeStamps = {minT: NaN, maxT: NaN, minV: NaN, maxV: NaN, timestamps: []},
+    tsData: ITimeStamps = {
+        minT: NaN, maxT: NaN, left: {min: NaN, max: NaN}, right: {min: NaN, max: NaN}, timestamps: []
+    },
     key: number = 0
 ) => {
     const parameter = parameters.shift();
@@ -67,18 +65,28 @@ const getData = (
                     if (isNaN(tsData.maxT) || row.timeStamp > tsData.maxT) {
                         tsData.maxT = row.timeStamp;
                     }
-                    if ((isNaN(tsData.minV) || row.value < tsData.minV) && row.value !== null) {
-                        tsData.minV = row.value;
+                    if (parameter.meta.axis === 'left') {
+                        if ((isNaN(tsData.left.min) || row.value < tsData.left.min) && row.value !== null) {
+                            tsData.left.min = row.value;
+                        }
+                        if ((isNaN(tsData.left.max) || row.value > tsData.left.max) && row.value !== null) {
+                            tsData.left.max = row.value;
+                        }
                     }
-                    if ((isNaN(tsData.maxV) || row.value > tsData.maxV) && row.value !== null) {
-                        tsData.maxV = row.value;
+                    if (parameter.meta.axis === 'right') {
+                        if ((isNaN(tsData.right.min) || row.value < tsData.right.min) && row.value !== null) {
+                            tsData.right.min = row.value;
+                        }
+                        if ((isNaN(tsData.right.max) || row.value > tsData.right.max) && row.value !== null) {
+                            tsData.right.max = row.value;
+                        }
                     }
                     if (!tsData.timestamps.includes(row.timeStamp)) {
                         tsData.timestamps.push(row.timeStamp);
                     }
                     return {
                         x: row.timeStamp,
-                        y: row.value
+                        y: row.value || NaN
                     };
                 });
                 key++;
@@ -105,17 +113,10 @@ const processData = (data: IParameterWithMetaData[], tsData: ITimeStamps) => {
     });
 };
 
-enum tools {
-    DATETIME = 'datetime',
-    DATETIME_MIN = 'datetimeMin',
-    DATETIME_MAX = 'datetimeMax'
-}
-
 const visualizationParameter = (props: IProps) => {
     const [isAnimated, setIsAnimated] = useState<boolean>(false);
     const [isFetching, setIsFetching] = useState<boolean>(true);
 
-    const [activeTool, setActiveTool] = useState<tools>(tools.DATETIME);
     const [withLines, setWithLines] = useState<boolean>(true);
 
     const [timestamp, setTimestamp] = useState<number>(0);
@@ -124,19 +125,46 @@ const visualizationParameter = (props: IProps) => {
     const [data, setData] = useState<IParameterWithMetaData[]>([]);
     const [filteredData, setFilteredData] = useState<IParameterWithMetaData[]>([]);
 
-    const [showScale, setShowScale] = useState<boolean>(false);
-
-    const [tsData, setTsData] = useState<ITimeStamps>({minT: 0, maxT: 0, minV: 0, maxV: 0, timestamps: []});
+    const [tsData, setTsData] = useState<ITimeStamps>({
+        minT: 0, maxT: 0, left: {min: 0, max: 0}, right: {min: 0, max: 0}, timestamps: []
+    });
     const [filteredTsData, setFilteredTsData] = useState<ITimeStamps>(
-        {minT: 0, maxT: 0, minV: 0, maxV: 0, timestamps: []}
+        {minT: 0, maxT: 0, left: {min: 0, max: 0}, right: {min: 0, max: 0}, timestamps: []}
     );
 
+    const [leftAxis, setLeftAxis] = useState<string>('');
+    const [rightAxis, setRightAxis] = useState<string>('');
+
+    const [timeRange, setTimeRange] = useState<[number, number] | null>(null);
+    const [timeSlideId, setTimeSliderId] = useState<string>(Uuid.v4());
+
+    const chartRef = useRef<ScatterChart>(null);
     const timeRef = useRef<number>(0);
 
-    const rainbow = rainbowFactory({
-        min: tsData.minV,
-        max: tsData.maxV
-    }, heatMapColors.default);
+    const handleMoveTimeSlider = (result: [number, number]) => setTimeRange(
+        [tsData.timestamps[result[0]], tsData.timestamps[result[1]]]
+    );
+
+    const setAxisLabel = (d: IParameterWithMetaData[]) => {
+        const parametersLeft = d.filter((p) => p.meta.axis === 'left');
+        const parametersRight = d.filter((p) => p.meta.axis === 'right');
+        const unitsLeft: string[] = [];
+        const unitsRight: string[] = [];
+
+        parametersLeft.forEach((p) => {
+            if (p.parameter.unit && !unitsLeft.includes(p.parameter.unit)) {
+                unitsLeft.push(p.parameter.unit);
+            }
+        });
+        parametersRight.forEach((p) => {
+            if (p.parameter.unit && !unitsRight.includes(p.parameter.unit)) {
+                unitsRight.push(p.parameter.unit);
+            }
+        });
+
+        setLeftAxis(unitsLeft.join(', '));
+        setRightAxis(unitsRight.join(', '));
+    };
 
     useEffect(() => {
         if (props.parameters.length > 0) {
@@ -145,6 +173,7 @@ const visualizationParameter = (props: IProps) => {
                 setFilteredTsData(cloneDeep(rTsData));
                 setData(rData);
                 setFilteredData(cloneDeep(rData));
+                setAxisLabel(cloneDeep(rData));
                 setIsFetching(false);
                 setTimestamp(rTsData.timestamps[0]);
             });
@@ -185,7 +214,7 @@ const visualizationParameter = (props: IProps) => {
     // tslint:disable-next-line:variable-name
     const RenderNoShape = () => null;
 
-    if (isFetching) {
+    if (isFetching || props.parameters.length === 0) {
         return (
             <Dimmer active={true} inverted={true}>
                 <Loader inverted={true}>Loading</Loader>
@@ -196,6 +225,7 @@ const visualizationParameter = (props: IProps) => {
     const handleClickReset = () => {
         setTimestamp(tsData.timestamps[0]);
         setFilteredTsData(cloneDeep(tsData));
+        setTimeSliderId(Uuid.v4());
     };
 
     const handleClickLines = () => {
@@ -203,105 +233,67 @@ const visualizationParameter = (props: IProps) => {
     };
 
     const handleClickChart = (e: any) => {
-        if (activeTool === tools.DATETIME && e && e.xValue && typeof e.xValue === 'number') {
+        if (e) {
             return setTimestamp(getClosestValue(filteredTsData.timestamps, e.xValue));
-        }
-        if (activeTool === tools.DATETIME_MIN) {
-            const datetime = Math.floor(e.xValue);
-            if (timestamp < datetime) {
-                setTimestamp(getClosestValue(filteredTsData.timestamps, datetime));
-            }
-            return setFilteredTsData({
-                ...filteredTsData,
-                minT: datetime
-            });
-        }
-        if (activeTool === tools.DATETIME_MAX) {
-            const datetime = Math.floor(e.xValue);
-            if (timestamp > datetime) {
-                setTimestamp(getClosestValue(filteredTsData.timestamps, datetime));
-            }
-            return setFilteredTsData({
-                ...filteredTsData,
-                maxT: datetime
-            });
         }
     };
 
-    const handleSelectTool = (e: MouseEvent, {name}: ButtonProps) => setActiveTool(name);
+    const handleBlurRange = (range: [number, number]) => {
+        const startTimeStamp = tsData.timestamps[range[0]];
+        const endTimeStamp = tsData.timestamps[range[1]];
+        if (timestamp < startTimeStamp) {
+            setTimestamp(getClosestValue(filteredTsData.timestamps, startTimeStamp));
+        }
+        if (timestamp > endTimeStamp) {
+            setTimestamp(getClosestValue(filteredTsData.timestamps, endTimeStamp));
+        }
+        setTimeRange(null);
+        return setFilteredTsData({
+            ...filteredTsData,
+            minT: startTimeStamp,
+            maxT: endTimeStamp
+        });
+    };
 
     const handleTogglePlay = () => setIsAnimated(!isAnimated);
 
-    const handleToggleScale = () => setShowScale(!showScale);
-
-    const calculateBoundingBox = () => {
-        return BoundingBox.fromPoints(
-            props.rtm.sensors.all.filter(
-                (s) => props.parameters.filter((p) => p.sensor.id === s.id).length > 0
-            ).map((s) => {
-                return {
-                    type: 'Point',
-                    coordinates: [s.geolocation.coordinates[0], s.geolocation.coordinates[1]]
-                };
-            })
+    if (filteredData.length === 0) {
+        return (
+            <Segment color={'grey'} raised={true}>
+                Select at least one parameter!
+            </Segment>
         );
-    };
+    }
 
-    const renderLegend = () => {
-        const gradients = rainbow.gradients.slice().reverse();
-        const lastGradient = gradients[gradients.length - 1];
-        const legend = gradients.map((gradient) => ({
-            color: '#' + gradient.endColor,
-            value: Number(gradient.maxNum).toFixed(2)
-        }));
-
-        legend.push({
-            color: '#' + lastGradient.startColor,
-            value: Number(lastGradient.minNum).toFixed(2)
-        });
-        return <ColorLegend legend={legend} unit={''}/>;
-    };
-
-    const renderMarker = (key: number, sensor: ISensor) => {
-        const parameter = data.filter((p) => p.sensor.id === sensor.id);
-        if (parameter.length > 0) {
-            let fillColor = parameter[0].meta.color;
-            let fillOpacity = 0.8;
-            let value = null;
-
-            if (showScale && tsData) {
-                const row = parameter[0].data.filter((r) => r.x === (isAnimated ? tsData.timestamps[
-                    timeRef.current] : timestamp));
-                if (row.length > 0) {
-                    value = row[0].y;
-                    fillColor = `#${rainbow.colorAt(row[0].y)}`;
-                } else {
-                    fillColor = `#000`;
-                    fillOpacity = 0.3;
-                }
+    const generateDataArray = () => filteredTsData.timestamps.map((ts) => {
+        const rowObject: IPropertyValueObject = {
+            x: ts
+        };
+        filteredData.forEach((p) => {
+            const row = p.data.filter((r) => r.x === ts);
+            if (row.length > 0) {
+                rowObject[p.parameter.type] = row[0].y;
+            } else {
+                rowObject[p.parameter.type] = NaN;
             }
+        });
+        return rowObject;
+    });
 
-            return (
-                <CircleMarker
-                    center={
-                        [
-                            sensor.geolocation.coordinates[1],
-                            sensor.geolocation.coordinates[0]
-                        ] as LatLngExpression
-                    }
-                    fillColor={fillColor}
-                    fillOpacity={fillOpacity}
-                    key={key}
-                    radius={10}
-                    stroke={false}
-                >
-                    <Tooltip direction="top">
-                        {sensor.name} {value ? `(${value})` : null}
-                    </Tooltip>
-                </CircleMarker>
-            );
-        }
-        return null;
+    const handleExportChartImage = () => chartRef.current ? exportChartImage(chartRef.current) : null;
+
+    const handleExportChartData = () => {
+        const rows = generateDataArray();
+        const keys = Object.keys(rows[0]);
+        let csvContent = 'data:text/csv;charset=utf-8,';
+        csvContent += keys.join(',');
+        csvContent += '\r\n';
+        rows.forEach((row) => {
+            csvContent += Object.values(row).join(',');
+            csvContent += '\r\n';
+        });
+        const encodedUri = encodeURI(csvContent);
+        downloadFile('chart.csv', encodedUri);
     };
 
     return (
@@ -311,15 +303,6 @@ const visualizationParameter = (props: IProps) => {
                     <Grid.Row>
                         <Grid.Column>
                             <Button.Group>
-                                <Popup
-                                    content="Reset"
-                                    trigger={
-                                        <Button
-                                            onClick={handleClickReset}
-                                            icon="undo"
-                                        />
-                                    }
-                                />
                                 <Popup
                                     content="Interpolation"
                                     trigger={
@@ -342,42 +325,6 @@ const visualizationParameter = (props: IProps) => {
                                 />
                             </Button.Group>
                             &nbsp;
-                            <Button.Group>
-                                <Popup
-                                    content="Select time"
-                                    trigger={
-                                        <Button
-                                            onClick={handleSelectTool}
-                                            name={tools.DATETIME}
-                                            primary={activeTool === tools.DATETIME}
-                                            icon="mouse pointer"
-                                        />
-                                    }
-                                />
-                                <Popup
-                                    content="Select lower time limit"
-                                    trigger={
-                                        <Button
-                                            onClick={handleSelectTool}
-                                            name={tools.DATETIME_MIN}
-                                            primary={activeTool === tools.DATETIME_MIN}
-                                            icon="arrow alternate circle right"
-                                        />
-                                    }
-                                />
-                                <Popup
-                                    content="Select upper time limit"
-                                    trigger={
-                                        <Button
-                                            onClick={handleSelectTool}
-                                            name={tools.DATETIME_MAX}
-                                            primary={activeTool === tools.DATETIME_MAX}
-                                            icon="arrow alternate circle left"
-                                        />
-                                    }
-                                />
-                            </Button.Group>
-                            &nbsp;
                             <Popup
                                 content="Selected time"
                                 trigger={
@@ -387,24 +334,68 @@ const visualizationParameter = (props: IProps) => {
                                     />
                                 }
                             />
+                            <div className="downloadButtons">
+                                <Button
+                                    compact={true}
+                                    basic={true}
+                                    icon={true}
+                                    size={'small'}
+                                    onClick={handleExportChartImage}
+                                >
+                                    <Icon name="download"/> JPG
+                                </Button>
+                                <Button
+                                    compact={true}
+                                    basic={true}
+                                    icon={true}
+                                    size={'small'}
+                                    onClick={handleExportChartData}
+                                >
+                                    <Icon name="download"/> CSV
+                                </Button>
+                            </div>
                         </Grid.Column>
                     </Grid.Row>
                     <Grid.Row>
                         <Grid.Column>
                             <ResponsiveContainer height={300}>
-                                <ScatterChart onClick={handleClickChart}>
+                                <ScatterChart
+                                    onClick={handleClickChart}
+                                    ref={chartRef}
+                                >
                                     <XAxis
-                                        dataKey={'x'}
+                                        dataKey="x"
                                         domain={[filteredTsData.minT, filteredTsData.maxT]}
                                         name={'Date Time'}
                                         tickFormatter={(dt) => moment.unix(dt).utc().format('YYYY/MM/DD')}
                                         type={'number'}
                                     />
-                                    <YAxis dataKey={'y'} name={''} domain={[filteredTsData.minV, filteredTsData.maxV]}/>
+                                    {filteredData.filter((p) => p.meta.axis === 'left').length > 0 &&
+                                    <YAxis
+                                        yAxisId="left"
+                                        dataKey="y"
+                                        name=""
+                                        domain={[filteredTsData.left.min, filteredTsData.left.max]}
+                                        label={{value: leftAxis, angle: -90, position: 'left'}}
+                                        tickFormatter={(v) => v.toExponential(2)}
+                                    />
+                                    }
+                                    {filteredData.filter((p) => p.meta.axis === 'right').length > 0 &&
+                                    <YAxis
+                                        yAxisId="right"
+                                        dataKey="y"
+                                        name=""
+                                        orientation="right"
+                                        domain={[filteredTsData.right.min, filteredTsData.right.max]}
+                                        label={{value: rightAxis, angle: -90, position: 'right'}}
+                                        tickFormatter={(v) => v.toExponential(2)}
+                                    />
+                                    }
                                     {filteredData.filter((r) => r.meta.active).map((row, idx) => {
                                         return (
                                             <Scatter
                                                 key={idx}
+                                                yAxisId={row.meta.axis}
                                                 data={LTOB(row.data, 100)}
                                                 fill={row.meta.color}
                                                 line={withLines ? {strokeWidth: 2, stroke: row.meta.color} : false}
@@ -418,54 +409,61 @@ const visualizationParameter = (props: IProps) => {
                                         x={isAnimated ? filteredTsData.timestamps[timeRef.current] : timestamp}
                                         stroke="#000"
                                         strokeDasharray="3 3"
+                                        yAxisId={
+                                            filteredData.filter((p) => p.meta.axis === 'left').length > 0 ?
+                                                'left' : 'right'
+                                        }
                                     />
+                                    {!!timeRange &&
+                                    <ReferenceArea
+                                        x1={timeRange[0]}
+                                        x2={timeRange[1]}
+                                        stroke="#1eb1ed"
+                                        yAxisId={
+                                            filteredData.filter((p) => p.meta.axis === 'left').length > 0 ?
+                                                'left' : 'right'
+                                        }
+                                    />
+                                    }
                                 </ScatterChart>
                             </ResponsiveContainer>
+                            <Grid>
+                                <Grid.Row>
+                                    <Grid.Column width={1}>
+                                        <Popup
+                                            content="Reset"
+                                            trigger={
+                                                <Button
+                                                    onClick={handleClickReset}
+                                                    icon="undo"
+                                                    size="tiny"
+                                                />
+                                            }
+                                        />
+                                    </Grid.Column>
+                                    <Grid.Column key={timeSlideId} width={15}>
+                                        <TimeSlider
+                                            onChange={handleBlurRange}
+                                            onMove={handleMoveTimeSlider}
+                                            timeSteps={tsData.timestamps}
+                                        />
+                                    </Grid.Column>
+                                </Grid.Row>
+                            </Grid>
                         </Grid.Column>
                     </Grid.Row>
                 </Grid>
             </Segment>
             <Segment color={'grey'} raised={true}>
-                <Grid>
-                    <Grid.Row>
-                        <Grid.Column>
-                            <Button.Group>
-                                <Popup
-                                    content="Show color scale"
-                                    trigger={
-                                        <Button
-                                            onClick={handleToggleScale}
-                                            icon="chart pie"
-                                            primary={showScale}
-                                        />
-                                    }
-                                />
-                            </Button.Group>
-                        </Grid.Column>
-                    </Grid.Row>
-                    <Grid.Row>
-                        <Grid.Column>
-                            <Map
-                                maxZoom={19}
-                                bounds={calculateBoundingBox().getBoundsLatLng()}
-                                style={{
-                                    height: '400px',
-                                    width: '100%'
-                                }}
-                            >
-                                <BasicTileLayer/>
-                                {props.rtm.sensors.all.filter(
-                                    (s) => props.parameters.filter(
-                                        (p) => p.meta.active && p.sensor.id === s.id
-                                    ).length > 0
-                                ).map((s, sKey) => {
-                                    return renderMarker(sKey, s.toObject());
-                                })}
-                                {showScale && renderLegend()}
-                            </Map>
-                        </Grid.Column>
-                    </Grid.Row>
-                </Grid>
+                <VisualizationMap
+                    timestamp={timestamp}
+                    timeRef={timeRef.current}
+                    tsData={tsData}
+                    parameters={props.parameters}
+                    data={data}
+                    rtm={props.rtm}
+                    isAnimated={isAnimated}
+                />
             </Segment>
         </div>
     );

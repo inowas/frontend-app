@@ -100,11 +100,11 @@ const budgetResults = (props: IProps) => {
     };
 
     const exportData = () => {
-        return exportChartData(chartRef.current);
+        return chartRef.current ? exportChartData(chartRef.current) : null;
     };
 
     const exportImage = () => {
-        return exportChartImage(chartRef.current);
+        return chartRef.current ? exportChartImage(chartRef.current) : null;
     };
 
     const yTickFormatter = (value: number) => {

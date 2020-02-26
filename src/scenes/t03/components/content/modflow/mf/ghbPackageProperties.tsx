@@ -78,7 +78,6 @@ const ghbPackageProperties = (props: IProps) => {
                     ))}
                 </Grid.Row>
             </Grid>
-
             <Form.Group widths={'equal'}>
                 <Form.Field width={14}>
                     <label>Save cell-by-cell budget data (IPAKCB)</label>

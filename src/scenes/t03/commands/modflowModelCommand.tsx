@@ -1,17 +1,13 @@
 import AbstractCommand from '../../../core/model/command/AbstractCommand';
 import FlopyPackages from '../../../core/model/flopy/packages/FlopyPackages';
-import BoundingBox from '../../../core/model/geometry/BoundingBox';
 import {IBoundingBox} from '../../../core/model/geometry/BoundingBox.type';
-import {GeoJson, IGeometry} from '../../../core/model/geometry/Geometry.type';
-import GridSize from '../../../core/model/geometry/GridSize';
+import {ICells} from '../../../core/model/geometry/Cells.type';
+import {IGeometry} from '../../../core/model/geometry/Geometry.type';
 import {IGridSize} from '../../../core/model/geometry/GridSize.type';
-import {Cells, LengthUnit, TimeUnit} from '../../../core/model/modflow';
 import {Boundary} from '../../../core/model/modflow/boundaries';
 import SoilmodelLayer from '../../../core/model/modflow/soilmodel/SoilmodelLayer';
-import Stressperiods from '../../../core/model/modflow/Stressperiods';
 import {IStressPeriods} from '../../../core/model/modflow/Stressperiods.type';
 import {JSON_SCHEMA_URL} from '../../../services/api';
-import {ICells} from '../../../core/model/geometry/Cells.type';
 
 class ModflowModelCommand extends AbstractCommand {
 

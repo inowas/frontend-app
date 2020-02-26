@@ -1,6 +1,23 @@
 export const ROLE_USER = 'ROLE_USER';
 
-const availableTools = [
+export interface ITool {
+    slug: string;
+    name: string;
+    path: string;
+    subPath: string;
+    role: string;
+    instances: any[];
+}
+
+export interface IToolInstance {
+    id: string;
+    tool: string;
+    created_at: string;
+    name: string;
+    user_name: string;
+}
+
+const availableTools: ITool[] = [
     {
         slug: 'T01',
         name: 'SAT basin infiltration capacity reduction database',

@@ -2,62 +2,62 @@ import moment from 'moment';
 import * as Papa from 'papaparse';
 import {ParseResult} from 'papaparse';
 import React, {ChangeEvent, SyntheticEvent, useEffect, useState} from 'react';
-import {Button, DropdownProps, Form, Grid, Header, Label, List, Modal, Segment} from 'semantic-ui-react';
+import {Button, DropdownProps, Form, Grid, Header, List, Modal, Segment, Table} from 'semantic-ui-react';
+import {ECsvColumnType} from './types';
+
+type TColumns = Array<{ key: number, value: string, text: string, type?: ECsvColumnType }>;
 
 interface IProps {
-    columns: Array<{ key: number, value: string, text: string }>;
+    columns: TColumns;
     onSave: (ds: any[][]) => void;
     onCancel: () => void;
     useDateTimes?: boolean;
 }
 
 const advancedCsvUpload = (props: IProps) => {
-    const [columns, setColumns] = useState<Array<{key: number, value: string, text: string}>>(props.columns);
+    const [columns, setColumns] = useState<TColumns>(props.columns);
     const [metadata, setMetadata] = useState<ParseResult | null>(null);
 
-    const [dateTimeFormat, setDateTimeFormat] = useState<string>('DD.MM.YYYY H:i:s');
+    const [dateTimeFormat, setDateTimeFormat] = useState<string>('DD.MM.YYYY H:m:s');
     const [firstRowIsHeader, setFirstRowIsHeader] = useState<boolean>(true);
 
     const [parameterColumns, setParameterColumns] = useState<{ [name: string]: number } | null>(null);
 
     const [fetchingData] = useState<boolean>(false);
     const [parsingData, setParsingData] = useState<boolean>(false);
+    const [processedData, setProcessedData] = useState<any[][] | null>(null);
 
     const [isFetched] = useState<boolean>(false);
 
     useEffect(() => {
         if (props.useDateTimes) {
-            return setColumns([{
+            return setColumns(([{
                 key: 0,
                 value: 'datetime',
-                text: 'Datetime'
-            }].concat(props.columns));
+                text: 'Datetime',
+                type: ECsvColumnType.DATE_TIME
+            }] as TColumns).concat(props.columns));
         }
         return setColumns(props.columns);
     }, [props.columns, props.useDateTimes]);
 
-    const handleSave = () => {
-        if (!metadata || !parameterColumns ||
-            (parameterColumns && Object.keys(parameterColumns).length !== columns.length)) {
-            return;
+    useEffect(() => {
+        if (metadata && parameterColumns && Object.keys(parameterColumns).length === columns.length) {
+            processData(metadata);
         }
+    }, [firstRowIsHeader, parameterColumns]);
 
-        const nData: any[][] = [];
-        metadata.data.forEach((r, rKey) => {
-            if (!firstRowIsHeader || firstRowIsHeader && rKey > 0) {
-                const row = columns.map((c, cKey) => {
-                    if (props.useDateTimes && cKey === 0) {
-                        return moment.utc(r[parameterColumns[c.value]]);
-                    }
-                    if (!props.useDateTimes || cKey > 0) {
-                        return r[parameterColumns[c.value]] || 0;
-                    }
-                });
-                nData.push(row);
-            }
-        });
-        props.onCancel();
-        return props.onSave(nData);
+    const handleBlurDateTimeFormat = () => {
+        if (metadata && parameterColumns && Object.keys(parameterColumns).length === columns.length) {
+            processData(metadata);
+        }
+    };
+
+    const handleSave = () => {
+        if (processedData) {
+            props.onCancel();
+            return props.onSave(processedData);
+        }
     };
 
     const handleChange = (f: (v: any) => void) => (e: any, d: any) => {
@@ -75,6 +75,44 @@ const advancedCsvUpload = (props: IProps) => {
             ...parameterColumns,
             [name]: value
         });
+    };
+
+    const processData = ({data}: ParseResult) => {
+        if (!metadata || !parameterColumns ||
+            (parameterColumns && Object.keys(parameterColumns).length !== columns.length)) {
+            return;
+        }
+        const nData: any[][] = [];
+        data.forEach((r, rKey) => {
+            if (!firstRowIsHeader || firstRowIsHeader && rKey > 0) {
+                const row = columns.map((c) => {
+                    if (c.type === ECsvColumnType.DATE_TIME) {
+                        return moment.utc(r[parameterColumns[c.value]], dateTimeFormat);
+                    }
+                    if (c.type === ECsvColumnType.BOOLEAN) {
+                        return r[parameterColumns[c.value]] === 1 || r[parameterColumns[c.value]] === true ||
+                            r[parameterColumns[c.value]] === 'true';
+                    }
+                    return r[parameterColumns[c.value]] || 0;
+
+                });
+                nData.push(row);
+            }
+        });
+        return setProcessedData(nData);
+    };
+
+    const parseToString = (value: any) => {
+        if (typeof value === 'boolean') {
+            return value.toString();
+        }
+        if (typeof value === 'number') {
+            return value.toFixed(3);
+        }
+        if (moment.isMoment(value)) {
+            return value.format(dateTimeFormat);
+        }
+        return value;
     };
 
     const handleUploadFile = (e: ChangeEvent<HTMLInputElement>) => {
@@ -102,18 +140,9 @@ const advancedCsvUpload = (props: IProps) => {
                     <React.Fragment>
                         <Grid.Row>
                             <Grid.Column>
-                                <Form>
-                                    <Segment raised={true} loading={parsingData}>
-                                        <Label as={'div'} color={'blue'} ribbon={true}>Upload File</Label>
+                                <Segment raised={true} loading={parsingData}>
+                                    <Form>
                                         <Form.Group>
-                                            {props.useDateTimes &&
-                                            <Form.Input
-                                                onChange={handleChange(setDateTimeFormat)}
-                                                label="Datetime format"
-                                                name={'datetimeField'}
-                                                value={dateTimeFormat}
-                                            />
-                                            }
                                             <Form.Input
                                                 onChange={handleUploadFile}
                                                 label="File"
@@ -121,6 +150,27 @@ const advancedCsvUpload = (props: IProps) => {
                                                 type="file"
                                                 width={6}
                                             />
+                                        </Form.Group>
+                                    </Form>
+                                </Segment>
+                            </Grid.Column>
+                        </Grid.Row>
+                        {metadata &&
+                        <Grid.Row>
+                            <Grid.Column>
+                                <Segment raised={true}>
+                                    <Form>
+                                        <Form.Group>
+                                            {(props.useDateTimes || columns.filter((c) =>
+                                                c.type === ECsvColumnType.DATE_TIME).length > 0) &&
+                                                <Form.Input
+                                                    onBlur={handleBlurDateTimeFormat}
+                                                    onChange={handleChange(setDateTimeFormat)}
+                                                    label="Datetime format"
+                                                    name={'datetimeField'}
+                                                    value={dateTimeFormat}
+                                                />
+                                            }
                                             <Form.Checkbox
                                                 style={{marginTop: '30px'}}
                                                 toggle={true}
@@ -129,20 +179,21 @@ const advancedCsvUpload = (props: IProps) => {
                                                 label="First row is header."
                                             />
                                         </Form.Group>
-                                    </Segment>
-                                </Form>
+                                    </Form>
+                                </Segment>
                             </Grid.Column>
                         </Grid.Row>
+                        }
+                        {metadata &&
                         <Grid.Row>
                             <Grid.Column>
                                 <Segment
                                     raised={true}
                                     loading={parsingData}
-                                    color={metadata && metadata.errors.length > 0 ? 'red' : undefined}
+                                    color={metadata.errors.length > 0 ? 'red' : undefined}
                                 >
-                                    {metadata && metadata.errors.length > 0 &&
+                                    {metadata.errors.length > 0 &&
                                     <div>
-                                        <Label as={'div'} color={'red'} ribbon={true}>Parsing errors</Label>
                                         <List divided={true} relaxed={true}/>
                                         {metadata.errors.map((e, key) => (
                                             <List.Item key={key}>
@@ -155,9 +206,8 @@ const advancedCsvUpload = (props: IProps) => {
                                         ))}
                                     </div>
                                     }
-                                    {metadata && metadata.errors.length === 0 &&
+                                    {metadata.errors.length === 0 &&
                                     <div>
-                                        <Label as={'div'} color={'blue'} ribbon={true}>Metadata</Label>
                                         <Form>
                                             <Form.Group>
                                                 {columns.map((c, key) => (
@@ -182,13 +232,40 @@ const advancedCsvUpload = (props: IProps) => {
                                 </Segment>
                             </Grid.Column>
                         </Grid.Row>
+                        }
+                        {processedData &&
+                        <Grid.Row>
+                            <Grid.Column>
+                                <Table size={'small'}>
+                                    <Table.Header>
+                                        <Table.Row>
+                                            {props.columns.map((c, cKey) =>
+                                                <Table.HeaderCell key={cKey}>{c.text}</Table.HeaderCell>
+                                            )}
+                                        </Table.Row>
+                                    </Table.Header>
+                                    <Table.Body>
+                                        {processedData.map((row, rKey) =>
+                                            <Table.Row key={rKey}>
+                                                {row.map((c, cKey) => (
+                                                    <Table.Cell key={cKey}>
+                                                        {parseToString(c)}
+                                                    </Table.Cell>
+                                                ))}
+                                            </Table.Row>
+                                        )}
+                                    </Table.Body>
+                                </Table>
+                            </Grid.Column>
+                        </Grid.Row>
+                        }
                     </React.Fragment>
                     }
                 </Grid>
             </Modal.Content>
             <Modal.Actions>
                 <Button negative={true} onClick={props.onCancel}>Cancel</Button>
-                <Button positive={true} onClick={handleSave}>Apply</Button>
+                <Button positive={true} disabled={!processData} onClick={handleSave}>Apply</Button>
             </Modal.Actions>
         </Modal>
     );

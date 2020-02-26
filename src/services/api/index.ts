@@ -1,5 +1,5 @@
 import axios from 'axios';
-import getConfig from '../../config.default.js';
+import getConfig from '../../config.default';
 import AbstractCommand from '../../core/model/command/AbstractCommand';
 import FlopyPackages from '../../core/model/flopy/packages/FlopyPackages';
 import {Array2D, Array3D} from '../../core/model/geometry/Array2D.type';
@@ -148,6 +148,16 @@ export const makeTimeProcessingRequest = (data: IDateTimeValue[], rule: string, 
         data
     }).then((r) => r.data)
 );
+
+export const fetchCalculationObservations = (calculationId: string) => (
+    axios.request({
+        method: 'GET',
+        url: `${MODFLOW_CALCULATION_URL}/${calculationId}/results/types/observations`,
+        headers: {
+            'Access-Control-Allow-Origin': '*',
+            'Content-Type': 'application/json'
+        }
+    }).then((r) => r.data));
 
 export const fetchCalculationDetails = (calculationId: string) => {
     return axios.request({

@@ -1,9 +1,12 @@
 import * as moment from 'moment';
 import Papa from 'papaparse';
 import React, {ChangeEvent, useState} from 'react';
-import {Button, Divider, Grid, Header, List, Modal, Segment} from 'semantic-ui-react';
+import {Button, Divider, Grid, Header, Icon, List, Modal, Segment} from 'semantic-ui-react';
 import Stressperiods from '../../../../../core/model/modflow/Stressperiods';
 import {IStressPeriods} from '../../../../../core/model/modflow/Stressperiods.type';
+import {ITimeUnit} from '../../../../../core/model/modflow/TimeUnit.type';
+import {AdvancedCsvUpload} from '../../../../shared/simpleTools/upload';
+import {ECsvColumnType} from '../../../../shared/simpleTools/upload/types';
 import {StressperiodsDatatable} from './index';
 
 interface IProps {
@@ -16,8 +19,40 @@ const stressperiodsImport = (props: IProps) => {
     const [importedStressperiods, setImportedStressperiods] = useState<IStressPeriods | null>(null);
     const [isLoading, setIsLoading] = useState<boolean>(false);
     const [showImportModal, setShowImportModal] = useState<boolean>(false);
+    const [showAdvancedImportModal, setShowAdvancedImportModal] = useState<boolean>(false);
 
-    const handleCancel = () => setShowImportModal(false);
+    const handleCancel = () => {
+        setShowAdvancedImportModal(false);
+        setShowImportModal(false);
+    };
+
+    const handleClickAdvanced = () => {
+        setShowAdvancedImportModal(true);
+        setShowImportModal(false);
+    };
+
+    const handleSubmitAdvancedModal = (result: any[][]) => {
+        setShowAdvancedImportModal(false);
+
+        if (result[0].length !== 4) {
+            return null;
+        }
+
+        const stressPeriods: IStressPeriods = {
+            start_date_time: result[0][0],
+            end_date_time: result[result.length - 1][0],
+            stressperiods: result.filter((sp, sKey) => sKey < (result.length - 1)).map((row) => {
+                return {
+                    start_date_time: row[0],
+                    nstp: row[1],
+                    tsmult: row[2],
+                    steady: row[3]
+                };
+            }),
+            time_unit: ITimeUnit.days
+        };
+        return props.onChange(Stressperiods.fromObject(stressPeriods));
+    };
 
     const handleClickSubmit = () => {
         if (importedStressperiods) {
@@ -100,6 +135,21 @@ const stressperiodsImport = (props: IProps) => {
         </Segment>
     );
 
+    const renderAdvancedImportModal = () => {
+        return (
+            <AdvancedCsvUpload
+                columns={[
+                    {key: 0, value: 'start_date_time', text: 'Start date', type: ECsvColumnType.DATE_TIME},
+                    {key: 1, value: 'nstp', text: 'NSTP'},
+                    {key: 2, value: 'tsmult', text: 'TSMULT'},
+                    {key: 3, value: 'steady', text: 'Steady', type: ECsvColumnType.BOOLEAN}
+                ]}
+                onSave={handleSubmitAdvancedModal}
+                onCancel={handleCancel}
+            />
+        );
+    };
+
     const render = () => {
         return (
             <Modal
@@ -117,7 +167,6 @@ const stressperiodsImport = (props: IProps) => {
                             <Grid.Column>
                                 <Segment basic={true} placeholder={true} style={{minHeight: '10rem'}}>
                                     <Grid columns={2} stackable={true} textAlign="center">
-                                        <Divider vertical={true}/>
                                         <Grid.Row verticalAlign="top">
                                             <Grid.Column>
                                                 {errors.length === 0 &&
@@ -136,6 +185,7 @@ const stressperiodsImport = (props: IProps) => {
                                                 }
                                                 {errors.length > 0 && renderValidationErrors()}
                                             </Grid.Column>
+                                            <Divider vertical={true}/>
                                             <Grid.Column>
                                                 <Header as={'h3'}>
                                                     Upload Stressperiods
@@ -162,6 +212,24 @@ const stressperiodsImport = (props: IProps) => {
                                                 <p>The file has to be a valid csv-file.</p>
                                             </Grid.Column>
                                         </Grid.Row>
+                                        <Grid.Row>
+                                            <Grid.Column width={16}>
+                                                <Header as={'h3'}>
+                                                    ... or use advanced CSV-Upload, for more flexibility
+                                                </Header>
+                                                <Button
+                                                    fluid={true}
+                                                    icon={true}
+                                                    labelPosition={'left'}
+                                                    size={'large'}
+                                                    onClick={handleClickAdvanced}
+                                                    primary={true}
+                                                >
+                                                    <Icon name="upload"/>
+                                                    Advanced
+                                                </Button>
+                                            </Grid.Column>
+                                        </Grid.Row>
                                     </Grid>
                                 </Segment>
                             </Grid.Column>
@@ -180,12 +248,12 @@ const stressperiodsImport = (props: IProps) => {
                         Close
                     </Button>
                     {errors.length === 0 && importedStressperiods &&
-                        <Button
-                            onClick={handleClickSubmit}
-                            primary={true}
-                        >
-                            Submit
-                        </Button>
+                    <Button
+                        onClick={handleClickSubmit}
+                        primary={true}
+                    >
+                        Submit
+                    </Button>
                     }
                 </Modal.Actions>
             </Modal>
@@ -203,6 +271,7 @@ const stressperiodsImport = (props: IProps) => {
                 onClick={handleClickUpload}
             />
             {showImportModal && render()}
+            {showAdvancedImportModal && renderAdvancedImportModal()}
         </div>
     );
 };

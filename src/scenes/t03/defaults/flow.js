@@ -70,6 +70,37 @@ export const documentation = {
         start_datetime: <div>Starting datetime of the simulation. default is ‘1/1/1970’</div>
     },
 
+    // DRN
+    drn: {
+        ipakcb: <div>A flag that is used to determine if cell-by-cell budget data should be saved. If ipakcb is
+            non-zero cell-by-cell budget data will be saved. (default is None).</div>,
+        options: <div>Package options. (default is None).</div>,
+        extension: <div>Filename extension (default is ‘drn’)</div>,
+        unitnumber: <div>File unit number (default is None).</div>,
+        filenames: <div>Filenames to use for the package and the output files. If filenames=None the package name will
+            be created using the model name and package extension and the cbc output name will be created using the
+            model name and .cbc extension (for example, modflowtest.cbc), if ipakcbc is a number greater than zero.
+            If a single string is passed the package will be set to the string and cbc output names will be created
+            using the model name and .cbc extension, if ipakcbc is a number greater than zero. To define the names for
+            all package files (input and output) the length of the list of strings should be 2. Default is None.</div>
+    },
+
+    // EVT
+    evt: {
+        ipakcb: <div>A flag that is used to determine if cell-by-cell budget data should be saved. If ipakcb is
+            non-zero cell-by-cell budget data will be saved. (default is None).</div>,
+        nevtop: <div>is the recharge option code. 1: ET is calculated only for cells in the top grid layer 2: ET to
+            layer defined in ievt 3: ET to highest active cell (default is 3).</div>,
+        extension: <div>Filename extension (default is ‘ev’)</div>,
+        unitnumber: <div>File unit number (default is None).</div>,
+        filenames: <div>Filenames to use for the package and the output files. If filenames=None the package name will
+            be created using the model name and package extension and the cbc output name will be created using the
+            model name and .cbc extension (for example, modflowtest.cbc), if ipakcbc is a number greater than zero.
+            If a single string is passed the package will be set to the string and cbc output names will be created
+            using the model name and .cbc extension, if ipakcbc is a number greater than zero. To define the names for
+            all package files (input and output) the length of the list of strings should be 2. Default is None.</div>
+    },
+
     // FHB
     fhb: {
         nbdtim: <div>The number of times at which flow and head will be specified for all selected cells. (default is
@@ -114,34 +145,35 @@ export const documentation = {
     },
 
     // FLWOB
-
-    nqfb: <div>Number of cell groups for the head-dependent flow boundary observations</div>,
-    nqcfb: <div>Greater than or equal to the total number of cells in all cell groups</div>,
-    nqtfb: <div>Total number of head-dependent flow boundary observations for all cell groups</div>,
-    iufbobsv: <div>unit number where output is saved</div>,
-    tomultfb: <div>Time-offset multiplier for head-dependent flow boundary observations. The product of tomultfb and
-        toffset must produce a time value in units consistent with other model input. tomultfb can be dimensionless or
-        can be used to convert the units of toffset to the time unit used in the simulation.</div>,
-    nqobfb: <div>The number of times at which flows are observed for the group of cells</div>,
-    nqclfb: <div>Is a flag, and the absolute value of nqclfb is the number of cells in the group. If nqclfb is less than
-        zero, factor = 1.0 for all cells in the group.</div>,
-    obsnam: <div>Observation name</div>,
-    irefsp: <div>Stress period to which the observation time is referenced. The reference point is the beginning of the
-        specified stress period.</div>,
-    toffset: <div>Is the time from the beginning of the stress period irefsp to the time of the observation. toffset
-        must be in units such that the product of toffset and tomultfb are consistent with other model input. For steady
-        state observations, specify irefsp as the steady state stress period and toffset less than or equal to perlen of
-        the stress period. If perlen is zero, set toffset to zero. If the observation falls within a time step, linearly
-        interpolation is used between values at the beginning and end of the time step.</div>,
-    flwobs: <div>Observed flow value from the head-dependent flow boundary into the aquifer (+) or the flow from the
-        aquifer into the boundary (-)</div>,
-    layer: <div>layer index for the cell included in the cell group</div>,
-    row: <div>row index for the cell included in the cell group</div>,
-    column: <div>column index of the cell included in the cell group</div>,
-    factor: <div>Is the portion of the simulated gain or loss in the cell that is included in the total gain or loss for
-        this cell group (fn of eq. 5).</div>,
-    flowtype: <div>String that corresponds to the head-dependent flow boundary condition type (CHD, GHB, DRN,
-        RIV)</div>,
+    flwob: {
+        nqfb: <div>Number of cell groups for the head-dependent flow boundary observations</div>,
+        nqcfb: <div>Greater than or equal to the total number of cells in all cell groups</div>,
+        nqtfb: <div>Total number of head-dependent flow boundary observations for all cell groups</div>,
+        iufbobsv: <div>unit number where output is saved</div>,
+        tomultfb: <div>Time-offset multiplier for head-dependent flow boundary observations. The product of tomultfb and
+            toffset must produce a time value in units consistent with other model input. tomultfb can be dimensionless
+            or can be used to convert the units of toffset to the time unit used in the simulation.</div>,
+        nqobfb: <div>The number of times at which flows are observed for the group of cells</div>,
+        nqclfb: <div>Is a flag, and the absolute value of nqclfb is the number of cells in the group. If nqclfb is less
+            than zero, factor = 1.0 for all cells in the group.</div>,
+        obsnam: <div>Observation name</div>,
+        irefsp: <div>Stress period to which the observation time is referenced. The reference point is the beginning of
+            the specified stress period.</div>,
+        toffset: <div>Is the time from the beginning of the stress period irefsp to the time of the observation. toffset
+            must be in units such that the product of toffset and tomultfb are consistent with other model input. For
+            steady state observations, specify irefsp as the steady state stress period and toffset less than or equal
+            to perlen of the stress period. If perlen is zero, set toffset to zero. If the observation falls within a
+            time step, linearly interpolation is used between values at the beginning and end of the time step.</div>,
+        flwobs: <div>Observed flow value from the head-dependent flow boundary into the aquifer (+) or the flow from the
+            aquifer into the boundary (-)</div>,
+        layer: <div>layer index for the cell included in the cell group</div>,
+        row: <div>row index for the cell included in the cell group</div>,
+        column: <div>column index of the cell included in the cell group</div>,
+        factor: <div>Is the portion of the simulated gain or loss in the cell that is included in the total gain or loss
+            for this cell group (fn of eq. 5).</div>,
+        flowtype: <div>String that corresponds to the head-dependent flow boundary condition type (CHD, GHB, DRN,
+            RIV)</div>
+    },
 
     // GHB
     ghb: {
@@ -227,6 +259,8 @@ export const documentation = {
         transportable among different computer operating systems or different Fortran compilers. (default is
         None)</div>,
     compact: <div>Save results in compact budget form.</div>,
+    stress_period_data: <div>TODO!!</div>,
+    label: <div>TODO!!</div>,
 
     // RIV
     riv: {
@@ -259,41 +293,6 @@ export const documentation = {
             using the model name and .cbc extension, if ipakcbc is a number greater than zero. To define the names for
             all package files (input and output) the length of the list of strings should be 2. Default is None.</div>
     },
-
-    // SOL
-
-    itmx: <div>Maximum number of iterations for each time step. Specify ITMAX = 1 if iteration is not desired. Ideally
-        iteration would not be required for direct solution. However, it is necessary to iterate if the flow equation is
-        nonlinear or if computer precision limitations result in inaccurate calculations as indicated by a large water
-        budget error (default is 50).</div>,
-    mxup: <div>Maximum number of equations in the upper part of the equations to be solved. This value impacts the
-        amount of memory used by the DE4 Package. If specified as 0, the program will calculate MXUP as half the number
-        of cells in the model, which is an upper limit (default is 0).</div>,
-    mxlow: <div>Maximum number of equations in the lower part of equations to be solved. This value impacts the amount
-        of memory used by the DE4 Package. If specified as 0, the program will calculate MXLOW as half the number of
-        cells in the model, which is an upper limit (default is 0).</div>,
-    mxbw: <div>Maximum band width plus 1 of the lower part of the head coefficients matrix. This value impacts the
-        amount of memory used by the DE4 Package. If specified as 0, the program will calculate MXBW as the product of
-        the two smallest grid dimensions plus 1, which is an upper limit (default is 0).</div>,
-    ifreq: <div>Flag indicating the frequency at which coefficients in head matrix change. IFREQ = 1 indicates that the
-        flow equations are linear and that coefficients of simulated head for all stress terms are constant for all
-        stress periods. IFREQ = 2 indicates that the flow equations are linear, but coefficients of simulated head for
-        some stress terms may change at the start of each stress period. IFREQ = 3 indicates that a nonlinear flow
-        equation is being solved, which means that some terms in the head coefficients matrix depend on simulated head
-        (default is 3).</div>,
-    mutd4: <div>Flag that indicates the quantity of information that is printed when convergence information is printed
-        for a time step. MUTD4 = 0 indicates that the number of iterations in the time step and the maximum head change
-        each iteration are printed. MUTD4 = 1 indicates that only the number of iterations in the time step is printed.
-        MUTD4 = 2 indicates no information is printed (default is 0).</div>,
-    accl: <div>Multiplier for the computed head change for each iteration. Normally this value is 1. A value greater
-        than 1 may be useful for improving the rate of convergence when using external iteration to solve nonlinear
-        problems (default is 1).</div>,
-    hclose: <div>Head change closure criterion. If iterating (ITMX > 1), iteration stops when the absolute value of head
-        change at every node is less than or equal to HCLOSE. HCLOSE is not used if not iterating, but a value must
-        always be specified (default is 1e-5).</div>,
-    iprd4: <div>Time step interval for printing out convergence information when iterating (ITMX > 1). If IPRD4 is 2,
-        convergence information is printed every other time step. A value must always be specified even if not iterating
-        (default is 1).</div>,
 
     // VDF
 

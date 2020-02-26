@@ -5,7 +5,7 @@ import Soilmodel from '../../../modflow/soilmodel/Soilmodel';
 import {IPropertyValueObject} from '../../../types';
 import FlopyModflowPackage from './FlopyModflowPackage';
 
-export interface IFlopyModflowMfbas {
+export interface IFlopyModflowMfbas extends IPropertyValueObject {
     ibound: Array<number | Array2D<number>> | number;
     strt: Array<number | Array2D<number>> | number;
     ifrefm: boolean;
