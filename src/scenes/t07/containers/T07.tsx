@@ -1,20 +1,20 @@
-import {cloneDeep} from 'lodash';
-import React, {useEffect, useState} from 'react';
-import {useDispatch, useSelector} from 'react-redux';
-import {Redirect, RouteComponentProps, withRouter} from 'react-router-dom';
-import {Button, Grid, Header, Icon, Message, Popup, Segment} from 'semantic-ui-react';
+import { cloneDeep } from 'lodash';
+import React, { useEffect, useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { Redirect, RouteComponentProps, withRouter } from 'react-router-dom';
+import { Button, Grid, Header, Icon, Message, Popup, Segment } from 'semantic-ui-react';
 import Uuid from 'uuid';
 import uuid from 'uuid';
-import {Calculation, ModflowModel, Soilmodel} from '../../../core/model/modflow';
-import {ScenarioAnalysis} from '../../../core/model/scenarioAnalysis';
-import {IScenarioAnalysis} from '../../../core/model/scenarioAnalysis/ScenarioAnalysis';
-import {IPropertyValueObject} from '../../../core/model/types';
-import {IRootReducer} from '../../../reducers';
-import {sendCommand} from '../../../services/api';
+import { Calculation, ModflowModel, Soilmodel } from '../../../core/model/modflow';
+import { ScenarioAnalysis } from '../../../core/model/scenarioAnalysis';
+import { IScenarioAnalysis } from '../../../core/model/scenarioAnalysis/ScenarioAnalysis';
+import { IPropertyValueObject } from '../../../core/model/types';
+import { IRootReducer } from '../../../reducers';
+import { sendCommand } from '../../../services/api';
 import AppContainer from '../../shared/AppContainer';
 import ToolNavigation from '../../shared/complexTools/toolNavigation';
 import ToolMetaData from '../../shared/simpleTools/ToolMetaData';
-import {IToolMetaData} from '../../shared/simpleTools/ToolMetaData/ToolMetaData.type';
+import { IToolMetaData } from '../../shared/simpleTools/ToolMetaData/ToolMetaData.type';
 import {
     updateScenarioAnalysis
 } from '../actions/actions';
@@ -32,7 +32,7 @@ const navigation = [
     {
         name: 'Documentation',
         path: 'https://inowas.com/tools/t07-application-specific-scenarios-analyzer/',
-        icon: <Icon name="file"/>
+        icon: <Icon name="file" />
     }
 ];
 
@@ -42,18 +42,17 @@ const menuItems = [{
         {
             name: 'Cross Section',
             property: 'crosssection',
-            icon: <Icon name="calendar alternate outline"/>
+            icon: <Icon name="calendar alternate outline" />
         },
         {
             name: 'Difference',
             property: 'difference',
-            icon: <Icon name="expand"/>,
-            disabled: true
+            icon: <Icon name="expand" />
         },
         {
             name: 'Time Series',
             property: 'timeseries',
-            icon: <Icon name="map marker alternate"/>,
+            icon: <Icon name="map marker alternate" />,
             disabled: true
         }
     ]
@@ -140,13 +139,21 @@ const t07 = (props: RouteComponentProps<{
                     />
                 );
             case 'difference':
-                return (<Content.Difference/>);
+                return (
+                    <Content.Difference
+                        boundaries={boundaries}
+                        calculations={calculations}
+                        models={models}
+                        scenarioAnalysis={scenarioAnalysis}
+                        soilmodels={soilmodels}
+                    />
+                );
             case 'timeseries':
                 return ('TIMESERIES');
             default:
                 const basePath = props.match.path.split(':')[0];
                 return (
-                    <Redirect to={basePath + id + '/crosssection'}/>
+                    <Redirect to={basePath + id + '/crosssection'} />
                 );
         }
     };
@@ -185,7 +192,7 @@ const t07 = (props: RouteComponentProps<{
     };
 
     const renderModelListItem = (
-        {id, name, canBeDeleted = true}: { id: string, name: string, canBeDeleted: boolean }
+        { id, name, canBeDeleted = true }: { id: string, name: string, canBeDeleted: boolean }
     ) => {
         return (
             <Grid.Column key={id}>
@@ -200,33 +207,33 @@ const t07 = (props: RouteComponentProps<{
                             <Grid.Column width={14} onClick={handleScenarioClick(id)}>
                                 <Header as={'a'} size="tiny">{name}</Header>
                             </Grid.Column>
-                            <Grid.Column width={2} style={{padding: '0'}}>
+                            <Grid.Column width={2} style={{ padding: '0' }}>
                                 <Popup
-                                    trigger={<Icon name="ellipsis vertical"/>}
+                                    trigger={<Icon name="ellipsis vertical" />}
                                     content={
                                         <Button.Group size="small">
                                             <Popup
-                                                trigger={<Button icon={'edit'} onClick={editScenario(id)}/>}
+                                                trigger={<Button icon={'edit'} onClick={editScenario(id)} />}
                                                 content="Edit"
                                                 position="top center"
                                                 size="mini"
                                                 inverted={true}
                                             />
                                             <Popup
-                                                trigger={<Button icon={'clone'} onClick={cloneScenario(id)}/>}
+                                                trigger={<Button icon={'clone'} onClick={cloneScenario(id)} />}
                                                 content="Clone"
                                                 position="top center"
                                                 size="mini"
                                                 inverted={true}
                                             />
                                             {canBeDeleted &&
-                                            <Popup
-                                                trigger={<Button icon={'trash'} onClick={deleteScenario(id)}/>}
-                                                content="Delete"
-                                                position="top center"
-                                                size="mini"
-                                                inverted={true}
-                                            />
+                                                <Popup
+                                                    trigger={<Button icon={'trash'} onClick={deleteScenario(id)} />}
+                                                    content="Delete"
+                                                    position="top center"
+                                                    size="mini"
+                                                    inverted={true}
+                                                />
                                             }
                                         </Button.Group>
                                     }
@@ -291,32 +298,32 @@ const t07 = (props: RouteComponentProps<{
         <AppContainer navbarItems={navigation}>
             <DataFetcherWrapper key={wrapperKey}>
                 {localScenarioAnalysis &&
-                <ToolMetaData
-                    isDirty={false}
-                    onChange={handleChangeMetaData}
-                    readOnly={false}
-                    tool={{
-                        tool: 'T07',
-                        name: localScenarioAnalysis.name,
-                        description: localScenarioAnalysis.description,
-                        public: localScenarioAnalysis.public
-                    }}
-                    defaultButton={false}
-                    saveButton={false}
-                    onSave={handleSaveMetaData}
-                />
+                    <ToolMetaData
+                        isDirty={false}
+                        onChange={handleChangeMetaData}
+                        readOnly={false}
+                        tool={{
+                            tool: 'T07',
+                            name: localScenarioAnalysis.name,
+                            description: localScenarioAnalysis.description,
+                            public: localScenarioAnalysis.public
+                        }}
+                        defaultButton={false}
+                        saveButton={false}
+                        onSave={handleSaveMetaData}
+                    />
                 }
-            <Grid padded={true}>
-                <Grid.Row>
-                    <Grid.Column width={3}>
-                        <ToolNavigation navigationItems={menuItems}/>
-                        {renderModelList()}
-                    </Grid.Column>
-                    <Grid.Column width={13}>
-                        {renderContent(props.match.params.id, props.match.params.property)}
-                    </Grid.Column>
-                </Grid.Row>
-            </Grid>
+                <Grid padded={true}>
+                    <Grid.Row>
+                        <Grid.Column width={3}>
+                            <ToolNavigation navigationItems={menuItems} />
+                            {props.match.params.property === 'crosssection' && renderModelList()}
+                        </Grid.Column>
+                        <Grid.Column width={13}>
+                            {renderContent(props.match.params.id, props.match.params.property)}
+                        </Grid.Column>
+                    </Grid.Row>
+                </Grid>
             </DataFetcherWrapper>
         </AppContainer>
     );

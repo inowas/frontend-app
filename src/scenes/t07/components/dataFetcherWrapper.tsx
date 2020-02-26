@@ -28,7 +28,6 @@ interface IIdValueObject<T> {
 }
 
 const dataFetcherWrapper = (props: IProps) => {
-
     const dispatch = useDispatch();
 
     const [scenarioAnalysisId, setScenarioAnalysisId] = useState<string | null>(null);
