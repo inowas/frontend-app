@@ -2,95 +2,98 @@ import React from 'react';
 
 export const documentation = {
     // ADV
-    mixelm: <div>Integer flag for the advection solution option.
-        <ul>
-            <li><i>MIXELM</i> = 0 standard finite difference method with upstream
-                or central-in-space weighting, depending on the value
-                of NADVFD
-            </li>
-            <li><i>MIXELM</i> = 1 Forward-tracking method of characteristics (MOC)</li>
-            <li><i>MIXELM</i> = 2 Backward-tracking modified method of characteristics (MMOC)</li>
-            <li><i>MIXELM</i> = 3 Hybrid method of characteristics (HMOC) with MOC or MMOC automatically and
-                dynamically selected.
-            </li>
-            <li><i>MIXELM</i> = -1 third-order TVD scheme (ULTIMATE)</li>
-        </ul>
-    </div>,
-    percel: <div>Courant number, i.e., the number of cells (or a fraction of a cell) advection will be allowed in any
-        direction in one transport step.<br/>For implicit finite-difference or particle tracking based schemes, there is
-        no limit on PERCEL, but for accuracy reasons, it is generally not set much greater than one. Note, however,
-        that the PERCEL limit is checked over the entire model grid. Thus, even if PERCEL > 1, advection may not be more
-        than one cell’s length at most model locations.<br/><br/>For the explicit finite-difference or the third-order
-        TVD scheme, PERCEL is also a stability constraint, which must not exceed one and will be automatically reset to
-        one if a value greater than one is specified.</div>,
-    nadvfd: <div>is an integer flag indicating which weighting scheme should be used. It is needed only when the
-        advection term is solved using the implicit finite-difference method.
-        <ul>
-            <li><i>NADVFD</i> = 0 or 1 Upstream weighting (default)</li>
-            <li><i>NADVFD</i> = 2 Central-in-space weighting</li>
-        </ul>
-    </div>,
-    mxpart: <div>Maximum total number of moving particles allowed, and is used only when MIXELM = 1 or 3.</div>,
-    itrack: <div>Flag indicating which particle tracking algorithm is selected for the Eulerian-Lagrangian methods.
-        <ul>
-            <li><i>ITRACK</i> = 1 First-order Euler algorithm is used.</li>
-            <li><i>ITRACK</i> = 2 Fourth-order Runge-Kutta algorithm is used. This option is computationally demanding
-                and may be needed only when PERCEL is set greater than one.
-            </li>
-            <li><i>ITRACK</i> = 3 Hybrid 1st and 4th order algorithm is used. The Runge-Kutta algorithm is used in
-                sink/source cells and the cells next to sinks/sources while the Euler algorithm is used elsewhere.
-            </li>
-        </ul>
-    </div>,
-    wd: <div>Concentration weighting factor between 0.5 and 1. It is used for operator splitting in the particle
-        tracking based methods. The value of 0.5 is generally adequate. The value of WD may be adjusted to achieve
-        better mass balance. Generally, it can be increased toward 1.0 as advection becomes more dominant.</div>,
-    dceps: <div>Small Relative Cell Concentration Gradient below which advective transport is considered negligible.
-        A value around 10^-5 is generally adequate.</div>,
-    nplane: <div>Flag indicating whether the random or fixed pattern is selected for initial placement of moving
-        particles.
-        <ul>
-            <li><i>NPLANE</i> = 0 Random pattern is selected for initial placement. Particles are distributed randomly
-                in both the horizontal and vertical directions by calling a random number generator. This option is
-                usually preferred and leads to smaller mass balance discrepancy in nonuniform or diverging/converging
-                flow fields.
-            </li>
-            <li><i>NPLANE</i> > 0 Fixed pattern is selected for initial placement. The value of NPLANE serves as the
-                number of vertical “planes” on which initial particles are placed within each cell block. The fixed
-                pattern may work better than the random pattern only in relatively uniform flow fields. For two
-                dimensional simulations in plan view, set NPLANE = 1. For cross sectional or three-dimensional
-                simulations, NPLANE = 2 is normally adequate. Increase NPLANE if more resolution in the vertical
-                direction is desired.
-            </li>
-        </ul>
-    </div>,
-    npl: <div>Number of initial particles per cell to be placed at cells where the Relative Cell Concentration Gradient
-        is less than or equal to DCEPS. Generally, NPL can be set to zero since advection is considered insignificant
-        when the Relative Cell Concentration Gradient is less than or equal to DCEPS. Setting NPL equal to NPH causes a
-        uniform number of particles to be placed in every cell over the entire grid (i.e., the uniform approach).</div>,
-    nph: <div>Number of initial particles per cell to be placed at cells where the Relative Cell Concentration Gradient
-        is greater than DCEPS. The selection of NPH depends on the nature of the flow field and also the computer memory
-        limitation. Generally, use a smaller number in relatively uniform flow fields and a larger number in relatively
-        nonuniform flow fields. However, values exceeding 16 in twodimensional simulation or 32 in three-dimensional
-        simulation are rarely necessary. If the random pattern is chosen, NPH particles are randomly distributed within
-        the cell block. If the fixed pattern is chosen, NPH is divided by NPLANE to yield the number of particles to be
-        placed per vertical plane.</div>,
-    npmin: <div>Minimum number of particles allowed per cell. If the number of particles in a cell at the end of a
-        transport step is fewer than NPMIN, new particles are inserted into that cell to maintain a sufficient number of
-        particles. NPMIN can be set to zero in relatively uniform flow fields, and a number greater than zero in
-        diverging/converging flow fields. Generally, a value between zero and four is adequate. </div>,
-    npmax: <div>Maximum number of particles allowed per cell. If the number of particles in a cell exceeds NPMAX, all
-        particles are removed from that cell and replaced by a new set of particles equal to NPH to maintain mass
-        balance. Generally, NPMAX can be set to approximately twice of NPH.</div>,
-    nlsink: <div>Flag indicating whether the random or fixed pattern is selected for initial placement of particles to
-        approximate sink cells in the MMOC scheme. The convention is the same as that for NPLANE. It is generally
-        adequate to set NLSINK equivalent to NPLANE.</div>,
-    npsink: <div>Number of particles used to approximate sink cells in the MMOC scheme. The convention is the same as
-        that for NPH. It is generally adequate to set NPSINK equivalent to NPH.</div>,
-    dchmoc: <div>Critical Relative Concentration Gradient for controlling the selective use of either MOC or MMOC in the
-        HMOC solution scheme.<br/>The MOC solution is selected at cells where the Relative Concentration Gradient is
-        greater than DCHMOC.<br/>The MMOC solution is selected at cells where the Relative Concentration Gradient is
-        less than or equal to DCHMOC.</div>,
+    adv: {
+        mixelm: <div>Integer flag for the advection solution option.
+            <ul>
+                <li><i>MIXELM</i> = 0 standard finite difference method with upstream
+                    or central-in-space weighting, depending on the value
+                    of NADVFD
+                </li>
+                <li><i>MIXELM</i> = 1 Forward-tracking method of characteristics (MOC)</li>
+                <li><i>MIXELM</i> = 2 Backward-tracking modified method of characteristics (MMOC)</li>
+                <li><i>MIXELM</i> = 3 Hybrid method of characteristics (HMOC) with MOC or MMOC automatically and
+                    dynamically selected.
+                </li>
+                <li><i>MIXELM</i> = -1 third-order TVD scheme (ULTIMATE)</li>
+            </ul>
+        </div>,
+        percel: <div>Courant number, i.e., the number of cells (or a fraction of a cell) advection will be allowed in
+            any direction in one transport step.<br/>For implicit finite-difference or particle tracking based schemes,
+            there is no limit on PERCEL, but for accuracy reasons, it is generally not set much greater than one. Note,
+            however, that the PERCEL limit is checked over the entire model grid. Thus, even if PERCEL > 1, advection
+            may not be more than one cell’s length at most model locations.<br/><br/>For the explicit finite-difference
+            or the third-order TVD scheme, PERCEL is also a stability constraint, which must not exceed one and will be
+            automatically reset to one if a value greater than one is specified.</div>,
+        nadvfd: <div>is an integer flag indicating which weighting scheme should be used. It is needed only when the
+            advection term is solved using the implicit finite-difference method.
+            <ul>
+                <li><i>NADVFD</i> = 0 or 1 Upstream weighting (default)</li>
+                <li><i>NADVFD</i> = 2 Central-in-space weighting</li>
+            </ul>
+        </div>,
+        mxpart: <div>Maximum total number of moving particles allowed, and is used only when MIXELM = 1 or 3.</div>,
+        itrack: <div>Flag indicating which particle tracking algorithm is selected for the Eulerian-Lagrangian methods.
+            <ul>
+                <li><i>ITRACK</i> = 1 First-order Euler algorithm is used.</li>
+                <li><i>ITRACK</i> = 2 Fourth-order Runge-Kutta algorithm is used. This option is computationally
+                    demanding and may be needed only when PERCEL is set greater than one.
+                </li>
+                <li><i>ITRACK</i> = 3 Hybrid 1st and 4th order algorithm is used. The Runge-Kutta algorithm is used in
+                    sink/source cells and the cells next to sinks/sources while the Euler algorithm is used elsewhere.
+                </li>
+            </ul>
+        </div>,
+        wd: <div>Concentration weighting factor between 0.5 and 1. It is used for operator splitting in the particle
+            tracking based methods. The value of 0.5 is generally adequate. The value of WD may be adjusted to achieve
+            better mass balance. Generally, it can be increased toward 1.0 as advection becomes more dominant.</div>,
+        dceps: <div>Small Relative Cell Concentration Gradient below which advective transport is considered negligible.
+            A value around 10^-5 is generally adequate.</div>,
+        nplane: <div>Flag indicating whether the random or fixed pattern is selected for initial placement of moving
+            particles.
+                    <ul>
+                        <li><i>NPLANE</i> = 0 Random pattern is selected for initial placement. Particles are distributed
+                            randomly in both the horizontal and vertical directions by calling a random number generator. This
+                            option is usually preferred and leads to smaller mass balance discrepancy in nonuniform or
+                            diverging/converging flow fields.
+                        </li>
+                        <li><i>NPLANE</i> > 0 Fixed pattern is selected for initial placement. The value of NPLANE serves as the
+                            number of vertical “planes” on which initial particles are placed within each cell block. The fixed
+                            pattern may work better than the random pattern only in relatively uniform flow fields. For two
+                            dimensional simulations in plan view, set NPLANE = 1. For cross sectional or three-dimensional
+                            simulations, NPLANE = 2 is normally adequate. Increase NPLANE if more resolution in the vertical
+                            direction is desired.
+                        </li>
+                    </ul>
+                </div>,
+        npl: <div>Number of initial particles per cell to be placed at cells where the Relative Cell Concentration
+            Gradient is less than or equal to DCEPS. Generally, NPL can be set to zero since advection is considered
+            insignificant when the Relative Cell Concentration Gradient is less than or equal to DCEPS. Setting NPL
+            equal to NPH causes a uniform number of particles to be placed in every cell over the entire grid
+            (i.e., the uniform approach).</div>,
+        nph: <div>Number of initial particles per cell to be placed at cells where the Relative Cell Concentration
+            Gradient is greater than DCEPS. The selection of NPH depends on the nature of the flow field and also the
+            computer memory limitation. Generally, use a smaller number in relatively uniform flow fields and a larger
+            number in relatively nonuniform flow fields. However, values exceeding 16 in twodimensional simulation or
+            32 in three-dimensional simulation are rarely necessary. If the random pattern is chosen, NPH particles are
+            randomly distributed within the cell block. If the fixed pattern is chosen, NPH is divided by NPLANE to
+            yield the number of particles to be placed per vertical plane.</div>,
+        npmin: <div>Minimum number of particles allowed per cell. If the number of particles in a cell at the end of a
+            transport step is fewer than NPMIN, new particles are inserted into that cell to maintain a sufficient
+            number of particles. NPMIN can be set to zero in relatively uniform flow fields, and a number greater than
+            zero in diverging/converging flow fields. Generally, a value between zero and four is adequate. </div>,
+        npmax: <div>Maximum number of particles allowed per cell. If the number of particles in a cell exceeds NPMAX,
+            all particles are removed from that cell and replaced by a new set of particles equal to NPH to maintain
+            mass balance. Generally, NPMAX can be set to approximately twice of NPH.</div>,
+        nlsink: <div>Flag indicating whether the random or fixed pattern is selected for initial placement of particles
+            to approximate sink cells in the MMOC scheme. The convention is the same as that for NPLANE. It is generally
+            adequate to set NLSINK equivalent to NPLANE.</div>,
+        npsink: <div>Number of particles used to approximate sink cells in the MMOC scheme. The convention is the same
+            as that for NPH. It is generally adequate to set NPSINK equivalent to NPH.</div>,
+        dchmoc: <div>Critical Relative Concentration Gradient for controlling the selective use of either MOC or MMOC
+            in the HMOC solution scheme.<br/>The MOC solution is selected at cells where the Relative Concentration
+            Gradient is greater than DCHMOC.<br/>The MMOC solution is selected at cells where the Relative Concentration
+            Gradient is less than or equal to DCHMOC.</div>
+    },
 
     // BTN
     btn: {

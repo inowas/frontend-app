@@ -1,5 +1,5 @@
 import React from 'react';
-import {Accordion, Checkbox, Form, Grid, Header, Icon, Input, Segment, Select} from 'semantic-ui-react';
+import {Accordion, Checkbox, Form, Header, Icon, Input, Segment, Select} from 'semantic-ui-react';
 import InfoPopup from '../../../../../shared/InfoPopup';
 import {documentation} from '../../../../defaults/transport';
 import AbstractPackageProperties from './AbstractPackageProperties';
@@ -38,7 +38,7 @@ class AdvPackageProperties extends AbstractPackageProperties {
                         <Form.Field width={1}>
                             <label>&nbsp;</label>
                             <InfoPopup
-                                description={documentation.mixelm}
+                                description={documentation.adv.mixelm}
                                 title={'MIXELM'}
                                 position={'bottom right'}
                                 iconOutside={true}
@@ -49,123 +49,118 @@ class AdvPackageProperties extends AbstractPackageProperties {
 
                 <Accordion styled={true} fluid={true}>
                     <Accordion.Title active={activeIndex === 0} index={0} onClick={this.handleClickAccordion}>
-                        <Icon name="dropdown"/>
+                        <Icon name={'dropdown'}/>
                         Advection Parameters and Particle Tracking
                     </Accordion.Title>
                     <Accordion.Content active={activeIndex === 0}>
-                        <Grid>
-                            <Grid.Row columns={2}>
-                                <Grid.Column>
+                        <Form.Group>
+                            <Form.Field width={8}>
+                                <label>Courant number (PERCEL)</label>
+                                <Input
+                                    type={'number'}
+                                    name={'percel'}
+                                    value={mtPackage.percel}
+                                    disabled={readOnly}
+                                    onBlur={this.handleOnBlur(parseFloat)}
+                                    onChange={this.handleOnChange}
+                                    icon={<InfoPopup
+                                        description={documentation.adv.percel}
+                                        title="PERCEL"
+                                        position="top right"
+                                    />}
+                                />
+                            </Form.Field>
+                            {[0].includes(mtPackage.mixelm) &&
+                            <Form.Group>
+                                <Form.Field width={15}>
+                                    <label>Weighting scheme (NADVFD)</label>
+                                    <Select
+                                        fluid={true}
+                                        name={'nadvfd'}
+                                        value={mtPackage.nadvfd}
+                                        disabled={readOnly}
+                                        onChange={this.handleOnSelect}
+                                        options={[
+                                            {key: 0, value: 1, text: '0 or 1: Upstream weighting (default)'},
+                                            {key: 1, value: 2, text: '2: Central-in-space weighting'},
+                                        ]}
+                                    />
+                                </Form.Field>
+                                <Form.Field width={1}>
+                                    <label>&nbsp;</label>
+                                    <InfoPopup
+                                        description={documentation.adv.nadvfd}
+                                        title={'NADVFD'}
+                                        position={'top right'}
+                                    />
+                                </Form.Field>
+                            </Form.Group>
+                                }
+                            {[1, 3].includes(mtPackage.mixelm) &&
+                                <Form.Field width={8}>
+                                    <label>Maximum moving particles (MXPART)</label>
+                                    <Input
+                                        type={'number'}
+                                        name={'mxpart'}
+                                        value={mtPackage.mxpart}
+                                        disabled={readOnly}
+                                        onBlur={this.handleOnBlur(parseInt)}
+                                        onChange={this.handleOnChange}
+                                        icon={<InfoPopup
+                                            description={documentation.adv.mxpart}
+                                            title="MXPART"
+                                            position="top right"
+                                        />}
+                                    />
+                                </Form.Field>
+                            }
+                        </Form.Group>
+
+                            {[1, 2, 3].includes(mtPackage.mixelm) &&
+                            <div>
+                                <Form.Group widths={'equal'}>
+                                    <Form.Field width={14}>
+                                        <label>Particle tracking algorithm (ITRACK)</label>
+                                        <Select
+                                            fluid={true}
+                                            name={'itrack'}
+                                            value={mtPackage.itrack}
+                                            disabled={readOnly}
+                                            onChange={this.handleOnSelect}
+                                            options={[
+                                                {key: 0, value: 1, text: '1: First-order Euler'},
+                                                {key: 1, value: 2, text: '2: Fourth-order Runge-Kutta'},
+                                                {key: 2, value: 3, text: '3: Hybrid'},
+                                            ]}
+                                        />
+                                    </Form.Field>
+                                    <Form.Field width={1}>
+                                        <label>&nbsp;</label>
+                                        <InfoPopup
+                                            description={documentation.adv.itrack}
+                                            title={'ITRACK'}
+                                            position={'top right'}
+                                        />
+                                    </Form.Field>
                                     <Form.Field>
-                                        <label>Courant number (PERCEL)</label>
+                                        <label>Concentration weighting factor (WD)</label>
                                         <Input
                                             type={'number'}
-                                            name={'percel'}
-                                            value={mtPackage.percel}
+                                            name={'wd'}
+                                            value={mtPackage.wd}
                                             disabled={readOnly}
                                             onBlur={this.handleOnBlur(parseFloat)}
                                             onChange={this.handleOnChange}
                                             icon={<InfoPopup
-                                                description={documentation.percel}
-                                                title="PERCEL"
+                                                description={documentation.adv.wd}
+                                                title="WD"
                                                 position="top right"
                                             />}
                                         />
                                     </Form.Field>
-                                    {[1, 3].includes(mtPackage.mixelm) &&
-                                    <Form.Field>
-                                        <label>Maximum moving particles (MXPART)</label>
-                                        <Input
-                                            type={'number'}
-                                            name={'mxpart'}
-                                            value={mtPackage.mxpart}
-                                            disabled={readOnly}
-                                            onBlur={this.handleOnBlur(parseInt)}
-                                            onChange={this.handleOnChange}
-                                            icon={<InfoPopup
-                                                description={documentation.mxpart}
-                                                title="MXPART"
-                                                position="top right"
-                                            />}
-                                        />
-                                    </Form.Field>
-                                    }
-                                </Grid.Column>
-                                <Grid.Column>
-                                    {[0].includes(mtPackage.mixelm) &&
-                                    <Form.Group>
-                                        <Form.Field width={14}>
-                                            <label>Weighting scheme (NADVFD)</label>
-                                            <Select
-                                                fluid={true}
-                                                name={'nadvfd'}
-                                                value={mtPackage.nadvfd}
-                                                disabled={readOnly}
-                                                onChange={this.handleOnSelect}
-                                                options={[
-                                                    {key: 0, value: 1, text: '0 or 1: Upstream weighting (default)'},
-                                                    {key: 1, value: 2, text: '2: Central-in-space weighting'},
-                                                ]}
-                                            />
-                                        </Form.Field>
-                                        <Form.Field width={1}>
-                                            <label>&nbsp;</label>
-                                            <InfoPopup
-                                                description={documentation.nadvfd}
-                                                title={'NADVFD'}
-                                                position={'top right'}
-                                            />
-                                        </Form.Field>
-                                    </Form.Group>
-                                    }
-                                    {[1, 2, 3].includes(mtPackage.mixelm) &&
-                                    <div>
-                                        <Form.Group>
-                                            <Form.Field width={14}>
-                                                <label>Particle tracking algorithm (ITRACK)</label>
-                                                <Select
-                                                    fluid={true}
-                                                    name={'itrack'}
-                                                    value={mtPackage.itrack}
-                                                    disabled={readOnly}
-                                                    onChange={this.handleOnSelect}
-                                                    options={[
-                                                        {key: 0, value: 1, text: '1: First-order Euler'},
-                                                        {key: 1, value: 2, text: '2: Fourth-order Runge-Kutta'},
-                                                        {key: 2, value: 3, text: '3: Hybrid'},
-                                                    ]}
-                                                />
-                                            </Form.Field>
-                                            <Form.Field width={1}>
-                                                <label>&nbsp;</label>
-                                                <InfoPopup
-                                                    description={documentation.itrack}
-                                                    title={'ITRACK'}
-                                                    position={'top right'}
-                                                />
-                                            </Form.Field>
-                                        </Form.Group>
-                                        <Form.Field>
-                                            <label>Concentration weighting factor (WD)</label>
-                                            <Input
-                                                type={'number'}
-                                                name={'wd'}
-                                                value={mtPackage.wd}
-                                                disabled={readOnly}
-                                                onBlur={this.handleOnBlur(parseFloat)}
-                                                onChange={this.handleOnChange}
-                                                icon={<InfoPopup
-                                                    description={documentation.wd}
-                                                    title="WD"
-                                                    position="top right"
-                                                />}
-                                            />
-                                        </Form.Field>
-                                    </div>
-                                    }
-                                </Grid.Column>
-                            </Grid.Row>
-                        </Grid>
+                                </Form.Group>
+                            </div>
+                            }
                     </Accordion.Content>
 
                     {[1, 3].includes(mtPackage.mixelm) &&
@@ -186,7 +181,7 @@ class AdvPackageProperties extends AbstractPackageProperties {
                                         onBlur={this.handleOnBlur(parseFloat)}
                                         onChange={this.handleOnChange}
                                         icon={<InfoPopup
-                                            description={documentation.dceps}
+                                            description={documentation.adv.dceps}
                                             title="DCEPS"
                                             position="top right"
                                         />}
@@ -200,7 +195,7 @@ class AdvPackageProperties extends AbstractPackageProperties {
                                         value={mtPackage.nplane || 0}
                                         disabled={readOnly}
                                         icon={<InfoPopup
-                                            description={documentation.nplane}
+                                            description={documentation.adv.nplane}
                                             title="NPLANE"
                                             position="top right"
                                         />}
@@ -209,7 +204,7 @@ class AdvPackageProperties extends AbstractPackageProperties {
                                 <Form.Field width={1}>
                                     <label>&nbsp;</label>
                                     <InfoPopup
-                                        description={documentation.nplane}
+                                        description={documentation.adv.nplane}
                                         title={'NPLANE'}
                                         position={'top right'}
                                     />
@@ -225,7 +220,7 @@ class AdvPackageProperties extends AbstractPackageProperties {
                                         disabled={readOnly}
                                         onBlur={this.handleOnBlur(parseInt)}
                                         onChange={this.handleOnChange}
-                                        icon={<InfoPopup description={documentation.npl} title="NPL"/>}
+                                        icon={<InfoPopup description={documentation.adv.npl} title="NPL"/>}
                                     />
                                 </Form.Field>
                                 <Form.Field>
@@ -238,7 +233,7 @@ class AdvPackageProperties extends AbstractPackageProperties {
                                         onBlur={this.handleOnBlur(parseInt)}
                                         onChange={this.handleOnChange}
                                         icon={<InfoPopup
-                                            description={documentation.nph}
+                                            description={documentation.adv.nph}
                                             title={'NPH'}
                                             position={'top right'}
                                         />}
@@ -256,7 +251,7 @@ class AdvPackageProperties extends AbstractPackageProperties {
                                         onBlur={this.handleOnBlur(parseInt)}
                                         onChange={this.handleOnChange}
                                         icon={<InfoPopup
-                                            description={documentation.npmin}
+                                            description={documentation.adv.npmin}
                                             title={'NPMIN'}
                                         />}
                                     />
@@ -271,7 +266,7 @@ class AdvPackageProperties extends AbstractPackageProperties {
                                         onBlur={this.handleOnBlur(parseInt)}
                                         onChange={this.handleOnChange}
                                         icon={<InfoPopup
-                                            description={documentation.npmax}
+                                            description={documentation.adv.npmax}
                                             title="NPMAX"
                                             position="top right"
                                         />}
@@ -289,7 +284,7 @@ class AdvPackageProperties extends AbstractPackageProperties {
                             Solution Flags and Critical Concentration
                         </Accordion.Title>
                         <Accordion.Content active={activeIndex === 2}>
-                            <Form.Group widths={'equal'}>
+                            <Form.Group>
                                 <Form.Field>
                                     <label>Particle pattern to approximate sink cells (NLSINK)</label>
                                     <Checkbox
@@ -297,17 +292,18 @@ class AdvPackageProperties extends AbstractPackageProperties {
                                         name={'nlsink'}
                                         value={mtPackage.nlsink || 0}
                                         disabled={readOnly}
-                                        // label={mtPackage.nlsink === 0 ? 'fixed' : 'random'} TODO!!
+                                        // label={mtPackage.nlsink >= 0 ? 'fixed' : 'random'} TODO !!
                                     />
                                 </Form.Field>
                                 <Form.Field width={1}>
-                                    <label>&nbsp;</label>
                                     <InfoPopup
-                                        description={documentation.nlsink}
+                                        description={documentation.adv.nlsink}
                                         title={'NLSINK'}
                                         position={'top right'}
                                     />
                                 </Form.Field>
+                            </Form.Group>
+                            <Form.Group>
                                 <Form.Field>
                                     <label>No. of particles used to approximate sink cells (NPSINK)</label>
                                     <Input
@@ -318,31 +314,31 @@ class AdvPackageProperties extends AbstractPackageProperties {
                                         onBlur={this.handleOnBlur(parseInt)}
                                         onChange={this.handleOnChange}
                                         icon={<InfoPopup
-                                            description={documentation.npsink}
+                                            description={documentation.adv.npsink}
                                             title="NPSINK"
                                             position="top right"
                                         />}
                                     />
                                 </Form.Field>
+                                {mtPackage.mixelm === 3 &&
+                                <Form.Field>
+                                    <label>Critical Relative Concentration Gradient (DCHMOC)</label>
+                                    <Input
+                                        type={'number'}
+                                        name={'dchmoc'}
+                                        value={mtPackage.dchmoc}
+                                        disabled={readOnly}
+                                        onBlur={this.handleOnBlur(parseFloat)}
+                                        onChange={this.handleOnChange}
+                                        icon={<InfoPopup
+                                            description={documentation.adv.dchmoc}
+                                            title="DCHMOC"
+                                            position="top right"
+                                        />}
+                                    />
+                                </Form.Field>
+                                }
                             </Form.Group>
-                            {mtPackage.mixelm === 3 &&
-                            <Form.Field>
-                                <label>Critical Relative Concentration Gradient (DCHMOC)</label>
-                                <Input
-                                    type={'number'}
-                                    name={'dchmoc'}
-                                    value={mtPackage.dchmoc}
-                                    disabled={readOnly}
-                                    onBlur={this.handleOnBlur(parseFloat)}
-                                    onChange={this.handleOnChange}
-                                    icon={<InfoPopup
-                                        description={documentation.dchmoc}
-                                        title="DCHMOC"
-                                        position="top right"
-                                    />}
-                                />
-                            </Form.Field>
-                            }
                         </Accordion.Content>
                     </div>
                     }
