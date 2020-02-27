@@ -178,16 +178,19 @@ export const documentation = {
     },
 
     // DSP
-    al: <div>Longitudinal dispersivity for every cell of the model grid (unit: L).</div>,
-    trpt: <div>1D real array defining the ratio of the horizontal transverse dispersivity to the longitudinal
-        dispersivity. Each value in the array corresponds to one model layer. Some recent field studies suggest
-        that TRPT is generally not greater than 0.1.</div>,
-    trpv: <div>Ratio of the vertical transverse dispersivity to the longitudinal dispersivity. Each value
-        in the array corresponds to one model layer. Some recent field studies suggest that TRPT is generally not
-        greater than 0.01. Set TRPV equal to TRPT to use the standard isotropic dispersion model. Otherwise, the
-        modified isotropic dispersion model is used.</div>,
-    dmcoef: <div>Effective molecular diffusion coefficient (unit: L^2T^-1). Set DMCOEF = 0 if the effect of molecular
-        diffusion is considered unimportant. Each value in the array corresponds to one model layer.</div>,
+    dsp: {
+        al: <div>Longitudinal dispersivity for every cell of the model grid (unit: L).</div>,
+        trpt: <div>1D real array defining the ratio of the horizontal transverse dispersivity to the longitudinal
+            dispersivity. Each value in the array corresponds to one model layer. Some recent field studies suggest
+            that TRPT is generally not greater than 0.1.</div>,
+        trpv: <div>Ratio of the vertical transverse dispersivity to the longitudinal dispersivity. Each value
+            in the array corresponds to one model layer. Some recent field studies suggest that TRPT is generally not
+            greater than 0.01. Set TRPV equal to TRPT to use the standard isotropic dispersion model. Otherwise, the
+            modified isotropic dispersion model is used.</div>,
+        dmcoef: <div>Effective molecular diffusion coefficient (unit: L^2T^-1). Set DMCOEF = 0 if the effect of
+            molecular diffusion is considered unimportant. Each value in the array corresponds to one model layer.</div>
+    },
+
     // GCG
     mxiter: <div>Maximum number of outer iterations. It should be set to an integer greater than one only when a
         nonlinear sorption isotherm is included in simulation.</div>,
