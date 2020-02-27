@@ -91,90 +91,89 @@ export const documentation = {
         HMOC solution scheme.<br/>The MOC solution is selected at cells where the Relative Concentration Gradient is
         greater than DCHMOC.<br/>The MMOC solution is selected at cells where the Relative Concentration Gradient is
         less than or equal to DCHMOC.</div>,
+
     // BTN
-    ncomp: <div>Total number of chemical species included in the current simulation. For single-species simulation, set
-        <i>NCOMP</i> = 1.</div>,
-    mcomp: <div>Total number of “mobile” species, must be equal to or less than NCOMP. For single-species simulation,
-        set <i>MCOMP</i> = 1.</div>,
-    prsity: <div>“Effective” porosity of the porous medium in a single porosity system. Note that if a dual porosity
-        system is simulated, <i>PRSITY</i> should be specified as the “mobile” porosity, i.e., the ratio of
-        interconnected pore
-        spaces filled with mobile waters over the bulk volume of the porous medium.</div>,
-    icbund: <div>Boundary condition type shared by all species.
-        <ul>
-            <li><i>ICBUND</i> = 0 inactive concentration cell for all species</li>
-            <li><i>ICBUND</i> {'<'} 0 constant concentration cell for all species</li>
-            <li><i>ICBUND</i> {'>'} 0 active (variable) concentration cell where the concentration will be calculated
-            </li>
-        </ul>
-    </div>,
-    sconc: <div>Starting concentration (initial condition) at the beginning of the simulation (unit: ML-3).</div>,
-    cinact: <div>Value for indicating an inactive concentration cell (<i>ICBUND</i> = 0). Even if it is not anticipated
-        to have
-        inactive cells in the model, a value for <i>CINACT</i> still must be submitted.</div>,
-    thkmin: <div>Minimum saturated thickness in a cell, expressed as the decimal fraction of the model layer thickness,
-        below which the cell is considered inactive. The default value is 0.01 (i.e., 1% of the model layer
-        thickness).</div>,
-    ifmtcn: <div>Flag indicating whether the calculated concentration should be printed to the standard output text file
-        and also serves as a printing-format code if it is printed <ul>
-            <li><i>IFMTCN</i> {'>'} 0 concentration is printed in the wrap form</li>
-            <li><i>IFMTCN</i> {'<'} 0 concentration is printed in the strip form</li>
-            <li><i>IFMTCN</i> = 0 concentration is not printed</li>
-        </ul></div>,
-    ifmtnp: <div>Flag indicating whether the number of particles in each cell (integers) should be printed and also
-        serves as a printing-format code if they are printed. The convention is the same as that used for <i>IFMTCN</i>.
-    </div>,
-    ifmtrf: <div>Flag indicating whether the model-calculated retardation factor should be printed and also serves as a
-        printing-format code if it is printed. The convention is the same as that used for <i>IFMTCN</i>.</div>,
-    ifmtdp: <div>Flag indicating whether the model-calculated, distance weighted dispersion coefficient should be
-        printed and also serves as a printing-format code if it is printed. The convention is the same as that
-        used for <i>IFMTCN</i>.</div>,
-    nprs: <div>Flag indicating the frequency of the output, and also indicating whether the output frequency is
-        specified in terms of total elapsed simulation time or the transport step number. Note that what are
-        actually printed or saved is controlled by the input values entered in the preceding record. <ul>
-            <li><i>NPRS</i> {'>'} 0 simulation results will be printed to the standard output text file</li>
-            <li><i>NPRS</i> {'<'} 0 simulation results will be printed or saved whenever the number of transport
-                steps is an even multiple of NPRS
-            </li>
-            <li><i>NPRS</i> = 0 simulation results will not be printed or saved except at the end of simulation</li>
-        </ul></div>,
-    nprobs: <div>Integer indicating how frequently the concentration at the specified observation points should be
-        saved in the observation file. Concentrations are saved every NPROBS step.</div>,
-    nprmas: <div>Integer indicating how frequently the mass budget information should be saved in the mass balance
-        summary file. Mass budget information is saved every NPRMAS step.</div>,
-    dt0: <div>Transport stepsize within each time step of the flow solution. DT0 is interpreted differently depending on
-        whether the solution option chosen is explicit or implicit:
-        <ul>
-            <li>For explicit solutions (i.e., the GCG solver
-                is not used), the program will always calculate a maximum transport stepsize which meets the various
-                stability criteria. Setting DT0 to zero causes the model calculated transport stepsize to be used in the
-                simulation. However, the model-calculated DT0 may not always be optimal. In this situation, DT0 should
-                be
-                adjusted to find a value that leads to the best results. If DT0 is given a value greater than the
-                model-calculated stepsize, the model-calculated stepsize, instead of the user-specified value, will be
-                used
-                in the simulation.
-            </li>
-            <li>For implicit solutions (i.e., the GCG solver is used), DT0 is the initial
-                transport stepsize. If it is specified as zero, the model-calculated value of DT0, based on the
-                user-specified Courant number in the Advection Package, will be used. The subsequent transport stepsize
-                may
-                increase or remain constant depending on the user specified transport stepsize multiplier TTSMULT and
-                the
-                solution scheme for the advection term.
-            </li>
-        </ul>
-    </div>,
-    mxstrn: <div>Maximum number of transport steps allowed within one time step of the flow solution. If the number of
-        transport steps within a flow time step exceeds MXSTRN, the simulation is terminated. </div>,
-    ttsmult: <div>Multiplier for successive transport steps within a flow time step, if the Generalized Conjugate
-        Gradient (GCG) solver is used and the solution option for the advection term is the standard finite difference
-        method. A value between 1.0 and 2.0 is generally adequate. If the GCG package is not used, the transport
-        solution is solved explicitly as in the original MT3D code, and TTSMULT is always set to 1.0 regardless of the
-        user-specified input. Note that for the particle tracking based solution options and the 3rd-order TVD scheme,
-        TTSMULT does not apply.</div>,
-    ttsmax: <div>Maximum transport stepsize allowed when transport stepsize multiplier TTSMULT > 1.0. Setting TTSMAX = 0
-        imposes no maximum limit.</div>,
+    btn: {
+        ncomp: <div>Total number of chemical species included in the current simulation. For single-species simulation,
+            set <i>NCOMP</i> = 1.</div>,
+        mcomp: <div>Total number of “mobile” species, must be equal to or less than NCOMP. For single-species
+            simulation, set <i>MCOMP</i> = 1.</div>,
+        prsity: <div>“Effective” porosity of the porous medium in a single porosity system. Note that if a dual porosity
+            system is simulated, <i>PRSITY</i> should be specified as the “mobile” porosity, i.e., the ratio of
+            interconnected pore
+            spaces filled with mobile waters over the bulk volume of the porous medium.</div>,
+        icbund: <div>Boundary condition type shared by all species.
+            <ul>
+                <li><i>ICBUND</i> = 0 inactive concentration cell for all species</li>
+                <li><i>ICBUND</i> {'<'} 0 constant concentration cell for all species</li>
+                <li><i>ICBUND</i> {'>'} 0 active (variable) concentration cell where the concentration will be calculated
+                </li>
+            </ul>
+        </div>,
+        sconc: <div>Starting concentration (initial condition) at the beginning of the simulation (unit: ML-3).</div>,
+        cinact: <div>Value for indicating an inactive concentration cell (<i>ICBUND</i> = 0). Even if it is not
+            anticipated to have inactive cells in the model, a value for <i>CINACT</i> still must be submitted.</div>,
+        thkmin: <div>Minimum saturated thickness in a cell, expressed as the decimal fraction of the model layer
+            thickness, below which the cell is considered inactive. The default value is 0.01 (i.e., 1% of the model
+            layer thickness).</div>,
+        ifmtcn: <div>Flag indicating whether the calculated concentration should be printed to the standard output text
+            file and also serves as a printing-format code if it is printed <ul>
+                <li><i>IFMTCN</i> {'>'} 0 concentration is printed in the wrap form</li>
+                <li><i>IFMTCN</i> {'<'} 0 concentration is printed in the strip form</li>
+                <li><i>IFMTCN</i> = 0 concentration is not printed</li>
+            </ul></div>,
+        ifmtnp: <div>Flag indicating whether the number of particles in each cell (integers) should be printed and also
+            serves as a printing-format code if they are printed. The convention is the same as that used for <i>IFMTCN</i>.
+        </div>,
+        ifmtrf: <div>Flag indicating whether the model-calculated retardation factor should be printed and also serves
+            as a printing-format code if it is printed. The convention is the same as that used for <i>IFMTCN</i>.</div>,
+        ifmtdp: <div>Flag indicating whether the model-calculated, distance weighted dispersion coefficient should be
+            printed and also serves as a printing-format code if it is printed. The convention is the same as that
+            used for <i>IFMTCN</i>.</div>,
+        nprs: <div>Flag indicating the frequency of the output, and also indicating whether the output frequency is
+            specified in terms of total elapsed simulation time or the transport step number. Note that what are
+            actually printed or saved is controlled by the input values entered in the preceding record. <ul>
+                <li><i>NPRS</i> {'>'} 0 simulation results will be printed to the standard output text file</li>
+                <li><i>NPRS</i> {'<'} 0 simulation results will be printed or saved whenever the number of transport
+                    steps is an even multiple of NPRS
+                </li>
+                <li><i>NPRS</i> = 0 simulation results will not be printed or saved except at the end of simulation</li>
+            </ul></div>,
+        nprobs: <div>Integer indicating how frequently the concentration at the specified observation points should be
+            saved in the observation file. Concentrations are saved every NPROBS step.</div>,
+        nprmas: <div>Integer indicating how frequently the mass budget information should be saved in the mass balance
+            summary file. Mass budget information is saved every NPRMAS step.</div>,
+        dt0: <div>Transport stepsize within each time step of the flow solution. DT0 is interpreted differently
+            depending on whether the solution option chosen is explicit or implicit:
+            <ul>
+                <li>For explicit solutions (i.e., the GCG solver
+                    is not used), the program will always calculate a maximum transport stepsize which meets the various
+                    stability criteria. Setting DT0 to zero causes the model calculated transport stepsize to be used in
+                    the simulation. However, the model-calculated DT0 may not always be optimal. In this situation, DT0
+                    should be adjusted to find a value that leads to the best results. If DT0 is given a value greater
+                    than the model-calculated stepsize, the model-calculated stepsize, instead of the user-specified
+                    value, will be used in the simulation.
+                </li>
+                <li>For implicit solutions (i.e., the GCG solver is used), DT0 is the initial
+                    transport stepsize. If it is specified as zero, the model-calculated value of DT0, based on the
+                    user-specified Courant number in the Advection Package, will be used. The subsequent transport
+                    stepsize may increase or remain constant depending on the user specified transport stepsize
+                    multiplier TTSMULT and the solution scheme for the advection term.
+                </li>
+            </ul>
+        </div>,
+        mxstrn: <div>Maximum number of transport steps allowed within one time step of the flow solution. If the number
+            of transport steps within a flow time step exceeds MXSTRN, the simulation is terminated. </div>,
+        ttsmult: <div>Multiplier for successive transport steps within a flow time step, if the Generalized Conjugate
+            Gradient (GCG) solver is used and the solution option for the advection term is the standard finite
+            difference method. A value between 1.0 and 2.0 is generally adequate. If the GCG package is not used, the
+            transport solution is solved explicitly as in the original MT3D code, and TTSMULT is always set to 1.0
+            regardless of the user-specified input. Note that for the particle tracking based solution options and the
+            3rd-order TVD scheme, TTSMULT does not apply.</div>,
+        ttsmax: <div>Maximum transport stepsize allowed when transport stepsize multiplier TTSMULT > 1.0. Setting
+            TTSMAX = 0 imposes no maximum limit.</div>
+    },
+
     // DSP
     al: <div>Longitudinal dispersivity for every cell of the model grid (unit: L).</div>,
     trpt: <div>1D real array defining the ratio of the horizontal transverse dispersivity to the longitudinal
