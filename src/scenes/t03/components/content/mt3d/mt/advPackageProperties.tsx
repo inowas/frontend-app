@@ -188,7 +188,7 @@ class AdvPackageProperties extends AbstractPackageProperties {
                                     />
                                 </Form.Field>
                                 <Form.Field width={14}>
-                                    <label>Particle placement pattern (NPLANE)</label>
+                                    <label>Particle pattern (NPLANE)</label>
                                     <Checkbox
                                         toggle={true}
                                         name={'nplane'}

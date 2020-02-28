@@ -192,99 +192,116 @@ export const documentation = {
     },
 
     // GCG
-    mxiter: <div>Maximum number of outer iterations. It should be set to an integer greater than one only when a
-        nonlinear sorption isotherm is included in simulation.</div>,
-    iter1: <div>Maximum number of inner iterations. A value of 30 - 50 should be adequate for most problems.</div>,
-    isolve: <div>Type of preconditioners to be used with the Lanczos/ORTHOMIN acceleration scheme.
-        <ul>
-            <li><i>ISOLVE</i> = 1 Jacobi</li>
-            <li><i>ISOLVE</i> = 2 SSOR</li>
-            <li><i>ISOLVE</i> = 3 Modified Incomplete Cholesky (MIC usually converges faster, but it needs significantly
-                more memory)
-            </li>
-        </ul>
-    </div>,
-    ncrs: <div>Integer flag for treatment of dispersion tensor cross terms.
-        <ul>
-            <li><i>NCRS</i> = 0 Lump all dispersion cross terms to the right-hand-side (approximate but highly
-                efficient).
-            </li>
-            <li><i>NCRS</i> = 1 Include full dispersion tensor (memory intensive).</li>
-        </ul>
-    </div>,
-    accl: <div>Relaxation factor for the SSOR option. A value of 1.0 is generally adequate.</div>,
-    cclose: <div>Convergence criterion in terms of relative concentration. A real value between 10^-4 and 10^-6 is
-        generally adequate.</div>,
-    iprgcg: <div>Interval for printing the maximum concentration changes of each iteration. Set IPRGCG to 0 as default
-        for printing at the end of each stress period.</div>,
+    gcg: {
+        mxiter: <div>Maximum number of outer iterations. It should be set to an integer greater than one only when a
+            nonlinear sorption isotherm is included in simulation.</div>,
+        iter1: <div>Maximum number of inner iterations. A value of 30 - 50 should be adequate for most problems.</div>,
+        isolve: <div>Type of preconditioners to be used with the Lanczos/ORTHOMIN acceleration scheme.
+            <ul>
+                <li><i>ISOLVE</i> = 1 Jacobi</li>
+                <li><i>ISOLVE</i> = 2 SSOR</li>
+                <li><i>ISOLVE</i> = 3 Modified Incomplete Cholesky (MIC usually converges faster, but it needs
+                    significantly more memory)
+                </li>
+            </ul>
+        </div>,
+        ncrs: <div>Integer flag for treatment of dispersion tensor cross terms.
+            <ul>
+                <li><i>NCRS</i> = 0 Lump all dispersion cross terms to the right-hand-side (approximate but highly
+                    efficient).
+                </li>
+                <li><i>NCRS</i> = 1 Include full dispersion tensor (memory intensive).</li>
+            </ul>
+        </div>,
+        accl: <div>Relaxation factor for the SSOR option. A value of 1.0 is generally adequate.</div>,
+        cclose: <div>Convergence criterion in terms of relative concentration. A real value between 10^-4 and 10^-6 is
+            generally adequate.</div>,
+        iprgcg: <div>Interval for printing the maximum concentration changes of each iteration. Set IPRGCG to 0 as
+            default for printing at the end of each stress period.</div>,
+    },
+
     // RCT
-    isothm: <div>A flag indicating which type of sorption (or dual-domain mass transfer) is simulated: isothm = 0, no
-        sorption is simulated; isothm = 1, linear isotherm (equilibrium-controlled); isothm = 2, Freundlich isotherm
-        (equilibrium-controlled); isothm = 3, Langmuir isotherm (equilibrium-controlled); isothm = 4, first-order
-        kinetic sorption (nonequilibrium); isothm = 5, dual-domain mass transfer (without sorption); isothm = 6,
-        dual-domain mass transfer (with sorption). (default is 0).</div>,
-    ireact: <div>A flag indicating which type of kinetic rate reaction is simulated: ireact = 0, no kinetic rate
-        reaction is simulated; ireact = 1, first-order irreversible reaction, ireact = 100, zero-order reactions (decay
-        or production). Note that this reaction package is not intended for modeling chemical reactions between species.
-        An add-on reaction package developed specifically for that purpose may be used. (default is 0).</div>,
-    igetsc: <div>An integer flag indicating whether the initial concentration for the nonequilibrium sorbed or immobile
-        phase of all species should be read when nonequilibrium sorption (ISOTHM=4) or dual-domain mass transfer
-        (ISOTHM=5 or 6) is simulated:
-        <ul>
-            <li>IGETSC=0, the initial concentration for the sorbed or immobile phase is not read. By default, the sorbed
-                phase is assumed to be in equilibrium with the dissolved phase (ISOTHM=4), and the immobile domain is
-                assumed to have zero concentration (ISOTHM=5 or 6).
-            </li>
-            <li>>0, the initial concentration for the sorbed phase or immobile liquid phase of all species will be
-                read.
-            </li>
-        </ul>
-    </div>,
-    rhob: <div>Bulk density of the aquifer medium (unit, ML-3). rhob is used if isothm = 1, 2, 3, 4, or 6. If rhob is
-        not user-specified and isothm is not 5 then rhob is set to 1.8e3. (default is None)</div>,
-    prsity2: <div>Porosity of the immobile domain, i.e., the ratio of pore spaces filled with immobile fluids over the
-        bulk volume of the aquifer medium, when the simulation is intended to represent a dual-domain system.</div>,
-    srconc: <div>User-specified initial concentration for the sorbed phase of the first species if isothm = 4 (unit,
-        MM-1). Note that for equilibrium-controlled sorption, the initial concentration for the sorbed phase cannot be
-        specified. srconc is the user-specified initial concentration of the first species for the immobile liquid phase
-        if isothm = 5 or 6 (unit, ML-3). If srconc is not user-specified and isothm = 4, 5, or 6 then srconc is set to
-        0. (default is None).</div>,
-    sp1: <div>SP1 is the first sorption parameter. The use of SP1 depends on the type
-        of sorption selected (i.e., the value of ISOTHM): <ul>
-            <li>For linear sorption (ISOTHM=1) and nonequilibrium sorption (ISOTHM=4), SP1 is the distribution
-                coefficient (Kd) (unit: L3 M-1).
-            </li>
-            <li>For Freundlich sorption (ISOTHM=2), SP1 is the Freundlich equilibrium constant (Kf) (the unit depends on
-                the Freundlich exponent a).
-            </li>
-            <li>For Langmuir sorption (ISOTHM=3), SP1 is the Langmuir equilibrium constant (Kl) (unit: L3 M-1 ).
-            </li>
-            <li>For dual-domain mass transfer without sorption (ISOTHM=5), SP1 is not used, but still must be entered.
-            </li>
-            <li>For dual-domain mass transfer with sorption (ISOTHM=6), SP1 is also the distribution coefficient (Kd)
-                (unit: L3 M-1).
-            </li>
-        </ul></div>,
-    sp2: <div>SP2 is the second sorption or dual-domain model parameter. The use of SP2 depends on the type of sorption
-        or dual-domain model selected:
-        <ul>
-            <li>For linear sorption (ISOTHM=1), SP2 is read but not used.</li>
-            <li>For Freundlich sorption (ISOTHM=2), SP2 is the Freundlich exponent a.</li>
-            <li>For Langmuir sorption (ISOTHM=3), SP2 is the total concentration of the sorption sites available ( S )
-                (unit: MM-1).
-            </li>
-            <li>For nonequilibrium sorption (ISOTHM=4), SP2 is the first-order mass transfer rate between the dissolved
-                and sorbed phases (unit: T-1).
-            </li>
-            <li>For dual-domain mass transfer (ISOTHM=5 or 6), SP2 is the first-order mass transfer rate between the two
-                domains (unit: T-1).
-            </li>
-        </ul></div>,
-    rc1: <div>First-order reaction rate for the dissolved (liquid) phase (unit: T-1). If a dual-domain system is
-        simulated, the reaction rates for the liquid phase in the mobile and immobile domains are assumed to be
-        equal.</div>,
-    rc2: <div>First-order reaction rate for the sorbed phase (unit: T-1). If a dual-domain system is simulated, the
-        reaction rates for the sorbed phase in the mobile and immobile domains are assumed to be equal. Generally, if
-        the reaction is radioactive decay, RC2 should be set equal to RC1, while for biodegradation, RC2 may be
-        different from RC1. Note that RC2 is read but not used, if no sorption is included in the simulation.</div>
+    rct: {
+        isothm: <div>A flag indicating which type of sorption (or dual-domain mass transfer) is simulated: isothm = 0,
+            no sorption is simulated; isothm = 1, linear isotherm (equilibrium-controlled); isothm = 2, Freundlich
+            isotherm (equilibrium-controlled); isothm = 3, Langmuir isotherm (equilibrium-controlled); isothm = 4,
+            first-order kinetic sorption (nonequilibrium); isothm = 5, dual-domain mass transfer (without sorption);
+            isothm = 6, dual-domain mass transfer (with sorption). (default is 0).</div>,
+        ireact: <div>A flag indicating which type of kinetic rate reaction is simulated: ireact = 0, no kinetic rate
+            reaction is simulated; ireact = 1, first-order irreversible reaction, ireact = 100, zero-order reactions
+            (decay or production). Note that this reaction package is not intended for modeling chemical reactions
+            between species. An add-on reaction package developed specifically for that purpose may be used.
+            (default is 0).</div>,
+        igetsc: <div>An integer flag indicating whether the initial concentration for the nonequilibrium sorbed or
+            immobile phase of all species should be read when nonequilibrium sorption (ISOTHM=4) or dual-domain mass
+            transfer (ISOTHM=5 or 6) is simulated:
+            <ul>
+                <li>IGETSC=0, the initial concentration for the sorbed or immobile phase is not read. By default, the
+                    sorbed phase is assumed to be in equilibrium with the dissolved phase (ISOTHM=4), and the immobile
+                    domain is assumed to have zero concentration (ISOTHM=5 or 6).
+                </li>
+                <li>>0, the initial concentration for the sorbed phase or immobile liquid phase of all species will be
+                    read.
+                </li>
+            </ul>
+        </div>,
+        rhob: <div>Bulk density of the aquifer medium (unit, ML-3). rhob is used if isothm = 1, 2, 3, 4, or 6. If rhob
+            is not user-specified and isothm is not 5 then rhob is set to 1.8e3. (default is None)</div>,
+        prsity2: <div>Porosity of the immobile domain, i.e., the ratio of pore spaces filled with immobile fluids over
+            the bulk volume of the aquifer medium, when the simulation is intended to represent a dual-domain system.
+            </div>,
+        srconc: <div>User-specified initial concentration for the sorbed phase of the first species if isothm = 4 (unit,
+            MM-1). Note that for equilibrium-controlled sorption, the initial concentration for the sorbed phase cannot
+            be specified. srconc is the user-specified initial concentration of the first species for the immobile
+            liquid phase if isothm = 5 or 6 (unit, ML-3). If srconc is not user-specified and isothm = 4, 5, or 6 then
+            srconc is set to 0. (default is None).</div>,
+        sp1: <div>SP1 is the first sorption parameter. The use of SP1 depends on the type
+            of sorption selected (i.e., the value of ISOTHM): <ul>
+                <li>For linear sorption (ISOTHM=1) and nonequilibrium sorption (ISOTHM=4), SP1 is the distribution
+                    coefficient (Kd) (unit: L3 M-1).
+                </li>
+                <li>For Freundlich sorption (ISOTHM=2), SP1 is the Freundlich equilibrium constant (Kf) (the unit
+                    depends on the Freundlich exponent a).
+                </li>
+                <li>For Langmuir sorption (ISOTHM=3), SP1 is the Langmuir equilibrium constant (Kl) (unit: L3 M-1 ).
+                </li>
+                <li>For dual-domain mass transfer without sorption (ISOTHM=5), SP1 is not used, but still must be
+                    entered.
+                </li>
+                <li>For dual-domain mass transfer with sorption (ISOTHM=6), SP1 is also the distribution coefficient
+                    (Kd) (unit: L3 M-1).
+                </li>
+            </ul></div>,
+        sp2: <div>SP2 is the second sorption or dual-domain model parameter. The use of SP2 depends on the type of
+            sorption or dual-domain model selected:
+            <ul>
+                <li>For linear sorption (ISOTHM=1), SP2 is read but not used.</li>
+                <li>For Freundlich sorption (ISOTHM=2), SP2 is the Freundlich exponent a.</li>
+                <li>For Langmuir sorption (ISOTHM=3), SP2 is the total concentration of the sorption sites available
+                    ( S ) (unit: MM-1).
+                </li>
+                <li>For nonequilibrium sorption (ISOTHM=4), SP2 is the first-order mass transfer rate between the
+                    dissolved and sorbed phases (unit: T-1).
+                </li>
+                <li>For dual-domain mass transfer (ISOTHM=5 or 6), SP2 is the first-order mass transfer rate between
+                    the two domains (unit: T-1).
+                </li>
+            </ul></div>,
+        rc1: <div>First-order reaction rate for the dissolved (liquid) phase (unit: T-1). If a dual-domain system is
+            simulated, the reaction rates for the liquid phase in the mobile and immobile domains are assumed to be
+            equal.</div>,
+        rc2: <div>First-order reaction rate for the sorbed phase (unit: T-1). If a dual-domain system is simulated, the
+            reaction rates for the sorbed phase in the mobile and immobile domains are assumed to be equal. Generally,
+            if the reaction is radioactive decay, RC2 should be set equal to RC1, while for biodegradation, RC2 may be
+            different from RC1. Note that RC2 is read but not used, if no sorption is included in the simulation.</div>
+    },
+
+    // SSM
+    ssm: {
+        extension: <div>Filename extension (default is ‘ssm’)</div>,
+        unitnumber: <div>File unit number (default is None).</div>,
+        filenames: <div>Filenames to use for the package. If filenames=None the package name will be created using the
+            model name and package extension. If a single string is passed the package will be set to the string.
+            Default is None.</div>,
+    }
 };

@@ -41,6 +41,13 @@
      padding-bottom: 0.5em !important;
  }
 
+/*-------------------
+   Segment Group in T03
+  -------------------*/
+
+.ui.segments>.segment {
+    border-top: 1px solid #EEEEEE;
+}
  /*----------------------
   Custom Segment in T07
   ----------------------*/
