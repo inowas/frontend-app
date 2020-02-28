@@ -52,8 +52,7 @@ const menuItems = [{
         {
             name: 'Time Series',
             property: 'timeseries',
-            icon: <Icon name="map marker alternate" />,
-            disabled: true
+            icon: <Icon name="map marker alternate" />
         }
     ]
 }];
@@ -149,7 +148,16 @@ const t07 = (props: RouteComponentProps<{
                     />
                 );
             case 'timeseries':
-                return ('TIMESERIES');
+                return (
+                    <Content.TimeSeries
+                        boundaries={boundaries}
+                        calculations={calculations}
+                        models={models}
+                        scenarioAnalysis={scenarioAnalysis}
+                        selected={selected}
+                        soilmodels={soilmodels}
+                    />
+                );
             default:
                 const basePath = props.match.path.split(':')[0];
                 return (
@@ -317,7 +325,7 @@ const t07 = (props: RouteComponentProps<{
                     <Grid.Row>
                         <Grid.Column width={3}>
                             <ToolNavigation navigationItems={menuItems} />
-                            {props.match.params.property === 'crosssection' && renderModelList()}
+                            {props.match.params.property !== 'difference' && renderModelList()}
                         </Grid.Column>
                         <Grid.Column width={13}>
                             {renderContent(props.match.params.id, props.match.params.property)}
