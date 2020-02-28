@@ -120,7 +120,7 @@ const crossSection = (props: IProps) => {
         fetchData(layer, totim, type);
     };
 
-    const renderMap = (id: string, length: number, minMax: [number, number]) => {
+    const renderMap = (id: string, minMax: [number, number]) => {
         if (!props.models.hasOwnProperty(id) || !props.boundaries.hasOwnProperty(id) || !data.hasOwnProperty(id)) {
             return null;
         }
@@ -166,7 +166,7 @@ const crossSection = (props: IProps) => {
                     <Grid.Row key={cIdx} columns={numberOfCols}>
                         {c.map((m) => (
                             <Grid.Column key={m.id}>
-                                {renderMap(m.id, props.selected.length, minMax)}
+                                {renderMap(m.id, minMax)}
                             </Grid.Column>
                         ))}
                     </Grid.Row>

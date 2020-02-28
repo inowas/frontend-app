@@ -1,6 +1,5 @@
 import { cloneDeep } from 'lodash';
 import React, { SyntheticEvent, useEffect, useState } from 'react';
-import { Viewport } from 'react-leaflet';
 import { DropdownProps, Form, Grid, Header, Segment } from 'semantic-ui-react';
 import { Array2D } from '../../../core/model/geometry/Array2D.type';
 import { Calculation, ModflowModel, Soilmodel, Stressperiods } from '../../../core/model/modflow';
@@ -10,7 +9,7 @@ import { ICalculation } from '../../../core/model/modflow/Calculation.type';
 import { IModflowModel } from '../../../core/model/modflow/ModflowModel.type';
 import { ISoilmodel } from '../../../core/model/modflow/soilmodel/Soilmodel.type';
 import { ScenarioAnalysis } from '../../../core/model/scenarioAnalysis';
-import { fetchCalculationResultsFlow, fetchUrl } from '../../../services/api';
+import { fetchCalculationResultsFlow } from '../../../services/api';
 import ResultsChart from '../../shared/complexTools/ResultsChart';
 import ResultsMap from '../../shared/complexTools/ResultsMap';
 import ResultsSelectorFlow from '../../shared/complexTools/ResultsSelectorFlow';
