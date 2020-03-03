@@ -2,8 +2,7 @@ import AbstractCommand from '../../../core/model/command/AbstractCommand';
 import {JSON_SCHEMA_URL} from '../../../services/api';
 
 class ScenarioAnalysisCommand extends AbstractCommand {
-
-    static cloneScenarioAnalysis({id, newId}) {
+    public static cloneScenarioAnalysis({id, newId}: {id: string, newId: string}) {
         return new ScenarioAnalysisCommand(
             'cloneScenarioAnalysis', {
                 id,
@@ -13,20 +12,21 @@ class ScenarioAnalysisCommand extends AbstractCommand {
         );
     }
 
-    static createScenarioAnalysis(scenarioanalysisId, modelToCloneId, name, description, isPublic) {
+    public static createScenarioAnalysis(scenarioanalysisId: string, modelToCloneId: string, name: string,
+                                         description: string, isPublic: boolean) {
         return new ScenarioAnalysisCommand(
             'createScenarioAnalysis', {
                 id: scenarioanalysisId,
                 basemodel_id: modelToCloneId,
-                name: name,
-                description: description,
+                name,
+                description,
                 public: isPublic
             },
             JSON_SCHEMA_URL + '/commands/createScenarioAnalysis'
         );
     }
 
-    static createScenario(scenarioanalysisId, modelToCloneId, newId) {
+    public static createScenario(scenarioanalysisId: string, modelToCloneId: string, newId: string) {
         return new ScenarioAnalysisCommand(
             'createScenario', {
                 id: scenarioanalysisId,
@@ -37,7 +37,7 @@ class ScenarioAnalysisCommand extends AbstractCommand {
         );
     }
 
-    static deleteScenario(scenarioanalysisId, scenarioId) {
+    public static deleteScenario(scenarioanalysisId: string, scenarioId: string) {
         return new ScenarioAnalysisCommand(
             'deleteScenario', {
                 id: scenarioanalysisId,
@@ -47,22 +47,23 @@ class ScenarioAnalysisCommand extends AbstractCommand {
         );
     }
 
-    static deleteScenarioAnalysis(id) {
+    public static deleteScenarioAnalysis(id: string) {
         return new ScenarioAnalysisCommand(
             'deleteScenarioAnalysis', {id},
             JSON_SCHEMA_URL + '/commands/deleteScenarioAnalysis'
         );
     }
 
-    static updateScenarioAnalysis(scenarioanalysisId, name, description, isPublic) {
+    public static updateScenarioAnalysis(scenarioanalysisId: string, name: string, description: string,
+                                         isPublic: boolean) {
         return new ScenarioAnalysisCommand(
-            'updateScenarioAnalysis', {
+            'updateToolInstanceMetadata', {
                 id: scenarioanalysisId,
-                name: name,
-                description: description,
+                name,
+                description,
                 public: isPublic
             },
-            JSON_SCHEMA_URL + '/commands/updateScenarioAnalysis'
+            JSON_SCHEMA_URL + '/commands/updateToolInstanceMetadata'
         );
     }
 }

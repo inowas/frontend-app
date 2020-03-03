@@ -25,7 +25,7 @@ type IProps = IStateProps & RouteComponentProps<{
     type?: string;
 }>;
 
-enum EResultType {
+export enum EResultType {
     DRAWDOWN = 'drawdown',
     HEAD = 'head'
 }
