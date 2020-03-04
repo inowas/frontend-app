@@ -59,7 +59,7 @@ const budgetResults = (props: IProps) => {
                             }
                             return {
                                 name: arr[0],
-                                value: arr[1],
+                                value: typeof arr[1] === 'string' ? parseFloat(arr[1]) : arr[1],
                                 active: wasActive,
                                 position: key
                             };
