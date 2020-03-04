@@ -4,6 +4,8 @@ import {RouteComponentProps, withRouter} from 'react-router-dom';
 import {Grid, Menu, Segment} from 'semantic-ui-react';
 import FlopyPackages from '../../../../../core/model/flopy/packages/FlopyPackages';
 import {
+    FlopyModflowMf,
+    FlopyModflowMfbas,
     FlopyModflowMfchd,
     FlopyModflowMfdis,
     FlopyModflowMfdrn,
@@ -11,6 +13,7 @@ import {
     FlopyModflowMffhb,
     FlopyModflowMfghb,
     FlopyModflowMfhob,
+    FlopyModflowMfoc,
     FlopyModflowMfrch,
     FlopyModflowMfriv,
     FlopyModflowMfwel
@@ -190,21 +193,26 @@ const flow = (props: IProps) => {
 
         const readOnly = props.model.readOnly;
         const {type} = props.match.params;
+        const soilmodel = props.soilmodel;
 
         if (type && !['flow', 'solver'].includes(type) && !iMf.getPackage(type)) {
             return <div>Package not found!</div>;
+        }
+
+        if (!soilmodel) {
+            return <div>Soilmodel not found!</div>;
         }
 
         switch (type) {
             case 'bas':
                 return (
                     <BasPackageProperties
-                        mfPackage={iMf.getPackage(type)}
-                        mfPackages={iMf}
+                        mfPackage={iMf.getPackage(type) as FlopyModflowMfbas}
                         onChange={handleChangePackage}
                         onClickEdit={handleClickEdit}
                         readonly={readOnly}
-                        soilmodel={props.soilmodel}
+                        gridSize={props.model.gridSize}
+                        soilmodel={soilmodel}
                     />
                 );
             case 'chd':
@@ -281,7 +289,7 @@ const flow = (props: IProps) => {
             case 'mf':
                 return (
                     <MfPackageProperties
-                        mfPackage={iMf.getPackage(type)}
+                        mfPackage={iMf.getPackage(type) as FlopyModflowMf}
                         mfPackages={iMf}
                         onChange={handleChangePackage}
                         readonly={readOnly}
@@ -290,7 +298,7 @@ const flow = (props: IProps) => {
             case 'oc':
                 return (
                     <OcPackageProperties
-                        mfPackage={iMf.getPackage(type)}
+                        mfPackage={iMf.getPackage(type) as FlopyModflowMfoc}
                         mfPackages={iMf}
                         onChange={handleChangePackage}
                         readonly={readOnly}
@@ -335,7 +343,7 @@ const flow = (props: IProps) => {
             default:
                 return (
                     <MfPackageProperties
-                        mfPackage={iMf.getPackage('mf')}
+                        mfPackage={iMf.getPackage('mf') as FlopyModflowMf}
                         mfPackages={iMf}
                         onChange={handleChangePackage}
                         readonly={readOnly}

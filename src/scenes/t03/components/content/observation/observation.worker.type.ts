@@ -7,14 +7,10 @@ export interface IObservationWorkerInput {
 
 export interface IObservationWorkerResult {
     type: string;
-    data: IObservationResultData;
+    data: IStatistics | null;
 }
 
 export interface IObservationInputData {
     data: IHobData;
     exclude: string[];
-}
-
-export interface IObservationResultData {
-    data: IStatistics | null;
 }

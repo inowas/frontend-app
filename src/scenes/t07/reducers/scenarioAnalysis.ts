@@ -1,11 +1,15 @@
+import {IScenarioAnalysis} from '../../../core/model/scenarioAnalysis/ScenarioAnalysis';
 import {LOGOUT, UNAUTHORIZED} from '../../user/actions/actions';
 
 export const CLEAR = 'T07_CLEAR';
 export const UPDATE_SCENARIOANALYSIS = 'T07_UPDATE_SCENARIOANALYSIS';
 
-const initialState = null;
+const initialState: () => any = () => null;
 
-const scenarioAnalysis = (state = initialState, action) => {
+const scenarioAnalysis = (
+    state = initialState(),
+    action: {type: string, payload: IScenarioAnalysis}
+) => {
     switch (action.type) {
         case CLEAR:
             return null;
@@ -16,10 +20,9 @@ const scenarioAnalysis = (state = initialState, action) => {
                 ...action.payload
             };
 
-
         case UNAUTHORIZED:
         case LOGOUT: {
-            return initialState;
+            return initialState();
         }
 
         default: {
