@@ -6,12 +6,12 @@ import {
     Checkbox,
     CheckboxProps,
     Form,
-    Grid,
-    InputOnChangeData, Label,
+    Grid, Header,
+    InputOnChangeData,
+    Label,
     List,
     Menu,
-    Modal,
-    Tab
+    Modal, Segment, Tab
 } from 'semantic-ui-react';
 import {Geometry} from '../../../../../../core/model/geometry';
 import {ModflowModel} from '../../../../../../core/model/modflow';
@@ -183,6 +183,14 @@ const zoneDetails = (props: IProps) => {
                                                 readOnly={readOnly}
                                             />
                                         </Form.Field>
+                                            <Segment className={'selectZones'}>
+                                                <Header as={'h5'}>Affected Layers:</Header>
+                                                {affectedLayers.map((l, key) =>
+                                                    <Label key={key}>
+                                                        {l.name}
+                                                    </Label>
+                                                )}
+                                            </Segment>
                                     </Grid.Column>
 
                                     <Grid.Column width={4}>
@@ -209,20 +217,6 @@ const zoneDetails = (props: IProps) => {
                                                     />
                                                 </List.Item>
                                             </List>
-                                        </Form.Field>
-                                    </Grid.Column>
-                                </Grid.Row>
-                                <Grid.Row>
-                                    <Grid.Column>
-                                        <Form.Field>
-                                            <label>Affected layers:</label>
-                                                {affectedLayers.map((l, key) =>
-                                                    <Label
-                                                        key={key}
-                                                    >
-                                                        {l.name}
-                                                    </Label>
-                                                )}
                                         </Form.Field>
                                     </Grid.Column>
                                 </Grid.Row>

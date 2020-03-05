@@ -1,5 +1,16 @@
 import React, {ChangeEvent, SyntheticEvent} from 'react';
-import {Button, Dropdown, DropdownProps, Form, Grid, Icon, InputOnChangeData, Label, Segment} from 'semantic-ui-react';
+import {
+    Button,
+    Dropdown,
+    DropdownProps,
+    Form,
+    Grid,
+    Header,
+    Icon,
+    InputOnChangeData,
+    Label,
+    Segment
+} from 'semantic-ui-react';
 import {Stressperiods} from '../../../../../core/model/modflow';
 import {BoundaryCollection} from '../../../../../core/model/modflow/boundaries';
 import {Substance} from '../../../../../core/model/modflow/transport';
@@ -182,6 +193,7 @@ class SubstanceDetails extends React.Component<IProps, IState> {
                             <Grid>
                                 <Grid.Row>
                                     <Grid.Column>
+                                        <Header as={'h5'}>Boundary Conditions:</Header>
                                         {boundaryConcentrations.map((bc, key) => this.renderBoundary(bc.id, key))}
                                     </Grid.Column>
                                 </Grid.Row>

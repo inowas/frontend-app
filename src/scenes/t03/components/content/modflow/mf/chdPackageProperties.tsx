@@ -1,5 +1,5 @@
 import React, {ChangeEvent, useState} from 'react';
-import {Form, Grid, Header, Input, Segment} from 'semantic-ui-react';
+import {Form, Grid, Header, Input, Label, Segment} from 'semantic-ui-react';
 import {FlopyModflowMfchd, FlopyModflowMfdis} from '../../../../../../core/model/flopy/packages/mf';
 import FlopyModflow from '../../../../../../core/model/flopy/packages/mf/FlopyModflow';
 import {IFlopyModflowMfchd} from '../../../../../../core/model/flopy/packages/mf/FlopyModflowMfchd';
@@ -68,7 +68,7 @@ const chdPackageProperties = (props: IProps) => {
                 <Grid.Row columns={2}>
                     {affectedCellsLayers.map((layer: any, idx) => (
                         <Grid.Column key={idx}>
-                            <Header as={'p'}>Layer {idx + 1}</Header>
+                            <Label>Layer {idx + 1}</Label>
                             <RasterDataImage
                                 data={layer}
                                 gridSize={GridSize.fromData(layer)}

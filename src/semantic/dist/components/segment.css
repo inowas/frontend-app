@@ -475,7 +475,7 @@
 ---------------*/
 
 .ui.disabled.segment {
-  opacity: 0.45;
+  opacity: 0.6;
   color: rgba(40, 40, 40, 0.3);
 }
 
@@ -923,6 +923,13 @@
 
 .ui.segments > .segment {
   border-top: 1px solid #EEEEEE;
+}
+.ui.segment.selectZones {
+  -webkit-box-shadow: 0 0 0 1px #eee;
+          box-shadow: 0 0 0 1px #eee;
+}
+.ui.segment.selectZones .ui.header {
+  font-weight: 700;
 }
 
 /*----------------------

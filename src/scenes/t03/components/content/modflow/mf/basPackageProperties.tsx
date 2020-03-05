@@ -65,6 +65,7 @@ const basPackageProperties = (props: IProps) => {
                             {value: 0, color: 'white', label: 'no modflow'},
                             {value: 1, color: 'blue', label: 'flow'},
                         ] as ILegendItemDiscrete[]}
+                        border={'1px dotted black'}
                     />
                 </Grid.Column>
             );

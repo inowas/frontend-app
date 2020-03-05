@@ -1007,7 +1007,7 @@ body .ui.inverted::-webkit-scrollbar-thumb:hover {
 .ui.disabled.button:hover,
 .ui.disabled.active.button {
   cursor: default;
-  opacity: 0.45 !important;
+  opacity: 0.6 !important;
   background-image: none !important;
   -webkit-box-shadow: none !important;
   box-shadow: none !important;
@@ -7185,7 +7185,7 @@ h5.ui.header .sub.header {
 *******************************/
 
 .ui.disabled.header {
-  opacity: 0.45;
+  opacity: 0.6;
 }
 
 /*******************************
@@ -7800,7 +7800,7 @@ i.emphasized.icon {
 }
 
 i.disabled.icon {
-  opacity: 0.45 !important;
+  opacity: 0.6 !important;
 }
 
 /*******************************
@@ -13915,7 +13915,7 @@ img.ui.image {
 .ui.disabled.images,
 .ui.disabled.image {
   cursor: default;
-  opacity: 0.45;
+  opacity: 0.6;
 }
 
 /*******************************
@@ -14261,7 +14261,7 @@ img.ui.bordered.image {
 
 .ui.disabled.input,
 .ui.input:not(.disabled) input[disabled] {
-  opacity: 0.45;
+  opacity: 0.6;
 }
 
 .ui.disabled.input > input,
@@ -18942,7 +18942,7 @@ ol.ui.horizontal.list li:before,
 ---------------*/
 
 .ui.disabled.segment {
-  opacity: 0.45;
+  opacity: 0.6;
   color: rgba(40, 40, 40, 0.3);
 }
 
@@ -19442,6 +19442,15 @@ ol.ui.horizontal.list li:before,
 
 .ui.segments > .segment {
   border-top: 1px solid #EEEEEE;
+}
+
+.ui.segment.selectZones {
+  -webkit-box-shadow: 0 0 0 1px #eee;
+  box-shadow: 0 0 0 1px #eee;
+}
+
+.ui.segment.selectZones .ui.header {
+  font-weight: 700;
 }
 
 /*----------------------
@@ -20921,12 +20930,12 @@ ol.ui.horizontal.list li:before,
 .ui.form .disabled.field,
 .ui.form .field :disabled {
   pointer-events: none;
-  opacity: 0.45;
+  opacity: 0.6;
 }
 
 .ui.form .field.disabled > label,
 .ui.form .fields.disabled > label {
-  opacity: 0.45;
+  opacity: 0.6;
 }
 
 .ui.form .field.disabled :disabled {
@@ -33060,7 +33069,7 @@ select.ui.dropdown {
 
 .ui.active.search.dropdown input.search:focus + .text .icon,
 .ui.active.search.dropdown input.search:focus + .text .flag {
-  opacity: 0.45;
+  opacity: 0.6;
 }
 
 .ui.active.search.dropdown input.search:focus + .text {
@@ -33461,7 +33470,7 @@ select.ui.dropdown {
 .ui.dropdown .menu > .disabled.item {
   cursor: default;
   pointer-events: none;
-  opacity: 0.45;
+  opacity: 0.6;
 }
 
 /*******************************
@@ -37039,7 +37048,7 @@ a.ui.nag {
 .ui.disabled.search {
   cursor: default;
   pointer-events: none;
-  opacity: 0.45;
+  opacity: 0.6;
 }
 
 /*******************************
