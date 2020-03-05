@@ -1,17 +1,24 @@
-import {LatLngBoundsExpression} from 'leaflet';
-import md5 from 'md5';
-import React, {useState} from 'react';
-import {GeoJSON, Map} from 'react-leaflet';
+import * as GeoJson from 'geojson';
+import {LatLngBoundsExpression, LatLngExpression} from 'leaflet';
+import {uniqueId} from 'lodash';
+import React, {useEffect, useRef, useState} from 'react';
+import {CircleMarker, Map, Polygon, Polyline} from 'react-leaflet';
 import {Button, Form, Grid, Modal} from 'semantic-ui-react';
+import {SemanticSIZES} from 'semantic-ui-react/dist/commonjs/generic';
 import {BoundingBox} from '../../../../../core/model/geometry';
+import {IGeometry} from '../../../../../core/model/geometry/Geometry.type';
 import {Geometry} from '../../../../../core/model/modflow';
 import {JSON_SCHEMA_URL} from '../../../../../services/api';
 import {getStyle} from '../../../../../services/geoTools/mapHelpers';
 import {BasicTileLayer} from '../../../../../services/geoTools/tileLayers';
 import {validate} from '../../../../../services/jsonSchemaValidator';
 
+type TGeometryString = 'linestring' | 'point' | 'polygon';
+
 interface IProps {
     onChange: (geometry: Geometry) => void;
+    geometry?: TGeometryString;
+    size?: SemanticSIZES;
 }
 
 const style = {
@@ -21,31 +28,79 @@ const style = {
     },
     textArea: {
         minHeight: 500
+
     }
+};
+const examples: { [index in TGeometryString]: string } = {
+    linestring: `{
+    "type": "LineString",
+    "coordinates": [
+        [32.50803990407131, 34.76602340671524],
+        [32.50778413028787, 34.76640018660390],
+        [32.50739565519518, 34.76665194213551]
+    ]
+}`,
+    point: `{
+    "type": "Point",
+    "coordinates": [
+        32.459729998186553,
+        34.731475001275314
+    ]
+}`,
+    polygon: `{
+    "type": "Polygon",
+    "coordinates": [
+        [
+            [
+                32.45585808775890,
+                34.73041834971243
+            ],
+            [
+                32.45630544090171,
+                34.72972783194123
+            ],
+            [
+                32.45701791200979,
+                34.72928746921800
+            ],
+            [
+                32.45585808775890,
+                34.73041834971243
+            ]
+        ]
+    ]
+}`
 };
 
 const uploadGeoJSONModal = (props: IProps) => {
     const [showModal, setShowModal] = useState<boolean>(false);
-    const [geometry, setGeometry] = useState<Geometry | undefined>(undefined);
+    const [geometry, setGeometry] = useState<IGeometry | undefined>(undefined);
     const [geoJson, setGeoJson] = useState<string>('');
     const [isValid, setIsValid] = useState<boolean>(false);
 
+    const mapRef = useRef<Map>(null);
+
+    useEffect(() => {
+        if (geometry && geometry.type === 'Point' && mapRef.current) {
+            mapRef.current.leafletElement.flyTo({
+                lat: geometry.coordinates[1],
+                lng: geometry.coordinates[0]
+            }, 6);
+        }
+    }, [geometry]);
+
     const handleChangeGeometry = () => {
-        if (geometry === undefined) {
+        if (geometry === undefined || !isValid) {
             return;
         }
 
-        if (!isValid) {
-            return;
-        }
-
-        props.onChange(geometry);
+        props.onChange(Geometry.fromObject(geometry));
         setShowModal(false);
     };
 
     const getBoundsLatLng = () => {
-        if (geometry) {
-            return BoundingBox.fromGeoJson(geometry.toGeoJSON()).getBoundsLatLng() as LatLngBoundsExpression;
+        if (geometry && geometry.type !== 'Point') {
+            return BoundingBox.fromGeoJson(geometry).getBoundsLatLng() as LatLngBoundsExpression;
         }
 
         return [[60, 10], [45, 30]] as LatLngBoundsExpression;
@@ -55,12 +110,12 @@ const uploadGeoJSONModal = (props: IProps) => {
         setGeoJson(value);
         try {
             const parsedJSON = JSON.parse(value);
-            validate(parsedJSON, `${JSON_SCHEMA_URL}/geojson/polygon.json`).then((r) => {
+            validate(parsedJSON, `${JSON_SCHEMA_URL}/geojson/${props.geometry || 'polygon'}.json`).then((r) => {
                 if (!r[0]) {
                     return setIsValid(false);
                 }
 
-                setGeometry(Geometry.fromObject(parsedJSON));
+                setGeometry(Geometry.fromObject(parsedJSON).toGeoJSON());
                 setIsValid(true);
                 return;
             });
@@ -81,23 +136,50 @@ const uploadGeoJSONModal = (props: IProps) => {
             return;
         }
 
-        return (
-            <GeoJSON
-                key={md5(JSON.stringify(geometry))}
-                data={geometry}
-                style={getStyle('area')}
-            />
-        );
+        switch (geometry.type.toLowerCase()) {
+            case 'point':
+                return (
+                    <CircleMarker
+                        key={uniqueId(Geometry.fromObject(geometry as GeoJson.Point).hash())}
+                        center={[
+                            geometry.coordinates[1],
+                            geometry.coordinates[0]
+                        ]}
+                        {...getStyle('well')}
+                    />
+                );
+            case 'linestring':
+                return (
+                    <Polyline
+                        key={uniqueId(Geometry.fromObject(geometry as GeoJson.LineString).hash())}
+                        positions={
+                            Geometry.fromObject(geometry as GeoJson.LineString).coordinatesLatLng as LatLngExpression[]
+                        }
+                    />
+                );
+            case 'polygon':
+                return (
+                    <Polygon
+                        key={uniqueId(Geometry.fromObject(geometry as GeoJson.Polygon).hash())}
+                        positions={
+                            Geometry.fromObject(geometry as GeoJson.Polygon).coordinatesLatLng as LatLngExpression[]
+                        }
+                    />
+                );
+            default:
+                return null;
+        }
     };
 
     if (!showModal) {
         return (
             <Button
+                fluid={!!props.size}
                 onClick={() => {
                     setShowModal(true);
                     setGeometry(undefined);
                 }}
-                size={'massive'}
+                size={props.size || 'massive'}
                 content={'Load geoJSON'}
             />
         );
@@ -114,7 +196,9 @@ const uploadGeoJSONModal = (props: IProps) => {
                                 <Form.TextArea
                                     onChange={handleChangeGeoJSON}
                                     onBlur={handleBlurGeoJSON}
-                                    placeholder="Paste your geoJson here"
+                                    placeholder={props.geometry ? `Paste GeoJson here:
+
+${examples[props.geometry]}` : 'Paste GeoJson here.'}
                                     value={geoJson}
                                     width={16}
                                     style={style.textArea}
@@ -125,6 +209,7 @@ const uploadGeoJSONModal = (props: IProps) => {
                             <Map
                                 style={style.map}
                                 bounds={getBoundsLatLng()}
+                                ref={mapRef}
                             >
                                 <BasicTileLayer/>
                                 {geometry && areaLayer()}

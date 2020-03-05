@@ -13,6 +13,7 @@ import {
 } from './charts';
 
 import {CALCULATE_STATISTICS_INPUT, CALCULATE_STATISTICS_RESULT} from './observation.worker';
+import {IObservationWorkerResult} from './observation.worker.type';
 
 export type IHobData = Array<{
     simulated: number;
@@ -113,17 +114,15 @@ const observationStatistics = () => {
     }, []);
 
     useEffect(() => {
-        if (hobData && Array.isArray(hobData)) {
-            if (w) {
-                setIsCalculating(true);
-                w.postMessage({
-                    type: CALCULATE_STATISTICS_INPUT,
-                    data: {
-                        data: hobData,
-                        exclude: excludedWells
-                    }
-                });
-            }
+        if (hobData && Array.isArray(hobData) && w) {
+            setIsCalculating(true);
+            w.postMessage({
+                type: CALCULATE_STATISTICS_INPUT,
+                data: {
+                    data: hobData,
+                    exclude: excludedWells
+                }
+            });
         }
     }, [hobData, excludedWells]);
 
@@ -148,7 +147,7 @@ const observationStatistics = () => {
     }, [statistics]);
 
     const handleMessage = (m: any) => {
-        const message: any = m.data;
+        const message: IObservationWorkerResult = m.data;
         if (message && message.type === CALCULATE_STATISTICS_RESULT) {
             setIsCalculating(false);
             setStatistics(message.data);
