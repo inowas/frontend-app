@@ -66,6 +66,7 @@ const zonesMap = (props: IProps) => {
             key={zone ? zone.id : undefined}
             zoomControl={false}
             dragging={!readOnly}
+            maxZoom={16}
             boxZoom={!readOnly}
             touchZoom={!readOnly}
             doubleClickZoom={!readOnly}
@@ -79,9 +80,11 @@ const zonesMap = (props: IProps) => {
                 data={boundingBox.geoJson}
                 style={getStyle('area')}
             />
+            {props.boundaries.length > 0 &&
             <LayersControl position="topright">
                 {renderBoundaryOverlays(props.boundaries)}
             </LayersControl>
+            }
             {bgZones.length > 0 ?
                 <FeatureGroup>
                     {bgZones.map((z) => {
