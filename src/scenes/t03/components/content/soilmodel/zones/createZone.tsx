@@ -55,7 +55,6 @@ const createZone = () => {
     const baseUrl = '/tools/T03';
 
     useEffect(() => {
-        console.log('SOILMODEL CHANGED');
         if (soilmodel && !visibleZones) {
             setVisibleZones(
                 soilmodel.zonesCollection.all.filter((z) => !z.isDefault).map((z) => {
@@ -119,7 +118,6 @@ const createZone = () => {
     };
 
     const handleChangeCheckbox = (e: React.FormEvent<HTMLInputElement>, cData: CheckboxProps) => {
-        console.log('HANDLE CHANGE')
         if (!visibleZones) {
             return null;
         }
