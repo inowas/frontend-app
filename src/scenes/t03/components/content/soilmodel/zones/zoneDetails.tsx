@@ -7,12 +7,11 @@ import {
     CheckboxProps,
     Divider,
     Form,
-    Grid, InputOnChangeData,
+    Grid, Header,
+    InputOnChangeData,
     Label,
-    Header,
     List,
-    Menu,
-    Modal, Segment, Tab
+    Modal, Segment
 } from 'semantic-ui-react';
 import {Geometry} from '../../../../../../core/model/geometry';
 import {ModflowModel} from '../../../../../../core/model/modflow';
