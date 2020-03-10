@@ -159,7 +159,7 @@ class BoundaryMap extends Component<IProps> {
                     data={geometry.toGeoJSON()}
                     style={getStyle('area')}
                 />
-                {this.renderOtherBoundaries(boundaries)}
+                {boundaries.length > 0 && this.renderOtherBoundaries(boundaries)}
                 {this.renderBoundaryGeometry(boundary)}
                 {this.renderObservationPoints(boundary)}
             </Map>

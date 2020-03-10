@@ -84,9 +84,11 @@ const createBoundaryMap = (props: IProps) => {
                 />
                 }
                 <BasicTileLayer/>
-                <LayersControl position="topright">
-                    {renderBoundaryOverlays(props.boundaries)}
-                </LayersControl>
+                {props.boundaries.length > 0 &&
+                    <LayersControl position="topright">
+                        {renderBoundaryOverlays(props.boundaries)}
+                    </LayersControl>
+                }
                 {editControl()}
                 <GeoJSON
                     key={props.area.hash()}

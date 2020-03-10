@@ -5,10 +5,11 @@ import {
     Button,
     Checkbox,
     CheckboxProps,
+    Divider,
     Form,
-    Grid, Header,
-    InputOnChangeData,
+    Grid, InputOnChangeData,
     Label,
+    Header,
     List,
     Menu,
     Modal, Segment, Tab
@@ -20,6 +21,7 @@ import {Zone, ZonesCollection} from '../../../../../../core/model/modflow/soilmo
 import LayersCollection from '../../../../../../core/model/modflow/soilmodel/LayersCollection';
 import {IZone} from '../../../../../../core/model/modflow/soilmodel/Zone.type';
 import {calculateActiveCells} from '../../../../../../services/geoTools';
+import {UploadGeoJSONModal} from '../../create';
 import {ZonesMap} from './index';
 
 interface IProps {
@@ -98,6 +100,20 @@ const zoneDetails = (props: IProps) => {
         }));
     };
 
+    const handleApplyJson = (cGeometry: Geometry) => {
+        const cZone: IZone = {
+            ...zone,
+            cells: calculateActiveCells(cGeometry, props.model.boundingBox, props.model.gridSize).toObject(),
+            geometry: cGeometry.toObject()
+        };
+
+        if (affectedLayers.length > 0) {
+            setEditedZone(cZone);
+            return setRelationWarning(true);
+        }
+        return props.onChange(Zone.fromObject(cZone));
+    };
+
     const handleCreatePath = (e: DrawEvents.Created) => {
         const layer = e.layer;
         if (layer) {
@@ -118,17 +134,7 @@ const zoneDetails = (props: IProps) => {
             const layer = layers.features[0];
             const geometry = Geometry.fromGeoJson(layer.geometry);
 
-            const cZone: IZone = {
-                ...zone,
-                cells: calculateActiveCells(geometry, props.model.boundingBox, props.model.gridSize).toObject(),
-                geometry: geometry.toObject()
-            };
-
-            if (affectedLayers.length > 0) {
-                setEditedZone(cZone);
-                return setRelationWarning(true);
-            }
-            return props.onChange(Zone.fromObject(cZone));
+            return handleApplyJson(geometry);
         }
     };
 
@@ -150,80 +156,74 @@ const zoneDetails = (props: IProps) => {
     return (
         <div>
             <Form>
-                <Tab
-                    menu={{secondary: true, pointing: true}}
-                    activeIndex={0}
-                    panes={[{
-                        menuItem: (<Menu.Item key={0}>Properties</Menu.Item>),
-                        render: () => <Tab.Pane>
-                            <Grid>
-                                <Grid.Row columns={2}>
-                                    <Grid.Column width={12}>
-                                        <Form.Input
-                                            name="name"
-                                            value={zone.name}
-                                            label={'Zone name'}
-                                            onBlur={handleChange}
-                                            onChange={handleLocalChange}
-                                            placeholder="name ="
-                                            readOnly={readOnly}
-                                            type="text"
-                                        />
-                                        <Form.Field>
-                                            <label>Geometry</label>
-                                            <ZonesMap
-                                                boundingBox={props.model.boundingBox}
-                                                boundaries={props.boundaries}
-                                                zone={Zone.fromObject(zone)}
-                                                zones={ZonesCollection.fromObject(
-                                                    visibleZones.filter((z) => z.isActive))
-                                                }
-                                                onCreatePath={handleCreatePath}
-                                                onEditPath={handleEditPath}
-                                                readOnly={readOnly}
+                <Grid>
+                    <Grid.Row columns={2}>
+                        <Grid.Column width={12}>
+                            <Form.Input
+                                name="name"
+                                value={zone.name}
+                                label={'Zone name'}
+                                onBlur={handleChange}
+                                onChange={handleLocalChange}
+                                placeholder="name ="
+                                readOnly={readOnly}
+                                type="text"
+                            />
+                            <Form.Field>
+                                <label>Geometry</label>
+                                <ZonesMap
+                                    boundingBox={props.model.boundingBox}
+                                    boundaries={props.boundaries}
+                                    zone={Zone.fromObject(zone)}
+                                    zones={ZonesCollection.fromObject(visibleZones.filter((z) => z.isActive))}
+                                    onCreatePath={handleCreatePath}
+                                    onEditPath={handleEditPath}
+                                    readOnly={readOnly}
+                                />
+                            </Form.Field>
+                            <Segment className={'selectZones'}>
+                                <Header as={'h5'}>Affected Layers:</Header>
+                                {affectedLayers.map((l, key) =>
+                                    <Label key={key}>
+                                        {l.name}
+                                    </Label>
+                                )}
+                            </Segment>
+                        </Grid.Column>
+                        <Grid.Column width={4}>
+                            <Form.Field>
+                                <label>Other Zones</label>
+                                <List>
+                                    {visibleZones.map((z) => (
+                                        <List.Item key={z.id}>
+                                            <Checkbox
+                                                checked={z.isActive}
+                                                label={z.name}
+                                                onChange={handleChangeCheckbox}
+                                                value={z.id}
                                             />
-                                        </Form.Field>
-                                            <Segment className={'selectZones'}>
-                                                <Header as={'h5'}>Affected Layers:</Header>
-                                                {affectedLayers.map((l, key) =>
-                                                    <Label key={key}>
-                                                        {l.name}
-                                                    </Label>
-                                                )}
-                                            </Segment>
-                                    </Grid.Column>
-
-                                    <Grid.Column width={4}>
-                                        <Form.Field>
-                                            <label>Other Zones</label>
-                                            <List>
-                                                {visibleZones.map((z) => (
-                                                    <List.Item key={z.id}>
-                                                        <Checkbox
-                                                            checked={z.isActive}
-                                                            label={z.name}
-                                                            onChange={handleChangeCheckbox}
-                                                            value={z.id}
-                                                        />
-                                                    </List.Item>
-                                                ))}
-                                                <List.Item className="ui divider"/>
-                                                <List.Item>
-                                                    <Checkbox
-                                                        checked={visibleZones.filter((z) => !z.isActive).length === 0}
-                                                        label="Show All"
-                                                        onChange={handleChangeCheckbox}
-                                                        name="_all"
-                                                    />
-                                                </List.Item>
-                                            </List>
-                                        </Form.Field>
-                                    </Grid.Column>
-                                </Grid.Row>
-                            </Grid>
-                        </Tab.Pane>
-                    }]}
-                />
+                                        </List.Item>
+                                    ))}
+                                    <List.Item className="ui divider"/>
+                                    <List.Item>
+                                        <Checkbox
+                                            checked={visibleZones.filter((z) => !z.isActive).length === 0}
+                                            label="Show All"
+                                            onChange={handleChangeCheckbox}
+                                            name="_all"
+                                        />
+                                    </List.Item>
+                                </List>
+                            </Form.Field>
+                            <Divider/>
+                            <UploadGeoJSONModal
+                                onChange={handleApplyJson}
+                                geometry={'polygon'}
+                                size={'medium'}
+                            />
+                        </Grid.Column>
+                    </Grid.Row>
+                </Grid>
             </Form>
             {relationWarning &&
             <Modal size="small" open={relationWarning}>
