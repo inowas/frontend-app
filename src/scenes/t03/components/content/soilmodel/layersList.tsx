@@ -32,52 +32,52 @@ const layersList = ({layers, onClick, onClone, onRemove, readOnly, selected}: IP
 
     return (
         <div>
-            <Menu fluid={true} vertical={true} tabular={true}>
-                {rLayers.map((layer: ISoilmodelLayer) => (
-                    <Menu.Item
-                        name={layer.name}
-                        key={layer.id}
-                        active={layer.id === selected}
-                        onClick={handleClick(layer.id)}
-                    >
-                        {!readOnly &&
-                        <Popup
-                            trigger={<Icon name="ellipsis horizontal"/>}
-                            content={
-                                <div>
-                                    <Button.Group size="small">
-                                        <Popup
-                                            trigger={
-                                                <Button
-                                                    icon={'clone'}
-                                                    onClick={handleClone(SoilmodelLayer.fromObject(layer))}
-                                                />
-                                            }
-                                            content="Clone"
-                                            position="top center"
-                                            size="mini"
-                                        />
-                                        {layer.number !== 0 && <Popup
-                                            trigger={
-                                                <Button
-                                                    icon={'trash'}
-                                                    onClick={handleRemove(layer.id)}
-                                                />
-                                            }
-                                            content="Delete"
-                                            position="top center"
-                                            size="mini"
-                                        />}
-                                    </Button.Group>
-                                </div>
-                            }
-                            on={'click'}
-                            position={'right center'}
-                        />
+            <Menu fluid={true} vertical={true} secondary={true}>
+            {rLayers.map((layer: ISoilmodelLayer) => (
+                <Menu.Item
+                    name={layer.name}
+                    key={layer.id}
+                    active={layer.id === selected}
+                    onClick={handleClick(layer.id)}
+                >
+                    {!readOnly &&
+                    <Popup
+                        trigger={<Icon name="ellipsis horizontal"/>}
+                        content={
+                            <div>
+                                <Button.Group size="small">
+                                    <Popup
+                                        trigger={
+                                            <Button
+                                                icon={'clone'}
+                                                onClick={handleClone(SoilmodelLayer.fromObject(layer))}
+                                            />
+                                        }
+                                        content="Clone"
+                                        position="top center"
+                                        size="mini"
+                                    />
+                                    {layer.number !== 0 && <Popup
+                                        trigger={
+                                            <Button
+                                                icon={'trash'}
+                                                onClick={handleRemove(layer.id)}
+                                            />
+                                        }
+                                        content="Delete"
+                                        position="top center"
+                                        size="mini"
+                                    />}
+                                </Button.Group>
+                            </div>
                         }
-                        {layer.number}: {layer.name}
-                    </Menu.Item>
-                ))}
+                        on={'click'}
+                        position={'right center'}
+                    />
+                    }
+                    {layer.number}: {layer.name}
+                </Menu.Item>
+            ))}
             </Menu>
         </div>
     );

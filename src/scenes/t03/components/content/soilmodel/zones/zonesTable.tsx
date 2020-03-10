@@ -224,15 +224,15 @@ const zonesTable = (props: IProps) => {
     return (
         <React.Fragment>
             {props.zones.all.length > 1 &&
-            <Segment style={{boxShadow: '0 0 1px 0 rgba(0,0,0,.1)'}}>
-                <Header as={'h5'} style={{fontWeight: '500'}}>Select Zones</Header>
+            <Segment className={'selectZones'}>
+                <Header as={'h5'}>Select Zones</Header>
                 {props.zones.all.map((zone, key) => {
                     const relation = props.relations.findFirstBy('zoneId', zone.id);
 
                     if (!relation || (relation.priority !== 0)) {
                         return (
                             <Label
-                                as="a"
+                                as={'a'}
                                 color={relation ? 'blue' : undefined}
                                 value={zone.id}
                                 onClick={!props.readOnly ? handleToggleZone : undefined}

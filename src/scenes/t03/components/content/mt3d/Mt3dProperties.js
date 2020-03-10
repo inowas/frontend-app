@@ -24,7 +24,7 @@ import FlopyPackages from '../../../../../core/model/flopy/packages/FlopyPackage
 import FlopyMt3dPackage from '../../../../../core/model/flopy/packages/mt/FlopyMt3dPackage';
 
 const sideBar = [
-    {id: undefined, name: 'Overview (MT-Package)'},
+    {id: undefined, name: 'Overview Transport'},
     {id: 'btn', name: 'Basic package'},
     {id: 'adv', name: 'Advection package'},
     {id: 'dsp', name: 'Dispersion package'},

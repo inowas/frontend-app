@@ -36,3 +36,12 @@
 svg:not(:root) {
     overflow: visible;
 }
+
+/*-------------------
+      Labels
+--------------------*/
+
+.ui.form .field>label.headerLabel {
+    color: rgba(0,0,0,.95);
+    font-size: 1em;
+}

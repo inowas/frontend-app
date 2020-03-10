@@ -35,7 +35,7 @@ const zonesList = ({layers, zones, onClick, onClone, onRemove, readOnly, selecte
 
     return (
         <div>
-            <Menu fluid={true} vertical={true} tabular={true}>
+            <Menu fluid={true} vertical={true} secondary={true}>
                 {zones.all.map((zone: IZone) => (
                     <Menu.Item
                         name={zone.name}

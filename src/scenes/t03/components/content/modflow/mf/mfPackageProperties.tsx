@@ -1,5 +1,5 @@
 import React, {SyntheticEvent} from 'react';
-import {DropdownProps, Form, Select} from 'semantic-ui-react';
+import {DropdownProps, Form, Header, Select} from 'semantic-ui-react';
 import {FlopyModflowMf} from '../../../../../../core/model/flopy/packages/mf';
 import FlopyModflow from '../../../../../../core/model/flopy/packages/mf/FlopyModflow';
 import renderInfoPopup from '../../../../../shared/complexTools/InfoPopup';
@@ -32,6 +32,7 @@ const mfPackageProperties = (props: IProps) => {
 
     return (
         <Form>
+            <Header as={'h3'} dividing={true}>Flow Engine</Header>
             <Form.Group>
                 <Form.Field>
                     <label>Executable name</label>
