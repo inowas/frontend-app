@@ -2,10 +2,11 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import AbstractPackageProperties from './AbstractPackageProperties';
 import {FlopyMt3dMtssm} from '../../../../../../core/model/flopy/packages/mt';
-import {Form, Grid, Header, Input} from 'semantic-ui-react';
+import {Form, Grid, Header, Input, Label} from 'semantic-ui-react';
+import InfoPopup from '../../../../../shared/InfoPopup';
 import {RasterDataImage} from '../../../../../shared/rasterData';
 import {GridSize} from '../../../../../../core/model/modflow';
-import {documentation} from '../../../../defaults/flow';
+import {documentation} from '../../../../defaults/transport';
 import FlopyModflow from '../../../../../../core/model/flopy/packages/mf/FlopyModflow';
 
 class SsmPackageProperties extends AbstractPackageProperties {
@@ -35,12 +36,12 @@ class SsmPackageProperties extends AbstractPackageProperties {
 
         return (
             <Form>
+                <Header as={'h3'} dividing={true}>SSM: Source and Sink Mixing Package</Header>
                 <Grid divided={'vertically'}>
-                    <Header as={'h2'}>Source/Sink Package</Header>
                     <Grid.Row columns={2}>
                         {affectedCellsLayers.map((layer, idx) => (
                             <Grid.Column key={idx}>
-                                <Header as={'p'}>Layer {idx + 1}</Header>
+                                <Label>Layer {idx + 1}</Label>
                                 <RasterDataImage
                                     data={layer}
                                     gridSize={GridSize.fromData(layer)}
@@ -57,30 +58,33 @@ class SsmPackageProperties extends AbstractPackageProperties {
 
                 <Form.Group widths='equal'>
                     <Form.Field>
-                        <label>Filename extension (extension)</label>
+                        <label>Filename extension (EXTENSION)</label>
                         <Input
                             readOnly
                             name='extension'
                             value={mtPackage.extension}
-                            icon={this.renderInfoPopup(documentation.extension, 'extension')}
+                            icon={<InfoPopup
+                                description={documentation.ssm.extension}
+                                title={'EXTENSION'}
+                            />}
                         />
                     </Form.Field>
                     <Form.Field>
-                        <label>File unit number (unitnumber)</label>
+                        <label>File unit number (UNITNUMBER)</label>
                         <Input
                             readOnly
                             name='unitnumber'
                             value={mtPackage.unitnumber || ''}
-                            icon={this.renderInfoPopup(documentation.unitnumber, 'unitnumber')}
+                            icon={this.renderInfoPopup(documentation.ssm.unitnumber, 'UNITNUMBER')}
                         />
                     </Form.Field>
                     <Form.Field>
-                        <label>Filenames (filenames)</label>
+                        <label>Filenames (FILENAMES)</label>
                         <Input
                             readOnly
                             name='filenames'
                             value={mtPackage.filenames || ''}
-                            icon={this.renderInfoPopup(documentation.filenames, 'filenames')}
+                            icon={this.renderInfoPopup(documentation.ssm.filenames, 'FILENAMES')}
                         />
                     </Form.Field>
                 </Form.Group>

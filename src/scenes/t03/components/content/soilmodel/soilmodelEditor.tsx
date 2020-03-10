@@ -5,12 +5,13 @@ import {useHistory, useLocation, useParams} from 'react-router-dom';
 import {
     Button,
     Dimmer,
+    Divider,
     Dropdown,
     DropdownProps,
     Grid,
     Header,
-    Menu,
-    MenuItemProps, Message,
+    Menu, MenuItemProps,
+    Message,
     Progress,
     Segment
 } from 'semantic-ui-react';
@@ -461,7 +462,7 @@ const soilmodelEditor = () => {
                 </Grid.Row>
                 <Grid.Row>
                     <Grid.Column width={4}>
-                        <Menu secondary={true} fluid={true} widths={2}>
+                        <Menu tabular={true} fluid={true} widths={2}>
                             <Menu.Item
                                 name="Layers"
                                 value={nav.LAYERS}
@@ -476,29 +477,29 @@ const soilmodelEditor = () => {
                             />
                         </Menu>
                         {type === nav.LAYERS &&
+                        <div>
                             <Dropdown
                                 placeholder="Select parameter set"
                                 fluid={true}
                                 selection={true}
                                 onChange={handleChangeParameterSet}
                                 options={[
-                                    {key: 'soilmodel', text: 'Soil', value: 'soilmodel'},
-                                    {key: 'bas', text: 'Basic', value: 'bas'},
+                                    {key: 'soilmodel', text: 'Layer Parameters', value: 'soilmodel'},
+                                    {key: 'bas', text: 'Basic Layer Properties', value: 'bas'},
                                     // {key: 'modpath', text: 'Modpath', value: 'modpath'}
                                 ]}
                                 value={activeParamType}
                             />
-                        }
-                        <br/>
-                        {type === nav.LAYERS &&
-                        <LayersList
-                            onClick={handleClickItem}
-                            onClone={handleCloneItem}
-                            onRemove={handleRemoveItem}
-                            layers={soilmodel.layersCollection}
-                            readOnly={readOnly}
-                            selected={pid}
-                        />
+                            <Divider hidden={true} />
+                            <LayersList
+                                onClick={handleClickItem}
+                                onClone={handleCloneItem}
+                                onRemove={handleRemoveItem}
+                                layers={soilmodel.layersCollection}
+                                readOnly={readOnly}
+                                selected={pid}
+                            />
+                        </div>
                         }
                         {type === nav.ZONES &&
                         <ZonesList

@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types';
 import React from 'react';
-import {Form, Input, Select} from 'semantic-ui-react';
+import {Form, Header, Input, Select} from 'semantic-ui-react';
 
 import AbstractPackageProperties from './AbstractPackageProperties';
 import {FlopyMt3dMt} from '../../../../../../core/model/flopy/packages/mt';
@@ -27,6 +27,7 @@ class MtPackageProperties extends AbstractPackageProperties {
 
         return (
             <Form>
+                <Header as={'h3'} dividing={true}>Transport Engine</Header>
                 <Form.Group>
                     <Form.Field>
                         <label>Executable name</label>

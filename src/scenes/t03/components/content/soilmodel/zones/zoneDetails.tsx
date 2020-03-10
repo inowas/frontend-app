@@ -7,10 +7,13 @@ import {
     CheckboxProps,
     Divider,
     Form,
-    Grid, InputOnChangeData,
+    Grid,
+    Header,
+    InputOnChangeData,
     Label,
     List,
-    Modal
+    Modal,
+    Segment
 } from 'semantic-ui-react';
 import {Geometry} from '../../../../../../core/model/geometry';
 import {ModflowModel} from '../../../../../../core/model/modflow';
@@ -150,6 +153,7 @@ const zoneDetails = (props: IProps) => {
     };
 
     const readOnly = props.model.readOnly;
+
     return (
         <div>
             <Form>
@@ -178,6 +182,14 @@ const zoneDetails = (props: IProps) => {
                                     readOnly={readOnly}
                                 />
                             </Form.Field>
+                            <Segment className={'selectZones'}>
+                                <Header as={'h5'}>Affected Layers:</Header>
+                                {affectedLayers.map((l, key) =>
+                                    <Label key={key}>
+                                        {l.name}
+                                    </Label>
+                                )}
+                            </Segment>
                         </Grid.Column>
                         <Grid.Column width={4}>
                             <Form.Field>
@@ -210,14 +222,6 @@ const zoneDetails = (props: IProps) => {
                                 geometry={'polygon'}
                                 size={'medium'}
                             />
-                        </Grid.Column>
-                    </Grid.Row>
-                    <Grid.Row>
-                        <Grid.Column>
-                            <Form.Field>
-                                <label>Affected layers:</label>
-                                {affectedLayers.map((l, key) => <Label key={key}>{l.name}</Label>)}
-                            </Form.Field>
                         </Grid.Column>
                     </Grid.Row>
                 </Grid>
