@@ -10418,10 +10418,10 @@ react-is@^16.7.0, react-is@^16.8.1:
   version "16.8.6"
   resolved "https://registry.yarnpkg.com/react-is/-/react-is-16.8.6.tgz#5bbc1e2d29141c9fbdfed456343fe2bc430a6a16"
 
-react-leaflet-control@2.1.2:
-  version "2.1.2"
-  resolved "https://registry.yarnpkg.com/react-leaflet-control/-/react-leaflet-control-2.1.2.tgz#c716c5c1797375e4fd941c9e2e0c148bc34edbb0"
-  integrity sha512-xdheoLuLEeDGZ6/FKsnKjMYxC9BlyxsK5L5S27Dd6Z+FYP4jIa1Ekhu7UDgTV7GGSw+Yjjf8uofoheylxggB6w==
+react-leaflet-control@2.1.0:
+  version "2.1.0"
+  resolved "https://registry.yarnpkg.com/react-leaflet-control/-/react-leaflet-control-2.1.0.tgz#ec79adb6f5cf4d2825495821d63a42dfb3baeceb"
+  integrity sha512-EeZAOcSCkElubpX3EEDGJ4IWLIBoK1gXzox0cjDwQKGpR3AnYvwLWuKEt49g3UTRUAFApa/f53SaOxyxIfKZqA==
 
 react-leaflet-draw@0.19.0:
   version "0.19.0"

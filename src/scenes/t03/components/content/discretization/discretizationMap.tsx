@@ -143,6 +143,7 @@ const discretizationMap = (props: IProps) => {
             <Map
                 style={style.map}
                 bounds={getBoundsLatLng() as LatLngBoundsExpression}
+                maxZoom={16}
                 onclick={handleClickOnMap}
                 ref={mapRef}
             >

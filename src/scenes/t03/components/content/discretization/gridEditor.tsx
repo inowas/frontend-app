@@ -1,4 +1,4 @@
-import React, {ChangeEvent, useEffect, useState} from 'react';
+import React, {ChangeEvent, useEffect, useRef, useState} from 'react';
 import {Form, Grid} from 'semantic-ui-react';
 import {BoundingBox, Cells, Geometry, GridSize, ModflowModel} from '../../../../../core/model/modflow';
 import {BoundaryCollection} from '../../../../../core/model/modflow/boundaries';
@@ -17,12 +17,19 @@ interface IProps {
 }
 
 const gridEditor = (props: IProps) => {
-    const [intersection, setIntersection] = useState<number>(0);
+    const [intersection, setIntersection] = useState<number>(50);
     const [gridSizeLocal, setGridSizeLocal] = useState<GridSize | null>(null);
+
+    const intersectionRef = useRef<number>();
 
     useEffect(() => {
         setGridSizeLocal(props.model.gridSize);
+        intersectionRef.current = 50;
     }, []);
+
+    useEffect(() => {
+        intersectionRef.current = intersection;
+    }, [intersection]);
 
     useEffect(() => {
         if (gridSizeLocal && (gridSizeLocal.nX !== gridSize.nX || gridSizeLocal.nY !== gridSize.nY)) {
@@ -32,9 +39,9 @@ const gridEditor = (props: IProps) => {
 
     const readOnly = props.model.readOnly;
 
-    const calculate = (g: Geometry, bb: BoundingBox, gz: GridSize, ac = 0) => {
+    const calculate = (g: Geometry, bb: BoundingBox, gz: GridSize, i = 0) => {
         return new Promise((resolve: (cells: Cells) => void) => {
-            resolve(calculateActiveCells(g, bb, gz, ac / 100));
+            resolve(calculateActiveCells(g, bb, gz, i / 100));
         });
     };
 
@@ -43,7 +50,16 @@ const gridEditor = (props: IProps) => {
         return props.onSave(model);
     };
 
-    const handleChangeIntersection = (i: number) => setIntersection(i);
+    const handleChangeIntersection = (i: number) => {
+        setIntersection(i);
+        calculate(props.model.geometry, props.model.boundingBox, props.model.gridSize, i).then(
+            (c: Cells) => {
+                const model = props.model.getClone();
+                model.cells = Cells.fromObject(c.toObject());
+                return props.onChange(model);
+            }
+        );
+    };
 
     const handleGridSizeChange = (e: ChangeEvent<HTMLInputElement>) => {
         const {type, target} = e;
@@ -90,7 +106,7 @@ const gridEditor = (props: IProps) => {
 
     const handleChangeGeometry = (g: Geometry) => {
         const bb = BoundingBox.fromGeoJson(g);
-        calculate(g, bb, props.model.gridSize, intersection).then((c: Cells) => {
+        calculate(g, bb, props.model.gridSize, intersectionRef.current || 0).then((c: Cells) => {
             const model = props.model.getClone();
             model.cells = Cells.fromObject(c.toObject());
             model.geometry = Geometry.fromObject(g.toObject());
