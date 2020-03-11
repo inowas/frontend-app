@@ -9,6 +9,7 @@ import {IGeometry} from '../../../../../core/model/geometry/Geometry.type';
 import BoundaryCollection from '../../../../../core/model/modflow/boundaries/BoundaryCollection';
 import ActiveCellsLayer from '../../../../../services/geoTools/activeCellsLayer';
 import {BasicTileLayer} from '../../../../../services/geoTools/tileLayers';
+import IntersectionControl from '../../../../shared/leaflet/IntersectionControl';
 import {renderBoundaryOverlays} from '../../../../shared/rasterData/helpers';
 import {getStyle} from '../../maps';
 
@@ -18,9 +19,11 @@ interface IProps {
     cells: Cells | null;
     geometry: Geometry | null;
     gridSize: GridSize;
+    intersection?: number;
     readOnly: boolean;
     onChangeCells: (cells: Cells) => void;
     onChangeGeometry?: (geometry: Geometry) => void;
+    onChangeIntersection?: (intersection: number) => void;
 }
 
 const style = {
@@ -61,17 +64,8 @@ const discretizationMap = (props: IProps) => {
         readOnlyRef.current = props.readOnly;
     }, [props.readOnly]);
 
-    useEffect(() => {
-        isDrawingRef.current = isDrawing;
-        if (refDrawControl.current && isDrawing) {
-            // @ts-ignore
-            const drawControl = refDrawControl.current.leafletElement;
-            drawControl._toolbars.draw._modes.rectangle.handler.enable();
-        }
-    }, [isDrawing]);
-
     const onCreated = (e: DrawEvents.Created) => {
-        if (e.layerType === 'rectangle') {
+        if (e.layerType === 'rectangle' || e.layerType === 'polyline') {
             if (!cellsRef.current) {
                 return;
             }
@@ -81,7 +75,7 @@ const discretizationMap = (props: IProps) => {
             }
 
             const c: Cells = cellsRef.current;
-            c.toggleByRectangle(Geometry.fromGeoJson(e.layer.toGeoJSON()), props.boundingBox, props.gridSize);
+            c.toggleByGeometry(Geometry.fromGeoJson(e.layer.toGeoJSON()), props.boundingBox, props.gridSize);
             cellsRef.current = c;
             return props.onChangeCells(c);
         }
@@ -125,6 +119,11 @@ const discretizationMap = (props: IProps) => {
         const x = latlng.lng;
         const y = latlng.lat;
 
+        if (x < props.boundingBox.xMin || x > props.boundingBox.xMax ||
+            y < props.boundingBox.yMin || y > props.boundingBox.yMax) {
+            return null;
+        }
+
         const c: Cells = cellsRef.current;
         c.toggle([x, y], props.boundingBox, props.gridSize);
         cellsRef.current = _.cloneDeep(c);
@@ -148,8 +147,12 @@ const discretizationMap = (props: IProps) => {
                 ref={mapRef}
             >
                 <BasicTileLayer/>
-
-                {/* EDIT CONTROL */}
+                {props.intersection !== undefined && props.onChangeIntersection !== undefined &&
+                <IntersectionControl
+                    intersection={props.intersection}
+                    onClick={props.onChangeIntersection}
+                />
+                }
                 {!props.readOnly && <FeatureGroup>
                     <EditControl
                         position="topright"
@@ -157,12 +160,12 @@ const discretizationMap = (props: IProps) => {
                             circle: false,
                             circlemarker: false,
                             marker: false,
-                            polyline: false,
-                            rectangle: isDrawing && geometry != null,
-                            polygon: geometry == null
+                            polyline: isDrawing && geometry !== null,
+                            rectangle: isDrawing && geometry !== null,
+                            polygon: geometry === null
                         }}
                         edit={{
-                            edit: geometry != null && !!props.onChangeGeometry,
+                            edit: geometry !== null && !!props.onChangeGeometry,
                             remove: false
                         }}
                         onCreated={onCreated}
@@ -184,9 +187,11 @@ const discretizationMap = (props: IProps) => {
                     data={props.boundingBox.geoJson}
                     style={getStyle('bounding_box')}
                 />}
+                {props.boundaries.length > 0 &&
                 <LayersControl position="topright">
                     {renderBoundaryOverlays(props.boundaries)}
                 </LayersControl>
+                }
                 {props.cells &&
                 <ActiveCellsLayer
                     boundingBox={props.boundingBox}

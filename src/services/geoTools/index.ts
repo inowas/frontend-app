@@ -1,4 +1,5 @@
-import {booleanContains, booleanCrosses, booleanOverlap, envelope, lineString} from '@turf/turf';
+import {area, booleanContains, booleanCrosses, booleanOverlap, envelope, intersect, lineString} from '@turf/turf';
+import {Polygon} from 'geojson';
 import {floor} from 'lodash';
 import {ICell} from '../../core/model/geometry/Cells.type';
 import {BoundingBox, Cells, Geometry, GridSize} from '../../core/model/modflow';
@@ -53,7 +54,12 @@ export const calculateCells = (geometry: Geometry, boundingBox: BoundingBox, gri
     });
 };
 
-export const calculateActiveCells = (geometry: Geometry, boundingBox: BoundingBox, gridSize: GridSize) => {
+export const calculateActiveCells = (
+    geometry: Geometry,
+    boundingBox: BoundingBox,
+    gridSize: GridSize,
+    accuracy = 0
+) => {
     const activeCells = new Cells([]);
 
     if (geometry.fromType('point')) {
@@ -72,9 +78,17 @@ export const calculateActiveCells = (geometry: Geometry, boundingBox: BoundingBo
 
     if (geometry.fromType('polygon')) {
         const gridCells = getGridCells(boundingBox, gridSize);
+        const cellArea = area(gridCells[0].geometry);
         gridCells.forEach((cell) => {
             if (booleanContains(geometry, cell.geometry) || booleanOverlap(geometry, cell.geometry)) {
-                activeCells.addCell([cell.x, cell.y]);
+                if (accuracy > 0 && geometry.type === 'Polygon') {
+                    const coveredArea = intersect(geometry.toGeoJSON() as Polygon, cell.geometry);
+                    if (coveredArea && area(coveredArea) / cellArea > accuracy) {
+                        activeCells.addCell([cell.x, cell.y]);
+                    }
+                } else {
+                    activeCells.addCell([cell.x, cell.y]);
+                }
             }
         });
     }

@@ -17,7 +17,7 @@ interface IProps {
 }
 
 const gridEditor = (props: IProps) => {
-
+    const [intersection, setIntersection] = useState<number>(0);
     const [gridSizeLocal, setGridSizeLocal] = useState<GridSize | null>(null);
 
     useEffect(() => {
@@ -32,9 +32,9 @@ const gridEditor = (props: IProps) => {
 
     const readOnly = props.model.readOnly;
 
-    const calculate = (g: Geometry, bb: BoundingBox, gz: GridSize) => {
+    const calculate = (g: Geometry, bb: BoundingBox, gz: GridSize, ac = 0) => {
         return new Promise((resolve: (cells: Cells) => void) => {
-            resolve(calculateActiveCells(g, bb, gz));
+            resolve(calculateActiveCells(g, bb, gz, ac / 100));
         });
     };
 
@@ -42,6 +42,8 @@ const gridEditor = (props: IProps) => {
         const model = props.model.getClone();
         return props.onSave(model);
     };
+
+    const handleChangeIntersection = (i: number) => setIntersection(i);
 
     const handleGridSizeChange = (e: ChangeEvent<HTMLInputElement>) => {
         const {type, target} = e;
@@ -88,8 +90,7 @@ const gridEditor = (props: IProps) => {
 
     const handleChangeGeometry = (g: Geometry) => {
         const bb = BoundingBox.fromGeoJson(g);
-
-        calculate(g, bb, props.model.gridSize).then((c: Cells) => {
+        calculate(g, bb, props.model.gridSize, intersection).then((c: Cells) => {
             const model = props.model.getClone();
             model.cells = Cells.fromObject(c.toObject());
             model.geometry = Geometry.fromObject(g.toObject());
@@ -174,8 +175,10 @@ const gridEditor = (props: IProps) => {
                         boundaries={props.boundaries}
                         geometry={geometry}
                         gridSize={gridSize}
+                        intersection={intersection}
                         onChangeGeometry={handleChangeGeometry}
                         onChangeCells={handleChangeCells}
+                        onChangeIntersection={handleChangeIntersection}
                         readOnly={readOnly || props.boundaries.length > 0}
                     />
                 </Grid.Column>

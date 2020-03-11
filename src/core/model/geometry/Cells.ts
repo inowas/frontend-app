@@ -212,7 +212,7 @@ export default class Cells {
         return this;
     };
 
-    public toggleByRectangle = (geometry: Geometry, boundingBox: BoundingBox, gridSize: GridSize) => {
+    public toggleByGeometry = (geometry: Geometry, boundingBox: BoundingBox, gridSize: GridSize) => {
         const affectedCells = Cells.fromGeometry(geometry, boundingBox, gridSize).toObject();
 
         affectedCells.forEach((ac) => {
