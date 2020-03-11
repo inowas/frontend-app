@@ -1,7 +1,8 @@
 import React from 'react';
+// @ts-ignore
 import Control from 'react-leaflet-control';
 import {pure} from 'recompose';
-import {Button} from 'semantic-ui-react';
+import {Button, Popup} from 'semantic-ui-react';
 
 const styles = {
     leafletButton: {
@@ -30,36 +31,43 @@ const intersectionControl = (props: IProps) => {
 
     return (
         <Control position="topright">
-            <Button.Group
-                style={styles.leafletButtonGroup}
-            >
-                <Button
-                    onClick={handleClick(0)}
-                    primary={props.intersection === 0}
-                    style={styles.leafletButton}
-                >
-                    0
-                </Button>
-                <Button
-                    style={{
-                        ...styles.leafletButton,
-                        borderLeft: '2px solid rgba(0,0,0,0.2)',
-                        borderRight: '2px solid rgba(0,0,0,0.2)',
-                        width: '36px'
-                    }}
-                    onClick={handleClick(50)}
-                    primary={props.intersection === 50}
-                >
-                    50
-                </Button>
-                <Button
-                    style={styles.leafletButton}
-                    onClick={handleClick(99)}
-                    primary={props.intersection === 99}
-                >
-                    100
-                </Button>
-            </Button.Group>
+            <Popup
+                content="Percentage of cell covered by model area to become active"
+                position="left center"
+                trigger={
+                    <Button.Group
+                        style={styles.leafletButtonGroup}
+                    >
+
+                        <Button
+                            onClick={handleClick(0)}
+                            primary={props.intersection === 0}
+                            style={styles.leafletButton}
+                        >
+                            0
+                        </Button>
+                        <Button
+                            style={{
+                                ...styles.leafletButton,
+                                borderLeft: '1px solid rgba(0,0,0,0.2)',
+                                borderRight: '2px solid rgba(0,0,0,0.2)',
+                                width: '36px'
+                            }}
+                            onClick={handleClick(50)}
+                            primary={props.intersection === 50}
+                        >
+                            50
+                        </Button>
+                        <Button
+                            style={styles.leafletButton}
+                            onClick={handleClick(90)}
+                            primary={props.intersection === 90}
+                        >
+                            90
+                        </Button>
+                    </Button.Group>
+                }
+            />
         </Control>
     );
 };
