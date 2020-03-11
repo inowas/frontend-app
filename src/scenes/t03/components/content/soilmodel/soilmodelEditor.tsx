@@ -490,7 +490,7 @@ const soilmodelEditor = () => {
                                 ]}
                                 value={activeParamType}
                             />
-                            <Divider hidden={true} />
+                            <Divider hidden={true}/>
                             <LayersList
                                 onClick={handleClickItem}
                                 onClone={handleCloneItem}

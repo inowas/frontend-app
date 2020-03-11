@@ -224,7 +224,16 @@ const zoneDetails = (props: IProps) => {
                             />
                         </Grid.Column>
                     </Grid.Row>
+                    <Grid.Row>
+                        <Grid.Column>
+                            <Form.Field>
+                                <label>Affected layers:</label>
+                                {affectedLayers.map((l, key) => <Label key={key}>{l.name}</Label>)}
+                            </Form.Field>
+                        </Grid.Column>
+                    </Grid.Row>
                 </Grid>
+>>>>>>>>> Temporary merge branch 2
             </Form>
             {relationWarning &&
             <Modal size="small" open={relationWarning}>
