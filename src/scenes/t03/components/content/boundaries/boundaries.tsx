@@ -5,8 +5,8 @@ import {Grid, Segment} from 'semantic-ui-react';
 import {ModflowModel, Soilmodel} from '../../../../../core/model/modflow';
 import {Boundary, BoundaryCollection, BoundaryFactory} from '../../../../../core/model/modflow/boundaries';
 import {BoundaryType, IBoundary} from '../../../../../core/model/modflow/boundaries/Boundary.type';
-import ContentToolBar from '../../../../../scenes/shared/ContentToolbar';
 import {fetchUrl, sendCommand} from '../../../../../services/api';
+import ContentToolBar from '../../../../shared/ContentToolbar';
 import {usePrevious} from '../../../../shared/simpleTools/helpers/customHooks';
 import {updateBoundaries, updateModel} from '../../../actions/actions';
 import ModflowModelCommand from '../../../commands/modflowModelCommand';
@@ -209,8 +209,8 @@ const boundaries = (props: Props) => {
                                         onSave={handleUpdate}
                                         isDirty={isDirty}
                                         isError={error}
-                                        saveButton={!readOnly}
-                                        importButton={props.readOnly ||
+                                        buttonSave={!readOnly}
+                                        buttonImport={props.readOnly ||
                                         <BoundaryImport
                                             model={props.model}
                                             soilmodel={props.soilmodel}

@@ -70,86 +70,99 @@ type IProps = IStateProps & IDispatchProps & RouteComponentProps<{
 }>;
 
 const t03 = (props: IProps) => {
-        const [navigation, setNavigation] = useState<Array<{
-            name: string;
-            path: string;
-            icon: ReactNode
-        }>>(navDocumentation);
+    const [isSaving, setIsSaving] = useState<string | null>(null);
+    const [navigation, setNavigation] = useState<Array<{
+        name: string;
+        path: string;
+        icon: ReactNode
+    }>>(navDocumentation);
 
-        useEffect(() => {
-            const {search} = props.location;
+    useEffect(() => {
+        const {search} = props.location;
 
-            if (search.startsWith('?sid=')) {
-                const cScenarioAnalysisId = search.split('=')[1];
+        if (search.startsWith('?sid=')) {
+            const cScenarioAnalysisId = search.split('=')[1];
 
-                const cNavigation = cloneDeep(navigation);
-                cNavigation.push({
-                    name: 'Return to ScenarioAnalysis',
-                    path: '/tools/T07/' + cScenarioAnalysisId,
-                    icon: <Icon name="file"/>
-                });
+            const cNavigation = cloneDeep(navigation);
+            cNavigation.push({
+                name: 'Return to ScenarioAnalysis',
+                path: '/tools/T07/' + cScenarioAnalysisId,
+                icon: <Icon name="file"/>
+            });
 
-                setNavigation(cNavigation);
-            }
-        }, []);
+            setNavigation(cNavigation);
+        }
+    }, []);
 
-        const handleChangeToolMetaData = () => {
-            return null;
-        };
+    useEffect(() => {
+        setTimeout(() => {
+            setIsSaving(null);
+        }, 2000);
+    }, [isSaving]);
 
-        const saveMetaData = (tool: IToolMetaData) => {
-            const {name, description} = tool;
-            const isPublic = tool.public;
+    const handleChangeToolMetaData = () => {
+        return null;
+    };
 
-            if (props.model) {
-                const cModel = props.model;
-                cModel.name = name;
-                cModel.description = description;
-                cModel.isPublic = isPublic;
+    const handleSaving = (tool: string) => {
+        setIsSaving(tool);
+    };
 
-                return sendCommand(
-                    ModflowModelCommand.updateModflowModelMetadata(cModel.id, name, description, isPublic),
-                    () => props.updateModel(cModel),
-                    // tslint:disable-next-line:no-console
-                    (e) => console.log(e)
-                );
-            }
-        };
+    const saveMetaData = (tool: IToolMetaData) => {
+        const {name, description} = tool;
+        const isPublic = tool.public;
 
-        return (
-            <AppContainer navbarItems={navigation}>
-                <DataFetcherWrapper>
-                    {props.model && <ToolMetaData
-                        isDirty={false}
-                        onChange={handleChangeToolMetaData}
-                        readOnly={false}
-                        tool={{
-                            tool: 'T03',
-                            name: props.model.name,
-                            description: props.model.description,
-                            public: props.model.isPublic
-                        }}
-                        defaultButton={false}
-                        saveButton={false}
-                        onSave={saveMetaData}
-                    />}
-                    <Grid padded={true}>
-                        <Grid.Row>
-                            <Grid.Column width={3}>
-                                <Navigation/>
-                                <CalculationProcess/>
-                                <OptimizationProgressBar/>
-                            </Grid.Column>
-                            <Grid.Column width={13}>
-                                <ContentWrapper readOnly={props.model ? props.model.readOnly : false}/>
-                            </Grid.Column>
-                        </Grid.Row>
-                    </Grid>
-                </DataFetcherWrapper>
-            </AppContainer>
-        );
-    }
-;
+        if (props.model) {
+            const cModel = props.model;
+            cModel.name = name;
+            cModel.description = description;
+            cModel.isPublic = isPublic;
+
+            return sendCommand(
+                ModflowModelCommand.updateModflowModelMetadata(cModel.id, name, description, isPublic),
+                () => props.updateModel(cModel),
+                // tslint:disable-next-line:no-console
+                (e) => console.log(e)
+            );
+        }
+    };
+
+    return (
+        <AppContainer navbarItems={navigation}>
+            <DataFetcherWrapper>
+                {props.model && <ToolMetaData
+                    isDirty={false}
+                    onChange={handleChangeToolMetaData}
+                    readOnly={false}
+                    tool={{
+                        tool: 'T03',
+                        name: props.model.name,
+                        description: props.model.description,
+                        public: props.model.isPublic
+                    }}
+                    defaultButton={false}
+                    saveButton={false}
+                    onSave={saveMetaData}
+                />}
+                <Grid padded={true}>
+                    <Grid.Row>
+                        <Grid.Column width={3}>
+                            <Navigation/>
+                            <CalculationProcess/>
+                            <OptimizationProgressBar/>
+                        </Grid.Column>
+                        <Grid.Column width={13}>
+                            <ContentWrapper
+                                onSave={handleSaving}
+                                readOnly={props.model ? props.model.readOnly : false}
+                            />
+                        </Grid.Column>
+                    </Grid.Row>
+                </Grid>
+            </DataFetcherWrapper>
+        </AppContainer>
+    );
+};
 
 const mapStateToProps = (state: any) => ({
     model: state.T03.model ? ModflowModel.fromObject(state.T03.model) : null,

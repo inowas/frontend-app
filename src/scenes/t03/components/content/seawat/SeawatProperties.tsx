@@ -188,7 +188,7 @@ class SeawatProperties extends React.Component<Props, ISeawatPropertiesState> {
                                 <ContentToolBar
                                     isDirty={isDirty}
                                     isError={isError}
-                                    save={true}
+                                    buttonSave={true}
                                     onSave={this.handleSave}
                                 />
                             </Grid.Column>

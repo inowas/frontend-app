@@ -173,9 +173,9 @@ class TransportUi extends React.Component<Props, IState> {
                                 <ContentToolBar
                                     isDirty={isDirty}
                                     isError={isError || noBoundaryError}
-                                    visible={!readOnly}
-                                    message={noBoundaryError ? {warning: true, content: 'No Boundary'} : null}
-                                    save={true}
+                                    isVisible={!readOnly}
+                                    message={noBoundaryError ? {warning: true, content: 'No Boundary'} : undefined}
+                                    buttonSave={true}
                                     onSave={this.onSave}
                                 />
                                 <SubstanceDetails

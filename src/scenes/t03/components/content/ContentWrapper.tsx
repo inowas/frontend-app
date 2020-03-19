@@ -5,6 +5,7 @@ import {BoundaryType} from '../../../../core/model/modflow/boundaries/Boundary.t
 import * as Content from './index';
 
 interface IOwnProps {
+    onSave: (tool: string) => void;
     readOnly: boolean;
 }
 
@@ -15,7 +16,6 @@ type IProps = IOwnProps & RouteComponentProps<{
 }>;
 
 const contentWrapper = (props: IProps) => {
-
     const {id, property, type} = props.match.params;
 
     if (property === 'discretization') {

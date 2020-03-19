@@ -4,7 +4,7 @@ import {Form, Grid, Message} from 'semantic-ui-react';
 import {ModflowModel, Stressperiods} from '../../../../../core/model/modflow';
 import {BoundaryCollection} from '../../../../../core/model/modflow/boundaries';
 import {IStressPeriods} from '../../../../../core/model/modflow/Stressperiods.type';
-import ContentToolBar from '../../../../../scenes/shared/ContentToolbar';
+import ContentToolBar from '../../../../shared/ContentToolbar';
 import {StressperiodsImport} from './index';
 import StressPeriodsDataTable from './stressperiodsDatatable';
 
@@ -89,9 +89,9 @@ const stressperiodsEditor = (props: IProps) => {
                     <ContentToolBar
                         isDirty={props.isDirty}
                         isError={props.isError}
-                        visible={!props.model.readOnly}
-                        saveButton={!props.model.readOnly}
-                        importButton={props.model.readOnly ||
+                        isVisible={!props.model.readOnly}
+                        buttonSave={!props.model.readOnly}
+                        buttonImport={props.model.readOnly ||
                         <StressperiodsImport
                             onChange={handleChangeImport}
                             stressperiods={iStressperiods}

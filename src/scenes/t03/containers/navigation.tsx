@@ -1,10 +1,13 @@
 import React, {useEffect} from 'react';
-import {connect} from 'react-redux';
+import {connect, useDispatch, useSelector} from 'react-redux';
 import {RouteComponentProps, withRouter} from 'react-router';
 import {Calculation, ModflowModel, Transport, VariableDensity} from '../../../core/model/modflow';
+import {IRootReducer} from '../../../reducers';
 import {ToolNavigation} from '../../shared/complexTools';
+import {removeMessage} from '../actions/actions';
 import {CALCULATION_STATE_CALCULATION_FINISHED} from '../components/content/calculation/CalculationProgress';
 import {IMenu, menuItems} from '../defaults/menuItems';
+import {EMessageState} from '../reducers/messages';
 
 interface IStateProps {
     calculation: Calculation | null;
@@ -20,12 +23,27 @@ const t03Navigation = (props: IProps) => {
         return;
     }, [props.match.params.property]);
 
+    const dispatch = useDispatch();
+    const T03 = useSelector((state: IRootReducer) => state.T03);
+    const messages = T03.messages;
+
+    useEffect(() => {
+        messages.filter((m) => m.name === 'saving' && m.state === EMessageState.SUCCESS).forEach((m) => {
+            setTimeout(() => {
+                dispatch(removeMessage(m));
+            }, 1000);
+        });
+    }, [messages]);
+
     const calculationState = props.calculation ? props.calculation.state : null;
     const calculationResults: string[] = props.calculation ? props.calculation.layer_values[0] : [];
     const totalTimes = props.calculation && props.calculation.times ? props.calculation.times.total_times : [];
 
     const mappedMenuItems: IMenu = menuItems.map((mi) => {
         mi.items = mi.items.map((i) => {
+            const saving = messages.filter((m) => m.origin === i.property && m.name === 'saving');
+            i.state = saving.length > 0 ? saving[0].state : undefined;
+
             if (i.property === 'mt3d') {
                 i.disabled = props.transport ? !props.transport.enabled : true;
                 return i;
@@ -34,6 +52,10 @@ const t03Navigation = (props: IProps) => {
             if (i.property === 'seawat') {
                 i.disabled = !props.transport || (props.transport && !props.transport.enabled) || !props.variableDensity
                     || (props.variableDensity && !props.variableDensity.vdfEnabled);
+                return i;
+            }
+
+            if (i.property === 'soilmodel') {
                 return i;
             }
 

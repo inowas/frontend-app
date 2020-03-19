@@ -10,9 +10,9 @@ import {ModflowModel, Soilmodel} from '../../../../../core/model/modflow';
 import {BoundaryCollection, BoundaryFactory} from '../../../../../core/model/modflow/boundaries';
 import {BoundaryType, ISpValues, IValueProperty} from '../../../../../core/model/modflow/boundaries/Boundary.type';
 import {IRootReducer} from '../../../../../reducers';
-import ContentToolBar from '../../../../../scenes/shared/ContentToolbar';
 import {sendCommand} from '../../../../../services/api';
 import {calculateActiveCells} from '../../../../../services/geoTools';
+import ContentToolBar from '../../../../shared/ContentToolbar';
 import {updateBoundaries} from '../../../actions/actions';
 import ModflowModelCommand from '../../../commands/modflowModelCommand';
 import {CreateBoundaryMap} from '../../maps';
@@ -174,7 +174,7 @@ const createBoundary = (props: Props) => {
                             isValid={!!geometry}
                             isDirty={isDirty && !!geometry && !!cells}
                             isError={isError}
-                            saveButton={!model.readOnly && !isEditing}
+                            buttonSave={!model.readOnly && !isEditing}
                         />
                         <CreateBoundaryMap
                             boundaries={boundaries}

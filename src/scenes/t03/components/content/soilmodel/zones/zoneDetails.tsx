@@ -233,7 +233,6 @@ const zoneDetails = (props: IProps) => {
                         </Grid.Column>
                     </Grid.Row>
                 </Grid>
->>>>>>>>> Temporary merge branch 2
             </Form>
             {relationWarning &&
             <Modal size="small" open={relationWarning}>

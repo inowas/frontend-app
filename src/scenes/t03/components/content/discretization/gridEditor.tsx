@@ -25,6 +25,11 @@ const gridEditor = (props: IProps) => {
     useEffect(() => {
         setGridSizeLocal(props.model.gridSize);
         intersectionRef.current = 50;
+        return () => {
+            if (props.isDirty) {
+                onSave();
+            }
+        };
     }, []);
 
     useEffect(() => {
@@ -129,8 +134,8 @@ const gridEditor = (props: IProps) => {
                     <ContentToolBar
                         isDirty={props.isDirty}
                         isError={props.isError}
-                        visible={!(readOnly)}
-                        saveButton={true}
+                        isVisible={!(readOnly)}
+                        buttonSave={true}
                         onSave={onSave}
                     />
                 </Grid.Column>

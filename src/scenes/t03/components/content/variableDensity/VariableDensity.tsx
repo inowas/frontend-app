@@ -105,8 +105,8 @@ const variableDensityProperties = (props: IProps) => {
                             <ContentToolBar
                                 isDirty={isDirty}
                                 isError={false}
-                                visible={!props.model.readOnly}
-                                save={true}
+                                isVisible={!props.model.readOnly}
+                                buttonSave={true}
                                 onSave={handleSave}
                             />
                             <Form style={{marginTop: '1rem'}}>

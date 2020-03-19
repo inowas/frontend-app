@@ -6,6 +6,7 @@ export interface IMenuItem {
     property: string;
     icon: React.ReactNode;
     disabled?: boolean;
+    state?: string;
     type?: string;
 }
 
