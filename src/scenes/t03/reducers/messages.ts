@@ -1,24 +1,11 @@
 import _ from 'lodash';
+import moment from 'moment';
+import {IMessage} from '../../../core/model/messages/Message.type';
 import {CLEAR} from './model';
 
 export const ADD_MESSAGE = 'T03_ADD_MESSAGE';
 export const REMOVE_MESSAGE = 'T03_REMOVE_MESSAGE';
 export const UPDATE_MESSAGE = 'T03_UPDATE_MESSAGE';
-
-export enum EMessageState {
-    IN_PROGRESS = 'inProgress',
-    SUCCESS = 'success',
-    ERROR = 'error'
-}
-
-export interface IMessage {
-    id: string;
-    name: string;
-    text?: string;
-    origin?: string;
-    state?: EMessageState;
-    timestamp?: number;
-}
 
 const initialState = () => [];
 
@@ -30,7 +17,10 @@ const messages = (state: IMessage[] = [], action: { type: string, payload?: IMes
         case ADD_MESSAGE:
             const cMessages = _.cloneDeep(state);
             if (action.payload) {
-                cMessages.push(action.payload);
+                cMessages.push({
+                    ...action.payload,
+                    timestamp: moment().unix()
+                });
             }
             return cMessages;
 

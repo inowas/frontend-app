@@ -1,5 +1,5 @@
 import {cloneDeep} from 'lodash';
-import React, {MouseEvent, SyntheticEvent, useEffect, useState} from 'react';
+import React, {MouseEvent, SyntheticEvent, useEffect, useRef, useState} from 'react';
 import {useDispatch, useSelector} from 'react-redux';
 import {useHistory, useLocation, useParams} from 'react-router-dom';
 import {
@@ -17,6 +17,8 @@ import {
     Segment
 } from 'semantic-ui-react';
 import Uuid from 'uuid';
+import {EMessageState, IMessage} from '../../../../../core/model/messages/Message.type';
+import MessagesCollection from '../../../../../core/model/messages/MessagesCollection';
 import {ModflowModel} from '../../../../../core/model/modflow';
 import BoundaryCollection from '../../../../../core/model/modflow/boundaries/BoundaryCollection';
 import {Soilmodel, SoilmodelLayer, Zone, ZonesCollection} from '../../../../../core/model/modflow/soilmodel';
@@ -28,26 +30,26 @@ import {IRootReducer} from '../../../../../reducers';
 import {sendCommand} from '../../../../../services/api';
 import {sendCommands} from '../../../../../services/api/commandHelper';
 import NoContent from '../../../../shared/complexTools/noContent';
-import ContentToolBar from '../../../../shared/ContentToolbar';
+import ContentToolBar from '../../../../shared/ContentToolbar2';
 import {usePrevious} from '../../../../shared/simpleTools/helpers/customHooks';
 import {
     addLayer,
     addMessage,
     addZone,
-    removeLayer,
+    removeLayer, removeMessage,
     removeZone,
     updateLayer,
     updateMessage,
     updateZone
 } from '../../../actions/actions';
 import Command from '../../../commands/modflowModelCommand';
+import {messageDirty, messageError, messageSaving} from '../../../defaults/messages';
 import {
     basParameters,
     defaultSoilmodelLayer,
     modpathParameters,
     soilmodelParameters
 } from '../../../defaults/soilmodel';
-import {EMessageState, IMessage} from '../../../reducers/messages';
 import LayerDetails from './layerDetails';
 import LayersList from './layersList';
 import {CreateZoneModal, ZoneDetails} from './zones';
@@ -67,9 +69,6 @@ const soilmodelEditor = () => {
     const [selectedLayer, setSelectedLayer] = useState<ISoilmodelLayer | null>(null);
     const [selectedZone, setSelectedZone] = useState<IZone | null>(null);
     const [isLoading, setIsLoading] = useState<boolean>(false);
-    const [isAutoSaving, setIsAutoSaving] = useState<boolean>(true);
-    const [isDirty, setIsDirty] = useState<boolean>(false);
-    const [isError, setIsError] = useState<boolean>(false);
     const [pageNotFound, setPageNotFound] = useState<boolean>(false);
 
     const [calculationState, setCalculationState] = useState<{
@@ -85,6 +84,15 @@ const soilmodelEditor = () => {
     const model = T03.model ? ModflowModel.fromObject(T03.model) : null;
     const boundaries = T03.boundaries ? BoundaryCollection.fromObject(T03.boundaries) : null;
     const soilmodel = T03.soilmodel ? Soilmodel.fromObject(T03.soilmodel) : null;
+
+    const messages = MessagesCollection.fromObject(T03.messages);
+
+    const layerRef = useRef<ISoilmodelLayer>();
+    const zoneRef = useRef<IZone>();
+    const editingState = useRef<{[key: string]: IMessage | null}>({
+        dirty: null,
+        saving: null
+    });
 
     if (!boundaries || !model || !soilmodel) {
         return (
@@ -117,12 +125,22 @@ const soilmodelEditor = () => {
     }
 
     useEffect(() => {
-        return () => {
-            if (isDirty && isAutoSaving) {
-                handleSave();
-            }
+        return function cleanup() {
+            handleSave();
         };
-    }, [isDirty]);
+    }, []);
+
+    useEffect(() => {
+        if (messages) {
+            editingState.current = messages.getEditingState('soilmodel');
+        }
+        if (selectedLayer) {
+            layerRef.current = selectedLayer;
+        }
+        if (selectedZone) {
+            zoneRef.current = selectedZone;
+        }
+    }, [messages, selectedLayer, selectedZone]);
 
     useEffect(() => {
         if (pid && pid !== prevPid) {
@@ -210,7 +228,7 @@ const soilmodelEditor = () => {
         sendCommands(commands, () => {
                 dispatch(removeLayer(layerId));
                 setIsLoading(false);
-            }, () => setIsError(true)
+            }, (e) => dispatch(addMessage(messageError('soilmodel', e)))
         );
     };
 
@@ -230,7 +248,7 @@ const soilmodelEditor = () => {
                 setIsLoading(false);
                 history.push(`${baseUrl}/${id}/${property}/${type || 'layers'}/${layer.id}`);
             },
-            () => setIsError(true)
+            (e) => dispatch(addMessage(messageError('soilmodel', e)))
         );
     };
 
@@ -317,7 +335,9 @@ const soilmodelEditor = () => {
     };
 
     const handleChangeLayer = (layer: SoilmodelLayer) => {
-        setIsDirty(true);
+        if (!editingState.current.dirty) {
+            dispatch(addMessage(messageDirty('soilmodel')));
+        }
         return setSelectedLayer(layer.toObject());
     };
 
@@ -331,7 +351,9 @@ const soilmodelEditor = () => {
     };
 
     const handleChangeZone = (zone: Zone) => {
-        setIsDirty(true);
+        if (!editingState.current.dirty) {
+            dispatch(addMessage(messageDirty('soilmodel')));
+        }
         setSelectedZone(zone.toObject());
     };
 
@@ -382,7 +404,9 @@ const soilmodelEditor = () => {
     };
 
     const handleUndo = () => {
-        setIsDirty(false);
+        if (editingState.current.dirty) {
+            dispatch(removeMessage(editingState.current.dirty));
+        }
         if (pid) {
             if (type === nav.LAYERS) {
                 const cLayer = soilmodel.layersCollection.findById(pid);
@@ -395,17 +419,16 @@ const soilmodelEditor = () => {
     };
 
     const handleSave = () => {
-        const message: IMessage = {
-            id: Uuid.v4(),
-            name: 'saving',
-            origin: 'soilmodel',
-            state: EMessageState.IN_PROGRESS,
-        };
+        if (!editingState.current.dirty) {
+            return;
+        }
+        const message = messageSaving('soilmodel');
         dispatch(addMessage(message));
+        dispatch(addMessage(messageError('soilmodel', 'test')));
         const cZones = soilmodel.zonesCollection;
-        if (selectedZone && type === nav.ZONES) {
-            cZones.update(selectedZone);
-            dispatch(updateZone(Zone.fromObject(selectedZone)));
+        if (zoneRef.current && type === nav.ZONES) {
+            cZones.update(zoneRef.current);
+            dispatch(updateZone(Zone.fromObject(zoneRef.current)));
 
             setIsLoading(true);
             return sendCommand(
@@ -417,26 +440,30 @@ const soilmodelEditor = () => {
                     }
                 }), () => {
                     setIsLoading(false);
-                    setIsDirty(false);
+                    if (editingState.current.dirty) {
+                        dispatch(removeMessage(editingState.current.dirty));
+                    }
                     return dispatch(updateMessage({...message, state: EMessageState.SUCCESS}));
                 }
             );
         }
 
-        if (selectedLayer && type === nav.LAYERS) {
+        if (layerRef.current && type === nav.LAYERS) {
             setNumberOfTasks(
-                selectedLayer.parameters.filter((p) => Array.isArray(p.value)).length +
-                selectedLayer.relations.filter((r) => Array.isArray(r.value)).length
+                layerRef.current.parameters.filter((p) => Array.isArray(p.value)).length +
+                layerRef.current.relations.filter((r) => Array.isArray(r.value)).length
             );
 
-            return saveLayer(selectedLayer, model.toObject(), false, 0,
+            return saveLayer(layerRef.current, model.toObject(), false, 0,
                 (state) => {
                     setCalculationState(state);
                 },
                 (layer) => {
                     dispatch(updateLayer(SoilmodelLayer.fromObject(layer)));
-                    dispatch(updateMessage({...message, state: EMessageState.SUCCESS}));
-                    return setIsDirty(false);
+                    if (editingState.current.dirty) {
+                        dispatch(removeMessage(editingState.current.dirty));
+                    }
+                    return dispatch(updateMessage({...message, state: EMessageState.SUCCESS}));
                 }
             );
         }
@@ -491,14 +518,9 @@ const soilmodelEditor = () => {
                     </Grid.Column>
                     <Grid.Column width={12}>
                         <ContentToolBar
-                            disableAutoSave={!isAutoSaving}
-                            isDirty={isDirty}
-                            isError={isError}
-                            isVisible={!readOnly}
                             buttonSave={true}
                             onSave={handleSave}
                             onUndo={handleUndo}
-                            onToggleAutoSave={() => setIsAutoSaving(!isAutoSaving)}
                         />
                     </Grid.Column>
                 </Grid.Row>

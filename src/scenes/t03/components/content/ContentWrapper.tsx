@@ -5,7 +5,6 @@ import {BoundaryType} from '../../../../core/model/modflow/boundaries/Boundary.t
 import * as Content from './index';
 
 interface IOwnProps {
-    onSave: (tool: string) => void;
     readOnly: boolean;
 }
 

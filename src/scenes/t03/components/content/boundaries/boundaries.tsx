@@ -207,8 +207,6 @@ const boundaries = (props: Props) => {
                                 <Grid.Column width={16}>
                                     <ContentToolBar
                                         onSave={handleUpdate}
-                                        isDirty={isDirty}
-                                        isError={error}
                                         buttonSave={!readOnly}
                                         buttonImport={props.readOnly ||
                                         <BoundaryImport

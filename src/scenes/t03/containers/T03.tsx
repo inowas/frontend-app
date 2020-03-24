@@ -15,6 +15,7 @@ import {BoundaryCollection} from '../../../core/model/modflow/boundaries';
 import Optimization from '../../../core/model/modflow/optimization/Optimization';
 import {sendCommand} from '../../../services/api';
 import AppContainer from '../../shared/AppContainer';
+import ErrorsBox from '../../shared/ErrorsBox';
 import ToolMetaData from '../../shared/simpleTools/ToolMetaData';
 import {IToolMetaData} from '../../shared/simpleTools/ToolMetaData/ToolMetaData.type';
 import {
@@ -70,7 +71,6 @@ type IProps = IStateProps & IDispatchProps & RouteComponentProps<{
 }>;
 
 const t03 = (props: IProps) => {
-    const [isSaving, setIsSaving] = useState<string | null>(null);
     const [navigation, setNavigation] = useState<Array<{
         name: string;
         path: string;
@@ -94,18 +94,8 @@ const t03 = (props: IProps) => {
         }
     }, []);
 
-    useEffect(() => {
-        setTimeout(() => {
-            setIsSaving(null);
-        }, 2000);
-    }, [isSaving]);
-
     const handleChangeToolMetaData = () => {
         return null;
-    };
-
-    const handleSaving = (tool: string) => {
-        setIsSaving(tool);
     };
 
     const saveMetaData = (tool: IToolMetaData) => {
@@ -152,8 +142,8 @@ const t03 = (props: IProps) => {
                             <OptimizationProgressBar/>
                         </Grid.Column>
                         <Grid.Column width={13}>
+                            <ErrorsBox/>
                             <ContentWrapper
-                                onSave={handleSaving}
                                 readOnly={props.model ? props.model.readOnly : false}
                             />
                         </Grid.Column>
