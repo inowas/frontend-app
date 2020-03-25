@@ -4,32 +4,25 @@ import {BoundingBox, Cells, Geometry, GridSize, ModflowModel} from '../../../../
 import {BoundaryCollection} from '../../../../../core/model/modflow/boundaries';
 import {calculateActiveCells} from '../../../../../services/geoTools';
 import {dxCell, dyCell} from '../../../../../services/geoTools/distance';
-import ContentToolBar from '../../../../shared/ContentToolbar';
+import ContentToolBar from '../../../../shared/ContentToolbar2';
 import {DiscretizationMap} from './index';
 
 interface IProps {
     boundaries: BoundaryCollection;
     model: ModflowModel;
-    isDirty: boolean;
-    isError: boolean;
     onChange: (modflowModel: ModflowModel) => void;
-    onSave: (modflowModel: ModflowModel) => void;
+    onSave: () => void;
+    onUndo: () => void;
 }
 
 const gridEditor = (props: IProps) => {
     const [intersection, setIntersection] = useState<number>(50);
     const [gridSizeLocal, setGridSizeLocal] = useState<GridSize | null>(null);
-
     const intersectionRef = useRef<number>();
 
     useEffect(() => {
         setGridSizeLocal(props.model.gridSize);
         intersectionRef.current = 50;
-        return () => {
-            if (props.isDirty) {
-                onSave();
-            }
-        };
     }, []);
 
     useEffect(() => {
@@ -48,11 +41,6 @@ const gridEditor = (props: IProps) => {
         return new Promise((resolve: (cells: Cells) => void) => {
             resolve(calculateActiveCells(g, bb, gz, i / 100));
         });
-    };
-
-    const onSave = () => {
-        const model = props.model.getClone();
-        return props.onSave(model);
     };
 
     const handleChangeIntersection = (i: number) => {
@@ -132,11 +120,9 @@ const gridEditor = (props: IProps) => {
             <Grid.Row>
                 <Grid.Column width={16}>
                     <ContentToolBar
-                        isDirty={props.isDirty}
-                        isError={props.isError}
-                        isVisible={!(readOnly)}
                         buttonSave={true}
-                        onSave={onSave}
+                        onSave={props.onSave}
+                        onUndo={props.onUndo}
                     />
                 </Grid.Column>
             </Grid.Row>}

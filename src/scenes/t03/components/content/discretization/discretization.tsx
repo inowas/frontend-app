@@ -1,12 +1,16 @@
-import React, {useState} from 'react';
+import React, {useEffect, useRef, useState} from 'react';
 import {useDispatch, useSelector} from 'react-redux';
 import {Grid, Menu, Segment} from 'semantic-ui-react';
+import {EMessageState, IMessage} from '../../../../../core/model/messages/Message.type';
+import MessagesCollection from '../../../../../core/model/messages/MessagesCollection';
 import {ModflowModel} from '../../../../../core/model/modflow';
 import {BoundaryCollection} from '../../../../../core/model/modflow/boundaries';
+import {IModflowModel} from '../../../../../core/model/modflow/ModflowModel.type';
 import {IRootReducer} from '../../../../../reducers';
 import {sendCommand} from '../../../../../services/api';
-import {updateModel} from '../../../actions/actions';
+import {addMessage, removeMessage, updateMessage, updateModel} from '../../../actions/actions';
 import ModflowModelCommand from '../../../commands/modflowModelCommand';
+import {messageDirty, messageSaving} from '../../../defaults/messages';
 import DiscretizationImport from './discretizationImport';
 import GridEditor from './gridEditor';
 import StressperiodsEditor from './stressperiodsEditor';
@@ -16,25 +20,61 @@ const discretization = () => {
         {id: 'grid', name: 'Spatial discretization'},
         {id: 'stressperiods', name: 'Time discretization'}
     ];
-
+    const [model, setModel] = useState<IModflowModel>();
     const [selected, setSelected] = useState<string>(menuItems[0].id);
-    const [isDirty, setIsDirty] = useState<boolean>(false);
-    const [isError, setIsError] = useState<boolean>(false);
+
+    const modelRef = useRef<ModflowModel>();
+    const editingState = useRef<{ [key: string]: IMessage | null }>({
+        dirty: null,
+        saving: null
+    });
 
     const dispatch = useDispatch();
 
     const handleChangeModel = (m: ModflowModel) => {
-        dispatch(updateModel(m));
-        setIsDirty(true);
+        modelRef.current = m;
+        setModel(m.toObject());
+        if (!editingState.current.dirty) {
+            dispatch(addMessage(messageDirty('discretization')));
+        }
     };
 
     const handleChangeSelected = (id: string) => () => setSelected(id);
 
     const T03 = useSelector((state: IRootReducer) => state.T03);
-    const model = T03.model ? ModflowModel.fromObject(T03.model) : null;
+    const modelFromProps = T03.model ? ModflowModel.fromObject(T03.model) : null;
     const boundaries = T03.boundaries ? BoundaryCollection.fromObject(T03.boundaries) : null;
+    const messages = MessagesCollection.fromObject(T03.messages);
 
-    const handleSave = (m: ModflowModel) => {
+    useEffect(() => {
+        if (modelFromProps) {
+            modelRef.current = modelFromProps;
+            setModel(modelFromProps.toObject());
+        }
+        return function cleanup() {
+            handleSave();
+        };
+    }, []);
+
+    useEffect(() => {
+        editingState.current = messages.getEditingState('discretization');
+    }, [messages]);
+
+    const handleUndo = () => {
+        if (!editingState.current.dirty || !modelFromProps) {
+            return;
+        }
+        dispatch(removeMessage(editingState.current.dirty));
+        setModel(modelFromProps.toObject());
+    };
+
+    const handleSave = () => {
+        if (!modelRef.current || !editingState.current.dirty) {
+            return;
+        }
+        const m = modelRef.current;
+        const message = messageSaving('discretization');
+        dispatch(addMessage(message));
         const command = ModflowModelCommand.updateModflowModelDiscretization(
             m.id,
             m.geometry.toObject(),
@@ -47,8 +87,10 @@ const discretization = () => {
         );
 
         return sendCommand(command, () => {
-                setIsDirty(false);
-                setIsError(false);
+                if (editingState.current.dirty) {
+                    dispatch(removeMessage(editingState.current.dirty));
+                }
+                dispatch(updateMessage({...message, state: EMessageState.SUCCESS}));
                 dispatch(updateModel(m));
             }
         );
@@ -63,24 +105,22 @@ const discretization = () => {
             case 'grid': {
                 return (
                     <GridEditor
-                        model={model}
+                        model={ModflowModel.fromObject(model)}
                         boundaries={boundaries}
-                        isDirty={isDirty}
-                        isError={isError}
                         onChange={handleChangeModel}
                         onSave={handleSave}
+                        onUndo={handleUndo}
                     />
                 );
             }
             case 'stressperiods': {
                 return (
                     <StressperiodsEditor
-                        model={model}
+                        model={ModflowModel.fromObject(model)}
                         boundaries={boundaries}
-                        isDirty={isDirty}
-                        isError={isError}
                         onChange={handleChangeModel}
                         onSave={handleSave}
+                        onUndo={handleUndo}
                     />
                 );
             }
@@ -108,9 +148,10 @@ const discretization = () => {
                                 </Menu.Item>
                             )}
                             <Menu.Item>&nbsp;</Menu.Item>
-
-                            {model && !model.readOnly && boundaries && boundaries.length === 0 &&
-                            <DiscretizationImport onChange={handleChangeModel} model={model}/>}
+                            {model && !ModflowModel.fromObject(model).readOnly &&
+                            boundaries && boundaries.length === 0 &&
+                            <DiscretizationImport onChange={handleChangeModel} model={ModflowModel.fromObject(model)}/>
+                            }
                         </Menu>
                     </Grid.Column>
                     <Grid.Column width={13}>

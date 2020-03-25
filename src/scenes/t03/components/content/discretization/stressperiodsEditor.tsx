@@ -1,20 +1,19 @@
 import moment from 'moment';
-import React, {ChangeEvent, useState} from 'react';
+import React, {ChangeEvent, useEffect, useState} from 'react';
 import {Form, Grid, Message} from 'semantic-ui-react';
 import {ModflowModel, Stressperiods} from '../../../../../core/model/modflow';
 import {BoundaryCollection} from '../../../../../core/model/modflow/boundaries';
 import {IStressPeriods} from '../../../../../core/model/modflow/Stressperiods.type';
-import ContentToolBar from '../../../../shared/ContentToolbar';
+import ContentToolBar from '../../../../shared/ContentToolbar2';
 import {StressperiodsImport} from './index';
 import StressPeriodsDataTable from './stressperiodsDatatable';
 
 interface IProps {
     boundaries: BoundaryCollection;
     model: ModflowModel;
-    isDirty: boolean;
-    isError: boolean;
     onChange: (modflowModel: ModflowModel) => void;
-    onSave: (modflowModel: ModflowModel) => void;
+    onSave: () => void;
+    onUndo: () => void;
 }
 
 const stressperiodsEditor = (props: IProps) => {
@@ -23,11 +22,9 @@ const stressperiodsEditor = (props: IProps) => {
         props.model.stressperiods.endDateTime.format('YYYY-MM-DD')
     );
 
-    const handleSave = () => {
-        const model = props.model.getClone();
-        model.stressperiods = Stressperiods.fromObject(stressperiods);
-        return props.onSave(model);
-    };
+    useEffect(() => {
+        setStressperiods(props.model.stressperiods.toObject());
+    }, [props.model.stressperiods]);
 
     const handleDateTimeChange = (e: ChangeEvent<HTMLInputElement>) => {
         const {name, value} = e.target;
@@ -87,9 +84,6 @@ const stressperiodsEditor = (props: IProps) => {
             <Grid.Row>
                 <Grid.Column width={16}>
                     <ContentToolBar
-                        isDirty={props.isDirty}
-                        isError={props.isError}
-                        isVisible={!props.model.readOnly}
                         buttonSave={!props.model.readOnly}
                         buttonImport={props.model.readOnly ||
                         <StressperiodsImport
@@ -97,7 +91,8 @@ const stressperiodsEditor = (props: IProps) => {
                             stressperiods={iStressperiods}
                         />
                         }
-                        onSave={handleSave}
+                        onSave={props.onSave}
+                        onUndo={props.onUndo}
                     />
                 </Grid.Column>
             </Grid.Row>

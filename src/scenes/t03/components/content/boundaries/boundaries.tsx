@@ -166,7 +166,7 @@ const boundaries = (props: IProps) => {
                             const cBoundaries = boundaryCollection;
                             cBoundaries.addBoundary(clonedBoundary);
                             dispatch(updateBoundaries(cBoundaries));
-                            dispatch(handleBoundaryClick(clonedBoundary.id));
+                            handleBoundaryClick(clonedBoundary.id);
                         },
                         (e) => dispatch(addMessage(messageError('boundaries', e)))
                     );

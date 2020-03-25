@@ -84,7 +84,6 @@ const soilmodelEditor = () => {
     const model = T03.model ? ModflowModel.fromObject(T03.model) : null;
     const boundaries = T03.boundaries ? BoundaryCollection.fromObject(T03.boundaries) : null;
     const soilmodel = T03.soilmodel ? Soilmodel.fromObject(T03.soilmodel) : null;
-
     const messages = MessagesCollection.fromObject(T03.messages);
 
     const layerRef = useRef<ISoilmodelLayer>();
