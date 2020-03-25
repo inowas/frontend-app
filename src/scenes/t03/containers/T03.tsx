@@ -15,7 +15,7 @@ import {BoundaryCollection} from '../../../core/model/modflow/boundaries';
 import Optimization from '../../../core/model/modflow/optimization/Optimization';
 import {sendCommand} from '../../../services/api';
 import AppContainer from '../../shared/AppContainer';
-import ErrorsBox from '../../shared/ErrorsBox';
+import MessageBox from '../../shared/MessageBox';
 import ToolMetaData from '../../shared/simpleTools/ToolMetaData';
 import {IToolMetaData} from '../../shared/simpleTools/ToolMetaData/ToolMetaData.type';
 import {
@@ -142,7 +142,7 @@ const t03 = (props: IProps) => {
                             <OptimizationProgressBar/>
                         </Grid.Column>
                         <Grid.Column width={13}>
-                            <ErrorsBox/>
+                            <MessageBox/>
                             <ContentWrapper
                                 readOnly={props.model ? props.model.readOnly : false}
                             />

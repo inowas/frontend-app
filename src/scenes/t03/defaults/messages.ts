@@ -12,7 +12,7 @@ export const messageSaving = (origin: string): IMessage => ({
     id: Uuid.v4(),
     name: 'saving',
     origin,
-    state: EMessageState.IN_PROGRESS
+    state: EMessageState.IN_PROGRESS,
 });
 
 export const messageError = (origin: string, text: string): IMessage => ({

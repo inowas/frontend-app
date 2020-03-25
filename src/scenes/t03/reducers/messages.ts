@@ -30,7 +30,10 @@ const messages = (state: IMessage[] = [], action: { type: string, payload?: IMes
         case UPDATE_MESSAGE:
             return state.map((m) => {
                 if (action.payload && m.id === action.payload.id) {
-                    return action.payload;
+                    return {
+                        ...action.payload,
+                        timestamp: moment().unix()
+                    };
                 }
                 return m;
             });

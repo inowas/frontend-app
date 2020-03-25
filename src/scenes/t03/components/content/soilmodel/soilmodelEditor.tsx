@@ -9,7 +9,7 @@ import {
     Dropdown,
     DropdownProps,
     Grid,
-    Header,
+Header,
     Menu,
     MenuItemProps,
     Message,
@@ -131,7 +131,7 @@ const soilmodelEditor = () => {
     }, []);
 
     useEffect(() => {
-        if (messages) {
+        if (messages.length > 0) {
             editingState.current = messages.getEditingState('soilmodel');
         }
         if (selectedLayer) {
@@ -359,20 +359,24 @@ const soilmodelEditor = () => {
 
     const handleClickItem = (iId: string) => {
         if (type === nav.LAYERS && iId !== pid) {
+            handleSave();
             history.push(
                 `${baseUrl}/${id}/${property}/layers/${iId}?type=${activeParamType}&param=${activeParam}`
             );
         }
         if (type === nav.ZONES && iId !== pid) {
+            handleSave();
             history.push(`${baseUrl}/${id}/${property}/zones/${iId}`);
         }
     };
 
     const handleNavClick = (e: MouseEvent<HTMLAnchorElement>, {value}: MenuItemProps) => {
         if (value === nav.LAYERS && type !== 'layers') {
+            handleSave();
             return history.push(`${baseUrl}/${id}/${property}/layers/${soilmodel.layersCollection.first.id}`);
         }
         if (value === nav.ZONES && type !== 'zones') {
+            handleSave();
             if (fZones.length > 0) {
                 return history.push(`${baseUrl}/${id}/${property}/zones/${fZones[0].id}`);
             }
@@ -404,9 +408,10 @@ const soilmodelEditor = () => {
     };
 
     const handleUndo = () => {
-        if (editingState.current.dirty) {
-            dispatch(removeMessage(editingState.current.dirty));
+        if (!editingState.current.dirty) {
+            return;
         }
+        dispatch(removeMessage(editingState.current.dirty));
         if (pid) {
             if (type === nav.LAYERS) {
                 const cLayer = soilmodel.layersCollection.findById(pid);
@@ -424,7 +429,6 @@ const soilmodelEditor = () => {
         }
         const message = messageSaving('soilmodel');
         dispatch(addMessage(message));
-        dispatch(addMessage(messageError('soilmodel', 'test')));
         const cZones = soilmodel.zonesCollection;
         if (zoneRef.current && type === nav.ZONES) {
             cZones.update(zoneRef.current);
