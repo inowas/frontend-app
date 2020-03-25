@@ -9,7 +9,7 @@ import {
     Dropdown,
     DropdownProps,
     Grid,
-Header,
+    Header,
     Menu,
     MenuItemProps,
     Message,
@@ -88,7 +88,7 @@ const soilmodelEditor = () => {
 
     const layerRef = useRef<ISoilmodelLayer>();
     const zoneRef = useRef<IZone>();
-    const editingState = useRef<{[key: string]: IMessage | null}>({
+    const editingState = useRef<{ [key: string]: IMessage | null }>({
         dirty: null,
         saving: null
     });
@@ -130,9 +130,7 @@ const soilmodelEditor = () => {
     }, []);
 
     useEffect(() => {
-        if (messages.length > 0) {
-            editingState.current = messages.getEditingState('soilmodel');
-        }
+        editingState.current = messages.getEditingState('soilmodel');
         if (selectedLayer) {
             layerRef.current = selectedLayer;
         }

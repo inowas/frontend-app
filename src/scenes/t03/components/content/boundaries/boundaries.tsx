@@ -70,9 +70,7 @@ const boundaries = (props: IProps) => {
     }, []);
 
     useEffect(() => {
-        if (messages.length > 0) {
-            editingState.current = messages.getEditingState('boundaries');
-        }
+        editingState.current = messages.getEditingState('boundaries');
         if (selectedBoundary) {
             boundaryRef.current = selectedBoundary;
         }
@@ -146,6 +144,7 @@ const boundaries = (props: IProps) => {
     };
 
     const handleBoundaryClick = (bid: string) => {
+        handleUpdate();
         history.push(`${baseUrl}/${id}/${property}/!/${bid}`);
     };
 
@@ -185,6 +184,14 @@ const boundaries = (props: IProps) => {
             },
             (e) => dispatch(addMessage(messageError('boundaries', e)))
         );
+    };
+
+    const handleUndo = () => {
+        if (!editingState.current.dirty) {
+            return;
+        }
+        dispatch(removeMessage(editingState.current.dirty));
+        fetchBoundary(id, pid);
     };
 
     const handleUpdate = () => {
@@ -236,6 +243,7 @@ const boundaries = (props: IProps) => {
                                 <Grid.Column width={16}>
                                     <ContentToolBar
                                         onSave={handleUpdate}
+                                        onUndo={handleUndo}
                                         buttonSave={!readOnly}
                                         buttonImport={readOnly ||
                                         <BoundaryImport

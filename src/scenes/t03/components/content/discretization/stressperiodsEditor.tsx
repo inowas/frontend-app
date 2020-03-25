@@ -84,8 +84,8 @@ const stressperiodsEditor = (props: IProps) => {
             <Grid.Row>
                 <Grid.Column width={16}>
                     <ContentToolBar
-                        buttonSave={!props.model.readOnly}
-                        buttonImport={props.model.readOnly ||
+                        buttonSave={true}
+                        buttonImport={
                         <StressperiodsImport
                             onChange={handleChangeImport}
                             stressperiods={iStressperiods}
