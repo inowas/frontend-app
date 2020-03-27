@@ -106,7 +106,7 @@ const observationStatistics = () => {
             return () => {
                 if (w) {
                     // @ts-ignore
-                    w.removeEventListener('message');
+                    w.removeEventListener('message', handleMessage);
                     w.terminate();
                 }
             };

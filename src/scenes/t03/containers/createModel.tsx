@@ -26,6 +26,9 @@ import ModflowModelCommand from '../commands/modflowModelCommand';
 import {DrawOnMapModal, UploadGeoJSONModal} from '../components/content/create';
 import {ModelMap} from '../components/maps';
 import defaults from '../defaults/createModel';
+import {WorkerComponent} from '../worker';
+import {CALCULATE_CELLS_INPUT} from '../worker/t03.worker';
+import {ICalculateCellsInputData} from '../worker/t03.worker.type';
 
 const navigation = [{
     name: 'Documentation',
@@ -47,6 +50,7 @@ interface IState {
     stressperiodsLocal: IStressPeriods;
     timeUnit: ITimeUnit;
     isPublic: boolean;
+    calculating: boolean;
     error: boolean;
     loading: boolean;
     validation: any;
@@ -72,6 +76,7 @@ class CreateModel extends React.Component<IProps, IState> {
             timeUnit: defaults.timeUnit,
             isPublic: defaults.isPublic,
             stressperiods: defaults.stressperiods.toObject(),
+            calculating: false,
             error: false,
             loading: false,
             gridSizeLocal: defaults.gridSize.toObject(),
@@ -210,6 +215,8 @@ class CreateModel extends React.Component<IProps, IState> {
         }
 
         const gridSize = GridSize.fromObject(this.state.gridSize);
+        this.setState({calculating: true});
+
         calculateCells(geometry, boundingBox, gridSize).then((cells: Cells) => {
             return (
                 this.setState({
@@ -232,6 +239,7 @@ class CreateModel extends React.Component<IProps, IState> {
             (validation) => this.setState({validation})
         );
     };
+
     public render() {
         return (
             <AppContainer navbarItems={navigation}>
@@ -396,6 +404,19 @@ class CreateModel extends React.Component<IProps, IState> {
                         </Grid.Row>
                     </Grid>
                 </Segment>
+                <WorkerComponent
+                    input={{
+                        type: CALCULATE_CELLS_INPUT,
+                        data: {
+                            geometry: this.state.geometry,
+                            boundingBox: this.state.boundingBox,
+                            gridSize: this.state.gridSize
+                        } as ICalculateCellsInputData
+                    }}
+                    onProgressFinished={() => {
+                        console.log('FINISHED');
+                    }}
+                />
             </AppContainer>
         );
     }

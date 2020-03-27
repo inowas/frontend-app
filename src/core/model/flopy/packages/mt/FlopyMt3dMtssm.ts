@@ -1,5 +1,6 @@
 import {Boundary, BoundaryCollection} from '../../../modflow/boundaries';
 import SubstanceCollection from '../../../modflow/transport/SubstanceCollection';
+import {IPropertyValueObject} from '../../../types';
 import FlopyMt3dPackage from './FlopyMt3dPackage';
 
 const itypes = {
@@ -14,70 +15,107 @@ const itypes = {
     CC: -1
 };
 
-class FlopyMt3dMtssm extends FlopyMt3dPackage {
+export interface IFlopyMt3dMtssm {
+    crch: null | any;
+    cevt: null | any;
+    mxss: null | any;
+    stress_period_data: null | any;
+    extension: string;
+    unitnumber: number | null;
+    filenames: null | string | string[];
+}
+
+export const defaults: IFlopyMt3dMtssm = {
+    crch: null,
+    cevt: null,
+    mxss: null,
+
+    // SET stress_period_data
+    // ssm_data[0] = [
+    //      [#lay, #row, #col, #value1, #itype, #value1, #value2)]
+    //      [4, 4, 4, 1.0, itype['GHB'], 1.0, 100.0)]
+    // ]
+    stress_period_data: null,
+    extension: 'ssm',
+    unitnumber: null,
+    filenames: null,
+};
+
+class FlopyMt3dMtssm extends FlopyMt3dPackage<IFlopyMt3dMtssm> {
+
+    public static create(obj = {}) {
+        return this.fromObject(obj);
+    }
+
+    public static fromDefault() {
+        return this.fromObject({});
+    }
+
+    public static fromObject(obj: IPropertyValueObject): FlopyMt3dMtssm {
+        const d: any = FlopyMt3dPackage.cloneDeep(defaults);
+        for (const key in d) {
+            if (d.hasOwnProperty(key) && obj.hasOwnProperty(key)) {
+                d[key] = obj[key];
+            }
+        }
+
+        return new this(d);
+    }
 
     get crch() {
-        return this._crch;
+        return this._props.crch;
     }
 
     set crch(value) {
-        this._crch = value;
+        this._props.crch = value;
     }
 
     get cevt() {
-        return this._cevt;
+        return this._props.cevt;
     }
 
     set cevt(value) {
-        this._cevt = value;
+        this._props.cevt = value;
     }
 
     get mxss() {
-        return this._mxss;
+        return this._props.mxss;
     }
 
     set mxss(value) {
-        this._mxss = value;
+        this._props.mxss = value;
     }
 
     get stress_period_data() {
-        return this._stress_period_data;
+        return this._props.stress_period_data;
     }
 
     set stress_period_data(value) {
-        this._stress_period_data = value;
-    }
-
-    get dtype() {
-        return this._dtype;
-    }
-
-    set dtype(value) {
-        this._dtype = value;
+        this._props.stress_period_data = value;
     }
 
     get extension() {
-        return this._extension;
+        return this._props.extension;
     }
 
     set extension(value) {
-        this._extension = value;
+        this._props.extension = value;
     }
 
     get unitnumber() {
-        return this._unitnumber;
+        return this._props.unitnumber;
     }
 
     set unitnumber(value) {
-        this._unitnumber = value;
+        this._props.unitnumber = value;
     }
 
     get filenames() {
-        return this._filenames;
+        return this._props.filenames;
     }
 
     set filenames(value) {
-        this._filenames = value;
+        this._props.filenames = value;
     }
 
     public static calculateSpData(substances: SubstanceCollection, boundaries: BoundaryCollection) {
@@ -162,20 +200,6 @@ class FlopyMt3dMtssm extends FlopyMt3dPackage {
         });
         return obj;
     };
-    // SET stress_period_data
-    // ssm_data[0] = [
-    //      [#lay, #row, #col, #value1, #itype, #value1, #value2)]
-    //      [4, 4, 4, 1.0, itype['GHB'], 1.0, 100.0)]
-    // ]
-    public _crch = null;
-    public _cevt = null;
-    public _mxss = null;
-    // tslint:disable-next-line:variable-name
-    public _stress_period_data = null;
-    public _dtype = null;
-    public _extension = 'ssm';
-    public _unitnumber = null;
-    public _filenames = null;
 }
 
 export default FlopyMt3dMtssm;

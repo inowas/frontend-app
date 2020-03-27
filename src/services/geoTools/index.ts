@@ -59,7 +59,7 @@ export const calculateActiveCells = (
     boundingBox: BoundingBox,
     gridSize: GridSize,
     intersection = 0
-) => {
+): Cells => {
     const activeCells = new Cells([]);
 
     if (geometry.fromType('point')) {
