@@ -144,7 +144,7 @@ const calculationProcess = () => {
                     model.id,
                     FlopyModflow.create(model, soilmodel, boundaries),
                     FlopyModpath.create(),
-                    FlopyMt3d.createFromTransport(transport, boundaries),
+                    FlopyMt3d.create(transport, boundaries),
                     FlopySeawat.createFromVariableDensity(variableDensity)
                 );
 
