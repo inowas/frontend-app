@@ -5,15 +5,14 @@ import {ModflowModel} from '../../../../../core/model/modflow';
 import {IRootReducer} from '../../../../../reducers';
 import {fetchCalculationObservations} from '../../../../../services/api';
 import {ILinearRegression} from '../../../../../services/statistics/calculateStatistics';
+import {CALCULATE_STATISTICS_INPUT} from '../../../worker/t03.worker';
+import {asyncWorker} from '../../../worker/worker';
 
 import {
     ChartObservedVsCalculatedHeads,
     ChartRankedResidualsAgainstNormalProbability,
     ChartWeightedResidualsVsSimulatedHeads
 } from './charts';
-
-import {CALCULATE_STATISTICS_INPUT, CALCULATE_STATISTICS_RESULT} from './observation.worker';
-import {IObservationWorkerResult} from './observation.worker.type';
 
 export type IHobData = Array<{
     simulated: number;
@@ -60,22 +59,6 @@ export interface IStatistics {
     linRegObsRResNpf: ILinearRegression;
 }
 
-let w: Worker | undefined;
-
-const loadWorker = () => {
-    let worker;
-    try {
-        // tslint:disable-next-line:no-var-requires
-        worker = require('worker-loader!./observation.worker');
-    } catch (e) {
-        if (process.env.NODE_ENV !== 'test') {
-            throw e;
-        }
-    }
-
-    return new worker() as Worker;
-};
-
 const observationStatistics = () => {
     const [isLoading, setIsLoading] = useState<boolean>(false);
     const [isCalculating, setIsCalculating] = useState<boolean>(false);
@@ -99,29 +82,23 @@ const observationStatistics = () => {
                     setIsLoading(false);
                     setHobData([]);
                 });
-
-            w = loadWorker();
-            w.addEventListener('message', handleMessage);
-
-            return () => {
-                if (w) {
-                    // @ts-ignore
-                    w.removeEventListener('message', handleMessage);
-                    w.terminate();
-                }
-            };
         }
     }, []);
 
     useEffect(() => {
-        if (hobData && Array.isArray(hobData) && w) {
+        if (hobData && Array.isArray(hobData)) {
             setIsCalculating(true);
-            w.postMessage({
+            asyncWorker({
                 type: CALCULATE_STATISTICS_INPUT,
                 data: {
                     data: hobData,
                     exclude: excludedWells
                 }
+            }).then((data: IStatistics) => {
+                setIsCalculating(false);
+                setStatistics(data);
+            }).catch(() => {
+                setIsCalculating(false);
             });
         }
     }, [hobData, excludedWells]);
@@ -145,14 +122,6 @@ const observationStatistics = () => {
         );
 
     }, [statistics]);
-
-    const handleMessage = (m: any) => {
-        const message: IObservationWorkerResult = m.data;
-        if (message && message.type === CALCULATE_STATISTICS_RESULT) {
-            setIsCalculating(false);
-            setStatistics(message.data);
-        }
-    };
 
     const handleChangeExcludesWells = (e: SyntheticEvent<HTMLElement, Event>, data: DropdownProps) => {
         const value: string[] = data.value as string[];
