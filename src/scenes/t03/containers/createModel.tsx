@@ -25,9 +25,9 @@ import ModflowModelCommand from '../commands/modflowModelCommand';
 import {DrawOnMapModal, UploadGeoJSONModal} from '../components/content/create';
 import {ModelMap} from '../components/maps';
 import defaults from '../defaults/createModel';
-import {WorkerComponent} from '../worker';
 import {CALCULATE_CELLS_INPUT} from '../worker/t03.worker';
 import {ICalculateCellsInputData} from '../worker/t03.worker.type';
+import {asyncWorker} from '../worker/worker';
 
 const navigation = [{
     name: 'Documentation',
@@ -206,17 +206,29 @@ class CreateModel extends React.Component<IProps, IState> {
         if (this.state.geometry === null) {
             return;
         }
-        const geometry = Geometry.fromObject(this.state.geometry);
 
+        const geometry = Geometry.fromObject(this.state.geometry);
         let boundingBox = BoundingBox.fromGeoJson(geometry.toGeoJSON());
         if (this.state.boundingBox !== null) {
             boundingBox = BoundingBox.fromObject(this.state.boundingBox);
         }
 
         this.setState({
-            calculating: true,
-            boundingBox: boundingBox.toObject()
-        });
+                calculating: true,
+                boundingBox: boundingBox.toObject()
+            }, () => asyncWorker({
+                type: CALCULATE_CELLS_INPUT,
+                data: {
+                    geometry: this.state.geometry,
+                    boundingBox: this.state.boundingBox,
+                    gridSize: this.state.gridSize
+                } as ICalculateCellsInputData
+            }).then((cells: ICells) => {
+                this.setState({cells, calculating: false});
+                this.validate();
+            }
+            ).catch(() => this.setState({error: true, calculating: false}))
+        );
     };
 
     public validate = () => {
@@ -395,23 +407,6 @@ class CreateModel extends React.Component<IProps, IState> {
                         </Grid.Row>
                     </Grid>
                 </Segment>
-                <WorkerComponent
-                    calculate={this.state.calculating}
-                    input={{
-                        type: CALCULATE_CELLS_INPUT,
-                        data: {
-                            geometry: this.state.geometry,
-                            boundingBox: this.state.boundingBox,
-                            gridSize: this.state.gridSize
-                        } as ICalculateCellsInputData
-                    }}
-                    onProgressFinished={(cells: ICells) => {
-                        this.setState({
-                            calculating: false,
-                            cells
-                        }, () => this.validate());
-                    }}
-                />
             </AppContainer>
         );
     }

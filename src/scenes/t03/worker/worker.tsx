@@ -30,6 +30,37 @@ const loadWorker = () => {
     return new worker() as Worker;
 };
 
+export const asyncWorker = (input: IProps['input']) => {
+
+    return new Promise<any>((resolve, reject) => {
+
+        const handleMessage = (m: any) => {
+            if (m.data.data) {
+                resolve(m.data.data);
+            } else {
+                reject('Error calculating.');
+            }
+
+            if (w) {
+                // @ts-ignore
+                w.removeEventListener('message', handleMessage);
+                w.terminate();
+            }
+        };
+
+        w = loadWorker();
+
+        if (!w) {
+            reject('Error loading worker');
+            return;
+        }
+
+        w.addEventListener('message', handleMessage);
+        w.postMessage(input);
+
+    });
+};
+
 const workerComponent = (props: IProps) => {
     useEffect(() => {
         w = loadWorker();
