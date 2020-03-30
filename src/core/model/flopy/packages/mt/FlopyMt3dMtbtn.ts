@@ -1,7 +1,8 @@
+import {Transport} from '../../../modflow';
 import {IPropertyValueObject} from '../../../types';
 import FlopyMt3dPackage from './FlopyMt3dPackage';
 
-export interface IFlopyMt3dMtAdv {
+export interface IFlopyMt3dMtBtn {
     MFStyleArr: boolean;
     DRYCell: boolean;
     Legacy99Stor: boolean;
@@ -47,13 +48,13 @@ export interface IFlopyMt3dMtAdv {
     mxstrn: number;
     ttsmult: number;
     ttsmax: number;
-    species_names: [] | string | null;
+    species_names: string[] | string | null;
     extension: string;
     unitnumber: number | null;
     filenames: string | null;
 }
 
-export const defaults: IFlopyMt3dMtAdv = {
+export const defaults: IFlopyMt3dMtBtn = {
     /**
      * @type {boolean}
      * @private
@@ -509,7 +510,7 @@ export const defaults: IFlopyMt3dMtAdv = {
  * All values with default null,
  * are optional and will be taken from the MF-Model.
  */
-class FlopyMt3dMtbtn extends FlopyMt3dPackage<IFlopyMt3dMtAdv> {
+class FlopyMt3dMtbtn extends FlopyMt3dPackage<IFlopyMt3dMtBtn> {
 
     public static create(obj = {}) {
         return this.fromObject(obj);
@@ -528,6 +529,13 @@ class FlopyMt3dMtbtn extends FlopyMt3dPackage<IFlopyMt3dMtAdv> {
         }
 
         return new this(d);
+    }
+
+    public update(transport: Transport) {
+        this.ncomp = transport.substances.length;
+        this.mcomp = transport.substances.length;
+        this.species_names = transport.substances.all.map((s) => s.name);
+        return this;
     }
 
     get MFStyleArr() {

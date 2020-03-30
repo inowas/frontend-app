@@ -48,6 +48,10 @@ class FlopyMt3dMtgcg extends FlopyMt3dPackage<IFlopyMt3dMtgcg> {
         return new this(d);
     }
 
+    public update() {
+        return this;
+    }
+
     get mxiter() {
         return this._props.mxiter;
     }

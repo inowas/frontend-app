@@ -20,7 +20,6 @@ import {IStressPeriods} from '../../../core/model/modflow/Stressperiods.type';
 import TimeUnit from '../../../core/model/modflow/TimeUnit';
 import {ITimeUnit} from '../../../core/model/modflow/TimeUnit.type';
 import {sendCommands} from '../../../services/api/commandHelper';
-import {calculateCells} from '../../../services/geoTools';
 import AppContainer from '../../shared/AppContainer';
 import ModflowModelCommand from '../commands/modflowModelCommand';
 import {DrawOnMapModal, UploadGeoJSONModal} from '../components/content/create';
@@ -106,7 +105,7 @@ class CreateModel extends React.Component<IProps, IState> {
     };
 
     public handleSave = () => {
-        if (!this.state.geometry || !this.state.boundingBox) {
+        if (!this.state.geometry || !this.state.boundingBox || this.state.cells.length === 0) {
             return;
         }
 
@@ -214,18 +213,9 @@ class CreateModel extends React.Component<IProps, IState> {
             boundingBox = BoundingBox.fromObject(this.state.boundingBox);
         }
 
-        const gridSize = GridSize.fromObject(this.state.gridSize);
-        this.setState({calculating: true});
-
-        calculateCells(geometry, boundingBox, gridSize).then((cells: Cells) => {
-            return (
-                this.setState({
-                    geometry: geometry.toObject(),
-                    boundingBox: boundingBox.toObject(),
-                    gridSize: gridSize.toObject(),
-                    cells: cells.toObject()
-                }, () => this.validate())
-            );
+        this.setState({
+            calculating: true,
+            boundingBox: boundingBox.toObject()
         });
     };
 
@@ -394,9 +384,10 @@ class CreateModel extends React.Component<IProps, IState> {
                                 <Button
                                     floated={'right'}
                                     primary={true}
-                                    type="submit"
+                                    type={'submit'}
                                     onClick={this.handleSave}
-                                    disabled={!this.state.validation[0]}
+                                    negative={!this.state.validation[0]}
+                                    loading={this.state.calculating}
                                 >
                                     Create model
                                 </Button>
@@ -405,6 +396,7 @@ class CreateModel extends React.Component<IProps, IState> {
                     </Grid>
                 </Segment>
                 <WorkerComponent
+                    calculate={this.state.calculating}
                     input={{
                         type: CALCULATE_CELLS_INPUT,
                         data: {
@@ -413,8 +405,11 @@ class CreateModel extends React.Component<IProps, IState> {
                             gridSize: this.state.gridSize
                         } as ICalculateCellsInputData
                     }}
-                    onProgressFinished={() => {
-                        console.log('FINISHED');
+                    onProgressFinished={(cells: ICells) => {
+                        this.setState({
+                            calculating: false,
+                            cells
+                        }, () => this.validate());
                     }}
                 />
             </AppContainer>

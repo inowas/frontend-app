@@ -54,6 +54,10 @@ class FlopyMt3dMtrct extends FlopyMt3dPackage<IFlopyMt3dMtrct> {
         return new this(d);
     }
 
+    public update() {
+        return this;
+    }
+
     get isothm() {
         return this._props.isothm;
     }

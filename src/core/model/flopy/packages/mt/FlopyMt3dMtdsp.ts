@@ -44,6 +44,10 @@ class FlopyMt3dMtdsp extends FlopyMt3dPackage<IFlopyMt3dMtdsp> {
         return new this(d);
     }
 
+    public update() {
+        return this;
+    }
+
     get al() {
         return this._props.al;
     }

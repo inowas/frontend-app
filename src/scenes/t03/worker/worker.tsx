@@ -5,6 +5,7 @@ import {IStatistics} from '../components/content/observation/statistics';
 import {CALCULATE_CELLS_RESULT, CALCULATE_PACKAGES_RESULT, CALCULATE_STATISTICS_RESULT} from './t03.worker';
 
 interface IProps {
+    calculate: boolean;
     input: {
         type: string;
         data: any;
@@ -19,7 +20,7 @@ const loadWorker = () => {
     let worker;
     try {
         // tslint:disable-next-line:no-var-requires
-        worker = require('worker-loader!./t032.worker');
+        worker = require('worker-loader!./t03.worker');
     } catch (e) {
         if (process.env.NODE_ENV !== 'test') {
             throw e;
@@ -44,10 +45,10 @@ const workerComponent = (props: IProps) => {
     }, []);
 
     useEffect(() => {
-        if (w) {
+        if (w && props.calculate) {
             w.postMessage(props.input);
         }
-    }, [props.input]);
+    }, [props.calculate]);
 
     const handleMessage = (m: any) => {
         const messageType = m && m.data && m.data.type;

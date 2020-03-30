@@ -37,11 +37,7 @@ ctx.addEventListener('message', (e) => {
         return;
     }
 
-    // @ts-ignore
-    postMessage('TEST!!');
-
     const messageType = e.data.type;
-
     let input;
     let result;
 

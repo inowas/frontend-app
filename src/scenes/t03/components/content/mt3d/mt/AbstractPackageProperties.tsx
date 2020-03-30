@@ -5,7 +5,7 @@ import FlopyMt3dPackage from '../../../../../../core/model/flopy/packages/mt/Flo
 import {PopupPosition} from '../../../../../types';
 
 export interface IProps {
-    mtPackage: FlopyMt3dPackage;
+    mtPackage: FlopyMt3dPackage<any>;
     onChange: (mtPackage: any) => void;
     readOnly: boolean;
 }

@@ -1,3 +1,4 @@
+import {Transport} from '../../../modflow';
 import {Boundary, BoundaryCollection} from '../../../modflow/boundaries';
 import SubstanceCollection from '../../../modflow/transport/SubstanceCollection';
 import {IPropertyValueObject} from '../../../types';
@@ -42,25 +43,6 @@ export const defaults: IFlopyMt3dMtssm = {
 };
 
 class FlopyMt3dMtssm extends FlopyMt3dPackage<IFlopyMt3dMtssm> {
-
-    public static create(obj = {}) {
-        return this.fromObject(obj);
-    }
-
-    public static fromDefault() {
-        return this.fromObject({});
-    }
-
-    public static fromObject(obj: IPropertyValueObject): FlopyMt3dMtssm {
-        const d: any = FlopyMt3dPackage.cloneDeep(defaults);
-        for (const key in d) {
-            if (d.hasOwnProperty(key) && obj.hasOwnProperty(key)) {
-                d[key] = obj[key];
-            }
-        }
-
-        return new this(d);
-    }
 
     get crch() {
         return this._props.crch;
@@ -116,6 +98,25 @@ class FlopyMt3dMtssm extends FlopyMt3dPackage<IFlopyMt3dMtssm> {
 
     set filenames(value) {
         this._props.filenames = value;
+    }
+
+    public static create(transport: Transport, boundaries: BoundaryCollection) {
+        return this.fromDefault().update(transport, boundaries);
+    }
+
+    public static fromDefault() {
+        return this.fromObject({});
+    }
+
+    public static fromObject(obj: IPropertyValueObject): FlopyMt3dMtssm {
+        const d: any = FlopyMt3dPackage.cloneDeep(defaults);
+        for (const key in d) {
+            if (d.hasOwnProperty(key) && obj.hasOwnProperty(key)) {
+                d[key] = obj[key];
+            }
+        }
+
+        return new this(d);
     }
 
     public static calculateSpData(substances: SubstanceCollection, boundaries: BoundaryCollection) {
@@ -200,6 +201,11 @@ class FlopyMt3dMtssm extends FlopyMt3dPackage<IFlopyMt3dMtssm> {
         });
         return obj;
     };
+
+    public update(transport: Transport, boundaries: BoundaryCollection) {
+        this.stress_period_data = FlopyMt3dMtssm.calculateSpData(transport.substances, boundaries);
+        return this;
+    }
 }
 
 export default FlopyMt3dMtssm;

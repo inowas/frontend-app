@@ -64,6 +64,10 @@ class FlopyMt3dMtadv extends FlopyMt3dPackage<IFlopyMt3dMtAdv> {
         return new this(d);
     }
 
+    public update() {
+        return this;
+    }
+
     get mixelm() {
         return this._props.mixelm;
     }
