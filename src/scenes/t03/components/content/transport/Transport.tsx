@@ -1,214 +1,182 @@
-import React from 'react';
-import {connect} from 'react-redux';
-import {withRouter} from 'react-router-dom';
+import React, {useEffect, useRef, useState} from 'react';
+import {useDispatch, useSelector} from 'react-redux';
+import {useParams} from 'react-router-dom';
 import {Button, Grid, Menu, Segment} from 'semantic-ui-react';
-import FlopyPackages from '../../../../../core/model/flopy/packages/FlopyPackages';
+import {EMessageState, IMessage} from '../../../../../core/model/messages/Message.type';
+import MessagesCollection from '../../../../../core/model/messages/MessagesCollection';
 import {ModflowModel} from '../../../../../core/model/modflow';
 import {BoundaryCollection} from '../../../../../core/model/modflow/boundaries';
 import {Substance, Transport} from '../../../../../core/model/modflow/transport';
+import {ISubstance} from '../../../../../core/model/modflow/transport/Substance.type';
+import {IRootReducer} from '../../../../../reducers';
 import {sendCommand} from '../../../../../services/api';
-import ContentToolBar from '../../../../shared/ContentToolbar';
-import {updatePackages, updateTransport} from '../../../actions/actions';
+import ContentToolBar from '../../../../shared/ContentToolbar2';
+import {addMessage, removeMessage, updateMessage, updateTransport} from '../../../actions/actions';
 import Command from '../../../commands/modflowModelCommand';
+import {messageDirty, messageError, messageSaving} from '../../../defaults/messages';
 import SubstanceDetails from './SubstanceDetails';
 import SubstanceList from './SubstanceList';
 
-interface IOwnProps {
-    history: any;
-    location: any;
-    match: any;
-    readOnly?: boolean;
-}
+const transport = () => {
+    const [selectedSubstance, setSelectedSubstance] = useState<ISubstance | null>(null);
 
-interface IDispatchProps {
-    updatePackages: (packages: FlopyPackages) => any;
-    updateTransport: (transport: Transport) => any;
-}
+    const T03 = useSelector((state: IRootReducer) => state.T03);
+    const model = T03.model ? ModflowModel.fromObject(T03.model) : null;
+    const boundaries = T03.boundaries ? BoundaryCollection.fromObject(T03.boundaries) : null;
+    const transportInstance = T03.transport ? Transport.fromObject(T03.transport) : null;
+    const messages = MessagesCollection.fromObject(T03.messages);
 
-interface IStateProps {
-    boundaries: BoundaryCollection;
-    model: ModflowModel;
-    packages: FlopyPackages;
-    transport: Transport;
-}
+    const dispatch = useDispatch();
+    const {property} = useParams();
 
-type Props = IStateProps & IDispatchProps & IOwnProps;
+    const transportRef = useRef<Transport>();
+    const editingState = useRef<{ [key: string]: IMessage | null }>({
+        dirty: null,
+        saving: null
+    });
 
-interface IState {
-    isDirty: boolean;
-    isError: boolean;
-    isLoading: boolean;
-    selectedSubstanceId: string | null;
-}
+    if (!boundaries || !model || !transportInstance) {
+        return (
+            <Segment color={'grey'} loading={true}/>
+        );
+    }
 
-class TransportUi extends React.Component<Props, IState> {
-
-    constructor(props: Props) {
-        super(props);
-        this.state = {
-            isDirty: false,
-            isError: false,
-            isLoading: false,
-            selectedSubstanceId: null
+    useEffect(() => {
+        if (!selectedSubstance && transportInstance.substances.length > 0) {
+            handleSubstanceListClick(transportInstance.substances.first.id);
+        }
+        return function cleanup() {
+            handleSave();
         };
-    }
+    }, []);
 
-    public componentDidMount() {
-        if (!this.state.selectedSubstanceId && this.props.transport.substances.length > 0) {
-            this.handleSubstanceListClick(this.props.transport.substances.first.id);
+    useEffect(() => {
+        editingState.current = messages.getEditingState(property);
+        if (transportInstance) {
+            transportRef.current = transportInstance;
         }
-    }
+    }, [messages, transportInstance]);
 
-    public componentWillReceiveProps(nextProps: Props) {
-        if (!this.state.selectedSubstanceId && nextProps.transport.substances.length > 0) {
-            this.handleSubstanceListClick(nextProps.transport.substances.first.id);
+    useEffect(() => {
+        if (!selectedSubstance && transportInstance.substances.length > 0) {
+            handleSubstanceListClick(transportInstance.substances.first.id);
         }
-    }
+    }, [transportInstance]);
 
-    public handleAddSubstance = () => {
+    const handleAddSubstance = () => {
         const substance = Substance.create('new substance');
-        const transport = this.props.transport;
-        transport.addSubstance(substance);
-        transport.enabled = true;
-        this.props.updateTransport(transport);
-        return this.setState({selectedSubstanceId: substance.id});
+        const cTransport = transportInstance;
+        cTransport.addSubstance(substance);
+        cTransport.enabled = true;
+        dispatch(updateTransport(cTransport));
+        setSelectedSubstance(substance);
     };
 
-    public handleSubstanceListClick = (selectedSubstanceId: string) => {
-        return this.setState({selectedSubstanceId});
+    const handleSubstanceListClick = (id: string) => {
+        const substance = transportInstance.substances.findById(id);
+        setSelectedSubstance(substance || null);
     };
 
-    public handleRemoveSubstance = (substanceId: string) => {
-        const transport = this.props.transport;
-        transport.removeSubstanceById(substanceId);
-        this.props.updateTransport(transport);
-
-        if (transport.substances.length === 0) {
-            return this.setState({selectedSubstanceId: null, isDirty: true});
+    const handleRemoveSubstance = (id: string) => {
+        const cTransport = transportInstance;
+        cTransport.removeSubstanceById(id);
+        dispatch(updateTransport(cTransport));
+        if (!editingState.current.dirty) {
+            dispatch(addMessage(messageDirty(property)));
         }
 
-        return this.setState({selectedSubstanceId: transport.substances.first.id, isDirty: true});
+        if (cTransport.substances.length === 0) {
+            return setSelectedSubstance(null);
+        }
+        setSelectedSubstance(cTransport.substances.first);
     };
 
-    public handleChangeSubstance = (substance: Substance) => {
-        const transport = this.props.transport;
-        transport.updateSubstance(substance);
-        this.props.updateTransport(transport);
-        return this.setState({selectedSubstanceId: substance.id, isDirty: true});
+    const handleChangeSubstance = (substance: Substance) => {
+        const cTransport = transportInstance;
+        cTransport.updateSubstance(substance);
+        dispatch(updateTransport(cTransport));
+        if (!editingState.current.dirty) {
+            dispatch(addMessage(messageDirty(property)));
+        }
+        setSelectedSubstance(substance.toObject());
     };
 
-    public handleToggleEnabled = () => {
-        const transport = this.props.transport;
-        transport.enabled = !transport.enabled;
-        this.props.updateTransport(transport);
-        return this.setState({isDirty: true});
+    const handleToggleEnabled = () => {
+        const cTransport = transportInstance;
+        cTransport.enabled = !cTransport.enabled;
+        dispatch(updateTransport(cTransport));
+        if (!editingState.current.dirty) {
+            dispatch(addMessage(messageDirty(property)));
+        }
     };
 
-    public onSave = () => {
-        const {boundaries, packages, transport} = this.props;
-        this.setState({isLoading: true});
+    const handleSave = () => {
+        if (!editingState.current.dirty || !transportRef.current) {
+            return;
+        }
+        const message = messageSaving(property);
+        dispatch(addMessage(message));
         return sendCommand(
             Command.updateTransport({
-                id: this.props.model.id,
-                transport: transport.toObject(),
+                id: model.id,
+                transport: transportRef.current.toObject(),
             }), () => {
-                this.props.updateTransport(transport);
-                this.setState({
-                    isDirty: false,
-                    isLoading: false
-                });
-
-                const mt = packages.mt;
-                mt.recalculate(transport, boundaries);
-                packages.mt = mt;
-
-                this.props.updatePackages(packages);
-                sendCommand(
-                    Command.updateFlopyPackages(this.props.model.id, packages)
-                );
-            }, () => this.setState({isError: true})
+                // TODO: Recalculate MT-Package
+                if (editingState.current.dirty) {
+                    dispatch(removeMessage(editingState.current.dirty));
+                }
+                return dispatch(updateMessage({...message, state: EMessageState.SUCCESS}));
+            }, (e) => dispatch(addMessage(messageError(property, e)))
         );
     };
 
-    public render() {
-        const {boundaries, model, transport} = this.props;
-        const {substances} = transport;
-        const {readOnly} = model;
-
-        const {selectedSubstanceId, isDirty, isError} = this.state;
-        const selectedSubstance = selectedSubstanceId ?
-            substances.findById(selectedSubstanceId) || undefined : undefined;
-        const noBoundaryError = substances.all.filter((s) => s.boundaryConcentrations.length === 0).length > 0;
-
-        return (
-            <Segment color={'grey'}>
-                <Grid>
-                    <Grid.Row>
-                        <Grid.Column width={4}>
-                            <Menu fluid={true} vertical={true} tabular={true}>
-                                <Menu.Item>
-                                    <Button
-                                        disabled={readOnly}
-                                        negative={!transport.enabled}
-                                        positive={transport.enabled}
-                                        icon={transport.enabled ? 'toggle on' : 'toggle off'}
-                                        labelPosition="left"
-                                        onClick={this.handleToggleEnabled}
-                                        content={transport.enabled ? 'Enabled' : 'Disabled'}
-                                        style={{marginLeft: '-20px', width: '200px'}}
-                                    />
-                                </Menu.Item>
-                                <SubstanceList
-                                    addSubstance={this.handleAddSubstance}
-                                    onClick={this.handleSubstanceListClick}
-                                    onRemove={this.handleRemoveSubstance}
-                                    selected={selectedSubstanceId || undefined}
-                                    substances={substances}
-                                    readOnly={readOnly}
+    return (
+        <Segment color={'grey'}>
+            <Grid>
+                <Grid.Row>
+                    <Grid.Column width={4}>
+                        <Menu fluid={true} vertical={true} tabular={true}>
+                            <Menu.Item>
+                                <Button
+                                    disabled={model.readOnly}
+                                    negative={!transportInstance.enabled}
+                                    positive={transportInstance.enabled}
+                                    icon={transportInstance.enabled ? 'toggle on' : 'toggle off'}
+                                    labelPosition="left"
+                                    onClick={handleToggleEnabled}
+                                    content={transportInstance.enabled ? 'Enabled' : 'Disabled'}
+                                    style={{marginLeft: '-20px', width: '200px'}}
                                 />
-                            </Menu>
-                        </Grid.Column>
-                        <Grid.Column width={12}>
-                            <div>
-                                <ContentToolBar
-                                    isDirty={isDirty}
-                                    isError={isError || noBoundaryError}
-                                    isVisible={!readOnly}
-                                    message={noBoundaryError ? {warning: true, content: 'No Boundary'} : undefined}
-                                    buttonSave={true}
-                                    onSave={this.onSave}
-                                />
-                                <SubstanceDetails
-                                    substance={selectedSubstance}
-                                    boundaries={boundaries}
-                                    onChange={this.handleChangeSubstance}
-                                    readOnly={readOnly}
-                                    stressperiods={model.stressperiods}
-                                />
-                            </div>
-                        </Grid.Column>
-                    </Grid.Row>
-                </Grid>
-            </Segment>
-        );
-    }
-}
-
-const mapStateToProps = (state: any) => {
-    return {
-        boundaries: BoundaryCollection.fromObject(state.T03.boundaries),
-        model: ModflowModel.fromObject(state.T03.model),
-        packages: FlopyPackages.fromObject(state.T03.packages.data),
-        transport: Transport.fromObject(state.T03.transport)
-    };
+                            </Menu.Item>
+                            <SubstanceList
+                                addSubstance={handleAddSubstance}
+                                onClick={handleSubstanceListClick}
+                                onRemove={handleRemoveSubstance}
+                                selected={selectedSubstance ? selectedSubstance.id : undefined}
+                                substances={transportInstance.substances}
+                                readOnly={model.readOnly}
+                            />
+                        </Menu>
+                    </Grid.Column>
+                    <Grid.Column width={12}>
+                        <div>
+                            <ContentToolBar
+                                buttonSave={true}
+                                onSave={handleSave}
+                            />
+                            <SubstanceDetails
+                                substance={selectedSubstance ? Substance.fromObject(selectedSubstance) : undefined}
+                                boundaries={boundaries}
+                                onChange={handleChangeSubstance}
+                                readOnly={model.readOnly}
+                                stressperiods={model.stressperiods}
+                            />
+                        </div>
+                    </Grid.Column>
+                </Grid.Row>
+            </Grid>
+        </Segment>
+    );
 };
 
-const mapDispatchToProps = (dispatch: any): IDispatchProps => ({
-    updatePackages: (packages: FlopyPackages) => dispatch(updatePackages(packages)),
-    updateTransport: (transport: Transport) => dispatch(updateTransport(transport))
-});
-
-export default withRouter(connect<IStateProps, IDispatchProps, IOwnProps>(
-    mapStateToProps,
-    mapDispatchToProps)
-(TransportUi));
+export default transport;

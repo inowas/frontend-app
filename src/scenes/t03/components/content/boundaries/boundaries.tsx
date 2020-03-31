@@ -94,16 +94,6 @@ const boundaries = (props: IProps) => {
     }, [props.types]);
 
     useEffect(() => {
-        setIsLoading(true);
-        if (!pid) {
-            return redirectToFirstBoundary();
-        }
-        if (filteredBoundaries().findById(pid)) {
-            return fetchBoundary(id, pid);
-        }
-    }, [boundaries]);
-
-    useEffect(() => {
         if (pid !== prevPid) {
             setSelectedBoundary(null);
             if (filteredBoundaries().findById(pid)) {
@@ -117,6 +107,7 @@ const boundaries = (props: IProps) => {
     const redirectToFirstBoundary = () => {
         if (filteredBoundaries().length > 0) {
             const bid = filteredBoundaries().first.id;
+            setIsLoading(false);
             return history.push(`${baseUrl}/${id}/${property}/!/${bid}`);
         }
         if (pid) {

@@ -38,6 +38,6 @@ export interface IT03Reducer {
     optimization: any;
     packages: IPackagesReducer;
     soilmodel: ISoilmodel;
-    transport: ITransport | undefined;
+    transport: ITransport | null;
     variableDensity: IVariableDensity;
 }

@@ -2,12 +2,13 @@ import moment from 'moment';
 import React from 'react';
 import {useSelector} from 'react-redux';
 import {Header, List, Segment} from 'semantic-ui-react';
+import getConfig from '../../config.default';
 import {IMessage} from '../../core/model/messages/Message.type';
 import MessagesCollection from '../../core/model/messages/MessagesCollection';
 import {IRootReducer} from '../../reducers';
 
 const messageBox = () => {
-    const debugging = true;
+    const debugging = getConfig().VERSION === 'dev';
 
     const T03 = useSelector((state: IRootReducer) => state.T03);
     const messages = debugging ?
