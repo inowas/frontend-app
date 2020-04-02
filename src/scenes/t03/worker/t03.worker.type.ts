@@ -39,3 +39,11 @@ export interface ICalculatePackagesInputData {
     transport: ITransport;
     variableDensity: IVariableDensity;
 }
+
+export interface ICalculateMfPackagesInputData {
+    p: string | string[] | null;
+    packages: IFlopyPackages;
+    model: IModflowModel;
+    soilmodel: ISoilmodel;
+    boundaries: IBoundary[];
+}

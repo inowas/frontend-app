@@ -1,7 +1,7 @@
-import {cloneDeep} from 'lodash';
+import {GenericObject} from '../../genericObject/GenericObject';
 import {IVariableDensity} from './VariableDensity.type';
 
-class VariableDensity {
+class VariableDensity extends GenericObject<IVariableDensity> {
 
     get enabled() {
         return this._props.vdfEnabled;
@@ -27,23 +27,24 @@ class VariableDensity {
         this._props.vscEnabled = value;
     }
 
+    public static fromDefault() {
+        return new VariableDensity({
+            vdfEnabled: false,
+            vscEnabled: false
+        });
+    }
+
     public static fromObject(obj: IVariableDensity) {
         return new VariableDensity(obj);
     }
 
     public static fromQuery(obj: IVariableDensity) {
+        if (Array.isArray(obj) && obj.length === 0) {
+            return VariableDensity.fromDefault();
+        }
+
         return VariableDensity.fromObject(obj);
     }
-
-    private readonly _props: IVariableDensity;
-
-    constructor(props: IVariableDensity) {
-        this._props = cloneDeep(props);
-    }
-
-    public toObject = () => {
-        return this._props;
-    };
 }
 
 export default VariableDensity;

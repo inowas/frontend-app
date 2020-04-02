@@ -1,8 +1,9 @@
+import {GenericObject} from '../../genericObject/GenericObject';
 import Substance from './Substance';
 import SubstanceCollection from './SubstanceCollection';
 import {ITransport} from './Transport.type';
 
-class Transport {
+class Transport extends GenericObject<ITransport> {
 
     get enabled() {
         return this._props.enabled;
@@ -21,6 +22,9 @@ class Transport {
     }
 
     public static fromQuery(query: ITransport) {
+        if (Array.isArray(query) && query.length === 0) {
+            return Transport.fromDefault();
+        }
         return new Transport(query);
     }
 
@@ -28,10 +32,11 @@ class Transport {
         return new Transport(obj);
     }
 
-    public _props: ITransport;
-
-    constructor(props: ITransport) {
-        this._props = props;
+    public static fromDefault() {
+        return Transport.fromObject({
+            enabled: false,
+            substances: []
+        });
     }
 
     public addSubstance = (substance: Substance) => {
@@ -50,8 +55,6 @@ class Transport {
             return s;
         });
     };
-
-    public toObject = () => this._props;
 }
 
 export default Transport;

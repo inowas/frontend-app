@@ -4,12 +4,21 @@ import React from 'react';
 import {RouteComponentProps, withRouter} from 'react-router-dom';
 import {Button, Checkbox, Form, Grid, Header, Icon, Segment} from 'semantic-ui-react';
 import uuidv4 from 'uuid/v4';
+import FlopyPackages from '../../../core/model/flopy/packages/FlopyPackages';
 import BoundingBox from '../../../core/model/geometry/BoundingBox';
 import {IBoundingBox} from '../../../core/model/geometry/BoundingBox.type';
 import {ICells} from '../../../core/model/geometry/Cells.type';
 import {GeoJson} from '../../../core/model/geometry/Geometry.type';
 import {IGridSize} from '../../../core/model/geometry/GridSize.type';
-import {Cells, Geometry, GridSize, ModflowModel, Stressperiods} from '../../../core/model/modflow';
+import {
+    Cells,
+    Geometry,
+    GridSize,
+    ModflowModel,
+    Stressperiods,
+    Transport,
+    VariableDensity
+} from '../../../core/model/modflow';
 import {BoundaryCollection} from '../../../core/model/modflow/boundaries';
 import LengthUnit from '../../../core/model/modflow/LengthUnit';
 import {ILengthUnit} from '../../../core/model/modflow/LengthUnit.type';
@@ -84,7 +93,7 @@ class CreateModel extends React.Component<IProps, IState> {
         };
     }
 
-    public getPayload = () => {
+    public getModel = () => {
         if (!this.state.geometry || !this.state.boundingBox) {
             return;
         }
@@ -101,7 +110,7 @@ class CreateModel extends React.Component<IProps, IState> {
             TimeUnit.fromInt(this.state.timeUnit),
             Stressperiods.fromObject(this.state.stressperiods),
             this.state.isPublic
-        )).toCreatePayload();
+        ));
     };
 
     public handleSave = () => {
@@ -111,28 +120,39 @@ class CreateModel extends React.Component<IProps, IState> {
 
         const commands = [];
 
-        const soilmodel = Soilmodel.fromDefaults(
-            Geometry.fromObject(this.state.geometry), Cells.fromObject(this.state.cells)
-        );
-
-        const createModelPayload = this.getPayload();
-        if (!createModelPayload) {
+        const model = this.getModel();
+        if (!model) {
             return;
         }
 
-        commands.push(ModflowModelCommand.createModflowModel(createModelPayload));
+        const soilmodel = Soilmodel.fromDefaults(
+            Geometry.fromObject(this.state.geometry),
+            Cells.fromObject(this.state.cells)
+        );
+
+        commands.push(ModflowModelCommand.createModflowModel(model));
         commands.push(ModflowModelCommand.addLayer(
-            createModelPayload.id,
+            model.id,
             SoilmodelLayer.fromObject(soilmodel.layersCollection.first as ISoilmodelLayer)
         ));
         commands.push(ModflowModelCommand.updateSoilmodelProperties({
-            id: createModelPayload.id,
+            id: model.id,
             properties: soilmodel.toObject().properties
         }));
 
+        commands.push(ModflowModelCommand.updateFlopyPackages(
+            model.id,
+            FlopyPackages.createFromModelInstances(
+                model,
+                soilmodel,
+                new BoundaryCollection([]),
+                Transport.fromDefault(),
+                VariableDensity.fromDefault()
+            )));
+
         return sendCommands(
             commands,
-            () => this.props.history.push(`/tools/T03/${createModelPayload.id}`),
+            () => this.props.history.push(`/tools/T03/${model.id}`),
             (e: any) => this.setState({error: e})
         );
     };
@@ -236,10 +256,14 @@ class CreateModel extends React.Component<IProps, IState> {
             return this.setState({validation: [false, []]});
         }
 
-        const command = ModflowModelCommand.createModflowModel(this.getPayload());
-        command.validate().then(
-            (validation) => this.setState({validation})
-        );
+        const model = this.getModel();
+        if (model) {
+            ModflowModelCommand.createModflowModel(model)
+                .validate()
+                .then(
+                    (validation) => this.setState({validation})
+                );
+        }
     };
 
     public render() {

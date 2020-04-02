@@ -143,9 +143,7 @@ const t03 = (props: IProps) => {
                         </Grid.Column>
                         <Grid.Column width={13}>
                             <MessageBox/>
-                            <ContentWrapper
-                                readOnly={props.model ? props.model.readOnly : false}
-                            />
+                            <ContentWrapper/>
                         </Grid.Column>
                     </Grid.Row>
                 </Grid>

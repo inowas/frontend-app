@@ -1,21 +1,19 @@
 import React from 'react';
-import {Redirect, RouteComponentProps, withRouter} from 'react-router-dom';
+import {Redirect, useLocation, useParams, useRouteMatch} from 'react-router-dom';
 import {BoundaryFactory} from '../../../../core/model/modflow/boundaries';
 import {BoundaryType} from '../../../../core/model/modflow/boundaries/Boundary.type';
 import * as Content from './index';
 
-interface IOwnProps {
-    readOnly: boolean;
+interface IRouterProps {
+    id: string;
+    property: string;
+    type?: string;
 }
 
-type IProps = IOwnProps & RouteComponentProps<{
-    id: string;
-    property?: string;
-    type?: string;
-}>;
+const contentWrapper = () => {
 
-const contentWrapper = (props: IProps) => {
-    const {id, property, type} = props.match.params;
+    const params: IRouterProps = useParams();
+    const {id, property, type} = params;
 
     if (property === 'discretization') {
         return (<Content.Discretization/>);
@@ -52,20 +50,8 @@ const contentWrapper = (props: IProps) => {
         return (<Content.Statistics/>);
     }
 
-    if (property === 'modflow') {
-        return (<Content.Modflow/>);
-    }
-
-    if (property === 'mt3d') {
-        return (<Content.Mt3d/>);
-    }
-
-    if (property === 'seawat') {
-        return (<Content.Seawat/>);
-    }
-
-    if (property === 'calculation') {
-        return (<Content.Calculation/>);
+    if (['modflow', 'mt3d', 'seawat', 'calculation'].includes(property)) {
+        return (<Content.PackageActualizationWrapper property={property}/>);
     }
 
     if (property === 'flow') {
@@ -87,11 +73,14 @@ const contentWrapper = (props: IProps) => {
         return (<Content.Export/>);
     }
 
-    const path = props.match.path;
+    const match = useRouteMatch();
+    const path = match.path;
     const basePath = path.split(':')[0];
+
+    const location = useLocation();
     return (
-        <Redirect to={basePath + id + '/discretization' + props.location.search}/>
+        <Redirect to={basePath + id + '/discretization' + location.search}/>
     );
 };
 
-export default withRouter(contentWrapper);
+export default contentWrapper;

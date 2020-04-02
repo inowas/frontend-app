@@ -108,7 +108,7 @@ export default class FlopyPackages {
         const mf = FlopyModflow.create(model, soilmodel, boundaries);
         const mt = FlopyMt3d.create(transport, boundaries);
         const modpath = new FlopyModpath();
-        const swt = FlopySeawat.createFromVariableDensity(variableDensity);
+        const swt = FlopySeawat.create(variableDensity);
         return FlopyPackages.create(model.id, mf, modpath, mt, swt);
     }
 
@@ -174,8 +174,17 @@ export default class FlopyPackages {
         this.mf = this.mf.recalculate(model, soilmodel, boundaries);
         this.mf.setTransportEnabled(transport.enabled);
         this.mt = this.mt.recalculate(transport, boundaries);
-        this.swt = this.swt.update(variableDensity);
+        this.swt = this.swt.recalculate(variableDensity);
         return this;
+    };
+
+    public recalculateMfPackages = (
+        p: null | string | string[],
+        model: ModflowModel,
+        soilmodel: Soilmodel,
+        boundaries: BoundaryCollection
+    ) => {
+        this.mf = this.mf.recalculatePackages(p, model, soilmodel, boundaries);
     };
 
     public getData = () => {

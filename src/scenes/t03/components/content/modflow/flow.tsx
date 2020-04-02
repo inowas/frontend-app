@@ -1,6 +1,6 @@
-import React, {useEffect, useRef, useState} from 'react';
-import {useDispatch, useSelector} from 'react-redux';
-import {useHistory, useParams} from 'react-router-dom';
+import React, {useEffect, useState} from 'react';
+import {useDispatch} from 'react-redux';
+import {useHistory, useRouteMatch} from 'react-router-dom';
 import {Grid, Menu, Segment} from 'semantic-ui-react';
 import FlopyPackages from '../../../../../core/model/flopy/packages/FlopyPackages';
 import {
@@ -21,16 +21,12 @@ import {
 import FlopyModflow, {flowPackages, packagesMap} from '../../../../../core/model/flopy/packages/mf/FlopyModflow';
 import {IFlopyModflow, IFlopyModflowPackage} from '../../../../../core/model/flopy/packages/mf/FlopyModflow.type';
 import FlopyModflowPackage from '../../../../../core/model/flopy/packages/mf/FlopyModflowPackage';
-import {EMessageState, IMessage} from '../../../../../core/model/messages/Message.type';
-import MessagesCollection from '../../../../../core/model/messages/MessagesCollection';
 import {ModflowModel, Soilmodel} from '../../../../../core/model/modflow';
 import {BoundaryCollection} from '../../../../../core/model/modflow/boundaries';
-import {IRootReducer} from '../../../../../reducers';
 import {sendCommand} from '../../../../../services/api';
-import ContentToolBar from '../../../../shared/ContentToolbar2';
-import {addMessage, removeMessage, updateMessage, updatePackages} from '../../../actions/actions';
+import ContentToolBar from '../../../../shared/ContentToolbar';
+import {updatePackages} from '../../../actions/actions';
 import ModflowModelCommand from '../../../commands/modflowModelCommand';
-import {messageDirty, messageError, messageSaving} from '../../../defaults/messages';
 import {
     BasPackageProperties,
     ChdPackageProperties,
@@ -67,90 +63,59 @@ const sideBar = (boundaries: BoundaryCollection) => ([
     {id: 'oc', name: 'Output control', enabled: true}
 ]);
 
-const baseUrl = '/tools/T03';
+interface IProps {
+    boundaries: BoundaryCollection;
+    model: ModflowModel;
+    soilmodel: Soilmodel;
+    packages: FlopyPackages | null;
+}
 
-const flow = () => {
-    const [mf, setMf] = useState<IFlopyModflow>();
+const flow = (props: IProps) => {
+    const [mf, setMf] = useState<IFlopyModflow | null>(
+        props.packages ? props.packages.mf.toObject() : null
+    );
+    const [isDirty, setIsDirty] = useState<boolean>(false);
     const [isLoading, setIsLoading] = useState<boolean>(false);
-
-    const T03 = useSelector((state: IRootReducer) => state.T03);
-    const model = T03.model ? ModflowModel.fromObject(T03.model) : null;
-    const boundaries = T03.boundaries ? BoundaryCollection.fromObject(T03.boundaries) : null;
-    const packages = T03.packages.data ? FlopyPackages.fromObject(T03.packages.data) : null;
-    const soilmodel = T03.soilmodel ? Soilmodel.fromObject(T03.soilmodel) : null;
-    const messages = MessagesCollection.fromObject(T03.messages);
-
-    const mfRef = useRef<IFlopyModflow>();
-    const editingState = useRef<{ [key: string]: IMessage | null }>({
-        dirty: null,
-        saving: null
-    });
-
-    if (!boundaries || !model || !packages || !soilmodel) {
-        return (
-            <Segment color={'grey'} loading={true}/>
-        );
-    }
-
-    const {property, type} = useParams();
 
     const dispatch = useDispatch();
     const history = useHistory();
+    const match = useRouteMatch();
 
     useEffect(() => {
-        setIsLoading(true);
-        setMf(packages.mf.toObject());
-        recalculate();
-        return function cleanup() {
-            handleSave();
-        };
-    }, []);
-
-    useEffect(() => {
-        editingState.current = messages.getEditingState(property);
-        if (mf) {
-            mfRef.current = mf;
+        const {packages} = props;
+        if (packages) {
+            setMf(packages.mf.toObject());
         }
-    }, [messages, mf]);
-
-    const recalculate = () => {
-        const cPackages = FlopyPackages.fromObject(packages.toObject());
-        cPackages.mf.recalculate(model, soilmodel, boundaries);
-        setIsLoading(false);
-        return dispatch(updatePackages(cPackages));
-    };
+    }, [props.packages]);
 
     const handleSave = () => {
-        if (!mfRef.current || !editingState.current.dirty) {
+        if (!mf || !props.model || !props.packages) {
             return null;
         }
-        const message = messageSaving(property);
-        dispatch(addMessage(message));
-        packages.modelId = model.id;
-        packages.mf = FlopyModflow.fromObject(mfRef.current);
+        const packages = props.packages;
+        packages.modelId = props.model.id;
+        packages.mf = FlopyModflow.fromObject(mf);
+        setIsLoading(true);
         sendCommand(
-            ModflowModelCommand.updateFlopyPackages(model.id, packages),
+            ModflowModelCommand.updateFlopyPackages(props.model.id, packages),
             () => {
                 dispatch(updatePackages(packages));
-                if (editingState.current.dirty) {
-                    dispatch(removeMessage(editingState.current.dirty));
-                }
-                return dispatch(updateMessage({...message, state: EMessageState.SUCCESS}));
-            }, (e) => dispatch(addMessage(messageError(property, e)))
+                setIsLoading(false);
+                setIsDirty(false);
+            }
         );
     };
 
-    const handleUndo = () => {
-        if (!editingState.current.dirty) {
-            return;
+    const handleClickEdit = (layerId: string, set: string, parameter: string) => {
+        if (!props.model) {
+            return null;
         }
-        dispatch(removeMessage(editingState.current.dirty));
-        setMf(packages.mf.toObject());
+        const path = match.path;
+        const basePath = path.split(':')[0];
+        return history.push(
+            `${basePath}${props.model.id}/soilmodel/layers/${layerId}?type=${set}&param=${parameter}`
+        );
     };
-
-    const handleClickEdit = (layerId: string, set: string, parameter: string) => history.push(
-        `${baseUrl}/${model.id}/soilmodel/layers/${layerId}?type=${set}&param=${parameter}`
-    );
 
     const handleChangePackage = (p: FlopyModflowPackage<IFlopyModflowPackage>) => {
         if (!mf) {
@@ -159,46 +124,58 @@ const flow = () => {
         const cMf = FlopyModflow.fromObject(mf);
         cMf.setPackage(p);
         setMf(cMf.toObject());
-        if (!editingState.current.dirty) {
-            dispatch(addMessage(messageDirty(property)));
-        }
+        setIsDirty(true);
     };
 
-    const handleChangeFlowPackageType = (cType: string) => {
-        if (!mf) {
+    const handleChangeFlowPackageType = (type: string) => {
+        if (!mf || !props.packages) {
             return null;
         }
-        if (flowPackages.indexOf(cType) < 0) {
-            throw Error('Type ' + cType + 'is not a registered FlowPackage type');
+        if (flowPackages.indexOf(type) < 0) {
+            throw Error('Type ' + type + 'is not a registered FlowPackage type');
         }
-        const fp = packagesMap[cType].create(soilmodel);
+        const fp = packagesMap[type].create(props.soilmodel);
 
         const mfPackages = FlopyModflow.fromObject(mf);
         mfPackages.setPackage(fp);
 
         setMf(mfPackages.toObject());
-        if (!editingState.current.dirty) {
-            dispatch(addMessage(messageDirty(property)));
-        }
+        setIsDirty(true);
+        const packages = props.packages;
+        packages.mf = mfPackages;
+        dispatch(updatePackages(packages));
     };
 
-    const handleMenuClick = (cType: string | undefined) => () => {
-        handleSave();
-        if (!cType) {
-            return history.push(`${baseUrl}/${model.id}/modflow`);
+    const handleMenuClick = (type: string | undefined) => () => {
+        if (!props.model) {
+            return null;
         }
-        return history.push(`${baseUrl}/${model.id}/modflow/${cType}`);
+        const path = match.path;
+        const basePath = path.split(':')[0];
+
+        if (!type) {
+            return history.push(basePath + props.model.id + '/modflow');
+        }
+
+        return history.push(basePath + props.model.id + '/modflow/' + type);
     };
 
     const renderProperties = () => {
-        if (!mf) {
+        if (!mf || !props.model) {
             return null;
         }
         const iMf = FlopyModflow.fromObject(mf);
-        const readOnly = model.readOnly;
+
+        const readOnly = props.model.readOnly;
+        const {type} = match.params;
+        const soilmodel = props.soilmodel;
 
         if (type && !['flow', 'solver'].includes(type) && !iMf.getPackage(type)) {
             return <div>Package not found!</div>;
+        }
+
+        if (!soilmodel) {
+            return <div>Soilmodel not found!</div>;
         }
 
         switch (type) {
@@ -209,7 +186,7 @@ const flow = () => {
                         onChange={handleChangePackage}
                         onClickEdit={handleClickEdit}
                         readonly={readOnly}
-                        gridSize={model.gridSize}
+                        gridSize={props.model.gridSize}
                         soilmodel={soilmodel}
                     />
                 );
@@ -351,10 +328,14 @@ const flow = () => {
     };
 
     const renderSidebar = () => {
+        if (!props.boundaries) {
+            return null;
+        }
+        const {type} = match.params;
         return (
             <div>
                 <Menu fluid={true} vertical={true} tabular={true}>
-                    {sideBar(boundaries).map((item, key) => {
+                    {sideBar(props.boundaries).map((item, key) => {
                         if (item.enabled) {
                             return (
                                 <Menu.Item
@@ -377,27 +358,25 @@ const flow = () => {
     }
 
     return (
-        <div>
-            <Segment color={'grey'} loading={isLoading}>
-                <Grid>
-                    <Grid.Row>
-                        <Grid.Column width={4}/>
-                        <Grid.Column width={12}>
-                            <ContentToolBar buttonSave={true} onUndo={handleUndo} onSave={handleSave}/>
-                        </Grid.Column>
-                    </Grid.Row>
-                    <Grid.Row>
-                        <Grid.Column width={4}>
-                            {renderSidebar()}
-                        </Grid.Column>
-                        <Grid.Column width={12}>
-                            {renderProperties()}
-                        </Grid.Column>
-                    </Grid.Row>
-                </Grid>
-            </Segment>
-        </div>
+        <Segment color={'grey'} loading={isLoading}>
+            <Grid>
+                <Grid.Row>
+                    <Grid.Column width={4}/>
+                    <Grid.Column width={12}>
+                        <ContentToolBar isDirty={isDirty} isError={false} onSave={handleSave}/>
+                    </Grid.Column>
+                </Grid.Row>
+                <Grid.Row>
+                    <Grid.Column width={4}>
+                        {renderSidebar()}
+                    </Grid.Column>
+                    <Grid.Column width={12}>
+                        {renderProperties()}
+                    </Grid.Column>
+                </Grid.Row>
+            </Grid>
+        </Segment>
     );
 };
 
-export default (flow);
+export default flow;

@@ -3,10 +3,13 @@ import {connect} from 'react-redux';
 import {withRouter} from 'react-router-dom';
 import {Grid, Menu, Segment} from 'semantic-ui-react';
 import FlopyPackages from '../../../../../core/model/flopy/packages/FlopyPackages';
-import {FlopySeawat, FlopySeawatPackage} from '../../../../../core/model/flopy/packages/swt';
+import {
+    FlopySeawat,
+    FlopySeawatPackage,
+    FlopySeawatSwtvdf,
+    FlopySeawatSwtvsc
+} from '../../../../../core/model/flopy/packages/swt';
 import {IFlopySeawat} from '../../../../../core/model/flopy/packages/swt/FlopySeawat';
-import {IFlopySeawatSwtvdf} from '../../../../../core/model/flopy/packages/swt/FlopySeawatSwtvdf';
-import {IFlopySeawatSwtvsc} from '../../../../../core/model/flopy/packages/swt/FlopySeawatSwtvsc';
 import {ModflowModel, Transport, VariableDensity} from '../../../../../core/model/modflow';
 import {BoundaryCollection} from '../../../../../core/model/modflow/boundaries';
 import {sendCommand} from '../../../../../services/api';
@@ -93,8 +96,7 @@ class SeawatProperties extends React.Component<Props, ISeawatPropertiesState> {
         );
     };
 
-    public handleChangePackage = (
-        p: FlopySeawatPackage<IFlopySeawatSwtvdf | IFlopySeawatSwtvsc> | { [index: string]: any }
+    public handleChangePackage = (p: FlopySeawatPackage<any> | { [index: string]: any }
     ) => {
         const swt = FlopySeawat.fromObject(this.state.swt);
         swt.setPackage(p);
@@ -131,7 +133,7 @@ class SeawatProperties extends React.Component<Props, ISeawatPropertiesState> {
                     <VdfPackageProperties
                         onChange={this.handleChangePackage}
                         readOnly={readOnly}
-                        swtPackage={seawat.getPackage('vdf')}
+                        swtPackage={seawat.getPackage('vdf') as FlopySeawatSwtvdf}
                         transport={this.props.transport}
                     />
                 );
@@ -140,7 +142,7 @@ class SeawatProperties extends React.Component<Props, ISeawatPropertiesState> {
                     <VscPackageProperties
                         onChange={this.handleChangePackage}
                         readOnly={readOnly}
-                        swtPackage={seawat.getPackage('vsc')}
+                        swtPackage={seawat.getPackage('vsc') as FlopySeawatSwtvsc}
                         transport={this.props.transport}
                     />
                 );
@@ -149,7 +151,7 @@ class SeawatProperties extends React.Component<Props, ISeawatPropertiesState> {
                     <SeawatPackageProperties
                         onChange={this.handleChangePackage}
                         readOnly={readOnly}
-                        swtPackage={seawat.getPackage('swt')}
+                        swtPackage={seawat.getPackage('swt') as FlopySeawatPackage<any>}
                         transport={this.props.transport}
                     />
                 );

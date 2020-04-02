@@ -4,6 +4,7 @@ import {IBoundingBox} from '../../../core/model/geometry/BoundingBox.type';
 import {ICells} from '../../../core/model/geometry/Cells.type';
 import {IGeometry} from '../../../core/model/geometry/Geometry.type';
 import {IGridSize} from '../../../core/model/geometry/GridSize.type';
+import {ModflowModel} from '../../../core/model/modflow';
 import {Boundary} from '../../../core/model/modflow/boundaries';
 import SoilmodelLayer from '../../../core/model/modflow/soilmodel/SoilmodelLayer';
 import {IStressPeriods} from '../../../core/model/modflow/Stressperiods.type';
@@ -53,9 +54,9 @@ class ModflowModelCommand extends AbstractCommand {
         }, JSON_SCHEMA_URL + '/commands/' + name);
     }
 
-    public static createModflowModel(payload: any) {
+    public static createModflowModel(model: ModflowModel) {
         const name = 'createModflowModel';
-        return new ModflowModelCommand(name, payload, JSON_SCHEMA_URL + '/commands/' + name);
+        return new ModflowModelCommand(name, model.toCreatePayload(), JSON_SCHEMA_URL + '/commands/' + name);
     }
 
     public static deleteModflowModel({id}: { id: string }) {
