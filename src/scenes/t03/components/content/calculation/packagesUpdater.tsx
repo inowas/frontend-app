@@ -60,7 +60,7 @@ const packagesUpdater = () => {
                 FlopyModflow.create(model, soilmodel, boundaries),
                 FlopyModpath.create(),
                 FlopyMt3d.create(transport, boundaries),
-                FlopySeawat.createFromVariableDensity(variableDensity)
+                FlopySeawat.create(variableDensity)
             );
 
             dispatch(updateProcessedPackages(p));

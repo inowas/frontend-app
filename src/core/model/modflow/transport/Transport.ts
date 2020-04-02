@@ -22,6 +22,9 @@ class Transport extends GenericObject<ITransport> {
     }
 
     public static fromQuery(query: ITransport) {
+        if (Array.isArray(query) && query.length === 0) {
+            return Transport.fromDefault();
+        }
         return new Transport(query);
     }
 
@@ -35,9 +38,6 @@ class Transport extends GenericObject<ITransport> {
             substances: []
         });
     }
-
-    public _enabled: boolean = false;
-    public _substances: SubstanceCollection = new SubstanceCollection();
 
     public addSubstance = (substance: Substance) => {
         this._props.substances.push(substance.toObject());

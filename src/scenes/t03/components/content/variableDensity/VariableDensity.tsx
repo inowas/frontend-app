@@ -4,7 +4,6 @@ import * as React from 'react';
 import {useDispatch, useSelector} from 'react-redux';
 import {useParams} from 'react-router-dom';
 import {Button, Checkbox, CheckboxProps, Form, Grid, Menu, Message, Segment} from 'semantic-ui-react';
-import FlopyPackages from '../../../../../core/model/flopy/packages/FlopyPackages';
 import {EMessageState, IMessage} from '../../../../../core/model/messages/Message.type';
 import MessagesCollection from '../../../../../core/model/messages/MessagesCollection';
 import {ModflowModel, Transport, VariableDensity} from '../../../../../core/model/modflow';
@@ -14,7 +13,7 @@ import ContentToolBar from '../../../../shared/ContentToolbar2';
 import {
     addMessage,
     removeMessage,
-    updateMessage, updatePackages,
+    updateMessage,
     updateVariableDensity
 } from '../../../actions/actions';
 import Command from '../../../commands/modflowModelCommand';
@@ -23,7 +22,6 @@ import {messageDirty, messageSaving} from '../../../defaults/messages';
 const variableDensityProperties = () => {
     const T03 = useSelector((state: IRootReducer) => state.T03);
     const model = T03.model ? ModflowModel.fromObject(T03.model) : null;
-    const packages = T03.packages.data ? FlopyPackages.fromObject(T03.packages.data) : null;
     const transport = T03.transport ? Transport.fromObject(T03.transport) : null;
     const variableDensity = T03.variableDensity ? VariableDensity.fromObject(T03.variableDensity) : null;
     const messages = MessagesCollection.fromObject(T03.messages);
@@ -37,7 +35,7 @@ const variableDensityProperties = () => {
         saving: null
     });
 
-    if (!model || !variableDensity || !packages || !transport) {
+    if (!model || !variableDensity || !transport) {
         return (
             <Segment color={'grey'} loading={true}/>
         );
@@ -67,10 +65,6 @@ const variableDensityProperties = () => {
                 id: model.id,
                 variableDensity: variableDensityRef.current.toObject(),
             }), () => {
-                if (variableDensityRef.current) {
-                    packages.swt.update(variableDensityRef.current);
-                    dispatch(updatePackages(packages));
-                }
                 if (editingState.current.dirty) {
                     dispatch(removeMessage(editingState.current.dirty));
                 }
@@ -143,18 +137,9 @@ const variableDensityProperties = () => {
                                         checked={variableDensity.vscEnabled}
                                         onChange={handleChangeViscosity}
                                         name="vscEnabled"
-                                        disabled={model.readOnly || !packages.mf.hasPackage('lpf') ||
-                                        !transport.enabled || !variableDensity.vdfEnabled}
+                                        disabled={model.readOnly}
                                     />
                                 </Form.Field>
-                                {!packages.mf.hasPackage('lpf') &&
-                                <Message negative={true}>
-                                    <Message.Header>LPF package has to be active, to activate
-                                        viscosity.</Message.Header>
-                                    <p>To change the package, navigate to Calculation > Mf packages > Flow
-                                        packages.</p>
-                                </Message>
-                                }
                             </Form>
                         </div>
                     </Grid.Column>

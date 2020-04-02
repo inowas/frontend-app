@@ -9,7 +9,7 @@ class SubstanceCollection extends Collection<Substance> {
         return sortBy(this.all, [(b) => b.name.toUpperCase()]);
     }
 
-    public static fromObject(arr: ISubstance[]) {
+    public static fromObject(arr: ISubstance[] = []) {
         const substances = new SubstanceCollection();
         arr.map((item) => substances.addSubstance(Substance.fromObject(item)));
         return substances;

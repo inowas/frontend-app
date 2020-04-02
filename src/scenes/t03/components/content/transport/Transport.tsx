@@ -2,7 +2,6 @@ import React, {useEffect, useRef, useState} from 'react';
 import {useDispatch, useSelector} from 'react-redux';
 import {useParams} from 'react-router-dom';
 import {Button, Grid, Menu, Segment} from 'semantic-ui-react';
-import FlopyPackages from '../../../../../core/model/flopy/packages/FlopyPackages';
 import {EMessageState, IMessage} from '../../../../../core/model/messages/Message.type';
 import MessagesCollection from '../../../../../core/model/messages/MessagesCollection';
 import {ModflowModel} from '../../../../../core/model/modflow';
@@ -12,7 +11,7 @@ import {ISubstance} from '../../../../../core/model/modflow/transport/Substance.
 import {IRootReducer} from '../../../../../reducers';
 import {sendCommand} from '../../../../../services/api';
 import ContentToolBar from '../../../../shared/ContentToolbar2';
-import {addMessage, removeMessage, updateMessage, updatePackages, updateTransport} from '../../../actions/actions';
+import {addMessage, removeMessage, updateMessage, updateTransport} from '../../../actions/actions';
 import Command from '../../../commands/modflowModelCommand';
 import {messageDirty, messageError, messageSaving} from '../../../defaults/messages';
 import SubstanceDetails from './SubstanceDetails';
@@ -24,7 +23,6 @@ const transport = () => {
     const T03 = useSelector((state: IRootReducer) => state.T03);
     const model = T03.model ? ModflowModel.fromObject(T03.model) : null;
     const boundaries = T03.boundaries ? BoundaryCollection.fromObject(T03.boundaries) : null;
-    const packages = T03.packages.data ? FlopyPackages.fromObject(T03.packages.data) : null;
     const transportInstance = T03.transport ? Transport.fromObject(T03.transport) : null;
     const messages = MessagesCollection.fromObject(T03.messages);
 
@@ -37,7 +35,7 @@ const transport = () => {
         saving: null
     });
 
-    if (!boundaries || !model || !packages || !transportInstance) {
+    if (!boundaries || !model || !transportInstance) {
         return (
             <Segment color={'grey'} loading={true}/>
         );
@@ -123,8 +121,6 @@ const transport = () => {
                 id: model.id,
                 transport: transportRef.current.toObject(),
             }), () => {
-                packages.mt.update(transportRef.current, boundaries);
-                dispatch(updatePackages(packages));
                 if (editingState.current.dirty) {
                     dispatch(removeMessage(editingState.current.dirty));
                 }

@@ -27,11 +27,22 @@ class VariableDensity extends GenericObject<IVariableDensity> {
         this._props.vscEnabled = value;
     }
 
+    public static fromDefault() {
+        return new VariableDensity({
+            vdfEnabled: false,
+            vscEnabled: false
+        });
+    }
+
     public static fromObject(obj: IVariableDensity) {
         return new VariableDensity(obj);
     }
 
     public static fromQuery(obj: IVariableDensity) {
+        if (Array.isArray(obj) && obj.length === 0) {
+            return VariableDensity.fromDefault();
+        }
+
         return VariableDensity.fromObject(obj);
     }
 }

@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {useDispatch} from 'react-redux';
 import {useHistory, useRouteMatch} from 'react-router-dom';
 import {Grid, Menu, Segment} from 'semantic-ui-react';
@@ -80,6 +80,13 @@ const flow = (props: IProps) => {
     const dispatch = useDispatch();
     const history = useHistory();
     const match = useRouteMatch();
+
+    useEffect(() => {
+        const {packages} = props;
+        if (packages) {
+            setMf(packages.mf.toObject());
+        }
+    }, [props.packages]);
 
     const handleSave = () => {
         if (!mf || !props.model || !props.packages) {
@@ -356,7 +363,7 @@ const flow = (props: IProps) => {
                 <Grid.Row>
                     <Grid.Column width={4}/>
                     <Grid.Column width={12}>
-                        <ContentToolBar isDirty={isDirty} isError={false} save={true} onSave={handleSave}/>
+                        <ContentToolBar isDirty={isDirty} isError={false} onSave={handleSave}/>
                     </Grid.Column>
                 </Grid.Row>
                 <Grid.Row>

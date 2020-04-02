@@ -22,7 +22,7 @@ interface IProps {
 const packageActualizationWrapper = (props: IProps) => {
 
     const [isCalculating, setIsCalculating] = useState<boolean>(true);
-    const [isError, setError] = useState<boolean>(false);
+    const [isError, setError] = useState<any>(false);
 
     const T03 = useSelector((state: IRootReducer) => state.T03);
     const dispatch = useDispatch();
@@ -50,6 +50,7 @@ const packageActualizationWrapper = (props: IProps) => {
         }
 
         setIsCalculating(true);
+        setError(false);
         asyncWorker({
             type: CALCULATE_PACKAGES_INPUT,
             data: {
