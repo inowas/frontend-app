@@ -1,6 +1,8 @@
 import React, {ChangeEvent, FocusEvent, MouseEvent, SyntheticEvent} from 'react';
 import {AccordionTitleProps, DropdownProps, Icon, InputOnChangeData, Popup} from 'semantic-ui-react';
 import {FlopySeawatPackage} from '../../../../../../core/model/flopy/packages/swt';
+import {IFlopySeawatSwtvdf} from '../../../../../../core/model/flopy/packages/swt/FlopySeawatSwtvdf';
+import {IFlopySeawatSwtvsc} from '../../../../../../core/model/flopy/packages/swt/FlopySeawatSwtvsc';
 import {Transport} from '../../../../../../core/model/modflow';
 
 interface IIndexObject {
@@ -8,8 +10,8 @@ interface IIndexObject {
 }
 
 interface IProps {
-    swtPackage: FlopySeawatPackage;
-    onChange: (data: FlopySeawatPackage | IIndexObject) => any;
+    swtPackage: FlopySeawatPackage<IFlopySeawatSwtvsc | IFlopySeawatSwtvdf>;
+    onChange: (data: FlopySeawatPackage<IFlopySeawatSwtvsc | IFlopySeawatSwtvdf> | IIndexObject) => any;
     readOnly: boolean;
     transport: Transport;
 }

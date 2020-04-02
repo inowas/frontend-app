@@ -14,7 +14,7 @@ import ContentToolBar from '../../../../shared/ContentToolbar2';
 import {
     addMessage,
     removeMessage,
-    updateMessage,
+    updateMessage, updatePackages,
     updateVariableDensity
 } from '../../../actions/actions';
 import Command from '../../../commands/modflowModelCommand';
@@ -44,7 +44,6 @@ const variableDensityProperties = () => {
     }
 
     useEffect(() => {
-        // TODO: RECALCULATE PACKGES
         return function cleanup() {
             handleSave();
         };
@@ -68,7 +67,10 @@ const variableDensityProperties = () => {
                 id: model.id,
                 variableDensity: variableDensityRef.current.toObject(),
             }), () => {
-                // TODO: RECALCULATE PACKGES
+                if (variableDensityRef.current) {
+                    packages.swt.update(variableDensityRef.current);
+                    dispatch(updatePackages(packages));
+                }
                 if (editingState.current.dirty) {
                     dispatch(removeMessage(editingState.current.dirty));
                 }

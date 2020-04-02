@@ -4,6 +4,9 @@ import {withRouter} from 'react-router-dom';
 import {Grid, Menu, Segment} from 'semantic-ui-react';
 import FlopyPackages from '../../../../../core/model/flopy/packages/FlopyPackages';
 import {FlopySeawat, FlopySeawatPackage} from '../../../../../core/model/flopy/packages/swt';
+import {IFlopySeawat} from '../../../../../core/model/flopy/packages/swt/FlopySeawat';
+import {IFlopySeawatSwtvdf} from '../../../../../core/model/flopy/packages/swt/FlopySeawatSwtvdf';
+import {IFlopySeawatSwtvsc} from '../../../../../core/model/flopy/packages/swt/FlopySeawatSwtvsc';
 import {ModflowModel, Transport, VariableDensity} from '../../../../../core/model/modflow';
 import {BoundaryCollection} from '../../../../../core/model/modflow/boundaries';
 import {sendCommand} from '../../../../../services/api';
@@ -33,7 +36,7 @@ interface IDispatchProps {
 type Props = IStateProps & IDispatchProps & IOwnProps;
 
 interface ISeawatPropertiesState {
-    swt: object;
+    swt: IFlopySeawat;
     isError: boolean;
     isDirty: boolean;
     isLoading: boolean;
@@ -90,7 +93,9 @@ class SeawatProperties extends React.Component<Props, ISeawatPropertiesState> {
         );
     };
 
-    public handleChangePackage = (p: FlopySeawatPackage | { [index: string]: any }) => {
+    public handleChangePackage = (
+        p: FlopySeawatPackage<IFlopySeawatSwtvdf | IFlopySeawatSwtvsc> | { [index: string]: any }
+    ) => {
         const swt = FlopySeawat.fromObject(this.state.swt);
         swt.setPackage(p);
 
