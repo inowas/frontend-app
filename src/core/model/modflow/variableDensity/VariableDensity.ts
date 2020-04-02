@@ -26,6 +26,10 @@ class VariableDensity {
         this._vscEnabled = value;
     }
 
+    public static fromDefault() {
+        return VariableDensity.fromObject([]);
+    }
+
     public static fromObject(obj: IVariableDensity | []) {
         const variableDensity = new VariableDensity();
         if (obj as IVariableDensity) {

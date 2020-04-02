@@ -31,6 +31,13 @@ class Transport {
         return transport;
     }
 
+    public static fromDefault() {
+        return Transport.fromObject({
+            enabled: false,
+            substances: []
+        });
+    }
+
     public _enabled: boolean = false;
     public _substances: SubstanceCollection = new SubstanceCollection();
 

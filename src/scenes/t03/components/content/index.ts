@@ -9,6 +9,7 @@ import {Modpath} from './modpath';
 import Mt3d from './mt3d/Mt3dProperties.js';
 import {Statistics} from './observation';
 import Optimization from './optimization/optimization.js';
+import PackageActualizationWrapper from './PackageActualizationWrapper';
 import {BudgetResults, FlowResults, TransportResults} from './results';
 import Seawat from './seawat/SeawatProperties';
 import SoilmodelEditor from './soilmodel/soilmodelEditor';
@@ -28,6 +29,7 @@ export {
     Modpath,
     Mt3d,
     Optimization,
+    PackageActualizationWrapper,
     Seawat,
     Transport,
     TransportResults,

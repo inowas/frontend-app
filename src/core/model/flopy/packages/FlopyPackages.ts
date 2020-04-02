@@ -178,6 +178,15 @@ export default class FlopyPackages {
         return this;
     };
 
+    public recalculateMfPackages = (
+        p: null | string | string[],
+        model: ModflowModel,
+        soilmodel: Soilmodel,
+        boundaries: BoundaryCollection
+    ) => {
+        this.mf = this.mf.recalculatePackages(p, model, soilmodel, boundaries);
+    };
+
     public getData = () => {
         const data: any = {};
 

@@ -141,7 +141,7 @@ const t03 = (props: IProps) => {
                                 <OptimizationProgressBar/>
                             </Grid.Column>
                             <Grid.Column width={13}>
-                                <ContentWrapper readOnly={props.model ? props.model.readOnly : false}/>
+                                <ContentWrapper/>
                             </Grid.Column>
                         </Grid.Row>
                     </Grid>

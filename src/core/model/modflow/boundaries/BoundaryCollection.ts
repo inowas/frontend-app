@@ -1,4 +1,5 @@
 import {cloneDeep, isEqual, sortBy} from 'lodash';
+import md5 from 'md5';
 import simpleDiff from '../../../../services/diffTools/simpleDiff';
 import {Collection} from '../../collection/Collection';
 import BoundingBox from '../../geometry/BoundingBox';
@@ -111,6 +112,10 @@ class BoundaryCollection extends Collection<Boundary> {
         });
 
         return items;
+    };
+
+    public getChecksum = () => {
+        return md5(JSON.stringify(this.boundaries));
     };
 }
 

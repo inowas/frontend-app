@@ -13,7 +13,7 @@ import {calculateActiveCells} from '../../../services/geoTools';
 import calculateStatistics from '../../../services/statistics/calculateStatistics';
 import {IStatistics} from '../components/content/observation/statistics';
 import {
-    ICalculateCellsInputData,
+    ICalculateCellsInputData, ICalculateMfPackagesInputData,
     ICalculatePackagesInputData,
     IObservationInputData,
     IWorkerInput,
@@ -29,7 +29,68 @@ export const CALCULATE_CELLS_RESULT = 'CALCULATE_CELLS_RESULT';
 export const CALCULATE_PACKAGES_INPUT = 'CALCULATE_PACKAGES_INPUT';
 export const CALCULATE_PACKAGES_RESULT = 'CALCULATE_PACKAGES_RESULT';
 
+export const CALCULATE_MF_PACKAGES_INPUT = 'CALCULATE_MF_PACKAGES_INPUT';
+export const CALCULATE_MF_PACKAGES_RESULT = 'CALCULATE_MF_PACKAGES_RESULT';
+
 const ctx: Worker = self as any;
+
+const calculateCells = (input: IWorkerInput<ICalculateCellsInputData>) => {
+    const geometry = input.data.geometry ? Geometry.fromObject(input.data.geometry) : null;
+    const boundingBox = input.data.boundingBox ? BoundingBox.fromObject(input.data.boundingBox) : null;
+    const gridSize = input.data.gridSize ? GridSize.fromObject(input.data.gridSize) : null;
+    const intersection = input.data.intersection || 0;
+
+    if (geometry && boundingBox && gridSize) {
+        return {
+            type: CALCULATE_CELLS_RESULT,
+            data: calculateActiveCells(geometry, boundingBox, gridSize, intersection).toObject()
+        } as IWorkerResult<ICells>;
+    }
+
+    return null;
+};
+
+const calculatePackages = (input: IWorkerInput<ICalculatePackagesInputData>) => {
+
+    let packages = input.data.packages ? FlopyPackages.fromObject(input.data.packages) : null;
+    const model = ModflowModel.fromObject(input.data.model);
+    const soilmodel = Soilmodel.fromObject(input.data.soilmodel);
+    const boundaries = BoundaryCollection.fromObject(input.data.boundaries);
+    const transport = Transport.fromObject(input.data.transport);
+    const variableDensity = VariableDensity.fromObject(input.data.variableDensity);
+
+    if (packages instanceof FlopyPackages) {
+        packages.update(
+            model, soilmodel, boundaries, transport, variableDensity
+        );
+    }
+
+    if (packages === null) {
+        packages = FlopyPackages.createFromModelInstances(
+            model, soilmodel, boundaries, transport, variableDensity
+        );
+    }
+
+    return {
+        type: CALCULATE_PACKAGES_RESULT,
+        data: packages.toObject()
+    } as IWorkerResult<IFlopyPackages>;
+};
+
+const calculateMfPackages = (input: IWorkerInput<ICalculateMfPackagesInputData>) => {
+    const pType = input.data.p;
+    const packages = FlopyPackages.fromObject(input.data.packages);
+    const model = ModflowModel.fromObject(input.data.model);
+    const soilmodel = Soilmodel.fromObject(input.data.soilmodel);
+    const boundaries = BoundaryCollection.fromObject(input.data.boundaries);
+
+    packages.mf = packages.mf.recalculatePackages(pType, model, soilmodel, boundaries);
+
+    return {
+        type: CALCULATE_MF_PACKAGES_RESULT,
+        data: packages.toObject()
+    } as IWorkerResult<IFlopyPackages>;
+};
 
 // Respond to message from parent thread
 ctx.addEventListener('message', (e) => {
@@ -55,18 +116,8 @@ ctx.addEventListener('message', (e) => {
 
         case CALCULATE_CELLS_INPUT:
             input = e.data as IWorkerInput<ICalculateCellsInputData>;
-
-            const geometry = input.data.geometry ? Geometry.fromObject(input.data.geometry) : null;
-            const boundingBox = input.data.boundingBox ? BoundingBox.fromObject(input.data.boundingBox) : null;
-            const gridSize = input.data.gridSize ? GridSize.fromObject(input.data.gridSize) : null;
-            const intersection = input.data.intersection || 0;
-
-            if (geometry && boundingBox && gridSize) {
-                result = {
-                    type: CALCULATE_CELLS_RESULT,
-                    data: calculateActiveCells(geometry, boundingBox, gridSize, intersection).toObject()
-                } as IWorkerResult<ICells>;
-
+            result = calculateCells(input);
+            if (result) {
                 // @ts-ignore
                 postMessage(result);
             }
@@ -75,33 +126,20 @@ ctx.addEventListener('message', (e) => {
 
         case CALCULATE_PACKAGES_INPUT:
             input = e.data as IWorkerInput<ICalculatePackagesInputData>;
-
-            let packages = input.data.packages ? FlopyPackages.fromObject(input.data.packages) : null;
-            const model = ModflowModel.fromObject(input.data.model);
-            const soilmodel = Soilmodel.fromObject(input.data.soilmodel);
-            const boundaries = BoundaryCollection.fromObject(input.data.boundaries);
-            const transport = Transport.fromObject(input.data.transport);
-            const variableDensity = VariableDensity.fromObject(input.data.variableDensity);
-
-            if (packages instanceof FlopyPackages) {
-                packages.update(
-                    model, soilmodel, boundaries, transport, variableDensity
-                );
+            result = calculatePackages(input);
+            if (result) {
+                // @ts-ignore
+                postMessage(result);
             }
+            break;
 
-            if (packages === null) {
-                packages = FlopyPackages.createFromModelInstances(
-                    model, soilmodel, boundaries, transport, variableDensity
-                );
+        case CALCULATE_MF_PACKAGES_INPUT:
+            input = e.data as IWorkerInput<ICalculateMfPackagesInputData>;
+            result = calculateMfPackages(input);
+            if (result) {
+                // @ts-ignore
+                postMessage(result);
             }
-
-            result = {
-                type: CALCULATE_PACKAGES_RESULT,
-                data: packages.toObject()
-            } as IWorkerResult<IFlopyPackages>;
-
-            // @ts-ignore
-            postMessage(result);
             break;
     }
 });
