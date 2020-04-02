@@ -1,34 +1,32 @@
+import {GenericObject} from '../../genericObject/GenericObject';
 import Substance from './Substance';
 import SubstanceCollection from './SubstanceCollection';
 import {ITransport} from './Transport.type';
 
-class Transport {
+class Transport extends GenericObject<ITransport> {
 
     get enabled() {
-        return this._enabled;
+        return this._props.enabled;
     }
 
     set enabled(value) {
-        this._enabled = value;
+        this._props.enabled = value;
     }
 
     get substances() {
-        return this._substances;
+        return SubstanceCollection.fromObject(this._props.substances);
     }
 
     set substances(value) {
-        this._substances = value;
+        this._props.substances = value.toObject();
     }
 
     public static fromQuery(query: ITransport) {
-        return Transport.fromObject(query);
+        return new Transport(query);
     }
 
     public static fromObject(obj: ITransport) {
-        const transport = new Transport();
-        transport.enabled = obj.enabled || false;
-        transport.substances = SubstanceCollection.fromArray(obj.substances || []);
-        return transport;
+        return new Transport(obj);
     }
 
     public static fromDefault() {
@@ -42,22 +40,20 @@ class Transport {
     public _substances: SubstanceCollection = new SubstanceCollection();
 
     public addSubstance = (substance: Substance) => {
-        this.substances.addSubstance(substance);
+        this._props.substances.push(substance.toObject());
     };
 
     public removeSubstanceById = (substanceId: string) => {
-        this.substances.removeSubstanceById(substanceId);
+        this._props.substances.filter((s) => s.id !== substanceId);
     };
 
     public updateSubstance = (substance: Substance) => {
-        this.substances.update(substance, false);
-    };
-
-    public toObject = () => {
-        return {
-            enabled: this.enabled,
-            substances: this.substances.toArray(),
-        };
+        this._props.substances = this._props.substances.map((s) => {
+            if (s.id === substance.id) {
+                return substance.toObject();
+            }
+            return s;
+        });
     };
 }
 

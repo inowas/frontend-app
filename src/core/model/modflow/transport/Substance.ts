@@ -4,64 +4,63 @@ import {IBoundaryConcentration, ISubstance} from './Substance.type';
 class Substance {
 
     get id() {
-        return this._id;
+        return this._props.id;
     }
 
     set id(value: string) {
-        this._id = value;
+        this._props.id = value;
     }
 
     get name() {
-        return this._name;
+        return this._props.name;
     }
 
     set name(value: string) {
-        this._name = value;
+        this._props.name = value;
     }
 
     get boundaryConcentrations() {
-        return this._boundaryConcentrations;
+        return this._props.boundaryConcentrations;
     }
 
     set boundaryConcentrations(values: IBoundaryConcentration[]) {
-        this._boundaryConcentrations = values;
+        this._props.boundaryConcentrations = values;
     }
 
     public static create(name: string) {
-        const substance = new Substance();
-        substance._id = Uuid.v4();
-        substance._name = name;
-        return substance;
+        return new Substance({
+            id: Uuid.v4(),
+            name,
+            boundaryConcentrations: []
+        });
     }
 
     public static fromObject(obj: ISubstance) {
-        const substance = new Substance();
-        substance._id = obj.id;
-        substance._name = obj.name;
-        substance._boundaryConcentrations = obj.boundaryConcentrations;
-        return substance;
+        return new Substance(obj);
     }
 
-    public _id: string = '';
-    public _name: string = '';
-    public _boundaryConcentrations: IBoundaryConcentration[] | [] = [];
+    public _props: ISubstance;
+
+    constructor(props: ISubstance) {
+        this._props = props;
+    }
 
     public addBoundaryId = (id: string) => {
-        const pushable = this._boundaryConcentrations as IBoundaryConcentration[];
+        const pushable = this._props.boundaryConcentrations;
         pushable.push({
             id,
             concentrations: []
         });
-        this._boundaryConcentrations = pushable;
+        this._props.boundaryConcentrations = pushable;
     };
 
     public removeBoundaryId = (id: string) => {
-        this._boundaryConcentrations = this._boundaryConcentrations.filter((bc) => bc.id !== id);
+        this._props.boundaryConcentrations = this._props.boundaryConcentrations.filter((bc) => bc.id !== id);
     };
 
     public updateConcentrations = (boundaryId: string, concentrations: number[]) => {
-        const mappable = this._boundaryConcentrations as IBoundaryConcentration[];
-        this._boundaryConcentrations = mappable.map((bc) => {
+        const cConcentrations = this._props.boundaryConcentrations;
+        this._props.boundaryConcentrations = cConcentrations.map((bc) => {
             if (bc.id === boundaryId) {
                 bc.concentrations = concentrations;
             }
@@ -71,9 +70,9 @@ class Substance {
 
     public toObject(): ISubstance {
         return {
-            id: this.id,
-            name: this._name,
-            boundaryConcentrations: this._boundaryConcentrations,
+            id: this._props.id,
+            name: this._props.name,
+            boundaryConcentrations: this._props.boundaryConcentrations,
         };
     }
 }

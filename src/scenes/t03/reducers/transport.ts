@@ -1,11 +1,15 @@
-import {CLEAR} from './model';
+import {ITransport} from '../../../core/model/modflow/transport/Transport.type';
 import {LOGOUT, UNAUTHORIZED} from '../../user/actions/actions';
+import {CLEAR} from './model';
 
 export const UPDATE_TRANSPORT = 'T03_UPDATE_TRANSPORT';
 
-const initialState = [];
+const initialState = null;
 
-const transport = (state = initialState, action) => {
+const transport = (state: ITransport | null = initialState, action: {
+    type: string,
+    payload: ITransport
+}) => {
     switch (action.type) {
         case CLEAR:
             return initialState;

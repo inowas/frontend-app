@@ -6,5 +6,5 @@ export interface IBoundaryConcentration {
 export interface ISubstance {
     id: string;
     name: string;
-    boundaryConcentrations: IBoundaryConcentration[] | [];
+    boundaryConcentrations: IBoundaryConcentration[];
 }
