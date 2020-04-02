@@ -15,7 +15,6 @@ type IProps = IOwnProps & RouteComponentProps<{
 }>;
 
 const contentWrapper = (props: IProps) => {
-
     const {id, property, type} = props.match.params;
 
     if (property === 'discretization') {

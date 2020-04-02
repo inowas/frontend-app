@@ -200,7 +200,7 @@ const modpath: React.FC<Props> = (props: Props) => {
                         <ContentToolBar
                             isDirty={isDirty}
                             isError={isError}
-                            save={true}
+                            buttonSave={true}
                             onSave={handleSave}
                         />
                         {mp &&

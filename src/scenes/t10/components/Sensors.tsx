@@ -106,8 +106,8 @@ const sensors = (props: IProps) => {
                                         onSave={props.onSave}
                                         isDirty={props.isDirty}
                                         isError={props.isError}
-                                        saveButton={!props.rtm.readOnly}
-                                        importButton={false}
+                                        buttonSave={!props.rtm.readOnly}
+                                        buttonImport={false}
                                     />
                                     {props.children}
                                 </Grid.Column>

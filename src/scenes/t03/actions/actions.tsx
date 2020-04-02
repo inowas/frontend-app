@@ -10,12 +10,14 @@ import {
 
 import FlopyPackages from '../../../core/model/flopy/packages/FlopyPackages';
 import {FlopyMt3d} from '../../../core/model/flopy/packages/mt';
+import {IMessage} from '../../../core/model/messages/Message.type';
 import {Calculation, ModflowModel, Stressperiods, Transport, VariableDensity} from '../../../core/model/modflow';
 import {BoundaryCollection} from '../../../core/model/modflow/boundaries';
 import {Optimization} from '../../../core/model/modflow/optimization';
 import {Soilmodel, SoilmodelLayer} from '../../../core/model/modflow/soilmodel';
 import {Zone} from '../../../core/model/modflow/soilmodel';
 import LayerParameterZonesCollection from '../../../core/model/modflow/soilmodel/LayerParameterZonesCollection';
+import {ADD_MESSAGE, REMOVE_MESSAGE, UPDATE_MESSAGE} from '../reducers/messages';
 import {
     PROCESSING_PACKAGES,
     RECALCULATE_PACKAGES,
@@ -188,5 +190,26 @@ export function updateLayer(layer: SoilmodelLayer) {
 export function startCalculation() {
     return {
         type: START_CALCULATION
+    };
+}
+
+export function addMessage(message: IMessage) {
+    return {
+        type: ADD_MESSAGE,
+        payload: message
+    };
+}
+
+export function removeMessage(message: IMessage) {
+    return {
+        type: REMOVE_MESSAGE,
+        payload: message
+    };
+}
+
+export function updateMessage(message: IMessage) {
+    return {
+        type: UPDATE_MESSAGE,
+        payload: message
     };
 }

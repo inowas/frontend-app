@@ -1,63 +1,83 @@
-import React, {useEffect, useState} from 'react';
-import {connect} from 'react-redux';
-import {withRouter} from 'react-router-dom';
+import React, {useEffect, useRef, useState} from 'react';
+import {useDispatch, useSelector} from 'react-redux';
+import {useHistory, useParams} from 'react-router-dom';
 import {Grid, Segment} from 'semantic-ui-react';
+import {EMessageState, IMessage} from '../../../../../core/model/messages/Message.type';
+import MessagesCollection from '../../../../../core/model/messages/MessagesCollection';
 import {ModflowModel, Soilmodel} from '../../../../../core/model/modflow';
 import {Boundary, BoundaryCollection, BoundaryFactory} from '../../../../../core/model/modflow/boundaries';
 import {BoundaryType, IBoundary} from '../../../../../core/model/modflow/boundaries/Boundary.type';
-import ContentToolBar from '../../../../../scenes/shared/ContentToolbar';
+import {IRootReducer} from '../../../../../reducers';
 import {fetchUrl, sendCommand} from '../../../../../services/api';
+import ContentToolBar from '../../../../shared/ContentToolbar2';
 import {usePrevious} from '../../../../shared/simpleTools/helpers/customHooks';
-import {updateBoundaries, updateModel} from '../../../actions/actions';
+import {addMessage, removeMessage, updateBoundaries, updateMessage} from '../../../actions/actions';
 import ModflowModelCommand from '../../../commands/modflowModelCommand';
+import {messageDirty, messageError, messageSaving} from '../../../defaults/messages';
 import BoundaryDetails from './boundaryDetails';
 import BoundaryImport from './boundaryImport';
 import BoundaryList from './boundaryList';
 
 const baseUrl = '/tools/T03';
 
-interface IOwnProps {
-    history: any;
-    location: any;
-    match: any;
-    readOnly: boolean;
+interface IProps {
     types: BoundaryType[];
 }
 
-interface IStateProps {
-    boundaries: BoundaryCollection;
-    model: ModflowModel;
-    soilmodel: Soilmodel;
-}
-
-interface IDispatchProps {
-    updateBoundaries: (packages: BoundaryCollection) => any;
-    updateModel: (model: ModflowModel) => any;
-}
-
-type Props = IStateProps & IDispatchProps & IOwnProps;
-
-const boundaries = (props: Props) => {
+const boundaries = (props: IProps) => {
     const [selectedBoundary, setSelectedBoundary] = useState<IBoundary | null>(null);
     const [isLoading, setIsLoading] = useState<boolean>(true);
-    const [isDirty, setIsDirty] = useState<boolean>(false);
-    const [error, setError] = useState<boolean>(false);
 
-    const prevPid = usePrevious<string>(props.match.params.pid);
+    const {id, pid, property} = useParams();
+    const prevPid = usePrevious<string>(pid);
+
+    const types = props.types;
     const prevTypes = usePrevious<BoundaryType[]>(props.types);
 
-    const {id, pid, property} = props.match.params;
-    const {model, soilmodel, types} = props;
+    const dispatch = useDispatch();
+    const history = useHistory();
+
+    const T03 = useSelector((state: IRootReducer) => state.T03);
+    const boundaryCollection = T03.boundaries ? BoundaryCollection.fromObject(T03.boundaries) : null;
+    const messages = MessagesCollection.fromObject(T03.messages);
+    const model = T03.model ? ModflowModel.fromObject(T03.model) : null;
+    const soilmodel = T03.soilmodel ? Soilmodel.fromObject(T03.soilmodel) : null;
+
+    const boundaryRef = useRef<IBoundary>();
+    const editingState = useRef<{ [key: string]: IMessage | null }>({
+        dirty: null,
+        saving: null
+    });
+
+    if (!boundaryCollection || !model || !soilmodel) {
+        return (
+            <Segment color={'grey'} loading={true}/>
+        );
+    }
+
     const readOnly = model.readOnly;
 
     const filteredBoundaries = () => {
         const bc = new BoundaryCollection();
-        bc.items = props.boundaries.all.filter((b) => props.types.includes(b.type));
+        bc.items = boundaryCollection.all.filter((b) => props.types.includes(b.type));
         return bc;
     };
 
     useEffect(() => {
-        if (!props.match.params.pid) {
+        return function cleanup() {
+            handleUpdate();
+        };
+    }, []);
+
+    useEffect(() => {
+        editingState.current = messages.getEditingState('boundaries');
+        if (selectedBoundary) {
+            boundaryRef.current = selectedBoundary;
+        }
+    }, [messages, selectedBoundary]);
+
+    useEffect(() => {
+        if (!pid) {
             setIsLoading(true);
             return redirectToFirstBoundary();
         }
@@ -67,41 +87,32 @@ const boundaries = (props: Props) => {
         if (prevTypes && JSON.stringify(props.types) !== JSON.stringify(prevTypes)) {
             setSelectedBoundary(null);
             setIsLoading(true);
-            if (!props.match.params.pid) {
+            if (!pid) {
                 return redirectToFirstBoundary();
             }
         }
     }, [props.types]);
 
     useEffect(() => {
-        setIsLoading(true);
-        if (!props.match.params.pid) {
-            return redirectToFirstBoundary();
-        }
-        if (filteredBoundaries().findById(props.match.params.pid)) {
-            return fetchBoundary(props.model.id, props.match.params.pid);
-        }
-    }, [props.boundaries]);
-
-    useEffect(() => {
-        if (props.match.params.pid !== prevPid) {
+        if (pid !== prevPid) {
             setSelectedBoundary(null);
-            if (filteredBoundaries().findById(props.match.params.pid)) {
+            if (filteredBoundaries().findById(pid)) {
                 setIsLoading(true);
-                return fetchBoundary(props.model.id, props.match.params.pid);
+                return fetchBoundary(id, pid);
             }
             return redirectToFirstBoundary();
         }
-    }, [props.match.params.pid]);
+    }, [pid]);
 
     const redirectToFirstBoundary = () => {
         if (filteredBoundaries().length > 0) {
             const bid = filteredBoundaries().first.id;
-            return props.history.push(`${baseUrl}/${id}/${property}/!/${bid}`);
+            setIsLoading(false);
+            return history.push(`${baseUrl}/${id}/${property}/!/${bid}`);
         }
         if (pid) {
             setIsLoading(false);
-            return props.history.push(`${baseUrl}/${id}/${property}`);
+            return history.push(`${baseUrl}/${id}/${property}`);
         }
         setIsLoading(false);
     };
@@ -112,22 +123,25 @@ const boundaries = (props: Props) => {
                 setIsLoading(false);
                 setSelectedBoundary(cBoundary);
             },
-            () => setError(true)
+            (e) => dispatch(addMessage(messageError('boundaries', e)))
         );
     };
 
     const handleChangeBoundary = (cBoundary: Boundary) => {
-        setSelectedBoundary(cBoundary.toObject());
-        setIsDirty(true);
+        if (!editingState.current.dirty) {
+            dispatch(addMessage(messageDirty('boundaries')));
+        }
+        return setSelectedBoundary(cBoundary.toObject());
     };
 
     const handleBoundaryClick = (bid: string) => {
-        props.history.push(`${baseUrl}/${id}/${property}/!/${bid}`);
+        handleUpdate();
+        history.push(`${baseUrl}/${id}/${property}/!/${bid}`);
     };
 
-    const handleAdd = (type: BoundaryType) => {
-        if (BoundaryFactory.availableTypes.indexOf(type) >= 0) {
-            props.history.push(`${baseUrl}/${id}/${property}/${type}`);
+    const handleAdd = (bType: BoundaryType) => {
+        if (BoundaryFactory.availableTypes.indexOf(bType) >= 0) {
+            history.push(`${baseUrl}/${id}/${property}/${bType}`);
         }
     };
 
@@ -139,50 +153,63 @@ const boundaries = (props: Props) => {
                     const clonedBoundary = b.clone();
                     sendCommand(ModflowModelCommand.addBoundary(model.id, clonedBoundary),
                         () => {
-                            const cBoundaries = props.boundaries;
+                            const cBoundaries = boundaryCollection;
                             cBoundaries.addBoundary(clonedBoundary);
-                            props.updateBoundaries(cBoundaries);
+                            dispatch(updateBoundaries(cBoundaries));
                             handleBoundaryClick(clonedBoundary.id);
                         },
-                        () => setError(true)
+                        (e) => dispatch(addMessage(messageError('boundaries', e)))
                     );
                 }
             },
-            () => setError(true)
+            (e) => dispatch(addMessage(messageError('boundaries', e)))
         );
     };
 
     const handleRemove = (boundaryId: string) => {
         return sendCommand(ModflowModelCommand.removeBoundary(model.id, boundaryId),
             () => {
-                const cBoundaries = props.boundaries.removeById(boundaryId);
-                props.updateBoundaries(cBoundaries);
+                const cBoundaries = boundaryCollection.removeById(boundaryId);
+                dispatch(updateBoundaries(cBoundaries));
                 return redirectToFirstBoundary();
             },
-            () => setError(true)
+            (e) => dispatch(addMessage(messageError('boundaries', e)))
         );
     };
 
-    const handleUpdate = () => {
-        if (!selectedBoundary) {
+    const handleUndo = () => {
+        if (!editingState.current.dirty) {
             return;
         }
-        const cBoundary = BoundaryFactory.fromObject(selectedBoundary);
+        dispatch(removeMessage(editingState.current.dirty));
+        fetchBoundary(id, pid);
+    };
+
+    const handleUpdate = () => {
+        if (!boundaryRef.current || !editingState.current.dirty) {
+            return;
+        }
+        const message = messageSaving('boundaries');
+        dispatch(addMessage(message));
+        const cBoundary = BoundaryFactory.fromObject(boundaryRef.current);
         return sendCommand(ModflowModelCommand.updateBoundary(model.id, cBoundary),
             () => {
-                setIsDirty(false);
-                if (cBoundary) {
-                    const cBoundaries = props.boundaries;
-                    cBoundaries.update(cBoundary);
-                    props.updateBoundaries(cBoundaries);
+                if (editingState.current.dirty) {
+                    dispatch(removeMessage(editingState.current.dirty));
                 }
+                if (cBoundary) {
+                    const cBoundaries = boundaryCollection;
+                    cBoundaries.update(cBoundary);
+                    dispatch(updateBoundaries(cBoundaries));
+                }
+                dispatch(updateMessage({...message, state: EMessageState.SUCCESS}));
             },
-            () => setError(true)
+            (e) => dispatch(addMessage(messageError('boundaries', e)))
         );
     };
 
     const handleChangeImport = (cBoundaries: BoundaryCollection) => {
-        return props.updateBoundaries(cBoundaries);
+        return dispatch(updateBoundaries(cBoundaries));
     };
 
     return (
@@ -207,14 +234,13 @@ const boundaries = (props: Props) => {
                                 <Grid.Column width={16}>
                                     <ContentToolBar
                                         onSave={handleUpdate}
-                                        isDirty={isDirty}
-                                        isError={error}
-                                        saveButton={!readOnly}
-                                        importButton={props.readOnly ||
+                                        onUndo={handleUndo}
+                                        buttonSave={!readOnly}
+                                        buttonImport={readOnly ||
                                         <BoundaryImport
-                                            model={props.model}
-                                            soilmodel={props.soilmodel}
-                                            boundaries={props.boundaries}
+                                            model={model}
+                                            soilmodel={soilmodel}
+                                            boundaries={boundaryCollection}
                                             onChange={handleChangeImport}
                                         />
                                         }
@@ -239,18 +265,4 @@ const boundaries = (props: Props) => {
     );
 };
 
-const mapStateToProps = (state: any) => {
-    return ({
-        readOnly: ModflowModel.fromObject(state.T03.model).readOnly,
-        boundaries: BoundaryCollection.fromObject(state.T03.boundaries),
-        model: ModflowModel.fromObject(state.T03.model),
-        soilmodel: Soilmodel.fromObject(state.T03.soilmodel)
-    });
-};
-
-const mapDispatchToProps = (dispatch: any): IDispatchProps => ({
-    updateBoundaries: (cBoundaries: BoundaryCollection) => dispatch(updateBoundaries(cBoundaries, true)),
-    updateModel: (model: ModflowModel) => dispatch(updateModel(model))
-});
-
-export default withRouter(connect(mapStateToProps, mapDispatchToProps)(boundaries));
+export default boundaries;

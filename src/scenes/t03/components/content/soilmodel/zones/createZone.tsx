@@ -177,13 +177,13 @@ const createZone = () => {
                     </Grid.Column>
                     <Grid.Column width={12}>
                         <ContentToolBar
-                            backButton={true}
+                            buttonBack={true}
                             onBack={handleClickBack}
                             onSave={() => handleSave(geometry, cells)}
                             isValid={!!geometry}
                             isDirty={isDirty && !!geometry && !!cells}
                             isError={isError}
-                            saveButton={!model.readOnly && !isEditing}
+                            buttonSave={!model.readOnly && !isEditing}
                         />
                     </Grid.Column>
                 </Grid.Row>

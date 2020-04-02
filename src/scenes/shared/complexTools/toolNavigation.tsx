@@ -1,14 +1,8 @@
 import React, {MouseEvent} from 'react';
 import {RouteComponentProps, withRouter} from 'react-router-dom';
-import {Menu, MenuItemProps, Segment} from 'semantic-ui-react';
-
-interface IMenuItem {
-    name: string;
-    property: string;
-    icon: React.ReactNode;
-    disabled?: boolean;
-    type?: string;
-}
+import {Icon, Menu, MenuItemProps, Segment} from 'semantic-ui-react';
+import {EMessageState} from '../../../core/model/messages/Message.type';
+import {IMenuItem} from '../../t03/defaults/menuItems';
 
 interface IMenuSection {
     header: string;
@@ -28,6 +22,16 @@ const toolNavigation = (props: IProps) => {
     const basePath = path.split(':')[0];
     const {navigationItems} = props;
 
+    const renderIcon = (item: IMenuItem) => {
+        if (item.state === EMessageState.IN_PROGRESS) {
+            return <Icon loading={true} color="green" name="sync"/>;
+        }
+        if (item.state === EMessageState.SUCCESS) {
+            return <Icon color="green" name="save"/>;
+        }
+        return item.icon;
+    };
+
     const menuItems = navigationItems.map((itemGroup, itemGroupIdx) => (
         <Menu.Item key={itemGroupIdx} className="menuItemGroup">
             <Menu.Header as="h4" className="menuItemHeader">{itemGroup.header}</Menu.Header>
@@ -41,7 +45,7 @@ const toolNavigation = (props: IProps) => {
                         route={basePath + id + '/' + i.property + (i.type ? `/${i.type}` : '')}
                         onClick={handleItemClick}
                     >
-                        {i.icon}{i.name}
+                        {renderIcon(i)}{i.name}
                     </Menu.Item>
                 ))}
             </Menu.Menu>

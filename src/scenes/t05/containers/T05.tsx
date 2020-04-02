@@ -141,7 +141,7 @@ const t05 = (props: IProps) => {
     };
 
     const handleClickCriteriaNavigation = (e: MouseEvent<HTMLAnchorElement>, {name}: MenuItemProps) => {
-        if (name && typeof name === 'string') {
+        if (name) {
             routeTo(name);
         }
     };
@@ -302,12 +302,12 @@ const t05 = (props: IProps) => {
                     <Grid.Column width={12}>
                         <Segment color={'grey'} loading={isLoading}>
                             <ContentToolBar
-                                backButton={!!cid && property !== 'cd'}
+                                buttonBack={!!cid && property !== 'cd'}
                                 onBack={routeTo}
                                 onSave={handleSave}
                                 isDirty={isDirty}
                                 isError={isError}
-                                saveButton={true}
+                                buttonSave={true}
                             />
                             <Divider/>
                             {renderContent()}

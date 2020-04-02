@@ -229,9 +229,9 @@ const dataFetcherWrapper = (props: IProps) => {
         setFetchingVariableDensity(true);
         fetchUrl(`modflowmodels/${id}/variableDensity`,
             (data) => {
+                dispatch(updateVariableDensity(VariableDensity.fromQuery(data)));
                 setFetchingVariableDensity(false);
                 setFetchingVariableDensitySuccess(true);
-                return updateVariableDensity(VariableDensity.fromQuery(data));
             },
             (cError) => {
                 setFetchingVariableDensity(true);
