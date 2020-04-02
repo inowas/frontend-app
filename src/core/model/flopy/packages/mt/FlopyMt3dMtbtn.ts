@@ -1,12 +1,60 @@
+import {Transport} from '../../../modflow';
+import {IPropertyValueObject} from '../../../types';
 import FlopyMt3dPackage from './FlopyMt3dPackage';
 
-/**
- * Properties of Btn-Package
- * All values with default null,
- * are optional and will be taken from the MF-Model.
- */
-class FlopyMt3dMtbtn extends FlopyMt3dPackage {
+export interface IFlopyMt3dMtBtn {
+    MFStyleArr: boolean;
+    DRYCell: boolean;
+    Legacy99Stor: boolean;
+    FTLPrint: boolean;
+    NoWetDryPrint: boolean;
+    OmitDryBud: boolean;
+    AltWTSorb: boolean;
+    nlay: number | null;
+    nrow: number | null;
+    ncol: number | null;
+    nper: number | null;
+    perlen: number | number[] | null;
+    nstp: number | number[] | null;
+    tsmult: number | number[] | null;
+    ssflag: number | number[] | null;
+    ncomp: number;
+    mcomp: number;
+    tunit: string;
+    lunit: string;
+    munit: string;
+    laycon: number | number[] | null;
+    delr: number | number[] | null;
+    delc: number | number[] | null;
+    htop: number | [] | null;
+    dz: number | [] | null;
+    prsity: number | [];
+    icbund: number | [];
+    sconc: number;
+    cinact: number;
+    thkmin: number;
+    ifmtcn: number;
+    ifmtnp: number;
+    ifmtrf: number;
+    ifmtdp: number;
+    savucn: boolean;
+    nprs: number;
+    timprs: null;
+    obs: [] | null;
+    nprobs: number;
+    chkmas: boolean;
+    nprmas: number;
+    dt0: number;
+    mxstrn: number;
+    ttsmult: number;
+    ttsmax: number;
+    species_names: string[] | string | null;
+    extension: string;
+    unitnumber: number | null;
+    filenames: string | null;
+}
 
+export const defaults: IFlopyMt3dMtBtn = {
     /**
      * @type {boolean}
      * @private
@@ -15,7 +63,7 @@ class FlopyMt3dMtbtn extends FlopyMt3dPackage {
      * Specifies whether or not to read arrays using the MODFLOW array
      * reader format or the original MT3DMS array reader.
      */
-    private _MFStyleArr = false;
+    MFStyleArr: false,
 
     /**
      * @type {boolean}
@@ -25,7 +73,7 @@ class FlopyMt3dMtbtn extends FlopyMt3dPackage {
      * When MF-NWT is used to generate the flow-transport link file,
      * this is a distinct possibility.
      */
-    private _DRYCell = false;
+    DRYCell: false,
 
     /**
      * @type {boolean}
@@ -33,7 +81,7 @@ class FlopyMt3dMtbtn extends FlopyMt3dPackage {
      *
      * Specifies whether or not to use the storage formulation used in MT3DMS.
      */
-    private _Legacy99Stor = false;
+    Legacy99Stor: false,
 
     /**
      * @type {boolean}
@@ -41,7 +89,7 @@ class FlopyMt3dMtbtn extends FlopyMt3dPackage {
      *
      * Specifies if flow-transport link terms (cell-by-cell flows) should be echoed to the MT3D-USGS listing file.
      */
-    private _FTLPrint = false;
+    FTLPrint: false,
 
     /**
      * @type {boolean}
@@ -49,7 +97,7 @@ class FlopyMt3dMtbtn extends FlopyMt3dPackage {
      *
      * Specifies whether or not to suppress wet/dry messaging in the MT3D-USGS listing file.
      */
-    private _NoWetDryPrint = false;
+    NoWetDryPrint: false,
 
     /**
      * @type {boolean}
@@ -58,7 +106,7 @@ class FlopyMt3dMtbtn extends FlopyMt3dPackage {
      * Specifies whether or not to include the mass flux terms through
      * dry cells in the mass budget written to the listing file.
      */
-    private _OmitDryBud = false;
+    OmitDryBud: false,
 
     /**
      * @type {boolean}
@@ -69,7 +117,7 @@ class FlopyMt3dMtbtn extends FlopyMt3dPackage {
      * with the aqueous phase, even though the aqueous phase may only occupy a portion
      * of the cell’s thickness. When used, only the saturated portion of the cell is available for sorbing.
      */
-    private _AltWTSorb = false;
+    AltWTSorb: false,
 
     /**
      * @type {number|null}
@@ -77,7 +125,7 @@ class FlopyMt3dMtbtn extends FlopyMt3dPackage {
      *
      * Total number of layers
      */
-    private _nlay = null;
+    nlay: null,
 
     /**
      * @type {number|null}
@@ -85,7 +133,7 @@ class FlopyMt3dMtbtn extends FlopyMt3dPackage {
      *
      * Total number of rows
      */
-    private _nrow = null;
+    nrow: null,
 
     /**
      * @type {number|null}
@@ -93,7 +141,7 @@ class FlopyMt3dMtbtn extends FlopyMt3dPackage {
      *
      * Total number of columns
      */
-    private _ncol = null;
+    ncol: null,
 
     /**
      * @type {number|null}
@@ -101,7 +149,7 @@ class FlopyMt3dMtbtn extends FlopyMt3dPackage {
      *
      * Total number of stressperiods
      */
-    private _nper = null;
+    nper: null,
 
     /**
      * @type {number|array|null}
@@ -109,7 +157,7 @@ class FlopyMt3dMtbtn extends FlopyMt3dPackage {
      *
      * Length of stressperiods
      */
-    private _perlen = null;
+    perlen: null,
 
     /**
      * @type {number|array|null}
@@ -117,7 +165,7 @@ class FlopyMt3dMtbtn extends FlopyMt3dPackage {
      *
      * Number of time steps
      */
-    private _nstp = null;
+    nstp: null,
 
     /**
      * @type {number|array|null}
@@ -125,7 +173,7 @@ class FlopyMt3dMtbtn extends FlopyMt3dPackage {
      *
      * Time step multiplier
      */
-    private _tsmult = null;
+    tsmult: null,
 
     /**
      * @type {number|array|null}
@@ -133,7 +181,7 @@ class FlopyMt3dMtbtn extends FlopyMt3dPackage {
      *
      * steady state flag for each stress period
      */
-    private _ssflag = null;
+    ssflag: null,
 
     /**
      * @type {number}
@@ -142,7 +190,7 @@ class FlopyMt3dMtbtn extends FlopyMt3dPackage {
      * The total number of chemical species in the simulation.
      * (default is None, will be changed to 1 if sconc is single value)
      */
-    private _ncomp = 1;
+    ncomp: 1,
 
     /**
      * @type {number}
@@ -151,7 +199,7 @@ class FlopyMt3dMtbtn extends FlopyMt3dPackage {
      * The total number of ‘mobile’ species (default is 1).
      * mcomp must be equal or less than ncomp.
      */
-    private _mcomp = 1;
+    mcomp: 1,
 
     /**
      * @type {string}
@@ -160,7 +208,7 @@ class FlopyMt3dMtbtn extends FlopyMt3dPackage {
      * The name of unit for time (default is ‘D’, for ‘days’).
      * Used for identification purposes only.
      */
-    private _tunit = 'D';
+    tunit: 'D',
 
     /**
      * @type {string}
@@ -169,7 +217,7 @@ class FlopyMt3dMtbtn extends FlopyMt3dPackage {
      * The name of unit for length (default is ‘M’, for ‘meters’).
      * Used for identification purposes only.
      */
-    private _lunit = 'M';
+    lunit: 'M',
 
     /**
      * @type {string}
@@ -178,37 +226,37 @@ class FlopyMt3dMtbtn extends FlopyMt3dPackage {
      * The name of unit for mass (default is ‘KG’, for ‘kilograms’).
      * Used for identification purposes only.
      */
-    private _munit = 'KG';
+    munit: 'KG',
 
     /**
      * @type {number|array|null}
      * @private
      */
-    private _laycon = null;
+    laycon: null,
 
     /**
      * @type {number|array|null}
      * @private
      */
-    private _delr = null;
+    delr: null,
 
     /**
      * @type {number|array|null}
      * @private
      */
-    private _delc = null;
+    delc: null,
 
     /**
      * @type {number|array|null}
      * @private
      */
-    private _htop = null;
+    htop: null,
 
     /**
      * @type {number|array|null}
      * @private
      */
-    private _dz = null;
+    dz: null,
 
     /**
      * @type {number}
@@ -218,7 +266,7 @@ class FlopyMt3dMtbtn extends FlopyMt3dPackage {
      * or the mobile porosity in a dual-porosity medium (the immobile porosity
      * is defined through the Chemical Reaction Package. (default is 0.25).
      */
-    private _prsity = 0.25;
+    prsity: 0.25,
 
     /**
      * @type {number}
@@ -232,7 +280,7 @@ class FlopyMt3dMtbtn extends FlopyMt3dPackage {
      * If icbund > 0, the cell is an active concentration cell where
      * the concentration value will be calculated. (default is 1).
      */
-    private _icbund = 1;
+    icbund: 1,
 
     /**
      * @type {number}
@@ -242,7 +290,7 @@ class FlopyMt3dMtbtn extends FlopyMt3dPackage {
      * starting concentrations for other species in a multi-species simulation,
      * include additional keywords, such as sconc2, sconc3, and so forth.
      */
-    private _sconc = 0.0;
+    sconc: 0.0,
 
     /**
      * @type {number}
@@ -250,7 +298,7 @@ class FlopyMt3dMtbtn extends FlopyMt3dPackage {
      *
      * The value for indicating an inactive concentration cell. (default is 1e30).
      */
-    private _cinact = 1e+30;
+    cinact: 1e+30,
 
     /**
      * @type {number}
@@ -260,7 +308,7 @@ class FlopyMt3dMtbtn extends FlopyMt3dPackage {
      * fraction of its thickness, below which the cell is considered inactive.
      * (default is 0.01).
      */
-    private _thkmin = 0.01;
+    thkmin: 0.01,
 
     /**
      * @type {number}
@@ -275,7 +323,7 @@ class FlopyMt3dMtbtn extends FlopyMt3dPackage {
      * If ifmtcn = 0 concentrations are not printed.
      * (default is 0).
      */
-    private _ifmtcn = 0;
+    ifmtcn: 0,
 
     /**
      * @type {number}
@@ -285,7 +333,7 @@ class FlopyMt3dMtbtn extends FlopyMt3dPackage {
      * to the standard output text file. The convention is the same as for ifmtcn.
      * (default is 0).
      */
-    private _ifmtnp = 0;
+    ifmtnp: 0,
 
     /**
      * @type {number}
@@ -296,7 +344,7 @@ class FlopyMt3dMtbtn extends FlopyMt3dPackage {
      * The convention is the same as for ifmtcn.
      * (default is 0).
      */
-    private _ifmtrf = 0;
+    ifmtrf: 0,
 
     /**
      * @type {number}
@@ -307,7 +355,7 @@ class FlopyMt3dMtbtn extends FlopyMt3dPackage {
      * The convention is the same as for ifmtcn.
      * (default is 0).
      */
-    private _ifmtdp = 0;
+    ifmtdp: 0,
 
     /**
      * @type {boolean}
@@ -316,7 +364,7 @@ class FlopyMt3dMtbtn extends FlopyMt3dPackage {
      * A logical flag indicating whether the concentration solution should be saved in an unformatted file.
      * (default is True).
      */
-    private _savucn = true;
+    savucn: true,
 
     /**
      * @type {number}
@@ -332,7 +380,7 @@ class FlopyMt3dMtbtn extends FlopyMt3dPackage {
      * If NPRS < 0, simulation results will be saved whenever the number of transport steps is an even multiple of nprs.
      * (default is 0).
      */
-    private _nprs = 0;
+    nprs: 0,
 
     /**
      * @type {null}
@@ -342,7 +390,7 @@ class FlopyMt3dMtbtn extends FlopyMt3dPackage {
      * The number of entries in timprs must equal nprs.
      * (default is None).
      */
-    private _timprs = null;
+    timprs: null,
 
     /**
      * @type {array|null}
@@ -354,7 +402,7 @@ class FlopyMt3dMtbtn extends FlopyMt3dPackage {
      *
      * obs indices must be entered as zero-based numbers as a 1 is added to them before writing to the btn file.
      */
-    private _obs = null;
+    obs: null,
 
     /**
      * @type {number}
@@ -363,7 +411,7 @@ class FlopyMt3dMtbtn extends FlopyMt3dPackage {
      * An integer indicating how frequently the concentration at the specified observation points should be saved.
      * (default is 1).
      */
-    private _nprobs = 1;
+    nprobs: 1,
 
     /**
      * @type {boolean}
@@ -372,7 +420,7 @@ class FlopyMt3dMtbtn extends FlopyMt3dPackage {
      * A logical flag indicating whether a one-line summary of mass balance information should be printed.
      * (default is True).
      */
-    private _chkmas = true;
+    chkmas: true,
 
     /**
      * @type {number}
@@ -381,7 +429,7 @@ class FlopyMt3dMtbtn extends FlopyMt3dPackage {
      * An integer indicating how frequently the mass budget information should be saved.
      * (default is 1).
      */
-    private _nprmas = 1;
+    nprmas: 1,
 
     /**
      * @type {number}
@@ -390,7 +438,7 @@ class FlopyMt3dMtbtn extends FlopyMt3dPackage {
      * The user-specified initial transport step size within each time-step of the flow solution.
      * (default is 0).
      */
-    private _dt0 = 0;
+    dt0: 0,
 
     /**
      * @type {number}
@@ -399,7 +447,7 @@ class FlopyMt3dMtbtn extends FlopyMt3dPackage {
      * The maximum number of transport steps allowed within one time step of the flow solution.
      * (default is 50000).
      */
-    private _mxstrn = 50000;
+    mxstrn: 50000,
 
     /**
      * @type {number}
@@ -410,7 +458,7 @@ class FlopyMt3dMtbtn extends FlopyMt3dPackage {
      * is the standard finite-difference method.
      * (default is 1.0).
      */
-    private _ttsmult = 1.0;
+    ttsmult: 1.0,
 
     /**
      * @type {number}
@@ -419,7 +467,7 @@ class FlopyMt3dMtbtn extends FlopyMt3dPackage {
      * The maximum transport step size allowed when transport step size multiplier TTSMULT > 1.0.
      * (default is 0).
      */
-    private _ttsmax = 0;
+    ttsmax: 0,
 
     /**
      * @type {array|string}
@@ -427,8 +475,7 @@ class FlopyMt3dMtbtn extends FlopyMt3dPackage {
      *
      * A list of names for every species in the simulation.
      */
-    // tslint:disable-next-line:variable-name
-    private _species_names = null;
+    species_names: null,
 
     /**
      * @type {string}
@@ -436,7 +483,7 @@ class FlopyMt3dMtbtn extends FlopyMt3dPackage {
      *
      * Filename extension (default is ‘btn’)
      */
-    private _extension = 'btn';
+    extension: 'btn',
 
     /**
      * @type {string|null}
@@ -444,7 +491,7 @@ class FlopyMt3dMtbtn extends FlopyMt3dPackage {
      *
      * File unit number (default is None).
      */
-    private _unitnumber = null;
+    unitnumber: null,
 
     /**
      * @type {string|null}
@@ -455,398 +502,432 @@ class FlopyMt3dMtbtn extends FlopyMt3dPackage {
      * If a single string is passed the package will be set to the string.
      * (Default is None).
      */
-    private _filenames = null;
+    filenames: null
+};
+
+/**
+ * Properties of Btn-Package
+ * All values with default null,
+ * are optional and will be taken from the MF-Model.
+ */
+class FlopyMt3dMtbtn extends FlopyMt3dPackage<IFlopyMt3dMtBtn> {
+
+    public static create(obj = {}) {
+        return this.fromObject(obj);
+    }
+
+    public static fromDefault() {
+        return this.fromObject({});
+    }
+
+    public static fromObject(obj: IPropertyValueObject): FlopyMt3dMtbtn {
+        const d: any = FlopyMt3dPackage.cloneDeep(defaults);
+        for (const key in d) {
+            if (d.hasOwnProperty(key) && obj.hasOwnProperty(key)) {
+                d[key] = obj[key];
+            }
+        }
+
+        return new this(d);
+    }
+
+    public update(transport: Transport) {
+        this.ncomp = transport.substances.length;
+        this.mcomp = transport.substances.length;
+        this.species_names = transport.substances.all.map((s) => s.name);
+        return this;
+    }
 
     get MFStyleArr() {
-        return this._MFStyleArr;
+        return this._props.MFStyleArr;
     }
 
     set MFStyleArr(value) {
-        this._MFStyleArr = value;
+        this._props.MFStyleArr = value;
     }
 
     get DRYCell() {
-        return this._DRYCell;
+        return this._props.DRYCell;
     }
 
     set DRYCell(value) {
-        this._DRYCell = value;
+        this._props.DRYCell = value;
     }
 
     get Legacy99Stor() {
-        return this._Legacy99Stor;
+        return this._props.Legacy99Stor;
     }
 
     set Legacy99Stor(value) {
-        this._Legacy99Stor = value;
+        this._props.Legacy99Stor = value;
     }
 
     get FTLPrint() {
-        return this._FTLPrint;
+        return this._props.FTLPrint;
     }
 
     set FTLPrint(value) {
-        this._FTLPrint = value;
+        this._props.FTLPrint = value;
     }
 
     get NoWetDryPrint() {
-        return this._NoWetDryPrint;
+        return this._props.NoWetDryPrint;
     }
 
     set NoWetDryPrint(value) {
-        this._NoWetDryPrint = value;
+        this._props.NoWetDryPrint = value;
     }
 
     get OmitDryBud() {
-        return this._OmitDryBud;
+        return this._props.OmitDryBud;
     }
 
     set OmitDryBud(value) {
-        this._OmitDryBud = value;
+        this._props.OmitDryBud = value;
     }
 
     get AltWTSorb() {
-        return this._AltWTSorb;
+        return this._props.AltWTSorb;
     }
 
     set AltWTSorb(value) {
-        this._AltWTSorb = value;
+        this._props.AltWTSorb = value;
     }
 
     get nlay() {
-        return this._nlay;
+        return this._props.nlay;
     }
 
     set nlay(value) {
-        this._nlay = value;
+        this._props.nlay = value;
     }
 
     get nrow() {
-        return this._nrow;
+        return this._props.nrow;
     }
 
     set nrow(value) {
-        this._nrow = value;
+        this._props.nrow = value;
     }
 
     get ncol() {
-        return this._ncol;
+        return this._props.ncol;
     }
 
     set ncol(value) {
-        this._ncol = value;
+        this._props.ncol = value;
     }
 
     get nper() {
-        return this._nper;
+        return this._props.nper;
     }
 
     set nper(value) {
-        this._nper = value;
+        this._props.nper = value;
     }
 
     get ncomp() {
-        return this._ncomp;
+        return this._props.ncomp;
     }
 
     set ncomp(value) {
-        this._ncomp = value;
+        this._props.ncomp = value;
     }
 
     get mcomp() {
-        return this._mcomp;
+        return this._props.mcomp;
     }
 
     set mcomp(value) {
-        this._mcomp = value;
+        this._props.mcomp = value;
     }
 
     get tunit() {
-        return this._tunit;
+        return this._props.tunit;
     }
 
     set tunit(value) {
-        this._tunit = value;
+        this._props.tunit = value;
     }
 
     get lunit() {
-        return this._lunit;
+        return this._props.lunit;
     }
 
     set lunit(value) {
-        this._lunit = value;
+        this._props.lunit = value;
     }
 
     get munit() {
-        return this._munit;
+        return this._props.munit;
     }
 
     set munit(value) {
-        this._munit = value;
+        this._props.munit = value;
     }
 
     get laycon() {
-        return this._laycon;
+        return this._props.laycon;
     }
 
     set laycon(value) {
-        this._laycon = value;
+        this._props.laycon = value;
     }
 
     get delr() {
-        return this._delr;
+        return this._props.delr;
     }
 
     set delr(value) {
-        this._delr = value;
+        this._props.delr = value;
     }
 
     get delc() {
-        return this._delc;
+        return this._props.delc;
     }
 
     set delc(value) {
-        this._delc = value;
+        this._props.delc = value;
     }
 
     get htop() {
-        return this._htop;
+        return this._props.htop;
     }
 
     set htop(value) {
-        this._htop = value;
+        this._props.htop = value;
     }
 
     get dz() {
-        return this._dz;
+        return this._props.dz;
     }
 
     set dz(value) {
-        this._dz = value;
+        this._props.dz = value;
     }
 
     get prsity() {
-        return this._prsity;
+        return this._props.prsity;
     }
 
     set prsity(value) {
-        this._prsity = value;
+        this._props.prsity = value;
     }
 
     get icbund() {
-        return this._icbund;
+        return this._props.icbund;
     }
 
     set icbund(value) {
-        this._icbund = value;
+        this._props.icbund = value;
     }
 
     get sconc() {
-        return this._sconc;
+        return this._props.sconc;
     }
 
     set sconc(value) {
-        this._sconc = value;
+        this._props.sconc = value;
     }
 
     get cinact() {
-        return this._cinact;
+        return this._props.cinact;
     }
 
     set cinact(value) {
-        this._cinact = value;
+        this._props.cinact = value;
     }
 
     get thkmin() {
-        return this._thkmin;
+        return this._props.thkmin;
     }
 
     set thkmin(value) {
-        this._thkmin = value;
+        this._props.thkmin = value;
     }
 
     get ifmtcn() {
-        return this._ifmtcn;
+        return this._props.ifmtcn;
     }
 
     set ifmtcn(value) {
-        this._ifmtcn = value;
+        this._props.ifmtcn = value;
     }
 
     get ifmtnp() {
-        return this._ifmtnp;
+        return this._props.ifmtnp;
     }
 
     set ifmtnp(value) {
-        this._ifmtnp = value;
+        this._props.ifmtnp = value;
     }
 
     get ifmtrf() {
-        return this._ifmtrf;
+        return this._props.ifmtrf;
     }
 
     set ifmtrf(value) {
-        this._ifmtrf = value;
+        this._props.ifmtrf = value;
     }
 
     get ifmtdp() {
-        return this._ifmtdp;
+        return this._props.ifmtdp;
     }
 
     set ifmtdp(value) {
-        this._ifmtdp = value;
+        this._props.ifmtdp = value;
     }
 
     get savucn() {
-        return this._savucn;
+        return this._props.savucn;
     }
 
     set savucn(value) {
-        this._savucn = value;
+        this._props.savucn = value;
     }
 
     get nprs() {
-        return this._nprs;
+        return this._props.nprs;
     }
 
     set nprs(value) {
-        this._nprs = value;
+        this._props.nprs = value;
     }
 
     get timprs() {
-        return this._timprs;
+        return this._props.timprs;
     }
 
     set timprs(value) {
-        this._timprs = value;
+        this._props.timprs = value;
     }
 
     get obs() {
-        return this._obs;
+        return this._props.obs;
     }
 
     set obs(value) {
-        this._obs = value;
+        this._props.obs = value;
     }
 
     get nprobs() {
-        return this._nprobs;
+        return this._props.nprobs;
     }
 
     set nprobs(value) {
-        this._nprobs = value;
+        this._props.nprobs = value;
     }
 
     get chkmas() {
-        return this._chkmas;
+        return this._props.chkmas;
     }
 
     set chkmas(value) {
-        this._chkmas = value;
+        this._props.chkmas = value;
     }
 
     get nprmas() {
-        return this._nprmas;
+        return this._props.nprmas;
     }
 
     set nprmas(value) {
-        this._nprmas = value;
+        this._props.nprmas = value;
     }
 
     get perlen() {
-        return this._perlen;
+        return this._props.perlen;
     }
 
     set perlen(value) {
-        this._perlen = value;
+        this._props.perlen = value;
     }
 
     get nstp() {
-        return this._nstp;
+        return this._props.nstp;
     }
 
     set nstp(value) {
-        this._nstp = value;
+        this._props.nstp = value;
     }
 
     get tsmult() {
-        return this._tsmult;
+        return this._props.tsmult;
     }
 
     set tsmult(value) {
-        this._tsmult = value;
+        this._props.tsmult = value;
     }
 
     get ssflag() {
-        return this._ssflag;
+        return this._props.ssflag;
     }
 
     set ssflag(value) {
-        this._ssflag = value;
+        this._props.ssflag = value;
     }
 
     get dt0() {
-        return this._dt0;
+        return this._props.dt0;
     }
 
     set dt0(value) {
-        this._dt0 = value;
+        this._props.dt0 = value;
     }
 
     get mxstrn() {
-        return this._mxstrn;
+        return this._props.mxstrn;
     }
 
     set mxstrn(value) {
-        this._mxstrn = value;
+        this._props.mxstrn = value;
     }
 
     get ttsmult() {
-        return this._ttsmult;
+        return this._props.ttsmult;
     }
 
     set ttsmult(value) {
-        this._ttsmult = value;
+        this._props.ttsmult = value;
     }
 
     get ttsmax() {
-        return this._ttsmax;
+        return this._props.ttsmax;
     }
 
     set ttsmax(value) {
-        this._ttsmax = value;
+        this._props.ttsmax = value;
     }
 
     get species_names() {
-        return this._species_names;
+        return this._props.species_names;
     }
 
     set species_names(value) {
-        this._species_names = value;
+        this._props.species_names = value;
     }
 
     get extension() {
-        return this._extension;
+        return this._props.extension;
     }
 
     set extension(value) {
-        this._extension = value;
+        this._props.extension = value;
     }
 
     get unitnumber() {
-        return this._unitnumber;
+        return this._props.unitnumber;
     }
 
     set unitnumber(value) {
-        this._unitnumber = value;
+        this._props.unitnumber = value;
     }
 
     get filenames() {
-        return this._filenames;
+        return this._props.filenames;
     }
 
     set filenames(value) {
-        this._filenames = value;
+        this._props.filenames = value;
     }
 }
 

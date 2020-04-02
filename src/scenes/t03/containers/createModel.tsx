@@ -20,12 +20,14 @@ import {IStressPeriods} from '../../../core/model/modflow/Stressperiods.type';
 import TimeUnit from '../../../core/model/modflow/TimeUnit';
 import {ITimeUnit} from '../../../core/model/modflow/TimeUnit.type';
 import {sendCommands} from '../../../services/api/commandHelper';
-import {calculateCells} from '../../../services/geoTools';
 import AppContainer from '../../shared/AppContainer';
 import ModflowModelCommand from '../commands/modflowModelCommand';
 import {DrawOnMapModal, UploadGeoJSONModal} from '../components/content/create';
 import {ModelMap} from '../components/maps';
 import defaults from '../defaults/createModel';
+import {CALCULATE_CELLS_INPUT} from '../worker/t03.worker';
+import {ICalculateCellsInputData} from '../worker/t03.worker.type';
+import {asyncWorker} from '../worker/worker';
 
 const navigation = [{
     name: 'Documentation',
@@ -47,6 +49,7 @@ interface IState {
     stressperiodsLocal: IStressPeriods;
     timeUnit: ITimeUnit;
     isPublic: boolean;
+    calculating: boolean;
     error: boolean;
     loading: boolean;
     validation: any;
@@ -72,6 +75,7 @@ class CreateModel extends React.Component<IProps, IState> {
             timeUnit: defaults.timeUnit,
             isPublic: defaults.isPublic,
             stressperiods: defaults.stressperiods.toObject(),
+            calculating: false,
             error: false,
             loading: false,
             gridSizeLocal: defaults.gridSize.toObject(),
@@ -101,7 +105,7 @@ class CreateModel extends React.Component<IProps, IState> {
     };
 
     public handleSave = () => {
-        if (!this.state.geometry || !this.state.boundingBox) {
+        if (!this.state.geometry || !this.state.boundingBox || this.state.cells.length === 0) {
             return;
         }
 
@@ -202,24 +206,29 @@ class CreateModel extends React.Component<IProps, IState> {
         if (this.state.geometry === null) {
             return;
         }
-        const geometry = Geometry.fromObject(this.state.geometry);
 
+        const geometry = Geometry.fromObject(this.state.geometry);
         let boundingBox = BoundingBox.fromGeoJson(geometry.toGeoJSON());
         if (this.state.boundingBox !== null) {
             boundingBox = BoundingBox.fromObject(this.state.boundingBox);
         }
 
-        const gridSize = GridSize.fromObject(this.state.gridSize);
-        calculateCells(geometry, boundingBox, gridSize).then((cells: Cells) => {
-            return (
-                this.setState({
-                    geometry: geometry.toObject(),
-                    boundingBox: boundingBox.toObject(),
-                    gridSize: gridSize.toObject(),
-                    cells: cells.toObject()
-                }, () => this.validate())
-            );
-        });
+        this.setState({
+                calculating: true,
+                boundingBox: boundingBox.toObject()
+            }, () => asyncWorker({
+                type: CALCULATE_CELLS_INPUT,
+                data: {
+                    geometry: this.state.geometry,
+                    boundingBox: this.state.boundingBox,
+                    gridSize: this.state.gridSize
+                } as ICalculateCellsInputData
+            }).then((cells: ICells) => {
+                this.setState({cells, calculating: false});
+                this.validate();
+            }
+            ).catch(() => this.setState({error: true, calculating: false}))
+        );
     };
 
     public validate = () => {
@@ -232,6 +241,7 @@ class CreateModel extends React.Component<IProps, IState> {
             (validation) => this.setState({validation})
         );
     };
+
     public render() {
         return (
             <AppContainer navbarItems={navigation}>
@@ -386,9 +396,10 @@ class CreateModel extends React.Component<IProps, IState> {
                                 <Button
                                     floated={'right'}
                                     primary={true}
-                                    type="submit"
+                                    type={'submit'}
                                     onClick={this.handleSave}
-                                    disabled={!this.state.validation[0]}
+                                    negative={!this.state.validation[0]}
+                                    loading={this.state.calculating}
                                 >
                                     Create model
                                 </Button>

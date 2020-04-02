@@ -13,5 +13,5 @@ export {
     FlopyMt3dMtgcg,
     FlopyMt3d,
     FlopyMt3dMt,
-    FlopyMt3dMtssm,
+    FlopyMt3dMtssm
 };

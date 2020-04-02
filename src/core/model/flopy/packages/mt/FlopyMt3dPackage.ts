@@ -1,12 +1,9 @@
-import FlopyModflowSerializable from '../FlopySerializable';
-import {FlopyMt3d} from './index';
+import {GenericObject} from '../../../genericObject/GenericObject';
+import {IPropertyValueObject} from '../../../types';
 
-export default class FlopyMt3dPackage extends FlopyModflowSerializable {
-    public static create(mt: any, obj = {}) {
-        const self = this.fromObject(obj);
-        if (mt instanceof FlopyMt3d) {
-            mt.setPackage(self);
-        }
-        return self;
+export default class FlopyMt3dPackage<T> extends GenericObject<T> {
+
+    public static fromObject(obj: IPropertyValueObject) {
+        throw new Error('Static Method fromObject not implemented in ' + this.constructor.name);
     }
 }
