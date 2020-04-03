@@ -16,7 +16,7 @@ const itypes = {
     CC: -1
 };
 
-export interface IFlopyMt3dMtssm {
+export interface IFlopyMt3dMtssm extends IPropertyValueObject {
     crch: null | any;
     cevt: null | any;
     mxss: null | any;

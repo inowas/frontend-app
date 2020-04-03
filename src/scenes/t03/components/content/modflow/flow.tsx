@@ -335,7 +335,7 @@ const flow = (props: IProps) => {
                 <Grid.Row>
                     <Grid.Column width={4}/>
                     <Grid.Column width={12}>
-                        <ContentToolBar isDirty={isDirty} isError={false} onSave={handleSave}/>
+                        <ContentToolBar isDirty={isDirty} isError={false} buttonSave={true} onSave={handleSave}/>
                     </Grid.Column>
                 </Grid.Row>
                 <Grid.Row>
