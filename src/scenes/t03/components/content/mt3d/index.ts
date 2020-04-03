@@ -1,4 +1,4 @@
-import Transport from './Mt3dProperties';
+import Transport from './transport';
 
 export {
     Transport

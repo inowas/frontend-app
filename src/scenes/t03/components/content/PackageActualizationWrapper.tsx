@@ -104,19 +104,26 @@ const packageActualizationWrapper = (props: IProps) => {
 
     const {property} = props;
 
-    if (property === 'modflow') {
+    if (property === 'modflow' && packages instanceof FlopyPackages) {
         return (
             <Content.Modflow
-                model={model}
                 boundaries={boundaries}
-                soilmodel={soilmodel}
+                model={model}
                 packages={packages}
+                soilmodel={soilmodel}
             />
         );
     }
 
-    if (property === 'mt3d') {
-        return (<Content.Mt3d/>);
+    if (property === 'mt3d' && packages instanceof FlopyPackages) {
+        return (
+            <Content.Mt3d
+                model={model}
+                packages={packages}
+                soilmodel={soilmodel}
+                transport={transport}
+            />
+        );
     }
 
     if (property === 'seawat') {

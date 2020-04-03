@@ -67,13 +67,11 @@ interface IProps {
     boundaries: BoundaryCollection;
     model: ModflowModel;
     soilmodel: Soilmodel;
-    packages: FlopyPackages | null;
+    packages: FlopyPackages;
 }
 
 const flow = (props: IProps) => {
-    const [mf, setMf] = useState<IFlopyModflow | null>(
-        props.packages ? props.packages.mf.toObject() : null
-    );
+    const [mf, setMf] = useState<IFlopyModflow>(props.packages.mf.toObject());
     const [isDirty, setIsDirty] = useState<boolean>(false);
     const [isLoading, setIsLoading] = useState<boolean>(false);
 
@@ -82,16 +80,10 @@ const flow = (props: IProps) => {
     const match = useRouteMatch();
 
     useEffect(() => {
-        const {packages} = props;
-        if (packages) {
-            setMf(packages.mf.toObject());
-        }
+        setMf(props.packages.mf.toObject());
     }, [props.packages]);
 
     const handleSave = () => {
-        if (!mf || !props.model || !props.packages) {
-            return null;
-        }
         const packages = props.packages;
         packages.modelId = props.model.id;
         packages.mf = FlopyModflow.fromObject(mf);
@@ -107,9 +99,6 @@ const flow = (props: IProps) => {
     };
 
     const handleClickEdit = (layerId: string, set: string, parameter: string) => {
-        if (!props.model) {
-            return null;
-        }
         const path = match.path;
         const basePath = path.split(':')[0];
         return history.push(
@@ -118,9 +107,6 @@ const flow = (props: IProps) => {
     };
 
     const handleChangePackage = (p: FlopyModflowPackage<IFlopyModflowPackage>) => {
-        if (!mf) {
-            return null;
-        }
         const cMf = FlopyModflow.fromObject(mf);
         cMf.setPackage(p);
         setMf(cMf.toObject());
@@ -128,9 +114,6 @@ const flow = (props: IProps) => {
     };
 
     const handleChangeFlowPackageType = (type: string) => {
-        if (!mf || !props.packages) {
-            return null;
-        }
         if (flowPackages.indexOf(type) < 0) {
             throw Error('Type ' + type + 'is not a registered FlowPackage type');
         }
@@ -147,9 +130,6 @@ const flow = (props: IProps) => {
     };
 
     const handleMenuClick = (type: string | undefined) => () => {
-        if (!props.model) {
-            return null;
-        }
         const path = match.path;
         const basePath = path.split(':')[0];
 
@@ -161,11 +141,7 @@ const flow = (props: IProps) => {
     };
 
     const renderProperties = () => {
-        if (!mf || !props.model) {
-            return null;
-        }
         const iMf = FlopyModflow.fromObject(mf);
-
         const readOnly = props.model.readOnly;
         const {type} = match.params;
         const soilmodel = props.soilmodel;
@@ -352,10 +328,6 @@ const flow = (props: IProps) => {
             </div>
         );
     };
-
-    if (!mf) {
-        return null;
-    }
 
     return (
         <Segment color={'grey'} loading={isLoading}>
