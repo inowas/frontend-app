@@ -20,7 +20,7 @@ export interface IFlopyMt3dMtssm extends IPropertyValueObject {
     crch: null | any;
     cevt: null | any;
     mxss: null | any;
-    stress_period_data: null | any;
+    stress_period_data: null | Array<Array<[number, number, number, number, string]>>;
     extension: string;
     unitnumber: number | null;
     filenames: null | string | string[];
