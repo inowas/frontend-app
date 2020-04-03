@@ -126,7 +126,7 @@ const packageActualizationWrapper = (props: IProps) => {
         );
     }
 
-    if (property === 'seawat') {
+    if (property === 'seawat' && packages instanceof FlopyPackages) {
         return (<Content.Seawat/>);
     }
 
