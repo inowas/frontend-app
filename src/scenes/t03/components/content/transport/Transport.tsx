@@ -112,7 +112,13 @@ const transport = () => {
 
     const handleSave = () => {
         if (!editingState.current.dirty || !transportRef.current) {
-            return;
+            return null;
+        }
+        const filteredSubstances = transportRef.current.substances.all.filter(
+            (s) => s.boundaryConcentrations.length === 0);
+        if (filteredSubstances.length > 0) {
+            dispatch(addMessage(messageError('transport', 'Substances must be applied to at least one boundary.')));
+            return null;
         }
         const message = messageSaving(property);
         dispatch(addMessage(message));

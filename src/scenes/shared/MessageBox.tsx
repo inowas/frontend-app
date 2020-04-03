@@ -1,15 +1,17 @@
 import moment from 'moment';
 import React from 'react';
-import {useSelector} from 'react-redux';
-import {Header, List, Segment} from 'semantic-ui-react';
+import {useDispatch, useSelector} from 'react-redux';
+import {Header, Icon, List, Segment} from 'semantic-ui-react';
 import getConfig from '../../config.default';
-import {IMessage} from '../../core/model/messages/Message.type';
+import {EMessageState, IMessage} from '../../core/model/messages/Message.type';
 import MessagesCollection from '../../core/model/messages/MessagesCollection';
 import {IRootReducer} from '../../reducers';
+import {removeMessage} from '../t03/actions/actions';
 
 const messageBox = () => {
     const debugging = getConfig().VERSION === 'dev';
 
+    const dispatch = useDispatch();
     const T03 = useSelector((state: IRootReducer) => state.T03);
     const messages = debugging ?
         MessagesCollection.fromObject(T03.messages) :
@@ -21,6 +23,10 @@ const messageBox = () => {
         return `${timeStamp} at ${e.origin}: ${text}`;
     };
 
+    const handleClickRemove = (msg: IMessage) => () => {
+        dispatch(removeMessage(msg));
+    };
+
     if (messages.length === 0) {
         return null;
     }
@@ -29,9 +35,14 @@ const messageBox = () => {
         <Segment color={'red'}>
             <Header>Messages</Header>
             <List>
-                {messages.all.map((e, key) => (
+                {messages.all.map((m, key) => (
                     <List.Item key={key}>
-                        {renderError(e)}
+                        {m.state === EMessageState.ERROR &&
+                        <List.Content floated="right">
+                            <Icon name="trash" style={{cursor: 'pointer'}} onClick={handleClickRemove(m)}/>
+                        </List.Content>
+                        }
+                        {renderError(m)}
                     </List.Item>
                 ))}
             </List>
