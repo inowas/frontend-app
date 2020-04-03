@@ -122,7 +122,8 @@ class FlopyMt3d extends GenericObject<IFlopyMt3d> {
             return null;
         }
 
-        const obj = {...this._props, enabled: undefined};
+        const obj = {...this._props};
+        delete obj.enabled;
 
         return {
             ...obj, packages: Object.keys(obj)

@@ -17,7 +17,7 @@ export interface IFlopySeawatSwtvsc extends IPropertyValueObject {
     invisc: number;
     visc: number;
     extension: string;
-    unitnumer: number | null;
+    unitnumber: number | null;
     filenames: null | string | string[];
 }
 
@@ -36,7 +36,7 @@ export const defaults: IFlopySeawatSwtvsc = {
     invisc: -1,
     visc: -1,
     extension: 'vsc',
-    unitnumer: null,
+    unitnumber: null,
     filenames: null
 };
 
