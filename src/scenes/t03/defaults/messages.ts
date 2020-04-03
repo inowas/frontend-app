@@ -22,3 +22,12 @@ export const messageError = (origin: string, text: string): IMessage => ({
     text,
     state: EMessageState.ERROR
 });
+
+export interface IEditingState {
+    [key: string]: IMessage | null;
+}
+
+export const initialEditingState: IEditingState = {
+    dirty: null,
+    saving: null
+};

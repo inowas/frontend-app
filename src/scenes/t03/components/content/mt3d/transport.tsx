@@ -1,6 +1,9 @@
-import React, {useState} from 'react';
-import {useDispatch} from 'react-redux';
+import React, {useEffect, useRef, useState} from 'react';
+import {useDispatch, useSelector} from 'react-redux';
 import {useHistory, useRouteMatch} from 'react-router-dom';
+import {Grid, Menu, Segment} from 'semantic-ui-react';
+import FlopyPackages from '../../../../../core/model/flopy/packages/FlopyPackages';
+import {FlopyMt3d} from '../../../../../core/model/flopy/packages/mt';
 import {IFlopyMt3d} from '../../../../../core/model/flopy/packages/mt/FlopyMt3d';
 import FlopyMt3dMt from '../../../../../core/model/flopy/packages/mt/FlopyMt3dMt';
 import FlopyMt3dMtadv from '../../../../../core/model/flopy/packages/mt/FlopyMt3dMtadv';
@@ -9,17 +12,16 @@ import FlopyMt3dMtdsp from '../../../../../core/model/flopy/packages/mt/FlopyMt3
 import FlopyMt3dMtgcg from '../../../../../core/model/flopy/packages/mt/FlopyMt3dMtgcg';
 import FlopyMt3dMtrct from '../../../../../core/model/flopy/packages/mt/FlopyMt3dMtrct';
 import FlopyMt3dMtssm from '../../../../../core/model/flopy/packages/mt/FlopyMt3dMtssm';
-import {sendCommand} from '../../../../../services/api';
-import ModflowModelCommand from '../../../commands/modflowModelCommand';
-
-import {Grid, Menu, Segment} from 'semantic-ui-react';
-import FlopyPackages from '../../../../../core/model/flopy/packages/FlopyPackages';
-import {FlopyMt3d} from '../../../../../core/model/flopy/packages/mt';
 import FlopyMt3dPackage from '../../../../../core/model/flopy/packages/mt/FlopyMt3dPackage';
+import {EMessageState} from '../../../../../core/model/messages/Message.type';
+import MessagesCollection from '../../../../../core/model/messages/MessagesCollection';
 import {ModflowModel, Soilmodel, Transport} from '../../../../../core/model/modflow';
-import ContentToolBar from '../../../../shared/ContentToolbar';
-import {updatePackages} from '../../../actions/actions';
-
+import {IRootReducer} from '../../../../../reducers';
+import {sendCommand} from '../../../../../services/api';
+import ContentToolBar from '../../../../shared/ContentToolbar2';
+import {addMessage, removeMessage, updateMessage, updatePackages} from '../../../actions/actions';
+import ModflowModelCommand from '../../../commands/modflowModelCommand';
+import {IEditingState, initialEditingState, messageDirty, messageSaving} from '../../../defaults/messages';
 import {
     AdvPackageProperties,
     BtnPackageProperties,
@@ -48,40 +50,76 @@ interface IProps {
 }
 
 const transport = (props: IProps) => {
-
     const [mt, setMt] = useState<IFlopyMt3d>(props.packages.mt.toObject());
-    const [isDirty, setIsDirty] = useState<boolean>(false);
-    const [isLoading, setIsLoading] = useState<boolean>(false);
+
+    const mtRef = useRef<IFlopyMt3d>();
+    const editingState = useRef<IEditingState>(initialEditingState);
+
+    const T03 = useSelector((state: IRootReducer) => state.T03);
+    const messages = MessagesCollection.fromObject(T03.messages);
 
     const dispatch = useDispatch();
     const history = useHistory();
     const match = useRouteMatch();
 
+    useEffect(() => {
+        return function cleanup() {
+            handleSave();
+        };
+    }, []);
+
+    useEffect(() => {
+        editingState.current = messages.getEditingState('mt3d');
+    }, [messages]);
+
+    useEffect(() => {
+        if (mt) {
+            mtRef.current = mt;
+        }
+    }, [mt]);
+
     const handleSave = () => {
+        if (!editingState.current.dirty || !mtRef.current) {
+            return null;
+        }
+        const message = messageSaving('mt3d');
+        dispatch(addMessage(message));
         const packages = props.packages;
         packages.modelId = props.model.id;
         packages.mt = FlopyMt3d.fromObject(mt);
-        setIsLoading(true);
         sendCommand(
             ModflowModelCommand.updateFlopyPackages(props.model.id, packages),
             () => {
+                if (editingState.current.dirty) {
+                    dispatch(removeMessage(editingState.current.dirty));
+                }
                 dispatch(updatePackages(packages));
-                setIsLoading(false);
-                setIsDirty(false);
+                dispatch(updateMessage({...message, state: EMessageState.SUCCESS}));
             }
         );
+    };
+
+    const handleUndo = () => {
+        if (!editingState.current.dirty) {
+            return null;
+        }
+        setMt(props.packages.mt.toObject());
+        dispatch(removeMessage(editingState.current.dirty));
     };
 
     const handleChangePackage = (p: FlopyMt3dPackage<any>) => {
         const cMt = FlopyMt3d.fromObject(mt);
         cMt.setPackage(p);
         setMt(cMt.toObject());
-        setIsDirty(true);
+        if (!editingState.current.dirty) {
+            dispatch(addMessage(messageDirty('mt3d')));
+        }
     };
 
     const handleMenuClick = (type: string | undefined) => () => {
         const path = match.path;
         const basePath = path.split(':')[0];
+        handleSave();
 
         if (!type) {
             return history.push(basePath + props.model.id + '/mt3d');
@@ -175,12 +213,12 @@ const transport = (props: IProps) => {
     };
 
     return (
-        <Segment color={'grey'} loading={isLoading}>
+        <Segment color={'grey'}>
             <Grid>
                 <Grid.Row>
                     <Grid.Column width={4}/>
                     <Grid.Column width={12}>
-                        <ContentToolBar isDirty={isDirty} isError={false} buttonSave={true} onSave={handleSave}/>
+                        <ContentToolBar buttonSave={true} onUndo={handleUndo} onSave={handleSave}/>
                     </Grid.Column>
                 </Grid.Row>
                 <Grid.Row>
