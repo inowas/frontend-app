@@ -126,16 +126,11 @@ export default class FlopySeawat extends GenericObject<IFlopySeawat> {
             return null;
         }
 
-        const obj: IPropertyValueObject = {
-            packages: Object.keys(this.packages)
+        const obj = {...this._props};
+        delete obj.enabled;
+
+        return {
+            ...obj, packages: Object.keys(obj)
         };
-
-        for (const prop in this.packages) {
-            if (this.packages.hasOwnProperty(prop)) {
-                obj[prop] = this.packages[prop].toObject();
-            }
-        }
-
-        return obj;
     };
 }

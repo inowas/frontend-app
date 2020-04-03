@@ -6,7 +6,7 @@ import Discretization from './discretization/discretization';
 import Export from './importExport/export';
 import Modflow from './modflow/flow';
 import {Modpath} from './modpath';
-import Mt3d from './mt3d/Mt3dProperties.js';
+import Mt3d from './mt3d/transport';
 import {Statistics} from './observation';
 import Optimization from './optimization/optimization.js';
 import PackageActualizationWrapper from './PackageActualizationWrapper';

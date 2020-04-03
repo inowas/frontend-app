@@ -4,15 +4,15 @@ import FlopySeawatPackage from './FlopySeawatPackage';
 
 export interface IFlopySeawatSwt extends IPropertyValueObject {
     modelname: string;
-    namefileext: string;
+    namefile_ext: string;
     modflowmodel: null | string;
     mt3dmodel: null | string;
     version: string;
-    exename: string;
+    exe_name: string;
     structured: boolean;
     listunit: number;
-    modelws: string;
-    externalpath: null | string;
+    model_ws: string;
+    external_path: null | string;
     verbose: boolean;
     load: boolean;
     silent: number;
@@ -20,15 +20,15 @@ export interface IFlopySeawatSwt extends IPropertyValueObject {
 
 export const defaults: IFlopySeawatSwt = {
     modelname: 'seawat-model',
-    namefileext: 'nam',
+    namefile_ext: 'nam',
     modflowmodel: null,
     mt3dmodel: null,
     version: 'seawat',
-    exename: 'swtv4',
+    exe_name: 'swtv4',
     structured: true,
     listunit: 2,
-    modelws: '.',
-    externalpath: null,
+    model_ws: '.',
+    external_path: null,
     verbose: false,
     load: true,
     silent: 0
@@ -63,11 +63,11 @@ class FlopySeawatSwt extends FlopySeawatPackage<IFlopySeawatSwt> {
     }
 
     get namefile_ext() {
-        return this._props.namefileext;
+        return this._props.namefile_ext;
     }
 
     set namefile_ext(value) {
-        this._props.namefileext = value;
+        this._props.namefile_ext = value;
     }
 
     get modflowmodel() {
@@ -95,11 +95,11 @@ class FlopySeawatSwt extends FlopySeawatPackage<IFlopySeawatSwt> {
     }
 
     get exe_name() {
-        return this._props.exename;
+        return this._props.exe_name;
     }
 
     set exe_name(value) {
-        this._props.exename = value;
+        this._props.exe_name = value;
     }
 
     get structured() {
@@ -119,19 +119,19 @@ class FlopySeawatSwt extends FlopySeawatPackage<IFlopySeawatSwt> {
     }
 
     get model_ws() {
-        return this._props.modelws;
+        return this._props.model_ws;
     }
 
     set model_ws(value) {
-        this._props.modelws = value;
+        this._props.model_ws = value;
     }
 
     get external_path() {
-        return this._props.externalpath;
+        return this._props.external_path;
     }
 
     set external_path(value) {
-        this._props.externalpath = value;
+        this._props.external_path = value;
     }
 
     get verbose() {

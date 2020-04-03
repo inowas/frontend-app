@@ -1,7 +1,7 @@
 import {IPropertyValueObject} from '../../../types';
 import FlopyMt3dPackage from './FlopyMt3dPackage';
 
-export interface IFlopyMt3dMtAdv {
+export interface IFlopyMt3dMtAdv extends IPropertyValueObject {
     mixelm: number;
     percel: number;
     mxpart: number;

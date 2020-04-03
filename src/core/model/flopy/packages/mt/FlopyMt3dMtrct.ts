@@ -1,7 +1,7 @@
 import {IPropertyValueObject} from '../../../types';
 import FlopyMt3dPackage from './FlopyMt3dPackage';
 
-export interface IFlopyMt3dMtrct {
+export interface IFlopyMt3dMtrct extends IPropertyValueObject {
     isothm: number;
     ireact: number;
     igetsc: number;

@@ -1,7 +1,7 @@
 import {IPropertyValueObject} from '../../../types';
 import FlopyMt3dPackage from './FlopyMt3dPackage';
 
-export interface IFlopyMt3dMtgcg {
+export interface IFlopyMt3dMtgcg extends IPropertyValueObject {
     mxiter: number;
     iter1: number;
     isolve: number;

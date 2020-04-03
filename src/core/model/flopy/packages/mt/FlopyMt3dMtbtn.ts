@@ -2,7 +2,7 @@ import {Transport} from '../../../modflow';
 import {IPropertyValueObject} from '../../../types';
 import FlopyMt3dPackage from './FlopyMt3dPackage';
 
-export interface IFlopyMt3dMtBtn {
+export interface IFlopyMt3dMtBtn extends IPropertyValueObject {
     MFStyleArr: boolean;
     DRYCell: boolean;
     Legacy99Stor: boolean;
