@@ -112,7 +112,7 @@ export const documentation = {
             be interpolated for steady-state stress periods in the same way that values are interpolated for transient
             stress periods. If the simulation includes only steady-state stress periods, the flag controls how flow,
             head, and auxiliary-variable values will be computed for each steady-state solution. (default is 0)</div>,
-        ipakcb:<div>A flag that is used to determine if cell-by-cell budget data should be saved. If ipakcb is non-zero
+        ipakcb: <div>A flag that is used to determine if cell-by-cell budget data should be saved. If ipakcb is non-zero
             cell-by-cell budget data will be saved. (default is None).</div>,
         nfhbx1: <div>Number of auxiliary variables whose values will be computed for each time step for each
             specified-flow cell. Auxiliary variables are currently not supported. (default is 0)</div>,
@@ -196,7 +196,6 @@ export const documentation = {
             all package files (input and output) the length of the list of strings should be 2. Default is None.</div>
     },
 
-
     // HFB
     hfb: {
         nphfb: <div>Number of horizontal-flow barrier parameters. Note that for an HFB parameter to have an effect in
@@ -225,8 +224,10 @@ export const documentation = {
         tomulth: <div>Time step multiplier for head observations. The product of tomulth and toffset must produce a time
             value in units consistent with other model input. tomulth can be dimensionless or can be used to convert the
             units of toffset to the time unit used in the simulation (default is 1).</div>,
-        obs_data: <div>A single HeadObservation instance or a list of HeadObservation instances containing all of the data
-            for each observation. If obs_data is None a default HeadObservation with an observation in layer, row, column
+        obs_data: <div>A single HeadObservation instance or a list of HeadObservation instances containing all of the
+            data
+            for each observation. If obs_data is None a default HeadObservation with an observation in layer, row,
+            column
             (0, 0, 0) and a head value of 0 at totim 0 will be created (default is None).</div>
     },
 
@@ -278,10 +279,12 @@ export const documentation = {
 
     // RCH
     rch: {
-        nrchop: <div>Is the recharge option code. 1: Recharge to top grid layer only 2: Recharge to layer defined in irch 3:
+        nrchop: <div>Is the recharge option code. 1: Recharge to top grid layer only 2: Recharge to layer defined in
+            irch 3:
             Recharge to highest active cell (default is 3).</div>,
         rech: <div>Is the recharge flux. (default is 1.e-3)</div>,
-        irch: <div>Is the layer to which recharge is applied in each vertical column (only used when nrchop=2). (default is
+        irch: <div>Is the layer to which recharge is applied in each vertical column (only used when nrchop=2). (default
+            is
             0).</div>,
         ipakcb: <div>TODO!!</div>,
         extension: <div>Filename extension (default is ‘rch’)</div>,
@@ -364,7 +367,7 @@ export const documentation = {
         ipakcb: <div>A flag that is used to determine if cell-by-cell budget data should be saved.
             If ipakcb is non-zero cell-by-cell budget data will be saved. (default is 0).</div>,
         extension: <div>Filename extension (default is ‘wel’)</div>,
-        options:<div>Package options (default is None).</div>,
+        options: <div>Package options (default is None).</div>,
         unitnumber: <div>File unit number (default is None).</div>,
         filenames: <div>Filenames to use for the package and the output files. If filenames=None the package name will
             be created using the model name and package extension and the cbc output name will be created using the
@@ -454,7 +457,6 @@ export const documentation = {
             using the model name and .cbc extension, if ipakcbc is a number greater than zero. To define the names for
             all package files (input and output) the length of the list of strings should be 2. Default is None.</div>
     },
-
 
     // SOLVER Packages
 

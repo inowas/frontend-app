@@ -19,7 +19,7 @@ export const OPTIMIZATION_STATE_ERROR_PUBLISHING = 42;
 export const OPTIMIZATION_STATE_ERROR_CANCELLING = 43;
 export const OPTIMIZATION_STATE_ERROR_OPTIMIZATION_CORE = 50;
 
-export const optimizationHasError = (code) => {
+export const optimizationHasError = (code: number) => {
     const hasError = [
         OPTIMIZATION_STATE_ERROR,
         OPTIMIZATION_STATE_ERROR_RECALCULATING_MODEL,
@@ -30,7 +30,7 @@ export const optimizationHasError = (code) => {
     return hasError.includes(code);
 };
 
-export const optimizationInProgress = (code) => {
+export const optimizationInProgress = (code: number) => {
     const inProgress = [
         OPTIMIZATION_STATE_STARTED,
         OPTIMIZATION_STATE_PREPROCESSING,
@@ -42,7 +42,7 @@ export const optimizationInProgress = (code) => {
     return inProgress.includes(code);
 };
 
-export const getMessage = (code) => {
+export const getMessage = (code: number) => {
     switch (code) {
         case OPTIMIZATION_STATE_NEW:
             return 'New';

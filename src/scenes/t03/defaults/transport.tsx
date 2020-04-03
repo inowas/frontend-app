@@ -50,21 +50,21 @@ export const documentation = {
             A value around 10^-5 is generally adequate.</div>,
         nplane: <div>Flag indicating whether the random or fixed pattern is selected for initial placement of moving
             particles.
-                    <ul>
-                        <li><i>NPLANE</i> = 0 Random pattern is selected for initial placement. Particles are distributed
-                            randomly in both the horizontal and vertical directions by calling a random number generator. This
-                            option is usually preferred and leads to smaller mass balance discrepancy in nonuniform or
-                            diverging/converging flow fields.
-                        </li>
-                        <li><i>NPLANE</i> > 0 Fixed pattern is selected for initial placement. The value of NPLANE serves as the
-                            number of vertical “planes” on which initial particles are placed within each cell block. The fixed
-                            pattern may work better than the random pattern only in relatively uniform flow fields. For two
-                            dimensional simulations in plan view, set NPLANE = 1. For cross sectional or three-dimensional
-                            simulations, NPLANE = 2 is normally adequate. Increase NPLANE if more resolution in the vertical
-                            direction is desired.
-                        </li>
-                    </ul>
-                </div>,
+            <ul>
+                <li><i>NPLANE</i> = 0 Random pattern is selected for initial placement. Particles are distributed
+                    randomly in both the horizontal and vertical directions by calling a random number generator. This
+                    option is usually preferred and leads to smaller mass balance discrepancy in nonuniform or
+                    diverging/converging flow fields.
+                </li>
+                <li><i>NPLANE</i> > 0 Fixed pattern is selected for initial placement. The value of NPLANE serves as the
+                    number of vertical “planes” on which initial particles are placed within each cell block. The fixed
+                    pattern may work better than the random pattern only in relatively uniform flow fields. For two
+                    dimensional simulations in plan view, set NPLANE = 1. For cross sectional or three-dimensional
+                    simulations, NPLANE = 2 is normally adequate. Increase NPLANE if more resolution in the vertical
+                    direction is desired.
+                </li>
+            </ul>
+        </div>,
         npl: <div>Number of initial particles per cell to be placed at cells where the Relative Cell Concentration
             Gradient is less than or equal to DCEPS. Generally, NPL can be set to zero since advection is considered
             insignificant when the Relative Cell Concentration Gradient is less than or equal to DCEPS. Setting NPL
@@ -109,7 +109,8 @@ export const documentation = {
             <ul>
                 <li><i>ICBUND</i> = 0 inactive concentration cell for all species</li>
                 <li><i>ICBUND</i> {'<'} 0 constant concentration cell for all species</li>
-                <li><i>ICBUND</i> {'>'} 0 active (variable) concentration cell where the concentration will be calculated
+                <li><i>ICBUND</i> {'>'} 0 active (variable) concentration cell where the concentration will be
+                    calculated
                 </li>
             </ul>
         </div>,
@@ -126,10 +127,12 @@ export const documentation = {
                 <li><i>IFMTCN</i> = 0 concentration is not printed</li>
             </ul></div>,
         ifmtnp: <div>Flag indicating whether the number of particles in each cell (integers) should be printed and also
-            serves as a printing-format code if they are printed. The convention is the same as that used for <i>IFMTCN</i>.
+            serves as a printing-format code if they are printed. The convention is the same as that used
+            for <i>IFMTCN</i>.
         </div>,
         ifmtrf: <div>Flag indicating whether the model-calculated retardation factor should be printed and also serves
-            as a printing-format code if it is printed. The convention is the same as that used for <i>IFMTCN</i>.</div>,
+            as a printing-format code if it is printed. The convention is the same as that used for <i>IFMTCN</i>.
+        </div>,
         ifmtdp: <div>Flag indicating whether the model-calculated, distance weighted dispersion coefficient should be
             printed and also serves as a printing-format code if it is printed. The convention is the same as that
             used for <i>IFMTCN</i>.</div>,
@@ -220,6 +223,11 @@ export const documentation = {
             default for printing at the end of each stress period.</div>,
     },
 
+    // MT
+    mt: {
+        exe_name: <div>The name of the executable to use (the default is ‘mt3dms’).</div>,
+    },
+
     // RCT
     rct: {
         isothm: <div>A flag indicating which type of sorption (or dual-domain mass transfer) is simulated: isothm = 0,
@@ -249,7 +257,7 @@ export const documentation = {
             is not user-specified and isothm is not 5 then rhob is set to 1.8e3. (default is None)</div>,
         prsity2: <div>Porosity of the immobile domain, i.e., the ratio of pore spaces filled with immobile fluids over
             the bulk volume of the aquifer medium, when the simulation is intended to represent a dual-domain system.
-            </div>,
+        </div>,
         srconc: <div>User-specified initial concentration for the sorbed phase of the first species if isothm = 4 (unit,
             MM-1). Note that for equilibrium-controlled sorption, the initial concentration for the sorbed phase cannot
             be specified. srconc is the user-specified initial concentration of the first species for the immobile
