@@ -127,7 +127,15 @@ const packageActualizationWrapper = (props: IProps) => {
     }
 
     if (property === 'seawat' && packages instanceof FlopyPackages) {
-        return (<Content.Seawat/>);
+        return (
+            <Content.Seawat
+                boundaries={boundaries}
+                model={model}
+                packages={packages}
+                transport={transport}
+                variableDensity={variableDensity}
+            />
+        );
     }
 
     if (property === 'calculation') {

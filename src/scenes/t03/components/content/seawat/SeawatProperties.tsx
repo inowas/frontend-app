@@ -1,6 +1,6 @@
-import React from 'react';
-import {connect} from 'react-redux';
-import {withRouter} from 'react-router-dom';
+import React, {useState} from 'react';
+import {useDispatch} from 'react-redux';
+import {useHistory, useRouteMatch} from 'react-router-dom';
 import {Grid, Menu, Segment} from 'semantic-ui-react';
 import FlopyPackages from '../../../../../core/model/flopy/packages/FlopyPackages';
 import {
@@ -10,6 +10,7 @@ import {
     FlopySeawatSwtvsc
 } from '../../../../../core/model/flopy/packages/swt';
 import {IFlopySeawat} from '../../../../../core/model/flopy/packages/swt/FlopySeawat';
+import FlopySeawatSwt from '../../../../../core/model/flopy/packages/swt/FlopySeawatSwt';
 import {ModflowModel, Transport, VariableDensity} from '../../../../../core/model/modflow';
 import {BoundaryCollection} from '../../../../../core/model/modflow/boundaries';
 import {sendCommand} from '../../../../../services/api';
@@ -18,13 +19,13 @@ import {updatePackages} from '../../../actions/actions';
 import ModflowModelCommand from '../../../commands/modflowModelCommand';
 import {SeawatPackageProperties, VdfPackageProperties, VscPackageProperties} from './packages';
 
-interface IOwnProps {
-    history: any;
-    location: any;
-    match: any;
-}
+const sideBar = [
+    {id: undefined, name: 'Overview (SEAWAT)'},
+    {id: 'vdf', name: 'Variable-density flow package'},
+    {id: 'vsc', name: 'Viscosity package'}
+];
 
-interface IStateProps {
+interface IProps {
     boundaries: BoundaryCollection;
     model: ModflowModel;
     packages: FlopyPackages;
@@ -32,202 +33,120 @@ interface IStateProps {
     variableDensity: VariableDensity;
 }
 
-interface IDispatchProps {
-    updatePackages: (packages: FlopyPackages) => any;
-}
+const seawatProperties = (props: IProps) => {
 
-type Props = IStateProps & IDispatchProps & IOwnProps;
+    const [swt, setSwt] = useState<IFlopySeawat>(props.packages.swt.toObject());
+    const [isDirty, setIsDirty] = useState<boolean>(false);
+    const [isLoading, setIsLoading] = useState<boolean>(false);
 
-interface ISeawatPropertiesState {
-    swt: IFlopySeawat;
-    isError: boolean;
-    isDirty: boolean;
-    isLoading: boolean;
-}
+    const dispatch = useDispatch();
+    const history = useHistory();
+    const match = useRouteMatch();
 
-type packageTypes = 'vdf' | 'vsc' | undefined;
-
-type sideBarItems = Array<{ id: packageTypes, name: string }>;
-
-const sideBar: sideBarItems = [
-    {id: undefined, name: 'Overview (SEAWAT)'},
-    {id: 'vdf', name: 'Variable-density flow package'},
-    {id: 'vsc', name: 'Viscosity package'}
-];
-
-class SeawatProperties extends React.Component<Props, ISeawatPropertiesState> {
-    constructor(props: Props) {
-        super(props);
-
-        this.state = {
-            swt: this.props.packages.swt.toObject(),
-            isError: false,
-            isDirty: false,
-            isLoading: false,
-        };
-    }
-
-    public componentDidMount() {
-        const {variableDensity} = this.props;
-        const packages = FlopyPackages.fromObject(this.props.packages.toObject());
-        packages.swt.recalculate(variableDensity);
-        this.props.updatePackages(packages);
-    }
-
-    public componentWillReceiveProps(nextProps: Props) {
-        return this.setState({
-            swt: nextProps.packages.swt.toObject()
-        });
-    }
-
-    public handleSave = () => {
-        const packages = this.props.packages;
-        packages.swt = FlopySeawat.fromObject(this.state.swt);
-
-        this.setState({isLoading: true}, () =>
-            sendCommand(
-                ModflowModelCommand.updateFlopyPackages(this.props.model.id, packages),
-                () => {
-                    this.props.updatePackages(packages);
-                    return this.setState({isDirty: false, isLoading: false});
-                },
-                () => this.setState({isError: true})
-            )
+    const handleSave = () => {
+        const packages = props.packages;
+        packages.modelId = props.model.id;
+        packages.swt = FlopySeawat.fromObject(swt);
+        setIsLoading(true);
+        sendCommand(
+            ModflowModelCommand.updateFlopyPackages(props.model.id, packages),
+            () => {
+                dispatch(updatePackages(packages));
+                setIsLoading(false);
+                setIsDirty(false);
+            }
         );
     };
 
-    public handleChangePackage = (p: FlopySeawatPackage<any> | { [index: string]: any }
-    ) => {
-        const swt = FlopySeawat.fromObject(this.state.swt);
-        swt.setPackage(p);
-
-        return this.setState({
-            swt: swt.toObject(),
-            isDirty: true
-        });
+    const handleChangePackage = (p: FlopySeawatPackage<any>) => {
+        const cSwt = FlopySeawat.fromObject(swt);
+        cSwt.setPackage(p);
+        setIsDirty(true);
+        setSwt(cSwt.toObject());
     };
 
-    public onMenuClick = (type: packageTypes) => () => {
-        const path = this.props.match.path;
+    const handleMenuClick = (type: string | undefined) => () => {
+        const path = match.path;
         const basePath = path.split(':')[0];
 
         if (!type) {
-            return this.props.history.push(basePath + this.props.model.id + '/seawat');
+            return history.push(basePath + props.model.id + '/seawat');
         }
 
-        return this.props.history.push(basePath + this.props.model.id + '/seawat/' + type);
+        return history.push(basePath + props.model.id + '/seawat/' + type);
     };
 
-    public renderProperties() {
-        if (!this.state.swt || !this.props.model || !this.props.transport) {
-            return null;
-        }
-
-        const seawat = FlopySeawat.fromObject(this.state.swt);
-        const readOnly = this.props.model.readOnly || false;
-        const {type} = this.props.match.params;
+    const renderProperties = () => {
+        const seawat = FlopySeawat.fromObject(swt);
+        const readOnly = props.model.readOnly;
+        const transport = props.transport;
+        const {type} = match.params;
 
         switch (type) {
             case 'vdf':
                 return (
                     <VdfPackageProperties
-                        onChange={this.handleChangePackage}
+                        onChange={handleChangePackage}
                         readOnly={readOnly}
                         swtPackage={seawat.getPackage('vdf') as FlopySeawatSwtvdf}
-                        transport={this.props.transport}
+                        transport={transport}
                     />
                 );
             case 'vsc':
                 return (
                     <VscPackageProperties
-                        onChange={this.handleChangePackage}
+                        onChange={handleChangePackage}
                         readOnly={readOnly}
                         swtPackage={seawat.getPackage('vsc') as FlopySeawatSwtvsc}
-                        transport={this.props.transport}
+                        transport={transport}
                     />
                 );
             default:
                 return (
                     <SeawatPackageProperties
-                        onChange={this.handleChangePackage}
-                        readOnly={readOnly}
-                        swtPackage={seawat.getPackage('swt') as FlopySeawatPackage<any>}
-                        transport={this.props.transport}
+                        swtPackage={seawat.getPackage('swt') as FlopySeawatSwt}
                     />
                 );
         }
-    }
+    };
 
-    public renderSidebar = () => {
-        const {type} = this.props.match.params;
+    const renderSidebar = () => {
+        const {type} = match.params;
 
         return (
-            <div>
-                <Menu fluid={true} vertical={true} tabular={true}>
-                    {sideBar.map((item, key) => (
-                        <Menu.Item
-                            key={key}
-                            name={item.name}
-                            disabled={item.id === 'vsc' && !this.props.variableDensity.vscEnabled}
-                            active={type === item.id}
-                            onClick={this.onMenuClick(item.id)}
-                        />
-                    ))}
-                </Menu>
-            </div>
+            <Menu fluid={true} vertical={true} tabular={true}>
+                {sideBar.map((item, key) => (
+                    <Menu.Item
+                        key={key}
+                        name={item.name}
+                        active={type === item.id}
+                        onClick={handleMenuClick(item.id)}
+                    />
+                ))}
+            </Menu>
         );
     };
 
-    public render() {
-        const {isDirty, isError, isLoading, swt} = this.state;
+    return (
+        <Segment color={'grey'} loading={isLoading}>
+            <Grid>
+                <Grid.Row>
+                    <Grid.Column width={4}/>
+                    <Grid.Column width={12}>
+                        <ContentToolBar isDirty={isDirty} isError={false} buttonSave={true} onSave={handleSave}/>
+                    </Grid.Column>
+                </Grid.Row>
+                <Grid.Row>
+                    <Grid.Column width={4}>
+                        {renderSidebar()}
+                    </Grid.Column>
+                    <Grid.Column width={12}>
+                        {renderProperties()}
+                    </Grid.Column>
+                </Grid.Row>
+            </Grid>
+        </Segment>
+    );
+};
 
-        if (!swt) {
-            return null;
-        }
-
-        return (
-            <div>
-                <Segment color={'grey'} loading={isLoading}>
-                    <Grid>
-                        <Grid.Row>
-                            <Grid.Column width={4}/>
-                            <Grid.Column width={12}>
-                                <ContentToolBar
-                                    isDirty={isDirty}
-                                    isError={isError}
-                                    buttonSave={true}
-                                    onSave={this.handleSave}
-                                />
-                            </Grid.Column>
-                        </Grid.Row>
-                        <Grid.Row>
-                            <Grid.Column width={4}>
-                                {this.renderSidebar()}
-                            </Grid.Column>
-                            <Grid.Column width={12}>
-                                {this.renderProperties()}
-                            </Grid.Column>
-                        </Grid.Row>
-                    </Grid>
-                </Segment>
-            </div>
-        );
-    }
-}
-
-const mapStateToProps = (state: any) => ({
-    boundaries: BoundaryCollection.fromObject(state.T03.boundaries),
-    model: ModflowModel.fromObject(state.T03.model),
-    packages: FlopyPackages.fromObject(state.T03.packages.data),
-    transport: Transport.fromObject(state.T03.transport),
-    variableDensity: VariableDensity.fromObject(state.T03.variableDensity)
-});
-
-const mapDispatchToProps = (dispatch: any): IDispatchProps => ({
-    updatePackages: (packages: FlopyPackages) => dispatch(updatePackages(packages))
-});
-
-export default withRouter(connect<IStateProps, IDispatchProps, IOwnProps>(
-    mapStateToProps,
-    mapDispatchToProps)
-(SeawatProperties));
+export default seawatProperties;
