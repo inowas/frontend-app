@@ -1,5 +1,5 @@
-import React, {useEffect, useState} from 'react';
-import {useDispatch} from 'react-redux';
+import React, {useEffect, useRef, useState} from 'react';
+import {useDispatch, useSelector} from 'react-redux';
 import {useHistory, useRouteMatch} from 'react-router-dom';
 import {Grid, Menu, Segment} from 'semantic-ui-react';
 import FlopyPackages from '../../../../../core/model/flopy/packages/FlopyPackages';
@@ -21,12 +21,16 @@ import {
 import FlopyModflow, {flowPackages, packagesMap} from '../../../../../core/model/flopy/packages/mf/FlopyModflow';
 import {IFlopyModflow, IFlopyModflowPackage} from '../../../../../core/model/flopy/packages/mf/FlopyModflow.type';
 import FlopyModflowPackage from '../../../../../core/model/flopy/packages/mf/FlopyModflowPackage';
+import {EMessageState} from '../../../../../core/model/messages/Message.type';
+import MessagesCollection from '../../../../../core/model/messages/MessagesCollection';
 import {ModflowModel, Soilmodel} from '../../../../../core/model/modflow';
 import {BoundaryCollection} from '../../../../../core/model/modflow/boundaries';
+import {IRootReducer} from '../../../../../reducers';
 import {sendCommand} from '../../../../../services/api';
-import ContentToolBar from '../../../../shared/ContentToolbar';
-import {updatePackages} from '../../../actions/actions';
+import ContentToolBar from '../../../../shared/ContentToolbar2';
+import {addMessage, removeMessage, updateMessage, updatePackages} from '../../../actions/actions';
 import ModflowModelCommand from '../../../commands/modflowModelCommand';
+import {IEditingState, initialEditingState, messageDirty, messageSaving} from '../../../defaults/messages';
 import {
     BasPackageProperties,
     ChdPackageProperties,
@@ -72,30 +76,66 @@ interface IProps {
 
 const flow = (props: IProps) => {
     const [mf, setMf] = useState<IFlopyModflow>(props.packages.mf.toObject());
-    const [isDirty, setIsDirty] = useState<boolean>(false);
-    const [isLoading, setIsLoading] = useState<boolean>(false);
+
+    const mfRef = useRef<IFlopyModflow>();
+    const packagesRef = useRef<FlopyPackages>();
+    const editingState = useRef<IEditingState>(initialEditingState);
+
+    const T03 = useSelector((state: IRootReducer) => state.T03);
+    const messages = MessagesCollection.fromObject(T03.messages);
 
     const dispatch = useDispatch();
     const history = useHistory();
     const match = useRouteMatch();
 
     useEffect(() => {
+        return function cleanup() {
+            handleSave();
+        };
+    }, []);
+
+    useEffect(() => {
+        editingState.current = messages.getEditingState('modflow');
+    }, [messages]);
+
+    useEffect(() => {
+        if (mf) {
+            mfRef.current = mf;
+        }
+    }, [mf]);
+
+    useEffect(() => {
         setMf(props.packages.mf.toObject());
+        packagesRef.current = props.packages;
     }, [props.packages]);
 
     const handleSave = () => {
-        const packages = props.packages;
+        if (!editingState.current.dirty || !mfRef.current || !packagesRef.current) {
+            return null;
+        }
+        const message = messageSaving('modflow');
+        dispatch(addMessage(message));
+        const packages = packagesRef.current;
         packages.modelId = props.model.id;
-        packages.mf = FlopyModflow.fromObject(mf);
-        setIsLoading(true);
+        packages.mf = FlopyModflow.fromObject(mfRef.current);
         sendCommand(
             ModflowModelCommand.updateFlopyPackages(props.model.id, packages),
             () => {
+                if (editingState.current.dirty) {
+                    dispatch(removeMessage(editingState.current.dirty));
+                }
                 dispatch(updatePackages(packages));
-                setIsLoading(false);
-                setIsDirty(false);
+                dispatch(updateMessage({...message, state: EMessageState.SUCCESS}));
             }
         );
+    };
+
+    const handleUndo = () => {
+        if (!editingState.current.dirty) {
+            return null;
+        }
+        dispatch(removeMessage(editingState.current.dirty));
+        setMf(props.packages.mf.toObject());
     };
 
     const handleClickEdit = (layerId: string, set: string, parameter: string) => {
@@ -110,10 +150,15 @@ const flow = (props: IProps) => {
         const cMf = FlopyModflow.fromObject(mf);
         cMf.setPackage(p);
         setMf(cMf.toObject());
-        setIsDirty(true);
+        if (!editingState.current.dirty) {
+            dispatch(addMessage(messageDirty('modflow')));
+        }
     };
 
     const handleChangeFlowPackageType = (type: string) => {
+        if (!mf || !props.packages) {
+            return null;
+        }
         if (flowPackages.indexOf(type) < 0) {
             throw Error('Type ' + type + 'is not a registered FlowPackage type');
         }
@@ -123,15 +168,21 @@ const flow = (props: IProps) => {
         mfPackages.setPackage(fp);
 
         setMf(mfPackages.toObject());
-        setIsDirty(true);
+        if (!editingState.current.dirty) {
+            dispatch(addMessage(messageDirty('modflow')));
+        }
         const packages = props.packages;
         packages.mf = mfPackages;
         dispatch(updatePackages(packages));
     };
 
     const handleMenuClick = (type: string | undefined) => () => {
+        if (!props.model) {
+            return null;
+        }
         const path = match.path;
         const basePath = path.split(':')[0];
+        handleSave();
 
         if (!type) {
             return history.push(basePath + props.model.id + '/modflow');
@@ -141,7 +192,11 @@ const flow = (props: IProps) => {
     };
 
     const renderProperties = () => {
+        if (!mf || !props.model) {
+            return null;
+        }
         const iMf = FlopyModflow.fromObject(mf);
+
         const readOnly = props.model.readOnly;
         const {type} = match.params;
         const soilmodel = props.soilmodel;
@@ -330,12 +385,12 @@ const flow = (props: IProps) => {
     };
 
     return (
-        <Segment color={'grey'} loading={isLoading}>
+        <Segment color={'grey'}>
             <Grid>
                 <Grid.Row>
                     <Grid.Column width={4}/>
                     <Grid.Column width={12}>
-                        <ContentToolBar isDirty={isDirty} isError={false} buttonSave={true} onSave={handleSave}/>
+                        <ContentToolBar buttonSave={true} onUndo={handleUndo} onSave={handleSave}/>
                     </Grid.Column>
                 </Grid.Row>
                 <Grid.Row>
