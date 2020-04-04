@@ -156,6 +156,9 @@ const flow = (props: IProps) => {
     };
 
     const handleChangeFlowPackageType = (type: string) => {
+        if (!mf || !props.packages) {
+            return null;
+        }
         if (flowPackages.indexOf(type) < 0) {
             throw Error('Type ' + type + 'is not a registered FlowPackage type');
         }
@@ -174,6 +177,9 @@ const flow = (props: IProps) => {
     };
 
     const handleMenuClick = (type: string | undefined) => () => {
+        if (!props.model) {
+            return null;
+        }
         const path = match.path;
         const basePath = path.split(':')[0];
         handleSave();
@@ -186,7 +192,11 @@ const flow = (props: IProps) => {
     };
 
     const renderProperties = () => {
+        if (!mf || !props.model) {
+            return null;
+        }
         const iMf = FlopyModflow.fromObject(mf);
+
         const readOnly = props.model.readOnly;
         const {type} = match.params;
         const soilmodel = props.soilmodel;

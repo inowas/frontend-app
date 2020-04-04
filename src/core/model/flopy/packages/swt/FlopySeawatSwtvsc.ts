@@ -13,7 +13,7 @@ export interface IFlopySeawatSwtvsc extends IPropertyValueObject {
     dmudc: number;
     cmuref: number;
     mtmutempspec: number;
-    amucoeff: null | number | number[];
+    amucoeff: null | number[];
     invisc: number;
     visc: number;
     extension: string;
