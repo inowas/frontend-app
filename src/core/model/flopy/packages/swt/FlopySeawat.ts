@@ -36,18 +36,10 @@ export default class FlopySeawat extends GenericObject<IFlopySeawat> {
 
     public recalculate = (variableDensity: VariableDensity) => {
         this.enabled = variableDensity.enabled;
-
-        if (variableDensity.vdfEnabled) {
-            this._props.vdf = FlopySeawatSwtvdf.fromDefaults().toObject();
-        } else {
-            delete this._props.vdf;
-        }
-
-        if (variableDensity.vscEnabled) {
-            this._props.vsc = FlopySeawatSwtvsc.fromDefaults().toObject();
-        } else {
-            delete this._props.vsc;
-        }
+        this._props.vdf = this._props.vdf ? FlopySeawatSwtvdf.fromObject(this._props.vdf).update().toObject() :
+            undefined;
+        this._props.vsc = this._props.vsc ? FlopySeawatSwtvsc.fromObject(this._props.vsc).update().toObject() :
+            undefined;
 
         return this;
     };
@@ -91,14 +83,6 @@ export default class FlopySeawat extends GenericObject<IFlopySeawat> {
         const className = packagesMap[type];
         return className.fromObject(this._props[type]);
     };
-
-    get vdf() {
-        return this._props.vdf;
-    }
-
-    get vsc() {
-        return this._props.vsc;
-    }
 
     get packages(): IPropertyValueObject {
         return {

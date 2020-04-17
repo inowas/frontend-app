@@ -61,6 +61,10 @@ export default class FlopySeawatSwtvsc extends FlopySeawatPackage<IFlopySeawatSw
         return new this(d);
     }
 
+    public update() {
+        return this;
+    }
+
     get mt3dmuflg() {
         return this._props.mt3dmuflg;
     }
