@@ -18,7 +18,7 @@ import {BoundaryCollection} from '../../../../../core/model/modflow/boundaries';
 import {IRootReducer} from '../../../../../reducers';
 import {sendCommand} from '../../../../../services/api';
 import ContentToolBar from '../../../../shared/ContentToolbar2';
-import {addMessage, removeMessage, updateMessage} from '../../../actions/actions';
+import {addMessage, removeMessage, updateMessage, updatePackages} from '../../../actions/actions';
 import ModflowModelCommand from '../../../commands/modflowModelCommand';
 import {messageDirty, messageError, messageSaving} from '../../../defaults/messages';
 import {SeawatPackageProperties, VdfPackageProperties, VscPackageProperties} from './packages';
@@ -78,6 +78,7 @@ const seawatProperties = (props: IProps) => {
                 if (editingState.current.dirty) {
                     dispatch(removeMessage(editingState.current.dirty));
                 }
+                dispatch(updatePackages(packages));
                 return dispatch(updateMessage({...message, state: EMessageState.SUCCESS}));
             },
             (e) => dispatch(addMessage(messageError('seawat', e)))

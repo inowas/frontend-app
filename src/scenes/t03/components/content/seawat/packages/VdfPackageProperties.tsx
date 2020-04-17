@@ -23,7 +23,7 @@ const vdfPackageProperties = (props: IProps) => {
 
     const handleOnSelect = (e: SyntheticEvent, {name, value}: DropdownProps) => {
         setSwtPackage({...swtPackage, [name]: value});
-        props.onChange(FlopySeawatSwtvdf.fromObject({...props.swtPackage, [name]: value}));
+        props.onChange(FlopySeawatSwtvdf.fromObject({...swtPackage, [name]: value}));
     };
 
     const handleOnChange = (e: ChangeEvent<HTMLInputElement>) => {
@@ -155,18 +155,6 @@ const vdfPackageProperties = (props: IProps) => {
             </Form.Group>
             {swtPackage.nswtcpl > 1 &&
             <Form.Group widths="equal">
-                <Form.Field>
-                    <label>Number of iterations</label>
-                    <Input
-                        readOnly={readOnly}
-                        name="nswtcpl"
-                        value={swtPackage.nswtcpl}
-                        onBlur={handleOnBlur(parseFloat)}
-                        onChange={handleOnChange}
-                        icon={renderInfoPopup(documentation.nswtcpl, 'nswtcpl')}
-                        type="number"
-                    />
-                </Form.Field>
                 <Form.Field>
                     <label>Convergence criterion</label>
                     <Input
