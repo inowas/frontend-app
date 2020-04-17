@@ -44,7 +44,7 @@ class Transport extends GenericObject<ITransport> {
     };
 
     public removeSubstanceById = (substanceId: string) => {
-        this._props.substances.filter((s) => s.id !== substanceId);
+        this._props.substances =  this._props.substances.filter((s) => s.id !== substanceId);
     };
 
     public updateSubstance = (substance: Substance) => {

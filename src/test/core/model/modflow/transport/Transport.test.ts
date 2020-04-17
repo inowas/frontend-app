@@ -13,7 +13,7 @@ test('toObject, fromObject', () => {
 });
 
 test('Add, update, remove Substances', () => {
-    const transport = new Transport();
+    const transport = Transport.fromDefault();
     const s1 = Substance.create('NaCl');
     s1.id = '1234567890';
     transport.addSubstance(s1);
