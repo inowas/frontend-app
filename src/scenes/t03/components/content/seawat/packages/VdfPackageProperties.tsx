@@ -79,7 +79,7 @@ const vdfPackageProperties = (props: IProps) => {
                         readOnly={readOnly}
                         name="denseref"
                         value={swtPackage.denseref}
-                        onBlur={handleOnBlur}
+                        onBlur={handleOnBlur(parseFloat)}
                         onChange={handleOnChange}
                         icon={renderInfoPopup(documentation.denseref, 'denseref', PopupPosition.BOTTOM_RIGHT)}
                         type="number"
@@ -93,7 +93,7 @@ const vdfPackageProperties = (props: IProps) => {
                         readOnly={readOnly}
                         name="drhodc"
                         value={swtPackage.drhodc}
-                        onBlur={handleOnBlur}
+                        onBlur={handleOnBlur(parseFloat)}
                         onChange={handleOnChange}
                         icon={renderInfoPopup(documentation.drhodc, 'drhodc', PopupPosition.BOTTOM_RIGHT)}
                         type="number"
@@ -156,24 +156,12 @@ const vdfPackageProperties = (props: IProps) => {
             {swtPackage.nswtcpl > 1 &&
             <Form.Group widths="equal">
                 <Form.Field>
-                    <label>Number of iterations</label>
-                    <Input
-                        readOnly={readOnly}
-                        name="nswtcpl"
-                        value={swtPackage.nswtcpl || ''}
-                        onBlur={handleOnBlur}
-                        onChange={handleOnChange}
-                        icon={renderInfoPopup(documentation.nswtcpl, 'nswtcpl')}
-                        type="number"
-                    />
-                </Form.Field>
-                <Form.Field>
                     <label>Convergence criterion</label>
                     <Input
                         readOnly={readOnly}
                         name="dnscrit"
-                        value={swtPackage.dnscrit || ''}
-                        onBlur={handleOnBlur}
+                        value={swtPackage.dnscrit}
+                        onBlur={handleOnBlur(parseFloat)}
                         onChange={handleOnChange}
                         icon={renderInfoPopup(documentation.dnscrit, 'dnscrit', PopupPosition.TOP_RIGHT)}
                         type="number"
@@ -188,8 +176,8 @@ const vdfPackageProperties = (props: IProps) => {
                     <Input
                         readOnly={readOnly}
                         name="dnscrit"
-                        value={swtPackage.dnscrit || ''}
-                        onBlur={handleOnBlur}
+                        value={swtPackage.dnscrit}
+                        onBlur={handleOnBlur(parseFloat)}
                         onChange={handleOnChange}
                         icon={renderInfoPopup(documentation.dnscrit, 'dnscrit', PopupPosition.TOP_RIGHT)}
                         type="number"
@@ -203,8 +191,8 @@ const vdfPackageProperties = (props: IProps) => {
                     <Input
                         readOnly={readOnly}
                         name="densemin"
-                        value={swtPackage.densemin || 0}
-                        onBlur={handleOnBlur}
+                        value={swtPackage.densemin}
+                        onBlur={handleOnBlur(parseFloat)}
                         onChange={handleOnChange}
                         icon={renderInfoPopup(documentation.densemin, 'densemin')}
                         type="number"
@@ -215,8 +203,8 @@ const vdfPackageProperties = (props: IProps) => {
                     <Input
                         readOnly={readOnly}
                         name="densemax"
-                        value={swtPackage.densemax || 0}
-                        onBlur={handleOnBlur}
+                        value={swtPackage.densemax}
+                        onBlur={handleOnBlur(parseFloat)}
                         onChange={handleOnChange}
                         icon={renderInfoPopup(documentation.densemax, 'densemax', PopupPosition.TOP_RIGHT)}
                         type="number"

@@ -186,7 +186,7 @@ const vscPackageProperties = (props: IProps) => {
                         name="viscmin"
                         value={swtPackage.viscmin}
                         disabled={readOnly}
-                        onBlur={handleOnBlur}
+                        onBlur={handleOnBlur(parseFloat)}
                         onChange={handleOnChange}
                         icon={renderInfoPopup(documentation.viscmin, 'viscmin', PopupPosition.BOTTOM_LEFT)}
                         type="number"
@@ -198,7 +198,7 @@ const vscPackageProperties = (props: IProps) => {
                         name="viscmax"
                         value={swtPackage.viscmax || 0}
                         disabled={readOnly}
-                        onBlur={handleOnBlur}
+                        onBlur={handleOnBlur(parseFloat)}
                         onChange={handleOnChange}
                         icon={renderInfoPopup(documentation.viscmax, 'viscmax', PopupPosition.BOTTOM_RIGHT)}
                         type="number"
@@ -212,7 +212,7 @@ const vscPackageProperties = (props: IProps) => {
                         name="viscref"
                         value={swtPackage.viscref || 0}
                         disabled={readOnly}
-                        onBlur={handleOnBlur}
+                        onBlur={handleOnBlur(parseFloat)}
                         onChange={handleOnChange}
                         icon={renderInfoPopup(documentation.viscref, 'viscref', PopupPosition.BOTTOM_RIGHT)}
                         type="number"
@@ -226,7 +226,7 @@ const vscPackageProperties = (props: IProps) => {
                         name="dmudc"
                         value={swtPackage.dmudc || 0}
                         disabled={readOnly}
-                        onBlur={handleOnBlur}
+                        onBlur={handleOnBlur(parseFloat)}
                         onChange={handleOnChange}
                         icon={renderInfoPopup(documentation.dmudc, 'dmudc', PopupPosition.BOTTOM_RIGHT)}
                         type="number"
@@ -240,7 +240,7 @@ const vscPackageProperties = (props: IProps) => {
                         name="cmuref"
                         value={swtPackage.cmuref || 0}
                         disabled={readOnly}
-                        onBlur={handleOnBlur}
+                        onBlur={handleOnBlur(parseFloat)}
                         onChange={handleOnChange}
                         icon={renderInfoPopup(documentation.cmuref, 'cmuref', PopupPosition.TOP_RIGHT)}
                         type="number"

@@ -69,6 +69,10 @@ class FlopySeawatSwtvdf extends FlopySeawatPackage<IFlopySeawatSwtvdf> {
         return new this(d);
     }
 
+    public update() {
+        return this;
+    }
+
     get mtdnconc() {
         return this._props.mtdnconc;
     }
