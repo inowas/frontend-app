@@ -1,6 +1,10 @@
+import {Feature} from '@turf/helpers';
+import * as turf from '@turf/helpers';
+import union from '@turf/union';
+import * as geojson from 'geojson';
 import _ from 'lodash';
 import React from 'react';
-import {FeatureGroup, Polyline} from 'react-leaflet';
+import {FeatureGroup, GeoJSON, Polygon, Polyline} from 'react-leaflet';
 import {useDispatch, useSelector} from 'react-redux';
 import FlopyPackages from '../../core/model/flopy/packages/FlopyPackages';
 import {Cells} from '../../core/model/geometry';
@@ -10,6 +14,7 @@ import {Boundary, BoundaryCollection} from '../../core/model/modflow/boundaries'
 import {IRootReducer} from '../../reducers';
 import {addMessage} from '../../scenes/t03/actions/actions';
 import {messageError} from '../../scenes/t03/defaults/messages';
+import {getStyle} from "./mapHelpers";
 
 interface IProps {
     boundary: Boundary;
@@ -90,7 +95,7 @@ const affectedCellsLayer = (props: IProps) => {
             type: ECellType.MODEL
         }));
 
-        // 1) Active cells are either taken from model or affected layers ibound
+        // 1) Active cells are either taken from model or affected layers ibound TODO: SOILMODEL
         const ibound = basPackage.toObject().ibound;
         affectedLayers.forEach((ln) => {
             if (ibound.length > 0 && Array.isArray(ibound[ln])) {
@@ -165,6 +170,58 @@ const affectedCellsLayer = (props: IProps) => {
         );
     };
 
+    const renderPolygons = (cells: Array<[number, number, number, number, ECellType]>) => {
+        const cellsByType: { [key: string]: Array<[number, number, number, number, ECellType]> } = {
+            affected: [],
+            difference: [],
+            model: [],
+            other: []
+        };
+
+        // 1) Group cells by type
+        cells.forEach((cell) => {
+            cellsByType[cell[4]].push(cell);
+        });
+
+        // 2) Create one multipolygon for each type
+        const polygons: { [key: string]: Array<Feature<geojson.Polygon | geojson.MultiPolygon | null>> } = {
+            affected: [],
+            difference: [],
+            model: [],
+            other: []
+        };
+
+        Object.keys(cellsByType).forEach((type) => {
+            const cellPolygons = cellsByType[type].map((c) => {
+                return turf.polygon([[[c[0], c[2]], [c[0], c[3]], [c[1], c[3]], [c[1], c[2]], [c[0], c[2]]]]);
+            });
+
+            if (cellPolygons.length > 0) {
+                const u = union(...cellPolygons);
+                if (u) {
+                    polygons[type].push(u);
+                }
+            }
+        });
+
+        return Object.keys(polygons).filter((p) => polygons[p].length > 0).map((p, key) => {
+            const data = polygons[p][0] as Feature<geojson.Polygon | geojson.MultiPolygon>;
+            return (
+                <GeoJSON
+                    key={key}
+                    data={data.geometry}
+                    stroke={false}
+                    fill={true}
+                    fillColor={p === ECellType.AFFECTED ? '#393B89' :
+                        p === ECellType.DIFFERENCE ? '#843C39' :
+                            p === ECellType.MODEL ? '#888888' :
+                                '#9C9EDE'}
+                    fillOpacity={0.6}
+                />
+            );
+        });
+    };
+
     const gridCells = calculateGridCells();
     if (!gridCells) {
         return null;
@@ -172,7 +229,7 @@ const affectedCellsLayer = (props: IProps) => {
 
     return (
         <FeatureGroup>
-            {gridCells.map((c, k) => renderGridCell(k, c[0], c[1], c[2], c[3], c[4]))}
+            {renderPolygons(gridCells)}
         </FeatureGroup>
     );
 };
