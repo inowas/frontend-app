@@ -197,17 +197,6 @@ const boundaryValuesDataTable = (props: IProps) => {
                     <Icon name="upload"/>
                     Upload csv
                 </Button>
-                <Button
-                    icon={true}
-                    labelPosition="left"
-                    onClick={handleToggleCalculationModal}
-                    primary={true}
-                    floated="right"
-                    size="mini"
-                >
-                    <Icon name="calculator"/>
-                    Calculator
-                </Button>
             </p>
             {spValues && spValues.length > 20 &&
             <Pagination

@@ -49,7 +49,7 @@ const activeCellsLayer = (props: IProps) => {
     const gridCells = calculateGridCells(props.boundingBox, props.gridSize, props.cells);
     return (
         <FeatureGroup>
-            {gridCells.map((c, k) => renderGridCell(k, c[0], c[1], c[2], c[3], props.styles))};
+            {gridCells.map((c, k) => renderGridCell(k, c[0], c[1], c[2], c[3], props.styles))}
         </FeatureGroup>
     );
 };

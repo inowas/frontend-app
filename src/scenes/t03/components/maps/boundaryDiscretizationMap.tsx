@@ -4,7 +4,7 @@ import {uniqueId} from 'lodash';
 import React from 'react';
 import {CircleMarker, FeatureGroup, GeoJSON, Map, Polygon, Polyline} from 'react-leaflet';
 import {EditControl} from 'react-leaflet-draw';
-import {Checkbox, Grid, Icon, List} from 'semantic-ui-react';
+import {Grid, Icon, List} from 'semantic-ui-react';
 import BoundingBox from '../../../../core/model/geometry/BoundingBox';
 import {GeoJson} from '../../../../core/model/geometry/Geometry.type';
 import GridSize from '../../../../core/model/geometry/GridSize';
@@ -14,7 +14,6 @@ import {
     BoundaryCollection,
     LineBoundary, WellBoundary,
 } from '../../../../core/model/modflow/boundaries';
-import ActiveCellsLayer from '../../../../services/geoTools/activeCellsLayer';
 import AffectedCellsLayer from '../../../../services/geoTools/affectedCellsLayer';
 import {BasicTileLayer} from '../../../../services/geoTools/tileLayers';
 import {getStyle} from './index';
@@ -176,7 +175,7 @@ const boundaryDiscretizationMap = (props: IProps) => {
         );
     };
 
-    const activeCellsLayer = () => {
+    /*const activeCellsLayer = () => {
         const {boundingBox, gridSize} = props.model;
         return (
             <ActiveCellsLayer
@@ -186,7 +185,7 @@ const boundaryDiscretizationMap = (props: IProps) => {
                 styles={getStyle('active_cells')}
             />
         );
-    };
+    };*/
 
     const affectedCellsLayer = () => {
         return (
@@ -220,14 +219,13 @@ const boundaryDiscretizationMap = (props: IProps) => {
 
     const legend = [
         {active: true, name: 'AFFECTED', color: '#393B89'}  ,
-        {active: true, name: 'DIFFERENCE', color: '#843C39'},
-        {active: true, name: 'MODEL', color: '#888888'},
+        {active: true, name: 'INACTIVE', color: '#888888'},
         {active: true, name: 'OTHER', color: '#9C9EDE'}
     ];
 
     return (
         <Grid>
-            <Grid.Column width={13}>
+            <Grid.Column width={props.showActiveCells ? 13 : 16}>
                 <Map
                     style={style.map}
                     bounds={props.model.boundingBox.getBoundsLatLng()}
@@ -240,6 +238,7 @@ const boundaryDiscretizationMap = (props: IProps) => {
                     {props.showActiveCells && affectedCellsLayer()}
                 </Map>
             </Grid.Column>
+            {props.showActiveCells &&
             <Grid.Column width={3}>
                 <List>
                     <List.Item>
@@ -247,28 +246,19 @@ const boundaryDiscretizationMap = (props: IProps) => {
                             <List.Item
                                 key={key}
                             >
-                                <Checkbox
-                                    checked={c.active}
-                                    label={{
-                                        children:
-                                            <div>
-                                                <Icon
-                                                    style={{
-                                                        color: c.color
-                                                    }}
-                                                    name="square"
-                                                />
-                                                {c.name}
-                                            </div>
+                                <Icon
+                                    style={{
+                                        color: c.color
                                     }}
-                                    onChange={() => null}
-                                    value={c.name}
+                                    name="square"
                                 />
+                                {c.name}
                             </List.Item>
                         )}
                     </List.Item>
                 </List>
             </Grid.Column>
+            }
         </Grid>
     );
 };
