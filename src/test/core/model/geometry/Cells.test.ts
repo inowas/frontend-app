@@ -1,5 +1,4 @@
 import {booleanCrosses} from '@turf/turf';
-import {Cell} from 'recharts';
 import {BoundingBox, Geometry, GridSize} from '../../../../core/model/geometry';
 import Cells from '../../../../core/model/geometry/Cells';
 
