@@ -242,6 +242,20 @@ export default class Cells {
         return iBound2D;
     };
 
+    public invert = (gridSize: GridSize) => {
+        const cells = new Cells([]);
+        const iBound = this.calculateIBound(gridSize.nY, gridSize.nX);
+        for (let rIdx: number = 0; rIdx < gridSize.nY; rIdx++) {
+            for (let cIdx: number = 0; cIdx < gridSize.nX; cIdx++) {
+                if (iBound[rIdx][cIdx] === 0) {
+                    cells.addCell([cIdx, rIdx, 0]);
+                }
+            }
+        }
+
+        return cells;
+    };
+
     get cells() {
         return cloneDeep(this._cells);
     }
