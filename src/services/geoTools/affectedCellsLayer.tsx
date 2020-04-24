@@ -1,9 +1,10 @@
+import * as turf from '@turf/turf';
 import React, {useEffect, useState} from 'react';
-import {FeatureGroup, LayersControl, Polyline} from 'react-leaflet';
+import {FeatureGroup, GeoJSON, LayersControl} from 'react-leaflet';
 import {useSelector} from 'react-redux';
-import {BoundingBox, Cells, GridSize} from '../../core/model/geometry';
-import {ICell} from '../../core/model/geometry/Cells.type';
-import {ModflowModel, Soilmodel} from '../../core/model/modflow';
+import uuid from 'uuid';
+import {BoundingBox, Cells, Geometry, GridSize} from '../../core/model/geometry';
+import {ModflowModel} from '../../core/model/modflow';
 import {Boundary, BoundaryCollection} from '../../core/model/modflow/boundaries';
 import {IRootReducer} from '../../reducers';
 
@@ -33,91 +34,156 @@ const styles = {
 };
 
 const affectedCellsLayer = (props: IProps) => {
-    const [iBoundLayer, setIBoundLayer] = useState<ICell[]>();
-    const [boundaryLayers, setBoundaryLayers] = useState<any[]>([]);
+    const [iBoundLayer, setIBoundLayer] = useState();
+    const [boundaryLayer, setBoundaryLayer] = useState();
+    const [boundaryLayers, setBoundaryLayers] = useState();
+    const [featureKey, setFeatureKey] = useState<string>(uuid.v4());
 
     const T03 = useSelector((state: IRootReducer) => state.T03);
     const boundaries = T03.boundaries ? BoundaryCollection.fromObject(T03.boundaries) : null;
     const model = T03.model ? ModflowModel.fromObject(T03.model) : null;
-    const soilmodel = T03.soilmodel ? Soilmodel.fromObject(T03.soilmodel) : null;
 
-    if (!model || !boundaries || !soilmodel) {
+    if (!model || !boundaries) {
         return null;
     }
 
     useEffect(() => {
-        setIBoundLayer(model.inactiveCells.toObject());
-    }, [model]);
+        setIBoundLayer(createPolygon(model.boundingBox, model.gridSize, model.inactiveCells, styles.inactive));
+    }, [T03.model]);
 
     useEffect(() => {
-        setBoundaryLayers(boundaries.all.filter(
+        const polygon = createPolygon(model.boundingBox, model.gridSize, props.boundary.cells, styles.affected);
+        setBoundaryLayer(polygon);
+    }, [props.boundary]);
+
+    useEffect(() => {
+        setFeatureKey(uuid.v4());
+    }, [boundaryLayer]);
+
+    useEffect(() => {
+        const sameTypeBoundaries = boundaries.all.filter(
             (b) => b.type === props.boundary.type && b.id !== props.boundary.id
-            ).map((b) => calculateGridCells(model.boundingBox, model.gridSize, b.cells).map(
-            (c, k) => renderGridCell(k, c[0], c[1], c[2], c[3], styles.other)
-            ))
         );
-    }, [boundaries]);
+        setBoundaryLayers(sameTypeBoundaries.length > 0 ? sameTypeBoundaries.map(
+            (b, key) => createPolygon(model.boundingBox, model.gridSize, b.cells, styles.other, key)
+            ) : null
+        );
+    }, [T03.boundaries]);
 
-    const renderGridCell = (key: number, xMin: number, xMax: number, yMin: number, yMax: number, style: any) => (
-        <Polyline
-            key={key}
-            positions={[
-                {lng: xMin, lat: yMin},
-                {lng: xMin, lat: yMax},
-                {lng: xMax, lat: yMax},
-                {lng: xMax, lat: yMin},
-                {lng: xMin, lat: yMin}
-            ]}
-            {...style}
-        />
-    );
-
-    const calculateGridCells = (boundingBox: BoundingBox, gridSize: GridSize, cells: Cells) => {
-
+    const createPolygon = (boundingBox: BoundingBox, gridSize: GridSize, cells: Cells, style: any, key?: number) => {
         const dX = boundingBox.dX / gridSize.nX;
         const dY = boundingBox.dY / gridSize.nY;
-        const cg: Array<[number, number, number, number]> = [];
+        const mergedCells: Array<[number, number, number, number]> = [];
 
-        cells.cells.forEach((a) => {
-            const x = a[0];
-            const y = a[1];
+        const grid = cells.calculateIBound(gridSize.nY, gridSize.nX);
 
-            const cXmin = boundingBox.xMin + x * dX;
-            const cXmax = boundingBox.xMin + (x + 1) * dX;
-            const cYmin = boundingBox.yMax - y * dY;
-            const cYmax = boundingBox.yMax - (y + 1) * dY;
+        grid.forEach((row, rIdx) => {
+            const startIdx: number[] = [];
+            const endIdx: number[] = [];
 
-            cg.push([cXmin, cXmax, cYmin, cYmax]);
+            row.forEach((v, cIdx) => {
+
+                    if (v === 1) {
+                        if (cIdx === 0) {
+                            startIdx.push(cIdx);
+                        }
+
+                        if (cIdx > 0 && grid[rIdx][cIdx - 1] === 0) {
+                            startIdx.push(cIdx);
+                        }
+
+                        if (cIdx === row.length - 1) {
+                            endIdx.push(cIdx);
+                        }
+
+                        if (cIdx < row.length - 1 && grid[rIdx][cIdx + 1] === 0) {
+                            endIdx.push(cIdx);
+                        }
+                    }
+                }
+            );
+
+            if (startIdx.length !== endIdx.length) {
+                throw new Error('startIdx.length !== endIdx.length');
+            }
+
+            const startEndIdxArr = startIdx.map((e, idx) => [startIdx[idx], endIdx[idx]]);
+            startEndIdxArr.forEach((e) => {
+                const x0 = e[0];
+                const x1 = e[1];
+                const y = rIdx;
+
+                const cXmin = boundingBox.xMin + x0 * dX;
+                const cXmax = boundingBox.xMin + (x1 + 1) * dX;
+                const cYmin = boundingBox.yMax - y * dY;
+                const cYmax = boundingBox.yMax - (y + 1) * dY;
+
+                mergedCells.push([cXmin, cXmax, cYmin, cYmax]);
+            });
         });
 
-        return cg;
+        const turfPolygons = mergedCells.map((c) => {
+            const [xMin, xMax, yMin, yMax] = c;
+            return (
+                turf.polygon([[
+                    [xMin, yMin],
+                    [xMin, yMax],
+                    [xMax, yMax],
+                    [xMax, yMin],
+                    [xMin, yMin]
+                ]])
+            );
+        });
+
+        let turfPolygon: turf.helpers.Feature<turf.helpers.Polygon> | null = null;
+
+        if (turfPolygons.length > 0) {
+            turfPolygon = turfPolygons[0];
+            turfPolygons.forEach((p) => {
+                if (turfPolygon !== null) {
+                    turfPolygon = turf.union(turfPolygon, p) as turf.helpers.Feature<turf.helpers.Polygon>;
+                }
+            });
+        }
+
+        if (turfPolygon === null) {
+            return null;
+        }
+
+        const geometry = Geometry.fromGeoJson(turfPolygon.geometry);
+        return (
+            <GeoJSON
+                key={key}
+                data={geometry}
+                {...style}
+            />
+        );
     };
 
-    if (!iBoundLayer) {
+    if (!iBoundLayer || !boundaryLayer) {
         return null;
     }
-
-    const gridCells = calculateGridCells(model.boundingBox, model.gridSize, Cells.fromObject(iBoundLayer));
-    const affectedCells = calculateGridCells(model.boundingBox, model.gridSize, props.boundary.cells);
 
     return (
         <FeatureGroup>
             <LayersControl position="topright">
                 <LayersControl.Overlay name="Inactive cells" checked={true}>
                     <FeatureGroup color={styles.inactive.fillColor}>
-                        {gridCells.map((c, k) => renderGridCell(k, c[0], c[1], c[2], c[3], styles.inactive))}
-                    </FeatureGroup >
+                        {iBoundLayer}
+                    </FeatureGroup>
                 </LayersControl.Overlay>
-                <LayersControl.Overlay name="Affected cells" checked={true}>
+                <LayersControl.Overlay name="Affected cells" checked={true} key={featureKey}>
                     <FeatureGroup color={styles.affected.fillColor}>
-                        {affectedCells.map((c, k) => renderGridCell(k, c[0], c[1], c[2], c[3], styles.affected))}
-                    </FeatureGroup >
+                        {boundaryLayer}
+                    </FeatureGroup>
                 </LayersControl.Overlay>
+                {!!boundaryLayers &&
                 <LayersControl.Overlay name={`Cells of other ${props.boundary.type} boundaries`} checked={true}>
                     <FeatureGroup color={styles.other.fillColor}>
                         {boundaryLayers}
-                    </FeatureGroup >
+                    </FeatureGroup>
                 </LayersControl.Overlay>
+                }
             </LayersControl>
         </FeatureGroup>
     );
