@@ -7,7 +7,8 @@ import {Button} from 'semantic-ui-react';
 import {BoundingBox, Cells, Geometry, GridSize} from '../../../../../core/model/geometry';
 import {IGeometry} from '../../../../../core/model/geometry/Geometry.type';
 import BoundaryCollection from '../../../../../core/model/modflow/boundaries/BoundaryCollection';
-import ActiveCellsLayer from '../../../../../services/geoTools/activeCellsLayer';
+import ActiveCellsLayer from '../../../../../services/geoTools/affectedCellsLayer';
+import Grid from '../../../../../services/geoTools/grid';
 import {BasicTileLayer} from '../../../../../services/geoTools/tileLayers';
 import IntersectionControl from '../../../../shared/leaflet/IntersectionControl';
 import {renderBoundaryOverlays} from '../../../../shared/rasterData/helpers';
@@ -148,6 +149,10 @@ const discretizationMap = (props: IProps) => {
                 ref={mapRef}
             >
                 <BasicTileLayer/>
+                <Grid
+                    boundingBox={props.boundingBox}
+                    gridSize={props.gridSize}
+                />
                 {props.intersection !== undefined && props.onChangeIntersection !== undefined &&
                 <IntersectionControl
                     intersection={props.intersection}
@@ -198,8 +203,8 @@ const discretizationMap = (props: IProps) => {
                     boundingBox={props.boundingBox}
                     gridSize={props.gridSize}
                     cells={props.cells}
-                    styles={getStyle('active_cells')}
-                />}
+                />
+                }
             </Map>
         </React.Fragment>
     );

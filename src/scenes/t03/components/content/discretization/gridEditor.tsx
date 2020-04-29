@@ -1,10 +1,16 @@
+import _ from 'lodash';
 import React, {ChangeEvent, useEffect, useRef, useState} from 'react';
-import {Form, Grid} from 'semantic-ui-react';
+import {useDispatch, useSelector} from 'react-redux';
+import {Dimmer, Form, Grid, Header, Progress} from 'semantic-ui-react';
 import {BoundingBox, Cells, Geometry, GridSize, ModflowModel} from '../../../../../core/model/modflow';
-import {BoundaryCollection} from '../../../../../core/model/modflow/boundaries';
+import {Boundary, BoundaryCollection} from '../../../../../core/model/modflow/boundaries';
+import {IRootReducer} from '../../../../../reducers';
+import {sendCommand} from '../../../../../services/api';
 import {calculateActiveCells} from '../../../../../services/geoTools';
 import {dxCell, dyCell} from '../../../../../services/geoTools/distance';
 import ContentToolBar from '../../../../shared/ContentToolbar2';
+import {updateBoundaries} from '../../../actions/actions';
+import ModflowModelCommand from '../../../commands/modflowModelCommand';
 import {DiscretizationMap} from './index';
 
 interface IProps {
@@ -15,10 +21,47 @@ interface IProps {
     onUndo: () => void;
 }
 
+interface IBoundaryUpdaterStatus {
+    task: number;
+    message: string;
+}
+
+const boundaryUpdater = (
+    boundaries: BoundaryCollection,
+    model: ModflowModel,
+    onEachTask: (b: Boundary) => any,
+    onFinished: (bc: BoundaryCollection) => any,
+    result: BoundaryCollection = new BoundaryCollection([])
+): any => {
+    if (boundaries.length > 0) {
+        const boundary = boundaries.first;
+        boundary.cells = calculateActiveCells(boundary.geometry, model.boundingBox, model.gridSize);
+        onEachTask(boundary);
+        return sendCommand(ModflowModelCommand.updateBoundary(model.id, boundary),
+            boundaryUpdater(
+                boundaries.removeById(boundary.id),
+                model,
+                onEachTask,
+                onFinished,
+                result.addBoundary(boundary)
+            )
+        );
+    }
+    return onFinished(result);
+};
+
 const gridEditor = (props: IProps) => {
     const [intersection, setIntersection] = useState<number>(50);
     const [gridSizeLocal, setGridSizeLocal] = useState<GridSize | null>(null);
+
+    const [updaterStatus, setUpdaterStatus] = useState<IBoundaryUpdaterStatus | null>(null);
+
     const intersectionRef = useRef<number>();
+
+    const dispatch = useDispatch();
+
+    const T03 = useSelector((state: IRootReducer) => state.T03);
+    const boundaryCollection = T03.boundaries ? BoundaryCollection.fromObject(T03.boundaries) : null;
 
     useEffect(() => {
         setGridSizeLocal(props.model.gridSize);
@@ -41,6 +84,26 @@ const gridEditor = (props: IProps) => {
         return new Promise((resolve: (cells: Cells) => void) => {
             resolve(calculateActiveCells(g, bb, gz, i / 100));
         });
+    };
+
+    const update = (model: ModflowModel) => {
+        if (!boundaryCollection) {
+            return null;
+        }
+        boundaryUpdater(
+            _.cloneDeep(boundaryCollection),
+            model,
+            (b) => {
+                setUpdaterStatus({
+                    task: updaterStatus ? ++updaterStatus.task : 0,
+                    message: `Updating ${b.name}`
+                });
+            },
+            (bc) => {
+                setUpdaterStatus(null);
+                dispatch(updateBoundaries(bc));
+            }
+        );
     };
 
     const handleChangeIntersection = (i: number) => {
@@ -82,10 +145,16 @@ const gridEditor = (props: IProps) => {
 
             const gz = GridSize.fromObject(gridSizeLocal.toObject());
 
+            setUpdaterStatus({
+                task: 0,
+                message: `Updating...`
+            });
+
             calculate(props.model.geometry, props.model.boundingBox, gz).then((c: Cells) => {
                 const model = props.model.getClone();
                 model.cells = Cells.fromObject(c.toObject());
                 model.gridSize = GridSize.fromObject(gz.toObject());
+                update(model);
                 return props.onChange(model);
             });
         }
@@ -104,6 +173,7 @@ const gridEditor = (props: IProps) => {
             model.cells = Cells.fromObject(c.toObject());
             model.geometry = Geometry.fromObject(g.toObject());
             model.boundingBox = BoundingBox.fromObject(bb.toObject());
+            update(model);
             return props.onChange(model);
         });
     };
@@ -116,6 +186,14 @@ const gridEditor = (props: IProps) => {
 
     return (
         <Grid>
+            {!!updaterStatus &&
+            <Dimmer active={true} page={true}>
+                <Header as="h2" icon={true} inverted={true}>
+                    {updaterStatus.message}
+                </Header>
+                <Progress percent={(updaterStatus.task / props.boundaries.length)} indicating={true} progress={true}/>
+            </Dimmer>
+            }
             {!readOnly &&
             <Grid.Row>
                 <Grid.Column width={16}>
@@ -138,7 +216,7 @@ const gridEditor = (props: IProps) => {
                                 onChange={handleGridSizeChange}
                                 onBlur={handleGridSizeChange}
                                 width={'6'}
-                                readOnly={readOnly || props.boundaries.length > 0}
+                                readOnly={readOnly}
                             />
                             <Form.Input
                                 type="number"
@@ -148,7 +226,7 @@ const gridEditor = (props: IProps) => {
                                 onChange={handleGridSizeChange}
                                 onBlur={handleGridSizeChange}
                                 width={'6'}
-                                readOnly={readOnly || props.boundaries.length > 0}
+                                readOnly={readOnly}
                             />
                             <Form.Input
                                 label="Cell height"
@@ -168,7 +246,7 @@ const gridEditor = (props: IProps) => {
                                 options={[{key: 2, text: 'meters', value: 2}]}
                                 style={{zIndex: 10000}}
                                 value={props.model.lengthUnit.toInt()}
-                                disabled={readOnly || props.boundaries.length > 0}
+                                disabled={readOnly}
                             />
                         </Form.Group>
                     </Form>
@@ -186,7 +264,7 @@ const gridEditor = (props: IProps) => {
                         onChangeGeometry={handleChangeGeometry}
                         onChangeCells={handleChangeCells}
                         onChangeIntersection={handleChangeIntersection}
-                        readOnly={readOnly || props.boundaries.length > 0}
+                        readOnly={readOnly}
                     />
                 </Grid.Column>
             </Grid.Row>

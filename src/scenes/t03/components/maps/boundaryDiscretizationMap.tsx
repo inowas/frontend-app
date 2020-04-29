@@ -175,22 +175,13 @@ const boundaryDiscretizationMap = (props: IProps) => {
         );
     };
 
-    /*const activeCellsLayer = () => {
-        const {boundingBox, gridSize} = props.model;
-        return (
-            <ActiveCellsLayer
-                boundingBox={boundingBox}
-                gridSize={gridSize}
-                cells={Cells.fromObject(props.boundary.cells.cells)}
-                styles={getStyle('active_cells')}
-            />
-        );
-    };*/
-
     const affectedCellsLayer = () => {
         return (
             <AffectedCellsLayer
                 boundary={props.boundary}
+                boundingBox={props.model.boundingBox}
+                gridSize={props.model.gridSize}
+                cells={props.model.cells}
             />
         );
     };

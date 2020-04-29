@@ -4,12 +4,14 @@ import {FeatureGroup, GeoJSON, LayersControl} from 'react-leaflet';
 import {useSelector} from 'react-redux';
 import uuid from 'uuid';
 import {BoundingBox, Cells, Geometry, GridSize} from '../../core/model/geometry';
-import {ModflowModel} from '../../core/model/modflow';
 import {Boundary, BoundaryCollection} from '../../core/model/modflow/boundaries';
 import {IRootReducer} from '../../reducers';
 
 interface IProps {
-    boundary: Boundary;
+    boundary?: Boundary;
+    boundingBox: BoundingBox;
+    gridSize: GridSize;
+    cells: Cells;
 }
 
 const styles = {
@@ -37,35 +39,48 @@ const affectedCellsLayer = (props: IProps) => {
     const [iBoundLayer, setIBoundLayer] = useState();
     const [boundaryLayer, setBoundaryLayer] = useState();
     const [boundaryLayers, setBoundaryLayers] = useState();
-    const [featureKey, setFeatureKey] = useState<string>(uuid.v4());
+    const [boundaryKey, setBoundaryKey] = useState<string>(uuid.v4());
+    const [iBoundKey, setIBoundKey] = useState<string>(uuid.v4());
 
     const T03 = useSelector((state: IRootReducer) => state.T03);
     const boundaries = T03.boundaries ? BoundaryCollection.fromObject(T03.boundaries) : null;
-    const model = T03.model ? ModflowModel.fromObject(T03.model) : null;
 
-    if (!model || !boundaries) {
+    if (!boundaries) {
         return null;
     }
 
     useEffect(() => {
-        setIBoundLayer(createPolygon(model.boundingBox, model.gridSize, model.inactiveCells, styles.inactive));
-    }, [T03.model]);
+        setIBoundLayer(
+            createPolygon(props.boundingBox, props.gridSize, props.cells.invert(props.gridSize), styles.inactive)
+        );
+    }, [props.boundingBox, props.cells, props.gridSize]);
 
     useEffect(() => {
-        const polygon = createPolygon(model.boundingBox, model.gridSize, props.boundary.cells, styles.affected);
-        setBoundaryLayer(polygon);
+        if (props.boundary) {
+            const polygon = createPolygon(
+                props.boundingBox, props.gridSize, props.boundary.cells.invert(props.gridSize), styles.affected
+            );
+            setBoundaryLayer(polygon);
+        }
     }, [props.boundary]);
 
     useEffect(() => {
-        setFeatureKey(uuid.v4());
+        setBoundaryKey(uuid.v4());
     }, [boundaryLayer]);
 
     useEffect(() => {
+        setIBoundKey(uuid.v4());
+    }, [iBoundLayer]);
+
+    useEffect(() => {
+        if (!props.boundary || !T03.boundaries) {
+            return;
+        }
         const sameTypeBoundaries = boundaries.all.filter(
-            (b) => b.type === props.boundary.type && b.id !== props.boundary.id
+            (b) => props.boundary && b.type === props.boundary.type && b.id !== props.boundary.id
         );
         setBoundaryLayers(sameTypeBoundaries.length > 0 ? sameTypeBoundaries.map(
-            (b, key) => createPolygon(model.boundingBox, model.gridSize, b.cells, styles.other, key)
+            (b, key) => createPolygon(props.boundingBox, props.gridSize, b.cells, styles.other, key)
             ) : null
         );
     }, [T03.boundaries]);
@@ -160,32 +175,30 @@ const affectedCellsLayer = (props: IProps) => {
         );
     };
 
-    if (!iBoundLayer || !boundaryLayer) {
-        return null;
-    }
-
     return (
-        <FeatureGroup>
-            <LayersControl position="topright">
-                <LayersControl.Overlay name="Inactive cells" checked={true}>
-                    <FeatureGroup color={styles.inactive.fillColor}>
-                        {iBoundLayer}
-                    </FeatureGroup>
-                </LayersControl.Overlay>
-                <LayersControl.Overlay name="Affected cells" checked={true} key={featureKey}>
-                    <FeatureGroup color={styles.affected.fillColor}>
-                        {boundaryLayer}
-                    </FeatureGroup>
-                </LayersControl.Overlay>
-                {!!boundaryLayers &&
-                <LayersControl.Overlay name={`Cells of other ${props.boundary.type} boundaries`} checked={true}>
-                    <FeatureGroup color={styles.other.fillColor}>
-                        {boundaryLayers}
-                    </FeatureGroup>
-                </LayersControl.Overlay>
-                }
-            </LayersControl>
-        </FeatureGroup>
+        <LayersControl position="topright">
+            {!!iBoundLayer &&
+            <LayersControl.Overlay name="Inactive cells" checked={true} key={iBoundKey}>
+                <FeatureGroup color={styles.inactive.fillColor}>
+                    {iBoundLayer}
+                </FeatureGroup>
+            </LayersControl.Overlay>
+            }
+            {!!boundaryLayer &&
+            <LayersControl.Overlay name="Affected cells" checked={true} key={boundaryKey}>
+                <FeatureGroup color={styles.affected.fillColor}>
+                    {boundaryLayer}
+                </FeatureGroup>
+            </LayersControl.Overlay>
+            }
+            {!!boundaryLayers && !!props.boundary &&
+            <LayersControl.Overlay name={`Cells of other ${props.boundary.type} boundaries`} checked={true}>
+                <FeatureGroup color={styles.other.fillColor}>
+                    {boundaryLayers}
+                </FeatureGroup>
+            </LayersControl.Overlay>
+            }
+        </LayersControl>
     );
 };
 
