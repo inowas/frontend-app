@@ -209,7 +209,7 @@ const boundaryDiscretizationMap = (props: IProps) => {
     };
 
     const legend = [
-        {active: true, name: 'AFFECTED', color: '#393B89'}  ,
+        {active: true, name: 'AFFECTED', color: '#393B89'},
         {active: true, name: 'INACTIVE', color: '#888888'},
         {active: true, name: 'OTHER', color: '#9C9EDE'}
     ];
@@ -227,6 +227,11 @@ const boundaryDiscretizationMap = (props: IProps) => {
                     {props.showBoundaryGeometry && showBoundaryGeometry()}
                     {modelGeometryLayer()}
                     {props.showActiveCells && affectedCellsLayer()}
+                    <AffectedCellsLayer
+                        boundingBox={props.model.boundingBox}
+                        gridSize={props.model.gridSize}
+                        cells={props.model.cells}
+                    />
                 </Map>
             </Grid.Column>
             {props.showActiveCells &&

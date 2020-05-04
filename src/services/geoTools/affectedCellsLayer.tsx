@@ -58,7 +58,7 @@ const affectedCellsLayer = (props: IProps) => {
     useEffect(() => {
         if (props.boundary) {
             const polygon = createPolygon(
-                props.boundingBox, props.gridSize, props.boundary.cells.invert(props.gridSize), styles.affected
+                props.boundingBox, props.gridSize, props.boundary.cells, styles.affected
             );
             setBoundaryLayer(polygon);
         }
