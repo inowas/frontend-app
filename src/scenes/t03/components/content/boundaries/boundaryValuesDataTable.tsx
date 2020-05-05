@@ -1,11 +1,12 @@
 import {cloneDeep} from 'lodash';
 import moment from 'moment';
-import React, {ChangeEvent, useState} from 'react';
-import {Button, Icon, Input, Table} from 'semantic-ui-react';
+import React, {ChangeEvent, MouseEvent, useState} from 'react';
+import {Button, Icon, Input, Pagination, PaginationProps, Table} from 'semantic-ui-react';
 import {Stressperiods} from '../../../../../core/model/modflow';
 import {Boundary, LineBoundary} from '../../../../../core/model/modflow/boundaries';
 import {ISpValues} from '../../../../../core/model/modflow/boundaries/Boundary.type';
 import {AdvancedCsvUpload} from '../../../../shared/simpleTools/upload';
+import CalculationModal from './calculationModal';
 
 interface IActiveInput {
     col: number;
@@ -24,7 +25,10 @@ interface IProps {
 
 const boundaryValuesDataTable = (props: IProps) => {
     const [activeInput, setActiveInput] = useState<IActiveInput | null>(null);
+    const [stressperiodsPerPage] = useState<number>(20);
+    const [paginationPage, setPaginationPage] = useState<number>(1);
     const [showUploadModal, setShowUploadModal] = useState<boolean>(false);
+    const [showCalculationModal, setShowCalculationModal] = useState<boolean>(false);
 
     const {boundary, selectedOP} = props;
 
@@ -38,6 +42,11 @@ const boundaryValuesDataTable = (props: IProps) => {
     const spValues: ISpValues | null = getSpValues();
 
     const handleToggleUploadModal = () => setShowUploadModal(!showUploadModal);
+
+    const handleToggleCalculationModal = () => setShowCalculationModal(!showCalculationModal);
+
+    const handleChangePagination = (e: MouseEvent, {activePage}: PaginationProps) =>
+        setPaginationPage(typeof activePage === 'number' ? activePage : 1);
 
     const handleLocalChange = (row: number, col: number) => (e: ChangeEvent<HTMLInputElement>) => setActiveInput({
         col,
@@ -114,7 +123,10 @@ const boundaryValuesDataTable = (props: IProps) => {
             );
         }
 
-        return spValues.map((spValue, spIdx) => (
+        const startingIndex = (paginationPage - 1) * stressperiodsPerPage;
+        const endingIndex = startingIndex + stressperiodsPerPage;
+
+        return spValues.slice(startingIndex, endingIndex).map((spValue, spIdx) => (
             <Table.Row key={spIdx}>
                 <Table.Cell width={4}>
                     <Input
@@ -123,7 +135,7 @@ const boundaryValuesDataTable = (props: IProps) => {
                         id={spIdx}
                         name={'dateTime'}
                         type={'date'}
-                        value={moment(dateTimes[spIdx]).format('YYYY-MM-DD')}
+                        value={moment(dateTimes[startingIndex + spIdx]).format('YYYY-MM-DD')}
                     />
                 </Table.Cell>
                 {spValue.map((v, vIdx) => (
@@ -135,10 +147,10 @@ const boundaryValuesDataTable = (props: IProps) => {
                             col={vIdx}
                             name={'dateTimeValue'}
                             onBlur={handleSpValuesChange}
-                            onChange={handleLocalChange(spIdx, vIdx)}
+                            onChange={handleLocalChange(startingIndex + spIdx, vIdx)}
                             type={'number'}
-                            value={activeInput && activeInput.col === vIdx && activeInput.row === spIdx ?
-                                activeInput.value : v}
+                            value={activeInput && activeInput.col === vIdx &&
+                            activeInput.row === (startingIndex + spIdx) ? activeInput.value : v}
                         />
                     </Table.Cell>
                 ))}
@@ -164,6 +176,14 @@ const boundaryValuesDataTable = (props: IProps) => {
                 useDateTimes={false}
             />
             }
+            {showCalculationModal && spValues &&
+            <CalculationModal
+                onCancel={handleToggleCalculationModal}
+                onSave={() => null}
+                spValues={spValues}
+                valueProperties={boundary.valueProperties}
+            />
+            }
             <p style={{marginTop: '10px'}}>
                 <b>Time dependent boundary values{boundary instanceof LineBoundary ? ' observation point' : ''}</b>
                 <Button
@@ -178,6 +198,14 @@ const boundaryValuesDataTable = (props: IProps) => {
                     Upload csv
                 </Button>
             </p>
+            {spValues && spValues.length > 20 &&
+            <Pagination
+                activePage={paginationPage}
+                onPageChange={handleChangePagination}
+                size="mini"
+                totalPages={Math.ceil(spValues.length / stressperiodsPerPage)}
+            />
+            }
             <Table size={'small'} singleLine={true}>
                 <Table.Header>
                     <Table.Row>

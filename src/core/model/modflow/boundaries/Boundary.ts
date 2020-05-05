@@ -21,11 +21,15 @@ export default abstract class Boundary {
 
     abstract get geometry(): Geometry;
 
+    abstract set geometry(geometry: Geometry);
+
     abstract get name(): string;
 
     abstract set name(name: string);
 
     abstract get cells(): Cells;
+
+    abstract set cells(cells: Cells);
 
     abstract get layers(): number[];
 

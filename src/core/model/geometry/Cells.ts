@@ -247,6 +247,7 @@ export default class Cells {
     public invert = (gridSize: GridSize) => {
         const cells = new Cells([]);
         const iBound = this.calculateIBound(gridSize.nY, gridSize.nX);
+
         for (let rIdx: number = 0; rIdx < gridSize.nY; rIdx++) {
             for (let cIdx: number = 0; cIdx < gridSize.nX; cIdx++) {
                 if (iBound[rIdx][cIdx] === 0) {

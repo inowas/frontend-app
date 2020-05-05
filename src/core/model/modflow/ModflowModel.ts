@@ -36,6 +36,10 @@ export default class ModflowModel {
         this._props.discretization.cells = value.toObject();
     }
 
+    get inactiveCells(): Cells {
+        return this.cells.invert(this.gridSize);
+    }
+
     get boundingBox() {
         return BoundingBox.fromObject(this._props.discretization.bounding_box);
     }
