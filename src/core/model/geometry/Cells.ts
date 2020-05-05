@@ -226,7 +226,7 @@ export default class Cells {
         this._cells.push(cell);
     };
 
-    public calculateIBound = (nrow: number, ncol: number): Array2D<number> => {
+    public calculateIBound = (nrow: number, ncol: number) => {
         const iBound2D: Array2D<number> = [];
         for (let row: number = 0; row < nrow; row++) {
             iBound2D[row] = [0];
@@ -234,11 +234,13 @@ export default class Cells {
                 iBound2D[row][col] = 0;
             }
         }
+
         this.cells.forEach((cell) => {
             if (cell[1] <= iBound2D.length && cell[0] <= iBound2D[0].length) {
                 iBound2D[cell[1]][cell[0]] = 1;
             }
         });
+
         return iBound2D;
     };
 

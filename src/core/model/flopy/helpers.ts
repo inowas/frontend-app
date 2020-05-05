@@ -103,6 +103,9 @@ export const calculateLineBoundarySpData = (boundaries: LineBoundary[], stresspe
     }
 
     const spData: number[][][] = [];
+    for (let per = 0; per < stressperiods.count; per++) {
+        spData[per] = [];
+    }
 
     boundaries.forEach((b: LineBoundary) => {
         const cells = b.cells.toObject();
@@ -110,7 +113,6 @@ export const calculateLineBoundarySpData = (boundaries: LineBoundary[], stresspe
         const ops = b.observationPoints.map((o) => ({spValues: o.getSpValues(stressperiods)}));
 
         for (let per = 0; per < stressperiods.count; per++) {
-            spData[per] = [];
             layers.forEach((lay: number) => {
                 cells.forEach((cell: ICell) => {
                     const col = cell[0];
