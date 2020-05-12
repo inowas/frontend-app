@@ -7,10 +7,8 @@ import {Button} from 'semantic-ui-react';
 import {BoundingBox, Cells, Geometry, GridSize} from '../../../../../core/model/geometry';
 import {IGeometry} from '../../../../../core/model/geometry/Geometry.type';
 import BoundaryCollection from '../../../../../core/model/modflow/boundaries/BoundaryCollection';
-import ActiveCellsLayer from '../../../../../services/geoTools/affectedCellsLayer';
-import Grid from '../../../../../services/geoTools/grid';
+import AffectedCellsLayer from '../../../../../services/geoTools/affectedCellsLayer';
 import {BasicTileLayer} from '../../../../../services/geoTools/tileLayers';
-import IntersectionControl from '../../../../shared/leaflet/IntersectionControl';
 import {renderBoundaryOverlays} from '../../../../shared/rasterData/helpers';
 import {getStyle} from '../../maps';
 
@@ -22,6 +20,7 @@ interface IProps {
     gridSize: GridSize;
     intersection?: number;
     readOnly: boolean;
+    rotation?: number;
     onChangeCells: (cells: Cells) => void;
     onChangeGeometry?: (geometry: Geometry) => void;
     onChangeIntersection?: (intersection: number) => void;
@@ -133,6 +132,42 @@ const discretizationMap = (props: IProps) => {
 
     const handleToggleDrawing = () => setIsDrawing(!isDrawing);
 
+    const renderActiveCellsLayer = () => {
+        if (!props.cells) {
+            return null;
+        }
+        if (props.geometry && props.rotation && props.rotation > 0 && props.rotation < 360) {
+            return (
+                <AffectedCellsLayer
+                    boundingBox={props.boundingBox}
+                    gridSize={props.gridSize}
+                    cells={props.cells}
+                    rotation={{geometry: props.geometry, angle: props.rotation}}
+                />
+            );
+        }
+        return (
+            <AffectedCellsLayer
+                boundingBox={props.boundingBox}
+                gridSize={props.gridSize}
+                cells={props.cells}
+            />
+        );
+    };
+
+    const renderBoundingBox = () => {
+        const data = props.rotation && props.geometry ?
+            BoundingBox.geoJsonFromGeometryAndRotation(props.geometry, props.rotation, props.geometry.centerOfMass) :
+            props.boundingBox.geoJson;
+        return (
+            <GeoJSON
+                key={uniqueId()}
+                data={data}
+                style={getStyle('bounding_box')}
+            />
+        );
+    };
+
     return (
         <React.Fragment>
             {!props.readOnly &&
@@ -149,16 +184,6 @@ const discretizationMap = (props: IProps) => {
                 ref={mapRef}
             >
                 <BasicTileLayer/>
-                <Grid
-                    boundingBox={props.boundingBox}
-                    gridSize={props.gridSize}
-                />
-                {props.intersection !== undefined && props.onChangeIntersection !== undefined &&
-                <IntersectionControl
-                    intersection={props.intersection}
-                    onClick={props.onChangeIntersection}
-                />
-                }
                 {!props.readOnly && <FeatureGroup>
                     <EditControl
                         position="topright"
@@ -178,33 +203,21 @@ const discretizationMap = (props: IProps) => {
                         onEdited={onEdited}
                         ref={refDrawControl}
                     />
-
                     {geometry &&
                     <Polygon
                         key={uniqueId()}
                         positions={Geometry.fromObject(geometry).coordinatesLatLng as LatLngExpression[]}
-                    />}
-
-                </FeatureGroup>}
-
-                {props.boundingBox &&
-                <GeoJSON
-                    key={uniqueId()}
-                    data={props.boundingBox.geoJson}
-                    style={getStyle('bounding_box')}
-                />}
+                    />
+                    }
+                </FeatureGroup>
+                }
                 {props.boundaries.length > 0 &&
                 <LayersControl position="topright">
                     {renderBoundaryOverlays(props.boundaries)}
                 </LayersControl>
                 }
-                {props.cells &&
-                <ActiveCellsLayer
-                    boundingBox={props.boundingBox}
-                    gridSize={props.gridSize}
-                    cells={props.cells}
-                />
-                }
+                {renderActiveCellsLayer()}
+                {renderBoundingBox()}
             </Map>
         </React.Fragment>
     );

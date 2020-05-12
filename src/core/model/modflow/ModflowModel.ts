@@ -64,6 +64,14 @@ export default class ModflowModel {
         this._props.discretization.grid_size = value.toObject();
     }
 
+    get rotation() {
+        return this._props.discretization.rotation || 0;
+    }
+
+    set rotation(value) {
+        this._props.discretization.rotation = value;
+    }
+
     get lengthUnit() {
         return LengthUnit.fromInt(this._props.discretization.length_unit);
     }

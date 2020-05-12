@@ -4,6 +4,8 @@ import {FeatureGroup, GeoJSON, LayersControl} from 'react-leaflet';
 import {useSelector} from 'react-redux';
 import uuid from 'uuid';
 import {BoundingBox, Cells, Geometry, GridSize} from '../../core/model/geometry';
+import {IBoundingBox} from '../../core/model/geometry/BoundingBox.type';
+import {IRotationProperties} from '../../core/model/geometry/Geometry.type';
 import {Boundary, BoundaryCollection} from '../../core/model/modflow/boundaries';
 import {IRootReducer} from '../../reducers';
 
@@ -12,6 +14,7 @@ interface IProps {
     boundingBox: BoundingBox;
     gridSize: GridSize;
     cells: Cells;
+    rotation?: IRotationProperties;
 }
 
 const styles = {
@@ -37,6 +40,7 @@ const styles = {
 
 const affectedCellsLayer = (props: IProps) => {
     const [iBoundLayer, setIBoundLayer] = useState();
+    const [boundingBox, setBoundingBox] = useState<IBoundingBox>(props.boundingBox.toObject());
     const [boundaryLayer, setBoundaryLayer] = useState();
     const [boundaryLayers, setBoundaryLayers] = useState();
     const [boundaryKey, setBoundaryKey] = useState<string>(uuid.v4());
@@ -50,15 +54,32 @@ const affectedCellsLayer = (props: IProps) => {
     }
 
     useEffect(() => {
+        setBoundingBox(props.boundingBox.toObject());
+    }, [props.boundingBox]);
+
+    useEffect(() => {
+        if (props.rotation) {
+            const center = props.rotation.geometry.centerOfMass;
+            const bbox = BoundingBox.fromGeometryAndRotation(props.rotation.geometry, props.rotation.angle, center);
+            setBoundingBox(bbox.toObject());
+        }
+    }, [props.rotation]);
+
+    useEffect(() => {
         setIBoundLayer(
-            createPolygon(props.boundingBox, props.gridSize, props.cells.invert(props.gridSize), styles.inactive)
+            createPolygon(
+                BoundingBox.fromObject(boundingBox),
+                props.gridSize,
+                props.cells.invert(props.gridSize),
+                styles.inactive
+            )
         );
-    }, [props.boundingBox, props.cells, props.gridSize]);
+    }, [boundingBox, props.cells, props.gridSize]);
 
     useEffect(() => {
         if (props.boundary) {
             const polygon = createPolygon(
-                props.boundingBox, props.gridSize, props.boundary.cells, styles.affected
+                BoundingBox.fromObject(boundingBox), props.gridSize, props.boundary.cells, styles.affected
             );
             setBoundaryLayer(polygon);
         }
@@ -85,9 +106,9 @@ const affectedCellsLayer = (props: IProps) => {
         );
     }, [T03.boundaries]);
 
-    const createPolygon = (boundingBox: BoundingBox, gridSize: GridSize, cells: Cells, style: any, key?: number) => {
-        const dX = boundingBox.dX / gridSize.nX;
-        const dY = boundingBox.dY / gridSize.nY;
+    const createPolygon = (bbox: BoundingBox, gridSize: GridSize, cells: Cells, style: any, key?: number) => {
+        const dX = bbox.dX / gridSize.nX;
+        const dY = bbox.dY / gridSize.nY;
         const mergedCells: Array<[number, number, number, number]> = [];
 
         const grid = cells.calculateIBound(gridSize.nY, gridSize.nX);
@@ -128,10 +149,10 @@ const affectedCellsLayer = (props: IProps) => {
                 const x1 = e[1];
                 const y = rIdx;
 
-                const cXmin = boundingBox.xMin + x0 * dX;
-                const cXmax = boundingBox.xMin + (x1 + 1) * dX;
-                const cYmin = boundingBox.yMax - y * dY;
-                const cYmax = boundingBox.yMax - (y + 1) * dY;
+                const cXmin = bbox.xMin + x0 * dX;
+                const cXmax = bbox.xMin + (x1 + 1) * dX;
+                const cYmin = bbox.yMax - y * dY;
+                const cYmax = bbox.yMax - (y + 1) * dY;
 
                 mergedCells.push([cXmin, cXmax, cYmin, cYmax]);
             });
@@ -163,6 +184,14 @@ const affectedCellsLayer = (props: IProps) => {
 
         if (turfPolygon === null) {
             return null;
+        }
+
+        if (props.rotation && props.rotation.angle > 0 && props.rotation.angle < 360) {
+            turfPolygon = turf.transformRotate(
+                turfPolygon,
+                props.rotation.angle,
+                {pivot: props.rotation.geometry.centerOfMass}
+            );
         }
 
         const geometry = Geometry.fromGeoJson(turfPolygon.geometry);

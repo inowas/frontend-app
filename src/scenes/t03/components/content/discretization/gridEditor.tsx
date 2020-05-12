@@ -1,7 +1,7 @@
 import _ from 'lodash';
 import React, {ChangeEvent, useEffect, useRef, useState} from 'react';
 import {useDispatch, useSelector} from 'react-redux';
-import {Dimmer, Form, Grid, Header, Progress} from 'semantic-ui-react';
+import {Dimmer, Form, Grid, Header, Icon, Progress} from 'semantic-ui-react';
 import {BoundingBox, Cells, Geometry, GridSize, ModflowModel} from '../../../../../core/model/modflow';
 import {Boundary, BoundaryCollection} from '../../../../../core/model/modflow/boundaries';
 import {IRootReducer} from '../../../../../reducers';
@@ -11,7 +11,7 @@ import {dxCell, dyCell} from '../../../../../services/geoTools/distance';
 import ContentToolBar from '../../../../shared/ContentToolbar2';
 import {updateBoundaries} from '../../../actions/actions';
 import ModflowModelCommand from '../../../commands/modflowModelCommand';
-import {DiscretizationMap} from './index';
+import {DiscretizationMap, RotationModal} from './index';
 
 interface IProps {
     boundaries: BoundaryCollection;
@@ -53,8 +53,8 @@ const boundaryUpdater = (
 const gridEditor = (props: IProps) => {
     const [intersection, setIntersection] = useState<number>(50);
     const [gridSizeLocal, setGridSizeLocal] = useState<GridSize | null>(null);
-
     const [updaterStatus, setUpdaterStatus] = useState<IBoundaryUpdaterStatus | null>(null);
+    const [showRotationModal, setShowRotationModal] = useState<boolean>(false);
 
     const intersectionRef = useRef<number>();
 
@@ -178,6 +178,15 @@ const gridEditor = (props: IProps) => {
         });
     };
 
+    const handleChangeRotation = (rotation: number, cells: Cells) => {
+        setShowRotationModal(false);
+        const model = props.model.getClone();
+        model.cells = cells;
+        model.rotation = rotation;
+        update(model);
+        return props.onChange(model);
+    };
+
     if (!gridSizeLocal) {
         return null;
     }
@@ -193,6 +202,13 @@ const gridEditor = (props: IProps) => {
                 </Header>
                 <Progress percent={(updaterStatus.task / props.boundaries.length)} indicating={true} progress={true}/>
             </Dimmer>
+            }
+            {showRotationModal &&
+                <RotationModal
+                    model={props.model}
+                    onChange={handleChangeRotation}
+                    onClose={() => setShowRotationModal(false)}
+                />
             }
             {!readOnly &&
             <Grid.Row>
@@ -244,9 +260,26 @@ const gridEditor = (props: IProps) => {
                                 compact={true}
                                 label="Length unit"
                                 options={[{key: 2, text: 'meters', value: 2}]}
-                                style={{zIndex: 10000}}
                                 value={props.model.lengthUnit.toInt()}
                                 disabled={readOnly}
+                            />
+                        </Form.Group>
+                        <Form.Group>
+                            <Form.Input
+                                label="Grid rotation"
+                                icon={
+                                    <Icon
+                                        name="pencil"
+                                        inverted={true}
+                                        circular={true}
+                                        link={true}
+                                        onClick={() => setShowRotationModal(true)}
+                                    />
+                                }
+                                name={'rotation'}
+                                value={props.model.rotation || 0}
+                                width={'6'}
+                                readOnly={readOnly}
                             />
                         </Form.Group>
                     </Form>
@@ -265,6 +298,7 @@ const gridEditor = (props: IProps) => {
                         onChangeCells={handleChangeCells}
                         onChangeIntersection={handleChangeIntersection}
                         readOnly={readOnly}
+                        rotation={props.model.rotation}
                     />
                 </Grid.Column>
             </Grid.Row>

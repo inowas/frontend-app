@@ -1,5 +1,7 @@
+import {Point} from '@turf/helpers';
 import {bbox} from '@turf/turf';
-import {LineString, MultiPolygon, Polygon} from 'geojson';
+import * as turf from '@turf/turf';
+import {Feature} from 'geojson';
 import {cloneDeep} from 'lodash';
 import md5 from 'md5';
 import {GeoJson} from './Geometry.type';
@@ -31,6 +33,10 @@ class Geometry {
 
     public fromType(type: string) {
         return (type.toLowerCase() === this.type.toLowerCase());
+    }
+
+    get centerOfMass() {
+        return turf.centerOfMass(this.toGeoJSON()) as Feature<Point>;
     }
 
     get coordinatesLatLng() {
