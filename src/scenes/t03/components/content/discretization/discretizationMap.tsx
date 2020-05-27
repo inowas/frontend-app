@@ -1,16 +1,18 @@
 import {Control, DrawEvents, LatLngBoundsExpression, LatLngExpression} from 'leaflet';
 import _, {uniqueId} from 'lodash';
 import React, {useEffect, useRef, useState} from 'react';
-import {FeatureGroup, GeoJSON, LayersControl, Map, Polygon} from 'react-leaflet';
+import {Polygon} from 'react-leaflet';
+import {FeatureGroup, GeoJSON, LayersControl, Map} from 'react-leaflet';
 import {EditControl} from 'react-leaflet-draw';
 import {Button} from 'semantic-ui-react';
 import {BoundingBox, Cells, Geometry, GridSize} from '../../../../../core/model/geometry';
 import {IGeometry} from '../../../../../core/model/geometry/Geometry.type';
 import BoundaryCollection from '../../../../../core/model/modflow/boundaries/BoundaryCollection';
 import AffectedCellsLayer from '../../../../../services/geoTools/affectedCellsLayer';
+import {rotateCoordinateAroundPoint} from '../../../../../services/geoTools/getCellFromClick';
+import {getStyle} from '../../../../../services/geoTools/mapHelpers';
 import {BasicTileLayer} from '../../../../../services/geoTools/tileLayers';
 import {renderBoundaryOverlays} from '../../../../shared/rasterData/helpers';
-import {getStyle} from '../../maps';
 
 interface IProps {
     boundingBox: BoundingBox;
@@ -112,17 +114,15 @@ const discretizationMap = (props: IProps) => {
     };
 
     const handleClickOnMap = ({latlng}: { latlng: any }) => {
-        if (isDrawingRef.current || readOnlyRef.current || !cellsRef.current || !props.boundingBox || !props.gridSize) {
+        if (isDrawingRef.current || readOnlyRef.current || !cellsRef.current || !props.boundingBox || !props.gridSize
+        || !props.geometry) {
             return null;
         }
 
-        const x = latlng.lng;
-        const y = latlng.lat;
-
-        if (x < props.boundingBox.xMin || x > props.boundingBox.xMax ||
-            y < props.boundingBox.yMin || y > props.boundingBox.yMax) {
-            return null;
-        }
+        const latlngRot = props.rotation ?
+            rotateCoordinateAroundPoint(latlng, props.geometry.centerOfMass, props.rotation) : latlng;
+        const x = latlngRot.lng;
+        const y = latlngRot.lat;
 
         const c: Cells = cellsRef.current;
         c.toggle([x, y], props.boundingBox, props.gridSize);
@@ -157,7 +157,7 @@ const discretizationMap = (props: IProps) => {
 
     const renderBoundingBox = () => {
         const data = props.rotation && props.geometry ?
-            BoundingBox.geoJsonFromGeometryAndRotation(props.geometry, props.rotation, props.geometry.centerOfMass) :
+            props.boundingBox.geoJsonWithRotation(props.rotation, props.geometry.centerOfMass) :
             props.boundingBox.geoJson;
         return (
             <GeoJSON

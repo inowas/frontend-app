@@ -11,6 +11,7 @@ export interface IDiscretization {
     bounding_box: IBoundingBox;
     grid_size: IGridSize;
     cells: ICells;
+    intersection?: number;
     rotation?: number;
     stressperiods: IStressPeriods;
     length_unit: ILengthUnit;

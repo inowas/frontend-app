@@ -236,7 +236,7 @@ export default class Cells {
         }
 
         this.cells.forEach((cell) => {
-            if (cell[1] <= iBound2D.length && cell[0] <= iBound2D[0].length) {
+            if (cell[1] <= iBound2D.length && cell[0] <= iBound2D[0].length && iBound2D[cell[1]]) {
                 iBound2D[cell[1]][cell[0]] = 1;
             }
         });

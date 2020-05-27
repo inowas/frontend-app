@@ -1,7 +1,7 @@
 import _ from 'lodash';
-import React, {ChangeEvent, useEffect, useRef, useState} from 'react';
+import React, {useEffect, useRef, useState} from 'react';
 import {useDispatch, useSelector} from 'react-redux';
-import {Dimmer, Form, Grid, Header, Icon, Progress} from 'semantic-ui-react';
+import {Dimmer, Form, Grid, Header, Progress} from 'semantic-ui-react';
 import {BoundingBox, Cells, Geometry, GridSize, ModflowModel} from '../../../../../core/model/modflow';
 import {Boundary, BoundaryCollection} from '../../../../../core/model/modflow/boundaries';
 import {IRootReducer} from '../../../../../reducers';
@@ -11,7 +11,7 @@ import {dxCell, dyCell} from '../../../../../services/geoTools/distance';
 import ContentToolBar from '../../../../shared/ContentToolbar2';
 import {updateBoundaries} from '../../../actions/actions';
 import ModflowModelCommand from '../../../commands/modflowModelCommand';
-import {DiscretizationMap, RotationModal} from './index';
+import {DiscretizationMap, GridProperties} from './index';
 
 interface IProps {
     boundaries: BoundaryCollection;
@@ -54,7 +54,6 @@ const gridEditor = (props: IProps) => {
     const [intersection, setIntersection] = useState<number>(50);
     const [gridSizeLocal, setGridSizeLocal] = useState<GridSize | null>(null);
     const [updaterStatus, setUpdaterStatus] = useState<IBoundaryUpdaterStatus | null>(null);
-    const [showRotationModal, setShowRotationModal] = useState<boolean>(false);
 
     const intersectionRef = useRef<number>();
 
@@ -117,49 +116,6 @@ const gridEditor = (props: IProps) => {
         );
     };
 
-    const handleGridSizeChange = (e: ChangeEvent<HTMLInputElement>) => {
-        const {type, target} = e;
-        const {name, value} = target;
-
-        if (type === 'change') {
-            if (!gridSizeLocal) {
-                return;
-            }
-
-            const gzl = gridSizeLocal.getClone();
-            if (name === 'nX') {
-                gzl.nX = parseInt(value, 10);
-            }
-
-            if (name === 'nY') {
-                gzl.nY = parseInt(value, 10);
-            }
-
-            setGridSizeLocal(gzl);
-        }
-
-        if (type === 'blur') {
-            if (!gridSizeLocal) {
-                return;
-            }
-
-            const gz = GridSize.fromObject(gridSizeLocal.toObject());
-
-            setUpdaterStatus({
-                task: 0,
-                message: `Updating...`
-            });
-
-            calculate(props.model.geometry, props.model.boundingBox, gz).then((c: Cells) => {
-                const model = props.model.getClone();
-                model.cells = Cells.fromObject(c.toObject());
-                model.gridSize = GridSize.fromObject(gz.toObject());
-                update(model);
-                return props.onChange(model);
-            });
-        }
-    };
-
     const handleChangeCells = (c: Cells) => {
         const model = props.model.getClone();
         model.cells = c;
@@ -167,8 +123,15 @@ const gridEditor = (props: IProps) => {
     };
 
     const handleChangeGeometry = (g: Geometry) => {
+        const rotation = props.model.rotation;
+        let bbRot: BoundingBox | null = null;
+        if (rotation % 360 !== 0) {
+            g = Geometry.fromGeoJson(g.toGeoJSONWithRotation(rotation, props.model.boundingBox.southWest));
+            bbRot = BoundingBox.fromGeoJson(g);
+        }
+
         const bb = BoundingBox.fromGeoJson(g);
-        calculate(g, bb, props.model.gridSize, intersectionRef.current || 0).then((c: Cells) => {
+        calculate(g, bbRot || bb, props.model.gridSize, props.model.intersection).then((c: Cells) => {
             const model = props.model.getClone();
             model.cells = Cells.fromObject(c.toObject());
             model.geometry = Geometry.fromObject(g.toObject());
@@ -178,11 +141,15 @@ const gridEditor = (props: IProps) => {
         });
     };
 
-    const handleChangeRotation = (rotation: number, cells: Cells) => {
-        setShowRotationModal(false);
+    const handleChangeRotation = (g: GridSize, i: number, r: number, c: Cells) => {
         const model = props.model.getClone();
-        model.cells = cells;
-        model.rotation = rotation;
+        if (r % 360 !== 0) {
+            model.boundingBox = BoundingBox.fromGeometryAndRotation(model.geometry, r);
+        }
+        model.cells = c;
+        model.gridSize = g;
+        model.intersection = i;
+        model.rotation = r;
         update(model);
         return props.onChange(model);
     };
@@ -203,13 +170,6 @@ const gridEditor = (props: IProps) => {
                 <Progress percent={(updaterStatus.task / props.boundaries.length)} indicating={true} progress={true}/>
             </Dimmer>
             }
-            {showRotationModal &&
-                <RotationModal
-                    model={props.model}
-                    onChange={handleChangeRotation}
-                    onClose={() => setShowRotationModal(false)}
-                />
-            }
             {!readOnly &&
             <Grid.Row>
                 <Grid.Column width={16}>
@@ -224,26 +184,6 @@ const gridEditor = (props: IProps) => {
                 <Grid.Column>
                     <Form>
                         <Form.Group>
-                            <Form.Input
-                                type="number"
-                                label="Rows"
-                                name={'nY'}
-                                value={gridSizeLocal.nY}
-                                onChange={handleGridSizeChange}
-                                onBlur={handleGridSizeChange}
-                                width={'6'}
-                                readOnly={readOnly}
-                            />
-                            <Form.Input
-                                type="number"
-                                label="Columns"
-                                name={'nX'}
-                                value={gridSizeLocal.nX}
-                                onChange={handleGridSizeChange}
-                                onBlur={handleGridSizeChange}
-                                width={'6'}
-                                readOnly={readOnly}
-                            />
                             <Form.Input
                                 label="Cell height"
                                 value={Math.round(dyCell(boundingBox, gridSize) * 10000) / 10}
@@ -264,25 +204,15 @@ const gridEditor = (props: IProps) => {
                                 disabled={readOnly}
                             />
                         </Form.Group>
-                        <Form.Group>
-                            <Form.Input
-                                label="Grid rotation"
-                                icon={
-                                    <Icon
-                                        name="pencil"
-                                        inverted={true}
-                                        circular={true}
-                                        link={true}
-                                        onClick={() => setShowRotationModal(true)}
-                                    />
-                                }
-                                name={'rotation'}
-                                value={props.model.rotation || 0}
-                                width={'6'}
-                                readOnly={readOnly}
-                            />
-                        </Form.Group>
                     </Form>
+                    <GridProperties
+                        boundingBox={boundingBox}
+                        geometry={geometry}
+                        gridSize={gridSize}
+                        intersection={props.model.intersection}
+                        onChange={handleChangeRotation}
+                        rotation={props.model.rotation}
+                    />
                 </Grid.Column>
             </Grid.Row>
             <Grid.Row>

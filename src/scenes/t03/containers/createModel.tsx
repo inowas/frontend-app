@@ -1,14 +1,15 @@
 import {cloneDeep} from 'lodash';
 import moment from 'moment/moment';
-import React from 'react';
-import {RouteComponentProps, withRouter} from 'react-router-dom';
+import React, {useEffect, useState} from 'react';
+import {useDispatch} from 'react-redux';
+import {useHistory, withRouter} from 'react-router-dom';
 import {Button, Checkbox, Form, Grid, Header, Icon, Segment} from 'semantic-ui-react';
 import uuidv4 from 'uuid/v4';
 import FlopyPackages from '../../../core/model/flopy/packages/FlopyPackages';
 import BoundingBox from '../../../core/model/geometry/BoundingBox';
 import {IBoundingBox} from '../../../core/model/geometry/BoundingBox.type';
 import {ICells} from '../../../core/model/geometry/Cells.type';
-import {GeoJson} from '../../../core/model/geometry/Geometry.type';
+import {IGeometry} from '../../../core/model/geometry/Geometry.type';
 import {IGridSize} from '../../../core/model/geometry/GridSize.type';
 import {
     Cells,
@@ -30,10 +31,13 @@ import TimeUnit from '../../../core/model/modflow/TimeUnit';
 import {ITimeUnit} from '../../../core/model/modflow/TimeUnit.type';
 import {sendCommands} from '../../../services/api/commandHelper';
 import AppContainer from '../../shared/AppContainer';
+import {addMessage} from '../actions/actions';
 import ModflowModelCommand from '../commands/modflowModelCommand';
 import {DrawOnMapModal, UploadGeoJSONModal} from '../components/content/create';
+import {GridProperties} from '../components/content/discretization';
 import {ModelMap} from '../components/maps';
 import defaults from '../defaults/createModel';
+import {messageError} from '../defaults/messages';
 import {CALCULATE_CELLS_INPUT} from '../worker/t03.worker';
 import {ICalculateCellsInputData} from '../worker/t03.worker.type';
 import {asyncWorker} from '../worker/worker';
@@ -44,90 +48,72 @@ const navigation = [{
     icon: <Icon name="file"/>
 }];
 
-interface IState {
-    id: string;
-    name: string;
-    description: string;
-    geometry: GeoJson | null;
-    boundingBox: IBoundingBox | null;
-    gridSize: IGridSize;
-    gridSizeLocal: IGridSize;
-    cells: ICells;
-    lengthUnit: ILengthUnit;
-    stressperiods: IStressPeriods;
-    stressperiodsLocal: IStressPeriods;
-    timeUnit: ITimeUnit;
-    isPublic: boolean;
-    calculating: boolean;
-    error: boolean;
-    loading: boolean;
-    validation: any;
-}
+const createModel = () => {
+    const [modelName, setModelName] = useState<string>(defaults.name);
+    const [description, setDescription] = useState<string>(defaults.description);
+    const [geometry, setGeometry] = useState<IGeometry | null>(null);
+    const [boundingBox, setBoundingBox] = useState<IBoundingBox | null>(null);
+    const [gridSize, setGridSize] = useState<IGridSize>(defaults.gridSize.toObject());
+    const [cells, setCells] = useState<ICells>([]);
+    const [lengthUnit] = useState<ILengthUnit>(defaults.lengthUnit);
+    const [timeUnit] = useState<ITimeUnit>(defaults.timeUnit);
+    const [intersection, setIntersection] = useState<number>(defaults.intersection);
+    const [rotation, setRotation] = useState<number>(defaults.rotation);
+    const [isPublic, setIsPublic] = useState<boolean>(defaults.isPublic);
+    const [stressperiods, setStressperiods] = useState<IStressPeriods>(defaults.stressperiods.toObject());
+    const [calculating, setCalculating] = useState<boolean>(false);
+    const [stressperiodsLocal, setStressperoidsLocal] =
+        useState<IStressPeriods>(cloneDeep(defaults.stressperiods.toObject()));
+    const [validation, setValidation] = useState<[boolean, string[]]>([false, []]);
 
-// tslint:disable-next-line:no-empty-interface
-interface IProps extends RouteComponentProps {
-}
+    const dispatch = useDispatch();
+    const history = useHistory();
 
-class CreateModel extends React.Component<IProps, IState> {
+    useEffect(() => {
+        recalculate();
+    }, [geometry]);
 
-    constructor(props: any) {
-        super(props);
-        this.state = {
-            id: defaults.id,
-            name: defaults.name,
-            description: defaults.description,
-            geometry: null,
-            boundingBox: null,
-            gridSize: defaults.gridSize.toObject(),
-            cells: [],
-            lengthUnit: defaults.lengthUnit,
-            timeUnit: defaults.timeUnit,
-            isPublic: defaults.isPublic,
-            stressperiods: defaults.stressperiods.toObject(),
-            calculating: false,
-            error: false,
-            loading: false,
-            gridSizeLocal: defaults.gridSize.toObject(),
-            stressperiodsLocal: cloneDeep(defaults.stressperiods.toObject()),
-            validation: [false, []]
-        };
-    }
+    useEffect(() => {
+        validate();
+    }, [boundingBox]);
 
-    public getModel = () => {
-        if (!this.state.geometry || !this.state.boundingBox) {
+    const getModel = () => {
+        if (!geometry || !boundingBox) {
             return;
         }
 
         return (ModflowModel.createFromParameters(
             uuidv4(),
-            this.state.name,
-            this.state.description,
-            Geometry.fromObject(this.state.geometry),
-            BoundingBox.fromObject(this.state.boundingBox),
-            GridSize.fromObject(this.state.gridSize),
-            Cells.fromObject(this.state.cells),
-            LengthUnit.fromInt(this.state.lengthUnit),
-            TimeUnit.fromInt(this.state.timeUnit),
-            Stressperiods.fromObject(this.state.stressperiods),
-            this.state.isPublic
+            modelName,
+            description,
+            Geometry.fromObject(geometry),
+            BoundingBox.fromObject(boundingBox),
+            GridSize.fromObject(gridSize),
+            Cells.fromObject(cells),
+            LengthUnit.fromInt(lengthUnit),
+            TimeUnit.fromInt(timeUnit),
+            intersection,
+            rotation,
+            Stressperiods.fromObject(stressperiods),
+            isPublic
         ));
     };
 
-    public handleSave = () => {
-        if (!this.state.geometry || !this.state.boundingBox || this.state.cells.length === 0) {
+    const handleSave = () => {
+        if (!geometry || !boundingBox || cells.length === 0) {
             return;
         }
 
         const commands = [];
 
-        const model = this.getModel();
+        const model = getModel();
         if (!model) {
             return;
         }
 
         const soilmodel = Soilmodel.fromDefaults(
-            Geometry.fromObject(this.state.geometry),
-            Cells.fromObject(this.state.cells)
+            Geometry.fromObject(geometry),
+            Cells.fromObject(cells)
         );
 
         commands.push(ModflowModelCommand.createModflowModel(model));
@@ -152,55 +138,52 @@ class CreateModel extends React.Component<IProps, IState> {
 
         return sendCommands(
             commands,
-            () => this.props.history.push(`/tools/T03/${model.id}`),
-            (e: any) => this.setState({error: e})
+            () => history.push(`/tools/T03/${model.id}`),
+            (e: any) => {
+                dispatch(addMessage(messageError('createModel', e)));
+            }
         );
     };
 
-    public handleInputChange = (e: any, {value, name, checked}: any) => {
-        // @ts-ignore
-        this.setState({
-            [name]: value || checked
-        });
+    const handleChangeGridProps = (g: GridSize, i: number, r: number, c: Cells) => {
+        if (geometry && r % 360 !== 0) {
+            setBoundingBox(BoundingBox.fromGeometryAndRotation(Geometry.fromObject(geometry), r).toObject());
+        }
+        setGridSize(g.toObject());
+        setIntersection(i);
+        setRotation(r);
+        setCells(c.toObject());
     };
 
-    public handleGridSizeChange = (e: any) => {
+    const handleInputChange = (e: any, {value, name, checked}: any) => {
+        if (name === 'name') {
+            return setModelName(value);
+        }
+        if (name === 'description') {
+            return setDescription(value);
+        }
+        if (name === 'isPublic') {
+            return setIsPublic(checked);
+        }
+    };
+
+    const handleStressperiodsChange = (e: any) => {
         const {type, target} = e;
         const {name, value} = target;
 
         if (type === 'change') {
-            const gridSize = GridSize.fromObject(this.state.gridSizeLocal);
-            // @ts-ignore
-            gridSize[name] = parseFloat(value);
-            this.setState({gridSizeLocal: gridSize.toObject()});
-        }
-
-        if (type === 'blur') {
-            this.setState({gridSize: this.state.gridSizeLocal}, () => {
-                this.recalculate();
+            setStressperoidsLocal({
+                ...stressperiodsLocal,
+                [name]: value
             });
         }
-    };
-
-    public handleStressperiodsChange = (e: any) => {
-        const {type, target} = e;
-        const {name, value} = target;
-
-        if (type === 'change') {
-            this.setState((prevState: any) => ({
-                stressperiodsLocal: {
-                    ...prevState.stressperiodsLocal,
-                    [name]: value
-                }
-            }));
-        }
 
         if (type === 'blur') {
-            const stressPeriods = Stressperiods.fromObject(this.state.stressperiods);
+            const stressPeriods = Stressperiods.fromObject(stressperiods);
             const first = stressPeriods.first;
 
-            const start = moment.utc(this.state.stressperiodsLocal.start_date_time);
-            const end = moment.utc(this.state.stressperiodsLocal.end_date_time);
+            const start = moment.utc(stressperiodsLocal.start_date_time);
+            const end = moment.utc(stressperiodsLocal.end_date_time);
 
             first.startDateTime = start;
             stressPeriods.updateStressperiodByIdx(0, first);
@@ -208,232 +191,232 @@ class CreateModel extends React.Component<IProps, IState> {
 
             if (end.isSameOrBefore(start)) {
                 const test = moment(
-                    start.clone().add(1, TimeUnit.fromInt(this.state.timeUnit).toString()).format('YYYY-MM-DD')
+                    start.clone().add(1, TimeUnit.fromInt(timeUnit).toString()).format('YYYY-MM-DD')
                 );
                 stressPeriods.endDateTime = test.clone();
             } else {
                 stressPeriods.endDateTime = end;
             }
 
-            this.setState({
-                stressperiodsLocal: stressPeriods.toObject(),
-                stressperiods: stressPeriods.toObject()
-            }, () => this.validate());
+            setStressperoidsLocal(stressPeriods.toObject());
+            setStressperiods(stressPeriods.toObject());
+            validate();
         }
     };
 
-    public recalculate = () => {
-        if (this.state.geometry === null) {
+    const recalculate = () => {
+        if (geometry === null) {
             return;
         }
 
-        const geometry = Geometry.fromObject(this.state.geometry);
-        let boundingBox = BoundingBox.fromGeoJson(geometry.toGeoJSON());
-        if (this.state.boundingBox !== null) {
-            boundingBox = BoundingBox.fromObject(this.state.boundingBox);
+        const cGeometry = Geometry.fromObject(geometry);
+        let cBoundingBox = BoundingBox.fromGeoJson(cGeometry.toGeoJSON());
+        if (boundingBox !== null) {
+            cBoundingBox = BoundingBox.fromObject(boundingBox);
         }
 
-        this.setState({
-                calculating: true,
-                boundingBox: boundingBox.toObject()
-            }, () => asyncWorker({
-                type: CALCULATE_CELLS_INPUT,
-                data: {
-                    geometry: this.state.geometry,
-                    boundingBox: this.state.boundingBox,
-                    gridSize: this.state.gridSize
-                } as ICalculateCellsInputData
-            }).then((cells: ICells) => {
-                this.setState({cells, calculating: false});
-                this.validate();
-            }
-            ).catch(() => this.setState({error: true, calculating: false}))
-        );
+        let geometryRot = null;
+        if (rotation % 360 === 0) {
+            geometryRot = cGeometry.toGeoJSONWithRotation(rotation, cBoundingBox.southWest);
+            cBoundingBox = BoundingBox.fromGeoJson(geometryRot);
+        }
+
+        setCalculating(true);
+        setBoundingBox(cBoundingBox.toObject());
+
+        asyncWorker({
+            type: CALCULATE_CELLS_INPUT,
+            data: {
+                geometry: geometryRot || geometry,
+                boundingBox: cBoundingBox.toObject(),
+                gridSize,
+                intersection
+            } as ICalculateCellsInputData
+        }).then((c: ICells) => {
+            setCells(c);
+            setCalculating(false);
+            validate();
+        }).catch(() => {
+            dispatch(addMessage(messageError('createModel', 'Calculating cells failed.')));
+            setCalculating(false);
+        });
     };
 
-    public validate = () => {
-        if (!this.state.boundingBox || !this.state.geometry) {
-            return this.setState({validation: [false, []]});
+    const validate = () => {
+        if (!boundingBox || !geometry) {
+            return setValidation([false, []]);
         }
 
-        const model = this.getModel();
+        const model = getModel();
         if (model) {
             ModflowModelCommand.createModflowModel(model)
                 .validate()
-                .then(
-                    (validation) => this.setState({validation})
-                );
+                .then((v) => setValidation(v));
         }
     };
 
-    public render() {
-        return (
-            <AppContainer navbarItems={navigation}>
-                <Segment color={'grey'}>
-                    <Grid padded={true} columns={2}>
-                        <Grid.Row stretched={true}>
-                            <Grid.Column width={6}>
-                                <Segment>
-                                    <Form>
-                                        <Form.Group>
-                                            <Form.Input
-                                                label="Name"
-                                                name={'name'}
-                                                value={this.state.name}
-                                                width={14}
-                                                onChange={this.handleInputChange}
+    return (
+        <AppContainer navbarItems={navigation}>
+            <Segment color={'grey'}>
+                <Grid padded={true} columns={2}>
+                    <Grid.Row stretched={true}>
+                        <Grid.Column width={6}>
+                            <Segment>
+                                <Form>
+                                    <Form.Group>
+                                        <Form.Input
+                                            label="Name"
+                                            name={'name'}
+                                            value={modelName}
+                                            width={14}
+                                            onChange={handleInputChange}
+                                        />
+                                        <Form.Field>
+                                            <label>Public</label>
+                                            <Checkbox
+                                                toggle={true}
+                                                checked={isPublic}
+                                                onChange={handleInputChange}
+                                                name={'isPublic'}
+                                                width={2}
                                             />
-                                            <Form.Field>
-                                                <label>Public</label>
-                                                <Checkbox
-                                                    toggle={true}
-                                                    checked={this.state.isPublic}
-                                                    onChange={this.handleInputChange}
-                                                    name={'isPublic'}
-                                                    width={2}
+                                        </Form.Field>
+                                    </Form.Group>
+                                    <Form.TextArea
+                                        label="Description"
+                                        name="description"
+                                        onChange={handleInputChange}
+                                        placeholder="Description"
+                                        value={description}
+                                        width={16}
+                                    />
+                                </Form>
+                            </Segment>
+                            <Grid columns={2}>
+                                <Grid.Row>
+                                    <Grid.Column>
+                                        <Segment>
+                                            <Form>
+                                                <Form.Select
+                                                    compact={true}
+                                                    label="Length unit"
+                                                    options={[{key: 2, text: 'meters', value: 2}]}
+                                                    value={lengthUnit}
                                                 />
-                                            </Form.Field>
-                                        </Form.Group>
-                                        <Form.TextArea
-                                            label="Description"
-                                            name="description"
-                                            onChange={this.handleInputChange}
-                                            placeholder="Description"
-                                            value={this.state.description}
-                                            width={16}
-                                        />
-                                    </Form>
+                                            </Form>
+                                        </Segment>
+                                    </Grid.Column>
+                                    <Grid.Column>
+                                        <Segment>
+                                            <Form>
+                                                <Form.Input
+                                                    type="date"
+                                                    label="Start Date"
+                                                    name={'start_date_time'}
+                                                    value={Stressperiods
+                                                        .fromObject(stressperiodsLocal)
+                                                        .startDateTime.format('YYYY-MM-DD')}
+                                                    onChange={handleStressperiodsChange}
+                                                    onBlur={handleStressperiodsChange}
+                                                />
+                                                <Form.Input
+                                                    type="date"
+                                                    label="End Date"
+                                                    name={'end_date_time'}
+                                                    value={Stressperiods
+                                                        .fromObject(stressperiodsLocal)
+                                                        .endDateTime.format('YYYY-MM-DD')}
+                                                    onChange={handleStressperiodsChange}
+                                                    onBlur={handleStressperiodsChange}
+                                                />
+                                                <Form.Select
+                                                    compact={true}
+                                                    label="Time unit"
+                                                    options={[{key: 4, text: 'days', value: 4}]}
+                                                    value={timeUnit}
+                                                />
+                                            </Form>
+                                        </Segment>
+                                    </Grid.Column>
+                                </Grid.Row>
+                            </Grid>
+                        </Grid.Column>
+                        <Grid.Column width={10}>
+                            {(geometry && boundingBox && cells) ?
+                                <Segment>
+                                    <ModelMap
+                                        boundaries={BoundaryCollection.fromObject([])}
+                                        geometry={Geometry.fromObject(geometry)}
+                                        boundingBox={BoundingBox.fromObject(boundingBox)}
+                                        cells={Cells.fromObject(cells)}
+                                        gridSize={GridSize.fromObject(gridSize)}
+                                        rotation={rotation}
+                                    />
+                                    <Button
+                                        icon={'trash'}
+                                        color={'red'}
+                                        floated={'right'}
+                                        onClick={() => setGeometry(null)}
+                                    />
+                                </Segment> :
+                                <Segment>
+                                    <Grid columns={1} textAlign={'center'}>
+                                        <Grid.Row>
+                                            <Grid.Column>
+                                                <Header as={'h1'}>Set model geometry</Header>
+                                                <p>You have the following options</p>
+                                                <DrawOnMapModal
+                                                    onChange={(g) => setGeometry(g.toGeoJSON())}
+                                                />
+                                            </Grid.Column>
+                                        </Grid.Row>
+                                        <Grid.Row>
+                                            <Grid.Column>
+                                                <UploadGeoJSONModal
+                                                    onChange={(g) => setGeometry(g.toGeoJSON())}
+                                                />
+                                            </Grid.Column>
+                                        </Grid.Row>
+                                    </Grid>
                                 </Segment>
-                                <Grid columns={2}>
-                                    <Grid.Row>
-                                        <Grid.Column>
-                                            <Segment>
-                                                <Form>
-                                                    <Form.Input
-                                                        type="number"
-                                                        label="Rows"
-                                                        name={'nY'}
-                                                        value={(GridSize.fromObject(this.state.gridSizeLocal)).nY}
-                                                        onChange={this.handleGridSizeChange}
-                                                        onBlur={this.handleGridSizeChange}
-                                                    />
-                                                    <Form.Input
-                                                        type="number"
-                                                        label="Columns"
-                                                        name={'nX'}
-                                                        value={GridSize.fromObject(this.state.gridSizeLocal).nX}
-                                                        onChange={this.handleGridSizeChange}
-                                                        onBlur={this.handleGridSizeChange}
-                                                    />
-                                                    <Form.Select
-                                                        compact={true}
-                                                        label="Length unit"
-                                                        options={[{key: 2, text: 'meters', value: 2}]}
-                                                        value={this.state.lengthUnit}
-                                                    />
-                                                </Form>
-                                            </Segment>
-                                        </Grid.Column>
-                                        <Grid.Column>
-                                            <Segment>
-                                                <Form>
-                                                    <Form.Input
-                                                        type="date"
-                                                        label="Start Date"
-                                                        name={'start_date_time'}
-                                                        value={Stressperiods
-                                                            .fromObject(this.state.stressperiodsLocal)
-                                                            .startDateTime.format('YYYY-MM-DD')}
-                                                        onChange={this.handleStressperiodsChange}
-                                                        onBlur={this.handleStressperiodsChange}
-                                                    />
-                                                    <Form.Input
-                                                        type="date"
-                                                        label="End Date"
-                                                        name={'end_date_time'}
-                                                        value={Stressperiods
-                                                            .fromObject(this.state.stressperiodsLocal)
-                                                            .endDateTime.format('YYYY-MM-DD')}
-                                                        onChange={this.handleStressperiodsChange}
-                                                        onBlur={this.handleStressperiodsChange}
-                                                    />
-                                                    <Form.Select
-                                                        compact={true}
-                                                        label="Time unit"
-                                                        options={[{key: 4, text: 'days', value: 4}]}
-                                                        value={this.state.timeUnit}
-                                                    />
-                                                </Form>
-                                            </Segment>
-                                        </Grid.Column>
-                                    </Grid.Row>
-                                </Grid>
-                            </Grid.Column>
-                            <Grid.Column width={10}>
-                                {(this.state.geometry && this.state.boundingBox && this.state.cells) ?
-                                    <Segment>
-                                        <ModelMap
-                                            boundaries={BoundaryCollection.fromObject([])}
-                                            geometry={Geometry.fromObject(this.state.geometry)}
-                                            boundingBox={BoundingBox.fromObject(this.state.boundingBox)}
-                                            cells={Cells.fromObject(this.state.cells)}
-                                            gridSize={GridSize.fromObject(this.state.gridSize)}
-                                        />
-                                        <Button
-                                            icon={'trash'}
-                                            color={'red'}
-                                            floated={'right'}
-                                            onClick={() => this.setState({geometry: null}, () => this.validate())}
-                                        />
-                                    </Segment> :
-                                    <Segment>
-                                        <Grid columns={1} textAlign={'center'}>
-                                            <Grid.Row>
-                                                <Grid.Column>
-                                                    <Header as={'h1'}>Set model geometry</Header>
-                                                    <p>You have the following options</p>
-                                                    <DrawOnMapModal
-                                                        onChange={(geometry) => {
-                                                            this.setState({geometry: geometry.toGeoJSON()},
-                                                                () => this.recalculate());
-                                                        }}
-                                                    />
-                                                </Grid.Column>
-                                            </Grid.Row>
-                                            <Grid.Row>
-                                                <Grid.Column>
-                                                    <UploadGeoJSONModal
-                                                        onChange={(geometry) => {
-                                                            this.setState({geometry: geometry.toGeoJSON()},
-                                                                () => this.recalculate());
-                                                        }}
-                                                    />
-                                                </Grid.Column>
-                                            </Grid.Row>
-                                        </Grid>
-                                    </Segment>
-                                }
-                            </Grid.Column>
-                        </Grid.Row>
-                        <Grid.Row>
-                            <Grid.Column width={16}>
-                                <Button
-                                    floated={'right'}
-                                    primary={true}
-                                    type={'submit'}
-                                    onClick={this.handleSave}
-                                    negative={!this.state.validation[0]}
-                                    loading={this.state.calculating}
-                                >
-                                    Create model
-                                </Button>
-                            </Grid.Column>
-                        </Grid.Row>
-                    </Grid>
-                </Segment>
-            </AppContainer>
-        );
-    }
-}
+                            }
+                        </Grid.Column>
+                    </Grid.Row>
+                    {boundingBox && geometry &&
+                    <Grid.Row>
+                        <Grid.Column width={16}>
+                            <Segment>
+                                <GridProperties
+                                    boundingBox={BoundingBox.fromObject(boundingBox)}
+                                    geometry={Geometry.fromObject(geometry)}
+                                    gridSize={GridSize.fromObject(gridSize)}
+                                    intersection={intersection}
+                                    onChange={handleChangeGridProps}
+                                    rotation={rotation}
+                                    readonly={calculating}
+                                />
+                            </Segment>
+                        </Grid.Column>
+                    </Grid.Row>
+                    }
+                    <Grid.Row>
+                        <Grid.Column width={16}>
+                            <Button
+                                floated={'right'}
+                                primary={true}
+                                type={'submit'}
+                                onClick={handleSave}
+                                negative={!validation[0]}
+                                loading={calculating}
+                            >
+                                Create model
+                            </Button>
+                        </Grid.Column>
+                    </Grid.Row>
+                </Grid>
+            </Segment>
+        </AppContainer>
+    );
+};
 
-export default withRouter(CreateModel);
+export default withRouter(createModel);

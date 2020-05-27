@@ -114,13 +114,16 @@ class ModflowModelCommand extends AbstractCommand {
         cells: ICells,
         stressperiods: IStressPeriods,
         lengthUnit: number,
-        timeUnit: number
+        timeUnit: number,
+        rotation: number,
+        intersection: number
     ) {
         const commandName = 'updateModflowModelDiscretization';
         const payload = {
             id, geometry, bounding_box: boundingBox,
             grid_size: gridSize, cells, stressperiods,
-            length_unit: lengthUnit, time_unit: timeUnit
+            length_unit: lengthUnit, time_unit: timeUnit,
+            rotation, intersection
         };
 
         return new ModflowModelCommand(commandName, payload, JSON_SCHEMA_URL + '/commands/' + commandName);

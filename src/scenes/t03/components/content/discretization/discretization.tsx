@@ -83,7 +83,9 @@ const discretization = () => {
             m.cells.toObject(),
             m.stressperiods.toObject(),
             m.lengthUnit.toInt(),
-            m.timeUnit.toInt()
+            m.timeUnit.toInt(),
+            m.rotation,
+            m.intersection
         );
 
         return sendCommand(command, () => {

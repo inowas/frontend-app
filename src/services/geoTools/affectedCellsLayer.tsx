@@ -35,6 +35,11 @@ const styles = {
         fill: true,
         fillColor: '#9C9EDE',
         fillOpacity: 0.6
+    },
+    selected: {
+        color: '#ded340',
+        stroke: true,
+        fill: false,
     }
 };
 
@@ -59,8 +64,7 @@ const affectedCellsLayer = (props: IProps) => {
 
     useEffect(() => {
         if (props.rotation) {
-            const center = props.rotation.geometry.centerOfMass;
-            const bbox = BoundingBox.fromGeometryAndRotation(props.rotation.geometry, props.rotation.angle, center);
+            const bbox = BoundingBox.fromGeometryAndRotation(props.rotation.geometry, props.rotation.angle);
             setBoundingBox(bbox.toObject());
         }
     }, [props.rotation]);

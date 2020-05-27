@@ -64,6 +64,14 @@ export default class ModflowModel {
         this._props.discretization.grid_size = value.toObject();
     }
 
+    get intersection() {
+        return this._props.discretization.intersection === undefined ? 50 : this._props.discretization.intersection;
+    }
+
+    set intersection(value) {
+        this._props.discretization.intersection = value;
+    }
+
     get rotation() {
         return this._props.discretization.rotation || 0;
     }
@@ -146,6 +154,8 @@ export default class ModflowModel {
         cells: Cells,
         lengthUnit: LengthUnit,
         timeUnit: TimeUnit,
+        intersection: number,
+        rotation: number,
         stressperiods: Stressperiods,
         isPublic: boolean) {
         return new ModflowModel({
@@ -160,6 +170,8 @@ export default class ModflowModel {
                 grid_size: gridSize.toObject(),
                 cells: cells.toObject(),
                 length_unit: lengthUnit.toInt(),
+                intersection,
+                rotation,
                 stressperiods: stressperiods.toObject(),
                 time_unit: timeUnit.toInt(),
             },
@@ -187,6 +199,8 @@ export default class ModflowModel {
         grid_size: this.gridSize.toObject(),
         cells: this.cells.toObject(),
         length_unit: this.lengthUnit.toInt(),
+        intersection: this.intersection,
+        rotation: this.rotation,
         stressperiods: this.stressperiods.toObject(),
         time_unit: this.timeUnit.toInt()
     });
