@@ -1,6 +1,7 @@
-import {AllGeoJSON} from '@turf/helpers';
+import {AllGeoJSON, Feature} from '@turf/helpers';
 import {bbox} from '@turf/turf';
 import * as turf from '@turf/turf';
+import {Point} from 'geojson';
 import {cloneDeep} from 'lodash';
 import md5 from 'md5';
 import {GeoJson} from './Geometry.type';
@@ -55,8 +56,8 @@ class Geometry {
 
     public toGeoJSON = () => (this._geometry);
 
-    public toGeoJSONWithRotation = (r: number, center: {lat: number, lng: number}) => {
-        return turf.transformRotate(this.toGeoJSON(), -1 * r, {pivot: [center.lat, center.lng]});
+    public toGeoJSONWithRotation = (r: number, center: Feature<Point | null>) => {
+        return turf.transformRotate(this.toGeoJSON(), -1 * r, {pivot: center});
     };
 
     public hash = () => (md5(JSON.stringify(this._geometry)));

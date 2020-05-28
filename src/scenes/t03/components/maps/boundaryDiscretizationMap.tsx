@@ -15,6 +15,7 @@ import {
     LineBoundary, WellBoundary,
 } from '../../../../core/model/modflow/boundaries';
 import AffectedCellsLayer from '../../../../services/geoTools/affectedCellsLayer';
+import {rotateCoordinateAroundPoint} from '../../../../services/geoTools/getCellFromClick';
 import {BasicTileLayer} from '../../../../services/geoTools/tileLayers';
 import {getStyle} from './index';
 
@@ -182,6 +183,10 @@ const boundaryDiscretizationMap = (props: IProps) => {
                 boundingBox={props.model.boundingBox}
                 gridSize={props.model.gridSize}
                 cells={props.model.cells}
+                rotation={{
+                    geometry: props.model.geometry,
+                    angle: props.model.rotation
+                }}
             />
         );
     };
@@ -195,8 +200,12 @@ const boundaryDiscretizationMap = (props: IProps) => {
         const cells = Cells.fromObject(boundary.cells.cells);
         const boundingBox = props.model.boundingBox;
         const gridSize = props.model.gridSize;
-        const x = latlng.lng;
-        const y = latlng.lat;
+
+        const latlngRot = props.model.rotation ?
+            rotateCoordinateAroundPoint(latlng, props.model.geometry.centerOfMass, props.model.rotation) : latlng;
+
+        const x = latlngRot.lng;
+        const y = latlngRot.lat;
 
         cells.toggle([x, y], boundingBox, gridSize);
 
@@ -227,11 +236,6 @@ const boundaryDiscretizationMap = (props: IProps) => {
                     {props.showBoundaryGeometry && showBoundaryGeometry()}
                     {modelGeometryLayer()}
                     {props.showActiveCells && affectedCellsLayer()}
-                    <AffectedCellsLayer
-                        boundingBox={props.model.boundingBox}
-                        gridSize={props.model.gridSize}
-                        cells={props.model.cells}
-                    />
                 </Map>
             </Grid.Column>
             {props.showActiveCells &&

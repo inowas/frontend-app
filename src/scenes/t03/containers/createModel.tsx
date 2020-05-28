@@ -217,7 +217,7 @@ const createModel = () => {
 
         let geometryRot = null;
         if (rotation % 360 === 0) {
-            geometryRot = cGeometry.toGeoJSONWithRotation(rotation, cBoundingBox.southWest);
+            geometryRot = cGeometry.toGeoJSONWithRotation(rotation, cGeometry.centerOfMass);
             cBoundingBox = BoundingBox.fromGeoJson(geometryRot);
         }
 

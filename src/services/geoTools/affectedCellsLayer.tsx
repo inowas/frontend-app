@@ -190,7 +190,7 @@ const affectedCellsLayer = (props: IProps) => {
             return null;
         }
 
-        if (props.rotation && props.rotation.angle > 0 && props.rotation.angle < 360) {
+        if (props.rotation && props.rotation.angle % 360 !== 0) {
             turfPolygon = turf.transformRotate(
                 turfPolygon,
                 props.rotation.angle,

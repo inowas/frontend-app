@@ -126,7 +126,7 @@ const gridEditor = (props: IProps) => {
         const rotation = props.model.rotation;
         let bbRot: BoundingBox | null = null;
         if (rotation % 360 !== 0) {
-            g = Geometry.fromGeoJson(g.toGeoJSONWithRotation(rotation, props.model.boundingBox.southWest));
+            g = Geometry.fromGeoJson(g.toGeoJSONWithRotation(rotation, g.centerOfMass));
             bbRot = BoundingBox.fromGeoJson(g);
         }
 

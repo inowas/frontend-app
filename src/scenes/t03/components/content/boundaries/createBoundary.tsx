@@ -1,3 +1,4 @@
+import * as turf from '@turf/turf';
 import React, {ChangeEvent, SyntheticEvent, useState} from 'react';
 import {useDispatch, useSelector} from 'react-redux';
 import {RouteComponentProps, withRouter} from 'react-router-dom';
@@ -13,8 +14,12 @@ import {IRootReducer} from '../../../../../reducers';
 import {sendCommand} from '../../../../../services/api';
 import {calculateActiveCells} from '../../../../../services/geoTools';
 import ContentToolBar from '../../../../shared/ContentToolbar';
-import {updateBoundaries} from '../../../actions/actions';
+import {addMessage, updateBoundaries} from '../../../actions/actions';
 import ModflowModelCommand from '../../../commands/modflowModelCommand';
+import {messageError} from '../../../defaults/messages';
+import {CALCULATE_CELLS_INPUT} from '../../../worker/t03.worker';
+import {ICalculateCellsInputData} from '../../../worker/t03.worker.type';
+import {asyncWorker} from '../../../worker/worker';
 import {CreateBoundaryMap} from '../../maps';
 import {UploadGeoJSONModal} from '../create';
 
@@ -55,10 +60,27 @@ const createBoundary = (props: Props) => {
 
     const handleChangeGeometry = (cGeometry: Geometry) => {
         if (model.boundingBox) {
-            const cCells = calculateActiveCells(cGeometry, model.boundingBox, model.gridSize);
-            setCells(cCells.toObject());
-            setGeometry(cGeometry.toObject());
-            return setIsDirty(true);
+            let g = cGeometry.toGeoJSON();
+            if (model.rotation % 360 !== 0) {
+                g = turf.transformRotate(
+                    cGeometry.toGeoJSON(), -1 * model.rotation, {pivot: model.geometry.centerOfMass}
+                );
+            }
+            asyncWorker({
+                type: CALCULATE_CELLS_INPUT,
+                data: {
+                    geometry: g,
+                    boundingBox: model.boundingBox.toObject(),
+                    gridSize: model.gridSize.toObject(),
+                    intersection: model.intersection
+                } as ICalculateCellsInputData
+            }).then((c: ICells) => {
+                setCells(c);
+                setGeometry(cGeometry.toObject());
+                return setIsDirty(true);
+            }).catch(() => {
+                dispatch(addMessage(messageError('createModel', 'Calculating cells failed.')));
+            });
         }
     };
 
@@ -176,6 +198,7 @@ const createBoundary = (props: Props) => {
                             isError={isError}
                             buttonSave={!model.readOnly && !isEditing}
                         />
+                        <br />
                         <CreateBoundaryMap
                             boundaries={boundaries}
                             area={model.geometry}
