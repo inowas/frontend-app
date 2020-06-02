@@ -3,7 +3,8 @@ import { DrawEvents } from 'leaflet';
 import React, {ChangeEvent, useState} from 'react';
 import {Button, Form, InputOnChangeData, Modal} from 'semantic-ui-react';
 import uuidv4 from 'uuid/v4';
-import {BoundingBox, Geometry, GridSize} from '../../../../../../core/model/geometry';
+import {Geometry} from '../../../../../../core/model/geometry';
+import {ModflowModel} from '../../../../../../core/model/modflow';
 import BoundaryCollection from '../../../../../../core/model/modflow/boundaries/BoundaryCollection';
 import {Zone, ZonesCollection} from '../../../../../../core/model/modflow/soilmodel';
 import {calculateActiveCells} from '../../../../../../services/geoTools';
@@ -13,8 +14,7 @@ interface IProps {
     onCancel: () => any;
     onChange: (zone: Zone) => any;
     boundaries: BoundaryCollection;
-    boundingBox: BoundingBox;
-    gridSize: GridSize;
+    model: ModflowModel;
     zones: ZonesCollection;
 }
 
@@ -29,8 +29,8 @@ const createZoneModal = (props: IProps) => {
                 isDefault: false,
                 name,
                 geometry,
-                cells: geometry ? calculateActiveCells(Geometry.fromGeoJson(geometry), props.boundingBox,
-                    props.gridSize).toObject() : []
+                cells: geometry ? calculateActiveCells(Geometry.fromGeoJson(geometry), props.model.boundingBox,
+                    props.model.gridSize).toObject() : []
             });
 
             return props.onChange(zone);
@@ -77,7 +77,7 @@ const createZoneModal = (props: IProps) => {
                     <Form.Field>
                         <label>Geometry</label>
                         <ZonesMap
-                            boundingBox={props.boundingBox}
+                            model={props.model}
                             boundaries={props.boundaries}
                             geometry={geometry ? Geometry.fromObject(geometry) : undefined}
                             zones={props.zones}

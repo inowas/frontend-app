@@ -1,32 +1,49 @@
+import {latLngBounds, Layer, default as Leaflet} from 'leaflet';
 import PropTypes from 'prop-types';
-import { latLngBounds } from 'leaflet';
-import { CanvasHeatMapOverlay as LeafletCanvasHeatMapOverlay } from './leafletCanvasHeatMapOverlay';
-import {MapLayer, withLeaflet} from 'react-leaflet';
+import {CSSProperties} from 'react';
+import {MapLayer, MapLayerProps, withLeaflet} from 'react-leaflet';
+import { canvasHeatMapOverlay, canvasHeatMapOverlayClass} from './leafletCanvasHeatMapOverlay';
+
+interface IOwnProps {
+    nX: number;
+    nY: number;
+    dataArray: any;
+    bounds: any;
+    rainbow: any;
+    rotationAngle: number;
+    rotationCenter: number[];
+    sharpening: number;
+}
+
+type IProps = IOwnProps & MapLayerProps & CSSProperties;
 
 export default withLeaflet(class CanvasHeatMapOverlay extends MapLayer {
-    getChildContext() {
+    private leafletElement: canvasHeatMapOverlayClass;
+
+    public static childContextTypes = {
+        popupContainer: PropTypes.object
+    };
+    public getChildContext() {
         return {
             popupContainer: this.leafletElement
         };
     }
 
-    static childContextTypes = {
-        popupContainer: PropTypes.object
-    };
-
-    createLeafletElement(props) {
-        return new LeafletCanvasHeatMapOverlay(
+    public createLeafletElement(props: IProps) {
+        return canvasHeatMapOverlay(
             props.nX,
             props.nY,
             props.dataArray,
             props.bounds,
             props.rainbow,
+            props.rotationAngle,
+            props.rotationCenter,
             props.sharpening,
             this.getOptions(props)
         );
     }
 
-    updateLeafletElement = (fromProps, toProps) => {
+    public updateLeafletElement = (fromProps: IProps, toProps: IProps) => {
         if (toProps.nX !== fromProps.nX) {
             this.leafletElement.setNX(toProps.nX);
         }
@@ -41,6 +58,7 @@ export default withLeaflet(class CanvasHeatMapOverlay extends MapLayer {
                 latLngBounds(toProps.bounds)
             );
         }
+
         if (toProps.rainbow !== fromProps.rainbow) {
             this.leafletElement.setRainbow(toProps.rainbow);
         }
@@ -53,5 +71,11 @@ export default withLeaflet(class CanvasHeatMapOverlay extends MapLayer {
         if (toProps.sharpening !== fromProps.sharpening) {
             this.leafletElement.setSharpening(toProps.sharpening);
         }
+        if (toProps.rotationAngle !== fromProps.rotationAngle) {
+            this.leafletElement.setRotationAngle(toProps.rotationAngle);
+        }
+        if (toProps.rotationCenter !== fromProps.rotationCenter) {
+            this.leafletElement.setRotationCenter(toProps.rotationCenter);
+        }
     };
-})
+});

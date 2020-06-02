@@ -1,4 +1,5 @@
-import {default as geojson, Polygon} from 'geojson';
+import * as turf from '@turf/turf';
+import {default as geojson} from 'geojson';
 import {DrawEvents} from 'leaflet';
 import React, {ChangeEvent, SyntheticEvent, useEffect, useState} from 'react';
 import {useDispatch, useSelector} from 'react-redux';
@@ -24,10 +25,13 @@ import {Zone, ZonesCollection} from '../../../../../../core/model/modflow/soilmo
 import {IZone} from '../../../../../../core/model/modflow/soilmodel/Zone.type';
 import {IRootReducer} from '../../../../../../reducers';
 import {sendCommand} from '../../../../../../services/api';
-import {calculateActiveCells} from '../../../../../../services/geoTools';
 import ContentToolBar from '../../../../../shared/ContentToolbar';
-import {addZone} from '../../../../actions/actions';
+import {addMessage, addZone} from '../../../../actions/actions';
 import Command from '../../../../commands/modflowModelCommand';
+import {messageError} from '../../../../defaults/messages';
+import {CALCULATE_CELLS_INPUT} from '../../../../worker/t03.worker';
+import {ICalculateCellsInputData} from '../../../../worker/t03.worker.type';
+import {asyncWorker} from '../../../../worker/worker';
 import {UploadGeoJSONModal} from '../../create';
 import {ZonesMap} from './index';
 
@@ -40,7 +44,6 @@ const createZone = () => {
     const [geometry, setGeometry] = useState<IGeometry | null>(null);
     const [cells, setCells] = useState<ICells | null>(null);
     const [isDirty, setIsDirty] = useState<boolean>(false);
-    const [isEditing, setIsEditing] = useState<boolean>(false);
     const [isError, setIsError] = useState<boolean>(false);
     const [visibleZones, setVisibleZones] = useState<IVisibleZone[]>();
 
@@ -81,14 +84,35 @@ const createZone = () => {
         }
     };
 
+    const handleCalculateCells = (cGeometry: Geometry) => {
+        let g = cGeometry.toGeoJSON();
+        if (model.rotation % 360 !== 0) {
+            g = turf.transformRotate(
+                cGeometry.toGeoJSON(), -1 * model.rotation, {pivot: model.geometry.centerOfMass}
+            );
+        }
+        asyncWorker({
+            type: CALCULATE_CELLS_INPUT,
+            data: {
+                geometry: g,
+                boundingBox: model.boundingBox.toObject(),
+                gridSize: model.gridSize.toObject(),
+                intersection: model.intersection
+            } as ICalculateCellsInputData
+        }).then((c: ICells) => {
+            setCells(c);
+            setGeometry(cGeometry.toObject());
+            return setIsDirty(true);
+        }).catch(() => {
+            dispatch(addMessage(messageError('createZone', 'Calculating cells failed.')));
+        });
+    };
+
     const handleCreatePath = (e: DrawEvents.Created) => {
         const layer = e.layer;
         if (layer) {
             const g = layer.toGeoJSON().geometry;
-            setIsDirty(true);
-            setCells(calculateActiveCells(Geometry.fromGeoJson(g), model.boundingBox,
-                model.gridSize).toObject());
-            return setGeometry(g as Polygon);
+            handleCalculateCells(Geometry.fromGeoJson(g));
         }
     };
 
@@ -98,17 +122,11 @@ const createZone = () => {
         if (layers.features.length > 0) {
             const layer = layers.features[0];
             const g = layer.geometry;
-            setCells(calculateActiveCells(Geometry.fromGeoJson(g), model.boundingBox,
-                model.gridSize).toObject());
-            setIsDirty(true);
-            return setGeometry(g as Polygon);
+            handleCalculateCells(Geometry.fromGeoJson(g));
         }
     };
 
-    const handleApplyJson = (cGeometry: Geometry) => {
-        const cCells = calculateActiveCells(cGeometry, model.boundingBox, model.gridSize);
-        return handleSave(cGeometry.toObject(), cCells.toObject());
-    };
+    const handleApplyJson = (g: Geometry) => handleCalculateCells(Geometry.fromGeoJson(g));
 
     const handleClickBack = () => {
         if (soilmodel.zonesCollection.all.filter((z) => !z.isDefault).length > 0) {
@@ -183,7 +201,7 @@ const createZone = () => {
                             isValid={!!geometry}
                             isDirty={isDirty && !!geometry && !!cells}
                             isError={isError}
-                            buttonSave={!model.readOnly && !isEditing}
+                            buttonSave={!model.readOnly}
                         />
                     </Grid.Column>
                 </Grid.Row>
@@ -230,7 +248,7 @@ const createZone = () => {
                     </Grid.Column>
                     <Grid.Column width={12}>
                         <ZonesMap
-                            boundingBox={model.boundingBox}
+                            model={model}
                             boundaries={boundaries}
                             geometry={geometry ? Geometry.fromObject(geometry) : undefined}
                             zones={ZonesCollection.fromObject(visibleZones.filter((z) => z.isActive))}

@@ -114,10 +114,9 @@ const regular = (props: IProps) => {
                 <Grid.Row columns={1}>
                     <Grid.Column>
                         <ZonesEditor
-                            boundingBox={props.model.boundingBox}
                             boundaries={props.boundaries}
                             layer={props.layer}
-                            gridSize={props.model.gridSize}
+                            model={props.model}
                             onAddRelation={handleAddRelation}
                             onChange={handleChangeRelations}
                             onRemoveRelation={handleRemoveRelation}

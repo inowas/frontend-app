@@ -1,13 +1,13 @@
 import React from 'react';
-import {GeoJSON, LayersControl, Map, MapLayerProps} from 'react-leaflet';
+import {LayersControl, Map, MapLayerProps} from 'react-leaflet';
 import {Array2D} from '../../../core/model/geometry/Array2D.type';
-import BoundingBox from '../../../core/model/geometry/BoundingBox';
-import GridSize from '../../../core/model/geometry/GridSize';
+import {ModflowModel} from '../../../core/model/modflow';
 import BoundaryCollection from '../../../core/model/modflow/boundaries/BoundaryCollection';
 import {BasicTileLayer} from '../../../services/geoTools/tileLayers';
 import {createGridData, rainbowFactory} from '../../../services/rainbowvis/helpers';
 import Rainbow from '../../../services/rainbowvis/Rainbowvis';
 import {ILegendItem} from '../../../services/rainbowvis/types';
+import {renderBoundingBoxLayer} from '../../t03/components/maps/mapLayers';
 import ColorLegend from './ColorLegend';
 import {
     max,
@@ -44,25 +44,29 @@ const renderLegend = (rainbow: Rainbow, unit: string = '') => {
 };
 
 interface IProps {
-    boundingBox: BoundingBox;
     boundaries?: BoundaryCollection;
     data: number | Array2D<number>;
-    gridSize: GridSize;
+    model: ModflowModel;
     unit: string;
 }
 
 const rasterDataMap = (props: IProps) => {
-    const {boundingBox, data, gridSize, unit} = props;
+    const {model, data, unit} = props;
     const rainbowVis = rainbowFactory({min: min(data), max: max(data)});
+    const centerOfMass = props.model.geometry.centerOfMass.geometry ?
+        props.model.geometry.centerOfMass.geometry.coordinates : [0, 0];
 
     const mapProps = {
-        nX: gridSize.nX,
-        nY: gridSize.nY,
+        nX: model.gridSize.nX,
+        nY: model.gridSize.nY,
         rainbow: rainbowVis,
-        dataArray: createGridData(data, gridSize.nX, gridSize.nY),
-        bounds: boundingBox.getBoundsLatLng(),
+        dataArray: createGridData(data, model.gridSize.nX, model.gridSize.nY),
+        bounds: model.boundingBox.getBoundsLatLng(),
         opacity: 0.75,
+        rotationAngle: props.model.rotation,
+        rotationCenter: centerOfMass,
         sharpening: 10,
+        WebkitTransform: 'rotate(45deg)',
         zIndex: 1
     } as MapLayerProps;
 
@@ -70,14 +74,10 @@ const rasterDataMap = (props: IProps) => {
         <Map
             style={styles.map}
             zoomControl={false}
-            bounds={boundingBox.getBoundsLatLng()}
+            bounds={model.boundingBox.getBoundsLatLng()}
         >
             <BasicTileLayer/>
-            <GeoJSON
-                key={boundingBox.hash()}
-                data={boundingBox.geoJson}
-                style={styles.area}
-            />
+            {renderBoundingBoxLayer(model)}
             {props.boundaries && props.boundaries.length > 0 &&
             <LayersControl position="topright">
                 {renderBoundaryOverlays(props.boundaries)}

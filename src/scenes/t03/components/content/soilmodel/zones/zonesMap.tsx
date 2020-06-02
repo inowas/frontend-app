@@ -1,14 +1,15 @@
 import {DrawEvents, LatLngExpression} from 'leaflet';
 import {uniqueId} from 'lodash';
 import React from 'react';
-import {FeatureGroup, GeoJSON, LayersControl, Map, Polygon} from 'react-leaflet';
+import {FeatureGroup, LayersControl, Map, Polygon} from 'react-leaflet';
 import {EditControl} from 'react-leaflet-draw';
-import {BoundingBox, Geometry} from '../../../../../../core/model/geometry';
+import {Geometry} from '../../../../../../core/model/geometry';
+import {ModflowModel} from '../../../../../../core/model/modflow';
 import BoundaryCollection from '../../../../../../core/model/modflow/boundaries/BoundaryCollection';
 import {Zone, ZonesCollection} from '../../../../../../core/model/modflow/soilmodel';
 import {BasicTileLayer} from '../../../../../../services/geoTools/tileLayers';
 import {renderBoundaryOverlays} from '../../../../../shared/rasterData/helpers';
-import {getStyle} from '../../../maps';
+import {renderAreaLayer, renderBoundingBoxLayer} from '../../../maps/mapLayers';
 
 const styles = {
     map: {
@@ -19,8 +20,8 @@ const styles = {
 
 interface IProps {
     boundaries: BoundaryCollection;
-    boundingBox: BoundingBox;
     geometry?: Geometry;
+    model: ModflowModel;
     zone?: Zone;
     zones: ZonesCollection;
     onCreatePath: (e: DrawEvents.Created) => any;
@@ -29,7 +30,7 @@ interface IProps {
 }
 
 const zonesMap = (props: IProps) => {
-    const {boundingBox, geometry, readOnly, zone, zones} = props;
+    const {geometry, model, readOnly, zone, zones} = props;
 
     const options = {
         edit: {
@@ -71,15 +72,12 @@ const zonesMap = (props: IProps) => {
             touchZoom={!readOnly}
             doubleClickZoom={!readOnly}
             scrollWheelZoom={!readOnly}
-            bounds={boundingBox.getBoundsLatLng()}
+            bounds={model.boundingBox.getBoundsLatLng()}
             style={styles.map}
         >
             <BasicTileLayer/>
-            <GeoJSON
-                key={boundingBox.hash()}
-                data={boundingBox.geoJson}
-                style={getStyle('area')}
-            />
+            {renderBoundingBoxLayer(model)}
+            {renderAreaLayer(model)}
             {props.boundaries.length > 0 &&
             <LayersControl position="topright">
                 {renderBoundaryOverlays(props.boundaries)}

@@ -613,8 +613,7 @@ const soilmodelEditor = () => {
                 boundaries={boundaries}
                 onCancel={handleCancelModals}
                 onChange={handleAddZone}
-                boundingBox={model.boundingBox}
-                gridSize={model.gridSize}
+                model={model}
                 zones={soilmodel.zonesCollection}
             />
             }
