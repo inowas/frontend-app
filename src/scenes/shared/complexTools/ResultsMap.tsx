@@ -5,7 +5,6 @@ import {
     GeoJSON,
     LayersControl,
     Map,
-    MapLayerProps,
     Rectangle,
     Viewport
 } from 'react-leaflet';
@@ -25,6 +24,7 @@ import {
     rainbowFactory,
     renderBoundaryOverlays
 } from '../rasterData/helpers';
+import { IReactLeafletHeatMapProps } from '../rasterData/ReactLeafletHeatMapCanvasOverlay.type';
 
 const style = {
     map: {
@@ -180,12 +180,12 @@ const resultsMap = (props: IProps) => {
         nX: props.model.gridSize.nX,
         nY: props.model.gridSize.nY,
         rainbow: rainbowVis,
-        dataArray: createGridData(props.data, props.model.gridSize.nX, props.model.gridSize.nY),
+        data: createGridData(props.data, props.model.gridSize.nX, props.model.gridSize.nY),
         bounds: props.model.boundingBox.getBoundsLatLng(),
         opacity: props.opacity || 0.5,
         sharpening: 10,
         zIndex: 1
-    } as MapLayerProps;
+    } as IReactLeafletHeatMapProps;
 
     return (
         <Map

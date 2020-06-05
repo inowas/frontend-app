@@ -1,6 +1,6 @@
 import {DrawEvents, LeafletMouseEvent} from 'leaflet';
 import React, {useEffect, useState} from 'react';
-import {FeatureGroup, Map, MapLayerProps, Rectangle} from 'react-leaflet';
+import {FeatureGroup, Map, Rectangle} from 'react-leaflet';
 import {EditControl} from 'react-leaflet-draw';
 import {Button, Icon} from 'semantic-ui-react';
 import {BoundingBox} from '../../../../core/model/geometry';
@@ -133,15 +133,8 @@ const criteriaRasterMap = (props: IProps) => {
             </div>
         );
     }
-    const mapProps = {
-        nX: gridSize.nX,
-        nY: gridSize.nY,
-        rainbow: props.legend,
-        dataArray: createGridData(raster.data, gridSize.nX, gridSize.nY),
-        bounds: boundingBox.getBoundsLatLng(),
-        opacity: 0.75,
-        sharpening: 10
-    } as MapLayerProps;
+
+    const data = createGridData(raster.data, gridSize.nX, gridSize.nY);
 
     return (
         <div>
@@ -180,12 +173,15 @@ const criteriaRasterMap = (props: IProps) => {
                     />
                 </FeatureGroup>
                 }
-                {raster.data.length > 0 &&
+                {props.legend && data && data.length > 0 &&
                 <div>
                     <CanvasHeatMapOverlay
-                        {
-                            ...mapProps
-                        }
+                        nX={gridSize.nX}
+                        nY={gridSize.nY}
+                        rainbow={props.legend}
+                        data={data}
+                        bounds={boundingBox.getBoundsLatLng()}
+                        sharpening={10}
                     />
                     {props.legend && props.showLegend && renderLegend(props.legend)}
                 </div>

@@ -1,47 +1,16 @@
 import {
     Bounds,
-    DomUtil,
-    latLngBounds as toLatLngBounds,
-    Layer,
+    default as Leaflet,
+    DomUtil, latLngBounds as toLatLngBounds,
+    LatLngExpression, Layer,
     Util
 } from 'leaflet';
+import {MapLayerProps} from 'react-leaflet';
 import Rainbow from '../../../services/rainbowvis/Rainbowvis';
+import {ILegendItemContinuous, ILegendItemDiscrete, RainbowOrLegend} from '../../../services/rainbowvis/types';
+import {IData} from './ReactLeafletHeatMapCanvasOverlay.type';
 
-export interface ILeafletCanvasHeatMapOverlay {
-    options: {
-        opacity: number;
-        interactivity: boolean;
-        zIndex: number;
-        className: string;
-    };
-    initialize: () => void;
-    setOpacity: () => void;
-    setStyle: () => void;
-    bringToFront: () => void;
-    bringToBack: () => void;
-    setNx: (v: number) => void;
-    setNy: (v: number) => void;
-    setDataArray: () => void;
-    setBounds: () => void;
-    getBounds: () => any;
-    setRainbow: () => void;
-    setRotationAngle: (v: number) => void;
-    setRotationCenter: (v: number[]) => void;
-    setSharpening: (v: number) => void;
-    setZIndex: (v: number) => void;
-    getElement: () => void;
-    _animateZoom: (e: any) => void;
-    _initCanvas: () => void;
-    _overlayOnError: () => any;
-    _reset: () => void;
-    _runDraw: () => void;
-    _updateOpacity: () => void;
-    _updateZIndex: () => void;
-}
-
-type overlayType = Layer extends ILeafletCanvasHeatMapOverlay;
-
-export const canvasHeatMapOverlayClass: ILeafletCanvasHeatMapOverlay = Layer.extend({
+export const canvasHeatMapOverlayClass = Layer.extend({
     options: {
         opacity: 1,
         interactive: false,
@@ -49,20 +18,19 @@ export const canvasHeatMapOverlayClass: ILeafletCanvasHeatMapOverlay = Layer.ext
         className: ''
     },
 
-    initialize(
-        nX: number, nY: number, data, bounds, rainbow,
-        rotationAngle: number, rotationCenter: number[], sharpening = 1, options
-    ) {
+    initialize(nX: number, nY: number, data: IData[], bounds: LatLngExpression[], rainbow: RainbowOrLegend,
+               rotationAngle?: number, rotationCenter?: number, sharpening?: number, options?: MapLayerProps) {
         this._nX = nX;
         this._nY = nY;
         this._dataArray = data;
         this._bounds = toLatLngBounds(bounds);
         this._rainbow = rainbow;
-        this._rotationAngle = rotationAngle;
-        this._rotationCenter = rotationCenter;
-        this._sharpening = sharpening;
-
-        Util.setOptions(this, options);
+        this._sharpening = sharpening || 1;
+        this._rotationAngle = rotationAngle || 0;
+        this._rotationCenter = rotationCenter || [0, 0];
+        if (options) {
+            Util.setOptions(this, options);
+        }
     },
 
     onAdd() {
@@ -99,7 +67,7 @@ export const canvasHeatMapOverlayClass: ILeafletCanvasHeatMapOverlay = Layer.ext
         return this;
     },
 
-    setStyle(styleOpts) {
+    setStyle(styleOpts: any) {
         if (styleOpts.opacity) {
             this.setOpacity(styleOpts.opacity);
         }
@@ -140,7 +108,7 @@ export const canvasHeatMapOverlayClass: ILeafletCanvasHeatMapOverlay = Layer.ext
         return this;
     },
 
-    setDataArray(dataArray) {
+    setDataArray(dataArray: IData[]) {
         this._dataArray = dataArray;
 
         if (this._map) {
@@ -149,7 +117,7 @@ export const canvasHeatMapOverlayClass: ILeafletCanvasHeatMapOverlay = Layer.ext
         return this;
     },
 
-    setBounds(bounds) {
+    setBounds(bounds: LatLngExpression[]) {
         this._bounds = toLatLngBounds(bounds);
 
         if (this._map) {
@@ -158,7 +126,7 @@ export const canvasHeatMapOverlayClass: ILeafletCanvasHeatMapOverlay = Layer.ext
         return this;
     },
 
-    setRainbow(rainbow) {
+    setRainbow(rainbow: RainbowOrLegend) {
         this._rainbow = rainbow;
 
         if (this._map) {
@@ -167,8 +135,8 @@ export const canvasHeatMapOverlayClass: ILeafletCanvasHeatMapOverlay = Layer.ext
         return this;
     },
 
-    setRotationAngle(rotationAngle: number) {
-        this._rotationAngle = rotationAngle;
+    setRotationAngle(angle: number) {
+        this._rotationAngle = angle;
 
         if (this._map) {
             this._runDraw();
@@ -176,8 +144,8 @@ export const canvasHeatMapOverlayClass: ILeafletCanvasHeatMapOverlay = Layer.ext
         return this;
     },
 
-    setRotationCenter(rotationCenter: number[]) {
-        this._rotationCenter = rotationCenter;
+    setRotationCenter(center: number[]) {
+        this._rotationCenter = center;
 
         if (this._map) {
             this._runDraw();
@@ -195,16 +163,11 @@ export const canvasHeatMapOverlayClass: ILeafletCanvasHeatMapOverlay = Layer.ext
     },
 
     getEvents() {
-        const events = {
+        return {
             zoom: this._reset,
+            zoomanim: this._zoomAnimated ? this._animateZoom : undefined,
             viewreset: this._reset
         };
-
-        if (this._zoomAnimated) {
-            events.zoomanim = this._animateZoom;
-        }
-
-        return events;
     },
 
     setZIndex(value: number) {
@@ -227,7 +190,7 @@ export const canvasHeatMapOverlayClass: ILeafletCanvasHeatMapOverlay = Layer.ext
             'leaflet-layer ' +
             (this._zoomAnimated ? 'leaflet-zoom-animated' : '') +
             (this.options.className || '')
-        ));
+        )) as HTMLCanvasElement;
 
         this._ctx = canvas.getContext('2d');
 
@@ -240,9 +203,9 @@ export const canvasHeatMapOverlayClass: ILeafletCanvasHeatMapOverlay = Layer.ext
         canvas.onload = Util.bind(this.fire, this, 'load');
         canvas.onerror = Util.bind(this._overlayOnError, this, 'error');
 
-        if (this.options.crossOrigin) {
+        /*if (this.options.crossOrigin) {
             canvas.crossOrigin = '';
-        }
+        }*/
 
         if (this.options.zIndex) {
             this._updateZIndex();
@@ -252,7 +215,7 @@ export const canvasHeatMapOverlayClass: ILeafletCanvasHeatMapOverlay = Layer.ext
         this._runDraw();
     },
 
-    _animateZoom(e) {
+    _animateZoom(e: Leaflet.ZoomAnimEvent) {
         const scale = this._map.getZoomScale(e.zoom);
         const offset = this._map._latLngBoundsToNewLayerBounds(
             this._bounds,
@@ -269,28 +232,32 @@ export const canvasHeatMapOverlayClass: ILeafletCanvasHeatMapOverlay = Layer.ext
             this._map.latLngToLayerPoint(this._bounds.getNorthWest()),
             this._map.latLngToLayerPoint(this._bounds.getSouthEast())
         );
-        const size = bounds.getSize();
+        if (bounds && bounds.min) {
+            const size = bounds.getSize();
 
-        DomUtil.setPosition(canvas, bounds.min);
+            DomUtil.setPosition(canvas, bounds.min);
 
-        canvas.style.width = size.x + 'px';
-        canvas.style.height = size.y + 'px';
+            canvas.style.width = size.x + 'px';
+            canvas.style.height = size.y + 'px';
+        }
     },
 
     _runDraw() {
         this._ctx.clearRect(0, 0, this._canvas.width, this._canvas.height);
-        this._dataArray.forEach((d) => {
+        this._dataArray.forEach((d: IData) => {
             if (isNaN(d.value)) {
                 this._ctx.clearRect(d.x, d.y, this._canvas.width, this._canvas.height);
             } else if (this._rainbow instanceof Rainbow) {
                 this._ctx.fillStyle = '#' + this._rainbow.colorAt(d.value);
-                this._ctx.fillRect(d.x, d.y, 1 * this._sharpening, 1 * this._sharpening);
+                this._ctx.fillRect(d.x, d.y, this._sharpening, this._sharpening);
             } else {
                 const data = this._rainbow[0].isContinuous ?
-                    this._rainbow.filter((row) => (row.fromOperator === '>' ? d.value > row.from : d.value >= row.from) && (row.toOperator === '<' ? d.value < row.to : d.value <= row.to)) :
-                    this._rainbow.filter((row) => row.value === d.value);
+                    (this._rainbow as ILegendItemContinuous[])
+                        .filter((row) => (row.fromOperator === '>' ? d.value > row.from :
+                            d.value >= row.from) && (row.toOperator === '<' ? d.value < row.to : d.value <= row.to)) :
+                    (this._rainbow as ILegendItemDiscrete[]).filter((row) => row.value === d.value);
                 this._ctx.fillStyle = data.length > 0 ? data[0].color : '#fff';
-                this._ctx.fillRect(d.x, d.y, 1 * this._sharpening, 1 * this._sharpening);
+                this._ctx.fillRect(d.x, d.y, this._sharpening, this._sharpening);
             }
         });
     },
@@ -323,15 +290,15 @@ export const canvasHeatMapOverlayClass: ILeafletCanvasHeatMapOverlay = Layer.ext
 export const canvasHeatMapOverlay = (
     nX: number,
     nY: number,
-    data,
-    bounds,
-    rainbow,
-    rotationAngle: number,
-    rotationCenter: number[],
-    sharpening: number,
-    options
+    data: IData[],
+    bounds: LatLngExpression[],
+    rainbow: RainbowOrLegend,
+    rotationAngle?: number,
+    rotationCenter?: number[],
+    sharpening?: number,
+    options?: MapLayerProps
 ) => {
-    const overlay = new CanvasHeatMapOverlay();
+    const overlay = new canvasHeatMapOverlayClass();
     overlay.initialize(nX, nY, data, bounds, rainbow, rotationAngle, rotationCenter, sharpening, options);
     return overlay;
 };

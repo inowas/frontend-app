@@ -1,5 +1,5 @@
 import React from 'react';
-import {LayersControl, Map, MapLayerProps} from 'react-leaflet';
+import {LayersControl, Map} from 'react-leaflet';
 import {Array2D} from '../../../core/model/geometry/Array2D.type';
 import {ModflowModel} from '../../../core/model/modflow';
 import BoundaryCollection from '../../../core/model/modflow/boundaries/BoundaryCollection';
@@ -14,6 +14,7 @@ import {
     min, renderBoundaryOverlays
 } from './helpers';
 import CanvasHeatMapOverlay from './ReactLeafletHeatMapCanvasOverlay';
+import { IReactLeafletHeatMapProps } from './ReactLeafletHeatMapCanvasOverlay.type';
 
 const styles = {
     map: {
@@ -60,7 +61,7 @@ const rasterDataMap = (props: IProps) => {
         nX: model.gridSize.nX,
         nY: model.gridSize.nY,
         rainbow: rainbowVis,
-        dataArray: createGridData(data, model.gridSize.nX, model.gridSize.nY),
+        data: createGridData(data, model.gridSize.nX, model.gridSize.nY),
         bounds: model.boundingBox.getBoundsLatLng(),
         opacity: 0.75,
         rotationAngle: props.model.rotation,
@@ -68,7 +69,7 @@ const rasterDataMap = (props: IProps) => {
         sharpening: 10,
         WebkitTransform: 'rotate(45deg)',
         zIndex: 1
-    } as MapLayerProps;
+    } as IReactLeafletHeatMapProps;
 
     return (
         <Map
