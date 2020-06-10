@@ -1,7 +1,9 @@
+import * as turf from '@turf/turf';
 import _ from 'lodash';
 import React, {useEffect, useRef, useState} from 'react';
 import {useDispatch, useSelector} from 'react-redux';
 import {Dimmer, Form, Grid, Header, Progress} from 'semantic-ui-react';
+import {ICells} from '../../../../../core/model/geometry/Cells.type';
 import {BoundingBox, Cells, Geometry, GridSize, ModflowModel} from '../../../../../core/model/modflow';
 import {Boundary, BoundaryCollection} from '../../../../../core/model/modflow/boundaries';
 import {IRootReducer} from '../../../../../reducers';
@@ -11,6 +13,9 @@ import {dxCell, dyCell} from '../../../../../services/geoTools/distance';
 import ContentToolBar from '../../../../shared/ContentToolbar2';
 import {updateBoundaries} from '../../../actions/actions';
 import ModflowModelCommand from '../../../commands/modflowModelCommand';
+import {CALCULATE_CELLS_INPUT} from '../../../worker/t03.worker';
+import {ICalculateCellsInputData} from '../../../worker/t03.worker.type';
+import {asyncWorker} from '../../../worker/worker';
 import {DiscretizationMap, GridProperties} from './index';
 
 interface IProps {
@@ -29,23 +34,45 @@ interface IBoundaryUpdaterStatus {
 const boundaryUpdater = (
     boundaries: BoundaryCollection,
     model: ModflowModel,
-    onEachTask: (b: Boundary) => any,
+    onEachTask: (b: Boundary, l: number) => any,
     onFinished: (bc: BoundaryCollection) => any,
+    onError: (e: string) => any,
     result: BoundaryCollection = new BoundaryCollection([])
 ): any => {
     if (boundaries.length > 0) {
         const boundary = boundaries.first;
-        boundary.cells = calculateActiveCells(boundary.geometry, model.boundingBox, model.gridSize);
-        onEachTask(boundary);
-        return sendCommand(ModflowModelCommand.updateBoundary(model.id, boundary),
-            boundaryUpdater(
-                boundaries.removeById(boundary.id),
-                model,
-                onEachTask,
-                onFinished,
-                result.addBoundary(boundary)
-            )
-        );
+
+        let g = boundary.geometry.toGeoJSON();
+        if (model.rotation % 360 !== 0) {
+            g = turf.transformRotate(
+                boundary.geometry.toGeoJSON(), -1 * model.rotation, {pivot: model.geometry.centerOfMass}
+            );
+        }
+        asyncWorker({
+            type: CALCULATE_CELLS_INPUT,
+            data: {
+                geometry: g,
+                boundingBox: model.boundingBox.toObject(),
+                gridSize: model.gridSize.toObject(),
+                intersection: model.intersection
+            } as ICalculateCellsInputData
+        }).then((c: ICells) => {
+            boundary.cells = Cells.fromObject(c);
+            onEachTask(boundary, boundaries.length);
+            sendCommand(ModflowModelCommand.updateBoundary(model.id, boundary),
+                boundaryUpdater(
+                    boundaries.removeById(boundary.id),
+                    model,
+                    onEachTask,
+                    onFinished,
+                    onError,
+                    result.addBoundary(boundary)
+                )
+            );
+        }).catch((e) => {
+            onError(e);
+        });
+        return;
     }
     return onFinished(result);
 };
@@ -92,16 +119,15 @@ const gridEditor = (props: IProps) => {
         boundaryUpdater(
             _.cloneDeep(boundaryCollection),
             model,
-            (b) => {
-                setUpdaterStatus({
-                    task: updaterStatus ? ++updaterStatus.task : 0,
-                    message: `Updating ${b.name}`
-                });
-            },
+            (b, l) => setUpdaterStatus({
+                task: boundaryCollection.length - l,
+                message: `Updating ${b.name}`
+            }),
             (bc) => {
                 setUpdaterStatus(null);
                 dispatch(updateBoundaries(bc));
-            }
+            },
+            (e) => console.log(e)
         );
     };
 
@@ -145,6 +171,8 @@ const gridEditor = (props: IProps) => {
         const model = props.model.getClone();
         if (r % 360 !== 0) {
             model.boundingBox = BoundingBox.fromGeometryAndRotation(model.geometry, r);
+        } else {
+            model.boundingBox = BoundingBox.fromGeoJson(model.geometry.toGeoJSON());
         }
         model.cells = c;
         model.gridSize = g;
@@ -167,7 +195,11 @@ const gridEditor = (props: IProps) => {
                 <Header as="h2" icon={true} inverted={true}>
                     {updaterStatus.message}
                 </Header>
-                <Progress percent={(updaterStatus.task / props.boundaries.length)} indicating={true} progress={true}/>
+                <Progress
+                    percent={(100 * (updaterStatus.task / props.boundaries.length)).toFixed(0)}
+                    indicating={true}
+                    progress={true}
+                />
             </Dimmer>
             }
             {!readOnly &&

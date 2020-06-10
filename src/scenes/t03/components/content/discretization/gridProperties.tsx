@@ -65,10 +65,29 @@ const gridProperties = (props: IProps) => {
     }, [isCalculating]);
 
     const calculateRotation = (r: number) => {
+        // No rotation:
+        let bbox = BoundingBox.fromGeoJson(props.geometry.toGeoJSON());
+        if (r % 360 === 0) {
+            setBoundingBox(bbox.geoJson);
+            setBoundingBoxRotated(bbox.geoJson);
+            asyncWorker({
+                type: CALCULATE_CELLS_INPUT,
+                data: {
+                    geometry: props.geometry.toGeoJSON(),
+                    boundingBox: bbox.toObject(),
+                    gridSize,
+                    intersection
+                }
+            }).then((c: ICells) => {
+                setCells(c);
+            });
+            return;
+        }
+        // With rotation:
         const withRotation = turf.transformRotate(
             props.geometry.toGeoJSON(), -1 * r, {pivot: props.geometry.centerOfMass}
         );
-        const bbox = BoundingBox.fromGeoJson(withRotation);
+        bbox = BoundingBox.fromGeoJson(withRotation);
         const bboxWithRotation = bbox.geoJsonWithRotation(r, props.geometry.centerOfMass);
         setBoundingBox(bbox.geoJson);
         setBoundingBoxRotated(bboxWithRotation);
@@ -127,8 +146,13 @@ const gridProperties = (props: IProps) => {
     const handleClickCalculation = () => setIsCalculating(true);
 
     const handleClickRedo = () => {
-        const withRotation = turf.transformRotate(props.geometry, rotation, {pivot: props.boundingBox.rotationPoint});
-        setBoundingBox(BoundingBox.fromGeoJson(withRotation).geoJson);
+        if (rotation % 360 !== 0) {
+            const withRotation =
+                turf.transformRotate(props.geometry, rotation, {pivot: props.boundingBox.rotationPoint});
+            setBoundingBox(BoundingBox.fromGeoJson(withRotation).geoJson);
+        } else {
+            setBoundingBox(props.boundingBox.geoJson);
+        }
         setCells(null);
         setBoundingBoxRotated(null);
     };
@@ -309,21 +333,25 @@ const gridProperties = (props: IProps) => {
                         label="Rows"
                         value={gridSize.n_y}
                         readOnly={true}
+                        style={{width: '150px'}}
                     />
                     <Form.Input
                         label="Columns"
                         value={gridSize.n_x}
                         readOnly={true}
+                        style={{width: '150px'}}
                     />
                     <Form.Input
                         label="Grid rotation"
                         value={props.rotation || 0}
                         readOnly={true}
+                        style={{width: '150px'}}
                     />
                     <Form.Input
                         label="Intersection"
                         value={props.intersection || 0}
                         readOnly={true}
+                        style={{width: '150px'}}
                     />
                     <Form.Button
                         fluid={true}

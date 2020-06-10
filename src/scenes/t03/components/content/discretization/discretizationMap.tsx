@@ -136,7 +136,7 @@ const discretizationMap = (props: IProps) => {
         if (!props.cells) {
             return null;
         }
-        if (props.geometry && props.rotation && props.rotation > 0 && props.rotation < 360) {
+        if (props.geometry && props.rotation && props.rotation % 360 !== 0) {
             return (
                 <AffectedCellsLayer
                     boundingBox={props.boundingBox}
