@@ -2,7 +2,7 @@ import {Control, DrawEvents, LatLngBoundsExpression, LatLngExpression} from 'lea
 import _, {uniqueId} from 'lodash';
 import React, {useEffect, useRef, useState} from 'react';
 import {Polygon} from 'react-leaflet';
-import {FeatureGroup, GeoJSON, LayersControl, Map} from 'react-leaflet';
+import {FeatureGroup, LayersControl, Map} from 'react-leaflet';
 import {EditControl} from 'react-leaflet-draw';
 import {Button} from 'semantic-ui-react';
 import {BoundingBox, Cells, Geometry, GridSize} from '../../../../../core/model/geometry';
@@ -10,9 +10,8 @@ import {IGeometry} from '../../../../../core/model/geometry/Geometry.type';
 import BoundaryCollection from '../../../../../core/model/modflow/boundaries/BoundaryCollection';
 import AffectedCellsLayer from '../../../../../services/geoTools/affectedCellsLayer';
 import {rotateCoordinateAroundPoint} from '../../../../../services/geoTools/getCellFromClick';
-import {getStyle} from '../../../../../services/geoTools/mapHelpers';
 import {BasicTileLayer} from '../../../../../services/geoTools/tileLayers';
-import {renderBoundaryOverlays} from '../../../../shared/rasterData/helpers';
+import {renderBoundaryOverlays, renderBoundingBoxLayer} from '../../maps/mapLayers';
 
 interface IProps {
     boundingBox: BoundingBox;
@@ -107,7 +106,7 @@ const discretizationMap = (props: IProps) => {
         }
 
         if (geometry) {
-            return BoundingBox.fromGeoJson(Geometry.fromObject(geometry));
+            return Geometry.fromObject(geometry).getBoundsLatLng();
         }
 
         return [[60, 10], [45, 30]];
@@ -115,7 +114,7 @@ const discretizationMap = (props: IProps) => {
 
     const handleClickOnMap = ({latlng}: { latlng: any }) => {
         if (isDrawingRef.current || readOnlyRef.current || !cellsRef.current || !props.boundingBox || !props.gridSize
-        || !props.geometry) {
+            || !props.geometry) {
             return null;
         }
 
@@ -151,19 +150,6 @@ const discretizationMap = (props: IProps) => {
                 boundingBox={props.boundingBox}
                 gridSize={props.gridSize}
                 cells={props.cells}
-            />
-        );
-    };
-
-    const renderBoundingBox = () => {
-        const data = props.rotation && props.geometry ?
-            props.boundingBox.geoJsonWithRotation(props.rotation, props.geometry.centerOfMass) :
-            props.boundingBox.geoJson;
-        return (
-            <GeoJSON
-                key={uniqueId()}
-                data={data}
-                style={getStyle('bounding_box')}
             />
         );
     };
@@ -217,7 +203,7 @@ const discretizationMap = (props: IProps) => {
                 </LayersControl>
                 }
                 {renderActiveCellsLayer()}
-                {renderBoundingBox()}
+                {renderBoundingBoxLayer(props.boundingBox, props.rotation, props.geometry || undefined)}
             </Map>
         </React.Fragment>
     );

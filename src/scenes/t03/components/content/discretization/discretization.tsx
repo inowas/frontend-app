@@ -108,7 +108,6 @@ const discretization = () => {
                 return (
                     <GridEditor
                         model={ModflowModel.fromObject(model)}
-                        boundaries={boundaries}
                         onChange={handleChangeModel}
                         onSave={handleSave}
                         onUndo={handleUndo}

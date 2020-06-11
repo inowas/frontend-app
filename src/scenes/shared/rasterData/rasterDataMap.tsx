@@ -7,14 +7,14 @@ import {BasicTileLayer} from '../../../services/geoTools/tileLayers';
 import {createGridData, rainbowFactory} from '../../../services/rainbowvis/helpers';
 import Rainbow from '../../../services/rainbowvis/Rainbowvis';
 import {ILegendItem} from '../../../services/rainbowvis/types';
-import {renderBoundingBoxLayer} from '../../t03/components/maps/mapLayers';
+import {renderBoundaryOverlays, renderBoundingBoxLayer} from '../../t03/components/maps/mapLayers';
 import ColorLegend from './ColorLegend';
 import {
     max,
-    min, renderBoundaryOverlays
+    min
 } from './helpers';
 import CanvasHeatMapOverlay from './ReactLeafletHeatMapCanvasOverlay';
-import { IReactLeafletHeatMapProps } from './ReactLeafletHeatMapCanvasOverlay.type';
+import {IReactLeafletHeatMapProps} from './ReactLeafletHeatMapCanvasOverlay.type';
 
 const styles = {
     map: {
@@ -78,7 +78,7 @@ const rasterDataMap = (props: IProps) => {
             bounds={model.boundingBox.getBoundsLatLng()}
         >
             <BasicTileLayer/>
-            {renderBoundingBoxLayer(model)}
+            {renderBoundingBoxLayer(model.boundingBox, model.rotation, model.geometry)}
             {props.boundaries && props.boundaries.length > 0 &&
             <LayersControl position="topright">
                 {renderBoundaryOverlays(props.boundaries)}

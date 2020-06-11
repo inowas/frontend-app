@@ -8,8 +8,7 @@ import {ModflowModel} from '../../../../../../core/model/modflow';
 import BoundaryCollection from '../../../../../../core/model/modflow/boundaries/BoundaryCollection';
 import {Zone, ZonesCollection} from '../../../../../../core/model/modflow/soilmodel';
 import {BasicTileLayer} from '../../../../../../services/geoTools/tileLayers';
-import {renderBoundaryOverlays} from '../../../../../shared/rasterData/helpers';
-import {renderAreaLayer, renderBoundingBoxLayer} from '../../../maps/mapLayers';
+import {renderAreaLayer, renderBoundaryOverlays, renderBoundingBoxLayer} from '../../../maps/mapLayers';
 
 const styles = {
     map: {
@@ -76,8 +75,8 @@ const zonesMap = (props: IProps) => {
             style={styles.map}
         >
             <BasicTileLayer/>
-            {renderBoundingBoxLayer(model)}
-            {renderAreaLayer(model)}
+            {renderBoundingBoxLayer(model.boundingBox, model.rotation, model.geometry)}
+            {renderAreaLayer(model.geometry)}
             {props.boundaries.length > 0 &&
             <LayersControl position="topright">
                 {renderBoundaryOverlays(props.boundaries)}

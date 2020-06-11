@@ -1,25 +1,19 @@
-import * as turf from '@turf/turf';
 import _ from 'lodash';
 import React, {useEffect, useRef, useState} from 'react';
 import {useDispatch, useSelector} from 'react-redux';
 import {Dimmer, Form, Grid, Header, Progress} from 'semantic-ui-react';
-import {ICells} from '../../../../../core/model/geometry/Cells.type';
-import {BoundingBox, Cells, Geometry, GridSize, ModflowModel} from '../../../../../core/model/modflow';
-import {Boundary, BoundaryCollection} from '../../../../../core/model/modflow/boundaries';
+import {BoundingBox, Cells, Geometry, GridSize, ModflowModel, Soilmodel} from '../../../../../core/model/modflow';
+import {BoundaryCollection} from '../../../../../core/model/modflow/boundaries';
 import {IRootReducer} from '../../../../../reducers';
-import {sendCommand} from '../../../../../services/api';
 import {calculateActiveCells} from '../../../../../services/geoTools';
 import {dxCell, dyCell} from '../../../../../services/geoTools/distance';
 import ContentToolBar from '../../../../shared/ContentToolbar2';
-import {updateBoundaries} from '../../../actions/actions';
-import ModflowModelCommand from '../../../commands/modflowModelCommand';
-import {CALCULATE_CELLS_INPUT} from '../../../worker/t03.worker';
-import {ICalculateCellsInputData} from '../../../worker/t03.worker.type';
-import {asyncWorker} from '../../../worker/worker';
+import {addMessage, updateBoundaries, updateLayer, updateSoilmodel} from '../../../actions/actions';
+import {messageError} from '../../../defaults/messages';
 import {DiscretizationMap, GridProperties} from './index';
+import {boundaryUpdater, layersUpdater, zonesUpdater} from './updater';
 
 interface IProps {
-    boundaries: BoundaryCollection;
     model: ModflowModel;
     onChange: (modflowModel: ModflowModel) => void;
     onSave: () => void;
@@ -30,52 +24,6 @@ interface IBoundaryUpdaterStatus {
     task: number;
     message: string;
 }
-
-const boundaryUpdater = (
-    boundaries: BoundaryCollection,
-    model: ModflowModel,
-    onEachTask: (b: Boundary, l: number) => any,
-    onFinished: (bc: BoundaryCollection) => any,
-    onError: (e: string) => any,
-    result: BoundaryCollection = new BoundaryCollection([])
-): any => {
-    if (boundaries.length > 0) {
-        const boundary = boundaries.first;
-
-        let g = boundary.geometry.toGeoJSON();
-        if (model.rotation % 360 !== 0) {
-            g = turf.transformRotate(
-                boundary.geometry.toGeoJSON(), -1 * model.rotation, {pivot: model.geometry.centerOfMass}
-            );
-        }
-        asyncWorker({
-            type: CALCULATE_CELLS_INPUT,
-            data: {
-                geometry: g,
-                boundingBox: model.boundingBox.toObject(),
-                gridSize: model.gridSize.toObject(),
-                intersection: model.intersection
-            } as ICalculateCellsInputData
-        }).then((c: ICells) => {
-            boundary.cells = Cells.fromObject(c);
-            onEachTask(boundary, boundaries.length);
-            sendCommand(ModflowModelCommand.updateBoundary(model.id, boundary),
-                boundaryUpdater(
-                    boundaries.removeById(boundary.id),
-                    model,
-                    onEachTask,
-                    onFinished,
-                    onError,
-                    result.addBoundary(boundary)
-                )
-            );
-        }).catch((e) => {
-            onError(e);
-        });
-        return;
-    }
-    return onFinished(result);
-};
 
 const gridEditor = (props: IProps) => {
     const [intersection, setIntersection] = useState<number>(50);
@@ -88,6 +36,11 @@ const gridEditor = (props: IProps) => {
 
     const T03 = useSelector((state: IRootReducer) => state.T03);
     const boundaryCollection = T03.boundaries ? BoundaryCollection.fromObject(T03.boundaries) : null;
+    const soilmodel = T03.soilmodel ? Soilmodel.fromObject(T03.soilmodel) : null;
+
+    if (!soilmodel || !boundaryCollection) {
+        return null;
+    }
 
     useEffect(() => {
         setGridSizeLocal(props.model.gridSize);
@@ -120,14 +73,48 @@ const gridEditor = (props: IProps) => {
             _.cloneDeep(boundaryCollection),
             model,
             (b, l) => setUpdaterStatus({
-                task: boundaryCollection.length - l,
+                task: 1 + boundaryCollection.length - l,
                 message: `Updating ${b.name}`
             }),
             (bc) => {
-                setUpdaterStatus(null);
                 dispatch(updateBoundaries(bc));
+                if (soilmodel.zonesCollection.length > 1) {
+                    zonesUpdater(
+                        model,
+                        soilmodel,
+                        soilmodel.zonesCollection,
+                        (z, l) => setUpdaterStatus({
+                            task: 1 + boundaryCollection.length + soilmodel.zonesCollection.length - l,
+                            message: `Updating ${z.name}`
+                        }),
+                        (zc) => {
+                            soilmodel.zonesCollection = zc;
+                            dispatch(updateSoilmodel(soilmodel));
+                            layersUpdater(
+                                model,
+                                soilmodel.layersCollection,
+                                zc,
+                                (layer, l) => {
+                                    dispatch(updateLayer(layer));
+                                    setUpdaterStatus({
+                                        task: 1 + boundaryCollection.length + soilmodel.zonesCollection.length +
+                                            soilmodel.layersCollection.length - l,
+                                        message: `Updating ${layer.name}`
+                                    });
+                                },
+                                () => {
+                                    setUpdaterStatus(null);
+                                },
+                                (e) => dispatch(addMessage(messageError('layersUpdater', e)))
+                            );
+                        },
+                        (e) => dispatch(addMessage(messageError('zonesUpdater', e)))
+                    );
+                } else {
+                    setUpdaterStatus(null);
+                }
             },
-            (e) => console.log(e)
+            (e) => dispatch(addMessage(messageError('boundariesUpdater', e)))
         );
     };
 
@@ -188,6 +175,8 @@ const gridEditor = (props: IProps) => {
 
     const {boundingBox, geometry, gridSize} = props.model;
 
+    const tasks = boundaryCollection.length + soilmodel.zonesCollection.length + soilmodel.layersCollection.length;
+
     return (
         <Grid>
             {!!updaterStatus &&
@@ -196,7 +185,7 @@ const gridEditor = (props: IProps) => {
                     {updaterStatus.message}
                 </Header>
                 <Progress
-                    percent={(100 * (updaterStatus.task / props.boundaries.length)).toFixed(0)}
+                    percent={(100 * (updaterStatus.task / tasks)).toFixed(0)}
                     indicating={true}
                     progress={true}
                 />
@@ -252,7 +241,7 @@ const gridEditor = (props: IProps) => {
                     <DiscretizationMap
                         cells={props.model.cells}
                         boundingBox={boundingBox}
-                        boundaries={props.boundaries}
+                        boundaries={boundaryCollection}
                         geometry={geometry}
                         gridSize={gridSize}
                         intersection={intersection}

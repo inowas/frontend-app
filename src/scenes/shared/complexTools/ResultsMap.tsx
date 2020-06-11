@@ -2,7 +2,6 @@ import {LeafletMouseEvent} from 'leaflet';
 import React, {useEffect, useRef, useState} from 'react';
 import {
     FeatureGroup,
-    GeoJSON,
     LayersControl,
     Map,
     Rectangle,
@@ -13,18 +12,17 @@ import {ICell} from '../../../core/model/geometry/Cells.type';
 import {ModflowModel} from '../../../core/model/modflow';
 import {BoundaryCollection} from '../../../core/model/modflow/boundaries';
 import {getActiveCellFromCoordinate} from '../../../services/geoTools';
-import {getStyle} from '../../../services/geoTools/mapHelpers';
 import {BasicTileLayer} from '../../../services/geoTools/tileLayers';
 import Rainbow from '../../../services/rainbowvis/Rainbowvis';
+import {renderAreaLayer, renderBoundaryOverlays, renderBoundingBoxLayer} from '../../t03/components/maps/mapLayers';
 import {ColorLegend, ReactLeafletHeatMapCanvasOverlay} from '../rasterData';
 import {
     createGridData,
     max,
     min,
-    rainbowFactory,
-    renderBoundaryOverlays
+    rainbowFactory
 } from '../rasterData/helpers';
-import { IReactLeafletHeatMapProps } from '../rasterData/ReactLeafletHeatMapCanvasOverlay.type';
+import {IReactLeafletHeatMapProps} from '../rasterData/ReactLeafletHeatMapCanvasOverlay.type';
 
 const style = {
     map: {
@@ -201,19 +199,9 @@ const resultsMap = (props: IProps) => {
             <BasicTileLayer/>
             <LayersControl position="topright">
                 <LayersControl.Overlay name="Model area" checked={true}>
-                    <GeoJSON
-                        key={props.model.geometry.hash()}
-                        data={props.model.geometry.toGeoJSON()}
-                        style={getStyle('area')}
-                    />
+                    {renderAreaLayer(props.model.geometry)}
                 </LayersControl.Overlay>
-                <LayersControl.Overlay name={'Bounding Box'} checked={true}>
-                    <GeoJSON
-                        key={props.model.boundingBox.hash()}
-                        data={props.model.boundingBox.geoJson}
-                        style={getStyle('bounding_box')}
-                    />
-                </LayersControl.Overlay>
+                {renderBoundingBoxLayer(props.model.boundingBox, props.model.rotation, props.model.geometry)}
                 {renderBoundaryOverlays(props.boundaries)}
                 <ReactLeafletHeatMapCanvasOverlay
                     {

@@ -11,6 +11,7 @@ import {Boundary, BoundaryCollection, WellBoundary} from '../../../../core/model
 import AffectedCellsLayer from '../../../../services/geoTools/affectedCellsLayer';
 import {getStyle} from '../../../../services/geoTools/mapHelpers';
 import {BasicTileLayer} from '../../../../services/geoTools/tileLayers';
+import {renderAreaLayer} from './mapLayers';
 
 export interface IProps {
     geometry: Geometry;
@@ -121,11 +122,7 @@ const modelMap = (props: IProps) => {
             bounds={props.geometry.getBoundsLatLng()}
         >
             <BasicTileLayer/>
-            <GeoJSON
-                key={props.geometry.hash()}
-                data={props.geometry.toGeoJSON()}
-                style={getStyle('area')}
-            />
+            {renderAreaLayer(props.geometry)}
             {props.boundaries && renderOtherBoundaries(props.boundaries)}
             {props.boundingBox && renderBoundingBox(props.boundingBox)}
             {props.cells && props.boundingBox && props.gridSize &&

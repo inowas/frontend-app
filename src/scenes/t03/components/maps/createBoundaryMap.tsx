@@ -1,5 +1,5 @@
 import React, {useRef, useState} from 'react';
-import {FeatureGroup, GeoJSON, LayersControl, Map} from 'react-leaflet';
+import {FeatureGroup, LayersControl, Map} from 'react-leaflet';
 import {EditControl} from 'react-leaflet-draw';
 import {Geometry} from '../../../../core/model/modflow';
 import {BoundaryFactory} from '../../../../core/model/modflow/boundaries';
@@ -7,8 +7,7 @@ import {BoundaryType} from '../../../../core/model/modflow/boundaries/Boundary.t
 import BoundaryCollection from '../../../../core/model/modflow/boundaries/BoundaryCollection';
 import {BasicTileLayer} from '../../../../services/geoTools/tileLayers';
 import CenterControl from '../../../shared/leaflet/CenterControl';
-import {renderBoundaryOverlays} from '../../../shared/rasterData/helpers';
-import {getStyle} from './index';
+import { renderAreaLayer, renderBoundaryOverlays } from './mapLayers';
 
 interface IProps {
     area: Geometry;
@@ -90,11 +89,7 @@ const createBoundaryMap = (props: IProps) => {
                     </LayersControl>
                 }
                 {editControl()}
-                <GeoJSON
-                    key={props.area.hash()}
-                    data={props.area.toGeoJSON()}
-                    style={getStyle('area')}
-                />
+                {renderAreaLayer(props.area)}
             </Map>
         </React.Fragment>
     );
