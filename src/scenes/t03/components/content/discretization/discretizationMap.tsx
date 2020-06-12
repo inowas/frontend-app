@@ -1,16 +1,24 @@
+import * as turf from '@turf/turf';
 import {Control, DrawEvents, LatLngBoundsExpression, LatLngExpression} from 'leaflet';
 import _, {uniqueId} from 'lodash';
 import React, {useEffect, useRef, useState} from 'react';
 import {Polygon} from 'react-leaflet';
 import {FeatureGroup, LayersControl, Map} from 'react-leaflet';
 import {EditControl} from 'react-leaflet-draw';
+import {useDispatch} from 'react-redux';
 import {Button} from 'semantic-ui-react';
 import {BoundingBox, Cells, Geometry, GridSize} from '../../../../../core/model/geometry';
+import {ICells} from '../../../../../core/model/geometry/Cells.type';
 import {IGeometry} from '../../../../../core/model/geometry/Geometry.type';
 import BoundaryCollection from '../../../../../core/model/modflow/boundaries/BoundaryCollection';
 import AffectedCellsLayer from '../../../../../services/geoTools/affectedCellsLayer';
 import {rotateCoordinateAroundPoint} from '../../../../../services/geoTools/getCellFromClick';
 import {BasicTileLayer} from '../../../../../services/geoTools/tileLayers';
+import {addMessage} from '../../../actions/actions';
+import {messageError} from '../../../defaults/messages';
+import {CALCULATE_CELLS_INPUT} from '../../../worker/t03.worker';
+import {ICalculateCellsInputData} from '../../../worker/t03.worker.type';
+import {asyncWorker} from '../../../worker/worker';
 import {renderBoundaryOverlays, renderBoundingBoxLayer} from '../../maps/mapLayers';
 
 interface IProps {
@@ -38,10 +46,11 @@ const discretizationMap = (props: IProps) => {
     const cellsRef = useRef<Cells | null>(null);
     const mapRef = useRef<Map>(null);
     const readOnlyRef = useRef<boolean>(true);
-    const isDrawingRef = useRef<boolean>(false);
     const refDrawControl = useRef<Control>(null);
     const [geometry, setGeometry] = useState<IGeometry | null>(null);
     const [isDrawing, setIsDrawing] = useState<boolean>(false);
+
+    const dispatch = useDispatch();
 
     useEffect(() => {
         if (props.cells) {
@@ -66,8 +75,8 @@ const discretizationMap = (props: IProps) => {
     }, [props.readOnly]);
 
     const onCreated = (e: DrawEvents.Created) => {
-        if (e.layerType === 'rectangle' || e.layerType === 'polyline') {
-            if (!cellsRef.current) {
+        if ((isDrawing && e.layerType === 'polygon') || e.layerType === 'polyline') {
+            if (!cellsRef.current || !props.geometry) {
                 return;
             }
 
@@ -75,18 +84,42 @@ const discretizationMap = (props: IProps) => {
                 mapRef.current.leafletElement.removeLayer(e.layer);
             }
 
-            const c: Cells = cellsRef.current;
-            c.toggleByGeometry(Geometry.fromGeoJson(e.layer.toGeoJSON()), props.boundingBox, props.gridSize);
-            cellsRef.current = c;
-            return props.onChangeCells(c);
+            let g = Geometry.fromGeoJson(e.layer.toGeoJSON()).toGeoJSON();
+            if (props.geometry && props.rotation && props.rotation % 360 !== 0) {
+                g = turf.transformRotate(
+                    g, -1 * props.rotation, {pivot: props.geometry.centerOfMass}
+                );
+            }
+
+            asyncWorker({
+                type: CALCULATE_CELLS_INPUT,
+                data: {
+                    geometry: g,
+                    boundingBox: props.boundingBox.toObject(),
+                    gridSize: props.gridSize.toObject(),
+                    intersection: props.intersection || 0
+                } as ICalculateCellsInputData
+            }).then((rCells: ICells) => {
+                const cCells: Cells | null = cellsRef.current;
+                if (cCells) {
+                    rCells.forEach((rC) => {
+                        cCells.toggle([rC[0], rC[1]], props.boundingBox, props.gridSize, false);
+                    });
+                    cellsRef.current = cCells;
+                    return props.onChangeCells(cCells);
+                }
+            }).catch(() => {
+                dispatch(addMessage(messageError('discretizationMap', 'Calculating cells failed.')));
+            });
+            return;
         }
         if (!props.onChangeGeometry) {
             return;
         }
         const polygon = e.layer;
-        const g = Geometry.fromGeoJson(polygon.toGeoJSON());
-        setGeometry(g.toObject());
-        return props.onChangeGeometry(g);
+        const g2 = Geometry.fromGeoJson(polygon.toGeoJSON());
+        setGeometry(g2.toObject());
+        return props.onChangeGeometry(g2);
     };
 
     const onEdited = (e: DrawEvents.Edited) => {
@@ -113,8 +146,8 @@ const discretizationMap = (props: IProps) => {
     };
 
     const handleClickOnMap = ({latlng}: { latlng: any }) => {
-        if (isDrawingRef.current || readOnlyRef.current || !cellsRef.current || !props.boundingBox || !props.gridSize
-            || !props.geometry) {
+        if (isDrawing || readOnlyRef.current || !cellsRef.current || !props.boundingBox ||
+            !props.gridSize || !props.geometry) {
             return null;
         }
 
@@ -178,8 +211,8 @@ const discretizationMap = (props: IProps) => {
                             circlemarker: false,
                             marker: false,
                             polyline: isDrawing && geometry !== null,
-                            rectangle: isDrawing && geometry !== null,
-                            polygon: geometry === null
+                            rectangle: false,
+                            polygon: geometry === null || isDrawing
                         }}
                         edit={{
                             edit: geometry !== null && !!props.onChangeGeometry,

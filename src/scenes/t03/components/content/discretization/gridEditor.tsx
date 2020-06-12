@@ -137,14 +137,13 @@ const gridEditor = (props: IProps) => {
 
     const handleChangeGeometry = (g: Geometry) => {
         const rotation = props.model.rotation;
-        let bbRot: BoundingBox | null = null;
+        let geometryWithRotation: null | Geometry = null;
+        let bb: BoundingBox = BoundingBox.fromGeoJson(g);
         if (rotation % 360 !== 0) {
-            g = Geometry.fromGeoJson(g.toGeoJSONWithRotation(rotation, g.centerOfMass));
-            bbRot = BoundingBox.fromGeoJson(g);
+            geometryWithRotation = Geometry.fromGeoJson(g.toGeoJSONWithRotation(rotation, g.centerOfMass));
+            bb = BoundingBox.fromGeometryAndRotation(g, rotation);
         }
-
-        const bb = BoundingBox.fromGeoJson(g);
-        calculate(g, bbRot || bb, props.model.gridSize, props.model.intersection).then((c: Cells) => {
+        calculate(geometryWithRotation || g, bb, props.model.gridSize, props.model.intersection).then((c: Cells) => {
             const model = props.model.getClone();
             model.cells = Cells.fromObject(c.toObject());
             model.geometry = Geometry.fromObject(g.toObject());
@@ -156,11 +155,8 @@ const gridEditor = (props: IProps) => {
 
     const handleChangeRotation = (g: GridSize, i: number, r: number, c: Cells) => {
         const model = props.model.getClone();
-        if (r % 360 !== 0) {
-            model.boundingBox = BoundingBox.fromGeometryAndRotation(model.geometry, r);
-        } else {
-            model.boundingBox = BoundingBox.fromGeoJson(model.geometry.toGeoJSON());
-        }
+        model.boundingBox = r % 360 !== 0 ? BoundingBox.fromGeometryAndRotation(model.geometry, r) :
+            BoundingBox.fromGeoJson(model.geometry.toGeoJSON());
         model.cells = c;
         model.gridSize = g;
         model.intersection = i;

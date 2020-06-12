@@ -212,16 +212,6 @@ export default class Cells {
         return this;
     };
 
-    public toggleByGeometry = (geometry: Geometry, boundingBox: BoundingBox, gridSize: GridSize) => {
-        const affectedCells = Cells.fromGeometry(geometry, boundingBox, gridSize).toObject();
-
-        affectedCells.forEach((ac) => {
-            this.toggle([ac[0], ac[1]], boundingBox, gridSize, false);
-        });
-
-        return this;
-    };
-
     public addCell = (cell: ICell) => {
         this._cells.push(cell);
     };

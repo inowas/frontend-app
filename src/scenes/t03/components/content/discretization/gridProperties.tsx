@@ -15,6 +15,7 @@ import {BasicTileLayer} from '../../../../../services/geoTools/tileLayers';
 import SliderWithTooltip from '../../../../shared/complexTools/SliderWithTooltip';
 import {CALCULATE_CELLS_INPUT} from '../../../worker/t03.worker';
 import {asyncWorker} from '../../../worker/worker';
+import {renderAreaLayer} from '../../maps/mapLayers';
 
 interface IProps {
     boundingBox: BoundingBox;
@@ -207,11 +208,7 @@ const gridProperties = (props: IProps) => {
                             gridSize={GridSize.fromObject(gridSize)}
                             rotation={{geometry: props.geometry, angle: rotation}}
                         />
-                        <GeoJSON
-                            key={uuid.v4()}
-                            data={props.geometry.toGeoJSON()}
-                            style={getStyle('area')}
-                        />
+                        {renderAreaLayer(props.geometry)}
                     </Map>
                 </Grid.Row>
             </Grid>
@@ -299,11 +296,7 @@ const gridProperties = (props: IProps) => {
                             style={style.map}
                             bounds={props.boundingBox.getBoundsLatLng()}
                         >
-                            <GeoJSON
-                                key={uuid.v4()}
-                                data={props.geometry.toGeoJSON()}
-                                style={getStyle('area')}
-                            />
+                            {renderAreaLayer(props.geometry)}
                             {!isCalculating && false &&
                             <GeoJSON
                                 key={uuid.v4()}
