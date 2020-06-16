@@ -1,10 +1,12 @@
+import * as turf from '@turf/turf';
+import * as d3 from 'd3';
 import React from 'react';
-import {LayersControl, Map} from 'react-leaflet';
+import {GeoJSON, LayersControl, Map, Tooltip} from 'react-leaflet';
 import {Array2D} from '../../../core/model/geometry/Array2D.type';
 import {ModflowModel} from '../../../core/model/modflow';
 import BoundaryCollection from '../../../core/model/modflow/boundaries/BoundaryCollection';
 import {BasicTileLayer} from '../../../services/geoTools/tileLayers';
-import {createGridData, rainbowFactory} from '../../../services/rainbowvis/helpers';
+import {rainbowFactory} from '../../../services/rainbowvis/helpers';
 import Rainbow from '../../../services/rainbowvis/Rainbowvis';
 import {ILegendItem} from '../../../services/rainbowvis/types';
 import {renderBoundaryOverlays, renderBoundingBoxLayer} from '../../t03/components/maps/mapLayers';
@@ -13,19 +15,11 @@ import {
     max,
     min
 } from './helpers';
-import CanvasHeatMapOverlay from './ReactLeafletHeatMapCanvasOverlay';
-import {IReactLeafletHeatMapProps} from './ReactLeafletHeatMapCanvasOverlay.type';
 
 const styles = {
     map: {
         minHeight: 400
-    },
-    area: {
-        weight: 1,
-        opacity: 0.7,
-        color: 'grey',
-        fill: false
-    },
+    }
 };
 
 const renderLegend = (rainbow: Rainbow, unit: string = '') => {
@@ -54,22 +48,52 @@ interface IProps {
 const rasterDataMap = (props: IProps) => {
     const {model, data, unit} = props;
     const rainbowVis = rainbowFactory({min: min(data), max: max(data)});
-    const centerOfMass = props.model.geometry.centerOfMass.geometry ?
-        props.model.geometry.centerOfMass.geometry.coordinates : [0, 0];
 
-    const mapProps = {
-        nX: model.gridSize.nX,
-        nY: model.gridSize.nY,
-        rainbow: rainbowVis,
-        data: createGridData(data, model.gridSize.nX, model.gridSize.nY),
-        bounds: model.boundingBox.getBoundsLatLng(),
-        opacity: 0.75,
-        rotationAngle: props.model.rotation,
-        rotationCenter: centerOfMass,
-        sharpening: 10,
-        WebkitTransform: 'rotate(45deg)',
-        zIndex: 1
-    } as IReactLeafletHeatMapProps;
+    const generateContours = () => {
+        const cData: any = data;
+        const fData = [].concat(...cData);
+        const thresholds = d3.range(min(cData), max(cData));
+        const contours = d3.contours().size([model.gridSize.nX, model.gridSize.nY])
+            .thresholds(thresholds)(fData);
+
+        const xMin = model.boundingBox.xMin;
+        const yMax = model.boundingBox.yMax;
+        const dX = model.boundingBox.dX / model.gridSize.nX;
+        const dY = model.boundingBox.dY / model.gridSize.nY;
+
+        const tContours = contours.map((mp) => {
+            mp.coordinates = mp.coordinates.map((c) => {
+                c = c.map((cc) => {
+                    cc = cc.map((ccc) => {
+                        ccc[0] = xMin + ccc[0] * dX;
+                        ccc[1] = yMax - ccc[1] * dY;
+                        return ccc;
+                    });
+                    return cc;
+                });
+                return c;
+            });
+
+            if (model.rotation % 360 !== 0) {
+                return turf.transformRotate(mp, model.rotation, {pivot: model.geometry.centerOfMass});
+            }
+
+            return mp;
+        });
+
+        return tContours.map((mp, key) => (
+            <GeoJSON
+                key={key}
+                data={mp}
+                color={`#${rainbowVis.colorAt(thresholds[key])}`}
+                fillOpacity={0.8}
+            >
+                <Tooltip>{thresholds[key]}</Tooltip>
+            </GeoJSON>
+        ));
+    };
+
+    const p = generateContours();
 
     return (
         <Map
@@ -84,11 +108,7 @@ const rasterDataMap = (props: IProps) => {
                 {renderBoundaryOverlays(props.boundaries)}
             </LayersControl>
             }
-            <CanvasHeatMapOverlay
-                {
-                    ...mapProps
-                }
-            />
+            {p}
             {renderLegend(rainbowVis, unit)}
         </Map>
     );
