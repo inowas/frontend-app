@@ -1,7 +1,5 @@
-import * as turf from '@turf/turf';
-import * as d3 from 'd3';
 import React from 'react';
-import {GeoJSON, LayersControl, Map, Tooltip} from 'react-leaflet';
+import {LayersControl, Map} from 'react-leaflet';
 import {Array2D} from '../../../core/model/geometry/Array2D.type';
 import {ModflowModel} from '../../../core/model/modflow';
 import BoundaryCollection from '../../../core/model/modflow/boundaries/BoundaryCollection';
@@ -11,6 +9,7 @@ import Rainbow from '../../../services/rainbowvis/Rainbowvis';
 import {ILegendItem} from '../../../services/rainbowvis/types';
 import {renderBoundaryOverlays, renderBoundingBoxLayer} from '../../t03/components/maps/mapLayers';
 import ColorLegend from './ColorLegend';
+import ContourLayer from './contourLayer';
 import {
     max,
     min
@@ -49,52 +48,6 @@ const rasterDataMap = (props: IProps) => {
     const {model, data, unit} = props;
     const rainbowVis = rainbowFactory({min: min(data), max: max(data)});
 
-    const generateContours = () => {
-        const cData: any = data;
-        const fData = [].concat(...cData);
-        const thresholds = d3.range(min(cData), max(cData));
-        const contours = d3.contours().size([model.gridSize.nX, model.gridSize.nY])
-            .thresholds(thresholds)(fData);
-
-        const xMin = model.boundingBox.xMin;
-        const yMax = model.boundingBox.yMax;
-        const dX = model.boundingBox.dX / model.gridSize.nX;
-        const dY = model.boundingBox.dY / model.gridSize.nY;
-
-        const tContours = contours.map((mp) => {
-            mp.coordinates = mp.coordinates.map((c) => {
-                c = c.map((cc) => {
-                    cc = cc.map((ccc) => {
-                        ccc[0] = xMin + ccc[0] * dX;
-                        ccc[1] = yMax - ccc[1] * dY;
-                        return ccc;
-                    });
-                    return cc;
-                });
-                return c;
-            });
-
-            if (model.rotation % 360 !== 0) {
-                return turf.transformRotate(mp, model.rotation, {pivot: model.geometry.centerOfMass});
-            }
-
-            return mp;
-        });
-
-        return tContours.map((mp, key) => (
-            <GeoJSON
-                key={key}
-                data={mp}
-                color={`#${rainbowVis.colorAt(thresholds[key])}`}
-                fillOpacity={0.8}
-            >
-                <Tooltip>{thresholds[key]}</Tooltip>
-            </GeoJSON>
-        ));
-    };
-
-    const p = generateContours();
-
     return (
         <Map
             style={styles.map}
@@ -108,7 +61,15 @@ const rasterDataMap = (props: IProps) => {
                 {renderBoundaryOverlays(props.boundaries)}
             </LayersControl>
             }
-            {p}
+            <ContourLayer
+                boundingBox={model.boundingBox}
+                data={data}
+                geometry={model.geometry}
+                gridSize={model.gridSize}
+                rainbow={rainbowVis}
+                rotation={model.rotation}
+                steps={0}
+            />
             {renderLegend(rainbowVis, unit)}
         </Map>
     );

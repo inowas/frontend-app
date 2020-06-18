@@ -4,6 +4,7 @@ import {Cells, ModflowModel, Soilmodel} from '../../../../../core/model/modflow'
 import {Boundary, BoundaryCollection} from '../../../../../core/model/modflow/boundaries';
 import LayersCollection from '../../../../../core/model/modflow/soilmodel/LayersCollection';
 import SoilmodelLayer from '../../../../../core/model/modflow/soilmodel/SoilmodelLayer';
+import {saveLayer} from '../../../../../core/model/modflow/soilmodel/updater/services';
 import Zone from '../../../../../core/model/modflow/soilmodel/Zone';
 import ZonesCollection from '../../../../../core/model/modflow/soilmodel/ZonesCollection';
 import {sendCommand} from '../../../../../services/api';
@@ -69,32 +70,26 @@ export const layersUpdater = (
     if (layers.length > 0) {
         const layer = SoilmodelLayer.fromObject(layers.first).zonesToParameters(model.gridSize, zones);
         if (layer.relations.length > 1) {
-            sendCommand(
-                ModflowModelCommand.updateLayer({
-                    id: model.id,
-                    layer: layer.toObject()
-                }),
-                layersUpdater(
-                    model,
-                    layers.removeById(layer.id),
-                    zones,
-                    onEachTask,
-                    onFinished,
-                    onError,
-                    result.add(layer.toObject())
-                )
+            saveLayer(
+                layer.toObject(),
+                model.toObject(),
+                false,
+                0,
+                () => onEachTask(layer, layers.length),
+                (l) => {
+                    layersUpdater(
+                        model,
+                        layers.removeById(layer.id),
+                        zones,
+                        onEachTask,
+                        onFinished,
+                        onError,
+                        result.add(l)
+                    );
+                }
             );
             return;
         }
-        layersUpdater(
-            model,
-            layers.removeById(layer.id),
-            zones,
-            onEachTask,
-            onFinished,
-            onError,
-            result.add(layer.toObject())
-        );
         return;
     }
     return onFinished(result);
