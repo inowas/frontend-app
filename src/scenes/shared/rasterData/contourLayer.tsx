@@ -40,7 +40,7 @@ const contourLayer = (props: IProps) => {
 
         const fData = ([] as number[]).concat(...cData);
         const cThresholds = props.steps === 0 ?
-            _.uniq(fData).sort() : d3.range(min(cData), max(cData), props.steps || undefined);
+            _.uniq(fData).sort((a, b) => a - b) : d3.range(min(cData), max(cData), props.steps || undefined);
         const cContours = d3.contours().size([props.gridSize.nX, props.gridSize.nY])
             .thresholds(cThresholds)(fData);
 

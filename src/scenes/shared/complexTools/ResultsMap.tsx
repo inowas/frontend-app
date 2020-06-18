@@ -9,20 +9,21 @@ import {
 } from 'react-leaflet';
 import {Array2D} from '../../../core/model/geometry/Array2D.type';
 import {ICell} from '../../../core/model/geometry/Cells.type';
-import {ModflowModel} from '../../../core/model/modflow';
+import {BoundingBox, GridSize, ModflowModel} from '../../../core/model/modflow';
 import {BoundaryCollection} from '../../../core/model/modflow/boundaries';
 import {getActiveCellFromCoordinate} from '../../../services/geoTools';
 import {BasicTileLayer} from '../../../services/geoTools/tileLayers';
 import Rainbow from '../../../services/rainbowvis/Rainbowvis';
 import {renderAreaLayer, renderBoundaryOverlays, renderBoundingBoxLayer} from '../../t03/components/maps/mapLayers';
-import {ColorLegend, ReactLeafletHeatMapCanvasOverlay} from '../rasterData';
+import {ColorLegend} from '../rasterData';
+import ContourLayer from '../rasterData/contourLayer';
 import {
-    createGridData,
     max,
     min,
     rainbowFactory
 } from '../rasterData/helpers';
-import {IReactLeafletHeatMapProps} from '../rasterData/ReactLeafletHeatMapCanvasOverlay.type';
+import {getCellFromClick} from "../../../services/geoTools/getCellFromClick";
+import {Feature, Point} from "@turf/helpers";
 
 const style = {
     map: {
@@ -82,9 +83,13 @@ const resultsMap = (props: IProps) => {
     }, [props.viewport]);
 
     const handleClickOnMap = ({latlng}: LeafletMouseEvent) => {
-        const x = latlng.lng;
-        const y = latlng.lat;
-        const activeCell = getActiveCellFromCoordinate([x, y], props.model.boundingBox, props.model.gridSize);
+        const activeCell = getCellFromClick(
+            props.model.boundingBox,
+            props.model.gridSize,
+            latlng,
+            props.model.rotation,
+            props.model.geometry.centerOfMass
+        );
 
         if (!props.model.gridSize.isWithIn(activeCell[0], activeCell[1])) {
             return;
@@ -124,6 +129,8 @@ const resultsMap = (props: IProps) => {
             [props.model.boundingBox.yMin, props.model.boundingBox.xMin + selectedCol * dX],
             [props.model.boundingBox.yMax, props.model.boundingBox.xMin + (selectedCol + 1) * dX]
         ];
+
+
 
         return (
             <FeatureGroup>
@@ -174,17 +181,6 @@ const resultsMap = (props: IProps) => {
         props.colors || ['#800080', '#ff2200', '#fcff00', '#45ff8e', '#15d6ff', '#0000FF']
     );
 
-    const mapProps = {
-        nX: props.model.gridSize.nX,
-        nY: props.model.gridSize.nY,
-        rainbow: rainbowVis,
-        data: createGridData(props.data, props.model.gridSize.nX, props.model.gridSize.nY),
-        bounds: props.model.boundingBox.getBoundsLatLng(),
-        opacity: props.opacity || 0.5,
-        sharpening: 10,
-        zIndex: 1
-    } as IReactLeafletHeatMapProps;
-
     return (
         <Map
             ref={mapRef}
@@ -201,13 +197,17 @@ const resultsMap = (props: IProps) => {
                 <LayersControl.Overlay name="Model area" checked={true}>
                     {renderAreaLayer(props.model.geometry)}
                 </LayersControl.Overlay>
+                <ContourLayer
+                    boundingBox={props.model.boundingBox}
+                    data={props.data}
+                    geometry={props.model.geometry}
+                    gridSize={props.model.gridSize}
+                    rainbow={rainbowVis}
+                    rotation={props.model.rotation}
+                    steps={0}
+                />
                 {renderBoundingBoxLayer(props.model.boundingBox, props.model.rotation, props.model.geometry)}
                 {renderBoundaryOverlays(props.boundaries)}
-                <ReactLeafletHeatMapCanvasOverlay
-                    {
-                        ...mapProps
-                    }
-                />
                 {renderLegend(rainbowVis)}
             </LayersControl>
             {renderSelectedRowAndCol()}
