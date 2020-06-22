@@ -1,5 +1,4 @@
 import {Layer} from 'leaflet';
-import React from 'react';
 import {MapLayer, withLeaflet} from 'react-leaflet';
 import {canvasHeatMapOverlay} from './leafletCanvasHeatMapOverlay';
 import {IReactLeafletHeatMapClass, IReactLeafletHeatMapProps} from './ReactLeafletHeatMapCanvasOverlay.type';

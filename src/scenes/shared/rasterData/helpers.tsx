@@ -1,4 +1,3 @@
-import React from 'react';
 import {Array2D} from '../../../core/model/geometry/Array2D.type';
 import Rainbow from '../../../services/rainbowvis/Rainbowvis';
 

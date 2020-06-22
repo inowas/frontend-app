@@ -26,7 +26,7 @@ const grid = (props: IProps) => {
     const dY = boundingBox.dY / gridSize.nY;
 
     const rotate = (positions: Array<[number, number]>) => {
-        if (!props.rotation || props.rotation === 0 || props.rotation === 360) {
+        if (!props.rotation || props.rotation % 360 === 0) {
             return positions;
         }
         const lineString = turf.lineString(positions);

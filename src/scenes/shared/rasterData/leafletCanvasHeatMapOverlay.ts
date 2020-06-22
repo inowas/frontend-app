@@ -232,7 +232,7 @@ export const canvasHeatMapOverlayClass = Layer.extend({
             this._map.latLngToLayerPoint(this._bounds.getNorthWest()),
             this._map.latLngToLayerPoint(this._bounds.getSouthEast())
         );
-        if (bounds && bounds.min) {
+        if (bounds.min) {
             const size = bounds.getSize();
 
             DomUtil.setPosition(canvas, bounds.min);

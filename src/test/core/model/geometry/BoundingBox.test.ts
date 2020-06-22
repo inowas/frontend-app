@@ -9,7 +9,7 @@ test('bounding box works', () => {
     expect(box.yMax).toEqual(4);
     expect(box.dX).toEqual(4);
     expect(box.dY).toEqual(6);
-    expect(box.northEast).toEqual({lat: 4, lon: 3});
-    expect(box.southWest).toEqual({lat: -2, lon: -1});
+    expect(box.northEast).toEqual({lat: 4, lng: 3});
+    expect(box.southWest).toEqual({lat: -2, lng: -1});
     expect(box.getBoundsLatLng()).toEqual([[-2, -1], [4, 3]]);
 });
