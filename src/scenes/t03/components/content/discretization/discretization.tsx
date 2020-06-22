@@ -83,7 +83,9 @@ const discretization = () => {
             m.cells.toObject(),
             m.stressperiods.toObject(),
             m.lengthUnit.toInt(),
-            m.timeUnit.toInt()
+            m.timeUnit.toInt(),
+            m.rotation,
+            m.intersection
         );
 
         return sendCommand(command, () => {
@@ -106,7 +108,6 @@ const discretization = () => {
                 return (
                     <GridEditor
                         model={ModflowModel.fromObject(model)}
-                        boundaries={boundaries}
                         onChange={handleChangeModel}
                         onSave={handleSave}
                         onUndo={handleUndo}

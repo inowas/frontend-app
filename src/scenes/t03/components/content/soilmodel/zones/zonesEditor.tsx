@@ -1,7 +1,7 @@
 import React, {ChangeEvent, MouseEvent, useState} from 'react';
 import {Accordion, AccordionTitleProps, Form, Header, Icon, InputOnChangeData, Loader} from 'semantic-ui-react';
-import {BoundingBox, GridSize} from '../../../../../../core/model/geometry';
 import {Array2D} from '../../../../../../core/model/geometry/Array2D.type';
+import {ModflowModel} from '../../../../../../core/model/modflow';
 import BoundaryCollection from '../../../../../../core/model/modflow/boundaries/BoundaryCollection';
 import {
     LayerParameterZonesCollection,
@@ -20,10 +20,9 @@ interface IUploadData {
 }
 
 interface IProps {
-    boundingBox: BoundingBox;
     boundaries?: BoundaryCollection;
     layer: SoilmodelLayer;
-    gridSize: GridSize;
+    model: ModflowModel;
     onAddRelation: (relation: ILayerParameterZone, parameterId?: string) => any;
     onChange: (relations: LayerParameterZonesCollection, parameterId?: string) => any;
     onRemoveRelation: (relation: ILayerParameterZone, parameterId?: string) => any;
@@ -115,10 +114,9 @@ const zonesEditor = (props: IProps) => {
 
         return (
             <RasterDataMap
-                boundingBox={props.boundingBox}
+                model={props.model}
                 boundaries={props.boundaries}
                 data={data as Array2D<number> | number}
-                gridSize={props.gridSize}
                 unit={props.parameter.unit}
             />
         );
@@ -194,7 +192,7 @@ const zonesEditor = (props: IProps) => {
             />
             {rasterUploadModal && !props.readOnly &&
             <RasterfileUploadModal
-                gridSize={props.gridSize}
+                gridSize={props.model.gridSize}
                 parameter={props.parameter}
                 onCancel={handleCancelUploadModal}
                 onChange={handleUploadRaster}

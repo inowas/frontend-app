@@ -212,16 +212,6 @@ export default class Cells {
         return this;
     };
 
-    public toggleByGeometry = (geometry: Geometry, boundingBox: BoundingBox, gridSize: GridSize) => {
-        const affectedCells = Cells.fromGeometry(geometry, boundingBox, gridSize).toObject();
-
-        affectedCells.forEach((ac) => {
-            this.toggle([ac[0], ac[1]], boundingBox, gridSize, false);
-        });
-
-        return this;
-    };
-
     public addCell = (cell: ICell) => {
         this._cells.push(cell);
     };
@@ -236,7 +226,7 @@ export default class Cells {
         }
 
         this.cells.forEach((cell) => {
-            if (cell[1] <= iBound2D.length && cell[0] <= iBound2D[0].length) {
+            if (cell[1] <= iBound2D.length && cell[0] <= iBound2D[0].length && iBound2D[cell[1]]) {
                 iBound2D[cell[1]][cell[0]] = 1;
             }
         });

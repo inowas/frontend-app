@@ -61,11 +61,6 @@ const calculate = (props: IProps) => {
             setShowProgress(true);
         }
 
-        if (model.readOnly) {
-            setCanBeCalculated(false);
-            setShowProgress(false);
-        }
-
     }, [props.calculation, props.model, props.packages]);
 
     const renderMapOrLog = () => {

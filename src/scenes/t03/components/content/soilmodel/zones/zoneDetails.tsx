@@ -173,7 +173,7 @@ const zoneDetails = (props: IProps) => {
                             <Form.Field>
                                 <label>Geometry</label>
                                 <ZonesMap
-                                    boundingBox={props.model.boundingBox}
+                                    model={props.model}
                                     boundaries={props.boundaries}
                                     zone={Zone.fromObject(zone)}
                                     zones={ZonesCollection.fromObject(visibleZones.filter((z) => z.isActive))}
@@ -222,14 +222,6 @@ const zoneDetails = (props: IProps) => {
                                 geometry={'polygon'}
                                 size={'medium'}
                             />
-                        </Grid.Column>
-                    </Grid.Row>
-                    <Grid.Row>
-                        <Grid.Column>
-                            <Form.Field>
-                                <label>Affected layers:</label>
-                                {affectedLayers.map((l, key) => <Label key={key}>{l.name}</Label>)}
-                            </Form.Field>
                         </Grid.Column>
                     </Grid.Row>
                 </Grid>

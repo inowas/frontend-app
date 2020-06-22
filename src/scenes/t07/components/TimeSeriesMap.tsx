@@ -1,13 +1,12 @@
 import { LeafletMouseEvent } from 'leaflet';
 import React, { useRef } from 'react';
-import { FeatureGroup, GeoJSON, LayersControl, Map, Rectangle } from 'react-leaflet';
+import { FeatureGroup, LayersControl, Map, Rectangle } from 'react-leaflet';
 import { ICell } from '../../../core/model/geometry/Cells.type';
 import { BoundaryCollection, ModflowModel } from '../../../core/model/modflow';
 import { getActiveCellFromCoordinate } from '../../../services/geoTools';
 import { BasicTileLayer } from '../../../services/geoTools/tileLayers';
 import CenterControl from '../../shared/leaflet/CenterControl';
-import { renderBoundaryOverlays } from '../../shared/rasterData/helpers';
-import { getStyle } from '../../t03/components/maps';
+import {renderAreaLayer, renderBoundaryOverlays, renderBoundingBoxLayer} from '../../t03/components/maps/mapLayers';
 
 interface IProps {
     activeCell: ICell;
@@ -108,16 +107,8 @@ const timeSeriesMap = (props: IProps) => {
             <LayersControl position="topright">
                 {renderBoundaryOverlays(props.boundaries)}
             </LayersControl>
-            <GeoJSON
-                key={props.model.geometry.hash()}
-                data={props.model.geometry.toGeoJSON()}
-                style={getStyle('area')}
-            />
-            <GeoJSON
-                key={props.model.boundingBox.hash()}
-                data={props.model.boundingBox.geoJson}
-                style={getStyle('bounding_box')}
-            />
+            {renderBoundingBoxLayer(props.model.boundingBox, props.model.rotation, props.model.geometry)}
+            {renderAreaLayer(props.model.geometry)}
             {renderSelectedRowAndCol()}
         </Map>
     );

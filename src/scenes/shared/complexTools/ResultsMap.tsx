@@ -1,29 +1,26 @@
 import {LeafletMouseEvent} from 'leaflet';
 import React, {useEffect, useRef, useState} from 'react';
 import {
-    FeatureGroup,
-    GeoJSON,
+    FeatureGroup, GeoJSON,
     LayersControl,
     Map,
-    MapLayerProps,
-    Rectangle,
     Viewport
 } from 'react-leaflet';
+import uuid from 'uuid';
 import {Array2D} from '../../../core/model/geometry/Array2D.type';
 import {ICell} from '../../../core/model/geometry/Cells.type';
-import {ModflowModel} from '../../../core/model/modflow';
+import {Geometry, ModflowModel} from '../../../core/model/modflow';
 import {BoundaryCollection} from '../../../core/model/modflow/boundaries';
-import {getActiveCellFromCoordinate} from '../../../services/geoTools';
-import {getStyle} from '../../../services/geoTools/mapHelpers';
+import {getCellFromClick} from '../../../services/geoTools/getCellFromClick';
 import {BasicTileLayer} from '../../../services/geoTools/tileLayers';
 import Rainbow from '../../../services/rainbowvis/Rainbowvis';
-import {ColorLegend, ReactLeafletHeatMapCanvasOverlay} from '../rasterData';
+import {renderAreaLayer, renderBoundaryOverlays, renderBoundingBoxLayer} from '../../t03/components/maps/mapLayers';
+import {ColorLegend} from '../rasterData';
+import ContourLayer from '../rasterData/contourLayer';
 import {
-    createGridData,
     max,
     min,
-    rainbowFactory,
-    renderBoundaryOverlays
+    rainbowFactory
 } from '../rasterData/helpers';
 
 const style = {
@@ -67,6 +64,7 @@ interface IState {
 
 const resultsMap = (props: IProps) => {
     const [state, setState] = useState<IState>({viewport: null});
+    const [renderKey, setRenderKey] = useState<string>(uuid.v4());
     const mapRef = useRef<Map | null>(null);
 
     useEffect(() => {
@@ -83,10 +81,18 @@ const resultsMap = (props: IProps) => {
         }
     }, [props.viewport]);
 
+    useEffect(() => {
+        setRenderKey(uuid.v4());
+    }, [props.activeCell]);
+
     const handleClickOnMap = ({latlng}: LeafletMouseEvent) => {
-        const x = latlng.lng;
-        const y = latlng.lat;
-        const activeCell = getActiveCellFromCoordinate([x, y], props.model.boundingBox, props.model.gridSize);
+        const activeCell = getCellFromClick(
+            props.model.boundingBox,
+            props.model.gridSize,
+            latlng,
+            props.model.rotation,
+            props.model.geometry.centerOfMass
+        );
 
         if (!props.model.gridSize.isWithIn(activeCell[0], activeCell[1])) {
             return;
@@ -117,33 +123,59 @@ const resultsMap = (props: IProps) => {
         const dX = props.model.boundingBox.dX / props.model.gridSize.nX;
         const dY = props.model.boundingBox.dY / props.model.gridSize.nY;
 
-        const selectedRowBoundsLatLng: Array<[number, number]> = [
-            [props.model.boundingBox.yMax - selectedRow * dY, props.model.boundingBox.xMin],
-            [props.model.boundingBox.yMax - (selectedRow + 1) * dY, props.model.boundingBox.xMax]
-        ];
+        const selectedRowJson = Geometry.fromGeoJson({
+            type: 'Feature',
+            geometry: {
+                type: 'Polygon',
+                coordinates: [
+                    [
+                        [props.model.boundingBox.xMin, props.model.boundingBox.yMax - selectedRow * dY],
+                        [props.model.boundingBox.xMax, props.model.boundingBox.yMax - selectedRow * dY],
+                        [props.model.boundingBox.xMax, props.model.boundingBox.yMax - (selectedRow + 1) * dY],
+                        [props.model.boundingBox.xMin, props.model.boundingBox.yMax - (selectedRow + 1) * dY],
+                        [props.model.boundingBox.xMin, props.model.boundingBox.yMax - selectedRow * dY]
+                    ]
+                ]
+            }
+        });
 
-        const selectedColBoundsLatLng: Array<[number, number]> = [
-            [props.model.boundingBox.yMin, props.model.boundingBox.xMin + selectedCol * dX],
-            [props.model.boundingBox.yMax, props.model.boundingBox.xMin + (selectedCol + 1) * dX]
-        ];
+        const selectedColJson = Geometry.fromGeoJson({
+            type: 'Feature',
+            geometry: {
+                type: 'Polygon',
+                coordinates: [
+                    [
+                        [props.model.boundingBox.xMin + selectedCol * dX, props.model.boundingBox.yMin],
+                        [props.model.boundingBox.xMin + selectedCol * dX, props.model.boundingBox.yMax],
+                        [props.model.boundingBox.xMin + (selectedCol + 1) * dX, props.model.boundingBox.yMax],
+                        [props.model.boundingBox.xMin + (selectedCol + 1) * dX, props.model.boundingBox.yMin],
+                        [props.model.boundingBox.xMin + selectedCol * dX, props.model.boundingBox.yMin]
+                    ]
+                ]
+            }
+        });
 
         return (
-            <FeatureGroup>
-                <Rectangle
-                    bounds={selectedColBoundsLatLng}
+            <FeatureGroup key={renderKey}>
+                <GeoJSON
+                    data={selectedColJson.toGeoJSONWithRotation(
+                        -1 * props.model.rotation, props.model.geometry.centerOfMass
+                    )}
                     color={style.selectedCol.color}
                     weight={style.selectedCol.weight}
                     opacity={style.selectedCol.opacity}
                     fillColor={style.selectedCol.fillColor}
                     fillOpacity={style.selectedCol.fillOpacity}
                 />
-                <Rectangle
-                    bounds={selectedRowBoundsLatLng}
-                    color={style.selectedRow.color}
-                    weight={style.selectedRow.weight}
-                    opacity={style.selectedRow.opacity}
-                    fillColor={style.selectedRow.fillColor}
-                    fillOpacity={style.selectedRow.fillOpacity}
+                <GeoJSON
+                    data={selectedRowJson.toGeoJSONWithRotation(
+                        -1 * props.model.rotation, props.model.geometry.centerOfMass
+                    )}
+                    color={style.selectedCol.color}
+                    weight={style.selectedCol.weight}
+                    opacity={style.selectedCol.opacity}
+                    fillColor={style.selectedCol.fillColor}
+                    fillOpacity={style.selectedCol.fillOpacity}
                 />
             </FeatureGroup>
         );
@@ -176,17 +208,6 @@ const resultsMap = (props: IProps) => {
         props.colors || ['#800080', '#ff2200', '#fcff00', '#45ff8e', '#15d6ff', '#0000FF']
     );
 
-    const mapProps = {
-        nX: props.model.gridSize.nX,
-        nY: props.model.gridSize.nY,
-        rainbow: rainbowVis,
-        dataArray: createGridData(props.data, props.model.gridSize.nX, props.model.gridSize.nY),
-        bounds: props.model.boundingBox.getBoundsLatLng(),
-        opacity: props.opacity || 0.5,
-        sharpening: 10,
-        zIndex: 1
-    } as MapLayerProps;
-
     return (
         <Map
             ref={mapRef}
@@ -201,25 +222,19 @@ const resultsMap = (props: IProps) => {
             <BasicTileLayer/>
             <LayersControl position="topright">
                 <LayersControl.Overlay name="Model area" checked={true}>
-                    <GeoJSON
-                        key={props.model.geometry.hash()}
-                        data={props.model.geometry.toGeoJSON()}
-                        style={getStyle('area')}
-                    />
+                    {renderAreaLayer(props.model.geometry)}
                 </LayersControl.Overlay>
-                <LayersControl.Overlay name={'Bounding Box'} checked={true}>
-                    <GeoJSON
-                        key={props.model.boundingBox.hash()}
-                        data={props.model.boundingBox.geoJson}
-                        style={getStyle('bounding_box')}
-                    />
-                </LayersControl.Overlay>
-                {renderBoundaryOverlays(props.boundaries)}
-                <ReactLeafletHeatMapCanvasOverlay
-                    {
-                        ...mapProps
-                    }
+                <ContourLayer
+                    boundingBox={props.model.boundingBox}
+                    data={props.data}
+                    geometry={props.model.geometry}
+                    gridSize={props.model.gridSize}
+                    rainbow={rainbowVis}
+                    rotation={props.model.rotation}
+                    steps={0}
                 />
+                {renderBoundingBoxLayer(props.model.boundingBox, props.model.rotation, props.model.geometry)}
+                {renderBoundaryOverlays(props.boundaries)}
                 {renderLegend(rainbowVis)}
             </LayersControl>
             {renderSelectedRowAndCol()}

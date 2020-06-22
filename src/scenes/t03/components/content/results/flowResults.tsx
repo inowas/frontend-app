@@ -107,6 +107,11 @@ const flowResults = (props: IProps) => {
         fetchData({layer, totim, type});
     };
 
+    const handleClickOnCell = (colRow: number[]) => {
+        setSelectedRow(colRow[1]);
+        setSelectedCol(colRow[0]);
+    };
+
     const {model, boundaries, soilmodel, calculation} = props;
 
     if (!(calculation instanceof Calculation)) {
@@ -156,10 +161,7 @@ const flowResults = (props: IProps) => {
                                         boundaries={boundaries}
                                         data={data}
                                         model={model}
-                                        onClick={(colRow) => {
-                                            setSelectedRow(colRow[1]);
-                                            setSelectedCol(colRow[0]);
-                                        }}
+                                        onClick={handleClickOnCell}
                                     />
                                     }
                                 </Accordion.Content>

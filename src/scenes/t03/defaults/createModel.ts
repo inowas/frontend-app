@@ -8,6 +8,8 @@ const createModelDefaults = {
     gridSize: GridSize.fromNxNy(100, 100),
     lengthUnit: 2,
     timeUnit: 4,
+    intersection: 0,
+    rotation: 0,
     isPublic: true,
     stressperiods: Stressperiods.fromObject({
         start_date_time: '2000-01-01T00:00:00.000Z',

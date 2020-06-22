@@ -169,10 +169,9 @@ const layerDetails = (props: IProps) => {
             if (parameter) {
                 return (
                     <ZonesEditor
-                        boundingBox={props.model.boundingBox}
                         boundaries={props.boundaries}
                         layer={SoilmodelLayer.fromObject(layer)}
-                        gridSize={props.model.gridSize}
+                        model={props.model}
                         onAddRelation={handleAddRelation}
                         onChange={handleChangeRelations}
                         onRemoveRelation={handleRemoveRelation}

@@ -1,19 +1,35 @@
-import {MapComponentProps} from 'react-leaflet';
-import {IBoundingBox} from '../../../core/model/geometry/BoundingBox.type';
+import {LatLngExpression} from 'leaflet';
+import {MapLayerProps} from 'react-leaflet';
+import {RainbowOrLegend} from '../../../services/rainbowvis/types';
 
-interface IData {
+export interface IData {
     x: number;
     y: number;
     value: number;
 }
 
-export interface IReactLeafletHeatMapCanvasOverlay extends MapComponentProps {
+export type IReactLeafletHeatMapProps = IOwnProps & MapLayerProps;
+
+interface IOwnProps {
     nX: number;
     nY: number;
-    dataArray: IData[];
-    bounds: IBoundingBox;
-    opacity: number;
-    rainbow: any;
-    sharpening: number;
-    zIndex: number;
+    data: IData[];
+    bounds: LatLngExpression[];
+    rainbow: RainbowOrLegend;
+    rotationAngle?: number;
+    rotationCenter?: number[];
+    sharpening?: number;
+}
+
+export interface IReactLeafletHeatMapClass {
+    setNX: (v: number) => any;
+    setNY: (v: number) => any;
+    setDataArray: (v: IData[]) => any;
+    setBounds: (v: LatLngExpression[]) => any;
+    setRainbow: (v: RainbowOrLegend) => any;
+    setOpacity: (v: number) => any;
+    setZIndex: (v: number) => any;
+    setSharpening: (v: number) => any;
+    setRotationAngle: (v: number) => any;
+    setRotationCenter: (v: number[]) => any;
 }

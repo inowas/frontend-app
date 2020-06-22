@@ -1,25 +1,25 @@
-import {Feature} from 'geojson';
 import * as GeoJson from 'geojson';
 import {LatLngExpression} from 'leaflet';
 import {uniqueId} from 'lodash';
 import md5 from 'md5';
-import React, {Component} from 'react';
-import {CircleMarker, GeoJSON, LayersControl, Map, Polygon, Polyline} from 'react-leaflet';
+import React from 'react';
+import {CircleMarker, GeoJSON, Map, Polygon, Polyline} from 'react-leaflet';
 import BoundingBox from '../../../../core/model/geometry/BoundingBox';
 import GridSize from '../../../../core/model/geometry/GridSize';
 import {Cells, Geometry} from '../../../../core/model/modflow';
 import {Boundary, BoundaryCollection, WellBoundary} from '../../../../core/model/modflow/boundaries';
-import ActiveCellsLayer from '../../../../services/geoTools/activeCellsLayer';
-
+import AffectedCellsLayer from '../../../../services/geoTools/affectedCellsLayer';
 import {getStyle} from '../../../../services/geoTools/mapHelpers';
 import {BasicTileLayer} from '../../../../services/geoTools/tileLayers';
+import {renderAreaLayer} from './mapLayers';
 
-export interface IPropsModelMap {
+export interface IProps {
     geometry: Geometry;
     boundaries: BoundaryCollection | null;
     boundingBox?: BoundingBox;
     cells?: Cells;
     gridSize?: GridSize;
+    rotation?: number;
 }
 
 const style = {
@@ -28,10 +28,8 @@ const style = {
     }
 };
 
-class ModelMap extends Component<IPropsModelMap> {
-
-    // noinspection JSMethodCanBeStatic
-    public renderBoundaryGeometry(b: Boundary, underlay = false) {
+const modelMap = (props: IProps) => {
+    const renderBoundaryGeometry = (b: Boundary, underlay = false) => {
         const geometry = b.geometry;
 
         if (!geometry) {
@@ -97,63 +95,46 @@ class ModelMap extends Component<IPropsModelMap> {
             default:
                 return null;
         }
-    }
+    };
 
-    public renderOtherBoundaries(boundaries: BoundaryCollection) {
+    const renderOtherBoundaries = (boundaries: BoundaryCollection) => {
         return boundaries.boundaries
-            .map((b: Boundary) => this.renderBoundaryGeometry(b, true));
-    }
+            .map((b: Boundary) => renderBoundaryGeometry(b, true));
+    };
 
-    public renderBoundingBox = (boundingBox: BoundingBox) => {
+    const renderBoundingBox = (boundingBox: BoundingBox) => {
+        const data = props.rotation && props.geometry ?
+            boundingBox.geoJsonWithRotation(props.rotation, props.geometry.centerOfMass) :
+            boundingBox.geoJson;
         return (
             <GeoJSON
-                key={md5(JSON.stringify(boundingBox.toObject()))}
-                data={boundingBox.geoJson as Feature}
+                key={md5(JSON.stringify(data))}
+                data={data}
                 style={getStyle('bounding_box')}
             />
         );
     };
 
-    public renderCells = () => {
-        const {boundingBox, cells, gridSize} = this.props;
-        if (boundingBox && gridSize && cells) {
-            return (
-                <ActiveCellsLayer
-                    boundingBox={boundingBox}
-                    gridSize={gridSize}
-                    cells={cells}
-                    styles={getStyle('active_cells')}
-                />
-            );
-        }
-    };
+    return (
+        <Map
+            style={style.map}
+            zoomControl={false}
+            bounds={props.geometry.getBoundsLatLng()}
+        >
+            <BasicTileLayer/>
+            {renderAreaLayer(props.geometry)}
+            {props.boundaries && renderOtherBoundaries(props.boundaries)}
+            {props.boundingBox && renderBoundingBox(props.boundingBox)}
+            {props.cells && props.boundingBox && props.gridSize &&
+            <AffectedCellsLayer
+                boundingBox={props.boundingBox}
+                cells={props.cells}
+                gridSize={props.gridSize}
+                rotation={props.rotation ? {geometry: props.geometry, angle: props.rotation} : undefined}
+            />
+            }
+        </Map>
+    );
+};
 
-    public render() {
-        const {geometry, boundaries, boundingBox, cells} = this.props;
-
-        return (
-            <Map
-                style={style.map}
-                zoomControl={false}
-                bounds={geometry.getBoundsLatLng()}
-            >
-                <BasicTileLayer/>
-                <GeoJSON
-                    key={geometry.hash()}
-                    data={geometry.toGeoJSON()}
-                    style={getStyle('area')}
-                />
-                {boundaries && this.renderOtherBoundaries(boundaries)}
-                {boundingBox && this.renderBoundingBox(boundingBox)}
-                {cells &&
-                <LayersControl position="topright">
-                    <LayersControl.Overlay name="Active cells">
-                        {this.renderCells()}
-                    </LayersControl.Overlay>
-                </LayersControl>}
-            </Map>
-        );
-    }
-}
-
-export default ModelMap;
+export default modelMap;
