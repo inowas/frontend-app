@@ -86,10 +86,10 @@ const stressperiodsEditor = (props: IProps) => {
                     <ContentToolBar
                         buttonSave={true}
                         buttonImport={
-                        <StressperiodsImport
-                            onChange={handleChangeImport}
-                            stressperiods={iStressperiods}
-                        />
+                            <StressperiodsImport
+                                onChange={handleChangeImport}
+                                stressperiods={iStressperiods}
+                            />
                         }
                         onSave={props.onSave}
                         onUndo={props.onUndo}
@@ -98,43 +98,54 @@ const stressperiodsEditor = (props: IProps) => {
             </Grid.Row>
             }
             <Grid.Row>
-                <Grid.Column width={5}>
+                <Grid.Column width={16}>
                     <Form color={'grey'}>
-                        <Form.Input
-                            type="date"
-                            label="Start Date"
-                            name={'startDateTime'}
-                            value={moment.utc(stressperiods.start_date_time).format('YYYY-MM-DD')}
-                            readOnly={true}
-                        />
-                        <Form.Input
-                            error={datesInvalid}
-                            type="date"
-                            label="End Date"
-                            name={'endDateTime'}
-                            value={endDateTime}
-                            onBlur={handleDateTimeChange}
-                            onChange={handleDateTimeChange}
-                            readOnly={props.model.readOnly}
-                        />
-                        <Form.Select
-                            label="Time unit"
-                            options={[{key: 4, text: 'days', value: 4}]}
-                            value={4}
-                            width={16}
-                            disabled={props.model.readOnly}
-                        />
+                        <Form.Group>
+                            <Form.Input
+                                type="date"
+                                label="Start Date"
+                                name={'startDateTime'}
+                                value={moment.utc(stressperiods.start_date_time).format('YYYY-MM-DD')}
+                                readOnly={true}
+                            />
+                            <Form.Input
+                                error={datesInvalid}
+                                type="date"
+                                label="End Date"
+                                name={'endDateTime'}
+                                value={endDateTime}
+                                onBlur={handleDateTimeChange}
+                                onChange={handleDateTimeChange}
+                                readOnly={props.model.readOnly}
+                            />
+                            <Form.Select
+                                label="Time unit"
+                                options={[{key: 4, text: 'days', value: 4}]}
+                                value={4}
+                                width={16}
+                                disabled={props.model.readOnly}
+                            />
+                            <Form.Input
+                                type="number"
+                                label="Total time"
+                                value={iStressperiods.totim}
+                                readOnly={true}
+                            />
+                        </Form.Group>
                     </Form>
-                    <Message color={'blue'}>
-                        <strong>Total time: </strong>{iStressperiods.totim} days
-                    </Message>
-                    {datesInvalid &&
+                </Grid.Column>
+            </Grid.Row>
+            {datesInvalid &&
+            <Grid.Row>
+                <Grid.Column width={6}>
                     <Message color={'red'}>
                         <strong>Error: </strong>Start date of last stress period is greater than end date.
                     </Message>
-                    }
                 </Grid.Column>
-                <Grid.Column width={11}>
+            </Grid.Row>
+            }
+            <Grid.Row>
+                <Grid.Column width={16}>
                     <StressPeriodsDataTable
                         readOnly={props.model.readOnly}
                         stressperiods={iStressperiods}

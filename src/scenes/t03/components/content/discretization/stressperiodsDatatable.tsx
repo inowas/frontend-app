@@ -12,7 +12,8 @@ interface IProps {
 }
 
 const stressPeriodsDataTable = (props: IProps) => {
-    const [activeInput, setActiveInput] = useState<number | null>(null);
+    const [activeSp, setActiveSp] = useState<number | null>(null);
+    const [activeInput, setActiveInput] = useState<string | null>(null);
     const [activeValue, setActiveValue] = useState<string>('');
     const [startDateError, setStartDateError] = useState<boolean>(false);
     const [showGenerator, setShowGenerator] = useState<boolean>(false);
@@ -63,40 +64,45 @@ const stressPeriodsDataTable = (props: IProps) => {
     };
 
     const handleStressperiodChange = (
-        e: ChangeEvent<HTMLInputElement>, {value, idx}: InputOnChangeData
+        e: ChangeEvent<HTMLInputElement>, {value, name, idx}: InputOnChangeData
     ) => {
-        setActiveInput(idx);
+        setActiveSp(idx);
+        setActiveInput(name);
         setActiveValue(value);
     };
 
     const handleChange = () => {
         setStartDateError(false);
         const stressperiods = props.stressperiods;
-        if (activeInput !== null && activeValue) {
-            const edited = stressperiods.stressperiods[activeInput];
-            edited.startDateTime = moment.utc(activeValue);
+        if (activeSp !== null && activeValue) {
+            const edited = stressperiods.stressperiods[activeSp];
 
-            if (edited.startDateTime.isSameOrBefore(stressperiods.startDateTime)) {
-                setActiveValue('');
-                setActiveInput(null);
-                setStartDateError(true);
-                return;
-            }
+            if (activeInput === 'startDateTime') {
+                edited.startDateTime = moment.utc(activeValue);
 
-            if (activeInput === 0) {
-                if (stressperiods.stressperiods.filter((sp) => sp.startDateTime.isBefore(moment.utc(activeValue))
-                ).length > 1) {
+                if (activeSp === 0) {
+                    stressperiods.startDateTime = moment.utc(activeValue);
+                }
+
+                if (activeSp !== 0 && edited.startDateTime.isSameOrBefore(stressperiods.startDateTime)) {
+                    setActiveSp(null);
                     setActiveValue('');
                     setActiveInput(null);
                     setStartDateError(true);
                     return;
                 }
-                stressperiods.startDateTime = moment.utc(activeValue);
+            }
+            if (activeInput === 'nstp') {
+                edited.nstp = parseFloat(activeValue);
+            }
+            if (activeInput === 'tsmult') {
+                edited.tsmult = parseFloat(activeValue);
             }
 
-            stressperiods.updateStressperiodByIdx(activeInput, edited);
+            stressperiods.updateStressperiodByIdx(activeSp, edited);
 
             setActiveValue('');
+            setActiveSp(null);
             setActiveInput(null);
 
             if (props.onChange) {
@@ -133,17 +139,40 @@ const stressPeriodsDataTable = (props: IProps) => {
                             type="date"
                             name={'startDateTime'}
                             idx={idx}
-                            value={
-                                activeInput === idx ? activeValue : sp.startDateTime.format('YYYY-MM-DD')
-                            }
+                            value={activeInput === 'startDateTime' && activeSp === idx ?
+                                activeValue : sp.startDateTime.format('YYYY-MM-DD')}
                             onBlur={handleChange}
                             onChange={handleStressperiodChange}
                         />
                     }
                 />
             </Table.Cell>
-            <Table.Cell>{sp.nstp}</Table.Cell>
-            <Table.Cell>{sp.tsmult}</Table.Cell>
+            <Table.Cell>
+                <Form.Input
+                    disabled={readOnly}
+                    type="number"
+                    name="nstp"
+                    idx={idx}
+                    value={
+                        activeInput === 'nstp' && activeSp === idx ? activeValue : sp.nstp
+                    }
+                    onBlur={handleChange}
+                    onChange={handleStressperiodChange}
+                />
+            </Table.Cell>
+            <Table.Cell>
+                <Form.Input
+                    disabled={readOnly}
+                    type="number"
+                    name="tsmult"
+                    idx={idx}
+                    value={
+                        activeInput === 'tsmult' && activeSp === idx ? activeValue : sp.tsmult.toFixed(3)
+                    }
+                    onBlur={handleChange}
+                    onChange={handleStressperiodChange}
+                />
+            </Table.Cell>
             <Table.Cell>
                 <Checkbox
                     name={'steady'}
