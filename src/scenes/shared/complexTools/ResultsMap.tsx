@@ -1,17 +1,17 @@
 import {LeafletMouseEvent} from 'leaflet';
 import React, {useEffect, useRef, useState} from 'react';
 import {
-    FeatureGroup,
+    FeatureGroup, GeoJSON,
     LayersControl,
     Map,
-    Rectangle,
     Viewport
 } from 'react-leaflet';
+import uuid from 'uuid';
 import {Array2D} from '../../../core/model/geometry/Array2D.type';
 import {ICell} from '../../../core/model/geometry/Cells.type';
-import {BoundingBox, GridSize, ModflowModel} from '../../../core/model/modflow';
+import {Geometry, ModflowModel} from '../../../core/model/modflow';
 import {BoundaryCollection} from '../../../core/model/modflow/boundaries';
-import {getActiveCellFromCoordinate} from '../../../services/geoTools';
+import {getCellFromClick} from '../../../services/geoTools/getCellFromClick';
 import {BasicTileLayer} from '../../../services/geoTools/tileLayers';
 import Rainbow from '../../../services/rainbowvis/Rainbowvis';
 import {renderAreaLayer, renderBoundaryOverlays, renderBoundingBoxLayer} from '../../t03/components/maps/mapLayers';
@@ -22,8 +22,6 @@ import {
     min,
     rainbowFactory
 } from '../rasterData/helpers';
-import {getCellFromClick} from "../../../services/geoTools/getCellFromClick";
-import {Feature, Point} from "@turf/helpers";
 
 const style = {
     map: {
@@ -66,6 +64,7 @@ interface IState {
 
 const resultsMap = (props: IProps) => {
     const [state, setState] = useState<IState>({viewport: null});
+    const [renderKey, setRenderKey] = useState<string>(uuid.v4());
     const mapRef = useRef<Map | null>(null);
 
     useEffect(() => {
@@ -81,6 +80,10 @@ const resultsMap = (props: IProps) => {
             setState({viewport});
         }
     }, [props.viewport]);
+
+    useEffect(() => {
+        setRenderKey(uuid.v4());
+    }, [props.activeCell]);
 
     const handleClickOnMap = ({latlng}: LeafletMouseEvent) => {
         const activeCell = getCellFromClick(
@@ -120,35 +123,59 @@ const resultsMap = (props: IProps) => {
         const dX = props.model.boundingBox.dX / props.model.gridSize.nX;
         const dY = props.model.boundingBox.dY / props.model.gridSize.nY;
 
-        const selectedRowBoundsLatLng: Array<[number, number]> = [
-            [props.model.boundingBox.yMax - selectedRow * dY, props.model.boundingBox.xMin],
-            [props.model.boundingBox.yMax - (selectedRow + 1) * dY, props.model.boundingBox.xMax]
-        ];
+        const selectedRowJson = Geometry.fromGeoJson({
+            type: 'Feature',
+            geometry: {
+                type: 'Polygon',
+                coordinates: [
+                    [
+                        [props.model.boundingBox.xMin, props.model.boundingBox.yMax - selectedRow * dY],
+                        [props.model.boundingBox.xMax, props.model.boundingBox.yMax - selectedRow * dY],
+                        [props.model.boundingBox.xMax, props.model.boundingBox.yMax - (selectedRow + 1) * dY],
+                        [props.model.boundingBox.xMin, props.model.boundingBox.yMax - (selectedRow + 1) * dY],
+                        [props.model.boundingBox.xMin, props.model.boundingBox.yMax - selectedRow * dY]
+                    ]
+                ]
+            }
+        });
 
-        const selectedColBoundsLatLng: Array<[number, number]> = [
-            [props.model.boundingBox.yMin, props.model.boundingBox.xMin + selectedCol * dX],
-            [props.model.boundingBox.yMax, props.model.boundingBox.xMin + (selectedCol + 1) * dX]
-        ];
-
-
+        const selectedColJson = Geometry.fromGeoJson({
+            type: 'Feature',
+            geometry: {
+                type: 'Polygon',
+                coordinates: [
+                    [
+                        [props.model.boundingBox.xMin + selectedCol * dX, props.model.boundingBox.yMin],
+                        [props.model.boundingBox.xMin + selectedCol * dX, props.model.boundingBox.yMax],
+                        [props.model.boundingBox.xMin + (selectedCol + 1) * dX, props.model.boundingBox.yMax],
+                        [props.model.boundingBox.xMin + (selectedCol + 1) * dX, props.model.boundingBox.yMin],
+                        [props.model.boundingBox.xMin + selectedCol * dX, props.model.boundingBox.yMin]
+                    ]
+                ]
+            }
+        });
 
         return (
-            <FeatureGroup>
-                <Rectangle
-                    bounds={selectedColBoundsLatLng}
+            <FeatureGroup key={renderKey}>
+                <GeoJSON
+                    data={selectedColJson.toGeoJSONWithRotation(
+                        -1 * props.model.rotation, props.model.geometry.centerOfMass
+                    )}
                     color={style.selectedCol.color}
                     weight={style.selectedCol.weight}
                     opacity={style.selectedCol.opacity}
                     fillColor={style.selectedCol.fillColor}
                     fillOpacity={style.selectedCol.fillOpacity}
                 />
-                <Rectangle
-                    bounds={selectedRowBoundsLatLng}
-                    color={style.selectedRow.color}
-                    weight={style.selectedRow.weight}
-                    opacity={style.selectedRow.opacity}
-                    fillColor={style.selectedRow.fillColor}
-                    fillOpacity={style.selectedRow.fillOpacity}
+                <GeoJSON
+                    data={selectedRowJson.toGeoJSONWithRotation(
+                        -1 * props.model.rotation, props.model.geometry.centerOfMass
+                    )}
+                    color={style.selectedCol.color}
+                    weight={style.selectedCol.weight}
+                    opacity={style.selectedCol.opacity}
+                    fillColor={style.selectedCol.fillColor}
+                    fillOpacity={style.selectedCol.fillOpacity}
                 />
             </FeatureGroup>
         );
