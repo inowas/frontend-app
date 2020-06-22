@@ -378,6 +378,7 @@ const boundaryDetails = (props: IProps) => {
                 onCancel={handleCancelGeometryEditor}
                 onChange={props.onChange}
                 readOnly={props.readOnly}
+                soilmodel={props.soilmodel}
             />
             }
             {(showObservationPointEditor && boundary instanceof LineBoundary) &&

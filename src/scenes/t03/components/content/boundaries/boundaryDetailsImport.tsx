@@ -188,6 +188,7 @@ class BoundaryDetailsImport extends React.Component<IProps, IState> {
                     onCancel={this.handleCancelGeometryEditor}
                     onChange={this.props.onChange}
                     readOnly={this.props.readOnly}
+                    soilmodel={this.props.soilmodel}
                 />
                 }
                 {(this.state.showObservationPointEditor && boundary instanceof LineBoundary) &&

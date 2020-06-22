@@ -1,10 +1,12 @@
 import {LineString, Point} from 'geojson';
 import {LatLngExpression} from 'leaflet';
 import {uniqueId} from 'lodash';
+import math from 'mathjs';
 import React from 'react';
 import {CircleMarker, FeatureGroup, GeoJSON, Map, Polygon, Polyline} from 'react-leaflet';
 import {EditControl} from 'react-leaflet-draw';
 import {Grid, Icon, List} from 'semantic-ui-react';
+import {Array2D} from '../../../../core/model/geometry/Array2D.type';
 import BoundingBox from '../../../../core/model/geometry/BoundingBox';
 import {GeoJson} from '../../../../core/model/geometry/Geometry.type';
 import GridSize from '../../../../core/model/geometry/GridSize';
@@ -14,6 +16,8 @@ import {
     BoundaryCollection,
     LineBoundary, WellBoundary,
 } from '../../../../core/model/modflow/boundaries';
+import {SoilmodelLayer} from '../../../../core/model/modflow/soilmodel';
+import Soilmodel from '../../../../core/model/modflow/soilmodel/Soilmodel';
 import AffectedCellsLayer from '../../../../services/geoTools/affectedCellsLayer';
 import {rotateCoordinateAroundPoint} from '../../../../services/geoTools/getCellFromClick';
 import {BasicTileLayer} from '../../../../services/geoTools/tileLayers';
@@ -34,6 +38,7 @@ interface IProps {
     readOnly: boolean;
     showActiveCells: boolean;
     showBoundaryGeometry: boolean;
+    soilmodel: Soilmodel;
 }
 
 const boundaryDiscretizationMap = (props: IProps) => {
@@ -177,12 +182,23 @@ const boundaryDiscretizationMap = (props: IProps) => {
     };
 
     const affectedCellsLayer = () => {
+        const affectedLayers = props.boundary.layers;
+
+        let cells: Array2D<number> = props.model.cells.toRaster(props.model.gridSize);
+        affectedLayers.forEach((l) => {
+            const layer = SoilmodelLayer.fromObject(props.soilmodel.layersCollection.all[l]);
+            const data = layer.getValueOfParameter('ibound');
+            if (data && Array.isArray(data)) {
+                cells = math.dotMultiply(cells, data) as Array2D<number>;
+            }
+        });
+
         return (
             <AffectedCellsLayer
                 boundary={props.boundary}
                 boundingBox={props.model.boundingBox}
                 gridSize={props.model.gridSize}
-                cells={props.model.cells}
+                cells={Cells.fromRaster(cells)}
                 rotation={{
                     geometry: props.model.geometry,
                     angle: props.model.rotation

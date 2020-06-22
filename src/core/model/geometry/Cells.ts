@@ -125,6 +125,16 @@ export default class Cells {
         return cells;
     }
 
+    public toRaster(gridSize: GridSize) {
+        const raster = new Array(gridSize.nY).fill(0).map(() => new Array(gridSize.nX).fill(0)) as Array2D<number>;
+
+        this.cells.forEach((c) => {
+            raster[c[1]][c[0]] = 1;
+        });
+
+        return raster;
+    }
+
     constructor(private _cells: ICells = []) {
     }
 
