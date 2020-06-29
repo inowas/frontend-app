@@ -1,4 +1,4 @@
-import React, {ComponentType} from 'react';
+import React, {ComponentType, useEffect} from 'react';
 import {useDispatch, useSelector} from 'react-redux';
 import {Route, useHistory} from 'react-router-dom';
 import {IRootReducer} from '../../reducers';
@@ -14,23 +14,36 @@ interface IProps {
 }
 
 const privateRoute = (props: IProps) => {
-
     const dispatch = useDispatch();
     const userStore = useSelector((state: IRootReducer) => state.user);
     const sessionStore = useSelector((state: IRootReducer) => state.session);
 
     const history = useHistory();
 
+    useEffect(() => {
+        if (!(getFetched(userStore))) {
+            fetchUser();
+            return;
+        }
+
+        if (!hasSessionKey(sessionStore)) {
+            history.push('/login');
+            return;
+        }
+
+        if (!userHasAccessToRoute()) {
+            history.push('/tools');
+        }
+    }, []);
+
     const fetchUser = () => {
         fetchUrl('/user',
             (response) => {
                 dispatch(setUser(response));
             },
-            (error: any) => {
-                if (error.response.status === 401) {
-                    dispatch(unauthorized);
-                    return history.push('/login');
-                }
+            () => {
+                dispatch(unauthorized);
+                history.push('/login');
             }
         );
     };
@@ -48,19 +61,6 @@ const privateRoute = (props: IProps) => {
 
         return hasAccess;
     };
-
-    if (!(getFetched(userStore))) {
-        fetchUser();
-        return null;
-    }
-
-    if (!hasSessionKey(sessionStore)) {
-        return history.push('/login');
-    }
-
-    if (!userHasAccessToRoute()) {
-        return history.push('/tools');
-    }
 
     const {component, ...rest} = props;
     return (<Route {...rest} component={component}/>);

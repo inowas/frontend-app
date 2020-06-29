@@ -14,7 +14,7 @@ import { sendCommand } from '../../../services/api';
 import AppContainer from '../../shared/AppContainer';
 import ToolNavigation from '../../shared/complexTools/toolNavigation';
 import ToolMetaData from '../../shared/simpleTools/ToolMetaData';
-import { IToolMetaData } from '../../shared/simpleTools/ToolMetaData/ToolMetaData.type';
+import {IToolMetaDataEdit} from '../../shared/simpleTools/ToolMetaData/ToolMetaData.type';
 import {
     updateScenarioAnalysis
 } from '../actions/actions';
@@ -166,7 +166,7 @@ const t07 = (props: RouteComponentProps<{
         }
     };
 
-    const handleChangeMetaData = (metaData: IToolMetaData) => {
+    const handleChangeMetaData = (metaData: IToolMetaDataEdit) => {
         if (!localScenarioAnalysis) {
             return null;
         }
@@ -316,8 +316,6 @@ const t07 = (props: RouteComponentProps<{
                             description: localScenarioAnalysis.description,
                             public: localScenarioAnalysis.public
                         }}
-                        defaultButton={false}
-                        saveButton={false}
                         onSave={handleSaveMetaData}
                     />
                 }

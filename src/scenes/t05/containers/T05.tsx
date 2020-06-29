@@ -11,7 +11,7 @@ import AppContainer from '../../shared/AppContainer';
 import ContentToolBar from '../../shared/ContentToolbar';
 import Command from '../../shared/simpleTools/commands/command';
 import ToolMetaData from '../../shared/simpleTools/ToolMetaData';
-import {IToolMetaData} from '../../shared/simpleTools/ToolMetaData/ToolMetaData.type';
+import {IToolMetaDataEdit} from '../../shared/simpleTools/ToolMetaData/ToolMetaData.type';
 import {
     CriteriaDataEditor,
     CriteriaEditor,
@@ -39,7 +39,7 @@ const t05 = (props: IProps) => {
     const [isDirty, setIsDirty] = useState<boolean>(false);
     const [isError, setIsError] = useState<boolean>(false);
     const [isLoading, setIsLoading] = useState<boolean>(true);
-    const [tool, setTool] = useState<IToolMetaData | null>(null);
+    const [tool, setTool] = useState<IToolMetaDataEdit | null>(null);
 
     const {id, cid, property} = props.match.params;
 
@@ -82,7 +82,7 @@ const t05 = (props: IProps) => {
     const readOnly = !includes(permissions, 'w');
     const menuItems = getMenuItems(mcda);
 
-    const buildPayload = (cTool: IToolMetaData) => {
+    const buildPayload = (cTool: IToolMetaDataEdit) => {
         return ({
             id: cTool.id,
             name: cTool.name,
@@ -136,7 +136,7 @@ const t05 = (props: IProps) => {
         return;
     };
 
-    const handleUpdateMetaData = (cTool: IToolMetaData) => {
+    const handleUpdateMetaData = (cTool: IToolMetaDataEdit) => {
         setTool(cTool);
     };
 
@@ -267,8 +267,6 @@ const t05 = (props: IProps) => {
                 readOnly={readOnly}
                 onChange={handleUpdateMetaData}
                 onSave={handleSaveMetadata}
-                defaultButton={false}
-                saveButton={false}
                 isDirty={isDirty}
             />
             <Grid padded={true}>
