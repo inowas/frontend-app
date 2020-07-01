@@ -70,7 +70,7 @@ const boundaries = (props: IProps) => {
     }, []);
 
     useEffect(() => {
-        editingState.current = messages.getEditingState('boundaries');
+        editingState.current = messages.getEditingState(property);
         if (selectedBoundary) {
             boundaryRef.current = selectedBoundary;
         }
@@ -123,13 +123,13 @@ const boundaries = (props: IProps) => {
                 setIsLoading(false);
                 setSelectedBoundary(cBoundary);
             },
-            (e) => dispatch(addMessage(messageError('boundaries', e)))
+            (e) => dispatch(addMessage(messageError(property, e)))
         );
     };
 
     const handleChangeBoundary = (cBoundary: Boundary) => {
         if (!editingState.current.dirty) {
-            dispatch(addMessage(messageDirty('boundaries')));
+            dispatch(addMessage(messageDirty(property)));
         }
         return setSelectedBoundary(cBoundary.toObject());
     };
@@ -158,11 +158,11 @@ const boundaries = (props: IProps) => {
                             dispatch(updateBoundaries(cBoundaries));
                             handleBoundaryClick(clonedBoundary.id);
                         },
-                        (e) => dispatch(addMessage(messageError('boundaries', e)))
+                        (e) => dispatch(addMessage(messageError(property, e)))
                     );
                 }
             },
-            (e) => dispatch(addMessage(messageError('boundaries', e)))
+            (e) => dispatch(addMessage(messageError(property, e)))
         );
     };
 
@@ -173,7 +173,7 @@ const boundaries = (props: IProps) => {
                 dispatch(updateBoundaries(cBoundaries));
                 return redirectToFirstBoundary();
             },
-            (e) => dispatch(addMessage(messageError('boundaries', e)))
+            (e) => dispatch(addMessage(messageError(property, e)))
         );
     };
 
@@ -189,7 +189,7 @@ const boundaries = (props: IProps) => {
         if (!boundaryRef.current || !editingState.current.dirty) {
             return;
         }
-        const message = messageSaving('boundaries');
+        const message = messageSaving(property);
         dispatch(addMessage(message));
         const cBoundary = BoundaryFactory.fromObject(boundaryRef.current);
         return sendCommand(ModflowModelCommand.updateBoundary(model.id, cBoundary),
@@ -204,7 +204,7 @@ const boundaries = (props: IProps) => {
                 }
                 dispatch(updateMessage({...message, state: EMessageState.SUCCESS}));
             },
-            (e) => dispatch(addMessage(messageError('boundaries', e)))
+            (e) => dispatch(addMessage(messageError(property, e)))
         );
     };
 
