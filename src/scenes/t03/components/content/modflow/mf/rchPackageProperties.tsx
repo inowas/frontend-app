@@ -31,7 +31,6 @@ const rchPackageProperties = (props: IProps) => {
     if (!basPackage || !(basPackage instanceof FlopyModflowMfbas)) {
         return null;
     }
-    const {ibound} = basPackage;
 
     return (
         <Form>
@@ -42,7 +41,7 @@ const rchPackageProperties = (props: IProps) => {
                         <Label>Stress period data (SP1)</Label>
                         <RasterDataImage
                             data={spData2D}
-                            gridSize={GridSize.fromArray([0, 0])/*GridSize.fromData(ibound)*/}
+                            gridSize={GridSize.fromData(spData2D)}
                             unit={''}
                             border={'1px dotted black'}
                         />

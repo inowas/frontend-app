@@ -27,7 +27,7 @@ const privateRoute = (props: IProps) => {
         }
 
         if (!hasSessionKey(sessionStore)) {
-            history.push('/login');
+            history.push('/logout');
             return;
         }
 
@@ -43,7 +43,6 @@ const privateRoute = (props: IProps) => {
             },
             () => {
                 dispatch(unauthorized);
-                history.push('/login');
             }
         );
     };
