@@ -249,24 +249,26 @@ export const canvasHeatMapOverlayClass = Layer.extend({
 
     _runDraw() {
         this._ctx.clearRect(0, 0, this._canvas.width, this._canvas.height);
-        this._dataArray.forEach((d: IData) => {
-            if (isNaN(d.value)) {
-                this._ctx.clearRect(d.x, d.y, this._canvas.width, this._canvas.height);
-            } else if (this._rainbow instanceof Rainbow) {
-                this._drawRasterCell(
-                    d.x, d.y, this._sharpening, this._sharpening, '#' + this._rainbow.colorAt(d.value)
-                );
-            } else {
-                const data = this._rainbow[0].isContinuous ?
-                    (this._rainbow as ILegendItemContinuous[])
-                        .filter((row) => (row.fromOperator === '>' ? d.value > row.from :
-                            d.value >= row.from) && (row.toOperator === '<' ? d.value < row.to : d.value <= row.to)) :
-                    (this._rainbow as ILegendItemDiscrete[]).filter((row) => row.value === d.value);
-                this._drawRasterCell(
-                    d.x, d.y, this._sharpening, this._sharpening, data.length > 0 ? data[0].color : '#fff'
-                );
-            }
-        });
+        if (Array.isArray(this._dataArray)) {
+            this._dataArray.forEach((d: IData) => {
+                if (isNaN(d.value)) {
+                    this._ctx.clearRect(d.x, d.y, this._canvas.width, this._canvas.height);
+                } else if (this._rainbow instanceof Rainbow) {
+                    this._drawRasterCell(
+                        d.x, d.y, this._sharpening, this._sharpening, '#' + this._rainbow.colorAt(d.value)
+                    );
+                } else {
+                    const data = this._rainbow[0].isContinuous ?
+                        (this._rainbow as ILegendItemContinuous[])
+                            .filter((row) => (row.fromOperator === '>' ? d.value > row.from :
+                                d.value >= row.from) && (row.toOperator === '<' ? d.value < row.to : d.value <= row.to))
+                        : (this._rainbow as ILegendItemDiscrete[]).filter((row) => row.value === d.value);
+                    this._drawRasterCell(
+                        d.x, d.y, this._sharpening, this._sharpening, data.length > 0 ? data[0].color : '#fff'
+                    );
+                }
+            });
+        }
     },
 
     _updateOpacity() {
