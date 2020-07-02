@@ -69,7 +69,7 @@ const toolMetaData = (props: IProps) => {
                 <Breadcrumb.Section>{tool.tool}. {fTool.name}</Breadcrumb.Section>
                 <Breadcrumb.Divider icon="right arrow"/>
                 <Breadcrumb.Section active={true}>
-                    {fTool.name}
+                    {tool.name}
                     {!props.readOnly &&
                     <Button basic={true} size={'small'} icon="pencil" onClick={handleButtonClick}/>}
                 </Breadcrumb.Section>

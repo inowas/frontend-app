@@ -15,13 +15,15 @@ import {getCellFromClick} from '../../../services/geoTools/getCellFromClick';
 import {BasicTileLayer} from '../../../services/geoTools/tileLayers';
 import Rainbow from '../../../services/rainbowvis/Rainbowvis';
 import {renderAreaLayer, renderBoundaryOverlays, renderBoundingBoxLayer} from '../../t03/components/maps/mapLayers';
-import {ColorLegend} from '../rasterData';
+import {ColorLegend, ReactLeafletHeatMapCanvasOverlay} from '../rasterData';
 import ContourLayer from '../rasterData/contourLayer';
 import {
+    createGridData,
     max,
     min,
     rainbowFactory
 } from '../rasterData/helpers';
+import {IReactLeafletHeatMapProps} from '../rasterData/ReactLeafletHeatMapCanvasOverlay.type';
 
 const style = {
     map: {
@@ -208,6 +210,17 @@ const resultsMap = (props: IProps) => {
         props.colors || ['#800080', '#ff2200', '#fcff00', '#45ff8e', '#15d6ff', '#0000FF']
     );
 
+    const mapProps = {
+        nX: props.model.gridSize.nX,
+        nY: props.model.gridSize.nY,
+        rainbow: rainbowVis,
+        data: createGridData(props.data, props.model.gridSize.nX, props.model.gridSize.nY),
+        bounds: props.model.boundingBox.getBoundsLatLng(),
+        opacity: 0.75,
+        sharpening: 10,
+        zIndex: 1
+    } as IReactLeafletHeatMapProps;
+
     return (
         <Map
             ref={mapRef}
@@ -224,15 +237,22 @@ const resultsMap = (props: IProps) => {
                 <LayersControl.Overlay name="Model area" checked={true}>
                     {renderAreaLayer(props.model.geometry)}
                 </LayersControl.Overlay>
-                <ContourLayer
-                    boundingBox={props.model.boundingBox}
-                    data={props.data}
-                    geometry={props.model.geometry}
-                    gridSize={props.model.gridSize}
-                    rainbow={rainbowVis}
-                    rotation={props.model.rotation}
-                    steps={0}
-                />
+                {props.model.rotation % 360 !== 0 ?
+                    <ContourLayer
+                        boundingBox={props.model.boundingBox}
+                        data={props.data}
+                        geometry={props.model.geometry}
+                        gridSize={props.model.gridSize}
+                        rainbow={rainbowVis}
+                        rotation={props.model.rotation}
+                        steps={0}
+                    /> :
+                    <ReactLeafletHeatMapCanvasOverlay
+                        {
+                            ...mapProps
+                        }
+                    />
+                }
                 {renderBoundingBoxLayer(props.model.boundingBox, props.model.rotation, props.model.geometry)}
                 {renderBoundaryOverlays(props.boundaries)}
                 {renderLegend(rainbowVis)}
