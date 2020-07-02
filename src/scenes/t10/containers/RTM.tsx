@@ -4,12 +4,12 @@ import {Grid, Icon, Message} from 'semantic-ui-react';
 import {Rtm, Sensor} from '../../../core/model/rtm';
 import {IRtm} from '../../../core/model/rtm/Rtm.type';
 import {ISensorParameter} from '../../../core/model/rtm/Sensor.type';
-import {IMetaData} from '../../../core/model/types';
 import {fetchUrl, sendCommand} from '../../../services/api';
 import AppContainer from '../../shared/AppContainer';
 import ToolNavigation from '../../shared/complexTools/toolNavigation';
 import SimpleToolsCommand from '../../shared/simpleTools/commands/SimpleToolsCommand';
 import ToolMetaData from '../../shared/simpleTools/ToolMetaData';
+import {IToolMetaDataEdit} from '../../shared/simpleTools/ToolMetaData/ToolMetaData.type';
 import {DataSources, Processing, SensorMetaData, Sensors, Visualization} from '../components/index';
 
 export interface IProps extends RouteComponentProps<{ id: string, property: string, pid: string }> {
@@ -108,7 +108,7 @@ const RTM = (props: IProps) => {
         onSave(lRtm);
     };
 
-    const onchangeMetaData = (metaData: IMetaData) => {
+    const onchangeMetaData = (metaData: IToolMetaDataEdit) => {
         if (rtm) {
             setRtm({
                     ...rtm,
@@ -227,8 +227,6 @@ const RTM = (props: IProps) => {
                     description: rtm.description,
                     public: rtm.public
                 }}
-                defaultButton={false}
-                saveButton={false}
                 onSave={onSave}
             />
             <Grid padded={true}>

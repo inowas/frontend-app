@@ -17,7 +17,7 @@ import {sendCommand} from '../../../services/api';
 import AppContainer from '../../shared/AppContainer';
 import MessageBox from '../../shared/MessageBox';
 import ToolMetaData from '../../shared/simpleTools/ToolMetaData';
-import {IToolMetaData} from '../../shared/simpleTools/ToolMetaData/ToolMetaData.type';
+import {IToolMetaDataEdit} from '../../shared/simpleTools/ToolMetaData/ToolMetaData.type';
 import {
     clear,
     updateBoundaries,
@@ -98,7 +98,7 @@ const t03 = (props: IProps) => {
         return null;
     };
 
-    const saveMetaData = (tool: IToolMetaData) => {
+    const saveMetaData = (tool: IToolMetaDataEdit) => {
         const {name, description} = tool;
         const isPublic = tool.public;
 
@@ -130,8 +130,6 @@ const t03 = (props: IProps) => {
                         description: props.model.description,
                         public: props.model.isPublic
                     }}
-                    defaultButton={false}
-                    saveButton={false}
                     onSave={saveMetaData}
                 />}
                 <Grid padded={true}>

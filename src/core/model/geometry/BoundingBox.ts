@@ -64,6 +64,14 @@ class BoundingBox {
         };
     }
 
+    get heightInMeters() {
+        return turf.distance([this.xMin, this.yMin], [this.xMin, this.yMax], {units: 'meters'});
+    }
+
+    get widthInMeters() {
+        return turf.distance([this.xMin, this.yMin], [this.xMax, this.yMin], {units: 'meters'});
+    }
+
     get rotationPoint() {
         return turf.centerOfMass(this.geoJson as AllGeoJSON);
     }
@@ -184,7 +192,6 @@ class BoundingBox {
 
     public sameAs = (obj: BoundingBox) => {
         return isEqual(obj.toObject(), this.toObject());
-
     };
 }
 

@@ -4,12 +4,12 @@ import {GeoJsonObject} from 'geojson';
 import {uniqueId} from 'lodash';
 import React, {FormEvent, useEffect, useState} from 'react';
 import {GeoJSON, Map} from 'react-leaflet';
-import {Button, Form, Grid, Icon, InputOnChangeData, Modal} from 'semantic-ui-react';
-import uuid from 'uuid';
+import {Button, Checkbox, Form, Grid, Icon, InputOnChangeData, Modal} from 'semantic-ui-react';
 import {ICells} from '../../../../../core/model/geometry/Cells.type';
 import {IGridSize} from '../../../../../core/model/geometry/GridSize.type';
 import {BoundingBox, Cells, Geometry, GridSize} from '../../../../../core/model/modflow';
 import AffectedCellsLayer from '../../../../../services/geoTools/affectedCellsLayer';
+import {dxCell, dyCell} from '../../../../../services/geoTools/distance';
 import {getStyle} from '../../../../../services/geoTools/mapHelpers';
 import {BasicTileLayer} from '../../../../../services/geoTools/tileLayers';
 import SliderWithTooltip from '../../../../shared/complexTools/SliderWithTooltip';
@@ -38,15 +38,15 @@ const style = {
 const gridProperties = (props: IProps) => {
     const [activeInput, setActiveInput] = useState<string | null>(null);
     const [activeValue, setActiveValue] = useState<string>('');
-
     const [boundingBox, setBoundingBox] = useState<GeoJsonObject>(props.boundingBox.geoJson);
     const [boundingBoxRotated, setBoundingBoxRotated] = useState<GeoJsonObject | null>(null);
     const [cells, setCells] = useState<ICells | null>(null);
+    const [cellSize, setCellSize] = useState<[number, number]>([0, 0]);
+    const [editingMode, setEditingMode] = useState<string>('gridSize');
     const [gridSize, setGridSize] = useState<IGridSize>(props.gridSize.toObject());
     const [intersection, setIntersection] = useState<number>(props.intersection);
     const [isCalculating, setIsCalculating] = useState<boolean>(false);
     const [rotation, setRotation] = useState<number>(props.rotation);
-
     const [showModal, setShowModal] = useState<boolean>(false);
 
     useEffect(() => {
@@ -64,6 +64,15 @@ const gridProperties = (props: IProps) => {
             return calculateRotation(rotation);
         }
     }, [isCalculating]);
+
+    useEffect(() => {
+        setCellSize([
+            Math.round(dyCell(BoundingBox.fromGeoJson(boundingBox as AllGeoJSON),
+                GridSize.fromObject(gridSize)) * 10000) / 10,
+            Math.round(dxCell(BoundingBox.fromGeoJson(boundingBox as AllGeoJSON),
+                GridSize.fromObject(gridSize)) * 10000) / 10
+        ]);
+    }, [gridSize]);
 
     const calculateRotation = (r: number) => {
         // No rotation:
@@ -105,6 +114,25 @@ const gridProperties = (props: IProps) => {
         });
     };
 
+    const handleBlurCellSize = () => {
+        const value = parseFloat(activeValue);
+
+        const cBoundingBox = BoundingBox.fromGeoJson(boundingBox as AllGeoJSON);
+        const length = activeInput === 'cH' ? cBoundingBox.heightInMeters : cBoundingBox.widthInMeters;
+        const amount = Math.floor(length / value);
+
+        const cGridSize = GridSize.fromObject(gridSize);
+        if (activeInput === 'cH') {
+            cGridSize.nY = amount;
+        }
+        if (activeInput === 'cW') {
+            cGridSize.nX = amount;
+        }
+
+        setActiveInput(null);
+        setGridSize(cGridSize.toObject());
+    };
+
     const handleBlurGridSize = () => {
         const g = GridSize.fromObject(gridSize);
         if (activeInput === 'nX') {
@@ -117,7 +145,7 @@ const gridProperties = (props: IProps) => {
         setGridSize(g.toObject());
     };
 
-    const handleChangeGridSize = (e: FormEvent<HTMLInputElement>, {name, value}: InputOnChangeData) => {
+    const handleChangeInput = (e: FormEvent<HTMLInputElement>, {name, value}: InputOnChangeData) => {
         setActiveInput(name);
         setActiveValue(value);
     };
@@ -126,11 +154,17 @@ const gridProperties = (props: IProps) => {
         setIntersection(value);
     };
 
-    const handleChangeRotation = (value: number) => {
+    const handleChangeRotation = (value: number, remainder?: [number, number]) => {
         const withRotation = turf.transformRotate(
             props.geometry.toGeoJSON(), -1 * value, {pivot: props.geometry.centerOfMass}
         );
-        const bbox = BoundingBox.fromGeoJson(withRotation);
+        let bbox = BoundingBox.fromGeoJson(withRotation);
+        if (remainder) {
+            bbox = BoundingBox.fromPoints([
+                {type: 'Point', coordinates: [bbox.xMin - remainder[0], bbox.yMin - remainder[1]]},
+                {type: 'Point', coordinates: [bbox.xMax + remainder[0], bbox.yMax + remainder[1]]}
+            ]);
+        }
         const bboxWithRotation = bbox.geoJsonWithRotation(value, props.geometry.centerOfMass);
         setBoundingBoxRotated(bboxWithRotation);
         setRotation(value);
@@ -220,23 +254,68 @@ const gridProperties = (props: IProps) => {
             <Form>
                 <Grid>
                     <Grid.Row>
-                        <Grid.Column>
+                        <p>Edit by</p>
+                    </Grid.Row>
+                    <Grid.Row>
+                        <Grid.Column width={8}>
+                            <Checkbox
+                                radio={true}
+                                label="Set by grid size"
+                                name="checkboxRadioGroup"
+                                checked={editingMode === 'gridSize'}
+                                onChange={() => setEditingMode('gridSize')}
+                            />
+                        </Grid.Column>
+                        <Grid.Column width={8}>
+                            <Checkbox
+                                radio={true}
+                                label="Set by cell size"
+                                name="checkboxRadioGroup"
+                                checked={editingMode === 'cellSize'}
+                                onChange={() => setEditingMode('cellSize')}
+                            />
+                        </Grid.Column>
+                    </Grid.Row>
+                    <Grid.Row>
+                        <Grid.Column width={8}>
                             <Form.Group>
                                 <Form.Input
                                     type="number"
                                     label="Rows"
                                     name={'nY'}
                                     value={activeInput === 'nY' ? activeValue : gridSize.n_y}
-                                    onChange={handleChangeGridSize}
+                                    onChange={handleChangeInput}
                                     onBlur={handleBlurGridSize}
+                                    readOnly={editingMode === 'cellSize'}
                                 />
                                 <Form.Input
                                     type="number"
                                     label="Columns"
                                     name={'nX'}
                                     value={activeInput === 'nX' ? activeValue : gridSize.n_x}
-                                    onChange={handleChangeGridSize}
+                                    onChange={handleChangeInput}
                                     onBlur={handleBlurGridSize}
+                                    readOnly={editingMode === 'cellSize'}
+                                />
+                            </Form.Group>
+                        </Grid.Column>
+                        <Grid.Column width={8}>
+                            <Form.Group>
+                                <Form.Input
+                                    label="Cell height"
+                                    name="cH"
+                                    value={activeInput === 'cH' ? activeValue : cellSize[0]}
+                                    onChange={handleChangeInput}
+                                    onBlur={handleBlurCellSize}
+                                    readOnly={editingMode === 'gridSize'}
+                                />
+                                <Form.Input
+                                    label="Cell width"
+                                    name="cW"
+                                    value={activeInput === 'cW' ? activeValue : cellSize[1]}
+                                    onChange={handleChangeInput}
+                                    onBlur={handleBlurCellSize}
+                                    readOnly={editingMode === 'gridSize'}
                                 />
                             </Form.Group>
                         </Grid.Column>
@@ -297,13 +376,6 @@ const gridProperties = (props: IProps) => {
                             bounds={props.boundingBox.getBoundsLatLng()}
                         >
                             {renderAreaLayer(props.geometry)}
-                            {!isCalculating && false &&
-                            <GeoJSON
-                                key={uuid.v4()}
-                                data={boundingBox}
-                                style={getStyle('bounding_box')}
-                            />
-                            }
                             {boundingBoxRotated &&
                             <GeoJSON
                                 key={uniqueId()}
@@ -359,7 +431,7 @@ const gridProperties = (props: IProps) => {
                 open={showModal}
                 onClose={handleToggleModal}
             >
-                <Modal.Header>Grid rotation</Modal.Header>
+                <Modal.Header>Grid Properties</Modal.Header>
                 <Modal.Content>
                     {cells ? renderCells() : renderPreview()}
                 </Modal.Content>

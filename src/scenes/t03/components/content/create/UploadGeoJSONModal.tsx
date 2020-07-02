@@ -1,9 +1,11 @@
 import * as GeoJson from 'geojson';
+import {GeoJsonGeometryTypes} from 'geojson';
 import {LatLngBoundsExpression, LatLngExpression} from 'leaflet';
 import {uniqueId} from 'lodash';
-import React, {useEffect, useRef, useState} from 'react';
+import _ from 'lodash';
+import React, {MouseEvent, useEffect, useRef, useState} from 'react';
 import {CircleMarker, Map, Polygon, Polyline} from 'react-leaflet';
-import {Button, Form, Grid, Modal} from 'semantic-ui-react';
+import {Button, Form, Grid, Modal, Tab, TabProps} from 'semantic-ui-react';
 import {SemanticSIZES} from 'semantic-ui-react/dist/commonjs/generic';
 import {BoundingBox} from '../../../../../core/model/geometry';
 import {IGeometry} from '../../../../../core/model/geometry/Geometry.type';
@@ -12,6 +14,7 @@ import {JSON_SCHEMA_URL} from '../../../../../services/api';
 import {getStyle} from '../../../../../services/geoTools/mapHelpers';
 import {BasicTileLayer} from '../../../../../services/geoTools/tileLayers';
 import {validate} from '../../../../../services/jsonSchemaValidator';
+import UploadGeoJSONFile from './UploadGeoJSONFile';
 
 type TGeometryString = 'linestring' | 'point' | 'polygon';
 
@@ -77,6 +80,7 @@ const uploadGeoJSONModal = (props: IProps) => {
     const [geometry, setGeometry] = useState<IGeometry | undefined>(undefined);
     const [geoJson, setGeoJson] = useState<string>('');
     const [isValid, setIsValid] = useState<boolean>(false);
+    const [activeTab, setActiveTab] = useState<number>(0);
 
     const mapRef = useRef<Map>(null);
 
@@ -128,6 +132,12 @@ const uploadGeoJSONModal = (props: IProps) => {
         if (isValid) {
             const parsedJSON = JSON.parse(geoJson);
             setGeoJson(JSON.stringify(parsedJSON, undefined, 4));
+        }
+    };
+
+    const handleChangeTab = (e: MouseEvent<HTMLDivElement>, {activeIndex}: TabProps) => {
+        if (activeIndex !== undefined) {
+            setActiveTab(typeof activeIndex === 'number' ? activeIndex : parseInt(activeIndex, 10));
         }
     };
 
@@ -192,30 +202,53 @@ const uploadGeoJSONModal = (props: IProps) => {
                 <Grid columns={2}>
                     <Grid.Row>
                         <Grid.Column>
-                            <Form>
-                                <Form.TextArea
-                                    onChange={handleChangeGeoJSON}
-                                    onBlur={handleBlurGeoJSON}
-                                    placeholder={props.geometry ? `Paste GeoJson here:
-
-${examples[props.geometry]}` : 'Paste GeoJson here.'}
-                                    value={geoJson}
-                                    width={16}
-                                    style={style.textArea}
-                                />
-                            </Form>
-                        </Grid.Column>
-                        <Grid.Column>
-                            <Map
-                                style={style.map}
-                                bounds={getBoundsLatLng()}
-                                ref={mapRef}
-                            >
-                                <BasicTileLayer/>
-                                {geometry && areaLayer()}
-                            </Map>
+                            <Tab
+                                activeIndex={activeTab}
+                                menu={{
+                                    secondary: true,
+                                    pointing: true
+                                }}
+                                panes={[
+                                    {menuItem: 'Copy/Paste'},
+                                    {menuItem: 'File'}
+                                ]}
+                                onTabChange={handleChangeTab}
+                            />
                         </Grid.Column>
                     </Grid.Row>
+                    {activeTab === 0 ?
+                        <Grid.Row>
+                            <Grid.Column>
+                                    <Form>
+                                        <Form.TextArea
+                                            onChange={handleChangeGeoJSON}
+                                            onBlur={handleBlurGeoJSON}
+                                            placeholder={`Paste GeoJson here:
+${props.geometry ? examples[props.geometry] : examples.polygon}`}
+                                            value={geoJson}
+                                            width={16}
+                                            style={style.textArea}
+                                        />
+                                    </Form>
+                            </Grid.Column>
+                            <Grid.Column>
+                                <Map
+                                    style={style.map}
+                                    bounds={getBoundsLatLng()}
+                                    ref={mapRef}
+                                >
+                                    <BasicTileLayer/>
+                                    {geometry && areaLayer()}
+                                </Map>
+                            </Grid.Column>
+                        </Grid.Row>
+                        :
+                        <UploadGeoJSONFile
+                            geometry={geometry ? Geometry.fromObject(geometry) : undefined}
+                            onChange={(data) => handleChangeGeoJSON(undefined, {value: data})}
+                            type={_.capitalize(props.geometry) as GeoJsonGeometryTypes || 'Polygon'}
+                        />
+                    }
                 </Grid>
             </Modal.Content>
             <Modal.Actions>
