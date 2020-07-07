@@ -1,5 +1,4 @@
 import Discretization from './discretization';
-import DiscretizationImport from './discretizationImport';
 import DiscretizationMap from './discretizationMap';
 import GridEditor from './gridEditor';
 import GridProperties from './gridProperties';
@@ -10,7 +9,6 @@ import StressperiodsImport from './stressperiodsImport';
 
 export {
     Discretization,
-    DiscretizationImport,
     DiscretizationMap,
     GridEditor,
     GridProperties,

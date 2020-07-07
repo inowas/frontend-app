@@ -11,7 +11,6 @@ import {sendCommand} from '../../../../../services/api';
 import {addMessage, removeMessage, updateMessage, updateModel} from '../../../actions/actions';
 import ModflowModelCommand from '../../../commands/modflowModelCommand';
 import {messageDirty, messageSaving} from '../../../defaults/messages';
-import DiscretizationImport from './discretizationImport';
 import GridEditor from './gridEditor';
 import StressperiodsEditor from './stressperiodsEditor';
 
@@ -148,11 +147,6 @@ const discretization = () => {
                                     {i.name}
                                 </Menu.Item>
                             )}
-                            <Menu.Item>&nbsp;</Menu.Item>
-                            {model && !ModflowModel.fromObject(model).readOnly &&
-                            boundaries && boundaries.length === 0 &&
-                            <DiscretizationImport onChange={handleChangeModel} model={ModflowModel.fromObject(model)}/>
-                            }
                         </Menu>
                     </Grid.Column>
                     <Grid.Column width={13}>
