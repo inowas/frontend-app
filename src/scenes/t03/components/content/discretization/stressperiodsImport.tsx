@@ -1,12 +1,15 @@
 import * as moment from 'moment';
 import Papa from 'papaparse';
 import React, {ChangeEvent, useState} from 'react';
+import {useDispatch} from 'react-redux';
 import {Button, Divider, Grid, Header, Icon, List, Modal, Segment} from 'semantic-ui-react';
 import Stressperiods from '../../../../../core/model/modflow/Stressperiods';
 import {IStressPeriods} from '../../../../../core/model/modflow/Stressperiods.type';
 import {ITimeUnit} from '../../../../../core/model/modflow/TimeUnit.type';
 import {AdvancedCsvUpload} from '../../../../shared/simpleTools/upload';
 import {ECsvColumnType} from '../../../../shared/simpleTools/upload/types';
+import {addMessage} from '../../../actions/actions';
+import {messageError} from '../../../defaults/messages';
 import {StressperiodsDatatable} from './index';
 
 interface IProps {
@@ -20,6 +23,8 @@ const stressperiodsImport = (props: IProps) => {
     const [isLoading, setIsLoading] = useState<boolean>(false);
     const [showImportModal, setShowImportModal] = useState<boolean>(false);
     const [showAdvancedImportModal, setShowAdvancedImportModal] = useState<boolean>(false);
+
+    const dispatch = useDispatch();
 
     const handleCancel = () => {
         setShowAdvancedImportModal(false);
@@ -89,20 +94,38 @@ const stressperiodsImport = (props: IProps) => {
                         ('tsmult' in firstRowData) &&
                         ('steady' in firstRowData)
                     ) {
+                        const startDate = moment.utc(firstRowData.start_date_time).format();
+                        const endDate = moment.utc(results.data.pop().start_date_time).format();
+                        const sp = results.data.map((d) => {
+                            d.start_date_time = moment.utc(d.start_date_time).format();
+                            d.steady = d.steady === true || d.steady === 1;
+                            return d;
+                        });
+
+                        if (startDate === 'Invalid date') {
+                            dispatch(addMessage(messageError('discretization', 'Start date invalid.')));
+                        }
+                        if (endDate === 'Invalid date') {
+                            dispatch(addMessage(messageError('discretization', 'End date invalid.')));
+                        }
+                        if (sp.filter((s) => s.start_date_time === 'Invalid date').length > 0) {
+                            dispatch(addMessage(messageError('discretization', 'At least one of the stress' +
+                                'periods has an invalid start date.')));
+                        }
+
                         const stressPeriods = new Stressperiods({
-                            start_date_time: moment.utc(firstRowData.start_date_time).format(),
-                            end_date_time: moment.utc(results.data.pop().start_date_time).format(),
-                            stressperiods: results.data.map((d) => {
-                                d.start_date_time = moment.utc(d.start_date_time).format();
-                                d.steady = d.steady === true || d.steady === 1;
-                                return d;
-                            }),
+                            start_date_time: startDate,
+                            end_date_time: endDate,
+                            stressperiods: sp,
                             time_unit: 4
                         });
                         return setImportedStressperiods(stressPeriods.toObject());
                     } else {
                         return setErrors(errors.concat([{message: 'Wrong file format.'}]));
                     }
+                },
+                error: (err) => {
+                    dispatch(addMessage(messageError('discretization', err.message)));
                 }
             });
         }
