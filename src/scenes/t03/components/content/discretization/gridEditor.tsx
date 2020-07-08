@@ -10,6 +10,7 @@ import {dxCell, dyCell} from '../../../../../services/geoTools/distance';
 import ContentToolBar from '../../../../shared/ContentToolbar2';
 import {addMessage, updateBoundaries, updateLayer, updateSoilmodel} from '../../../actions/actions';
 import {messageError} from '../../../defaults/messages';
+import UploadGeoJSONModal from '../create/UploadGeoJSONModal';
 import {DiscretizationMap, GridProperties} from './index';
 import {boundaryUpdater, layersUpdater, zonesUpdater} from './updater';
 
@@ -192,6 +193,13 @@ const gridEditor = (props: IProps) => {
                 <Grid.Column width={16}>
                     <ContentToolBar
                         buttonSave={true}
+                        buttonImport={
+                            <UploadGeoJSONModal
+                                onChange={handleChangeGeometry}
+                                geometry={'polygon'}
+                                size="medium"
+                            />
+                        }
                         onSave={props.onSave}
                         onUndo={props.onUndo}
                     />

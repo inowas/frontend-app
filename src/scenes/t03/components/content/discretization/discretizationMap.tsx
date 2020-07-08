@@ -65,6 +65,12 @@ const discretizationMap = (props: IProps) => {
     }, []);
 
     useEffect(() => {
+        if (props.geometry) {
+            setGeometry(props.geometry.toObject());
+        }
+    }, [props.geometry]);
+
+    useEffect(() => {
         if (props.cells) {
             cellsRef.current = props.cells;
         }
