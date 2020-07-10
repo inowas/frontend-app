@@ -6,6 +6,8 @@ import {
     Map,
     Viewport
 } from 'react-leaflet';
+// @ts-ignore
+import FullscreenControl from 'react-leaflet-fullscreen';
 import uuid from 'uuid';
 import {Array2D} from '../../../core/model/geometry/Array2D.type';
 import {ICell} from '../../../core/model/geometry/Cells.type';
@@ -52,6 +54,7 @@ interface IProps {
     boundaries: BoundaryCollection;
     data: Array2D<number>;
     globalMinMax?: [number, number];
+    mode?: 'contour' | 'heatmap';
     model: ModflowModel;
     onClick: (cell: ICell) => any;
     onViewPortChange?: (viewport: Viewport) => any;
@@ -210,16 +213,38 @@ const resultsMap = (props: IProps) => {
         props.colors || ['#800080', '#ff2200', '#fcff00', '#45ff8e', '#15d6ff', '#0000FF']
     );
 
-    const mapProps = {
-        nX: props.model.gridSize.nX,
-        nY: props.model.gridSize.nY,
-        rainbow: rainbowVis,
-        data: createGridData(props.data, props.model.gridSize.nX, props.model.gridSize.nY),
-        bounds: props.model.boundingBox.getBoundsLatLng(),
-        opacity: 0.75,
-        sharpening: 10,
-        zIndex: 1
-    } as IReactLeafletHeatMapProps;
+    const renderRaster = () => {
+        const mapProps = {
+            nX: props.model.gridSize.nX,
+            nY: props.model.gridSize.nY,
+            rainbow: rainbowVis,
+            data: createGridData(props.data, props.model.gridSize.nX, props.model.gridSize.nY),
+            bounds: props.model.boundingBox.getBoundsLatLng(),
+            opacity: 0.75,
+            sharpening: 10,
+            zIndex: 1
+        } as IReactLeafletHeatMapProps;
+
+        if ((props.mode && props.mode === 'contour') || (!props.mode && props.model.rotation % 360 !== 0)) {
+            return (
+                <ContourLayer
+                    boundingBox={props.model.boundingBox}
+                    data={props.data}
+                    geometry={props.model.geometry}
+                    gridSize={props.model.gridSize}
+                    rainbow={rainbowVis}
+                    rotation={props.model.rotation}
+                />
+            );
+        }
+        return (
+            <ReactLeafletHeatMapCanvasOverlay
+                {
+                    ...mapProps
+                }
+            />
+        );
+    };
 
     return (
         <Map
@@ -233,25 +258,12 @@ const resultsMap = (props: IProps) => {
             onmoveend={handleViewPortChange}
         >
             <BasicTileLayer/>
+            <FullscreenControl position="topright"/>
             <LayersControl position="topright">
                 <LayersControl.Overlay name="Model area" checked={true}>
                     {renderAreaLayer(props.model.geometry)}
                 </LayersControl.Overlay>
-                {props.model.rotation % 360 !== 0 ?
-                    <ContourLayer
-                        boundingBox={props.model.boundingBox}
-                        data={props.data}
-                        geometry={props.model.geometry}
-                        gridSize={props.model.gridSize}
-                        rainbow={rainbowVis}
-                        rotation={props.model.rotation}
-                    /> :
-                    <ReactLeafletHeatMapCanvasOverlay
-                        {
-                            ...mapProps
-                        }
-                    />
-                }
+                {renderRaster()}
                 {renderBoundingBoxLayer(props.model.boundingBox, props.model.rotation, props.model.geometry)}
                 {renderBoundaryOverlays(props.boundaries)}
                 {renderLegend(rainbowVis)}
