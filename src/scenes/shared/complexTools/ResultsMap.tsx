@@ -245,7 +245,6 @@ const resultsMap = (props: IProps) => {
                         gridSize={props.model.gridSize}
                         rainbow={rainbowVis}
                         rotation={props.model.rotation}
-                        steps={0}
                     /> :
                     <ReactLeafletHeatMapCanvasOverlay
                         {
