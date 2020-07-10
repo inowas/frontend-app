@@ -23,7 +23,7 @@ const stressperiodsEditor = (props: IProps) => {
     }, [props.model]);
 
     const handleChangeEndDateTime = (e: ChangeEvent<HTMLInputElement>, {value}: InputOnChangeData) => {
-        if (value && value !== '') {
+        if (value) {
             setEndDateTime(value);
         }
     };

@@ -60,6 +60,10 @@ const uploadGeoJSONFile = (props: IProps) => {
                     feature.geometry.type = 'Polygon';
                     feature.geometry.coordinates = feature.geometry.coordinates[0];
                 }
+                if (feature.geometry.type === 'MultiLineString') {
+                    feature.geometry.type = 'LineString';
+                    feature.geometry.coordinates = feature.geometry.coordinates[0];
+                }
                 props.onChange(JSON.stringify(feature.geometry));
             }
         }
