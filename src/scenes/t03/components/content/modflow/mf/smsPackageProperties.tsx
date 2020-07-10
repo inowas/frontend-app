@@ -1,6 +1,15 @@
-import React, {ChangeEvent, SyntheticEvent, useState} from 'react';
-import {Checkbox, DropdownProps, Form, Grid, Header, Input, PopupProps, Segment} from 'semantic-ui-react';
-
+import React, {ChangeEvent, FormEvent, SyntheticEvent, useState} from 'react';
+import {
+    Checkbox,
+    CheckboxProps,
+    DropdownProps,
+    Form,
+    Grid,
+    Header,
+    Input,
+    PopupProps,
+    Segment
+} from 'semantic-ui-react';
 import {FlopyModflowMfsms} from '../../../../../../core/model/flopy/packages/mf';
 import {IFlopyModflowMfsms} from '../../../../../../core/model/flopy/packages/mf/FlopyModflowMfsms';
 import {InfoPopup} from '../../../../../shared';
@@ -33,6 +42,13 @@ const smsPackageProperties = (props: IProps) => {
     const handleOnChange = (e: ChangeEvent<HTMLInputElement>) => {
         const {name, value} = e.target;
         return setMfPackage({...mfPackage, [name]: value});
+    };
+
+    const handleOnChangeCheckbox = (e: FormEvent<HTMLInputElement>, {checked, name}: CheckboxProps) => {
+        if (typeof name === 'string') {
+            setMfPackage({...mfPackage, [name]: checked ? 1 : 0});
+            props.onChange(FlopyModflowMfsms.fromObject({...mfPackage, [name]: checked ? 1 : 0}));
+        }
     };
 
     const handleOnBlur = (cast?: (v: any) => any) => (e: ChangeEvent<HTMLInputElement>) => {
@@ -99,7 +115,7 @@ const smsPackageProperties = (props: IProps) => {
                                 <label>Head change criterion (HCLOSE)</label>
                                 <Input
                                     name={'hclose'}
-                                    readOnly={true}
+                                    readOnly={readOnly}
                                     type={'number'}
                                     value={mfPackage.hclose}
                                     icon={renderInfoPopup(documentation.sms.hclose, 'HCLOSE')}
@@ -111,7 +127,7 @@ const smsPackageProperties = (props: IProps) => {
                                 <label>Head change criterion for convergence (HICLOSE)</label>
                                 <Input
                                     name={'hiclose'}
-                                    readOnly={true}
+                                    readOnly={readOnly}
                                     type={'number'}
                                     value={mfPackage.hiclose}
                                     icon={renderInfoPopup(documentation.sms.hiclose, 'HICLOSE')}
@@ -123,7 +139,7 @@ const smsPackageProperties = (props: IProps) => {
                                 <label>Max. outer iterations (MXITER)</label>
                                 <Input
                                     name={'mxiter'}
-                                    readOnly={true}
+                                    readOnly={readOnly}
                                     type={'number'}
                                     value={mfPackage.mxiter}
                                     icon={renderInfoPopup(documentation.sms.mxiter, 'MXITER')}
@@ -135,7 +151,7 @@ const smsPackageProperties = (props: IProps) => {
                                 <label>Max. inner iterations (ITER1)</label>
                                 <Input
                                     name={'iter1'}
-                                    readOnly={true}
+                                    readOnly={readOnly}
                                     type={'number'}
                                     value={mfPackage.iter1}
                                     icon={renderInfoPopup(documentation.sms.iter1, 'ITER1')}
@@ -221,19 +237,25 @@ const smsPackageProperties = (props: IProps) => {
                     <Form.Field>
                         <label>Delta-bar-delta learning rate reduction factor (THETA)</label>
                         <Input
-                            readOnly={true}
+                            readOnly={readOnly}
+                            type="number"
                             name="theta"
                             value={mfPackage.theta || ''}
                             icon={renderInfoPopup(documentation.sms.theta, 'THETA')}
+                            onBlur={handleOnBlur(parseFloat)}
+                            onChange={handleOnChange}
                         />
                     </Form.Field>
                     <Form.Field>
                         <label>Delta-bar-delta learning rate increment (AKAPPA)</label>
                         <Input
-                            readOnly={true}
+                            readOnly={readOnly}
+                            type="number"
                             name="akappa"
                             value={mfPackage.akappa || ''}
                             icon={renderInfoPopup(documentation.sms.akappa, 'AKAPPA')}
+                            onBlur={handleOnBlur(parseFloat)}
+                            onChange={handleOnChange}
                         />
                     </Form.Field>
                 </Form.Group>
@@ -241,19 +263,25 @@ const smsPackageProperties = (props: IProps) => {
                     <Form.Field>
                         <label>Delta-bar-delta memory term factor (GAMA)</label>
                         <Input
-                            readOnly={true}
+                            readOnly={readOnly}
+                            type="number"
                             name="gamma"
                             value={mfPackage.gamma || ''}
                             icon={renderInfoPopup(documentation.sms.gamma, 'GAMA')}
+                            onBlur={handleOnBlur(parseFloat)}
+                            onChange={handleOnChange}
                         />
                     </Form.Field>
                     <Form.Field>
                         <label>Fraction of past history added (AMOMENTUM)</label>
                         <Input
-                            readOnly={true}
+                            readOnly={readOnly}
+                            type="number"
                             name="amomentum"
                             value={mfPackage.amomentum || ''}
                             icon={renderInfoPopup(documentation.sms.amomentum, 'AMOMENTUM')}
+                            onBlur={handleOnBlur(parseFloat)}
+                            onChange={handleOnChange}
                         />
                     </Form.Field>
                 </Form.Group>
@@ -261,19 +289,25 @@ const smsPackageProperties = (props: IProps) => {
                     <Form.Field>
                         <label>Backtracking Iterations Allowed (NUMTRACK)</label>
                         <Input
-                            readOnly={true}
+                            readOnly={readOnly}
+                            type="number"
                             name="numtrack"
                             value={mfPackage.numtrack || ''}
                             icon={renderInfoPopup(documentation.sms.numtrack, 'NUMTRACK')}
+                            onBlur={handleOnBlur(parseFloat)}
+                            onChange={handleOnChange}
                         />
                     </Form.Field>
                     <Form.Field>
                         <label>Residual change tolerance (BTOL)</label>
                         <Input
-                            readOnly={true}
+                            readOnly={readOnly}
+                            type="number"
                             name="btol"
                             value={mfPackage.btol || ''}
                             icon={renderInfoPopup(documentation.sms.btol, 'BTOL')}
+                            onBlur={handleOnBlur(parseFloat)}
+                            onChange={handleOnChange}
                         />
                     </Form.Field>
                 </Form.Group>
@@ -281,19 +315,25 @@ const smsPackageProperties = (props: IProps) => {
                     <Form.Field>
                         <label>Step Size Reduction (BREDUC)</label>
                         <Input
-                            readOnly={true}
+                            readOnly={readOnly}
+                            type="number"
                             name="breduc"
                             value={mfPackage.breduc || ''}
                             icon={renderInfoPopup(documentation.sms.breduc, 'BREDUC')}
+                            onBlur={handleOnBlur(parseFloat)}
+                            onChange={handleOnChange}
                         />
                     </Form.Field>
                     <Form.Field>
                         <label>Residual reduction limit (RESLIM)</label>
                         <Input
-                            readOnly={true}
+                            readOnly={readOnly}
+                            type="number"
                             name="reslim"
                             value={mfPackage.reslim || ''}
                             icon={renderInfoPopup(documentation.sms.reslim, 'RESLIM')}
+                            onBlur={handleOnBlur(parseFloat)}
+                            onChange={handleOnChange}
                         />
                     </Form.Field>
                 </Form.Group>
@@ -344,19 +384,25 @@ const smsPackageProperties = (props: IProps) => {
                     <Form.Field>
                         <label>Fill Level for ILU Decomposition (LEVEL)</label>
                         <Input
-                            readOnly={true}
+                            readOnly={readOnly}
+                            type="number"
                             name="level"
                             value={mfPackage.level}
                             icon={renderInfoPopup(documentation.sms.level, 'LEVEL')}
+                            onBlur={handleOnBlur(parseFloat)}
+                            onChange={handleOnChange}
                         />
                     </Form.Field>
                     <Form.Field>
                         <label>Number of orthogonalizations (NORTH)</label>
                         <Input
-                            readOnly={true}
+                            readOnly={readOnly}
+                            type="number"
                             name="north"
                             value={mfPackage.north}
                             icon={renderInfoPopup(documentation.sms.north, 'NORTH')}
+                            onBlur={handleOnBlur(parseFloat)}
+                            onChange={handleOnChange}
                         />
                     </Form.Field>
                 </Form.Group>
@@ -367,17 +413,21 @@ const smsPackageProperties = (props: IProps) => {
                             toggle={true}
                             readOnly={false}
                             name="iredsys"
-                            value={mfPackage.iredsys || ''}
+                            checked={mfPackage.iredsys === 1}
                             icon={renderInfoPopup(documentation.sms.iredsys, 'IREDSYS')}
+                            onChange={handleOnChangeCheckbox}
                         />
                     </Form.Field>
                     <Form.Field>
                         <label>Residual tolerance criterion (RRCTOL)</label>
                         <Input
-                            readOnly={true}
+                            readOnly={readOnly}
+                            type="number"
                             name="rrctol"
                             value={mfPackage.rrctol}
                             icon={renderInfoPopup(documentation.sms.rrctol, 'RRCTOL')}
+                            onBlur={handleOnBlur(parseFloat)}
+                            onChange={handleOnChange}
                         />
                     </Form.Field>
                 </Form.Group>
@@ -388,17 +438,21 @@ const smsPackageProperties = (props: IProps) => {
                             toggle={true}
                             readOnly={false}
                             name="idroptol"
-                            value={mfPackage.idroptol || ''}
+                            checked={mfPackage.idroptol === 1}
                             icon={renderInfoPopup(documentation.sms.idroptol, 'IDROPTOL')}
+                            onChange={handleOnChangeCheckbox}
                         />
                     </Form.Field>
                     <Form.Field>
                         <label>Drop tolerance value (EPSRN)</label>
                         <Input
-                            readOnly={true}
+                            readOnly={readOnly}
+                            type="number"
                             name="epsrn"
                             value={mfPackage.epsrn}
                             icon={renderInfoPopup(documentation.sms.epsrn, 'EPSRN')}
+                            onBlur={handleOnBlur(parseFloat)}
+                            onChange={handleOnChange}
                         />
                     </Form.Field>
                 </Form.Group>
@@ -409,10 +463,13 @@ const smsPackageProperties = (props: IProps) => {
                     <Form.Field>
                         <label>Linear acceleration method (CLIN)</label>
                         <Input
-                            readOnly={true}
+                            readOnly={readOnly}
+                            type="number"
                             name="clin"
                             value={mfPackage.clin}
                             icon={renderInfoPopup(documentation.sms.clin, 'CLIN')}
+                            onBlur={handleOnBlur(parseFloat)}
+                            onChange={handleOnChange}
                         />
                     </Form.Field>
                     <Form.Field>
@@ -480,19 +537,25 @@ const smsPackageProperties = (props: IProps) => {
                     <Form.Field>
                         <label>Convergence flow residual tolerance (RCLOSEPCGU)</label>
                         <Input
-                            readOnly={true}
+                            readOnly={readOnly}
+                            type="number"
                             name="rclosepcgu"
                             value={mfPackage.rclosepcgu}
                             icon={renderInfoPopup(documentation.sms.rclosepcgu, 'RCLOSEPCGU')}
+                            onBlur={handleOnBlur(parseFloat)}
+                            onChange={handleOnChange}
                         />
                     </Form.Field>
                     <Form.Field>
                         <label>MILU(0) relaxation factor (RELAXPCGU)</label>
                         <Input
-                            readOnly={true}
+                            readOnly={readOnly}
+                            type="number"
                             name="relaxpcgu"
                             value={mfPackage.relaxpcgu}
                             icon={renderInfoPopup(documentation.sms.relaxpcgu, 'RELAXPCGU')}
+                            onBlur={handleOnBlur(parseFloat)}
+                            onChange={handleOnChange}
                         />
                     </Form.Field>
                 </Form.Group>
