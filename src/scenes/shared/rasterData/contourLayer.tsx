@@ -20,6 +20,8 @@ interface IProps {
     steps?: number;
 }
 
+const maxSteps = 80;
+
 const contourLayer = (props: IProps) => {
     const [contours, setContours] = useState<ContourMultiPolygon[]>([]);
     const [renderKey, setRenderKey] = useState<string>(uuid.v4());
@@ -27,11 +29,33 @@ const contourLayer = (props: IProps) => {
 
     useEffect(() => {
         generateContours();
-    }, [props.data]);
+    }, [props.data, props.steps]);
 
     useEffect(() => {
         setRenderKey(uuid.v4());
     }, [contours, thresholds]);
+
+    const getThresholds = (data: Array2D<number>, unique: number[]) => {
+        let mSteps = props.steps || maxSteps;
+        if (mSteps > maxSteps) {
+            mSteps = maxSteps;
+        }
+
+        if (unique.length < mSteps) {
+            return unique;
+        }
+
+        const dMin = min(data);
+        const dMax = max(data);
+        let range: number[] = unique;
+        let steps = 1;
+
+        while (range.length > mSteps) {
+            range = d3.range(dMin, dMax, ++steps);
+        }
+
+        return range;
+    };
 
     const generateContours = () => {
         const cData: Array2D<number> = !Array.isArray(props.data) ?
@@ -40,10 +64,9 @@ const contourLayer = (props: IProps) => {
 
         const fData = ([] as number[]).concat(...cData);
         const unique = _.uniq(fData).sort((a, b) => a - b);
-        const cThresholds = props.steps === 0 && unique.length < 50 ?
-            unique : d3.range(min(cData), max(cData), unique.length >= 50 ? 50 : (props.steps || undefined));
+        const cThresholds = getThresholds(cData, unique);
         const cContours = d3.contours().size([props.gridSize.nX, props.gridSize.nY])
-            .thresholds(cThresholds)(fData);
+            .thresholds(cThresholds).smooth(false)(fData);
 
         const xMin = props.boundingBox.xMin;
         const yMax = props.boundingBox.yMax;
