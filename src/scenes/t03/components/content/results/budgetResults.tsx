@@ -1,7 +1,8 @@
+import {AxiosError} from 'axios';
 import React, {useEffect, useRef, useState} from 'react';
 import {connect} from 'react-redux';
 import {Bar, BarChart, CartesianGrid, Cell, Tooltip, XAxis, YAxis} from 'recharts';
-import {Button, Checkbox, CheckboxProps, Grid, Header, Icon, List, Segment} from 'semantic-ui-react';
+import {Button, Checkbox, CheckboxProps, Grid, Header, Icon, List, Message, Segment} from 'semantic-ui-react';
 import {Calculation, ModflowModel} from '../../../../../core/model/modflow';
 import {fetchCalculationResultsBudget} from '../../../../../services/api';
 import {IBudgetData, IBudgetType} from '../../../../../services/api/types';
@@ -19,7 +20,7 @@ interface IProps {
 const budgetResults = (props: IProps) => {
     const [data, setData] = useState<budgetData>(null);
     const [fetching, setFetching] = useState<boolean>(true);
-    const [isError, setIsError] = useState<string | null>(null);
+    const [isError, setIsError] = useState<AxiosError | null>(null);
     const [selectedTotim, setSelectedTotim] = useState<number>(
         props.calculation && props.calculation.times ? props.calculation.times.total_times.slice(-1)[0] : 0
     );
@@ -37,7 +38,7 @@ const budgetResults = (props: IProps) => {
                 type: selectedType,
             });
         }
-    }, []);
+    }, [props.calculation]);
 
     const fetchData = ({type, totim}: { type: IBudgetType, totim: number }) => {
         if (!props.calculation) {
@@ -46,6 +47,7 @@ const budgetResults = (props: IProps) => {
 
         const calculationId = props.calculation.id;
         if (calculationId) {
+            setFetching(true);
             fetchCalculationResultsBudget({calculationId, totim},
                 (sData: IBudgetData) => {
                     setSelectedTotim(totim);
@@ -67,7 +69,7 @@ const budgetResults = (props: IProps) => {
                     );
                     setFetching(false);
                 },
-                (e: string) => setIsError(e)
+                (e) => setIsError(e)
             );
         }
     };
@@ -117,6 +119,18 @@ const budgetResults = (props: IProps) => {
     if (data) {
         dataFiltered = data.filter((c) => c.active && c.name !== 'PERCENT_DISCREPANCY');
         percentDiscrepancy = data.filter((c) => c.name === 'PERCENT_DISCREPANCY');
+    }
+
+    if (isError) {
+        return (
+            <Segment color={'grey'}>
+                <Message negative={true}>
+                    <Message.Header>{isError.name}</Message.Header>
+                    <p>{isError.message}</p>
+                    <p>Check your .list file for possible reasons.</p>
+                </Message>
+            </Segment>
+        );
     }
 
     return (

@@ -1,5 +1,5 @@
 import Moment from 'moment';
-import React from 'react';
+import React, {useEffect, useState} from 'react';
 import {pure} from 'recompose';
 import {DropdownProps, Form, Grid, Header, Segment} from 'semantic-ui-react';
 import {Stressperiods} from '../../../core/model/modflow';
@@ -17,46 +17,38 @@ const styles = {
     }
 };
 
-interface IResultsSelectorBudgetProps {
+interface IProps {
     data: any;
     onChange: (response: any) => any;
     stressperiods: Stressperiods;
     totalTimes: number[] | null;
 }
 
-interface IResultsSelectorBudgetState {
-    temporaryTotim: number | null;
-}
+const resultsSelectorBudget = (props: IProps) => {
+    const [temporaryTotim, setTemporaryTotim] = useState<number | null>(null);
 
-class ResultsSelectorBudget extends React.Component<IResultsSelectorBudgetProps, IResultsSelectorBudgetState> {
-    public state = {
-        temporaryTotim: null
-    };
+    const {type} = props.data;
 
-    public componentDidMount() {
-        this.setState({temporaryTotim: this.props.data.totim});
-    }
+    useEffect(() => {
+        setTemporaryTotim(props.data.totim);
+    }, [props.data]);
 
-    public componentWillReceiveProps(nextProps: IResultsSelectorBudgetProps) {
-        this.setState({temporaryTotim: nextProps.data.totim});
-    }
-
-    public typeOptions = () => {
+    const typeOptions = () => {
         return [
             {key: 0, value: 'cumulative', text: 'Cumulative Volumes'},
             {key: 1, value: 'incremental', text: 'Rates'}
         ];
     };
 
-    public handleChangeType = (e: React.SyntheticEvent<HTMLElement, Event>, props: DropdownProps) => {
-        return this.props.onChange({
-            totim: this.state.temporaryTotim,
-            type: props.value
+    const handleChangeType = (e: React.SyntheticEvent<HTMLElement, Event>, {value}: DropdownProps) => {
+        return props.onChange({
+            totim: temporaryTotim,
+            type: value
         });
     };
 
-    public handleChangeSlider = (value: number) => {
-        const {totalTimes} = this.props;
+    const handleChangeSlider = (value: number) => {
+        const {totalTimes} = props;
 
         if (!totalTimes) {
             return;
@@ -64,69 +56,17 @@ class ResultsSelectorBudget extends React.Component<IResultsSelectorBudgetProps,
 
         const differences = totalTimes.map((tt, idx) => ({id: idx, value: Math.abs(tt - value)}));
         differences.sort((a, b) => a.value - b.value);
-        return this.setState({
-            temporaryTotim: totalTimes[differences[0].id]
-        });
+        setTemporaryTotim(totalTimes[differences[0].id]);
     };
 
-    public handleAfterChangeSlider = () => {
-        const {type} = this.props.data;
-        const totim = this.state.temporaryTotim;
-        return this.props.onChange({totim, type});
+    const handleAfterChangeSlider = () => {
+        const totim = temporaryTotim;
+        return props.onChange({totim, type});
     };
 
-    public render() {
-        const {temporaryTotim} = this.state;
-        const {data, totalTimes} = this.props;
-        const {type} = data;
-
-        return (
-            <Grid columns={2}>
-                <Grid.Row stretched={true}>
-                    <Grid.Column width={6}>
-                        <Segment color={'grey'}>
-                            <Form>
-                                <Form.Group inline={true}>
-                                    <label>Select type</label>
-                                    <Form.Dropdown
-                                        selection={true}
-                                        style={{zIndex: 1002, minWidth: '8em'}}
-                                        options={this.typeOptions()}
-                                        value={type}
-                                        onChange={this.handleChangeType}
-                                    />
-                                </Form.Group>
-                            </Form>
-                        </Segment>
-                    </Grid.Column>
-                    <Grid.Column width={10}>
-                        <Segment color={'grey'}>
-                            <Header textAlign={'center'} as={'h4'}>Select total time [days]</Header>
-                            {totalTimes && temporaryTotim &&
-                            <SliderWithTooltip
-                                dots={totalTimes.length < 20}
-                                dotStyle={styles.dot}
-                                trackStyle={styles.track}
-                                defaultValue={temporaryTotim}
-                                min={totalTimes[0]}
-                                max={totalTimes[totalTimes.length - 1]}
-                                marks={this.sliderMarks()}
-                                value={temporaryTotim}
-                                onAfterChange={this.handleAfterChangeSlider}
-                                onChange={this.handleChangeSlider}
-                                tipFormatter={this.formatTimestamp}
-                            />
-                            }
-                        </Segment>
-                    </Grid.Column>
-                </Grid.Row>
-            </Grid>
-        );
-    }
-
-    private sliderMarks = () => {
+    const sliderMarks = () => {
         const maxNumberOfMarks = 10;
-        let {totalTimes} = this.props;
+        let {totalTimes} = props;
 
         if (!totalTimes) {
             return;
@@ -148,17 +88,62 @@ class ResultsSelectorBudget extends React.Component<IResultsSelectorBudgetProps,
         return marks;
     };
 
-    private formatTimestamp = (value: number) => {
-        const {totalTimes} = this.props;
+    const formatTimestamp = (key: number | null) => () => {
+        const {totalTimes} = props;
 
-        if (!totalTimes) {
-            return;
+        if (!totalTimes || !key) {
+            return undefined;
         }
 
         return Moment.utc(
-            this.props.stressperiods.dateTimes[0]
-        ).add(value, 'days').format('L');
+            props.stressperiods.dateTimes[0]
+        ).add(totalTimes[key], 'days').format('L');
     };
-}
 
-export default pure(ResultsSelectorBudget);
+    return (
+        <Grid columns={2}>
+            <Grid.Row stretched={true}>
+                <Grid.Column width={6}>
+                    <Segment color={'grey'}>
+                        <Form>
+                            <Form.Group inline={true}>
+                                <label>Select type</label>
+                                <Form.Dropdown
+                                    selection={true}
+                                    style={{zIndex: 1002, minWidth: '8em'}}
+                                    options={typeOptions()}
+                                    value={type}
+                                    onChange={handleChangeType}
+                                />
+                            </Form.Group>
+                        </Form>
+                    </Segment>
+                </Grid.Column>
+                <Grid.Column width={10}>
+                    <Segment color={'grey'}>
+                        <Header textAlign={'center'} as={'h4'}>Select total time [days]</Header>
+                        {props.totalTimes && temporaryTotim &&
+                        <SliderWithTooltip
+                            dots={props.totalTimes.length < 20}
+                            dotStyle={styles.dot}
+                            trackStyle={styles.track}
+                            defaultValue={temporaryTotim}
+                            min={Math.floor(props.totalTimes[0])}
+                            max={Math.ceil(props.totalTimes[props.totalTimes.length - 1])}
+                            marks={sliderMarks()}
+                            value={temporaryTotim}
+                            onAfterChange={handleAfterChangeSlider}
+                            onChange={handleChangeSlider}
+                            tipFormatter={
+                                formatTimestamp(temporaryTotim ? props.totalTimes.indexOf(temporaryTotim) : null)
+                            }
+                        />
+                        }
+                    </Segment>
+                </Grid.Column>
+            </Grid.Row>
+        </Grid>
+    );
+};
+
+export default pure(resultsSelectorBudget);

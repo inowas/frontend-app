@@ -1,4 +1,4 @@
-import axios from 'axios';
+import axios, {AxiosError} from 'axios';
 import getConfig from '../../config.default';
 import AbstractCommand from '../../core/model/command/AbstractCommand';
 import FlopyPackages from '../../core/model/flopy/packages/FlopyPackages';
@@ -174,7 +174,7 @@ export const fetchCalculationDetails = (calculationId: string) => {
 export const fetchCalculationResultsBudget = (
     {calculationId, totim}: { calculationId: string, totim: number },
     onSuccess: CallbackFunction<IBudgetData, void>,
-    onError: ErrorCallbackFunction
+    onError: (e: AxiosError) => any
 ) => {
     const url = `${MODFLOW_CALCULATION_URL}/${calculationId}/results/types/budget/totims/${totim}`;
 
