@@ -61,7 +61,7 @@ const pcgPackageProperties = (props: IProps) => {
                     <Form.Field>
                         <label>Maximum number of outer iterations (mxiter)</label>
                         <Input
-                            readOnly={true}
+                            readOnly={readOnly}
                             name="mxiter"
                             type={'number'}
                             value={mfPackage.mxiter}
@@ -73,7 +73,7 @@ const pcgPackageProperties = (props: IProps) => {
                     <Form.Field>
                         <label>Maximum number of inner equations (iter1)</label>
                         <Input
-                            readOnly={true}
+                            readOnly={readOnly}
                             name="iter1"
                             type={'number'}
                             value={mfPackage.iter1}
@@ -128,7 +128,7 @@ const pcgPackageProperties = (props: IProps) => {
                     <Form.Field>
                         <label>Head change criterion (hclose)</label>
                         <Input
-                            readOnly={true}
+                            readOnly={readOnly}
                             name="hclose"
                             type={'number'}
                             value={mfPackage.hclose}
@@ -140,7 +140,7 @@ const pcgPackageProperties = (props: IProps) => {
                     <Form.Field>
                         <label>Residual criterion (rclose)</label>
                         <Input
-                            readOnly={true}
+                            readOnly={readOnly}
                             name="rclose"
                             type={'number'}
                             value={mfPackage.rclose}
@@ -154,7 +154,7 @@ const pcgPackageProperties = (props: IProps) => {
                     <Form.Field>
                         <label>Relaxation parameter (relax)</label>
                         <Input
-                            readOnly={true}
+                            readOnly={readOnly}
                             name="relax"
                             type={'number'}
                             value={mfPackage.relax}
@@ -166,7 +166,7 @@ const pcgPackageProperties = (props: IProps) => {
                     <Form.Field>
                         <label>Eigenvalue upper bound (nbpol)</label>
                         <Input
-                            disabled={true}
+                            disabled={readOnly}
                             name="nbpol"
                             type={'number'}
                             value={mfPackage.nbpol}
@@ -180,7 +180,7 @@ const pcgPackageProperties = (props: IProps) => {
                     <Form.Field>
                         <label>Solver printout interval (iprpcg)</label>
                         <Input
-                            readOnly={true}
+                            readOnly={readOnly}
                             name="iprpcg"
                             type={'number'}
                             value={mfPackage.iprpcg}
@@ -193,7 +193,8 @@ const pcgPackageProperties = (props: IProps) => {
                         <label>Print options (mutpcg)</label>
                         <Form.Dropdown
                             options={[
-                                {key: 0, value: 0, text: '(0) Tables of maximum head change and residual each interation'},
+                                {key: 0, value: 0, text:
+                                        '(0) Tables of maximum head change and residual each interation'},
                                 {key: 1, value: 1, text: '(1) Only total number of iterations'},
                                 {key: 2, value: 2, text: '(2) No printing'},
                                 {key: 3, value: 3, text: '(3) Printing only if convergence fails'},
@@ -215,8 +216,9 @@ const pcgPackageProperties = (props: IProps) => {
                     <Form.Field>
                         <label>Steady-state damping factor (damp)</label>
                         <Input
-                            readOnly={true}
+                            readOnly={readOnly}
                             name="damp"
+                            type={'number'}
                             value={mfPackage.damp}
                             icon={renderInfoPopup(documentation.pcg.damp, 'damp')}
                             onBlur={handleOnBlur(parseFloat)}
@@ -226,7 +228,7 @@ const pcgPackageProperties = (props: IProps) => {
                     <Form.Field>
                         <label>Transient damping factor (dampt)</label>
                         <Input
-                            readOnly={true}
+                            readOnly={readOnly}
                             name="dampt"
                             type={'number'}
                             value={mfPackage.dampt}
