@@ -88,10 +88,10 @@ const resultsSelectorBudget = (props: IProps) => {
         return marks;
     };
 
-    const formatTimestamp = (key: number | null) => () => {
+    const formatTimestamp = (key: number) => () => {
         const {totalTimes} = props;
 
-        if (!totalTimes || !key) {
+        if (!totalTimes) {
             return undefined;
         }
 
@@ -134,9 +134,7 @@ const resultsSelectorBudget = (props: IProps) => {
                             value={temporaryTotim}
                             onAfterChange={handleAfterChangeSlider}
                             onChange={handleChangeSlider}
-                            tipFormatter={
-                                formatTimestamp(temporaryTotim ? props.totalTimes.indexOf(temporaryTotim) : null)
-                            }
+                            tipFormatter={formatTimestamp(props.totalTimes.indexOf(temporaryTotim))}
                         />
                         }
                     </Segment>

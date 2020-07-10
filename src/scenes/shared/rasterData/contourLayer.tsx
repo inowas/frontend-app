@@ -37,7 +37,7 @@ const contourLayer = (props: IProps) => {
 
     const getThresholds = (data: Array2D<number>, unique: number[]) => {
         let mSteps = props.steps || maxSteps;
-        if (mSteps && mSteps > maxSteps) {
+        if (mSteps > maxSteps) {
             mSteps = maxSteps;
         }
 
