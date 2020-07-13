@@ -1,6 +1,5 @@
 import React, {useState} from 'react';
 import {useSelector} from 'react-redux';
-
 import {Grid, Segment} from 'semantic-ui-react';
 import Button from 'semantic-ui-react/dist/commonjs/elements/Button';
 import {BoundaryCollection, ModflowModel, Soilmodel} from '../../../../../core/model/modflow';
@@ -13,7 +12,7 @@ const exportUI = () => {
     const T03 = useSelector((state: IRootReducer) => state.T03);
 
     const getExportDataStructure = () => {
-        if (!T03) {
+        if (!T03 || !T03.model) {
             return null;
         }
 
@@ -30,9 +29,8 @@ const exportUI = () => {
     };
 
     const download = () => {
-
         const ds = getExportDataStructure();
-        if (!ds) {
+        if (!ds || !T03.model) {
             return;
         }
         const filename = 'modflowmodel_' + T03.model.id + '.json';
