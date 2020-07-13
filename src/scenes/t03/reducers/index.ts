@@ -34,7 +34,7 @@ export interface IT03Reducer {
     boundaries: IBoundary[];
     calculation: ICalculation | null | undefined;
     messages: IMessage[];
-    model: IModflowModel;
+    model: IModflowModel | null | undefined;
     optimization: any;
     packages: IPackagesReducer;
     soilmodel: ISoilmodel;

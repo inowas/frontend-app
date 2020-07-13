@@ -31,7 +31,6 @@ const dataFetcherWrapper = (props: IProps) => {
     const dispatch = useDispatch();
 
     const [modelId, setModelId] = useState<string | null>(null);
-    const [soilmodelFetched, setSoilmodelFetched] = useState<boolean>(false);
 
     const [fetchingModel, setFetchingModel] = useState<boolean>(false);
     const [fetchingModelSuccess, setFetchingModelSuccess] = useState<boolean | null>(null);
@@ -76,15 +75,7 @@ const dataFetcherWrapper = (props: IProps) => {
 
     useEffect(() => {
         fetchModel(props.match.params.id);
-        setSoilmodelFetched(false);
     }, [modelId]);
-
-    useEffect(() => {
-        if (model && !soilmodelFetched) {
-            setSoilmodelFetched(true);
-            fetchAndUpdateSoilmodel(model.id);
-        }
-    }, [model]);
 
     const fetchModel = (id: string) => {
         if (!fetchingModel) {
@@ -99,6 +90,7 @@ const dataFetcherWrapper = (props: IProps) => {
 
                     fetchBoundaries(id);
                     fetchPackages(id);
+                    fetchAndUpdateSoilmodel(mfModel);
                     fetchTransport(id);
                     fetchVariableDensity(id);
 
@@ -132,64 +124,63 @@ const dataFetcherWrapper = (props: IProps) => {
             });
     };
 
-    const fetchAndUpdateSoilmodel = (id: string) => {
-        if (model) {
-            setFetchingSoilmodel(true);
-            fetchUrl(`modflowmodels/${id}/soilmodel`,
-                (data) => {
+    const fetchAndUpdateSoilmodel = (mfModel: ModflowModel) => {
+        const id = mfModel.id;
+        setFetchingSoilmodel(true);
+        fetchUrl(`modflowmodels/${id}/soilmodel`,
+            (data) => {
 
-                    setSoilmodelFetcher({
-                        message: 'Start updating soilmodel.',
+                setSoilmodelFetcher({
+                    message: 'Start updating soilmodel.',
+                    fetching: true
+                });
+                updater(
+                    data,
+                    mfModel,
+                    (result) => setSoilmodelFetcher({
+                        message: result.message,
                         fetching: true
-                    });
-                    updater(
-                        data,
-                        ModflowModel.fromObject(model),
-                        (result) => setSoilmodelFetcher({
-                            message: result.message,
-                            fetching: true
-                        }),
-                        (result, needsToBeFetched) => {
+                    }),
+                    (result, needsToBeFetched) => {
+                        setSoilmodelFetcher({
+                            message: 'Finished updating soilmodel.',
+                            fetching: false
+                        });
+
+                        setFetchingSoilmodel(false);
+                        setFetchingSoilmodelSuccess(true);
+
+                        if (needsToBeFetched) {
                             setSoilmodelFetcher({
-                                message: 'Finished updating soilmodel.',
-                                fetching: false
+                                message: `Start fetching soilmodel...`,
+                                fetching: true
                             });
 
-                            setFetchingSoilmodel(false);
-                            setFetchingSoilmodelSuccess(true);
-
-                            if (needsToBeFetched) {
-                                setSoilmodelFetcher({
-                                    message: `Start fetching soilmodel...`,
-                                    fetching: true
-                                });
-
-                                const sm = Soilmodel.fromObject(result);
-                                if (sm.checkVersion()) {
-                                    return fetchSoilmodel(
-                                        result,
-                                        (r) => setSoilmodelFetcher(r),
-                                        (r) => {
-                                            setSoilmodelFetcher({
-                                                message: 'Finished fetching soilmodel.',
-                                                fetching: false
-                                            });
-                                            return dispatch(updateSoilmodel(Soilmodel.fromObject(r)));
-                                        }
-                                    );
-                                }
+                            const sm = Soilmodel.fromObject(result);
+                            if (sm.checkVersion()) {
+                                return fetchSoilmodel(
+                                    result,
+                                    (r) => setSoilmodelFetcher(r),
+                                    (r) => {
+                                        setSoilmodelFetcher({
+                                            message: 'Finished fetching soilmodel.',
+                                            fetching: false
+                                        });
+                                        return dispatch(updateSoilmodel(Soilmodel.fromObject(r)));
+                                    }
+                                );
                             }
-
-                            return dispatch(updateSoilmodel(Soilmodel.fromObject(result)));
                         }
-                    );
-                },
-                (cError) => {
-                    setFetchingSoilmodel(false);
-                    setFetchingSoilmodelSuccess(false);
-                    return handleError(cError);
-                });
-        }
+
+                        return dispatch(updateSoilmodel(Soilmodel.fromObject(result)));
+                    }
+                );
+            },
+            (cError) => {
+                setFetchingSoilmodel(false);
+                setFetchingSoilmodelSuccess(false);
+                return handleError(cError);
+            });
     };
 
     const fetchPackages = (id: string) => {
