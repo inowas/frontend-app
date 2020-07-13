@@ -1,7 +1,7 @@
 import React, {MouseEvent, useEffect, useState} from 'react';
 import {connect} from 'react-redux';
 import {RouteComponentProps, withRouter} from 'react-router-dom';
-import {Accordion, AccordionProps, Button, Grid, Header, Icon, Segment} from 'semantic-ui-react';
+import {Accordion, AccordionProps, Button, ButtonGroup, Grid, Header, Icon, Segment} from 'semantic-ui-react';
 import Uuid from 'uuid';
 import {Array2D} from '../../../../../core/model/geometry/Array2D.type';
 import {Calculation, ModflowModel, Soilmodel} from '../../../../../core/model/modflow';
@@ -33,6 +33,9 @@ export enum EResultType {
 const flowResults = (props: IProps) => {
     const [isError, setIsError] = useState<boolean>(false);
     const [isLoading, setIsLoading] = useState<boolean>(false);
+    const [rasterMode, setRasterMode] = useState<'contour' | 'heatmap'>(
+        props.model.rotation % 360 !== 0 ? 'contour' : 'heatmap'
+    );
     const [selectedLay, setSelectedLay] = useState<number>(0);
     const [selectedRow, setSelectedRow] = useState<number>(Math.floor(props.model.gridSize.nY / 2));
     const [selectedCol, setSelectedCol] = useState<number>(Math.floor(props.model.gridSize.nX / 2));
@@ -79,6 +82,9 @@ const flowResults = (props: IProps) => {
             () => setIsError(true)
         );
     };
+
+    const handleChangeMode = () => props.model.rotation % 360 === 0 ?
+        setRasterMode(rasterMode === 'heatmap' ? 'contour' : 'heatmap') : null;
 
     const handleClickAccordion = (e: MouseEvent, titleProps: AccordionProps) => {
         const {index} = titleProps;
@@ -155,11 +161,28 @@ const flowResults = (props: IProps) => {
                                     Results Map
                                 </Accordion.Title>
                                 <Accordion.Content active={activeIndex === 0}>
+                                    <ButtonGroup attached="top">
+                                        <Button
+                                            disabled={props.model.rotation % 360 !== 0}
+                                            onClick={handleChangeMode}
+                                            primary={rasterMode === 'heatmap'}
+                                        >
+                                            Heatmap
+                                        </Button>
+                                        <Button.Or/>
+                                        <Button
+                                            onClick={handleChangeMode}
+                                            primary={rasterMode === 'contour'}
+                                        >
+                                            Contours
+                                        </Button>
+                                    </ButtonGroup>
                                     {data &&
                                     <ResultsMap
                                         activeCell={[selectedCol, selectedRow]}
                                         boundaries={boundaries}
                                         data={data}
+                                        mode={rasterMode}
                                         model={model}
                                         onClick={handleClickOnCell}
                                     />

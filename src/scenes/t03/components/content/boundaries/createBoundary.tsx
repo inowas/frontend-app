@@ -7,7 +7,7 @@ import Uuid from 'uuid';
 import {ICells} from '../../../../../core/model/geometry/Cells.type';
 import {default as Geometry} from '../../../../../core/model/geometry/Geometry';
 import {IGeometry} from '../../../../../core/model/geometry/Geometry.type';
-import {ModflowModel, Soilmodel} from '../../../../../core/model/modflow';
+import {Cells, ModflowModel, Soilmodel} from '../../../../../core/model/modflow';
 import {BoundaryCollection, BoundaryFactory} from '../../../../../core/model/modflow/boundaries';
 import {BoundaryType, ISpValues, IValueProperty} from '../../../../../core/model/modflow/boundaries/Boundary.type';
 import {IRootReducer} from '../../../../../reducers';
@@ -75,7 +75,7 @@ const createBoundary = (props: Props) => {
                     intersection: model.intersection
                 } as ICalculateCellsInputData
             }).then((c: ICells) => {
-                setCells(c);
+                setCells(Cells.fromObject(c).removeCells(model.inactiveCells));
                 setGeometry(cGeometry.toObject());
                 return setIsDirty(true);
             }).catch(() => {
