@@ -48,6 +48,7 @@ const boundaryGeometryEditor = (props: IProps) => {
     const handleChangeBoundary = (b: Boundary) => {
         setBoundary(b.toObject());
         setButtonsDisabled(false);
+        setActiveItem('affected cells');
         props.onChange(b);
     };
 

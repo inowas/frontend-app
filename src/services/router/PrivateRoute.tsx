@@ -1,4 +1,4 @@
-import React, {ComponentType, useEffect} from 'react';
+import React, {ComponentType, useEffect, useState} from 'react';
 import {useDispatch, useSelector} from 'react-redux';
 import {Route, useHistory} from 'react-router-dom';
 import {IRootReducer} from '../../reducers';
@@ -14,11 +14,20 @@ interface IProps {
 }
 
 const privateRoute = (props: IProps) => {
+    const [redirectToLogin, setRedirectToLogin] = useState<boolean>(false);
+
     const dispatch = useDispatch();
     const userStore = useSelector((state: IRootReducer) => state.user);
     const sessionStore = useSelector((state: IRootReducer) => state.session);
 
     const history = useHistory();
+
+    useEffect(() => {
+        if (props.path === '/tools' && redirectToLogin) {
+            history.push('/login');
+            setRedirectToLogin(false);
+        }
+    }, [redirectToLogin]);
 
     useEffect(() => {
         if (!(getFetched(userStore))) {
@@ -27,7 +36,7 @@ const privateRoute = (props: IProps) => {
         }
 
         if (!hasSessionKey(sessionStore)) {
-            history.push('/logout');
+            setRedirectToLogin(true);
             return;
         }
 

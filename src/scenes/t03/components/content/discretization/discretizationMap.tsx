@@ -32,7 +32,6 @@ interface IProps {
     rotation?: number;
     onChangeCells: (cells: Cells) => void;
     onChangeGeometry?: (geometry: Geometry) => void;
-    onChangeIntersection?: (intersection: number) => void;
 }
 
 const style = {
