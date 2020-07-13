@@ -27,7 +27,6 @@ interface IBoundaryUpdaterStatus {
 }
 
 const gridEditor = (props: IProps) => {
-    const [intersection, setIntersection] = useState<number>(50);
     const [gridSizeLocal, setGridSizeLocal] = useState<GridSize | null>(null);
     const [updaterStatus, setUpdaterStatus] = useState<IBoundaryUpdaterStatus | null>(null);
 
@@ -47,10 +46,6 @@ const gridEditor = (props: IProps) => {
         setGridSizeLocal(props.model.gridSize);
         intersectionRef.current = 50;
     }, []);
-
-    useEffect(() => {
-        intersectionRef.current = intersection;
-    }, [intersection]);
 
     useEffect(() => {
         if (gridSizeLocal && (gridSizeLocal.nX !== gridSize.nX || gridSizeLocal.nY !== gridSize.nY)) {
@@ -116,17 +111,6 @@ const gridEditor = (props: IProps) => {
                 }
             },
             (e) => dispatch(addMessage(messageError('boundariesUpdater', e)))
-        );
-    };
-
-    const handleChangeIntersection = (i: number) => {
-        setIntersection(i);
-        calculate(props.model.geometry, props.model.boundingBox, props.model.gridSize, i).then(
-            (c: Cells) => {
-                const model = props.model.getClone();
-                model.cells = Cells.fromObject(c.toObject());
-                return props.onChange(model);
-            }
         );
     };
 
@@ -248,10 +232,9 @@ const gridEditor = (props: IProps) => {
                         boundaries={boundaryCollection}
                         geometry={geometry}
                         gridSize={gridSize}
-                        intersection={intersection}
+                        intersection={props.model.intersection}
                         onChangeGeometry={handleChangeGeometry}
                         onChangeCells={handleChangeCells}
-                        onChangeIntersection={handleChangeIntersection}
                         readOnly={readOnly}
                         rotation={props.model.rotation}
                     />
