@@ -38,7 +38,7 @@ export const boundaryUpdater = (
                 intersection: model.intersection
             } as ICalculateCellsInputData
         }).then((c: ICells) => {
-            boundary.cells = Cells.fromObject(c);
+            boundary.cells = Cells.fromObject(Cells.fromObject(c).removeCells(model.inactiveCells));
             onEachTask(boundary, boundaries.length);
             sendCommand(ModflowModelCommand.updateBoundary(model.id, boundary),
                 boundaryUpdater(
