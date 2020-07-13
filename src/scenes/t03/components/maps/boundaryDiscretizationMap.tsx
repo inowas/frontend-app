@@ -1,13 +1,16 @@
+import * as turf from '@turf/turf';
 import {LineString, Point} from 'geojson';
 import {LatLngExpression} from 'leaflet';
 import {uniqueId} from 'lodash';
 import math from 'mathjs';
-import React from 'react';
+import React, {useState} from 'react';
 import {CircleMarker, FeatureGroup, GeoJSON, Map, Polygon, Polyline} from 'react-leaflet';
 import {EditControl} from 'react-leaflet-draw';
-import {Grid, Icon, List} from 'semantic-ui-react';
+import {useDispatch} from 'react-redux';
+import {Dimmer, Grid, Icon, List, Loader} from 'semantic-ui-react';
 import {Array2D} from '../../../../core/model/geometry/Array2D.type';
 import BoundingBox from '../../../../core/model/geometry/BoundingBox';
+import {ICells} from '../../../../core/model/geometry/Cells.type';
 import {GeoJson} from '../../../../core/model/geometry/Geometry.type';
 import GridSize from '../../../../core/model/geometry/GridSize';
 import {Cells, Geometry, ModflowModel} from '../../../../core/model/modflow';
@@ -21,6 +24,11 @@ import Soilmodel from '../../../../core/model/modflow/soilmodel/Soilmodel';
 import AffectedCellsLayer from '../../../../services/geoTools/affectedCellsLayer';
 import {rotateCoordinateAroundPoint} from '../../../../services/geoTools/getCellFromClick';
 import {BasicTileLayer} from '../../../../services/geoTools/tileLayers';
+import {addMessage} from '../../actions/actions';
+import {messageError} from '../../defaults/messages';
+import {CALCULATE_CELLS_INPUT} from '../../worker/t03.worker';
+import {ICalculateCellsInputData} from '../../worker/t03.worker.type';
+import {asyncWorker} from '../../worker/worker';
 import {getStyle} from './index';
 
 const style = {
@@ -42,30 +50,43 @@ interface IProps {
 }
 
 const boundaryDiscretizationMap = (props: IProps) => {
+    const [isLoading, setIsLoading] = useState<boolean>(false);
+    const dispatch = useDispatch();
+
     const calculate = (boundary: Boundary, geometry: Geometry, boundingBox: BoundingBox, gridSize: GridSize) => {
-        return new Promise((resolve) => {
-            const cells = Cells.fromGeometry(geometry, boundingBox, gridSize);
-            if (boundary instanceof LineBoundary) {
-                cells.calculateValues(boundary, boundingBox, gridSize);
-            }
-            resolve(cells);
+        setIsLoading(true);
+        let g = geometry.toGeoJSON();
+        if (props.model.rotation % 360 !== 0) {
+            g = turf.transformRotate(
+                geometry.toGeoJSON(), -1 * props.model.rotation, {pivot: props.model.geometry.centerOfMass}
+            );
+        }
+        asyncWorker({
+            type: CALCULATE_CELLS_INPUT,
+            data: {
+                geometry: g,
+                boundingBox: boundingBox.toObject(),
+                gridSize: gridSize.toObject(),
+                intersection: props.model.intersection
+            } as ICalculateCellsInputData
+        }).then((c: ICells) => {
+            boundary.cells = Cells.fromObject(Cells.fromObject(c).removeCells(props.model.inactiveCells));
+            boundary.geometry = geometry;
+            props.onChange(boundary);
+            setIsLoading(false);
+        }).catch(() => {
+            dispatch(addMessage(messageError('boundaries', 'Calculating cells failed.')));
+            setIsLoading(false);
         });
     };
 
     const handleOnEdited = (e: any) => {
-        const {boundary, model, onChange} = props;
+        const {boundary, model} = props;
         const {boundingBox, gridSize} = model;
 
         e.layers.eachLayer((layer: any) => {
             const geometry = Geometry.fromGeoJson(layer.toGeoJSON());
-            calculate(boundary, geometry, boundingBox, gridSize)
-                .then((cells) => {
-                    if (cells instanceof Cells) {
-                        boundary.cells = cells;
-                        boundary.geometry = geometry;
-                        return onChange(boundary);
-                    }
-                });
+            calculate(boundary, geometry, boundingBox, gridSize);
         });
     };
 
@@ -242,6 +263,9 @@ const boundaryDiscretizationMap = (props: IProps) => {
     return (
         <Grid>
             <Grid.Column width={props.showActiveCells ? 13 : 16}>
+                <Dimmer active={isLoading} inverted={true}>
+                    <Loader>Loading</Loader>
+                </Dimmer>
                 <Map
                     style={style.map}
                     bounds={props.model.boundingBox.getBoundsLatLng()}

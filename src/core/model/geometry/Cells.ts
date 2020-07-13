@@ -135,6 +135,17 @@ export default class Cells {
         return raster;
     }
 
+    public removeCells(rCells: Cells) {
+        const cellsToRemove = rCells.toObject();
+        const cCells: ICell[] = [];
+        this.cells.forEach((c) => {
+            if (cellsToRemove.filter((cc) => cc[0] === c[0] && cc[1] === c[1]).length === 0) {
+                cCells.push(c);
+            }
+        });
+        return cCells;
+    }
+
     constructor(private _cells: ICells = []) {
     }
 
