@@ -10,31 +10,44 @@ import ToolNavigation from '../../shared/complexTools/toolNavigation';
 import SimpleToolsCommand from '../../shared/simpleTools/commands/SimpleToolsCommand';
 import ToolMetaData from '../../shared/simpleTools/ToolMetaData';
 import {IToolMetaDataEdit} from '../../shared/simpleTools/ToolMetaData/ToolMetaData.type';
+import {HeatTransfer} from '../components/heatTransfer';
 import {DataSources, Processing, SensorMetaData, Sensors, Visualization} from '../components/index';
 
 export interface IProps extends RouteComponentProps<{ id: string, property: string, pid: string }> {
 }
 
-const menuItems = [{
-    header: 'Sensors',
-    items: [
-        {
-            name: 'Setup',
-            property: 'sensor-setup',
-            icon: <Icon name="calendar alternate outline"/>
-        },
-        {
-            name: 'Processing',
-            property: 'sensor-processing',
-            icon: <Icon name="cube"/>
-        },
-        {
-            name: 'Visualization',
-            property: 'sensor-visualization',
-            icon: <Icon name="expand"/>
-        }
-    ]
-}];
+const menuItems = [
+    {
+        header: 'Sensors',
+        items: [
+            {
+                name: 'Setup',
+                property: 'sensor-setup',
+                icon: <Icon name="calendar alternate outline"/>
+            },
+            {
+                name: 'Processing',
+                property: 'sensor-processing',
+                icon: <Icon name="cube"/>
+            },
+            {
+                name: 'Visualization',
+                property: 'sensor-visualization',
+                icon: <Icon name="expand"/>
+            }
+        ]
+    },
+    {
+        header: 'Computation',
+        items: [
+            {
+                name: 'Heat Transport',
+                property: 'heat-transport',
+                icon: <Icon name="thermometer half"/>
+            }
+        ]
+    }
+];
 
 const navigation = [{
     name: 'Documentation',
@@ -144,20 +157,28 @@ const RTM = (props: IProps) => {
             parameter = sensor.parameters.findById(selectedParameterId);
         }
 
-        if (!['sensor-parameters', 'sensor-setup', 'sensor-processing', 'sensor-visualization'].includes(property)) {
+        if (property === 'sensor-visualization') {
+            return (
+                <Visualization
+                    rtm={Rtm.fromObject(rtm)}
+                />
+            );
+        }
+
+        if (property === 'heat-transfer') {
+            return (
+                <HeatTransfer
+                    rtm={Rtm.fromObject(rtm)}
+                />
+            );
+        }
+
+        if (!['sensor-parameters', 'sensor-setup', 'sensor-processing'].includes(property)) {
             const path = props.match.path;
             const basePath = path.split(':')[0];
             return (
                 <Redirect
                     to={basePath + props.match.params.id + '/sensor-setup' + props.location.search}
-                />
-            );
-        }
-
-        if (property === 'sensor-visualization') {
-            return (
-                <Visualization
-                    rtm={Rtm.fromObject(rtm)}
                 />
             );
         }
