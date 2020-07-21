@@ -243,7 +243,9 @@ const observationStatistics = () => {
                                                     loading={isCalculating}
                                                     name={'excludedWells'}
                                                     onChange={handleChangeExcludesWells}
-                                                    options={statistics.names.map((n) => ({key: n, value: n, text: n}))}
+                                                    options={
+                                                        hobData.map((w) => ({key: w.name, value: w.name, text: w.name}))
+                                                    }
                                                     multiple={true}
                                                     selection={true}
                                                     value={excludedWells}
