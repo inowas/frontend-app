@@ -1,3 +1,4 @@
+import * as turf from '@turf/turf';
 import React, {ChangeEvent, SyntheticEvent, useEffect, useState} from 'react';
 import {Button, Dropdown, DropdownProps, Form, InputOnChangeData, List, Popup} from 'semantic-ui-react';
 import uuid from 'uuid';
@@ -208,6 +209,31 @@ const boundaryDetails = (props: IProps) => {
         );
     };
 
+    const renderLengthInformation = () => {
+        if (boundary.geometry.type === 'LineString') {
+            return (
+                <Form.Input
+                    width={8}
+                    label={'Length [m]'}
+                    value={turf.length(boundary.geometry.toGeoJSON(), {units: 'meters'}).toFixed(6)}
+                    type={'number'}
+                    readOnly={true}
+                />
+            );
+        }
+        if (boundary.geometry.type === 'Polygon' || boundary.geometry.type === 'MultiPolygon') {
+            return (
+                <Form.Input
+                    width={8}
+                    label={'Area from affected cells [sqm]'}
+                    value={boundary.calculateAreaByCells(props.model.boundingBox, props.model.gridSize).toFixed(6)}
+                    type={'number'}
+                    readOnly={true}
+                />
+            );
+        }
+    };
+
     const handleCancelGeometryEditor = () => setShowBoundaryEditor(false);
     const handleCancelObservationPointEditor = () => setShowObservationPointEditor(false);
     const handleClickBoundary = (id: string) => props.onClick(id);
@@ -293,6 +319,7 @@ const boundaryDetails = (props: IProps) => {
                     />
                 </Form.Group>
                 }
+                {renderLengthInformation()}
             </Form>
 
             {!props.readOnly &&
@@ -353,7 +380,6 @@ const boundaryDetails = (props: IProps) => {
                         size="mini"
                         content="Clone point"
                     />
-                    {boundary instanceof LineBoundary &&
                     <Popup
                         trigger={
                             <Button
@@ -365,7 +391,6 @@ const boundaryDetails = (props: IProps) => {
                         size="mini"
                         content="Delete point"
                     />
-                    }
                 </Button>
             </div>
             }

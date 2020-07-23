@@ -1,4 +1,5 @@
 import Uuid from 'uuid';
+import {dxCell, dyCell} from '../../../../services/geoTools/distance';
 import BoundingBox from '../../geometry/BoundingBox';
 import GridSize from '../../geometry/GridSize';
 import {Cells, Geometry} from '../index';
@@ -61,6 +62,12 @@ export default abstract class Boundary {
     public abstract toExport(stressPeriods: Stressperiods): IBoundaryExport;
 
     public abstract toObject(): IBoundary;
+
+    public calculateAreaByCells(boundingBox: BoundingBox, gridSize: GridSize) {
+        const cellHeight = dyCell(boundingBox, gridSize) * 10000 / 10;
+        const cellWidth = dxCell(boundingBox, gridSize) * 10000 / 10;
+        return cellHeight * cellWidth * this.cells.cells.length;
+    }
 
     public clone() {
         const b = this._class.fromObject(this._props);

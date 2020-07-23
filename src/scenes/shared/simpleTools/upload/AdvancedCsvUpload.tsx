@@ -2,7 +2,7 @@ import moment from 'moment';
 import * as Papa from 'papaparse';
 import {ParseResult} from 'papaparse';
 import React, {ChangeEvent, SyntheticEvent, useEffect, useState} from 'react';
-import {Button, DropdownProps, Form, Grid, Header, List, Modal, Segment, Table} from 'semantic-ui-react';
+import {Button, DropdownProps, Form, Grid, List, Modal, Segment, Table} from 'semantic-ui-react';
 import {ECsvColumnType} from './types';
 
 type TColumns = Array<{ key: number, value: string, text: string, type?: ECsvColumnType }>;
@@ -132,10 +132,15 @@ const advancedCsvUpload = (props: IProps) => {
     };
 
     return (
-        <Modal centered={false} open={true} dimmer={'blurring'}>
+        <Modal
+            closeIcon={true}
+            open={true}
+            onClose={props.onCancel}
+            dimmer={'blurring'}
+        >
+            <Modal.Header>CSV Upload</Modal.Header>
             <Modal.Content>
-                <Header>CSV Upload</Header>
-                <Grid padded={true} loading={fetchingData.toString()}>
+                <Grid loading={fetchingData.toString()}>
                     {!isFetched &&
                     <React.Fragment>
                         <Grid.Row>
@@ -163,13 +168,13 @@ const advancedCsvUpload = (props: IProps) => {
                                         <Form.Group>
                                             {(props.useDateTimes || columns.filter((c) =>
                                                 c.type === ECsvColumnType.DATE_TIME).length > 0) &&
-                                                <Form.Input
-                                                    onBlur={handleBlurDateTimeFormat}
-                                                    onChange={handleChange(setDateTimeFormat)}
-                                                    label="Datetime format"
-                                                    name={'datetimeField'}
-                                                    value={dateTimeFormat}
-                                                />
+                                            <Form.Input
+                                                onBlur={handleBlurDateTimeFormat}
+                                                onChange={handleChange(setDateTimeFormat)}
+                                                label="Datetime format"
+                                                name={'datetimeField'}
+                                                value={dateTimeFormat}
+                                            />
                                             }
                                             <Form.Checkbox
                                                 style={{marginTop: '30px'}}
