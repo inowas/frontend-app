@@ -1,7 +1,7 @@
-import React, {MouseEvent, useEffect, useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {useSelector} from 'react-redux';
 import {useHistory} from 'react-router-dom';
-import {Accordion, AccordionProps, Button, ButtonGroup, Grid, Header, Icon, Segment} from 'semantic-ui-react';
+import {Button, Grid, Header, Segment} from 'semantic-ui-react';
 import Uuid from 'uuid';
 import FlopyPackages from '../../../../../core/model/flopy/packages/FlopyPackages';
 import {FlopyModflowMfbas} from '../../../../../core/model/flopy/packages/mf';
@@ -23,7 +23,6 @@ export enum EResultType {
 const flowResults = () => {
     const [isError, setIsError] = useState<boolean>(false);
     const [isLoading, setIsLoading] = useState<boolean>(false);
-    const [rasterMode, setRasterMode] = useState<'contour' | 'heatmap'>('heatmap');
     const [selectedLay, setSelectedLay] = useState<number>(0);
     const [selectedRow, setSelectedRow] = useState<number>(0);
     const [selectedCol, setSelectedCol] = useState<number>(0);
@@ -56,7 +55,6 @@ const flowResults = () => {
     }
 
     useEffect(() => {
-        setRasterMode(model.rotation % 360 !== 0 ? 'contour' : 'heatmap');
         setSelectedCol(Math.floor(model.gridSize.nX / 2));
         setSelectedRow(Math.floor(model.gridSize.nY / 2));
         if (calculation && calculation.times) {
@@ -107,15 +105,6 @@ const flowResults = () => {
         );
     };
 
-    const handleChangeMode = () => model.rotation % 360 === 0 ?
-        setRasterMode(rasterMode === 'heatmap' ? 'contour' : 'heatmap') : null;
-
-    const handleClickAccordion = (e: MouseEvent, titleProps: AccordionProps) => {
-        const {index} = titleProps;
-        const newIndex = activeIndex === index ? -1 : index;
-        return setActiveIndex(newIndex);
-    };
-
     const handleCreateScenarioAnalysisClick = () => {
         const scenarioAnalysisId = Uuid.v4();
         sendCommand(ScenarioAnalysisCommand.createScenarioAnalysis(
@@ -162,45 +151,17 @@ const flowResults = () => {
                         />
                         }
                         <Segment color={'grey'} loading={isLoading}>
-                            <Accordion>
-                                <Accordion.Title
-                                    active={activeIndex === 0}
-                                    index={0}
-                                    onClick={handleClickAccordion}
-                                >
-                                    <Icon name="dropdown"/>
-                                    Results Map
-                                </Accordion.Title>
-                                <Accordion.Content active={activeIndex === 0}>
-                                    <ButtonGroup attached="top">
-                                        <Button
-                                            disabled={model.rotation % 360 !== 0}
-                                            onClick={handleChangeMode}
-                                            primary={rasterMode === 'heatmap'}
-                                        >
-                                            Heatmap
-                                        </Button>
-                                        <Button.Or/>
-                                        <Button
-                                            onClick={handleChangeMode}
-                                            primary={rasterMode === 'contour'}
-                                        >
-                                            Contours
-                                        </Button>
-                                    </ButtonGroup>
-                                    {data &&
-                                    <ResultsMap
-                                        activeCell={[selectedCol, selectedRow]}
-                                        boundaries={boundaries}
-                                        data={data}
-                                        ibound={ibound}
-                                        mode={rasterMode}
-                                        model={model}
-                                        onClick={handleClickOnCell}
-                                    />
-                                    }
-                                </Accordion.Content>
-                            </Accordion>
+                            {data &&
+                            <ResultsMap
+                                activeCell={[selectedCol, selectedRow]}
+                                boundaries={boundaries}
+                                data={data}
+                                ibound={ibound}
+                                mode="contour"
+                                model={model}
+                                onClick={handleClickOnCell}
+                            />
+                            }
                         </Segment>
                         <Grid>
                             <Grid.Row columns={2}>
@@ -208,7 +169,13 @@ const flowResults = () => {
                                     <Segment loading={isLoading} color={'blue'}>
                                         <Header textAlign={'center'} as={'h4'}>Horizontal cross section</Header>
                                         {data &&
-                                        <ResultsChart data={data} col={selectedCol} row={selectedRow} show={'row'}/>
+                                        <ResultsChart
+                                            data={data}
+                                            col={selectedCol}
+                                            row={selectedRow}
+                                            show={'row'}
+                                            yLabel={selectedType}
+                                        />
                                         }
                                     </Segment>
                                 </Grid.Column>
@@ -216,7 +183,13 @@ const flowResults = () => {
                                     <Segment loading={isLoading} color={'blue'}>
                                         <Header textAlign={'center'} as={'h4'}>Vertical cross section</Header>
                                         {data &&
-                                        <ResultsChart data={data} col={selectedCol} row={selectedRow} show={'col'}/>
+                                        <ResultsChart
+                                            data={data}
+                                            col={selectedCol}
+                                            row={selectedRow}
+                                            show={'col'}
+                                            yLabel={selectedType}
+                                        />
                                         }
                                     </Segment>
                                 </Grid.Column>

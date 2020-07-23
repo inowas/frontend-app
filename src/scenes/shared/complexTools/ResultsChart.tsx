@@ -1,18 +1,17 @@
-import React from 'react';
-import PropTypes from 'prop-types';
-import {pure} from 'recompose';
-import {
-    XAxis,
-    YAxis,
-    CartesianGrid,
-    Tooltip,
-    ResponsiveContainer,
-    ReferenceLine,
-    Area, AreaChart, Line, LineChart
-} from 'recharts';
 import {flatten, max, min} from 'lodash';
-import {GridSize} from '../../../core/model/modflow';
+import React from 'react';
+import {
+    Area,
+    AreaChart,
+    CartesianGrid,
+    LabelProps,
+    Line,
+    LineChart,
+    ReferenceLine, ResponsiveContainer, Tooltip, TooltipProps, XAxis, YAxis
+} from 'recharts';
 import {Message} from 'semantic-ui-react';
+import {Array2D} from '../../../core/model/geometry/Array2D.type';
+import {GridSize} from '../../../core/model/modflow';
 
 const cbPalette = [
     '#0A75A0' /* navy */,
@@ -32,7 +31,19 @@ const styles = {
     }
 };
 
-const renderTooltip = (e, show) => {
+interface IProps {
+    col?: number;
+    data?: Array2D<number>;
+    globalMinMax?: [number, number];
+    row?: number;
+    selectedModels?: Array<{
+        id: string, name: string, data: Array2D<number>
+    }>;
+    show: string;
+    yLabel?: string;
+}
+
+const renderTooltip = (show: string) => (e: TooltipProps) => {
     const data = e.payload && e.payload.length >= 1 ? e.payload[0].payload : {name: '', value: 0};
     let name = 'Column';
 
@@ -41,25 +52,22 @@ const renderTooltip = (e, show) => {
     }
 
     return (
-        <Message size='tiny' color='black' style={styles.chartTooltip}>
+        <Message size="tiny" color="black" style={styles.chartTooltip}>
             <p>{name} {data.name}</p>
             <Message.Header>{data.value.toFixed(2)}</Message.Header>
         </Message>
     );
 };
 
-const getXAxisLabel = show => {
-
+const getXAxisLabel = (show: string): LabelProps => {
     if (show === 'row') {
-        return {value: 'Row', position: 'insideBottom', offset: -10, fill: '#4C4C4C', fontSize: '13px'};
+        return {value: 'Col', position: 'insideBottom', offset: -10, fill: '#4C4C4C', fontSize: '13px'};
     }
 
-    return {value: 'Col', position: 'insideBottom', offset: -10, fill: '#4C4C4C', fontSize: '13px'};
+    return {value: 'Row', position: 'insideBottom', offset: -10, fill: '#4C4C4C', fontSize: '13px'};
 };
 
-const getYAxisLabel = type => {
-
-
+const getYAxisLabel = (type: string): LabelProps => {
     if (type === 'head') {
         return {value: 'Head (m asl)', position: 'insideLeft', angle: -90, fill: '#4C4C4C', fontSize: '13px'};
     }
@@ -71,22 +79,21 @@ const getYAxisLabel = type => {
     return {};
 };
 
-const ResultsChart = ({data = null, selectedModels = null, globalMinMax = null, row, col, show}) => {
-
+const resultsChart = ({data, selectedModels, globalMinMax, row, col, show, yLabel = ''}: IProps) => {
     if (data) {
         const flattenData = flatten(data);
-        const minData = Math.floor(min(flattenData));
-        const maxData = Math.ceil(max(flattenData));
+        const minData = Math.floor(min(flattenData) || 0);
+        const maxData = Math.ceil(max(flattenData) || 0);
 
-        let processedData = [];
+        let processedData: Array<{ name: number, value: number }> = [];
         let referenceTo;
 
-        if (show === 'row') {
+        if (show === 'row' && row) {
             processedData = data[row].map((v, colIdx) => ({name: colIdx, value: v}));
             referenceTo = col;
         }
 
-        if (show === 'col') {
+        if (show === 'col' && col) {
             processedData = data.map((r, idx) => ({name: idx, value: r[col]})).reverse();
             referenceTo = row;
         }
@@ -101,17 +108,17 @@ const ResultsChart = ({data = null, selectedModels = null, globalMinMax = null, 
                     />
                     <YAxis
                         domain={[minData, maxData]}
-                        label={getYAxisLabel()}
+                        label={getYAxisLabel(yLabel)}
                     />
                     <CartesianGrid strokeDasharray="3 3"/>
                     <Tooltip
-                        content={e => renderTooltip(e, show)}
+                        content={renderTooltip(show)}
                     />
                     <ReferenceLine x={referenceTo} stroke="#000" strokeDasharray="3 3"/>
                     <Area type="linear" dataKey="value" stroke="#3ac6ff" fill="#3ac6ff"/>
                 </AreaChart>
             </ResponsiveContainer>
-        )
+        );
     }
 
     if (selectedModels) {
@@ -120,26 +127,26 @@ const ResultsChart = ({data = null, selectedModels = null, globalMinMax = null, 
         }
 
         let isValid = true;
-        selectedModels.forEach(m => {
-            isValid = isValid && m.data;
+        selectedModels.forEach((m) => {
+            isValid = isValid && Array.isArray(m.data);
         });
 
         if (!isValid) {
             return null;
         }
 
-        const [min, max] = globalMinMax;
+        const [minV, maxV] = globalMinMax;
         const gridSize = GridSize.fromData(selectedModels[0].data);
         const {nX, nY} = gridSize;
 
-        let processedData = [];
+        const processedData = [];
         let referenceTo;
 
-        if (show === 'row') {
+        if (show === 'row' && row) {
             for (let x = 0; x < nX; x++) {
-                const dataValue = {name: x};
-                selectedModels.forEach(m => {
-                    dataValue[m.name] = m.data[row][x]
+                const dataValue: { [key: string]: number } = {name: x};
+                selectedModels.forEach((m) => {
+                    dataValue[m.name] = m.data[row][x];
                 });
                 processedData.push(dataValue);
             }
@@ -147,11 +154,11 @@ const ResultsChart = ({data = null, selectedModels = null, globalMinMax = null, 
             referenceTo = col;
         }
 
-        if (show === 'col') {
+        if (show === 'col' && col) {
             for (let y = 0; y < nY; y++) {
-                const dataValue = {name: y};
-                selectedModels.forEach(m => {
-                    dataValue[m.name] = m.data[y][col]
+                const dataValue: { [key: string]: number } = {name: y};
+                selectedModels.forEach((m) => {
+                    dataValue[m.name] = m.data[y][col];
                 });
                 processedData.push(dataValue);
             }
@@ -164,7 +171,7 @@ const ResultsChart = ({data = null, selectedModels = null, globalMinMax = null, 
             <ResponsiveContainer aspect={1.5}>
                 <LineChart data={processedData}>
                     <XAxis dataKey="name" domain={['dataMin', 'dataMax']}/>
-                    <YAxis domain={[min, max]}/>
+                    <YAxis domain={[minV, maxV]}/>
                     <CartesianGrid strokeDasharray="3 3"/>
                     <Tooltip/>
                     <ReferenceLine x={referenceTo} stroke="#000" strokeDasharray="3 3"/>
@@ -180,18 +187,9 @@ const ResultsChart = ({data = null, selectedModels = null, globalMinMax = null, 
 
                 </LineChart>
             </ResponsiveContainer>
-        )
-
+        );
     }
+    return null;
 };
 
-ResultsChart.propTypes = {
-    col: PropTypes.number,
-    data: PropTypes.array,
-    globalMinMax: PropTypes.array,
-    selectedModels: PropTypes.array,
-    row: PropTypes.number,
-    show: PropTypes.string
-};
-
-export default pure(ResultsChart);
+export default resultsChart;

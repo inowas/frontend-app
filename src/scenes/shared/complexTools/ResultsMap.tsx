@@ -120,7 +120,7 @@ const resultsMap = (props: IProps) => {
             value: Number(lastGradient.minNum).toExponential(2)
         });
 
-        return <ColorLegend legend={legend} unit={''}/>;
+        return <ColorLegend legend={legend} unit="m"/>;
     };
 
     const renderSelectedRowAndCol = () => {

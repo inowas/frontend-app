@@ -40,6 +40,9 @@ class Geometry {
     }
 
     get coordinatesLatLng() {
+        if (!this._geometry.coordinates) {
+            return [];
+        }
         switch (this._geometry.type) {
             case 'MultiPolygon':
                 return this._geometry.coordinates.map((c) => this.getLatLngFromXY(c[0]));

@@ -6,13 +6,13 @@ import {useDispatch, useSelector} from 'react-redux';
 import {useHistory, useParams, withRouter} from 'react-router-dom';
 import {
     Checkbox,
-    CheckboxProps, Divider,
+    CheckboxProps, Dimmer, Divider,
     DropdownProps,
     Form,
     Grid,
     Header,
     InputOnChangeData,
-    List,
+    List, Loader,
     Segment
 } from 'semantic-ui-react';
 import uuid from 'uuid';
@@ -45,6 +45,7 @@ const createZone = () => {
     const [cells, setCells] = useState<ICells | null>(null);
     const [isDirty, setIsDirty] = useState<boolean>(false);
     const [isError, setIsError] = useState<boolean>(false);
+    const [isFetching, setIsFetching] = useState<boolean>(false);
     const [visibleZones, setVisibleZones] = useState<IVisibleZone[]>();
 
     const T03 = useSelector((state: IRootReducer) => state.T03);
@@ -85,6 +86,7 @@ const createZone = () => {
     };
 
     const handleCalculateCells = (cGeometry: Geometry) => {
+        setIsFetching(true);
         let g = cGeometry.toGeoJSON();
         if (model.rotation % 360 !== 0) {
             g = turf.transformRotate(
@@ -102,6 +104,7 @@ const createZone = () => {
         }).then((c: ICells) => {
             setCells(c);
             setGeometry(cGeometry.toObject());
+            setIsFetching(false);
             return setIsDirty(true);
         }).catch(() => {
             dispatch(addMessage(messageError('createZone', 'Calculating cells failed.')));
@@ -126,7 +129,7 @@ const createZone = () => {
         }
     };
 
-    const handleApplyJson = (g: Geometry) => handleCalculateCells(Geometry.fromGeoJson(g));
+    const handleApplyJson = (g: Geometry) => handleCalculateCells(g);
 
     const handleClickBack = () => {
         if (soilmodel.zonesCollection.all.filter((z) => !z.isDefault).length > 0) {
@@ -187,7 +190,7 @@ const createZone = () => {
     };
 
     return (
-        <Segment color={'grey'}>
+        <Segment color={'grey'} loading={isFetching}>
             <Grid>
                 <Grid.Row>
                     <Grid.Column width={4}>
@@ -247,6 +250,11 @@ const createZone = () => {
                         </Form>
                     </Grid.Column>
                     <Grid.Column width={12}>
+                        {isFetching &&
+                        <Dimmer active={true} inverted={true}>
+                            <Loader>Calculating cells</Loader>
+                        </Dimmer>
+                        }
                         <ZonesMap
                             model={model}
                             boundaries={boundaries}
