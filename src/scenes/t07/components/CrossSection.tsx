@@ -32,9 +32,9 @@ const crossSection = (props: IProps) => {
     const [layerValues, setLayerValues] = useState<string[][] | null>(null);
     const [totalTimes, setTotalTimes] = useState<number[] | null>(null);
     const [isLoading, setIsLoading] = useState<boolean>(false);
-    const [selectedCol, setSelectedCol] = useState<number | null>(null);
+    const [selectedCol, setSelectedCol] = useState<number>();
     const [selectedLay, setSelectedLay] = useState<number | null>(0);
-    const [selectedRow, setSelectedRow] = useState<number | null>(null);
+    const [selectedRow, setSelectedRow] = useState<number>();
     const [selectedTotim, setSelectedTotim] = useState<number | null>(null);
     const [selectedType, setSelectedType] = useState<EResultType>(EResultType.HEAD);
     const [commonViewPort, setCommonViewPort] = useState<Viewport | undefined>(undefined);

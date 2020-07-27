@@ -1,75 +1,97 @@
-import React, {MouseEvent, useEffect, useState} from 'react';
-import {connect} from 'react-redux';
-import {RouteComponentProps, withRouter} from 'react-router-dom';
-import {Accordion, AccordionProps, Button, ButtonGroup, Grid, Header, Icon, Segment} from 'semantic-ui-react';
+import React, {useEffect, useState} from 'react';
+import {useSelector} from 'react-redux';
+import {useHistory} from 'react-router-dom';
+import {Button, Grid, Header, Segment} from 'semantic-ui-react';
 import Uuid from 'uuid';
+import FlopyPackages from '../../../../../core/model/flopy/packages/FlopyPackages';
+import {FlopyModflowMfbas} from '../../../../../core/model/flopy/packages/mf';
 import {Array2D} from '../../../../../core/model/geometry/Array2D.type';
 import {Calculation, ModflowModel, Soilmodel} from '../../../../../core/model/modflow';
 import {BoundaryCollection} from '../../../../../core/model/modflow/boundaries';
+import {IRootReducer} from '../../../../../reducers';
 import {fetchCalculationResultsFlow, sendCommand} from '../../../../../services/api';
 import ResultsChart from '../../../../shared/complexTools/ResultsChart';
 import ResultsSelectorFlow from '../../../../shared/complexTools/ResultsSelectorFlow';
 import ScenarioAnalysisCommand from '../../../../t07/commands/scenarioAnalysisCommand';
 import ResultsMap from '../../maps/resultsMap';
 
-interface IStateProps {
-    boundaries: BoundaryCollection;
-    calculation: Calculation | null;
-    model: ModflowModel;
-    soilmodel: Soilmodel;
-}
-
-type IProps = IStateProps & RouteComponentProps<{
-    id: string;
-    property?: string;
-    type?: string;
-}>;
-
 export enum EResultType {
     DRAWDOWN = 'drawdown',
     HEAD = 'head'
 }
 
-const flowResults = (props: IProps) => {
+const flowResults = () => {
     const [isError, setIsError] = useState<boolean>(false);
     const [isLoading, setIsLoading] = useState<boolean>(false);
-    const [rasterMode, setRasterMode] = useState<'contour' | 'heatmap'>(
-        props.model.rotation % 360 !== 0 ? 'contour' : 'heatmap'
-    );
     const [selectedLay, setSelectedLay] = useState<number>(0);
-    const [selectedRow, setSelectedRow] = useState<number>(Math.floor(props.model.gridSize.nY / 2));
-    const [selectedCol, setSelectedCol] = useState<number>(Math.floor(props.model.gridSize.nX / 2));
+    const [selectedRow, setSelectedRow] = useState<number>(0);
+    const [selectedCol, setSelectedCol] = useState<number>(0);
     const [selectedTotim, setSelectedTotim] = useState<number>(0);
     const [selectedType, setSelectedType] = useState<EResultType>(EResultType.HEAD);
     const [layerValues, setLayerValues] = useState<string[][] | null>(null);
     const [totalTimes, setTotalTimes] = useState<number[] | null>(null);
     const [activeIndex, setActiveIndex] = useState<number>(0);
     const [data, setData] = useState<Array2D<number> | null>(null);
+    const [ibound, setIbound] = useState<Array2D<number>>();
+
+    const T03 = useSelector((state: IRootReducer) => state.T03);
+    const boundaries = T03.boundaries ? BoundaryCollection.fromObject(T03.boundaries) : null;
+    const calculation = T03.calculation ? Calculation.fromObject(T03.calculation) : null;
+    const model = T03.model ? ModflowModel.fromObject(T03.model) : null;
+    const packages = T03.packages.data ? FlopyPackages.fromObject(T03.packages.data) : null;
+    const soilmodel = T03.soilmodel ? Soilmodel.fromObject(T03.soilmodel) : null;
+
+    const history = useHistory();
+
+    if (!boundaries || !calculation || !model || !packages || !soilmodel) {
+        return (
+            <Segment color={'grey'} loading={isLoading}>
+                <Header as={'h2'}>
+                    No result data found. <br/>
+                    Have you started the calculation?
+                </Header>
+            </Segment>
+        );
+    }
 
     useEffect(() => {
-        if (props.calculation && props.calculation.times) {
+        setSelectedCol(Math.floor(model.gridSize.nX / 2));
+        setSelectedRow(Math.floor(model.gridSize.nY / 2));
+        if (calculation && calculation.times) {
             fetchData({
                 layer: selectedLay,
-                totim: props.calculation.times.total_times[0],
+                totim: calculation.times.total_times[0],
                 type: selectedType
             });
         }
     }, []);
 
     useEffect(() => {
-        if (props.calculation && props.calculation.times) {
-            const cTotalTimes = props.calculation.times.total_times;
-            setLayerValues(props.calculation.layer_values);
+        const mfPackage = packages.mf.getPackage('bas');
+        if (mfPackage instanceof FlopyModflowMfbas) {
+            const cIbound = mfPackage.ibound;
+            if (Array.isArray(cIbound) && Array.isArray(cIbound[0]) && cIbound.length > selectedLay) {
+                const sIbound = cIbound as Array<Array2D<number>>;
+                return setIbound(sIbound[selectedLay]);
+            }
+        }
+        return setIbound(undefined);
+    }, [selectedLay]);
+
+    useEffect(() => {
+        if (calculation && calculation.times) {
+            const cTotalTimes = calculation.times.total_times;
+            setLayerValues(calculation.layer_values);
             setSelectedTotim(cTotalTimes.slice(-1)[0]);
             setTotalTimes(cTotalTimes);
         }
-    }, [props.calculation]);
+    }, [calculation]);
 
     const fetchData = ({layer, totim, type}: { layer: number, totim: number, type: EResultType }) => {
-        if (!props.calculation) {
+        if (!calculation) {
             return null;
         }
-        const calculationId = props.calculation.id;
+        const calculationId = calculation.id;
         setIsLoading(true);
 
         fetchCalculationResultsFlow({calculationId, layer, totim, type}, (cData: Array2D<number>) => {
@@ -83,25 +105,16 @@ const flowResults = (props: IProps) => {
         );
     };
 
-    const handleChangeMode = () => props.model.rotation % 360 === 0 ?
-        setRasterMode(rasterMode === 'heatmap' ? 'contour' : 'heatmap') : null;
-
-    const handleClickAccordion = (e: MouseEvent, titleProps: AccordionProps) => {
-        const {index} = titleProps;
-        const newIndex = activeIndex === index ? -1 : index;
-        return setActiveIndex(newIndex);
-    };
-
     const handleCreateScenarioAnalysisClick = () => {
         const scenarioAnalysisId = Uuid.v4();
         sendCommand(ScenarioAnalysisCommand.createScenarioAnalysis(
             scenarioAnalysisId,
-            props.model.id,
-            'New scenario analysis ' + props.model.name,
+            model.id,
+            'New scenario analysis ' + model.name,
             '',
-            props.model.isPublic
+            model.isPublic
             ),
-            () => props.history.push('/tools/T07/' + scenarioAnalysisId),
+            () => history.push('/tools/T07/' + scenarioAnalysisId),
             () => setIsError(true)
         );
     };
@@ -117,19 +130,6 @@ const flowResults = (props: IProps) => {
         setSelectedRow(colRow[1]);
         setSelectedCol(colRow[0]);
     };
-
-    const {model, boundaries, soilmodel, calculation} = props;
-
-    if (!(calculation instanceof Calculation)) {
-        return (
-            <Segment color={'grey'} loading={isLoading}>
-                <Header as={'h2'}>
-                    No result data found. <br/>
-                    Have you started the calculation?
-                </Header>
-            </Segment>
-        );
-    }
 
     return (
         <Segment color={'grey'} loading={isLoading}>
@@ -151,44 +151,17 @@ const flowResults = (props: IProps) => {
                         />
                         }
                         <Segment color={'grey'} loading={isLoading}>
-                            <Accordion>
-                                <Accordion.Title
-                                    active={activeIndex === 0}
-                                    index={0}
-                                    onClick={handleClickAccordion}
-                                >
-                                    <Icon name="dropdown"/>
-                                    Results Map
-                                </Accordion.Title>
-                                <Accordion.Content active={activeIndex === 0}>
-                                    <ButtonGroup attached="top">
-                                        <Button
-                                            disabled={props.model.rotation % 360 !== 0}
-                                            onClick={handleChangeMode}
-                                            primary={rasterMode === 'heatmap'}
-                                        >
-                                            Heatmap
-                                        </Button>
-                                        <Button.Or/>
-                                        <Button
-                                            onClick={handleChangeMode}
-                                            primary={rasterMode === 'contour'}
-                                        >
-                                            Contours
-                                        </Button>
-                                    </ButtonGroup>
-                                    {data &&
-                                    <ResultsMap
-                                        activeCell={[selectedCol, selectedRow]}
-                                        boundaries={boundaries}
-                                        data={data}
-                                        mode={rasterMode}
-                                        model={model}
-                                        onClick={handleClickOnCell}
-                                    />
-                                    }
-                                </Accordion.Content>
-                            </Accordion>
+                            {data &&
+                            <ResultsMap
+                                activeCell={[selectedCol, selectedRow]}
+                                boundaries={boundaries}
+                                data={data}
+                                ibound={ibound}
+                                mode="contour"
+                                model={model}
+                                onClick={handleClickOnCell}
+                            />
+                            }
                         </Segment>
                         <Grid>
                             <Grid.Row columns={2}>
@@ -196,7 +169,13 @@ const flowResults = (props: IProps) => {
                                     <Segment loading={isLoading} color={'blue'}>
                                         <Header textAlign={'center'} as={'h4'}>Horizontal cross section</Header>
                                         {data &&
-                                        <ResultsChart data={data} col={selectedCol} row={selectedRow} show={'row'}/>
+                                        <ResultsChart
+                                            data={data}
+                                            col={selectedCol}
+                                            row={selectedRow}
+                                            show={'row'}
+                                            yLabel={selectedType}
+                                        />
                                         }
                                     </Segment>
                                 </Grid.Column>
@@ -204,7 +183,13 @@ const flowResults = (props: IProps) => {
                                     <Segment loading={isLoading} color={'blue'}>
                                         <Header textAlign={'center'} as={'h4'}>Vertical cross section</Header>
                                         {data &&
-                                        <ResultsChart data={data} col={selectedCol} row={selectedRow} show={'col'}/>
+                                        <ResultsChart
+                                            data={data}
+                                            col={selectedCol}
+                                            row={selectedRow}
+                                            show={'col'}
+                                            yLabel={selectedType}
+                                        />
                                         }
                                     </Segment>
                                 </Grid.Column>
@@ -230,11 +215,4 @@ const flowResults = (props: IProps) => {
     );
 };
 
-const mapStateToProps = (state: any) => ({
-    boundaries: BoundaryCollection.fromObject(state.T03.boundaries),
-    calculation: state.T03.calculation ? Calculation.fromObject(state.T03.calculation) : null,
-    model: ModflowModel.fromObject(state.T03.model),
-    soilmodel: Soilmodel.fromObject(state.T03.soilmodel)
-});
-
-export default withRouter(connect<IStateProps>(mapStateToProps)(flowResults));
+export default flowResults;

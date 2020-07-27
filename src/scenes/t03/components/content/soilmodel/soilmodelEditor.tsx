@@ -339,6 +339,7 @@ const soilmodelEditor = () => {
     };
 
     const handleChangeTab = (e: MouseEvent<Element>, data: MenuItemProps) => {
+        handleSave();
         if (data.name) {
             return history.push(
                 `${baseUrl}/${id}/${property}/layers/${pid}?type=${activeParamType}&param=${data.name}`
