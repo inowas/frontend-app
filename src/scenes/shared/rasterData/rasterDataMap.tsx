@@ -11,16 +11,14 @@ import {renderBoundaryOverlays, renderBoundingBoxLayer} from '../../t03/componen
 import ColorLegend from './ColorLegend';
 import ContourLayer from './contourLayer';
 import {
-    createGridData,
     max,
     min
 } from './helpers';
-import {ReactLeafletHeatMapCanvasOverlay} from './index';
-import {IReactLeafletHeatMapProps} from './ReactLeafletHeatMapCanvasOverlay.type';
 
 const styles = {
     map: {
-        minHeight: 400
+        minHeight: 400,
+        zIndex: 1
     }
 };
 
@@ -51,17 +49,6 @@ const rasterDataMap = (props: IProps) => {
     const {model, data, unit} = props;
     const rainbowVis = rainbowFactory({min: min(data), max: max(data)});
 
-    const mapProps = {
-        nX: model.gridSize.nX,
-        nY: model.gridSize.nY,
-        rainbow: rainbowVis,
-        data: createGridData(data, model.gridSize.nX, model.gridSize.nY),
-        bounds: model.boundingBox.getBoundsLatLng(),
-        opacity: 0.75,
-        sharpening: 10,
-        zIndex: 1
-    } as IReactLeafletHeatMapProps;
-
     return (
         <Map
             style={styles.map}
@@ -75,22 +62,15 @@ const rasterDataMap = (props: IProps) => {
                 {renderBoundaryOverlays(props.boundaries)}
             </LayersControl>
             }
-            {model.rotation % 360 !== 0 ?
-                <ContourLayer
-                    boundingBox={model.boundingBox}
-                    data={data}
-                    geometry={model.geometry}
-                    gridSize={model.gridSize}
-                    rainbow={rainbowVis}
-                    rotation={model.rotation}
-                    steps={0}
-                /> :
-                <ReactLeafletHeatMapCanvasOverlay
-                    {
-                        ...mapProps
-                    }
-                />
-            }
+            <ContourLayer
+                boundingBox={model.boundingBox}
+                data={data}
+                geometry={model.geometry}
+                gridSize={model.gridSize}
+                rainbow={rainbowVis}
+                rotation={model.rotation}
+                steps={0}
+            />
             {renderLegend(rainbowVis, unit)}
         </Map>
     );

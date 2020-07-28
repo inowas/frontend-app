@@ -35,12 +35,21 @@ const styles: { [name: string]: React.CSSProperties } = {
         opacity: 0.5
     },
     vertical: {
-        position: 'absolute',
+        position: 'relative',
         display: 'flex',
         zIndex: 1000,
         bottom: 0,
         left: 0,
         marginLeft: '0.5em'
+    },
+    vertical_unit: {
+        position: 'absolute',
+        zIndex: 1000,
+        marginTop: '-1.1em'
+    },
+    vertical_container: {
+        position: 'absolute',
+        bottom: 0
     }
 };
 
@@ -56,7 +65,7 @@ const colorLegend = (props: IProps) => {
     const renderVerticalLabels = () => {
         return legend.map((l, index) => {
             return (
-                <div style={styles.label} key={index}>{l.value} {unit}</div>
+                <div style={styles.label} key={index}>{l.value}</div>
             );
         });
     };
@@ -77,8 +86,9 @@ const colorLegend = (props: IProps) => {
         const labels = renderVerticalLabels();
 
         return (
-            <div>
+            <div style={styles.vertical_container}>
                 <div style={styles.vertical}>
+                    <div style={styles.vertical_unit}>{unit}</div>
                     <div
                         style={{
                             ...styles.stripe,

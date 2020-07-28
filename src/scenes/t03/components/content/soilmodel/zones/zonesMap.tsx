@@ -53,7 +53,7 @@ const zonesMap = (props: IProps) => {
             return Geometry.fromGeoJson(zone.geometry);
         }
         if (geometry) {
-            Geometry.fromGeoJson(geometry);
+            return Geometry.fromGeoJson(geometry);
         }
         return null;
     };

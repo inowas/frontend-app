@@ -28,9 +28,9 @@ const difference = (props: IProps) => {
     const [selectedModels, setSelectedModels] = useState<[IModflowModel, IModflowModel] | null>(null);
     const [data, setData] = useState<{ [id: string]: Array2D<number> }>({});
     const [isLoading, setIsLoading] = useState<boolean>(false);
-    const [selectedCol, setSelectedCol] = useState<number | null>(null);
+    const [selectedCol, setSelectedCol] = useState<number>();
     const [selectedLay, setSelectedLay] = useState<number | null>(null);
-    const [selectedRow, setSelectedRow] = useState<number | null>(null);
+    const [selectedRow, setSelectedRow] = useState<number>();
     const [selectedTotim, setSelectedTotim] = useState<number | null>(null);
     const [selectedType, setSelectedType] = useState<EResultType>(EResultType.HEAD);
 

@@ -54,6 +54,7 @@ interface IProps {
     boundaries: BoundaryCollection;
     data: Array2D<number>;
     globalMinMax?: [number, number];
+    ibound?: Array2D<number>;
     mode?: 'contour' | 'heatmap';
     model: ModflowModel;
     onClick: (cell: ICell) => any;
@@ -119,7 +120,7 @@ const resultsMap = (props: IProps) => {
             value: Number(lastGradient.minNum).toExponential(2)
         });
 
-        return <ColorLegend legend={legend} unit={''}/>;
+        return <ColorLegend legend={legend} unit="m"/>;
     };
 
     const renderSelectedRowAndCol = () => {
@@ -232,6 +233,7 @@ const resultsMap = (props: IProps) => {
                     data={props.data}
                     geometry={props.model.geometry}
                     gridSize={props.model.gridSize}
+                    ibound={props.ibound}
                     rainbow={rainbowVis}
                     rotation={props.model.rotation}
                 />
