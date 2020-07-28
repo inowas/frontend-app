@@ -2,14 +2,17 @@ import _ from 'lodash';
 import React, {useEffect, useRef, useState} from 'react';
 import {useDispatch, useSelector} from 'react-redux';
 import {Dimmer, Form, Grid, Header, Progress} from 'semantic-ui-react';
+import {ICells} from '../../../../../core/model/geometry/Cells.type';
 import {BoundingBox, Cells, Geometry, GridSize, ModflowModel, Soilmodel} from '../../../../../core/model/modflow';
 import {BoundaryCollection} from '../../../../../core/model/modflow/boundaries';
 import {IRootReducer} from '../../../../../reducers';
-import {calculateActiveCells} from '../../../../../services/geoTools';
 import {dxCell, dyCell} from '../../../../../services/geoTools/distance';
 import ContentToolBar from '../../../../shared/ContentToolbar2';
 import {addMessage, updateBoundaries, updateLayer, updateSoilmodel} from '../../../actions/actions';
 import {messageError} from '../../../defaults/messages';
+import {CALCULATE_CELLS_INPUT} from '../../../worker/t03.worker';
+import {ICalculateCellsInputData} from '../../../worker/t03.worker.type';
+import {asyncWorker} from '../../../worker/worker';
 import UploadGeoJSONModal from '../create/UploadGeoJSONModal';
 import {DiscretizationMap, GridProperties} from './index';
 import {boundaryUpdater, layersUpdater, zonesUpdater} from './updater';
@@ -54,12 +57,6 @@ const gridEditor = (props: IProps) => {
     }, [props.model.gridSize.nX, props.model.gridSize.nY]);
 
     const readOnly = props.model.readOnly;
-
-    const calculate = (g: Geometry, bb: BoundingBox, gz: GridSize, i = 0) => {
-        return new Promise((resolve: (cells: Cells) => void) => {
-            resolve(calculateActiveCells(g, bb, gz, i / 100));
-        });
-    };
 
     const update = (model: ModflowModel) => {
         if (!boundaryCollection) {
@@ -128,13 +125,24 @@ const gridEditor = (props: IProps) => {
             geometryWithRotation = Geometry.fromGeoJson(g.toGeoJSONWithRotation(rotation, g.centerOfMass));
             bb = BoundingBox.fromGeometryAndRotation(g, rotation);
         }
-        calculate(geometryWithRotation || g, bb, props.model.gridSize, props.model.intersection).then((c: Cells) => {
+
+        asyncWorker({
+            type: CALCULATE_CELLS_INPUT,
+            data: {
+                geometry: geometryWithRotation ? geometryWithRotation.toObject() : g.toObject(),
+                boundingBox: bb.toObject(),
+                gridSize: props.model.gridSize.toObject(),
+                intersection: props.model.intersection
+            } as ICalculateCellsInputData
+        }).then((c: ICells) => {
             const model = props.model.getClone();
-            model.cells = Cells.fromObject(c.toObject());
+            model.cells = Cells.fromObject(c);
             model.geometry = Geometry.fromObject(g.toObject());
             model.boundingBox = BoundingBox.fromObject(bb.toObject());
             update(model);
             return props.onChange(model);
+        }).catch(() => {
+            dispatch(addMessage(messageError('discretization', 'Calculating cells failed.')));
         });
     };
 

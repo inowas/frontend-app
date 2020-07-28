@@ -30,7 +30,6 @@ const flowResults = () => {
     const [selectedType, setSelectedType] = useState<EResultType>(EResultType.HEAD);
     const [layerValues, setLayerValues] = useState<string[][] | null>(null);
     const [totalTimes, setTotalTimes] = useState<number[] | null>(null);
-    const [activeIndex, setActiveIndex] = useState<number>(0);
     const [data, setData] = useState<Array2D<number> | null>(null);
     const [ibound, setIbound] = useState<Array2D<number>>();
 
@@ -60,7 +59,7 @@ const flowResults = () => {
         if (calculation && calculation.times) {
             fetchData({
                 layer: selectedLay,
-                totim: calculation.times.total_times[0],
+                totim: calculation.times.total_times[calculation.times.total_times.length - 1],
                 type: selectedType
             });
         }
