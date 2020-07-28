@@ -1,6 +1,6 @@
 import {flatten, uniq, upperFirst} from 'lodash';
 import Moment from 'moment';
-import React, {SyntheticEvent, useEffect, useState} from 'react';
+import React, {SyntheticEvent, useState} from 'react';
 import {DropdownProps, Form, Grid, Header, Segment} from 'semantic-ui-react';
 import {Soilmodel, Stressperiods} from '../../../core/model/modflow';
 import {IPropertyValueObject} from '../../../core/model/types';
@@ -42,10 +42,6 @@ interface IProps {
 
 const resultsSelectorFlow = (props: IProps) => {
     const [temporaryTotim, setTemporaryTotim] = useState<number>(props.data.totim);
-
-    useEffect(() => {
-        setTemporaryTotim(props.data.totim);
-    }, [props.data.totim]);
 
     const sliderMarks = () => {
         const maxNumberOfMarks = 10;
@@ -146,7 +142,7 @@ const resultsSelectorFlow = (props: IProps) => {
                             dots={props.totalTimes.length < 20}
                             dotStyle={styles.dot}
                             trackStyle={styles.track}
-                            defaultValue={temporaryTotim}
+                            defaultValue={props.data.totim}
                             min={Math.floor(props.totalTimes[0])}
                             max={Math.ceil(props.totalTimes[props.totalTimes.length - 1])}
                             marks={sliderMarks()}

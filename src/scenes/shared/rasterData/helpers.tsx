@@ -1,4 +1,6 @@
 import {Array2D} from '../../../core/model/geometry/Array2D.type';
+import BoundingBox from '../../../core/model/geometry/BoundingBox';
+import GridSize from '../../../core/model/geometry/GridSize';
 import Rainbow from '../../../services/rainbowvis/Rainbowvis';
 
 export const isValue = (data: any) => {
@@ -151,4 +153,27 @@ export const rainbowFactory = (numberRange = {min: -50, max: 50}, spectrum = ['#
     }
 
     return rainbow;
+};
+
+export const rasterDownload = (raster: Array2D<number>, boundingBox: BoundingBox, gridSize: GridSize) => {
+    const cellSize = (boundingBox.yMax - boundingBox.yMin) / gridSize.nY;
+
+    let content = `NCOLS ${gridSize.nX}
+NROWS ${gridSize.nY}
+XLLCORNER ${boundingBox.xMin}
+YLLCORNER ${boundingBox.yMin}
+CELLSIZE ${cellSize}
+NODATA_VALUE -9999
+`;
+
+    raster.forEach((row) => {
+        content += row.join(' ');
+        content += '\n';
+    });
+
+    const file = new Blob([content], {type: 'text/plain'});
+    const element = document.createElement('a');
+    element.href = URL.createObjectURL(file);
+    element.download = 'suitability.asc';
+    element.click();
 };
