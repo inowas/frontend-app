@@ -1,4 +1,4 @@
-import React, {ChangeEvent, SyntheticEvent, useState} from 'react';
+import React, {ChangeEvent, MouseEvent, SyntheticEvent, useState} from 'react';
 import {
     Checkbox,
     DropdownProps,
@@ -6,12 +6,13 @@ import {
     Grid,
     Header,
     Input,
-    InputOnChangeData,
+    InputOnChangeData, Pagination, PaginationProps,
     Segment,
     Table
 } from 'semantic-ui-react';
 import {FlopyModflowMfdis, FlopyModflowMfoc} from '../../../../../../core/model/flopy/packages/mf';
 import FlopyModflow from '../../../../../../core/model/flopy/packages/mf/FlopyModflow';
+import {IFlopyModflowMfoc} from '../../../../../../core/model/flopy/packages/mf/FlopyModflowMfoc';
 import renderInfoPopup from '../../../../../shared/complexTools/InfoPopup';
 import ToggleableInput from '../../../../../shared/complexTools/ToggleableInput';
 import {PopupPosition} from '../../../../../types';
@@ -51,7 +52,11 @@ interface IProps {
 
 const ocPackageProperties = (props: IProps) => {
     const [activeInput, setActiveInput] = useState<string | null>(null);
+    const [activePage, setActivePage] = useState<number>(1);
     const [activeValue, setActiveValue] = useState<string>('');
+    const [mfPackage, setMfPackage] = useState<IFlopyModflowMfoc>(props.mfPackage.toObject());
+
+    const rowsPerPage = 20;
 
     const handleOnChange = (e: ChangeEvent<HTMLInputElement>, {name, value}: InputOnChangeData) => {
         setActiveValue(value);
@@ -59,41 +64,46 @@ const ocPackageProperties = (props: IProps) => {
     };
 
     const handleOnChangeToggleable = (name: string, value: string | number | null) => {
-        const cMfPackage = props.mfPackage.toObject();
-        cMfPackage[name] = value;
-        return props.onChange(FlopyModflowMfoc.fromObject(cMfPackage));
+        mfPackage[name] = value;
+        setMfPackage(mfPackage);
+        return props.onChange(FlopyModflowMfoc.fromObject(mfPackage));
     };
 
     const handleOnBlur = () => {
         if (!activeInput) {
             return null;
         }
-        const cMfPackage = props.mfPackage.toObject();
-        if (cMfPackage.hasOwnProperty(activeInput)) {
-            cMfPackage[activeInput] = activeValue;
-            props.onChange(FlopyModflowMfoc.fromObject(cMfPackage));
+        if (mfPackage.hasOwnProperty(activeInput)) {
+            mfPackage[activeInput] = activeValue;
+            setMfPackage(mfPackage);
+            props.onChange(FlopyModflowMfoc.fromObject(mfPackage));
         }
         setActiveInput(null);
         setActiveValue('');
     };
 
     const handleOnSelect = (e: SyntheticEvent, {name, value}: DropdownProps) => {
-        const cMfPackage = props.mfPackage.toObject();
-        if (cMfPackage.hasOwnProperty(name)) {
-            cMfPackage[name] = value;
-            return props.onChange(FlopyModflowMfoc.fromObject(cMfPackage));
+        if (mfPackage.hasOwnProperty(name)) {
+            mfPackage[name] = value;
+            setMfPackage(mfPackage);
+            return props.onChange(FlopyModflowMfoc.fromObject(mfPackage));
         }
     };
 
     const handleChangeCompact = () => {
-        const cMfPackage = props.mfPackage.toObject();
-        cMfPackage.compact = !cMfPackage.compact;
-        return props.onChange(FlopyModflowMfoc.fromObject(cMfPackage));
+        mfPackage.compact = !mfPackage.compact;
+        setMfPackage(mfPackage);
+        return props.onChange(FlopyModflowMfoc.fromObject(mfPackage));
+    };
+
+    const handleChangePage = (e: MouseEvent<HTMLAnchorElement>, r: PaginationProps) => {
+        if (typeof r.activePage === 'number') {
+            setActivePage(r.activePage);
+        }
     };
 
     const handleToggleAll = (text: string) => {
-        const cMfPackage = props.mfPackage.toObject();
-        let {stress_period_data} = cMfPackage;
+        let {stress_period_data} = mfPackage;
         const activateAll = stress_period_data.filter((row) => !row[1].includes(text)).length > 0;
         stress_period_data = stress_period_data.map((row) => {
             if (row[1].includes(text) && !activateAll) {
@@ -104,13 +114,13 @@ const ocPackageProperties = (props: IProps) => {
             }
             return row;
         });
-        cMfPackage.stress_period_data = stress_period_data;
-        return props.onChange(FlopyModflowMfoc.fromObject(cMfPackage));
+        mfPackage.stress_period_data = stress_period_data;
+        setMfPackage(mfPackage);
+        return props.onChange(FlopyModflowMfoc.fromObject(mfPackage));
     };
 
     const handleToggleCheckBox = (per: number, stp: number, text: string) => {
-        const cMfPackage = props.mfPackage.toObject();
-        let {stress_period_data} = cMfPackage;
+        let {stress_period_data} = mfPackage;
 
         stress_period_data = stress_period_data.map((spd) => {
             if (spd[0][0] === per && spd[0][1] === stp) {
@@ -124,12 +134,14 @@ const ocPackageProperties = (props: IProps) => {
             }
             return spd;
         });
-        cMfPackage.stress_period_data = stress_period_data;
-        return props.onChange(FlopyModflowMfoc.fromObject(cMfPackage));
+
+        mfPackage.stress_period_data = stress_period_data;
+        setMfPackage(mfPackage);
+        return props.onChange(FlopyModflowMfoc.fromObject(mfPackage));
     };
 
     const renderOCDataTable = () => {
-        const stressPeriodData = props.mfPackage.stress_period_data;
+        const stressPeriodData = mfPackage.stress_period_data;
         const disPackage = props.mfPackages.getPackage('dis');
 
         if (!(disPackage instanceof FlopyModflowMfdis)) {
@@ -154,81 +166,99 @@ const ocPackageProperties = (props: IProps) => {
             });
         });
 
-        return (
-            <Table size={'small'} className={'packages'}>
-                <Table.Header>
-                    <Table.Row>
-                        <Table.HeaderCell>SP</Table.HeaderCell>
-                        <Table.HeaderCell>TS</Table.HeaderCell>
-                        <Table.HeaderCell textAlign="center">Save Head</Table.HeaderCell>
-                        <Table.HeaderCell textAlign="center">Save Drawdown</Table.HeaderCell>
-                        <Table.HeaderCell textAlign="center">Save Budget</Table.HeaderCell>
-                    </Table.Row>
-                </Table.Header>
-                <Table.Body>
-                    {tableData.length > 1 &&
-                    <Table.Row>
-                        <Table.Cell/>
-                        <Table.Cell/>
-                        <Table.Cell textAlign="center">
-                            <Checkbox
-                                onChange={() => handleToggleAll('save head')}
-                                checked={tableData.filter((row) => !row[1].includes('save head')).length === 0}
-                                disabled={props.readonly}
-                            />
-                        </Table.Cell>
-                        <Table.Cell textAlign="center">
-                            <Checkbox
-                                onChange={() => handleToggleAll('save drawdown')}
-                                checked={tableData.filter((row) => !row[1].includes('save drawdown')).length === 0}
-                                disabled={props.readonly}
-                            />
-                        </Table.Cell>
-                        <Table.Cell textAlign="center">
-                            <Checkbox
-                                onChange={() => handleToggleAll('save budget')}
-                                checked={tableData.filter((row) => !row[1].includes('save budget')).length === 0}
-                                disabled={props.readonly}
-                            />
-                        </Table.Cell>
-                    </Table.Row>
-                    }
-                    {tableData.map((d, idx) => {
-                        const [per, stp] = d[0];
+        let showPagination = false;
+        const startingIndex = (activePage - 1) * rowsPerPage;
+        const endingIndex = startingIndex + rowsPerPage;
+        const totalPages = Math.ceil(tableData.length / rowsPerPage);
+        if (tableData.length > rowsPerPage) {
+            showPagination = true;
+            tableData = tableData.slice(startingIndex, endingIndex);
+        }
 
-                        return (
-                            <Table.Row key={idx}>
-                                <Table.Cell>{per}</Table.Cell>
-                                <Table.Cell>{stp}</Table.Cell>
-                                <Table.Cell textAlign="center">
-                                    <Checkbox
-                                        onChange={() => handleToggleCheckBox(per, stp, 'save head')}
-                                        checked={d[1].includes('save head')}
-                                        disabled={props.readonly}
-                                    />
-                                </Table.Cell>
-                                <Table.Cell textAlign="center">
-                                    <Checkbox
-                                        onChange={() => handleToggleCheckBox(per, stp, 'save drawdown')}
-                                        checked={d[1].includes('save drawdown')}
-                                        disabled={props.readonly}
-                                    />
-                                </Table.Cell>
-                                <Table.Cell textAlign="center">
-                                    <Checkbox
-                                        onChange={() => handleToggleCheckBox(per, stp, 'save budget')}
-                                        checked={d[1].includes('save budget')}
-                                        disabled={props.readonly}
-                                    />
-                                </Table.Cell>
-                            </Table.Row>
-                        );
-                    })}
-                </Table.Body>
-            </Table>
+        return (
+            <React.Fragment>
+                {showPagination &&
+                <Pagination
+                    activePage={activePage}
+                    onPageChange={handleChangePage}
+                    totalPages={totalPages}
+                />
+                }
+                <Table size={'small'} className={'packages'}>
+                    <Table.Header>
+                        <Table.Row>
+                            <Table.HeaderCell>SP</Table.HeaderCell>
+                            <Table.HeaderCell>TS</Table.HeaderCell>
+                            <Table.HeaderCell textAlign="center">Save Head</Table.HeaderCell>
+                            <Table.HeaderCell textAlign="center">Save Drawdown</Table.HeaderCell>
+                            <Table.HeaderCell textAlign="center">Save Budget</Table.HeaderCell>
+                        </Table.Row>
+                    </Table.Header>
+                    <Table.Body>
+                        {tableData.length > 1 &&
+                        <Table.Row>
+                            <Table.Cell/>
+                            <Table.Cell/>
+                            <Table.Cell textAlign="center">
+                                <Checkbox
+                                    onChange={() => handleToggleAll('save head')}
+                                    checked={tableData.filter((row) => !row[1].includes('save head')).length === 0}
+                                    disabled={props.readonly}
+                                />
+                            </Table.Cell>
+                            <Table.Cell textAlign="center">
+                                <Checkbox
+                                    onChange={() => handleToggleAll('save drawdown')}
+                                    checked={tableData.filter((row) => !row[1].includes('save drawdown')).length === 0}
+                                    disabled={props.readonly}
+                                />
+                            </Table.Cell>
+                            <Table.Cell textAlign="center">
+                                <Checkbox
+                                    onChange={() => handleToggleAll('save budget')}
+                                    checked={tableData.filter((row) => !row[1].includes('save budget')).length === 0}
+                                    disabled={props.readonly}
+                                />
+                            </Table.Cell>
+                        </Table.Row>
+                        }
+                        {tableData.map((d, idx) => {
+                            const [per, stp] = d[0];
+
+                            return (
+                                <Table.Row key={idx}>
+                                    <Table.Cell>{per}</Table.Cell>
+                                    <Table.Cell>{stp}</Table.Cell>
+                                    <Table.Cell textAlign="center">
+                                        <Checkbox
+                                            onChange={() => handleToggleCheckBox(per, stp, 'save head')}
+                                            checked={d[1].includes('save head')}
+                                            disabled={props.readonly || stp !== 0}
+                                        />
+                                    </Table.Cell>
+                                    <Table.Cell textAlign="center">
+                                        <Checkbox
+                                            onChange={() => handleToggleCheckBox(per, stp, 'save drawdown')}
+                                            checked={d[1].includes('save drawdown')}
+                                            disabled={props.readonly || stp !== 0}
+                                        />
+                                    </Table.Cell>
+                                    <Table.Cell textAlign="center">
+                                        <Checkbox
+                                            onChange={() => handleToggleCheckBox(per, stp, 'save budget')}
+                                            checked={d[1].includes('save budget')}
+                                            disabled={props.readonly || stp !== 0}
+                                        />
+                                    </Table.Cell>
+                                </Table.Row>
+                            );
+                        })}
+                    </Table.Body>
+                </Table>
+            </React.Fragment>
         );
     };
-    if (!props.mfPackage) {
+    if (!mfPackage) {
         return null;
     }
     return (
@@ -248,7 +278,7 @@ const ocPackageProperties = (props: IProps) => {
                                         placeholder="Select ihedfm"
                                         name="ihedfm"
                                         selection={true}
-                                        value={props.mfPackage.ihedfm}
+                                        value={mfPackage.ihedfm}
                                         disabled={props.readonly}
                                         onChange={handleOnSelect}
                                     />
@@ -268,7 +298,7 @@ const ocPackageProperties = (props: IProps) => {
                                         placeholder="Select iddnfm"
                                         name="iddnfm"
                                         selection={true}
-                                        value={props.mfPackage.iddnfm}
+                                        value={mfPackage.iddnfm}
                                         disabled={props.readonly}
                                         onChange={handleOnSelect}
                                     />
@@ -286,7 +316,7 @@ const ocPackageProperties = (props: IProps) => {
                                         disabled={props.readonly}
                                         name="compact"
                                         onChange={handleChangeCompact}
-                                        checked={props.mfPackage.compact}
+                                        checked={mfPackage.compact}
                                     />
                                 </Form.Field>
                                 <Form.Field width={1}>
@@ -301,7 +331,7 @@ const ocPackageProperties = (props: IProps) => {
                                 <ToggleableInput
                                     readOnly={props.readonly}
                                     name="chedfm"
-                                    value={props.mfPackage.chedfm}
+                                    value={mfPackage.chedfm}
                                     onChange={handleOnChangeToggleable}
                                     placeholder=""
                                     type="string"
@@ -312,7 +342,7 @@ const ocPackageProperties = (props: IProps) => {
                                 <ToggleableInput
                                     readOnly={props.readonly}
                                     name="cddnfm"
-                                    value={props.mfPackage.cddnfm}
+                                    value={mfPackage.cddnfm}
                                     onChange={handleOnChangeToggleable}
                                     placeholder=""
                                     type="string"
@@ -323,7 +353,7 @@ const ocPackageProperties = (props: IProps) => {
                                 <ToggleableInput
                                     readOnly={props.readonly}
                                     name="cboufm"
-                                    value={props.mfPackage.cboufm}
+                                    value={mfPackage.cboufm}
                                     onChange={handleOnChangeToggleable}
                                     placeholder=""
                                     type="string"
@@ -341,7 +371,7 @@ const ocPackageProperties = (props: IProps) => {
                         <Input
                             readOnly={props.readonly}
                             name="stress_period_data"
-                            value={JSON.stringify(props.mfPackage.stress_period_data)}
+                            value={JSON.stringify(mfPackage.stress_period_data)}
                             icon={renderInfoPopup(documentation.stress_period_data, 'stress_period_data')}
                         />
                     </Form.Field>
@@ -350,7 +380,7 @@ const ocPackageProperties = (props: IProps) => {
                         <Input
                             readOnly={props.readonly}
                             name="label"
-                            value={activeInput === 'label' ? activeValue : props.mfPackage.label}
+                            value={activeInput === 'label' ? activeValue : mfPackage.label}
                             icon={renderInfoPopup(documentation.label, 'label')}
                             onBlur={handleOnBlur}
                             onChange={handleOnChange}
@@ -364,7 +394,7 @@ const ocPackageProperties = (props: IProps) => {
                     <Input
                         readOnly={true}
                         name="extension"
-                        value={props.mfPackage.extension || ''}
+                        value={mfPackage.extension || ''}
                         icon={renderInfoPopup(documentation.extension, 'extension')}
                     />
                 </Form.Field>
@@ -373,7 +403,7 @@ const ocPackageProperties = (props: IProps) => {
                     <Input
                         readOnly={true}
                         name="unitnumber"
-                        value={props.mfPackage.unitnumber || ''}
+                        value={mfPackage.unitnumber || ''}
                         icon={renderInfoPopup(documentation.unitnumber, 'unitnumber')}
                     />
                 </Form.Field>
@@ -382,7 +412,7 @@ const ocPackageProperties = (props: IProps) => {
                     <Input
                         readOnly={true}
                         name="filenames"
-                        value={props.mfPackage.filenames || ''}
+                        value={mfPackage.filenames || ''}
                         icon={renderInfoPopup(documentation.filenames, 'filenames')}
                     />
                 </Form.Field>
