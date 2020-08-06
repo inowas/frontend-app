@@ -9,13 +9,23 @@ interface IPoint3D {
     z: number;
 }
 
+export interface IIdwOptions {
+    mode: string;
+    numberOfPoints: number;
+    range: number;
+}
+
 export const distanceWeighting = (
     area: Geometry,
     boundingBox: BoundingBox,
     gridSize: GridSize,
     points: IPoint3D[],
     rotation?: number,
-    range: number = 5
+    options: IIdwOptions = {
+        mode: 'number',
+        numberOfPoints: 5,
+        range: 3
+    }
 ): Array2D<number> => {
     const raster = new Array(gridSize.nY).fill(0).map(() => new Array(gridSize.nX).fill(0)) as Array2D<number>;
 
@@ -36,10 +46,10 @@ export const distanceWeighting = (
 
             let pointsInRange = [];
 
-            if (pointsWithDistance.filter((p) => p.d <= range).length < 3) {
-                pointsInRange = _.orderBy(pointsWithDistance, ['d'], ['asc']).slice(0, 3);
+            if (options.mode === 'number' && pointsWithDistance.filter((p) => p.d <= options.range).length > 0) {
+                pointsInRange = pointsWithDistance.filter((p) => p.d <= options.range);
             } else {
-                pointsInRange = pointsWithDistance.filter((p) => p.d <= range);
+                pointsInRange = _.orderBy(pointsWithDistance, ['d'], ['asc']).slice(0, options.numberOfPoints);
             }
 
             let sum1 = 0;
