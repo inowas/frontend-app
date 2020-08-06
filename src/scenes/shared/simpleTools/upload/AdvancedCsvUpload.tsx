@@ -12,6 +12,7 @@ interface IProps {
     onSave: (ds: any[][]) => void;
     onCancel: () => void;
     useDateTimes?: boolean;
+    withoutModal?: boolean;
 }
 
 const advancedCsvUpload = (props: IProps) => {
@@ -99,7 +100,10 @@ const advancedCsvUpload = (props: IProps) => {
                 nData.push(row);
             }
         });
-        return setProcessedData(nData);
+        setProcessedData(nData);
+        if (props.withoutModal) {
+            return props.onSave(nData);
+        }
     };
 
     const parseToString = (value: any) => {
@@ -131,149 +135,159 @@ const advancedCsvUpload = (props: IProps) => {
         }
     };
 
-    return (
-        <Modal
-            closeIcon={true}
-            open={true}
-            onClose={props.onCancel}
-            dimmer={'blurring'}
-        >
-            <Modal.Header>CSV Upload</Modal.Header>
-            <Modal.Content>
-                <Grid loading={fetchingData.toString()}>
-                    {!isFetched &&
-                    <React.Fragment>
-                        <Grid.Row>
-                            <Grid.Column>
-                                <Segment raised={true} loading={parsingData}>
-                                    <Form>
-                                        <Form.Group>
-                                            <Form.Input
-                                                onChange={handleUploadFile}
-                                                label="File"
-                                                name="file"
-                                                type="file"
-                                                width={6}
-                                            />
-                                        </Form.Group>
-                                    </Form>
-                                </Segment>
-                            </Grid.Column>
-                        </Grid.Row>
-                        {metadata &&
-                        <Grid.Row>
-                            <Grid.Column>
-                                <Segment raised={true}>
-                                    <Form>
-                                        <Form.Group>
-                                            {(props.useDateTimes || columns.filter((c) =>
-                                                c.type === ECsvColumnType.DATE_TIME).length > 0) &&
-                                            <Form.Input
-                                                onBlur={handleBlurDateTimeFormat}
-                                                onChange={handleChange(setDateTimeFormat)}
-                                                label="Datetime format"
-                                                name={'datetimeField'}
-                                                value={dateTimeFormat}
-                                            />
-                                            }
-                                            <Form.Checkbox
-                                                style={{marginTop: '30px'}}
-                                                toggle={true}
-                                                onChange={handleChange(setFirstRowIsHeader)}
-                                                checked={firstRowIsHeader}
-                                                label="First row is header."
-                                            />
-                                        </Form.Group>
-                                    </Form>
-                                </Segment>
-                            </Grid.Column>
-                        </Grid.Row>
-                        }
-                        {metadata &&
-                        <Grid.Row>
-                            <Grid.Column>
-                                <Segment
-                                    raised={true}
-                                    loading={parsingData}
-                                    color={metadata.errors.length > 0 ? 'red' : undefined}
-                                >
-                                    {metadata.errors.length > 0 &&
-                                    <div>
-                                        <List divided={true} relaxed={true}/>
-                                        {metadata.errors.map((e, key) => (
-                                            <List.Item key={key}>
-                                                <List.Content>
-                                                    <List.Header>{e.type}: {e.code}</List.Header>
-                                                    <List.Description as="a">{e.message} in
-                                                        row {e.row}</List.Description>
-                                                </List.Content>
-                                            </List.Item>
-                                        ))}
-                                    </div>
-                                    }
-                                    {metadata.errors.length === 0 &&
-                                    <div>
-                                        <Form>
-                                            <Form.Group>
-                                                {columns.map((c, key) => (
-                                                    <Form.Dropdown
-                                                        key={key}
-                                                        label={c.text}
-                                                        name={c.value}
-                                                        selection={true}
-                                                        value={parameterColumns ? parameterColumns[c.value] : undefined}
-                                                        onChange={handleChangeParameterColumn}
-                                                        options={metadata.data[0].map((s: string, idx: number) => ({
-                                                            key: idx,
-                                                            value: idx,
-                                                            text: firstRowIsHeader ? s : `Column ${idx + 1}`
-                                                        }))}
-                                                    />
-                                                ))}
-                                            </Form.Group>
-                                        </Form>
-                                    </div>
-                                    }
-                                </Segment>
-                            </Grid.Column>
-                        </Grid.Row>
-                        }
-                        {processedData &&
-                        <Grid.Row>
-                            <Grid.Column>
-                                <Table size={'small'}>
-                                    <Table.Header>
-                                        <Table.Row>
-                                            {props.columns.map((c, cKey) =>
-                                                <Table.HeaderCell key={cKey}>{c.text}</Table.HeaderCell>
-                                            )}
-                                        </Table.Row>
-                                    </Table.Header>
-                                    <Table.Body>
-                                        {processedData.map((row, rKey) =>
-                                            <Table.Row key={rKey}>
-                                                {row.map((c, cKey) => (
-                                                    <Table.Cell key={cKey}>
-                                                        {parseToString(c)}
-                                                    </Table.Cell>
-                                                ))}
-                                            </Table.Row>
-                                        )}
-                                    </Table.Body>
-                                </Table>
-                            </Grid.Column>
-                        </Grid.Row>
-                        }
-                    </React.Fragment>
+    const renderContent = () => {
+        return (
+            <Grid loading={fetchingData.toString()}>
+                {!isFetched &&
+                <React.Fragment>
+                    <Grid.Row>
+                        <Grid.Column>
+                            <Segment raised={false} loading={parsingData}>
+                                <Form>
+                                    <Form.Group>
+                                        <Form.Input
+                                            onChange={handleUploadFile}
+                                            label="File"
+                                            name="file"
+                                            type="file"
+                                        />
+                                    </Form.Group>
+                                </Form>
+                            </Segment>
+                        </Grid.Column>
+                    </Grid.Row>
+                    {metadata &&
+                    <Grid.Row>
+                        <Grid.Column>
+                            <Segment raised={true}>
+                                <Form>
+                                    <Form.Group>
+                                        {(props.useDateTimes || columns.filter((c) =>
+                                            c.type === ECsvColumnType.DATE_TIME).length > 0) &&
+                                        <Form.Input
+                                            onBlur={handleBlurDateTimeFormat}
+                                            onChange={handleChange(setDateTimeFormat)}
+                                            label="Datetime format"
+                                            name={'datetimeField'}
+                                            value={dateTimeFormat}
+                                        />
+                                        }
+                                        <Form.Checkbox
+                                            style={{marginTop: '30px'}}
+                                            toggle={true}
+                                            onChange={handleChange(setFirstRowIsHeader)}
+                                            checked={firstRowIsHeader}
+                                            label="First row is header."
+                                        />
+                                    </Form.Group>
+                                </Form>
+                            </Segment>
+                        </Grid.Column>
+                    </Grid.Row>
                     }
-                </Grid>
-            </Modal.Content>
-            <Modal.Actions>
-                <Button negative={true} onClick={props.onCancel}>Cancel</Button>
-                <Button positive={true} disabled={!processData} onClick={handleSave}>Apply</Button>
-            </Modal.Actions>
-        </Modal>
-    );
+                    {metadata &&
+                    <Grid.Row>
+                        <Grid.Column>
+                            <Segment
+                                raised={true}
+                                loading={parsingData}
+                                color={metadata.errors.length > 0 ? 'red' : undefined}
+                                style={{overflow: 'auto'}}
+                            >
+                                {metadata.errors.length > 0 &&
+                                <div>
+                                    <List divided={true} relaxed={true}/>
+                                    {metadata.errors.map((e, key) => (
+                                        <List.Item key={key}>
+                                            <List.Content>
+                                                <List.Header>{e.type}: {e.code}</List.Header>
+                                                <List.Description as="a">{e.message} in
+                                                    row {e.row}</List.Description>
+                                            </List.Content>
+                                        </List.Item>
+                                    ))}
+                                </div>
+                                }
+                                {metadata.errors.length === 0 &&
+                                <div>
+                                    <Form>
+                                        <Form.Group>
+                                            {columns.map((c, key) => (
+                                                <Form.Dropdown
+                                                    key={key}
+                                                    label={c.text}
+                                                    name={c.value}
+                                                    selection={true}
+                                                    value={parameterColumns ? parameterColumns[c.value] : undefined}
+                                                    onChange={handleChangeParameterColumn}
+                                                    options={metadata.data[0].map((s: string, idx: number) => ({
+                                                        key: idx,
+                                                        value: idx,
+                                                        text: firstRowIsHeader ? s : `Column ${idx + 1}`
+                                                    }))}
+                                                />
+                                            ))}
+                                        </Form.Group>
+                                    </Form>
+                                </div>
+                                }
+                            </Segment>
+                        </Grid.Column>
+                    </Grid.Row>
+                    }
+                    {processedData &&
+                    <Grid.Row>
+                        <Grid.Column>
+                            <Table size={'small'}>
+                                <Table.Header>
+                                    <Table.Row>
+                                        {props.columns.map((c, cKey) =>
+                                            <Table.HeaderCell key={cKey}>{c.text}</Table.HeaderCell>
+                                        )}
+                                    </Table.Row>
+                                </Table.Header>
+                                <Table.Body>
+                                    {processedData.map((row, rKey) =>
+                                        <Table.Row key={rKey}>
+                                            {row.map((c, cKey) => (
+                                                <Table.Cell key={cKey}>
+                                                    {parseToString(c)}
+                                                </Table.Cell>
+                                            ))}
+                                        </Table.Row>
+                                    )}
+                                </Table.Body>
+                            </Table>
+                        </Grid.Column>
+                    </Grid.Row>
+                    }
+                </React.Fragment>
+                }
+            </Grid>
+        );
+    };
+
+    if (!props.withoutModal) {
+        return (
+            <Modal
+                closeIcon={true}
+                open={true}
+                onClose={props.onCancel}
+                dimmer={'blurring'}
+            >
+                <Modal.Header>CSV Upload</Modal.Header>
+                <Modal.Content>
+                    {renderContent()}
+                </Modal.Content>
+                <Modal.Actions>
+                    <Button negative={true} onClick={props.onCancel}>Cancel</Button>
+                    <Button positive={true} disabled={!processData} onClick={handleSave}>Apply</Button>
+                </Modal.Actions>
+            </Modal>
+        );
+    }
+
+    return renderContent();
 };
 
 export default advancedCsvUpload;
