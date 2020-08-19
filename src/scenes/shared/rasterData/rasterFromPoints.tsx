@@ -120,6 +120,8 @@ const rasterFromPoints = (props: IProps) => {
         <Grid>
             <Grid.Row>
                 <Grid.Column width={8}>
+                    <Segment color={'green'}>
+                        <p>Upload CSV file with columns lat, lng and value:</p>
                     <AdvancedCsvUpload
                         columns={[
                             {key: 0, value: 'x', text: 'x', type: ECsvColumnType.NUMBER},
@@ -130,6 +132,7 @@ const rasterFromPoints = (props: IProps) => {
                         onSave={handleChangeData}
                         withoutModal={true}
                     />
+                    </Segment>
                 </Grid.Column>
                 <Grid.Column width={8}>
                     <Segment>
