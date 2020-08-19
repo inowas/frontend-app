@@ -3,7 +3,7 @@ import {GeoJSON as GeoJSONType, GeoJsonGeometryTypes} from 'geojson';
 import {LatLngBoundsExpression} from 'leaflet';
 import React, {FormEvent, useEffect, useRef, useState} from 'react';
 import {CircleMarker, GeoJSON, Map} from 'react-leaflet';
-import {Button, Checkbox, CheckboxProps, Grid, List} from 'semantic-ui-react';
+import {Button, Checkbox, CheckboxProps, Grid, List, Message} from 'semantic-ui-react';
 import uuid from 'uuid';
 import {BoundingBox, Geometry} from '../../../../../core/model/modflow';
 import {BasicTileLayer} from '../../../../../services/geoTools/tileLayers';
@@ -99,18 +99,15 @@ const uploadGeoJSONFile = (props: IProps) => {
 
         const data = JSON.parse(text);
 
+        if (!data.crs.properties.name.includes('CRS84')) {
+            setErrors(errors.concat(
+                `CRS ${data.crs.properties.name} might not be compatible. Use WGS 84 (EPSG 4326).`
+            ));
+        }
+
         /*
         TODO: add schema for geojson in general
-        const schemaUrl = JSON_SCHEMA_URL + '/geojson/polygon.json';
-
-        validate(data, schemaUrl).then(([isValid, errors]) => {
-            if (!isValid) {
-                setIsLoading(false);
-                return setErrors([]);
-            }
-
-            console.log({data});
-        });*/
+        */
 
         setIsLoading(false);
 
@@ -155,7 +152,7 @@ const uploadGeoJSONFile = (props: IProps) => {
         if (f.geometry.type === 'Point') {
             return (
                 <CircleMarker
-                    center={f.geometry.coordinates}
+                    center={[f.geometry.coordinates[1], f.geometry.coordinates[0]]}
                     key={uuid.v4()}
                     {...styles.point}
                 />
@@ -195,6 +192,7 @@ const uploadGeoJSONFile = (props: IProps) => {
                     onChange={handleUpload}
                     value={''}
                 />
+                {errors.map((e, key) => <Message key={key} negative={true}>{e}</Message>)}
                 <List>
                 {features.map((f, key) => (
                     <List.Item key={key}>

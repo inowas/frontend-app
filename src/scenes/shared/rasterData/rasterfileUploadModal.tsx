@@ -25,6 +25,7 @@ import {fetchRasterData, fetchRasterMetaData, uploadRasterfile} from '../../../s
 import {IRasterFileMetadata} from '../../../services/api/types';
 import {RainbowOrLegend} from '../../../services/rainbowvis/types';
 import RasterDataImage from './rasterDataImage';
+import RasterFromCSV from './rasterFromCSV';
 import RasterFromPoints from './rasterFromPoints';
 import RasterFromProject from './rasterFromProject';
 import {InterpolationType} from './types';
@@ -197,27 +198,39 @@ const rasterFileUploadModal = (props: IProps) => {
             <Modal.Content>
                 <Menu pointing={true} secondary={true}>
                     <Menu.Item
-                        name="File"
+                        name="GeoTiff"
                         active={activeItem === 'file'}
                         onClick={handleItemClick}
                         value="file"
                     />
                     <Menu.Item
-                        name="Project"
+                        name="Points to Raster"
+                        active={activeItem === 'interpolation'}
+                        onClick={handleItemClick}
+                        value="interpolation"
+                    />
+                    <Menu.Item
+                        name="Import from Project"
                         active={activeItem === 'project'}
                         onClick={handleItemClick}
                         value="project"
                     />
                     <Menu.Item
-                        name="Interpolation"
-                        active={activeItem === 'interpolation'}
+                        name="Import from CSV"
+                        active={activeItem === 'csv'}
                         onClick={handleItemClick}
-                        value="interpolation"
+                        value="csv"
                     />
                 </Menu>
                 {activeItem === 'project' &&
                 <RasterFromProject
                     onChange={handleChangeRasterFromProject}
+                />
+                }
+                {activeItem === 'csv' &&
+                <RasterFromCSV
+                    onChange={handleChangeRasterFromProject}
+                    unit={props.parameter.unit}
                 />
                 }
                 {activeItem === 'interpolation' &&

@@ -61,6 +61,12 @@ const rasterFromProject = (props: IProps) => {
     }, [mode, selectedLay]);
 
     useEffect(() => {
+        if (!calculation) {
+            setMode('soilmodel');
+        }
+    }, [calculation]);
+
+    useEffect(() => {
         if (selectedParam && soilmodel && mode === 'soilmodel') {
             const layer = soilmodel.layersCollection.all[selectedLay];
             const param = layer.parameters.filter((p) => p.id === selectedParam);
@@ -116,7 +122,7 @@ const rasterFromProject = (props: IProps) => {
         }
     };
 
-    if (!soilmodel || !calculation || !model) {
+    if (!soilmodel || !model) {
         return (
             <Segment color={'grey'} loading={true}/>
         );
@@ -200,7 +206,7 @@ const rasterFromProject = (props: IProps) => {
                             fluid={true}
                             label="Import from"
                             options={[
-                                {key: 'results', text: 'Results', value: 'results'},
+                                {key: 'results', text: 'Results', value: 'results', disabled: !calculation},
                                 {key: 'soilmodel', text: 'Soilmodel', value: 'soilmodel'}
                             ]}
                             onChange={handleChangeMode}
