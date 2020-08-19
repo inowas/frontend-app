@@ -1,11 +1,13 @@
 import {LTOB} from 'downsample';
+import _ from 'lodash';
 import moment from 'moment';
 import React, {SyntheticEvent, useEffect, useState} from 'react';
-import {ResponsiveContainer, Scatter, ScatterChart, XAxis, YAxis} from 'recharts';
-import {Dimmer, DropdownItemProps, DropdownProps, Form, Grid, Loader, Segment} from 'semantic-ui-react';
+import {ReferenceLine, ResponsiveContainer, Scatter, ScatterChart, XAxis, YAxis} from 'recharts';
+import {Button, Dimmer, DropdownItemProps, DropdownProps, Form, Grid, Loader, Popup, Segment} from 'semantic-ui-react';
+import Uuid from 'uuid';
 import {DataSourceCollection, Rtm} from '../../../../core/model/rtm';
 import {IDateTimeValue, ISensor, ISensorParameter} from '../../../../core/model/rtm/Sensor.type';
-import { TimeSlider } from '../Visualization';
+import {TimeSlider} from '../Visualization';
 
 interface IProps {
     rtm: Rtm;
@@ -23,6 +25,11 @@ const heatTransfer = (props: IProps) => {
     const [sensorInData, setSensorInData] = useState<IDateTimeValue[]>();
     const [sensorOutData, setSensorOutData] = useState<IDateTimeValue[]>();
 
+    const [tempTime, setTempTime] = useState<[number, number]>();
+    const [timePeriod, setTimePeriod] = useState<[number, number]>();
+    const [timesteps, setTimesteps] = useState<number[]>();
+    const [timeSlideId, setTimeSliderId] = useState<string>(Uuid.v4());
+
     useEffect(() => {
         if (parameterIn) {
             setData(parameterIn, setSensorInData);
@@ -34,6 +41,15 @@ const heatTransfer = (props: IProps) => {
             setData(parameterOut, setSensorOutData);
         }
     }, [parameterOut]);
+
+    useEffect(() => {
+        if (sensorInData && sensorOutData) {
+            const ts = sensorInData.map((t) => t.timeStamp)
+                .concat(sensorOutData.map((t) => t.timeStamp));
+            const fTs = _.orderBy(_.uniq(ts));
+            setTimesteps(fTs);
+        }
+    }, [sensorInData, sensorOutData]);
 
     const setData = (param: ISensorParameter, setter: (d: IDateTimeValue[]) => void) => {
         setIsFetching(true);
@@ -58,6 +74,14 @@ const heatTransfer = (props: IProps) => {
         };
     });
 
+    const handleClickReset = () => {
+        if (!timesteps) {
+            return null;
+        }
+        setTimePeriod([0, timesteps.length - 1]);
+        setTimeSliderId(Uuid.v4());
+    };
+
     const handleChangeSensor = (e: SyntheticEvent<HTMLElement, Event>, {name, value}: DropdownProps) => {
         if (typeof value !== 'string') {
             return null;
@@ -77,6 +101,10 @@ const heatTransfer = (props: IProps) => {
             }
         }
     };
+
+    const handleChangeTimeSlider = () => setTimePeriod(tempTime);
+
+    const handleMoveTimeSlider = (ts: [number, number]) => setTempTime(ts);
 
     const formatDateTimeTicks = (dt: number) => {
         return moment.unix(dt).format('YYYY/MM/DD');
@@ -107,6 +135,20 @@ const heatTransfer = (props: IProps) => {
                         name={''}
                         domain={['auto', 'auto']}
                     />
+                    {timePeriod && timesteps &&
+                    <ReferenceLine
+                        x={timesteps[timePeriod[0]]}
+                        stroke="#000"
+                        strokeDasharray="3 3"
+                    />
+                    }
+                    {timePeriod && timesteps &&
+                    <ReferenceLine
+                        x={timesteps[timePeriod[1]]}
+                        stroke="#000"
+                        strokeDasharray="3 3"
+                    />
+                    }
                     <Scatter
                         data={downSampledDataLTOB(data)}
                         line={{strokeWidth: 2, stroke: '#3498DB'}}
@@ -160,13 +202,29 @@ const heatTransfer = (props: IProps) => {
                             {sensorOutData && renderChart(sensorOutData)}
                         </Grid.Column>
                     </Grid.Row>
+                    {timesteps &&
                     <Grid.Row>
-                        <TimeSlider
-                            onChange={() => null}
-                            onMove={() => null}
-                            timeSteps={[]}
-                        />
+                        <Grid.Column width={1}>
+                            <Popup
+                                content="Reset"
+                                trigger={
+                                    <Button
+                                        onClick={handleClickReset}
+                                        icon="undo"
+                                        size="tiny"
+                                    />
+                                }
+                            />
+                        </Grid.Column>
+                        <Grid.Column key={timeSlideId} width={15}>
+                            <TimeSlider
+                                onChange={handleChangeTimeSlider}
+                                onMove={handleMoveTimeSlider}
+                                timeSteps={timesteps}
+                            />
+                        </Grid.Column>
                     </Grid.Row>
+                    }
                 </Grid>
             </Form>
         </Segment>

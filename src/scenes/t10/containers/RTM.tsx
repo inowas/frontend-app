@@ -165,7 +165,7 @@ const RTM = (props: IProps) => {
             );
         }
 
-        if (property === 'heat-transfer') {
+        if (property === 'heat-transport') {
             return (
                 <HeatTransfer
                     rtm={Rtm.fromObject(rtm)}
