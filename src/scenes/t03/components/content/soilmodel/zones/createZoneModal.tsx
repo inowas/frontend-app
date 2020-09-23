@@ -1,13 +1,17 @@
+import * as turf from '@turf/turf';
 import {default as geojson, Polygon} from 'geojson';
 import { DrawEvents } from 'leaflet';
 import React, {ChangeEvent, useState} from 'react';
 import {Button, Form, InputOnChangeData, Modal} from 'semantic-ui-react';
 import uuidv4 from 'uuid/v4';
 import {Geometry} from '../../../../../../core/model/geometry';
-import {ModflowModel} from '../../../../../../core/model/modflow';
+import {ICells} from '../../../../../../core/model/geometry/Cells.type';
+import {Cells, ModflowModel} from '../../../../../../core/model/modflow';
 import BoundaryCollection from '../../../../../../core/model/modflow/boundaries/BoundaryCollection';
 import {Zone, ZonesCollection} from '../../../../../../core/model/modflow/soilmodel';
-import {calculateActiveCells} from '../../../../../../services/geoTools';
+import {CALCULATE_CELLS_INPUT} from '../../../../worker/t03.worker';
+import {ICalculateCellsInputData} from '../../../../worker/t03.worker.type';
+import {asyncWorker} from '../../../../worker/worker';
 import {ZonesMap} from './index';
 
 interface IProps {
@@ -24,16 +28,36 @@ const createZoneModal = (props: IProps) => {
 
     const handleApply = () => {
         if (name && geometry) {
-            const zone = new Zone({
-                id: uuidv4(),
-                isDefault: false,
-                name,
-                geometry,
-                cells: geometry ? calculateActiveCells(Geometry.fromGeoJson(geometry), props.model.boundingBox,
-                    props.model.gridSize).toObject() : []
-            });
+            const {model} = props;
+            const cGeometry = Geometry.fromObject(geometry);
 
-            return props.onChange(zone);
+            let g = cGeometry.toGeoJSON();
+            if (model.rotation % 360 !== 0) {
+                g = turf.transformRotate(
+                    cGeometry.toGeoJSON(), -1 * model.rotation, {pivot: model.geometry.centerOfMass}
+                );
+            }
+
+            asyncWorker({
+                type: CALCULATE_CELLS_INPUT,
+                data: {
+                    geometry: g,
+                    boundingBox: model.boundingBox.toObject(),
+                    gridSize: model.gridSize.toObject(),
+                    intersection: model.intersection
+                } as ICalculateCellsInputData
+            }).then((c: ICells) => {
+                const cCells = Cells.fromObject(c).removeCells(model.inactiveCells);
+                const zone = new Zone({
+                    id: uuidv4(),
+                    isDefault: false,
+                    name,
+                    geometry,
+                    cells: cCells
+                });
+
+                return props.onChange(zone);
+            });
         }
     };
 

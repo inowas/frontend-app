@@ -12,7 +12,6 @@ import {BoundaryCollection, BoundaryFactory} from '../../../../../core/model/mod
 import {BoundaryType, ISpValues, IValueProperty} from '../../../../../core/model/modflow/boundaries/Boundary.type';
 import {IRootReducer} from '../../../../../reducers';
 import {sendCommand} from '../../../../../services/api';
-import {calculateActiveCells} from '../../../../../services/geoTools';
 import ContentToolBar from '../../../../shared/ContentToolbar';
 import {addMessage, updateBoundaries} from '../../../actions/actions';
 import ModflowModelCommand from '../../../commands/modflowModelCommand';
@@ -79,14 +78,33 @@ const createBoundary = (props: Props) => {
                 setGeometry(cGeometry.toObject());
                 return setIsDirty(true);
             }).catch(() => {
-                dispatch(addMessage(messageError('createModel', 'Calculating cells failed.')));
+                dispatch(addMessage(messageError('boundaries', 'Calculating cells failed.')));
             });
         }
     };
 
     const handleApplyJson = (cGeometry: Geometry) => {
-        const cCells = calculateActiveCells(cGeometry, model.boundingBox, model.gridSize);
-        return handleSave(cGeometry.toObject(), cCells.toObject());
+        let g = cGeometry.toGeoJSON();
+        if (model.rotation % 360 !== 0) {
+            g = turf.transformRotate(
+                cGeometry.toGeoJSON(), -1 * model.rotation, {pivot: model.geometry.centerOfMass}
+            );
+        }
+
+        asyncWorker({
+            type: CALCULATE_CELLS_INPUT,
+            data: {
+                geometry: g,
+                boundingBox: model.boundingBox.toObject(),
+                gridSize: model.gridSize.toObject(),
+                intersection: model.intersection
+            } as ICalculateCellsInputData
+        }).then((c: ICells) => {
+            const cCells = Cells.fromObject(c).removeCells(model.inactiveCells);
+            return handleSave(cGeometry.toObject(), cCells);
+        }).catch(() => {
+            dispatch(addMessage(messageError('boundaries', 'Calculating cells failed.')));
+        });
     };
 
     const handleChange = (e: SyntheticEvent<HTMLElement, Event> | ChangeEvent<HTMLInputElement>,
