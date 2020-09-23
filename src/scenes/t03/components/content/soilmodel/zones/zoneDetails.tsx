@@ -1,6 +1,8 @@
+import * as turf from '@turf/turf';
 import geojson from 'geojson';
 import {DrawEvents} from 'leaflet';
 import React, {ChangeEvent, useEffect, useState} from 'react';
+import {useDispatch} from 'react-redux';
 import {
     Button,
     Checkbox,
@@ -16,12 +18,17 @@ import {
     Segment
 } from 'semantic-ui-react';
 import {Geometry} from '../../../../../../core/model/geometry';
-import {ModflowModel} from '../../../../../../core/model/modflow';
+import {ICells} from '../../../../../../core/model/geometry/Cells.type';
+import {Cells, ModflowModel} from '../../../../../../core/model/modflow';
 import BoundaryCollection from '../../../../../../core/model/modflow/boundaries/BoundaryCollection';
 import {Zone, ZonesCollection} from '../../../../../../core/model/modflow/soilmodel';
 import LayersCollection from '../../../../../../core/model/modflow/soilmodel/LayersCollection';
 import {IZone} from '../../../../../../core/model/modflow/soilmodel/Zone.type';
-import {calculateActiveCells} from '../../../../../../services/geoTools';
+import {addMessage} from '../../../../actions/actions';
+import {messageError} from '../../../../defaults/messages';
+import {CALCULATE_CELLS_INPUT} from '../../../../worker/t03.worker';
+import {ICalculateCellsInputData} from '../../../../worker/t03.worker.type';
+import {asyncWorker} from '../../../../worker/worker';
 import {UploadGeoJSONModal} from '../../create';
 import {ZonesMap} from './index';
 
@@ -52,6 +59,8 @@ const zoneDetails = (props: IProps) => {
             };
         })
     );
+
+    const dispatch = useDispatch();
 
     const affectedLayers = props.layers.getAffectedByZone(zone.id);
 
@@ -102,29 +111,46 @@ const zoneDetails = (props: IProps) => {
     };
 
     const handleApplyJson = (cGeometry: Geometry) => {
-        const cZone: IZone = {
-            ...zone,
-            cells: calculateActiveCells(cGeometry, props.model.boundingBox, props.model.gridSize).toObject(),
-            geometry: cGeometry.toObject()
-        };
-
-        if (affectedLayers.length > 0) {
-            setEditedZone(cZone);
-            return setRelationWarning(true);
+        const {model} = props;
+        let g = cGeometry.toGeoJSON();
+        if (model.rotation % 360 !== 0) {
+            g = turf.transformRotate(
+                cGeometry.toGeoJSON(), -1 * model.rotation, {pivot: model.geometry.centerOfMass}
+            );
         }
-        return props.onChange(Zone.fromObject(cZone));
+
+        asyncWorker({
+            type: CALCULATE_CELLS_INPUT,
+            data: {
+                geometry: g,
+                boundingBox: model.boundingBox.toObject(),
+                gridSize: model.gridSize.toObject(),
+                intersection: model.intersection
+            } as ICalculateCellsInputData
+        }).then((c: ICells) => {
+            const cCells = Cells.fromObject(c).removeCells(model.inactiveCells);
+
+            const cZone: IZone = {
+                ...zone,
+                cells: cCells,
+                geometry: cGeometry.toObject()
+            };
+
+            if (affectedLayers.length > 0) {
+                setEditedZone(cZone);
+                return setRelationWarning(true);
+            }
+            return props.onChange(Zone.fromObject(cZone));
+        }).catch(() => {
+            dispatch(addMessage(messageError('zones', 'Calculating cells failed.')));
+        });
     };
 
     const handleCreatePath = (e: DrawEvents.Created) => {
         const layer = e.layer;
         if (layer) {
             const geometry = Geometry.fromGeoJson(layer.toGeoJSON().geometry);
-            const cZone: IZone = {
-                ...zone,
-                cells: calculateActiveCells(geometry, props.model.boundingBox, props.model.gridSize).toObject(),
-                geometry: geometry.toObject()
-            };
-            return props.onChange(Zone.fromObject(cZone));
+            return handleApplyJson(geometry);
         }
     };
 
