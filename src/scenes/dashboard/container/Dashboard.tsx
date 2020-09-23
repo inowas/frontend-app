@@ -1,4 +1,4 @@
-import React, {MouseEvent, useEffect, useState} from 'react';
+import React, {MouseEvent, useEffect, useRef, useState} from 'react';
 import {useDispatch, useSelector} from 'react-redux';
 import {RouteComponentProps, withRouter} from 'react-router-dom';
 import {
@@ -37,13 +37,14 @@ type IProps = RouteComponentProps;
 const dashboard = (props: IProps) => {
     const [isLoading, setIsLoading] = useState<boolean>(true);
     const [toolInstances, setToolInstances] = useState<IToolInstance[]>([]);
-    const [hasError, setHasError] = useState<boolean>(false);
     const [search, setSearch] = useState<string>();
 
     const dispatch = useDispatch();
     const activeTool = useSelector((state: IRootReducer) => state.dashboard.activeTool);
     const roles = useSelector((state: IRootReducer) => state.user.roles);
     const showPublicInstances = useSelector((state: IRootReducer) => state.dashboard.showPublicInstances);
+
+    const fetchingAttempts = useRef<number>(0);
 
     if (!activeTool) {
         return <div>No active tool!</div>;
@@ -60,8 +61,11 @@ const dashboard = (props: IProps) => {
                 setIsLoading(false);
             },
             () => {
-                setHasError(true);
-                setIsLoading(false);
+                // TODO: not pretty but works for now
+                fetchingAttempts.current = fetchingAttempts.current + 1;
+                if (fetchingAttempts.current < 5) {
+                    fetchInstances(tool, cShowPublicInstances);
+                }
             }
         );
     };
@@ -109,7 +113,6 @@ const dashboard = (props: IProps) => {
                 fetchInstances(tool, false);
             }, () => {
                 setIsLoading(false);
-                setHasError(true);
             }
         );
     };
@@ -122,7 +125,6 @@ const dashboard = (props: IProps) => {
                 fetchInstances(tool, false);
             }, () => {
                 setIsLoading(false);
-                setHasError(true);
             }
         );
     };
