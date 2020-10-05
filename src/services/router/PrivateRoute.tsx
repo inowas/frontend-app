@@ -19,7 +19,6 @@ const privateRoute = (props: IProps) => {
     const dispatch = useDispatch();
     const userStore = useSelector((state: IRootReducer) => state.user);
     const sessionStore = useSelector((state: IRootReducer) => state.session);
-
     const history = useHistory();
 
     useEffect(() => {
@@ -50,8 +49,11 @@ const privateRoute = (props: IProps) => {
             (response) => {
                 dispatch(setUser(response));
             },
-            () => {
-                dispatch(unauthorized);
+            (e: any) => {
+                if (e.response && e.response && e.response.status === 401) {
+                    dispatch(unauthorized());
+                    setRedirectToLogin(true);
+                }
             }
         );
     };
