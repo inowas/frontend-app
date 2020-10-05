@@ -4,7 +4,6 @@ import GridEditor from './gridEditor';
 import GridProperties from './gridProperties';
 import StressperiodsDatatable from './stressperiodsDatatable';
 import StressperiodsEditor from './stressperiodsEditor';
-import StressperiodsGenerator from './stressperiodsGenerator';
 import StressperiodsImport from './stressperiodsImport';
 
 export {
@@ -14,6 +13,5 @@ export {
     GridProperties,
     StressperiodsDatatable,
     StressperiodsEditor,
-    StressperiodsGenerator,
     StressperiodsImport
 };
