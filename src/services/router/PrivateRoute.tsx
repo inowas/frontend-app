@@ -19,6 +19,7 @@ const privateRoute = (props: IProps) => {
     const dispatch = useDispatch();
     const userStore = useSelector((state: IRootReducer) => state.user);
     const sessionStore = useSelector((state: IRootReducer) => state.session);
+
     const history = useHistory();
 
     useEffect(() => {
