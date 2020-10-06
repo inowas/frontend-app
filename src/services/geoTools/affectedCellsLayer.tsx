@@ -4,7 +4,6 @@ import {FeatureGroup, GeoJSON, LayersControl} from 'react-leaflet';
 import {useSelector} from 'react-redux';
 import uuid from 'uuid';
 import {BoundingBox, Cells, Geometry, GridSize} from '../../core/model/geometry';
-import {IBoundingBox} from '../../core/model/geometry/BoundingBox.type';
 import {IRotationProperties} from '../../core/model/geometry/Geometry.type';
 import {Boundary, BoundaryCollection} from '../../core/model/modflow/boundaries';
 import {IRootReducer} from '../../reducers';
@@ -45,7 +44,6 @@ const styles = {
 
 const affectedCellsLayer = (props: IProps) => {
     const [iBoundLayer, setIBoundLayer] = useState();
-    const [boundingBox, setBoundingBox] = useState<IBoundingBox>(props.boundingBox.toObject());
     const [boundaryLayer, setBoundaryLayer] = useState();
     const [boundaryLayers, setBoundaryLayers] = useState();
     const [boundaryKey, setBoundaryKey] = useState<string>(uuid.v4());
@@ -59,31 +57,20 @@ const affectedCellsLayer = (props: IProps) => {
     }
 
     useEffect(() => {
-        setBoundingBox(props.boundingBox.toObject());
-    }, [props.boundingBox]);
-
-    useEffect(() => {
-        if (props.rotation) {
-            const bbox = BoundingBox.fromGeometryAndRotation(props.rotation.geometry, props.rotation.angle);
-            setBoundingBox(bbox.toObject());
-        }
-    }, [props.rotation]);
-
-    useEffect(() => {
         setIBoundLayer(
             createPolygon(
-                BoundingBox.fromObject(boundingBox),
+                props.boundingBox,
                 props.gridSize,
                 props.cells.invert(props.gridSize),
                 styles.inactive
             )
         );
-    }, [boundingBox, props.cells, props.gridSize]);
+    }, [props.boundingBox, props.cells, props.gridSize]);
 
     useEffect(() => {
         if (props.boundary) {
             const polygon = createPolygon(
-                BoundingBox.fromObject(boundingBox), props.gridSize, props.boundary.cells, styles.affected
+                props.boundingBox, props.gridSize, props.boundary.cells, styles.affected
             );
             setBoundaryLayer(polygon);
         }

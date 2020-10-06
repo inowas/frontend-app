@@ -1,6 +1,5 @@
 import {AllGeoJSON, Feature} from '@turf/helpers';
 import * as turf from '@turf/turf';
-import {envelope} from '@turf/turf';
 import {GeoJSON, Point} from 'geojson';
 import {isEqual} from 'lodash';
 import md5 from 'md5';
@@ -77,7 +76,7 @@ class BoundingBox {
     }
 
     public static fromGeoJson(geoJson: AllGeoJSON) {
-        const polygon = envelope(geoJson);
+        const polygon = turf.envelope(geoJson);
 
         if (!polygon.geometry) {
             throw new Error('No geometry');
@@ -165,11 +164,23 @@ class BoundingBox {
         return bbox.geoJsonWithRotation(rotation, area.centerOfMass);
     };
 
-    private readonly _props: IBoundingBox;
+    private _props: IBoundingBox;
 
     constructor([[xMin, yMin], [xMax, yMax]]: IBoundingBox) {
         this._props = [[xMin, yMin], [xMax, yMax]];
     }
+
+    public applyCellSize = (cs: [number, number]) => {
+        const difference = [
+            turf.lengthToDegrees((Math.ceil(this.heightInMeters / cs[0]) * cs[0] - this.heightInMeters) / 2, 'meters'),
+            turf.lengthToDegrees((Math.ceil(this.widthInMeters / cs[1]) * cs[1] - this.widthInMeters) / 2, 'meters')
+        ];
+        this._props = [
+            [this.xMin - difference[0], this.yMin - difference[1]],
+            [this.xMax + difference[0], this.yMax + difference[1]]
+        ];
+        return this;
+    };
 
     public geoJsonWithRotation = (rotation: number, center: Feature<Point | null>): GeoJSON => {
         return turf.transformRotate(

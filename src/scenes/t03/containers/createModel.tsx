@@ -145,10 +145,8 @@ const createModel = () => {
         );
     };
 
-    const handleChangeGridProps = (g: GridSize, i: number, r: number, c: Cells) => {
-        if (geometry && r % 360 !== 0) {
-            setBoundingBox(BoundingBox.fromGeometryAndRotation(Geometry.fromObject(geometry), r).toObject());
-        }
+    const handleChangeGridProps = (b: BoundingBox, g: GridSize, i: number, r: number, c: Cells) => {
+        setBoundingBox(b.toObject());
         setGridSize(g.toObject());
         setIntersection(i);
         setRotation(r);

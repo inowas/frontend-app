@@ -146,10 +146,9 @@ const gridEditor = (props: IProps) => {
         });
     };
 
-    const handleChangeRotation = (g: GridSize, i: number, r: number, c: Cells) => {
+    const handleChangeGridProperties = (b: BoundingBox, g: GridSize, i: number, r: number, c: Cells) => {
         const model = props.model.getClone();
-        model.boundingBox = r % 360 !== 0 ? BoundingBox.fromGeometryAndRotation(model.geometry, r) :
-            BoundingBox.fromGeoJson(model.geometry.toGeoJSON());
+        model.boundingBox = b;
         model.cells = c;
         model.gridSize = g;
         model.intersection = i;
@@ -203,13 +202,13 @@ const gridEditor = (props: IProps) => {
                         <Form.Group>
                             <Form.Input
                                 label="Cell height"
-                                value={Math.round(dyCell(boundingBox, gridSize) * 10000) / 10}
+                                value={Math.round(dyCell(boundingBox, gridSize) * 1000)}
                                 width={'6'}
                                 readOnly={true}
                             />
                             <Form.Input
                                 label="Cell width"
-                                value={Math.round(dxCell(boundingBox, gridSize) * 10000) / 10}
+                                value={Math.round(dxCell(boundingBox, gridSize) * 1000)}
                                 width={'6'}
                                 readOnly={true}
                             />
@@ -227,7 +226,7 @@ const gridEditor = (props: IProps) => {
                         geometry={geometry}
                         gridSize={gridSize}
                         intersection={props.model.intersection}
-                        onChange={handleChangeRotation}
+                        onChange={handleChangeGridProperties}
                         rotation={props.model.rotation}
                     />
                 </Grid.Column>
