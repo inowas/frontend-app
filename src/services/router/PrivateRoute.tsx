@@ -51,7 +51,7 @@ const privateRoute = (props: IProps) => {
                 dispatch(setUser(response));
             },
             (e: any) => {
-                if (e.response && e.response && e.response.status === 401) {
+                if (e.response && e.response.status && e.response.status === 401) {
                     dispatch(unauthorized());
                     setRedirectToLogin(true);
                 }
