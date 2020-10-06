@@ -50,8 +50,11 @@ const privateRoute = (props: IProps) => {
             (response) => {
                 dispatch(setUser(response));
             },
-            () => {
-                dispatch(unauthorized);
+            (e: any) => {
+                if (e.response && e.response && e.response.status === 401) {
+                    dispatch(unauthorized());
+                    setRedirectToLogin(true);
+                }
             }
         );
     };
