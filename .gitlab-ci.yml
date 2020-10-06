@@ -129,7 +129,7 @@ deploy:training:
   only:
     - tags
   except:
-    - /^(?!master).+@/
+    - master
 
 build:prod:
   image: node:10
