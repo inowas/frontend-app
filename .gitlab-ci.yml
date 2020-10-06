@@ -54,24 +54,22 @@ deploy:dev:
 build:smart-control:
   image: node:10
   stage: build
-
   script:
     - yarn install
     - REACT_APP_VERSION=$(git describe --tags --always --dirty=+) REACT_APP_API_URL=https://api.dss.smart-control.inowas.com REACT_APP_USERS_CAN_REGISTER=false REACT_APP_PUBLIC_PROJECTS_ACCESS=false yarn build
     - VERSION=$(git describe --tags --always --dirty=+) && DATE=$(date +%Y-%m-%dT%H:%M:%S) && sed -i "s/@@__VERSION__@@/${VERSION}/g;s/@@__BUILT__@@/${DATE}/g" ./build/index.html
-
   artifacts:
     paths:
       - build/
-
   only:
-    - master
+    - tags
+  except:
+    - /^(?!master).+@/
 
 deploy:smart-control:
   stage: deploy
   dependencies:
     - build:smart-control
-
   before_script:
     - 'which ssh-agent || ( apt-get update -y && apt-get install openssh-client -y )'
     - mkdir -p ~/.ssh
@@ -89,30 +87,29 @@ deploy:smart-control:
     name: smart-control
     url: https://dss.smart-control.inowas.com
   only:
-    - master
-
+    - tags
+  except:
+    - /^(?!master).+@/
 
 build:training:
   image: node:10
   stage: build
-
   script:
     - yarn install
     - REACT_APP_VERSION=$(git describe --tags --always --dirty=+) REACT_APP_API_URL=https://api.training.inowas.com REACT_APP_DISABLE_TOOL=T10 yarn build
     - VERSION=$(git describe --tags --always --dirty=+) && DATE=$(date +%Y-%m-%dT%H:%M:%S) && sed -i "s/@@__VERSION__@@/${VERSION}/g;s/@@__BUILT__@@/${DATE}/g" ./build/index.html
-
   artifacts:
     paths:
       - build/
-
   only:
-    - master
+    - tags
+  except:
+    - /^(?!master).+@/
 
 deploy:training:
   stage: deploy
   dependencies:
     - build:training
-
   before_script:
     - 'which ssh-agent || ( apt-get update -y && apt-get install openssh-client -y )'
     - mkdir -p ~/.ssh
@@ -130,29 +127,29 @@ deploy:training:
     name: training
     url: https://training.inowas.com
   only:
-    - master
+    - tags
+  except:
+    - /^(?!master).+@/
 
 build:prod:
   image: node:10
   stage: build
-
   script:
     - yarn install
     - REACT_APP_VERSION=$(git describe --tags --always --dirty=+) REACT_APP_API_URL=https://api.dss.inowas.com REACT_APP_DISABLE_TOOL=T10 yarn build
     - VERSION=$(git describe --tags --always --dirty=+) && DATE=$(date +%Y-%m-%dT%H:%M:%S) && sed -i "s/@@__VERSION__@@/${VERSION}/g;s/@@__BUILT__@@/${DATE}/g" ./build/index.html
-
   artifacts:
     paths:
       - build/
-
   only:
-    - master
+    - tags
+  except:
+    - /^(?!master).+@/
 
 deploy:prod:staging:
   stage: deploy
   dependencies:
     - build:prod
-
   before_script:
     - 'which ssh-agent || ( apt-get update -y && apt-get install openssh-client -y )'
     - mkdir -p ~/.ssh
@@ -170,13 +167,14 @@ deploy:prod:staging:
     name: staging
     url: https://staging.inowas.com
   only:
-    - master
+    - tags
+  except:
+    - /^(?!master).+@/
 
 deploy:prod:production:
   stage: deploy
   dependencies:
     - build:prod
-
   before_script:
     - 'which ssh-agent || ( apt-get update -y && apt-get install openssh-client -y )'
     - mkdir -p ~/.ssh
@@ -195,4 +193,6 @@ deploy:prod:production:
     url: https://dss.inowas.com
   when: manual
   only:
-    - master    
+    - tags
+  except:
+    - /^(?!master).+@/
