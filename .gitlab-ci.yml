@@ -65,7 +65,7 @@ build:smart-control:
       - build/
 
   only:
-    - dev
+    - master
 
 deploy:smart-control:
   stage: deploy
@@ -89,7 +89,7 @@ deploy:smart-control:
     name: smart-control
     url: https://dss.smart-control.inowas.com
   only:
-    - dev
+    - master
 
 
 build:training:
