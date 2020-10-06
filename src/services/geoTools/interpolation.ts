@@ -34,8 +34,13 @@ export const distanceWeighting = (
 
     for (let y = 0; y < gridSize.nY; y++) {
         for (let x = 0; x < gridSize.nX; x++) {
-            const cX = boundingBox.xMin + x * dX + dX / 2;
-            const cY = boundingBox.yMax - y * dY - dY / 2;
+            let cX = boundingBox.xMin + x * dX + dX / 2;
+            let cY = boundingBox.yMax - y * dY - dY / 2;
+
+            if (rotation && rotation % 360 !== 0) {
+                const result = turf.transformRotate(turf.point([cX, cY]), rotation, {pivot: area.centerOfMass});
+                if (result.geometry) { [cX, cY] = result.geometry.coordinates; }
+            }
 
             const pointsWithDistance = points.map((p) => {
                 return {

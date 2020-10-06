@@ -23,7 +23,7 @@ const privateRoute = (props: IProps) => {
     const history = useHistory();
 
     useEffect(() => {
-        if (props.path === '/tools' && redirectToLogin) {
+        if (redirectToLogin) {
             history.push('/login');
             setRedirectToLogin(false);
         }
