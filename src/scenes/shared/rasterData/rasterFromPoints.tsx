@@ -1,11 +1,10 @@
 import React, {ChangeEvent, FormEvent, useEffect, useState} from 'react';
+import {CircleMarker, FeatureGroup, Tooltip} from 'react-leaflet';
 import {useSelector} from 'react-redux';
 import {DropdownProps, Form, Grid, InputOnChangeData, Segment} from 'semantic-ui-react';
 import uuid from 'uuid';
 import {Array2D} from '../../../core/model/geometry/Array2D.type';
 import {ModflowModel} from '../../../core/model/modflow';
-import {BoundaryCollection, BoundaryFactory} from '../../../core/model/modflow/boundaries';
-import {IBoundary} from '../../../core/model/modflow/boundaries/Boundary.type';
 import {IRootReducer} from '../../../reducers';
 import {distanceWeighting, IIdwOptions} from '../../../services/geoTools/interpolation';
 import {AdvancedCsvUpload} from '../simpleTools/upload';
@@ -20,7 +19,6 @@ interface IProps {
 const rasterFromPoints = (props: IProps) => {
     const [activeInput, setActiveInput] = useState<string>();
     const [activeValue, setActiveValue] = useState<string>('');
-    const [points, setPoints] = useState<IBoundary[]>();
     const [data, setData] = useState<Array<{ x: number, y: number, z: number }>>();
     const [mode, setMode] = useState<string>('idw');
     const [idwOptions, setIdwOptions] = useState<IIdwOptions>({
@@ -75,27 +73,9 @@ const rasterFromPoints = (props: IProps) => {
     const handleChangeData = (r: any[][]) => {
         if (r.length > 0 && r[0].length === 3 &&
             typeof r[0][0] === 'number' && typeof r[0][1] === 'number' && typeof r[0][2] === 'number') {
-            const boundaries = BoundaryCollection.fromObject(r.map((rr, key) => BoundaryFactory.fromObject({
-                id: uuid.v4(),
-                type: 'Feature',
-                geometry: {
-                    type: 'Point',
-                    coordinates: [rr[0], rr[1]]
-                },
-                properties: {
-                    cells: [],
-                    layers: [],
-                    name: `point ${key}`,
-                    sp_values: [],
-                    type: 'wel',
-                    well_type: 'puw'
-                }
-            }).toObject()));
-
             setData(r.map((row) => {
                 return {x: row[0], y: row[1], z: row[2]};
             }));
-            setPoints(boundaries.toObject());
         }
     };
 
@@ -116,22 +96,47 @@ const rasterFromPoints = (props: IProps) => {
         props.onChange(cRaster);
     };
 
+    // TODO: Points are behind contour layer but should be in front of it (#1934)
+    const renderPoints = () => {
+        if (!data) {
+            return null;
+        }
+        return (
+            <FeatureGroup zIndex={10000}>
+                {data.map((point) => (
+                    <CircleMarker
+                        key={uuid.v4()}
+                        center={[
+                            point.y,
+                            point.x
+                        ]}
+                        radius={3}
+                    >
+                        <Tooltip>
+                            <span>{point.z} {props.unit}</span>
+                        </Tooltip>
+                    </CircleMarker>
+                ))}
+            </FeatureGroup>
+        );
+    };
+
     return (
         <Grid>
             <Grid.Row>
                 <Grid.Column width={8}>
                     <Segment color={'green'}>
                         <p>Upload CSV file with columns lat, lng and value:</p>
-                    <AdvancedCsvUpload
-                        columns={[
-                            {key: 0, value: 'x', text: 'x', type: ECsvColumnType.NUMBER},
-                            {key: 1, value: 'y', text: 'y', type: ECsvColumnType.NUMBER},
-                            {key: 2, value: 'z', text: 'z', type: ECsvColumnType.NUMBER}
-                        ]}
-                        onCancel={() => null}
-                        onSave={handleChangeData}
-                        withoutModal={true}
-                    />
+                        <AdvancedCsvUpload
+                            columns={[
+                                {key: 0, value: 'x', text: 'x', type: ECsvColumnType.NUMBER},
+                                {key: 1, value: 'y', text: 'y', type: ECsvColumnType.NUMBER},
+                                {key: 2, value: 'z', text: 'z', type: ECsvColumnType.NUMBER}
+                            ]}
+                            onCancel={() => null}
+                            onSave={handleChangeData}
+                            withoutModal={true}
+                        />
                     </Segment>
                 </Grid.Column>
                 <Grid.Column width={8}>
@@ -184,14 +189,15 @@ const rasterFromPoints = (props: IProps) => {
                             }
                         </Form>
                     </Segment>
-                    {data !== undefined && points && raster &&
+                    {data !== undefined && raster &&
                     <Segment>
                         <RasterDataMap
-                            boundaries={BoundaryCollection.fromObject(points)}
                             data={raster}
                             model={model}
                             unit={props.unit}
-                        />
+                        >
+                            {renderPoints()}
+                        </RasterDataMap>
                     </Segment>
                     }
                 </Grid.Column>

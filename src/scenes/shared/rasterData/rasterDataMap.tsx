@@ -1,5 +1,5 @@
 import React from 'react';
-import {LayersControl, Map} from 'react-leaflet';
+import {Children, LayersControl, Map} from 'react-leaflet';
 import {Array2D} from '../../../core/model/geometry/Array2D.type';
 import {ModflowModel} from '../../../core/model/modflow';
 import BoundaryCollection from '../../../core/model/modflow/boundaries/BoundaryCollection';
@@ -40,13 +40,14 @@ const renderLegend = (rainbow: Rainbow, unit: string = '') => {
 
 interface IProps {
     boundaries?: BoundaryCollection;
+    children?: Children;
     data: number | Array2D<number>;
     model: ModflowModel;
     unit: string;
 }
 
 const rasterDataMap = (props: IProps) => {
-    const {model, data, unit} = props;
+    const {children, model, data, unit} = props;
     const rainbowVis = rainbowFactory({min: min(data), max: max(data)});
 
     return (
@@ -71,6 +72,7 @@ const rasterDataMap = (props: IProps) => {
                 rotation={model.rotation}
                 steps={0}
             />
+            {children}
             {renderLegend(rainbowVis, unit)}
         </Map>
     );

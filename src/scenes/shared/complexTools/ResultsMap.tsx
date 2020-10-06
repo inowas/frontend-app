@@ -6,8 +6,6 @@ import {
     Map,
     Viewport
 } from 'react-leaflet';
-// @ts-ignore
-import FullscreenControl from 'react-leaflet-fullscreen';
 import uuid from 'uuid';
 import {Array2D} from '../../../core/model/geometry/Array2D.type';
 import {ICell} from '../../../core/model/geometry/Cells.type';
@@ -26,6 +24,7 @@ import {
     rainbowFactory
 } from '../rasterData/helpers';
 import {IReactLeafletHeatMapProps} from '../rasterData/ReactLeafletHeatMapCanvasOverlay.type';
+import {FullscreenControl} from './index';
 
 const style = {
     map: {

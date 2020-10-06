@@ -23,7 +23,7 @@ const privateRoute = (props: IProps) => {
     const history = useHistory();
 
     useEffect(() => {
-        if (props.path === '/tools' && redirectToLogin) {
+        if (redirectToLogin) {
             history.push('/login');
             setRedirectToLogin(false);
         }
@@ -50,8 +50,11 @@ const privateRoute = (props: IProps) => {
             (response) => {
                 dispatch(setUser(response));
             },
-            () => {
-                dispatch(unauthorized);
+            (e: any) => {
+                if (e.response && e.response.status && e.response.status === 401) {
+                    dispatch(unauthorized());
+                    setRedirectToLogin(true);
+                }
             }
         );
     };
