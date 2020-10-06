@@ -96,7 +96,7 @@ const rasterFromPoints = (props: IProps) => {
         props.onChange(cRaster);
     };
 
-    // TODO: Points are behind contour layer but should be in front of it
+    // TODO: Points are behind contour layer but should be in front of it (#1934)
     const renderPoints = () => {
         if (!data) {
             return null;
