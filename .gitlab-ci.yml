@@ -64,7 +64,7 @@ build:smart-control:
   only:
     - tags
   except:
-    - /^(?!master).+@/
+    - master
 
 deploy:smart-control:
   stage: deploy
@@ -89,7 +89,7 @@ deploy:smart-control:
   only:
     - tags
   except:
-    - /^(?!master).+@/
+    - master
 
 build:training:
   image: node:10
@@ -104,7 +104,7 @@ build:training:
   only:
     - tags
   except:
-    - /^(?!master).+@/
+    - master
 
 deploy:training:
   stage: deploy
@@ -144,7 +144,7 @@ build:prod:
   only:
     - tags
   except:
-    - /^(?!master).+@/
+    - master
 
 deploy:prod:staging:
   stage: deploy
@@ -169,7 +169,7 @@ deploy:prod:staging:
   only:
     - tags
   except:
-    - /^(?!master).+@/
+    - master
 
 deploy:prod:production:
   stage: deploy
@@ -195,4 +195,4 @@ deploy:prod:production:
   only:
     - tags
   except:
-    - /^(?!master).+@/
+    - master
