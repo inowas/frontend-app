@@ -3,12 +3,18 @@ import DataSources from './DataSources';
 import DataSourcesChart from './DataSourcesChart';
 import DataSourceTimeRange from './DataSourceTimeRange';
 import FileDatasourceEditor from './FileDatasourceEditor';
+import Processing from './Processing';
+import ProcessingTimeRange from './ProcessingTimeRange';
+import PrometheusDatasourceEditor from './PrometheusDatasourceEditor';
 import SensorDatasourceEditor from './SensorDatasourceEditor';
 import SensorList from './SensorList';
 import SensorMap from './SensorMap';
 import SensorMetaData from './SensorMetadata';
 import Sensors from './Sensors';
+import TimeProcessingEditor from './TimeProcessingEditor';
 import TinyLineChart from './TinyLineChart';
+import ValueProcessingEditor from './ValueProcessingEditor';
+import Visualization from './Visualization/Visualization';
 
 export {
     AddSensor,
@@ -16,10 +22,16 @@ export {
     DataSourcesChart,
     DataSourceTimeRange,
     FileDatasourceEditor,
-    SensorList,
-    Sensors,
+    Processing,
+    ProcessingTimeRange,
+    PrometheusDatasourceEditor,
     SensorDatasourceEditor,
+    SensorList,
     SensorMap,
     SensorMetaData,
-    TinyLineChart
+    Sensors,
+    TimeProcessingEditor,
+    TinyLineChart,
+    ValueProcessingEditor,
+    Visualization
 };

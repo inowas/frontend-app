@@ -1,53 +1,50 @@
+import {GenericObject} from '../../genericObject/GenericObject';
 import {IVariableDensity} from './VariableDensity.type';
 
-class VariableDensity {
+class VariableDensity extends GenericObject<IVariableDensity> {
 
     get enabled() {
-        return this._vdfEnabled;
+        return this._props.vdfEnabled;
     }
 
     get vdfEnabled() {
-        return this._vdfEnabled;
+        return this._props.vdfEnabled;
     }
 
     set vdfEnabled(value) {
         if (!value) {
-            this._vscEnabled = false;
+            this._props.vdfEnabled = false;
         }
 
-        this._vdfEnabled = value;
+        this._props.vdfEnabled = value;
     }
 
     get vscEnabled() {
-        return this._vscEnabled;
+        return this._props.vscEnabled;
     }
 
     set vscEnabled(value) {
-        this._vscEnabled = value;
+        this._props.vscEnabled = value;
     }
 
-    public static fromObject(obj: IVariableDensity | []) {
-        const variableDensity = new VariableDensity();
-        if (obj as IVariableDensity) {
-            variableDensity.vdfEnabled = (obj as IVariableDensity).vdfEnabled || false;
-            variableDensity.vscEnabled = (obj as IVariableDensity).vscEnabled || false;
+    public static fromDefault() {
+        return new VariableDensity({
+            vdfEnabled: false,
+            vscEnabled: false
+        });
+    }
+
+    public static fromObject(obj: IVariableDensity) {
+        return new VariableDensity(obj);
+    }
+
+    public static fromQuery(obj: IVariableDensity) {
+        if (Array.isArray(obj) && obj.length === 0) {
+            return VariableDensity.fromDefault();
         }
-        return variableDensity;
-    }
 
-    public static fromQuery(obj: IVariableDensity | []) {
         return VariableDensity.fromObject(obj);
     }
-
-    private _vdfEnabled: boolean = false;
-    private _vscEnabled: boolean = false;
-
-    public toObject = () => {
-        return {
-            vdfEnabled: this.vdfEnabled,
-            vscEnabled: this.vscEnabled,
-        };
-    };
 }
 
 export default VariableDensity;

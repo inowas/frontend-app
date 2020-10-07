@@ -2,7 +2,7 @@ import {Point} from 'geojson';
 import Uuid from 'uuid';
 import {Geometry} from '../../../../../core/model/geometry';
 import {ICells} from '../../../../../core/model/geometry/Cells.type';
-import {Cells} from '../../../../../core/model/modflow';
+import {Cells, Stressperiods} from '../../../../../core/model/modflow';
 import {HeadObservationWell} from '../../../../../core/model/modflow/boundaries';
 import {JSON_SCHEMA_URL} from '../../../../../services/api';
 import {validate} from '../../../../../services/jsonSchemaValidator';
@@ -13,9 +13,10 @@ const createHeadObservationWell = () => {
     const geometry: Point = {type: 'Point', coordinates: [3, 4]};
     const layers = [1];
     const cells: ICells = [[1, 2]];
+    const dateTimes = ['2000-01-01', '2001-01-01', '2002-01-01'];
     const spValues = [[1], [2], [3]];
 
-    return HeadObservationWell.create(id, geometry, name, layers, cells, spValues);
+    return HeadObservationWell.create(id, geometry, name, layers, cells, dateTimes, spValues);
 };
 
 test('HeadObservationWell create', () => {
@@ -24,9 +25,10 @@ test('HeadObservationWell create', () => {
     const geometry: Point = {type: 'Point', coordinates: [3, 4]};
     const layers = [1];
     const cells: ICells = [[1, 2]];
+    const dateTimes = ['2000-01-01'];
     const spValues = [[1], [2], [3]];
 
-    const headObservationWell = HeadObservationWell.create(id, geometry, name, layers, cells, spValues);
+    const headObservationWell = HeadObservationWell.create(id, geometry, name, layers, cells, dateTimes, spValues);
 
     expect(headObservationWell).toBeInstanceOf(HeadObservationWell);
     expect(headObservationWell.id).toEqual(id);
@@ -36,7 +38,7 @@ test('HeadObservationWell create', () => {
     expect(headObservationWell.layers).toEqual(layers);
     expect(headObservationWell.cells).toBeInstanceOf(Cells);
     expect(headObservationWell.cells.toObject()).toEqual(cells);
-    expect(headObservationWell.getSpValues()).toEqual(spValues);
+    expect(headObservationWell.getSpValues(Stressperiods.fromDefaults())).toEqual([[1]]);
 });
 
 test('HeadObservationWell fromObject', () => {

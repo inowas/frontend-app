@@ -1,10 +1,11 @@
 import {isEqual} from 'lodash';
+import {GenericObject} from '../genericObject/GenericObject';
 import {Array2D} from './Array2D.type';
 import {IGridSize} from './GridSize.type';
 
 type IGridSizeArray = [number, number];
 
-class GridSize {
+class GridSize extends GenericObject<IGridSize> {
 
     public get nX() {
         return this._props.n_x;
@@ -42,20 +43,12 @@ class GridSize {
         return new GridSize({n_x: data[0].length, n_y: data.length});
     }
 
-    private readonly _props: IGridSize;
-
-    constructor(obj: IGridSize) {
-        this._props = obj;
-    }
-
-    public toObject = (): IGridSize => (this._props);
-
     public sameAs = (obj: GridSize) => {
         return isEqual(obj.toObject(), this.toObject());
     };
 
     public isWithIn = (x: number, y: number) => {
-        return (x >= 0 && x <= this.nX && y >= 0 && y <= this.nY);
+        return (x >= 0 && x <= (this.nX - 1) && y >= 0 && y <= (this.nY - 1));
     };
 }
 

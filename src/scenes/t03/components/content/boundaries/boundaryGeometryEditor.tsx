@@ -1,8 +1,9 @@
-import React, {ChangeEvent, MouseEvent} from 'react';
+import React, {ChangeEvent, MouseEvent, useEffect, useState} from 'react';
 import {Button, Form, Icon, Menu, MenuItemProps, Modal, Segment} from 'semantic-ui-react';
 import {ModflowModel} from '../../../../../core/model/modflow';
 import {Boundary, BoundaryCollection, BoundaryFactory} from '../../../../../core/model/modflow/boundaries';
 import {IBoundary} from '../../../../../core/model/modflow/boundaries/Boundary.type';
+import Soilmodel from '../../../../../core/model/modflow/soilmodel/Soilmodel';
 import BoundaryDiscretizationMap from '../../maps/boundaryDiscretizationMap';
 
 interface IIndexedBoundary {
@@ -18,152 +19,137 @@ interface IProps {
     onCancel: () => any;
     onChange: (boundary: Boundary) => any;
     readOnly: boolean;
-}
-
-interface IState {
-    activeItem: ActiveItemType;
-    boundary: IBoundary;
-    buttonsDisabled: boolean;
+    soilmodel: Soilmodel;
 }
 
 function isActiveItemType(value: any): value is ActiveItemType {
     return true;
 }
 
-class BoundaryGeometryEditor extends React.Component<IProps, IState> {
-    constructor(props: IProps) {
-        super(props);
-        this.state = {
-            activeItem: 'geometry',
-            boundary: props.boundary.toObject(),
-            buttonsDisabled: true
-        };
-    }
+const boundaryGeometryEditor = (props: IProps) => {
+    const [activeItem, setActiveItem] = useState<string>('geometry');
+    const [boundary, setBoundary] = useState<IBoundary>(props.boundary.toObject());
+    const [buttonsDisabled, setButtonsDisabled] = useState<boolean>(true);
 
-    public componentWillReceiveProps(nextProps: IProps) {
-        this.setState({boundary: nextProps.boundary.toObject()});
-    }
+    useEffect(() => {
+        setBoundary(props.boundary.toObject());
+    }, [props.boundary]);
 
-    public handleChange = (e: ChangeEvent<HTMLInputElement>) => {
+    const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
         const {name, value} = e.target;
-        const boundary: IIndexedBoundary | null = BoundaryFactory.fromObject(this.state.boundary);
-        if (boundary) {
-            boundary[name] = value;
-            this.setState({
-                boundary: boundary.toObject(),
-                buttonsDisabled: false
-            });
+        const b: IIndexedBoundary | null = BoundaryFactory.fromObject(boundary);
+        if (b) {
+            b[name] = value;
+            setBoundary(b.toObject());
+            setButtonsDisabled(false);
         }
     };
 
-    public handleChangeBoundary = (boundary: Boundary) => {
-        this.setState({
-            boundary: boundary.toObject(),
-            buttonsDisabled: false
-        }, () => this.props.onChange(boundary));
+    const handleChangeBoundary = (b: Boundary) => {
+        setBoundary(b.toObject());
+        setButtonsDisabled(false);
+        setActiveItem('affected cells');
+        props.onChange(b);
     };
 
-    public handleItemClick = (e: MouseEvent<HTMLAnchorElement, Event>, data: MenuItemProps) => {
+    const handleItemClick = (e: MouseEvent<HTMLAnchorElement, Event>, data: MenuItemProps) => {
         if (isActiveItemType(data.name)) {
-            return this.setState({
-                activeItem: data.name
-            });
+            setActiveItem(data.name);
         }
     };
 
-    public render() {
-        const {boundaries, model, onCancel, readOnly} = this.props;
-        const {activeItem, buttonsDisabled} = this.state;
-        const boundary = BoundaryFactory.fromObject(this.state.boundary);
-
-        if (!boundary) {
-            return;
+    const handleOnClickApply = () => {
+        const b = BoundaryFactory.fromObject(boundary);
+        if (b) {
+            props.onChange(b);
         }
+        return props.onCancel();
+    };
 
-        return (
-            <Modal size={'large'} open={true} onClose={onCancel} dimmer={'inverted'}>
-                <Modal.Header>Edit boundary properties</Modal.Header>
-                <Modal.Content>
-                    <Form>
-                        <Form.Field>
-                            <label>Name</label>
-                            <input
-                                placeholder="Boundary name"
-                                name={'name'}
-                                value={boundary.name}
-                                onChange={this.handleChange}
-                            />
-                        </Form.Field>
-                    </Form>
+    const {boundaries, model, onCancel, readOnly} = props;
+    const iBoundary = BoundaryFactory.fromObject(boundary);
 
-                    <Menu attached="top" tabular={true}>
-                        <Menu.Item
-                            name="geometry"
-                            active={activeItem === 'geometry'}
-                            onClick={this.handleItemClick}
-                        >
-                            <Icon name="location arrow"/>
-                            Geometry
-                        </Menu.Item>
-
-                        <Menu.Item
-                            name="affected cells"
-                            active={activeItem === 'affected cells'}
-                            onClick={this.handleItemClick}
-                        >
-                            <Icon name="table"/>
-                            Affected cells
-                        </Menu.Item>
-                    </Menu>
-
-                    <Segment attached="bottom">
-                        {activeItem === 'geometry' && <BoundaryDiscretizationMap
-                            model={model}
-                            boundary={boundary}
-                            boundaries={boundaries}
-                            onChange={this.handleChangeBoundary}
-                            readOnly={readOnly}
-                            showBoundaryGeometry={true}
-                            showActiveCells={false}
-                        />}
-                        {activeItem === 'affected cells' && <BoundaryDiscretizationMap
-                            model={model}
-                            boundary={boundary}
-                            boundaries={boundaries}
-                            onChange={this.handleChangeBoundary}
-                            readOnly={readOnly}
-                            showBoundaryGeometry={true}
-                            showActiveCells={true}
-                        />}
-                    </Segment>
-
-                </Modal.Content>
-                <Modal.Actions>
-                    <Button
-                        negative={true}
-                        onClick={onCancel}
-                    >
-                        Cancel
-                    </Button>
-                    <Button
-                        positive={true}
-                        onClick={this.handleOnClickApply}
-                        disabled={buttonsDisabled}
-                    >
-                        Apply
-                    </Button>
-                </Modal.Actions>
-            </Modal>
-        );
+    if (!iBoundary) {
+        return null;
     }
 
-    private handleOnClickApply = () => {
-        const boundary = BoundaryFactory.fromObject(this.state.boundary);
-        if (boundary) {
-            this.props.onChange(boundary);
-        }
-        return this.props.onCancel();
-    };
-}
+    return (
+        <Modal size={'large'} open={true} onClose={onCancel} dimmer={'inverted'}>
+            <Modal.Header>Edit boundary properties</Modal.Header>
+            <Modal.Content>
+                <Form>
+                    <Form.Field>
+                        <label>Name</label>
+                        <input
+                            placeholder="Boundary name"
+                            name={'name'}
+                            value={iBoundary.name}
+                            onChange={handleChange}
+                        />
+                    </Form.Field>
+                </Form>
 
-export default BoundaryGeometryEditor;
+                <Menu attached="top" tabular={true}>
+                    <Menu.Item
+                        name="geometry"
+                        active={activeItem === 'geometry'}
+                        onClick={handleItemClick}
+                    >
+                        <Icon name="location arrow"/>
+                        Geometry
+                    </Menu.Item>
+
+                    <Menu.Item
+                        name="affected cells"
+                        active={activeItem === 'affected cells'}
+                        onClick={handleItemClick}
+                    >
+                        <Icon name="table"/>
+                        Affected cells
+                    </Menu.Item>
+                </Menu>
+
+                <Segment attached="bottom">
+                    {activeItem === 'geometry' && <BoundaryDiscretizationMap
+                        model={model}
+                        boundary={iBoundary}
+                        boundaries={boundaries}
+                        onChange={handleChangeBoundary}
+                        readOnly={readOnly}
+                        showBoundaryGeometry={true}
+                        showActiveCells={false}
+                        soilmodel={props.soilmodel}
+                    />}
+                    {activeItem === 'affected cells' && <BoundaryDiscretizationMap
+                        model={model}
+                        boundary={iBoundary}
+                        boundaries={boundaries}
+                        onChange={handleChangeBoundary}
+                        readOnly={readOnly}
+                        showBoundaryGeometry={true}
+                        showActiveCells={true}
+                        soilmodel={props.soilmodel}
+                    />}
+                </Segment>
+
+            </Modal.Content>
+            <Modal.Actions>
+                <Button
+                    negative={true}
+                    onClick={onCancel}
+                >
+                    Cancel
+                </Button>
+                <Button
+                    positive={true}
+                    onClick={handleOnClickApply}
+                    disabled={buttonsDisabled}
+                >
+                    Apply
+                </Button>
+            </Modal.Actions>
+        </Modal>
+    );
+};
+
+export default boundaryGeometryEditor;

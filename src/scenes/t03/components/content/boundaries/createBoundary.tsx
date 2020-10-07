@@ -1,141 +1,156 @@
-import React, {ChangeEvent, SyntheticEvent} from 'react';
-import {connect} from 'react-redux';
-import {withRouter} from 'react-router-dom';
+import * as turf from '@turf/turf';
+import React, {ChangeEvent, SyntheticEvent, useState} from 'react';
+import {useDispatch, useSelector} from 'react-redux';
+import {RouteComponentProps, withRouter} from 'react-router-dom';
 import {DropdownProps, Form, Grid, Header, InputOnChangeData, Segment} from 'semantic-ui-react';
 import Uuid from 'uuid';
 import {ICells} from '../../../../../core/model/geometry/Cells.type';
 import {default as Geometry} from '../../../../../core/model/geometry/Geometry';
-import {GeoJson} from '../../../../../core/model/geometry/Geometry.type';
-
-import {ModflowModel, Soilmodel, Stressperiods} from '../../../../../core/model/modflow';
+import {IGeometry} from '../../../../../core/model/geometry/Geometry.type';
+import {Cells, ModflowModel, Soilmodel} from '../../../../../core/model/modflow';
 import {BoundaryCollection, BoundaryFactory} from '../../../../../core/model/modflow/boundaries';
-import Boundary from '../../../../../core/model/modflow/boundaries/Boundary';
 import {BoundaryType, ISpValues, IValueProperty} from '../../../../../core/model/modflow/boundaries/Boundary.type';
-import ContentToolBar from '../../../../../scenes/shared/ContentToolbar';
+import {IRootReducer} from '../../../../../reducers';
 import {sendCommand} from '../../../../../services/api';
-import {calculateActiveCells} from '../../../../../services/geoTools';
-import {updateBoundaries} from '../../../actions/actions';
+import ContentToolBar from '../../../../shared/ContentToolbar';
+import {addMessage, updateBoundaries} from '../../../actions/actions';
 import ModflowModelCommand from '../../../commands/modflowModelCommand';
+import {messageError} from '../../../defaults/messages';
+import {CALCULATE_CELLS_INPUT} from '../../../worker/t03.worker';
+import {ICalculateCellsInputData} from '../../../worker/t03.worker.type';
+import {asyncWorker} from '../../../worker/worker';
 import {CreateBoundaryMap} from '../../maps';
+import {UploadGeoJSONModal} from '../create';
 
 const baseUrl = '/tools/T03';
 
 interface IOwnProps {
-    history: any;
-    location: any;
-    match: any;
-    readOnly: boolean;
     type: BoundaryType;
 }
 
-interface IStateProps {
-    boundaries: BoundaryCollection;
-    model: ModflowModel;
-    soilmodel: Soilmodel;
-    stressperiods: Stressperiods;
-}
+type Props = IOwnProps & RouteComponentProps<{
+    id: string;
+    property?: string;
+    type?: string;
+}>;
 
-interface IDispatchProps {
-    updateBoundaries: (packages: BoundaryCollection) => any;
-}
+const createBoundary = (props: Props) => {
+    const [name, setName] = useState<string>('New ' + props.match.params.type + '-Boundary');
+    const [geometry, setGeometry] = useState<IGeometry | null>(null);
+    const [cells, setCells] = useState<ICells | null>(null);
+    const [layers, setLayers] = useState<number[]>([0]);
+    const [isDirty, setIsDirty] = useState<boolean>(false);
+    const [isEditing, setIsEditing] = useState<boolean>(false);
+    const [isError, setIsError] = useState<boolean>(false);
 
-type Props = IStateProps & IDispatchProps & IOwnProps;
+    const T03 = useSelector((state: IRootReducer) => state.T03);
+    const boundaries = T03.boundaries ? BoundaryCollection.fromObject(T03.boundaries) : null;
+    const model = T03.model ? ModflowModel.fromObject(T03.model) : null;
+    const soilmodel = T03.soilmodel ? Soilmodel.fromObject(T03.soilmodel) : null;
 
-interface IState {
-    name: string;
-    geometry: GeoJson | null;
-    cells: ICells | null;
-    layers: number[];
-    isLoading: boolean;
-    isDirty: boolean;
-    isEditing: boolean;
-    isError: boolean;
-    state: null;
-}
+    const dispatch = useDispatch();
+    const type: BoundaryType = props.match.params.type as BoundaryType;
 
-class CreateBoundary extends React.Component<Props, IState> {
-    constructor(props: Props) {
-        super(props);
-        const {type} = this.props.match.params;
-
-        this.state = {
-            name: 'New ' + type + '-Boundary',
-            geometry: null,
-            cells: null,
-            layers: [0],
-            isLoading: false,
-            isDirty: false,
-            isEditing: false,
-            isError: false,
-            state: null
-        };
+    if (!boundaries || !model || !soilmodel) {
+        return (
+            <Segment color={'grey'} loading={true}/>
+        );
     }
 
-    public onChangeGeometry = (geometry: Geometry) => {
-        if (this.props.model.boundingBox) {
-            const cells = calculateActiveCells(geometry, this.props.model.boundingBox,
-                this.props.model.gridSize);
-            this.setState({
-                cells: cells.toObject(),
-                geometry: geometry.toObject(),
-                isDirty: true
+    const handleChangeGeometry = (cGeometry: Geometry) => {
+        if (model.boundingBox) {
+            let g = cGeometry.toGeoJSON();
+            if (model.rotation % 360 !== 0) {
+                g = turf.transformRotate(
+                    cGeometry.toGeoJSON(), -1 * model.rotation, {pivot: model.geometry.centerOfMass}
+                );
+            }
+            asyncWorker({
+                type: CALCULATE_CELLS_INPUT,
+                data: {
+                    geometry: g,
+                    boundingBox: model.boundingBox.toObject(),
+                    gridSize: model.gridSize.toObject(),
+                    intersection: model.intersection
+                } as ICalculateCellsInputData
+            }).then((c: ICells) => {
+                setCells(Cells.fromObject(c).removeCells(model.inactiveCells));
+                setGeometry(cGeometry.toObject());
+                return setIsDirty(true);
+            }).catch(() => {
+                dispatch(addMessage(messageError('boundaries', 'Calculating cells failed.')));
             });
         }
     };
 
-    public onToggleEditMode = () => this.setState((prevState) => ({
-        isEditing: !prevState.isEditing
-    }));
-
-    public handleChange = (e: SyntheticEvent<HTMLElement, Event> | ChangeEvent<HTMLInputElement>,
-                           data: DropdownProps | InputOnChangeData) => {
-        let value = data.value;
-        if (data.name === 'layers' && typeof value === 'number') {
-            value = [value];
+    const handleApplyJson = (cGeometry: Geometry) => {
+        let g = cGeometry.toGeoJSON();
+        if (model.rotation % 360 !== 0) {
+            g = turf.transformRotate(
+                cGeometry.toGeoJSON(), -1 * model.rotation, {pivot: model.geometry.centerOfMass}
+            );
         }
 
-        return this.setState({
-            [data.name]: value,
-            isDirty: true
-        } as Pick<IState, keyof IState>);
+        asyncWorker({
+            type: CALCULATE_CELLS_INPUT,
+            data: {
+                geometry: g,
+                boundingBox: model.boundingBox.toObject(),
+                gridSize: model.gridSize.toObject(),
+                intersection: model.intersection
+            } as ICalculateCellsInputData
+        }).then((c: ICells) => {
+            const cCells = Cells.fromObject(c).removeCells(model.inactiveCells);
+            return handleSave(cGeometry.toObject(), cCells);
+        }).catch(() => {
+            dispatch(addMessage(messageError('boundaries', 'Calculating cells failed.')));
+        });
     };
 
-    public onSave = () => {
-        const {id, property, type} = this.props.match.params;
-        const {model, stressperiods} = this.props;
-        const {name, geometry, cells, layers} = this.state;
+    const handleChange = (e: SyntheticEvent<HTMLElement, Event> | ChangeEvent<HTMLInputElement>,
+                          data: DropdownProps | InputOnChangeData) => {
+        setIsDirty(true);
+        if (data.name === 'layers' && typeof data.value === 'number') {
+            return setLayers([data.value]);
+        }
 
-        const valueProperties = BoundaryFactory.valuePropertiesByType(type);
-        const values = valueProperties.map((vp: IValueProperty) => vp.default);
+        if (data.name === 'name' && typeof data.value === 'string') {
+            return setName(data.value);
+        }
+    };
 
-        if (!geometry || !cells) {
+    const handleSave = (sGeometry = geometry, sCells = cells) => {
+        if (!boundaries || !model || !sGeometry || !sCells || !type) {
             return null;
         }
+
+        const {id, property} = props.match.params;
+        const valueProperties = BoundaryFactory.valuePropertiesByType(type);
+        const values = valueProperties.map((vp: IValueProperty) => vp.default);
 
         const boundary = BoundaryFactory.createNewFromProps(
             type,
             Uuid.v4(),
-            geometry,
+            sGeometry,
             name,
             layers,
-            cells,
-            new Array(stressperiods.count).fill(values) as ISpValues
+            sCells,
+            new Array(model.stressperiods.count).fill(values) as ISpValues,
+            ['fhb', 'hob'].includes(type) ? [model.stressperiods.startDateTime.format('YYYY-MM-DD')] : undefined
         );
 
         return sendCommand(ModflowModelCommand.addBoundary(model.id, boundary),
             () => {
-                const boundaries = this.props.boundaries;
-                boundaries.addBoundary(boundary as Boundary);
-                this.props.updateBoundaries(boundaries);
-                this.props.history.push(`${baseUrl}/${id}/${property}/!/${boundary.id}`);
+                const cBoundaries = boundaries;
+                cBoundaries.addBoundary(boundary);
+                dispatch(updateBoundaries(cBoundaries));
+                props.history.push(`${baseUrl}/${id}/${property}/!/${boundary.id}`);
             },
-            () => this.setState({isError: true})
+            () => setIsError(true)
         );
     };
 
-    public renderDropdown() {
-        const {type} = this.props.match.params;
-
+    const renderDropdown = () => {
         // Add boundary types, which doesn't need layer selection:
         if (['evt', 'rch', 'riv'].includes(type)) {
             return null;
@@ -143,82 +158,78 @@ class CreateBoundary extends React.Component<Props, IState> {
 
         // Add boundary types, for which multiple layers may be selected:
         const multipleLayers = ['chd', 'ghb'].includes(type);
-
-        const {layers} = this.state;
         return (
             <Form.Dropdown
                 label={'Selected layers'}
                 selection={true}
                 fluid={true}
-                options={this.props.soilmodel.layersCollection.all.map((l, key) => (
+                options={soilmodel.layersCollection.all.map((l, key) => (
                     {key: l.id, value: key, text: l.name}
                 ))}
                 value={multipleLayers ? layers : layers[0]}
                 multiple={multipleLayers}
                 name={'layers'}
-                onChange={this.handleChange}
+                onChange={handleChange}
             />
 
         );
-    }
-
-    public render() {
-        const {model} = this.props;
-        const readOnly = model.readOnly;
-        const {isError, isDirty, cells, geometry, name} = this.state;
-        const {type} = this.props.match.params;
-
-        return (
-            <Segment color={'grey'} loading={this.state.isLoading}>
-                <Grid padded={true}>
-                    <Grid.Row>
-                        <Grid.Column width={4}>
-                            <Header as={'h2'}>
-                                {type === 'hob' ? 'Create HOB' : 'Create Boundary'}
-                            </Header>
-                            <Form>
-                                <Form.Input
-                                    label={'Name'}
-                                    name={'name'}
-                                    value={name}
-                                    onChange={this.handleChange}
-                                />
-                                {this.renderDropdown()}
-                            </Form>
-                        </Grid.Column>
-                        <Grid.Column width={12}>
-                            <ContentToolBar
-                                onSave={this.onSave}
-                                isValid={!!geometry}
-                                isDirty={isDirty && !!geometry && !!cells}
-                                isError={isError}
-                                saveButton={!readOnly && !this.state.isEditing}
-                            />
-                            <CreateBoundaryMap
-                                type={type}
-                                geometry={model.geometry}
-                                onChangeGeometry={this.onChangeGeometry}
-                                onToggleEditMode={this.onToggleEditMode}
-                            />
-                        </Grid.Column>
-                    </Grid.Row>
-                </Grid>
-            </Segment>
-        );
-    }
-}
-
-const mapStateToProps = (state: any) => {
-    return {
-        boundaries: BoundaryCollection.fromObject(state.T03.boundaries),
-        model: ModflowModel.fromObject(state.T03.model),
-        stressperiods: ModflowModel.fromObject(state.T03.model).stressperiods,
-        soilmodel: Soilmodel.fromObject(state.T03.soilmodel)
     };
+
+    const getSchema = () => {
+        if (['wel', 'hob'].includes(type)) {
+            return 'point';
+        }
+        if (['chd', 'drn', 'fhb', 'ghb', 'riv'].includes(type)) {
+            return 'linestring';
+        }
+        return 'polygon';
+    };
+
+    return (
+        <Segment color={'grey'}>
+            <Grid padded={true}>
+                <Grid.Row>
+                    <Grid.Column width={4}>
+                        <Header as={'h2'}>
+                            {type === 'hob' ? 'Create HOB' : 'Create Boundary'}
+                        </Header>
+                        <Form>
+                            <Form.Input
+                                label={'Name'}
+                                name={'name'}
+                                value={name}
+                                onChange={handleChange}
+                            />
+                            {renderDropdown()}
+                            <UploadGeoJSONModal
+                                onChange={handleApplyJson}
+                                geometry={getSchema()}
+                                size={'medium'}
+                            />
+                        </Form>
+                    </Grid.Column>
+                    <Grid.Column width={12}>
+                        <ContentToolBar
+                            onSave={() => handleSave(geometry, cells)}
+                            isValid={!!geometry}
+                            isDirty={isDirty && !!geometry && !!cells}
+                            isError={isError}
+                            buttonSave={!model.readOnly && !isEditing}
+                        />
+                        <br />
+                        <CreateBoundaryMap
+                            boundaries={boundaries}
+                            area={model.geometry}
+                            type={type}
+                            geometry={geometry ? Geometry.fromObject(geometry) : null}
+                            onChangeGeometry={handleChangeGeometry}
+                            onToggleEditMode={() => setIsEditing(!isEditing)}
+                        />
+                    </Grid.Column>
+                </Grid.Row>
+            </Grid>
+        </Segment>
+    );
 };
 
-const mapDispatchToProps = {
-    updateBoundaries
-};
-
-export default withRouter(connect(mapStateToProps, mapDispatchToProps)(CreateBoundary));
+export default withRouter(createBoundary);

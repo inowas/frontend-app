@@ -1,8 +1,10 @@
-import {AllGeoJSON} from '@turf/helpers';
+import {AllGeoJSON, Feature} from '@turf/helpers';
+import * as turf from '@turf/turf';
 import {envelope} from '@turf/turf';
 import {GeoJSON, Point} from 'geojson';
 import {isEqual} from 'lodash';
 import md5 from 'md5';
+import {Geometry} from '../modflow';
 import {IBoundingBox} from './BoundingBox.type';
 
 class BoundingBox {
@@ -51,15 +53,27 @@ class BoundingBox {
     get northEast() {
         return {
             lat: this.yMax,
-            lon: this.xMax
+            lng: this.xMax
         };
     }
 
     get southWest() {
         return {
             lat: this.yMin,
-            lon: this.xMin
+            lng: this.xMin
         };
+    }
+
+    get heightInMeters() {
+        return turf.distance([this.xMin, this.yMin], [this.xMin, this.yMax], {units: 'meters'});
+    }
+
+    get widthInMeters() {
+        return turf.distance([this.xMin, this.yMin], [this.xMax, this.yMin], {units: 'meters'});
+    }
+
+    get rotationPoint() {
+        return turf.centerOfMass(this.geoJson as AllGeoJSON);
     }
 
     public static fromGeoJson(geoJson: AllGeoJSON) {
@@ -141,11 +155,27 @@ class BoundingBox {
         return new BoundingBox(obj);
     }
 
+    public static fromGeometryAndRotation = (area: Geometry, rotation: number) => {
+        const withRotation = turf.transformRotate(area.toGeoJSON(), -1 * rotation, {pivot: area.centerOfMass});
+        return BoundingBox.fromGeoJson(withRotation);
+    };
+
+    public static geoJsonFromGeometryAndRotation = (area: Geometry, rotation: number) => {
+        const bbox = BoundingBox.fromGeometryAndRotation(area, rotation);
+        return bbox.geoJsonWithRotation(rotation, area.centerOfMass);
+    };
+
     private readonly _props: IBoundingBox;
 
     constructor([[xMin, yMin], [xMax, yMax]]: IBoundingBox) {
         this._props = [[xMin, yMin], [xMax, yMax]];
     }
+
+    public geoJsonWithRotation = (rotation: number, center: Feature<Point | null>): GeoJSON => {
+        return turf.transformRotate(
+            Geometry.fromGeoJson(this.geoJson).toGeoJSON(), rotation, {pivot: center}
+        );
+    };
 
     public hash = () => (md5(JSON.stringify(this.geoJson)));
 

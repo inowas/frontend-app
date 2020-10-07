@@ -1,4 +1,4 @@
-import React, {ChangeEvent, FormEvent, SyntheticEvent, useState} from 'react';
+import React, {ChangeEvent, FormEvent, MouseEvent, SyntheticEvent, useState} from 'react';
 import {
     Button,
     CheckboxProps,
@@ -11,17 +11,23 @@ import {
     Input,
     List,
     Loader,
+    Menu,
+    MenuItemProps,
     Message,
     Modal,
     Radio,
-    Segment
+    Segment,
 } from 'semantic-ui-react';
 import {GridSize} from '../../../core/model/geometry';
 import {Array2D, Array3D} from '../../../core/model/geometry/Array2D.type';
-import {RasterParameter} from '../../../core/model/gis';
+import {RasterParameter} from '../../../core/model/modflow/soilmodel';
 import {fetchRasterData, fetchRasterMetaData, uploadRasterfile} from '../../../services/api';
 import {IRasterFileMetadata} from '../../../services/api/types';
+import {RainbowOrLegend} from '../../../services/rainbowvis/types';
 import RasterDataImage from './rasterDataImage';
+import RasterFromCSV from './rasterFromCSV';
+import RasterFromPoints from './rasterFromPoints';
+import RasterFromProject from './rasterFromProject';
 import {InterpolationType} from './types';
 
 const styles = {
@@ -42,6 +48,7 @@ interface IProps {
     onChange: (data: IData) => any;
     onSave?: (data: Array2D<number>) => any;
     parameter: RasterParameter;
+    legend?: RainbowOrLegend;
     discreteRescaling?: boolean;
 }
 
@@ -55,13 +62,7 @@ const rasterFileUploadModal = (props: IProps) => {
     const [errorFetching, setErrorFetching] = useState<string | null>(null);
     const [errorUploading, setErrorUploading] = useState<string | null>(null);
     const [errorGridSize, setErrorGridSize] = useState<boolean>(false);
-
-    const handleSave = () => {
-        if (data && data[selectedBand] && props.onSave) {
-            return props.onSave(data[selectedBand]);
-        }
-        return null;
-    };
+    const [activeItem, setActiveItem] = useState<string>('file');
 
     const handleChangeInterpolation = (e: SyntheticEvent<HTMLElement, Event>, {value}: DropdownProps) =>
         setInterpolation(value as InterpolationType);
@@ -187,10 +188,58 @@ const rasterFileUploadModal = (props: IProps) => {
         }
     };
 
+    const handleItemClick = (e: MouseEvent<HTMLAnchorElement>, {value}: MenuItemProps) => setActiveItem(value);
+
+    const handleChangeRasterFromProject = (result: Array2D<number>) => setData([result]);
+
     return (
         <Modal size={'large'} open={true} onClose={props.onCancel} dimmer={'blurring'}>
-            <Modal.Header>Upload Rasterfile</Modal.Header>
+            <Modal.Header>Import Rasterfile</Modal.Header>
             <Modal.Content>
+                <Menu pointing={true} secondary={true}>
+                    <Menu.Item
+                        name="GeoTiff"
+                        active={activeItem === 'file'}
+                        onClick={handleItemClick}
+                        value="file"
+                    />
+                    <Menu.Item
+                        name="Points to Raster"
+                        active={activeItem === 'interpolation'}
+                        onClick={handleItemClick}
+                        value="interpolation"
+                    />
+                    <Menu.Item
+                        name="Import from Project"
+                        active={activeItem === 'project'}
+                        onClick={handleItemClick}
+                        value="project"
+                    />
+                    <Menu.Item
+                        name="Import from CSV"
+                        active={activeItem === 'csv'}
+                        onClick={handleItemClick}
+                        value="csv"
+                    />
+                </Menu>
+                {activeItem === 'project' &&
+                <RasterFromProject
+                    onChange={handleChangeRasterFromProject}
+                />
+                }
+                {activeItem === 'csv' &&
+                <RasterFromCSV
+                    onChange={handleChangeRasterFromProject}
+                    unit={props.parameter.unit}
+                />
+                }
+                {activeItem === 'interpolation' &&
+                <RasterFromPoints
+                    onChange={handleChangeRasterFromProject}
+                    unit={props.parameter.unit}
+                />
+                }
+                {activeItem === 'file' &&
                 <Grid divided={'vertically'}>
                     <Grid.Row columns={2}>
                         <Grid.Column>
@@ -253,6 +302,7 @@ const rasterFileUploadModal = (props: IProps) => {
                             <Segment color={'green'}>
                                 <RasterDataImage
                                     data={data[selectedBand]}
+                                    legend={props.legend}
                                     unit={props.parameter.unit}
                                     gridSize={props.gridSize}
                                 />
@@ -261,6 +311,7 @@ const rasterFileUploadModal = (props: IProps) => {
                         </Grid.Column>
                     </Grid.Row>
                 </Grid>
+                }
             </Modal.Content>
             <Modal.Actions>
                 <Button

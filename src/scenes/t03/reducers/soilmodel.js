@@ -1,10 +1,6 @@
 import {CLEAR} from './model';
 import {LOGOUT, UNAUTHORIZED} from '../../user/actions/actions';
-import LayersCollection from "../../../core/model/gis/LayersCollection";
-import SoilmodelLayer from "../../../core/model/modflow/soilmodel/SoilmodelLayer";
-import ZonesCollection from "../../../core/model/gis/ZonesCollection";
-import {Zone} from "../../../core/model/gis";
-import LayerParameterZonesCollection from "../../../core/model/gis/LayerParameterZonesCollection";
+import {LayersCollection, LayerParameterZonesCollection, SoilmodelLayer, Zone, ZonesCollection} from "../../../core/model/modflow/soilmodel";
 
 export const UPDATE_SOILMODEL_RELATIONS = 'T03_UPDATE_SOILMODEL_RELATIONS';
 export const UPDATE_SOILMODEL = 'T03_UPDATE_SOILMODEL';

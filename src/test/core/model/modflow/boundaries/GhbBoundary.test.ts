@@ -38,7 +38,7 @@ test('GeneralHeadBoundary create', () => {
 
 test('GeneralHeadBoundary add ObservationPoint', () => {
     const generalHeadBoundary = createGeneralHeadBoundary();
-    generalHeadBoundary.addObservationPoint(Uuid.v4(), 'Op2', {type: 'Point', coordinates: [1, 2]}, [[3], [2], [1]]);
+    generalHeadBoundary.createObservationPoint(Uuid.v4(), 'Op2', {type: 'Point', coordinates: [1, 2]}, [[3], [2], [1]]);
     expect(generalHeadBoundary.observationPoints).toHaveLength(2);
 
     const op2 = generalHeadBoundary.findObservationPointByName('Op2');
@@ -51,7 +51,7 @@ test('GeneralHeadBoundary add ObservationPoint', () => {
 
 test('GeneralHeadBoundary update ObservationPoint', () => {
     const generalHeadBoundary = createGeneralHeadBoundary();
-    generalHeadBoundary.addObservationPoint(Uuid.v4(), 'Op2', {type: 'Point', coordinates: [1, 2]}, [[3], [2], [1]]);
+    generalHeadBoundary.createObservationPoint(Uuid.v4(), 'Op2', {type: 'Point', coordinates: [1, 2]}, [[3], [2], [1]]);
     expect(generalHeadBoundary.observationPoints).toHaveLength(2);
     const op2 = generalHeadBoundary.findObservationPointByName('Op2');
 
@@ -73,7 +73,7 @@ test('GeneralHeadBoundary update ObservationPoint', () => {
 
 test('GeneralHeadBoundary remove ObservationPoint', () => {
     const generalHeadBoundary = createGeneralHeadBoundary();
-    generalHeadBoundary.addObservationPoint(Uuid.v4(), 'Op2', {type: 'Point', coordinates: [1, 2]}, [[3], [2], [1]]);
+    generalHeadBoundary.createObservationPoint(Uuid.v4(), 'Op2', {type: 'Point', coordinates: [1, 2]}, [[3], [2], [1]]);
     expect(generalHeadBoundary.observationPoints).toHaveLength(2);
     const op2 = generalHeadBoundary.findObservationPointByName('Op2');
     generalHeadBoundary.removeObservationPoint(op2.id);

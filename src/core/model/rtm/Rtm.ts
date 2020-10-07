@@ -31,6 +31,18 @@ export default class Rtm {
         this._props.description = value;
     }
 
+    get parameterTypes(): string[] {
+        const params: string[] = [];
+        this.sensors.all.forEach((s) => {
+            s.parameters.all.forEach((p) => {
+                if (!params.includes(p.type)) {
+                    params.push(p.type);
+                }
+            });
+        });
+        return params;
+    }
+
     get permissions(): string {
         return this._props.permissions;
     }
@@ -79,6 +91,7 @@ export default class Rtm {
     }
 
     public static fromObject(obj: IRtm): Rtm {
+
         return new Rtm(obj);
     }
 

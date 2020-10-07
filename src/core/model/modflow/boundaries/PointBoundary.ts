@@ -1,4 +1,5 @@
-import {Cells, Geometry} from '../index';
+import {BoundingBox, Cells, Geometry, GridSize} from '../index';
+import Stressperiods from '../Stressperiods';
 import Boundary from './Boundary';
 import {ISpValues} from './Boundary.type';
 
@@ -48,8 +49,12 @@ export default abstract class PointBoundary extends Boundary {
         this._props.properties.cells = value.toObject();
     }
 
-    public getSpValues() {
-        return this._props.properties.sp_values;
+    public getSpValues(stressperiods: Stressperiods): ISpValues {
+        return Boundary.mergeStressperiodsWithSpValues(stressperiods, this._props.properties.sp_values);
+    }
+
+    public recalculateCells(boundingBox: BoundingBox, gridSize: GridSize): void {
+        this.cells = Cells.fromGeometry(this.geometry, boundingBox, gridSize);
     }
 
     public setSpValues(spValues: ISpValues, opId?: string) {

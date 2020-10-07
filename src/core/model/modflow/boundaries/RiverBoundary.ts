@@ -5,6 +5,7 @@ import BoundingBox from '../../geometry/BoundingBox';
 import {ICells} from '../../geometry/Cells.type';
 import GridSize from '../../geometry/GridSize';
 import {Cells, Geometry} from '../index';
+import Stressperiods from '../Stressperiods';
 import {ISpValues, IValueProperty} from './Boundary.type';
 import LineBoundary from './LineBoundary';
 import {IRiverBoundary, IRiverBoundaryExport} from './RiverBoundary.type';
@@ -63,7 +64,7 @@ export default class RiverBoundary extends LineBoundary {
 
         const opIdToRemove = boundary.observationPoints[0].id;
         obj.ops.forEach((op) => {
-            boundary.addObservationPoint(
+            boundary.createObservationPoint(
                 op.id ? op.id : Uuid.v4(),
                 op.name,
                 op.geometry,
@@ -113,7 +114,7 @@ export default class RiverBoundary extends LineBoundary {
         this._class = RiverBoundary;
     }
 
-    public toExport = (): IRiverBoundaryExport => ({
+    public toExport = (stressPeriods: Stressperiods): IRiverBoundaryExport => ({
         id: this.id,
         type: this.type,
         name: this.name,
@@ -122,7 +123,7 @@ export default class RiverBoundary extends LineBoundary {
         ops: this.observationPoints.map((op) => ({
                 name: op.name,
                 geometry: op.geometry,
-                sp_values: op.spValues
+                sp_values: op.getSpValues(stressPeriods)
             }
         ))
     });

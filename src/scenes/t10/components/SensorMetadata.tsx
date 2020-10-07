@@ -5,15 +5,17 @@ import {
     Dropdown,
     Form,
     Grid,
-    Icon,
+    Header,
     InputOnChangeData,
     Label,
+    Modal,
     Segment,
     Table
 } from 'semantic-ui-react';
 import Uuid from 'uuid';
 import {Rtm, Sensor} from '../../../core/model/rtm';
 import {ParameterCollection} from '../../../core/model/rtm/ParameterCollection';
+import {ISensorParameter} from '../../../core/model/rtm/Sensor.type';
 import {parameterList} from '../defaults';
 import {SensorMap} from './index';
 
@@ -30,8 +32,8 @@ interface IActiveInput {
 }
 
 const sensorMetadata = (props: IProps) => {
-
     const [activeInput, setActiveInput] = useState<IActiveInput | null>(null);
+    const [customParameter, setCustomParameter] = useState<ISensorParameter | null>(null);
     const [selectedParameterId, setSelectedParameterId] = useState<string | null>(null);
 
     useEffect(() => {
@@ -53,6 +55,15 @@ const sensorMetadata = (props: IProps) => {
         name: data.name,
         value: data.value
     });
+
+    const handleChangeCustomParameter = (e: ChangeEvent<HTMLInputElement>, {name, value}: InputOnChangeData) => {
+        if (customParameter) {
+            return setCustomParameter({
+                ...customParameter,
+                [name]: value
+            });
+        }
+    };
 
     const handleChange = () => {
         if (activeInput && props.sensor) {
@@ -97,16 +108,38 @@ const sensorMetadata = (props: IProps) => {
         }
     };
 
-    const handleAddParameter = (pType: string) => () => {
+    const handleAddParameter = (pType: string, param?: ISensorParameter) => () => {
         if (props.sensor) {
             const params = ParameterCollection.fromObject(props.sensor.parameters.toObject());
             const id = Uuid.v4();
-            params.add({
-                id,
-                type: pType,
-                description: '',
-                dataSources: []
-            });
+
+            if (pType === 'other' && !param) {
+                return setCustomParameter({
+                    id,
+                    type: '',
+                    description: 'New Parameter',
+                    dataSources: [],
+                    processings: [],
+                    unit: ''
+                });
+            }
+            if (pType === 'other' && param) {
+                if (params.findById(param.id)) {
+                    params.update(param);
+                } else {
+                    params.add(param);
+                }
+                setCustomParameter(null);
+            }
+            if (pType !== 'other') {
+                params.add({
+                    id,
+                    type: pType,
+                    description: parameterList.filter((i) => i.type === pType)[0].description,
+                    dataSources: [],
+                    processings: []
+                });
+            }
             handleChangeParameters(params);
             setSelectedParameterId(id);
         }
@@ -123,8 +156,21 @@ const sensorMetadata = (props: IProps) => {
         props.onChange(sensor);
     };
 
+    const handleEditParameter = (param: ISensorParameter) => () => setCustomParameter(param);
+
     const handleSelectParameter = (id: string) => () => {
         setSelectedParameterId(id);
+    };
+
+    const getDescription = (param: ISensorParameter) => {
+        const defaultParameter = parameterList.filter((i) => i.type === param.type);
+        if (defaultParameter.length > 0) {
+            return defaultParameter[0].description;
+        }
+        if (param.description !== '') {
+            return param.description;
+        }
+        return 'Other';
     };
 
     if (!props.sensor) {
@@ -202,9 +248,9 @@ const sensorMetadata = (props: IProps) => {
                                     >
                                         {selectedParameterId === p.id ?
                                             <Label ribbon={true} color={'red'}>
-                                                {parameterList.filter((i) => i.parameter === p.type)[0].text}
+                                                {getDescription(p)}
                                             </Label> :
-                                            parameterList.filter((i) => i.parameter === p.type)[0].text
+                                            getDescription(p)
                                         }
 
                                     </Table.Cell>
@@ -212,9 +258,8 @@ const sensorMetadata = (props: IProps) => {
                                     <Table.Cell textAlign={'right'}>
                                         {!props.rtm.readOnly &&
                                         <Button.Group>
-                                            <Button icon={true} onClick={handleDeleteParameter(p.id)}>
-                                                <Icon name={'trash'}/>
-                                            </Button>
+                                            <Button icon="edit" onClick={handleEditParameter(p)}/>
+                                            <Button icon="trash" onClick={handleDeleteParameter(p.id)}/>
                                         </Button.Group>}
                                     </Table.Cell>
                                 </Table.Row>)}
@@ -241,9 +286,9 @@ const sensorMetadata = (props: IProps) => {
                                                 <Dropdown.Header>Choose type</Dropdown.Header>
                                                 {parameterList.map((o) =>
                                                     <Dropdown.Item
-                                                        key={o.parameter}
-                                                        text={o.text}
-                                                        onClick={handleAddParameter(o.parameter)}
+                                                        key={o.id}
+                                                        text={o.description + (o.unit ? ` (${o.unit})` : '')}
+                                                        onClick={handleAddParameter(o.id)}
                                                     />
                                                 )}
                                             </Dropdown.Menu>
@@ -256,6 +301,49 @@ const sensorMetadata = (props: IProps) => {
                     </Table>
                 </Grid.Column>
             </Grid.Row>
+            {customParameter &&
+            <Modal
+                open={true}
+                onClose={() => setCustomParameter(null)}
+            >
+                <Header>Add custom parameter</Header>
+                <Modal.Content>
+                    <Form>
+                        <Form.Group widths="equal">
+                            <Form.Input
+                                fluid={true}
+                                label="Type"
+                                name="type"
+                                onChange={handleChangeCustomParameter}
+                                value={customParameter.type}
+                            />
+                            <Form.Input
+                                fluid={true}
+                                label="Description"
+                                name="description"
+                                onChange={handleChangeCustomParameter}
+                                value={customParameter.description}
+                            />
+                            <Form.Input
+                                fluid={true}
+                                label="Unit"
+                                name="unit"
+                                onChange={handleChangeCustomParameter}
+                                value={customParameter.unit}
+                            />
+                        </Form.Group>
+                    </Form>
+                </Modal.Content>
+                <Modal.Actions>
+                    <Button
+                        onClick={handleAddParameter('other', customParameter)}
+                        primary={true}
+                    >
+                        Submit
+                    </Button>
+                </Modal.Actions>
+            </Modal>
+            }
         </Grid>
     );
 };

@@ -1,11 +1,11 @@
-import {concat} from 'lodash';
+import {cloneDeep, concat} from 'lodash';
 import {Collection} from '../collection/Collection';
 import {DataSourceFactory} from './index';
 import {IDataSource, IDateTimeValue} from './Sensor.type';
 
 export class DataSourceCollection extends Collection<IDataSource> {
     public static fromObject(obj: IDataSource[]) {
-        return new DataSourceCollection(obj);
+        return new DataSourceCollection(cloneDeep(obj));
     }
 
     public globalBegin = () => {
@@ -36,35 +36,55 @@ export class DataSourceCollection extends Collection<IDataSource> {
         return Math.max(...maxs);
     };
 
-    public getMergedData = () => {
+    public isFetched = () => {
+        let isFetched = true;
+        this.all.forEach((ds) => {
+            if (ds.data === undefined) {
+                isFetched = false;
+            }
+        });
+
+        return isFetched;
+    };
+
+    public async mergedData() {
+        for (const dsObj of this.all) {
+            const dsInst = DataSourceFactory.fromObject(dsObj);
+            await dsInst.loadData();
+        }
+
+        return this.mergeData();
+    }
+
+    public toObject() {
+        return this.all;
+    }
+
+    private mergeData = () => {
         let result: IDateTimeValue[] = [];
-        this.all.forEach((ds, key) => {
-            const d = DataSourceFactory.fromObject(ds);
-            if (d.data) {
+        this.all.forEach((dsObj, key) => {
+            const dsInst = DataSourceFactory.fromObject(dsObj);
+            if (dsInst.data) {
                 if (key === 0) {
-                    result = d.data;
+                    result = dsInst.data;
                     return;
                 }
 
-                if (d.data.length === 0) {
+                if (dsInst.data.length === 0) {
                     return;
                 }
 
-                const begin = d.data[0].timeStamp;
-                const end = d.data[d.data.length - 1].timeStamp;
+                const begin = dsInst.data[0].timeStamp;
+                const end = dsInst.data[dsInst.data.length - 1].timeStamp;
 
                 result = result.filter((d) => d.timeStamp < begin || d.timeStamp > end);
-                result = concat(result, d.data);
+                result = concat(result, dsInst.data);
                 result.sort((a, b) => a.timeStamp - b.timeStamp);
             }
         });
 
         return result;
     };
-
-    public toObject() {
-        return this.all;
-    }
 }
 
 export default DataSourceCollection;

@@ -1,7 +1,8 @@
+import {AxiosError} from 'axios';
 import React, {useEffect, useRef, useState} from 'react';
 import {connect} from 'react-redux';
 import {Bar, BarChart, CartesianGrid, Cell, Tooltip, XAxis, YAxis} from 'recharts';
-import {Button, Checkbox, CheckboxProps, Grid, Header, Icon, List, Segment} from 'semantic-ui-react';
+import {Button, Checkbox, CheckboxProps, Grid, Header, Icon, List, Message, Segment} from 'semantic-ui-react';
 import {Calculation, ModflowModel} from '../../../../../core/model/modflow';
 import {fetchCalculationResultsBudget} from '../../../../../services/api';
 import {IBudgetData, IBudgetType} from '../../../../../services/api/types';
@@ -19,13 +20,12 @@ interface IProps {
 const budgetResults = (props: IProps) => {
     const [data, setData] = useState<budgetData>(null);
     const [fetching, setFetching] = useState<boolean>(true);
-    const [isError, setIsError] = useState<string | null>(null);
-    const [isLoading, setIsLoading] = useState<boolean>(false);
+    const [isError, setIsError] = useState<AxiosError | null>(null);
     const [selectedTotim, setSelectedTotim] = useState<number>(
         props.calculation && props.calculation.times ? props.calculation.times.total_times.slice(-1)[0] : 0
     );
     const [selectedType, setSelectedType] = useState<IBudgetType>('cumulative');
-    const [totalTimes, setTotalTimes] = useState<number[] | null>(
+    const [totalTimes] = useState<number[] | null>(
         props.calculation && props.calculation.times ? props.calculation.times.total_times : []
     );
     const chartRef = useRef<BarChart>(null);
@@ -38,7 +38,7 @@ const budgetResults = (props: IProps) => {
                 type: selectedType,
             });
         }
-    }, []);
+    }, [props.calculation]);
 
     const fetchData = ({type, totim}: { type: IBudgetType, totim: number }) => {
         if (!props.calculation) {
@@ -47,6 +47,7 @@ const budgetResults = (props: IProps) => {
 
         const calculationId = props.calculation.id;
         if (calculationId) {
+            setFetching(true);
             fetchCalculationResultsBudget({calculationId, totim},
                 (sData: IBudgetData) => {
                     setSelectedTotim(totim);
@@ -60,7 +61,7 @@ const budgetResults = (props: IProps) => {
                             }
                             return {
                                 name: arr[0],
-                                value: arr[1],
+                                value: typeof arr[1] === 'string' ? parseFloat(arr[1]) : arr[1],
                                 active: wasActive,
                                 position: key
                             };
@@ -68,7 +69,7 @@ const budgetResults = (props: IProps) => {
                     );
                     setFetching(false);
                 },
-                (e: string) => setIsError(e)
+                (e) => setIsError(e)
             );
         }
     };
@@ -84,7 +85,7 @@ const budgetResults = (props: IProps) => {
             return null;
         }
 
-        if (cData.name === 'all') {
+        if (cData.name === '_all') {
             const setToTrue = data.filter((c) => !c.active).length > 0;
             return setData(data.map((c) => {
                 c.active = setToTrue;
@@ -92,23 +93,20 @@ const budgetResults = (props: IProps) => {
             }));
         }
 
-        return ({
-            data: data.map((c) => {
-                if (c.name === cData.value) {
-                    c.active = !c.active;
-                }
-
-                return c;
-            })
-        });
+        return setData(data.map((c) => {
+            if (c.name === cData.value) {
+                c.active = !c.active;
+            }
+            return c;
+        }));
     };
 
     const exportData = () => {
-        return exportChartData(chartRef.current);
+        return chartRef.current ? exportChartData(chartRef.current) : null;
     };
 
     const exportImage = () => {
-        return exportChartImage(chartRef.current);
+        return chartRef.current ? exportChartImage(chartRef.current) : null;
     };
 
     const yTickFormatter = (value: number) => {
@@ -123,8 +121,20 @@ const budgetResults = (props: IProps) => {
         percentDiscrepancy = data.filter((c) => c.name === 'PERCENT_DISCREPANCY');
     }
 
+    if (isError) {
+        return (
+            <Segment color={'grey'}>
+                <Message negative={true}>
+                    <Message.Header>{isError.name}</Message.Header>
+                    <p>{isError.message}</p>
+                    <p>Check your .list file for possible reasons.</p>
+                </Message>
+            </Segment>
+        );
+    }
+
     return (
-        <Segment color={'grey'} loading={isLoading}>
+        <Segment color={'grey'}>
             <Grid padded={true}>
                 <Grid.Row>
                     <Grid.Column>

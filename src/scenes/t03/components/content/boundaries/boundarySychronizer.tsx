@@ -26,7 +26,9 @@ interface IState {
 class BoundarySynchronizer extends React.Component<IProps, IState> {
     public constructor(props: IProps) {
         super(props);
-        const boundaryList: IBoundaryComparisonItem[] = props.currentBoundaries.compareWith(props.newBoundaries);
+        const boundaryList: IBoundaryComparisonItem[] = props.currentBoundaries.compareWith(
+            props.model.stressperiods, props.newBoundaries
+        );
         this.state = {
             boundaryList,
             commands: this.calculateCommands(boundaryList),
@@ -38,7 +40,9 @@ class BoundarySynchronizer extends React.Component<IProps, IState> {
     }
 
     public componentWillReceiveProps(nextProps: IProps) {
-        const boundaryList = nextProps.currentBoundaries.compareWith(nextProps.newBoundaries);
+        const boundaryList = nextProps.currentBoundaries.compareWith(
+            nextProps.model.stressperiods, nextProps.newBoundaries
+        );
         this.setState({
             boundaryList,
             commands: this.calculateCommands(boundaryList),

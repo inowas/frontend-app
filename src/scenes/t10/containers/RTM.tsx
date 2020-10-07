@@ -1,17 +1,16 @@
 import React, {useEffect, useState} from 'react';
 import {Redirect, RouteComponentProps, withRouter} from 'react-router-dom';
-
 import {Grid, Icon, Message} from 'semantic-ui-react';
 import {Rtm, Sensor} from '../../../core/model/rtm';
 import {IRtm} from '../../../core/model/rtm/Rtm.type';
 import {ISensorParameter} from '../../../core/model/rtm/Sensor.type';
-import {IMetaData} from '../../../core/model/types';
 import {fetchUrl, sendCommand} from '../../../services/api';
 import AppContainer from '../../shared/AppContainer';
 import ToolNavigation from '../../shared/complexTools/toolNavigation';
 import SimpleToolsCommand from '../../shared/simpleTools/commands/SimpleToolsCommand';
 import ToolMetaData from '../../shared/simpleTools/ToolMetaData';
-import {DataSources, SensorMetaData, Sensors} from '../components/index';
+import {IToolMetaDataEdit} from '../../shared/simpleTools/ToolMetaData/ToolMetaData.type';
+import {DataSources, Processing, SensorMetaData, Sensors, Visualization} from '../components/index';
 
 export interface IProps extends RouteComponentProps<{ id: string, property: string, pid: string }> {
 }
@@ -83,6 +82,7 @@ const RTM = (props: IProps) => {
         const lRtm = Rtm.fromObject(rtm);
         lRtm.updateSensor(sensor);
         setRtm(lRtm.toObject());
+        onSave(lRtm);
     };
 
     const handleUpdateParameter = (parameter: ISensorParameter) => {
@@ -105,9 +105,10 @@ const RTM = (props: IProps) => {
         const lRtm = Rtm.fromObject(rtm);
         lRtm.updateSensor(sensor);
         setRtm(lRtm.toObject());
+        onSave(lRtm);
     };
 
-    const onchangeMetaData = (metaData: IMetaData) => {
+    const onchangeMetaData = (metaData: IToolMetaDataEdit) => {
         if (rtm) {
             setRtm({
                     ...rtm,
@@ -143,12 +144,20 @@ const RTM = (props: IProps) => {
             parameter = sensor.parameters.findById(selectedParameterId);
         }
 
-        if (!['sensor-setup', 'sensor-processing', 'sensor-visualization'].includes(property)) {
+        if (!['sensor-parameters', 'sensor-setup', 'sensor-processing', 'sensor-visualization'].includes(property)) {
             const path = props.match.path;
             const basePath = path.split(':')[0];
             return (
                 <Redirect
                     to={basePath + props.match.params.id + '/sensor-setup' + props.location.search}
+                />
+            );
+        }
+
+        if (property === 'sensor-visualization') {
+            return (
+                <Visualization
+                    rtm={Rtm.fromObject(rtm)}
                 />
             );
         }
@@ -168,11 +177,20 @@ const RTM = (props: IProps) => {
                     onChange={handleUpdateSensor}
                     onChangeSelectedParameterId={setSelectedParameterId}
                 />
-                {parameter && property === 'sensor-setup' && <DataSources
+                {parameter && property === 'sensor-processing' &&
+                <Processing
                     rtm={Rtm.fromObject(rtm)}
                     parameter={parameter}
                     onChange={handleUpdateParameter}
-                />}
+                />
+                }
+                {parameter && property === 'sensor-setup' &&
+                <DataSources
+                    rtm={Rtm.fromObject(rtm)}
+                    parameter={parameter}
+                    onChange={handleUpdateParameter}
+                />
+                }
             </Sensors>
         );
     };
@@ -209,8 +227,6 @@ const RTM = (props: IProps) => {
                     description: rtm.description,
                     public: rtm.public
                 }}
-                defaultButton={false}
-                saveButton={false}
                 onSave={onSave}
             />
             <Grid padded={true}>

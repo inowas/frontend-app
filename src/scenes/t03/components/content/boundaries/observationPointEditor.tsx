@@ -102,13 +102,13 @@ class ObservationPointEditor extends React.Component<IProps, IState> {
                                 name={'name'}
                                 width={10}
                             />
+                        </Form.Group>
+                        <Form.Group>
                             <Form.Field>
-                                <label>Latitude</label>
-                                <input readOnly={true} value={latitude} width={3}/>
+                                <Form.Input label="Latitude" readOnly={true} value={latitude} />
                             </Form.Field>
                             <Form.Field>
-                                <label>Longitude</label>
-                                <input readOnly={true} value={longitude} width={3}/>
+                                <Form.Input label="Longitude" readOnly={true} value={longitude} />
                             </Form.Field>
                         </Form.Group>
                     </Form>
@@ -137,6 +137,7 @@ class ObservationPointEditor extends React.Component<IProps, IState> {
     private handleApply = (op: ObservationPoint) => {
         const {boundary} = this.props;
         boundary.updateObservationPoint(op.id, op.name, op.geometry, op.spValues);
+        boundary.recalculateCellValues(this.props.model.boundingBox, this.props.model.gridSize);
         this.props.onChange(boundary);
     };
 

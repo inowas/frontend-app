@@ -48,7 +48,6 @@ class CreateOptimizationObject extends React.Component {
     }
 
     fetchModel(id) {
-        console.log('FETCH MODEL', id);
         if (this.props.model && this.props.model.id !== id) {
             this.props.clear();
         }

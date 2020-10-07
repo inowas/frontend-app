@@ -1,15 +1,38 @@
 import {LTOB} from 'downsample';
 import {DataPoint} from 'downsample/dist/types';
 import moment from 'moment';
-import React from 'react';
+import React, {useEffect, useRef, useState} from 'react';
 import {ResponsiveContainer, Scatter, ScatterChart, XAxis, YAxis} from 'recharts';
+import {Button, Icon} from 'semantic-ui-react';
 import {DataSourceCollection} from '../../../core/model/rtm';
+import ProcessingCollection from '../../../core/model/rtm/processing/ProcessingCollection';
+import {IDateTimeValue} from '../../../core/model/rtm/Sensor.type';
+import {exportChartData, exportChartImage} from '../../shared/simpleTools/helpers';
 
 interface IProps {
     dataSources: DataSourceCollection;
+    processings?: ProcessingCollection;
+    unit?: string;
 }
 
 const dataSourcesChart = (props: IProps) => {
+    const [data, setData] = useState<IDateTimeValue[] | null>(null);
+    const chartRef = useRef<ScatterChart>(null);
+
+    useEffect(() => {
+        async function f() {
+            const mergedData = await props.dataSources.mergedData();
+
+            if (props.processings instanceof ProcessingCollection) {
+                return setData(await props.processings.apply(mergedData));
+            }
+
+            return setData(mergedData);
+        }
+
+        f();
+
+    }, [props.dataSources, props.processings]);
 
     const formatDateTimeTicks = (dt: number) => {
         return moment.unix(dt).format('YYYY/MM/DD');
@@ -17,8 +40,6 @@ const dataSourcesChart = (props: IProps) => {
 
     // tslint:disable-next-line:variable-name
     const RenderNoShape = () => null;
-
-    const data = props.dataSources.getMergedData();
 
     if (!data || data.length === 0) {
         return null;
@@ -29,27 +50,60 @@ const dataSourcesChart = (props: IProps) => {
         y: ds.value
     })), 500);
 
-    return (
-        <ResponsiveContainer height={300}>
-            <ScatterChart>
-                <XAxis
-                    dataKey={'x'}
-                    domain={[data[0].timeStamp, data[data.length - 1].timeStamp]}
-                    name={'Date Time'}
-                    tickFormatter={formatDateTimeTicks}
-                    type={'number'}
-                />
-                <YAxis dataKey={'y'} name={''} domain={['auto', 'auto']}/>
+    const handleExportChartData = () => chartRef.current ? exportChartData(chartRef.current) : null;
 
-                <Scatter
-                    data={downSampledDataLTOB}
-                    line={{strokeWidth: 2, stroke: '#3498DB'}}
-                    lineType={'joint'}
-                    name={'p'}
-                    shape={<RenderNoShape/>}
-                />);
-            </ScatterChart>
-        </ResponsiveContainer>
+    const handleExportChartImage = () => chartRef.current ? exportChartImage(chartRef.current) : null;
+
+    return (
+        <div>
+            <ResponsiveContainer height={300}>
+                <ScatterChart
+                    data={data}
+                    ref={chartRef}
+                >
+                    <XAxis
+                        dataKey={'x'}
+                        domain={[data[0].timeStamp, data[data.length - 1].timeStamp]}
+                        name={'Date Time'}
+                        tickFormatter={formatDateTimeTicks}
+                        type={'number'}
+                    />
+                    <YAxis
+                        label={props.unit ? {value: props.unit, angle: -90, position: 'insideLeft'} : undefined}
+                        dataKey={'y'}
+                        name={''}
+                        domain={['auto', 'auto']}
+                    />
+                    <Scatter
+                        data={downSampledDataLTOB}
+                        line={{strokeWidth: 2, stroke: '#3498DB'}}
+                        lineType={'joint'}
+                        name={'p'}
+                        shape={<RenderNoShape/>}
+                    />);
+                </ScatterChart>
+            </ResponsiveContainer>
+            <div className="downloadButtons">
+                <Button
+                    compact={true}
+                    basic={true}
+                    icon={true}
+                    size={'small'}
+                    onClick={handleExportChartImage}
+                >
+                    <Icon name="download"/> JPG
+                </Button>
+                <Button
+                    compact={true}
+                    basic={true}
+                    icon={true}
+                    size={'small'}
+                    onClick={handleExportChartData}
+                >
+                    <Icon name="download"/> CSV
+                </Button>
+            </div>
+        </div>
     );
 };
 

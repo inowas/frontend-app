@@ -1,224 +1,259 @@
-import React, {ChangeEvent} from 'react';
-import {connect} from 'react-redux';
-import {Form, Grid} from 'semantic-ui-react';
-import {IBoundingBox} from '../../../../../core/model/geometry/BoundingBox.type';
+import _ from 'lodash';
+import React, {useEffect, useRef, useState} from 'react';
+import {useDispatch, useSelector} from 'react-redux';
+import {Dimmer, Form, Grid, Header, Progress} from 'semantic-ui-react';
 import {ICells} from '../../../../../core/model/geometry/Cells.type';
-import {IGeometry} from '../../../../../core/model/geometry/Geometry.type';
-import {IGridSize} from '../../../../../core/model/geometry/GridSize.type';
-import {BoundingBox, Cells, Geometry, GridSize, ModflowModel} from '../../../../../core/model/modflow';
-import {ILengthUnit} from '../../../../../core/model/modflow/LengthUnit.type';
-
-import {sendCommand} from '../../../../../services/api';
+import {BoundingBox, Cells, Geometry, GridSize, ModflowModel, Soilmodel} from '../../../../../core/model/modflow';
+import {BoundaryCollection} from '../../../../../core/model/modflow/boundaries';
+import {IRootReducer} from '../../../../../reducers';
 import {dxCell, dyCell} from '../../../../../services/geoTools/distance';
-import ContentToolBar from '../../../../shared/ContentToolbar';
-import ModflowModelCommand from '../../../commands/modflowModelCommand';
-import {ModelDiscretizationMap} from '../../maps';
+import ContentToolBar from '../../../../shared/ContentToolbar2';
+import {addMessage, updateBoundaries, updateLayer, updateSoilmodel} from '../../../actions/actions';
+import {messageError} from '../../../defaults/messages';
+import {CALCULATE_CELLS_INPUT} from '../../../worker/t03.worker';
+import {ICalculateCellsInputData} from '../../../worker/t03.worker.type';
+import {asyncWorker} from '../../../worker/worker';
+import UploadGeoJSONModal from '../create/UploadGeoJSONModal';
+import {DiscretizationMap, GridProperties} from './index';
+import {boundaryUpdater, layersUpdater, zonesUpdater} from './updater';
 
-import {updateModel} from '../../../actions/actions';
-import DiscretizationImport from './discretizationImport';
-
-interface IState {
-    boundingBox: IBoundingBox;
-    geometry: IGeometry;
-    gridSize: IGridSize;
-    gridSizeLocal: IGridSize;
-    cells: ICells;
-    lengthUnit: ILengthUnit;
-    isDirty: boolean;
-    isError: boolean;
-}
-
-interface IStateProps {
+interface IProps {
     model: ModflowModel;
-}
-
-interface IDispatchProps {
     onChange: (modflowModel: ModflowModel) => void;
+    onSave: () => void;
+    onUndo: () => void;
 }
 
-type IProps = IStateProps & IDispatchProps;
+interface IBoundaryUpdaterStatus {
+    task: number;
+    message: string;
+}
 
-class GridEditor extends React.Component<IProps, IState> {
-    constructor(props: IProps) {
-        super(props);
-        this.state = {
-            cells: props.model.cells.toObject(),
-            boundingBox: props.model.boundingBox.toObject(),
-            lengthUnit: props.model.lengthUnit.toInt(),
-            geometry: props.model.geometry.toObject(),
-            gridSize: props.model.gridSize.toObject(),
-            gridSizeLocal: props.model.gridSize.toObject(),
-            isDirty: false,
-            isError: false
-        };
+const gridEditor = (props: IProps) => {
+    const [gridSizeLocal, setGridSizeLocal] = useState<GridSize | null>(null);
+    const [updaterStatus, setUpdaterStatus] = useState<IBoundaryUpdaterStatus | null>(null);
+
+    const intersectionRef = useRef<number>();
+
+    const dispatch = useDispatch();
+
+    const T03 = useSelector((state: IRootReducer) => state.T03);
+    const boundaryCollection = T03.boundaries ? BoundaryCollection.fromObject(T03.boundaries) : null;
+    const soilmodel = T03.soilmodel ? Soilmodel.fromObject(T03.soilmodel) : null;
+
+    if (!soilmodel || !boundaryCollection) {
+        return null;
     }
 
-    public render() {
-        const gridSize = GridSize.fromObject(this.state.gridSize);
-        const gridSizeLocal = GridSize.fromObject(this.state.gridSizeLocal);
-        const boundingBox = BoundingBox.fromObject(this.state.boundingBox);
-        const readOnly = this.props.model.readOnly;
+    useEffect(() => {
+        setGridSizeLocal(props.model.gridSize);
+        intersectionRef.current = 50;
+    }, []);
 
-        return (
-            <Grid>
-                <Grid.Row>
-                    <Grid.Column width={16}>
-                        <ContentToolBar
-                            isDirty={this.state.isDirty}
-                            isError={this.state.isError}
-                            visible={!readOnly}
-                            saveButton={true}
-                            onSave={this.onSave}
-                            importButton={
-                                <DiscretizationImport
-                                    onChange={this.handleImport}
-                                    model={this.props.model}
-                                />
-                            }
-                        />
-                    </Grid.Column>
-                </Grid.Row>
-                <Grid.Row>
-                    <Grid.Column>
-                        <Form>
-                            <Form.Group>
-                                <Form.Input
-                                    type="number"
-                                    label="Rows"
-                                    name={'n_y'}
-                                    value={gridSizeLocal.nY}
-                                    onChange={this.handleGridSizeChange}
-                                    onBlur={this.handleGridSizeChange}
-                                    width={'6'}
-                                    readOnly={readOnly}
-                                />
-                                <Form.Input
-                                    type="number"
-                                    label="Columns"
-                                    name={'n_x'}
-                                    value={gridSizeLocal.nX}
-                                    onChange={this.handleGridSizeChange}
-                                    onBlur={this.handleGridSizeChange}
-                                    width={'6'}
-                                    readOnly={readOnly}
-                                />
-                                <Form.Input
-                                    type="number"
-                                    label="Cell height"
-                                    value={Math.round(dyCell(boundingBox, gridSize) * 10000) / 10}
-                                    width={'6'}
-                                    readOnly={readOnly}
-                                />
-                                <Form.Input
-                                    type="number"
-                                    label="Cell width"
-                                    value={Math.round(dxCell(boundingBox, gridSize) * 10000) / 10}
-                                    width={'6'}
-                                    readOnly={readOnly}
-                                />
-                                <Form.Select
-                                    compact={true}
-                                    label="Length unit"
-                                    options={[{key: 2, text: 'meters', value: 2}]}
-                                    style={{zIndex: 10000}}
-                                    value={this.state.lengthUnit}
-                                    disabled={readOnly}
-                                />
-                            </Form.Group>
-                        </Form>
-                    </Grid.Column>
-                </Grid.Row>
-                <Grid.Row>
-                    <Grid.Column>
-                        <ModelDiscretizationMap
-                            cells={Cells.fromObject(this.state.cells)}
-                            boundingBox={BoundingBox.fromObject(this.state.boundingBox)}
-                            geometry={Geometry.fromObject(this.state.geometry)}
-                            gridSize={GridSize.fromObject(this.state.gridSize)}
-                            onChange={this.handleMapChange}
-                        /></Grid.Column>
-                </Grid.Row>
+    useEffect(() => {
+        if (gridSizeLocal && (gridSizeLocal.nX !== gridSize.nX || gridSizeLocal.nY !== gridSize.nY)) {
+            setGridSizeLocal(props.model.gridSize);
+        }
+    }, [props.model.gridSize.nX, props.model.gridSize.nY]);
 
-                <Grid.Row>
-                    <Grid.Column width={16}/>
-                </Grid.Row>
-            </Grid>
-        );
-    }
+    const readOnly = props.model.readOnly;
 
-    private handleImport = (model: ModflowModel) =>
-        this.setState({
-            boundingBox: model.boundingBox.toObject(),
-            geometry: model.geometry.toObject(),
-            gridSize: model.gridSize.toObject(),
-            gridSizeLocal: model.gridSize.toObject(),
-            cells: model.cells.toObject(),
-            lengthUnit: model.lengthUnit.toInt(),
-            isDirty: true
-        });
-
-    private onSave = () => {
-        const model = this.props.model;
-        model.cells = Cells.fromObject(this.state.cells);
-        model.boundingBox = BoundingBox.fromObject(this.state.boundingBox);
-        model.geometry = Geometry.fromObject(this.state.geometry);
-        model.gridSize = GridSize.fromObject(this.state.gridSize);
-        const command = ModflowModelCommand.updateModflowModelDiscretization(
-            model.id,
-            model.geometry.toObject(),
-            model.boundingBox.toObject(),
-            model.gridSize.toObject(),
-            model.cells.toObject(),
-            model.stressperiods.toObject(),
-            model.lengthUnit.toInt(),
-            model.timeUnit.toInt()
-        );
-
-        return sendCommand(command,
-            () => {
-                this.setState({isDirty: false});
-                this.props.onChange(model);
+    const update = (model: ModflowModel) => {
+        if (!boundaryCollection) {
+            return null;
+        }
+        boundaryUpdater(
+            _.cloneDeep(boundaryCollection),
+            model,
+            (b, l) => setUpdaterStatus({
+                task: 1 + boundaryCollection.length - l,
+                message: `Updating ${b.name}`
+            }),
+            (bc) => {
+                dispatch(updateBoundaries(bc));
+                if (soilmodel.zonesCollection.length > 1) {
+                    zonesUpdater(
+                        model,
+                        soilmodel,
+                        soilmodel.zonesCollection,
+                        (z, l) => setUpdaterStatus({
+                            task: 1 + boundaryCollection.length + soilmodel.zonesCollection.length - l,
+                            message: `Updating ${z.name}`
+                        }),
+                        (zc) => {
+                            soilmodel.zonesCollection = zc;
+                            dispatch(updateSoilmodel(soilmodel));
+                            layersUpdater(
+                                model,
+                                soilmodel.layersCollection,
+                                zc,
+                                (layer, l) => {
+                                    dispatch(updateLayer(layer));
+                                    setUpdaterStatus({
+                                        task: 1 + boundaryCollection.length + soilmodel.zonesCollection.length +
+                                            soilmodel.layersCollection.length - l,
+                                        message: `Updating ${layer.name}`
+                                    });
+                                },
+                                () => {
+                                    setUpdaterStatus(null);
+                                },
+                                (e) => dispatch(addMessage(messageError('layersUpdater', e)))
+                            );
+                        },
+                        (e) => dispatch(addMessage(messageError('zonesUpdater', e)))
+                    );
+                } else {
+                    setUpdaterStatus(null);
+                }
             },
-            () => this.setState({isError: true})
+            (e) => dispatch(addMessage(messageError('boundariesUpdater', e)))
         );
     };
 
-    private handleGridSizeChange = (e: ChangeEvent<HTMLInputElement>) => {
-        const {type, target} = e;
-        const {name, value} = target;
-
-        if (type === 'change') {
-            this.setState((prevState) => ({
-                gridSizeLocal: {...prevState.gridSizeLocal, [name]: parseInt(value, 10)}
-            }));
-        }
-
-        if (type === 'blur') {
-            this.setState({
-                gridSize: this.state.gridSizeLocal,
-                isDirty: true
-            });
-        }
+    const handleChangeCells = (c: Cells) => {
+        const model = props.model.getClone();
+        model.cells = c;
+        props.onChange(model);
     };
 
-    private handleMapChange = (
-        {cells, boundingBox, geometry}: { cells: Cells, boundingBox: BoundingBox, geometry: Geometry }
-    ) => {
-        this.setState({
-            cells: cells.toObject(),
-            boundingBox: boundingBox.toObject(),
-            geometry: geometry.toObject(),
-            isDirty: true
+    const handleChangeGeometry = (g: Geometry) => {
+        const rotation = props.model.rotation;
+        let geometryWithRotation: null | Geometry = null;
+        let bb: BoundingBox = BoundingBox.fromGeoJson(g);
+        if (rotation % 360 !== 0) {
+            geometryWithRotation = Geometry.fromGeoJson(g.toGeoJSONWithRotation(rotation, g.centerOfMass));
+            bb = BoundingBox.fromGeometryAndRotation(g, rotation);
+        }
+
+        asyncWorker({
+            type: CALCULATE_CELLS_INPUT,
+            data: {
+                geometry: geometryWithRotation ? geometryWithRotation.toObject() : g.toObject(),
+                boundingBox: bb.toObject(),
+                gridSize: props.model.gridSize.toObject(),
+                intersection: props.model.intersection
+            } as ICalculateCellsInputData
+        }).then((c: ICells) => {
+            const model = props.model.getClone();
+            model.cells = Cells.fromObject(c);
+            model.geometry = Geometry.fromObject(g.toObject());
+            model.boundingBox = BoundingBox.fromObject(bb.toObject());
+            update(model);
+            return props.onChange(model);
+        }).catch(() => {
+            dispatch(addMessage(messageError('discretization', 'Calculating cells failed.')));
         });
     };
-}
 
-const mapStateToProps = (state: any) => ({
-    model: ModflowModel.fromObject(state.T03.model)
-});
+    const handleChangeRotation = (g: GridSize, i: number, r: number, c: Cells) => {
+        const model = props.model.getClone();
+        model.boundingBox = r % 360 !== 0 ? BoundingBox.fromGeometryAndRotation(model.geometry, r) :
+            BoundingBox.fromGeoJson(model.geometry.toGeoJSON());
+        model.cells = c;
+        model.gridSize = g;
+        model.intersection = i;
+        model.rotation = r;
+        update(model);
+        return props.onChange(model);
+    };
 
-const mapDispatchToProps = (dispatch: any) => ({
-    onChange: (model: ModflowModel) => dispatch(updateModel(model))
-});
+    if (!gridSizeLocal) {
+        return null;
+    }
 
-export default connect(mapStateToProps, mapDispatchToProps)(GridEditor);
+    const {boundingBox, geometry, gridSize} = props.model;
+
+    const tasks = boundaryCollection.length + soilmodel.zonesCollection.length + soilmodel.layersCollection.length;
+
+    return (
+        <Grid>
+            {!!updaterStatus &&
+            <Dimmer active={true} page={true}>
+                <Header as="h2" icon={true} inverted={true}>
+                    {updaterStatus.message}
+                </Header>
+                <Progress
+                    percent={(100 * (updaterStatus.task / tasks)).toFixed(0)}
+                    indicating={true}
+                    progress={true}
+                />
+            </Dimmer>
+            }
+            {!readOnly &&
+            <Grid.Row>
+                <Grid.Column width={16}>
+                    <ContentToolBar
+                        buttonSave={true}
+                        buttonImport={
+                            <UploadGeoJSONModal
+                                onChange={handleChangeGeometry}
+                                geometry={'polygon'}
+                                size="medium"
+                            />
+                        }
+                        onSave={props.onSave}
+                        onUndo={props.onUndo}
+                    />
+                </Grid.Column>
+            </Grid.Row>}
+            <Grid.Row>
+                <Grid.Column>
+                    <Form>
+                        <Form.Group>
+                            <Form.Input
+                                label="Cell height"
+                                value={Math.round(dyCell(boundingBox, gridSize) * 10000) / 10}
+                                width={'6'}
+                                readOnly={true}
+                            />
+                            <Form.Input
+                                label="Cell width"
+                                value={Math.round(dxCell(boundingBox, gridSize) * 10000) / 10}
+                                width={'6'}
+                                readOnly={true}
+                            />
+                            <Form.Select
+                                compact={true}
+                                label="Length unit"
+                                options={[{key: 2, text: 'meters', value: 2}]}
+                                value={props.model.lengthUnit.toInt()}
+                                disabled={readOnly}
+                            />
+                        </Form.Group>
+                    </Form>
+                    <GridProperties
+                        boundingBox={boundingBox}
+                        geometry={geometry}
+                        gridSize={gridSize}
+                        intersection={props.model.intersection}
+                        onChange={handleChangeRotation}
+                        rotation={props.model.rotation}
+                    />
+                </Grid.Column>
+            </Grid.Row>
+            <Grid.Row>
+                <Grid.Column>
+                    <DiscretizationMap
+                        cells={props.model.cells}
+                        boundingBox={boundingBox}
+                        boundaries={boundaryCollection}
+                        geometry={geometry}
+                        gridSize={gridSize}
+                        intersection={props.model.intersection}
+                        onChangeGeometry={handleChangeGeometry}
+                        onChangeCells={handleChangeCells}
+                        readOnly={readOnly}
+                        rotation={props.model.rotation}
+                    />
+                </Grid.Column>
+            </Grid.Row>
+
+            <Grid.Row>
+                <Grid.Column width={16}/>
+            </Grid.Row>
+        </Grid>
+    );
+};
+
+export default gridEditor;

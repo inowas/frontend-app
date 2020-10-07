@@ -9,19 +9,19 @@ import {ITimeUnit} from './TimeUnit.type';
 class Stressperiods {
 
     get startDateTime(): Moment {
-        return moment(this._props.start_date_time);
+        return moment.utc(this._props.start_date_time);
     }
 
     set startDateTime(value: Moment) {
-        this._props.start_date_time = value.toISOString();
+        this._props.start_date_time = value.utc().toISOString();
     }
 
     get endDateTime(): Moment {
-        return moment(this._props.end_date_time);
+        return moment.utc(this._props.end_date_time);
     }
 
     set endDateTime(value: Moment) {
-        this._props.end_date_time = value.toISOString();
+        this._props.end_date_time = value.utc().toISOString();
     }
 
     set stressperiods(stressperiods: Stressperiod[]) {
@@ -158,6 +158,16 @@ class Stressperiods {
         return this.stressperiods[idx];
     }
 
+    public get first() {
+        let first = this.stressperiods[0];
+        this.stressperiods.forEach((sp) => {
+            if (sp.startDateTime.isBefore(first.startDateTime)) {
+                first = sp;
+            }
+        });
+        return first;
+    }
+
     public last() {
         return this.stressperiods[this.count - 1];
     }
@@ -185,13 +195,33 @@ class Stressperiods {
         this.stressperiods = stressperiods;
     }
 
+    public updateStressPeriodsByStartDateTime() {
+        const firstStressPeriod = this.first;
+        const difference = moment.duration(this.startDateTime.diff(firstStressPeriod.startDateTime)).asDays();
+
+        this.stressperiods = this.stressperiods.map((sp) => {
+            sp.startDateTime = sp.startDateTime.add(difference, 'days');
+            return sp;
+        });
+        return this;
+    }
+
+    public toCsv = () => {
+        let text = 'start_date_time;nstp;tsmult;steady\n';
+        this.stressperiods.forEach((sp) => {
+            text += (`${sp.startDateTime.format('YYYY-MM-DD')};${sp.nstp};${sp.tsmult};${sp.steady ? 1 : 0}\n`);
+        });
+        text += (`${this.endDateTime.format('YYYY-MM-DD')};;;`);
+        return text;
+    };
+
     public toObject = () => {
         return this._props;
     };
 
-    private totimFromDate(dateTime: Moment) {
+    public totimFromDate(dateTime: Moment) {
         if (this.timeUnit.toInt() === ITimeUnit.days) {
-            return dateTime.diff(this.startDateTime, 'days');
+            return dateTime.diff(this.startDateTime, 'days', true);
         }
 
         throw new Error(`TimeUnit ${this.timeUnit.toInt()} not implemented yet.`);

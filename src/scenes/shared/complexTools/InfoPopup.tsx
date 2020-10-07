@@ -2,8 +2,12 @@ import React from 'react';
 import {Icon, Popup} from 'semantic-ui-react';
 import {PopupPosition} from '../../types';
 
-const renderInfoPopup = (description: JSX.Element, title: string, position: PopupPosition = PopupPosition.TOP_LEFT,
-                         iconOutside = false) => {
+const renderInfoPopup = (
+    description: JSX.Element | string,
+    title: string,
+    position: PopupPosition = PopupPosition.TOP_LEFT,
+    iconOutside = false
+) => {
     return (
         <Popup
             className="popupFix"

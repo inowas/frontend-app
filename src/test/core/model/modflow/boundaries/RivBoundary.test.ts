@@ -2,6 +2,7 @@ import {LineString, Point} from 'geojson';
 import Uuid from 'uuid';
 import {BoundingBox, Cells, Geometry, GridSize} from '../../../../../core/model/geometry';
 import {ICells} from '../../../../../core/model/geometry/Cells.type';
+import {Stressperiods} from '../../../../../core/model/modflow';
 import {RiverBoundary} from '../../../../../core/model/modflow/boundaries';
 import {JSON_SCHEMA_URL} from '../../../../../services/api';
 import {validate} from '../../../../../services/jsonSchemaValidator';
@@ -39,7 +40,7 @@ test('RiverBoundary add ObservationPoint', () => {
     const riverBoundary = createRiverBoundary();
     expect(riverBoundary.observationPoints).toHaveLength(1);
 
-    riverBoundary.addObservationPoint(Uuid.v4(), 'Op2', {type: 'Point', coordinates: [1, 2]}, [[3], [2], [1]]);
+    riverBoundary.createObservationPoint(Uuid.v4(), 'Op2', {type: 'Point', coordinates: [1, 2]}, [[3], [2], [1]]);
     expect(riverBoundary.observationPoints).toHaveLength(2);
 
     const op2 = riverBoundary.findObservationPointByName('Op2');
@@ -52,18 +53,18 @@ test('RiverBoundary add ObservationPoint', () => {
 
 test('RiverBoundary clone ObservationPoint', () => {
     const riverBoundary = createRiverBoundary();
-    riverBoundary.addObservationPoint(Uuid.v4(), 'Op2', {type: 'Point', coordinates: [1, 2]}, [[3], [2], [1]]);
+    riverBoundary.createObservationPoint(Uuid.v4(), 'Op2', {type: 'Point', coordinates: [1, 2]}, [[3], [2], [1]]);
     expect(riverBoundary.observationPoints).toHaveLength(2);
     const op2 = riverBoundary.findObservationPointByName('Op2');
 
     const newId = Uuid.v4();
-    riverBoundary.cloneObservationPoint(op2.id, newId);
+    riverBoundary.cloneObservationPoint(op2.id, newId, Stressperiods.fromDefaults());
     expect(riverBoundary.observationPoints).toHaveLength(3);
 });
 
 test('RiverBoundary update ObservationPoint', () => {
     const riverBoundary = createRiverBoundary();
-    riverBoundary.addObservationPoint(Uuid.v4(), 'Op2', {type: 'Point', coordinates: [1, 2]}, [[3], [2], [1]]);
+    riverBoundary.createObservationPoint(Uuid.v4(), 'Op2', {type: 'Point', coordinates: [1, 2]}, [[3], [2], [1]]);
     expect(riverBoundary.observationPoints).toHaveLength(2);
     const op2 = riverBoundary.findObservationPointByName('Op2');
 
@@ -85,7 +86,7 @@ test('RiverBoundary update ObservationPoint', () => {
 
 test('RiverBoundary remove ObservationPoint', () => {
     const riverBoundary = createRiverBoundary();
-    riverBoundary.addObservationPoint(Uuid.v4(), 'Op2', {type: 'Point', coordinates: [1, 2]}, [[3], [2], [1]]);
+    riverBoundary.createObservationPoint(Uuid.v4(), 'Op2', {type: 'Point', coordinates: [1, 2]}, [[3], [2], [1]]);
     expect(riverBoundary.observationPoints).toHaveLength(2);
     const op2 = riverBoundary.findObservationPointByName('Op2');
     riverBoundary.removeObservationPoint(op2.id);
@@ -126,8 +127,8 @@ test('RiverBoundary adding ObservationPoint, orders by OPs by distance', () => {
 
     const op1 = riverBoundary.observationPoints[0];
     riverBoundary.updateObservationPoint(op1.id, 'OP1', {type: 'Point', coordinates: [3, -4]}, [[10, 20, 30]]);
-    riverBoundary.addObservationPoint(Uuid.v4(), 'OP3', {type: 'Point', coordinates: [19, 2]}, [[30, 40, 50]]);
-    riverBoundary.addObservationPoint(Uuid.v4(), 'OP2', {type: 'Point', coordinates: [11, 0]}, [[20, 30, 40]]);
+    riverBoundary.createObservationPoint(Uuid.v4(), 'OP3', {type: 'Point', coordinates: [19, 2]}, [[30, 40, 50]]);
+    riverBoundary.createObservationPoint(Uuid.v4(), 'OP2', {type: 'Point', coordinates: [11, 0]}, [[20, 30, 40]]);
 
     expect(riverBoundary.observationPoints.length).toBe(3);
     expect(riverBoundary.observationPoints.filter((op) => op.name === 'OP1')).toHaveLength(1);
@@ -164,8 +165,8 @@ test('RiverBoundary cells calculation', () => {
 
     const op1 = riverBoundary.observationPoints[0];
     riverBoundary.updateObservationPoint(op1.id, 'OP1', {type: 'Point', coordinates: [3, -4]}, [[10, 20, 30]]);
-    riverBoundary.addObservationPoint(Uuid.v4(), 'OP3', {type: 'Point', coordinates: [19, 2]}, [[30, 40, 50]]);
-    riverBoundary.addObservationPoint(Uuid.v4(), 'OP2', {type: 'Point', coordinates: [11, 0]}, [[20, 30, 40]]);
+    riverBoundary.createObservationPoint(Uuid.v4(), 'OP3', {type: 'Point', coordinates: [19, 2]}, [[30, 40, 50]]);
+    riverBoundary.createObservationPoint(Uuid.v4(), 'OP2', {type: 'Point', coordinates: [11, 0]}, [[20, 30, 40]]);
 
     expect(riverBoundary.observationPoints.length).toBe(3);
 

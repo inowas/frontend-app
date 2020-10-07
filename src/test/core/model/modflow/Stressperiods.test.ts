@@ -4,8 +4,8 @@ import {ITimeUnit} from '../../../../core/model/modflow/TimeUnit.type';
 
 test('Stressperiods create with no sps', () => {
 
-    const startDate = moment('2010-02-01T00:00:00.000Z');
-    const endDate = moment('2011-01-21T00:00:00.000Z');
+    const startDate = moment.utc('2010-02-01T00:00:00.000Z');
+    const endDate = moment.utc('2011-01-21T00:00:00.000Z');
     const timeUnit = TimeUnit.fromInt(ITimeUnit.days);
 
     const stressperiods = Stressperiods.create(startDate, endDate, timeUnit);
@@ -40,7 +40,7 @@ test('Stressperiods add, update, remove stressperiod and reorder automatically',
     expect(stressperiods.count).toEqual(1);
 
     stressperiods.addStressPeriod(new Stressperiod({
-        start_date_time: moment('2002-01-01T00:00:00.000Z').toISOString(),
+        start_date_time: moment.utc('2002-01-01T00:00:00.000Z').toISOString(),
         nstp: 2,
         tsmult: 1,
         steady: false
@@ -50,7 +50,7 @@ test('Stressperiods add, update, remove stressperiod and reorder automatically',
     expect(stressperiods.stressperiods[1].startDateTime.toISOString()).toEqual('2002-01-01T00:00:00.000Z');
 
     stressperiods.addStressPeriod(new Stressperiod({
-        start_date_time: moment('2001-01-01T00:00:00.000Z').toISOString(),
+        start_date_time: moment.utc('2001-01-01T00:00:00.000Z').toISOString(),
         nstp: 2,
         tsmult: 1,
         steady: false
@@ -60,7 +60,7 @@ test('Stressperiods add, update, remove stressperiod and reorder automatically',
     expect(stressperiods.stressperiods[2].startDateTime.toISOString()).toEqual('2002-01-01T00:00:00.000Z');
 
     stressperiods.updateStressperiodByIdx(1, new Stressperiod({
-        start_date_time: moment('2005-01-01T00:00:00.000Z').toISOString(),
+        start_date_time: moment.utc('2005-01-01T00:00:00.000Z').toISOString(),
         nstp: 2,
         tsmult: 1,
         steady: false
@@ -77,19 +77,19 @@ test('Stressperiods add, update, remove stressperiod and reorder automatically',
 test('Stressperiods toObject, fromObject', () => {
     const stressperiods = Stressperiods.fromDefaults();
     stressperiods.addStressPeriod(new Stressperiod({
-        start_date_time: moment('2001-01-01T00:00:00.000Z').toISOString(),
+        start_date_time: moment.utc('2001-01-01T00:00:00.000Z').toISOString(),
         nstp: 2,
         tsmult: 1,
         steady: false
     }));
     stressperiods.addStressPeriod(new Stressperiod({
-        start_date_time: moment('2002-01-01T00:00:00.000Z').toISOString(),
+        start_date_time: moment.utc('2002-01-01T00:00:00.000Z').toISOString(),
         nstp: 2,
         tsmult: 1,
         steady: false
     }));
     stressperiods.addStressPeriod(new Stressperiod({
-        start_date_time: moment('2003-01-01T00:00:00.000Z').toISOString(),
+        start_date_time: moment.utc('2003-01-01T00:00:00.000Z').toISOString(),
         nstp: 2,
         tsmult: 1,
         steady: false
@@ -102,25 +102,25 @@ test('Stressperiods toObject, fromObject', () => {
 test('Stressperiods calculations', () => {
     const stressperiods = Stressperiods.fromDefaults();
     stressperiods.addStressPeriod(new Stressperiod({
-        start_date_time: moment('2001-01-01T00:00:00.000Z').toISOString(),
+        start_date_time: moment.utc('2001-01-01T00:00:00.000Z').toISOString(),
         nstp: 2,
         tsmult: 1,
         steady: false
     }));
     stressperiods.addStressPeriod(new Stressperiod({
-        start_date_time: moment('2002-01-01T00:00:00.000Z').toISOString(),
+        start_date_time: moment.utc('2002-01-01T00:00:00.000Z').toISOString(),
         nstp: 2,
         tsmult: 1,
         steady: false
     }));
     stressperiods.addStressPeriod(new Stressperiod({
-        start_date_time: moment('2003-01-01T00:00:00.000Z').toISOString(),
+        start_date_time: moment.utc('2003-01-01T00:00:00.000Z').toISOString(),
         nstp: 2,
         tsmult: 1,
         steady: false
     }));
     stressperiods.addStressPeriod(new Stressperiod({
-        start_date_time: moment('2004-02-05T00:00:00.000Z').toISOString(),
+        start_date_time: moment.utc('2004-02-05T00:00:00.000Z').toISOString(),
         nstp: 2,
         tsmult: 1,
         steady: false

@@ -1,8 +1,11 @@
 import * as turf from '@turf/helpers';
 import {lineDistance, lineSlice} from '@turf/turf';
 import {LineString, Point} from 'geojson';
-import Uuid from 'uuid';
+import moment, {Moment} from 'moment';
+import BoundingBox from '../../geometry/BoundingBox';
+import GridSize from '../../geometry/GridSize';
 import {Cells, Geometry} from '../index';
+import Stressperiods from '../Stressperiods';
 import {ISpValues} from './Boundary.type';
 import {IConstantHeadBoundaryFeature} from './ConstantHeadBoundary.type';
 import {Boundary, ObservationPoint} from './index';
@@ -176,22 +179,15 @@ export default abstract class LineBoundary extends Boundary {
         this._props.features = features.concat(ops.map((op) => op.toObject()));
     }
 
-    public getSpValues(opId: string): ISpValues {
-        let spValues: any;
-        this._props.features.forEach((f: IObservationPoint | IConstantHeadBoundaryFeature) => {
-            if (f.properties.type === 'op' && f.id === opId) {
-                spValues = f.properties.sp_values;
-            }
-        });
-
-        if (spValues) {
-            return spValues;
+    public getSpValues(stressperiods: Stressperiods, opId?: string): ISpValues {
+        if (opId) {
+            const observationPoint = this.findObservationPointById(opId);
+            return observationPoint.getSpValues(stressperiods);
         }
-
-        throw new Error('Main feature not available.');
+        return [];
     }
 
-    public setSpValues(spValues: ISpValues, opId: string) {
+    public setSpValues(spValues: ISpValues, opId?: string) {
         this._props.features.forEach((f: IObservationPoint | IConstantHeadBoundaryFeature) => {
             if (f.properties.type === 'op' && f.id === opId) {
                 f.properties.sp_values = spValues;
@@ -199,19 +195,27 @@ export default abstract class LineBoundary extends Boundary {
         });
     }
 
-    public addObservationPoint = (id: string, name: string, geometry: Point, spValues: ISpValues) => {
+    public createObservationPoint = (newId: string, name: string, geometry: Point,
+                                     spValues: ISpValues, dateTimes?: string[]) => {
         const ops = this.observationPoints;
-        ops.push(ObservationPoint.create(
-            Uuid.v4(), 'op', geometry, name, spValues,
-            distanceOnLine(this.geometry as LineString, geometry)
-        ));
+        ops.push(
+            ObservationPoint.create(newId, 'op', geometry, name, spValues,
+                distanceOnLine(this.geometry as LineString, geometry), dateTimes
+            )
+        );
 
         this.observationPoints = ops;
     };
 
-    public cloneObservationPoint = (id: string, newId: string) => {
-        const op = this.findObservationPointById(id);
-        this.addObservationPoint(newId, op.name + ' (clone)', op.geometry as Point, op.spValues as ISpValues);
+    public cloneObservationPoint = (id: string, newId: string, stressperiods: Stressperiods) => {
+        const op = ObservationPoint.fromObject(this.findObservationPointById(id).toObject());
+        this.createObservationPoint(
+            newId,
+            op.name + ' (clone)',
+            op.geometry as Point,
+            op.getSpValues(stressperiods),
+            op.dateTimes && op.dateTimes.map((dt) => dt.format('YYYY-MM-DD'))
+        );
     };
 
     public findObservationPointById = (id: string) => {
@@ -241,15 +245,46 @@ export default abstract class LineBoundary extends Boundary {
         this.observationPoints = this.observationPoints.filter((existingOp) => opId !== existingOp.id);
     };
 
-    public updateObservationPoint = (id: string, name: string, geometry: Point, spValues: ISpValues) => {
+    public updateDateTimeValues = (id: string, spValues: ISpValues, dateTimes: string[]) => {
+        this.observationPoints = this.observationPoints.map((op) => {
+            if (op.id === id) {
+                op.dateTimes = dateTimes.map((dt) => moment.utc(dt));
+                op.spValues = spValues;
+            }
+            return op;
+        });
+    };
+
+    public updateObservationPoint = (id: string, name: string, geometry: Point, spValues: ISpValues,
+                                     dateTimes?: Moment[]) => {
         this.observationPoints = this.observationPoints.map((op) => {
             if (op.id === id) {
                 op.name = name;
                 op.geometry = geometry;
                 op.spValues = spValues;
+                if (op.dateTimes && dateTimes) {
+                    op.dateTimes = dateTimes;
+                }
                 op.distance = distanceOnLine(this.geometry as LineString, geometry);
             }
             return op;
         });
+    };
+
+    public recalculateCells = (boundingBox: BoundingBox, gridSize: GridSize) => {
+        const cells = Cells.fromGeometry(this.geometry, boundingBox, gridSize);
+        this.observationPoints = this.observationPoints.map((op) => {
+            op.distance = distanceOnLine(this.geometry as LineString, op.geometry);
+            return op;
+        });
+
+        cells.calculateValues(this, boundingBox, gridSize);
+        this.cells = cells;
+    };
+
+    public recalculateCellValues = (boundingBox: BoundingBox, gridSize: GridSize) => {
+        const cells = this.cells;
+        cells.calculateValues(this, boundingBox, gridSize);
+        this.cells = cells;
     };
 }

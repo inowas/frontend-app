@@ -1,18 +1,31 @@
 import {Point} from 'geojson';
-import {cloneDeep} from 'lodash';
+import {cloneDeep, orderBy} from 'lodash';
+import moment, {DurationInputArg1, DurationInputArg2, Moment} from 'moment';
 import Uuid from 'uuid';
 import BoundingBox from '../../geometry/BoundingBox';
 import {ICells} from '../../geometry/Cells.type';
 import GridSize from '../../geometry/GridSize';
 import {Cells, Geometry} from '../index';
+import Stressperiods from '../Stressperiods';
 import {ISpValues, IValueProperty} from './Boundary.type';
 import {IHeadObservationWell, IHeadObservationWellExport} from './HeadObservationWell.type';
 import PointBoundary from './PointBoundary';
 
 export default class HeadObservationWell extends PointBoundary {
+    set dateTimes(value: Moment[]) {
+        this._props.properties.date_times = value.map((dt) => dt.format('YYYY-MM-DD'));
+    }
+
+    get dateTimes() {
+        return this._props.properties.date_times.map((dt: string) => moment.utc(dt));
+    }
 
     get geometryType() {
         return this._class.geometryType();
+    }
+
+    public get valueProperties(): IValueProperty[] {
+        return this._class.valueProperties();
     }
 
     public static geometryType() {
@@ -36,7 +49,7 @@ export default class HeadObservationWell extends PointBoundary {
     }
 
     public static create(id: string, geometry: Point, name: string, layers: number[], cells: ICells,
-                         spValues: ISpValues) {
+                         dateTimes: string[], spValues: ISpValues) {
         return new this({
             id,
             type: 'Feature',
@@ -46,6 +59,7 @@ export default class HeadObservationWell extends PointBoundary {
                 name,
                 layers,
                 cells,
+                date_times: dateTimes,
                 sp_values: spValues
             }
         });
@@ -58,6 +72,7 @@ export default class HeadObservationWell extends PointBoundary {
             obj.name,
             obj.layers,
             Cells.fromGeometry(Geometry.fromGeoJson(obj.geometry), boundingBox, gridSize).toObject(),
+            obj.date_times,
             obj.sp_values
         );
     }
@@ -68,20 +83,85 @@ export default class HeadObservationWell extends PointBoundary {
         this._class = HeadObservationWell;
     }
 
-    public toExport = (): IHeadObservationWellExport => ({
+    public getDateTimes = (stressperiods: Stressperiods): Moment[] => {
+        if (!this._props.properties.date_times) {
+            this._props.properties.date_times = stressperiods.stressperiods.map((sp) =>
+                sp.startDateTime.format('YYYY-MM-DD'));
+        }
+        return this._props.properties.date_times.map((dt: string) => moment.utc(dt));
+    };
+
+    public addDateTime(amount: DurationInputArg1, unit: DurationInputArg2, opId?: string,
+                       stressperiods?: Stressperiods) {
+        if (stressperiods) {
+            const dateTimes = this._props.properties.date_times;
+            if (this._props.properties.date_times.length > 0) {
+                const newDateTime = moment.utc(dateTimes[dateTimes.length - 1]).add(amount, unit);
+                this._props.properties.date_times.push(newDateTime.format('YYYY-MM-DD'));
+                this._props.properties.sp_values.push(
+                    this._props.properties.sp_values[this._props.properties.sp_values.length - 1]
+                );
+                return this;
+            }
+            this._props.properties.date_times.push(stressperiods.startDateTime.format('YYYY-MM-DD'));
+            this._props.properties.sp_values.push(this.valueProperties.map((v) => v.default));
+        }
+        return this;
+    }
+
+    public changeDateTime(value: string, idx: number, opId?: string) {
+        const dateTimes = this.dateTimes;
+        if (dateTimes.length > idx) {
+            dateTimes[idx] = moment.utc(value);
+        }
+
+        this.dateTimes = dateTimes;
+        this.reorderDateTimes();
+
+        return this;
+    }
+
+    public removeDateTime(id: number, opId?: string) {
+        const dateTimes: string[] = [];
+        const spValues: ISpValues = [];
+        this._props.properties.date_times.forEach((dt: string, idx: number) => {
+            if (id !== idx) {
+                spValues.push(this._props.properties.sp_values[idx]);
+                dateTimes.push(dt);
+            }
+        });
+        this._props.properties.date_times = dateTimes;
+        this._props.properties.sp_values = spValues;
+        return this;
+    }
+
+    public reorderDateTimes() {
+        this.dateTimes = orderBy(this.dateTimes, (o: Moment) => o.unix(), ['asc']);
+        return this;
+    }
+
+    public getSpValues(stressperiods: Stressperiods): ISpValues {
+        const spValues = this._props.properties.sp_values;
+
+        return this.getDateTimes(stressperiods).map((dt, idx) => {
+            if (Array.isArray(spValues[idx])) {
+                return spValues[idx];
+            }
+            return spValues[spValues.length - 1];
+        });
+    }
+
+    public toExport = (stressPeriods: Stressperiods): IHeadObservationWellExport => ({
         id: this.id,
         type: this.type,
         name: this.name,
         geometry: this.geometry.toObject() as Point,
         layers: this.layers,
-        sp_values: this.getSpValues()
+        date_times: this.getDateTimes(stressPeriods).map((dt: Moment) => dt.format('YYYY-MM-DD')),
+        sp_values: this.getSpValues(stressPeriods)
     });
 
     public toObject(): IHeadObservationWell {
         return this._props;
-    }
-
-    public get valueProperties(): IValueProperty[] {
-        return this._class.valueProperties();
     }
 }

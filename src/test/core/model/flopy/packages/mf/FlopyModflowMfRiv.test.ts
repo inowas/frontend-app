@@ -1,10 +1,13 @@
 import {LineString} from 'geojson';
+import moment from 'moment';
 import Uuid from 'uuid';
-import {FlopyModflow, FlopyModflowMfriv} from '../../../../../../core/model/flopy/packages/mf';
+import {FlopyModflowMfriv} from '../../../../../../core/model/flopy/packages/mf';
 import {BoundingBox, Cells, Geometry, GridSize} from '../../../../../../core/model/geometry';
+import {BoundaryCollection, Stressperiod} from '../../../../../../core/model/modflow';
 import {RiverBoundary} from '../../../../../../core/model/modflow/boundaries';
+import Stressperiods from '../../../../../../core/model/modflow/Stressperiods';
 
-const createRiverBoundary = () => {
+const createBoundaries = () => {
     const id = Uuid.v4();
     const name = 'NameOfRRiver';
     const geometry = Geometry.fromGeoJson({
@@ -27,13 +30,13 @@ const createRiverBoundary = () => {
         type: 'Point',
         coordinates: [3, -4]
     }, [[10, 20, 30], [11, 22, 33]]);
-    riverBoundary.addObservationPoint(
+    riverBoundary.createObservationPoint(
         Uuid.v4(),
         'OP3',
         {type: 'Point', coordinates: [19, 2]},
         [[30, 40, 50], [33, 44, 55]]
     );
-    riverBoundary.addObservationPoint(
+    riverBoundary.createObservationPoint(
         Uuid.v4(),
         'OP2', {type: 'Point', coordinates: [11, 0]}, [[20, 30, 40], [22, 33, 44]]
     );
@@ -41,25 +44,31 @@ const createRiverBoundary = () => {
     cells.calculateValues(riverBoundary, boundingBox, gridSize);
     riverBoundary.cells = cells;
 
-    return riverBoundary;
+    return new BoundaryCollection([riverBoundary]);
+};
+
+const createStressPeriods = () => {
+    const stressperiods = Stressperiods.fromDefaults();
+    stressperiods.addStressPeriod(new Stressperiod({
+        start_date_time: moment('2001-01-01T00:00:00.000Z').toISOString(),
+        nstp: 2,
+        tsmult: 1,
+        steady: false
+    }));
+    return stressperiods;
 };
 
 test('It can instantiate FlopyModflowMfRiv', () => {
-    const model = new FlopyModflow();
     const spData = {0: [1, 2, 4, 4, 5, 5], 1: [1, 2, 4, 4, 5, 5], 2: [1, 2, 4, 4, 5, 5]};
-    const mfRiv = FlopyModflowMfriv.create(model, {stress_period_data: spData});
+    const mfRiv = FlopyModflowMfriv.fromObject({stress_period_data: spData});
     expect(mfRiv).toBeInstanceOf(FlopyModflowMfriv);
     expect(mfRiv.stress_period_data).toEqual(spData);
-    expect(model.getPackage('riv')).toBeInstanceOf(FlopyModflowMfriv);
-    expect(model.getPackage('riv').toObject()).toEqual(mfRiv.toObject());
 });
 
 test('It can calculate spData river boundaries', () => {
-    const riverBoundary = createRiverBoundary();
-    expect(riverBoundary).toBeInstanceOf(RiverBoundary);
-
-    const spData = FlopyModflowMfriv.calculateSpData([riverBoundary], 2);
-    expect(spData).toEqual({
+    const mfRiv = FlopyModflowMfriv.create(createBoundaries(), createStressPeriods()) as FlopyModflowMfriv;
+    expect(mfRiv).toBeInstanceOf(FlopyModflowMfriv);
+    expect(mfRiv.stress_period_data).toEqual({
             0: [
                 [0, 4, 0, 10, 20, 30], [0, 4, 1, 10, 20, 30], [0, 4, 2, 12.049, 22.049, 32.049],
                 [0, 3, 2, 13.022, 23.022, 33.022], [0, 3, 3, 15.009, 25.009, 35.009], [0, 3, 4, 17.017, 27.017, 37.017],

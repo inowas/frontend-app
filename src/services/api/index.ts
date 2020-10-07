@@ -1,19 +1,25 @@
-import axios, {AxiosResponse} from 'axios';
-import getConfig from '../../config.default.js';
+import axios, {AxiosError} from 'axios';
+import getConfig from '../../config.default';
 import AbstractCommand from '../../core/model/command/AbstractCommand';
 import FlopyPackages from '../../core/model/flopy/packages/FlopyPackages';
 import {Array2D, Array3D} from '../../core/model/geometry/Array2D.type';
-import {ICalculation} from '../../core/model/modflow/Calculation.type';
+import {IDateTimeValue} from '../../core/model/rtm/Sensor.type';
 import {IMetaData, ISimpleTool} from '../../core/model/types';
 import {InterpolationType} from '../../scenes/shared/rasterData/types';
 import {CallbackFunction, ErrorCallbackFunction} from '../../scenes/types';
 import storeToCreate from '../../store';
 import {IBudgetData, IModflowFile, IRasterFileMetadata} from './types';
 
-export const {BASE_URL, DATADROPPER_URL, GEOPROCESSING_URL, MODFLOW_CALCULATION_URL, JSON_SCHEMA_URL} = getConfig();
+export const {
+    BASE_URL,
+    DATADROPPER_URL,
+    GEOPROCESSING_URL,
+    JSON_SCHEMA_URL,
+    MODFLOW_CALCULATION_URL,
+    TIMEPROCESSING_URL
+} = getConfig();
 
 // TODO: Check all callback function generics
-
 const getToken = () => {
     const store = storeToCreate();
     return store.getState().session.token;
@@ -46,6 +52,11 @@ export const sendCommand = (
         .catch(onError);
 };
 
+export const sendCommandAsync = async (command: AbstractCommand) => {
+    const api = createApi(getToken());
+    return await api.post('messagebox', command.toObject()).then((response) => response.data);
+};
+
 export const uploadRasterfile = (
     file: File,
     onSuccess: CallbackFunction<{ hash: string }, void>,
@@ -64,23 +75,16 @@ export const uploadRasterfile = (
     }).then((response) => response.data).then(onSuccess).catch(onError);
 };
 
-export const sendCalculationRequest = (
-    flopyPackages: FlopyPackages,
-    onSuccess: CallbackFunction<undefined, void>,
-    onError: ErrorCallbackFunction
-) => {
-    flopyPackages.validate(true).then(
-        () => axios.request({
-            method: 'POST',
-            url: MODFLOW_CALCULATION_URL,
-            data: flopyPackages.toFlopyCalculation(),
-            headers: {
-                'Access-Control-Allow-Origin': '*',
-                'Content-Type': 'application/json',
-            }
-        }).then((response) => response.data).then(onSuccess).catch(onError),
-    ).catch((e) => console.log(e));
-};
+export const sendModflowCalculationRequest = (flopyPackages: FlopyPackages) =>
+    axios.request({
+        method: 'POST',
+        url: MODFLOW_CALCULATION_URL,
+        data: flopyPackages.toFlopyCalculation(),
+        headers: {
+            'Access-Control-Allow-Origin': '*',
+            'Content-Type': 'application/json',
+        }
+    });
 
 interface IFetchRasterData {
     hash: string;
@@ -133,28 +137,44 @@ export const fetchRasterMetaData = (
     }).then((response) => response.data).then(onSuccess).catch(onError);
 };
 
-export const fetchCalculationDetails = (
-    calculationId: string,
-    onSuccess: CallbackFunction<ICalculation, void>,
-    onError: ErrorCallbackFunction
-) => {
-    const url = `${MODFLOW_CALCULATION_URL}/${calculationId}`;
+export const makeTimeProcessingRequest = (data: IDateTimeValue[], rule: string, method: string) => (
+    axios.request({
+        method: 'POST',
+        url: `${TIMEPROCESSING_URL}?rule=${rule}&interpolation_method=${method}`,
+        headers: {
+            'Access-Control-Allow-Origin': '*',
+            'Content-Type': 'application/json'
+        },
+        data
+    }).then((r) => r.data)
+);
 
+export const fetchCalculationObservations = (calculationId: string) => (
+    axios.request({
+        method: 'GET',
+        url: `${MODFLOW_CALCULATION_URL}/${calculationId}/results/types/observations`,
+        headers: {
+            'Access-Control-Allow-Origin': '*',
+            'Content-Type': 'application/json'
+        }
+    }).then((r) => r.data));
+
+export const fetchCalculationDetails = (calculationId: string) => {
     return axios.request({
         method: 'GET',
-        url,
+        url: `${MODFLOW_CALCULATION_URL}/${calculationId}`,
         headers: {
             'Access-Control-Allow-Origin': '*',
             'Content-Type': 'application/json'
         },
         data: {}
-    }).then((response) => response.data).then(onSuccess).catch(onError);
+    }).then((r) => r.data);
 };
 
 export const fetchCalculationResultsBudget = (
     {calculationId, totim}: { calculationId: string, totim: number },
     onSuccess: CallbackFunction<IBudgetData, void>,
-    onError: ErrorCallbackFunction
+    onError: (e: AxiosError) => any
 ) => {
     const url = `${MODFLOW_CALCULATION_URL}/${calculationId}/results/types/budget/totims/${totim}`;
 
@@ -283,28 +303,14 @@ interface ISubmitSignUpCredentials {
     password: string;
 }
 
-export const submitSignUpCredentials = (
-    {name, email, password}: ISubmitSignUpCredentials,
-    onSuccess: CallbackFunction<AxiosResponse<any>, void>,
-    onError: ErrorCallbackFunction
-) => {
+export const submitSignUpCredentials = ({name, email, password}: ISubmitSignUpCredentials) => {
     const api = createApi();
-    const payload = {name, email, password};
-    api.post('register', payload)
-        .then(onSuccess)
-        .catch(onError);
+    return api.post('register', {name, email, password});
 };
 
-export const submitLoginCredentials = (
-    {username, password}: { username: string, password: string },
-    onSuccess: CallbackFunction<any, void>,
-    onError: ErrorCallbackFunction
-) => {
+export const submitLoginCredentials = ({username, password}: { username: string, password: string }) => {
     const api = createApi();
-    const payload = {username, password};
-    api.post('login_check', payload)
-        .then(onSuccess)
-        .catch(onError);
+    return api.post('login_check', {username, password});
 };
 
 export const dropData = (

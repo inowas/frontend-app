@@ -38,7 +38,7 @@ class AbstractCollection {
     findBy(property, value, options) {
         options = _.defaults({}, _.clone(options), {
             first: false,               // If set to true, findBy only returns the first found element or null
-            equal: true,                // If set to true, === is used for comparison, otherwise !== is used
+            equal: true,                // If set to true, === is used for comparator, otherwise !== is used
             returnCollection: false     // If set to true, findBy returns a new AbstractCollection, otherwise an array is returned
         });
         const items = this.all.filter(item => {

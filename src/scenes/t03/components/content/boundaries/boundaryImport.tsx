@@ -9,6 +9,7 @@ import {IBoundary, IBoundaryExport} from '../../../../../core/model/modflow/boun
 import Soilmodel from '../../../../../core/model/modflow/soilmodel/Soilmodel';
 import {JSON_SCHEMA_URL} from '../../../../../services/api';
 import {validate} from '../../../../../services/jsonSchemaValidator';
+import {CoordinateSystemDisclaimer} from '../../../../shared/complexTools';
 import BoundaryComparator from './boundaryComparator';
 
 interface IState {
@@ -142,7 +143,7 @@ export default class BoundaryImport extends React.Component<IProps, IState> {
 
     private download = () => {
         const filename = 'boundaries.json';
-        const boundaries: IBoundaryExport[] = this.props.boundaries.toExport();
+        const boundaries: IBoundaryExport[] = this.props.boundaries.toExport(this.props.model.stressperiods);
         const text = JSON.stringify(boundaries, null, 2);
 
         const element: HTMLAnchorElement = document.createElement('a');
@@ -202,7 +203,7 @@ export default class BoundaryImport extends React.Component<IProps, IState> {
 
     private renderImportModal = () => (
         <Modal
-            size={'large'}
+            size={'small'}
             trigger={<Button>Show Modal</Button>}
             closeIcon={true}
             open={true}
@@ -211,12 +212,13 @@ export default class BoundaryImport extends React.Component<IProps, IState> {
         >
             <Modal.Header>Import Boundaries</Modal.Header>
             <Modal.Content>
+                <CoordinateSystemDisclaimer/>
                 <Grid stackable={true}>
                     <Grid.Row>
                         <Grid.Column>
                             <Segment basic={true} placeholder={true} style={{minHeight: '10rem'}}>
                                 <Grid columns={2} stackable={true} textAlign="center">
-                                    <Divider vertical={true} />
+                                    <Divider vertical={true}/>
                                     <Grid.Row verticalAlign="top">
                                         <Grid.Column>
                                             {!this.state.errors &&

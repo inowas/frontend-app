@@ -1,12 +1,15 @@
 import moment from 'moment';
-import {ISensorData, IServerSensorData} from './Sensor.type';
+import {IPrometheusResponseData, ISensorData, IServerSensorData} from './Sensor.type';
 
 export async function retrieveData(sensorData: ISensorData, caching: boolean = false) {
     const url = new URL(`${sensorData.url}`);
 
     const localStorageObj = sessionStorage.getItem(url.toString());
     if (localStorageObj) {
-        return JSON.parse(localStorageObj);
+        const obj = JSON.parse(localStorageObj);
+        if (obj.TTL && obj.TTL > moment.utc().unix()) {
+            return obj.data;
+        }
     }
 
     const response = await fetch(
@@ -29,11 +32,31 @@ export async function retrieveData(sensorData: ISensorData, caching: boolean = f
             };
         });
 
+        let TTL = moment.utc().unix() + 10 * 60; // 10 minutes
+
         if (caching) {
-            sessionStorage.setItem(url.toString(), JSON.stringify(data));
+            TTL = moment.utc().unix() + 60 * 60 * 24; // 24 hours
         }
 
+        sessionStorage.setItem(url.toString(), JSON.stringify({data, TTL}));
+
         return data;
+    } catch (e) {
+        return null;
+    }
+}
+
+export async function retrievePrometheusData(url: string) {
+    const response = await fetch(
+        url.toString(), {
+            method: 'get',
+            headers: {
+                'Content-Type': 'application/json',
+            }
+        });
+
+    try {
+        return await response.json() as IPrometheusResponseData;
     } catch (e) {
         return null;
     }

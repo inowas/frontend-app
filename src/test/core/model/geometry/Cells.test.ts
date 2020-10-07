@@ -1,7 +1,6 @@
 import {booleanCrosses} from '@turf/turf';
 import {BoundingBox, Geometry, GridSize} from '../../../../core/model/geometry';
 import Cells from '../../../../core/model/geometry/Cells';
-
 export default {};
 
 test('cells works', () => {
@@ -37,4 +36,21 @@ test('Create cells from geometry', () => {
     // tslint:disable-next-line:max-line-length
     expect(cells.cells).toEqual([[4, 0, 0], [5, 0, 0], [4, 1, 0], [5, 1, 0], [3, 2, 0], [4, 2, 0], [3, 3, 0], [2, 4, 0], [3, 4, 0], [2, 5, 0], [1, 6, 0], [2, 6, 0], [1, 7, 0], [0, 8, 0], [1, 8, 0], [0, 9, 0]]);
     expect(cells.cells.length).toBe(16);
+});
+
+test('Invert cells', () => {
+    const geometry = Geometry.fromGeoJson({
+        type: 'Polygon',
+        coordinates: [[[1, 1], [1, 9], [9, 1], [9, 9], [1, 1]]]
+    });
+
+    const boundingBox = new BoundingBox([[0, 0], [10, 10]]);
+    const gridSize = GridSize.fromArray([10, 10]);
+
+    const cells = Cells.fromGeometry(geometry, boundingBox, gridSize);
+    expect(cells.cells.length).toBe(76);
+
+    const invertedCells = cells.invert(gridSize);
+    expect(invertedCells).toBeInstanceOf(Cells);
+    expect(invertedCells.cells.length).toBe(24);
 });

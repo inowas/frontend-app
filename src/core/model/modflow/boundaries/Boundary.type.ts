@@ -9,6 +9,11 @@ import {
     IEvapotranspirationBoundaryExport,
 } from './EvapotranspirationBoundary.type';
 import {
+    IFlowAndHeadBoundary,
+    IFlowAndHeadBoundaryExport,
+    IFlowAndHeadBoundaryFeature
+} from './FlowAndHeadBoundary.type';
+import {
     IGeneralHeadBoundary,
     IGeneralHeadBoundaryExport,
     IGeneralHeadBoundaryFeature
@@ -19,15 +24,16 @@ import {IRechargeBoundary, IRechargeBoundaryExport} from './RechargeBoundary.typ
 import {IRiverBoundary, IRiverBoundaryExport, IRiverBoundaryFeature} from './RiverBoundary.type';
 import {IWellBoundary, IWellBoundaryExport} from './WellBoundary.type';
 
-export type BoundaryType = 'evt' | 'rch' | 'wel' | 'hob' | LineBoundaryType;
+export type BoundaryType = 'evt' | 'rch' | 'wel' | 'hob' | 'lak' | LineBoundaryType;
 
-export type IBoundary = IConstantHeadBoundary | IGeneralHeadBoundary | IDrainageBoundary |
-    IEvapotranspirationBoundary | IHeadObservationWell | IRechargeBoundary | IRiverBoundary | IWellBoundary;
+export type IBoundary = IConstantHeadBoundary | IGeneralHeadBoundary | IDrainageBoundary | IEvapotranspirationBoundary |
+    IFlowAndHeadBoundary | IHeadObservationWell | IRechargeBoundary | IRiverBoundary | IWellBoundary;
 
 export type IBoundaryFeature =
     IConstantHeadBoundaryFeature
     | IDrainageBoundaryFeature
     | IGeneralHeadBoundaryFeature
+    | IFlowAndHeadBoundaryFeature
     | IRiverBoundaryFeature;
 
 export type IBoundaryExport =
@@ -35,6 +41,7 @@ export type IBoundaryExport =
     | IDrainageBoundaryExport
     | IGeneralHeadBoundaryExport
     | IRiverBoundaryExport
+    | IFlowAndHeadBoundaryExport
     | IEvapotranspirationBoundaryExport
     | IHeadObservationWellExport
     | IRechargeBoundaryExport
@@ -42,7 +49,7 @@ export type IBoundaryExport =
 
 export type BoundarySelection = 'all' | BoundaryType;
 
-export type ISpValues = number[][] | null;
+export type ISpValues = number[][];
 
 export interface IValueProperty {
     name: string;
@@ -50,4 +57,17 @@ export interface IValueProperty {
     unit: string;
     decimals: number;
     default: number;
+    canBeDisabled?: boolean;
+}
+
+export enum EBoundaryType {
+    CHD = 'chd',
+    DRN = 'drn',
+    EVT = 'evt',
+    FHB = 'fhb',
+    GHB = 'ghb',
+    HOB = 'hob',
+    RCH = 'rch',
+    RIV = 'riv',
+    WEL = 'wel'
 }

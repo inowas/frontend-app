@@ -1,176 +1,251 @@
 import {cloneDeep} from 'lodash';
-import React, {MouseEvent, useEffect, useState} from 'react';
-import {connect} from 'react-redux';
-import {Redirect, withRouter} from 'react-router-dom';
-import {Button, Grid, Menu, MenuItemProps, Segment} from 'semantic-ui-react';
+import React, {MouseEvent, SyntheticEvent, useEffect, useRef, useState} from 'react';
+import {useDispatch, useSelector} from 'react-redux';
+import {useHistory, useLocation, useParams} from 'react-router-dom';
+import {
+    Button,
+    Dimmer,
+    Divider,
+    Dropdown,
+    DropdownProps,
+    Grid,
+    Header,
+    Menu,
+    MenuItemProps,
+    Message,
+    Progress,
+    Segment
+} from 'semantic-ui-react';
 import Uuid from 'uuid';
-import {Zone, ZonesCollection} from '../../../../../core/model/gis';
-import {ILayerParameterZone} from '../../../../../core/model/gis/LayerParameterZone.type';
-import LayerParameterZonesCollection from '../../../../../core/model/gis/LayerParameterZonesCollection';
-import {IZone} from '../../../../../core/model/gis/Zone.type';
+import {EMessageState, IMessage} from '../../../../../core/model/messages/Message.type';
+import MessagesCollection from '../../../../../core/model/messages/MessagesCollection';
 import {ModflowModel} from '../../../../../core/model/modflow';
-import {Soilmodel, SoilmodelLayer} from '../../../../../core/model/modflow/soilmodel';
+import BoundaryCollection from '../../../../../core/model/modflow/boundaries/BoundaryCollection';
+import {Soilmodel, SoilmodelLayer, Zone, ZonesCollection} from '../../../../../core/model/modflow/soilmodel';
+import LayerParameterZonesCollection from '../../../../../core/model/modflow/soilmodel/LayerParameterZonesCollection';
 import {ISoilmodelLayer} from '../../../../../core/model/modflow/soilmodel/SoilmodelLayer.type';
+import {saveLayer} from '../../../../../core/model/modflow/soilmodel/updater/services';
+import {IZone} from '../../../../../core/model/modflow/soilmodel/Zone.type';
+import {IRootReducer} from '../../../../../reducers';
 import {sendCommand} from '../../../../../services/api';
 import {sendCommands} from '../../../../../services/api/commandHelper';
 import NoContent from '../../../../shared/complexTools/noContent';
-import ContentToolBar from '../../../../shared/ContentToolbar';
-import {CreateZoneModal, ZoneDetails} from '../../../../shared/zones';
+import ContentToolBar from '../../../../shared/ContentToolbar2';
+import {usePrevious} from '../../../../shared/simpleTools/helpers/customHooks';
 import {
-    addLayer, addZone,
-    cloneLayer, cloneZone,
-    removeLayer,
+    addLayer,
+    addMessage,
+    addZone,
+    removeLayer, removeMessage,
     removeZone,
     updateLayer,
-    updateSoilmodel, updateSoilmodelRelations, updateZone
+    updateMessage,
+    updateZone
 } from '../../../actions/actions';
 import Command from '../../../commands/modflowModelCommand';
-import {defaultSoilmodelLayer} from '../../../defaults/soilmodel';
+import {messageDirty, messageError, messageSaving} from '../../../defaults/messages';
+import {
+    basParameters,
+    defaultSoilmodelLayer,
+    modpathParameters,
+    soilmodelParameters
+} from '../../../defaults/soilmodel';
 import LayerDetails from './layerDetails';
-import LayersImport from './layersImport';
 import LayersList from './layersList';
+import {CreateZoneModal, ZoneDetails} from './zones';
+import CreateZone from './zones/createZone';
 import ZonesList from './zonesList';
 
 const baseUrl = '/tools/T03';
 
 enum nav {
     LAYERS = 'layers',
+    NEW_ZONE = 'zone',
     ZONES = 'zones'
 }
 
-interface IOwnProps {
-    history: any;
-    location: any;
-    match: any;
-    readOnly: boolean;
-    soilmodel: Soilmodel;
-}
-
-interface IStateProps {
-    model: ModflowModel;
-}
-
-interface IDispatchProps {
-    addLayer: (layer: SoilmodelLayer) => any;
-    cloneLayer: (layer: SoilmodelLayer) => any;
-    removeLayer: (layerId: string) => any;
-    updateSoilmodel: (soilmodel: Soilmodel) => any;
-    updateSoilmodelRelations: (relations: LayerParameterZonesCollection) => any;
-    updateLayer: (layer: SoilmodelLayer) => any;
-    addZone: (zone: Zone) => any;
-    removeZone: (zoneId: string) => any;
-    cloneZone: (zone: Zone) => any;
-    updateZone: (zone: Zone) => any;
-}
-
-type IProps = IStateProps & IDispatchProps & IOwnProps;
-
-const soilmodelEditor = (props: IProps) => {
-    const [activeIndex, setActiveIndex] = useState<number>(0);
+const soilmodelEditor = () => {
     const [createZoneModal, setCreateZoneModal] = useState<boolean>(false);
-    const [relations, setRelations] = useState<ILayerParameterZone[]>(props.soilmodel.relationsCollection.toObject());
     const [selectedLayer, setSelectedLayer] = useState<ISoilmodelLayer | null>(null);
     const [selectedZone, setSelectedZone] = useState<IZone | null>(null);
     const [isLoading, setIsLoading] = useState<boolean>(false);
-    const [isDirty, setIsDirty] = useState<boolean>(false);
-    const [isError, setIsError] = useState<boolean>(false);
+    const [pageNotFound, setPageNotFound] = useState<boolean>(false);
 
-    const {soilmodel} = props;
-    const {id, pid, property, type} = props.match.params;
+    const [calculationState, setCalculationState] = useState<{
+        message: string;
+        task: number;
+    }>({
+        message: 'Start Fetching ...',
+        task: 0
+    });
+    const [numberOfTasks, setNumberOfTasks] = useState<number>(0);
 
-    const defaultRelation = props.soilmodel.relationsCollection.findFirstBy('priority', 0);
+    const T03 = useSelector((state: IRootReducer) => state.T03);
+    const model = T03.model ? ModflowModel.fromObject(T03.model) : null;
+    const boundaries = T03.boundaries ? BoundaryCollection.fromObject(T03.boundaries) : null;
+    const soilmodel = T03.soilmodel ? Soilmodel.fromObject(T03.soilmodel) : null;
+    const messages = MessagesCollection.fromObject(T03.messages);
 
-    if (!defaultRelation) {
-        throw new Error('There is no default relation.');
+    const layerRef = useRef<ISoilmodelLayer>();
+    const zoneRef = useRef<IZone>();
+    const editingState = useRef<{ [key: string]: IMessage | null }>({
+        dirty: null,
+        saving: null
+    });
+
+    if (!boundaries || !model || !soilmodel) {
+        return (
+            <Segment color={'grey'} loading={true}/>
+        );
     }
 
-    const fZones = props.soilmodel.zonesCollection.all.filter((z) => z.id !== defaultRelation.zoneId);
-    const firstZone = soilmodel.zonesCollection.findFirstBy('id', defaultRelation.zoneId, false);
+    const {id, pid, property, type} = useParams();
+
+    const dispatch = useDispatch();
+    const location = useLocation();
+    const history = useHistory();
+
+    const prevPid = usePrevious(pid);
+
+    const searchParams = new URLSearchParams(location.search);
+    const activeParamType = searchParams.get('type') || 'soilmodel';
+    const activeParam = searchParams.get('param') || 'properties';
+
+    const fZones = soilmodel.zonesCollection.all.filter((z) => !z.isDefault);
+    const defaultZone = soilmodel.zonesCollection.findFirstBy('isDefault', true);
+
+    if (!defaultZone) {
+        return (
+            <Message error={true}>
+                The model you requested is not compatible with the current version. Contact an administrator or
+                create a new model.
+            </Message>
+        );
+    }
 
     useEffect(() => {
-        if (pid) {
-            fetch(pid);
-        }
+        return function cleanup() {
+            handleSave();
+        };
     }, []);
 
     useEffect(() => {
-        if (pid) {
-            fetch(pid);
+        editingState.current = messages.getEditingState('soilmodel');
+        if (selectedLayer) {
+            layerRef.current = selectedLayer;
         }
-    }, [props.match.params, props.soilmodel]);
+        if (selectedZone) {
+            zoneRef.current = selectedZone;
+        }
+    }, [messages, selectedLayer, selectedZone]);
 
-    const fetch = (iId: string) => {
-        if (type === nav.LAYERS) {
-            setRelations(soilmodel.relationsCollection.all);
-            return setSelectedLayer(soilmodel.layersCollection.findById(iId) as ISoilmodelLayer);
+    useEffect(() => {
+        if (pid && pid !== prevPid) {
+            if (type === nav.LAYERS) {
+                const cLayer = soilmodel.layersCollection.findById(pid);
+                return setSelectedLayer(cLayer);
+            }
+            if (type === nav.ZONES) {
+                return setSelectedZone(soilmodel.zonesCollection.findById(pid));
+            }
         }
+        redirect();
+    }, [pid, soilmodel]);
+
+    useEffect(() => {
+        const paramType = searchParams.get('type');
+        if (paramType && !['soilmodel', 'bas', 'modpath'].includes(paramType)) {
+            return setPageNotFound(true);
+        }
+        const param = searchParams.get('param');
+        if (param && paramType && param !== 'properties' &&
+            getParameters(paramType).filter((p) => p.name === param).length === 0) {
+            return setPageNotFound(true);
+        }
+    }, [searchParams]);
+
+    const redirect = () => {
+        if (type === nav.LAYERS && (!pid || (pid && !soilmodel.layersCollection.findFirstBy('id', pid)))) {
+            return history.push(`${baseUrl}/${id}/${property}/${type}/${soilmodel.layersCollection.first.id}`);
+        }
+        if (pid && type === nav.ZONES && !soilmodel.zonesCollection.findFirstBy('id', pid)) {
+            if (fZones.length > 0) {
+                return history.push(`${baseUrl}/${id}/${property}/${type}/${fZones[0].id}`);
+            }
+            return history.push(`${baseUrl}/${id}/${property}/${nav.ZONES}`);
+        }
+
+        if (pid) {
+            return null;
+        }
+
         if (type === nav.ZONES) {
-            return setSelectedZone(soilmodel.zonesCollection.findById(iId));
+            if (fZones.length > 0) {
+                return history.push(`${baseUrl}/${id}/${property}/${type}/${fZones[0].id}`);
+            }
+            if (fZones.length === 0) {
+                return history.push(`${baseUrl}/${id}/${property}/${nav.NEW_ZONE}`);
+            }
+        }
+        return null;
+    };
+
+    const getParameters = (paramType: string) => {
+        switch (paramType) {
+            case 'bas':
+                return basParameters;
+            case 'modpath':
+                return modpathParameters;
+            default:
+                return soilmodelParameters;
         }
     };
 
     const handleRemoveLayer = (layerId: string) => {
         const commands = [];
 
-        const cRelations = soilmodel.relationsCollection.findBy('layerId', layerId, false);
         const properties = {
-            ...soilmodel.toObject().properties,
-            relations: cRelations
+            ...soilmodel.toObject().properties
         };
 
         commands.push(
             Command.removeLayer({
-                id: props.model.id,
+                id: model.id,
                 layer_id: layerId
             })
         );
 
         commands.push(
             Command.updateSoilmodelProperties({
-                id: props.model.id,
+                id: model.id,
                 properties
             })
         );
 
         sendCommands(commands, () => {
-                props.removeLayer(layerId);
-                props.updateSoilmodelRelations(LayerParameterZonesCollection.fromObject(cRelations));
+                dispatch(removeLayer(layerId));
                 setIsLoading(false);
-            }, () => setIsError(true)
+            }, (e) => dispatch(addMessage(messageError('soilmodel', e)))
         );
     };
 
-    const handleAddLayer = (layer: SoilmodelLayer, cRelations: LayerParameterZonesCollection) => {
+    const handleAddLayer = (layer: SoilmodelLayer) => {
         const commands = [];
-
-        const properties = {
-            ...soilmodel.toObject().properties,
-            relations: cRelations.all
-        };
-
         setIsLoading(true);
 
         commands.push(
-            Command.updateSoilmodelProperties({
-                id: props.model.id,
-                properties
-            })
-        );
-
-        commands.push(
             Command.addLayer(
-                props.model.id,
+                model.id,
                 layer
             )
         );
 
         sendCommands(commands, () => {
-                props.addLayer(layer);
-                props.updateSoilmodelRelations(cRelations);
+                dispatch(addLayer(layer));
                 setIsLoading(false);
-                props.history.push(`${baseUrl}/${id}/${property}/${type || 'layers'}/${layer.id}`);
+                history.push(`${baseUrl}/${id}/${property}/${type || 'layers'}/${layer.id}`);
             },
-            () => setIsError(true)
+            (e) => dispatch(addMessage(messageError('soilmodel', e)))
         );
     };
 
@@ -183,23 +258,24 @@ const soilmodelEditor = (props: IProps) => {
             layer.name = 'New Layer';
             layer.number = lc.length > 0 ? lc.orderBy('number', 'desc').first.number + 1 : 1;
 
-            const cRelations = soilmodel.relationsCollection;
             soilmodel.parametersCollection.findBy('parameter', 'top', false).forEach((p) => {
-                cRelations.add({
+                layer.addRelation({
+                    data: {
+                        file: null
+                    },
                     id: Uuid.v4(),
-                    layerId: layer.id,
                     parameter: p.id,
                     priority: 0,
                     value: p.defaultValue,
-                    zoneId: defaultRelation.zoneId
-                } as ILayerParameterZone);
+                    zoneId: defaultZone.id
+                });
             });
 
-            return handleAddLayer(layer, cRelations);
+            return handleAddLayer(layer);
         }
 
         if (type === nav.ZONES) {
-            return setCreateZoneModal(true);
+            return history.push(`${baseUrl}/${id}/${property}/${nav.NEW_ZONE}`);
         }
     };
 
@@ -214,20 +290,14 @@ const soilmodelEditor = (props: IProps) => {
                 soilmodel.layersCollection.orderBy('number', 'desc').first.number + 1 : 1;
             newLayer.parameters = item.parameters.filter((p) => p.id !== 'top');
 
-            const newRelations = soilmodel.relationsCollection.all.filter((r) =>
-                r.parameter !== 'top' && r.layerId === item.id).map((r) => {
+            const newRelations = item.relations.all.filter((r) =>
+                r.parameter !== 'top').map((r) => {
                 r.id = Uuid.v4();
-                r.layerId = newLayer.id;
                 return r;
             });
+            newLayer.relations = LayerParameterZonesCollection.fromObject(newRelations);
 
-            const cRelations = soilmodel.relationsCollection;
-
-            newRelations.forEach((r) => {
-                cRelations.add(r);
-            });
-
-            return handleAddLayer(newLayer, cRelations);
+            return handleAddLayer(newLayer);
         }
 
         if (type === nav.ZONES && item instanceof Zone) {
@@ -238,25 +308,21 @@ const soilmodelEditor = (props: IProps) => {
         }
     };
 
-    const handleImport = () => {
-        console.log('HANDLE IMPORT');
-    };
-
     const handleAddZone = (zone: Zone) => {
         const cZones = soilmodel.zonesCollection.add(zone.toObject());
         setCreateZoneModal(false);
         setIsLoading(true);
         return sendCommand(
             Command.updateSoilmodelProperties({
-                id: props.model.id,
+                id: model.id,
                 properties: {
-                    ...props.soilmodel.toObject().properties,
+                    ...soilmodel.toObject().properties,
                     zones: cZones.all
                 }
             }), () => {
-                props.addZone(zone);
+                dispatch(addZone(zone));
                 setIsLoading(false);
-                props.history.push(`${baseUrl}/${id}/${property}/zones/${zone.id}`);
+                history.push(`${baseUrl}/${id}/${property}/zones/${zone.id}`);
             }
         );
     };
@@ -266,47 +332,54 @@ const soilmodelEditor = (props: IProps) => {
     };
 
     const handleChangeLayer = (layer: SoilmodelLayer) => {
-        setIsDirty(true);
+        if (!editingState.current.dirty) {
+            dispatch(addMessage(messageDirty('soilmodel')));
+        }
         return setSelectedLayer(layer.toObject());
     };
 
-    const handleChangeRelations = (iRelations: LayerParameterZonesCollection) => {
-        setIsDirty(true);
-        return setRelations(iRelations.toObject());
-    };
-
     const handleChangeTab = (e: MouseEvent<Element>, data: MenuItemProps) => {
-        return setActiveIndex(data.activeIndex);
+        handleSave();
+        if (data.name) {
+            return history.push(
+                `${baseUrl}/${id}/${property}/layers/${pid}?type=${activeParamType}&param=${data.name}`
+            );
+        }
+        return history.push(`${baseUrl}/${id}/${property}/layers/${pid}`);
     };
 
     const handleChangeZone = (zone: Zone) => {
-        setIsDirty(true);
+        if (!editingState.current.dirty) {
+            dispatch(addMessage(messageDirty('soilmodel')));
+        }
         setSelectedZone(zone.toObject());
     };
 
     const handleClickItem = (iId: string) => {
-        if (type === nav.LAYERS) {
-            props.history.push(`${baseUrl}/${id}/${property}/layers/${iId}`);
+        if (type === nav.LAYERS && iId !== pid) {
+            handleSave();
+            history.push(
+                `${baseUrl}/${id}/${property}/layers/${iId}?type=${activeParamType}&param=${activeParam}`
+            );
         }
-        if (type === nav.ZONES) {
-            props.history.push(`${baseUrl}/${id}/${property}/zones/${iId}`);
+        if (type === nav.ZONES && iId !== pid) {
+            handleSave();
+            history.push(`${baseUrl}/${id}/${property}/zones/${iId}`);
         }
     };
 
     const handleNavClick = (e: MouseEvent<HTMLAnchorElement>, {value}: MenuItemProps) => {
-        let lid = '';
-        if (value === nav.LAYERS) {
-            lid = soilmodel.layersCollection.first.id;
-            return props.history.push(`${baseUrl}/${id}/${property}/layers/${lid}`);
+        if (value === nav.LAYERS && type !== 'layers') {
+            handleSave();
+            return history.push(`${baseUrl}/${id}/${property}/layers/${soilmodel.layersCollection.first.id}`);
         }
-        if (value === nav.ZONES) {
-            if (soilmodel.zonesCollection.length > 1) {
-                lid = firstZone ? firstZone.id : soilmodel.zonesCollection.first.id;
-                return props.history.push(`${baseUrl}/${id}/${property}/zones/${lid}`);
+        if (value === nav.ZONES && type !== 'zones') {
+            handleSave();
+            if (fZones.length > 0) {
+                return history.push(`${baseUrl}/${id}/${property}/zones/${fZones[0].id}`);
             }
-            return props.history.push(`${baseUrl}/${id}/${property}/zones`);
+            return history.push(`${baseUrl}/${id}/${property}/zone`);
         }
-        return props.history.push(`${baseUrl}/${id}/${property}/${value}`);
     };
 
     const handleRemoveItem = (rId: string) => {
@@ -316,113 +389,122 @@ const soilmodelEditor = (props: IProps) => {
         }
         if (type === nav.ZONES) {
             setIsLoading(true);
-            const cRelations = soilmodel.relationsCollection.all.filter((r) => r.zoneId !== rId);
             const cZones = soilmodel.zonesCollection.removeById(rId);
             return sendCommand(
                 Command.updateSoilmodelProperties({
-                    id: props.model.id,
+                    id: model.id,
                     properties: {
-                        ...props.soilmodel.toObject().properties,
-                        relations: cRelations,
+                        ...soilmodel.toObject().properties,
                         zones: cZones.all
                     }
                 }), () => {
-                    props.removeZone(rId);
+                    dispatch(removeZone(rId));
                     setIsLoading(false);
                 }
             );
         }
     };
 
-    const handleSave = () => {
-        const cZones = soilmodel.zonesCollection;
-        if (selectedZone && type === nav.ZONES) {
-            cZones.update(selectedZone);
-            props.updateZone(Zone.fromObject(selectedZone));
-        }
-        setIsLoading(true);
-        return sendCommand(
-            Command.updateSoilmodelProperties({
-                id: props.model.id,
-                properties: {
-                    ...props.soilmodel.toObject().properties,
-                    relations,
-                    zones: cZones.all
-                }
-            }), () => {
-                props.updateSoilmodelRelations(LayerParameterZonesCollection.fromObject(relations));
-                if (selectedLayer && type === nav.LAYERS) {
-                    const layer = SoilmodelLayer.fromObject(selectedLayer);
-
-                    return sendCommand(
-                        Command.updateLayer({
-                            id: props.model.id,
-                            layer_id: layer.id,
-                            layer: layer.toObject()
-                        }), () => {
-                            props.updateLayer(layer);
-                            setIsLoading(false);
-                            return setIsDirty(false);
-                        }
-                    );
-                }
-                setIsLoading(false);
-                return setIsDirty(false);
-            }
-        );
-
-    };
-
-    const redirect = () => {
-        let lid = '';
-
-        if (soilmodel.layersCollection.length === 0) {
+    const handleUndo = () => {
+        if (!editingState.current.dirty) {
             return;
         }
-
-        // If no item is selected, redirect to the first ...
-        if (!pid || !type) {
-            // ... existing layer:
-            if (type === nav.LAYERS || !type || !Object.values(nav).includes(type)) {
-                lid = soilmodel.layersCollection.first.id;
-                return <Redirect to={`${baseUrl}/${id}/${property}/layers/${lid}`}/>;
-            }
-            // ... existing zone:
-            if (type === nav.ZONES && soilmodel.zonesCollection.length > 0 && firstZone) {
-                lid = firstZone.id;
-                return <Redirect to={`${baseUrl}/${id}/${property}/zones/${lid}`}/>;
-            }
-        }
-        // If the active layer or zone id doesn't exist ...
+        dispatch(removeMessage(editingState.current.dirty));
         if (pid) {
-            // ... redirect to the first existing layer:
-            if (type === nav.LAYERS && !soilmodel.layersCollection.findFirstBy('id', pid)) {
-                lid = soilmodel.layersCollection.first.id;
-                return <Redirect to={`${baseUrl}/${id}/${property}/${type}/${lid}`}/>;
+            if (type === nav.LAYERS) {
+                const cLayer = soilmodel.layersCollection.findById(pid);
+                return setSelectedLayer(cLayer);
             }
-
-            const nonDefaultZones = ZonesCollection.fromObject(
-                soilmodel.zonesCollection.all.filter((z) => z.id !== defaultRelation.zoneId)
-            );
-
-            // ... redirect to the first existing zone ...
-            if (type === nav.ZONES && !nonDefaultZones.findFirstBy('id', pid)) {
-                // ... if there is one:
-                if (nonDefaultZones.length > 0) {
-                    lid = firstZone ? firstZone.id : soilmodel.zonesCollection.first.id;
-                    return <Redirect to={`${baseUrl}/${id}/${property}/${type}/${lid}`}/>;
-                }
-                return <Redirect to={`${baseUrl}/${id}/${property}/zones`}/>;
+            if (type === nav.ZONES) {
+                return setSelectedZone(soilmodel.zonesCollection.findById(pid));
             }
         }
-        return null;
     };
 
-    const {readOnly} = props.model;
+    const handleSave = () => {
+        if (!editingState.current.dirty) {
+            return;
+        }
+        const message = messageSaving('soilmodel');
+        dispatch(addMessage(message));
+        const cZones = soilmodel.zonesCollection;
+        if (zoneRef.current && type === nav.ZONES) {
+            cZones.update(zoneRef.current);
+            dispatch(updateZone(Zone.fromObject(zoneRef.current)));
+
+            setIsLoading(true);
+            return sendCommand(
+                Command.updateSoilmodelProperties({
+                    id: model.id,
+                    properties: {
+                        ...soilmodel.toObject().properties,
+                        zones: cZones.all
+                    }
+                }), () => {
+                    setIsLoading(false);
+                    if (editingState.current.dirty) {
+                        dispatch(removeMessage(editingState.current.dirty));
+                    }
+                    return dispatch(updateMessage({...message, state: EMessageState.SUCCESS}));
+                }
+            );
+        }
+
+        if (layerRef.current && type === nav.LAYERS) {
+            setNumberOfTasks(
+                layerRef.current.parameters.filter((p) => Array.isArray(p.value)).length +
+                layerRef.current.relations.filter((r) => Array.isArray(r.value)).length
+            );
+
+            return saveLayer(layerRef.current, model.toObject(), false, 0,
+                (state) => {
+                    setCalculationState(state);
+                },
+                (layer) => {
+                    dispatch(updateLayer(SoilmodelLayer.fromObject(layer)));
+                    if (editingState.current.dirty) {
+                        dispatch(removeMessage(editingState.current.dirty));
+                    }
+                    return dispatch(updateMessage({...message, state: EMessageState.SUCCESS}));
+                }
+            );
+        }
+    };
+
+    const handleChangeParameterSet = (e: SyntheticEvent<HTMLElement>, {value}: DropdownProps) => history.push(
+        `${baseUrl}/${id}/${property}/layers/${pid}?type=${value}`
+    );
+
+    const {readOnly} = model;
+
+    if (pageNotFound) {
+        return (
+            <Segment color={'grey'}>
+                404 - Page not found
+            </Segment>
+        );
+    }
+
+    if (numberOfTasks > calculationState.task) {
+        const progress = numberOfTasks === 0 ? 0 : Math.floor(calculationState.task / numberOfTasks * 100);
+        return (
+            <Dimmer active={true} page={true}>
+                <Header as="h2" icon={true} inverted={true}>
+                    {calculationState.message}
+                </Header>
+                <Progress percent={progress} indicating={true} progress={true}/>
+            </Dimmer>
+        );
+    }
+
+    if (!isLoading && type === nav.NEW_ZONE) {
+        return (
+            <CreateZone/>
+        );
+    }
 
     return (
         <Segment color={'grey'} loading={isLoading}>
-            {redirect()}
             <Grid>
                 <Grid.Row>
                     <Grid.Column width={4}>
@@ -438,22 +520,15 @@ const soilmodelEditor = (props: IProps) => {
                     </Grid.Column>
                     <Grid.Column width={12}>
                         <ContentToolBar
-                            isDirty={isDirty}
-                            isError={isError}
-                            visible={!readOnly}
-                            save={true}
+                            buttonSave={true}
                             onSave={handleSave}
-                            importButton={props.readOnly ||
-                            <LayersImport
-                                onChange={handleImport}
-                            />
-                            }
+                            onUndo={handleUndo}
                         />
                     </Grid.Column>
                 </Grid.Row>
                 <Grid.Row>
                     <Grid.Column width={4}>
-                        <Menu secondary={true} fluid={true} widths={2}>
+                        <Menu tabular={true} fluid={true} widths={2}>
                             <Menu.Item
                                 name="Layers"
                                 value={nav.LAYERS}
@@ -468,17 +543,33 @@ const soilmodelEditor = (props: IProps) => {
                             />
                         </Menu>
                         {type === nav.LAYERS &&
-                        <LayersList
-                            onClick={handleClickItem}
-                            onClone={handleCloneItem}
-                            onRemove={handleRemoveItem}
-                            layers={props.soilmodel.layersCollection}
-                            readOnly={readOnly}
-                            selected={pid}
-                        />
+                        <div>
+                            <Dropdown
+                                placeholder="Select parameter set"
+                                fluid={true}
+                                selection={true}
+                                onChange={handleChangeParameterSet}
+                                options={[
+                                    {key: 'soilmodel', text: 'Layer Parameters', value: 'soilmodel'},
+                                    {key: 'bas', text: 'Basic Layer Properties', value: 'bas'},
+                                    // {key: 'modpath', text: 'Modpath', value: 'modpath'}
+                                ]}
+                                value={activeParamType}
+                            />
+                            <Divider hidden={true}/>
+                            <LayersList
+                                onClick={handleClickItem}
+                                onClone={handleCloneItem}
+                                onRemove={handleRemoveItem}
+                                layers={soilmodel.layersCollection}
+                                readOnly={readOnly}
+                                selected={pid}
+                            />
+                        </div>
                         }
                         {type === nav.ZONES &&
                         <ZonesList
+                            layers={soilmodel.layersCollection}
                             onClick={handleClickItem}
                             onClone={handleCloneItem}
                             onRemove={handleRemoveItem}
@@ -491,38 +582,39 @@ const soilmodelEditor = (props: IProps) => {
                     <Grid.Column width={12}>
                         {!isLoading && type === nav.LAYERS && selectedLayer &&
                         <LayerDetails
-                            activeIndex={activeIndex}
+                            activeParam={activeParam}
+                            boundaries={boundaries}
                             onChange={handleChangeLayer}
                             onChangeTab={handleChangeTab}
-                            onChangeRelations={handleChangeRelations}
-                            model={props.model}
-                            layer={SoilmodelLayer.fromObject(selectedLayer as ISoilmodelLayer)}
+                            parameters={getParameters(activeParamType)}
+                            model={model}
+                            layer={SoilmodelLayer.fromObject(selectedLayer)}
                             readOnly={readOnly}
-                            relations={LayerParameterZonesCollection.fromObject(relations)}
                             soilmodel={soilmodel}
                         />
                         }
                         {!isLoading && type === nav.ZONES && selectedZone &&
                         <ZoneDetails
+                            boundaries={boundaries}
                             onChange={handleChangeZone}
-                            model={props.model}
-                            relations={LayerParameterZonesCollection.fromObject(relations)}
+                            model={model}
+                            layers={soilmodel.layersCollection}
                             zone={Zone.fromObject(selectedZone)}
                             zones={soilmodel.zonesCollection}
                         />
                         }
                         {((type === nav.ZONES && !selectedZone) || (type === nav.LAYERS && !selectedLayer)) &&
-                            <NoContent message={'No objects.'}/>
+                        <NoContent message={'No objects.'}/>
                         }
                     </Grid.Column>
                 </Grid.Row>
             </Grid>
             {createZoneModal && !readOnly &&
             <CreateZoneModal
+                boundaries={boundaries}
                 onCancel={handleCancelModals}
                 onChange={handleAddZone}
-                boundingBox={props.model.boundingBox}
-                gridSize={props.model.gridSize}
+                model={model}
                 zones={soilmodel.zonesCollection}
             />
             }
@@ -530,27 +622,4 @@ const soilmodelEditor = (props: IProps) => {
     );
 };
 
-const mapStateToProps = (state: any) => {
-    return ({
-        model: ModflowModel.fromObject(state.T03.model)
-    });
-};
-
-const mapDispatchToProps = (dispatch: any): IDispatchProps => ({
-    addLayer: (layer: SoilmodelLayer) => dispatch(addLayer(layer)),
-    cloneLayer: (layer: SoilmodelLayer) => dispatch(cloneLayer(layer)),
-    removeLayer: (layerId: string) => dispatch(removeLayer(layerId)),
-    updateSoilmodel: (soilmodel: Soilmodel) => dispatch(updateSoilmodel(soilmodel)),
-    updateSoilmodelRelations: (relations: LayerParameterZonesCollection) =>
-        dispatch(updateSoilmodelRelations(relations)),
-    updateLayer: (layer: SoilmodelLayer) => dispatch(updateLayer(layer)),
-    addZone: (zone: Zone) => dispatch(addZone(zone)),
-    cloneZone: (zone: Zone) => dispatch(cloneZone(zone)),
-    removeZone: (zoneId: string) => dispatch(removeZone(zoneId)),
-    updateZone: (zone: Zone) => dispatch(updateZone(zone)),
-});
-
-export default withRouter(connect<IStateProps, IDispatchProps, IOwnProps>(
-    mapStateToProps,
-    mapDispatchToProps)
-(soilmodelEditor));
+export default soilmodelEditor;

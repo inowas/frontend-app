@@ -2,9 +2,14 @@ import * as GeoJson from 'geojson';
 import {LatLngExpression} from 'leaflet';
 import {uniqueId} from 'lodash';
 import React, {Component} from 'react';
-import {CircleMarker, GeoJSON, Map, Polygon, Polyline} from 'react-leaflet';
+import {CircleMarker, GeoJSON, Map, Polygon, Polyline, Tooltip} from 'react-leaflet';
 import {Geometry} from '../../../../core/model/modflow';
-import {Boundary, BoundaryCollection, LineBoundary} from '../../../../core/model/modflow/boundaries';
+import {
+    Boundary,
+    BoundaryCollection,
+    HeadObservationWell,
+    LineBoundary
+} from '../../../../core/model/modflow/boundaries';
 import WellBoundary from '../../../../core/model/modflow/boundaries/WellBoundary';
 import {BasicTileLayer} from '../../../../services/geoTools/tileLayers';
 import {getStyle} from './index';
@@ -15,6 +20,7 @@ interface IProps {
     geometry: Geometry;
     selectedObservationPointId?: string;
     onClick?: (bid: string) => any;
+    onClickObservationPoint?: (bid: string) => any;
 }
 
 const style = {
@@ -45,8 +51,17 @@ class BoundaryMap extends Component<IProps> {
                             op.geometry.coordinates[1],
                             op.geometry.coordinates[0]
                         ]}
+                        onClick={this.handleClickObservationPoint(op.id)}
                         {...getStyle('op' + selected)}
-                    />
+                    >
+                        <Tooltip offset={[0, 0]} opacity={1} sticky={true}>
+                            <b>{op.name}</b><br />
+                            {op.geometry.coordinates[1] >= 0 ? 'N ' : 'S '}
+                            {op.geometry.coordinates[1].toFixed(3)}
+                            {op.geometry.coordinates[0] >= 0 ? ' E ' : ' W '}
+                            {op.geometry.coordinates[0].toFixed(3)}
+                        </Tooltip>
+                    </CircleMarker>
                 );
             }
         });
@@ -90,14 +105,14 @@ class BoundaryMap extends Component<IProps> {
 
         switch (geometry.type.toLowerCase()) {
             case 'point':
-                return b instanceof WellBoundary ? (
+                return (b instanceof WellBoundary || b instanceof HeadObservationWell) ? (
                     <CircleMarker
                         key={uniqueId(Geometry.fromObject(geometry as GeoJson.Point).hash())}
                         center={[
                             geometry.coordinates[1],
                             geometry.coordinates[0]
                         ]}
-                        {...getStyle(b.type, b.wellType)}
+                        {...getStyle(b.type, b instanceof WellBoundary ? b.wellType : undefined)}
                     />
                 ) : null;
             case 'linestring':
@@ -144,7 +159,7 @@ class BoundaryMap extends Component<IProps> {
                     data={geometry.toGeoJSON()}
                     style={getStyle('area')}
                 />
-                {this.renderOtherBoundaries(boundaries)}
+                {boundaries.length > 0 && this.renderOtherBoundaries(boundaries)}
                 {this.renderBoundaryGeometry(boundary)}
                 {this.renderObservationPoints(boundary)}
             </Map>
@@ -154,6 +169,12 @@ class BoundaryMap extends Component<IProps> {
     private handleClickBoundary = (bid: string) => () => {
         if (!!this.props.onClick) {
             return this.props.onClick(bid);
+        }
+    };
+
+    private handleClickObservationPoint = (bid: string) => () => {
+        if (!!this.props.onClickObservationPoint) {
+            return this.props.onClickObservationPoint(bid);
         }
     };
 }

@@ -6,6 +6,8 @@ import {Checkbox, Form, Grid, Header, Icon, Item, Breadcrumb, Label} from 'seman
 import {getData} from '../data';
 import {AppContainer} from '../../shared';
 import {ToolGrid} from '../../shared/simpleTools';
+import {withRouter} from 'react-router-dom';
+import PropTypes from 'prop-types';
 
 const navigation = [{
     name: 'Documentation',
@@ -91,9 +93,13 @@ class T06 extends React.Component {
 
     renderBreadcrumbs = () => (
         <Breadcrumb>
-            <Breadcrumb.Section link>Tools</Breadcrumb.Section>
+            <Breadcrumb.Section link={true} onClick={() => this.props.history.push('/tools')}>
+                Tools
+            </Breadcrumb.Section>
             <Breadcrumb.Divider icon='right chevron'/>
-            <Breadcrumb.Section active>T06. MAR method selection</Breadcrumb.Section>
+            <Breadcrumb.Section active={true}>
+                T06. MAR method selection
+            </Breadcrumb.Section>
         </Breadcrumb>
     );
 
@@ -139,8 +145,10 @@ class T06 extends React.Component {
                         <Item.Description>{method.description}</Item.Description>
                         <Item.Extra><a href={method.href} target={'_blank'}>Read more</a></Item.Extra>
                         <Item.Extra>
-                            <Label>Cost: {method.highCost ? <Icon name='arrow up' fitted/> : <Icon name='arrow down' fitted/>}</Label>
-                            <Label>Area: {method.highLandNeed ? <Icon name='arrow up' fitted/> : <Icon name='arrow down' fitted/>}</Label>
+                            <Label>Cost: {method.highCost ? <Icon name='arrow up' fitted/> :
+                                <Icon name='arrow down' fitted/>}</Label>
+                            <Label>Area: {method.highLandNeed ? <Icon name='arrow up' fitted/> :
+                                <Icon name='arrow down' fitted/>}</Label>
                         </Item.Extra>
                     </Item.Content>
                 </Item>
@@ -167,20 +175,6 @@ class T06 extends React.Component {
                         <Item.Group divided>
                             {this.methods()}
                         </Item.Group>
-
-                        {/*<Table celled padded>
-                            <Table.Header>
-                                <Table.Row>
-                                    <Table.HeaderCell width={4} singleLine>MAR methods</Table.HeaderCell>
-                                    <Table.HeaderCell>Unit costs</Table.HeaderCell>
-                                    <Table.HeaderCell>Area required</Table.HeaderCell>
-                                    <Table.HeaderCell>More information</Table.HeaderCell>
-                                </Table.Row>
-                            </Table.Header>
-                            <Table.Body>
-                                {this.methods()}
-                            </Table.Body>
-                        </Table>*/}
                     </div>
                 </ToolGrid>
             </AppContainer>
@@ -188,4 +182,11 @@ class T06 extends React.Component {
     }
 }
 
-export default T06;
+T06.propTypes = {
+    history: PropTypes.object.isRequired,
+    location: PropTypes.object.isRequired,
+    match: PropTypes.object.isRequired,
+};
+
+
+export default withRouter(T06);

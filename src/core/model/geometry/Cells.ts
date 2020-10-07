@@ -1,4 +1,5 @@
 import * as turf from '@turf/helpers';
+import {NearestPointOnLine} from '@turf/nearest-point-on-line';
 import {
     booleanContains,
     booleanCrosses,
@@ -8,12 +9,11 @@ import {
     lineSlice,
     nearestPointOnLine
 } from '@turf/turf';
-
-import {NearestPointOnLine} from '@turf/nearest-point-on-line';
 import {Feature, LineString} from 'geojson';
-import {floor, isEqual} from 'lodash';
+import {cloneDeep, floor, isEqual, uniqWith} from 'lodash';
 import {LineBoundary} from '../modflow/boundaries';
 import {BoundingBox, Geometry, GridSize} from '../modflow/index';
+import {Array2D} from './Array2D.type';
 import {ICell, ICells, Point} from './Cells.type';
 
 const getActiveCellFromCoordinate = (coordinate: Point, boundingBox: BoundingBox, gridSize: GridSize): ICell => {
@@ -73,15 +73,15 @@ const distanceOnLine = (ls: Feature<LineString>, point: NearestPointOnLine) => {
 export default class Cells {
 
     public static create(cells: ICells = []) {
-        return new this(cells);
+        return new this(cloneDeep(cells));
     }
 
     public static fromArray(cells: ICells) {
-        return new this(cells);
+        return new this(cloneDeep(cells));
     }
 
     public static fromObject(cells: ICells) {
-        return new this(cells);
+        return new this(cloneDeep(cells));
     }
 
     public static fromGeometry(geometry: Geometry, boundingBox: BoundingBox, gridSize: GridSize) {
@@ -113,6 +113,39 @@ export default class Cells {
         return cells;
     }
 
+    public static fromRaster(raster: Array2D<number>) {
+        const cells = new Cells([]);
+        raster.forEach((row, rIdx) => {
+            row.forEach((value, cIdx) => {
+                if (value !== 0) {
+                    cells.addCell([cIdx, rIdx, value]);
+                }
+            });
+        });
+        return cells;
+    }
+
+    public toRaster(gridSize: GridSize) {
+        const raster = new Array(gridSize.nY).fill(0).map(() => new Array(gridSize.nX).fill(0)) as Array2D<number>;
+
+        this.cells.forEach((c) => {
+            raster[c[1]][c[0]] = 1;
+        });
+
+        return raster;
+    }
+
+    public removeCells(rCells: Cells) {
+        const cellsToRemove = rCells.toObject();
+        const cCells: ICell[] = [];
+        this.cells.forEach((c) => {
+            if (cellsToRemove.filter((cc) => cc[0] === c[0] && cc[1] === c[1]).length === 0) {
+                cCells.push(c);
+            }
+        });
+        return cCells;
+    }
+
     constructor(private _cells: ICells = []) {
     }
 
@@ -123,7 +156,6 @@ export default class Cells {
         });
 
         const {observationPoints} = boundary;
-
         if (observationPoints.length <= 1 || !boundary.geometry) {
             return;
         }
@@ -171,15 +203,17 @@ export default class Cells {
         this._cells = cellObjs.map((li) => ([li.x, li.y, li.value]) as ICell);
     };
 
-    public toggle = ([x, y]: number[], boundingBox: BoundingBox, gridSize: GridSize) => {
-
+    public toggle = ([x, y]: number[], boundingBox: BoundingBox, gridSize: GridSize, transform: boolean = true) => {
         const dx = boundingBox.dX / gridSize.nX;
         const dy = boundingBox.dY / gridSize.nY;
 
-        const clickedCell = [
-            floor((x - boundingBox.xMin) / dx),
-            floor(gridSize.nY - (y - boundingBox.yMin) / dy)
-        ];
+        let clickedCell = [x, y];
+        if (transform) {
+            clickedCell = [
+                floor((x - boundingBox.xMin) / dx),
+                floor(gridSize.nY - (y - boundingBox.yMin) / dy)
+            ];
+        }
 
         const cells = [];
         let removed = false;
@@ -203,39 +237,61 @@ export default class Cells {
         this._cells.push(cell);
     };
 
-    public calculateIBound = (nlay: number, nrow: number, ncol: number) => {
-        const iBound2D: number[][] = [];
-        for (let row = 0; row < nrow; row++) {
-            iBound2D[row] = [];
-            for (let col = 0; col < ncol; col++) {
+    public calculateIBound = (nrow: number, ncol: number) => {
+        const iBound2D: Array2D<number> = [];
+        for (let row: number = 0; row < nrow; row++) {
+            iBound2D[row] = [0];
+            for (let col: number = 0; col < ncol; col++) {
                 iBound2D[row][col] = 0;
             }
         }
 
         this.cells.forEach((cell) => {
-            iBound2D[cell[1]][cell[0]] = 1;
+            if (cell[1] <= iBound2D.length && cell[0] <= iBound2D[0].length && iBound2D[cell[1]]) {
+                iBound2D[cell[1]][cell[0]] = 1;
+            }
         });
 
-        const iBound = [];
-        for (let lay = 0; lay < nlay; lay++) {
-            iBound[lay] = iBound2D;
+        return iBound2D;
+    };
+
+    public invert = (gridSize: GridSize) => {
+        const cells = new Cells([]);
+        const iBound = this.calculateIBound(gridSize.nY, gridSize.nX);
+
+        for (let rIdx: number = 0; rIdx < gridSize.nY; rIdx++) {
+            for (let cIdx: number = 0; cIdx < gridSize.nX; cIdx++) {
+                if (iBound[rIdx][cIdx] === 0) {
+                    cells.addCell([cIdx, rIdx, 0]);
+                }
+            }
         }
-        return iBound;
+
+        return cells;
     };
 
     get cells() {
-        return this._cells;
+        return cloneDeep(this._cells);
     }
 
     public toArray() {
-        return this._cells;
+        return cloneDeep(this._cells);
     }
 
     public toObject() {
-        return this._cells;
+        return cloneDeep(this._cells);
     }
+
+    public merge = (cells: Cells) => {
+        const allCellsWithoutValues = this.cells.concat(cells.cells).map((c) => [c[0], c[1]]) as ICell[];
+        return Cells.fromArray(uniqWith(allCellsWithoutValues, isEqual));
+    };
 
     public sameAs = (obj: Cells) => {
         return isEqual(obj.cells, this.cells);
+    };
+
+    public count = () => {
+        return this._cells.length;
     };
 }

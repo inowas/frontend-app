@@ -21,7 +21,7 @@ const toolNavigation = (props: IProps) => {
 
     const menuItems = navigationItems.map((i, idx) => (
         <Menu.Item
-            disabled={i.status !== null && i.status.val === 'warning'}
+            disabled={i.status !== null && (i.status.val === 'warning' || i.status.val === 'wip')}
             key={idx}
             active={property === i.property}
             route={basePath + id + '/' + i.property}
@@ -36,6 +36,12 @@ const toolNavigation = (props: IProps) => {
             {i.status && i.status.msg && i.status.val === 'warning' &&
             <Popup
                 trigger={<Icon name="exclamation circle" color="yellow"/>}
+                content={i.status.msg}
+            />
+            }
+            {i.status && i.status.msg && i.status.val === 'wip' &&
+            <Popup
+                trigger={<Icon name="configure" color="grey"/>}
                 content={i.status.msg}
             />
             }

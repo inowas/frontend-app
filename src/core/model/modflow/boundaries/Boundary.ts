@@ -1,7 +1,9 @@
-import {isEqual} from 'lodash';
 import Uuid from 'uuid';
-import simpleDiff from '../../../../services/diffTools/simpleDiff';
+import {dxCell, dyCell} from '../../../../services/geoTools/distance';
+import BoundingBox from '../../geometry/BoundingBox';
+import GridSize from '../../geometry/GridSize';
 import {Cells, Geometry} from '../index';
+import Stressperiods from '../Stressperiods';
 import {
     BoundaryType,
     IBoundary,
@@ -12,10 +14,6 @@ import {
 
 export default abstract class Boundary {
 
-    protected _props: any;
-
-    protected _class: any;
-
     abstract get type(): BoundaryType;
 
     abstract get id(): string;
@@ -24,11 +22,15 @@ export default abstract class Boundary {
 
     abstract get geometry(): Geometry;
 
+    abstract set geometry(geometry: Geometry);
+
     abstract get name(): string;
 
     abstract set name(name: string);
 
     abstract get cells(): Cells;
+
+    abstract set cells(cells: Cells);
 
     abstract get layers(): number[];
 
@@ -38,16 +40,33 @@ export default abstract class Boundary {
 
     abstract get valueProperties(): IValueProperty[];
 
-    public abstract getSpValues(opId?: string): ISpValues;
+    public static mergeStressperiodsWithSpValues = (stressperiods: Stressperiods, spValues: ISpValues): ISpValues => {
+        return stressperiods.stressperiods.map((sp, idx) => {
+            if (Array.isArray(spValues[idx])) {
+                return spValues[idx];
+            }
+            return spValues[spValues.length - 1];
+        });
+    };
+
+    protected _props: any;
+
+    protected _class: any;
+
+    public abstract getSpValues(stressPeriods: Stressperiods, opId?: string): ISpValues;
+
+    public abstract recalculateCells(boundingBox: BoundingBox, gridSize: GridSize): void;
 
     public abstract setSpValues(spValues: ISpValues, opId?: string): void;
 
-    public abstract toExport(): IBoundaryExport;
+    public abstract toExport(stressPeriods: Stressperiods): IBoundaryExport;
 
     public abstract toObject(): IBoundary;
 
-    public sameAs(b: Boundary): boolean {
-        return isEqual(simpleDiff(this.toExport(), b.toExport()), {});
+    public calculateAreaByCells(boundingBox: BoundingBox, gridSize: GridSize) {
+        const cellHeight = dyCell(boundingBox, gridSize) * 10000 / 10;
+        const cellWidth = dxCell(boundingBox, gridSize) * 10000 / 10;
+        return cellHeight * cellWidth * this.cells.cells.length;
     }
 
     public clone() {

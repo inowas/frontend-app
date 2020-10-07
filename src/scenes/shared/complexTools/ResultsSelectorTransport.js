@@ -70,7 +70,9 @@ class ResultsSelectorTransport extends React.Component {
     };
 
     formatTimestamp = (key) => {
-        return Moment.utc(this.props.stressperiods.dateTimes[key]).format('L');
+        return Moment.utc(
+            this.props.stressperiods.dateTimes[0]
+        ).add(this.props.totalTimes[key], 'days').format('L');
     };
 
     handleChangeSubstance = (e, {value}) => {

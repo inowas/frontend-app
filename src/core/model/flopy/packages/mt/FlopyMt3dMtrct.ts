@@ -1,124 +1,166 @@
+import {IPropertyValueObject} from '../../../types';
 import FlopyMt3dPackage from './FlopyMt3dPackage';
 
-class FlopyMt3dMtrct extends FlopyMt3dPackage {
+export interface IFlopyMt3dMtrct extends IPropertyValueObject {
+    isothm: number;
+    ireact: number;
+    igetsc: number;
+    rhob: any;
+    prsity2: any;
+    srconc: any;
+    sp1: any;
+    sp2: any;
+    rc1: any;
+    rc2: any;
+    extension: string;
+    unitnumber: number | null;
+    filenames: null | string | string[];
+}
 
-    get isothm(): number {
-        return this._isothm;
+export const defaults: IFlopyMt3dMtrct = {
+    isothm: 0,
+    ireact: 0,
+    igetsc: 0,
+    rhob: null,
+    prsity2: null,
+    srconc: null,
+    sp1: null,
+    sp2: null,
+    rc1: null,
+    rc2: null,
+    extension: 'rct',
+    unitnumber: null,
+    filenames: null,
+};
+
+class FlopyMt3dMtrct extends FlopyMt3dPackage<IFlopyMt3dMtrct> {
+
+    public static create(obj = {}) {
+        return this.fromObject(obj);
     }
 
-    set isothm(value: number) {
-        this._isothm = value;
+    public static fromDefault() {
+        return this.fromObject({});
     }
 
-    get ireact(): number {
-        return this._ireact;
+    public static fromObject(obj: IPropertyValueObject): FlopyMt3dMtrct {
+        const d: any = FlopyMt3dPackage.cloneDeep(defaults);
+        for (const key in d) {
+            if (d.hasOwnProperty(key) && obj.hasOwnProperty(key)) {
+                d[key] = obj[key];
+            }
+        }
+
+        return new this(d);
     }
 
-    set ireact(value: number) {
-        this._ireact = value;
+    public update() {
+        return this;
     }
 
-    get igetsc(): number {
-        return this._igetsc;
+    get isothm() {
+        return this._props.isothm;
     }
 
-    set igetsc(value: number) {
-        this._igetsc = value;
+    set isothm(value) {
+        this._props.isothm = value;
     }
 
-    get rhob(): any {
-        return this._rhob;
+    get ireact() {
+        return this._props.ireact;
     }
 
-    set rhob(value: any) {
-        this._rhob = value;
+    set ireact(value) {
+        this._props.ireact = value;
     }
 
-    get prsity2(): any {
-        return this._prsity2;
+    get igetsc() {
+        return this._props.igetsc;
     }
 
-    set prsity2(value: any) {
-        this._prsity2 = value;
+    set igetsc(value) {
+        this._props.igetsc = value;
     }
 
-    get srconc(): any {
-        return this._srconc;
+    get rhob() {
+        return this._props.rhob;
     }
 
-    set srconc(value: any) {
-        this._srconc = value;
+    set rhob(value) {
+        this._props.rhob = value;
     }
 
-    get sp1(): any {
-        return this._sp1;
+    get prsity2() {
+        return this._props.prsity2;
     }
 
-    set sp1(value: any) {
-        this._sp1 = value;
+    set prsity2(value) {
+        this._props.prsity2 = value;
     }
 
-    get sp2(): any {
-        return this._sp2;
+    get srconc() {
+        return this._props.srconc;
     }
 
-    set sp2(value: any) {
-        this._sp2 = value;
+    set srconc(value) {
+        this._props.srconc = value;
     }
 
-    get rc1(): any {
-        return this._rc1;
+    get sp1() {
+        return this._props.sp1;
     }
 
-    set rc1(value: any) {
-        this._rc1 = value;
+    set sp1(value) {
+        this._props.sp1 = value;
     }
 
-    get rc2(): any {
-        return this._rc2;
+    get sp2() {
+        return this._props.sp2;
     }
 
-    set rc2(value: any) {
-        this._rc2 = value;
+    set sp2(value) {
+        this._props.sp2 = value;
     }
 
-    get extension(): string {
-        return this._extension;
+    get rc1() {
+        return this._props.rc1;
     }
 
-    set extension(value: string) {
-        this._extension = value;
+    set rc1(value) {
+        this._props.rc1 = value;
     }
 
-    get unitnumber(): any {
-        return this._unitnumber;
+    get rc2() {
+        return this._props.rc2;
     }
 
-    set unitnumber(value: any) {
-        this._unitnumber = value;
+    set rc2(value) {
+        this._props.rc2 = value;
     }
 
-    get filenames(): any {
-        return this._filenames;
+    get extension() {
+        return this._props.extension;
     }
 
-    set filenames(value: any) {
-        this._filenames = value;
+    set extension(value) {
+        this._props.extension = value;
     }
 
-    private _isothm: number = 0;
-    private _ireact: number = 0;
-    private _igetsc: number = 0;
-    private _rhob = null;
-    private _prsity2 = null;
-    private _srconc = null;
-    private _sp1 = null;
-    private _sp2 = null;
-    private _rc1 = null;
-    private _rc2 = null;
-    private _extension: string = 'rct';
-    private _unitnumber = null;
-    private _filenames = null;
+    get unitnumber() {
+        return this._props.unitnumber;
+    }
+
+    set unitnumber(value) {
+        this._props.unitnumber = value;
+    }
+
+    get filenames() {
+        return this._props.filenames;
+    }
+
+    set filenames(value) {
+        this._props.filenames = value;
+    }
 }
 
 export default FlopyMt3dMtrct;

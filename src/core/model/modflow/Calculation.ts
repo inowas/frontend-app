@@ -66,7 +66,7 @@ export default class Calculation {
     }
 
     private readonly _props: ICalculation = {
-        calculation_id: null,
+        calculation_id: '',
         state: 0,
         message: '',
         times: null,

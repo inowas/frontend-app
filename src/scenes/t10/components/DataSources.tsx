@@ -1,14 +1,16 @@
 import React, {useEffect, useState} from 'react';
-import {Button, Dropdown, Grid, Header, Icon, Label, Segment, Table} from 'semantic-ui-react';
+import {Button, Dropdown, Grid, Header, Icon, Label, Popup, Segment, Table} from 'semantic-ui-react';
 import {DataSourceCollection, DataSourceFactory, Rtm} from '../../../core/model/rtm';
 import FileDataSource from '../../../core/model/rtm/FileDataSource';
+import PrometheusDataSource from '../../../core/model/rtm/PrometheusDataSource';
 import {DataSource, IDataSource, ISensorParameter} from '../../../core/model/rtm/Sensor.type';
 import SensorDataSource from '../../../core/model/rtm/SensorDataSource';
-import {colors, dataSourceList, parameterList} from '../defaults';
+import {colors, dataSourceList} from '../defaults';
 import {
     DataSourcesChart,
     DataSourceTimeRange,
     FileDatasourceEditor,
+    PrometheusDatasourceEditor,
     SensorDatasourceEditor,
     TinyLineChart
 } from './index';
@@ -42,19 +44,17 @@ const dataSources = (props: IProps) => {
     const [editDatasource, setEditDatasource] = useState<DataSource | null>(null);
 
     useEffect(() => {
-        props.parameter.dataSources.map((ds) => {
-            const d = DataSourceFactory.fromObject(ds);
-            if (d === null) {
-                return ds;
-            }
-
-            d.loadData().then(() => handleUpdateDataSource(d));
-        });
+        const dsc = DataSourceCollection.fromObject(props.parameter.dataSources);
+        dsc.mergedData().then((() => handleUpdateDataSources(dsc)));
     }, []);
 
     const getDsType = (ds: DataSource) => {
         if (ds instanceof FileDataSource) {
             return 'file';
+        }
+
+        if (ds instanceof PrometheusDataSource) {
+            return 'prometheus';
         }
 
         return 'online';
@@ -69,6 +69,17 @@ const dataSources = (props: IProps) => {
 
         parameter.dataSources.push(ds.toObject());
         setAddDatasource(null);
+        props.onChange(parameter);
+    };
+
+    const handleUpdateDataSources = (dsc: DataSourceCollection) => {
+        const {parameter} = props;
+        if (!parameter) {
+            return;
+        }
+
+        parameter.dataSources = dsc.toObject();
+        setEditDatasource(null);
         props.onChange(parameter);
     };
 
@@ -139,6 +150,13 @@ const dataSources = (props: IProps) => {
                             onSave={handleAddDataSource}
                         />
                     );
+                case 'prometheus':
+                    return (
+                        <PrometheusDatasourceEditor
+                            onCancel={handleCancelDataSourceClick}
+                            onSave={handleAddDataSource}
+                        />
+                    );
                 case 'file':
                     return (
                         <FileDatasourceEditor
@@ -153,7 +171,17 @@ const dataSources = (props: IProps) => {
             if (editDatasource instanceof SensorDataSource) {
                 return (
                     <SensorDatasourceEditor
-                        dataSource={editDatasource}
+                        dataSource={editDatasource as SensorDataSource}
+                        onCancel={handleCancelDataSourceClick}
+                        onSave={handleUpdateDataSource}
+                    />
+                );
+            }
+
+            if (editDatasource instanceof PrometheusDataSource) {
+                return (
+                    <PrometheusDatasourceEditor
+                        dataSource={editDatasource as PrometheusDataSource}
                         onCancel={handleCancelDataSourceClick}
                         onSave={handleUpdateDataSource}
                     />
@@ -162,7 +190,7 @@ const dataSources = (props: IProps) => {
 
             return (
                 <FileDatasourceEditor
-                    dataSource={editDatasource}
+                    dataSource={editDatasource as FileDataSource}
                     onCancel={handleCancelDataSourceClick}
                     onSave={handleUpdateDataSource}
                 />
@@ -176,13 +204,15 @@ const dataSources = (props: IProps) => {
         return null;
     }
 
+    const dataSourceCollection = DataSourceCollection.fromObject(props.parameter.dataSources);
+
     return (
         <Grid>
             <Grid.Row>
                 <Grid.Column>
                     <Segment color={'red'} raised={true}>
                         <Header as={'h2'} dividing={true}>
-                            {parameterList.filter((i) => i.parameter === props.parameter.type)[0].text}
+                            {props.parameter.description}
                         </Header>
                         <Label color={'blue'} ribbon={true} size={'large'}>
                             Data sources
@@ -194,10 +224,11 @@ const dataSources = (props: IProps) => {
                                     <Table.HeaderCell>Time range</Table.HeaderCell>
                                     <Table.HeaderCell/>
                                     <Table.HeaderCell/>
+                                    <Table.HeaderCell/>
                                 </Table.Row>
                             </Table.Header>
                             <Table.Body>
-                                {props.parameter.dataSources.map((ds, key) => {
+                                {dataSourceCollection.all.map((ds, key) => {
                                     const dsInst = DataSourceFactory.fromObject(ds);
                                     if (dsInst === null) {
                                         return null;
@@ -213,11 +244,19 @@ const dataSources = (props: IProps) => {
                                                 <TinyLineChart
                                                     datasource={dsInst}
                                                     color={colors[key]}
-                                                    begin={DataSourceCollection
-                                                        .fromObject(props.parameter.dataSources).globalBegin()}
-                                                    end={DataSourceCollection
-                                                        .fromObject(props.parameter.dataSources).globalEnd()}
+                                                    begin={dataSourceCollection.globalBegin()}
+                                                    end={dataSourceCollection.globalEnd()}
                                                 />
+                                            </Table.Cell>
+                                            <Table.Cell>
+                                                {
+                                                    ((dsInst instanceof PrometheusDataSource && !dsInst.end) ||
+                                                        (dsInst instanceof SensorDataSource && !dsInst.end)) &&
+                                                    <Popup
+                                                        content={'Automatic update'}
+                                                        trigger={<Icon name={'circle'} color={'red'}/>}
+                                                    />
+                                                }
                                             </Table.Cell>
                                             <Table.Cell textAlign={'right'}>
                                                 {!props.rtm.readOnly &&
@@ -233,7 +272,7 @@ const dataSources = (props: IProps) => {
                                                         <Button
                                                             icon={true}
                                                             onClick={handleMoveDataSourceClick(key, key + 1)}
-                                                            disabled={key === props.parameter.dataSources.length - 1}
+                                                            disabled={key === dataSourceCollection.length - 1}
                                                         >
                                                             <Icon name={'arrow down'}/>
                                                         </Button>
@@ -301,7 +340,10 @@ const dataSources = (props: IProps) => {
                         <Label color={'blue'} ribbon={true} size={'large'}>
                             Chart
                         </Label>
-                        <DataSourcesChart dataSources={DataSourceCollection.fromObject(props.parameter.dataSources)}/>
+                        <DataSourcesChart
+                            dataSources={dataSourceCollection}
+                            unit={props.parameter.unit !== '' ? props.parameter.unit : undefined}
+                        />
                     </Segment>
                     }
 

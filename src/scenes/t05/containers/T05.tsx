@@ -11,9 +11,8 @@ import AppContainer from '../../shared/AppContainer';
 import ContentToolBar from '../../shared/ContentToolbar';
 import Command from '../../shared/simpleTools/commands/command';
 import ToolMetaData from '../../shared/simpleTools/ToolMetaData';
-import {IToolMetaData} from '../../shared/simpleTools/ToolMetaData/ToolMetaData.type';
+import {IToolMetaDataEdit} from '../../shared/simpleTools/ToolMetaData/ToolMetaData.type';
 import {
-    ConstraintsEditor,
     CriteriaDataEditor,
     CriteriaEditor,
     CriteriaNavigation,
@@ -40,7 +39,7 @@ const t05 = (props: IProps) => {
     const [isDirty, setIsDirty] = useState<boolean>(false);
     const [isError, setIsError] = useState<boolean>(false);
     const [isLoading, setIsLoading] = useState<boolean>(true);
-    const [tool, setTool] = useState<IToolMetaData | null>(null);
+    const [tool, setTool] = useState<IToolMetaDataEdit | null>(null);
 
     const {id, cid, property} = props.match.params;
 
@@ -83,7 +82,7 @@ const t05 = (props: IProps) => {
     const readOnly = !includes(permissions, 'w');
     const menuItems = getMenuItems(mcda);
 
-    const buildPayload = (cTool: IToolMetaData) => {
+    const buildPayload = (cTool: IToolMetaDataEdit) => {
         return ({
             id: cTool.id,
             name: cTool.name,
@@ -137,12 +136,12 @@ const t05 = (props: IProps) => {
         return;
     };
 
-    const handleUpdateMetaData = (cTool: IToolMetaData) => {
+    const handleUpdateMetaData = (cTool: IToolMetaDataEdit) => {
         setTool(cTool);
     };
 
     const handleClickCriteriaNavigation = (e: MouseEvent<HTMLAnchorElement>, {name}: MenuItemProps) => {
-        if (name && typeof name === 'string') {
+        if (name) {
             routeTo(name);
         }
     };
@@ -187,7 +186,7 @@ const t05 = (props: IProps) => {
                         onChange={handleChange}
                     />
                 );
-            case 'cm':
+            /*case 'cm':
                 if (mcda.criteriaCollection.length > 0 && (mcda.constraints && !mcda.constraints.boundingBox)) {
                     mcda.constraints.boundingBox = mcda.criteriaCollection.getBoundingBox(mcda.withAhp);
                 }
@@ -198,7 +197,7 @@ const t05 = (props: IProps) => {
                         mcda={mcda}
                         onChange={handleChange}
                     />
-                );
+                );*/
             case 'wa':
                 const filteredWeightAssignment = mcda.weightAssignmentsCollection.findById(cCid);
                 const weightAssignment = cCid && filteredWeightAssignment ? filteredWeightAssignment : null;
@@ -268,8 +267,6 @@ const t05 = (props: IProps) => {
                 readOnly={readOnly}
                 onChange={handleUpdateMetaData}
                 onSave={handleSaveMetadata}
-                defaultButton={false}
-                saveButton={false}
                 isDirty={isDirty}
             />
             <Grid padded={true}>
@@ -303,12 +300,12 @@ const t05 = (props: IProps) => {
                     <Grid.Column width={12}>
                         <Segment color={'grey'} loading={isLoading}>
                             <ContentToolBar
-                                backButton={!!cid && property !== 'cd'}
+                                buttonBack={!!cid && property !== 'cd'}
                                 onBack={routeTo}
                                 onSave={handleSave}
                                 isDirty={isDirty}
                                 isError={isError}
-                                saveButton={true}
+                                buttonSave={true}
                             />
                             <Divider/>
                             {renderContent()}

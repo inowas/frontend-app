@@ -1,139 +1,98 @@
-import React from 'react';
-import {CircleMarker, FeatureGroup, GeoJSON, Map} from 'react-leaflet';
+import React, {useRef, useState} from 'react';
+import {FeatureGroup, LayersControl, Map} from 'react-leaflet';
 import {EditControl} from 'react-leaflet-draw';
 import {Geometry} from '../../../../core/model/modflow';
 import {BoundaryFactory} from '../../../../core/model/modflow/boundaries';
 import {BoundaryType} from '../../../../core/model/modflow/boundaries/Boundary.type';
+import BoundaryCollection from '../../../../core/model/modflow/boundaries/BoundaryCollection';
 import {BasicTileLayer} from '../../../../services/geoTools/tileLayers';
 import CenterControl from '../../../shared/leaflet/CenterControl';
-import {getStyle} from './index';
+import { renderAreaLayer, renderBoundaryOverlays } from './mapLayers';
 
 interface IProps {
-    geometry: Geometry;
+    area: Geometry;
+    boundaries: BoundaryCollection;
+    geometry: Geometry | null;
     onChangeGeometry: (geometry: Geometry) => any;
     onToggleEditMode?: () => any;
     type: BoundaryType;
 }
 
-interface IState {
-    geometry: any;
-}
-
 const style = {
     map: {
-        height: '400px',
-        marginTop: '20px'
+        height: '400px'
     }
 };
 
-class CreateBoundaryMap extends React.Component<IProps, IState> {
-    private map: any;
-    private mapInstance: any;
+const createBoundaryMap = (props: IProps) => {
+    const [isEditing, setIsEditing] = useState<boolean>(false);
+    const mapRef = useRef<Map>(null);
 
-    constructor(props: IProps) {
-        super(props);
-        this.state = {
-            geometry: null
-        };
-    }
-
-    public componentDidMount() {
-        this.map = this.mapInstance.leafletElement;
-    }
-
-    public onCreated = (e: any) => {
-        const geometry = Geometry.fromGeoJson(e.layer.toGeoJSON());
-        this.props.onChangeGeometry(geometry);
-        this.setState({
-            geometry: geometry.toObject()
-        });
+    const handleOnCreated = (e: any) => {
+        const cGeometry = Geometry.fromGeoJson(e.layer.toGeoJSON());
+        props.onChangeGeometry(cGeometry);
     };
 
-    public onEdited = (e: any) => {
+    const handleOnEdited = (e: any) => {
         e.layers.eachLayer((layer: any) => {
-            const geometry = Geometry.fromGeoJson(layer.toGeoJSON());
-            this.setState({
-                geometry
-            });
-            this.props.onChangeGeometry(geometry);
+            const cGeometry = Geometry.fromGeoJson(layer.toGeoJSON());
+            props.onChangeGeometry(cGeometry);
         });
     };
 
-    public editControl = () => {
-        const geometryType = BoundaryFactory.geometryTypeByType(this.props.type).toLowerCase();
+    const handleToggleIsEditing = () => setIsEditing(!isEditing);
+
+    const editControl = () => {
+        const geometryType = BoundaryFactory.geometryTypeByType(props.type).toLowerCase();
         return (
             <FeatureGroup>
                 <EditControl
                     position="topright"
                     draw={{
                         circle: false,
-                        circlemarker: geometryType.toLowerCase() === 'point' && !this.state.geometry,
+                        circlemarker: geometryType.toLowerCase() === 'point' && !props.geometry,
                         marker: false,
-                        polyline: geometryType.toLowerCase() === 'linestring' && !this.state.geometry,
+                        polyline: geometryType.toLowerCase() === 'linestring' && !props.geometry,
                         rectangle: false,
-                        polygon: geometryType.toLowerCase() === 'polygon' && !this.state.geometry
+                        polygon: geometryType.toLowerCase() === 'polygon' && !props.geometry
                     }}
                     edit={{
-                        edit: !!this.state.geometry,
+                        edit: !!props.geometry,
                         remove: false
                     }}
-                    onCreated={this.onCreated}
-                    onEdited={this.onEdited}
-                    onEditStart={this.props.onToggleEditMode}
-                    onEditStop={this.props.onToggleEditMode}
-                >
-                    {this.state.geometry && this.renderGeometry(Geometry.fromGeoJson(this.state.geometry))}
-                </EditControl>
+                    onCreated={handleOnCreated}
+                    onEdited={handleOnEdited}
+                    onEditStart={handleToggleIsEditing}
+                    onEditStop={handleToggleIsEditing}
+                />
             </FeatureGroup>
         );
     };
 
-    public renderGeometry(geometry: Geometry) {
-        const gType = BoundaryFactory.geometryTypeByType(this.props.type).toLowerCase();
-        if (gType === 'point') {
-            return (
-                <CircleMarker
-                    key={Math.random()}
-                    center={geometry.coordinatesLatLng}
-                    {...getStyle(this.props.type)}
-                />
-            );
-        }
-
-        return (
-            <GeoJSON
-                key={geometry.hash()}
-                data={geometry}
-                style={getStyle(this.props.type)}
-            />
-        );
-    }
-
-    public render() {
-        const {geometry} = this.props;
-
-        return (
+    return (
+        <React.Fragment>
             <Map
                 style={style.map}
-                bounds={geometry.getBoundsLatLng()}
-                ref={(e) => {
-                    this.mapInstance = e;
-                }}
+                bounds={props.area.getBoundsLatLng()}
+                ref={mapRef}
             >
+                {mapRef.current &&
                 <CenterControl
-                    map={this.map}
-                    bounds={geometry.getBoundsLatLng()}
+                    map={mapRef.current}
+                    bounds={props.area.getBoundsLatLng()}
                 />
+                }
                 <BasicTileLayer/>
-                {this.editControl()}
-                <GeoJSON
-                    key={geometry.hash()}
-                    data={geometry.toGeoJSON()}
-                    style={getStyle('area')}
-                />
+                {props.boundaries.length > 0 &&
+                    <LayersControl position="topright">
+                        {renderBoundaryOverlays(props.boundaries)}
+                    </LayersControl>
+                }
+                {editControl()}
+                {renderAreaLayer(props.area)}
             </Map>
-        );
-    }
-}
+        </React.Fragment>
+    );
+};
 
-export default CreateBoundaryMap;
+export default createBoundaryMap;

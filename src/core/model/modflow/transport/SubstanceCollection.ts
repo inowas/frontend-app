@@ -9,7 +9,7 @@ class SubstanceCollection extends Collection<Substance> {
         return sortBy(this.all, [(b) => b.name.toUpperCase()]);
     }
 
-    public static fromArray(arr: ISubstance[]) {
+    public static fromObject(arr: ISubstance[] = []) {
         const substances = new SubstanceCollection();
         arr.map((item) => substances.addSubstance(Substance.fromObject(item)));
         return substances;
@@ -23,7 +23,7 @@ class SubstanceCollection extends Collection<Substance> {
         return this.removeBy('id', substanceId);
     }
 
-    public toArray = () => {
+    public toObject = () => {
         return this.substances.map((b) => b.toObject());
     };
 }

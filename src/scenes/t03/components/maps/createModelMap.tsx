@@ -21,7 +21,7 @@ const style = {
 
 interface ICreateModelMapProps {
     gridSize: GridSize;
-    onChange: (args: { cells: Cells, boundingBox: BoundingBox, geometry: Geometry }) => {};
+    onChange: (args: { cells: Cells, boundingBox: BoundingBox, geometry: Geometry }) => void;
 }
 
 interface ICreateModelMapState {
@@ -53,7 +53,7 @@ class CreateModelMap extends React.Component<ICreateModelMapProps, ICreateModelM
 
     public calculate = (geometry: Geometry, boundingBox: BoundingBox, gridSize: GridSize) => {
         return new Promise<Cells>((resolve) => {
-            const activeCells = calculateActiveCells(geometry, boundingBox, gridSize);
+            const activeCells = calculateActiveCells(geometry, boundingBox, gridSize, 0.5);
             resolve(activeCells);
             this.forceUpdate();
         });

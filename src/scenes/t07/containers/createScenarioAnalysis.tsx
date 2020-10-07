@@ -218,17 +218,19 @@ class CreateScenarioAnalysis extends React.Component<IProps, IState> {
 
     private onCreateScenarioAnalysisClick = () => {
         const scenarioAnalysisId = Uuid.v4();
-        const command = ScenarioAnalysisCommand.createScenarioAnalysis(
-            scenarioAnalysisId,
-            this.state.selectedModelId,
-            this.state.name,
-            this.state.description,
-            this.state.public
-        );
-        sendCommand(command,
-            () => this.props.history.push('/tools/T07/' + scenarioAnalysisId),
-            () => this.setState({fetchingError: true})
-        );
+        if (this.state.selectedModelId) {
+            const command = ScenarioAnalysisCommand.createScenarioAnalysis(
+                scenarioAnalysisId,
+                this.state.selectedModelId,
+                this.state.name,
+                this.state.description,
+                this.state.public
+            );
+            sendCommand(command,
+                () => this.props.history.push('/tools/T07/' + scenarioAnalysisId),
+                () => this.setState({fetchingError: true})
+            );
+        }
     };
 }
 

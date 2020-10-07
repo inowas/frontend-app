@@ -1,96 +1,135 @@
+import {IPropertyValueObject} from '../../../types';
 import FlopyMt3dPackage from './FlopyMt3dPackage';
 
-class FlopyMt3dMtgcg extends FlopyMt3dPackage {
+export interface IFlopyMt3dMtgcg extends IPropertyValueObject {
+    mxiter: number;
+    iter1: number;
+    isolve: number;
+    ncrs: number;
+    accl: number;
+    cclose: number;
+    iprgcg: number;
+    extension: string;
+    unitnumber: number | null;
+    filenames: string | string[] | null;
+}
 
-    private _mxiter = 1;
-    private _iter1 = 50;
-    private _isolve = 3;
-    private _ncrs = 0;
-    private _accl = 1;
-    private _cclose = 1e-5;
-    private _iprgcg = 0;
-    private _extension = 'gcg';
-    private _unitnumber = null;
-    private _filenames = null;
+export const defaults: IFlopyMt3dMtgcg = {
+    mxiter: 1,
+    iter1: 50,
+    isolve: 3,
+    ncrs: 0,
+    accl: 1,
+    cclose: 1e-5,
+    iprgcg: 0,
+    extension: 'gcg',
+    unitnumber: null,
+    filenames: null,
+};
+
+class FlopyMt3dMtgcg extends FlopyMt3dPackage<IFlopyMt3dMtgcg> {
+
+    public static create(obj = {}) {
+        return this.fromObject(obj);
+    }
+
+    public static fromDefault() {
+        return this.fromObject({});
+    }
+
+    public static fromObject(obj: IPropertyValueObject): FlopyMt3dMtgcg {
+        const d: any = FlopyMt3dPackage.cloneDeep(defaults);
+        for (const key in d) {
+            if (d.hasOwnProperty(key) && obj.hasOwnProperty(key)) {
+                d[key] = obj[key];
+            }
+        }
+
+        return new this(d);
+    }
+
+    public update() {
+        return this;
+    }
 
     get mxiter() {
-        return this._mxiter;
+        return this._props.mxiter;
     }
 
     set mxiter(value) {
-        this._mxiter = value;
+        this._props.mxiter = value;
     }
 
     get iter1() {
-        return this._iter1;
+        return this._props.iter1;
     }
 
     set iter1(value) {
-        this._iter1 = value;
+        this._props.iter1 = value;
     }
 
     get isolve() {
-        return this._isolve;
+        return this._props.isolve;
     }
 
     set isolve(value) {
-        this._isolve = value;
+        this._props.isolve = value;
     }
 
     get ncrs() {
-        return this._ncrs;
+        return this._props.ncrs;
     }
 
     set ncrs(value) {
-        this._ncrs = value;
+        this._props.ncrs = value;
     }
 
     get accl() {
-        return this._accl;
+        return this._props.accl;
     }
 
     set accl(value) {
-        this._accl = value;
+        this._props.accl = value;
     }
 
     get cclose() {
-        return this._cclose;
+        return this._props.cclose;
     }
 
     set cclose(value) {
-        this._cclose = value;
+        this._props.cclose = value;
     }
 
     get iprgcg() {
-        return this._iprgcg;
+        return this._props.iprgcg;
     }
 
     set iprgcg(value) {
-        this._iprgcg = value;
+        this._props.iprgcg = value;
     }
 
     get extension() {
-        return this._extension;
+        return this._props.extension;
     }
 
     set extension(value) {
-        this._extension = value;
+        this._props.extension = value;
     }
 
     get unitnumber() {
-        return this._unitnumber;
+        return this._props.unitnumber;
     }
 
     set unitnumber(value) {
-        this._unitnumber = value;
+        this._props.unitnumber = value;
     }
 
     get filenames() {
-        return this._filenames;
+        return this._props.filenames;
     }
 
     set filenames(value) {
-        this._filenames = value;
+        this._props.filenames = value;
     }
 }
 
