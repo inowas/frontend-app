@@ -1,6 +1,6 @@
 import {AllGeoJSON, Feature} from '@turf/helpers';
 import * as turf from '@turf/turf';
-import {GeoJSON, Point} from 'geojson';
+import {GeoJSON, Point, Polygon} from 'geojson';
 import {isEqual} from 'lodash';
 import md5 from 'md5';
 import {Geometry} from '../modflow';
@@ -45,7 +45,7 @@ class BoundingBox {
                     [this.xMin, this.yMin],
                 ]],
                 type: 'Polygon'
-            }
+            } as Polygon
         };
     }
 
@@ -170,19 +170,21 @@ class BoundingBox {
         this._props = [[xMin, yMin], [xMax, yMax]];
     }
 
-    public applyCellSize = (cs: [number, number]) => {
-        const difference = [
-            turf.lengthToDegrees((Math.ceil(this.heightInMeters / cs[0]) * cs[0] - this.heightInMeters) / 2, 'meters'),
-            turf.lengthToDegrees((Math.ceil(this.widthInMeters / cs[1]) * cs[1] - this.widthInMeters) / 2, 'meters')
+    public applyCellSize = ([cellHeight, cellWidth]: [number, number]) => {
+        const [diffHeight, diffWidth] = [
+            turf.lengthToDegrees((Math.ceil(this.heightInMeters / cellHeight) * cellHeight - this.heightInMeters) / 2,
+                'meters'),
+            turf.lengthToDegrees((Math.ceil(this.widthInMeters / cellWidth) * cellWidth - this.widthInMeters) / 2,
+                'meters')
         ];
         this._props = [
-            [this.xMin - difference[0], this.yMin - difference[1]],
-            [this.xMax + difference[0], this.yMax + difference[1]]
+            [this.xMin - diffWidth, this.yMin - diffHeight],
+            [this.xMax + diffWidth, this.yMax + diffHeight]
         ];
         return this;
     };
 
-    public geoJsonWithRotation = (rotation: number, center: Feature<Point | null>): GeoJSON => {
+    public geoJsonWithRotation = (rotation: number, center: Feature<Point | null>) => {
         return turf.transformRotate(
             Geometry.fromGeoJson(this.geoJson).toGeoJSON(), rotation, {pivot: center}
         );

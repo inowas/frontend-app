@@ -1,16 +1,16 @@
-import {AllGeoJSON} from '@turf/helpers';
 import * as turf from '@turf/turf';
 import {GeoJsonObject} from 'geojson';
 import {uniqueId} from 'lodash';
 import React, {FormEvent, useEffect, useState} from 'react';
 import {GeoJSON, Map} from 'react-leaflet';
 import {Button, Checkbox, Form, Grid, Icon, InputOnChangeData, Modal} from 'semantic-ui-react';
+import {IBoundingBox} from '../../../../../core/model/geometry/BoundingBox.type';
 import {ICells} from '../../../../../core/model/geometry/Cells.type';
 import {IGridSize} from '../../../../../core/model/geometry/GridSize.type';
 import {BoundingBox, Cells, Geometry, GridSize} from '../../../../../core/model/modflow';
 import AffectedCellsLayer from '../../../../../services/geoTools/affectedCellsLayer';
-import {dxCell, dyCell} from '../../../../../services/geoTools/distance';
 import {getStyle} from '../../../../../services/geoTools/mapHelpers';
+import synchronizeGeometry from '../../../../../services/geoTools/synchronizeGeometry';
 import {BasicTileLayer} from '../../../../../services/geoTools/tileLayers';
 import SliderWithTooltip from '../../../../shared/complexTools/SliderWithTooltip';
 import {CALCULATE_CELLS_INPUT} from '../../../worker/t03.worker';
@@ -39,8 +39,8 @@ const style = {
 const gridProperties = (props: IProps) => {
     const [activeInput, setActiveInput] = useState<string | null>(null);
     const [activeValue, setActiveValue] = useState<string>('');
-    const [boundingBox, setBoundingBox] = useState<GeoJsonObject>(props.boundingBox.geoJson);
-    const [boundingBoxRotated, setBoundingBoxRotated] = useState<GeoJsonObject | null>(null);
+    const [boundingBox, setBoundingBox] = useState<IBoundingBox>(props.boundingBox.toObject());
+    const [boundingBoxPreview, setBoundingBoxPreview] = useState<GeoJsonObject | null>(null);
     const [boundingBoxIsFixed, setBoundingBoxIsFixed] = useState<boolean>(true);
     const [cells, setCells] = useState<ICells | null>(null);
     const [cellSize, setCellSize] = useState<[number, number]>([0, 0]);
@@ -67,34 +67,14 @@ const gridProperties = (props: IProps) => {
         }
     }, [isCalculating]);
 
-    useEffect(() => {
-        if (boundingBoxIsFixed) {
-            setCellSize([
-                Math.round(dyCell(BoundingBox.fromGeoJson(boundingBox as AllGeoJSON),
-                    GridSize.fromObject(gridSize)) * 1000),
-                Math.round(dxCell(BoundingBox.fromGeoJson(boundingBox as AllGeoJSON),
-                    GridSize.fromObject(gridSize)) * 1000)
-            ]);
-        }
-    }, [boundingBoxIsFixed, gridSize]);
-
-    useEffect(() => {
-        if (cellSize[0] > 0 && cellSize[1] > 0) {
-            handleChangeBoundingBoxPreview();
-        }
-    }, [cellSize, rotation]);
-
     const calculateRotation = (r: number) => {
         // No rotation:
-        let bbox = BoundingBox.fromGeoJson(props.geometry.toGeoJSON()).applyCellSize(cellSize);
         if (r % 360 === 0) {
-            setBoundingBox(bbox.geoJson);
-            setBoundingBoxRotated(bbox.geoJson);
             asyncWorker({
                 type: CALCULATE_CELLS_INPUT,
                 data: {
                     geometry: props.geometry.toGeoJSON(),
-                    boundingBox: bbox.toObject(),
+                    boundingBox,
                     gridSize,
                     intersection
                 }
@@ -107,15 +87,11 @@ const gridProperties = (props: IProps) => {
         const withRotation = turf.transformRotate(
             props.geometry.toGeoJSON(), -1 * r, {pivot: props.geometry.centerOfMass}
         );
-        bbox = BoundingBox.fromGeoJson(withRotation).applyCellSize(cellSize);
-        const bboxWithRotation = bbox.geoJsonWithRotation(r, props.geometry.centerOfMass);
-        setBoundingBox(bbox.geoJson);
-        setBoundingBoxRotated(bboxWithRotation);
         asyncWorker({
             type: CALCULATE_CELLS_INPUT,
             data: {
                 geometry: Geometry.fromGeoJson(withRotation).toObject(),
-                boundingBox: bbox.toObject(),
+                boundingBox,
                 gridSize,
                 intersection
             }
@@ -124,37 +100,24 @@ const gridProperties = (props: IProps) => {
         });
     };
 
-    const handleChangeBoundingBoxPreview = () => {
-        const withRotation = turf.transformRotate(
-            props.geometry.toGeoJSON(), -1 * rotation, {pivot: props.geometry.centerOfMass}
-        );
-        const bbox = BoundingBox.fromGeoJson(withRotation).applyCellSize(cellSize);
-        const bboxWithRotation = bbox.geoJsonWithRotation(rotation, props.geometry.centerOfMass);
-        setBoundingBoxRotated(bboxWithRotation);
-    };
-
     const handleBlurCellSize = () => {
-        const value = parseFloat(activeValue);
-
-        const bbox = BoundingBox.fromGeoJson(boundingBox as AllGeoJSON);
-        const length = activeInput === 'cH' ? bbox.heightInMeters : bbox.widthInMeters;
-        const amount = boundingBoxIsFixed ? Math.floor(length / value) : Math.ceil(length / value);
-
-        const cGridSize = GridSize.fromObject(gridSize);
-        if (activeInput === 'cH') {
-            cGridSize.nY = amount;
+        if (!activeInput) {
+            return null;
         }
-        if (activeInput === 'cW') {
-            cGridSize.nX = amount;
-        }
+        const parsedInput = parseFloat(activeValue);
+        const value = isNaN(parsedInput) || parsedInput <= 0 ?
+            (activeInput === 'cH' ? cellSize[0] : cellSize[1]) : parsedInput;
+        const cCellSize: [number, number] = activeInput === 'cH' ? [value, cellSize[1]] : [cellSize[0], value];
 
-        if (!boundingBoxIsFixed) {
-            const cCellSize: [number, number] = activeInput === 'cH' ? [value, cellSize[1]] : [cellSize[0], value];
-            setCellSize(cCellSize);
-        }
+        const result = synchronizeGeometry(
+            props.geometry, boundingBoxIsFixed, cCellSize, null
+        );
 
         setActiveInput(null);
-        setGridSize(cGridSize.toObject());
+        setBoundingBox(result.boundingBox.toObject());
+        setBoundingBoxPreview(result.boundingBoxWithRotation);
+        setCellSize(result.cellSize);
+        setGridSize(result.gridSize.toObject());
     };
 
     const handleBlurGridSize = () => {
@@ -165,8 +128,12 @@ const gridProperties = (props: IProps) => {
         if (activeInput === 'nY') {
             g.nY = parseFloat(activeValue);
         }
+        const result = synchronizeGeometry(
+            props.geometry, boundingBoxIsFixed, null, g
+        );
         setActiveInput(null);
-        setGridSize(g.toObject());
+        setCellSize(result.cellSize);
+        setGridSize(result.gridSize.toObject());
     };
 
     const handleChangeInput = (e: FormEvent<HTMLInputElement>, {name, value}: InputOnChangeData) => {
@@ -186,7 +153,7 @@ const gridProperties = (props: IProps) => {
             return null;
         }
         return props.onChange(
-            BoundingBox.fromGeoJson(boundingBox as AllGeoJSON),
+            BoundingBox.fromObject(boundingBox),
             GridSize.fromObject(gridSize), intersection, rotation, Cells.fromObject(cells)
         );
     };
@@ -197,18 +164,25 @@ const gridProperties = (props: IProps) => {
         if (rotation % 360 !== 0) {
             const withRotation =
                 turf.transformRotate(props.geometry, rotation, {pivot: props.boundingBox.rotationPoint});
-            setBoundingBox(BoundingBox.fromGeoJson(withRotation).geoJson);
+            setBoundingBox(BoundingBox.fromGeoJson(withRotation).toObject());
         } else {
-            setBoundingBox(props.boundingBox.geoJson);
+            setBoundingBox(props.boundingBox.toObject());
         }
         setCells(null);
-        setBoundingBoxRotated(null);
+        setBoundingBoxPreview(null);
+    };
+
+    const handleChangeEditingMode = (mode: string) => () => {
+        if (mode === 'gridSize') {
+            setBoundingBoxIsFixed(true);
+        }
+        setEditingMode(mode);
     };
 
     const handleToggleModal = () => setShowModal(!showModal);
 
     const renderCells = () => {
-        if (!cells || !boundingBoxRotated) {
+        if (!cells || !boundingBoxPreview) {
             return null;
         }
         return (
@@ -246,11 +220,11 @@ const gridProperties = (props: IProps) => {
                         <BasicTileLayer/>
                         <GeoJSON
                             key={uniqueId()}
-                            data={boundingBoxRotated}
+                            data={boundingBoxPreview}
                             style={getStyle('bounding_box')}
                         />
                         <AffectedCellsLayer
-                            boundingBox={BoundingBox.fromGeoJson(boundingBox as AllGeoJSON)}
+                            boundingBox={BoundingBox.fromObject(boundingBox)}
                             cells={Cells.fromObject(cells)}
                             gridSize={GridSize.fromObject(gridSize)}
                             rotation={{geometry: props.geometry, angle: rotation}}
@@ -271,24 +245,21 @@ const gridProperties = (props: IProps) => {
                             <Checkbox
                                 radio={true}
                                 label="Set by grid size"
-                                name="checkboxRadioGroup"
                                 checked={editingMode === 'gridSize'}
-                                onChange={() => setEditingMode('gridSize')}
+                                onChange={handleChangeEditingMode('gridSize')}
                             />
                         </Grid.Column>
                         <Grid.Column width={4}>
                             <Checkbox
                                 radio={true}
                                 label="Set by cell size"
-                                name="checkboxRadioGroup"
                                 checked={editingMode === 'cellSize'}
-                                onChange={() => setEditingMode('cellSize')}
+                                onChange={handleChangeEditingMode('cellSize')}
                             />
                         </Grid.Column>
                         <Grid.Column width={4}>
                             <Checkbox
                                 label="Fixed Boundingbox"
-                                name="fixedBoundingBox"
                                 disabled={editingMode === 'gridSize'}
                                 checked={boundingBoxIsFixed}
                                 onChange={() => setBoundingBoxIsFixed(!boundingBoxIsFixed)}
@@ -395,10 +366,10 @@ const gridProperties = (props: IProps) => {
                             bounds={props.boundingBox.getBoundsLatLng()}
                         >
                             {renderAreaLayer(props.geometry)}
-                            {boundingBoxRotated &&
+                            {boundingBoxPreview &&
                             <GeoJSON
                                 key={uniqueId()}
-                                data={boundingBoxRotated}
+                                data={boundingBoxPreview}
                                 style={getStyle('bounding_box')}
                             />
                             }

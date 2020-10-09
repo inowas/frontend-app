@@ -119,5 +119,4 @@ test('WeightedDistance', () => {
     const raster = distanceWeighting(area, boundingBox, gridSize, points);
 
     expect(raster).toEqual([[0]]);
-})
-;
+});
