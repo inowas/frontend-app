@@ -110,7 +110,7 @@ const gridProperties = (props: IProps) => {
         const cCellSize: [number, number] = activeInput === 'cH' ? [value, cellSize[1]] : [cellSize[0], value];
 
         const result = synchronizeGeometry(
-            props.geometry, boundingBoxIsFixed, cCellSize, null
+            props.geometry, null, boundingBoxIsFixed, cCellSize, null
         );
 
         setActiveInput(null);
@@ -129,7 +129,7 @@ const gridProperties = (props: IProps) => {
             g.nY = parseFloat(activeValue);
         }
         const result = synchronizeGeometry(
-            props.geometry, boundingBoxIsFixed, null, g
+            props.geometry, null, boundingBoxIsFixed, null, g
         );
         setActiveInput(null);
         setCellSize(result.cellSize);
