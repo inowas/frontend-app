@@ -14,7 +14,7 @@ import Sensors from './Sensors';
 import TimeProcessingEditor from './TimeProcessingEditor';
 import TinyLineChart from './TinyLineChart';
 import ValueProcessingEditor from './ValueProcessingEditor';
-import Visualization from './Visualization/Visualization';
+import Visualization from './visualization/Visualization';
 
 export {
     AddSensor,
