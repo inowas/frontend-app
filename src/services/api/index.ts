@@ -6,6 +6,7 @@ import {Array2D, Array3D} from '../../core/model/geometry/Array2D.type';
 import {IDateTimeValue} from '../../core/model/rtm/Sensor.type';
 import {IMetaData, ISimpleTool} from '../../core/model/types';
 import {InterpolationType} from '../../scenes/shared/rasterData/types';
+import {IHeatTransportRequest} from '../../scenes/t10/components/heatTransport/types';
 import {CallbackFunction, ErrorCallbackFunction} from '../../scenes/types';
 import storeToCreate from '../../store';
 import {IBudgetData, IModflowFile, IRasterFileMetadata} from './types';
@@ -148,6 +149,18 @@ export const makeTimeProcessingRequest = (data: IDateTimeValue[], rule: string, 
         data
     }).then((r) => r.data)
 );
+
+export const makeHeatTransportRequest = (data: IHeatTransportRequest) => {
+    const json = JSON.stringify(data);
+    return axios.request({
+        method: 'POST',
+        url: `https://opencpu.inowas.com/ocpu/library/kwb.heatsine.opencpu/R/run_optimisation/json`,
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        data: json
+    }).then((r) => r.data);
+};
 
 export const fetchCalculationObservations = (calculationId: string) => (
     axios.request({
