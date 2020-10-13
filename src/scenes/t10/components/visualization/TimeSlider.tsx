@@ -6,6 +6,8 @@ interface IProps {
     onChange: (ts: [number, number]) => any;
     onMove: (ts: [number, number]) => any;
     timeSteps: number[];
+    format?: string;
+    readOnly?: boolean;
 }
 
 const timeSlider = (props: IProps) => {
@@ -18,11 +20,12 @@ const timeSlider = (props: IProps) => {
         return props.onMove(e);
     };
 
-    const tipFormatter = (s: number) => moment.unix(props.timeSteps[s]).format('YYYY-MM-DD HH:mm:ss');
+    const tipFormatter = (s: number) => moment.unix(props.timeSteps[s]).format(props.format || 'YYYY-MM-DD HH:mm:ss');
 
     return (
         <RangeWithTooltip
             allowCross={false}
+            disabled={props.readOnly}
             min={0}
             max={props.timeSteps.length - 1}
             value={[startIndex, endIndex]}
