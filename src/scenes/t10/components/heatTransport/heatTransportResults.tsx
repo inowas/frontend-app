@@ -1,7 +1,9 @@
+import _ from 'lodash';
 import moment from 'moment';
-import React, {MouseEvent, useState} from 'react';
-import {ResponsiveContainer, Scatter, ScatterChart, XAxis, YAxis} from 'recharts';
-import {Accordion, AccordionTitleProps, Icon, Table} from 'semantic-ui-react';
+import React, {MouseEvent, useEffect, useState} from 'react';
+import {ResponsiveContainer, Scatter, ScatterChart, Tooltip, XAxis, YAxis} from 'recharts';
+import {Button, Checkbox, Icon, Menu, MenuItemProps, Segment, Table} from 'semantic-ui-react';
+import {downloadFile} from '../../../shared/simpleTools/helpers';
 import {IHeatTransportResults} from './types';
 
 interface IProps {
@@ -10,11 +12,40 @@ interface IProps {
 
 const heatTransportResults = (props: IProps) => {
     const [activeIndex, setActiveIndex] = useState<number>(0);
+    const [timesteps, setTimesteps] = useState<[number, number]>([0, 0]);
+    const [useSameTimes, setUseSameTimes] = useState<boolean>(true);
+
+    useEffect(() => {
+        const ts = props.results.data.map((row) => row.date);
+        const fTs = _.orderBy(_.uniq(ts));
+        const min = moment(fTs[0]).unix();
+        const max = moment(fTs[fTs.length - 1]).unix();
+        setTimesteps([min, max]);
+    }, [props.results]);
 
     const traveltimes = props.results.traveltimes;
 
-    const handleClickAccordion = (e: MouseEvent, {index}: AccordionTitleProps) =>
+    const handleChangeCheckbox = () => setUseSameTimes(!useSameTimes);
+
+    const handleClickMenuItem = (e: MouseEvent, {index}: MenuItemProps) =>
         setActiveIndex(typeof index === 'number' ? index : 0);
+
+    const exportData = (arrayOfObjects: Array<{ [key: string]: any }>, filename: string) => () => {
+        if (arrayOfObjects.length < 1) {
+            return null;
+        }
+        const keys = Object.keys(arrayOfObjects[0]);
+        let csvContent = 'data:text/csv;charset=utf-8,';
+        csvContent += keys.join(',');
+        csvContent += '\r\n';
+        arrayOfObjects.forEach((row) => {
+            csvContent += Object.values(row).join(',');
+            csvContent += '\r\n';
+        });
+        const encodedUri = encodeURI(csvContent);
+
+        downloadFile(`${filename}.csv`, encodedUri);
+    };
 
     const renderChart = (dataObs: Array<{ x: number, y: number }>, dataSim: Array<{ x: number, y: number }>) => {
         const RENDER_NO_SHAPE = () => null;
@@ -28,7 +59,7 @@ const heatTransportResults = (props: IProps) => {
                 <ScatterChart>
                     <XAxis
                         dataKey={'x'}
-                        domain={['auto', 'auto']}
+                        domain={useSameTimes ? timesteps : ['auto', 'auto']}
                         name={'Date Time'}
                         tickFormatter={formatDateTimeTicks}
                         type={'number'}
@@ -39,6 +70,7 @@ const heatTransportResults = (props: IProps) => {
                         name={''}
                         domain={['auto', 'auto']}
                     />
+                    <Tooltip cursor={{ strokeDasharray: '3 3' }} />
                     <Scatter
                         data={dataObs}
                         line={{strokeWidth: 2, stroke: '#db3434'}}
@@ -81,8 +113,25 @@ const heatTransportResults = (props: IProps) => {
 
         return (
             <React.Fragment>
+                <Checkbox
+                    label="Use same time scale"
+                    onChange={handleChangeCheckbox}
+                    checked={useSameTimes}
+                    toggle={true}
+                />
                 <h3>groundwater</h3>
                 {renderChart(dataGwObs, dataGwSim)}
+                <div className="downloadButtons">
+                    <Button
+                        compact={true}
+                        basic={true}
+                        icon={true}
+                        size={'small'}
+                        onClick={exportData(props.results.data, 'chart')}
+                    >
+                        <Icon name="download"/> CSV
+                    </Button>
+                </div>
                 <h3>surface-water</h3>
                 {renderChart(dataSwObs, dataSwSim)}
             </React.Fragment>
@@ -130,62 +179,129 @@ const heatTransportResults = (props: IProps) => {
     };
 
     const renderSineFitResults = () => (
-        <Table celled={true} selectable={true}>
-            <Table.Header>
-                <Table.Row>
-                    <Table.HeaderCell rowSpan={2}/>
-                    <Table.HeaderCell rowSpan={2}>Surface Water (IN)</Table.HeaderCell>
-                    <Table.HeaderCell rowSpan={2}>Groundwater (OUT)</Table.HeaderCell>
-                    <Table.HeaderCell colSpan={2}>Residence Time [d]</Table.HeaderCell>
-                </Table.Row>
-                <Table.Row>
-                    <Table.HeaderCell>Thermal</Table.HeaderCell>
-                    <Table.HeaderCell>Hydraulic</Table.HeaderCell>
-                </Table.Row>
-            </Table.Header>
-            <Table.Body>
-                {traveltimes.map((traveltime, key) => {
-                    const keys = Object.keys(traveltime);
-                    const keySw = keys.filter((k) => k.includes('surface-water'));
-                    const keyGw = keys.filter((k) => k.includes('groundwater'));
+        <React.Fragment>
+            <div className="downloadButtons">
+                <Button
+                    compact={true}
+                    basic={true}
+                    icon={true}
+                    size={'small'}
+                    onClick={exportData(traveltimes, 'traveltimes')}
+                >
+                    <Icon name="download"/> CSV
+                </Button>
+            </div>
+            <Table celled={true} selectable={true}>
+                <Table.Header>
+                    <Table.Row>
+                        <Table.HeaderCell rowSpan={2}/>
+                        <Table.HeaderCell rowSpan={2}>Surface Water (IN)</Table.HeaderCell>
+                        <Table.HeaderCell rowSpan={2}>Groundwater (OUT)</Table.HeaderCell>
+                        <Table.HeaderCell colSpan={2}>Residence Time [d]</Table.HeaderCell>
+                    </Table.Row>
+                    <Table.Row>
+                        <Table.HeaderCell>Thermal</Table.HeaderCell>
+                        <Table.HeaderCell>Hydraulic</Table.HeaderCell>
+                    </Table.Row>
+                </Table.Header>
+                <Table.Body>
+                    {traveltimes.map((traveltime, key) => {
+                        const keys = Object.keys(traveltime);
+                        const keySw = keys.filter((k) => k.includes('surface-water'));
+                        const keyGw = keys.filter((k) => k.includes('groundwater'));
 
-                    return (
-                        <Table.Row key={key}>
-                            <Table.Cell>{traveltime.point_type}</Table.Cell>
-                            <Table.Cell>{keySw.length > 0 ? traveltime[keySw[0]] : 'NULL'}</Table.Cell>
-                            <Table.Cell>{keyGw.length > 0 ? traveltime[keyGw[0]] : 'NULL'}</Table.Cell>
-                            <Table.Cell>{traveltime.traveltime_thermal_days}</Table.Cell>
-                            <Table.Cell>{traveltime.traveltime_hydraulic_days}</Table.Cell>
-                        </Table.Row>
-                    );
-                })}
-            </Table.Body>
-        </Table>
+                        return (
+                            <Table.Row key={key}>
+                                <Table.Cell>{traveltime.point_type}</Table.Cell>
+                                <Table.Cell>{keySw.length > 0 ? traveltime[keySw[0]] : 'NULL'}</Table.Cell>
+                                <Table.Cell>{keyGw.length > 0 ? traveltime[keyGw[0]] : 'NULL'}</Table.Cell>
+                                <Table.Cell>{traveltime.traveltime_thermal_days}</Table.Cell>
+                                <Table.Cell>{traveltime.traveltime_hydraulic_days}</Table.Cell>
+                            </Table.Row>
+                        );
+                    })}
+                </Table.Body>
+            </Table>
+        </React.Fragment>
     );
 
+    const renderContent = () => {
+        switch (activeIndex) {
+            case 0:
+                return renderGraph();
+            case 1:
+                return (
+                    <React.Fragment>
+                        <div className="downloadButtons">
+                            <Button
+                                compact={true}
+                                basic={true}
+                                icon={true}
+                                size={'small'}
+                                onClick={exportData(props.results.paras, 'parameters')}
+                            >
+                                <Icon name="download"/> CSV
+                            </Button>
+                        </div>
+                        {renderData(props.results.paras)}
+                    </React.Fragment>
+                );
+            case 2:
+                return (
+                    <React.Fragment>
+                        <div className="downloadButtons">
+                            <Button
+                                compact={true}
+                                basic={true}
+                                icon={true}
+                                size={'small'}
+                                onClick={exportData(props.results.gof, 'goodnessOfFit')}
+                            >
+                                <Icon name="download"/> CSV
+                            </Button>
+                        </div>
+                        {renderData(props.results.gof)}
+                    </React.Fragment>
+                );
+            case 3:
+                return renderSineFitResults();
+            default:
+                return null;
+        }
+    };
+
     return (
-        <Accordion fluid={true} styled={true}>
-            <Accordion.Title active={activeIndex === 0} index={0} onClick={handleClickAccordion}>
-                <Icon name="dropdown"/>
-                Graph
-            </Accordion.Title>
-            <Accordion.Content active={activeIndex === 0}>{renderGraph()}</Accordion.Content>
-            <Accordion.Title active={activeIndex === 1} index={1} onClick={handleClickAccordion}>
-                <Icon name="dropdown"/>
-                Optimization Parameters
-            </Accordion.Title>
-            <Accordion.Content active={activeIndex === 1}>{renderData(props.results.paras)}</Accordion.Content>
-            <Accordion.Title active={activeIndex === 2} index={2} onClick={handleClickAccordion}>
-                <Icon name="dropdown"/>
-                Goodness of Fit
-            </Accordion.Title>
-            <Accordion.Content active={activeIndex === 2}>{renderData(props.results.gof)}</Accordion.Content>
-            <Accordion.Title active={activeIndex === 3} index={3} onClick={handleClickAccordion}>
-                <Icon name="dropdown"/>
-                Sine Fit Results
-            </Accordion.Title>
-            <Accordion.Content active={activeIndex === 3}>{renderSineFitResults()}</Accordion.Content>
-        </Accordion>
+        <React.Fragment>
+            <Menu attached="top" tabular={true}>
+                <Menu.Item
+                    active={activeIndex === 0}
+                    index={0}
+                    name="Graph"
+                    onClick={handleClickMenuItem}
+                />
+                <Menu.Item
+                    active={activeIndex === 1}
+                    index={1}
+                    name="Optimization Parameters"
+                    onClick={handleClickMenuItem}
+                />
+                <Menu.Item
+                    active={activeIndex === 2}
+                    index={2}
+                    name="Goodness of Fit"
+                    onClick={handleClickMenuItem}
+                />
+                <Menu.Item
+                    active={activeIndex === 3}
+                    index={3}
+                    name="Sine Fit Results"
+                    onClick={handleClickMenuItem}
+                />
+            </Menu>
+            <Segment attached="bottom">
+                {renderContent()}
+            </Segment>
+        </React.Fragment>
     );
 };
 
