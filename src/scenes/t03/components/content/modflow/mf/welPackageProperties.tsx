@@ -20,7 +20,7 @@ interface IProps {
     readonly: boolean;
 }
 
-const welPackageProperties = (props: IProps) => {
+const WelPackageProperties = (props: IProps) => {
     const [mfPackage] = useState<IFlopyModflowMfwel>(props.mfPackage.toObject());
     const {mfPackages, readonly} = props;
     const disPackage: FlopyModflowMfdis = mfPackages.getPackage('dis') as FlopyModflowMfdis;
@@ -131,4 +131,4 @@ const welPackageProperties = (props: IProps) => {
     );
 };
 
-export default welPackageProperties;
+export default WelPackageProperties;

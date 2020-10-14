@@ -19,7 +19,7 @@ const styles = {
     }
 };
 
-const userProfile = () => {
+const UserProfile = () => {
 
     const dispatch = useDispatch();
     const user = useSelector((state: IRootReducer) => state.user);
@@ -166,4 +166,4 @@ const userProfile = () => {
     );
 };
 
-export default userProfile;
+export default UserProfile;

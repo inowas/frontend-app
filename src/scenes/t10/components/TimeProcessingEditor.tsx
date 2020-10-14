@@ -17,7 +17,7 @@ interface IProps {
     onCancel: () => void;
 }
 
-const timeProcessingEditor = (props: IProps) => {
+const TimeProcessingEditor = (props: IProps) => {
 
     const [processing, setProcessing] = useState<TimeProcessing | null>(null);
 
@@ -287,4 +287,4 @@ const timeProcessingEditor = (props: IProps) => {
 
 };
 
-export default timeProcessingEditor;
+export default TimeProcessingEditor;

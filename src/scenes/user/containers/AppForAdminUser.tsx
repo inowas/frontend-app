@@ -9,7 +9,7 @@ interface IProps {
     children: ReactNode;
 }
 
-const appForAdminUser = (props: IProps) => {
+const AppForAdminUser = (props: IProps) => {
 
     const dispatch = useDispatch();
     const session = useSelector((state: IRootReducer) => state.session);
@@ -34,4 +34,4 @@ const appForAdminUser = (props: IProps) => {
     return props.children;
 };
 
-export default appForAdminUser;
+export default AppForAdminUser;

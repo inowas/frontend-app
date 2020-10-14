@@ -18,7 +18,7 @@ interface IProps {
     onCancel: () => void;
 }
 
-const valueProcessingEditor = (props: IProps) => {
+const ValueProcessingEditor = (props: IProps) => {
 
     const [processing, setProcessing] = useState<ValueProcessing | null>(null);
 
@@ -282,4 +282,4 @@ const valueProcessingEditor = (props: IProps) => {
 
 };
 
-export default valueProcessingEditor;
+export default ValueProcessingEditor;

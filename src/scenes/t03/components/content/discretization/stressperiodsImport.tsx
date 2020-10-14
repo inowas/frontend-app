@@ -11,8 +11,8 @@ interface IProps {
     stressperiods: Stressperiods;
 }
 
-const stressperiodsImport = (props: IProps) => {
-    const [errors, setErrors] = useState<Array<{ message: string }>>([]);
+const StressperiodsImport = (props: IProps) => {
+    const [errors] = useState<Array<{ message: string }>>([]);
     const [showImportModal, setShowImportModal] = useState<boolean>(false);
     const [showAdvancedImportModal, setShowAdvancedImportModal] = useState<boolean>(false);
 
@@ -177,4 +177,4 @@ const stressperiodsImport = (props: IProps) => {
     );
 };
 
-export default stressperiodsImport;
+export default StressperiodsImport;

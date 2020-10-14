@@ -21,7 +21,7 @@ interface IProps {
     readonly: boolean;
 }
 
-const pcgnPackageProperties = (props: IProps) => {
+const PcgnPackageProperties = (props: IProps) => {
 
     const [mfPackage, setMfPackage] = useState<IFlopyModflowMfpcgn>(props.mfPackage.toObject());
     const handleOnSelect = (e: SyntheticEvent<HTMLElement, Event>, data: DropdownProps) => {
@@ -340,4 +340,4 @@ const pcgnPackageProperties = (props: IProps) => {
     );
 };
 
-export default pcgnPackageProperties;
+export default PcgnPackageProperties;

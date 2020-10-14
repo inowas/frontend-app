@@ -33,7 +33,7 @@ interface ISensorMetaData {
     };
 }
 
-const sensorDatasourceEditor = (props: IProps) => {
+const SensorDatasourceEditor = (props: IProps) => {
 
     const [dataSource, setDatasource] = useState<SensorDataSource | null>(null);
     const [fetchingServerMetaData, setFetchingServerMetaData] = useState<boolean>(false);
@@ -549,4 +549,4 @@ const sensorDatasourceEditor = (props: IProps) => {
 
 };
 
-export default sensorDatasourceEditor;
+export default SensorDatasourceEditor;

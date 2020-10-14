@@ -15,7 +15,7 @@ interface IProps {
     selected?: string;
 }
 
-const zonesList = ({layers, zones, onClick, onClone, onRemove, readOnly, selected}: IProps) => {
+const ZonesList = ({layers, zones, onClick, onClone, onRemove, readOnly, selected}: IProps) => {
 
     const handleClick = (id: string) => {
         return () => onClick(id);
@@ -87,4 +87,4 @@ const zonesList = ({layers, zones, onClick, onClone, onRemove, readOnly, selecte
     );
 };
 
-export default pure(zonesList);
+export default pure(ZonesList);

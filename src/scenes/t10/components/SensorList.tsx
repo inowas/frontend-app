@@ -12,7 +12,7 @@ interface IProps {
     readOnly: boolean;
 }
 
-const sensorList = (props: IProps) => {
+const SensorList = (props: IProps) => {
 
     const handleClick = (id: string) => () => props.onChangeSelectedSensor(id);
     const handleClone = (id: string) => () => props.onClone(id);
@@ -80,4 +80,4 @@ const sensorList = (props: IProps) => {
     );
 };
 
-export default sensorList;
+export default SensorList;

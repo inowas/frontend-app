@@ -50,7 +50,7 @@ interface IProps {
     readonly: boolean;
 }
 
-const ocPackageProperties = (props: IProps) => {
+const OcPackageProperties = (props: IProps) => {
     const [activeInput, setActiveInput] = useState<string | null>(null);
     const [activePage, setActivePage] = useState<number>(1);
     const [activeValue, setActiveValue] = useState<string>('');
@@ -421,4 +421,4 @@ const ocPackageProperties = (props: IProps) => {
     );
 };
 
-export default ocPackageProperties;
+export default OcPackageProperties;

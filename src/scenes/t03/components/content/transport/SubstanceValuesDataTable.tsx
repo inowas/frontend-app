@@ -14,7 +14,7 @@ interface IProps {
     substance: Substance;
 }
 
-const substanceValuesDataTable = (props: IProps) => {
+const SubstanceValuesDataTable = (props: IProps) => {
     const [spValues, setSpValues] = useState<Array<number | string>>([]);
 
     useEffect(() => {
@@ -114,4 +114,4 @@ const substanceValuesDataTable = (props: IProps) => {
     );
 };
 
-export default substanceValuesDataTable;
+export default SubstanceValuesDataTable;

@@ -45,7 +45,7 @@ interface IVisibleZone extends IZone {
     isActive: boolean;
 }
 
-const zoneDetails = (props: IProps) => {
+const ZoneDetails = (props: IProps) => {
     const [relationWarning, setRelationWarning] = useState<boolean>(false);
     const [editedZone, setEditedZone] = useState<IZone | null>(null);
     const [zone, setZone] = useState<IZone>(props.zone.toObject());
@@ -284,4 +284,4 @@ const zoneDetails = (props: IProps) => {
     );
 };
 
-export default zoneDetails;
+export default ZoneDetails;

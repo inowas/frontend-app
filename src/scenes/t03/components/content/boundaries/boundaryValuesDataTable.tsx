@@ -23,7 +23,7 @@ interface IProps {
     stressperiods: Stressperiods;
 }
 
-const boundaryValuesDataTable = (props: IProps) => {
+const BoundaryValuesDataTable = (props: IProps) => {
     const [activeInput, setActiveInput] = useState<IActiveInput | null>(null);
     const [stressperiodsPerPage] = useState<number>(20);
     const [paginationPage, setPaginationPage] = useState<number>(1);
@@ -221,4 +221,4 @@ const boundaryValuesDataTable = (props: IProps) => {
     );
 };
 
-export default boundaryValuesDataTable;
+export default BoundaryValuesDataTable;

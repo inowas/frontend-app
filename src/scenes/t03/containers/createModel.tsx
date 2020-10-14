@@ -48,7 +48,7 @@ const navigation = [{
     icon: <Icon name="file"/>
 }];
 
-const createModel = () => {
+const CreateModel = () => {
     const [modelName, setModelName] = useState<string>(defaults.name);
     const [description, setDescription] = useState<string>(defaults.description);
     const [geometry, setGeometry] = useState<IGeometry | null>(null);
@@ -419,4 +419,4 @@ const createModel = () => {
     );
 };
 
-export default withRouter(createModel);
+export default withRouter(CreateModel);

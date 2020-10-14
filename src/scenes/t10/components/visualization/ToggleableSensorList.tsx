@@ -7,7 +7,7 @@ interface IProps {
     onChange: (sensors: IParameterWithMetaData[]) => any;
 }
 
-const toggleableSensorList = (props: IProps) => {
+const ToggleableSensorList = (props: IProps) => {
 
     const handleChangeCheckbox = (e: FormEvent, {name, value}: CheckboxProps) => {
         if (name === '_all') {
@@ -73,4 +73,4 @@ const toggleableSensorList = (props: IProps) => {
     );
 };
 
-export default toggleableSensorList;
+export default ToggleableSensorList;

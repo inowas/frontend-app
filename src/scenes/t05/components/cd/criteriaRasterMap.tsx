@@ -47,7 +47,7 @@ interface IProps {
     mapHeight?: string;
 }
 
-const criteriaRasterMap = (props: IProps) => {
+const CriteriaRasterMap = (props: IProps) => {
     const [showMap, setShowMap] = useState<boolean>(
         props.gridSize.nX * props.gridSize.nY <= maximumGridCells
     );
@@ -191,4 +191,4 @@ const criteriaRasterMap = (props: IProps) => {
     );
 };
 
-export default criteriaRasterMap;
+export default CriteriaRasterMap;

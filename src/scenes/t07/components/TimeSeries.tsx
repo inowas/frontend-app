@@ -1,4 +1,5 @@
 import { upperFirst } from 'lodash';
+import moment from 'moment';
 import React, { SyntheticEvent, useEffect, useState } from 'react';
 import { CartesianGrid, Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
 import { Dimmer, DropdownProps, Form, Grid, Loader, Segment } from 'semantic-ui-react';
@@ -12,10 +13,9 @@ import { ScenarioAnalysis } from '../../../core/model/scenarioAnalysis';
 import { axios } from '../../../services';
 import { MODFLOW_CALCULATION_URL } from '../../../services/api';
 import { EResultType } from '../../t03/components/content/results/flowResults';
+import { heatMapColors } from '../../t05/defaults/gis';
 import { CallbackFunction, ErrorCallbackFunction } from '../../types';
 import TimeSeriesMap from './TimeSeriesMap';
-import { heatMapColors } from '../../t05/defaults/gis';
-import moment from 'moment';
 
 interface IProps {
     models: { [id: string]: IModflowModel };
@@ -26,7 +26,7 @@ interface IProps {
     soilmodels: { [id: string]: ISoilmodel };
 }
 
-const timeSeries = (props: IProps) => {
+const TimeSeries = (props: IProps) => {
     // const [data, setData] = useState<{ [id: string]: Array2D<number> }>({});
 
     const [data, setData] = useState<Array<{ [key: string]: number }>>([]);
@@ -263,4 +263,4 @@ const timeSeries = (props: IProps) => {
     );
 };
 
-export default timeSeries;
+export default TimeSeries;

@@ -59,7 +59,7 @@ export interface IStatistics {
     linRegObsRResNpf: ILinearRegression;
 }
 
-const observationStatistics = () => {
+const ObservationStatistics = () => {
     const [isLoading, setIsLoading] = useState<boolean>(false);
     const [isCalculating, setIsCalculating] = useState<boolean>(false);
 
@@ -269,4 +269,4 @@ const observationStatistics = () => {
     );
 };
 
-export default observationStatistics;
+export default ObservationStatistics;

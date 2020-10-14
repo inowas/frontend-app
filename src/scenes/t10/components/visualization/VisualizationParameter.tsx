@@ -113,7 +113,7 @@ const processData = (data: IParameterWithMetaData[], tsData: ITimeStamps) => {
     });
 };
 
-const visualizationParameter = (props: IProps) => {
+const VisualizationParameter = (props: IProps) => {
     const [isAnimated, setIsAnimated] = useState<boolean>(false);
     const [isFetching, setIsFetching] = useState<boolean>(true);
 
@@ -469,4 +469,4 @@ const visualizationParameter = (props: IProps) => {
     );
 };
 
-export default visualizationParameter;
+export default VisualizationParameter;

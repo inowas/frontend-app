@@ -3,16 +3,15 @@ import {useDispatch} from 'react-redux';
 import {Redirect} from 'react-router';
 import {Action} from '../actions/index';
 
-const logout = () => {
+const Logout = () => {
     const dispatch = useDispatch();
-
     useEffect(() => {
         dispatch(Action.logout());
-    }, []);
+    });
 
     return (
         <Redirect to={'/'}/>
     );
 };
 
-export default logout;
+export default Logout;

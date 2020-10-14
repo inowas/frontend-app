@@ -12,7 +12,7 @@ interface IProps {
     readonly: boolean;
 }
 
-const sorPackageProperties = (props: IProps) => {
+const SorPackageProperties = (props: IProps) => {
 
     const [mfPackage, setMfPackage] = useState<IFlopyModflowMfsor>(props.mfPackage.toObject());
     const {readonly} = props;
@@ -127,4 +127,4 @@ const sorPackageProperties = (props: IProps) => {
     );
 };
 
-export default sorPackageProperties;
+export default SorPackageProperties;

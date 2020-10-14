@@ -21,7 +21,7 @@ interface IProps {
     readOnly: boolean;
 }
 
-const advPackageProperties = (props: IProps) => {
+const AdvPackageProperties = (props: IProps) => {
 
     const [mtPackage, setMtPackage] = useState<IFlopyMt3dMtAdv>(props.mtPackage.toObject());
     const [activeIndex, setActiveIndex] = useState<number>(0);
@@ -396,4 +396,4 @@ const advPackageProperties = (props: IProps) => {
     );
 };
 
-export default advPackageProperties;
+export default AdvPackageProperties;

@@ -16,7 +16,7 @@ interface IProps {
     readonly: boolean;
 }
 
-const drnPackageProperties = (props: IProps) => {
+const DrnPackageProperties = (props: IProps) => {
     const [mfPackage, setMfPackage] = useState<IFlopyModflowMfdrn>(props.mfPackage.toObject());
     const {mfPackages, readonly} = props;
 
@@ -145,4 +145,4 @@ const drnPackageProperties = (props: IProps) => {
     );
 };
 
-export default drnPackageProperties;
+export default DrnPackageProperties;

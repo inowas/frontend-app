@@ -15,7 +15,7 @@ interface IProps {
     readOnly: boolean;
 }
 
-const vscPackageProperties = (props: IProps) => {
+const VscPackageProperties = (props: IProps) => {
 
     const [swtPackage, setSwtPackage] = useState<IFlopySeawatSwtvsc>(props.swtPackage.toObject());
 
@@ -281,4 +281,4 @@ const vscPackageProperties = (props: IProps) => {
 
 };
 
-export default vscPackageProperties;
+export default VscPackageProperties;

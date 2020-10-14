@@ -9,9 +9,12 @@ import Terminal from '../../../../shared/complexTools/Terminal';
 
 import {fetchModflowFile, MODFLOW_CALCULATION_URL} from '../../../../../services/api';
 
-const modflowFiles = () => {
+const ModflowFiles = () => {
 
     const [isLoading, setIsLoading] = useState<boolean>(false);
+
+    // Todo show errors
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const [isError, setIsError] = useState<boolean>(false);
     const [selectedFile, setSelectedFile] = useState<string | null>(null);
     const [copyToClipBoardSuccessful, setCopyToClipBoardSuccessful] = useState<boolean>(false);
@@ -32,6 +35,7 @@ const modflowFiles = () => {
             }
         });
 
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     const fetchFile = (id: string, f: string) => {
@@ -145,4 +149,4 @@ const modflowFiles = () => {
     );
 };
 
-export default modflowFiles;
+export default ModflowFiles;

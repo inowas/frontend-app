@@ -43,7 +43,7 @@ const styles = {
     }
 };
 
-const affectedCellsLayer = (props: IProps) => {
+const AffectedCellsLayer = (props: IProps) => {
     const [iBoundLayer, setIBoundLayer] = useState();
     const [boundingBox, setBoundingBox] = useState<IBoundingBox>(props.boundingBox.toObject());
     const [boundaryLayer, setBoundaryLayer] = useState();
@@ -53,10 +53,6 @@ const affectedCellsLayer = (props: IProps) => {
 
     const T03 = useSelector((state: IRootReducer) => state.T03);
     const boundaries = T03.boundaries ? BoundaryCollection.fromObject(T03.boundaries) : null;
-
-    if (!boundaries) {
-        return null;
-    }
 
     useEffect(() => {
         setBoundingBox(props.boundingBox.toObject());
@@ -98,7 +94,7 @@ const affectedCellsLayer = (props: IProps) => {
     }, [iBoundLayer]);
 
     useEffect(() => {
-        if (!props.boundary || !T03.boundaries) {
+        if (!props.boundary || !T03.boundaries || !boundaries) {
             return;
         }
         const sameTypeBoundaries = boundaries.all.filter(
@@ -109,6 +105,10 @@ const affectedCellsLayer = (props: IProps) => {
             ) : null
         );
     }, [T03.boundaries]);
+
+    if (!boundaries) {
+        return null;
+    }
 
     const createPolygon = (bbox: BoundingBox, gridSize: GridSize, cells: Cells, style: any, key?: number) => {
         const dX = bbox.dX / gridSize.nX;
@@ -235,4 +235,4 @@ const affectedCellsLayer = (props: IProps) => {
     );
 };
 
-export default affectedCellsLayer;
+export default AffectedCellsLayer;

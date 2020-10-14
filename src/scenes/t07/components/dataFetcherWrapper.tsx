@@ -27,7 +27,7 @@ interface IIdValueObject<T> {
     [id: string]: T;
 }
 
-const dataFetcherWrapper = (props: IProps) => {
+const DataFetcherWrapper = (props: IProps) => {
     const dispatch = useDispatch();
 
     const [scenarioAnalysisId, setScenarioAnalysisId] = useState<string | null>(null);
@@ -246,4 +246,4 @@ const dataFetcherWrapper = (props: IProps) => {
     );
 };
 
-export default withRouter(dataFetcherWrapper);
+export default withRouter(DataFetcherWrapper);

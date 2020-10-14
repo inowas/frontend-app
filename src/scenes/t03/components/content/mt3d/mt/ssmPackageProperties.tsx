@@ -19,7 +19,7 @@ interface IProps {
     readOnly: boolean;
 }
 
-const ssmPackageProperties = (props: IProps) => {
+const SsmPackageProperties = (props: IProps) => {
 
     const [mtPackage, setMtPackage] = useState<IFlopyMt3dMtssm>(props.mtPackage.toObject());
 
@@ -105,4 +105,4 @@ const ssmPackageProperties = (props: IProps) => {
     );
 };
 
-export default ssmPackageProperties;
+export default SsmPackageProperties;

@@ -39,7 +39,7 @@ interface ISmoothParameters {
     parameterId: string;
 }
 
-const layerDetails = (props: IProps) => {
+const LayerDetails = (props: IProps) => {
     const [layer, setLayer] = useState<ISoilmodelLayer>(props.layer.toObject());
     const [activeParameter, setActiveParameter] = useState<ILayerParameter>();
 
@@ -317,4 +317,4 @@ const layerDetails = (props: IProps) => {
     );
 };
 
-export default layerDetails;
+export default LayerDetails;

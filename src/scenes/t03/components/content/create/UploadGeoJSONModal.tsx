@@ -75,7 +75,7 @@ const examples: { [index in TGeometryString]: string } = {
 }`
 };
 
-const uploadGeoJSONModal = (props: IProps) => {
+const UploadGeoJSONModal = (props: IProps) => {
     const [showModal, setShowModal] = useState<boolean>(false);
     const [geometry, setGeometry] = useState<IGeometry | undefined>(undefined);
     const [geoJson, setGeoJson] = useState<string>('');
@@ -268,4 +268,4 @@ ${props.geometry ? examples[props.geometry] : examples.polygon}`}
     );
 };
 
-export default uploadGeoJSONModal;
+export default UploadGeoJSONModal;

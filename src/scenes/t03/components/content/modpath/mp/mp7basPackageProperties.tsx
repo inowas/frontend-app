@@ -11,7 +11,7 @@ interface IProps {
     readOnly: boolean;
 }
 
-const mp7basPackageProperties = (props: IProps) => {
+const Mp7basPackageProperties = (props: IProps) => {
     const {readOnly} = props;
     const [mpPackage, setMpPackage] = useState<IPropertyValueObject>(props.mpPackage.toObject());
 
@@ -57,4 +57,4 @@ const mp7basPackageProperties = (props: IProps) => {
     );
 };
 
-export default mp7basPackageProperties;
+export default Mp7basPackageProperties;

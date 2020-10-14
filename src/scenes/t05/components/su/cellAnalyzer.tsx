@@ -15,7 +15,7 @@ interface ICellAnalyzerProps {
     onClose(): any;
 }
 
-const cellAnalyzer = (props: ICellAnalyzerProps) => {
+const CellAnalyzer = (props: ICellAnalyzerProps) => {
     const {onClose, cell, mcda} = props;
 
     const renderCriterion = (criterion: ICriterion, key: number) => {
@@ -86,4 +86,4 @@ const cellAnalyzer = (props: ICellAnalyzerProps) => {
     );
 };
 
-export default cellAnalyzer;
+export default CellAnalyzer;

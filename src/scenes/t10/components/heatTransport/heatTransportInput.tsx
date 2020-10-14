@@ -26,7 +26,7 @@ interface IProps {
     rtm: Rtm;
 }
 
-const heatTransportInput = (props: IProps) => {
+const HeatTransportInput = (props: IProps) => {
     const [isFetching, setIsFetching] = useState<boolean>(false);
 
     const [sensor, setSensor] = useState<ISensor>();
@@ -216,4 +216,4 @@ const heatTransportInput = (props: IProps) => {
     );
 };
 
-export default heatTransportInput;
+export default HeatTransportInput;

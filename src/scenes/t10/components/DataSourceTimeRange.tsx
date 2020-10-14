@@ -7,7 +7,7 @@ interface IProps {
     color?: string;
 }
 
-const dsTimeRange = (props: IProps) => {
+const DsTimeRange = (props: IProps) => {
 
     const {datasource} = props;
     if (!datasource) {
@@ -35,4 +35,4 @@ const dsTimeRange = (props: IProps) => {
     return <span>{begin} - {end}</span>;
 };
 
-export default dsTimeRange;
+export default DsTimeRange;

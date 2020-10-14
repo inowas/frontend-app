@@ -18,7 +18,7 @@ interface IStateProps {
 
 type IProps = IStateProps & RouteComponentProps<any>;
 
-const t03Navigation = (props: IProps) => {
+const T03Navigation = (props: IProps) => {
     useEffect(() => {
         return;
     }, [props.match.params.property]);
@@ -109,4 +109,4 @@ const mapStateToProps = (state: any) => {
     });
 };
 
-export default withRouter(connect<IStateProps>(mapStateToProps)(t03Navigation));
+export default withRouter(connect<IStateProps>(mapStateToProps)(T03Navigation));

@@ -18,7 +18,7 @@ interface IUploadState {
     success: boolean;
 }
 
-const csvUpload = (props: IProps) => {
+const CsvUpload = (props: IProps) => {
     const [modalOpen, setModalOpen] = useState<boolean>(true);
     const prevUploadState = usePrevious<IUploadState>(props.uploadState);
 
@@ -97,4 +97,4 @@ const csvUpload = (props: IProps) => {
     );
 };
 
-export default csvUpload;
+export default CsvUpload;

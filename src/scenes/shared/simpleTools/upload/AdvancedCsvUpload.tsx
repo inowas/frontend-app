@@ -26,7 +26,7 @@ interface IProps {
     withoutModal?: boolean;
 }
 
-const advancedCsvUpload = (props: IProps) => {
+const AdvancedCsvUpload = (props: IProps) => {
     const [columns, setColumns] = useState<TColumns>(props.columns);
     const [metadata, setMetadata] = useState<ParseResult | null>(null);
 
@@ -329,4 +329,4 @@ const advancedCsvUpload = (props: IProps) => {
     return renderContent();
 };
 
-export default advancedCsvUpload;
+export default AdvancedCsvUpload;

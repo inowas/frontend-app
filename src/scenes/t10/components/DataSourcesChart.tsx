@@ -15,7 +15,7 @@ interface IProps {
     unit?: string;
 }
 
-const dataSourcesChart = (props: IProps) => {
+const DataSourcesChart = (props: IProps) => {
     const [data, setData] = useState<IDateTimeValue[] | null>(null);
     const chartRef = useRef<ScatterChart>(null);
 
@@ -107,4 +107,4 @@ const dataSourcesChart = (props: IProps) => {
     );
 };
 
-export default dataSourcesChart;
+export default DataSourcesChart;

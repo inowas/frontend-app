@@ -9,7 +9,8 @@ interface IProps {
     mcda: MCDA;
 }
 
-const suitabilityResults = (props: IProps) => {
+// tslint:disable-next-line:variable-name
+const SuitabilityResults = (props: IProps) => {
     const [colors, setColors] = useState<string>('reclassified');
     const [layer, setLayer] = useState<string>('suitability');
     const [selectedCell, setSelectedCell] = useState<{ x: number, y: number } | null>(null);
@@ -195,4 +196,4 @@ NODATA_VALUE -9999
     );
 };
 
-export default suitabilityResults;
+export default SuitabilityResults;

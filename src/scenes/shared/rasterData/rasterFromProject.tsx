@@ -26,7 +26,7 @@ const styles = {
     }
 };
 
-const rasterFromProject = (props: IProps) => {
+const RasterFromProject = (props: IProps) => {
     const [data, setData] = useState<Array2D<number> | number>();
     const [isFetching, setIsFetching] = useState<boolean>(false);
     const [mode, setMode] = useState<string>('results');
@@ -281,4 +281,4 @@ const rasterFromProject = (props: IProps) => {
     );
 };
 
-export default rasterFromProject;
+export default RasterFromProject;

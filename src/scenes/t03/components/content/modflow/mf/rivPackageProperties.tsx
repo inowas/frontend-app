@@ -16,7 +16,7 @@ interface IProps {
     readonly: boolean;
 }
 
-const rivPackageProperties = (props: IProps) => {
+const RivPackageProperties = (props: IProps) => {
     const [mfPackage] = useState<IFlopyModflowMfriv>(props.mfPackage.toObject());
     const {mfPackages, readonly} = props;
 
@@ -131,4 +131,4 @@ const rivPackageProperties = (props: IProps) => {
     );
 };
 
-export default rivPackageProperties;
+export default RivPackageProperties;

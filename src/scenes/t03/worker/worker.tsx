@@ -19,7 +19,7 @@ let w: Worker | undefined;
 const loadWorker = () => {
     let worker;
     try {
-        // tslint:disable-next-line:no-var-requires
+        // eslint-disable-next-line import/no-webpack-loader-syntax
         worker = require('worker-loader!./t03.worker');
     } catch (e) {
         if (process.env.NODE_ENV !== 'test') {
@@ -61,7 +61,7 @@ export const asyncWorker = (input: IProps['input']) => {
     });
 };
 
-const workerComponent = (props: IProps) => {
+const WorkerComponent = (props: IProps) => {
     useEffect(() => {
         w = loadWorker();
         w.addEventListener('message', handleMessage);
@@ -106,4 +106,4 @@ const workerComponent = (props: IProps) => {
     return null;
 };
 
-export default workerComponent;
+export default WorkerComponent;

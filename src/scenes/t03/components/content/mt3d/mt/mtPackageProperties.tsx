@@ -11,7 +11,7 @@ interface IProps {
     readOnly: boolean;
 }
 
-const mtPackageProperties = (props: IProps) => {
+const MtPackageProperties = (props: IProps) => {
 
     const handleOnSelect = (e: SyntheticEvent, {name, value}: DropdownProps) => {
         const cMtPackage = props.mtPackage.toObject();
@@ -68,4 +68,4 @@ const mtPackageProperties = (props: IProps) => {
     );
 };
 
-export default mtPackageProperties;
+export default MtPackageProperties;

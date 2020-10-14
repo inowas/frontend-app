@@ -12,7 +12,7 @@ interface IProps {
     onChange: (criterion: Criterion) => any;
 }
 
-const criteriaDataResults = (props: IProps) => {
+const CriteriaDataResults = (props: IProps) => {
     const [colors, setColors] = useState<string>('default');
     const [layer, setLayer] = useState<string>('suitability');
     const [showBasicLayer, setShowBasicLayer] = useState<boolean>(false);
@@ -231,4 +231,4 @@ NODATA_VALUE -9999
     );
 };
 
-export default criteriaDataResults;
+export default CriteriaDataResults;

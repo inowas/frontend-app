@@ -46,7 +46,7 @@ interface IProps {
     data: any[];
 }
 
-const chart = (props: IProps) => {
+const Chart = (props: IProps) => {
 
     const chartRef = useRef<ScatterChart | null>(null);
 
@@ -150,4 +150,4 @@ const chart = (props: IProps) => {
     );
 };
 
-export default chart;
+export default Chart;

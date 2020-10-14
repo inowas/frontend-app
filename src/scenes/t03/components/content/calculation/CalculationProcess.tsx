@@ -28,7 +28,7 @@ import CalculationStatus, {
     CALCULATION_STATE_WAITING_FOR_CALCULATION
 } from './CalculationProgress';
 
-const calculationProcess = () => {
+const CalculationProcess = () => {
 
         const [fetching, setFetching] = useState<boolean>(false);
         const [polling, setPolling] = useState<boolean>(false);
@@ -203,4 +203,4 @@ const calculationProcess = () => {
     }
 ;
 
-export default calculationProcess;
+export default CalculationProcess;

@@ -32,7 +32,7 @@ const styles = {
     }
 };
 
-const uploadGeoJSONFile = (props: IProps) => {
+const UploadGeoJSONFile = (props: IProps) => {
     const [isLoading, setIsLoading] = useState<boolean>(false);
     const [errors, setErrors] = useState<string[]>([]);
     const [features, setFeatures] = useState<GeoJSONType[]>([]);
@@ -221,4 +221,4 @@ const uploadGeoJSONFile = (props: IProps) => {
     );
 };
 
-export default uploadGeoJSONFile;
+export default UploadGeoJSONFile;
