@@ -94,10 +94,6 @@ const t03 = (props: IProps) => {
         }
     }, []);
 
-    const handleChangeToolMetaData = () => {
-        return null;
-    };
-
     const saveMetaData = (tool: IToolMetaDataEdit) => {
         const {name, description} = tool;
         const isPublic = tool.public;
@@ -122,7 +118,6 @@ const t03 = (props: IProps) => {
             <DataFetcherWrapper>
                 {props.model && <ToolMetaData
                     isDirty={false}
-                    onChange={handleChangeToolMetaData}
                     readOnly={false}
                     tool={{
                         tool: 'T03',

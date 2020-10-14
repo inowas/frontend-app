@@ -1,8 +1,9 @@
 import _ from 'lodash';
 import moment from 'moment';
 import React, {MouseEvent, useEffect, useState} from 'react';
-import {ResponsiveContainer, Scatter, ScatterChart, Tooltip, XAxis, YAxis} from 'recharts';
+import {Label, ReferenceDot, ResponsiveContainer, Scatter, ScatterChart, Tooltip, XAxis, YAxis} from 'recharts';
 import {Button, Checkbox, Icon, Menu, MenuItemProps, Segment, Table} from 'semantic-ui-react';
+import {SemanticCOLORS} from 'semantic-ui-react/dist/commonjs/generic';
 import {downloadFile} from '../../../shared/simpleTools/helpers';
 import {IHeatTransportResults} from './types';
 
@@ -47,12 +48,25 @@ const heatTransportResults = (props: IProps) => {
         downloadFile(`${filename}.csv`, encodedUri);
     };
 
-    const renderChart = (dataObs: Array<{ x: number, y: number }>, dataSim: Array<{ x: number, y: number }>) => {
+    const renderChart = (type: string, dataObs: Array<{ x: number, y: number }>,
+                         dataSim: Array<{ x: number, y: number }>) => {
         const RENDER_NO_SHAPE = () => null;
 
         const formatDateTimeTicks = (dt: number) => {
             return moment.unix(dt).format('YYYY-MM-DD');
         };
+
+        const filteredPoints: Array<{
+            fill: SemanticCOLORS,
+            x: number,
+            y: number,
+            type: string
+        }> = props.results.points.filter((point) => point.label.includes(type)).map((point) => ({
+            fill: point.point_type === 'max' ? 'red' : (point.point_type === 'min' ? 'green' : 'blue'),
+            x: moment(point.date).unix(),
+            y: point.simulated,
+            type: point.point_type
+        }));
 
         return (
             <ResponsiveContainer height={300}>
@@ -70,7 +84,7 @@ const heatTransportResults = (props: IProps) => {
                         name={''}
                         domain={['auto', 'auto']}
                     />
-                    <Tooltip cursor={{ strokeDasharray: '3 3' }} />
+                    <Tooltip cursor={{strokeDasharray: '3 3'}}/>
                     <Scatter
                         data={dataObs}
                         line={{strokeWidth: 2, stroke: '#db3434'}}
@@ -85,6 +99,26 @@ const heatTransportResults = (props: IProps) => {
                         name={'simulated'}
                         shape={<RENDER_NO_SHAPE/>}
                     />
+                    {filteredPoints.map((point, key) => (
+                        <ReferenceDot
+                            key={key}
+                            label={
+                                <Label
+                                    fill={point.fill}
+                                    fontSize={12}
+                                    offset={5}
+                                    position="top"
+                                    value={point.type}
+                                />
+                            }
+                            x={point.x}
+                            y={point.y}
+                            r={10}
+                            fill={point.fill}
+                            fillOpacity={0.4}
+                            stroke="none"
+                        />
+                    ))}
                 </ScatterChart>
             </ResponsiveContainer>
         );
@@ -120,7 +154,7 @@ const heatTransportResults = (props: IProps) => {
                     toggle={true}
                 />
                 <h3>groundwater</h3>
-                {renderChart(dataGwObs, dataGwSim)}
+                {renderChart('groundwater', dataGwObs, dataGwSim)}
                 <div className="downloadButtons">
                     <Button
                         compact={true}
@@ -133,7 +167,7 @@ const heatTransportResults = (props: IProps) => {
                     </Button>
                 </div>
                 <h3>surface-water</h3>
-                {renderChart(dataSwObs, dataSwSim)}
+                {renderChart('surface-water', dataSwObs, dataSwSim)}
             </React.Fragment>
         );
     };

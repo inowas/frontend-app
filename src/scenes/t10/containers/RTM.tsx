@@ -121,13 +121,14 @@ const RTM = (props: IProps) => {
         onSave(lRtm);
     };
 
-    const onchangeMetaData = (metaData: IToolMetaDataEdit) => {
+    const handleSaveMetaData = (metaData: IToolMetaDataEdit) => {
         if (rtm) {
-            setRtm({
-                    ...rtm,
-                    name: metaData.name, description: metaData.description, public: metaData.public
-                }
-            );
+            const cRtm = Rtm.fromObject({
+                ...rtm,
+                name: metaData.name, description: metaData.description, public: metaData.public
+            });
+            setRtm(cRtm.toObject());
+            onSave(cRtm);
         }
     };
 
@@ -240,7 +241,6 @@ const RTM = (props: IProps) => {
         <AppContainer navbarItems={navigation}>
             <ToolMetaData
                 isDirty={isDirty}
-                onChange={onchangeMetaData}
                 readOnly={false}
                 tool={{
                     tool: 'T10',
@@ -248,7 +248,7 @@ const RTM = (props: IProps) => {
                     description: rtm.description,
                     public: rtm.public
                 }}
-                onSave={onSave}
+                onSave={handleSaveMetaData}
             />
             <Grid padded={true}>
                 <Grid.Row>

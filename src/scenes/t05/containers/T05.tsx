@@ -101,13 +101,13 @@ const t05 = (props: IProps) => {
         });
     };
 
-    const handleSaveMetadata = () => {
+    const handleSaveMetadata = (cTool: IToolMetaDataEdit) => {
         sendCommand(
             Command.updateToolInstanceMetadata({
-                id: tool.id,
-                name: tool.name,
-                description: tool.description,
-                public: tool.public
+                id: cTool.id,
+                name: cTool.name,
+                description: cTool.description,
+                public: cTool.public
             }),
             () => {
                 setIsDirty(false);
@@ -134,10 +134,6 @@ const t05 = (props: IProps) => {
             }
         );
         return;
-    };
-
-    const handleUpdateMetaData = (cTool: IToolMetaDataEdit) => {
-        setTool(cTool);
     };
 
     const handleClickCriteriaNavigation = (e: MouseEvent<HTMLAnchorElement>, {name}: MenuItemProps) => {
@@ -265,7 +261,6 @@ const t05 = (props: IProps) => {
             <ToolMetaData
                 tool={tool}
                 readOnly={readOnly}
-                onChange={handleUpdateMetaData}
                 onSave={handleSaveMetadata}
                 isDirty={isDirty}
             />
