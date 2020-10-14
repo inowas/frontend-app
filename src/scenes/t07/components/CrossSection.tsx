@@ -26,7 +26,7 @@ interface IProps {
     selected: string[];
 }
 
-const crossSection = (props: IProps) => {
+const CrossSection = (props: IProps) => {
     const [selectedModels, setSelectedModels] = useState<IModflowModel[]>([]);
     const [data, setData] = useState<{ [id: string]: Array2D<number> }>({});
     const [layerValues, setLayerValues] = useState<string[][] | null>(null);
@@ -257,4 +257,4 @@ const crossSection = (props: IProps) => {
     );
 };
 
-export default crossSection;
+export default CrossSection;

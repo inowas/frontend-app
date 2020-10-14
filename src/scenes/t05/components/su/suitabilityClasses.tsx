@@ -11,7 +11,7 @@ interface IProps {
     readOnly: boolean;
 }
 
-const suitabilityClasses = (props: IProps) => {
+const SuitabilityClasses = (props: IProps) => {
     const [selectedRule, setSelectedRule] = useState<IRule | null>(null);
     const [showInfo, setShowInfo] = useState<boolean>(true);
 
@@ -144,4 +144,4 @@ const suitabilityClasses = (props: IProps) => {
         </div>
     );
 };
-export default suitabilityClasses;
+export default SuitabilityClasses;

@@ -19,7 +19,7 @@ interface IProps {
     calculation: Calculation | null;
 }
 
-const calculate = (props: IProps) => {
+const Calculate = (props: IProps) => {
 
     const [canBeCalculated, setCanBeCalculated] = useState<boolean>(true);
     const [isCalculating, setIsCalculating] = useState<boolean>(false);
@@ -123,4 +123,4 @@ const calculate = (props: IProps) => {
     );
 };
 
-export default calculate;
+export default Calculate;

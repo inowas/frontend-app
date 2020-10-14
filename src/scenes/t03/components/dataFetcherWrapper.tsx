@@ -26,7 +26,7 @@ interface IOwnProps {
 
 type IProps = IOwnProps & RouteComponentProps<{ id: string }>;
 
-const dataFetcherWrapper = (props: IProps) => {
+const DataFetcherWrapper = (props: IProps) => {
 
     const dispatch = useDispatch();
 
@@ -302,4 +302,4 @@ const dataFetcherWrapper = (props: IProps) => {
     );
 };
 
-export default withRouter(dataFetcherWrapper);
+export default withRouter(DataFetcherWrapper);

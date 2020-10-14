@@ -17,7 +17,7 @@ interface IActiveInput {
     value: string;
 }
 
-const addSensor = (props: IProps) => {
+const AddSensor = (props: IProps) => {
     const [name, setName] = useState<string>('New Sensor');
     const [activeInput, setActiveInput] = useState<IActiveInput | null>(null);
     const [geolocation, setGeolocation] = useState<Point | null>(null);
@@ -127,4 +127,4 @@ const addSensor = (props: IProps) => {
     );
 };
 
-export default addSensor;
+export default AddSensor;

@@ -16,7 +16,7 @@ interface IProps {
     readOnly: boolean;
 }
 
-const constraintsEditor = (props: IProps) => {
+const ConstraintsEditor = (props: IProps) => {
     const [constraints, setConstraints] = useState<IGis>(props.mcda.constraints.toObject());
     const [isFetching, setIsFetching] = useState<boolean>(false);
     const [mode, setMode] = useState<string>('map');
@@ -182,4 +182,4 @@ const constraintsEditor = (props: IProps) => {
     );
 };
 
-export default constraintsEditor;
+export default ConstraintsEditor;

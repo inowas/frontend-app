@@ -23,7 +23,7 @@ interface IProps {
     soilmodels: { [id: string]: ISoilmodel };
 }
 
-const difference = (props: IProps) => {
+const Difference = (props: IProps) => {
     const [selected, setSelected] = useState<[string | null, string | null]>([null, null]);
     const [selectedModels, setSelectedModels] = useState<[IModflowModel, IModflowModel] | null>(null);
     const [data, setData] = useState<{ [id: string]: Array2D<number> }>({});
@@ -299,4 +299,4 @@ const difference = (props: IProps) => {
     );
 };
 
-export default difference;
+export default Difference;

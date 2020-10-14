@@ -13,7 +13,7 @@ interface IProps {
     readonly: boolean;
 }
 
-const mfPackageProperties = (props: IProps) => {
+const MfPackageProperties = (props: IProps) => {
     const handleOnSelect = (e: SyntheticEvent, {name, value}: DropdownProps) => {
         const cMfPackage = props.mfPackage.toObject();
         cMfPackage[name] = value;
@@ -78,4 +78,4 @@ const mfPackageProperties = (props: IProps) => {
     );
 };
 
-export default mfPackageProperties;
+export default MfPackageProperties;

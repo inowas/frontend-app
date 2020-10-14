@@ -6,7 +6,7 @@ import {EMessageState, IMessage} from '../../../../../core/model/messages/Messag
 import MessagesCollection from '../../../../../core/model/messages/MessagesCollection';
 import {ModflowModel} from '../../../../../core/model/modflow';
 import {BoundaryCollection} from '../../../../../core/model/modflow/boundaries';
-import {Substance, Transport} from '../../../../../core/model/modflow/transport';
+import {Substance, Transport as TransportAlias} from '../../../../../core/model/modflow/transport';
 import {ISubstance} from '../../../../../core/model/modflow/transport/Substance.type';
 import {IRootReducer} from '../../../../../reducers';
 import {sendCommand} from '../../../../../services/api';
@@ -17,32 +17,26 @@ import {messageDirty, messageError, messageSaving} from '../../../defaults/messa
 import SubstanceDetails from './SubstanceDetails';
 import SubstanceList from './SubstanceList';
 
-const transport = () => {
+const Transport = () => {
     const [selectedSubstance, setSelectedSubstance] = useState<ISubstance | null>(null);
 
     const T03 = useSelector((state: IRootReducer) => state.T03);
     const model = T03.model ? ModflowModel.fromObject(T03.model) : null;
     const boundaries = T03.boundaries ? BoundaryCollection.fromObject(T03.boundaries) : null;
-    const transportInstance = T03.transport ? Transport.fromObject(T03.transport) : null;
+    const transportInstance = T03.transport ? TransportAlias.fromObject(T03.transport) : null;
     const messages = MessagesCollection.fromObject(T03.messages);
 
     const dispatch = useDispatch();
     const {property} = useParams();
 
-    const transportRef = useRef<Transport>();
+    const transportRef = useRef<TransportAlias>();
     const editingState = useRef<{ [key: string]: IMessage | null }>({
         dirty: null,
         saving: null
     });
 
-    if (!boundaries || !model || !transportInstance) {
-        return (
-            <Segment color={'grey'} loading={true}/>
-        );
-    }
-
     useEffect(() => {
-        if (!selectedSubstance && transportInstance.substances.length > 0) {
+        if (!selectedSubstance && transportInstance && transportInstance.substances.length > 0) {
             handleSubstanceListClick(transportInstance.substances.first.id);
         }
         return function cleanup() {
@@ -58,10 +52,16 @@ const transport = () => {
     }, [messages, transportInstance]);
 
     useEffect(() => {
-        if (!selectedSubstance && transportInstance.substances.length > 0) {
+        if (!selectedSubstance && transportInstance && transportInstance.substances.length > 0) {
             handleSubstanceListClick(transportInstance.substances.first.id);
         }
     }, [transportInstance]);
+
+    if (!boundaries || !model || !transportInstance) {
+        return (
+            <Segment color={'grey'} loading={true}/>
+        );
+    }
 
     const handleAddSubstance = () => {
         const substance = Substance.create('new substance');
@@ -184,4 +184,4 @@ const transport = () => {
     );
 };
 
-export default transport;
+export default Transport;

@@ -18,7 +18,7 @@ interface IProps extends RouteComponentProps<any> {
     readOnly: boolean;
 }
 
-const suitabilityEditor = (props: IProps) => {
+const SuitabilityEditor = (props: IProps) => {
     const [isFetching, setIsFetching] = useState<boolean>(false);
     const [mcda, setMcda] = useState<IMCDA>(props.mcda.toObject());
     const prevMcda = usePrevious<IMCDA>(props.mcda.toObject());
@@ -107,4 +107,4 @@ const suitabilityEditor = (props: IProps) => {
     );
 };
 
-export default withRouter(suitabilityEditor);
+export default withRouter(SuitabilityEditor);

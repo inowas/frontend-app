@@ -31,7 +31,7 @@ interface IProps {
     variableDensity: VariableDensity;
 }
 
-const seawatProperties = (props: IProps) => {
+const SeawatProperties = (props: IProps) => {
     const [swt, setSwt] = useState<IFlopySeawat>(props.packages.swt.toObject());
 
     const dispatch = useDispatch();
@@ -195,4 +195,4 @@ const seawatProperties = (props: IProps) => {
     );
 };
 
-export default seawatProperties;
+export default SeawatProperties;

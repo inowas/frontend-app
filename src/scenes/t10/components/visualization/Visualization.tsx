@@ -21,7 +21,7 @@ interface ISelectedParameter {
     axis: 'left' | 'right';
 }
 
-const visualization = (props: IProps) => {
+const Visualization = (props: IProps) => {
     const [dropdownData, setDropdownData] = useState<Array<{
         key: string, text: string, value: string
     }>>([]);
@@ -216,4 +216,4 @@ const visualization = (props: IProps) => {
     );
 };
 
-export default visualization;
+export default Visualization;

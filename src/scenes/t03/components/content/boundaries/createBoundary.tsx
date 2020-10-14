@@ -34,7 +34,7 @@ type Props = IOwnProps & RouteComponentProps<{
     type?: string;
 }>;
 
-const createBoundary = (props: Props) => {
+const CreateBoundary = (props: Props) => {
     const [name, setName] = useState<string>('New ' + props.match.params.type + '-Boundary');
     const [geometry, setGeometry] = useState<IGeometry | null>(null);
     const [cells, setCells] = useState<ICells | null>(null);
@@ -232,4 +232,4 @@ const createBoundary = (props: Props) => {
     );
 };
 
-export default withRouter(createBoundary);
+export default withRouter(CreateBoundary);

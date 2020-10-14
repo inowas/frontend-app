@@ -25,7 +25,7 @@ interface IProps {
     valueIsStatic?: boolean;
 }
 
-const criteriaReclassificationModal = (props: IProps) => {
+const CriteriaReclassificationModal = (props: IProps) => {
     const [activeInput, setActiveInput] = useState<string | null>(null);
     const [activeValue, setActiveValue] = useState<string>('');
     const [displayColorPicker, setDisplayColorPicker] = useState<boolean>(false);
@@ -209,4 +209,4 @@ const criteriaReclassificationModal = (props: IProps) => {
     );
 };
 
-export default criteriaReclassificationModal;
+export default CriteriaReclassificationModal;

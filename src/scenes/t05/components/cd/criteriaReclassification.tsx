@@ -16,7 +16,7 @@ interface IProps {
     readOnly: boolean;
 }
 
-const criteriaReclassification = (props: IProps) => {
+const CriteriaReclassification = (props: IProps) => {
     const [selectedRule, setSelectedRule] = useState<IRule | null>(null);
     const [showInfo, setShowInfo] = useState<boolean>(true);
 
@@ -284,4 +284,4 @@ const criteriaReclassification = (props: IProps) => {
     );
 };
 
-export default criteriaReclassification;
+export default CriteriaReclassification;

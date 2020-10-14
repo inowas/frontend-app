@@ -9,7 +9,8 @@ interface IProps {
     weightAssignment: WeightAssignment;
 }
 
-const rating = (props: IProps) => {
+// tslint:disable-next-line:variable-name
+const Rating = (props: IProps) => {
     const [showInfo, setShowInfo] = useState<boolean>(true);
     const [wa, setWa] = useState<IWeightAssignment>(props.weightAssignment.toObject());
 
@@ -151,4 +152,4 @@ const rating = (props: IProps) => {
     );
 };
 
-export default rating;
+export default Rating;

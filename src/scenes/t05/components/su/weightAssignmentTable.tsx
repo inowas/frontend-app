@@ -18,7 +18,7 @@ interface IProps {
     readOnly: boolean;
 }
 
-const weightAssignmentTable = (props: IProps) => {
+const WeightAssignmentTable = (props: IProps) => {
     const [showInfo, setShowInfo] = useState<boolean>(true);
     const {mcda} = props;
 
@@ -162,4 +162,4 @@ const weightAssignmentTable = (props: IProps) => {
     );
 };
 
-export default weightAssignmentTable;
+export default WeightAssignmentTable;

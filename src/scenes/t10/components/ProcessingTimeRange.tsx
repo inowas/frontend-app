@@ -8,7 +8,7 @@ interface IProps {
     color?: string;
 }
 
-const processingTimeRange = (props: IProps) => {
+const ProcessingTimeRange = (props: IProps) => {
 
     const {processing} = props;
     if (!processing) {
@@ -31,4 +31,4 @@ const processingTimeRange = (props: IProps) => {
     return <span>{begin} - {end}</span>;
 };
 
-export default processingTimeRange;
+export default ProcessingTimeRange;

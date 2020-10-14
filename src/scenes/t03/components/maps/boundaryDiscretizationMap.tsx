@@ -49,7 +49,7 @@ interface IProps {
     soilmodel: Soilmodel;
 }
 
-const boundaryDiscretizationMap = (props: IProps) => {
+const BoundaryDiscretizationMap = (props: IProps) => {
     const [isLoading, setIsLoading] = useState<boolean>(false);
     const dispatch = useDispatch();
 
@@ -303,4 +303,4 @@ const boundaryDiscretizationMap = (props: IProps) => {
     );
 };
 
-export default boundaryDiscretizationMap;
+export default BoundaryDiscretizationMap;

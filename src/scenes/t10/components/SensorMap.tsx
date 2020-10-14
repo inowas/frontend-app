@@ -29,7 +29,7 @@ const style = {
     }
 };
 
-const sensorMap = (props: IProps) => {
+const SensorMap = (props: IProps) => {
     const [mapKey, setMapKey] = useState<string>(uuidv4());
     const [geometry, setGeometry] = useState<GeoJson | null>(
         props.geometry ? Geometry.fromGeoJson(props.geometry).toObject() : null
@@ -170,4 +170,4 @@ const sensorMap = (props: IProps) => {
     );
 };
 
-export default sensorMap;
+export default SensorMap;

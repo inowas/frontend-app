@@ -47,7 +47,7 @@ interface IProps {
     routeTo: (route: string) => void;
 }
 
-const criteriaEditor = (props: IProps) => {
+const CriteriaEditor = (props: IProps) => {
     const [criteria, setCriteria] = useState<ICriterion[]>(props.mcda.criteriaCollection.toObject());
     const [showInfo, setShowInfo] = useState<boolean>(true);
     // const network = useRef<any>(null);
@@ -377,4 +377,4 @@ const criteriaEditor = (props: IProps) => {
     );
 };
 
-export default criteriaEditor;
+export default CriteriaEditor;

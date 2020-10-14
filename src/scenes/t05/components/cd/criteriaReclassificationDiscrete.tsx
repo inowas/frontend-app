@@ -41,7 +41,7 @@ interface IUploadState {
     success: boolean;
 }
 
-const criteriaReclassificationDiscrete = (props: IProps) => {
+const CriteriaReclassificationDiscrete = (props: IProps) => {
     const [criterion, setCriterion] = useState<ICriterion>(props.criterion.toObject());
     const [ruleToPickColorFor, setRuleToPickColorFor] = useState<IRule | null>(null);
     const [showInfo, setShowInfo] = useState<boolean>(true);
@@ -369,4 +369,4 @@ const criteriaReclassificationDiscrete = (props: IProps) => {
     );
 };
 
-export default criteriaReclassificationDiscrete;
+export default CriteriaReclassificationDiscrete;

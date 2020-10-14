@@ -7,10 +7,6 @@ import {Cells} from '../../modflow';
 import {IGis, IGis1v0} from './Gis.type';
 import RasterLayer from './RasterLayer';
 import VectorLayersCollection from './VectorLayersCollection';
-import {IRasterLayer, IRasterLayer1v0} from './RasterLayer.type';
-import {ICells} from '../../geometry/Cells.type';
-import {IBoundingBox} from '../../geometry/BoundingBox.type';
-import {IVectorLayer} from './VectorLayer.type';
 
 class Gis {
 

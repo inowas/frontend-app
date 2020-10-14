@@ -25,7 +25,7 @@ const navigation = [
     }
 ];
 
-const createRTM = (props: IProps) => {
+const CreateRTM = (props: IProps) => {
 
     const [fetchingModels, setFetchingModels] = useState<boolean>(true);
     const [fetchingError, setFetchingError] = useState<boolean>(false);
@@ -218,4 +218,4 @@ const createRTM = (props: IProps) => {
 
 };
 
-export default withRouter<IProps>(createRTM);
+export default withRouter<IProps>(CreateRTM);

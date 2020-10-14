@@ -19,7 +19,7 @@ export const servers = [{
     url: 'prometheus.inowas.com'
 }];
 
-const prometheusDatasourceEditor = (props: IProps) => {
+const PrometheusDatasourceEditor = (props: IProps) => {
 
     const [dataSource, setDatasource] = useState<PrometheusDataSource | null>(null);
     const [fetchingError] = useState<boolean>(false);
@@ -324,4 +324,4 @@ const prometheusDatasourceEditor = (props: IProps) => {
 
 };
 
-export default prometheusDatasourceEditor;
+export default PrometheusDatasourceEditor;

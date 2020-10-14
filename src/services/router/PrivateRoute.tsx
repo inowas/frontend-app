@@ -13,7 +13,7 @@ interface IProps {
     path: string;
 }
 
-const privateRoute = (props: IProps) => {
+const PrivateRoute = (props: IProps) => {
     const [redirectToLogin, setRedirectToLogin] = useState<boolean>(false);
 
     const dispatch = useDispatch();
@@ -77,4 +77,4 @@ const privateRoute = (props: IProps) => {
     return (<Route {...rest} component={component}/>);
 };
 
-export default privateRoute;
+export default PrivateRoute;

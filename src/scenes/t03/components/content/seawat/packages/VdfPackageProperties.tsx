@@ -14,7 +14,7 @@ interface IProps {
     readOnly: boolean;
 }
 
-const vdfPackageProperties = (props: IProps) => {
+const VdfPackageProperties = (props: IProps) => {
     const [swtPackage, setSwtPackage] = useState<IFlopySeawatSwtvdf>(props.swtPackage.toObject());
 
     useEffect(() => {
@@ -241,4 +241,4 @@ const vdfPackageProperties = (props: IProps) => {
     );
 };
 
-export default vdfPackageProperties;
+export default VdfPackageProperties;

@@ -34,7 +34,7 @@ enum EState {
     NOT_VALID = 'notValid'
 }
 
-const contentToolBar = (props: IProps) => {
+const ContentToolBar = (props: IProps) => {
     const fadingTime = 2500;
 
     const [isVisible, setIsVisible] = useState<boolean>(false);
@@ -234,4 +234,4 @@ const contentToolBar = (props: IProps) => {
     );
 };
 
-export default contentToolBar;
+export default ContentToolBar;

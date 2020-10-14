@@ -10,7 +10,7 @@ interface IProps {
     value: string | number | null;
 }
 
-const toggleableInput = (props: IProps) => {
+const ToggleableInput = (props: IProps) => {
     const [localValue, setLocalValue] = useState<string | number | null>(props.value);
 
     const handleChange = () => {
@@ -64,4 +64,4 @@ const toggleableInput = (props: IProps) => {
     );
 };
 
-export default toggleableInput;
+export default ToggleableInput;

@@ -11,7 +11,7 @@ interface IProps {
     results: IHeatTransportResults;
 }
 
-const heatTransportResults = (props: IProps) => {
+const HeatTransportResults = (props: IProps) => {
     const [activeIndex, setActiveIndex] = useState<number>(0);
     const [timesteps, setTimesteps] = useState<[number, number]>([0, 0]);
     const [useSameTimes, setUseSameTimes] = useState<boolean>(true);
@@ -339,4 +339,4 @@ const heatTransportResults = (props: IProps) => {
     );
 };
 
-export default heatTransportResults;
+export default HeatTransportResults;

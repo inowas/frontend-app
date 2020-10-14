@@ -64,7 +64,7 @@ enum nav {
     ZONES = 'zones'
 }
 
-const soilmodelEditor = () => {
+const SoilmodelEditor = () => {
     const [createZoneModal, setCreateZoneModal] = useState<boolean>(false);
     const [selectedLayer, setSelectedLayer] = useState<ISoilmodelLayer | null>(null);
     const [selectedZone, setSelectedZone] = useState<IZone | null>(null);
@@ -93,12 +93,6 @@ const soilmodelEditor = () => {
         saving: null
     });
 
-    if (!boundaries || !model || !soilmodel) {
-        return (
-            <Segment color={'grey'} loading={true}/>
-        );
-    }
-
     const {id, pid, property, type} = useParams();
 
     const dispatch = useDispatch();
@@ -106,28 +100,6 @@ const soilmodelEditor = () => {
     const history = useHistory();
 
     const prevPid = usePrevious(pid);
-
-    const searchParams = new URLSearchParams(location.search);
-    const activeParamType = searchParams.get('type') || 'soilmodel';
-    const activeParam = searchParams.get('param') || 'properties';
-
-    const fZones = soilmodel.zonesCollection.all.filter((z) => !z.isDefault);
-    const defaultZone = soilmodel.zonesCollection.findFirstBy('isDefault', true);
-
-    if (!defaultZone) {
-        return (
-            <Message error={true}>
-                The model you requested is not compatible with the current version. Contact an administrator or
-                create a new model.
-            </Message>
-        );
-    }
-
-    useEffect(() => {
-        return function cleanup() {
-            handleSave();
-        };
-    }, []);
 
     useEffect(() => {
         editingState.current = messages.getEditingState('soilmodel');
@@ -141,16 +113,21 @@ const soilmodelEditor = () => {
 
     useEffect(() => {
         if (pid && pid !== prevPid) {
-            if (type === nav.LAYERS) {
+            if (type === nav.LAYERS && soilmodel) {
                 const cLayer = soilmodel.layersCollection.findById(pid);
                 return setSelectedLayer(cLayer);
             }
-            if (type === nav.ZONES) {
+            if (type === nav.ZONES && soilmodel) {
                 return setSelectedZone(soilmodel.zonesCollection.findById(pid));
             }
         }
         redirect();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [pid, soilmodel]);
+
+    const searchParams = new URLSearchParams(location.search);
+    const activeParamType = searchParams.get('type') || 'soilmodel';
+    const activeParam = searchParams.get('param') || 'properties';
 
     useEffect(() => {
         const paramType = searchParams.get('type');
@@ -163,6 +140,24 @@ const soilmodelEditor = () => {
             return setPageNotFound(true);
         }
     }, [searchParams]);
+
+    if (!boundaries || !model || !soilmodel) {
+        return (
+            <Segment color={'grey'} loading={true}/>
+        );
+    }
+
+    const fZones = soilmodel.zonesCollection.all.filter((z) => !z.isDefault);
+    const defaultZone = soilmodel.zonesCollection.findFirstBy('isDefault', true);
+
+    if (!defaultZone) {
+        return (
+            <Message error={true}>
+                The model you requested is not compatible with the current version. Contact an administrator or
+                create a new model.
+            </Message>
+        );
+    }
 
     const redirect = () => {
         if (type === nav.LAYERS && (!pid || (pid && !soilmodel.layersCollection.findFirstBy('id', pid)))) {
@@ -622,4 +617,4 @@ const soilmodelEditor = () => {
     );
 };
 
-export default soilmodelEditor;
+export default SoilmodelEditor;

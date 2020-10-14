@@ -17,7 +17,7 @@ interface IProps {
     readonly: boolean;
 }
 
-const lpfPackageProperties = (props: IProps) => {
+const LpfPackageProperties = (props: IProps) => {
 
     const [mfPackage, setMfPackage] = useState<IFlopyModflowMflpf>(props.mfPackage.toObject());
 
@@ -446,4 +446,4 @@ const lpfPackageProperties = (props: IProps) => {
     );
 };
 
-export default lpfPackageProperties;
+export default LpfPackageProperties;

@@ -24,7 +24,7 @@ interface IProps {
     totalTimes: number[] | null;
 }
 
-const resultsSelectorBudget = (props: IProps) => {
+const ResultsSelectorBudget = (props: IProps) => {
     const [temporaryTotim, setTemporaryTotim] = useState<number | null>(null);
 
     const {type} = props.data;
@@ -144,4 +144,4 @@ const resultsSelectorBudget = (props: IProps) => {
     );
 };
 
-export default pure(resultsSelectorBudget);
+export default pure(ResultsSelectorBudget);

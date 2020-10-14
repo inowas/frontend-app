@@ -31,7 +31,7 @@ interface IProps {
     stressperiods: Stressperiods;
 }
 
-const boundaryDateTimeValuesDataTable = (props: IProps) => {
+const BoundaryDateTimeValuesDataTable = (props: IProps) => {
     const [activeInput, setActiveInput] = useState<IActiveInput | null>(null);
     const [activeDateTime, setActiveDateTime] = useState<IActiveString | null>(null);
     const [showUploadModal, setShowUploadModal] = useState<boolean>(false);
@@ -188,7 +188,7 @@ const boundaryDateTimeValuesDataTable = (props: IProps) => {
                             style={getCellStyle(spValues[spIdx].length)}
                             disabled={
                                 props.readOnly ||
-                                boundary instanceof FlowAndHeadBoundary && !boundary.spValuesEnabled[vIdx]
+                                (boundary instanceof FlowAndHeadBoundary && !boundary.spValuesEnabled[vIdx])
                             }
                             id={spIdx}
                             col={vIdx}
@@ -283,4 +283,4 @@ const boundaryDateTimeValuesDataTable = (props: IProps) => {
     );
 };
 
-export default boundaryDateTimeValuesDataTable;
+export default BoundaryDateTimeValuesDataTable;

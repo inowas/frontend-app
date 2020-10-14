@@ -74,7 +74,7 @@ interface IProps {
     packages: FlopyPackages;
 }
 
-const flow = (props: IProps) => {
+const Flow = (props: IProps) => {
     const [mf, setMf] = useState<IFlopyModflow>(props.packages.mf.toObject());
 
     const mfRef = useRef<IFlopyModflow>();
@@ -406,4 +406,4 @@ const flow = (props: IProps) => {
     );
 };
 
-export default flow;
+export default Flow;

@@ -8,7 +8,8 @@ import Calculate from './calculate';
 import Files from './files';
 import Log from './log';
 
-const calculationWrapper = () => {
+// tslint:disable-next-line:variable-name
+const CalculationWrapper = () => {
 
     const T03 = useSelector((state: IRootReducer) => state.T03);
 
@@ -35,4 +36,4 @@ const calculationWrapper = () => {
     );
 };
 
-export default calculationWrapper;
+export default CalculationWrapper;

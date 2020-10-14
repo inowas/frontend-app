@@ -21,7 +21,7 @@ const navigation = [{
 interface IProps extends RouteComponentProps {
 }
 
-const t01 = (props: IProps) => {
+const T01 = (props: IProps) => {
 
     const [data, setData] = useState<any>(null);
 
@@ -98,4 +98,4 @@ const t01 = (props: IProps) => {
 
 };
 
-export default withRouter<IProps>(t01);
+export default withRouter<IProps>(T01);

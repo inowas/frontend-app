@@ -16,7 +16,7 @@ interface IProps {
     onUndo?: () => void;
 }
 
-const contentToolBar = (props: IProps) => {
+const ContentToolBar = (props: IProps) => {
     const {property} = useParams();
 
     const T03 = useSelector((state: IRootReducer) => state.T03);
@@ -132,4 +132,4 @@ const contentToolBar = (props: IProps) => {
     );
 };
 
-export default contentToolBar;
+export default ContentToolBar;

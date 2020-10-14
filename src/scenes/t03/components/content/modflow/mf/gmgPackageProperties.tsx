@@ -12,7 +12,7 @@ interface IProps {
     readonly: boolean;
 }
 
-const gmgPackageProperties = (props: IProps) => {
+const GmgPackageProperties = (props: IProps) => {
 
     const [mfPackage, setMfPackage] = useState<IFlopyModflowMfgmg>(props.mfPackage.toObject());
     const {readonly} = props;
@@ -307,4 +307,4 @@ const gmgPackageProperties = (props: IProps) => {
     );
 };
 
-export default gmgPackageProperties;
+export default GmgPackageProperties;

@@ -31,7 +31,7 @@ interface IActiveInput {
     value: string;
 }
 
-const sensorMetadata = (props: IProps) => {
+const SensorMetadata = (props: IProps) => {
     const [activeInput, setActiveInput] = useState<IActiveInput | null>(null);
     const [customParameter, setCustomParameter] = useState<ISensorParameter | null>(null);
     const [selectedParameterId, setSelectedParameterId] = useState<string | null>(null);
@@ -348,4 +348,4 @@ const sensorMetadata = (props: IProps) => {
     );
 };
 
-export default sensorMetadata;
+export default SensorMetadata;

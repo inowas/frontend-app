@@ -16,7 +16,7 @@ interface IProps {
     rtm: Rtm;
 }
 
-const heatTransport = (props: IProps) => {
+const HeatTransport = (props: IProps) => {
     const [isFetching, setIsFetching] = useState<boolean>(false);
 
     const [swData, setSwData] = useState<IDateTimeValue[]>();
@@ -160,4 +160,4 @@ const heatTransport = (props: IProps) => {
     );
 };
 
-export default heatTransport;
+export default HeatTransport;

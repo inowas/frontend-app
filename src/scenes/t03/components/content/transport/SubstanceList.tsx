@@ -12,7 +12,7 @@ interface IProps {
     readOnly: boolean;
 }
 
-const substanceList = ({addSubstance, substances, onClick, onRemove, selected, readOnly}: IProps) => {
+const SubstanceList = ({addSubstance, substances, onClick, onRemove, selected, readOnly}: IProps) => {
 
     const onClickItem = (substanceId: string) => () => {
         return onClick(substanceId);
@@ -72,4 +72,4 @@ const substanceList = ({addSubstance, substances, onClick, onRemove, selected, r
     );
 };
 
-export default pure(substanceList);
+export default pure(SubstanceList);

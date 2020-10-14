@@ -39,7 +39,7 @@ interface IVisibleZone extends IZone {
     isActive: boolean;
 }
 
-const createZone = () => {
+const CreateZone = () => {
     const [name, setName] = useState<string>('New Zone');
     const [geometry, setGeometry] = useState<IGeometry | null>(null);
     const [cells, setCells] = useState<ICells | null>(null);
@@ -271,4 +271,4 @@ const createZone = () => {
     );
 };
 
-export default withRouter(createZone);
+export default withRouter(CreateZone);

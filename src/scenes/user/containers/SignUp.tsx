@@ -25,7 +25,7 @@ interface IValidation {
     message: string;
 }
 
-const signUp = () => {
+const SignUp = () => {
 
     const session = useSelector((state: IRootReducer) => state.session);
     const userIsLoggedIn = hasSessionKey(session);
@@ -236,4 +236,4 @@ const signUp = () => {
     );
 };
 
-export default signUp;
+export default SignUp;

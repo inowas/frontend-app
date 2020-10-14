@@ -20,7 +20,7 @@ interface IProps extends RouteComponentProps<any> {
     readOnly: boolean;
 }
 
-const criteriaNavigation = (props: IProps) => {
+const CriteriaNavigation = (props: IProps) => {
     const [searchTerm, setSearchTerm] = useState<string>('');
     const [gridSize, setGridSize] = useState<IGridSize>(props.mcda.gridSize.toObject());
 
@@ -104,4 +104,4 @@ const criteriaNavigation = (props: IProps) => {
     );
 };
 
-export default withRouter(criteriaNavigation);
+export default withRouter(CriteriaNavigation);

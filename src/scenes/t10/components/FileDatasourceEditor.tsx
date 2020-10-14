@@ -16,7 +16,7 @@ interface IProps {
     onCancel: () => void;
 }
 
-const fileDatasourceEditor = (props: IProps) => {
+const FileDatasourceEditor = (props: IProps) => {
     const [dataSource, setDataSource] = useState<IFileDataSource | null>(null);
 
     const [rawData, setRawData] = useState<IDateTimeValue[] | undefined>(undefined);
@@ -395,4 +395,4 @@ const fileDatasourceEditor = (props: IProps) => {
     );
 };
 
-export default fileDatasourceEditor;
+export default FileDatasourceEditor;

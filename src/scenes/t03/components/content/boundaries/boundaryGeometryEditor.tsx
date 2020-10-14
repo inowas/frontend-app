@@ -26,7 +26,7 @@ function isActiveItemType(value: any): value is ActiveItemType {
     return true;
 }
 
-const boundaryGeometryEditor = (props: IProps) => {
+const BoundaryGeometryEditor = (props: IProps) => {
     const [activeItem, setActiveItem] = useState<string>('geometry');
     const [boundary, setBoundary] = useState<IBoundary>(props.boundary.toObject());
     const [buttonsDisabled, setButtonsDisabled] = useState<boolean>(true);
@@ -152,4 +152,4 @@ const boundaryGeometryEditor = (props: IProps) => {
     );
 };
 
-export default boundaryGeometryEditor;
+export default BoundaryGeometryEditor;
