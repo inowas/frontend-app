@@ -12,7 +12,7 @@ interface IProps {
     readonly: boolean;
 }
 
-const sipPackageProperties = (props: IProps) => {
+const SipPackageProperties = (props: IProps) => {
 
     const [mfPackage, setMfPackage] = useState<IFlopyModflowMfsip>(props.mfPackage.toObject());
 
@@ -149,4 +149,4 @@ const sipPackageProperties = (props: IProps) => {
     );
 };
 
-export default sipPackageProperties;
+export default SipPackageProperties;

@@ -26,7 +26,7 @@ interface IProps {
     stressperiods: Stressperiods;
 }
 
-const substanceDetails = (props: IProps) => {
+const SubstanceDetails = (props: IProps) => {
     const [selectedBoundary, setSelectedBoundary] = useState<string | null>(null);
     const [substance, setSubstance] = useState<ISubstance | null>(null);
 
@@ -173,4 +173,4 @@ const substanceDetails = (props: IProps) => {
     );
 };
 
-export default substanceDetails;
+export default SubstanceDetails;

@@ -30,7 +30,7 @@ interface IProps {
     readonly: boolean;
 }
 
-const solverPackageProperties = (props: IProps) => {
+const SolverPackageProperties = (props: IProps) => {
 
     const {mfPackages} = props;
     const {readonly} = props;
@@ -154,4 +154,4 @@ const solverPackageProperties = (props: IProps) => {
     );
 };
 
-export default solverPackageProperties;
+export default SolverPackageProperties;

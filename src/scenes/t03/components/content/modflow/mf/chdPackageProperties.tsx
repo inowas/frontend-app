@@ -16,7 +16,7 @@ interface IProps {
     readonly: boolean;
 }
 
-const chdPackageProperties = (props: IProps) => {
+const ChdPackageProperties = (props: IProps) => {
     const [mfPackage, setMfPackage] = useState<IFlopyModflowMfchd>(props.mfPackage.toObject());
     const {mfPackages, readonly} = props;
 
@@ -124,4 +124,4 @@ const chdPackageProperties = (props: IProps) => {
     );
 };
 
-export default chdPackageProperties;
+export default ChdPackageProperties;

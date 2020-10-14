@@ -22,7 +22,7 @@ interface IProps {
     zones: ZonesCollection;
 }
 
-const createZoneModal = (props: IProps) => {
+const CreateZoneModal = (props: IProps) => {
     const [name, setName] = useState<string>('New Zone');
     const [geometry, setGeometry] = useState<Polygon | null>(null);
 
@@ -126,4 +126,4 @@ const createZoneModal = (props: IProps) => {
     );
 };
 
-export default createZoneModal;
+export default CreateZoneModal;

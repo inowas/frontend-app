@@ -49,7 +49,7 @@ const toSliderValue = (value: number) => {
     return Math.pow(value, -1) - 1;
 };
 
-const pairwiseComparison = (props: IProps) => {
+const PairwiseComparison = (props: IProps) => {
     const prepareState = () => {
         let cRelations: IRelation[] = [];
 
@@ -257,4 +257,4 @@ const pairwiseComparison = (props: IProps) => {
     );
 };
 
-export default pairwiseComparison;
+export default PairwiseComparison;

@@ -17,7 +17,7 @@ interface IProps {
     readonly: boolean;
 }
 
-const evtPackageProperties = (props: IProps) => {
+const EvtPackageProperties = (props: IProps) => {
     const [mfPackage, setMfPackage] = useState<IFlopyModflowMfevt>(props.mfPackage.toObject());
     const {mfPackages, readonly} = props;
     const spData2D = Object.values(mfPackage.evtr)[0];
@@ -130,4 +130,4 @@ const evtPackageProperties = (props: IProps) => {
     );
 };
 
-export default evtPackageProperties;
+export default EvtPackageProperties;

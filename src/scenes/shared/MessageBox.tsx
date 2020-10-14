@@ -8,7 +8,8 @@ import MessagesCollection from '../../core/model/messages/MessagesCollection';
 import {IRootReducer} from '../../reducers';
 import {removeMessage} from '../t03/actions/actions';
 
-const messageBox = () => {
+// tslint:disable-next-line:variable-name
+const MessageBox = () => {
     const debugging = getConfig().VERSION === 'dev';
 
     const dispatch = useDispatch();
@@ -50,4 +51,4 @@ const messageBox = () => {
     );
 };
 
-export default messageBox;
+export default MessageBox;

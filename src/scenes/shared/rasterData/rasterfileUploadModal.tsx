@@ -52,7 +52,7 @@ interface IProps {
     discreteRescaling?: boolean;
 }
 
-const rasterFileUploadModal = (props: IProps) => {
+const RasterFileUploadModal = (props: IProps) => {
     const [hash, setHash] = useState<string | null>(null);
     const [metadata, setMetadata] = useState<IRasterFileMetadata | null>(null);
     const [data, setData] = useState<Array3D<number> | null>(null);
@@ -333,4 +333,4 @@ const rasterFileUploadModal = (props: IProps) => {
     );
 };
 
-export default rasterFileUploadModal;
+export default RasterFileUploadModal;

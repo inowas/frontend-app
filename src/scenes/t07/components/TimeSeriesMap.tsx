@@ -15,7 +15,7 @@ interface IProps {
     onClick: (colRow: ICell) => any;
 }
 
-const timeSeriesMap = (props: IProps) => {
+const TimeSeriesMap = (props: IProps) => {
     const mapRef = useRef<Map | null>(null);
 
     const style = {
@@ -114,4 +114,4 @@ const timeSeriesMap = (props: IProps) => {
     );
 };
 
-export default timeSeriesMap;
+export default TimeSeriesMap;

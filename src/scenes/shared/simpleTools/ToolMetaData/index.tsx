@@ -22,7 +22,7 @@ interface IProps {
     tool: IToolMetaDataEdit;
 }
 
-const toolMetaData = (props: IProps) => {
+const ToolMetaData = (props: IProps) => {
     const [tool, setTool] = useState<IToolMetaDataEdit>(props.tool);
     const [isEditing, setIsEditing] = useState<boolean>(false);
 
@@ -134,4 +134,4 @@ const toolMetaData = (props: IProps) => {
     );
 };
 
-export default toolMetaData;
+export default ToolMetaData;

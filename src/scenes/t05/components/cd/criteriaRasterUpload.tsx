@@ -20,7 +20,7 @@ interface IProps {
     readOnly?: boolean;
 }
 
-const criteriaRasterUpload = (props: IProps) => {
+const CriteriaRasterUpload = (props: IProps) => {
     const [showInfo, setShowInfo] = useState<boolean>(true);
     const [showUploadModal, setShowUploadModal] = useState<boolean>(false);
     const [showBasicLayer, setShowBasicLayer] = useState<boolean>(false);
@@ -232,4 +232,4 @@ const criteriaRasterUpload = (props: IProps) => {
     );
 };
 
-export default criteriaRasterUpload;
+export default CriteriaRasterUpload;

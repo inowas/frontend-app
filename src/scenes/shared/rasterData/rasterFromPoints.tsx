@@ -16,7 +16,7 @@ interface IProps {
     unit: string;
 }
 
-const rasterFromPoints = (props: IProps) => {
+const RasterFromPoints = (props: IProps) => {
     const [activeInput, setActiveInput] = useState<string>();
     const [activeValue, setActiveValue] = useState<string>('');
     const [data, setData] = useState<Array<{ x: number, y: number, z: number }>>();
@@ -31,15 +31,15 @@ const rasterFromPoints = (props: IProps) => {
     const T03 = useSelector((state: IRootReducer) => state.T03);
     const model = T03.model ? ModflowModel.fromObject(T03.model) : null;
 
+    useEffect(() => {
+        runCalculation();
+    }, [data, idwOptions]);
+
     if (!model) {
         return (
             <Segment color={'grey'} loading={true}/>
         );
     }
-
-    useEffect(() => {
-        runCalculation();
-    }, [data, idwOptions]);
 
     const handleBlurInput = () => {
         if (activeInput) {
@@ -206,4 +206,4 @@ const rasterFromPoints = (props: IProps) => {
     );
 };
 
-export default rasterFromPoints;
+export default RasterFromPoints;

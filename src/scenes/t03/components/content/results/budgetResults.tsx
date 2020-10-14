@@ -17,7 +17,7 @@ interface IProps {
     model: ModflowModel;
 }
 
-const budgetResults = (props: IProps) => {
+const BudgetResults = (props: IProps) => {
     const [data, setData] = useState<budgetData>(null);
     const [fetching, setFetching] = useState<boolean>(true);
     const [isError, setIsError] = useState<AxiosError | null>(null);
@@ -275,4 +275,4 @@ const mapStateToProps = (state: any) => {
     };
 };
 
-export default connect(mapStateToProps)(budgetResults);
+export default connect(mapStateToProps)(BudgetResults);

@@ -26,7 +26,7 @@ interface IProps {
     readOnly: boolean;
 }
 
-const criteriaDataConstraints = (props: IProps) => {
+const CriteriaDataConstraints = (props: IProps) => {
     const [criterion, setCriterion] = useState<ICriterion>(props.criterion.toObject());
     const [showInfo, setShowInfo] = useState<boolean>(true);
 
@@ -337,4 +337,4 @@ const criteriaDataConstraints = (props: IProps) => {
     );
 };
 
-export default criteriaDataConstraints;
+export default CriteriaDataConstraints;

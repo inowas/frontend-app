@@ -19,7 +19,7 @@ import {
 import Command from '../../../commands/modflowModelCommand';
 import {messageDirty, messageSaving} from '../../../defaults/messages';
 
-const variableDensityProperties = () => {
+const VariableDensityProperties = () => {
     const T03 = useSelector((state: IRootReducer) => state.T03);
     const model = T03.model ? ModflowModel.fromObject(T03.model) : null;
     const transport = T03.transport ? Transport.fromObject(T03.transport) : null;
@@ -35,12 +35,6 @@ const variableDensityProperties = () => {
         saving: null
     });
 
-    if (!model || !variableDensity || !transport) {
-        return (
-            <Segment color={'grey'} loading={true}/>
-        );
-    }
-
     useEffect(() => {
         return function cleanup() {
             handleSave();
@@ -53,6 +47,12 @@ const variableDensityProperties = () => {
             variableDensityRef.current = variableDensity;
         }
     }, [messages, variableDensity]);
+
+    if (!model || !variableDensity || !transport) {
+        return (
+            <Segment color={'grey'} loading={true}/>
+        );
+    }
 
     const handleSave = () => {
         if (!editingState.current.dirty || !variableDensityRef.current) {
@@ -149,4 +149,4 @@ const variableDensityProperties = () => {
     );
 };
 
-export default variableDensityProperties;
+export default VariableDensityProperties;

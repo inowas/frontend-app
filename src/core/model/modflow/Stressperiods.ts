@@ -126,6 +126,8 @@ class Stressperiods {
                     steady: sp.steady
                 });
             }
+
+            return sp;
         });
 
         obj.stressperiods = stressperiods;

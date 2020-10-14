@@ -35,7 +35,7 @@ const style = {
     }
 };
 
-const gridProperties = (props: IProps) => {
+const GridProperties = (props: IProps) => {
     const [activeInput, setActiveInput] = useState<string | null>(null);
     const [activeValue, setActiveValue] = useState<string>('');
     const [boundingBox, setBoundingBox] = useState<GeoJsonObject>(props.boundingBox.geoJson);
@@ -440,4 +440,4 @@ const gridProperties = (props: IProps) => {
     );
 };
 
-export default gridProperties;
+export default GridProperties;

@@ -12,7 +12,7 @@ interface IProps {
     readOnly: boolean;
 }
 
-const suitabilityWeightAssignment = (props: IProps) => {
+const SuitabilityWeightAssignment = (props: IProps) => {
     const [calculationState, setCalculationState] = useState<{
         message: string;
         task: number;
@@ -242,4 +242,4 @@ const suitabilityWeightAssignment = (props: IProps) => {
     );
 };
 
-export default suitabilityWeightAssignment;
+export default SuitabilityWeightAssignment;

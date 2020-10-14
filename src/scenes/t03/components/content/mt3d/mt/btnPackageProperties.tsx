@@ -19,7 +19,7 @@ interface IProps {
     readOnly: boolean;
 }
 
-const btnPackageProperties = (props: IProps) => {
+const BtnPackageProperties = (props: IProps) => {
 
     const [mtPackage, setMtPackage] = useState<IFlopyMt3dMtBtn>(props.mtPackage.toObject());
     const [activeIndex, setActiveIndex] = useState<number>(0);
@@ -396,4 +396,4 @@ const btnPackageProperties = (props: IProps) => {
     );
 };
 
-export default btnPackageProperties;
+export default BtnPackageProperties;

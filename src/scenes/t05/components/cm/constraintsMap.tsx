@@ -29,7 +29,7 @@ const style = {
     }
 };
 
-const constraintsMap = (props: IProps) => {
+const ConstraintsMap = (props: IProps) => {
     const [refreshKey, setRefreshKey] = useState<string>(uuidv4());
     const refDrawControl = useRef<Control>(null);
 
@@ -184,4 +184,4 @@ const constraintsMap = (props: IProps) => {
     );
 };
 
-export default pure(constraintsMap);
+export default pure(ConstraintsMap);

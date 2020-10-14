@@ -12,7 +12,7 @@ interface IProps {
     end?: number;
 }
 
-const tinyLineChart = (props: IProps) => {
+const TinyLineChart = (props: IProps) => {
 
     const [data, setData] = useState<any>(null);
 
@@ -58,4 +58,4 @@ const tinyLineChart = (props: IProps) => {
     );
 };
 
-export default tinyLineChart;
+export default TinyLineChart;

@@ -10,7 +10,7 @@ interface IProps {
     results: IHeatTransportResults;
 }
 
-const heatTransportResults = (props: IProps) => {
+const HeatTransportResults = (props: IProps) => {
     const [activeIndex, setActiveIndex] = useState<number>(0);
     const [timesteps, setTimesteps] = useState<[number, number]>([0, 0]);
     const [useSameTimes, setUseSameTimes] = useState<boolean>(true);
@@ -70,7 +70,7 @@ const heatTransportResults = (props: IProps) => {
                         name={''}
                         domain={['auto', 'auto']}
                     />
-                    <Tooltip cursor={{ strokeDasharray: '3 3' }} />
+                    <Tooltip cursor={{strokeDasharray: '3 3'}}/>
                     <Scatter
                         data={dataObs}
                         line={{strokeWidth: 2, stroke: '#db3434'}}
@@ -305,4 +305,4 @@ const heatTransportResults = (props: IProps) => {
     );
 };
 
-export default heatTransportResults;
+export default HeatTransportResults;

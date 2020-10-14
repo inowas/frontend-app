@@ -46,7 +46,7 @@ const isNavigationItem = (arg: any): arg is NavigationItem => {
     return true;
 };
 
-const modpath: React.FC<Props> = (props: Props) => {
+const Modpath: React.FC<Props> = (props: Props) => {
     const {boundaries, match, model, packages, soilmodel} = props;
     const [activeItem, setActiveItem] = useState<NavigationItem>(NavigationItem.SETUP);
     const [isDirty, setIsDirty] = useState<boolean>(false);
@@ -227,4 +227,4 @@ const mapStateToProps = (state: any) => ({
 export default withRouter(connect<IStateProps, IDispatchProps, IOwnProps>(
     mapStateToProps,
     mapDispatchToProps)
-(modpath));
+(Modpath));

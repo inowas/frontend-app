@@ -15,7 +15,8 @@ export interface IProps extends RouteComponentProps<{ id: string, property: stri
     children: ReactFragment;
 }
 
-const sensors = (props: IProps) => {
+const Sensors = (props: IProps) => {
+
 
     const [selectedSensorId, setSelectedSensorId] = useState<string | null>(null);
     const [addSensor, setAddSensor] = useState<boolean>(false);
@@ -127,4 +128,4 @@ const sensors = (props: IProps) => {
     );
 };
 
-export default withRouter<IProps>(sensors);
+export default withRouter<IProps>(Sensors);

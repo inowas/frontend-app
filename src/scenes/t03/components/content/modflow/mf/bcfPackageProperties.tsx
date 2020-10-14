@@ -16,7 +16,7 @@ interface IProps {
     readonly: boolean;
 }
 
-const bcfPackageProperties = (props: IProps) => {
+const BcfPackageProperties = (props: IProps) => {
 
     const [mfPackage, setMfPackage] = useState<IFlopyModflowMfbcf>(props.mfPackage.toObject());
     const {mfPackages, readonly} = props;
@@ -298,4 +298,4 @@ const bcfPackageProperties = (props: IProps) => {
     );
 };
 
-export default bcfPackageProperties;
+export default BcfPackageProperties;

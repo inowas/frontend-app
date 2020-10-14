@@ -18,7 +18,7 @@ interface IProps {
     readonly: boolean;
 }
 
-const fhbPackageProperties = (props: IProps) => {
+const FhbPackageProperties = (props: IProps) => {
     const [mfPackage, setMfPackage] = useState<IFlopyModflowMffhb>(props.mfPackage.toObject());
     const {mfPackages, readonly} = props;
 
@@ -324,4 +324,4 @@ const fhbPackageProperties = (props: IProps) => {
     );
 };
 
-export default fhbPackageProperties;
+export default FhbPackageProperties;

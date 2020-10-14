@@ -34,7 +34,7 @@ interface IActiveInput {
     value: string;
 }
 
-const boundaryDetails = (props: IProps) => {
+const BoundaryDetails = (props: IProps) => {
     const [activeInput, setActiveInput] = useState<IActiveInput | null>(null);
     const [showBoundaryEditor, setShowBoundaryEditor] = useState<boolean>(false);
     const [showObservationPointEditor, setShowObservationPointEditor] = useState<boolean>(false);
@@ -420,4 +420,4 @@ const boundaryDetails = (props: IProps) => {
     );
 };
 
-export default boundaryDetails;
+export default BoundaryDetails;

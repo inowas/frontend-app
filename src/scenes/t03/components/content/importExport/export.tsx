@@ -5,12 +5,9 @@ import Button from 'semantic-ui-react/dist/commonjs/elements/Button';
 import {BoundaryCollection, ModflowModel, Soilmodel} from '../../../../../core/model/modflow';
 import {IRootReducer} from '../../../../../reducers';
 
-const exportUI = () => {
-
+const ExportUI = () => {
     const [copyToClipBoardSuccessful, setCopyToClipBoardSuccessful] = useState<boolean>(false);
-
     const T03 = useSelector((state: IRootReducer) => state.T03);
-
     const getExportDataStructure = () => {
         if (!T03 || !T03.model) {
             return null;
@@ -95,4 +92,4 @@ const exportUI = () => {
     );
 };
 
-export default exportUI;
+export default ExportUI;

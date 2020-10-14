@@ -38,7 +38,7 @@ interface IProps {
     unit?: string;
 }
 
-const colorLegend = (props: IProps) => {
+const ColorLegend = (props: IProps) => {
     const {horizontal, legend, unit} = props;
 
     if (horizontal) {
@@ -80,4 +80,4 @@ const colorLegend = (props: IProps) => {
     );
 };
 
-export default colorLegend;
+export default ColorLegend;

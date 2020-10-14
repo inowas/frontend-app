@@ -67,7 +67,7 @@ interface IState {
     viewport: Viewport | null;
 }
 
-const resultsMap = (props: IProps) => {
+const ResultsMap = (props: IProps) => {
     const [state, setState] = useState<IState>({viewport: null});
     const [renderKey, setRenderKey] = useState<string>(uuid.v4());
     const mapRef = useRef<Map | null>(null);
@@ -274,4 +274,4 @@ const resultsMap = (props: IProps) => {
     );
 };
 
-export default resultsMap;
+export default ResultsMap;

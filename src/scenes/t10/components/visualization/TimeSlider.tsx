@@ -10,7 +10,7 @@ interface IProps {
     readOnly?: boolean;
 }
 
-const timeSlider = (props: IProps) => {
+const TimeSlider = (props: IProps) => {
     const [startIndex, setStartIndex] = useState<number>(0);
     const [endIndex, setEndIndex] = useState<number>(props.timeSteps.length - 1);
 
@@ -39,4 +39,4 @@ const timeSlider = (props: IProps) => {
     );
 };
 
-export default timeSlider;
+export default TimeSlider;

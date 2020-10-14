@@ -10,7 +10,7 @@ interface IProps {
     readOnly: boolean;
 }
 
-const dspPackageProperties = (props: IProps) => {
+const DspPackageProperties = (props: IProps) => {
 
     const [mtPackage, setMtPackage] = useState<IFlopyMt3dMtdsp>(props.mtPackage.toObject());
 
@@ -114,4 +114,4 @@ const dspPackageProperties = (props: IProps) => {
     );
 };
 
-export default dspPackageProperties;
+export default DspPackageProperties;

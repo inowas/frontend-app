@@ -35,7 +35,7 @@ interface IProps extends RouteComponentProps<any> {
     mcda: MCDA;
 }
 
-const t05 = (props: IProps) => {
+const T05 = (props: IProps) => {
     const [isDirty, setIsDirty] = useState<boolean>(false);
     const [isError, setIsError] = useState<boolean>(false);
     const [isLoading, setIsLoading] = useState<boolean>(true);
@@ -317,4 +317,4 @@ const t05 = (props: IProps) => {
     );
 };
 
-export default withRouter(t05);
+export default withRouter(T05);

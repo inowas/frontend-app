@@ -32,6 +32,7 @@ export const CALCULATE_PACKAGES_RESULT = 'CALCULATE_PACKAGES_RESULT';
 export const CALCULATE_MF_PACKAGES_INPUT = 'CALCULATE_MF_PACKAGES_INPUT';
 export const CALCULATE_MF_PACKAGES_RESULT = 'CALCULATE_MF_PACKAGES_RESULT';
 
+/* eslint-disable-next-line no-restricted-globals */
 const ctx: Worker = self as any;
 
 const calculateCells = (input: IWorkerInput<ICalculateCellsInputData>) => {

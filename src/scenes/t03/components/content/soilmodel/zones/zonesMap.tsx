@@ -28,7 +28,7 @@ interface IProps {
     readOnly?: boolean;
 }
 
-const zonesMap = (props: IProps) => {
+const ZonesMap = (props: IProps) => {
     const {geometry, model, readOnly, zone, zones} = props;
 
     const options = {
@@ -124,4 +124,4 @@ const zonesMap = (props: IProps) => {
     );
 };
 
-export default zonesMap;
+export default ZonesMap;

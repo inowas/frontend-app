@@ -18,7 +18,7 @@ interface IProps {
     steps?: number;
 }
 
-const contourLayer = (props: IProps) => {
+const ContourLayer = (props: IProps) => {
     const [contours, setContours] = useState<ContourMultiPolygon[]>([]);
     const [renderKey, setRenderKey] = useState<string>(uuid.v4());
     const [thresholds, setThresholds] = useState<number[]>([]);
@@ -59,4 +59,4 @@ const contourLayer = (props: IProps) => {
     );
 };
 
-export default contourLayer;
+export default ContourLayer;

@@ -59,7 +59,7 @@ interface IProps {
     unit?: string;
 }
 
-const colorLegend = (props: IProps) => {
+const ColorLegend = (props: IProps) => {
     const {legend, orientation, unit} = props;
 
     const renderVerticalLabels = () => {
@@ -149,4 +149,4 @@ const colorLegend = (props: IProps) => {
     return renderHorizontalColorLegend();
 };
 
-export default colorLegend;
+export default ColorLegend;

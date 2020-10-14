@@ -9,7 +9,7 @@ interface IProps {
     readOnly: boolean;
 }
 
-const mp7PackageProperties = (props: IProps) => {
+const Mp7PackageProperties = (props: IProps) => {
     const {mfPackage, readOnly} = props;
 
     return (
@@ -44,4 +44,4 @@ const mp7PackageProperties = (props: IProps) => {
     );
 };
 
-export default mp7PackageProperties;
+export default Mp7PackageProperties;

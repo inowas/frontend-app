@@ -30,7 +30,7 @@ interface IProps {
     readonly: boolean;
 }
 
-const smsPackageProperties = (props: IProps) => {
+const SmsPackageProperties = (props: IProps) => {
 
     const [mfPackage, setMfPackage] = useState<IFlopyModflowMfsms>(props.mfPackage.toObject());
     const handleOnSelect = (e: SyntheticEvent<HTMLElement, Event>, data: DropdownProps) => {
@@ -564,4 +564,4 @@ const smsPackageProperties = (props: IProps) => {
     );
 };
 
-export default smsPackageProperties;
+export default SmsPackageProperties;

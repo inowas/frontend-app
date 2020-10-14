@@ -19,7 +19,7 @@ const style = {
     }
 };
 
-const drawOnMapModal = (props: IProps) => {
+const DrawOnMapModal = (props: IProps) => {
     const [showModal, setShowModal] = useState<boolean>(false);
     const [geometry, setGeometry] = useState<Geometry | undefined>(undefined);
 
@@ -115,4 +115,4 @@ const drawOnMapModal = (props: IProps) => {
     );
 };
 
-export default drawOnMapModal;
+export default DrawOnMapModal;

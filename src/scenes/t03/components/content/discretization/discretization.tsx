@@ -14,7 +14,7 @@ import {messageDirty, messageSaving} from '../../../defaults/messages';
 import GridEditor from './gridEditor';
 import StressperiodsEditor from './stressperiodsEditor';
 
-const discretization = () => {
+const Discretization = () => {
     const menuItems = [
         {id: 'grid', name: 'Spatial discretization'},
         {id: 'stressperiods', name: 'Time discretization'}
@@ -158,4 +158,4 @@ const discretization = () => {
     );
 };
 
-export default discretization;
+export default Discretization;

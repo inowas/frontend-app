@@ -70,7 +70,7 @@ type IProps = IStateProps & IDispatchProps & RouteComponentProps<{
     type?: string;
 }>;
 
-const t03 = (props: IProps) => {
+const T03 = (props: IProps) => {
     const [navigation, setNavigation] = useState<Array<{
         name: string;
         path: string;
@@ -175,4 +175,4 @@ const mapDispatchToProps = (dispatch: any): IDispatchProps => ({
 export default withRouter(connect<IStateProps, IDispatchProps>(
     mapStateToProps,
     mapDispatchToProps)
-(t03));
+(T03));

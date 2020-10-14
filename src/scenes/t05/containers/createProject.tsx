@@ -23,7 +23,7 @@ const navigation = [{
     icon: <Icon name="file"/>
 }];
 
-const createProject = (props: RouteComponentProps<any>) => {
+const CreateProject = (props: RouteComponentProps<any>) => {
     const [activeInput, setActiveInput] = useState<string | null>(null);
     const [activeValue, setActiveValue] = useState<string>('');
     const [description, setDescription] = useState<string>('');
@@ -194,4 +194,4 @@ const createProject = (props: RouteComponentProps<any>) => {
     );
 };
 
-export default withRouter(createProject);
+export default withRouter(CreateProject);

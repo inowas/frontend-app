@@ -28,7 +28,7 @@ interface IProps {
     routeTo?: (id: string) => any;
 }
 
-const weightAssignmentEditor = (props: IProps) => {
+const WeightAssignmentEditor = (props: IProps) => {
     const [showInfo, setShowInfo] = useState<boolean>(true);
 
     const handleDismiss = () => setShowInfo(false);
@@ -283,4 +283,4 @@ const weightAssignmentEditor = (props: IProps) => {
     );
 };
 
-export default weightAssignmentEditor;
+export default WeightAssignmentEditor;

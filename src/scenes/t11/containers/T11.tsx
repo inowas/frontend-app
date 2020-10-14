@@ -10,7 +10,7 @@ const navigation = [{
     icon: <Icon name="file"/>
 }];
 
-const t11 = () => (
+const T11 = () => (
     <AppContainer navbarItems={navigation}>
         <Iframe
             url={'https://inowas.shinyapps.io/mar_model_selection/'}
@@ -21,4 +21,4 @@ const t11 = () => (
     </AppContainer>
 );
 
-export default t11;
+export default T11;

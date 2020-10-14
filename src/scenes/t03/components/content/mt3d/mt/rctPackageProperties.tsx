@@ -11,7 +11,7 @@ interface IProps {
     readOnly: boolean;
 }
 
-const rctPackageProperties = (props: IProps) => {
+const RctPackageProperties = (props: IProps) => {
     const [mtPackage, setMtPackage] = useState<IFlopyMt3dMtrct>(props.mtPackage.toObject());
     useEffect(() => {
         setMtPackage(props.mtPackage.toObject());
@@ -297,4 +297,4 @@ const rctPackageProperties = (props: IProps) => {
 
 };
 
-export default rctPackageProperties;
+export default RctPackageProperties;
