@@ -5,7 +5,7 @@ import {Label, ReferenceDot, ResponsiveContainer, Scatter, ScatterChart, Tooltip
 import {Button, Checkbox, Icon, Menu, MenuItemProps, Segment, Table} from 'semantic-ui-react';
 import {SemanticCOLORS} from 'semantic-ui-react/dist/commonjs/generic';
 import {downloadFile} from '../../shared/simpleTools/helpers';
-import {IHeatTransportResults} from './types';
+import {IHeatTransportResults} from '../../../core/model/htm/Htm.type';
 
 interface IProps {
     results: IHeatTransportResults;

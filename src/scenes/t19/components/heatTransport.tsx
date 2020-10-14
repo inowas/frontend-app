@@ -10,7 +10,7 @@ import {Rtm} from '../../../core/model/rtm';
 import {IDateTimeValue} from '../../../core/model/rtm/Sensor.type';
 import {makeHeatTransportRequest} from '../../../services/api';
 import {HeatTransportInput, HeatTransportResults} from './index';
-import {IHeatTransportRequest, IHeatTransportRequestOptions, IHeatTransportResults} from './types';
+import {IHeatTransportRequestOptions, IHeatTransportResults, IHeatTransportRequest} from "../../../core/model/htm/Htm.type";
 
 interface IProps {
     rtm: Rtm;
