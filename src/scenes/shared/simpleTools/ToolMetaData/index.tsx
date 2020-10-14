@@ -16,7 +16,6 @@ import {IToolMetaDataEdit} from './ToolMetaData.type';
 
 interface IProps {
     isDirty: boolean;
-    onChange: (tool: IToolMetaDataEdit) => any;
     onSave: (tool: IToolMetaDataEdit) => any;
     readOnly: boolean;
     tool: IToolMetaDataEdit;

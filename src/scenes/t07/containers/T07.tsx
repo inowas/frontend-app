@@ -166,20 +166,12 @@ const T07 = (props: RouteComponentProps<{
         }
     };
 
-    const handleChangeMetaData = (metaData: IToolMetaDataEdit) => {
-        if (!localScenarioAnalysis) {
-            return null;
-        }
-        const cScenarioAnalysis = ScenarioAnalysis.fromObject(localScenarioAnalysis);
-        cScenarioAnalysis.name = metaData.name;
-        cScenarioAnalysis.description = metaData.description;
-        cScenarioAnalysis.public = metaData.public;
-        setLocalScenarioAnalysis(cScenarioAnalysis.toObject());
-    };
-
-    const handleSaveMetaData = () => {
+    const handleSaveMetaData = (metaData: IToolMetaDataEdit) => {
         if (localScenarioAnalysis) {
             const cScenarioAnalysis = ScenarioAnalysis.fromObject(localScenarioAnalysis);
+            cScenarioAnalysis.name = metaData.name;
+            cScenarioAnalysis.description = metaData.description;
+            cScenarioAnalysis.public = metaData.public;
             return sendCommand(
                 ScenarioAnalysisCommand.updateScenarioAnalysis(cScenarioAnalysis.id, cScenarioAnalysis.name,
                     cScenarioAnalysis.description, cScenarioAnalysis.public),
@@ -306,18 +298,17 @@ const T07 = (props: RouteComponentProps<{
         <AppContainer navbarItems={navigation}>
             <DataFetcherWrapper key={wrapperKey}>
                 {localScenarioAnalysis &&
-                <ToolMetaData
-                    isDirty={false}
-                    onChange={handleChangeMetaData}
-                    readOnly={false}
-                    tool={{
-                        tool: 'T07',
-                        name: localScenarioAnalysis.name,
-                        description: localScenarioAnalysis.description,
-                        public: localScenarioAnalysis.public
-                    }}
-                    onSave={handleSaveMetaData}
-                />
+                    <ToolMetaData
+                        isDirty={false}
+                        readOnly={false}
+                        tool={{
+                            tool: 'T07',
+                            name: localScenarioAnalysis.name,
+                            description: localScenarioAnalysis.description,
+                            public: localScenarioAnalysis.public
+                        }}
+                        onSave={handleSaveMetaData}
+                    />
                 }
                 <Grid padded={true}>
                     <Grid.Row>
