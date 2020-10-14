@@ -127,7 +127,7 @@ const VariableDensityProperties = () => {
                                 {!transport.enabled &&
                                 <Message negative={true}>
                                     <Message.Header>Transport has to be active, to activate SEAWAT.</Message.Header>
-                                    <p>Navigate to Model Setup > Transport, to enable Transport and add a
+                                    <p>Navigate to Model Setup {'>'} Transport, to enable Transport and add a
                                         substance.</p>
                                 </Message>
                                 }
