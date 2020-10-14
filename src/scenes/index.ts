@@ -16,6 +16,7 @@ import {T12} from './t12/containers';
 import {T13, T13A, T13B, T13C, T13D, T13E} from './t13/containers';
 import {T14, T14A, T14B, T14C, T14D} from './t14/containers';
 import {T18} from './t18/containers';
+import {HeatTransport as T19} from './t19/containers';
 import TermsAndConditions from './termsAndConditions';
 import Login from './user/containers/Login';
 import Logout from './user/containers/Logout';
@@ -64,5 +65,6 @@ export {
     T14B,
     T14C,
     T14D,
-    T18
+    T18,
+    T19
 };
