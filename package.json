@@ -24,7 +24,7 @@
     "mathjs": "5.10.3",
     "md5": "2.2.1",
     "moment": "2.22.2",
-    "papaparse": "4.6.3",
+    "papaparse": "5.2.0",
     "prop-types": "15.7.2",
     "rainbowvis.js": "https://github.com/inowas/RainbowVis-JS.git#master",
     "rc-slider": "8.6.3",
