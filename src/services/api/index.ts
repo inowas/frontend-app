@@ -6,7 +6,7 @@ import {Array2D, Array3D} from '../../core/model/geometry/Array2D.type';
 import {IDateTimeValue} from '../../core/model/rtm/Sensor.type';
 import {IMetaData, ISimpleTool} from '../../core/model/types';
 import {InterpolationType} from '../../scenes/shared/rasterData/types';
-import {IHeatTransportRequest} from '../../scenes/t10/components/heatTransport/types';
+import {IHeatTransportRequest} from '../../scenes/t19/components/types';
 import {CallbackFunction, ErrorCallbackFunction} from '../../scenes/types';
 import storeToCreate from '../../store';
 import {IBudgetData, IModflowFile, IRasterFileMetadata} from './types';

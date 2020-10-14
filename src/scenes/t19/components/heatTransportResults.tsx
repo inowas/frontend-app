@@ -4,7 +4,7 @@ import React, {MouseEvent, useEffect, useState} from 'react';
 import {Label, ReferenceDot, ResponsiveContainer, Scatter, ScatterChart, Tooltip, XAxis, YAxis} from 'recharts';
 import {Button, Checkbox, Icon, Menu, MenuItemProps, Segment, Table} from 'semantic-ui-react';
 import {SemanticCOLORS} from 'semantic-ui-react/dist/commonjs/generic';
-import {downloadFile} from '../../../shared/simpleTools/helpers';
+import {downloadFile} from '../../shared/simpleTools/helpers';
 import {IHeatTransportResults} from './types';
 
 interface IProps {

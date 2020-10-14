@@ -128,4 +128,5 @@ const Sensors = (props: IProps) => {
     );
 };
 
+// @ts-ignore todo
 export default withRouter<IProps>(Sensors);

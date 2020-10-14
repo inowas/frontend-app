@@ -1,4 +1,5 @@
 import {LTOB} from 'downsample';
+// @ts-ignore todo
 import {DataPoint} from 'downsample/dist/types';
 import {maxBy, minBy, uniqBy} from 'lodash';
 import moment from 'moment';

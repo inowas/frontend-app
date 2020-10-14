@@ -131,7 +131,9 @@ const Transport = (props: IProps) => {
     const renderProperties = () => {
         const mt3d = FlopyMt3d.fromObject(mt);
         const readOnly = props.model.readOnly;
-        const {type} = match.params;
+        // @ts-ignore todo
+        // @ts-ignore todo
+const {type} = match.params;
         const {packages} = props;
 
         switch (type) {
@@ -196,7 +198,9 @@ const Transport = (props: IProps) => {
     };
 
     const renderSidebar = () => {
-        const {type} = match.params;
+        // @ts-ignore todo
+        // @ts-ignore todo
+const {type} = match.params;
 
         return (
             <Menu fluid={true} vertical={true} tabular={true}>

@@ -218,4 +218,5 @@ const CreateRTM = (props: IProps) => {
 
 };
 
+// @ts-ignore todo
 export default withRouter<IProps>(CreateRTM);

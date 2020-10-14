@@ -1,4 +1,5 @@
 import {LTOB} from 'downsample';
+// @ts-ignore todo
 import {DataPoint} from 'downsample/dist/types';
 import moment from 'moment';
 import React, {useEffect, useRef, useState} from 'react';

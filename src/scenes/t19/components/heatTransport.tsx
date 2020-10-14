@@ -6,9 +6,9 @@ import {
     InputOnChangeData,
     Segment
 } from 'semantic-ui-react';
-import {Rtm} from '../../../../core/model/rtm';
-import {IDateTimeValue} from '../../../../core/model/rtm/Sensor.type';
-import {makeHeatTransportRequest} from '../../../../services/api';
+import {Rtm} from '../../../core/model/rtm';
+import {IDateTimeValue} from '../../../core/model/rtm/Sensor.type';
+import {makeHeatTransportRequest} from '../../../services/api';
 import {HeatTransportInput, HeatTransportResults} from './index';
 import {IHeatTransportRequest, IHeatTransportRequestOptions, IHeatTransportResults} from './types';
 
@@ -16,7 +16,7 @@ interface IProps {
     rtm: Rtm;
 }
 
-const HeatTransport = (props: IProps) => {
+const HeatTransportData = (props: IProps) => {
     const [isFetching, setIsFetching] = useState<boolean>(false);
 
     const [swData, setSwData] = useState<IDateTimeValue[]>();
@@ -160,4 +160,4 @@ const HeatTransport = (props: IProps) => {
     );
 };
 
-export default HeatTransport;
+export default HeatTransportData;

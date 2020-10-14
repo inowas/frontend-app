@@ -10,7 +10,7 @@ import ToolNavigation from '../../shared/complexTools/toolNavigation';
 import SimpleToolsCommand from '../../shared/simpleTools/commands/SimpleToolsCommand';
 import ToolMetaData from '../../shared/simpleTools/ToolMetaData';
 import {IToolMetaDataEdit} from '../../shared/simpleTools/ToolMetaData/ToolMetaData.type';
-import {HeatTransport} from '../components/heatTransport';
+import {HeatTransport} from '../../t19/components';
 import {DataSources, Processing, SensorMetaData, Sensors, Visualization} from '../components/index';
 
 export interface IProps extends RouteComponentProps<{ id: string, property: string, pid: string }> {
@@ -264,4 +264,5 @@ const RTM = (props: IProps) => {
     );
 };
 
+// @ts-ignore todo
 export default withRouter<IProps>(RTM);

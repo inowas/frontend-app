@@ -198,7 +198,9 @@ const Flow = (props: IProps) => {
         const iMf = FlopyModflow.fromObject(mf);
 
         const readOnly = props.model.readOnly;
-        const {type} = match.params;
+        // @ts-ignore todo
+        // @ts-ignore todo
+const {type} = match.params;
         const soilmodel = props.soilmodel;
 
         if (type && !['flow', 'solver'].includes(type) && !iMf.getPackage(type)) {
@@ -362,7 +364,9 @@ const Flow = (props: IProps) => {
         if (!props.boundaries) {
             return null;
         }
-        const {type} = match.params;
+        // @ts-ignore todo
+        // @ts-ignore todo
+const {type} = match.params;
         return (
             <div>
                 <Menu fluid={true} vertical={true} tabular={true}>

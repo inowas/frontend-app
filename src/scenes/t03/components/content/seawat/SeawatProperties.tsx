@@ -119,7 +119,9 @@ const SeawatProperties = (props: IProps) => {
         const seawat = FlopySeawat.fromObject(swt);
         const readOnly = props.model.readOnly;
         const transport = props.transport;
-        const {type} = match.params;
+        // @ts-ignore todo
+        // @ts-ignore todo
+const {type} = match.params;
 
         switch (type) {
             case 'vdf':
@@ -150,7 +152,9 @@ const SeawatProperties = (props: IProps) => {
     };
 
     const renderSidebar = () => {
-        const {type} = match.params;
+        // @ts-ignore todo
+        // @ts-ignore todo
+const {type} = match.params;
 
         const sideBar = [
             {id: undefined, name: 'Overview (SEAWAT)', disabled: false},

@@ -1,4 +1,5 @@
 import {LTOB} from 'downsample';
+// @ts-ignore todo
 import {XYDataPoint} from 'downsample/dist/types';
 import {cloneDeep} from 'lodash';
 import moment from 'moment';
