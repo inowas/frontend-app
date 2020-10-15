@@ -131,7 +131,7 @@ const BoundaryDetails = (props: IProps) => {
         ));
     };
 
-    const renderDataTable = () => {
+    const renderDataTable = (props: IProps) => {
         if (boundary instanceof HeadObservationWell || boundary instanceof FlowAndHeadBoundary) {
             return (
                 <BoundaryDateTimeValuesDataTable
@@ -154,10 +154,11 @@ const BoundaryDetails = (props: IProps) => {
         );
     };
 
-    const renderLayerSelection = () => {
+    const renderLayerSelection = (props: IProps) => {
         const cBoundary = props.boundary;
         const multipleLayers = ['chd', 'ghb', 'fhb', 'riv'].includes(cBoundary.type);
 
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
         let options;
 
         switch (cBoundary.type) {
@@ -168,7 +169,6 @@ const BoundaryDetails = (props: IProps) => {
                 options = {enabled: true, label: 'Evapotranspiration option', name: 'nevtop'};
                 break;
             default:
-                // eslint-disable-next-line @typescript-eslint/no-unused-vars
                 options = {enabled: false, label: '', name: ''};
                 break;
         }
@@ -213,7 +213,7 @@ const BoundaryDetails = (props: IProps) => {
         );
     };
 
-    const renderLengthInformation = () => {
+    const renderLengthInformation = (props: IProps) => {
         if (boundary.geometry.type === 'LineString') {
             return (
                 <Form.Input
@@ -280,7 +280,7 @@ const BoundaryDetails = (props: IProps) => {
                         readOnly={props.readOnly}
                     />
 
-                    {renderLayerSelection()}
+                    {renderLayerSelection(props)}
 
                     {boundary.type === 'wel' && boundary instanceof WellBoundary &&
                     <Form.Dropdown
@@ -323,7 +323,7 @@ const BoundaryDetails = (props: IProps) => {
                     />
                 </Form.Group>
                 }
-                {renderLengthInformation()}
+                {renderLengthInformation(props)}
             </Form>
 
             {!props.readOnly &&
@@ -398,7 +398,7 @@ const BoundaryDetails = (props: IProps) => {
                 </Button>
             </div>
             }
-            {renderDataTable()}
+            {renderDataTable(props)}
             {showBoundaryEditor &&
             <BoundaryGeometryEditor
                 boundary={boundary}
