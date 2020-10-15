@@ -95,6 +95,7 @@ class BoundaryDetailsImport extends React.Component<IProps, IState> {
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
         const multipleLayers = ['chd', 'ghb'].includes(boundary.type);
 
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
         let options = {enabled: false, label: '', name: ''};
 
         switch (boundary.type) {
