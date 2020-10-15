@@ -7,8 +7,9 @@ const coordinateSystemDisclaimer = () => (
             <Grid.Row>
                 <Grid.Column>
                     <Header as={'h2'}>Geometry format</Header>
-                    {/* tslint:disable-next-line:max-line-length */}
-                    The platform is using the GEOJSON Format described in <a target={'_blank'} href={'https://tools.ietf.org/html/rfc7946'}>RFC7946.</a>.
+                    The platform is using the GEOJSON Format described in
+                    <a rel="noopener noreferrer" target='_blank'
+                       href={'https://tools.ietf.org/html/rfc7946'}>RFC7946.</a>.
                     <br/>
                     GEOJSON uses the geographic coordinate reference system: <br/>
                     <br/>

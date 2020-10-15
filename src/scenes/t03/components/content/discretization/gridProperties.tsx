@@ -51,6 +51,7 @@ const GridProperties = (props: IProps) => {
 
     useEffect(() => {
         handleChangeRotation(props.rotation);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     useEffect(() => {
@@ -63,6 +64,7 @@ const GridProperties = (props: IProps) => {
         if (isCalculating) {
             return calculateRotation(rotation);
         }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [isCalculating]);
 
     useEffect(() => {
@@ -72,6 +74,7 @@ const GridProperties = (props: IProps) => {
             Math.round(dxCell(BoundingBox.fromGeoJson(boundingBox as AllGeoJSON),
                 GridSize.fromObject(gridSize)) * 10000) / 10
         ]);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [gridSize]);
 
     const calculateRotation = (r: number) => {

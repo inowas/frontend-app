@@ -1,5 +1,4 @@
 import {Collection} from '../../collection/Collection';
-import {ICriteriaRelation} from './CriteriaRelation.type';
 import {IWeight} from './Weight.type';
 
 class WeightsCollection extends Collection<IWeight> {

@@ -41,6 +41,7 @@ const SensorMetadata = (props: IProps) => {
             setSelectedParameterId(props.sensor.parameters.first.id);
             props.onChangeSelectedParameterId(props.sensor.parameters.first.id);
         }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [props.sensor]);
 
     useEffect(() => {
@@ -49,6 +50,7 @@ const SensorMetadata = (props: IProps) => {
         }
 
         props.onChangeSelectedParameterId(selectedParameterId);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [selectedParameterId]);
 
     const handleLocalChange = (e: ChangeEvent<HTMLInputElement>, data: InputOnChangeData) => setActiveInput({

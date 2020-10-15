@@ -26,6 +26,7 @@ const CsvUpload = (props: IProps) => {
         if (!prevUploadState || prevUploadState.id !== props.uploadState.id) {
             setModalOpen(props.uploadState.error);
         }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [props.uploadState]);
 
     const handleUploadCSV = (e: ChangeEvent<HTMLInputElement>) => {

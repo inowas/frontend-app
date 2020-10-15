@@ -62,6 +62,7 @@ const AdvancedCsvUpload = (props: IProps) => {
         if (metadata && parameterColumns && Object.keys(parameterColumns).length === columns.length) {
             setIsFetching(true);
         }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [firstRowIsHeader, parameterColumns]);
 
     useEffect(() => {
@@ -75,12 +76,14 @@ const AdvancedCsvUpload = (props: IProps) => {
                 }
             });
         }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [parsingData]);
 
     useEffect(() => {
         if (metadata && isFetching) {
             processData(metadata);
         }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [isFetching]);
 
     const handleBlurDateTimeFormat = () => {
@@ -114,13 +117,16 @@ const AdvancedCsvUpload = (props: IProps) => {
     };
 
     const processData = ({data}: ParseResult) => {
-        if (!metadata || !parameterColumns ||
-            (parameterColumns && Object.keys(parameterColumns).length !== columns.length)) {
+        if (
+            (!metadata) ||
+            (!parameterColumns) ||
+            (parameterColumns && Object.keys(parameterColumns).length !== columns.length)
+        ) {
             return;
         }
         const nData: any[][] = [];
         data.forEach((r, rKey) => {
-            if (!firstRowIsHeader || firstRowIsHeader && rKey > 0) {
+            if (!firstRowIsHeader || (firstRowIsHeader && rKey > 0)) {
                 const row = columns.map((c) => {
                     if (c.type === ECsvColumnType.DATE_TIME) {
                         return moment.utc(r[parameterColumns[c.value]], dateTimeFormat);

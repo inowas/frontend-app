@@ -1,4 +1,5 @@
 import {LTOB} from 'downsample';
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore todo
 import {DataPoint} from 'downsample/dist/types';
 import {cloneDeep} from 'lodash';
@@ -57,13 +58,14 @@ const ValueProcessingEditor = (props: IProps) => {
         setOperator(p.operator);
         setValue(p.value);
         setProcessing(p);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     useEffect(() => {
         if (processing) {
             process(processing, props.dsc);
         }
-
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [processing]);
 
     useEffect(() => {
@@ -91,7 +93,7 @@ const ValueProcessingEditor = (props: IProps) => {
         }
 
         return handleBlur();
-
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [operator, begin, end, value]);
 
     const handleSave = () => {

@@ -66,6 +66,7 @@ const Transport = (props: IProps) => {
         return function cleanup() {
             handleSave();
         };
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     useEffect(() => {
@@ -131,9 +132,10 @@ const Transport = (props: IProps) => {
     const renderProperties = () => {
         const mt3d = FlopyMt3d.fromObject(mt);
         const readOnly = props.model.readOnly;
+
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
         // @ts-ignore todo
-        // @ts-ignore todo
-const {type} = match.params;
+        const {type} = match.params;
         const {packages} = props;
 
         switch (type) {
@@ -198,9 +200,9 @@ const {type} = match.params;
     };
 
     const renderSidebar = () => {
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
         // @ts-ignore todo
-        // @ts-ignore todo
-const {type} = match.params;
+        const {type} = match.params;
 
         return (
             <Menu fluid={true} vertical={true} tabular={true}>

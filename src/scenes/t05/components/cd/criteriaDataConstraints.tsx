@@ -69,6 +69,8 @@ const CriteriaDataConstraints = (props: IProps) => {
         const cCriterion = Criterion.fromObject(criterion);
         cCriterion.constraintRules = RulesCollection.fromObject(cCriterion.constraintRules.all.map((r: IRule) => {
             if (r.id === id) {
+                // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+                // @ts-ignore
                 r[name as RuleIndex] = value || NaN;
             }
             return r;
@@ -85,6 +87,8 @@ const CriteriaDataConstraints = (props: IProps) => {
         const cCriterion = Criterion.fromObject(criterion);
         cCriterion.constraintRules = RulesCollection.fromObject(cCriterion.constraintRules.all.map((r) => {
             if (r.id === id) {
+                // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+                // @ts-ignore
                 r[name as RuleIndex] = value as string || NaN;
             }
             return r;

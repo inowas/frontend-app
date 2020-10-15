@@ -13,9 +13,7 @@ import {createToolInstance} from '../../dashboard/commands';
 import AppContainer from '../../shared/AppContainer';
 import {ModelMap} from '../../t03/components/maps';
 
-// tslint:disable-next-line:no-empty-interface
-interface IProps extends RouteComponentProps {
-}
+type IProps = RouteComponentProps
 
 const navigation = [
     {
@@ -218,5 +216,6 @@ const CreateRTM = (props: IProps) => {
 
 };
 
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore todo
 export default withRouter<IProps>(CreateRTM);

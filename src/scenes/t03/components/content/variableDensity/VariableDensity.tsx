@@ -39,6 +39,7 @@ const VariableDensityProperties = () => {
         return function cleanup() {
             handleSave();
         };
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     useEffect(() => {
@@ -46,6 +47,7 @@ const VariableDensityProperties = () => {
         if (variableDensity) {
             variableDensityRef.current = variableDensity;
         }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [messages, variableDensity]);
 
     if (!model || !variableDensity || !transport) {

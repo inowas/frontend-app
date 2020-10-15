@@ -23,7 +23,7 @@ import {
 } from '../components';
 import {getMenuItems} from '../defaults';
 import {heatMapColors} from '../defaults/gis';
-import { updater } from '../updaters/mcda';
+import {updater} from '../updaters/mcda';
 
 const navigation = [{
     name: 'Documentation',
@@ -67,6 +67,7 @@ const T05 = (props: IProps) => {
                 setIsLoading(false);
             }
         );
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     if (!tool) {
@@ -154,6 +155,7 @@ const T05 = (props: IProps) => {
         if (!!cCid && !!cTool) {
             return props.history.push(basePath + id + '/' + property + '/' + cCid + '/' + cTool);
         }
+        // eslint-disable-next-line no-extra-boolean-cast
         if (!!cCid) {
             if (property === 'cd') {
                 return props.history.push(basePath + id + '/' + property + '/' + cCid + '/upload');

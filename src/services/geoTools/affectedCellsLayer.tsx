@@ -66,14 +66,17 @@ const AffectedCellsLayer = (props: IProps) => {
     }, [props.rotation]);
 
     useEffect(() => {
-        setIBoundLayer(
-            createPolygon(
-                BoundingBox.fromObject(boundingBox),
-                props.gridSize,
-                props.cells.invert(props.gridSize),
-                styles.inactive
-            )
+        const polygon = createPolygon(
+            BoundingBox.fromObject(boundingBox),
+            props.gridSize,
+            props.cells.invert(props.gridSize),
+            styles.inactive
         );
+
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore Todo
+        setIBoundLayer(polygon);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [boundingBox, props.cells, props.gridSize]);
 
     useEffect(() => {
@@ -81,8 +84,11 @@ const AffectedCellsLayer = (props: IProps) => {
             const polygon = createPolygon(
                 BoundingBox.fromObject(boundingBox), props.gridSize, props.boundary.cells, styles.affected
             );
+            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+            // @ts-ignore TODO!
             setBoundaryLayer(polygon);
         }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [props.boundary]);
 
     useEffect(() => {
@@ -100,10 +106,13 @@ const AffectedCellsLayer = (props: IProps) => {
         const sameTypeBoundaries = boundaries.all.filter(
             (b) => props.boundary && b.type === props.boundary.type && b.id !== props.boundary.id
         );
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore Todo
         setBoundaryLayers(sameTypeBoundaries.length > 0 ? sameTypeBoundaries.map(
             (b, key) => createPolygon(props.boundingBox, props.gridSize, b.cells, styles.other, key)
             ) : null
         );
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [T03.boundaries]);
 
     if (!boundaries) {

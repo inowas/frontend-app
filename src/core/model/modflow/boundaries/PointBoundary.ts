@@ -57,7 +57,7 @@ export default abstract class PointBoundary extends Boundary {
         this.cells = Cells.fromGeometry(this.geometry, boundingBox, gridSize);
     }
 
-    public setSpValues(spValues: ISpValues, opId?: string) {
+    public setSpValues(spValues: ISpValues) {
         this._props.properties.sp_values = spValues;
     }
 }

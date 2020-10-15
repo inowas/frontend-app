@@ -59,7 +59,9 @@ const RasterFileUploadModal = (props: IProps) => {
     const [interpolation, setInterpolation] = useState<InterpolationType>(InterpolationType.NEAREST_NEIGHBOR);
     const [isLoading, setIsLoading] = useState<boolean>(false);
     const [selectedBand, setSelectedBand] = useState<number>(0);
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const [errorFetching, setErrorFetching] = useState<string | null>(null);
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const [errorUploading, setErrorUploading] = useState<string | null>(null);
     const [errorGridSize, setErrorGridSize] = useState<boolean>(false);
     const [activeItem, setActiveItem] = useState<string>('file');

@@ -1,5 +1,5 @@
 import {cloneDeep, includes} from 'lodash';
-import {IHeatTransportInput, IHtm} from './Htm.type';
+import {IHtm} from './Htm.type';
 
 export default class Htm {
 

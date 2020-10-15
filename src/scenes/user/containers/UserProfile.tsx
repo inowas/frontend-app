@@ -28,6 +28,7 @@ const UserProfile = () => {
     const [institution, setInstitution] = useState<string>('');
     const [email, setEmail] = useState<string>('');
     const [showErrorMessages, setShowErrorMessages] = useState<boolean>(false);
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const [error, setError] = useState<boolean>(false);
     const [dirty, setDirty] = useState<boolean>(false);
     const [loading, setLoading] = useState<boolean>(false);

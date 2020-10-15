@@ -73,16 +73,18 @@ const ResultsMap = (props: IProps) => {
     const mapRef = useRef<Map | null>(null);
 
     useEffect(() => {
-        const {viewport} = props;
-        if (viewport) {
-            setState({viewport});
-        }
-    }, []);
+            const {viewport} = props;
+            if (viewport) {
+                setState({viewport});
+            }
+        },
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+        []
+    );
 
     useEffect(() => {
-        const {viewport} = props;
-        if (viewport) {
-            setState({viewport});
+        if (props.viewport) {
+            setState({viewport: props.viewport});
         }
     }, [props.viewport]);
 

@@ -51,6 +51,7 @@ const SeawatProperties = (props: IProps) => {
         return function cleanup() {
             handleSave();
         };
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     useEffect(() => {
@@ -119,9 +120,10 @@ const SeawatProperties = (props: IProps) => {
         const seawat = FlopySeawat.fromObject(swt);
         const readOnly = props.model.readOnly;
         const transport = props.transport;
+
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
         // @ts-ignore todo
-        // @ts-ignore todo
-const {type} = match.params;
+        const {type} = match.params;
 
         switch (type) {
             case 'vdf':
@@ -152,9 +154,9 @@ const {type} = match.params;
     };
 
     const renderSidebar = () => {
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
         // @ts-ignore todo
-        // @ts-ignore todo
-const {type} = match.params;
+        const {type} = match.params;
 
         const sideBar = [
             {id: undefined, name: 'Overview (SEAWAT)', disabled: false},

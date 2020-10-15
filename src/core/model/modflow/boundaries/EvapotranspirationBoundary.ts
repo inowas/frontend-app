@@ -81,7 +81,7 @@ export default class EvapotranspirationBoundary extends Boundary {
     }
 
     public static create(id: string, geometry: Polygon, name: string, layers: number[],
-                         cells: ICells, spValues: ISpValues, nevtop: number = 1) {
+                         cells: ICells, spValues: ISpValues, nevtop = 1) {
 
         return new this({
             id,
@@ -158,7 +158,7 @@ export default class EvapotranspirationBoundary extends Boundary {
         this.cells = Cells.fromGeometry(this.geometry, boundingBox, gridSize);
     }
 
-    public setSpValues(spValues: ISpValues, opId?: string) {
+    public setSpValues(spValues: ISpValues) {
         this._props.properties.sp_values = spValues;
     }
 

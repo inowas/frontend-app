@@ -32,6 +32,7 @@ const RasterFromCSV = (props: IProps) => {
         if (isCalculating && data) {
             runCalculation();
         }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [isCalculating]);
 
     if (!model) {

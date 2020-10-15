@@ -50,9 +50,14 @@ const Boundaries = (props: IProps) => {
     });
 
     useEffect(() => {
+        if (!pid) {
+            setIsLoading(true);
+            return redirectToFirstBoundary();
+        }
         return function cleanup() {
             handleUpdate();
         };
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     useEffect(() => {
@@ -60,14 +65,8 @@ const Boundaries = (props: IProps) => {
         if (selectedBoundary) {
             boundaryRef.current = selectedBoundary;
         }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [messages, selectedBoundary]);
-
-    useEffect(() => {
-        if (!pid) {
-            setIsLoading(true);
-            return redirectToFirstBoundary();
-        }
-    }, []);
 
     useEffect(() => {
         if (prevTypes && JSON.stringify(props.types) !== JSON.stringify(prevTypes)) {
@@ -77,6 +76,7 @@ const Boundaries = (props: IProps) => {
                 return redirectToFirstBoundary();
             }
         }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [props.types]);
 
     useEffect(() => {
@@ -88,6 +88,7 @@ const Boundaries = (props: IProps) => {
             }
             return redirectToFirstBoundary();
         }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [pid]);
 
     if (!boundaryCollection || !model || !soilmodel) {

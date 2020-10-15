@@ -24,6 +24,7 @@ interface IProps {
 }
 
 const DisPackageProperties = (props: IProps) => {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const [mfPackage, setMfPackage] = useState<IFlopyModflowMfdis>(props.mfPackage.toObject());
     const [activeIndex, setActiveIndex] = useState<number>(0);
     const {readonly} = props;

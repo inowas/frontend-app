@@ -12,9 +12,6 @@ import {IHeatTransportInput, IHtm} from '../../../core/model/htm/Htm.type';
 import Htm from "../../../core/model/htm/Htm";
 import SimpleToolsCommand from "../../shared/simpleTools/commands/SimpleToolsCommand";
 import {IToolMetaDataEdit} from "../../shared/simpleTools/ToolMetaData/ToolMetaData.type";
-import ModflowModelCommand from "../../t03/commands/modflowModelCommand";
-import {useSelector} from "react-redux";
-import {IRootReducer} from "../../../reducers";
 import {createToolInstance} from "../../dashboard/commands";
 
 const navigation = [{
@@ -27,7 +24,9 @@ const tool = 'T19';
 
 const HeatTransport = () => {
     const [isDirty, setDirty] = useState<boolean>(false);
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const [isFetching, setIsFetching] = useState<boolean>(false);
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const [rtm, setRtm] = useState<IRtm>();
     const [htm, setHtm] = useState<IHtm>();
 
@@ -64,6 +63,7 @@ const HeatTransport = () => {
                 () => console.log('ERROR')
             );
         }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [id]);
 
     const fetchToolInstance = () => {
@@ -78,7 +78,7 @@ const HeatTransport = () => {
                 setIsFetching(false);
             }
         );
-    }
+    };
 
     const handleSaveMetaData = (tool: IToolMetaDataEdit) => {
         const {name, description} = tool;
@@ -128,6 +128,6 @@ const HeatTransport = () => {
             </Grid>
         </AppContainer>
     );
-}
+};
 
 export default HeatTransport;

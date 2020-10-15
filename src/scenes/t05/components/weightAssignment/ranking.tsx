@@ -43,6 +43,8 @@ const Ranking = (props: IProps) => {
             wa.subParam = 2;
         }
 
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
         wa[name as WeightAssignmentIndex] = value;
 
         const cWa = WeightAssignment.fromObject(wa);

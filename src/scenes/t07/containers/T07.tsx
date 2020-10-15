@@ -4,7 +4,6 @@ import {useDispatch, useSelector} from 'react-redux';
 import {Redirect, RouteComponentProps, withRouter} from 'react-router-dom';
 import {Button, Grid, Header, Icon, Message, Popup, Segment} from 'semantic-ui-react';
 import Uuid from 'uuid';
-import uuid from 'uuid';
 import {Calculation, ModflowModel, Soilmodel} from '../../../core/model/modflow';
 import {ScenarioAnalysis} from '../../../core/model/scenarioAnalysis';
 import {IScenarioAnalysis} from '../../../core/model/scenarioAnalysis/ScenarioAnalysis';
@@ -63,8 +62,9 @@ const T07 = (props: RouteComponentProps<{
 }>) => {
     const [localScenarioAnalysis, setLocalScenarioAnalysis] = useState<IScenarioAnalysis | null>(null);
     const [selected, setSelected] = useState<string[]>([]);
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const [hasError, setHasError] = useState<any>(null);
-    const [wrapperKey, setWrapperKey] = useState<string>(uuid.v4());
+    const [wrapperKey, setWrapperKey] = useState<string>(Uuid.v4());
 
     const dispatch = useDispatch();
     const T07 = useSelector((state: IRootReducer) => state.T07);
@@ -255,7 +255,7 @@ const T07 = (props: RouteComponentProps<{
         const newId = Uuid.v4();
         sendCommand(
             ScenarioAnalysisCommand.createScenario(scenarioAnalysis.id, id, newId),
-            () => setWrapperKey(uuid.v4())
+            () => setWrapperKey(Uuid.v4())
         );
     };
 
@@ -265,7 +265,7 @@ const T07 = (props: RouteComponentProps<{
         }
         sendCommand(
             ScenarioAnalysisCommand.deleteScenario(scenarioAnalysis.id, id),
-            () => setWrapperKey(uuid.v4())
+            () => setWrapperKey(Uuid.v4())
         );
     };
 
@@ -298,17 +298,17 @@ const T07 = (props: RouteComponentProps<{
         <AppContainer navbarItems={navigation}>
             <DataFetcherWrapper key={wrapperKey}>
                 {localScenarioAnalysis &&
-                    <ToolMetaData
-                        isDirty={false}
-                        readOnly={false}
-                        tool={{
-                            tool: 'T07',
-                            name: localScenarioAnalysis.name,
-                            description: localScenarioAnalysis.description,
-                            public: localScenarioAnalysis.public
-                        }}
-                        onSave={handleSaveMetaData}
-                    />
+                <ToolMetaData
+                    isDirty={false}
+                    readOnly={false}
+                    tool={{
+                        tool: 'T07',
+                        name: localScenarioAnalysis.name,
+                        description: localScenarioAnalysis.description,
+                        public: localScenarioAnalysis.public
+                    }}
+                    onSave={handleSaveMetaData}
+                />
                 }
                 <Grid padded={true}>
                     <Grid.Row>

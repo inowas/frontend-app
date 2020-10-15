@@ -73,7 +73,7 @@ export default class ObservationPoint {
     }
 
     public static create(id: string, type: 'op', geometry: Point, name: string,
-                         spValues: ISpValues, distance: number = 0, dateTimes?: string[]) {
+                         spValues: ISpValues, distance = 0, dateTimes?: string[]) {
         return new ObservationPoint({
             type: 'Feature',
             id,
