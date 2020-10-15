@@ -11,9 +11,10 @@ const middlewares = [
 
 let appliedCompose = compose;
 if (process.env.NODE_ENV === 'development') {
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
     appliedCompose = composeWithDevTools;
-    // tslint:disable-next-line:no-var-requires
+    // eslint-disable-next-line @typescript-eslint/no-var-requires
     const {logger} = require('redux-logger');
     middlewares.push(logger);
 }
