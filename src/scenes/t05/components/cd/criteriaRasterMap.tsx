@@ -54,6 +54,7 @@ const CriteriaRasterMap = (props: IProps) => {
 
     useEffect(() => {
         setShowMap(props.showBasicLayer || props.gridSize.nX * props.gridSize.nY <= maximumGridCells);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [props.showBasicLayer, props.raster]);
 
     const handleClickMap = (e: LeafletMouseEvent) => {

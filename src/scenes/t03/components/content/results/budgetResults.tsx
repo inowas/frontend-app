@@ -38,6 +38,7 @@ const BudgetResults = (props: IProps) => {
                 type: selectedType,
             });
         }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [props.calculation]);
 
     const fetchData = ({type, totim}: { type: IBudgetType, totim: number }) => {

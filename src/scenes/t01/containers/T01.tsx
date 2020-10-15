@@ -98,4 +98,4 @@ const T01 = (props: IProps) => {
 
 };
 
-export default withRouter<IProps>(T01);
+export default withRouter(T01);

@@ -1,19 +1,19 @@
-import { cloneDeep } from 'lodash';
-import React, { SyntheticEvent, useEffect, useState } from 'react';
-import { DropdownProps, Form, Grid, Header, Segment } from 'semantic-ui-react';
-import { Array2D } from '../../../core/model/geometry/Array2D.type';
-import { Calculation, ModflowModel, Soilmodel, Stressperiods } from '../../../core/model/modflow';
-import { BoundaryCollection } from '../../../core/model/modflow/boundaries';
-import { IBoundary } from '../../../core/model/modflow/boundaries/Boundary.type';
-import { ICalculation } from '../../../core/model/modflow/Calculation.type';
-import { IModflowModel } from '../../../core/model/modflow/ModflowModel.type';
-import { ISoilmodel } from '../../../core/model/modflow/soilmodel/Soilmodel.type';
-import { ScenarioAnalysis } from '../../../core/model/scenarioAnalysis';
-import { fetchCalculationResultsFlow } from '../../../services/api';
+import {cloneDeep} from 'lodash';
+import React, {SyntheticEvent, useEffect, useState} from 'react';
+import {DropdownProps, Form, Grid, Header, Segment} from 'semantic-ui-react';
+import {Array2D} from '../../../core/model/geometry/Array2D.type';
+import {Calculation, ModflowModel, Soilmodel, Stressperiods} from '../../../core/model/modflow';
+import {BoundaryCollection} from '../../../core/model/modflow/boundaries';
+import {IBoundary} from '../../../core/model/modflow/boundaries/Boundary.type';
+import {ICalculation} from '../../../core/model/modflow/Calculation.type';
+import {IModflowModel} from '../../../core/model/modflow/ModflowModel.type';
+import {ISoilmodel} from '../../../core/model/modflow/soilmodel/Soilmodel.type';
+import {ScenarioAnalysis} from '../../../core/model/scenarioAnalysis';
+import {fetchCalculationResultsFlow} from '../../../services/api';
 import ResultsChart from '../../shared/complexTools/ResultsChart';
 import ResultsMap from '../../shared/complexTools/ResultsMap';
 import ResultsSelectorFlow from '../../shared/complexTools/ResultsSelectorFlow';
-import { EResultType } from '../../t03/components/content/results/flowResults';
+import {EResultType} from '../../t03/components/content/results/flowResults';
 
 interface IProps {
     models: { [id: string]: IModflowModel };
@@ -42,6 +42,7 @@ const Difference = (props: IProps) => {
         ) {
             setSelectedModels([props.models[selected[0]], props.models[selected[1]]]);
         }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [selected]);
 
     useEffect(() => {
@@ -55,6 +56,7 @@ const Difference = (props: IProps) => {
                 setSelectedTotim(basemodelCalculation.times.total_times[0]);
             }
         }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [selectedModels]);
 
     useEffect(() => {
@@ -62,6 +64,7 @@ const Difference = (props: IProps) => {
             setIsLoading(true);
             fetchDataRecursive(selectedLay, selectedTotim, selectedType);
         }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [selectedLay, selectedTotim, selectedType]);
 
     const fetchDataRecursive = (
@@ -90,7 +93,7 @@ const Difference = (props: IProps) => {
             if (!Array.isArray(d)) {
                 throw new Error('Data must be typeof Array!');
             }
-            cData = { ...results, [modelToFetch[0].id]: d };
+            cData = {...results, [modelToFetch[0].id]: d};
             return fetchDataRecursive(layer, totim, type, cData);
         }, () => {
             setIsLoading(false);
@@ -98,7 +101,7 @@ const Difference = (props: IProps) => {
     };
 
     const handleChangeTypeLayerOrTotim = (
-        { type, layer, totim }: { type: EResultType, layer: number, totim: number }
+        {type, layer, totim}: { type: EResultType, layer: number, totim: number }
     ) => {
         if (type === selectedType && layer === selectedLay && totim === selectedTotim) {
             return;
@@ -115,7 +118,7 @@ const Difference = (props: IProps) => {
         return res;
     };
 
-    const handleSelectModel = (e: SyntheticEvent, { id, value }: DropdownProps) => {
+    const handleSelectModel = (e: SyntheticEvent, {id, value}: DropdownProps) => {
         if (typeof value === 'string') {
             const cSelected = cloneDeep(selected);
             cSelected[id] = value;
@@ -130,7 +133,7 @@ const Difference = (props: IProps) => {
 
         return Object.keys(props.models).map((id) => {
             const m = props.models[id];
-            return { key: m.id, value: m.id, text: m.name };
+            return {key: m.id, value: m.id, text: m.name};
         });
     };
 
@@ -265,7 +268,7 @@ const Difference = (props: IProps) => {
                     <Grid.Row>
                         <Grid.Column width={7}>
                             <Form.Dropdown
-                                style={{ zIndex: 1000 }}
+                                style={{zIndex: 1000}}
                                 selection={true}
                                 fluid={true}
                                 id={0}
@@ -280,7 +283,7 @@ const Difference = (props: IProps) => {
                         </Grid.Column>
                         <Grid.Column width={7}>
                             <Form.Dropdown
-                                style={{ zIndex: 1000 }}
+                                style={{zIndex: 1000}}
                                 selection={true}
                                 fluid={true}
                                 id={1}

@@ -72,6 +72,7 @@ const getRoutes = () => {
                 <Route exact={true} path="/tools/T14C/:id?" component={Scenes.T14C}/>
                 <Route exact={true} path="/tools/T14D/:id?" component={Scenes.T14D}/>
                 <Route exact={true} path="/tools/T18/:id?" component={Scenes.T18}/>
+                <Route exact={true} path="/tools/T19/:id?" component={Scenes.T19}/>
 
                 <Route path="/imprint" component={Scenes.Imprint}/>
                 <Route path="/terms-and-conditions" component={Scenes.TermsAndConditions}/>
@@ -153,6 +154,7 @@ const getRoutes = () => {
             <PrivateRoute exact={true} path="/tools/T14C/:id?" component={Scenes.T14C} forRoles={['ROLE_USER']}/>
             <PrivateRoute exact={true} path="/tools/T14D/:id?" component={Scenes.T14D} forRoles={['ROLE_USER']}/>
             <PrivateRoute exact={true} path="/tools/T18/:id?" component={Scenes.T18} forRoles={['ROLE_USER']}/>
+            <PrivateRoute exact={true} path="/tools/T19/:id?" component={Scenes.T19} forRoles={['ROLE_USER']}/>
             <PrivateRoute path="/credentials" component={Scenes.UserCredentials} forRoles={['ROLE_USER']}/>
             <PrivateRoute path="/profile" component={Scenes.UserProfile} forRoles={['ROLE_USER']}/>
 

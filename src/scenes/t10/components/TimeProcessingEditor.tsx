@@ -1,4 +1,6 @@
 import {LTOB} from 'downsample';
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-ignore todo
 import {DataPoint} from 'downsample/dist/types';
 import {cloneDeep} from 'lodash';
 import moment from 'moment';
@@ -59,6 +61,7 @@ const TimeProcessingEditor = (props: IProps) => {
         setMethod(p.method);
         setRule(p.rule);
         setProcessing(p);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     useEffect(() => {
@@ -66,6 +69,7 @@ const TimeProcessingEditor = (props: IProps) => {
             process(processing, props.dsc);
         }
 
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [processing]);
 
     useEffect(() => {
@@ -94,6 +98,7 @@ const TimeProcessingEditor = (props: IProps) => {
 
         return handleBlur();
 
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [begin, end, method, rule]);
 
     const handleSave = () => {

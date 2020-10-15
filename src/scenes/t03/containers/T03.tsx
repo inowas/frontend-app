@@ -78,21 +78,25 @@ const T03 = (props: IProps) => {
     }>>(navDocumentation);
 
     useEffect(() => {
-        const {search} = props.location;
+            const {search} = props.location;
 
-        if (search.startsWith('?sid=')) {
-            const cScenarioAnalysisId = search.split('=')[1];
+            if (search.startsWith('?sid=')) {
+                const cScenarioAnalysisId = search.split('=')[1];
 
-            const cNavigation = cloneDeep(navigation);
-            cNavigation.push({
-                name: 'Return to ScenarioAnalysis',
-                path: '/tools/T07/' + cScenarioAnalysisId,
-                icon: <Icon name="file"/>
-            });
+                const cNavigation = cloneDeep(navigation);
+                cNavigation.push({
+                    name: 'Return to ScenarioAnalysis',
+                    path: '/tools/T07/' + cScenarioAnalysisId,
+                    icon: <Icon name="file"/>
+                });
 
-            setNavigation(cNavigation);
-        }
-    }, []);
+                setNavigation(cNavigation);
+            }
+
+        },
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+        []
+    );
 
     const saveMetaData = (tool: IToolMetaDataEdit) => {
         const {name, description} = tool;
@@ -169,5 +173,4 @@ const mapDispatchToProps = (dispatch: any): IDispatchProps => ({
 
 export default withRouter(connect<IStateProps, IDispatchProps>(
     mapStateToProps,
-    mapDispatchToProps)
-(T03));
+    mapDispatchToProps)(T03));

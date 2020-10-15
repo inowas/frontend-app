@@ -242,7 +242,9 @@ const ZonesTable = (props: IProps) => {
                             </Label>
                         );
                     }
-                })}
+
+                    return null;
+                }).filter(x => x)}
             </Segment>
             }
             <Table>

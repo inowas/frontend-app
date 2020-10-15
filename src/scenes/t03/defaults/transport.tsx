@@ -20,7 +20,7 @@ export const documentation = {
         percel: <div>Courant number, i.e., the number of cells (or a fraction of a cell) advection will be allowed in
             any direction in one transport step.<br/>For implicit finite-difference or particle tracking based schemes,
             there is no limit on PERCEL, but for accuracy reasons, it is generally not set much greater than one. Note,
-            however, that the PERCEL limit is checked over the entire model grid. Thus, even if PERCEL > 1, advection
+            however, that the PERCEL limit is checked over the entire model grid. Thus, even if PERCEL &gt; 1, advection
             may not be more than one cell’s length at most model locations.<br/><br/>For the explicit finite-difference
             or the third-order TVD scheme, PERCEL is also a stability constraint, which must not exceed one and will be
             automatically reset to one if a value greater than one is specified.</div>,
@@ -56,7 +56,8 @@ export const documentation = {
                     option is usually preferred and leads to smaller mass balance discrepancy in nonuniform or
                     diverging/converging flow fields.
                 </li>
-                <li><i>NPLANE</i> > 0 Fixed pattern is selected for initial placement. The value of NPLANE serves as the
+                <li><i>NPLANE</i> &gt; 0 Fixed pattern is selected for initial placement. The value of NPLANE serves as
+                    the
                     number of vertical “planes” on which initial particles are placed within each cell block. The fixed
                     pattern may work better than the random pattern only in relatively uniform flow fields. For two
                     dimensional simulations in plan view, set NPLANE = 1. For cross sectional or three-dimensional
@@ -176,7 +177,7 @@ export const documentation = {
             transport solution is solved explicitly as in the original MT3D code, and TTSMULT is always set to 1.0
             regardless of the user-specified input. Note that for the particle tracking based solution options and the
             3rd-order TVD scheme, TTSMULT does not apply.</div>,
-        ttsmax: <div>Maximum transport stepsize allowed when transport stepsize multiplier TTSMULT > 1.0. Setting
+        ttsmax: <div>Maximum transport stepsize allowed when transport stepsize multiplier TTSMULT &gt; 1.0. Setting
             TTSMAX = 0 imposes no maximum limit.</div>
     },
 
@@ -248,8 +249,8 @@ export const documentation = {
                     sorbed phase is assumed to be in equilibrium with the dissolved phase (ISOTHM=4), and the immobile
                     domain is assumed to have zero concentration (ISOTHM=5 or 6).
                 </li>
-                <li>>0, the initial concentration for the sorbed phase or immobile liquid phase of all species will be
-                    read.
+                <li>&gt;0, the initial concentration for the sorbed phase or immobile liquid phase of all species will
+                    be read.
                 </li>
             </ul>
         </div>,

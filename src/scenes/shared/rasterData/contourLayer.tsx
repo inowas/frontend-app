@@ -39,6 +39,7 @@ const ContourLayer = (props: IProps) => {
             props.rotation, ibound);
         setContours(cResult.contours);
         setThresholds(cResult.thresholds);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [props.data, props.steps]);
 
     useEffect(() => {

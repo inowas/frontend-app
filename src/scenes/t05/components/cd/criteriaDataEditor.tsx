@@ -52,6 +52,7 @@ const CriteriaDataEditor = (props: IProps) => {
                 suitability: prevCriterion.suitability
             });
         }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [props.criterion]);
 
     const getRasterData = () => {

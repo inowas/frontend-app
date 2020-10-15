@@ -17,7 +17,6 @@ export interface IProps extends RouteComponentProps<{ id: string, property: stri
 
 const Sensors = (props: IProps) => {
 
-
     const [selectedSensorId, setSelectedSensorId] = useState<string | null>(null);
     const [addSensor, setAddSensor] = useState<boolean>(false);
 
@@ -38,6 +37,7 @@ const Sensors = (props: IProps) => {
                 return setSelectedSensorId(null);
             }
         },
+        // eslint-disable-next-line react-hooks/exhaustive-deps
         [props.rtm.sensors]
     );
 
@@ -45,6 +45,7 @@ const Sensors = (props: IProps) => {
         if (selectedSensorId) {
             props.onChangeSelectedSensorId(selectedSensorId);
         }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [selectedSensorId]);
 
     const onAddNewSensor = () => {
@@ -128,4 +129,6 @@ const Sensors = (props: IProps) => {
     );
 };
 
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-ignore todo
 export default withRouter<IProps>(Sensors);

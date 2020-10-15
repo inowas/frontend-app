@@ -7,5 +7,6 @@ module.exports = function override(config, env) {
             {loader: 'babel-loader'}
         ]
     });
+
     return config;
 };

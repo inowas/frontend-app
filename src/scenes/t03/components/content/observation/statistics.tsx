@@ -71,19 +71,22 @@ const ObservationStatistics = () => {
     const model = T03.model ? ModflowModel.fromObject(T03.model) : null;
 
     useEffect(() => {
-        if (model && model.calculationId) {
-            setIsLoading(true);
-            fetchCalculationObservations(model.calculationId)
-                .then((d: IHobData) => {
-                    setHobData(d);
-                    setIsLoading(false);
-                })
-                .catch(() => {
-                    setIsLoading(false);
-                    setHobData([]);
-                });
-        }
-    }, []);
+            if (model && model.calculationId) {
+                setIsLoading(true);
+                fetchCalculationObservations(model.calculationId)
+                    .then((d: IHobData) => {
+                        setHobData(d);
+                        setIsLoading(false);
+                    })
+                    .catch(() => {
+                        setIsLoading(false);
+                        setHobData([]);
+                    });
+            }
+        },
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+        []
+    );
 
     useEffect(() => {
         if (hobData && Array.isArray(hobData)) {

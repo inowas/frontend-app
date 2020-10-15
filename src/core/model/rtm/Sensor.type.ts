@@ -3,7 +3,6 @@ import {IDataDropperFile} from '../../../services/dataDropper/DataDropper.type';
 import FileDataSource from './FileDataSource';
 import {IProcessing} from './processing/Processing.type';
 import PrometheusDataSource from './PrometheusDataSource';
-import {IDateTimeValue} from './Sensor.type';
 import SensorDataSource from './SensorDataSource';
 
 export interface ISensor {

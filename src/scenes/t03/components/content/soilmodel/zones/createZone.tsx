@@ -69,7 +69,7 @@ const CreateZone = () => {
                 })
             );
         }
-    }, [soilmodel]);
+    }, [soilmodel, visibleZones]);
 
     if (!boundaries || !model || !soilmodel || !visibleZones) {
         return (
@@ -222,7 +222,7 @@ const CreateZone = () => {
                                 geometry={'polygon'}
                                 size={'medium'}
                             />
-                            <Divider />
+                            <Divider/>
                             <Form.Field>
                                 <label>Other Zones</label>
                                 <List>

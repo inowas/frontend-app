@@ -42,6 +42,7 @@ const PackageActualizationWrapper = (props: IProps) => {
 
     useEffect(() => {
         recalculate();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     const recalculate = () => {

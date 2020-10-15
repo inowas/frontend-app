@@ -19,6 +19,7 @@ const SubstanceValuesDataTable = (props: IProps) => {
 
     useEffect(() => {
         setSpValues(spValuesFromProps(props));
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [props.substance, props.selectedBoundaryId]);
 
     const spValuesFromProps = (p: IProps) => {

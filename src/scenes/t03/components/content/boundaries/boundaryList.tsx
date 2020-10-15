@@ -32,6 +32,7 @@ class BoundaryList extends React.Component<IBoundaryListProps, IBoundaryListStat
         };
     }
 
+    // eslint-disable-next-line react/no-deprecated
     public componentWillReceiveProps(nextProps: IBoundaryListProps) {
         this.setState({
             selectedType: nextProps.types && nextProps.types.length === 1 ? nextProps.types[0] : 'all'
@@ -92,8 +93,8 @@ class BoundaryList extends React.Component<IBoundaryListProps, IBoundaryListStat
                                         {this.boundaryTypes()
                                             .filter((b) => b.value !== 'all')
                                             .map((o) =>
+                                                // eslint-disable-next-line react/jsx-key
                                                 <Dropdown.Item
-                                                    key={o.value}
                                                     {...o}
                                                     onClick={this.handleAdd(o.value)}
                                                 />

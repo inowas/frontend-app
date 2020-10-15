@@ -42,6 +42,7 @@ const Transport = () => {
         return function cleanup() {
             handleSave();
         };
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     useEffect(() => {
@@ -49,12 +50,14 @@ const Transport = () => {
         if (transportInstance) {
             transportRef.current = transportInstance;
         }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [messages, transportInstance]);
 
     useEffect(() => {
         if (!selectedSubstance && transportInstance && transportInstance.substances.length > 0) {
             handleSubstanceListClick(transportInstance.substances.first.id);
         }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [transportInstance]);
 
     if (!boundaries || !model || !transportInstance) {

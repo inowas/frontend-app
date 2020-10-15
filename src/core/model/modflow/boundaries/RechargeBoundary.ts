@@ -136,7 +136,7 @@ export default class RechargeBoundary extends Boundary {
         return Boundary.mergeStressperiodsWithSpValues(stressPeriods, this._props.properties.sp_values);
     }
 
-    public setSpValues(spValues: ISpValues, opId?: string) {
+    public setSpValues(spValues: ISpValues) {
         this._props.properties.sp_values = spValues;
     }
 

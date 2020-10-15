@@ -1,4 +1,20 @@
+import {ISimpleTool} from '../types';
+
+export interface IHtm extends ISimpleTool<IHtmData> {
+    data: IHtmData;
+}
+
+export interface IHtmData {
+    input: IHeatTransportInput[];
+    options: IHeatTransportRequestOptions;
+    results?: IHeatTransportResults;
+}
+
 export type TDateValueArray = Array<{date: string; value: number}>;
+
+export interface IHeatTransportInput {
+    id: string;
+}
 
 export interface IHeatTransportRequestOptions {
     retardation_factor: number;
@@ -28,12 +44,12 @@ export interface IHeatTransportResults {
     gof: Array<{type: string} & {[key: string]: number}>;
     paras: Array<{type: string} & {[key: string]: number}>;
     points: Array<{
-         date: string;
-         day_number: number;
-         label: string;
-         observed: number;
-         point_type: string;
-         simulated: number;
+        date: string;
+        day_number: number;
+        label: string;
+        observed: number;
+        point_type: string;
+        simulated: number;
     }>;
     traveltimes: Array<{
         point_type: string;

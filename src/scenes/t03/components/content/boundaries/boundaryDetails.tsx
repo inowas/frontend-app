@@ -48,6 +48,7 @@ const BoundaryDetails = (props: IProps) => {
         if (!observationPointId && props.boundary instanceof LineBoundary) {
             return setObservationPointId(props.boundary.observationPoints[0].id);
         }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [props.boundary]);
 
     const handleChange = (e: SyntheticEvent<HTMLElement, Event> | ChangeEvent<HTMLInputElement>,
@@ -66,6 +67,7 @@ const BoundaryDetails = (props: IProps) => {
         }
 
         const cBoundary = props.boundary;
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
         // @ts-ignore
         cBoundary[name] = value;
         return props.onChange(cBoundary);
@@ -166,6 +168,7 @@ const BoundaryDetails = (props: IProps) => {
                 options = {enabled: true, label: 'Evapotranspiration option', name: 'nevtop'};
                 break;
             default:
+                // eslint-disable-next-line @typescript-eslint/no-unused-vars
                 options = {enabled: false, label: '', name: ''};
                 break;
         }
@@ -193,8 +196,9 @@ const BoundaryDetails = (props: IProps) => {
                 />
                 }
                 <Form.Dropdown
-                    disabled={props.readOnly || (boundary instanceof RechargeBoundary ||
-                        boundary instanceof EvapotranspirationBoundary) && boundary.optionCode !== 2}
+                    disabled={
+                        props.readOnly || ((boundary instanceof RechargeBoundary ||
+                            boundary instanceof EvapotranspirationBoundary) && boundary.optionCode !== 2)}
                     loading={!(props.soilmodel)}
                     label={multipleLayers ? 'Selected layers' : 'Selected layer'}
                     style={{zIndex: 1000}}

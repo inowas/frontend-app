@@ -1,4 +1,6 @@
 import {LTOB} from 'downsample';
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-ignore todo
 import {DataPoint} from 'downsample/dist/types';
 import moment from 'moment';
 import React, {useEffect, useState} from 'react';
@@ -64,6 +66,7 @@ const PrometheusDatasourceEditor = (props: IProps) => {
         setStep(ds.step);
         setQuery(ds.query);
         setDatasource(ds);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     useEffect(() => {
@@ -71,6 +74,7 @@ const PrometheusDatasourceEditor = (props: IProps) => {
             dataSource.data = undefined;
             fetchData(dataSource);
         }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [dataSource]);
 
     const handleSave = () => {
@@ -81,10 +85,12 @@ const PrometheusDatasourceEditor = (props: IProps) => {
 
     const handleGenericChange = (f: (v: any) => void) => (e: any, d: any) => {
 
+        // eslint-disable-next-line no-prototype-builtins
         if (d && d.hasOwnProperty('value')) {
             return f(d.value);
         }
 
+        // eslint-disable-next-line no-prototype-builtins
         if (d && d.hasOwnProperty('checked')) {
             return f(d.checked);
         }
@@ -217,7 +223,7 @@ const PrometheusDatasourceEditor = (props: IProps) => {
                                         width={6}
                                         name={'server'}
                                         selection={true}
-                                        value={dataSource && dataSource.hostname || server || undefined}
+                                        value={dataSource ? dataSource.hostname : (server || undefined)}
                                         onChange={handleChangeServer}
                                         options={servers.map((s) => ({key: s.url, value: s.url, text: s.url}))}
                                     />
@@ -314,7 +320,7 @@ const PrometheusDatasourceEditor = (props: IProps) => {
                 <Button
                     positive={true}
                     onClick={handleSave}
-                    disabled={!dataSource || dataSource && !!dataSource.error}
+                    disabled={!dataSource || (dataSource && !!dataSource.error)}
                 >
                     Apply
                 </Button>

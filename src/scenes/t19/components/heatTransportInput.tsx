@@ -12,11 +12,11 @@ import {
     Loader,
     Segment
 } from 'semantic-ui-react';
-import {DataSourceCollection, Rtm} from '../../../../core/model/rtm';
-import {ProcessingCollection} from '../../../../core/model/rtm/processing';
-import {IDateTimeValue, ISensor, ISensorParameter} from '../../../../core/model/rtm/Sensor.type';
-import {makeTimeProcessingRequest} from '../../../../services/api';
-import {TimeSlider} from '../visualization';
+import {DataSourceCollection, Rtm} from '../../../core/model/rtm';
+import {ProcessingCollection} from '../../../core/model/rtm/processing';
+import {IDateTimeValue, ISensor, ISensorParameter} from '../../../core/model/rtm/Sensor.type';
+import {makeTimeProcessingRequest} from '../../../services/api';
+import {TimeSlider} from '../../t10/components/visualization';
 
 interface IProps {
     label: string;
@@ -64,6 +64,7 @@ const HeatTransportInput = (props: IProps) => {
                 });
             });
         }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [parameter]);
 
     const processData = (d: IDateTimeValue[], tp: [number, number] | undefined) => {

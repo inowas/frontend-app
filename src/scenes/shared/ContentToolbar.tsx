@@ -86,6 +86,7 @@ const ContentToolBar = (props: IProps) => {
                 }
             }, 1000);
         }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [props.isValid, props.isDirty, props.isError]);
 
     const getMessage = (state: EState): IMessage | null => {
@@ -124,6 +125,7 @@ const ContentToolBar = (props: IProps) => {
     const renderButtonsRight = () => {
         const children: ReactChild[] = [];
 
+        // eslint-disable-next-line no-extra-boolean-cast
         if (!!props.onUndo) {
             children.push(
                 <Popup
@@ -160,6 +162,7 @@ const ContentToolBar = (props: IProps) => {
             );
         }
 
+        // eslint-disable-next-line no-extra-boolean-cast
         if (!!props.onToggleAutoSave) {
             children.push(
                 <Popup
@@ -179,6 +182,7 @@ const ContentToolBar = (props: IProps) => {
 
         if (children.length > 1) {
             return (
+                // eslint-disable-next-line react/no-children-prop
                 <Button.Group children={children}/>
             );
         }
