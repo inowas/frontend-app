@@ -21,6 +21,7 @@ export enum EResultType {
 }
 
 const FlowResults = () => {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const [isError, setIsError] = useState<boolean>(false);
     const [isLoading, setIsLoading] = useState<boolean>(false);
     const [selectedLay, setSelectedLay] = useState<number>(0);
@@ -55,6 +56,7 @@ const FlowResults = () => {
                 type: selectedType
             });
         }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     useEffect(() => {
@@ -70,6 +72,7 @@ const FlowResults = () => {
             }
         }
         return setIbound(undefined);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [selectedLay]);
 
     useEffect(() => {

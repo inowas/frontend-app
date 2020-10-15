@@ -1,3 +1,4 @@
+/* eslint-disable */
 import React, {useEffect} from 'react';
 import {IFlopyPackages} from '../../../core/model/flopy/packages/FlopyPackages.type';
 import {ICells} from '../../../core/model/geometry/Cells.type';
@@ -19,7 +20,6 @@ let w: Worker | undefined;
 const loadWorker = () => {
     let worker;
     try {
-        // eslint-disable-next-line import/no-webpack-loader-syntax
         worker = require('worker-loader!./t03.worker');
     } catch (e) {
         if (process.env.NODE_ENV !== 'test') {
@@ -42,7 +42,6 @@ export const asyncWorker = (input: IProps['input']) => {
             }
 
             if (w) {
-                // @ts-ignore
                 w.removeEventListener('message', handleMessage);
                 w.terminate();
             }
@@ -68,7 +67,6 @@ const WorkerComponent = (props: IProps) => {
 
         return () => {
             if (w) {
-                // @ts-ignore
                 w.removeEventListener('message', handleMessage);
                 w.terminate();
             }

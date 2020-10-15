@@ -1,4 +1,5 @@
 import {LTOB} from 'downsample';
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore todo
 import {DataPoint} from 'downsample/dist/types';
 import {cloneDeep} from 'lodash';
@@ -63,6 +64,7 @@ const FileDatasourceEditor = (props: IProps) => {
         }
 
         setDataSource(props.dataSource.toObject());
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     useEffect(() => {
@@ -78,6 +80,7 @@ const FileDatasourceEditor = (props: IProps) => {
 
             return setRawData(cData);
         }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [datetimeField, dateTimeFormat, parameterField]);
 
     useEffect(() => {
@@ -89,7 +92,7 @@ const FileDatasourceEditor = (props: IProps) => {
             );
             setData(fData);
         }
-    }, [begin, beginEnabled, end, endEnabled, minValue, minValueEnabled, maxValue, maxValueEnabled]);
+    }, [begin, beginEnabled, end, endEnabled, minValue, minValueEnabled, maxValue, maxValueEnabled, rawData]);
 
     useEffect(() => {
         if (!rawData || rawData.length === 0) {
@@ -107,8 +110,7 @@ const FileDatasourceEditor = (props: IProps) => {
             setEnd(rawData[rawData.length - 1].timeStamp);
             setLEnd(rawData[rawData.length - 1].timeStamp);
         }
-
-    }, [rawData]);
+    }, [beginEnabled, endEnabled, rawData]);
 
     const handleSave = () => {
         if (!dataSource && data) {

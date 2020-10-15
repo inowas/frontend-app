@@ -143,7 +143,9 @@ class T06 extends React.Component {
                     <Item.Content>
                         <Item.Header as='h4'>{method.name} <Icon name='checkmark' color='green'/></Item.Header>
                         <Item.Description>{method.description}</Item.Description>
-                        <Item.Extra><a href={method.href} target={'_blank'}>Read more</a></Item.Extra>
+                        <Item.Extra>
+                            <a href={method.href} rel="noopener noreferrer" target='_blank'>Read more</a>
+                        </Item.Extra>
                         <Item.Extra>
                             <Label>Cost: {method.highCost ? <Icon name='arrow up' fitted/> :
                                 <Icon name='arrow down' fitted/>}</Label>

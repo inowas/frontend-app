@@ -65,16 +65,19 @@ const DataFetcherWrapper = (props: IProps) => {
 
     useEffect(() => {
         dispatch(clear());
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     useEffect(() => {
         if (modelId !== props.match.params.id) {
             setModelId(props.match.params.id);
         }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [props.match.params.id]);
 
     useEffect(() => {
         fetchModel(props.match.params.id);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [modelId]);
 
     const fetchModel = (id: string) => {

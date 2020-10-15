@@ -45,6 +45,7 @@ const CriteriaReclassificationDiscrete = (props: IProps) => {
     const [criterion, setCriterion] = useState<ICriterion>(props.criterion.toObject());
     const [ruleToPickColorFor, setRuleToPickColorFor] = useState<IRule | null>(null);
     const [showInfo, setShowInfo] = useState<boolean>(true);
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const [uploadState, setUploadState] = useState<IUploadState>({
         activeInput: null,
         error: false,
@@ -87,7 +88,7 @@ const CriteriaReclassificationDiscrete = (props: IProps) => {
         }
         return setCriterion({
             ...criterion,
-            rules: criterion.rules.map((rule: IRule & {[name: string]: any}) => {
+            rules: criterion.rules.map((rule: IRule & { [name: string]: any }) => {
                 if (rule.id === id) {
                     rule[name] = value;
                 }
@@ -281,7 +282,7 @@ const CriteriaReclassificationDiscrete = (props: IProps) => {
                             A suitability value between 0 and 1 can be set for each unique value of the uploaded
                             raster. It is also possible to choose a color and name for each value for a better
                             visualization of the criteria data in the next step. It is necessary to click on the
-                            'Perform Reclassification' button after making changes.
+                            &apos;Perform Reclassification&apos; button after making changes.
                         </p>
                     </Message>
                     }

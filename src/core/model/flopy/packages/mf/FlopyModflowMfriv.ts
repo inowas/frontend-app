@@ -49,11 +49,11 @@ export const defaults: IFlopyModflowMfriv = {
 
 export default class FlopyModflowMfriv extends FlopyModflowLineBoundary<IFlopyModflowMfriv> {
 
-    public static create(boundaries: BoundaryCollection, stressperiods: Stressperiods) {
+    public static create(boundaries: BoundaryCollection, stressperiods: Stressperiods): FlopyModflowMfriv | null {
         return this.fromDefault().update(boundaries, stressperiods);
     }
 
-    public static fromDefault() {
+    public static fromDefault(): FlopyModflowMfriv {
         return this.fromObject({});
     }
 
@@ -68,8 +68,8 @@ export default class FlopyModflowMfriv extends FlopyModflowLineBoundary<IFlopyMo
         return new this(d);
     }
 
-    public update = (boundaries: BoundaryCollection, stressperiods: Stressperiods) => {
-
+    // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
+    public update = (boundaries: BoundaryCollection, stressperiods: Stressperiods): FlopyModflowMfriv | null => {
         const bd = boundaries.all.filter((b) => (b instanceof RiverBoundary)) as RiverBoundary[];
         if (boundaries.length === 0) {
             return null;
@@ -84,7 +84,7 @@ export default class FlopyModflowMfriv extends FlopyModflowLineBoundary<IFlopyMo
         return this;
     };
 
-    get ipakcb() {
+    get ipakcb(): number {
         return this._props.ipakcb;
     }
 

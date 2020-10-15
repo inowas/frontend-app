@@ -35,6 +35,7 @@ const SubstanceDetails = (props: IProps) => {
             (bc) => bc.id === selectedBoundary
         ).length === 1 ? selectedBoundary : null);
         setSubstance(props.substance ? props.substance.toObject() : null);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [props.substance]);
 
     const handleSelectBoundary = (id: string) => () => {

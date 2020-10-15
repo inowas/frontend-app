@@ -48,6 +48,7 @@ const LayerDetails = (props: IProps) => {
         if (param.length > 0) {
             setActiveParameter(param[0]);
         }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [props.activeParam]);
 
     useEffect(() => {

@@ -83,7 +83,10 @@ const CriteriaReclassification = (props: IProps) => {
             return null;
         }
 
+        // Todo! Robert
+        // eslint-disable-next-line no-self-assign
         rule.from = rule.from;
+        // eslint-disable-next-line no-self-assign
         rule.to = rule.to;
         const criterion = props.criterion;
         criterion.updateRule(rule.toObject());
@@ -148,7 +151,7 @@ const CriteriaReclassification = (props: IProps) => {
                             <p>
                                 It is also possible to choose a color and name for each value for a better
                                 visualization of the criteria data in the next step. It is necessary to click on the
-                                'Perform Reclassification' button after making changes.
+                                &lsquo;Perform Reclassification&lsquo; button after making changes.
                             </p>
                             <p>Data interval: [{raster.min.toFixed(3)}, {raster.max.toFixed(3)}]</p>
                         </Message>

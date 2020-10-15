@@ -33,6 +33,7 @@ const T03Navigation = (props: IProps) => {
                 dispatch(removeMessage(m));
             }, 1000);
         });
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [messages]);
 
     const calculationState = props.calculation ? props.calculation.state : null;

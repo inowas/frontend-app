@@ -50,6 +50,7 @@ const Visualization = (props: IProps) => {
             });
             return setParameters(cParameters);
         }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [selectedParameters]);
 
     useEffect(() => {
@@ -72,6 +73,7 @@ const Visualization = (props: IProps) => {
                 return {key: p, text: p, value: p};
             })
         );
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     const handleChangeAxis = (type: string) => (e: SyntheticEvent<HTMLElement, Event>, {value}: any) => {

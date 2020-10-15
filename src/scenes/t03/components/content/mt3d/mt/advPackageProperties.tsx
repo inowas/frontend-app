@@ -261,7 +261,7 @@ const AdvPackageProperties = (props: IProps) => {
                         </Form.Group>
                         <Form.Group widths={'equal'}>
                             <Form.Field>
-                                <label>Initial particles at cells ≤ DCEPS (NPL)</label>
+                                <label>Initial particles at cells {'>'} DCEPS (NPL)</label>
                                 <Input
                                     type={'number'}
                                     name={'npl'}
@@ -273,7 +273,7 @@ const AdvPackageProperties = (props: IProps) => {
                                 />
                             </Form.Field>
                             <Form.Field>
-                                <label>Initial particles at cells > DCEPS (NPH)</label>
+                                <label>Initial particles at cells {'>'} DCEPS (NPH)</label>
                                 <Input
                                     type={'number'}
                                     name={'nph'}

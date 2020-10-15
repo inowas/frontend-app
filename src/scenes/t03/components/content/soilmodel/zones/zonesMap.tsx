@@ -97,7 +97,10 @@ const ZonesMap = (props: IProps) => {
                                 />
                             );
                         }
-                    })}
+
+                        return null;
+
+                    }).filter(x => x)}
                 </FeatureGroup>
                 :
                 <div/>

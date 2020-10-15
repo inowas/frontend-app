@@ -27,6 +27,7 @@ const PrivateRoute = (props: IProps) => {
             history.push('/login');
             setRedirectToLogin(false);
         }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [redirectToLogin]);
 
     useEffect(() => {
@@ -43,6 +44,7 @@ const PrivateRoute = (props: IProps) => {
         if (!userHasAccessToRoute()) {
             history.push('/tools');
         }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     const fetchUser = () => {

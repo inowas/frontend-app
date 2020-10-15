@@ -17,6 +17,7 @@ interface IProps {
 }
 
 const RchPackageProperties = (props: IProps) => {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const [mfPackage, setMfPackage] = useState<IFlopyModflowMfrch>(props.mfPackage.toObject());
     const {readonly} = props;
 

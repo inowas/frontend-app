@@ -50,6 +50,7 @@ const UploadGeoJSONFile = (props: IProps) => {
     useEffect(() => {
         setSelectedFeature(0);
         panToSelected(0);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [features]);
 
     useEffect(() => {
@@ -67,6 +68,7 @@ const UploadGeoJSONFile = (props: IProps) => {
                 props.onChange(JSON.stringify(feature.geometry));
             }
         }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [features, selectedFeature]);
 
     const panToSelected = (key?: number) => {
@@ -194,17 +196,17 @@ const UploadGeoJSONFile = (props: IProps) => {
                 />
                 {errors.map((e, key) => <Message key={key} negative={true}>{e}</Message>)}
                 <List>
-                {features.map((f, key) => (
-                    <List.Item key={key}>
-                        <Checkbox
-                            radio={true}
-                            checked={key === selectedFeature}
-                            label={`Feature ${key}`}
-                            onChange={handleChangeFeature}
-                            value={key}
-                        />
-                    </List.Item>
-                ))}
+                    {features.map((f, key) => (
+                        <List.Item key={key}>
+                            <Checkbox
+                                radio={true}
+                                checked={key === selectedFeature}
+                                label={`Feature ${key}`}
+                                onChange={handleChangeFeature}
+                                value={key}
+                            />
+                        </List.Item>
+                    ))}
                 </List>
             </Grid.Column>
             <Grid.Column>

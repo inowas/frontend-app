@@ -19,6 +19,7 @@ interface IProps extends RouteComponentProps<any> {
 }
 
 const SuitabilityEditor = (props: IProps) => {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const [isFetching, setIsFetching] = useState<boolean>(false);
     const [mcda, setMcda] = useState<IMCDA>(props.mcda.toObject());
     const prevMcda = usePrevious<IMCDA>(props.mcda.toObject());
@@ -41,6 +42,7 @@ const SuitabilityEditor = (props: IProps) => {
                 setMcda(newMcda.toObject());
             });
         }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [props.mcda]);
 
     const handleClickStep = (e: MouseEvent<HTMLAnchorElement>, {name}: StepProps) => props.onClickTool(name);

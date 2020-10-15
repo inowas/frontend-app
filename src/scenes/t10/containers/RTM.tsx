@@ -13,8 +13,7 @@ import {IToolMetaDataEdit} from '../../shared/simpleTools/ToolMetaData/ToolMetaD
 import {HeatTransport} from '../../t19/components';
 import {DataSources, Processing, SensorMetaData, Sensors, Visualization} from '../components/index';
 
-export interface IProps extends RouteComponentProps<{ id: string, property: string, pid: string }> {
-}
+export type IProps = RouteComponentProps<{ id: string, property: string, pid: string }>
 
 const menuItems = [
     {
@@ -81,7 +80,7 @@ const RTM = (props: IProps) => {
                 setError(false);
             }
         );
-    }, []);
+    }, [id]);
 
     useEffect(() => {
         setDirty(true);
@@ -264,5 +263,6 @@ const RTM = (props: IProps) => {
     );
 };
 
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore todo
 export default withRouter<IProps>(RTM);

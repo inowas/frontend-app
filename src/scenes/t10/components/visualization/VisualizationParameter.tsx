@@ -1,4 +1,5 @@
 import {LTOB} from 'downsample';
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore todo
 import {XYDataPoint} from 'downsample/dist/types';
 import {cloneDeep} from 'lodash';
@@ -50,7 +51,7 @@ const getData = (
     tsData: ITimeStamps = {
         minT: NaN, maxT: NaN, left: {min: NaN, max: NaN}, right: {min: NaN, max: NaN}, timestamps: []
     },
-    key: number = 0
+    key = 0
 ) => {
     const parameter = parameters.shift();
     if (parameter) {
@@ -184,6 +185,9 @@ const VisualizationParameter = (props: IProps) => {
     useEffect(() => {
         if (isAnimated) {
             timeRef.current = filteredTsData.timestamps.indexOf(timestamp);
+
+            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+            // @ts-ignore
             setIntervalId(setInterval(() => {
                 if (timeRef.current === filteredTsData.timestamps.length - 1) {
                     timeRef.current = 0;
@@ -196,6 +200,7 @@ const VisualizationParameter = (props: IProps) => {
             clearTimeout(intervalId);
             setTimestamp(filteredTsData.timestamps[timeRef.current]);
         }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [isAnimated]);
 
     useEffect(() => {
@@ -210,6 +215,7 @@ const VisualizationParameter = (props: IProps) => {
             ...filteredTsData,
             timestamps: filtered
         }));
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [filteredTsData.minT, filteredTsData.maxT]);
 
     // tslint:disable-next-line:variable-name

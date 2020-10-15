@@ -118,9 +118,9 @@ export const documentation = {
             specified-flow cell. Auxiliary variables are currently not supported. (default is 0)</div>,
         nfhbx2: <div>Number of auxiliary variables whose values will be computed for each time step for each
             specified-head cell. Auxiliary variables are currently not supported. (default is 0)</div>,
-        ifhbpt: <div>Flag for printing values of data list. Applies to datasets 4b, 5b, 6b, 7b, and 8b. If ifhbpt > 0,
-            datasets read at the beginning of the simulation will be printed. Otherwise, the datasets will not be
-            printed. (default is 0).</div>,
+        ifhbpt: <div>Flag for printing values of data list. Applies to datasets 4b, 5b, 6b, 7b, and 8b. If
+            ifhbpt &gt; 0, datasets read at the beginning of the simulation will be printed. Otherwise, the datasets
+            will not be printed. (default is 0).</div>,
         bdtimecnstm: <div>A constant multiplier for data list bdtime. (default is 1.0)</div>,
         bdtime: <div>Simulation time at which values of specified flow and (or) values of specified head will be read.
             nbdtim values are required. (default is 0.0)</div>,
@@ -314,7 +314,7 @@ export const documentation = {
         calculated using an upstream-weighted algorithm.</div>,
     nswtcpl: <div>Flag used to determine the flow and transport coupling procedure. If NSWTCPL = 0 or 1, flow and
         transport will be explicitly coupled using a one-timestep lag. The explicit coupling option is normally much
-        faster than the iterative option and is recommended for most applications. If NSWTCPL > 1, NSWTCPL is the
+        faster than the iterative option and is recommended for most applications. If NSWTCPL &gt; 1, NSWTCPL is the
         maximum number of non-linear coupling iterations for the flow and transport solutions. SEAWAT-2000 will stop
         execution after NSWTCPL iterations if convergence between flow and transport has not occurred. If NSWTCPL = -1,
         the flow solution will be recalculated only for: The first transport step of the simulation, or The last
@@ -328,25 +328,25 @@ export const documentation = {
         update the flow field (by solving the flow equation with the updated density field).</div>,
     densemin: <div>Minimum fluid density. If the resulting density value calculated with the equation of state is less
         than DENSEMIN, the density value is set to DENSEMIN. If DENSEMIN = 0, the computed fluid density is not limited
-        by DENSEMIN (this is the option to use for most simulations). If DENSEMIN > 0, a computed fluid density less
+        by DENSEMIN (this is the option to use for most simulations). If DENSEMIN &gt; 0, a computed fluid density less
         than DENSEMIN is automatically reset to DENSEMIN.</div>,
     densemax: <div>Maximum fluid density. If the resulting density value calculated with the equation of state is
         greater than DENSEMAX, the density value is set to DENSEMAX. If DENSEMAX = 0, the computed fluid density is not
-        limited by DENSEMAX (this is the option to use for most simulations). If DENSEMAX > 0, a computed fluid density
+        limited by DENSEMAX (this is the option to use for most simulations). If DENSEMAX &gt; 0, a computed fluid density
         larger than DENSEMAX is automatically reset to DENSEMAX.</div>,
     iwtable: <div>Flag used to activate the variable-density water-table corrections (Guo and Langevin, 2002, eq. 82).
-        If IWTABLE = 0, the water-table correction will not be applied. If IWTABLE > 0, the water-table correction will
+        If IWTABLE = 0, the water-table correction will not be applied. If IWTABLE &gt; 0, the water-table correction will
         be applied.</div>,
 
     // VSC
 
     viscmin: <div>Minimum fluid viscosity. If the resulting viscosity value calculated with the equation is less than
         VISCMIN, the viscosity value is set to VISCMIN. If VISCMIN = 0, the computed fluid viscosity is not limited by
-        VISCMIN (this is the option to use for most simulations). If VISCMIN > 0, a computed fluid viscosity less than
+        VISCMIN (this is the option to use for most simulations). If VISCMIN &gt; 0, a computed fluid viscosity less than
         VISCMIN is automatically reset to VISCMIN.</div>,
     viscmax: <div>Maximum fluid viscosity. If the resulting viscosity value calculated with the equation is greater than
         VISCMAX, the viscosity value is set to VISCMAX. If VISCMAX = 0, the computed fluid viscosity is not limited by
-        VISCMAX (this is the option to use for most simulations). If VISCMAX > 0, a computed fluid viscosity larger than
+        VISCMAX (this is the option to use for most simulations). If VISCMAX &gt; 0, a computed fluid viscosity larger than
         VISCMAX is automatically reset to VISCMAX.</div>,
     viscref: <div>Fluid viscosity at the reference concentration and reference temperature. For most simulations,
         VISCREF is specified as the viscosity of freshwater.</div>,
@@ -488,10 +488,10 @@ export const documentation = {
         accl: <div>Multiplier for the computed head change for each iteration. Normally this value is 1. A value greater
             than 1 may be useful for improving the rate of convergence when using external iteration to solve nonlinear
             problems (default is 1).</div>,
-        iprd4: <div>Time step interval for printing out convergence information when iterating (ITMX > 1). If IPRD4 is
+        iprd4: <div>Time step interval for printing out convergence information when iterating (ITMX &gt; 1). If IPRD4 is
             2, convergence information is printed every other time step. A value must always be specified even if not
             iterating (default is 1).</div>,
-        hclose: <div>Head change closure criterion. If iterating (ITMX > 1), iteration stops when the absolute value of
+        hclose: <div>Head change closure criterion. If iterating (ITMX &gt; 1), iteration stops when the absolute value of
             head change at every node is less than or equal to HCLOSE. HCLOSE is not used if not iterating, but a value
             must always be specified (default is 1e-5).</div>,
         extension: <div>Filename extension (default is ‘de4’)</div>,
@@ -832,7 +832,7 @@ export const documentation = {
             written.<br/><br/>
             Progress diagnostics consist of the weighted residual norm νi for every iteration i of the PCG solver; this
             information is output for every time step and every Picard iteration in the simulation. If this option is
-            used (<strong>unit_pc</strong> > 0), the integer value of the unit, along with the file name and type
+            used (<strong>unit_pc</strong> &gt; 0), the integer value of the unit, along with the file name and type
             “DATA,” should be given in the MODFLOW Name file (Harbaugh and others, 2000). In many instances, asking for
             this information will cause very large data files to be produced; it is not expected that this option will
             be used by most modelers.
@@ -840,7 +840,7 @@ export const documentation = {
         unit_ts: <div>is the unit number of an optional output file where the actual time in the PCG solver is
             accumulated.<br/><br/>
             The object here is to capture actual PCG solver time rather than total run time. If this option is used
-            (<strong>unit_ts</strong> > 0), the integer value of the unit, along with the file name and type “DATA,”
+            (<strong>unit_ts</strong> &gt; 0), the integer value of the unit, along with the file name and type “DATA,”
             should be given in the MODFLOW Name file. It is not expected that this option will be used by most modelers.
         </div>,
         adamp: <div>defines the mode of damping applied to the linear solution. In general, damping determines how much
@@ -858,12 +858,12 @@ export const documentation = {
             of <strong>adamp</strong> are:<br/>
             • <strong>adamp</strong> = 0: The damping parameter θ takes on the value <strong>damp</strong> and is
             maintained constant throughout the simulation.<br/>
-            • <strong>adamp</strong> > 0: The value of <strong>damp</strong> will be treated as the upper limit for θ in
+            • <strong>adamp</strong> &gt; 0: The value of <strong>damp</strong> will be treated as the upper limit for θ in
             the enhanced damping or adaptive damping algorithms.
         </div>,
         damp_lb: <div>is the lower bound placed on the dampening;<br/>
             Generally, 0 &#60; <strong>damp_lb</strong> &#60; <strong>damp</strong>. For the various modes
-            of <strong>adamp</strong> > 0, <strong>damp_lb</strong> serves the following purposes:<br/>
+            of <strong>adamp</strong> &gt; 0, <strong>damp_lb</strong> serves the following purposes:<br/>
             • <strong>adamp</strong> = 1: In the adaptive damping algorithm, <strong>damp_lb</strong> represents the
             lower limit to which θ, under adverse adaptive damping conditions, will be allowed to fall.<br/>
             • <strong>adamp</strong> = 2: In the enhanced damping algorithm, <strong>damp_lb</strong> is the starting
@@ -871,7 +871,7 @@ export const documentation = {
             iteration of every stress period.<br/>
             (default is 0.001)</div>,
         rate_d: <div>is a rate parameter; generally, 0 &#60; <strong>rate_d</strong> &#60; 1.<br/>
-            For the various modes of <strong>adamp</strong> > 0, <strong>rate_d</strong> serves the following
+            For the various modes of <strong>adamp</strong> &gt; 0, <strong>rate_d</strong> serves the following
             purposes:<br/>
             • <strong>adamp</strong> = 1: <strong>rate_d</strong> sets the recovery rate for the damping factor θ in
             response to the progress in the Picard iteration; it also forms a limit on the response function to progress
@@ -901,7 +901,7 @@ export const documentation = {
             such that CNVG_LB &#60; ε &#60; εs, where the exact value of ε is dependent on the measure of nonlinearity.
             This option requires a valid value for variable <strong>cnvg_lb</strong>.<br/>
             • <strong>acnvg</strong> = 2: Enhanced convergence is employed using variant of the conjugate gradient
-            method outlined in algorithm 3. If the variable enhancement option is employed (<strong>rate_c</strong> >
+            method outlined in algorithm 3. If the variable enhancement option is employed (<strong>rate_c</strong> &gt;
             0), then εs is taken as the upper limit for ε; see <em>Limiting the Inner Iteration</em> subsection for
             details. This option requires valid values for variables <strong>mcnvg</strong> and <strong>rate_c</strong>.<br/>
             (default is 0)</div>,
@@ -922,10 +922,10 @@ export const documentation = {
             constant. <strong>rate_c</strong> is used only in convergence mode <strong>acnvg</strong> = 2. (default is
             -1.)</div>,
         ipunit: <div>enables progress reporting for the Picard iteration.<br/>
-            If <strong>ipunit</strong> >= 0, then a record of progress made by the Picard iteration for each time step
+            If <strong>ipunit</strong> &gt;= 0, then a record of progress made by the Picard iteration for each time step
             is printed in the MODFLOW Listing file (Harbaugh and others, 2000). This record consists of the total number
             of dry cells at the end of each time step as well as the total number of PCG iterations necessary to obtain
-            convergence. In addition, if <strong>ipunit</strong> > 0, then extensive diagnostics for each Picard
+            convergence. In addition, if <strong>ipunit</strong> &gt; 0, then extensive diagnostics for each Picard
             iteration is also written in comma-separated format to a file whose unit number corresponds
             to <strong>ipunit</strong>; the name for this file, along with its unit number and type ‘data’ should be
             entered in the modflow Name file. If <strong>ipunit</strong> &#60; 0 then printing of all progress

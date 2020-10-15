@@ -56,12 +56,14 @@ const CrossSection = (props: IProps) => {
             setTotalTimes(basemodelCalculation.times.total_times);
         }
         setLayerValues(basemodelCalculation.layer_values);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     useEffect(() => {
         if (selectedModels.length > 0 && selectedLay !== null && selectedTotim !== null && selectedType !== null) {
             fetchData(selectedLay, selectedTotim, selectedType);
         }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [selectedModels, selectedLay, selectedTotim, selectedType]);
 
     useEffect(() => {
@@ -80,6 +82,7 @@ const CrossSection = (props: IProps) => {
             });
             setSelectedModels(cSelectedModels);
         }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [props.models, props.selected]);
 
     const fetchData = (layer = selectedLay, totim = selectedTotim, type = selectedType) => {

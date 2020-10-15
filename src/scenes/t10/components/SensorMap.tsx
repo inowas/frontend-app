@@ -73,6 +73,7 @@ const SensorMap = (props: IProps) => {
                 refMap.current.leafletElement.flyTo(latLng);
             }
         }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [props.sensor]);
 
     const handleCreated = (e: DrawEvents.Created) => {

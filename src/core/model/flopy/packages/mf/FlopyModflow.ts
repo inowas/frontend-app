@@ -300,6 +300,8 @@ export default class FlopyModflow extends GenericObject<IFlopyModflow> {
                     oc = FlopyModflowMfoc.fromObject(this._props.oc).update(model.stressperiods.stressperiods.length,
                         this._props.oc.stress_period_data) :
                     oc = FlopyModflowMfoc.create(model.stressperiods.stressperiods.length);
+                // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+                // @ts-ignore
                 oc ? this._props.oc = oc.toObject() : delete this._props.oc;
                 break;
 

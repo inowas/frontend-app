@@ -48,6 +48,7 @@ const BoundaryDetails = (props: IProps) => {
         if (!observationPointId && props.boundary instanceof LineBoundary) {
             return setObservationPointId(props.boundary.observationPoints[0].id);
         }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [props.boundary]);
 
     const handleChange = (e: SyntheticEvent<HTMLElement, Event> | ChangeEvent<HTMLInputElement>,
@@ -66,6 +67,7 @@ const BoundaryDetails = (props: IProps) => {
         }
 
         const cBoundary = props.boundary;
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
         // @ts-ignore
         cBoundary[name] = value;
         return props.onChange(cBoundary);
@@ -129,7 +131,7 @@ const BoundaryDetails = (props: IProps) => {
         ));
     };
 
-    const renderDataTable = () => {
+    const renderDataTable = (props: IProps) => {
         if (boundary instanceof HeadObservationWell || boundary instanceof FlowAndHeadBoundary) {
             return (
                 <BoundaryDateTimeValuesDataTable
@@ -152,10 +154,11 @@ const BoundaryDetails = (props: IProps) => {
         );
     };
 
-    const renderLayerSelection = () => {
+    const renderLayerSelection = (props: IProps) => {
         const cBoundary = props.boundary;
         const multipleLayers = ['chd', 'ghb', 'fhb', 'riv'].includes(cBoundary.type);
 
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
         let options;
 
         switch (cBoundary.type) {
@@ -193,8 +196,9 @@ const BoundaryDetails = (props: IProps) => {
                 />
                 }
                 <Form.Dropdown
-                    disabled={props.readOnly || (boundary instanceof RechargeBoundary ||
-                        boundary instanceof EvapotranspirationBoundary) && boundary.optionCode !== 2}
+                    disabled={
+                        props.readOnly || ((boundary instanceof RechargeBoundary ||
+                            boundary instanceof EvapotranspirationBoundary) && boundary.optionCode !== 2)}
                     loading={!(props.soilmodel)}
                     label={multipleLayers ? 'Selected layers' : 'Selected layer'}
                     style={{zIndex: 1000}}
@@ -209,7 +213,7 @@ const BoundaryDetails = (props: IProps) => {
         );
     };
 
-    const renderLengthInformation = () => {
+    const renderLengthInformation = (props: IProps) => {
         if (boundary.geometry.type === 'LineString') {
             return (
                 <Form.Input
@@ -276,7 +280,7 @@ const BoundaryDetails = (props: IProps) => {
                         readOnly={props.readOnly}
                     />
 
-                    {renderLayerSelection()}
+                    {renderLayerSelection(props)}
 
                     {boundary.type === 'wel' && boundary instanceof WellBoundary &&
                     <Form.Dropdown
@@ -319,7 +323,7 @@ const BoundaryDetails = (props: IProps) => {
                     />
                 </Form.Group>
                 }
-                {renderLengthInformation()}
+                {renderLengthInformation(props)}
             </Form>
 
             {!props.readOnly &&
@@ -394,7 +398,7 @@ const BoundaryDetails = (props: IProps) => {
                 </Button>
             </div>
             }
-            {renderDataTable()}
+            {renderDataTable(props)}
             {showBoundaryEditor &&
             <BoundaryGeometryEditor
                 boundary={boundary}
