@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from 'react';
-import {Redirect, RouteComponentProps, withRouter} from 'react-router-dom';
+import {Redirect, useLocation, useParams, useRouteMatch} from 'react-router-dom';
 import {Grid, Icon, Message} from 'semantic-ui-react';
 import {Rtm, Sensor} from '../../../core/model/rtm';
 import {IRtm} from '../../../core/model/rtm/Rtm.type';
@@ -13,7 +13,11 @@ import {IToolMetaDataEdit} from '../../shared/simpleTools/ToolMetaData/ToolMetaD
 import {HeatTransport} from '../../t19/components';
 import {DataSources, Processing, SensorMetaData, Sensors, Visualization} from '../components/index';
 
-export type IProps = RouteComponentProps<{ id: string, property: string, pid: string }>
+interface IRouterProps {
+    id: string;
+    property: string;
+    type?: string;
+}
 
 const menuItems = [
     {
@@ -56,9 +60,13 @@ const navigation = [{
 
 const tool = 'T10';
 
-const RTM = (props: IProps) => {
+const RTM = () => {
 
-    const {id} = props.match.params;
+    const params: IRouterProps = useParams();
+
+    const {id} = params;
+    const match = useRouteMatch();
+    const location = useLocation();
 
     const [isDirty, setDirty] = useState<boolean>(false);
     const [isError, setError] = useState<boolean>(false);
@@ -174,11 +182,11 @@ const RTM = (props: IProps) => {
         }
 
         if (!['sensor-parameters', 'sensor-setup', 'sensor-processing'].includes(property)) {
-            const path = props.match.path;
+            const path = match.path;
             const basePath = path.split(':')[0];
             return (
                 <Redirect
-                    to={basePath + props.match.params.id + '/sensor-setup' + props.location.search}
+                    to={basePath + params.id + '/sensor-setup' + location.search}
                 />
             );
         }
@@ -255,7 +263,7 @@ const RTM = (props: IProps) => {
                         <ToolNavigation navigationItems={menuItems}/>
                     </Grid.Column>
                     <Grid.Column width={13}>
-                        {renderContent(props.match.params.property)}
+                        {renderContent(params.property)}
                     </Grid.Column>
                 </Grid.Row>
             </Grid>
@@ -263,6 +271,4 @@ const RTM = (props: IProps) => {
     );
 };
 
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-// @ts-ignore todo
-export default withRouter<IProps>(RTM);
+export default RTM;
