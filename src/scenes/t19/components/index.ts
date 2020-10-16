@@ -1,4 +1,4 @@
-import HeatTransport from './heatTransport';
+import HeatTransport from './heatTransportData';
 import HeatTransportInput from './heatTransportInput';
 import HeatTransportResults from './heatTransportResults';
 

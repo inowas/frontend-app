@@ -1,9 +1,8 @@
 import React, {useEffect, useState} from 'react';
-import {Grid, Icon} from "semantic-ui-react";
+import {Button, Grid, Icon, Segment} from "semantic-ui-react";
 import AppContainer from "../../shared/AppContainer";
 import ToolMetaData from "../../shared/simpleTools/ToolMetaData";
-import HeatTransportData from "../components/heatTransport";
-import {Rtm} from "../../../core/model/rtm";
+import HeatTransportData from "../components/heatTransportData";
 import {IRtm} from '../../../core/model/rtm/Rtm.type';
 import {useParams, useHistory} from "react-router-dom";
 import uuid from "uuid";
@@ -12,10 +11,11 @@ import {IHeatTransportInput, IHtm} from '../../../core/model/htm/Htm.type';
 import Htm from "../../../core/model/htm/Htm";
 import SimpleToolsCommand from "../../shared/simpleTools/commands/SimpleToolsCommand";
 import {IToolMetaDataEdit} from "../../shared/simpleTools/ToolMetaData/ToolMetaData.type";
-import ModflowModelCommand from "../../t03/commands/modflowModelCommand";
-import {useSelector} from "react-redux";
-import {IRootReducer} from "../../../reducers";
 import {createToolInstance} from "../../dashboard/commands";
+import ContentToolBar from "../../shared/ContentToolbar2";
+import {useDispatch} from "react-redux";
+import {addMessage} from "../../t03/actions/actions";
+import {messageError} from "../../t03/defaults/messages";
 
 const navigation = [{
     name: 'Documentation',
@@ -31,8 +31,9 @@ const HeatTransport = () => {
     const [rtm, setRtm] = useState<IRtm>();
     const [htm, setHtm] = useState<IHtm>();
 
+    const dispatch = useDispatch();
     const history = useHistory();
-    const {id} = useParams();
+    const {id, property} = useParams();
 
     useEffect(() => {
         if (id) {
@@ -70,15 +71,17 @@ const HeatTransport = () => {
         setIsFetching(true);
         fetchUrl(`tools/${tool}/${id}`,
             (m: IHtm) => {
+                dispatch(addMessage(messageError('/', 'TEST')));
                 setHtm(m);
                 setIsFetching(false);
                 setDirty(false);
             },
-            () => {
+            (e) => {
+                dispatch(addMessage(messageError('/', e)));
                 setIsFetching(false);
             }
         );
-    }
+    };
 
     const handleSaveMetaData = (tool: IToolMetaDataEdit) => {
         const {name, description} = tool;
@@ -93,14 +96,21 @@ const HeatTransport = () => {
         }
     };
 
-    const handleSave = (h: Htm) => sendCommand(
-        SimpleToolsCommand.updateToolInstance(h.toObject()),
-        () => setDirty(false)
-    );
+    const handleSave = (h?: Htm) => {
+        if (!h) {
+            if (!htm) {
+                return null;
+            }
+            h = Htm.fromObject(htm);
+        }
+        sendCommand(
+            SimpleToolsCommand.updateToolInstance(h.toObject()),
+            () => setDirty(false)
+        );
+    };
 
     return (
         <AppContainer navbarItems={navigation}>
-            TEST
             {htm &&
             <ToolMetaData
                 isDirty={isDirty}
@@ -114,20 +124,15 @@ const HeatTransport = () => {
                 onSave={handleSaveMetaData}
             />
             }
-            <Grid>
+            <Grid padded={true}>
                 <Grid.Row>
-                    <Grid.Column width={5}>
-
-                    </Grid.Column>
-                    <Grid.Column width={11}>
-                        {rtm &&
-                        <HeatTransportData rtm={Rtm.fromObject(rtm)}/>
-                        }
+                    <Grid.Column width={16}>
+                        <HeatTransportData/>
                     </Grid.Column>
                 </Grid.Row>
             </Grid>
         </AppContainer>
     );
-}
+};
 
 export default HeatTransport;

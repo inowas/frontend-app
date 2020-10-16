@@ -6,17 +6,12 @@ import {
     InputOnChangeData,
     Segment
 } from 'semantic-ui-react';
-import {Rtm} from '../../../core/model/rtm';
 import {IDateTimeValue} from '../../../core/model/rtm/Sensor.type';
 import {makeHeatTransportRequest} from '../../../services/api';
 import {HeatTransportInput, HeatTransportResults} from './index';
 import {IHeatTransportRequestOptions, IHeatTransportResults, IHeatTransportRequest} from "../../../core/model/htm/Htm.type";
 
-interface IProps {
-    rtm: Rtm;
-}
-
-const HeatTransportData = (props: IProps) => {
+const HeatTransportData = () => {
     const [isFetching, setIsFetching] = useState<boolean>(false);
 
     const [swData, setSwData] = useState<IDateTimeValue[]>();
@@ -103,7 +98,6 @@ const HeatTransportData = (props: IProps) => {
                                 name="sw"
                                 onChange={handleChangeData}
                                 readOnly={isFetching}
-                                rtm={props.rtm}
                             />
                         </Grid.Column>
                         <Grid.Column width={8}>
@@ -112,7 +106,6 @@ const HeatTransportData = (props: IProps) => {
                                 name="gw"
                                 onChange={handleChangeData}
                                 readOnly={isFetching}
-                                rtm={props.rtm}
                             />
                         </Grid.Column>
                     </Grid.Row>
