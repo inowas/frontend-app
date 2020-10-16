@@ -23,7 +23,7 @@ const FileDatasourceEditor = (props: IProps) => {
 
     const [rawData, setRawData] = useState<IDateTimeValue[] | undefined>(undefined);
     const [data, setData] = useState<IDateTimeValue[] | undefined>(undefined);
-    const [metadata, setMetadata] = useState<ParseResult | null>(null);
+    const [metadata, setMetadata] = useState<ParseResult<any> | null>(null);
 
     const [dateTimeFormat, setDateTimeFormat] = useState<string>('DD.MM.YYYY H:i:s');
     const [firstRowIsHeader, setFirstRowIsHeader] = useState<boolean>(true);
@@ -129,11 +129,11 @@ const FileDatasourceEditor = (props: IProps) => {
     };
 
     const handleChange = (f: (v: any) => void) => (e: any, d: any) => {
-        if (d.hasOwnProperty('value')) {
+        if (Object.prototype.hasOwnProperty.call(d, 'value')) {
             f(d.value);
         }
 
-        if (d.hasOwnProperty('checked')) {
+        if (Object.prototype.hasOwnProperty.call(d, 'checked')) {
             f(d.checked);
         }
     };
