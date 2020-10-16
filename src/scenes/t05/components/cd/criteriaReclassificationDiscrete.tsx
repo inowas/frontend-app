@@ -129,7 +129,7 @@ const CriteriaReclassificationDiscrete = (props: IProps) => {
         return handleChange();
     };
 
-    const handleCsv = (response: ParseResult) => {
+    const handleCsv = (response: ParseResult<any>) => {
         if (!response || props.readOnly) {
             return;
         }

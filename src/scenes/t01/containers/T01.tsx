@@ -4,10 +4,12 @@ import {Background, Chart, Info, Parameters} from '../components/index';
 import image from '../images/T01.png';
 
 import PapaParse from 'papaparse';
+import {ParseResult} from 'papaparse';
 import {Breadcrumb, Grid, Icon} from 'semantic-ui-react';
 import AppContainer from '../../shared/AppContainer';
 import ToolGrid from '../../shared/simpleTools/ToolGrid';
 
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
 import csvFile from '../data/2018-10-25-mar-in-scales.csv';
 
@@ -18,8 +20,7 @@ const navigation = [{
 }];
 
 // tslint:disable-next-line:no-empty-interface
-interface IProps extends RouteComponentProps {
-}
+type IProps = RouteComponentProps
 
 const T01 = (props: IProps) => {
 
@@ -36,7 +37,7 @@ const T01 = (props: IProps) => {
             dynamicTyping: true,
             header: true,
             skipEmptyLines: true,
-            complete: (parsedObject) => {
+            complete: (parsedObject: ParseResult<{ x: any, y: any, selected: null | any }>) => {
                 const d = parsedObject.data.map((row, key) => {
                     row.x = row.x.split(';').map((v: any) => parseInt(v, 10));
                     row.y = row.y.split(';').map((v: any) => parseFloat(v));
