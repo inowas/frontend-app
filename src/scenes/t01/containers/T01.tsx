@@ -2,16 +2,11 @@ import React, {useEffect, useState} from 'react';
 import {RouteComponentProps, withRouter} from 'react-router';
 import {Background, Chart, Info, Parameters} from '../components/index';
 import image from '../images/T01.png';
-
 import PapaParse from 'papaparse';
 import {ParseResult} from 'papaparse';
 import {Breadcrumb, Grid, Icon} from 'semantic-ui-react';
 import AppContainer from '../../shared/AppContainer';
 import ToolGrid from '../../shared/simpleTools/ToolGrid';
-
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-// @ts-ignore
-import csvFile from '../data/2018-10-25-mar-in-scales.csv';
 
 const navigation = [{
     name: 'Documentation',
@@ -19,7 +14,6 @@ const navigation = [{
     icon: <Icon name="file"/>
 }];
 
-// tslint:disable-next-line:no-empty-interface
 type IProps = RouteComponentProps
 
 const T01 = (props: IProps) => {
@@ -31,7 +25,8 @@ const T01 = (props: IProps) => {
     }, []);
 
     const loadCsvFile = () => {
-        PapaParse.parse(csvFile, {
+        // eslint-disable-next-line @typescript-eslint/no-var-requires
+        PapaParse.parse(require("../data/2018-10-25-mar-in-scales.csv"), {
             download: true,
             delimiter: ';',
             dynamicTyping: true,
