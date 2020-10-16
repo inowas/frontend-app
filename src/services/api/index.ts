@@ -4,7 +4,7 @@ import AbstractCommand from '../../core/model/command/AbstractCommand';
 import FlopyPackages from '../../core/model/flopy/packages/FlopyPackages';
 import {Array2D, Array3D} from '../../core/model/geometry/Array2D.type';
 import {IDateTimeValue} from '../../core/model/rtm/Sensor.type';
-import {IMetaData, ISimpleTool} from '../../core/model/types';
+import {ISimpleTool} from '../../core/model/types';
 import {InterpolationType} from '../../scenes/shared/rasterData/types';
 import {CallbackFunction, ErrorCallbackFunction} from '../../scenes/types';
 import storeToCreate from '../../store';
@@ -26,7 +26,7 @@ const getToken = () => {
     return store.getState().session.token;
 };
 
-const createApi = (token: boolean = false) => {
+const createApi = (token: string | null = null) => {
     const headers: {
         'Authorization'?: string;
         'Content-Type': string;
@@ -274,7 +274,7 @@ export const fetchModflowFile = (
 export const fetchTool = (
     tool: string,
     id: string,
-    onSuccess: CallbackFunction<ISimpleTool<IMetaData>, void>,
+    onSuccess: CallbackFunction<ISimpleTool<any>, void>,
     onError: ErrorCallbackFunction
 ) => {
     const api = createApi(getToken());
