@@ -13,7 +13,7 @@
     "gaussian": "^1.1.0",
     "gwflowjs": "https://github.com/inowas/gwflowjs.git#master",
     "history": "^5.0.0",
-    "json-schema-ref-parser": "^9.0.6",
+    "json-schema-ref-parser": "^6.1.0",
     "leaflet": "^1.7.1",
     "leaflet-draw": "^1.0.4",
     "lodash": "^4.17.20",
