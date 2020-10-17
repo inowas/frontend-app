@@ -18,11 +18,14 @@ import {TimeSlider} from '../../t10/components/visualization';
 import {IRtm} from "../../../core/model/rtm/Rtm.type";
 import {IToolInstance} from "../../dashboard/defaults/tools";
 import uuid from "uuid";
+import {IHeatTransportInput} from '../../../core/model/htm/Htm.type';
+import HtmInput from "../../../core/model/htm/HtmInput";
 
 interface IProps {
+    input: HtmInput;
     label: string;
     name: string;
-    onChange: (name: string, value: IDateTimeValue[]) => void;
+    onChange: (input: HtmInput) => void;
     readOnly: boolean;
 }
 
@@ -36,25 +39,60 @@ const HeatTransportInput = (props: IProps) => {
 
     const [errors, setErrors] = useState<IError[]>([]);
 
+    const [input, setInput] = useState<IHeatTransportInput>(props.input.toObject());
+
     const [t10Instances, setT10Instances] = useState<IToolInstance[]>([]);
     const [rtm, setRtm] = useState<IRtm>();
 
     const [sensor, setSensor] = useState<ISensor>();
     const [parameter, setParameter] = useState<ISensorParameter>();
 
-    const [data, setData] = useState<IDateTimeValue[]>();
-    const [sensorData, setSensorData] = useState<IDateTimeValue[]>();
+    const [recalculate, setRecalculate] = useState<boolean>(false);
 
     const [tempTime, setTempTime] = useState<[number, number]>();       // KEY
-    const [timePeriod, setTimePeriod] = useState<[number, number]>();   // UNIX
     const [timesteps, setTimesteps] = useState<number[]>();             // UNIX[]
 
     useEffect(() => {
         fetchInstances();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     useEffect(() => {
-        if (parameter) {
+        setInput(props.input.toObject());
+    }, [props.input]);
+
+    useEffect(() => {
+        if (input.rtmId) {
+            fetchRtm(input.rtmId);
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [input.rtmId]);
+
+    useEffect(() => {
+        if (rtm && input.sensorId) {
+            fetchSensor(input.sensorId);
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [input.sensorId, rtm]);
+
+    useEffect(() => {
+        if (timesteps && input.timePeriod) {
+            const startIndex = timesteps.indexOf(input.timePeriod[0]);
+            const endIndex = timesteps.indexOf(input.timePeriod[1]);
+            setTempTime([startIndex < 0 ? 0 : startIndex, endIndex < 0 ? timesteps.length - 1 : endIndex]);
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [input.timePeriod]);
+
+    useEffect(() => {
+        if (input.data) {
+            const ts = input.data.map((t) => t.timeStamp);
+            setTimesteps(ts);
+        }
+    }, [input.data]);
+
+    useEffect(() => {
+        if (parameter && recalculate) {
             setIsFetching(true);
             const dataSourceCollection = DataSourceCollection.fromObject(parameter.dataSources);
             dataSourceCollection.mergedData().then((res) => {
@@ -66,12 +104,14 @@ const HeatTransportInput = (props: IProps) => {
                     makeTimeProcessingRequest(uniqueData, '1d', 'cubic').then((sd: IDateTimeValue[]) => {
                         if (sd.length > 0) {
                             const ts = sd.map((t) => t.timeStamp);
-                            setSensorData(sd);
+                            setRecalculate(false);
                             setTimesteps(ts);
                             setTempTime([0, ts.length - 1]);
-                            setTimePeriod([ts[0], ts[ts.length - 1]]);
-                            setData(sd);
-                            props.onChange(props.name, sd);
+                            props.onChange(HtmInput.fromObject({
+                                data: sd,
+                                timePeriod: [ts[0], ts[ts.length - 1]],
+                                ...input
+                            }));
                         }
                         setIsFetching(false);
                     });
@@ -79,7 +119,7 @@ const HeatTransportInput = (props: IProps) => {
             });
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [parameter]);
+    }, [parameter, recalculate]);
 
     const fetchInstances = () => {
         setIsFetching(true);
@@ -95,10 +135,32 @@ const HeatTransportInput = (props: IProps) => {
         );
     };
 
-    const processData = (d: IDateTimeValue[], tp: [number, number] | undefined) => {
-        const cData = !tp ? d : d.filter((row) => row.timeStamp >= tp[0] && row.timeStamp <= tp[1]);
-        setData(cData);
-        props.onChange(props.name, cData);
+    const fetchRtm = (id: string) => {
+        setIsFetching(true);
+        fetchUrl(`tools/T10/${id}`,
+            (m) => {
+                setRtm(m);
+                setIsFetching(false);
+            },
+            () => {
+                setErrors(errors.concat([{id: uuid.v4(), message: `Fetching t10 instance ${id} failed.`}]));
+                setIsFetching(false);
+            }
+        );
+    };
+
+    const fetchSensor = (id: string) => {
+        if (!rtm) {
+            return;
+        }
+        const s = sensorsWithTemperature(rtm).filter((swt) => swt.id === id);
+        if (s.length > 0) {
+            const param = s[0].parameters.all.filter((p) => p.type === 't');
+            if (param.length > 0) {
+                setParameter(param[0]);
+                return setSensor(s[0].toObject());
+            }
+        }
     };
 
     const sensorsWithTemperature = (rtm: IRtm) => Rtm.fromObject(rtm).sensors.all.filter((s) =>
@@ -120,41 +182,40 @@ const HeatTransportInput = (props: IProps) => {
     };
 
     const handleChangeRtm = (e: SyntheticEvent<HTMLElement, Event>, {value}: DropdownProps) => {
-        setIsFetching(true);
-        fetchUrl(`tools/T10/${value}`,
-            (m) => {
-                setRtm(m);
-                setIsFetching(false);
-            },
-            () => {
-                setErrors(errors.concat([{id: uuid.v4(), message: `Fetching t10 instance ${value} failed.`}]));
-                setIsFetching(false);
-            }
-        );
+        if (typeof value !== 'string') {
+            return null;
+        }
+        props.onChange(HtmInput.fromObject({
+            ...input,
+            rtmId: value
+        }));
     };
 
     const handleChangeSensor = (e: SyntheticEvent<HTMLElement, Event>, {value}: DropdownProps) => {
         if (typeof value !== 'string' || !rtm) {
             return null;
         }
-        const s = sensorsWithTemperature(rtm).filter((swt) => swt.id === value);
-        if (s.length > 0) {
-            const param = s[0].parameters.all.filter((p) => p.type === 't');
-            if (param.length > 0) {
-                setParameter(param[0]);
-                return setSensor(s[0].toObject());
-            }
-        }
+        setRecalculate(true);
+        props.onChange(HtmInput.fromObject({
+            ...input,
+            sensorId: value
+        }));
     };
 
     const handleChangeTimeSlider = () => {
         if (!timesteps || !tempTime) {
             return null;
         }
+        const sensorData = props.input.data;
         const tp: [number, number] = [timesteps[tempTime[0]], timesteps[tempTime[1]]];
-        setTimePeriod(tp);
         if (sensorData) {
-            processData(sensorData, tp);
+            const cData = !tp ? sensorData : sensorData.filter(
+                (row) => row.timeStamp >= tp[0] && row.timeStamp <= tp[1]);
+            props.onChange(HtmInput.fromObject({
+                data: cData,
+                timePeriod: tp,
+                ...input
+            }));
         }
     };
 
@@ -163,6 +224,7 @@ const HeatTransportInput = (props: IProps) => {
     const handleMoveTimeSlider = (ts: [number, number]) => setTempTime(ts);
 
     const renderChart = () => {
+        const sensorData = input.data;
         if (!sensorData) {
             return null;
         }
@@ -182,16 +244,16 @@ const HeatTransportInput = (props: IProps) => {
                         name={''}
                         domain={['auto', 'auto']}
                     />
-                    {timePeriod &&
+                    {tempTime && timesteps &&
                     <ReferenceLine
-                        x={timePeriod[0]}
+                        x={timesteps[tempTime[0]]}
                         stroke="#000"
                         strokeDasharray="3 3"
                     />
                     }
-                    {timePeriod &&
+                    {tempTime && timesteps &&
                     <ReferenceLine
-                        x={timePeriod[1]}
+                        x={timesteps[tempTime[1]]}
                         stroke="#000"
                         strokeDasharray="3 3"
                     />
@@ -252,7 +314,7 @@ const HeatTransportInput = (props: IProps) => {
                     options={getSensorOptions()}
                     onChange={handleChangeSensor}
                 />
-                {data && renderChart()}
+                {props.input.data && renderChart()}
                 {timesteps &&
                 <TimeSlider
                     onChange={handleChangeTimeSlider}
@@ -260,6 +322,7 @@ const HeatTransportInput = (props: IProps) => {
                     timeSteps={timesteps}
                     format="YYYY-MM-DD"
                     readOnly={props.readOnly}
+                    value={tempTime}
                 />
                 }
             </Segment>

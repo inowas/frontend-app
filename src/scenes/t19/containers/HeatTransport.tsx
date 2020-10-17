@@ -1,21 +1,15 @@
 import React, {useEffect, useState} from 'react';
-import {Button, Grid, Icon, Segment} from "semantic-ui-react";
+import {Dimmer, Grid, Icon, Loader} from "semantic-ui-react";
 import AppContainer from "../../shared/AppContainer";
 import ToolMetaData from "../../shared/simpleTools/ToolMetaData";
-import HeatTransportData from "../components/heatTransportData";
-import {IRtm} from '../../../core/model/rtm/Rtm.type';
+import HeatTransportController from "../components/heatTransportController";
 import {useParams, useHistory} from "react-router-dom";
-import uuid from "uuid";
 import {fetchUrl, sendCommand} from "../../../services/api";
-import {IHeatTransportInput, IHtm} from '../../../core/model/htm/Htm.type';
+import {IHtm} from '../../../core/model/htm/Htm.type';
 import Htm from "../../../core/model/htm/Htm";
 import SimpleToolsCommand from "../../shared/simpleTools/commands/SimpleToolsCommand";
 import {IToolMetaDataEdit} from "../../shared/simpleTools/ToolMetaData/ToolMetaData.type";
 import {createToolInstance} from "../../dashboard/commands";
-import ContentToolBar from "../../shared/ContentToolbar2";
-import {useDispatch} from "react-redux";
-import {addMessage} from "../../t03/actions/actions";
-import {messageError} from "../../t03/defaults/messages";
 
 const navigation = [{
     name: 'Documentation',
@@ -28,56 +22,34 @@ const tool = 'T19';
 const HeatTransport = () => {
     const [isDirty, setDirty] = useState<boolean>(false);
     const [isFetching, setIsFetching] = useState<boolean>(false);
-    const [rtm, setRtm] = useState<IRtm>();
     const [htm, setHtm] = useState<IHtm>();
 
-    const dispatch = useDispatch();
     const history = useHistory();
-    const {id, property} = useParams();
+    const {id} = useParams();
 
     useEffect(() => {
         if (id) {
             fetchToolInstance();
         }
         if (!id) {
-            const newId = uuid.v4();
-            const newInstance = Htm.fromObject({
-                id: newId,
-                name: 'New Heat Transport Model',
-                data: {
-                    input: [] as IHeatTransportInput[],
-                    options: {
-                        retardation_factor: 1.8,
-                        sw_monitoring_id: 'TEGsee-mikrosieb',
-                        gw_monitoring_id: 'TEG343',
-                        limits: [100, 500],
-                        tolerance: 0.001,
-                        debug: false
-                    }
-                },
-                description: '',
-                permissions: 'rwx',
-                public: true,
-                tool: 'T19'
-            }).toObject();
-            sendCommand(createToolInstance('T19', newInstance),
+            const newInstance = Htm.fromDefaults();
+            sendCommand(createToolInstance('T19', newInstance.toObject()),
                 () => history.push('/tools/T19/' + newInstance.id),
                 () => console.log('ERROR')
             );
         }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [id]);
 
     const fetchToolInstance = () => {
         setIsFetching(true);
         fetchUrl(`tools/${tool}/${id}`,
             (m: IHtm) => {
-                dispatch(addMessage(messageError('/', 'TEST')));
                 setHtm(m);
                 setIsFetching(false);
                 setDirty(false);
             },
-            (e) => {
-                dispatch(addMessage(messageError('/', e)));
+            () => {
                 setIsFetching(false);
             }
         );
@@ -96,7 +68,12 @@ const HeatTransport = () => {
         }
     };
 
+    const handleChange = (h: Htm) => {
+        setHtm(h.toObject());
+    };
+
     const handleSave = (h?: Htm) => {
+        setIsFetching(true);
         if (!h) {
             if (!htm) {
                 return null;
@@ -105,13 +82,25 @@ const HeatTransport = () => {
         }
         sendCommand(
             SimpleToolsCommand.updateToolInstance(h.toObject()),
-            () => setDirty(false)
+            () => {
+                if (h) {
+                    setHtm(h.toObject());
+                    setIsFetching(false);
+                }
+            }
         );
     };
 
+    if (!htm || isFetching) {
+        return (
+            <Dimmer active={true} inverted={true}>
+                <Loader inverted={true}>Loading</Loader>
+            </Dimmer>
+        );
+    }
+
     return (
         <AppContainer navbarItems={navigation}>
-            {htm &&
             <ToolMetaData
                 isDirty={isDirty}
                 readOnly={false}
@@ -123,11 +112,14 @@ const HeatTransport = () => {
                 }}
                 onSave={handleSaveMetaData}
             />
-            }
             <Grid padded={true}>
                 <Grid.Row>
                     <Grid.Column width={16}>
-                        <HeatTransportData/>
+                        <HeatTransportController
+                            htm={Htm.fromObject(htm)}
+                            onChange={handleChange}
+                            onSave={handleSave}
+                        />
                     </Grid.Column>
                 </Grid.Row>
             </Grid>

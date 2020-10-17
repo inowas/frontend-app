@@ -1,4 +1,5 @@
 import {ISimpleTool} from '../types';
+import { IDateTimeValue } from '../rtm/Sensor.type';
 
 export interface IHtm extends ISimpleTool<IHtmData> {
     data: IHtmData;
@@ -13,7 +14,11 @@ export interface IHtmData {
 export type TDateValueArray = Array<{date: string; value: number}>;
 
 export interface IHeatTransportInput {
-    id: string;
+    data?: IDateTimeValue[];
+    rtmId?: string;
+    sensorId?: string | null;
+    timePeriod?: [number, number];
+    type: 'gw' | 'sw';
 }
 
 export interface IHeatTransportRequestOptions {
