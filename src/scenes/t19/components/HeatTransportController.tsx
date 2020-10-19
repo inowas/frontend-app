@@ -20,10 +20,8 @@ interface IProps {
 
 const HeatTransportController = (props: IProps) => {
     const [isFetching, setIsFetching] = useState<boolean>(false);
-
     const [activeInput, setActiveInput] = useState<string>();
     const [activeValue, setActiveValue] = useState<string>('');
-
     const [requestOptions, setRequestOptions] = useState<IHeatTransportRequestOptions>(props.htm.options);
 
     useEffect(() => {

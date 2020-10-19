@@ -123,7 +123,7 @@ const HeatTransportInput = (props: IProps) => {
 
     const fetchInstances = () => {
         setIsFetching(true);
-        fetchUrl('tools/T10?public=true',
+        fetchUrl('tools/T10?public=false',
             (data) => {
                 setT10Instances(data);
                 setIsFetching(false);
