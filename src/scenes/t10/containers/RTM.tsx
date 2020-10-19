@@ -10,7 +10,6 @@ import ToolNavigation from '../../shared/complexTools/toolNavigation';
 import SimpleToolsCommand from '../../shared/simpleTools/commands/SimpleToolsCommand';
 import ToolMetaData from '../../shared/simpleTools/ToolMetaData';
 import {IToolMetaDataEdit} from '../../shared/simpleTools/ToolMetaData/ToolMetaData.type';
-import {HeatTransport} from '../../t19/components';
 import {DataSources, Processing, SensorMetaData, Sensors, Visualization} from '../components/index';
 
 interface IRouterProps {
@@ -37,16 +36,6 @@ const menuItems = [
                 name: 'Visualization',
                 property: 'sensor-visualization',
                 icon: <Icon name="expand"/>
-            }
-        ]
-    },
-    {
-        header: 'Computation',
-        items: [
-            {
-                name: 'Heat Transport',
-                property: 'heat-transport',
-                icon: <Icon name="thermometer half"/>
             }
         ]
     }
@@ -168,14 +157,6 @@ const RTM = () => {
         if (property === 'sensor-visualization') {
             return (
                 <Visualization
-                    rtm={Rtm.fromObject(rtm)}
-                />
-            );
-        }
-
-        if (property === 'heat-transport') {
-            return (
-                <HeatTransport
                     rtm={Rtm.fromObject(rtm)}
                 />
             );

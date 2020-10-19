@@ -1,14 +1,11 @@
 import React, {useEffect, useState} from 'react';
-import {Grid, Icon} from "semantic-ui-react";
+import {Dimmer, Grid, Icon, Loader} from "semantic-ui-react";
 import AppContainer from "../../shared/AppContainer";
 import ToolMetaData from "../../shared/simpleTools/ToolMetaData";
-import HeatTransportData from "../components/heatTransport";
-import {Rtm} from "../../../core/model/rtm";
-import {IRtm} from '../../../core/model/rtm/Rtm.type';
+import HeatTransportController from "../components/heatTransportController";
 import {useParams, useHistory} from "react-router-dom";
-import uuid from "uuid";
 import {fetchUrl, sendCommand} from "../../../services/api";
-import {IHeatTransportInput, IHtm} from '../../../core/model/htm/Htm.type';
+import {IHtm} from '../../../core/model/htm/Htm.type';
 import Htm from "../../../core/model/htm/Htm";
 import SimpleToolsCommand from "../../shared/simpleTools/commands/SimpleToolsCommand";
 import {IToolMetaDataEdit} from "../../shared/simpleTools/ToolMetaData/ToolMetaData.type";
@@ -24,10 +21,7 @@ const tool = 'T19';
 
 const HeatTransport = () => {
     const [isDirty, setDirty] = useState<boolean>(false);
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const [isFetching, setIsFetching] = useState<boolean>(false);
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const [rtm, setRtm] = useState<IRtm>();
     const [htm, setHtm] = useState<IHtm>();
 
     const history = useHistory();
@@ -38,27 +32,8 @@ const HeatTransport = () => {
             fetchToolInstance();
         }
         if (!id) {
-            const newId = uuid.v4();
-            const newInstance = Htm.fromObject({
-                id: newId,
-                name: 'New Heat Transport Model',
-                data: {
-                    input: [] as IHeatTransportInput[],
-                    options: {
-                        retardation_factor: 1.8,
-                        sw_monitoring_id: 'TEGsee-mikrosieb',
-                        gw_monitoring_id: 'TEG343',
-                        limits: [100, 500],
-                        tolerance: 0.001,
-                        debug: false
-                    }
-                },
-                description: '',
-                permissions: 'rwx',
-                public: true,
-                tool: 'T19'
-            }).toObject();
-            sendCommand(createToolInstance('T19', newInstance),
+            const newInstance = Htm.fromDefaults();
+            sendCommand(createToolInstance('T19', newInstance.toObject()),
                 () => history.push('/tools/T19/' + newInstance.id),
                 () => console.log('ERROR')
             );
@@ -93,15 +68,39 @@ const HeatTransport = () => {
         }
     };
 
-    const handleSave = (h: Htm) => sendCommand(
-        SimpleToolsCommand.updateToolInstance(h.toObject()),
-        () => setDirty(false)
-    );
+    const handleChange = (h: Htm) => {
+        setHtm(h.toObject());
+    };
+
+    const handleSave = (h?: Htm) => {
+        setIsFetching(true);
+        if (!h) {
+            if (!htm) {
+                return null;
+            }
+            h = Htm.fromObject(htm);
+        }
+        sendCommand(
+            SimpleToolsCommand.updateToolInstance(h.toObject()),
+            () => {
+                if (h) {
+                    setHtm(h.toObject());
+                    setIsFetching(false);
+                }
+            }
+        );
+    };
+
+    if (!htm || isFetching) {
+        return (
+            <Dimmer active={true} inverted={true}>
+                <Loader inverted={true}>Loading</Loader>
+            </Dimmer>
+        );
+    }
 
     return (
         <AppContainer navbarItems={navigation}>
-            TEST
-            {htm &&
             <ToolMetaData
                 isDirty={isDirty}
                 readOnly={false}
@@ -113,16 +112,14 @@ const HeatTransport = () => {
                 }}
                 onSave={handleSaveMetaData}
             />
-            }
-            <Grid>
+            <Grid padded={true}>
                 <Grid.Row>
-                    <Grid.Column width={5}>
-
-                    </Grid.Column>
-                    <Grid.Column width={11}>
-                        {rtm &&
-                        <HeatTransportData rtm={Rtm.fromObject(rtm)}/>
-                        }
+                    <Grid.Column width={16}>
+                        <HeatTransportController
+                            htm={Htm.fromObject(htm)}
+                            onChange={handleChange}
+                            onSave={handleSave}
+                        />
                     </Grid.Column>
                 </Grid.Row>
             </Grid>

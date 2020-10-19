@@ -16,6 +16,11 @@ import {IRtm} from '../../../core/model/rtm/Rtm.type';
 import {sendCommand} from '../../../services/api';
 import {createToolInstance} from '../../dashboard/commands';
 import AppContainer from '../../shared/AppContainer';
+import {ModelMap} from '../../t03/components/maps';
+
+// tslint:disable-next-line:no-empty-interface
+interface IProps extends RouteComponentProps {
+}
 
 const navigation = [
     {

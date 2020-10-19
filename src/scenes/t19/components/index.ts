@@ -1,9 +1,9 @@
-import HeatTransport from './heatTransport';
+import HeatTransportController from './heatTransportController';
 import HeatTransportInput from './heatTransportInput';
 import HeatTransportResults from './heatTransportResults';
 
 export {
-    HeatTransport,
+    HeatTransportController,
     HeatTransportInput,
     HeatTransportResults
 };
