@@ -1,6 +1,6 @@
-import moment from 'moment';
-import React, {useState} from 'react';
 import RangeWithTooltip from '../../../shared/complexTools/RangeWithTooltip';
+import React, {useState} from 'react';
+import moment from 'moment';
 
 interface IProps {
     onChange: (ts: [number, number]) => any;
