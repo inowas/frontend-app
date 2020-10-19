@@ -36,9 +36,7 @@ interface IProps {
     children: ReactNode;
 }
 
-// eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
 const AppContainer = (props: IProps) => {
-
     if (props.loading) {
         return (
             <div>

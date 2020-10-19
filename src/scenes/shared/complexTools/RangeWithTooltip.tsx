@@ -1,4 +1,5 @@
-import {createSliderWithTooltip} from 'rc-slider';
 import {Range} from 'rc-slider';
+import {createSliderWithTooltip} from 'rc-slider';
 
-export default class RangeWithTooltip extends createSliderWithTooltip(Range) {}
+export default class RangeWithTooltip extends createSliderWithTooltip(Range) {
+}
