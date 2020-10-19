@@ -1,5 +1,3 @@
-import React, {ChangeEvent, FormEvent, useState} from 'react';
-import {useHistory} from 'react-router-dom';
 import {
     Breadcrumb,
     Button,
@@ -11,16 +9,13 @@ import {
     InputOnChangeData,
     Segment, TextAreaProps
 } from 'semantic-ui-react';
-import Uuid from 'uuid';
 import {IRtm} from '../../../core/model/rtm/Rtm.type';
-import {sendCommand} from '../../../services/api';
 import {createToolInstance} from '../../dashboard/commands';
+import {sendCommand} from '../../../services/api';
+import {useHistory} from 'react-router-dom';
 import AppContainer from '../../shared/AppContainer';
-import {ModelMap} from '../../t03/components/maps';
-
-// tslint:disable-next-line:no-empty-interface
-interface IProps extends RouteComponentProps {
-}
+import React, {ChangeEvent, FormEvent, useState} from 'react';
+import Uuid from 'uuid';
 
 const navigation = [
     {
