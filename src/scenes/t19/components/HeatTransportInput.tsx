@@ -14,7 +14,6 @@ import {IToolInstance} from '../../dashboard/defaults/tools';
 import {LTOB} from 'downsample';
 import {ProcessingCollection} from '../../../core/model/rtm/processing';
 import {ReferenceLine, ResponsiveContainer, Scatter, ScatterChart, XAxis, YAxis} from 'recharts';
-import {TimeSlider} from '../../t10/components/visualization';
 import {fetchUrl, makeTimeProcessingRequest} from '../../../services/api';
 import HtmInput from '../../../core/model/htm/HtmInput';
 import React, {SyntheticEvent, useEffect, useState} from 'react';
@@ -108,9 +107,9 @@ const HeatTransportInput = (props: IProps) => {
                             setTimesteps(ts);
                             setTempTime([0, ts.length - 1]);
                             props.onChange(HtmInput.fromObject({
+                                ...input,
                                 data: sd,
                                 timePeriod: [ts[0], ts[ts.length - 1]],
-                                ...input
                             }));
                         }
                         setIsFetching(false);
@@ -202,26 +201,7 @@ const HeatTransportInput = (props: IProps) => {
         }));
     };
 
-    const handleChangeTimeSlider = () => {
-        if (!timesteps || !tempTime) {
-            return null;
-        }
-        const sensorData = props.input.data;
-        const tp: [number, number] = [timesteps[tempTime[0]], timesteps[tempTime[1]]];
-        if (sensorData) {
-            const cData = !tp ? sensorData : sensorData.filter(
-                (row) => row.timeStamp >= tp[0] && row.timeStamp <= tp[1]);
-            props.onChange(HtmInput.fromObject({
-                data: cData,
-                timePeriod: tp,
-                ...input
-            }));
-        }
-    };
-
     const handleDismissError = (id: string) => () => setErrors(errors.filter((e) => e.id !== id));
-
-    const handleMoveTimeSlider = (ts: [number, number]) => setTempTime(ts);
 
     const renderChart = () => {
         const sensorData = input.data;
@@ -315,16 +295,6 @@ const HeatTransportInput = (props: IProps) => {
                     onChange={handleChangeSensor}
                 />
                 {props.input.data && renderChart()}
-                {timesteps &&
-                <TimeSlider
-                    onChange={handleChangeTimeSlider}
-                    onMove={handleMoveTimeSlider}
-                    timeSteps={timesteps}
-                    format="YYYY-MM-DD"
-                    readOnly={props.readOnly}
-                    value={tempTime}
-                />
-                }
             </Segment>
             {errors.map((error, key) => (
                 <Message key={key} negative={true} onDismiss={handleDismissError(error.id)}>
