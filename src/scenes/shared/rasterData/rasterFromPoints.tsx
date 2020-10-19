@@ -1,15 +1,15 @@
-import React, {ChangeEvent, FormEvent, useEffect, useState} from 'react';
-import {CircleMarker, FeatureGroup, Tooltip} from 'react-leaflet';
-import {useSelector} from 'react-redux';
-import {DropdownProps, Form, Grid, InputOnChangeData, Segment} from 'semantic-ui-react';
-import uuid from 'uuid';
-import {Array2D} from '../../../core/model/geometry/Array2D.type';
-import {ModflowModel} from '../../../core/model/modflow';
-import {IRootReducer} from '../../../reducers';
-import {distanceWeighting, IIdwOptions} from '../../../services/geoTools/interpolation';
 import {AdvancedCsvUpload} from '../simpleTools/upload';
+import {Array2D} from '../../../core/model/geometry/Array2D.type';
+import {CircleMarker, FeatureGroup, Tooltip} from 'react-leaflet';
+import {DropdownProps, Form, Grid, InputOnChangeData, Segment} from 'semantic-ui-react';
 import {ECsvColumnType} from '../simpleTools/upload/types';
+import {IIdwOptions, distanceWeighting} from '../../../services/geoTools/interpolation';
+import {IRootReducer} from '../../../reducers';
+import {ModflowModel} from '../../../core/model/modflow';
 import {RasterDataMap} from './index';
+import {useSelector} from 'react-redux';
+import React, {ChangeEvent, FormEvent, useEffect, useState} from 'react';
+import uuid from 'uuid';
 
 interface IProps {
     onChange: (r: Array2D<number>) => any;

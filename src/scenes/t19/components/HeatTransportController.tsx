@@ -1,16 +1,16 @@
-import moment from 'moment';
-import React, {FormEvent, useEffect, useState} from 'react';
 import {
     Form,
     Grid,
     InputOnChangeData,
     Segment
 } from 'semantic-ui-react';
-import {makeHeatTransportRequest} from '../../../services/api';
 import {HeatTransportInput, HeatTransportResults} from './index';
-import {IHeatTransportRequestOptions, IHeatTransportRequest} from "../../../core/model/htm/Htm.type";
-import Htm from "../../../core/model/htm/Htm";
-import HtmInput from "../../../core/model/htm/HtmInput";
+import {IHeatTransportRequest, IHeatTransportRequestOptions} from '../../../core/model/htm/Htm.type';
+import {makeHeatTransportRequest} from '../../../services/api';
+import Htm from '../../../core/model/htm/Htm';
+import HtmInput from '../../../core/model/htm/HtmInput';
+import React, {FormEvent, useEffect, useState} from 'react';
+import moment from 'moment';
 
 interface IProps {
     htm: Htm;

@@ -1,12 +1,12 @@
-import React, {useEffect, useState} from 'react';
-import {RouteComponentProps, withRouter} from 'react-router';
 import {Background, Chart, Info, Parameters} from '../components/index';
-import image from '../images/T01.png';
-import PapaParse from 'papaparse';
-import {ParseResult} from 'papaparse';
 import {Breadcrumb, Grid, Icon} from 'semantic-ui-react';
+import {ParseResult} from 'papaparse';
+import {RouteComponentProps, withRouter} from 'react-router';
 import AppContainer from '../../shared/AppContainer';
+import PapaParse from 'papaparse';
+import React, {useEffect, useState} from 'react';
 import ToolGrid from '../../shared/simpleTools/ToolGrid';
+import image from '../images/T01.png';
 
 const navigation = [{
     name: 'Documentation',
@@ -26,7 +26,7 @@ const T01 = (props: IProps) => {
 
     const loadCsvFile = () => {
         // eslint-disable-next-line @typescript-eslint/no-var-requires
-        PapaParse.parse(require("../data/2018-10-25-mar-in-scales.csv"), {
+        PapaParse.parse(require('../data/2018-10-25-mar-in-scales.csv'), {
             download: true,
             delimiter: ';',
             dynamicTyping: true,

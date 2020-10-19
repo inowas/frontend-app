@@ -1,11 +1,11 @@
-import _ from 'lodash';
-import moment from 'moment';
-import React, {MouseEvent, useEffect, useState} from 'react';
-import {Label, ReferenceDot, ResponsiveContainer, Scatter, ScatterChart, Tooltip, XAxis, YAxis} from 'recharts';
 import {Button, Checkbox, Icon, Menu, MenuItemProps, Segment, Table} from 'semantic-ui-react';
+import {IHeatTransportResults} from '../../../core/model/htm/Htm.type';
+import {Label, ReferenceDot, ResponsiveContainer, Scatter, ScatterChart, Tooltip, XAxis, YAxis} from 'recharts';
 import {SemanticCOLORS} from 'semantic-ui-react/dist/commonjs/generic';
 import {downloadFile} from '../../shared/simpleTools/helpers';
-import {IHeatTransportResults} from '../../../core/model/htm/Htm.type';
+import React, {MouseEvent, useEffect, useState} from 'react';
+import _ from 'lodash';
+import moment from 'moment';
 
 interface IProps {
     results: IHeatTransportResults;
@@ -203,7 +203,9 @@ const HeatTransportResults = (props: IProps) => {
                     {keys.map((name, key) => (
                         <Table.Row key={key}>
                             <Table.Cell>{name}</Table.Cell>
+                            {/* eslint-disable-next-line no-prototype-builtins */}
                             <Table.Cell>{dataSw[0].hasOwnProperty(name) ? dataSw[0][name] : 'NULL'}</Table.Cell>
+                            {/* eslint-disable-next-line no-prototype-builtins */}
                             <Table.Cell>{dataGw[0].hasOwnProperty(name) ? dataGw[0][name] : 'NULL'}</Table.Cell>
                         </Table.Row>
                     ))}

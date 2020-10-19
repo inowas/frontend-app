@@ -1,15 +1,15 @@
-import React, {useEffect, useState} from 'react';
-import {Dimmer, Grid, Icon, Loader} from "semantic-ui-react";
-import AppContainer from "../../shared/AppContainer";
-import ToolMetaData from "../../shared/simpleTools/ToolMetaData";
-import HeatTransportController from "../components/heatTransportController";
-import {useParams, useHistory} from "react-router-dom";
-import {fetchUrl, sendCommand} from "../../../services/api";
+import {AppContainer} from '../../shared';
+import {Dimmer, Grid, Icon, Loader} from 'semantic-ui-react';
+import {HeatTransportController} from '../components';
 import {IHtm} from '../../../core/model/htm/Htm.type';
-import Htm from "../../../core/model/htm/Htm";
-import SimpleToolsCommand from "../../shared/simpleTools/commands/SimpleToolsCommand";
-import {IToolMetaDataEdit} from "../../shared/simpleTools/ToolMetaData/ToolMetaData.type";
-import {createToolInstance} from "../../dashboard/commands";
+import {IToolMetaDataEdit} from '../../shared/simpleTools/ToolMetaData/ToolMetaData.type';
+import {ToolMetaData} from '../../shared/simpleTools';
+import {createToolInstance} from '../../dashboard/commands';
+import {fetchUrl, sendCommand} from '../../../services/api';
+import {useHistory, useParams} from 'react-router-dom';
+import Htm from '../../../core/model/htm/Htm';
+import React, {useEffect, useState} from 'react';
+import SimpleToolsCommand from '../../shared/simpleTools/commands/SimpleToolsCommand';
 
 const navigation = [{
     name: 'Documentation',

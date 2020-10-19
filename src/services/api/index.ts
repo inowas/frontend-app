@@ -1,15 +1,15 @@
-import axios, {AxiosError} from 'axios';
-import getConfig from '../../config.default';
-import AbstractCommand from '../../core/model/command/AbstractCommand';
-import FlopyPackages from '../../core/model/flopy/packages/FlopyPackages';
 import {Array2D, Array3D} from '../../core/model/geometry/Array2D.type';
+import {CallbackFunction, ErrorCallbackFunction} from '../../scenes/types';
+import {IBudgetData, IModflowFile, IRasterFileMetadata} from './types';
 import {IDateTimeValue} from '../../core/model/rtm/Sensor.type';
+import {IHeatTransportRequest} from '../../core/model/htm/Htm.type';
 import {ISimpleTool} from '../../core/model/types';
 import {InterpolationType} from '../../scenes/shared/rasterData/types';
-import {CallbackFunction, ErrorCallbackFunction} from '../../scenes/types';
+import AbstractCommand from '../../core/model/command/AbstractCommand';
+import FlopyPackages from '../../core/model/flopy/packages/FlopyPackages';
+import axios, {AxiosError} from 'axios';
+import getConfig from '../../config.default';
 import storeToCreate from '../../store';
-import {IBudgetData, IModflowFile, IRasterFileMetadata} from './types';
-import {IHeatTransportRequest} from '../../core/model/htm/Htm.type';
 
 export const {
     BASE_URL,
@@ -154,7 +154,7 @@ export const makeHeatTransportRequest = (data: IHeatTransportRequest) => {
     const json = JSON.stringify(data);
     return axios.request({
         method: 'POST',
-        url: `https://opencpu.inowas.com/ocpu/library/kwb.heatsine.opencpu/R/run_optimisation/json`,
+        url: 'https://opencpu.inowas.com/ocpu/library/kwb.heatsine.opencpu/R/run_optimisation/json',
         headers: {
             'Content-Type': 'application/json'
         },

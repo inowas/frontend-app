@@ -1,11 +1,7 @@
+import {Segment} from 'semantic-ui-react';
 import React from 'react';
-import {Segment} from "semantic-ui-react";
 
-interface IProps {
-    onChange: () => void;
-}
-
-const SensorSelection = (props: IProps) => {
+const SensorSelection = () => {
 
     return (
         <Segment color={'grey'}>

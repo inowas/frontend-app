@@ -1,14 +1,8 @@
-import React, {ReactNode, useEffect, useState} from 'react';
-import {useDispatch, useSelector} from 'react-redux';
-import {RouteComponentProps, withRouter} from 'react-router-dom';
-import {List, Message, Modal} from 'semantic-ui-react';
-import FlopyPackages from '../../../core/model/flopy/packages/FlopyPackages';
-import {Calculation, ModflowModel, Soilmodel, Transport, VariableDensity} from '../../../core/model/modflow';
 import {BoundaryCollection} from '../../../core/model/modflow/boundaries';
-import {fetchSoilmodel} from '../../../core/model/modflow/soilmodel/updater/services';
-import updater from '../../../core/model/modflow/soilmodel/updater/updater';
+import {Calculation, ModflowModel, Soilmodel, Transport, VariableDensity} from '../../../core/model/modflow';
 import {IRootReducer} from '../../../reducers';
-import {fetchCalculationDetails, fetchUrl} from '../../../services/api';
+import {List, Message, Modal} from 'semantic-ui-react';
+import {RouteComponentProps, withRouter} from 'react-router-dom';
 import {
     clear,
     updateBoundaries,
@@ -19,6 +13,12 @@ import {
     updateTransport,
     updateVariableDensity
 } from '../actions/actions';
+import {fetchCalculationDetails, fetchUrl} from '../../../services/api';
+import {fetchSoilmodel} from '../../../core/model/modflow/soilmodel/updater/services';
+import {useDispatch, useSelector} from 'react-redux';
+import FlopyPackages from '../../../core/model/flopy/packages/FlopyPackages';
+import React, {ReactNode, useEffect, useState} from 'react';
+import updater from '../../../core/model/modflow/soilmodel/updater/updater';
 
 interface IOwnProps {
     children: ReactNode;
@@ -155,7 +155,7 @@ const DataFetcherWrapper = (props: IProps) => {
 
                         if (needsToBeFetched) {
                             setSoilmodelFetcher({
-                                message: `Start fetching soilmodel...`,
+                                message: 'Start fetching soilmodel...',
                                 fetching: true
                             });
 

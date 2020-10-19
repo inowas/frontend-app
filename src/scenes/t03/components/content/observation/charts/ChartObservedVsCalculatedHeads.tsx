@@ -1,10 +1,10 @@
-import math from 'mathjs';
-import React from 'react';
 import {CartesianGrid, ResponsiveContainer, Scatter, ScatterChart, Tooltip, XAxis, YAxis} from 'recharts';
-import {Segment} from 'semantic-ui-react';
+import {ICustomTooltipPayload, convenientColors, diagramLabel, getNameFromPayload} from './chartHelpers';
 import {IStatistics} from '../statistics';
-import {convenientColors, diagramLabel, getNameFromPayload, ICustomTooltipPayload} from './chartHelpers';
+import {Segment} from 'semantic-ui-react';
 import CustomizedDot from './CustomizedDot';
+import React from 'react';
+import math from 'mathjs';
 
 interface IProps {
     statistics: IStatistics;

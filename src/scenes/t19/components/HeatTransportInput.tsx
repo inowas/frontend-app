@@ -1,25 +1,25 @@
-import {LTOB} from 'downsample';
-import moment from 'moment';
-import React, {SyntheticEvent, useEffect, useState} from 'react';
-import {ReferenceLine, ResponsiveContainer, Scatter, ScatterChart, XAxis, YAxis} from 'recharts';
+import {DataSourceCollection, Rtm} from '../../../core/model/rtm';
 import {
     Dimmer,
     DropdownProps,
     Form,
     Loader,
-    Segment,
-    Message
+    Message,
+    Segment
 } from 'semantic-ui-react';
-import {DataSourceCollection, Rtm} from '../../../core/model/rtm';
-import {ProcessingCollection} from '../../../core/model/rtm/processing';
 import {IDateTimeValue, ISensor, ISensorParameter} from '../../../core/model/rtm/Sensor.type';
-import {fetchUrl, makeTimeProcessingRequest} from '../../../services/api';
-import {TimeSlider} from '../../t10/components/visualization';
-import {IRtm} from "../../../core/model/rtm/Rtm.type";
-import {IToolInstance} from "../../dashboard/defaults/tools";
-import uuid from "uuid";
 import {IHeatTransportInput} from '../../../core/model/htm/Htm.type';
-import HtmInput from "../../../core/model/htm/HtmInput";
+import {IRtm} from '../../../core/model/rtm/Rtm.type';
+import {IToolInstance} from '../../dashboard/defaults/tools';
+import {LTOB} from 'downsample';
+import {ProcessingCollection} from '../../../core/model/rtm/processing';
+import {ReferenceLine, ResponsiveContainer, Scatter, ScatterChart, XAxis, YAxis} from 'recharts';
+import {TimeSlider} from '../../t10/components/visualization';
+import {fetchUrl, makeTimeProcessingRequest} from '../../../services/api';
+import HtmInput from '../../../core/model/htm/HtmInput';
+import React, {SyntheticEvent, useEffect, useState} from 'react';
+import moment from 'moment';
+import uuid from 'uuid';
 
 interface IProps {
     input: HtmInput;
@@ -129,7 +129,7 @@ const HeatTransportInput = (props: IProps) => {
                 setIsFetching(false);
             },
             () => {
-                setErrors(errors.concat([{id: uuid.v4(), message: `Fetching t10 instances failed.`}]));
+                setErrors(errors.concat([{id: uuid.v4(), message: 'Fetching t10 instances failed.'}]));
                 setIsFetching(false);
             }
         );
@@ -326,8 +326,8 @@ const HeatTransportInput = (props: IProps) => {
                 />
                 }
             </Segment>
-            {errors.map((error) => (
-                <Message negative={true} onDismiss={handleDismissError(error.id)}>
+            {errors.map((error, key) => (
+                <Message key={key} negative={true} onDismiss={handleDismissError(error.id)}>
                     <Message.Header>Error</Message.Header>
                     <p>{error.message}</p>
                 </Message>
