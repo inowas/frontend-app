@@ -15,7 +15,7 @@ import moment from 'moment';
 interface IProps {
     htm: Htm;
     onChange: (htm: Htm) => void;
-    onSave: (htm: Htm) => void;
+    onSave: () => void;
 }
 
 const HeatTransportController = (props: IProps) => {
@@ -76,7 +76,8 @@ const HeatTransportController = (props: IProps) => {
             const cHtm = props.htm.toObject();
             cHtm.data.results = JSON.parse(r3);
             cHtm.data.options = requestOptions;
-            props.onSave(Htm.fromObject(cHtm));
+            props.onChange(Htm.fromObject(cHtm));
+            props.onSave();
             setIsFetching(false);
         });
     };

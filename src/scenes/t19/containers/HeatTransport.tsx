@@ -21,6 +21,7 @@ const tool = 'T19';
 
 const HeatTransport = () => {
     const [isDirty, setDirty] = useState<boolean>(false);
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const [isFetching, setIsFetching] = useState<boolean>(false);
     const [htm, setHtm] = useState<IHtm>();
 
@@ -29,31 +30,28 @@ const HeatTransport = () => {
 
     useEffect(() => {
         if (id) {
-            fetchToolInstance();
+            setIsFetching(true);
+            fetchUrl(`tools/${tool}/${id}`,
+                (m: IHtm) => {
+                    setHtm(m);
+                    setIsFetching(false);
+                    setDirty(false);
+                },
+                () => {
+                    setIsFetching(false);
+                }
+            );
+            return;
         }
+
         if (!id) {
             const newInstance = Htm.fromDefaults();
-            sendCommand(createToolInstance('T19', newInstance.toObject()),
-                () => history.push('/tools/T19/' + newInstance.id),
+            sendCommand(createToolInstance(newInstance.tool, newInstance.toObject()),
+                () => history.push(`/tools/${newInstance.tool}/${newInstance.id}`),
                 () => console.log('ERROR')
             );
         }
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [id]);
-
-    const fetchToolInstance = () => {
-        setIsFetching(true);
-        fetchUrl(`tools/${tool}/${id}`,
-            (m: IHtm) => {
-                setHtm(m);
-                setIsFetching(false);
-                setDirty(false);
-            },
-            () => {
-                setIsFetching(false);
-            }
-        );
-    };
+    }, [history, id]);
 
     const handleSaveMetaData = (tool: IToolMetaDataEdit) => {
         const {name, description} = tool;
@@ -64,7 +62,8 @@ const HeatTransport = () => {
             cHtm.name = name;
             cHtm.description = description;
             cHtm.public = isPublic;
-            handleSave(cHtm);
+            setHtm(cHtm.toObject);
+            handleSave();
         }
     };
 
@@ -72,26 +71,18 @@ const HeatTransport = () => {
         setHtm(h.toObject());
     };
 
-    const handleSave = (h?: Htm) => {
-        setIsFetching(true);
-        if (!h) {
-            if (!htm) {
-                return null;
-            }
-            h = Htm.fromObject(htm);
+    const handleSave = () => {
+        if (!htm) {
+            return null;
         }
+        setIsFetching(true);
         sendCommand(
-            SimpleToolsCommand.updateToolInstance(h.toObject()),
-            () => {
-                if (h) {
-                    setHtm(h.toObject());
-                    setIsFetching(false);
-                }
-            }
+            SimpleToolsCommand.updateToolInstance(htm),
+            () => setIsFetching(false)
         );
     };
 
-    if (!htm || isFetching) {
+    if (!htm) {
         return (
             <Dimmer active={true} inverted={true}>
                 <Loader inverted={true}>Loading</Loader>
