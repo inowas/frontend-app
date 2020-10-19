@@ -6,7 +6,7 @@ import {usePrevious} from '../helpers/customHooks';
 
 interface IProps {
     baseClasses?: string;
-    onUploaded: (response: ParseResult) => any;
+    onUploaded: (response: ParseResult<any>) => any;
     uploadState: IUploadState;
 }
 

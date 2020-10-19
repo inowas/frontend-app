@@ -28,7 +28,7 @@ interface IProps {
 
 const AdvancedCsvUpload = (props: IProps) => {
     const [columns, setColumns] = useState<TColumns>(props.columns);
-    const [metadata, setMetadata] = useState<ParseResult | null>(null);
+    const [metadata, setMetadata] = useState<ParseResult<any> | null>(null);
 
     const [dateTimeFormat, setDateTimeFormat] = useState<string>('DD.MM.YYYY H:m:s');
     const [firstRowIsHeader, setFirstRowIsHeader] = useState<boolean>(true);
@@ -100,10 +100,12 @@ const AdvancedCsvUpload = (props: IProps) => {
     };
 
     const handleChange = (f: (v: any) => void) => (e: any, d: any) => {
+        // eslint-disable-next-line no-prototype-builtins
         if (d.hasOwnProperty('value')) {
             f(d.value);
         }
 
+        // eslint-disable-next-line no-prototype-builtins
         if (d.hasOwnProperty('checked')) {
             f(d.checked);
         }
@@ -116,7 +118,7 @@ const AdvancedCsvUpload = (props: IProps) => {
         });
     };
 
-    const processData = ({data}: ParseResult) => {
+    const processData = ({data}: ParseResult<any>) => {
         if (
             (!metadata) ||
             (!parameterColumns) ||
@@ -192,7 +194,7 @@ const AdvancedCsvUpload = (props: IProps) => {
         ));
     };
 
-    const renderContent = () => (
+    const renderContent = (props: IProps) => (
         <Grid>
             {(parsingData || isFetching) &&
             <Dimmer active={true} inverted={true}>
@@ -322,7 +324,7 @@ const AdvancedCsvUpload = (props: IProps) => {
             >
                 <Modal.Header>CSV Upload</Modal.Header>
                 <Modal.Content>
-                    {renderContent()}
+                    {renderContent(props)}
                 </Modal.Content>
                 <Modal.Actions>
                     <Button negative={true} onClick={props.onCancel}>Cancel</Button>
@@ -332,7 +334,7 @@ const AdvancedCsvUpload = (props: IProps) => {
         );
     }
 
-    return renderContent();
+    return renderContent(props);
 };
 
 export default AdvancedCsvUpload;

@@ -29,7 +29,7 @@ export default class Sensor {
         this._props.geolocation = value;
     }
 
-    get parameters() {
+    get parameters(): ParameterCollection {
         return ParameterCollection.fromObject(this._props.parameters);
     }
 

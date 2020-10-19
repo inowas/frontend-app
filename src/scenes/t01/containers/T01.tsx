@@ -2,14 +2,11 @@ import React, {useEffect, useState} from 'react';
 import {RouteComponentProps, withRouter} from 'react-router';
 import {Background, Chart, Info, Parameters} from '../components/index';
 import image from '../images/T01.png';
-
 import PapaParse from 'papaparse';
+import {ParseResult} from 'papaparse';
 import {Breadcrumb, Grid, Icon} from 'semantic-ui-react';
 import AppContainer from '../../shared/AppContainer';
 import ToolGrid from '../../shared/simpleTools/ToolGrid';
-
-// @ts-ignore
-import csvFile from '../data/2018-10-25-mar-in-scales.csv';
 
 const navigation = [{
     name: 'Documentation',
@@ -17,9 +14,7 @@ const navigation = [{
     icon: <Icon name="file"/>
 }];
 
-// tslint:disable-next-line:no-empty-interface
-interface IProps extends RouteComponentProps {
-}
+type IProps = RouteComponentProps
 
 const T01 = (props: IProps) => {
 
@@ -30,13 +25,14 @@ const T01 = (props: IProps) => {
     }, []);
 
     const loadCsvFile = () => {
-        PapaParse.parse(csvFile, {
+        // eslint-disable-next-line @typescript-eslint/no-var-requires
+        PapaParse.parse(require("../data/2018-10-25-mar-in-scales.csv"), {
             download: true,
             delimiter: ';',
             dynamicTyping: true,
             header: true,
             skipEmptyLines: true,
-            complete: (parsedObject) => {
+            complete: (parsedObject: ParseResult<{ x: any, y: any, selected: null | any }>) => {
                 const d = parsedObject.data.map((row, key) => {
                     row.x = row.x.split(';').map((v: any) => parseInt(v, 10));
                     row.y = row.y.split(';').map((v: any) => parseFloat(v));

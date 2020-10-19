@@ -1,15 +1,36 @@
 import uuidv4 from 'uuid';
+import {ISimpleTool} from '../../../core/model/types';
+import {IRootReducer} from '../../../reducers';
 
-export const defaultsWithSession = (session) => {
-    let defaultsWithSession = defaults;
+export const defaultsWithSession = (session: IRootReducer['session']): IT02 => {
     if (session && !session.token) {
-        defaultsWithSession.permissions = 'r--';
+        return {...defaults, permissions: 'r--'};
     }
-
-    return defaultsWithSession;
+    return defaults;
 };
 
-const defaults = {
+export type IT02 = ISimpleTool<IT02Data>
+
+export interface IT02Data {
+    settings: {
+        variable: string
+    },
+    parameters: Array<{
+        order: number,
+        id: string,
+        name: string,
+        min: number,
+        validMin?: (x: number) => boolean,
+        max: number,
+        validMax?: (x: number) => boolean,
+        value: number,
+        stepSize: number,
+        type: string,
+        decimals: number
+    }>
+}
+
+const defaults: IT02 = {
     id: uuidv4(),
     name: 'New simple tool',
     description: 'Simple tool description',
@@ -25,7 +46,7 @@ const defaults = {
             id: 'w',
             name: 'Percolation rate<br/>w (m/d)',
             min: 0,
-            validMin: (x) => x >= 0,
+            validMin: (x: number) => x >= 0,
             max: 10,
             value: 0.045,
             stepSize: 0.001,
@@ -36,7 +57,7 @@ const defaults = {
             id: 'L',
             name: 'Basin length<br/>L (m)',
             min: 0,
-            validMin: (x) => x > 0,
+            validMin: (x: number) => x > 0,
             max: 1000,
             value: 40,
             stepSize: 1,
@@ -47,7 +68,7 @@ const defaults = {
             id: 'W',
             name: `Basin width<br/>W (m)`,
             min: 0,
-            validMin: (x) => x > 0,
+            validMin: (x: number) => x > 0,
             max: 100,
             value: 20,
             stepSize: 1,
@@ -58,7 +79,7 @@ const defaults = {
             id: 'hi',
             name: 'Initial groundwater Level<br/>h<sub>i</sub> (m)',
             min: 0,
-            validMin: (x) => x >= 0,
+            validMin: (x: number) => x >= 0,
             max: 100,
             value: 35,
             stepSize: 1,
@@ -69,9 +90,9 @@ const defaults = {
             id: 'Sy',
             name: 'Specific yield<br/>S<sub>y</sub> (-)',
             min: 0.000,
-            validMin: (x) => x > 0,
+            validMin: (x: number) => x > 0,
             max: 0.5,
-            validMax: (x) => x <= 0.5,
+            validMax: (x: number) => x <= 0.5,
             value: 0.085,
             stepSize: 0.001,
             type: 'float',
@@ -81,9 +102,9 @@ const defaults = {
             id: 'K',
             name: 'Hydraulic conductivity<br/>K (m/d)',
             min: 0.1,
-            validMin: (x) => x > 0,
+            validMin: (x: number) => x > 0,
             max: 10,
-            validMax: x => x <= 100000,
+            validMax: (x: number) => x <= 100000,
             value: 1.83,
             stepSize: 0.01,
             type: 'float',
@@ -93,7 +114,7 @@ const defaults = {
             id: 't',
             name: 'Infiltration time<br/>t (d)',
             min: 0,
-            validMin: x => x > 0,
+            validMin: (x: number) => x > 0,
             max: 100,
             value: 1.5,
             stepSize: 0.1,
