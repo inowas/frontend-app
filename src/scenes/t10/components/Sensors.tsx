@@ -1,9 +1,9 @@
-import React, {ReactFragment, useEffect, useState} from 'react';
-import {RouteComponentProps, withRouter} from 'react-router';
+import {AddSensor, SensorList} from './index';
 import {Grid, Segment} from 'semantic-ui-react';
+import {RouteComponentProps, withRouter} from 'react-router';
 import {Rtm, Sensor} from '../../../core/model/rtm';
 import ContentToolBar from '../../shared/ContentToolbar';
-import {AddSensor, SensorList} from './index';
+import React, {ReactFragment, useEffect, useState} from 'react';
 
 export interface IProps extends RouteComponentProps<{ id: string, property: string, pid: string }> {
     rtm: Rtm;

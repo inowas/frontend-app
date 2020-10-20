@@ -1,16 +1,16 @@
-import React, {useEffect, useState} from 'react';
-import {Redirect, useLocation, useParams, useRouteMatch} from 'react-router-dom';
+import {DataSources, Processing, SensorMetaData, Sensors, Visualization} from '../components/index';
 import {Grid, Icon, Message} from 'semantic-ui-react';
-import {Rtm, Sensor} from '../../../core/model/rtm';
 import {IRtm} from '../../../core/model/rtm/Rtm.type';
 import {ISensorParameter} from '../../../core/model/rtm/Sensor.type';
+import {IToolMetaDataEdit} from '../../shared/simpleTools/ToolMetaData/ToolMetaData.type';
+import {Redirect, useLocation, useParams, useRouteMatch} from 'react-router-dom';
+import {Rtm, Sensor} from '../../../core/model/rtm';
 import {fetchUrl, sendCommand} from '../../../services/api';
 import AppContainer from '../../shared/AppContainer';
-import ToolNavigation from '../../shared/complexTools/toolNavigation';
+import React, {useEffect, useState} from 'react';
 import SimpleToolsCommand from '../../shared/simpleTools/commands/SimpleToolsCommand';
 import ToolMetaData from '../../shared/simpleTools/ToolMetaData';
-import {IToolMetaDataEdit} from '../../shared/simpleTools/ToolMetaData/ToolMetaData.type';
-import {DataSources, Processing, SensorMetaData, Sensors, Visualization} from '../components/index';
+import ToolNavigation from '../../shared/complexTools/toolNavigation';
 
 interface IRouterProps {
     id: string;
@@ -61,8 +61,8 @@ const RTM = () => {
     const [isError, setError] = useState<boolean>(false);
     const [fetching, setFetching] = useState<boolean>(false);
     const [rtm, setRtm] = useState<IRtm | null>(null);
-    const [selectedParameterId, setSelectedParameterId] = useState<string | null>(null);
     const [selectedSensorId, setSelectedSensorId] = useState<string | null>(null);
+    const [selectedParameterId, setSelectedParameterId] = useState<string | null>(null);
 
     useEffect(() => {
         setFetching(true);
@@ -82,6 +82,25 @@ const RTM = () => {
     useEffect(() => {
         setDirty(true);
     }, [rtm]);
+
+    useEffect(() => {
+        if (rtm === null || selectedSensorId === null) {
+            return setSelectedParameterId(null);
+        }
+
+        const sensor = Rtm.fromObject(rtm).sensors.findById(selectedSensorId);
+        if (sensor === null) {
+            return setSelectedParameterId(null);
+        }
+
+        if (sensor.parameters.length === 0) {
+            return setSelectedParameterId(null);
+        }
+
+        setSelectedParameterId(sensor.parameters.first.id);
+
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [selectedSensorId]);
 
     const handleUpdateSensor = (sensor: Sensor) => {
         if (!rtm) {
@@ -129,6 +148,7 @@ const RTM = () => {
     };
 
     const onchange = (r: Rtm) => {
+        setSelectedParameterId(null);
         return setRtm(r.toObject());
     };
 
@@ -152,6 +172,11 @@ const RTM = () => {
         let parameter = null;
         if (sensor && selectedParameterId) {
             parameter = sensor.parameters.findById(selectedParameterId);
+        }
+
+        if (sensor && !selectedParameterId) {
+            parameter = sensor.parameters.first;
+            setSelectedParameterId(parameter.id);
         }
 
         if (property === 'sensor-visualization') {
@@ -184,6 +209,7 @@ const RTM = () => {
                 <SensorMetaData
                     rtm={Rtm.fromObject(rtm)}
                     sensor={sensor}
+                    selectedParameterId={selectedParameterId}
                     onChange={handleUpdateSensor}
                     onChangeSelectedParameterId={setSelectedParameterId}
                 />
