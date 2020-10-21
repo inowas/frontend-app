@@ -82,7 +82,10 @@ const HeatTransportController = (props: IProps) => {
         });
     };
 
-    const handleChangeData = (value: HtmInput) => props.onChange(props.htm.updateInput(value));
+    const handleChangeData = (value: HtmInput) => {
+        const htm = props.htm.getClone();
+        props.onChange(htm.updateInput(value));
+    };
 
     return (
         <React.Fragment>
@@ -91,7 +94,7 @@ const HeatTransportController = (props: IProps) => {
                     <Grid.Row>
                         <Grid.Column width={8}>
                             <HeatTransportInput
-                                input={props.htm.inputGw}
+                                input={props.htm.inputSw}
                                 label="Surface water"
                                 name="sw"
                                 onChange={handleChangeData}
@@ -100,7 +103,7 @@ const HeatTransportController = (props: IProps) => {
                         </Grid.Column>
                         <Grid.Column width={8}>
                             <HeatTransportInput
-                                input={props.htm.inputSw}
+                                input={props.htm.inputGw}
                                 label="Groundwater"
                                 name="gw"
                                 onChange={handleChangeData}
@@ -115,7 +118,7 @@ const HeatTransportController = (props: IProps) => {
                                     <Form.Input
                                         disabled={isFetching}
                                         name="retardationFactor"
-                                        label="Retardation Factor"
+                                        label="Thermal retardation factor"
                                         type="number"
                                         onBlur={handleBlurInput}
                                         onChange={handleChangeInput}
