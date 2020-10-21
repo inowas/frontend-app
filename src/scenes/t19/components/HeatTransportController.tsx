@@ -89,7 +89,6 @@ const HeatTransportController = (props: IProps) => {
     };
 
     const readOnly = !includes(props.htm.permissions, 'w');
-
     return (
         <React.Fragment>
             <Form>
