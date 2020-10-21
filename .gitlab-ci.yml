@@ -16,6 +16,7 @@ build:dev:
   stage: build
 
   script:
+    - export NODE_OPTIONS="--max-old-space-size=8192"
     - yarn install
     - REACT_APP_VERSION=$(git describe --tags --always --dirty=+) REACT_APP_API_URL=https://api.dev.inowas.com yarn build
     - VERSION=$(git describe --tags --always --dirty=+) && DATE=$(date +%Y-%m-%dT%H:%M:%S) && sed -i "s/@@__VERSION__@@/${VERSION}/g;s/@@__BUILT__@@/${DATE}/g" ./build/index.html
@@ -52,7 +53,7 @@ deploy:dev:
     - dev
 
 build:smart-control:
-  image: node:10
+  image: node:12
   stage: build
   script:
     - yarn install
@@ -92,7 +93,7 @@ deploy:smart-control:
     - master
 
 build:training:
-  image: node:10
+  image: node:12
   stage: build
   script:
     - yarn install
@@ -132,7 +133,7 @@ deploy:training:
     - master
 
 build:prod:
-  image: node:10
+  image: node:12
   stage: build
   script:
     - yarn install
