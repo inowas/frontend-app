@@ -6,6 +6,7 @@ import {
 } from 'semantic-ui-react';
 import {HeatTransportInput, HeatTransportResults} from './index';
 import {IHeatTransportRequest, IHeatTransportRequestOptions} from '../../../core/model/htm/Htm.type';
+import {includes} from 'lodash';
 import {makeHeatTransportRequest} from '../../../services/api';
 import Htm from '../../../core/model/htm/Htm';
 import HtmInput from '../../../core/model/htm/HtmInput';
@@ -87,6 +88,7 @@ const HeatTransportController = (props: IProps) => {
         props.onChange(htm.updateInput(value));
     };
 
+    const readOnly = !includes(props.htm.permissions, 'w');
     return (
         <React.Fragment>
             <Form>
@@ -98,7 +100,7 @@ const HeatTransportController = (props: IProps) => {
                                 label="Surface water"
                                 name="sw"
                                 onChange={handleChangeData}
-                                readOnly={isFetching}
+                                readOnly={isFetching || readOnly}
                             />
                         </Grid.Column>
                         <Grid.Column width={8}>
@@ -107,7 +109,7 @@ const HeatTransportController = (props: IProps) => {
                                 label="Groundwater"
                                 name="gw"
                                 onChange={handleChangeData}
-                                readOnly={isFetching}
+                                readOnly={isFetching || readOnly}
                             />
                         </Grid.Column>
                     </Grid.Row>
@@ -116,7 +118,7 @@ const HeatTransportController = (props: IProps) => {
                             <Segment color={'grey'}>
                                 <Form.Group>
                                     <Form.Input
-                                        disabled={isFetching}
+                                        disabled={isFetching || readOnly}
                                         name="retardationFactor"
                                         label="Thermal retardation factor"
                                         type="number"
@@ -126,7 +128,7 @@ const HeatTransportController = (props: IProps) => {
                                             requestOptions.retardation_factor}
                                     />
                                     <Form.Input
-                                        disabled={isFetching}
+                                        disabled={isFetching || readOnly}
                                         name="tolerance"
                                         label="Tolerance"
                                         type="number"
@@ -138,7 +140,7 @@ const HeatTransportController = (props: IProps) => {
                                         positive={true}
                                         fluid={true}
                                         onClick={handleCalculateAndSave}
-                                        disabled={!props.htm.inputSw.data || !props.htm.inputGw.data || isFetching}
+                                        disabled={!props.htm.inputSw.data || !props.htm.inputGw.data || isFetching || readOnly}
                                         label="&nbsp;"
                                         loading={isFetching}
                                     >
