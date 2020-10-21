@@ -3,13 +3,14 @@ import {useSelector} from 'react-redux';
 import React from 'react';
 import SemanticDatepicker from 'react-semantic-ui-datepickers';
 
-interface IProps {
+export interface IDatePickerProps {
     disabled?: boolean;
     inline?: boolean;
     inverted?: boolean;
     label?: string;
+    name?: string;
     onBlur?: (event?: React.SyntheticEvent) => void;
-    onChange?: (event: React.SyntheticEvent) => void;
+    onChange?: (event: React.SyntheticEvent, data: IDatePickerProps) => void;
     pointing?: 'left' | 'right' | 'top left' | 'top right';
     required?: boolean;
     showToday?: boolean;
@@ -18,7 +19,7 @@ interface IProps {
     value: Date | null;
 }
 
-const DatePicker = (props: IProps) => {
+const DatePicker = (props: IDatePickerProps) => {
     const dateFormat = useSelector((state: IRootReducer) => state.user.settings.dateFormat);
 
     return (
