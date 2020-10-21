@@ -1,14 +1,13 @@
-import {LTOB} from 'downsample';
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-// @ts-ignore todo
-import {DataPoint} from 'downsample/dist/types';
-import moment from 'moment';
-import React, {useEffect, useState} from 'react';
-import {ResponsiveContainer, Scatter, ScatterChart, XAxis, YAxis} from 'recharts';
 import {Button, Form, Grid, Header, Label, Modal, Segment, TextArea} from 'semantic-ui-react';
-import uuid from 'uuid';
-import PrometheusDataSource from '../../../core/model/rtm/PrometheusDataSource';
+import {DataPoint} from 'downsample';
+import {DatePicker} from '../../shared/uiComponents';
+import {LTOB} from 'downsample';
+import {ResponsiveContainer, Scatter, ScatterChart, XAxis, YAxis} from 'recharts';
 import {usePrevious} from '../../shared/simpleTools/helpers/customHooks';
+import PrometheusDataSource from '../../../core/model/rtm/PrometheusDataSource';
+import React, {useEffect, useState} from 'react';
+import moment from 'moment';
+import uuid from 'uuid';
 
 interface IProps {
     dataSource?: PrometheusDataSource;
@@ -74,8 +73,7 @@ const PrometheusDatasourceEditor = (props: IProps) => {
             dataSource.data = undefined;
             fetchData(dataSource);
         }
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [dataSource]);
+    }, [dataSource, prevUrl]);
 
     const handleSave = () => {
         if (dataSource) {
@@ -153,6 +151,7 @@ const PrometheusDatasourceEditor = (props: IProps) => {
             ds.query = query;
         }
 
+        console.log(dataSource.toObject());
         setDatasource(PrometheusDataSource.fromObject(ds.toObject()));
     };
 
@@ -239,12 +238,11 @@ const PrometheusDatasourceEditor = (props: IProps) => {
                                 <Label as={'div'} color={'blue'} ribbon={true}>Time range</Label>
                                 <Form>
                                     <Form.Group>
-                                        <Form.Input
+                                        <DatePicker
                                             label={'Start'}
-                                            type={'date'}
-                                            value={start && moment.unix(start).format('YYYY-MM-DD')}
-                                            onChange={handleGenericChange((d) => setStart(moment.utc(d).unix()))}
+                                            value={moment.unix(start).toDate()}
                                             onBlur={handleBlur('start')}
+                                            size={'small'}
                                         />
                                         <Form.Input
                                             label={'Step size'}
@@ -255,14 +253,12 @@ const PrometheusDatasourceEditor = (props: IProps) => {
                                         />
                                     </Form.Group>
                                     <Form.Group>
-                                        <Form.Input
+                                        <DatePicker
                                             disabled={autoUpdate}
                                             label={'End'}
-                                            type={'date'}
-                                            value={end ? moment.unix(end).format('YYYY-MM-DD')
-                                                : moment.utc().format('YYYY-MM-DD')}
-                                            onChange={handleGenericChange((d) => setEnd(moment.utc(d).unix()))}
+                                            value={end ? moment.unix(end).toDate() : null}
                                             onBlur={handleBlur('end')}
+                                            size={'small'}
                                         />
                                         <Form.Group grouped={true}>
                                             <label>Auto update</label>
