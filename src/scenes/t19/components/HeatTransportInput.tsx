@@ -269,7 +269,7 @@ const HeatTransportInput = (props: IProps) => {
                 }
                 <h4>{props.label}</h4>
                 <Form.Select
-                    disabled={props.readOnly}
+                    disabled={props.readOnly || !rtm}
                     label="T10 Instance"
                     placeholder="Select instance"
                     fluid={true}
