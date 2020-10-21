@@ -1,16 +1,15 @@
-import {LTOB} from 'downsample';
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-// @ts-ignore todo
-import {DataPoint} from 'downsample/dist/types';
-import {cloneDeep} from 'lodash';
-import moment from 'moment';
 import * as Papa from 'papaparse';
-import {ParseResult} from 'papaparse';
-import React, {ChangeEvent, useEffect, useState} from 'react';
-import {ResponsiveContainer, Scatter, ScatterChart, XAxis, YAxis} from 'recharts';
 import {Button, Form, Grid, Header, Label, List, Modal, Segment} from 'semantic-ui-react';
+import {DataPoint} from 'downsample';
+import {DatePicker} from '../../shared/uiComponents';
 import {FileDataSource} from '../../../core/model/rtm';
 import {IDateTimeValue, IFileDataSource} from '../../../core/model/rtm/Sensor.type';
+import {LTOB} from 'downsample';
+import {ParseResult} from 'papaparse';
+import {ResponsiveContainer, Scatter, ScatterChart, XAxis, YAxis} from 'recharts';
+import {cloneDeep} from 'lodash';
+import React, {ChangeEvent, useEffect, useState} from 'react';
+import moment from 'moment';
 
 interface IProps {
     dataSource?: FileDataSource;
@@ -303,34 +302,36 @@ const FileDatasourceEditor = (props: IProps) => {
                                     <Form>
                                         <Form.Group>
                                             <Form.Checkbox
+                                                disabled={true}
                                                 style={{marginTop: '30px'}}
                                                 toggle={true}
                                                 checked={beginEnabled}
                                                 onChange={handleChange(setBeginEnabled)}
                                             />
-                                            <Form.Input
+                                            <DatePicker
                                                 label={'Start'}
-                                                type={'date'}
-                                                value={moment.unix(lBegin).format('YYYY-MM-DD')}
-                                                disabled={!beginEnabled}
+                                                name={'start'}
+                                                value={moment.unix(lBegin).toDate()}
                                                 onChange={handleChange((d) => setLBegin(moment.utc(d).unix()))}
                                                 onBlur={handleBlur(() => setBegin(lBegin))}
+                                                size={'small'}
                                             />
                                         </Form.Group>
                                         <Form.Group>
                                             <Form.Checkbox
+                                                disabled={true}
                                                 style={{marginTop: '30px'}}
                                                 toggle={true}
                                                 checked={endEnabled}
                                                 onChange={handleChange(setEndEnabled)}
                                             />
-                                            <Form.Input
+                                            <DatePicker
                                                 label={'End'}
-                                                type={'date'}
-                                                value={moment.unix(lEnd).format('YYYY-MM-DD')}
-                                                disabled={!endEnabled}
+                                                name={'end'}
+                                                value={moment.unix(lEnd).toDate()}
                                                 onChange={handleChange((d) => setLEnd(moment.utc(d).unix()))}
-                                                onBlur={handleBlur(() => setEnd(lEnd))}
+                                                onBlur={handleBlur(() => setEnd(lBegin))}
+                                                size={'small'}
                                             />
                                         </Form.Group>
                                     </Form>

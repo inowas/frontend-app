@@ -1,19 +1,19 @@
-import React, {useEffect, useState} from 'react';
 import {Button, Dropdown, Grid, Header, Icon, Label, Popup, Segment, Table} from 'semantic-ui-react';
-import {DataSourceCollection, DataSourceFactory, Rtm} from '../../../core/model/rtm';
-import FileDataSource from '../../../core/model/rtm/FileDataSource';
-import PrometheusDataSource from '../../../core/model/rtm/PrometheusDataSource';
 import {DataSource, IDataSource, ISensorParameter} from '../../../core/model/rtm/Sensor.type';
-import SensorDataSource from '../../../core/model/rtm/SensorDataSource';
-import {colors, dataSourceList} from '../defaults';
+import {DataSourceCollection, DataSourceFactory, Rtm} from '../../../core/model/rtm';
 import {
-    DataSourcesChart,
     DataSourceTimeRange,
+    DataSourcesChart,
     FileDatasourceEditor,
     PrometheusDatasourceEditor,
     SensorDatasourceEditor,
     TinyLineChart
 } from './index';
+import {colors, dataSourceList} from '../defaults';
+import FileDataSource from '../../../core/model/rtm/FileDataSource';
+import PrometheusDataSource from '../../../core/model/rtm/PrometheusDataSource';
+import React, {useEffect, useState} from 'react';
+import SensorDataSource from '../../../core/model/rtm/SensorDataSource';
 
 interface IProps {
     rtm: Rtm;

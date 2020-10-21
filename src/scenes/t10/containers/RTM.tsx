@@ -175,8 +175,10 @@ const RTM = () => {
         }
 
         if (sensor && !selectedParameterId) {
-            parameter = sensor.parameters.first;
-            setSelectedParameterId(parameter.id);
+            if (sensor.parameters.length > 0) {
+                parameter = sensor.parameters.first;
+                setSelectedParameterId(parameter.id);
+            }
         }
 
         if (property === 'sensor-visualization') {
