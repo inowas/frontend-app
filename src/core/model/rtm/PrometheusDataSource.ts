@@ -1,15 +1,15 @@
-import moment from 'moment';
 import {GenericObject} from '../genericObject/GenericObject';
-import {IPrometheusDataSource} from './Sensor.type';
+import {IDateTimeValue, IPrometheusDataSource} from './Sensor.type';
 import {retrievePrometheusData} from './SensorDataHelper';
+import moment from 'moment';
 
 class PrometheusDataSource extends GenericObject<IPrometheusDataSource> {
 
-    get id() {
+    get id(): string {
         return this._props.id;
     }
 
-    get data() {
+    get data(): IDateTimeValue[] | null | undefined {
         return this._props.data;
     }
 
@@ -17,11 +17,11 @@ class PrometheusDataSource extends GenericObject<IPrometheusDataSource> {
         this._props.data = value;
     }
 
-    get protocol() {
+    get protocol(): string {
         return this._props.protocol;
     }
 
-    get hostname() {
+    get hostname(): string {
         return this._props.hostname;
     }
 
@@ -29,7 +29,7 @@ class PrometheusDataSource extends GenericObject<IPrometheusDataSource> {
         this._props.hostname = value;
     }
 
-    get start() {
+    get start(): number {
         return this._props.start;
     }
 
@@ -37,7 +37,7 @@ class PrometheusDataSource extends GenericObject<IPrometheusDataSource> {
         this._props.start = value;
     }
 
-    get end() {
+    get end(): number | undefined {
         return this._props.end;
     }
 
@@ -45,7 +45,7 @@ class PrometheusDataSource extends GenericObject<IPrometheusDataSource> {
         this._props.end = value;
     }
 
-    get step() {
+    get step(): number {
         return this._props.step;
     }
 
@@ -53,7 +53,7 @@ class PrometheusDataSource extends GenericObject<IPrometheusDataSource> {
         this._props.step = value;
     }
 
-    get error() {
+    get error(): any {
         return this._props.error;
     }
 
@@ -61,11 +61,11 @@ class PrometheusDataSource extends GenericObject<IPrometheusDataSource> {
         return `${this.protocol}://${this.hostname}/api/v1/query_range?` +
             `query=${encodeURIComponent(this.query)}&` +
             `start=${this.start}&` +
-            `end=${this.end ? this.end : moment.utc().unix()}&` +
+            `end=${this.end ? this.end : moment.utc().startOf('minute').unix()}&` +
             `step=${this.step}`;
     }
 
-    get query() {
+    get query(): string {
         return this._props.query;
     }
 
@@ -73,7 +73,7 @@ class PrometheusDataSource extends GenericObject<IPrometheusDataSource> {
         this._props.query = value;
     }
 
-    public static fromObject(obj: IPrometheusDataSource) {
+    public static fromObject(obj: IPrometheusDataSource): PrometheusDataSource {
         return new PrometheusDataSource(obj);
     }
 

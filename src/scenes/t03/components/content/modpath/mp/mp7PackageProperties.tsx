@@ -1,5 +1,5 @@
 import React from 'react';
-import {Form, Grid, Icon, Input, Popup} from 'semantic-ui-react';
+import {Form, Grid, Input} from 'semantic-ui-react';
 import {FlopyModpathMp7} from '../../../../../../core/model/flopy/packages/mp';
 import renderInfoPopup from '../../../../../shared/complexTools/InfoPopup';
 import {documentation} from '../../../../defaults/modpath';
@@ -9,7 +9,7 @@ interface IProps {
     readOnly: boolean;
 }
 
-const mp7PackageProperties = (props: IProps) => {
+const Mp7PackageProperties = (props: IProps) => {
     const {mfPackage, readOnly} = props;
 
     return (
@@ -21,7 +21,7 @@ const mp7PackageProperties = (props: IProps) => {
                             <Form.Field>
                                 <label>Version</label>
                                 <Input
-                                    readOnly={true}
+                                    readOnly={readOnly}
                                     name="extension"
                                     value={mfPackage.version || ''}
                                     icon={renderInfoPopup(documentation.extension, 'extension')}
@@ -30,7 +30,7 @@ const mp7PackageProperties = (props: IProps) => {
                             <Form.Field>
                                 <label>Exe name</label>
                                 <Input
-                                    readOnly={true}
+                                    readOnly={readOnly}
                                     name="unitnumber"
                                     value={mfPackage.exe_name || ''}
                                     icon={renderInfoPopup(documentation.unitnumber, 'unitnumber')}
@@ -44,4 +44,4 @@ const mp7PackageProperties = (props: IProps) => {
     );
 };
 
-export default mp7PackageProperties;
+export default Mp7PackageProperties;

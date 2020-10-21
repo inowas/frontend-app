@@ -47,13 +47,14 @@ interface IProps {
     mapHeight?: string;
 }
 
-const criteriaRasterMap = (props: IProps) => {
+const CriteriaRasterMap = (props: IProps) => {
     const [showMap, setShowMap] = useState<boolean>(
         props.gridSize.nX * props.gridSize.nY <= maximumGridCells
     );
 
     useEffect(() => {
         setShowMap(props.showBasicLayer || props.gridSize.nX * props.gridSize.nY <= maximumGridCells);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [props.showBasicLayer, props.raster]);
 
     const handleClickMap = (e: LeafletMouseEvent) => {
@@ -191,4 +192,4 @@ const criteriaRasterMap = (props: IProps) => {
     );
 };
 
-export default criteriaRasterMap;
+export default CriteriaRasterMap;

@@ -58,6 +58,7 @@ export default class FlopyModflowMfchd extends FlopyModflowLineBoundary<IFlopyMo
     public static fromObject(obj: IPropertyValueObject): FlopyModflowMfchd {
         const d: any = FlopyModflowPackage.cloneDeep(defaults);
         for (const key in d) {
+            // eslint-disable-next-line no-prototype-builtins
             if (d.hasOwnProperty(key) && obj.hasOwnProperty(key)) {
                 d[key] = obj[key];
             }

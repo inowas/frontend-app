@@ -19,7 +19,7 @@ interface IProps {
     property: string;
 }
 
-const packageActualizationWrapper = (props: IProps) => {
+const PackageActualizationWrapper = (props: IProps) => {
 
     const [isCalculating, setIsCalculating] = useState<boolean>(true);
     const [isError, setError] = useState<any>(false);
@@ -42,6 +42,7 @@ const packageActualizationWrapper = (props: IProps) => {
 
     useEffect(() => {
         recalculate();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     const recalculate = () => {
@@ -145,4 +146,4 @@ const packageActualizationWrapper = (props: IProps) => {
     return null;
 };
 
-export default packageActualizationWrapper;
+export default PackageActualizationWrapper;

@@ -1,10 +1,10 @@
-import math from 'mathjs';
-import React from 'react';
 import {CartesianGrid, ResponsiveContainer, Scatter, ScatterChart, Tooltip, XAxis, YAxis} from 'recharts';
-import {Segment} from 'semantic-ui-react';
+import {ICustomTooltipPayload, convenientColors, diagramLabel, getNameFromPayload} from './chartHelpers';
 import {IStatistics} from '../statistics';
-import {convenientColors, diagramLabel, getNameFromPayload, ICustomTooltipPayload} from './chartHelpers';
+import {Segment} from 'semantic-ui-react';
 import CustomizedDot from './CustomizedDot';
+import React from 'react';
+import math from 'mathjs';
 
 interface IProps {
     statistics: IStatistics;
@@ -47,10 +47,10 @@ const chartRankedResidualsAgainstNormalProbability = (props: IProps) => {
 
     const line = [{
         x: xMin,
-        y: xMin * linRegObsRResNpf.slope + linRegObsRResNpf.intercept
+        y: (xMin * linRegObsRResNpf.slope) + linRegObsRResNpf.intercept
     }, {
         x: xMax,
-        y: xMax * linRegObsRResNpf.slope + linRegObsRResNpf.intercept
+        y: (xMax * linRegObsRResNpf.slope) + linRegObsRResNpf.intercept
     }];
 
     return (

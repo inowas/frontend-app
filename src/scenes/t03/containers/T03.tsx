@@ -70,7 +70,7 @@ type IProps = IStateProps & IDispatchProps & RouteComponentProps<{
     type?: string;
 }>;
 
-const t03 = (props: IProps) => {
+const T03 = (props: IProps) => {
     const [navigation, setNavigation] = useState<Array<{
         name: string;
         path: string;
@@ -78,25 +78,25 @@ const t03 = (props: IProps) => {
     }>>(navDocumentation);
 
     useEffect(() => {
-        const {search} = props.location;
+            const {search} = props.location;
 
-        if (search.startsWith('?sid=')) {
-            const cScenarioAnalysisId = search.split('=')[1];
+            if (search.startsWith('?sid=')) {
+                const cScenarioAnalysisId = search.split('=')[1];
 
-            const cNavigation = cloneDeep(navigation);
-            cNavigation.push({
-                name: 'Return to ScenarioAnalysis',
-                path: '/tools/T07/' + cScenarioAnalysisId,
-                icon: <Icon name="file"/>
-            });
+                const cNavigation = cloneDeep(navigation);
+                cNavigation.push({
+                    name: 'Return to ScenarioAnalysis',
+                    path: '/tools/T07/' + cScenarioAnalysisId,
+                    icon: <Icon name="file"/>
+                });
 
-            setNavigation(cNavigation);
-        }
-    }, []);
+                setNavigation(cNavigation);
+            }
 
-    const handleChangeToolMetaData = () => {
-        return null;
-    };
+        },
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+        []
+    );
 
     const saveMetaData = (tool: IToolMetaDataEdit) => {
         const {name, description} = tool;
@@ -122,7 +122,6 @@ const t03 = (props: IProps) => {
             <DataFetcherWrapper>
                 {props.model && <ToolMetaData
                     isDirty={false}
-                    onChange={handleChangeToolMetaData}
                     readOnly={false}
                     tool={{
                         tool: 'T03',
@@ -174,5 +173,4 @@ const mapDispatchToProps = (dispatch: any): IDispatchProps => ({
 
 export default withRouter(connect<IStateProps, IDispatchProps>(
     mapStateToProps,
-    mapDispatchToProps)
-(t03));
+    mapDispatchToProps)(T03));

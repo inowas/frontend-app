@@ -21,7 +21,7 @@ interface IProps extends RouteComponentProps<any> {
     readOnly: boolean;
 }
 
-const criteriaDataEditor = (props: IProps) => {
+const CriteriaDataEditor = (props: IProps) => {
     const [criterion, setCriterion] = useState<ICriterion | null>(null);
     const [isFetching, setIsFetching] = useState<boolean>(false);
     const prevCriterion = usePrevious<ICriterion | null>(props.criterion ? props.criterion.toObject() : null);
@@ -52,6 +52,7 @@ const criteriaDataEditor = (props: IProps) => {
                 suitability: prevCriterion.suitability
             });
         }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [props.criterion]);
 
     const getRasterData = () => {
@@ -218,4 +219,4 @@ const criteriaDataEditor = (props: IProps) => {
     );
 };
 
-export default withRouter(criteriaDataEditor);
+export default withRouter(CriteriaDataEditor);

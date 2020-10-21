@@ -39,7 +39,7 @@ interface IVisibleZone extends IZone {
     isActive: boolean;
 }
 
-const createZone = () => {
+const CreateZone = () => {
     const [name, setName] = useState<string>('New Zone');
     const [geometry, setGeometry] = useState<IGeometry | null>(null);
     const [cells, setCells] = useState<ICells | null>(null);
@@ -69,7 +69,7 @@ const createZone = () => {
                 })
             );
         }
-    }, [soilmodel]);
+    }, [soilmodel, visibleZones]);
 
     if (!boundaries || !model || !soilmodel || !visibleZones) {
         return (
@@ -222,7 +222,7 @@ const createZone = () => {
                                 geometry={'polygon'}
                                 size={'medium'}
                             />
-                            <Divider />
+                            <Divider/>
                             <Form.Field>
                                 <label>Other Zones</label>
                                 <List>
@@ -271,4 +271,4 @@ const createZone = () => {
     );
 };
 
-export default withRouter(createZone);
+export default withRouter(CreateZone);

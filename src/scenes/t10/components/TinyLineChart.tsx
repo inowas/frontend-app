@@ -1,4 +1,5 @@
 import {LTOB} from 'downsample';
+// @ts-ignore todo
 import {DataPoint} from 'downsample/dist/types';
 import React, {useEffect, useState} from 'react';
 import {Line, LineChart, YAxis} from 'recharts';
@@ -12,7 +13,7 @@ interface IProps {
     end?: number;
 }
 
-const tinyLineChart = (props: IProps) => {
+const TinyLineChart = (props: IProps) => {
 
     const [data, setData] = useState<any>(null);
 
@@ -58,4 +59,4 @@ const tinyLineChart = (props: IProps) => {
     );
 };
 
-export default tinyLineChart;
+export default TinyLineChart;

@@ -30,7 +30,7 @@ interface IProps {
     border?: string;
 }
 
-const rasterDataImage = (props: IProps) => {
+const RasterDataImage = (props: IProps) => {
     const {border, data, gridSize, legend, unit} = props;
     const canvasRef = useRef<HTMLCanvasElement>(null);
     const rLegend = props.legend || rainbowFactory({min: min(data), max: max(data)});
@@ -141,4 +141,4 @@ const rasterDataImage = (props: IProps) => {
     );
 };
 
-export default rasterDataImage;
+export default RasterDataImage;

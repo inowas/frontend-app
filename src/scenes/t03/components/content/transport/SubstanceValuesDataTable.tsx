@@ -14,11 +14,12 @@ interface IProps {
     substance: Substance;
 }
 
-const substanceValuesDataTable = (props: IProps) => {
+const SubstanceValuesDataTable = (props: IProps) => {
     const [spValues, setSpValues] = useState<Array<number | string>>([]);
 
     useEffect(() => {
         setSpValues(spValuesFromProps(props));
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [props.substance, props.selectedBoundaryId]);
 
     const spValuesFromProps = (p: IProps) => {
@@ -114,4 +115,4 @@ const substanceValuesDataTable = (props: IProps) => {
     );
 };
 
-export default substanceValuesDataTable;
+export default SubstanceValuesDataTable;

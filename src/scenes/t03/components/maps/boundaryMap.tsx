@@ -55,7 +55,7 @@ class BoundaryMap extends Component<IProps> {
                         {...getStyle('op' + selected)}
                     >
                         <Tooltip offset={[0, 0]} opacity={1} sticky={true}>
-                            <b>{op.name}</b><br />
+                            <b>{op.name}</b><br/>
                             {op.geometry.coordinates[1] >= 0 ? 'N ' : 'S '}
                             {op.geometry.coordinates[1].toFixed(3)}
                             {op.geometry.coordinates[0] >= 0 ? ' E ' : ' W '}
@@ -64,7 +64,8 @@ class BoundaryMap extends Component<IProps> {
                     </CircleMarker>
                 );
             }
-        });
+            return null;
+        }).filter(x => x);
     }
 
     // noinspection JSMethodCanBeStatic
@@ -167,12 +168,14 @@ class BoundaryMap extends Component<IProps> {
     }
 
     private handleClickBoundary = (bid: string) => () => {
+        // eslint-disable-next-line no-extra-boolean-cast
         if (!!this.props.onClick) {
             return this.props.onClick(bid);
         }
     };
 
     private handleClickObservationPoint = (bid: string) => () => {
+        // eslint-disable-next-line no-extra-boolean-cast
         if (!!this.props.onClickObservationPoint) {
             return this.props.onClickObservationPoint(bid);
         }

@@ -21,7 +21,7 @@ interface IProps {
     readonly: boolean;
 }
 
-const nwtPackageProperties = (props: IProps) => {
+const NwtPackageProperties = (props: IProps) => {
 
     const [mfPackage, setMfPackage] = useState<IFlopyModflowMfnwt>(props.mfPackage.toObject());
 
@@ -545,4 +545,4 @@ const nwtPackageProperties = (props: IProps) => {
     );
 };
 
-export default nwtPackageProperties;
+export default NwtPackageProperties;

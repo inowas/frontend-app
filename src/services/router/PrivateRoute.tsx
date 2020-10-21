@@ -13,7 +13,7 @@ interface IProps {
     path: string;
 }
 
-const privateRoute = (props: IProps) => {
+const PrivateRoute = (props: IProps) => {
     const [redirectToLogin, setRedirectToLogin] = useState<boolean>(false);
 
     const dispatch = useDispatch();
@@ -27,6 +27,7 @@ const privateRoute = (props: IProps) => {
             history.push('/login');
             setRedirectToLogin(false);
         }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [redirectToLogin]);
 
     useEffect(() => {
@@ -43,6 +44,7 @@ const privateRoute = (props: IProps) => {
         if (!userHasAccessToRoute()) {
             history.push('/tools');
         }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     const fetchUser = () => {
@@ -77,4 +79,4 @@ const privateRoute = (props: IProps) => {
     return (<Route {...rest} component={component}/>);
 };
 
-export default privateRoute;
+export default PrivateRoute;

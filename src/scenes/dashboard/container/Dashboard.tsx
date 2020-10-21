@@ -34,7 +34,7 @@ const navigation = [
 
 type IProps = RouteComponentProps;
 
-const dashboard = (props: IProps) => {
+const Dashboard = (props: IProps) => {
     const [isLoading, setIsLoading] = useState<boolean>(true);
     const [toolInstances, setToolInstances] = useState<IToolInstance[]>([]);
     const [search, setSearch] = useState<string>();
@@ -46,13 +46,14 @@ const dashboard = (props: IProps) => {
 
     const fetchingAttempts = useRef<number>(0);
 
+    useEffect(() => {
+        fetchInstances(activeTool.slug, showPublicInstances);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
+
     if (!activeTool) {
         return <div>No active tool!</div>;
     }
-
-    useEffect(() => {
-        fetchInstances(activeTool.slug, showPublicInstances);
-    }, []);
 
     const fetchInstances = (tool: string, cShowPublicInstances: boolean) => {
         fetchUrl(`tools/${tool}` + (cShowPublicInstances ? '?public=true' : ''),
@@ -236,4 +237,4 @@ const dashboard = (props: IProps) => {
     );
 };
 
-export default withRouter(dashboard);
+export default withRouter(Dashboard);

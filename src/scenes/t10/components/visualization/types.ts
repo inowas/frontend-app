@@ -1,3 +1,4 @@
+// @ts-ignore todo
 import {XYDataPoint} from 'downsample/dist/types';
 import {ISensor, ISensorParameter} from '../../../../core/model/rtm/Sensor.type';
 

@@ -12,13 +12,14 @@ export const saveLayer = (
     layer: ISoilmodelLayer,
     model: IModflowModel,
     isFinished: boolean,
-    task: number = 0,
+    task = 0,
     onEachTask: ({message, task}: { message: string, task: number }) => any,
     onFinished: (layer: ISoilmodelLayer) => any
 ): any => {
     const parameters = layer.parameters.filter((p) => Array.isArray(p.value));
     if (parameters.length > 0) {
         task = ++task;
+        // eslint-disable-next-line no-extra-boolean-cast
         if (!!onEachTask) {
             onEachTask({
                 message: `Saving data for parameter ${parameters[0].id}.`,
@@ -54,6 +55,7 @@ export const saveLayer = (
     const relations = layer.relations.filter((r) => Array.isArray(r.value));
     if (relations.length > 0) {
         task = ++task;
+        // eslint-disable-next-line no-extra-boolean-cast
         if (!!onEachTask) {
             onEachTask({
                 message: `Saving data for relation ${relations[0].id}.`,
@@ -116,6 +118,7 @@ export const saveLayer = (
         );
         return;
     }
+    // eslint-disable-next-line no-extra-boolean-cast
     if (!!onFinished) {
         return onFinished(layer);
     }
@@ -130,7 +133,7 @@ export const saveSoilmodel = (
     saveLayers: boolean,
     saveProperties: boolean,
     commands: ModflowModelCommand[] = [],
-    task: number = 0,
+    task = 0,
 ): ISoilmodel | void => {
     const cSoilmodel = Soilmodel.fromObject(soilmodel);
 
@@ -283,7 +286,7 @@ export const saveSoilmodel = (
         return sendCommand(command, () => {
             return saveSoilmodel(model, cSoilmodel.toObject(), onEachTask, onSuccess, false, false, commands, task);
         }, (error) => {
-            // tslint:disable-next-line:no-console
+            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
             console.error(error);
         });
     }
@@ -319,6 +322,8 @@ export const fetchSoilmodel = (
                         if (l.id === layer.id) {
                             l.parameters = l.parameters.map((p) => {
                                 if (p.id === parameter.id) {
+                                    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+                                    // @ts-ignore
                                     p.data = file.toObject();
                                 }
                                 return p;
@@ -348,6 +353,8 @@ export const fetchSoilmodel = (
                         if (l.id === layer.id) {
                             l.relations = l.relations.map((r) => {
                                 if (r.id === relation.id) {
+                                    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+                                    // @ts-ignore
                                     r.data = file.toObject();
                                 }
                                 return r;

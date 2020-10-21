@@ -52,14 +52,16 @@ interface IProps {
     discreteRescaling?: boolean;
 }
 
-const rasterFileUploadModal = (props: IProps) => {
+const RasterFileUploadModal = (props: IProps) => {
     const [hash, setHash] = useState<string | null>(null);
     const [metadata, setMetadata] = useState<IRasterFileMetadata | null>(null);
     const [data, setData] = useState<Array3D<number> | null>(null);
     const [interpolation, setInterpolation] = useState<InterpolationType>(InterpolationType.NEAREST_NEIGHBOR);
     const [isLoading, setIsLoading] = useState<boolean>(false);
     const [selectedBand, setSelectedBand] = useState<number>(0);
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const [errorFetching, setErrorFetching] = useState<string | null>(null);
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const [errorUploading, setErrorUploading] = useState<string | null>(null);
     const [errorGridSize, setErrorGridSize] = useState<boolean>(false);
     const [activeItem, setActiveItem] = useState<string>('file');
@@ -333,4 +335,4 @@ const rasterFileUploadModal = (props: IProps) => {
     );
 };
 
-export default rasterFileUploadModal;
+export default RasterFileUploadModal;

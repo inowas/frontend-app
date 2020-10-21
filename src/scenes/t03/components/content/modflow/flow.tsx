@@ -74,7 +74,7 @@ interface IProps {
     packages: FlopyPackages;
 }
 
-const flow = (props: IProps) => {
+const Flow = (props: IProps) => {
     const [mf, setMf] = useState<IFlopyModflow>(props.packages.mf.toObject());
 
     const mfRef = useRef<IFlopyModflow>();
@@ -89,10 +89,13 @@ const flow = (props: IProps) => {
     const match = useRouteMatch();
 
     useEffect(() => {
-        return function cleanup() {
-            handleSave();
-        };
-    }, []);
+            return function cleanup() {
+                handleSave();
+            };
+        },
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+        []
+    );
 
     useEffect(() => {
         editingState.current = messages.getEditingState('modflow');
@@ -198,6 +201,8 @@ const flow = (props: IProps) => {
         const iMf = FlopyModflow.fromObject(mf);
 
         const readOnly = props.model.readOnly;
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore todo
         const {type} = match.params;
         const soilmodel = props.soilmodel;
 
@@ -362,6 +367,9 @@ const flow = (props: IProps) => {
         if (!props.boundaries) {
             return null;
         }
+
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore todo
         const {type} = match.params;
         return (
             <div>
@@ -406,4 +414,4 @@ const flow = (props: IProps) => {
     );
 };
 
-export default flow;
+export default Flow;

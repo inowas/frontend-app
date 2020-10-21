@@ -20,7 +20,8 @@ export enum EResultType {
     HEAD = 'head'
 }
 
-const flowResults = () => {
+const FlowResults = () => {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const [isError, setIsError] = useState<boolean>(false);
     const [isLoading, setIsLoading] = useState<boolean>(false);
     const [selectedLay, setSelectedLay] = useState<number>(0);
@@ -42,18 +43,10 @@ const flowResults = () => {
 
     const history = useHistory();
 
-    if (!boundaries || !calculation || !model || !packages || !soilmodel) {
-        return (
-            <Segment color={'grey'} loading={isLoading}>
-                <Header as={'h2'}>
-                    No result data found. <br/>
-                    Have you started the calculation?
-                </Header>
-            </Segment>
-        );
-    }
-
     useEffect(() => {
+        if (model === null) {
+            return;
+        }
         setSelectedCol(Math.floor(model.gridSize.nX / 2));
         setSelectedRow(Math.floor(model.gridSize.nY / 2));
         if (calculation && calculation.times) {
@@ -63,9 +56,13 @@ const flowResults = () => {
                 type: selectedType
             });
         }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     useEffect(() => {
+        if (packages === null) {
+            return;
+        }
         const mfPackage = packages.mf.getPackage('bas');
         if (mfPackage instanceof FlopyModflowMfbas) {
             const cIbound = mfPackage.ibound;
@@ -75,6 +72,7 @@ const flowResults = () => {
             }
         }
         return setIbound(undefined);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [selectedLay]);
 
     useEffect(() => {
@@ -85,6 +83,17 @@ const flowResults = () => {
             setTotalTimes(cTotalTimes);
         }
     }, [calculation]);
+
+    if (!boundaries || !calculation || !model || !packages || !soilmodel) {
+        return (
+            <Segment color={'grey'} loading={isLoading}>
+                <Header as={'h2'}>
+                    No result data found. <br/>
+                    Have you started the calculation?
+                </Header>
+            </Segment>
+        );
+    }
 
     const fetchData = ({layer, totim, type}: { layer: number, totim: number, type: EResultType }) => {
         if (!calculation) {
@@ -214,4 +223,4 @@ const flowResults = () => {
     );
 };
 
-export default flowResults;
+export default FlowResults;

@@ -28,7 +28,7 @@ interface IPayload extends IModflowModel {
     soilmodel?: ISoilmodel;
 }
 
-const modflowModelImport = (props: RouteComponentProps) => {
+const ModflowModelImport = (props: RouteComponentProps) => {
     const [errors, setErrors] = useState<ValidationError[] | null>(null);
     const [payload, setPayload] = useState<IPayload | null>(null);
     const [isLoading, setIsLoading] = useState<boolean>(false);
@@ -283,4 +283,4 @@ const modflowModelImport = (props: RouteComponentProps) => {
     );
 };
 
-export default withRouter(modflowModelImport);
+export default withRouter(ModflowModelImport);

@@ -1,4 +1,6 @@
 import {LTOB} from 'downsample';
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-ignore todo
 import {DataPoint} from 'downsample/dist/types';
 import {cloneDeep} from 'lodash';
 import moment from 'moment';
@@ -16,12 +18,12 @@ interface IProps {
     onCancel: () => void;
 }
 
-const fileDatasourceEditor = (props: IProps) => {
+const FileDatasourceEditor = (props: IProps) => {
     const [dataSource, setDataSource] = useState<IFileDataSource | null>(null);
 
     const [rawData, setRawData] = useState<IDateTimeValue[] | undefined>(undefined);
     const [data, setData] = useState<IDateTimeValue[] | undefined>(undefined);
-    const [metadata, setMetadata] = useState<ParseResult | null>(null);
+    const [metadata, setMetadata] = useState<ParseResult<any> | null>(null);
 
     const [dateTimeFormat, setDateTimeFormat] = useState<string>('DD.MM.YYYY H:i:s');
     const [firstRowIsHeader, setFirstRowIsHeader] = useState<boolean>(true);
@@ -62,6 +64,7 @@ const fileDatasourceEditor = (props: IProps) => {
         }
 
         setDataSource(props.dataSource.toObject());
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     useEffect(() => {
@@ -77,6 +80,7 @@ const fileDatasourceEditor = (props: IProps) => {
 
             return setRawData(cData);
         }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [datetimeField, dateTimeFormat, parameterField]);
 
     useEffect(() => {
@@ -88,7 +92,7 @@ const fileDatasourceEditor = (props: IProps) => {
             );
             setData(fData);
         }
-    }, [begin, beginEnabled, end, endEnabled, minValue, minValueEnabled, maxValue, maxValueEnabled]);
+    }, [begin, beginEnabled, end, endEnabled, minValue, minValueEnabled, maxValue, maxValueEnabled, rawData]);
 
     useEffect(() => {
         if (!rawData || rawData.length === 0) {
@@ -106,8 +110,7 @@ const fileDatasourceEditor = (props: IProps) => {
             setEnd(rawData[rawData.length - 1].timeStamp);
             setLEnd(rawData[rawData.length - 1].timeStamp);
         }
-
-    }, [rawData]);
+    }, [beginEnabled, endEnabled, rawData]);
 
     const handleSave = () => {
         if (!dataSource && data) {
@@ -126,11 +129,11 @@ const fileDatasourceEditor = (props: IProps) => {
     };
 
     const handleChange = (f: (v: any) => void) => (e: any, d: any) => {
-        if (d.hasOwnProperty('value')) {
+        if (Object.prototype.hasOwnProperty.call(d, 'value')) {
             f(d.value);
         }
 
-        if (d.hasOwnProperty('checked')) {
+        if (Object.prototype.hasOwnProperty.call(d, 'checked')) {
             f(d.checked);
         }
     };
@@ -395,4 +398,4 @@ const fileDatasourceEditor = (props: IProps) => {
     );
 };
 
-export default fileDatasourceEditor;
+export default FileDatasourceEditor;

@@ -10,7 +10,7 @@ interface IProps {
     readOnly: boolean;
 }
 
-const gcgPackageProperties = (props: IProps) => {
+const GcgPackageProperties = (props: IProps) => {
     const [mtPackage, setMtPackage] = useState<IFlopyMt3dMtgcg>(props.mtPackage.toObject());
 
     useEffect(() => {
@@ -190,4 +190,4 @@ const gcgPackageProperties = (props: IProps) => {
 
 };
 
-export default gcgPackageProperties;
+export default GcgPackageProperties;

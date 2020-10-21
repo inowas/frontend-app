@@ -15,7 +15,7 @@ interface IProps {
     onUndo: () => void;
 }
 
-const stressperiodsEditor = (props: IProps) => {
+const StressperiodsEditor = (props: IProps) => {
     const [endDateTime, setEndDateTime] = useState<string>(props.model.stressperiods.endDateTime.format('YYYY-MM-DD'));
 
     useEffect(() => {
@@ -130,4 +130,4 @@ const stressperiodsEditor = (props: IProps) => {
     );
 };
 
-export default stressperiodsEditor;
+export default StressperiodsEditor;

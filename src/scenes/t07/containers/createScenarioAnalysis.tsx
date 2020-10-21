@@ -234,4 +234,5 @@ class CreateScenarioAnalysis extends React.Component<IProps, IState> {
     };
 }
 
+// @ts-ignore todo
 export default withRouter<IProps>(CreateScenarioAnalysis);

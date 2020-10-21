@@ -1,5 +1,3 @@
-import {Point} from 'geojson';
-import React, {ChangeEvent, useEffect, useState} from 'react';
 import {
     Button,
     Dropdown,
@@ -12,16 +10,19 @@ import {
     Segment,
     Table
 } from 'semantic-ui-react';
-import Uuid from 'uuid';
-import {Rtm, Sensor} from '../../../core/model/rtm';
-import {ParameterCollection} from '../../../core/model/rtm/ParameterCollection';
 import {ISensorParameter} from '../../../core/model/rtm/Sensor.type';
-import {parameterList} from '../defaults';
+import {ParameterCollection} from '../../../core/model/rtm/ParameterCollection';
+import {Point} from 'geojson';
+import {Rtm, Sensor} from '../../../core/model/rtm';
 import {SensorMap} from './index';
+import {parameterList} from '../defaults';
+import React, {ChangeEvent, useState} from 'react';
+import Uuid from 'uuid';
 
 interface IProps {
     rtm: Rtm;
-    sensor: Sensor | null;
+    sensor: Sensor | null;  
+    selectedParameterId: string | null;
     onChange: (sensor: Sensor) => void;
     onChangeSelectedParameterId: (id: string) => void;
 }
@@ -31,25 +32,9 @@ interface IActiveInput {
     value: string;
 }
 
-const sensorMetadata = (props: IProps) => {
+const SensorMetadata = (props: IProps) => {
     const [activeInput, setActiveInput] = useState<IActiveInput | null>(null);
     const [customParameter, setCustomParameter] = useState<ISensorParameter | null>(null);
-    const [selectedParameterId, setSelectedParameterId] = useState<string | null>(null);
-
-    useEffect(() => {
-        if (props.sensor && !selectedParameterId && props.sensor.parameters.length > 0) {
-            setSelectedParameterId(props.sensor.parameters.first.id);
-            props.onChangeSelectedParameterId(props.sensor.parameters.first.id);
-        }
-    }, [props.sensor]);
-
-    useEffect(() => {
-        if (!selectedParameterId) {
-            return;
-        }
-
-        props.onChangeSelectedParameterId(selectedParameterId);
-    }, [selectedParameterId]);
 
     const handleLocalChange = (e: ChangeEvent<HTMLInputElement>, data: InputOnChangeData) => setActiveInput({
         name: data.name,
@@ -141,7 +126,6 @@ const sensorMetadata = (props: IProps) => {
                 });
             }
             handleChangeParameters(params);
-            setSelectedParameterId(id);
         }
     };
 
@@ -157,10 +141,6 @@ const sensorMetadata = (props: IProps) => {
     };
 
     const handleEditParameter = (param: ISensorParameter) => () => setCustomParameter(param);
-
-    const handleSelectParameter = (id: string) => () => {
-        setSelectedParameterId(id);
-    };
 
     const getDescription = (param: ISensorParameter) => {
         const defaultParameter = parameterList.filter((i) => i.type === param.type);
@@ -240,13 +220,13 @@ const sensorMetadata = (props: IProps) => {
                             {props.sensor.parameters.all.map((p) =>
                                 <Table.Row
                                     key={p.id}
-                                    selected={selectedParameterId === p.id}
+                                    selected={props.selectedParameterId === p.id}
                                 >
                                     <Table.Cell
-                                        onClick={handleSelectParameter(p.id)}
+                                        onClick={() => props.onChangeSelectedParameterId(p.id)}
                                         style={{cursor: 'Pointer'}}
                                     >
-                                        {selectedParameterId === p.id ?
+                                        {props.selectedParameterId === p.id ?
                                             <Label ribbon={true} color={'red'}>
                                                 {getDescription(p)}
                                             </Label> :
@@ -348,4 +328,4 @@ const sensorMetadata = (props: IProps) => {
     );
 };
 
-export default sensorMetadata;
+export default SensorMetadata;

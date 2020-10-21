@@ -39,13 +39,14 @@ const arrayMoveItems = (arr: any[], from: number, to: number) => {
     return arr;
 };
 
-const dataSources = (props: IProps) => {
+const DataSources = (props: IProps) => {
     const [addDatasource, setAddDatasource] = useState<string | null>(null);
     const [editDatasource, setEditDatasource] = useState<DataSource | null>(null);
 
     useEffect(() => {
         const dsc = DataSourceCollection.fromObject(props.parameter.dataSources);
         dsc.mergedData().then((() => handleUpdateDataSources(dsc)));
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     const getDsType = (ds: DataSource) => {
@@ -354,4 +355,4 @@ const dataSources = (props: IProps) => {
     );
 };
 
-export default dataSources;
+export default DataSources;

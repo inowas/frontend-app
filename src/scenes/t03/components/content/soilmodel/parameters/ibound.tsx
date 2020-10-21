@@ -26,7 +26,7 @@ interface IUploadData {
     metadata: IRasterFileMetadata | null;
 }
 
-const ibound = (props: IProps) => {
+const Ibound = (props: IProps) => {
     const [rasterUploadModal, setRasterUploadModal] = useState<boolean>(false);
 
     const handleChangeCells = (cells: Cells) => {
@@ -219,4 +219,4 @@ NODATA_VALUE -9999
     );
 };
 
-export default ibound;
+export default Ibound;

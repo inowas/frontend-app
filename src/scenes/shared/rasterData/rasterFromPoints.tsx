@@ -1,22 +1,22 @@
-import React, {ChangeEvent, FormEvent, useEffect, useState} from 'react';
-import {CircleMarker, FeatureGroup, Tooltip} from 'react-leaflet';
-import {useSelector} from 'react-redux';
-import {DropdownProps, Form, Grid, InputOnChangeData, Segment} from 'semantic-ui-react';
-import uuid from 'uuid';
-import {Array2D} from '../../../core/model/geometry/Array2D.type';
-import {ModflowModel} from '../../../core/model/modflow';
-import {IRootReducer} from '../../../reducers';
-import {distanceWeighting, IIdwOptions} from '../../../services/geoTools/interpolation';
 import {AdvancedCsvUpload} from '../simpleTools/upload';
+import {Array2D} from '../../../core/model/geometry/Array2D.type';
+import {CircleMarker, FeatureGroup, Tooltip} from 'react-leaflet';
+import {DropdownProps, Form, Grid, InputOnChangeData, Segment} from 'semantic-ui-react';
 import {ECsvColumnType} from '../simpleTools/upload/types';
+import {IIdwOptions, distanceWeighting} from '../../../services/geoTools/interpolation';
+import {IRootReducer} from '../../../reducers';
+import {ModflowModel} from '../../../core/model/modflow';
 import {RasterDataMap} from './index';
+import {useSelector} from 'react-redux';
+import React, {ChangeEvent, FormEvent, useEffect, useState} from 'react';
+import uuid from 'uuid';
 
 interface IProps {
     onChange: (r: Array2D<number>) => any;
     unit: string;
 }
 
-const rasterFromPoints = (props: IProps) => {
+const RasterFromPoints = (props: IProps) => {
     const [activeInput, setActiveInput] = useState<string>();
     const [activeValue, setActiveValue] = useState<string>('');
     const [data, setData] = useState<Array<{ x: number, y: number, z: number }>>();
@@ -31,15 +31,16 @@ const rasterFromPoints = (props: IProps) => {
     const T03 = useSelector((state: IRootReducer) => state.T03);
     const model = T03.model ? ModflowModel.fromObject(T03.model) : null;
 
+    useEffect(() => {
+        runCalculation();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [data, idwOptions]);
+
     if (!model) {
         return (
             <Segment color={'grey'} loading={true}/>
         );
     }
-
-    useEffect(() => {
-        runCalculation();
-    }, [data, idwOptions]);
 
     const handleBlurInput = () => {
         if (activeInput) {
@@ -206,4 +207,4 @@ const rasterFromPoints = (props: IProps) => {
     );
 };
 
-export default rasterFromPoints;
+export default RasterFromPoints;

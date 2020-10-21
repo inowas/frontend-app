@@ -16,13 +16,12 @@ import {IToolMetaDataEdit} from './ToolMetaData.type';
 
 interface IProps {
     isDirty: boolean;
-    onChange: (tool: IToolMetaDataEdit) => any;
     onSave: (tool: IToolMetaDataEdit) => any;
     readOnly: boolean;
     tool: IToolMetaDataEdit;
 }
 
-const toolMetaData = (props: IProps) => {
+const ToolMetaData = (props: IProps) => {
     const [tool, setTool] = useState<IToolMetaDataEdit>(props.tool);
     const [isEditing, setIsEditing] = useState<boolean>(false);
 
@@ -134,4 +133,4 @@ const toolMetaData = (props: IProps) => {
     );
 };
 
-export default toolMetaData;
+export default ToolMetaData;

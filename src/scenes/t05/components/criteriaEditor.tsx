@@ -47,7 +47,7 @@ interface IProps {
     routeTo: (route: string) => void;
 }
 
-const criteriaEditor = (props: IProps) => {
+const CriteriaEditor = (props: IProps) => {
     const [criteria, setCriteria] = useState<ICriterion[]>(props.mcda.criteriaCollection.toObject());
     const [showInfo, setShowInfo] = useState<boolean>(true);
     // const network = useRef<any>(null);
@@ -101,6 +101,8 @@ const criteriaEditor = (props: IProps) => {
             return;
         }
 
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
         criterion[name as CriterionIndex] = value as CriteriaType;
         return handleChangeCriterion(Criterion.fromObject(criterion));
     };
@@ -126,6 +128,8 @@ const criteriaEditor = (props: IProps) => {
             return;
         }
 
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
         criterion[name as CriterionIndex] = value;
         return setCriteria(criteriaCollection.update(criterion).toObject());
     };
@@ -377,4 +381,4 @@ const criteriaEditor = (props: IProps) => {
     );
 };
 
-export default criteriaEditor;
+export default CriteriaEditor;

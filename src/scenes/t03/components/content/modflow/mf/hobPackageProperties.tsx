@@ -19,7 +19,7 @@ interface IProps {
     readonly: boolean;
 }
 
-const hobPackageProperties = (props: IProps) => {
+const HobPackageProperties = (props: IProps) => {
     const [mfPackage, setMfPackage] = useState<IFlopyModflowMfhob>(props.mfPackage.toObject());
     const {mfPackages, readonly} = props;
     const disPackage: FlopyModflowMfdis = mfPackages.getPackage('dis') as FlopyModflowMfdis;
@@ -59,6 +59,7 @@ const hobPackageProperties = (props: IProps) => {
         props.onChange(FlopyModflowMfhob.fromObject({...mfPackage, [name]: value}));
     };
 
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const renderInfoPopup = (
         description: string | JSX.Element,
         title: string,
@@ -132,4 +133,4 @@ const hobPackageProperties = (props: IProps) => {
     );
 };
 
-export default hobPackageProperties;
+export default HobPackageProperties;

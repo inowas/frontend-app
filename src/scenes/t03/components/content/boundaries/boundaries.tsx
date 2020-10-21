@@ -24,7 +24,7 @@ interface IProps {
     types: BoundaryType[];
 }
 
-const boundaries = (props: IProps) => {
+const Boundaries = (props: IProps) => {
     const [selectedBoundary, setSelectedBoundary] = useState<IBoundary | null>(null);
     const [isLoading, setIsLoading] = useState<boolean>(true);
 
@@ -49,24 +49,15 @@ const boundaries = (props: IProps) => {
         saving: null
     });
 
-    if (!boundaryCollection || !model || !soilmodel) {
-        return (
-            <Segment color={'grey'} loading={true}/>
-        );
-    }
-
-    const readOnly = model.readOnly;
-
-    const filteredBoundaries = () => {
-        const bc = new BoundaryCollection();
-        bc.items = boundaryCollection.all.filter((b) => props.types.includes(b.type));
-        return bc;
-    };
-
     useEffect(() => {
+        if (!pid) {
+            setIsLoading(true);
+            return redirectToFirstBoundary();
+        }
         return function cleanup() {
             handleUpdate();
         };
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     useEffect(() => {
@@ -74,14 +65,8 @@ const boundaries = (props: IProps) => {
         if (selectedBoundary) {
             boundaryRef.current = selectedBoundary;
         }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [messages, selectedBoundary]);
-
-    useEffect(() => {
-        if (!pid) {
-            setIsLoading(true);
-            return redirectToFirstBoundary();
-        }
-    }, []);
 
     useEffect(() => {
         if (prevTypes && JSON.stringify(props.types) !== JSON.stringify(prevTypes)) {
@@ -91,6 +76,7 @@ const boundaries = (props: IProps) => {
                 return redirectToFirstBoundary();
             }
         }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [props.types]);
 
     useEffect(() => {
@@ -102,7 +88,22 @@ const boundaries = (props: IProps) => {
             }
             return redirectToFirstBoundary();
         }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [pid]);
+
+    if (!boundaryCollection || !model || !soilmodel) {
+        return (
+            <Segment color={'grey'} loading={true}/>
+        );
+    }
+
+    const filteredBoundaries = () => {
+        const bc = new BoundaryCollection();
+        bc.items = boundaryCollection.all.filter((b) => props.types.includes(b.type));
+        return bc;
+    };
+
+    const readOnly = model.readOnly;
 
     const redirectToFirstBoundary = () => {
         if (filteredBoundaries().length > 0) {
@@ -265,4 +266,4 @@ const boundaries = (props: IProps) => {
     );
 };
 
-export default boundaries;
+export default Boundaries;

@@ -10,7 +10,8 @@ interface IProps {
     onChange?: (stressperiods: Stressperiods) => void;
 }
 
-const stressPeriodsDataTable = (props: IProps) => {
+// tslint:disable-next-line:variable-name
+const StressPeriodsDataTable = (props: IProps) => {
     const [activeSp, setActiveSp] = useState<number | null>(null);
     const [activeInput, setActiveInput] = useState<string | null>(null);
     const [activeValue, setActiveValue] = useState<string>('');
@@ -212,4 +213,4 @@ const stressPeriodsDataTable = (props: IProps) => {
     );
 };
 
-export default stressPeriodsDataTable;
+export default StressPeriodsDataTable;

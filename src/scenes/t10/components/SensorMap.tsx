@@ -29,7 +29,7 @@ const style = {
     }
 };
 
-const sensorMap = (props: IProps) => {
+const SensorMap = (props: IProps) => {
     const [mapKey, setMapKey] = useState<string>(uuidv4());
     const [geometry, setGeometry] = useState<GeoJson | null>(
         props.geometry ? Geometry.fromGeoJson(props.geometry).toObject() : null
@@ -73,6 +73,7 @@ const sensorMap = (props: IProps) => {
                 refMap.current.leafletElement.flyTo(latLng);
             }
         }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [props.sensor]);
 
     const handleCreated = (e: DrawEvents.Created) => {
@@ -170,4 +171,4 @@ const sensorMap = (props: IProps) => {
     );
 };
 
-export default sensorMap;
+export default SensorMap;

@@ -17,7 +17,7 @@ interface IProps {
     model: ModflowModel;
 }
 
-const budgetResults = (props: IProps) => {
+const BudgetResults = (props: IProps) => {
     const [data, setData] = useState<budgetData>(null);
     const [fetching, setFetching] = useState<boolean>(true);
     const [isError, setIsError] = useState<AxiosError | null>(null);
@@ -38,6 +38,7 @@ const budgetResults = (props: IProps) => {
                 type: selectedType,
             });
         }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [props.calculation]);
 
     const fetchData = ({type, totim}: { type: IBudgetType, totim: number }) => {
@@ -275,4 +276,4 @@ const mapStateToProps = (state: any) => {
     };
 };
 
-export default connect(mapStateToProps)(budgetResults);
+export default connect(mapStateToProps)(BudgetResults);

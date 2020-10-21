@@ -1,9 +1,9 @@
-import React, {ReactFragment, useEffect, useState} from 'react';
-import {RouteComponentProps, withRouter} from 'react-router';
+import {AddSensor, SensorList} from './index';
 import {Grid, Segment} from 'semantic-ui-react';
+import {RouteComponentProps, withRouter} from 'react-router';
 import {Rtm, Sensor} from '../../../core/model/rtm';
 import ContentToolBar from '../../shared/ContentToolbar';
-import {AddSensor, SensorList} from './index';
+import React, {ReactFragment, useEffect, useState} from 'react';
 
 export interface IProps extends RouteComponentProps<{ id: string, property: string, pid: string }> {
     rtm: Rtm;
@@ -15,7 +15,7 @@ export interface IProps extends RouteComponentProps<{ id: string, property: stri
     children: ReactFragment;
 }
 
-const sensors = (props: IProps) => {
+const Sensors = (props: IProps) => {
 
     const [selectedSensorId, setSelectedSensorId] = useState<string | null>(null);
     const [addSensor, setAddSensor] = useState<boolean>(false);
@@ -37,6 +37,7 @@ const sensors = (props: IProps) => {
                 return setSelectedSensorId(null);
             }
         },
+        // eslint-disable-next-line react-hooks/exhaustive-deps
         [props.rtm.sensors]
     );
 
@@ -44,6 +45,7 @@ const sensors = (props: IProps) => {
         if (selectedSensorId) {
             props.onChangeSelectedSensorId(selectedSensorId);
         }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [selectedSensorId]);
 
     const onAddNewSensor = () => {
@@ -127,4 +129,6 @@ const sensors = (props: IProps) => {
     );
 };
 
-export default withRouter<IProps>(sensors);
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-ignore todo
+export default withRouter<IProps>(Sensors);

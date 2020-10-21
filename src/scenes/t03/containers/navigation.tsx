@@ -18,7 +18,7 @@ interface IStateProps {
 
 type IProps = IStateProps & RouteComponentProps<any>;
 
-const t03Navigation = (props: IProps) => {
+const T03Navigation = (props: IProps) => {
     useEffect(() => {
         return;
     }, [props.match.params.property]);
@@ -33,6 +33,7 @@ const t03Navigation = (props: IProps) => {
                 dispatch(removeMessage(m));
             }, 1000);
         });
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [messages]);
 
     const calculationState = props.calculation ? props.calculation.state : null;
@@ -109,4 +110,4 @@ const mapStateToProps = (state: any) => {
     });
 };
 
-export default withRouter(connect<IStateProps>(mapStateToProps)(t03Navigation));
+export default withRouter(connect<IStateProps>(mapStateToProps)(T03Navigation));

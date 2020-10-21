@@ -46,7 +46,7 @@ interface IProps {
     unit: string;
 }
 
-const rasterDataMap = (props: IProps) => {
+const RasterDataMap = (props: IProps) => {
     const {children, model, data, unit} = props;
     const rainbowVis = rainbowFactory({min: min(data), max: max(data)});
 
@@ -78,4 +78,4 @@ const rasterDataMap = (props: IProps) => {
     );
 };
 
-export default rasterDataMap;
+export default RasterDataMap;

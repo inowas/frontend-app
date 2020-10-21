@@ -13,7 +13,7 @@ interface IProps {
     unit: string;
 }
 
-const rasterFromCSV = (props: IProps) => {
+const RasterFromCSV = (props: IProps) => {
     const [data, setData] = useState<Array<{ col: number, row: number, value: number }>>();
     const [isCalculating, setIsCalculating] = useState<boolean>(false);
 
@@ -21,12 +21,6 @@ const rasterFromCSV = (props: IProps) => {
 
     const T03 = useSelector((state: IRootReducer) => state.T03);
     const model = T03.model ? ModflowModel.fromObject(T03.model) : null;
-
-    if (!model) {
-        return (
-            <Segment color={'grey'} loading={true}/>
-        );
-    }
 
     useEffect(() => {
         if (data) {
@@ -38,7 +32,14 @@ const rasterFromCSV = (props: IProps) => {
         if (isCalculating && data) {
             runCalculation();
         }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [isCalculating]);
+
+    if (!model) {
+        return (
+            <Segment color={'grey'} loading={true}/>
+        );
+    }
 
     const handleChangeData = (r: any[][]) => {
         if (r.length > 0 && r[0].length === 3 &&
@@ -104,4 +105,4 @@ const rasterFromCSV = (props: IProps) => {
     );
 };
 
-export default rasterFromCSV;
+export default RasterFromCSV;

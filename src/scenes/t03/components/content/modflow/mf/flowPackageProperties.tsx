@@ -16,7 +16,7 @@ interface IProps {
     readonly: boolean;
 }
 
-const flowPackageProperties = (props: IProps) => {
+const FlowPackageProperties = (props: IProps) => {
 
     const {mfPackages} = props;
     const flowPackage = mfPackages.getFlowPackage();
@@ -94,4 +94,4 @@ const flowPackageProperties = (props: IProps) => {
     );
 };
 
-export default flowPackageProperties;
+export default FlowPackageProperties;

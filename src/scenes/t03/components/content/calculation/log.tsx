@@ -6,7 +6,8 @@ import Button from 'semantic-ui-react/dist/commonjs/elements/Button';
 import {IRootReducer} from '../../../../../reducers';
 import Terminal from '../../../../shared/complexTools/Terminal';
 
-const log = () => {
+// tslint:disable-next-line:variable-name
+const Log = () => {
 
     const [copyToClipBoardSuccessful, setCopyToClipBoardSuccessful] = useState<boolean>(false);
 
@@ -59,4 +60,4 @@ const log = () => {
     );
 };
 
-export default log;
+export default Log;

@@ -29,7 +29,7 @@ interface IBoundaryUpdaterStatus {
     message: string;
 }
 
-const gridEditor = (props: IProps) => {
+const GridEditor = (props: IProps) => {
     const [gridSizeLocal, setGridSizeLocal] = useState<GridSize | null>(null);
     const [updaterStatus, setUpdaterStatus] = useState<IBoundaryUpdaterStatus | null>(null);
 
@@ -41,20 +41,22 @@ const gridEditor = (props: IProps) => {
     const boundaryCollection = T03.boundaries ? BoundaryCollection.fromObject(T03.boundaries) : null;
     const soilmodel = T03.soilmodel ? Soilmodel.fromObject(T03.soilmodel) : null;
 
-    if (!soilmodel || !boundaryCollection) {
-        return null;
-    }
-
     useEffect(() => {
         setGridSizeLocal(props.model.gridSize);
         intersectionRef.current = 50;
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     useEffect(() => {
         if (gridSizeLocal && (gridSizeLocal.nX !== gridSize.nX || gridSizeLocal.nY !== gridSize.nY)) {
             setGridSizeLocal(props.model.gridSize);
         }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [props.model.gridSize.nX, props.model.gridSize.nY]);
+
+    if (!soilmodel || !boundaryCollection) {
+        return null;
+    }
 
     const readOnly = props.model.readOnly;
 
@@ -256,4 +258,4 @@ const gridEditor = (props: IProps) => {
     );
 };
 
-export default gridEditor;
+export default GridEditor;

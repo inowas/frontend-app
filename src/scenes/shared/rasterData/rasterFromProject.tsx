@@ -26,7 +26,7 @@ const styles = {
     }
 };
 
-const rasterFromProject = (props: IProps) => {
+const RasterFromProject = (props: IProps) => {
     const [data, setData] = useState<Array2D<number> | number>();
     const [isFetching, setIsFetching] = useState<boolean>(false);
     const [mode, setMode] = useState<string>('results');
@@ -58,6 +58,7 @@ const rasterFromProject = (props: IProps) => {
             }));
         }
         setParameterOptions([]);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [mode, selectedLay]);
 
     useEffect(() => {
@@ -81,18 +82,21 @@ const rasterFromProject = (props: IProps) => {
                 fetchResults(totalTimes[0], selectedParam);
             }
         }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [selectedParam]);
 
     useEffect(() => {
         if (selectedParam && totalTimes) {
             fetchResults(totalTimes[0], selectedParam);
         }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [totalTimes]);
 
     useEffect(() => {
         if (selectedParam && selectedTotim) {
             fetchResults(selectedTotim, selectedParam);
         }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [selectedTotim]);
 
     useEffect(() => {
@@ -106,6 +110,7 @@ const rasterFromProject = (props: IProps) => {
                 ) as Array2D<number>
             );
         }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [data]);
 
     const fetchResults = (totim: number, type: string) => {
@@ -281,4 +286,4 @@ const rasterFromProject = (props: IProps) => {
     );
 };
 
-export default rasterFromProject;
+export default RasterFromProject;

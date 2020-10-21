@@ -16,7 +16,7 @@ interface IProps {
     readOnly: boolean;
 }
 
-const constraintsEditor = (props: IProps) => {
+const ConstraintsEditor = (props: IProps) => {
     const [constraints, setConstraints] = useState<IGis>(props.mcda.constraints.toObject());
     const [isFetching, setIsFetching] = useState<boolean>(false);
     const [mode, setMode] = useState<string>('map');
@@ -31,6 +31,7 @@ const constraintsEditor = (props: IProps) => {
         if (props.mcda.constraints) {
             constraintsToState(prevConstraints ? prevConstraints : null, props.mcda.constraints.toObject());
         }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [props.mcda.constraints]);
 
     const constraintsToState = (cPrevConstraints: IGis | null, cConstraints: IGis) => {
@@ -78,13 +79,6 @@ const constraintsEditor = (props: IProps) => {
         );
     };
 
-    const handleBlur = () => {
-        if (props.readOnly) {
-            return;
-        }
-        handleChange(Gis.fromObject(constraints));
-    };
-
     const handleCalculateActiveCells = () => {
         const cConstraints = Gis.fromObject(constraints);
         cConstraints.calculateActiveCells(props.gridSize);
@@ -105,7 +99,7 @@ const constraintsEditor = (props: IProps) => {
                 <Message.Header>Global Constraints</Message.Header>
                 <p>
                     Draw zones, which should not be respected in the suitability calculation. It is necessary to
-                    click on the 'Cut and Process' button, after making changes.
+                    click on the &apos;Cut and Process&apos; button, after making changes.
                 </p>
             </Message>
             }
@@ -182,4 +176,4 @@ const constraintsEditor = (props: IProps) => {
     );
 };
 
-export default constraintsEditor;
+export default ConstraintsEditor;

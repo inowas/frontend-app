@@ -1,5 +1,5 @@
 import {ModflowModel} from '../../index';
-import {ISoilmodel, ISoilmodel1v0, ISoilmodel2v0, ISoilmodelExport} from '../Soilmodel.type';
+import {ISoilmodel} from '../Soilmodel.type';
 import {SoilmodelTypes} from './defaults';
 import {saveSoilmodel} from './services';
 import updateSoilmodel from './updateSoilmodel';
@@ -7,7 +7,7 @@ import updateSoilmodel from './updateSoilmodel';
 /**
  * The updater is an asynchronous function, which updates and saves the soilmodel if necessary.
  *
- * @param {ISoilmodelExport | ISoilmodel | ISoilmodel1v0 | ISoilmodel2v0} soilmodel
+ * @param {SoilmodelTypes} soilmodel
  * @param {ModflowModel} model
  * @param onEachTask callback function, which is called once in every iteration
  * @param onUpdateSuccess callback function, which is called once when all tasks are resolved

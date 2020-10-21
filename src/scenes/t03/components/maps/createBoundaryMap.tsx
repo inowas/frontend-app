@@ -24,7 +24,7 @@ const style = {
     }
 };
 
-const createBoundaryMap = (props: IProps) => {
+const CreateBoundaryMap = (props: IProps) => {
     const [isEditing, setIsEditing] = useState<boolean>(false);
     const mapRef = useRef<Map>(null);
 
@@ -95,4 +95,4 @@ const createBoundaryMap = (props: IProps) => {
     );
 };
 
-export default createBoundaryMap;
+export default CreateBoundaryMap;

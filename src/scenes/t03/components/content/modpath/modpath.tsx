@@ -46,7 +46,7 @@ const isNavigationItem = (arg: any): arg is NavigationItem => {
     return true;
 };
 
-const modpath: React.FC<Props> = (props: Props) => {
+const Modpath: React.FC<Props> = (props: Props) => {
     const {boundaries, match, model, packages, soilmodel} = props;
     const [activeItem, setActiveItem] = useState<NavigationItem>(NavigationItem.SETUP);
     const [isDirty, setIsDirty] = useState<boolean>(false);
@@ -69,6 +69,7 @@ const modpath: React.FC<Props> = (props: Props) => {
         setActiveItem(type);
     }, [match.params]);
 
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const handleChange = (cMp: FlopyModpath) => {
         packages.mp = cMp;
         return props.updatePackages(packages);
@@ -224,7 +225,4 @@ const mapStateToProps = (state: any) => ({
     soilmodel: Soilmodel.fromObject(state.T03.soilmodel)
 });
 
-export default withRouter(connect<IStateProps, IDispatchProps, IOwnProps>(
-    mapStateToProps,
-    mapDispatchToProps)
-(modpath));
+export default withRouter(connect<IStateProps, IDispatchProps, IOwnProps>(mapStateToProps, mapDispatchToProps)(Modpath));

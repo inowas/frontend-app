@@ -17,7 +17,7 @@ import {
     updateProcessingPackages
 } from '../../../actions/actions';
 
-const packagesUpdater = () => {
+const PackagesUpdater = () => {
     const T03 = useSelector((state: IRootReducer) => state.T03);
     const dispatch = useDispatch();
 
@@ -40,6 +40,7 @@ const packagesUpdater = () => {
         if (isProcessing) {
             recalculate();
         }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [isProcessing]);
 
     const recalculate = () => {
@@ -86,4 +87,4 @@ const packagesUpdater = () => {
     );
 };
 
-export default packagesUpdater;
+export default PackagesUpdater;

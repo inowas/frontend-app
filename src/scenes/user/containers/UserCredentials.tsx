@@ -18,7 +18,7 @@ const styles = {
     }
 };
 
-const userCredentials = () => {
+const UserCredentials = () => {
 
     const [oldPassword, setOldPassword] = useState<string>('');
     const [newPassword, setNewPassword] = useState<string>('');
@@ -182,4 +182,4 @@ const userCredentials = () => {
     );
 };
 
-export default userCredentials;
+export default UserCredentials;

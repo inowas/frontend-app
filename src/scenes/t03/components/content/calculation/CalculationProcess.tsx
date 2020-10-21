@@ -28,11 +28,13 @@ import CalculationStatus, {
     CALCULATION_STATE_WAITING_FOR_CALCULATION
 } from './CalculationProgress';
 
-const calculationProcess = () => {
+const CalculationProcess = () => {
 
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
         const [fetching, setFetching] = useState<boolean>(false);
         const [polling, setPolling] = useState<boolean>(false);
         const [visible, setVisible] = useState<boolean>(false);
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
         const [error, setError] = useState<string | null>(null);
         const [isProcessing, setIsProcessing] = useState<boolean>(false);
 
@@ -73,6 +75,7 @@ const calculationProcess = () => {
                 setIsProcessing(true);
             }
 
+            // eslint-disable-next-line react-hooks/exhaustive-deps
         }, [T03.model, T03.calculation]);
 
         useEffect(() => {
@@ -108,6 +111,7 @@ const calculationProcess = () => {
                     );
                 }
             }
+            // eslint-disable-next-line react-hooks/exhaustive-deps
         }, [isProcessing]);
 
         const startPolling = () => {
@@ -203,4 +207,4 @@ const calculationProcess = () => {
     }
 ;
 
-export default calculationProcess;
+export default CalculationProcess;

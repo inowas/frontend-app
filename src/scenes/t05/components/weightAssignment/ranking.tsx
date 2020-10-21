@@ -22,7 +22,7 @@ interface IDragAndDropItem {
     rank: number;
 }
 
-const ranking = (props: IProps) => {
+const Ranking = (props: IProps) => {
     const [showInfo, setShowInfo] = useState<boolean>(true);
     const [wa, setWa] = useState<IWeightAssignment>(props.weightAssignment.toObject());
 
@@ -43,6 +43,8 @@ const ranking = (props: IProps) => {
             wa.subParam = 2;
         }
 
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
         wa[name as WeightAssignmentIndex] = value;
 
         const cWa = WeightAssignment.fromObject(wa);
@@ -215,4 +217,4 @@ const ranking = (props: IProps) => {
     );
 };
 
-export default pure(ranking);
+export default pure(Ranking);

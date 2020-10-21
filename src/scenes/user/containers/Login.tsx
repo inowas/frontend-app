@@ -16,7 +16,7 @@ const styles = {
     }
 };
 
-const login = () => {
+const Login = () => {
 
     const dispatch = useDispatch();
     const session = useSelector((state: IRootReducer) => state.session);
@@ -98,4 +98,4 @@ const login = () => {
     );
 };
 
-export default login;
+export default Login;

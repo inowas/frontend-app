@@ -27,7 +27,7 @@ interface IIdValueObject<T> {
     [id: string]: T;
 }
 
-const dataFetcherWrapper = (props: IProps) => {
+const DataFetcherWrapper = (props: IProps) => {
     const dispatch = useDispatch();
 
     const [scenarioAnalysisId, setScenarioAnalysisId] = useState<string | null>(null);
@@ -43,6 +43,7 @@ const dataFetcherWrapper = (props: IProps) => {
 
     useEffect(() => {
         dispatch(clear());
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     useEffect(() => {
@@ -52,6 +53,7 @@ const dataFetcherWrapper = (props: IProps) => {
                 fetchScenarioAnalysis(props.match.params.id);
             }
         }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [props.match.params.id]);
 
     const fetchScenarioAnalysis = (id: string) => {
@@ -109,35 +111,35 @@ const dataFetcherWrapper = (props: IProps) => {
     };
 
     const fetchAndUpdateSoilmodel = (model: ModflowModel, id: string) => {
-            if (model) {
-                fetchUrl(`modflowmodels/${id}/soilmodel`,
-                    (data) => {
-                        updater(
-                            data,
-                            model,
-                            () => null,
-                            (result, needsToBeFetched) => {
-                                if (needsToBeFetched) {
-                                    const sm = Soilmodel.fromObject(result);
-                                    if (sm.checkVersion()) {
-                                        return fetchSoilmodel(
-                                            result,
-                                            () => null,
-                                            (r) => {
-                                                return dispatch(updateSoilmodel(Soilmodel.fromObject(r), id));
-                                            }
-                                        );
-                                    }
+        if (model) {
+            fetchUrl(`modflowmodels/${id}/soilmodel`,
+                (data) => {
+                    updater(
+                        data,
+                        model,
+                        () => null,
+                        (result, needsToBeFetched) => {
+                            if (needsToBeFetched) {
+                                const sm = Soilmodel.fromObject(result);
+                                if (sm.checkVersion()) {
+                                    return fetchSoilmodel(
+                                        result,
+                                        () => null,
+                                        (r) => {
+                                            return dispatch(updateSoilmodel(Soilmodel.fromObject(r), id));
+                                        }
+                                    );
                                 }
-                                return dispatch(updateSoilmodel(Soilmodel.fromObject(result), id));
                             }
-                        );
-                    },
-                    (cError) => {
-                        return handleError(cError);
-                    }
-                );
-            }
+                            return dispatch(updateSoilmodel(Soilmodel.fromObject(result), id));
+                        }
+                    );
+                },
+                (cError) => {
+                    return handleError(cError);
+                }
+            );
+        }
     };
 
     const handleError = (dError: any) => {
@@ -246,4 +248,4 @@ const dataFetcherWrapper = (props: IProps) => {
     );
 };
 
-export default withRouter(dataFetcherWrapper);
+export default withRouter(DataFetcherWrapper);

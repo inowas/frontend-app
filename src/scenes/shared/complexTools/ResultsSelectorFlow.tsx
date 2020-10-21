@@ -40,7 +40,7 @@ interface IProps {
     stressperiods: Stressperiods;
 }
 
-const resultsSelectorFlow = (props: IProps) => {
+const ResultsSelectorFlow = (props: IProps) => {
     const [temporaryTotim, setTemporaryTotim] = useState<number>(props.data.totim);
 
     const sliderMarks = () => {
@@ -158,4 +158,4 @@ const resultsSelectorFlow = (props: IProps) => {
     );
 };
 
-export default resultsSelectorFlow;
+export default ResultsSelectorFlow;

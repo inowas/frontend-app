@@ -71,14 +71,6 @@ export default class Rtm {
         this._props.data.sensors = value.toObject();
     }
 
-    get model(): string | null {
-        return this._props.data.model;
-    }
-
-    set model(value: string | null) {
-        this._props.data.model = value;
-    }
-
     get readOnly() {
         return !includes(this.permissions, 'w');
     }

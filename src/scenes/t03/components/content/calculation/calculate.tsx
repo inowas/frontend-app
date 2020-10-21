@@ -19,8 +19,9 @@ interface IProps {
     calculation: Calculation | null;
 }
 
-const calculate = (props: IProps) => {
+const Calculate = (props: IProps) => {
 
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const [canBeCalculated, setCanBeCalculated] = useState<boolean>(true);
     const [isCalculating, setIsCalculating] = useState<boolean>(false);
     const [showProgress, setShowProgress] = useState<boolean>(false);
@@ -61,6 +62,7 @@ const calculate = (props: IProps) => {
             setShowProgress(true);
         }
 
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [props.calculation, props.model, props.packages]);
 
     const renderMapOrLog = () => {
@@ -123,4 +125,4 @@ const calculate = (props: IProps) => {
     );
 };
 
-export default calculate;
+export default Calculate;

@@ -21,7 +21,7 @@ interface IProps {
     readOnly: boolean;
 }
 
-const advPackageProperties = (props: IProps) => {
+const AdvPackageProperties = (props: IProps) => {
 
     const [mtPackage, setMtPackage] = useState<IFlopyMt3dMtAdv>(props.mtPackage.toObject());
     const [activeIndex, setActiveIndex] = useState<number>(0);
@@ -261,7 +261,7 @@ const advPackageProperties = (props: IProps) => {
                         </Form.Group>
                         <Form.Group widths={'equal'}>
                             <Form.Field>
-                                <label>Initial particles at cells ≤ DCEPS (NPL)</label>
+                                <label>Initial particles at cells {'>'} DCEPS (NPL)</label>
                                 <Input
                                     type={'number'}
                                     name={'npl'}
@@ -273,7 +273,7 @@ const advPackageProperties = (props: IProps) => {
                                 />
                             </Form.Field>
                             <Form.Field>
-                                <label>Initial particles at cells > DCEPS (NPH)</label>
+                                <label>Initial particles at cells {'>'} DCEPS (NPH)</label>
                                 <Input
                                     type={'number'}
                                     name={'nph'}
@@ -396,4 +396,4 @@ const advPackageProperties = (props: IProps) => {
     );
 };
 
-export default advPackageProperties;
+export default AdvPackageProperties;

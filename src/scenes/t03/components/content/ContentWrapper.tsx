@@ -10,10 +10,12 @@ interface IRouterProps {
     type?: string;
 }
 
-const contentWrapper = () => {
+const ContentWrapper = () => {
 
     const params: IRouterProps = useParams();
     const {id, property, type} = params;
+    const match = useRouteMatch();
+    const location = useLocation();
 
     if (property === 'discretization') {
         return (<Content.Discretization/>);
@@ -73,14 +75,12 @@ const contentWrapper = () => {
         return (<Content.Export/>);
     }
 
-    const match = useRouteMatch();
     const path = match.path;
     const basePath = path.split(':')[0];
 
-    const location = useLocation();
     return (
         <Redirect to={basePath + id + '/discretization' + location.search}/>
     );
 };
 
-export default contentWrapper;
+export default ContentWrapper;

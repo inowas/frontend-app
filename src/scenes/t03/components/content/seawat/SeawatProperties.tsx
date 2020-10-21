@@ -31,7 +31,7 @@ interface IProps {
     variableDensity: VariableDensity;
 }
 
-const seawatProperties = (props: IProps) => {
+const SeawatProperties = (props: IProps) => {
     const [swt, setSwt] = useState<IFlopySeawat>(props.packages.swt.toObject());
 
     const dispatch = useDispatch();
@@ -51,6 +51,7 @@ const seawatProperties = (props: IProps) => {
         return function cleanup() {
             handleSave();
         };
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     useEffect(() => {
@@ -119,6 +120,9 @@ const seawatProperties = (props: IProps) => {
         const seawat = FlopySeawat.fromObject(swt);
         const readOnly = props.model.readOnly;
         const transport = props.transport;
+
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore todo
         const {type} = match.params;
 
         switch (type) {
@@ -150,6 +154,8 @@ const seawatProperties = (props: IProps) => {
     };
 
     const renderSidebar = () => {
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore todo
         const {type} = match.params;
 
         const sideBar = [
@@ -195,4 +201,4 @@ const seawatProperties = (props: IProps) => {
     );
 };
 
-export default seawatProperties;
+export default SeawatProperties;

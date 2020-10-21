@@ -12,7 +12,7 @@ interface IProps {
     readonly: boolean;
 }
 
-const de4PackageProperties = (props: IProps) => {
+const De4PackageProperties = (props: IProps) => {
 
     const [mfPackage, setMfPackage] = useState<IFlopyModflowMfde4>(props.mfPackage.toObject());
     const {readonly} = props;
@@ -235,4 +235,4 @@ const de4PackageProperties = (props: IProps) => {
     );
 };
 
-export default de4PackageProperties;
+export default De4PackageProperties;

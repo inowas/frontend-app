@@ -1,10 +1,9 @@
-/* tslint:disable:quotemark object-literal-key-quotes */
+import {BoundaryCollection, ConstantHeadBoundary, WellBoundary} from '../../../../../core/model/modflow/boundaries';
+import {Geometry, Stressperiods} from '../../../../../core/model/modflow';
+import {IBoundary} from '../../../../../core/model/modflow/boundaries/Boundary.type';
+import {ICells} from '../../../../../core/model/geometry/Cells.type';
 import {LineString} from 'geojson';
 import Uuid from 'uuid';
-import {ICells} from '../../../../../core/model/geometry/Cells.type';
-import {Geometry, Stressperiods} from '../../../../../core/model/modflow';
-import {BoundaryCollection, ConstantHeadBoundary, WellBoundary} from '../../../../../core/model/modflow/boundaries';
-import {IBoundary} from '../../../../../core/model/modflow/boundaries/Boundary.type';
 
 test('BoundaryCollectionFromQuery', () => {
     const query = JSON.parse('[{"type":"Feature","geometry":{"type":"Point","coordinates":[8.822021,50.31675]},"' +
@@ -194,26 +193,26 @@ test('BoundaryCollection compareWith LineBoundary', () => {
     expect(bc1.compareWith(Stressperiods.fromDefaults(), bc2)).toEqual([{
         diff: {},
         id,
-        name: "NameOfConstantHead",
-        state: "noUpdate",
-        type: "chd"
+        name: 'NameOfConstantHead',
+        state: 'noUpdate',
+        type: 'chd'
     }]);
 
     const bc3 = new BoundaryCollection();
     expect(bc1.compareWith(Stressperiods.fromDefaults(), bc3)).toEqual([{
         diff: {},
         id,
-        name: "NameOfConstantHead",
-        state: "delete",
-        type: "chd"
+        name: 'NameOfConstantHead',
+        state: 'delete',
+        type: 'chd'
     }]);
 
     expect(bc3.compareWith(Stressperiods.fromDefaults(), bc1)).toEqual([{
         diff: {},
         id,
-        name: "NameOfConstantHead",
-        state: "add",
-        type: "chd"
+        name: 'NameOfConstantHead',
+        state: 'add',
+        type: 'chd'
     }]);
 
     const chb2: ConstantHeadBoundary = ConstantHeadBoundary.fromObject(chb1.toObject());
@@ -230,7 +229,7 @@ test('BoundaryCollection compareWith LineBoundary', () => {
         id,
         name: 'Updated',
         state: 'update',
-        type: "chd"
+        type: 'chd'
     }]);
 
 });

@@ -21,7 +21,7 @@ interface ISelectedParameter {
     axis: 'left' | 'right';
 }
 
-const visualization = (props: IProps) => {
+const Visualization = (props: IProps) => {
     const [dropdownData, setDropdownData] = useState<Array<{
         key: string, text: string, value: string
     }>>([]);
@@ -50,6 +50,7 @@ const visualization = (props: IProps) => {
             });
             return setParameters(cParameters);
         }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [selectedParameters]);
 
     useEffect(() => {
@@ -72,6 +73,7 @@ const visualization = (props: IProps) => {
                 return {key: p, text: p, value: p};
             })
         );
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     const handleChangeAxis = (type: string) => (e: SyntheticEvent<HTMLElement, Event>, {value}: any) => {
@@ -216,4 +218,4 @@ const visualization = (props: IProps) => {
     );
 };
 
-export default visualization;
+export default Visualization;

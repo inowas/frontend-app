@@ -15,7 +15,7 @@ import FlopyMt3dMtssm from '../../../../../core/model/flopy/packages/mt/FlopyMt3
 import FlopyMt3dPackage from '../../../../../core/model/flopy/packages/mt/FlopyMt3dPackage';
 import {EMessageState} from '../../../../../core/model/messages/Message.type';
 import MessagesCollection from '../../../../../core/model/messages/MessagesCollection';
-import {ModflowModel, Soilmodel, Transport} from '../../../../../core/model/modflow';
+import {ModflowModel, Soilmodel, Transport as TransportAlias} from '../../../../../core/model/modflow';
 import {IRootReducer} from '../../../../../reducers';
 import {sendCommand} from '../../../../../services/api';
 import ContentToolBar from '../../../../shared/ContentToolbar2';
@@ -46,10 +46,10 @@ interface IProps {
     model: ModflowModel;
     packages: FlopyPackages;
     soilmodel: Soilmodel;
-    transport: Transport;
+    transport: TransportAlias;
 }
 
-const transport = (props: IProps) => {
+const Transport = (props: IProps) => {
     const [mt, setMt] = useState<IFlopyMt3d>(props.packages.mt.toObject());
 
     const mtRef = useRef<IFlopyMt3d>();
@@ -66,6 +66,7 @@ const transport = (props: IProps) => {
         return function cleanup() {
             handleSave();
         };
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     useEffect(() => {
@@ -131,6 +132,9 @@ const transport = (props: IProps) => {
     const renderProperties = () => {
         const mt3d = FlopyMt3d.fromObject(mt);
         const readOnly = props.model.readOnly;
+
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore todo
         const {type} = match.params;
         const {packages} = props;
 
@@ -196,6 +200,8 @@ const transport = (props: IProps) => {
     };
 
     const renderSidebar = () => {
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore todo
         const {type} = match.params;
 
         return (
@@ -234,4 +240,4 @@ const transport = (props: IProps) => {
     );
 };
 
-export default transport;
+export default Transport;

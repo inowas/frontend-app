@@ -1,14 +1,15 @@
-import axios, {AxiosError} from 'axios';
-import getConfig from '../../config.default';
+import {Array2D, Array3D} from '../../core/model/geometry/Array2D.type';
+import {CallbackFunction, ErrorCallbackFunction} from '../../scenes/types';
+import {IBudgetData, IModflowFile, IRasterFileMetadata} from './types';
+import {IDateTimeValue} from '../../core/model/rtm/Sensor.type';
+import {IHeatTransportRequest} from '../../core/model/htm/Htm.type';
+import {ISimpleTool} from '../../core/model/types';
+import {InterpolationType} from '../../scenes/shared/rasterData/types';
 import AbstractCommand from '../../core/model/command/AbstractCommand';
 import FlopyPackages from '../../core/model/flopy/packages/FlopyPackages';
-import {Array2D, Array3D} from '../../core/model/geometry/Array2D.type';
-import {IDateTimeValue} from '../../core/model/rtm/Sensor.type';
-import {IMetaData, ISimpleTool} from '../../core/model/types';
-import {InterpolationType} from '../../scenes/shared/rasterData/types';
-import {CallbackFunction, ErrorCallbackFunction} from '../../scenes/types';
+import axios, {AxiosError} from 'axios';
+import getConfig from '../../config.default';
 import storeToCreate from '../../store';
-import {IBudgetData, IModflowFile, IRasterFileMetadata} from './types';
 
 export const {
     BASE_URL,
@@ -25,7 +26,7 @@ const getToken = () => {
     return store.getState().session.token;
 };
 
-const createApi = (token: boolean = false) => {
+const createApi = (token: string | null = null) => {
     const headers: {
         'Authorization'?: string;
         'Content-Type': string;
@@ -149,6 +150,18 @@ export const makeTimeProcessingRequest = (data: IDateTimeValue[], rule: string, 
     }).then((r) => r.data)
 );
 
+export const makeHeatTransportRequest = (data: IHeatTransportRequest) => {
+    const json = JSON.stringify(data);
+    return axios.request({
+        method: 'POST',
+        url: 'https://opencpu.inowas.com/ocpu/library/kwb.heatsine.opencpu/R/run_optimisation/json',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        data: json
+    }).then((r) => r.data);
+};
+
 export const fetchCalculationObservations = (calculationId: string) => (
     axios.request({
         method: 'GET',
@@ -261,7 +274,7 @@ export const fetchModflowFile = (
 export const fetchTool = (
     tool: string,
     id: string,
-    onSuccess: CallbackFunction<ISimpleTool<IMetaData>, void>,
+    onSuccess: CallbackFunction<ISimpleTool<any>, void>,
     onError: ErrorCallbackFunction
 ) => {
     const api = createApi(getToken());

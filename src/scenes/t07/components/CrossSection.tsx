@@ -26,7 +26,7 @@ interface IProps {
     selected: string[];
 }
 
-const crossSection = (props: IProps) => {
+const CrossSection = (props: IProps) => {
     const [selectedModels, setSelectedModels] = useState<IModflowModel[]>([]);
     const [data, setData] = useState<{ [id: string]: Array2D<number> }>({});
     const [layerValues, setLayerValues] = useState<string[][] | null>(null);
@@ -56,12 +56,14 @@ const crossSection = (props: IProps) => {
             setTotalTimes(basemodelCalculation.times.total_times);
         }
         setLayerValues(basemodelCalculation.layer_values);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     useEffect(() => {
         if (selectedModels.length > 0 && selectedLay !== null && selectedTotim !== null && selectedType !== null) {
             fetchData(selectedLay, selectedTotim, selectedType);
         }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [selectedModels, selectedLay, selectedTotim, selectedType]);
 
     useEffect(() => {
@@ -80,6 +82,7 @@ const crossSection = (props: IProps) => {
             });
             setSelectedModels(cSelectedModels);
         }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [props.models, props.selected]);
 
     const fetchData = (layer = selectedLay, totim = selectedTotim, type = selectedType) => {
@@ -257,4 +260,4 @@ const crossSection = (props: IProps) => {
     );
 };
 
-export default crossSection;
+export default CrossSection;

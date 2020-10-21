@@ -44,7 +44,7 @@ interface ISmoothParametersWithId {
     parameterId: string;
 }
 
-const zonesEditor = (props: IProps) => {
+const ZonesEditor = (props: IProps) => {
     const [activeIndex, setActiveIndex] = useState<number>(0);
     const [smoothParams, setSmoothParams] = useState<ISmoothParameters>({cycles: 1, distance: 1});
     const [rasterUploadModal, setRasterUploadModal] = useState<boolean>(false);
@@ -202,4 +202,4 @@ const zonesEditor = (props: IProps) => {
     );
 };
 
-export default (zonesEditor);
+export default (ZonesEditor);

@@ -35,7 +35,7 @@ const style = {
     }
 };
 
-const gridProperties = (props: IProps) => {
+const GridProperties = (props: IProps) => {
     const [activeInput, setActiveInput] = useState<string | null>(null);
     const [activeValue, setActiveValue] = useState<string>('');
     const [boundingBox, setBoundingBox] = useState<GeoJsonObject>(props.boundingBox.geoJson);
@@ -51,6 +51,7 @@ const gridProperties = (props: IProps) => {
 
     useEffect(() => {
         handleChangeRotation(props.rotation);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     useEffect(() => {
@@ -63,6 +64,7 @@ const gridProperties = (props: IProps) => {
         if (isCalculating) {
             return calculateRotation(rotation);
         }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [isCalculating]);
 
     useEffect(() => {
@@ -72,6 +74,7 @@ const gridProperties = (props: IProps) => {
             Math.round(dxCell(BoundingBox.fromGeoJson(boundingBox as AllGeoJSON),
                 GridSize.fromObject(gridSize)) * 10000) / 10
         ]);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [gridSize]);
 
     const calculateRotation = (r: number) => {
@@ -440,4 +443,4 @@ const gridProperties = (props: IProps) => {
     );
 };
 
-export default gridProperties;
+export default GridProperties;

@@ -1,3 +1,4 @@
+/* eslint-disable */
 import React, {useEffect} from 'react';
 import {IFlopyPackages} from '../../../core/model/flopy/packages/FlopyPackages.type';
 import {ICells} from '../../../core/model/geometry/Cells.type';
@@ -19,7 +20,6 @@ let w: Worker | undefined;
 const loadWorker = () => {
     let worker;
     try {
-        // tslint:disable-next-line:no-var-requires
         worker = require('worker-loader!./t03.worker');
     } catch (e) {
         if (process.env.NODE_ENV !== 'test') {
@@ -42,7 +42,6 @@ export const asyncWorker = (input: IProps['input']) => {
             }
 
             if (w) {
-                // @ts-ignore
                 w.removeEventListener('message', handleMessage);
                 w.terminate();
             }
@@ -61,14 +60,13 @@ export const asyncWorker = (input: IProps['input']) => {
     });
 };
 
-const workerComponent = (props: IProps) => {
+const WorkerComponent = (props: IProps) => {
     useEffect(() => {
         w = loadWorker();
         w.addEventListener('message', handleMessage);
 
         return () => {
             if (w) {
-                // @ts-ignore
                 w.removeEventListener('message', handleMessage);
                 w.terminate();
             }
@@ -106,4 +104,4 @@ const workerComponent = (props: IProps) => {
     return null;
 };
 
-export default workerComponent;
+export default WorkerComponent;

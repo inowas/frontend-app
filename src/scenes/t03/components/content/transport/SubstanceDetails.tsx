@@ -26,7 +26,7 @@ interface IProps {
     stressperiods: Stressperiods;
 }
 
-const substanceDetails = (props: IProps) => {
+const SubstanceDetails = (props: IProps) => {
     const [selectedBoundary, setSelectedBoundary] = useState<string | null>(null);
     const [substance, setSubstance] = useState<ISubstance | null>(null);
 
@@ -35,6 +35,7 @@ const substanceDetails = (props: IProps) => {
             (bc) => bc.id === selectedBoundary
         ).length === 1 ? selectedBoundary : null);
         setSubstance(props.substance ? props.substance.toObject() : null);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [props.substance]);
 
     const handleSelectBoundary = (id: string) => () => {
@@ -173,4 +174,4 @@ const substanceDetails = (props: IProps) => {
     );
 };
 
-export default substanceDetails;
+export default SubstanceDetails;

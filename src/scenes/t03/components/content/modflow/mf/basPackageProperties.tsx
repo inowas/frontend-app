@@ -18,7 +18,7 @@ interface IProps {
     soilmodel: Soilmodel;
 }
 
-const basPackageProperties = (props: IProps) => {
+const BasPackageProperties = (props: IProps) => {
     const [activeIndex, setActiveIndex] = useState<number>(0);
 
     const handleClickAccordion = (e: MouseEvent, titleProps: AccordionTitleProps) => {
@@ -188,4 +188,4 @@ const basPackageProperties = (props: IProps) => {
     );
 };
 
-export default basPackageProperties;
+export default BasPackageProperties;

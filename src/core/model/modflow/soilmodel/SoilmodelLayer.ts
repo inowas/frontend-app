@@ -190,7 +190,7 @@ class SoilmodelLayer {
         return this;
     }
 
-    public smoothParameter(gridSize: GridSize, parameter: string, cycles: number = 1, distance: number = 1) {
+    public smoothParameter(gridSize: GridSize, parameter: string, cycles = 1, distance = 1) {
         const lParameters = this.parameters.filter((p) => p.id === parameter);
 
         if (lParameters.length > 0) {

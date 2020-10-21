@@ -39,13 +39,14 @@ const arrayMoveItems = (arr: any[], from: number, to: number) => {
     return arr;
 };
 
-const processing = (props: IProps) => {
+const Processing = (props: IProps) => {
     const [addProcessing, setAddProcessing] = useState<string | null>(null);
     const [editProcessing, setEditProcessing] = useState<ValueProcessing | TimeProcessing | null>(null);
 
     useEffect(() => {
         const dsc = DataSourceCollection.fromObject(props.parameter.dataSources);
         dsc.mergedData().then((() => handleUpdateDataSources(dsc)));
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     const handleAddProcessing = (p: ValueProcessing | TimeProcessing) => {
@@ -322,4 +323,4 @@ const processing = (props: IProps) => {
     );
 };
 
-export default processing;
+export default Processing;

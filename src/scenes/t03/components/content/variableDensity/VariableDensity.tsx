@@ -19,7 +19,7 @@ import {
 import Command from '../../../commands/modflowModelCommand';
 import {messageDirty, messageSaving} from '../../../defaults/messages';
 
-const variableDensityProperties = () => {
+const VariableDensityProperties = () => {
     const T03 = useSelector((state: IRootReducer) => state.T03);
     const model = T03.model ? ModflowModel.fromObject(T03.model) : null;
     const transport = T03.transport ? Transport.fromObject(T03.transport) : null;
@@ -35,16 +35,11 @@ const variableDensityProperties = () => {
         saving: null
     });
 
-    if (!model || !variableDensity || !transport) {
-        return (
-            <Segment color={'grey'} loading={true}/>
-        );
-    }
-
     useEffect(() => {
         return function cleanup() {
             handleSave();
         };
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     useEffect(() => {
@@ -52,7 +47,14 @@ const variableDensityProperties = () => {
         if (variableDensity) {
             variableDensityRef.current = variableDensity;
         }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [messages, variableDensity]);
+
+    if (!model || !variableDensity || !transport) {
+        return (
+            <Segment color={'grey'} loading={true}/>
+        );
+    }
 
     const handleSave = () => {
         if (!editingState.current.dirty || !variableDensityRef.current) {
@@ -127,7 +129,7 @@ const variableDensityProperties = () => {
                                 {!transport.enabled &&
                                 <Message negative={true}>
                                     <Message.Header>Transport has to be active, to activate SEAWAT.</Message.Header>
-                                    <p>Navigate to Model Setup > Transport, to enable Transport and add a
+                                    <p>Navigate to Model Setup {'>'} Transport, to enable Transport and add a
                                         substance.</p>
                                 </Message>
                                 }
@@ -149,4 +151,4 @@ const variableDensityProperties = () => {
     );
 };
 
-export default variableDensityProperties;
+export default VariableDensityProperties;

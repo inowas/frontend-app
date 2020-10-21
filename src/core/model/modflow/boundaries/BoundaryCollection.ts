@@ -11,6 +11,8 @@ import {Boundary, BoundaryFactory} from './index';
 export interface IBoundaryComparisonItem {
     id: string;
     state: string | null;
+    // Todo use Record?
+    // eslint-disable-next-line @typescript-eslint/ban-types
     diff: object | null;
     type: BoundaryType;
     name: string;

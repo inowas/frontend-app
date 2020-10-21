@@ -1,10 +1,10 @@
-import React, {ReactChild} from 'react';
-import {useSelector} from 'react-redux';
-import {useParams} from 'react-router-dom';
 import {Button, Dropdown, DropdownProps, Grid, Icon, Message, Popup, Transition} from 'semantic-ui-react';
 import {EMessageState} from '../../core/model/messages/Message.type';
-import MessagesCollection from '../../core/model/messages/MessagesCollection';
 import {IRootReducer} from '../../reducers';
+import {useParams} from 'react-router-dom';
+import {useSelector} from 'react-redux';
+import MessagesCollection from '../../core/model/messages/MessagesCollection';
+import React, {ReactChild} from 'react';
 
 interface IProps {
     buttonBack?: boolean;
@@ -16,7 +16,7 @@ interface IProps {
     onUndo?: () => void;
 }
 
-const contentToolBar = (props: IProps) => {
+const ContentToolBar = (props: IProps) => {
     const {property} = useParams();
 
     const T03 = useSelector((state: IRootReducer) => state.T03);
@@ -29,7 +29,7 @@ const contentToolBar = (props: IProps) => {
     const renderButtonsRight = () => {
         const children: ReactChild[] = [];
 
-        if (!!props.onUndo) {
+        if (props.onUndo) {
             children.push(
                 <Popup
                     key="undo"
@@ -67,6 +67,7 @@ const contentToolBar = (props: IProps) => {
 
         if (children.length > 1) {
             return (
+                // eslint-disable-next-line react/no-children-prop
                 <Button.Group children={children}/>
             );
         }
@@ -132,4 +133,4 @@ const contentToolBar = (props: IProps) => {
     );
 };
 
-export default contentToolBar;
+export default ContentToolBar;

@@ -29,7 +29,7 @@ interface IProps {
     zones: ZonesCollection;
 }
 
-const zonesTable = (props: IProps) => {
+const ZonesTable = (props: IProps) => {
     const [activeRow, setActiveRow] = useState<string | null>(null);
     const [activeValue, setActiveValue] = useState<string>('');
     const relations = props.relations.all;
@@ -242,7 +242,9 @@ const zonesTable = (props: IProps) => {
                             </Label>
                         );
                     }
-                })}
+
+                    return null;
+                }).filter(x => x)}
             </Segment>
             }
             <Table>
@@ -262,4 +264,4 @@ const zonesTable = (props: IProps) => {
     );
 };
 
-export default zonesTable;
+export default ZonesTable;

@@ -19,7 +19,7 @@ const styles = {
     }
 };
 
-const userProfile = () => {
+const UserProfile = () => {
 
     const dispatch = useDispatch();
     const user = useSelector((state: IRootReducer) => state.user);
@@ -28,6 +28,7 @@ const userProfile = () => {
     const [institution, setInstitution] = useState<string>('');
     const [email, setEmail] = useState<string>('');
     const [showErrorMessages, setShowErrorMessages] = useState<boolean>(false);
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const [error, setError] = useState<boolean>(false);
     const [dirty, setDirty] = useState<boolean>(false);
     const [loading, setLoading] = useState<boolean>(false);
@@ -166,4 +167,4 @@ const userProfile = () => {
     );
 };
 
-export default userProfile;
+export default UserProfile;

@@ -26,9 +26,9 @@ interface IProps {
     withoutModal?: boolean;
 }
 
-const advancedCsvUpload = (props: IProps) => {
+const AdvancedCsvUpload = (props: IProps) => {
     const [columns, setColumns] = useState<TColumns>(props.columns);
-    const [metadata, setMetadata] = useState<ParseResult | null>(null);
+    const [metadata, setMetadata] = useState<ParseResult<any> | null>(null);
 
     const [dateTimeFormat, setDateTimeFormat] = useState<string>('DD.MM.YYYY H:m:s');
     const [firstRowIsHeader, setFirstRowIsHeader] = useState<boolean>(true);
@@ -62,6 +62,7 @@ const advancedCsvUpload = (props: IProps) => {
         if (metadata && parameterColumns && Object.keys(parameterColumns).length === columns.length) {
             setIsFetching(true);
         }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [firstRowIsHeader, parameterColumns]);
 
     useEffect(() => {
@@ -75,12 +76,14 @@ const advancedCsvUpload = (props: IProps) => {
                 }
             });
         }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [parsingData]);
 
     useEffect(() => {
         if (metadata && isFetching) {
             processData(metadata);
         }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [isFetching]);
 
     const handleBlurDateTimeFormat = () => {
@@ -97,10 +100,12 @@ const advancedCsvUpload = (props: IProps) => {
     };
 
     const handleChange = (f: (v: any) => void) => (e: any, d: any) => {
+        // eslint-disable-next-line no-prototype-builtins
         if (d.hasOwnProperty('value')) {
             f(d.value);
         }
 
+        // eslint-disable-next-line no-prototype-builtins
         if (d.hasOwnProperty('checked')) {
             f(d.checked);
         }
@@ -113,14 +118,17 @@ const advancedCsvUpload = (props: IProps) => {
         });
     };
 
-    const processData = ({data}: ParseResult) => {
-        if (!metadata || !parameterColumns ||
-            (parameterColumns && Object.keys(parameterColumns).length !== columns.length)) {
+    const processData = ({data}: ParseResult<any>) => {
+        if (
+            (!metadata) ||
+            (!parameterColumns) ||
+            (parameterColumns && Object.keys(parameterColumns).length !== columns.length)
+        ) {
             return;
         }
         const nData: any[][] = [];
         data.forEach((r, rKey) => {
-            if (!firstRowIsHeader || firstRowIsHeader && rKey > 0) {
+            if (!firstRowIsHeader || (firstRowIsHeader && rKey > 0)) {
                 const row = columns.map((c) => {
                     if (c.type === ECsvColumnType.DATE_TIME) {
                         return moment.utc(r[parameterColumns[c.value]], dateTimeFormat);
@@ -186,7 +194,7 @@ const advancedCsvUpload = (props: IProps) => {
         ));
     };
 
-    const renderContent = () => (
+    const renderContent = (props: IProps) => (
         <Grid>
             {(parsingData || isFetching) &&
             <Dimmer active={true} inverted={true}>
@@ -316,7 +324,7 @@ const advancedCsvUpload = (props: IProps) => {
             >
                 <Modal.Header>CSV Upload</Modal.Header>
                 <Modal.Content>
-                    {renderContent()}
+                    {renderContent(props)}
                 </Modal.Content>
                 <Modal.Actions>
                     <Button negative={true} onClick={props.onCancel}>Cancel</Button>
@@ -326,7 +334,7 @@ const advancedCsvUpload = (props: IProps) => {
         );
     }
 
-    return renderContent();
+    return renderContent(props);
 };
 
-export default advancedCsvUpload;
+export default AdvancedCsvUpload;

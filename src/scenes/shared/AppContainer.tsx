@@ -1,3 +1,5 @@
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-nocheck
 import React, {ReactNode} from 'react';
 
 import {Container, Dimmer, Loader, Segment} from 'semantic-ui-react';
@@ -34,8 +36,7 @@ interface IProps {
     children: ReactNode;
 }
 
-const appContainer = (props: IProps) => {
-
+const AppContainer = (props: IProps) => {
     if (props.loading) {
         return (
             <div>
@@ -65,4 +66,4 @@ const appContainer = (props: IProps) => {
     );
 };
 
-export default appContainer;
+export default AppContainer;

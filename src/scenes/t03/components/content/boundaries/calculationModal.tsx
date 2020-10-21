@@ -9,7 +9,7 @@ interface IProps {
     valueProperties: IValueProperty[];
 }
 
-const calculationModal = (props: IProps) => {
+const CalculationModal = (props: IProps) => {
     return (
         <Modal centered={false} open={true} dimmer={'blurring'}>
             <Modal.Content>
@@ -28,4 +28,4 @@ const calculationModal = (props: IProps) => {
     );
 };
 
-export default calculationModal;
+export default CalculationModal;

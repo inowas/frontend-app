@@ -41,7 +41,7 @@ const style = {
     }
 };
 
-const discretizationMap = (props: IProps) => {
+const DiscretizationMap = (props: IProps) => {
     const cellsRef = useRef<Cells | null>(null);
     const mapRef = useRef<Map>(null);
     const readOnlyRef = useRef<boolean>(true);
@@ -61,6 +61,7 @@ const discretizationMap = (props: IProps) => {
         }
 
         readOnlyRef.current = props.readOnly;
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     useEffect(() => {
@@ -247,4 +248,4 @@ const discretizationMap = (props: IProps) => {
     );
 };
 
-export default discretizationMap;
+export default DiscretizationMap;
