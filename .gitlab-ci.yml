@@ -52,7 +52,7 @@ deploy:dev:
     - dev
 
 build:smart-control:
-  image: node:10
+  image: node:12
   stage: build
   script:
     - yarn install
@@ -92,7 +92,7 @@ deploy:smart-control:
     - master
 
 build:training:
-  image: node:10
+  image: node:12
   stage: build
   script:
     - yarn install
@@ -132,7 +132,7 @@ deploy:training:
     - master
 
 build:prod:
-  image: node:10
+  image: node:12
   stage: build
   script:
     - yarn install
