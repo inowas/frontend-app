@@ -102,8 +102,7 @@ const PrometheusDatasourceEditor = (props: IProps) => {
             return;
         }
 
-        const ds = PrometheusDataSource.fromObject(dataSource.toObject());
-
+        const ds = dataSource.getClone();
         if (autoUpdate) {
             // Switch to fixed end date
             setEnd(moment.utc().unix());
@@ -116,7 +115,7 @@ const PrometheusDatasourceEditor = (props: IProps) => {
         setEnd(undefined);
         setAutoUpdate(true);
         ds.end = undefined;
-        return setDatasource(PrometheusDataSource.fromObject(ds.toObject()));
+        setDatasource(ds);
     };
 
     const handleChangeServer = (e: any, d: any) => {
@@ -133,8 +132,7 @@ const PrometheusDatasourceEditor = (props: IProps) => {
             return;
         }
 
-        const ds = PrometheusDataSource.fromObject(dataSource.toObject());
-
+        const ds = dataSource.getClone();
         if (param === 'start') {
             ds.start = start;
         }
@@ -151,8 +149,7 @@ const PrometheusDatasourceEditor = (props: IProps) => {
             ds.query = query;
         }
 
-        console.log(dataSource.toObject());
-        setDatasource(PrometheusDataSource.fromObject(ds.toObject()));
+        setDatasource(ds);
     };
 
     const adding = () => !(props.dataSource instanceof PrometheusDataSource);
@@ -161,7 +158,6 @@ const PrometheusDatasourceEditor = (props: IProps) => {
         return moment.unix(dt).format('YYYY/MM/DD');
     };
 
-    // tslint:disable-next-line:variable-name
     const RenderNoShape = () => null;
 
     const renderDiagram = () => {
@@ -240,7 +236,9 @@ const PrometheusDatasourceEditor = (props: IProps) => {
                                     <Form.Group>
                                         <DatePicker
                                             label={'Start'}
+                                            name={'start'}
                                             value={moment.unix(start).toDate()}
+                                            onChange={handleGenericChange((d) => setStart(moment.utc(d).unix()))}
                                             onBlur={handleBlur('start')}
                                             size={'small'}
                                         />
@@ -258,6 +256,7 @@ const PrometheusDatasourceEditor = (props: IProps) => {
                                             label={'End'}
                                             value={end ? moment.unix(end).toDate() : null}
                                             onBlur={handleBlur('end')}
+                                            onChange={handleGenericChange((d) => setEnd(moment.utc(d).unix()))}
                                             size={'small'}
                                         />
                                         <Form.Group grouped={true}>
@@ -323,7 +322,6 @@ const PrometheusDatasourceEditor = (props: IProps) => {
             </Modal.Actions>
         </Modal>
     );
-
 };
 
 export default PrometheusDatasourceEditor;

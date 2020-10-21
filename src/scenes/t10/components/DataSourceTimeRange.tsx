@@ -1,35 +1,35 @@
-import moment from 'moment';
-import React from 'react';
 import {DataSource} from '../../../core/model/rtm/Sensor.type';
+import React from 'react';
+import moment from 'moment';
 
 interface IProps {
     datasource: DataSource | null;
     color?: string;
+    dateTimeFormat?: 'string'
 }
 
 const DsTimeRange = (props: IProps) => {
 
-    const {datasource} = props;
-    if (!datasource) {
+    if (!props.datasource) {
         return null;
     }
 
-    const {data} = datasource;
-    if (!data) {
-        return null;
-    }
-
-    const beginTimeStamp = data[0].timeStamp;
-    const endTimeStamp = data[data.length - 1].timeStamp;
+    const beginTimeStamp = props.datasource.begin;
+    const endTimeStamp = props.datasource.end;
+    const dateTimeFormat = props.dateTimeFormat ? props.dateTimeFormat : 'YYYY/MM/DD';
 
     let begin = '';
     if (beginTimeStamp) {
-        begin = moment.unix(beginTimeStamp).format('YYYY/MM/DD');
+        begin = moment.unix(beginTimeStamp).format(dateTimeFormat);
     }
 
     let end = '';
     if (endTimeStamp) {
-        end = moment.unix(endTimeStamp).format('YYYY/MM/DD');
+        end = moment.unix(endTimeStamp).format(dateTimeFormat);
+    }
+
+    if (!endTimeStamp) {
+        end = moment.utc().format(dateTimeFormat);
     }
 
     return <span>{begin} - {end}</span>;

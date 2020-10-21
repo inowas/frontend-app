@@ -37,6 +37,14 @@ class PrometheusDataSource extends GenericObject<IPrometheusDataSource> {
         this._props.start = value;
     }
 
+    get begin(): number {
+        return this._props.start;
+    }
+
+    set begin(value) {
+        this._props.start = value;
+    }
+
     get end(): number | undefined {
         return this._props.end;
     }

@@ -1,6 +1,6 @@
-import React from 'react';
 import {Button, Grid, Icon, Menu, Popup} from 'semantic-ui-react';
 import {Sensor} from '../../../core/model/rtm';
+import React from 'react';
 
 interface IProps {
     onAdd: () => void;
@@ -50,7 +50,7 @@ const SensorList = (props: IProps) => {
                                 trigger={<Icon name="ellipsis horizontal"/>}
                                 content={
                                     <div>
-                                        <Button.Group size="small">
+                                        <Button.Group size="small" style={{zIndex: 100000}}>
                                             <Popup
                                                 trigger={<Button icon={'clone'} onClick={handleClone(s.id)}/>}
                                                 content="Clone"
@@ -67,7 +67,7 @@ const SensorList = (props: IProps) => {
                                     </div>
                                 }
                                 on={'click'}
-                                position={'right center'}
+                                position={'bottom center'}
                             />
                             }
                             {s.name}
