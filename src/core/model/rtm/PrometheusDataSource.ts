@@ -1,7 +1,7 @@
-import moment from 'moment';
 import {GenericObject} from '../genericObject/GenericObject';
 import {IDateTimeValue, IPrometheusDataSource} from './Sensor.type';
 import {retrievePrometheusData} from './SensorDataHelper';
+import moment from 'moment';
 
 class PrometheusDataSource extends GenericObject<IPrometheusDataSource> {
 
@@ -61,7 +61,7 @@ class PrometheusDataSource extends GenericObject<IPrometheusDataSource> {
         return `${this.protocol}://${this.hostname}/api/v1/query_range?` +
             `query=${encodeURIComponent(this.query)}&` +
             `start=${this.start}&` +
-            `end=${this.end ? this.end : moment.utc().unix()}&` +
+            `end=${this.end ? this.end : moment.utc().startOf('minute').unix()}&` +
             `step=${this.step}`;
     }
 
