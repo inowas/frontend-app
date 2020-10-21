@@ -52,8 +52,21 @@ const HeatTransportInput = (props: IProps) => {
     const [timesteps, setTimesteps] = useState<number[]>();             // UNIX[]
 
     useEffect(() => {
+        const fetchInstances = () => {
+            setIsFetching(true);
+            fetchUrl('tools/T10?public=false',
+                (data) => {
+                    setT10Instances(data);
+                    setIsFetching(false);
+                },
+                () => {
+                    setErrors([{id: uuid.v4(), message: 'Fetching t10 instances failed.'}]);
+                    setIsFetching(false);
+                }
+            );
+        };
+
         fetchInstances();
-        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     useEffect(() => {
@@ -61,17 +74,44 @@ const HeatTransportInput = (props: IProps) => {
     }, [props.input]);
 
     useEffect(() => {
+        const fetchRtm = (id: string) => {
+            setIsFetching(true);
+            fetchUrl(`tools/T10/${id}`,
+                (m) => {
+                    setRtm(m);
+                    setIsFetching(false);
+                },
+                () => {
+                    setErrors([{id: uuid.v4(), message: `Fetching t10 instance ${id} failed.`}]);
+                    setIsFetching(false);
+                }
+            );
+        };
+
         if (input.rtmId) {
             fetchRtm(input.rtmId);
         }
-        // eslint-disable-next-line react-hooks/exhaustive-deps
+
     }, [input.rtmId]);
 
     useEffect(() => {
+        const fetchSensor = (id: string) => {
+            if (!rtm) {
+                return;
+            }
+            const s = sensorsWithTemperature(rtm).filter((swt) => swt.id === id);
+            if (s.length > 0) {
+                const param = s[0].parameters.all.filter((p) => p.type === 't');
+                if (param.length > 0) {
+                    setParameter(param[0]);
+                    return setSensor(s[0].toObject());
+                }
+            }
+        };
+
         if (rtm && input.sensorId) {
             fetchSensor(input.sensorId);
         }
-        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [input.sensorId, rtm]);
 
     useEffect(() => {
@@ -120,48 +160,6 @@ const HeatTransportInput = (props: IProps) => {
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [parameter, recalculate]);
 
-    const fetchInstances = () => {
-        setIsFetching(true);
-        fetchUrl('tools/T10?public=false',
-            (data) => {
-                setT10Instances(data);
-                setIsFetching(false);
-            },
-            () => {
-                setErrors(errors.concat([{id: uuid.v4(), message: 'Fetching t10 instances failed.'}]));
-                setIsFetching(false);
-            }
-        );
-    };
-
-    const fetchRtm = (id: string) => {
-        setIsFetching(true);
-        fetchUrl(`tools/T10/${id}`,
-            (m) => {
-                setRtm(m);
-                setIsFetching(false);
-            },
-            () => {
-                setErrors(errors.concat([{id: uuid.v4(), message: `Fetching t10 instance ${id} failed.`}]));
-                setIsFetching(false);
-            }
-        );
-    };
-
-    const fetchSensor = (id: string) => {
-        if (!rtm) {
-            return;
-        }
-        const s = sensorsWithTemperature(rtm).filter((swt) => swt.id === id);
-        if (s.length > 0) {
-            const param = s[0].parameters.all.filter((p) => p.type === 't');
-            if (param.length > 0) {
-                setParameter(param[0]);
-                return setSensor(s[0].toObject());
-            }
-        }
-    };
-
     const sensorsWithTemperature = (rtm: IRtm) => Rtm.fromObject(rtm).sensors.all.filter((s) =>
         s.parameters.filterBy('type', 't').length > 0
     );
@@ -194,11 +192,11 @@ const HeatTransportInput = (props: IProps) => {
         if (typeof value !== 'string' || !rtm) {
             return null;
         }
-        setRecalculate(true);
         props.onChange(HtmInput.fromObject({
             ...input,
             sensorId: value
         }));
+        setRecalculate(true);
     };
 
     const handleDismissError = (id: string) => () => setErrors(errors.filter((e) => e.id !== id));

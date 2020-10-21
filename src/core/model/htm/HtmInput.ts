@@ -1,7 +1,7 @@
-import {IHeatTransportInput} from "./Htm.type";
-import _ from "lodash";
+import {GenericObject} from '../genericObject/GenericObject';
+import {IHeatTransportInput} from './Htm.type';
 
-export default class HtmInput {
+export default class HtmInput extends GenericObject<IHeatTransportInput> {
     get data() {
         return this._props.data;
     }
@@ -22,17 +22,7 @@ export default class HtmInput {
         return this._props.type;
     }
 
-    _props: IHeatTransportInput;
-
-    constructor(props: IHeatTransportInput) {
-        this._props = _.cloneDeep(props);
-    }
-
     public static fromObject(props: IHeatTransportInput) {
-        return new HtmInput(props)
-    }
-
-    public toObject() {
-        return _.cloneDeep(this._props);
+        return new HtmInput(props);
     }
 }

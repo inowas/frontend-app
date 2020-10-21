@@ -1,9 +1,10 @@
-import {cloneDeep, includes} from 'lodash';
+import {GenericObject} from '../genericObject/GenericObject';
 import {IHtm} from './Htm.type';
-import HtmInput from "./HtmInput";
-import uuid from "uuid";
+import {cloneDeep, includes} from 'lodash';
+import HtmInput from './HtmInput';
+import uuid from 'uuid';
 
-export default class Htm {
+export default class Htm extends GenericObject<IHtm> {
 
     get id(): string {
         return this._props.id;
@@ -101,12 +102,6 @@ export default class Htm {
 
     public static fromObject(obj: IHtm) {
         return new Htm(obj);
-    }
-
-    private readonly _props: IHtm;
-
-    constructor(data: IHtm) {
-        this._props = cloneDeep(data);
     }
 
     public toObject(): IHtm {
