@@ -1,23 +1,19 @@
 import {DataSourceCollection, Rtm} from '../../../core/model/rtm';
 import {
-    Dimmer,
     DropdownProps,
     Form,
-    Loader,
     Message,
     Segment
 } from 'semantic-ui-react';
+import {HeatTransportInputChart} from '.';
 import {IDateTimeValue, ISensor, ISensorParameter} from '../../../core/model/rtm/Sensor.type';
 import {IHeatTransportInput} from '../../../core/model/htm/Htm.type';
 import {IRtm} from '../../../core/model/rtm/Rtm.type';
 import {IToolInstance} from '../../dashboard/defaults/tools';
-import {LTOB} from 'downsample';
 import {ProcessingCollection} from '../../../core/model/rtm/processing';
-import {ReferenceLine, ResponsiveContainer, Scatter, ScatterChart, XAxis, YAxis} from 'recharts';
-import {fetchUrl, makeTimeProcessingRequest} from '../../../services/api';
+import {fetchApiWithToken, makeTimeProcessingRequest} from '../../../services/api';
 import HtmInput from '../../../core/model/htm/HtmInput';
 import React, {SyntheticEvent, useEffect, useState} from 'react';
-import moment from 'moment';
 import uuid from 'uuid';
 
 interface IProps {
@@ -34,11 +30,13 @@ interface IError {
 }
 
 const HeatTransportInput = (props: IProps) => {
+
     const [isFetching, setIsFetching] = useState<boolean>(true);
 
     const [errors, setErrors] = useState<IError[]>([]);
 
     const [input, setInput] = useState<IHeatTransportInput>(props.input.toObject());
+    const [data, setData] = useState<IHeatTransportInput['data']>(undefined);
 
     const [t10Instances, setT10Instances] = useState<IToolInstance[]>([]);
     const [rtm, setRtm] = useState<IRtm>();
@@ -52,21 +50,20 @@ const HeatTransportInput = (props: IProps) => {
     const [timesteps, setTimesteps] = useState<number[]>();             // UNIX[]
 
     useEffect(() => {
-        const fetchInstances = () => {
-            setIsFetching(true);
-            fetchUrl('tools/T10?public=false',
-                (data) => {
-                    setT10Instances(data);
-                    setIsFetching(false);
-                },
-                () => {
-                    setErrors([{id: uuid.v4(), message: 'Fetching t10 instances failed.'}]);
-                    setIsFetching(false);
-                }
-            );
+        const fetchInstances = async () => {
+            try {
+                setIsFetching(true);
+                const res = await fetchApiWithToken('tools/T10?public=false');
+                setT10Instances(res.data);
+            } catch (err) {
+                setErrors([{id: uuid.v4(), message: 'Fetching t10 instances failed.'}]);
+            } finally {
+                setIsFetching(false);
+            }
         };
 
         fetchInstances();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     useEffect(() => {
@@ -74,44 +71,47 @@ const HeatTransportInput = (props: IProps) => {
     }, [props.input]);
 
     useEffect(() => {
-        const fetchRtm = (id: string) => {
-            setIsFetching(true);
-            fetchUrl(`tools/T10/${id}`,
-                (m) => {
-                    setRtm(m);
-                    setIsFetching(false);
-                },
-                () => {
-                    setErrors([{id: uuid.v4(), message: `Fetching t10 instance ${id} failed.`}]);
-                    setIsFetching(false);
-                }
-            );
+        if (!input.rtmId) {
+            return;
+        }
+
+        const fetchRtm = async (id: string) => {
+            try {
+                setIsFetching(true);
+                const res = await fetchApiWithToken(`tools/T10/${id}`);
+                setRtm(res.data);
+            } catch (err) {
+                setErrors([{id: uuid.v4(), message: `Fetching t10 instance ${id} failed.`}]);
+            } finally {
+                setIsFetching(false);
+            }
         };
 
-        if (input.rtmId) {
-            fetchRtm(input.rtmId);
-        }
+        fetchRtm(input.rtmId);
 
     }, [input.rtmId]);
 
     useEffect(() => {
+        if (!(rtm && input.sensorId)) {
+            return;
+        }
+
         const fetchSensor = (id: string) => {
             if (!rtm) {
                 return;
             }
-            const s = sensorsWithTemperature(rtm).filter((swt) => swt.id === id);
-            if (s.length > 0) {
-                const param = s[0].parameters.all.filter((p) => p.type === 't');
+
+            const sensors = sensorsWithTemperature(rtm).filter((swt) => swt.id === id);
+            if (sensors.length > 0) {
+                const param = sensors[0].parameters.all.filter((p) => p.type === 't');
                 if (param.length > 0) {
+                    setSensor(sensors[0].toObject());
                     setParameter(param[0]);
-                    return setSensor(s[0].toObject());
                 }
             }
         };
 
-        if (rtm && input.sensorId) {
-            fetchSensor(input.sensorId);
-        }
+        fetchSensor(input.sensorId);
     }, [input.sensorId, rtm]);
 
     useEffect(() => {
@@ -128,35 +128,52 @@ const HeatTransportInput = (props: IProps) => {
             const ts = input.data.map((t) => t.timeStamp);
             setTimesteps(ts);
         }
+
+        if (!data && input.data) {
+            setData(input.data);
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [input.data]);
 
     useEffect(() => {
-        if (parameter && recalculate) {
-            setIsFetching(true);
-            const dataSourceCollection = DataSourceCollection.fromObject(parameter.dataSources);
-            dataSourceCollection.mergedData().then((res) => {
-                const processed = ProcessingCollection.fromObject(parameter.processings);
-                processed.apply(res).then((r) => {
-                    const uniqueData = r.filter((value, index, self) => {
-                        return self.findIndex((v) => v.timeStamp === value.timeStamp) === index;
-                    });
-                    makeTimeProcessingRequest(uniqueData, '1d', 'cubic').then((sd: IDateTimeValue[]) => {
-                        if (sd.length > 0) {
-                            const ts = sd.map((t) => t.timeStamp);
-                            setRecalculate(false);
-                            setTimesteps(ts);
-                            setTempTime([0, ts.length - 1]);
-                            props.onChange(HtmInput.fromObject({
-                                ...input,
-                                data: sd,
-                                timePeriod: [ts[0], ts[ts.length - 1]],
-                            }));
-                        }
-                        setIsFetching(false);
-                    });
-                });
-            });
+        if (!parameter || !recalculate) {
+            return;
         }
+
+        const fetchData = async () => {
+            try {
+                setIsFetching(true);
+                setData(undefined);
+                const dataSourceCollection = DataSourceCollection.fromObject(parameter.dataSources);
+                const mergedData = await dataSourceCollection.mergedData();
+                const processings = ProcessingCollection.fromObject(parameter.processings);
+                const processedData = await processings.apply(mergedData);
+                const uniqueData = processedData.filter((value, index, self) => self.findIndex((v) => v.timeStamp === value.timeStamp) === index);
+                const timeProcessedData = await makeTimeProcessingRequest(uniqueData, '1d', 'cubic');
+                if (timeProcessedData.length > 0) {
+                    const ts: number[] = timeProcessedData.map((t: IDateTimeValue) => t.timeStamp);
+                    setTimesteps(ts);
+                    setTempTime([0, ts.length - 1]);
+
+                    const htmInput = {
+                        ...input,
+                        data: timeProcessedData,
+                        timePeriod: [ts[0], ts[ts.length - 1]] as [number, number]
+                    };
+
+                    setData(timeProcessedData);
+                    setInput(htmInput);
+                    props.onChange(HtmInput.fromObject(htmInput));
+                }
+            } catch (err) {
+                setErrors([{id: uuid.v4(), message: 'Data processing failed.'}]);
+            } finally {
+                setIsFetching(false);
+                setRecalculate(false);
+            }
+        };
+
+        fetchData();
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [parameter, recalculate]);
 
@@ -182,91 +199,28 @@ const HeatTransportInput = (props: IProps) => {
         if (typeof value !== 'string') {
             return null;
         }
-        props.onChange(HtmInput.fromObject({
+
+        setInput({
             ...input,
-            rtmId: value
-        }));
+            rtmId: value,
+            data: undefined
+        });
     };
 
     const handleChangeSensor = (e: SyntheticEvent<HTMLElement, Event>, {value}: DropdownProps) => {
         if (typeof value !== 'string' || !rtm) {
             return null;
         }
-        props.onChange(HtmInput.fromObject({
-            ...input,
-            sensorId: value
-        }));
+
+        setInput({...input, sensorId: value});
         setRecalculate(true);
     };
 
     const handleDismissError = (id: string) => () => setErrors(errors.filter((e) => e.id !== id));
 
-    const renderChart = () => {
-        const sensorData = input.data;
-        if (!sensorData) {
-            return null;
-        }
-        return (
-            <ResponsiveContainer height={300}>
-                <ScatterChart>
-                    <XAxis
-                        dataKey={'x'}
-                        domain={[sensorData[0].timeStamp, sensorData[sensorData.length - 1].timeStamp]}
-                        name={'Date Time'}
-                        tickFormatter={formatDateTimeTicks}
-                        type={'number'}
-                    />
-                    <YAxis
-                        label={{value: 'T', angle: -90, position: 'insideLeft'}}
-                        dataKey={'y'}
-                        name={''}
-                        domain={['auto', 'auto']}
-                    />
-                    {tempTime && timesteps &&
-                    <ReferenceLine
-                        x={timesteps[tempTime[0]]}
-                        stroke="#000"
-                        strokeDasharray="3 3"
-                    />
-                    }
-                    {tempTime && timesteps &&
-                    <ReferenceLine
-                        x={timesteps[tempTime[1]]}
-                        stroke="#000"
-                        strokeDasharray="3 3"
-                    />
-                    }
-                    <Scatter
-                        data={downSampledDataLTOB(sensorData)}
-                        line={{strokeWidth: 2, stroke: '#3498DB'}}
-                        lineType={'joint'}
-                        name={'p'}
-                        shape={<RENDER_NO_SHAPE/>}
-                    />
-                </ScatterChart>
-            </ResponsiveContainer>
-        );
-    };
-
-    const formatDateTimeTicks = (dt: number) => {
-        return moment.unix(dt).format('YYYY-MM-DD');
-    };
-
-    const downSampledDataLTOB = (d: IDateTimeValue[]) => d ? LTOB(d.map((ds) => ({
-        x: ds.timeStamp,
-        y: ds.value
-    })), 500) : [];
-
-    const RENDER_NO_SHAPE = () => null;
-
     return (
         <div>
             <Segment color="grey">
-                {isFetching &&
-                <Dimmer active={true} inverted={true}>
-                    <Loader inverted={true}>Loading</Loader>
-                </Dimmer>
-                }
                 <h4>{props.label}</h4>
                 <Form.Select
                     disabled={props.readOnly || !rtm}
@@ -292,7 +246,12 @@ const HeatTransportInput = (props: IProps) => {
                     options={getSensorOptions()}
                     onChange={handleChangeSensor}
                 />
-                {props.input.data && renderChart()}
+                <HeatTransportInputChart
+                    data={data}
+                    tempTime={tempTime}
+                    timesteps={timesteps}
+                    isLoading={isFetching}
+                />
             </Segment>
             {errors.map((error, key) => (
                 <Message key={key} negative={true} onDismiss={handleDismissError(error.id)}>
@@ -304,4 +263,4 @@ const HeatTransportInput = (props: IProps) => {
     );
 };
 
-export default HeatTransportInput;
+export default React.memo(HeatTransportInput);

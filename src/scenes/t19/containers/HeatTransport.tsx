@@ -1,5 +1,5 @@
 import {AppContainer} from '../../shared';
-import {Dimmer, Grid, Icon, Loader} from 'semantic-ui-react';
+import {Grid, Icon, Loader} from 'semantic-ui-react';
 import {HeatTransportController} from '../components';
 import {IHtm} from '../../../core/model/htm/Htm.type';
 import {IToolMetaDataEdit} from '../../shared/simpleTools/ToolMetaData/ToolMetaData.type';
@@ -54,27 +54,20 @@ const HeatTransport = () => {
     }, [history, id]);
 
     const handleSaveMetaData = (tool: IToolMetaDataEdit) => {
+        if (!htm) {
+            return;
+        }
         const {name, description} = tool;
         const isPublic = tool.public;
-
-        if (htm) {
-            const cHtm = Htm.fromObject(htm);
-            cHtm.name = name;
-            cHtm.description = description;
-            cHtm.public = isPublic;
-            setHtm(cHtm.toObject);
-            handleSave();
-        }
+        setHtm({...htm, name, description, public: isPublic});
+        handleSave(htm);
     };
 
     const handleChange = (h: Htm) => {
         setHtm(h.toObject());
     };
 
-    const handleSave = () => {
-        if (!htm) {
-            return null;
-        }
+    const handleSave = (htm: IHtm) => {
         setIsFetching(true);
         sendCommand(
             SimpleToolsCommand.updateToolInstance(htm),
@@ -84,9 +77,9 @@ const HeatTransport = () => {
 
     if (!htm) {
         return (
-            <Dimmer active={true} inverted={true}>
+            <AppContainer navbarItems={navigation} loading={isFetching}>
                 <Loader inverted={true}>Loading</Loader>
-            </Dimmer>
+            </AppContainer>
         );
     }
 
@@ -107,6 +100,7 @@ const HeatTransport = () => {
                 <Grid.Row>
                     <Grid.Column width={16}>
                         <HeatTransportController
+                            key={htm.id}
                             htm={Htm.fromObject(htm)}
                             onChange={handleChange}
                             onSave={handleSave}
