@@ -5,7 +5,7 @@ import {
     Segment
 } from 'semantic-ui-react';
 import {HeatTransportInput, HeatTransportResults} from './index';
-import {IHeatTransportRequest, IHeatTransportRequestOptions} from '../../../core/model/htm/Htm.type';
+import {IHeatTransportRequest, IHeatTransportRequestOptions, IHtm} from '../../../core/model/htm/Htm.type';
 import {includes} from 'lodash';
 import {makeHeatTransportRequest} from '../../../services/api';
 import Htm from '../../../core/model/htm/Htm';
@@ -16,7 +16,7 @@ import moment from 'moment';
 interface IProps {
     htm: Htm;
     onChange: (htm: Htm) => void;
-    onSave: () => void;
+    onSave: (htm: IHtm) => void;
 }
 
 const HeatTransportController = (props: IProps) => {
@@ -78,7 +78,7 @@ const HeatTransportController = (props: IProps) => {
             cHtm.data.results = JSON.parse(r3);
             cHtm.data.options = requestOptions;
             props.onChange(Htm.fromObject(cHtm));
-            props.onSave();
+            props.onSave(cHtm);
             setIsFetching(false);
         });
     };

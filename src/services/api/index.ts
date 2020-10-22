@@ -296,6 +296,11 @@ export const fetchUrl = (
         .catch(onError);
 };
 
+export const fetchApiWithToken = (url: string) => {
+    const api = createApi(getToken());
+    return api.get(url);
+};
+
 export const fetchUrlAndUpdate = (
     url: string,
     onUpcast: (data: any) => any,
