@@ -1,6 +1,16 @@
 import {Button, Checkbox, Icon, Menu, MenuItemProps, Segment, Table} from 'semantic-ui-react';
+import {
+    CartesianGrid,
+    Label,
+    ReferenceDot,
+    ResponsiveContainer,
+    Scatter,
+    ScatterChart,
+    Tooltip,
+    XAxis,
+    YAxis
+} from 'recharts';
 import {IHeatTransportResults} from '../../../core/model/htm/Htm.type';
-import {Label, ReferenceDot, ResponsiveContainer, Scatter, ScatterChart, Tooltip, XAxis, YAxis} from 'recharts';
 import {SemanticCOLORS} from 'semantic-ui-react/dist/commonjs/generic';
 import {downloadFile} from '../../shared/simpleTools/helpers';
 import React, {MouseEvent, useEffect, useState} from 'react';
@@ -8,6 +18,7 @@ import _ from 'lodash';
 import moment from 'moment';
 
 interface IProps {
+    dateTimeFormat: string;
     results: IHeatTransportResults;
 }
 
@@ -50,10 +61,12 @@ const HeatTransportResults = (props: IProps) => {
 
     const renderChart = (type: string, dataObs: Array<{ x: number, y: number }>,
                          dataSim: Array<{ x: number, y: number }>) => {
-        const RENDER_NO_SHAPE = () => null;
-
         const formatDateTimeTicks = (dt: number) => {
-            return moment.unix(dt).format('YYYY-MM-DD');
+            return moment.unix(dt).format(props.dateTimeFormat);
+        };
+
+        const formatTemperatureTicks = (t: number) => {
+            return t.toFixed(2);
         };
 
         const filteredPoints: Array<{
@@ -68,37 +81,63 @@ const HeatTransportResults = (props: IProps) => {
             type: point.point_type
         }));
 
+        const getTicks = () => {
+            if (timesteps && useSameTimes) {
+                const dateStart = moment.unix(timesteps[0]);
+                const dateEnd = moment.unix(timesteps[1]);
+                const interim = dateStart.clone();
+                const timeValues: number[] = [];
+
+                while (dateEnd > interim || interim.format('M') === dateEnd.format('M')) {
+                    timeValues.push(moment(interim.format('YYYY-MM')).unix());
+                    interim.add(1,'month');
+                }
+                return timeValues;
+            }
+            return undefined;
+        };
+
+        const getTooltip = (value: any, name: string) => {
+            if (name === 'x') {
+                return [moment.unix(value).format(props.dateTimeFormat), 'Date'];
+            }
+            return [`${value}°C`, 'T'];
+        };
+
         return (
             <ResponsiveContainer height={300}>
                 <ScatterChart>
+                    <CartesianGrid strokeDasharray="3 3" />
                     <XAxis
                         dataKey={'x'}
                         domain={useSameTimes ? timesteps : ['auto', 'auto']}
-                        name={'Date Time'}
+                        name={'x'}
                         tickFormatter={formatDateTimeTicks}
+                        ticks={getTicks()}
                         type={'number'}
                     />
                     <YAxis
-                        label={{value: 'T', angle: -90, position: 'insideLeft'}}
+                        label={{value: 'T [°C]', angle: -90, position: 'insideLeft'}}
                         dataKey={'y'}
-                        name={''}
+                        name={'y'}
                         domain={['auto', 'auto']}
+                        tickFormatter={formatTemperatureTicks}
                     />
-                    <Tooltip cursor={{strokeDasharray: '3 3'}}/>
                     <Scatter
                         data={dataObs}
                         line={{strokeWidth: 2, stroke: '#db3434'}}
                         lineType={'joint'}
                         name={'observed'}
-                        shape={<RENDER_NO_SHAPE/>}
+                        fill='#00000000'
                     />
                     <Scatter
                         data={dataSim}
                         line={{strokeWidth: 2, stroke: '#3498DB'}}
                         lineType={'joint'}
                         name={'simulated'}
-                        shape={<RENDER_NO_SHAPE/>}
+                        fill='#00000000'
                     />
+                    <Tooltip formatter={getTooltip} cursor={{ strokeDasharray: '3 3' }}/>
                     {filteredPoints.map((point, key) => (
                         <ReferenceDot
                             key={key}

@@ -6,8 +6,10 @@ import {
 } from 'semantic-ui-react';
 import {HeatTransportInput, HeatTransportResults} from './index';
 import {IHeatTransportRequest, IHeatTransportRequestOptions, IHtm} from '../../../core/model/htm/Htm.type';
+import {IRootReducer} from '../../../reducers';
 import {includes} from 'lodash';
 import {makeHeatTransportRequest} from '../../../services/api';
+import {useSelector} from 'react-redux';
 import Htm from '../../../core/model/htm/Htm';
 import HtmInput from '../../../core/model/htm/HtmInput';
 import React, {FormEvent, useEffect, useState} from 'react';
@@ -24,6 +26,8 @@ const HeatTransportController = (props: IProps) => {
     const [activeInput, setActiveInput] = useState<string>();
     const [activeValue, setActiveValue] = useState<string>('');
     const [requestOptions, setRequestOptions] = useState<IHeatTransportRequestOptions>(props.htm.options);
+
+    const user = useSelector((state: IRootReducer) => state.user);
 
     useEffect(() => {
         setRequestOptions(props.htm.options);
@@ -96,6 +100,7 @@ const HeatTransportController = (props: IProps) => {
                     <Grid.Row>
                         <Grid.Column width={8}>
                             <HeatTransportInput
+                                dateTimeFormat={user.settings.dateFormat}
                                 input={props.htm.inputSw}
                                 label="Surface water"
                                 name="sw"
@@ -105,6 +110,7 @@ const HeatTransportController = (props: IProps) => {
                         </Grid.Column>
                         <Grid.Column width={8}>
                             <HeatTransportInput
+                                dateTimeFormat={user.settings.dateFormat}
                                 input={props.htm.inputGw}
                                 label="Groundwater"
                                 name="gw"
@@ -152,7 +158,7 @@ const HeatTransportController = (props: IProps) => {
                     </Grid.Row>
                 </Grid>
             </Form>
-            {props.htm.results && <HeatTransportResults results={props.htm.results}/>}
+            {props.htm.results && <HeatTransportResults dateTimeFormat={user.settings.dateFormat} results={props.htm.results}/>}
         </React.Fragment>
     );
 };
