@@ -12,6 +12,7 @@ import {IRtm} from '../../../core/model/rtm/Rtm.type';
 import {IToolInstance} from '../../dashboard/defaults/tools';
 import {ProcessingCollection} from '../../../core/model/rtm/processing';
 import {fetchApiWithToken, makeTimeProcessingRequest} from '../../../services/api';
+import {uniqBy} from 'lodash';
 import HtmInput from '../../../core/model/htm/HtmInput';
 import React, {SyntheticEvent, useEffect, useState} from 'react';
 import uuid from 'uuid';
@@ -53,8 +54,12 @@ const HeatTransportInput = (props: IProps) => {
         const fetchInstances = async () => {
             try {
                 setIsFetching(true);
-                const res = await fetchApiWithToken('tools/T10?public=false');
-                setT10Instances(res.data);
+                const privateT10Tools = (await fetchApiWithToken('tools/T10?public=false')).data;
+                const publicT10Tools = (await fetchApiWithToken('tools/T10?public=true')).data;
+
+                // Lets show an ordered List with the private projects first
+                const tools = uniqBy(privateT10Tools.concat(publicT10Tools), (t: IToolInstance) => t.id);
+                setT10Instances(tools);
             } catch (err) {
                 setErrors([{id: uuid.v4(), message: 'Fetching t10 instances failed.'}]);
             } finally {
@@ -223,7 +228,7 @@ const HeatTransportInput = (props: IProps) => {
             <Segment color="grey">
                 <h4>{props.label}</h4>
                 <Form.Select
-                    disabled={props.readOnly || !rtm}
+                    disabled={props.readOnly}
                     label="T10 Instance"
                     placeholder="Select instance"
                     fluid={true}
@@ -231,7 +236,7 @@ const HeatTransportInput = (props: IProps) => {
                     value={rtm ? rtm.id : undefined}
                     options={t10Instances.map((i) => ({
                         key: i.id,
-                        text: i.name,
+                        text: `${i.name} (${i.user_name})`,
                         value: i.id
                     }))}
                     onChange={handleChangeRtm}
