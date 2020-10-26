@@ -87,8 +87,8 @@ const HeatTransportController = (props: IProps) => {
         const htm = props.htm.getClone();
         props.onChange(htm.updateInput(value));
     };
-
     const readOnly = !includes(props.htm.permissions, 'w');
+
     return (
         <React.Fragment>
             <Form>
