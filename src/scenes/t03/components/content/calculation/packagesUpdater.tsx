@@ -40,6 +40,7 @@ const PackagesUpdater = () => {
         if (isProcessing) {
             recalculate();
         }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [isProcessing]);
 
     const recalculate = () => {

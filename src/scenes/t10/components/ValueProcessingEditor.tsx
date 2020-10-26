@@ -1,15 +1,16 @@
-import {LTOB} from 'downsample';
-import {DataPoint} from 'downsample/dist/types';
-import {cloneDeep} from 'lodash';
-import moment from 'moment';
-import React, {ChangeEvent, SyntheticEvent, useEffect, useState} from 'react';
-import {ResponsiveContainer, Scatter, ScatterChart, XAxis, YAxis} from 'recharts';
 import {Button, DropdownProps, Form, Grid, Header, InputOnChangeData, Label, Modal, Segment} from 'semantic-ui-react';
-import uuid from 'uuid';
-import DataSourceCollection from '../../../core/model/rtm/DataSourceCollection';
-import {IValueProcessingOperator} from '../../../core/model/rtm/processing/Processing.type';
-import ValueProcessing, {operators} from '../../../core/model/rtm/processing/ValueProcessing';
+import {DataPoint} from 'downsample';
+import {DatePicker} from '../../shared/uiComponents';
 import {IDateTimeValue} from '../../../core/model/rtm/Sensor.type';
+import {IValueProcessingOperator} from '../../../core/model/rtm/processing/Processing.type';
+import {LTOB} from 'downsample';
+import {ResponsiveContainer, Scatter, ScatterChart, XAxis, YAxis} from 'recharts';
+import {cloneDeep} from 'lodash';
+import DataSourceCollection from '../../../core/model/rtm/DataSourceCollection';
+import React, {ChangeEvent, SyntheticEvent, useEffect, useState} from 'react';
+import ValueProcessing, {operators} from '../../../core/model/rtm/processing/ValueProcessing';
+import moment from 'moment';
+import uuid from 'uuid';
 
 interface IProps {
     dsc: DataSourceCollection;
@@ -56,13 +57,14 @@ const ValueProcessingEditor = (props: IProps) => {
         setOperator(p.operator);
         setValue(p.value);
         setProcessing(p);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     useEffect(() => {
         if (processing) {
             process(processing, props.dsc);
         }
-
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [processing]);
 
     useEffect(() => {
@@ -90,7 +92,7 @@ const ValueProcessingEditor = (props: IProps) => {
         }
 
         return handleBlur();
-
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [operator, begin, end, value]);
 
     const handleSave = () => {
@@ -103,19 +105,6 @@ const ValueProcessingEditor = (props: IProps) => {
         dsc.mergedData().then((rd) => {
             p.apply(cloneDeep(rd)).then((d) => setProcessedData(d));
         });
-    };
-
-    const handleGenericChange = (f: (v: any) => void) => (e: any, d: any) => {
-
-        if (d && d.hasOwnProperty('value')) {
-            return f(d.value);
-        }
-
-        if (d && d.hasOwnProperty('checked')) {
-            return f(d.checked);
-        }
-
-        return f(e.target.value);
     };
 
     const handleValueChange = (e: ChangeEvent<HTMLInputElement>, d: InputOnChangeData) => {
@@ -205,29 +194,17 @@ const ValueProcessingEditor = (props: IProps) => {
                                 <Label as={'div'} color={'blue'} ribbon={true}>Time range</Label>
                                 <Form>
                                     <Form.Group widths={'equal'}>
-                                        <Form.Input
-                                            fluid={true}
+                                        <DatePicker
+                                            onBlur={handleBlur}
                                             label={'Start'}
-                                            type={'date'}
-                                            value={
-                                                isNaN(begin) ?
-                                                    moment.unix(0).format('YYYY-MM-DD') :
-                                                    moment.unix(begin).format('YYYY-MM-DD')
-                                            }
-                                            onChange={handleGenericChange((d) => setBegin(moment.utc(d).unix()))}
-                                            onBlur={handleBlur}
+                                            value={isNaN(begin) ? moment.unix(0).toDate() : moment.unix(begin).toDate()}
+                                            size={'small'}
                                         />
-                                        <Form.Input
-                                            fluid={true}
-                                            label={'End'}
-                                            type={'date'}
-                                            value={
-                                                isNaN(end) ?
-                                                    moment.utc().format('YYYY-MM-DD') :
-                                                    moment.unix(end).format('YYYY-MM-DD')
-                                            }
-                                            onChange={handleGenericChange((d) => setEnd(moment.utc(d).unix()))}
+                                        <DatePicker
                                             onBlur={handleBlur}
+                                            label={'End'}
+                                            value={isNaN(end) ? moment.utc().toDate() : moment.unix(end).toDate()}
+                                            size={'small'}
                                         />
                                     </Form.Group>
                                 </Form>

@@ -133,6 +133,13 @@ const availableTools: ITool[] = [
         subPath: '',
         role: ROLE_USER,
         instances: []
+    }, {
+        slug: 'T19',
+        name: 'Heat transport',
+        path: '/tools/',
+        subPath: '',
+        role: ROLE_USER,
+        instances: []
     }
 ];
 

@@ -6,7 +6,7 @@ import {usePrevious} from '../helpers/customHooks';
 
 interface IProps {
     baseClasses?: string;
-    onUploaded: (response: ParseResult) => any;
+    onUploaded: (response: ParseResult<any>) => any;
     uploadState: IUploadState;
 }
 
@@ -26,6 +26,7 @@ const CsvUpload = (props: IProps) => {
         if (!prevUploadState || prevUploadState.id !== props.uploadState.id) {
             setModalOpen(props.uploadState.error);
         }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [props.uploadState]);
 
     const handleUploadCSV = (e: ChangeEvent<HTMLInputElement>) => {

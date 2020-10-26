@@ -12,6 +12,9 @@ const initialState = () => ({
         email: '',
         institution: ''
     },
+    settings: {
+        dateFormat: 'YYYY/MM/DD'
+    },
     fetched: false
 });
 
@@ -24,6 +27,9 @@ export interface IUserReducer {
         name: string;
         email: string
     };
+    settings: {
+        dateFormat: string
+    }
     roles: any[];
     enabled: boolean;
     fetched: boolean;
@@ -39,6 +45,7 @@ export const user = (state: IUserReducer = initialState(), action: any) => {
                 email: action.payload.email || state.email,
                 roles: action.payload.roles || state.roles,
                 profile: action.payload.profile || state.profile,
+                settings: action.payload.settings || state.settings,
                 enabled: action.payload.enabled || state.enabled,
                 fetched: true
             };

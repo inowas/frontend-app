@@ -1,19 +1,21 @@
-import React, {useEffect, useState} from 'react';
-import {Redirect, RouteComponentProps, withRouter} from 'react-router-dom';
+import {DataSources, Processing, SensorMetaData, Sensors, Visualization} from '../components/index';
 import {Grid, Icon, Message} from 'semantic-ui-react';
-import {Rtm, Sensor} from '../../../core/model/rtm';
 import {IRtm} from '../../../core/model/rtm/Rtm.type';
 import {ISensorParameter} from '../../../core/model/rtm/Sensor.type';
+import {IToolMetaDataEdit} from '../../shared/simpleTools/ToolMetaData/ToolMetaData.type';
+import {Redirect, useLocation, useParams, useRouteMatch} from 'react-router-dom';
+import {Rtm, Sensor} from '../../../core/model/rtm';
 import {fetchUrl, sendCommand} from '../../../services/api';
 import AppContainer from '../../shared/AppContainer';
-import ToolNavigation from '../../shared/complexTools/toolNavigation';
+import React, {useEffect, useState} from 'react';
 import SimpleToolsCommand from '../../shared/simpleTools/commands/SimpleToolsCommand';
 import ToolMetaData from '../../shared/simpleTools/ToolMetaData';
-import {IToolMetaDataEdit} from '../../shared/simpleTools/ToolMetaData/ToolMetaData.type';
-import {HeatTransport} from '../components/heatTransport';
-import {DataSources, Processing, SensorMetaData, Sensors, Visualization} from '../components/index';
+import ToolNavigation from '../../shared/complexTools/toolNavigation';
 
-export interface IProps extends RouteComponentProps<{ id: string, property: string, pid: string }> {
+interface IRouterProps {
+    id: string;
+    property: string;
+    type?: string;
 }
 
 const menuItems = [
@@ -36,16 +38,6 @@ const menuItems = [
                 icon: <Icon name="expand"/>
             }
         ]
-    },
-    {
-        header: 'Computation',
-        items: [
-            {
-                name: 'Heat Transport',
-                property: 'heat-transport',
-                icon: <Icon name="thermometer half"/>
-            }
-        ]
     }
 ];
 
@@ -57,16 +49,20 @@ const navigation = [{
 
 const tool = 'T10';
 
-const RTM = (props: IProps) => {
+const RTM = () => {
 
-    const {id} = props.match.params;
+    const params: IRouterProps = useParams();
+
+    const {id} = params;
+    const match = useRouteMatch();
+    const location = useLocation();
 
     const [isDirty, setDirty] = useState<boolean>(false);
     const [isError, setError] = useState<boolean>(false);
     const [fetching, setFetching] = useState<boolean>(false);
     const [rtm, setRtm] = useState<IRtm | null>(null);
-    const [selectedParameterId, setSelectedParameterId] = useState<string | null>(null);
     const [selectedSensorId, setSelectedSensorId] = useState<string | null>(null);
+    const [selectedParameterId, setSelectedParameterId] = useState<string | null>(null);
 
     useEffect(() => {
         setFetching(true);
@@ -81,11 +77,30 @@ const RTM = (props: IProps) => {
                 setError(false);
             }
         );
-    }, []);
+    }, [id]);
 
     useEffect(() => {
         setDirty(true);
     }, [rtm]);
+
+    useEffect(() => {
+        if (rtm === null || selectedSensorId === null) {
+            return setSelectedParameterId(null);
+        }
+
+        const sensor = Rtm.fromObject(rtm).sensors.findById(selectedSensorId);
+        if (sensor === null) {
+            return setSelectedParameterId(null);
+        }
+
+        if (sensor.parameters.length === 0) {
+            return setSelectedParameterId(null);
+        }
+
+        setSelectedParameterId(sensor.parameters.first.id);
+
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [selectedSensorId]);
 
     const handleUpdateSensor = (sensor: Sensor) => {
         if (!rtm) {
@@ -133,6 +148,7 @@ const RTM = (props: IProps) => {
     };
 
     const onchange = (r: Rtm) => {
+        setSelectedParameterId(null);
         return setRtm(r.toObject());
     };
 
@@ -158,6 +174,13 @@ const RTM = (props: IProps) => {
             parameter = sensor.parameters.findById(selectedParameterId);
         }
 
+        if (sensor && !selectedParameterId) {
+            if (sensor.parameters.length > 0) {
+                parameter = sensor.parameters.first;
+                setSelectedParameterId(parameter.id);
+            }
+        }
+
         if (property === 'sensor-visualization') {
             return (
                 <Visualization
@@ -166,20 +189,12 @@ const RTM = (props: IProps) => {
             );
         }
 
-        if (property === 'heat-transport') {
-            return (
-                <HeatTransport
-                    rtm={Rtm.fromObject(rtm)}
-                />
-            );
-        }
-
         if (!['sensor-parameters', 'sensor-setup', 'sensor-processing'].includes(property)) {
-            const path = props.match.path;
+            const path = match.path;
             const basePath = path.split(':')[0];
             return (
                 <Redirect
-                    to={basePath + props.match.params.id + '/sensor-setup' + props.location.search}
+                    to={basePath + params.id + '/sensor-setup' + location.search}
                 />
             );
         }
@@ -196,6 +211,7 @@ const RTM = (props: IProps) => {
                 <SensorMetaData
                     rtm={Rtm.fromObject(rtm)}
                     sensor={sensor}
+                    selectedParameterId={selectedParameterId}
                     onChange={handleUpdateSensor}
                     onChangeSelectedParameterId={setSelectedParameterId}
                 />
@@ -256,7 +272,7 @@ const RTM = (props: IProps) => {
                         <ToolNavigation navigationItems={menuItems}/>
                     </Grid.Column>
                     <Grid.Column width={13}>
-                        {renderContent(props.match.params.property)}
+                        {renderContent(params.property)}
                     </Grid.Column>
                 </Grid.Row>
             </Grid>
@@ -264,4 +280,4 @@ const RTM = (props: IProps) => {
     );
 };
 
-export default withRouter<IProps>(RTM);
+export default RTM;

@@ -1,10 +1,9 @@
-import {Point} from 'geojson';
-import {cloneDeep} from 'lodash';
-import React, {ChangeEvent, useState} from 'react';
 import {Button, Form, Grid, Header, InputOnChangeData, Modal} from 'semantic-ui-react';
-import Uuid from 'uuid';
+import {Point} from 'geojson';
 import {Rtm, Sensor} from '../../../core/model/rtm';
 import {SensorMap} from './index';
+import React, {ChangeEvent, useState} from 'react';
+import Uuid from 'uuid';
 
 interface IProps {
     rtm: Rtm;
@@ -12,47 +11,33 @@ interface IProps {
     onCancel: () => void;
 }
 
-interface IActiveInput {
-    name: string;
-    value: string;
-}
-
 const AddSensor = (props: IProps) => {
     const [name, setName] = useState<string>('New Sensor');
-    const [activeInput, setActiveInput] = useState<IActiveInput | null>(null);
     const [geolocation, setGeolocation] = useState<Point | null>(null);
+    const [lat, setLat] = useState<string | null>(null);
+    const [long, setLong] = useState<string | null>(null);
 
     const handleChange = (func: any) => (e: any, data: any) => {
         const value = data.value ? data.value : data.checked;
         func(value);
     };
 
-    const handleLocalChange = (e: ChangeEvent<HTMLInputElement>, data: InputOnChangeData) => setActiveInput({
-        name: data.name,
-        value: data.value
-    });
+    const handleLocalChange = (e: ChangeEvent<HTMLInputElement>, data: InputOnChangeData) => {
+        if (data.name === 'lat') {
+            setLat(data.value);
+        }
+
+        if (data.name === 'long') {
+            setLong(data.value);
+        }
+    };
 
     const handleChangeGeolocation = () => {
-        if (geolocation && activeInput) {
-            const n = activeInput.name;
-            const value = parseFloat(activeInput.value);
-
-            if (isNaN(value)) {
-                setActiveInput(null);
-                return;
-            }
-
-            const g = cloneDeep(geolocation);
-            if (n === 'lat') {
-                g.coordinates[1] = value;
-            }
-
-            if (n === 'lon') {
-                g.coordinates[0] = value;
-            }
-
-            setActiveInput(null);
-            setGeolocation(g);
+        if (latIsValid() && longIsValid()) {
+            setGeolocation({
+                type: 'Point',
+                coordinates: [parseFloat(long as string), parseFloat(lat as string)]
+            });
         }
     };
 
@@ -68,8 +53,25 @@ const AddSensor = (props: IProps) => {
         }
     };
 
+    const latIsValid = (): boolean => {
+        if (lat === null) {
+            return false;
+        }
+
+        return parseFloat(lat) >= -90 && parseFloat(lat) <= 90;
+    };
+
+    const longIsValid = () => {
+        if (long === null) {
+            return false;
+        }
+        return parseFloat(long) >= -180 && parseFloat(long) <= 180;
+    };
+
     const handleChangeGeometry = (geometry: Point) => {
         setGeolocation(geometry);
+        setLong(geometry.coordinates[0].toString(10));
+        setLat(geometry.coordinates[1].toString(10));
     };
 
     return (
@@ -87,26 +89,22 @@ const AddSensor = (props: IProps) => {
                                     value={name}
                                     onChange={handleChange(setName)}
                                 />
-                                {geolocation &&
                                 <div>
                                     <Form.Input
                                         label={'Lat'}
                                         name={'lat'}
-                                        value={activeInput && activeInput.name === 'lat' ?
-                                            activeInput.value : geolocation.coordinates[1]}
+                                        value={lat ? lat : ''}
                                         onBlur={handleChangeGeolocation}
                                         onChange={handleLocalChange}
                                     />
                                     <Form.Input
                                         label={'Long'}
                                         name={'lon'}
-                                        value={activeInput && activeInput.name === 'lon' ?
-                                            activeInput.value : geolocation.coordinates[0]}
+                                        value={long ? long : ''}
                                         onBlur={handleChangeGeolocation}
                                         onChange={handleLocalChange}
                                     />
                                 </div>
-                                }
                             </Form>
                         </Grid.Column>
                         <Grid.Column width={12}>

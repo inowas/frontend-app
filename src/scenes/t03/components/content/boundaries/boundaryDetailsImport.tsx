@@ -43,6 +43,7 @@ class BoundaryDetailsImport extends React.Component<IProps, IState> {
         };
     }
 
+    // eslint-disable-next-line react/no-deprecated
     public componentWillReceiveProps(nextProps: IProps) {
         if (!nextProps.boundary) {
             return;
@@ -73,7 +74,8 @@ class BoundaryDetailsImport extends React.Component<IProps, IState> {
             value = [data.value];
         }
         const boundary = this.props.boundary;
-        // @ts-ignore
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore // todo
         boundary[name] = value;
         return this.props.onChange(boundary);
     };
@@ -90,8 +92,10 @@ class BoundaryDetailsImport extends React.Component<IProps, IState> {
 
     public renderLayerSelection = () => {
         const {boundary} = this.props;
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
         const multipleLayers = ['chd', 'ghb'].includes(boundary.type);
 
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
         let options = {enabled: false, label: '', name: ''};
 
         switch (boundary.type) {
@@ -102,6 +106,7 @@ class BoundaryDetailsImport extends React.Component<IProps, IState> {
                 options = {enabled: true, label: 'Evapotranspiration option', name: 'nevtop'};
                 break;
             default:
+                // eslint-disable-next-line @typescript-eslint/no-unused-vars
                 options = {enabled: false, label: '', name: ''};
                 break;
         }

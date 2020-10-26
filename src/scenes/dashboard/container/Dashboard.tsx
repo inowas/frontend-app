@@ -48,6 +48,7 @@ const Dashboard = (props: IProps) => {
 
     useEffect(() => {
         fetchInstances(activeTool.slug, showPublicInstances);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     if (!activeTool) {

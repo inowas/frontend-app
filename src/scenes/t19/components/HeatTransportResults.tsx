@@ -1,11 +1,11 @@
+import {Button, Checkbox, Icon, Menu, MenuItemProps, Segment, Table} from 'semantic-ui-react';
+import {IHeatTransportResults} from '../../../core/model/htm/Htm.type';
+import {Label, ReferenceDot, ResponsiveContainer, Scatter, ScatterChart, Tooltip, XAxis, YAxis} from 'recharts';
+import {SemanticCOLORS} from 'semantic-ui-react/dist/commonjs/generic';
+import {downloadFile} from '../../shared/simpleTools/helpers';
+import React, {MouseEvent, useEffect, useState} from 'react';
 import _ from 'lodash';
 import moment from 'moment';
-import React, {MouseEvent, useEffect, useState} from 'react';
-import {Label, ReferenceDot, ResponsiveContainer, Scatter, ScatterChart, Tooltip, XAxis, YAxis} from 'recharts';
-import {Button, Checkbox, Icon, Menu, MenuItemProps, Segment, Table} from 'semantic-ui-react';
-import {SemanticCOLORS} from 'semantic-ui-react/dist/commonjs/generic';
-import {downloadFile} from '../../../shared/simpleTools/helpers';
-import {IHeatTransportResults} from './types';
 
 interface IProps {
     results: IHeatTransportResults;
@@ -172,7 +172,7 @@ const HeatTransportResults = (props: IProps) => {
         );
     };
 
-    const renderData = (data: Array<{ type: string } & { [key: string]: number }>) => {
+    const renderData = (data: Array<{ type: string } & { [key: string]: number }>, digits = 4) => {
         const dataSw = data.filter((row) => row.type === 'surface-water');
         const dataGw = data.filter((row) => row.type === 'groundwater');
 
@@ -203,8 +203,10 @@ const HeatTransportResults = (props: IProps) => {
                     {keys.map((name, key) => (
                         <Table.Row key={key}>
                             <Table.Cell>{name}</Table.Cell>
-                            <Table.Cell>{dataSw[0].hasOwnProperty(name) ? dataSw[0][name] : 'NULL'}</Table.Cell>
-                            <Table.Cell>{dataGw[0].hasOwnProperty(name) ? dataGw[0][name] : 'NULL'}</Table.Cell>
+                            {/* eslint-disable-next-line no-prototype-builtins */}
+                            <Table.Cell>{dataSw[0].hasOwnProperty(name) ? dataSw[0][name].toFixed(digits) : 'NULL'}</Table.Cell>
+                            {/* eslint-disable-next-line no-prototype-builtins */}
+                            <Table.Cell>{dataGw[0].hasOwnProperty(name) ? dataGw[0][name].toFixed(digits) : 'NULL'}</Table.Cell>
                         </Table.Row>
                     ))}
                 </Table.Body>
@@ -249,8 +251,8 @@ const HeatTransportResults = (props: IProps) => {
                                 <Table.Cell>{traveltime.point_type}</Table.Cell>
                                 <Table.Cell>{keySw.length > 0 ? traveltime[keySw[0]] : 'NULL'}</Table.Cell>
                                 <Table.Cell>{keyGw.length > 0 ? traveltime[keyGw[0]] : 'NULL'}</Table.Cell>
-                                <Table.Cell>{traveltime.traveltime_thermal_days}</Table.Cell>
-                                <Table.Cell>{traveltime.traveltime_hydraulic_days}</Table.Cell>
+                                <Table.Cell>{traveltime.traveltime_thermal_days.toFixed(0)}</Table.Cell>
+                                <Table.Cell>{traveltime.traveltime_hydraulic_days.toFixed(0)}</Table.Cell>
                             </Table.Row>
                         );
                     })}
@@ -277,7 +279,7 @@ const HeatTransportResults = (props: IProps) => {
                                 <Icon name="download"/> CSV
                             </Button>
                         </div>
-                        {renderData(props.results.paras)}
+                        {renderData(props.results.paras, 0)}
                     </React.Fragment>
                 );
             case 2:

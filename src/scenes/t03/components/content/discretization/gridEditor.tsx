@@ -44,12 +44,14 @@ const GridEditor = (props: IProps) => {
     useEffect(() => {
         setGridSizeLocal(props.model.gridSize);
         intersectionRef.current = 50;
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     useEffect(() => {
         if (gridSizeLocal && (gridSizeLocal.nX !== gridSize.nX || gridSizeLocal.nY !== gridSize.nY)) {
             setGridSizeLocal(props.model.gridSize);
         }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [props.model.gridSize.nX, props.model.gridSize.nY]);
 
     if (!soilmodel || !boundaryCollection) {

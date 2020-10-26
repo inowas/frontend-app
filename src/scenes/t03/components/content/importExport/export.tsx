@@ -36,6 +36,8 @@ const ExportUI = () => {
             type: 'application/json;charset=utf-8;'
         });
 
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
         if (window.navigator.msSaveBlob) {
             // FOR IE BROWSER
             navigator.msSaveBlob(blob, filename);

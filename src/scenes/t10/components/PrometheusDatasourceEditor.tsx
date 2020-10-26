@@ -1,12 +1,13 @@
-import {LTOB} from 'downsample';
-import {DataPoint} from 'downsample/dist/types';
-import moment from 'moment';
-import React, {useEffect, useState} from 'react';
-import {ResponsiveContainer, Scatter, ScatterChart, XAxis, YAxis} from 'recharts';
 import {Button, Form, Grid, Header, Label, Modal, Segment, TextArea} from 'semantic-ui-react';
-import uuid from 'uuid';
-import PrometheusDataSource from '../../../core/model/rtm/PrometheusDataSource';
+import {DataPoint} from 'downsample';
+import {DatePicker} from '../../shared/uiComponents';
+import {LTOB} from 'downsample';
+import {ResponsiveContainer, Scatter, ScatterChart, XAxis, YAxis} from 'recharts';
 import {usePrevious} from '../../shared/simpleTools/helpers/customHooks';
+import PrometheusDataSource from '../../../core/model/rtm/PrometheusDataSource';
+import React, {useEffect, useState} from 'react';
+import moment from 'moment';
+import uuid from 'uuid';
 
 interface IProps {
     dataSource?: PrometheusDataSource;
@@ -64,6 +65,7 @@ const PrometheusDatasourceEditor = (props: IProps) => {
         setStep(ds.step);
         setQuery(ds.query);
         setDatasource(ds);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     useEffect(() => {
@@ -71,7 +73,7 @@ const PrometheusDatasourceEditor = (props: IProps) => {
             dataSource.data = undefined;
             fetchData(dataSource);
         }
-    }, [dataSource]);
+    }, [dataSource, prevUrl]);
 
     const handleSave = () => {
         if (dataSource) {
@@ -81,10 +83,12 @@ const PrometheusDatasourceEditor = (props: IProps) => {
 
     const handleGenericChange = (f: (v: any) => void) => (e: any, d: any) => {
 
+        // eslint-disable-next-line no-prototype-builtins
         if (d && d.hasOwnProperty('value')) {
             return f(d.value);
         }
 
+        // eslint-disable-next-line no-prototype-builtins
         if (d && d.hasOwnProperty('checked')) {
             return f(d.checked);
         }
@@ -98,8 +102,7 @@ const PrometheusDatasourceEditor = (props: IProps) => {
             return;
         }
 
-        const ds = PrometheusDataSource.fromObject(dataSource.toObject());
-
+        const ds = dataSource.getClone();
         if (autoUpdate) {
             // Switch to fixed end date
             setEnd(moment.utc().unix());
@@ -112,7 +115,7 @@ const PrometheusDatasourceEditor = (props: IProps) => {
         setEnd(undefined);
         setAutoUpdate(true);
         ds.end = undefined;
-        return setDatasource(PrometheusDataSource.fromObject(ds.toObject()));
+        setDatasource(ds);
     };
 
     const handleChangeServer = (e: any, d: any) => {
@@ -129,8 +132,7 @@ const PrometheusDatasourceEditor = (props: IProps) => {
             return;
         }
 
-        const ds = PrometheusDataSource.fromObject(dataSource.toObject());
-
+        const ds = dataSource.getClone();
         if (param === 'start') {
             ds.start = start;
         }
@@ -147,7 +149,7 @@ const PrometheusDatasourceEditor = (props: IProps) => {
             ds.query = query;
         }
 
-        setDatasource(PrometheusDataSource.fromObject(ds.toObject()));
+        setDatasource(ds);
     };
 
     const adding = () => !(props.dataSource instanceof PrometheusDataSource);
@@ -156,7 +158,6 @@ const PrometheusDatasourceEditor = (props: IProps) => {
         return moment.unix(dt).format('YYYY/MM/DD');
     };
 
-    // tslint:disable-next-line:variable-name
     const RenderNoShape = () => null;
 
     const renderDiagram = () => {
@@ -217,7 +218,7 @@ const PrometheusDatasourceEditor = (props: IProps) => {
                                         width={6}
                                         name={'server'}
                                         selection={true}
-                                        value={dataSource && dataSource.hostname || server || undefined}
+                                        value={dataSource ? dataSource.hostname : (server || undefined)}
                                         onChange={handleChangeServer}
                                         options={servers.map((s) => ({key: s.url, value: s.url, text: s.url}))}
                                     />
@@ -233,12 +234,13 @@ const PrometheusDatasourceEditor = (props: IProps) => {
                                 <Label as={'div'} color={'blue'} ribbon={true}>Time range</Label>
                                 <Form>
                                     <Form.Group>
-                                        <Form.Input
+                                        <DatePicker
                                             label={'Start'}
-                                            type={'date'}
-                                            value={start && moment.unix(start).format('YYYY-MM-DD')}
+                                            name={'start'}
+                                            value={moment.unix(start).toDate()}
                                             onChange={handleGenericChange((d) => setStart(moment.utc(d).unix()))}
                                             onBlur={handleBlur('start')}
+                                            size={'small'}
                                         />
                                         <Form.Input
                                             label={'Step size'}
@@ -249,14 +251,13 @@ const PrometheusDatasourceEditor = (props: IProps) => {
                                         />
                                     </Form.Group>
                                     <Form.Group>
-                                        <Form.Input
+                                        <DatePicker
                                             disabled={autoUpdate}
                                             label={'End'}
-                                            type={'date'}
-                                            value={end ? moment.unix(end).format('YYYY-MM-DD')
-                                                : moment.utc().format('YYYY-MM-DD')}
-                                            onChange={handleGenericChange((d) => setEnd(moment.utc(d).unix()))}
+                                            value={end ? moment.unix(end).toDate() : null}
                                             onBlur={handleBlur('end')}
+                                            onChange={handleGenericChange((d) => setEnd(moment.utc(d).unix()))}
+                                            size={'small'}
                                         />
                                         <Form.Group grouped={true}>
                                             <label>Auto update</label>
@@ -314,14 +315,13 @@ const PrometheusDatasourceEditor = (props: IProps) => {
                 <Button
                     positive={true}
                     onClick={handleSave}
-                    disabled={!dataSource || dataSource && !!dataSource.error}
+                    disabled={!dataSource || (dataSource && !!dataSource.error)}
                 >
                     Apply
                 </Button>
             </Modal.Actions>
         </Modal>
     );
-
 };
 
 export default PrometheusDatasourceEditor;

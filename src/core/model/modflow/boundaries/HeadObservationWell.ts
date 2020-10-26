@@ -121,7 +121,7 @@ export default class HeadObservationWell extends PointBoundary {
         return this;
     }
 
-    public removeDateTime(id: number, opId?: string) {
+    public removeDateTime(id: number) {
         const dateTimes: string[] = [];
         const spValues: ISpValues = [];
         this._props.properties.date_times.forEach((dt: string, idx: number) => {

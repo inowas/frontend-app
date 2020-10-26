@@ -101,6 +101,8 @@ const CriteriaEditor = (props: IProps) => {
             return;
         }
 
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
         criterion[name as CriterionIndex] = value as CriteriaType;
         return handleChangeCriterion(Criterion.fromObject(criterion));
     };
@@ -126,6 +128,8 @@ const CriteriaEditor = (props: IProps) => {
             return;
         }
 
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
         criterion[name as CriterionIndex] = value;
         return setCriteria(criteriaCollection.update(criterion).toObject());
     };

@@ -80,6 +80,9 @@ const toolNames = [
     }, {
         slug: 'T18',
         name: 'SAT basin design',
+    }, {
+        slug: 'T19',
+        name: 'Heat transport'
     }
 ];
 

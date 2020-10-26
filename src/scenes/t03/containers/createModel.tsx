@@ -71,10 +71,12 @@ const CreateModel = () => {
 
     useEffect(() => {
         recalculate();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [geometry]);
 
     useEffect(() => {
         validate();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [boundingBox]);
 
     const getModel = () => {

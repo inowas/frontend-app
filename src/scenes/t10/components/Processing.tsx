@@ -46,6 +46,7 @@ const Processing = (props: IProps) => {
     useEffect(() => {
         const dsc = DataSourceCollection.fromObject(props.parameter.dataSources);
         dsc.mergedData().then((() => handleUpdateDataSources(dsc)));
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     const handleAddProcessing = (p: ValueProcessing | TimeProcessing) => {

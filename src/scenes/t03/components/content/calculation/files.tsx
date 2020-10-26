@@ -1,13 +1,12 @@
-import React, {useEffect, useState} from 'react';
-import {useSelector} from 'react-redux';
-
 import {Button, Grid, Header, Icon, List, Popup, Segment} from 'semantic-ui-react';
-import {ModflowModel} from '../../../../../core/model/modflow';
-import {IRootReducer} from '../../../../../reducers';
 import {IModflowFile} from '../../../../../services/api/types';
+import {IRootReducer} from '../../../../../reducers';
+import {ModflowModel} from '../../../../../core/model/modflow';
+import {useSelector} from 'react-redux';
+import React, {useEffect, useState} from 'react';
 import Terminal from '../../../../shared/complexTools/Terminal';
 
-import {fetchModflowFile, MODFLOW_CALCULATION_URL} from '../../../../../services/api';
+import {MODFLOW_CALCULATION_URL, fetchModflowFile} from '../../../../../services/api';
 
 const ModflowFiles = () => {
 

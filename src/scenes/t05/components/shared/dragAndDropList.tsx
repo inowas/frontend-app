@@ -121,42 +121,45 @@ const dragAndDropList = (props: IProps) => {
                                 index={key}
                                 key={key}
                             >
-                                {(dProvided: DraggableProvided) => (
-                                    <div
-                                        ref={dProvided.innerRef}
-                                        {...dProvided.draggableProps}
-                                        {...dProvided.dragHandleProps}
-                                    >
-                                        <Segment style={styles.segment}>
-                                            <div style={styles.columnLeft}>
-                                                {item.rank}
-                                            </div>
-                                            <div style={styles.column}>
-                                                {item.data}
-                                            </div>
-                                            <div
-                                                style={styles.columnRight as CSSProperties}
-                                            >
-                                                {!props.readOnly &&
-                                                <Button.Group size="mini">
-                                                    {key !== 0 &&
-                                                    <Button
-                                                        icon="arrow up"
-                                                        onClick={handleArrowClick(key, key - 1)}
-                                                    />
+                                {(dProvided: DraggableProvided) => {
+                                    return (
+                                        // @ts-ignore todo
+                                        <div
+                                            ref={dProvided.innerRef}
+                                            {...dProvided.draggableProps}
+                                            {...dProvided.dragHandleProps}
+                                        >
+                                            <Segment style={styles.segment}>
+                                                <div style={styles.columnLeft}>
+                                                    {item.rank}
+                                                </div>
+                                                <div style={styles.column}>
+                                                    {item.data}
+                                                </div>
+                                                <div
+                                                    style={styles.columnRight as CSSProperties}
+                                                >
+                                                    {!props.readOnly &&
+                                                    <Button.Group size="mini">
+                                                        {key !== 0 &&
+                                                        <Button
+                                                            icon="arrow up"
+                                                            onClick={handleArrowClick(key, key - 1)}
+                                                        />
+                                                        }
+                                                        {key !== props.items.length - 1 &&
+                                                        <Button
+                                                            icon="arrow down"
+                                                            onClick={handleArrowClick(key, key + 1)}
+                                                        />
+                                                        }
+                                                    </Button.Group>
                                                     }
-                                                    {key !== props.items.length - 1 &&
-                                                    <Button
-                                                        icon="arrow down"
-                                                        onClick={handleArrowClick(key, key + 1)}
-                                                    />
-                                                    }
-                                                </Button.Group>
-                                                }
-                                            </div>
-                                        </Segment>
-                                    </div>
-                                )}
+                                                </div>
+                                            </Segment>
+                                        </div>
+                                    );
+                                }}
                             </Draggable>
                         )}
                     </div>

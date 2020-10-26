@@ -6,8 +6,8 @@ import SensorDataSource from '../../../core/model/rtm/SensorDataSource';
 test('Test SensorDataSource URL-props and regex pattern-matching', () => {
     const obj: ISensorDataSource = {
         id: Uuid.v4(),
-        url: `https://uit-sensors.inowas.com/sensors/project/DEU1/sensor/I-6/property/ec`
-            + `?timeResolution=1D&begin=1&end=10`
+        url: 'https://uit-sensors.inowas.com/sensors/project/DEU1/sensor/I-6/property/ec'
+            + '?timeResolution=1D&begin=1&end=10'
     };
 
     const ds = new SensorDataSource(obj);
@@ -92,8 +92,8 @@ test('Test SensorDataSource, loading pre-loaded data', async () => {
 test('Test SensorDataSource, loading from http-resource', async () => {
     const obj: ISensorDataSource = {
         id: Uuid.v4(),
-        url: `https://uit-sensors.inowas.com/sensors/project/DEU1/sensor/I-6/property/ec` +
-            `?timeResolution=1D&begin=0&end=1571047333`
+        url: 'https://uit-sensors.inowas.com/sensors/project/DEU1/sensor/I-6/property/ec' +
+            '?timeResolution=1D&begin=0&end=1571047333'
     };
 
     const ds = new SensorDataSource(obj);

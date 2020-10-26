@@ -5,7 +5,7 @@ export interface IToolMetaData {
     permissions: string;
     public: boolean;
     tool: string;
-    type: string;
+    type?: string;
     data: any;
 }
 

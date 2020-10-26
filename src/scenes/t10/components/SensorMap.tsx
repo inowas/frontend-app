@@ -1,18 +1,18 @@
-import {Point} from 'geojson';
-import {DrawEvents} from 'leaflet';
-import {uniqueId} from 'lodash';
-import React, {useEffect, useRef, useState} from 'react';
+import {BasicTileLayer} from '../../../services/geoTools/tileLayers';
 import {CircleMarker, FeatureGroup, Map} from 'react-leaflet';
+import {DrawEvents} from 'leaflet';
 import {EditControl} from 'react-leaflet-draw';
-import uuidv4 from 'uuid/v4';
 import {GeoJson} from '../../../core/model/geometry/Geometry.type';
 import {Geometry} from '../../../core/model/modflow';
+import {Point} from 'geojson';
 import {Rtm, Sensor} from '../../../core/model/rtm';
 import {SensorCollection} from '../../../core/model/rtm/SensorCollection';
 import {getStyle} from '../../../services/geoTools/mapHelpers';
-import {BasicTileLayer} from '../../../services/geoTools/tileLayers';
-import CenterControl from '../../shared/leaflet/CenterControl';
+import {uniqueId} from 'lodash';
 import {usePrevious} from '../../shared/simpleTools/helpers/customHooks';
+import CenterControl from '../../shared/leaflet/CenterControl';
+import React, {useEffect, useRef, useState} from 'react';
+import uuidv4 from 'uuid/v4';
 
 interface IProps {
     readOnly?: boolean;
@@ -73,6 +73,7 @@ const SensorMap = (props: IProps) => {
                 refMap.current.leafletElement.flyTo(latLng);
             }
         }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [props.sensor]);
 
     const handleCreated = (e: DrawEvents.Created) => {

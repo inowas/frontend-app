@@ -59,6 +59,7 @@ const HobPackageProperties = (props: IProps) => {
         props.onChange(FlopyModflowMfhob.fromObject({...mfPackage, [name]: value}));
     };
 
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const renderInfoPopup = (
         description: string | JSX.Element,
         title: string,

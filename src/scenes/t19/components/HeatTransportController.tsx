@@ -1,40 +1,33 @@
-import moment from 'moment';
-import React, {FormEvent, useState} from 'react';
 import {
     Form,
     Grid,
     InputOnChangeData,
     Segment
 } from 'semantic-ui-react';
-import {Rtm} from '../../../../core/model/rtm';
-import {IDateTimeValue} from '../../../../core/model/rtm/Sensor.type';
-import {makeHeatTransportRequest} from '../../../../services/api';
 import {HeatTransportInput, HeatTransportResults} from './index';
-import {IHeatTransportRequest, IHeatTransportRequestOptions, IHeatTransportResults} from './types';
+import {IHeatTransportRequest, IHeatTransportRequestOptions, IHtm} from '../../../core/model/htm/Htm.type';
+import {includes} from 'lodash';
+import {makeHeatTransportRequest} from '../../../services/api';
+import Htm from '../../../core/model/htm/Htm';
+import HtmInput from '../../../core/model/htm/HtmInput';
+import React, {FormEvent, useEffect, useState} from 'react';
+import moment from 'moment';
 
 interface IProps {
-    rtm: Rtm;
+    htm: Htm;
+    onChange: (htm: Htm) => void;
+    onSave: (htm: IHtm) => void;
 }
 
-const HeatTransport = (props: IProps) => {
+const HeatTransportController = (props: IProps) => {
     const [isFetching, setIsFetching] = useState<boolean>(false);
-
-    const [swData, setSwData] = useState<IDateTimeValue[]>();
-    const [gwData, setGwData] = useState<IDateTimeValue[]>();
-
-    const [results, setResults] = useState<IHeatTransportResults>();
-
     const [activeInput, setActiveInput] = useState<string>();
     const [activeValue, setActiveValue] = useState<string>('');
+    const [requestOptions, setRequestOptions] = useState<IHeatTransportRequestOptions>(props.htm.options);
 
-    const [requestOptions, setRequestOptions] = useState<IHeatTransportRequestOptions>({
-        retardation_factor: 1.8,
-        sw_monitoring_id: 'TEGsee-mikrosieb',
-        gw_monitoring_id: 'TEG343',
-        limits: [100, 500],
-        tolerance: 0.001,
-        debug: false
-    });
+    useEffect(() => {
+        setRequestOptions(props.htm.options);
+    }, [props.htm]);
 
     const handleBlurInput = () => {
         if (activeInput === 'retardationFactor') {
@@ -59,18 +52,21 @@ const HeatTransport = (props: IProps) => {
         setActiveValue(value);
     };
 
-    const handleCalculate = async () => {
-        if (!swData || !gwData) {
+    const handleCalculateAndSave = async () => {
+        const sw = props.htm.inputSw.toObject();
+        const gw = props.htm.inputGw.toObject();
+
+        if (!sw.data || !gw.data) {
             return;
         }
 
         setIsFetching(true);
         const requestData: IHeatTransportRequest = {
-            data_sw_selected: swData.map((row) => ({
+            data_sw_selected: sw.data.map((row) => ({
                 date: moment.unix(row.timeStamp).format('YYYY-MM-DD'),
                 value: row.value
             })),
-            data_gw_selected: gwData.map((row) => ({
+            data_gw_selected: gw.data.map((row) => ({
                 date: moment.unix(row.timeStamp).format('YYYY-MM-DD'),
                 value: row.value
             })),
@@ -78,20 +74,21 @@ const HeatTransport = (props: IProps) => {
         };
 
         makeHeatTransportRequest(requestData).then((r3) => {
-            setResults(JSON.parse(r3));
+            const cHtm = props.htm.toObject();
+            cHtm.data.results = JSON.parse(r3);
+            cHtm.data.options = requestOptions;
+            props.onChange(Htm.fromObject(cHtm));
+            props.onSave(cHtm);
             setIsFetching(false);
         });
     };
 
-    const handleChangeData = (name: string, value: IDateTimeValue[]) => {
-        if (name === 'sw') {
-            setSwData(value);
-        }
-        if (name === 'gw') {
-            setGwData(value);
-        }
+    const handleChangeData = (value: HtmInput) => {
+        const htm = props.htm.getClone();
+        props.onChange(htm.updateInput(value));
     };
 
+    const readOnly = !includes(props.htm.permissions, 'w');
     return (
         <React.Fragment>
             <Form>
@@ -99,20 +96,20 @@ const HeatTransport = (props: IProps) => {
                     <Grid.Row>
                         <Grid.Column width={8}>
                             <HeatTransportInput
+                                input={props.htm.inputSw}
                                 label="Surface water"
                                 name="sw"
                                 onChange={handleChangeData}
-                                readOnly={isFetching}
-                                rtm={props.rtm}
+                                readOnly={isFetching || readOnly}
                             />
                         </Grid.Column>
                         <Grid.Column width={8}>
                             <HeatTransportInput
+                                input={props.htm.inputGw}
                                 label="Groundwater"
                                 name="gw"
                                 onChange={handleChangeData}
-                                readOnly={isFetching}
-                                rtm={props.rtm}
+                                readOnly={isFetching || readOnly}
                             />
                         </Grid.Column>
                     </Grid.Row>
@@ -121,9 +118,9 @@ const HeatTransport = (props: IProps) => {
                             <Segment color={'grey'}>
                                 <Form.Group>
                                     <Form.Input
-                                        disabled={isFetching}
+                                        disabled={isFetching || readOnly}
                                         name="retardationFactor"
-                                        label="Retardation Factor"
+                                        label="Thermal retardation factor"
                                         type="number"
                                         onBlur={handleBlurInput}
                                         onChange={handleChangeInput}
@@ -131,7 +128,7 @@ const HeatTransport = (props: IProps) => {
                                             requestOptions.retardation_factor}
                                     />
                                     <Form.Input
-                                        disabled={isFetching}
+                                        disabled={isFetching || readOnly}
                                         name="tolerance"
                                         label="Tolerance"
                                         type="number"
@@ -142,12 +139,12 @@ const HeatTransport = (props: IProps) => {
                                     <Form.Button
                                         positive={true}
                                         fluid={true}
-                                        onClick={handleCalculate}
-                                        disabled={!swData || !gwData || isFetching}
+                                        onClick={handleCalculateAndSave}
+                                        disabled={!props.htm.inputSw.data || !props.htm.inputGw.data || isFetching || readOnly}
                                         label="&nbsp;"
                                         loading={isFetching}
                                     >
-                                        Run calculation
+                                        Run calculation and save
                                     </Form.Button>
                                 </Form.Group>
                             </Segment>
@@ -155,9 +152,9 @@ const HeatTransport = (props: IProps) => {
                     </Grid.Row>
                 </Grid>
             </Form>
-            {results && <HeatTransportResults results={results}/>}
+            {props.htm.results && <HeatTransportResults results={props.htm.results}/>}
         </React.Fragment>
     );
 };
 
-export default HeatTransport;
+export default HeatTransportController;

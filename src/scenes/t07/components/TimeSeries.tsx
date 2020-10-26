@@ -40,6 +40,7 @@ const TimeSeries = (props: IProps) => {
 
     useEffect(() => {
         setSelectedModels(props.selected.map((id) => props.models[id]));
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [props.selected]);
 
     useEffect(() => {
@@ -47,6 +48,7 @@ const TimeSeries = (props: IProps) => {
             setIsLoading(true);
             fetchDataRecursive(selectedLay, selectedType, selectedRow, selectedCol);
         }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [selectedModels, selectedCol, selectedLay, selectedRow, selectedType]);
 
     const fetchTimeseries = (

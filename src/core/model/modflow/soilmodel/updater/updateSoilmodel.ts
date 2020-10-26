@@ -1,6 +1,6 @@
 import {ModflowModel} from '../../index';
 import {ZonesCollection} from '../index';
-import {ISoilmodel, ISoilmodel1v0, ISoilmodel2v0, ISoilmodelExport} from '../Soilmodel.type';
+import {ISoilmodel, ISoilmodel1v0, ISoilmodel2v0} from '../Soilmodel.type';
 import {SoilmodelTypes} from './defaults';
 import {fixDefaultZone, fixLayerParameters, fixMissingRelations, update1v0to2v1, update2v0to2v1} from './index';
 
@@ -8,7 +8,7 @@ import {fixDefaultZone, fixLayerParameters, fixMissingRelations, update1v0to2v1,
  * Checks incoming soilmodel, fixes bugs and updates to newest version if necessary. The function can be used
  * independently, outside of the ./updater.ts file
  *
- * @param {ISoilmodelExport | ISoilmodel | ISoilmodel1v0 | ISoilmodel2v0} soilmodel
+ * @param {SoilmodelTypes} soilmodel
  * @param {ModflowModel} model
  *
  * @return {{soilmodel: ISoilmodel, isDirty: boolean}} object containing updated soilmodel and a flag, which tells, if
@@ -73,7 +73,7 @@ const updateSoilmodel = (
 
     if (
         'properties' in sm && sm.properties && sm.properties.version === '2.1' && (sm as ISoilmodel).layers.filter(
-            (l) => l.parameters.filter((p) => !p.value && !p.data.file).length > 0).length > 0
+        (l) => l.parameters.filter((p) => !p.value && !p.data.file).length > 0).length > 0
     ) {
         if (debug) {
             // tslint:disable-next-line:no-console

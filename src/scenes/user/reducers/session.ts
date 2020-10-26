@@ -1,7 +1,7 @@
 import getConfig from '../../../config.default';
 import {LOGIN, LOGIN_ERROR, LOGOUT, UNAUTHORIZED} from '../actions/actions';
 
-interface ISessionReducer {
+export interface ISessionReducer {
     token: string | null;
     error: boolean;
 }

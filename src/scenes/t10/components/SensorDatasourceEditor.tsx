@@ -1,14 +1,14 @@
-import {LTOB} from 'downsample';
-import {DataPoint} from 'downsample/dist/types';
-import {maxBy, minBy, uniqBy} from 'lodash';
-import moment from 'moment';
-import React, {useEffect, useState} from 'react';
-import {ResponsiveContainer, Scatter, ScatterChart, XAxis, YAxis} from 'recharts';
 import {Button, Form, Grid, Header, Label, Modal, Segment} from 'semantic-ui-react';
+import {DataPoint, LTOB} from 'downsample';
+import {DatePicker} from '../../shared/uiComponents';
 import {IDateTimeValue} from '../../../core/model/rtm/Sensor.type';
-import SensorDataSource from '../../../core/model/rtm/SensorDataSource';
+import {ResponsiveContainer, Scatter, ScatterChart, XAxis, YAxis} from 'recharts';
 import {fetchUrl} from '../../../services/api';
+import {maxBy, minBy, uniqBy} from 'lodash';
 import {usePrevious} from '../../shared/simpleTools/helpers/customHooks';
+import React, {useEffect, useState} from 'react';
+import SensorDataSource from '../../../core/model/rtm/SensorDataSource';
+import moment from 'moment';
 
 interface IProps {
     dataSource?: SensorDataSource;
@@ -57,34 +57,38 @@ const SensorDatasourceEditor = (props: IProps) => {
 
     useEffect(() => {
 
-        if (props.dataSource === undefined) {
-            return setServer(servers[0].url);
-        }
+            if (props.dataSource === undefined) {
+                return setServer(servers[0].url);
+            }
 
-        const ds = SensorDataSource.fromObject(props.dataSource.toObject());
-        if (!ds.data) {
-            fetchData(ds).then();
-        }
+            const ds = SensorDataSource.fromObject(props.dataSource.toObject());
+            if (!ds.data) {
+                fetchData(ds).then();
+            }
 
-        if (ds.begin !== null) {
-            setBegin(ds.begin);
-        }
+            if (ds.begin !== null) {
+                setBegin(ds.begin);
+            }
 
-        if (ds.end !== null) {
-            setEnd(ds.end);
-        }
+            if (ds.end !== null) {
+                setEnd(ds.end);
+            }
 
-        if (ds.min !== null) {
-            setMin(ds.min);
-        }
+            if (ds.min !== null) {
+                setMin(ds.min);
+            }
 
-        if (ds.max !== null) {
-            setMin(ds.max);
-        }
+            if (ds.max !== null) {
+                setMin(ds.max);
+            }
 
-        setDatasource(ds);
-        setServer(props.dataSource.server);
-    }, []);
+            setDatasource(ds);
+            setServer(props.dataSource.server);
+
+        },
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+        []
+    );
 
     useEffect(() => {
         if (!server) {
@@ -117,13 +121,17 @@ const SensorDatasourceEditor = (props: IProps) => {
 
             setDatasource(ds);
         }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [sensorServerMetaData]);
 
     useEffect(() => {
-        if (dataSource && dataSource.url.toString() !== prevUrl) {
-            fetchData(dataSource);
-        }
-    }, [dataSource]);
+            if (dataSource && dataSource.url.toString() !== prevUrl) {
+                fetchData(dataSource);
+            }
+        },
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+        [dataSource]
+    );
 
     const handleSave = () => {
         if (dataSource) {
@@ -133,10 +141,12 @@ const SensorDatasourceEditor = (props: IProps) => {
 
     const handleGenericChange = (f: (v: any) => void) => (e: any, d: any) => {
 
+        // eslint-disable-next-line no-prototype-builtins
         if (d && d.hasOwnProperty('value')) {
             return f(d.value);
         }
 
+        // eslint-disable-next-line no-prototype-builtins
         if (d && d.hasOwnProperty('checked')) {
             return f(d.checked);
         }
@@ -371,7 +381,7 @@ const SensorDatasourceEditor = (props: IProps) => {
                                         width={6}
                                         name={'server'}
                                         selection={true}
-                                        value={dataSource && dataSource.server || server || undefined}
+                                        value={dataSource ? dataSource.server : (server || undefined)}
                                         onChange={handleChangeServer}
                                         options={servers.map((s) => ({key: s.url, value: s.url, text: s.url}))}
                                     />
@@ -393,7 +403,7 @@ const SensorDatasourceEditor = (props: IProps) => {
                                             label={'Project'}
                                             name={'project'}
                                             selection={true}
-                                            value={dataSource && dataSource.project || undefined}
+                                            value={dataSource ? dataSource.project : undefined}
                                             onChange={handleChangeProject}
                                             options={uniqBy(sensorServerMetaData, 'project').map((s, idx) => ({
                                                 key: idx,
@@ -453,13 +463,13 @@ const SensorDatasourceEditor = (props: IProps) => {
                                             checked={!!dataSource.begin}
                                             onChange={handleChangeCheckbox}
                                         />
-                                        <Form.Input
+                                        <DatePicker
                                             label={'Start'}
-                                            type={'date'}
-                                            value={begin && moment.unix(begin).format('YYYY-MM-DD') || ''}
-                                            disabled={!dataSource.begin}
+                                            name={'start'}
+                                            value={begin ? moment.unix(begin).toDate() : null}
                                             onChange={handleGenericChange((d) => setBegin(moment.utc(d).unix()))}
                                             onBlur={handleBlur('begin')}
+                                            size={'small'}
                                         />
                                     </Form.Group>
                                     <Form.Group>
@@ -470,13 +480,13 @@ const SensorDatasourceEditor = (props: IProps) => {
                                             checked={!!dataSource.end}
                                             onChange={handleChangeCheckbox}
                                         />
-                                        <Form.Input
+                                        <DatePicker
                                             label={'End'}
-                                            type={'date'}
-                                            value={end && moment.unix(end).format('YYYY-MM-DD') || ''}
-                                            disabled={!dataSource.end}
+                                            name={'end'}
+                                            value={end ? moment.unix(end).toDate() : null}
                                             onChange={handleGenericChange((d) => setEnd(moment.utc(d).unix()))}
                                             onBlur={handleBlur('end')}
+                                            size={'small'}
                                         />
                                     </Form.Group>
 
