@@ -42,11 +42,29 @@ const HeatTransportResults = (props: IProps) => {
     const handleClickMenuItem = (e: MouseEvent, {index}: MenuItemProps) =>
         setActiveIndex(typeof index === 'number' ? index : 0);
 
-    const exportData = (arrayOfObjects: Array<{ [key: string]: any }>, filename: string) => () => {
+    const exportData = (
+        arrayOfObjects: Array<{ [key: string]: any }>,
+        filename: string,
+        properties?: string[]
+    ) => () => {
         if (arrayOfObjects.length < 1) {
             return null;
         }
-        const keys = Object.keys(arrayOfObjects[0]);
+        let keys = Object.keys(arrayOfObjects[0]);
+
+        if (properties) {
+            keys = keys.filter((name) => properties.includes(name));
+            arrayOfObjects = arrayOfObjects.map((row) => {
+                const newRow: {[key: string]: number} = {};
+                keys.forEach((k) => {
+                    newRow[k] = row[k];
+                });
+                return newRow;
+            });
+        }
+
+        console.log(arrayOfObjects);
+
         let csvContent = 'data:text/csv;charset=utf-8,';
         csvContent += keys.join(',');
         csvContent += '\r\n';
@@ -90,7 +108,7 @@ const HeatTransportResults = (props: IProps) => {
 
                 while (dateEnd > interim || interim.format('M') === dateEnd.format('M')) {
                     timeValues.push(moment(interim.format('YYYY-MM')).unix());
-                    interim.add(1,'month');
+                    interim.add(1, 'month');
                 }
                 return timeValues;
             }
@@ -107,7 +125,7 @@ const HeatTransportResults = (props: IProps) => {
         return (
             <ResponsiveContainer height={300}>
                 <ScatterChart>
-                    <CartesianGrid strokeDasharray="3 3" />
+                    <CartesianGrid strokeDasharray="3 3"/>
                     <XAxis
                         dataKey={'x'}
                         domain={useSameTimes ? timesteps : ['auto', 'auto']}
@@ -137,7 +155,7 @@ const HeatTransportResults = (props: IProps) => {
                         name={'simulated'}
                         fill='#00000000'
                     />
-                    <Tooltip formatter={getTooltip} cursor={{ strokeDasharray: '3 3' }}/>
+                    <Tooltip formatter={getTooltip} cursor={{strokeDasharray: '3 3'}}/>
                     {filteredPoints.map((point, key) => (
                         <ReferenceDot
                             key={key}
@@ -192,8 +210,8 @@ const HeatTransportResults = (props: IProps) => {
                     checked={useSameTimes}
                     toggle={true}
                 />
-                <h3>groundwater</h3>
-                {renderChart('groundwater', dataGwObs, dataGwSim)}
+                <h3>surface-water</h3>
+                {renderChart('surface-water', dataSwObs, dataSwSim)}
                 <div className="downloadButtons">
                     <Button
                         compact={true}
@@ -205,13 +223,17 @@ const HeatTransportResults = (props: IProps) => {
                         <Icon name="download"/> CSV
                     </Button>
                 </div>
-                <h3>surface-water</h3>
-                {renderChart('surface-water', dataSwObs, dataSwSim)}
+                <h3>groundwater</h3>
+                {renderChart('groundwater', dataGwObs, dataGwSim)}
             </React.Fragment>
         );
     };
 
-    const renderData = (data: Array<{ type: string } & { [key: string]: number }>, digits = 4) => {
+    const renderData = (
+        data: Array<{ type: string } & { [key: string]: number }>,
+        digits = 4,
+        properties?: string[]
+    ) => {
         const dataSw = data.filter((row) => row.type === 'surface-water');
         const dataGw = data.filter((row) => row.type === 'groundwater');
 
@@ -219,7 +241,7 @@ const HeatTransportResults = (props: IProps) => {
             return;
         }
 
-        const keys: string[] = [];
+        let keys: string[] = [];
         data.forEach((row) => {
             const rowKeys = Object.keys(row);
             rowKeys.forEach((k) => {
@@ -228,6 +250,10 @@ const HeatTransportResults = (props: IProps) => {
                 }
             });
         });
+
+        if (properties) {
+            keys = keys.filter((name) => properties.includes(name));
+        }
 
         return (
             <Table celled={true} selectable={true}>
@@ -330,12 +356,12 @@ const HeatTransportResults = (props: IProps) => {
                                 basic={true}
                                 icon={true}
                                 size={'small'}
-                                onClick={exportData(props.results.gof, 'goodnessOfFit')}
+                                onClick={exportData(props.results.gof, 'goodnessOfFit', ['type', 'RMSE', 'R2'])}
                             >
                                 <Icon name="download"/> CSV
                             </Button>
                         </div>
-                        {renderData(props.results.gof)}
+                        {renderData(props.results.gof, undefined, ['RMSE', 'R2'])}
                     </React.Fragment>
                 );
             case 3:
