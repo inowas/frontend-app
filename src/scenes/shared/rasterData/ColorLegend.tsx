@@ -1,5 +1,5 @@
-import React from 'react';
 import {ILegendItem} from '../../../services/rainbowvis/types';
+import React from 'react';
 
 const styles: { [name: string]: React.CSSProperties } = {
     horizontal: {
