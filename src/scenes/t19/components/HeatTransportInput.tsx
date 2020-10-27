@@ -18,6 +18,7 @@ import React, {SyntheticEvent, useEffect, useState} from 'react';
 import uuid from 'uuid';
 
 interface IProps {
+    dateTimeFormat: string;
     input: HtmInput;
     label: string;
     name: string;
@@ -253,6 +254,7 @@ const HeatTransportInput = (props: IProps) => {
                 />
                 <HeatTransportInputChart
                     data={data}
+                    dateTimeFormat={props.dateTimeFormat}
                     tempTime={tempTime}
                     timesteps={timesteps}
                     isLoading={isFetching}
