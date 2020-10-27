@@ -1,13 +1,14 @@
 import {IDateTimeValue} from '../../../core/model/rtm/Sensor.type';
 import {IHeatTransportInput} from '../../../core/model/htm/Htm.type';
 import {LTOB} from 'downsample';
-import {ReferenceLine, ResponsiveContainer, Scatter, ScatterChart, XAxis, YAxis} from 'recharts';
+import {ResponsiveContainer, Scatter, ScatterChart, XAxis, YAxis} from 'recharts';
 import {Segment} from 'semantic-ui-react';
 import React from 'react';
 import moment from 'moment';
 
 interface IProps {
     data?: IHeatTransportInput['data'],
+    dateTimeFormat: string,
     tempTime?: [number, number],
     timesteps?: number[],
     isLoading: boolean
@@ -22,13 +23,14 @@ const HeatTransportInputChart = (props: IProps) => {
                 </ResponsiveContainer>
             </Segment>
         );
-
     }
 
-    const {tempTime, timesteps} = props;
-
     const formatDateTimeTicks = (dt: number) => {
-        return moment.unix(dt).format('YYYY-MM-DD');
+        return moment.unix(dt).format(props.dateTimeFormat);
+    };
+
+    const formatTemperatureTicks = (t: number) => {
+        return t.toFixed(2);
     };
 
     const downSampleData = (d: IDateTimeValue[]) => d ? LTOB(d.map((ds) => ({
@@ -47,30 +49,17 @@ const HeatTransportInputChart = (props: IProps) => {
                     <XAxis
                         dataKey={'x'}
                         domain={[props.data[0].timeStamp, props.data[downsampledData.length - 1].timeStamp]}
-                        name={'Date Time'}
+                        name={'x'}
                         tickFormatter={formatDateTimeTicks}
                         type={'number'}
                     />
                     <YAxis
-                        label={{value: 'T', angle: -90, position: 'insideLeft'}}
+                        label={{value: 'T [°C]', angle: -90, position: 'insideLeft'}}
                         dataKey={'y'}
-                        name={''}
+                        name={'y'}
+                        tickFormatter={formatTemperatureTicks}
                         domain={['auto', 'auto']}
                     />
-                    {tempTime && timesteps &&
-                    <ReferenceLine
-                        x={timesteps[tempTime[0]]}
-                        stroke="#000"
-                        strokeDasharray="3 3"
-                    />
-                    }
-                    {tempTime && timesteps &&
-                    <ReferenceLine
-                        x={timesteps[tempTime[1]]}
-                        stroke="#000"
-                        strokeDasharray="3 3"
-                    />
-                    }
                     <Scatter
                         data={downsampledData}
                         line={{strokeWidth: 2, stroke: '#3498DB'}}
