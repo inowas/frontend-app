@@ -1,19 +1,19 @@
-import React, {useEffect, useState} from 'react';
-import {useDispatch, useSelector} from 'react-redux';
-import {Loader, Segment} from 'semantic-ui-react';
-import FlopyPackages from '../../../../core/model/flopy/packages/FlopyPackages';
+import * as Content from './index';
+import {CALCULATE_PACKAGES_INPUT} from '../../worker/t03.worker';
+import {ICalculatePackagesInputData} from '../../worker/t03.worker.type';
 import {IFlopyPackages} from '../../../../core/model/flopy/packages/FlopyPackages.type';
+import {IRootReducer} from '../../../../reducers';
+import {Loader, Segment} from 'semantic-ui-react';
+import {asyncWorker} from '../../worker/worker';
+import {updatePackages} from '../../actions/actions';
+import {useDispatch, useSelector} from 'react-redux';
 import BoundaryCollection from '../../../../core/model/modflow/boundaries/BoundaryCollection';
+import FlopyPackages from '../../../../core/model/flopy/packages/FlopyPackages';
 import ModflowModel from '../../../../core/model/modflow/ModflowModel';
+import React, {useEffect, useState} from 'react';
 import Soilmodel from '../../../../core/model/modflow/soilmodel/Soilmodel';
 import Transport from '../../../../core/model/modflow/transport/Transport';
 import VariableDensity from '../../../../core/model/modflow/variableDensity';
-import {IRootReducer} from '../../../../reducers';
-import {updatePackages} from '../../actions/actions';
-import {CALCULATE_PACKAGES_INPUT} from '../../worker/t03.worker';
-import {ICalculatePackagesInputData} from '../../worker/t03.worker.type';
-import {asyncWorker} from '../../worker/worker';
-import * as Content from './index';
 
 interface IProps {
     property: string;
