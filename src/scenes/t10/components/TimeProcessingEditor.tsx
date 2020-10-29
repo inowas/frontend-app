@@ -119,7 +119,6 @@ const TimeProcessingEditor = (props: IProps) => {
             p.apply(cloneDeep(rd))
                 .then((d) => {
                     setError(null);
-                    console.log({d});
                     setProcessedData(d);
                 })
                 .catch((e) => {
@@ -203,8 +202,6 @@ const TimeProcessingEditor = (props: IProps) => {
             x: d.timeStamp,
             y: d.value
         })), 200);
-
-        console.log({downSampledDataLTOB});
 
         return (
             <ResponsiveContainer height={300}>

@@ -98,7 +98,6 @@ class TimeProcessing extends GenericObject<ITimeProcessing> {
     }
 
     public async apply(input: IDateTimeValue[]) {
-        console.log({input});
         let dataToProcess: IDateTimeValue[] = _.uniqBy(input, 'timeStamp');
         if (!this.cut || this.cut === ECutRule.NONE || this.cut === ECutRule.PERIOD) {
             dataToProcess = dataToProcess.filter((i) => i.timeStamp >= this.begin && i.timeStamp <= this.end);
@@ -110,7 +109,6 @@ class TimeProcessing extends GenericObject<ITimeProcessing> {
         // eslint-disable-next-line no-useless-catch
         try {
             const processedData = await makeTimeProcessingRequest(dataToProcess, this.rule, this.method);
-            console.log({processedData});
 
             if (!this.cut || this.cut === ECutRule.NONE) {
                 return input.filter((i) => !(i.timeStamp >= this.begin && i.timeStamp <= this.end))

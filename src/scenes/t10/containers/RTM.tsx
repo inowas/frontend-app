@@ -114,7 +114,6 @@ const RTM = () => {
     };
 
     const handleUpdateParameter = (parameter: ISensorParameter) => {
-        console.log({parameter})
         if (!rtm) {
             return;
         }
