@@ -198,7 +198,9 @@ const TimeProcessingEditor = (props: IProps) => {
             );
         }
 
-        const downSampledDataLTOB: DataPoint[] = LTOB(processedData.map((d) => ({
+        const downSampledDataLTOB: DataPoint[] = LTOB(processedData.filter(
+            (d) => d.value !== null
+        ).map((d) => ({
             x: d.timeStamp,
             y: d.value
         })), 200);
@@ -279,32 +281,32 @@ const TimeProcessingEditor = (props: IProps) => {
                             </Grid.Column>
                         </Grid.Row>
                         {cut !== ECutRule.BEFORE_TODAY &&
-                            <Grid.Row>
-                                <Grid.Column width={16}>
-                                    <Segment raised={true}>
-                                        <Label as={'div'} color={'blue'} ribbon={true}>Time range</Label>
-                                        <Form>
-                                            <Form.Group widths={'equal'}>
-                                                <DatePicker
-                                                    onChange={handleBlurDate}
-                                                    label="Start"
-                                                    value={isNaN(begin) ? moment.unix(0).toDate() : moment.unix(begin).toDate()}
-                                                    size="small"
-                                                    name="start"
-                                                />
-                                                <DatePicker
-                                                    disabled={cut === ECutRule.UNTIL_TODAY}
-                                                    onChange={handleBlurDate}
-                                                    label="End"
-                                                    value={isNaN(end) ? moment.utc().toDate() : moment.unix(end).toDate()}
-                                                    size="small"
-                                                    name="end"
-                                                />
-                                            </Form.Group>
-                                        </Form>
-                                    </Segment>
-                                </Grid.Column>
-                            </Grid.Row>
+                        <Grid.Row>
+                            <Grid.Column width={16}>
+                                <Segment raised={true}>
+                                    <Label as={'div'} color={'blue'} ribbon={true}>Time range</Label>
+                                    <Form>
+                                        <Form.Group widths={'equal'}>
+                                            <DatePicker
+                                                onChange={handleBlurDate}
+                                                label="Start"
+                                                value={isNaN(begin) ? moment.unix(0).toDate() : moment.unix(begin).toDate()}
+                                                size="small"
+                                                name="start"
+                                            />
+                                            <DatePicker
+                                                disabled={cut === ECutRule.UNTIL_TODAY}
+                                                onChange={handleBlurDate}
+                                                label="End"
+                                                value={isNaN(end) ? moment.utc().toDate() : moment.unix(end).toDate()}
+                                                size="small"
+                                                name="end"
+                                            />
+                                        </Form.Group>
+                                    </Form>
+                                </Segment>
+                            </Grid.Column>
+                        </Grid.Row>
                         }
                         <Grid.Row>
                             <Grid.Column width={16}>

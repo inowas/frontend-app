@@ -170,7 +170,9 @@ const ValueProcessingEditor = (props: IProps) => {
             );
         }
 
-        const downSampledDataLTOB: DataPoint[] = LTOB(processedData.map((d) => ({
+        const downSampledDataLTOB: DataPoint[] = LTOB(processedData.filter(
+            (d) => d.value !== null
+        ).map((d) => ({
             x: d.timeStamp,
             y: d.value
         })), 200);
