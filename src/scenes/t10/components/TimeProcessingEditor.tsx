@@ -1,10 +1,11 @@
 import 'react-semantic-ui-datepickers/dist/react-semantic-ui-datepickers.css';
 import {Button, DropdownProps, Form, Grid, Header, InputOnChangeData, Label, Modal, Segment} from 'semantic-ui-react';
-import {DataPoint} from 'downsample';
+import {DataPoint, LTOB} from 'downsample';
 import {DataSourceCollection} from '../../../core/model/rtm';
 import {DatePicker} from '../../shared/uiComponents';
+import {ECutRule} from '../../../core/model/rtm/processing/Processing.type';
+import {IDatePickerProps} from '../../shared/uiComponents/DatePicker';
 import {IDateTimeValue} from '../../../core/model/rtm/Sensor.type';
-import {LTOB} from 'downsample';
 import {ResponsiveContainer, Scatter, ScatterChart, XAxis, YAxis} from 'recharts';
 import {cloneDeep} from 'lodash';
 import React, {ChangeEvent, SyntheticEvent, useEffect, useState} from 'react';
@@ -20,12 +21,16 @@ interface IProps {
 }
 
 const TimeProcessingEditor = (props: IProps) => {
+    const [activeInput, setActiveInput] = useState<string>();
+    const [activeValue, setActiveValue] = useState<string>('');
 
     const [processing, setProcessing] = useState<TimeProcessing | null>(null);
 
     const [processedData, setProcessedData] = useState<IDateTimeValue[] | null>(null);
     const [begin, setBegin] = useState<number>(moment().subtract(1, 'week').unix());
     const [end, setEnd] = useState<number>(moment().unix());
+    const [cut, setCut] = useState<ECutRule>(ECutRule.NONE);
+    const [cutNumber, setCutNumber] = useState<number | undefined>();
     const [error, setError] = useState<any | null>(null);
 
     // RULES: 1d, 1w, 1y, 2w, 2d, ...
@@ -51,7 +56,8 @@ const TimeProcessingEditor = (props: IProps) => {
                 begin,
                 end,
                 rule,
-                method
+                method,
+                cut: ECutRule.NONE
             }));
         }
 
@@ -60,6 +66,8 @@ const TimeProcessingEditor = (props: IProps) => {
         setEnd(p.end);
         setMethod(p.method);
         setRule(p.rule);
+        setCut(p.cut);
+        setCutNumber(p.cutNumber);
         setProcessing(p);
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
@@ -73,7 +81,6 @@ const TimeProcessingEditor = (props: IProps) => {
     }, [processing]);
 
     useEffect(() => {
-
         if (isNaN(begin)) {
             props.dsc.mergedData().then((rawData) => {
                 if (!rawData) {
@@ -99,7 +106,7 @@ const TimeProcessingEditor = (props: IProps) => {
         return handleBlur();
 
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [begin, end, method, rule]);
+    }, [cut, cutNumber, begin, end, method, rule]);
 
     const handleSave = () => {
         if (processing) {
@@ -120,16 +127,46 @@ const TimeProcessingEditor = (props: IProps) => {
         });
     };
 
-    const handleChangeMethod = (e: SyntheticEvent<HTMLElement, Event>, d: DropdownProps) => {
-        setMethod(d.value as string);
+    const handleChangeSelect = (e: SyntheticEvent<HTMLElement, Event>, d: DropdownProps) => {
+        if (d.name === 'method' && typeof d.value === 'string') {
+            setMethod(d.value);
+        }
+        if (d.name === 'cut' && typeof d.value === 'string') {
+            setCut(d.value as ECutRule);
+        }
     };
 
-    const handleChangeRule = (e: ChangeEvent<HTMLInputElement>, d: InputOnChangeData) => {
-        return setRule(d.value);
+    const handleChangeInput = (e: ChangeEvent<HTMLInputElement>, {name, value}: InputOnChangeData) => {
+        setActiveInput(name);
+        setActiveValue(value);
+    };
+
+    const handleBlurInput = () => {
+        if (activeInput === 'rule') {
+            setRule(activeValue);
+        }
+        if (activeInput === 'cutNumber') {
+            setCutNumber(parseFloat(activeValue));
+        }
+
+        setActiveInput(undefined);
+    };
+
+    const handleBlurDate = (e: SyntheticEvent<Element, Event>, p: IDatePickerProps) => {
+        if (!p.value) {
+            return;
+        }
+
+        const value = moment(p.value.toDateString()).unix();
+        if (p.name === 'start') {
+            setBegin(value < end ? value : begin);
+        }
+        if (p.name === 'end') {
+            setEnd(value > begin ? value : end);
+        }
     };
 
     const handleBlur = () => {
-        console.log('HANDLEBLUR');
         if (!(processing instanceof TimeProcessing)) {
             return;
         }
@@ -139,6 +176,8 @@ const TimeProcessingEditor = (props: IProps) => {
         p.end = end;
         p.rule = rule;
         p.method = method;
+        p.cut = cut;
+        p.cutNumber = cutNumber;
         setProcessing(TimeProcessing.fromObject(p.toObject()));
     };
 
@@ -159,7 +198,9 @@ const TimeProcessingEditor = (props: IProps) => {
             );
         }
 
-        const downSampledDataLTOB: DataPoint[] = LTOB(processedData.map((d) => ({
+        const downSampledDataLTOB: DataPoint[] = LTOB(processedData.filter(
+            (d) => d.value !== null
+        ).map((d) => ({
             x: d.timeStamp,
             y: d.value
         })), 200);
@@ -197,66 +238,114 @@ const TimeProcessingEditor = (props: IProps) => {
             <Modal.Content>
                 <Grid padded={true}>
                     {processedData &&
-                    <Grid.Row>
-                        <Grid.Column width={8}>
-                            <Segment raised={true}>
-                                <Label as={'div'} color={'blue'} ribbon={true}>Time range</Label>
-                                <Form>
-                                    <Form.Group widths={'equal'}>
-                                        <DatePicker
-                                            onBlur={handleBlur}
-                                            label={'Start'}
-                                            value={isNaN(begin) ? moment.unix(0).toDate() : moment.unix(begin).toDate()}
-                                            size={'small'}
-                                        />
-                                        <DatePicker
-                                            onBlur={handleBlur}
-                                            label={'End'}
-                                            value={isNaN(end) ? moment.utc().toDate() : moment.unix(end).toDate()}
-                                            size={'small'}
-                                        />
-                                    </Form.Group>
-                                </Form>
-                            </Segment>
-                        </Grid.Column>
-                        <Grid.Column width={8}>
-                            <Segment raised={true}>
-                                <Label as={'div'} color={'blue'} ribbon={true}>Time processing</Label>
-                                <Form>
-                                    <Form.Group widths={'equal'}>
-                                        <Form.Select
-                                            fluid={true}
-                                            label={'Method'}
-                                            options={methods.map((o) => ({key: o[0], value: o[0], text: o[0]}))}
-                                            value={method}
-                                            onChange={handleChangeMethod}
-                                        />
-                                        <Form.Input
-                                            fluid={true}
-                                            error={!!error}
-                                            label={'Rule'}
-                                            value={rule}
-                                            onChange={handleChangeRule}
-                                            onBlur={handleBlur}
-                                        />
-                                    </Form.Group>
-                                </Form>
-                            </Segment>
-                        </Grid.Column>
-                    </Grid.Row>
+                    <React.Fragment>
+                        <Grid.Row>
+                            <Grid.Column width={16}>
+                                <Segment raised={true}>
+                                    <Label as={'div'} color={'blue'} ribbon={true}>Cut</Label>
+                                    <Form>
+                                        <Form.Group widths={'equal'}>
+                                            <Form.Select
+                                                label="Rule"
+                                                name="cut"
+                                                onChange={handleChangeSelect}
+                                                options={[
+                                                    {key: ECutRule.NONE, value: ECutRule.NONE, text: 'None'},
+                                                    {key: ECutRule.PERIOD, value: ECutRule.PERIOD, text: 'Period'},
+                                                    {
+                                                        key: ECutRule.UNTIL_TODAY,
+                                                        value: ECutRule.UNTIL_TODAY,
+                                                        text: 'From date until today'
+                                                    },
+                                                    {
+                                                        key: ECutRule.BEFORE_TODAY,
+                                                        value: ECutRule.BEFORE_TODAY,
+                                                        text: 'Units before today'
+                                                    }
+                                                ]}
+                                                value={cut}
+                                            />
+                                            {cut === ECutRule.BEFORE_TODAY &&
+                                            <Form.Input
+                                                label="Number of units"
+                                                name="cutNumber"
+                                                value={activeInput === 'cutNumber' ? activeValue : cutNumber}
+                                                type="number"
+                                                onChange={handleChangeInput}
+                                                onBlur={handleBlurInput}
+                                            />
+                                            }
+                                        </Form.Group>
+                                    </Form>
+                                </Segment>
+                            </Grid.Column>
+                        </Grid.Row>
+                        {cut !== ECutRule.BEFORE_TODAY &&
+                        <Grid.Row>
+                            <Grid.Column width={16}>
+                                <Segment raised={true}>
+                                    <Label as={'div'} color={'blue'} ribbon={true}>Time range</Label>
+                                    <Form>
+                                        <Form.Group widths={'equal'}>
+                                            <DatePicker
+                                                onChange={handleBlurDate}
+                                                label="Start"
+                                                value={isNaN(begin) ? moment.unix(0).toDate() : moment.unix(begin).toDate()}
+                                                size="small"
+                                                name="start"
+                                            />
+                                            <DatePicker
+                                                disabled={cut === ECutRule.UNTIL_TODAY}
+                                                onChange={handleBlurDate}
+                                                label="End"
+                                                value={isNaN(end) ? moment.utc().toDate() : moment.unix(end).toDate()}
+                                                size="small"
+                                                name="end"
+                                            />
+                                        </Form.Group>
+                                    </Form>
+                                </Segment>
+                            </Grid.Column>
+                        </Grid.Row>
+                        }
+                        <Grid.Row>
+                            <Grid.Column width={16}>
+                                <Segment raised={true}>
+                                    <Label as={'div'} color={'blue'} ribbon={true}>Time resolution</Label>
+                                    <Form>
+                                        <Form.Group widths={'equal'}>
+                                            <Form.Select
+                                                fluid={true}
+                                                label="Method"
+                                                name="method"
+                                                options={methods.map((o) => ({key: o[0], value: o[0], text: o[0]}))}
+                                                value={method}
+                                                onChange={handleChangeSelect}
+                                            />
+                                            <Form.Input
+                                                fluid={true}
+                                                error={!!error}
+                                                name="rule"
+                                                label="Rule"
+                                                value={activeInput === 'rule' ? activeValue : rule}
+                                                onChange={handleChangeInput}
+                                                onBlur={handleBlurInput}
+                                            />
+                                        </Form.Group>
+                                    </Form>
+                                </Segment>
+                            </Grid.Column>
+                        </Grid.Row>
+                        <Grid.Row>
+                            <Grid.Column>
+                                <Segment loading={!processedData} raised={true}>
+                                    <Label as={'div'} color={'red'} ribbon={true}>Data</Label>
+                                    {renderDiagram()}
+                                </Segment>
+                            </Grid.Column>
+                        </Grid.Row>
+                    </React.Fragment>
                     }
-
-                    {processedData &&
-                    <Grid.Row>
-                        <Grid.Column>
-                            <Segment loading={!processedData} raised={true}>
-                                <Label as={'div'} color={'red'} ribbon={true}>Data</Label>
-                                {renderDiagram()}
-                            </Segment>
-                        </Grid.Column>
-                    </Grid.Row>
-                    }
-
                 </Grid>
             </Modal.Content>
             <Modal.Actions>

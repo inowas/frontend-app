@@ -1,8 +1,8 @@
-import _ from 'lodash';
-import {makeTimeProcessingRequest} from '../../../../services/api';
+import {ECutRule, ITimeProcessing} from './Processing.type';
 import {GenericObject} from '../../genericObject/GenericObject';
 import {IDateTimeValue} from '../Sensor.type';
-import {ITimeProcessing} from './Processing.type';
+import {makeTimeProcessingRequest} from '../../../../services/api';
+import _ from 'lodash';
 
 export const methods = [
     [
@@ -61,6 +61,22 @@ class TimeProcessing extends GenericObject<ITimeProcessing> {
         this._props.end = value;
     }
 
+    get cut(): ECutRule {
+        return this._props.cut;
+    }
+
+    set cut(value: ECutRule) {
+        this._props.cut = value;
+    }
+
+    get cutNumber(): number | undefined {
+        return this._props.cutNumber;
+    }
+
+    set cutNumber(value: number | undefined) {
+        this._props.cutNumber = value;
+    }
+
     get type(): string {
         return this._props.type;
     }
@@ -82,14 +98,28 @@ class TimeProcessing extends GenericObject<ITimeProcessing> {
     }
 
     public async apply(input: IDateTimeValue[]) {
-        const dataToProcess = _.uniqBy(
-            input.filter((i) => i.timeStamp >= this.begin && i.timeStamp <= this.end), 'timeStamp');
+        let dataToProcess: IDateTimeValue[] = _.uniqBy(input, 'timeStamp');
+        if (!this.cut || this.cut === ECutRule.NONE || this.cut === ECutRule.PERIOD) {
+            dataToProcess = dataToProcess.filter((i) => i.timeStamp >= this.begin && i.timeStamp <= this.end);
+        }
+        if (this.cut === ECutRule.UNTIL_TODAY) {
+            dataToProcess = dataToProcess.filter((i) => i.timeStamp >= this.begin);
+        }
 
+        // eslint-disable-next-line no-useless-catch
         try {
             const processedData = await makeTimeProcessingRequest(dataToProcess, this.rule, this.method);
-            return input.filter((i) => !(i.timeStamp >= this.begin && i.timeStamp <= this.end))
-                .concat(processedData)
-                .sort((a: IDateTimeValue, b: IDateTimeValue) => a.timeStamp - b.timeStamp);
+
+            if (!this.cut || this.cut === ECutRule.NONE) {
+                return input.filter((i) => !(i.timeStamp >= this.begin && i.timeStamp <= this.end))
+                    .concat(processedData)
+                    .sort((a: IDateTimeValue, b: IDateTimeValue) => a.timeStamp - b.timeStamp);
+            }
+            if (this.cut === ECutRule.BEFORE_TODAY) {
+                const n = this.cutNumber || 0;
+                return processedData.sort((a: IDateTimeValue, b: IDateTimeValue) => a.timeStamp - b.timeStamp).slice(-1 * n);
+            }
+            return processedData.sort((a: IDateTimeValue, b: IDateTimeValue) => a.timeStamp - b.timeStamp);
         } catch (e) {
             throw e;
         }
