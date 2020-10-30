@@ -1,19 +1,19 @@
-import {chunk, compact, flatten} from 'lodash';
-import React, {useEffect, useState} from 'react';
-import {Viewport} from 'react-leaflet';
-import {Grid, Header, Segment} from 'semantic-ui-react';
 import {Array2D} from '../../../core/model/geometry/Array2D.type';
-import {Calculation, ModflowModel, Soilmodel} from '../../../core/model/modflow';
 import {BoundaryCollection} from '../../../core/model/modflow/boundaries';
+import {Calculation, ModflowModel, Soilmodel} from '../../../core/model/modflow';
+import {EResultType} from '../../t03/components/content/results/flowResults';
+import {Grid, Header, Segment} from 'semantic-ui-react';
 import {IBoundary} from '../../../core/model/modflow/boundaries/Boundary.type';
 import {ICalculation} from '../../../core/model/modflow/Calculation.type';
 import {IModflowModel} from '../../../core/model/modflow/ModflowModel.type';
 import {ScenarioAnalysis} from '../../../core/model/scenarioAnalysis';
+import {Viewport} from 'react-leaflet';
+import {chunk, compact, flatten} from 'lodash';
 import {fetchCalculationResultsFlow} from '../../../services/api';
+import React, {useEffect, useState} from 'react';
 import ResultsChart from '../../shared/complexTools/ResultsChart';
 import ResultsMap from '../../shared/complexTools/ResultsMap';
 import ResultsSelectorFlow from '../../shared/complexTools/ResultsSelectorFlow';
-import {EResultType} from '../../t03/components/content/results/flowResults';
 
 interface IProps {
     basemodel: ModflowModel;
@@ -25,6 +25,8 @@ interface IProps {
     scenarioAnalysis: ScenarioAnalysis;
     selected: string[];
 }
+
+const QUANTILE = 1;
 
 const CrossSection = (props: IProps) => {
     const [selectedModels, setSelectedModels] = useState<IModflowModel[]>([]);
@@ -42,7 +44,7 @@ const CrossSection = (props: IProps) => {
     useEffect(() => {
         const {basemodel, basemodelCalculation} = props;
         const cSelectedModels = props.selected.map((id) => {
-            if (props.models.hasOwnProperty(id)) {
+            if (props.models.id) {
                 return ModflowModel.fromObject(props.models[id]).toObject();
             }
             return null;
@@ -124,10 +126,6 @@ const CrossSection = (props: IProps) => {
     };
 
     const renderMap = (id: string, minMax: [number, number]) => {
-        if (!props.models.hasOwnProperty(id) || !props.boundaries.hasOwnProperty(id) || !data.hasOwnProperty(id)) {
-            return null;
-        }
-
         const model = ModflowModel.fromObject(props.models[id]);
         const fData = data[id];
 
@@ -180,8 +178,10 @@ const CrossSection = (props: IProps) => {
 
     const calculateGlobalMinMax = (): [number, number] => {
         const sortedValues = compact(flatten(flatten(Object.values(data)))).sort();
-        const min = Math.floor(sortedValues[0]);
-        const max = Math.ceil(sortedValues[sortedValues.length - 1]);
+        const q = Math.floor(QUANTILE / 100 * sortedValues.length);
+
+        const min = Math.floor(sortedValues[q]);
+        const max = Math.ceil(sortedValues[sortedValues.length - q]);
         return [min, max];
     };
 

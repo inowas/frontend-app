@@ -1,30 +1,26 @@
-import {LeafletMouseEvent} from 'leaflet';
-import React, {useEffect, useRef, useState} from 'react';
+import {Array2D} from '../../../core/model/geometry/Array2D.type';
+import {BasicTileLayer} from '../../../services/geoTools/tileLayers';
+import {BoundaryCollection} from '../../../core/model/modflow/boundaries';
+import {ColorLegend, ReactLeafletHeatMapCanvasOverlay} from '../rasterData';
 import {
     FeatureGroup, GeoJSON,
     LayersControl,
     Map,
     Viewport
 } from 'react-leaflet';
-import uuid from 'uuid';
-import {Array2D} from '../../../core/model/geometry/Array2D.type';
-import {ICell} from '../../../core/model/geometry/Cells.type';
-import {Geometry, ModflowModel} from '../../../core/model/modflow';
-import {BoundaryCollection} from '../../../core/model/modflow/boundaries';
-import {getCellFromClick} from '../../../services/geoTools/getCellFromClick';
-import {BasicTileLayer} from '../../../services/geoTools/tileLayers';
-import Rainbow from '../../../services/rainbowvis/Rainbowvis';
-import {renderAreaLayer, renderBoundaryOverlays, renderBoundingBoxLayer} from '../../t03/components/maps/mapLayers';
-import {ColorLegend, ReactLeafletHeatMapCanvasOverlay} from '../rasterData';
-import ContourLayer from '../rasterData/contourLayer';
-import {
-    createGridData,
-    max,
-    min,
-    rainbowFactory
-} from '../rasterData/helpers';
-import {IReactLeafletHeatMapProps} from '../rasterData/ReactLeafletHeatMapCanvasOverlay.type';
 import {FullscreenControl} from './index';
+import {Geometry, ModflowModel} from '../../../core/model/modflow';
+import {ICell} from '../../../core/model/geometry/Cells.type';
+import {IReactLeafletHeatMapProps} from '../rasterData/ReactLeafletHeatMapCanvasOverlay.type';
+import {LeafletMouseEvent} from 'leaflet';
+import {createGridData, rainbowFactory} from '../rasterData/helpers';
+import {getCellFromClick} from '../../../services/geoTools/getCellFromClick';
+import {renderAreaLayer, renderBoundaryOverlays, renderBoundingBoxLayer} from '../../t03/components/maps/mapLayers';
+import ContourLayer from '../rasterData/contourLayer';
+import Rainbow from '../../../services/rainbowvis/Rainbowvis';
+import React, {useEffect, useRef, useState} from 'react';
+import _ from 'lodash';
+import uuid from 'uuid';
 
 const style = {
     map: {
@@ -66,6 +62,8 @@ interface IProps {
 interface IState {
     viewport: Viewport | null;
 }
+
+const QUANTILE = 1;
 
 const ResultsMap = (props: IProps) => {
     const [state, setState] = useState<IState>({viewport: null});
@@ -136,11 +134,11 @@ const ResultsMap = (props: IProps) => {
                 type: 'Polygon',
                 coordinates: [
                     [
-                        [props.model.boundingBox.xMin, props.model.boundingBox.yMax - selectedRow * dY],
-                        [props.model.boundingBox.xMax, props.model.boundingBox.yMax - selectedRow * dY],
-                        [props.model.boundingBox.xMax, props.model.boundingBox.yMax - (selectedRow + 1) * dY],
-                        [props.model.boundingBox.xMin, props.model.boundingBox.yMax - (selectedRow + 1) * dY],
-                        [props.model.boundingBox.xMin, props.model.boundingBox.yMax - selectedRow * dY]
+                        [props.model.boundingBox.xMin, (props.model.boundingBox.yMax - selectedRow) * dY],
+                        [props.model.boundingBox.xMax, (props.model.boundingBox.yMax - selectedRow) * dY],
+                        [props.model.boundingBox.xMax, (props.model.boundingBox.yMax - (selectedRow + 1)) * dY],
+                        [props.model.boundingBox.xMin, (props.model.boundingBox.yMax - (selectedRow + 1)) * dY],
+                        [props.model.boundingBox.xMin, (props.model.boundingBox.yMax - selectedRow) * dY]
                     ]
                 ]
             }
@@ -152,11 +150,11 @@ const ResultsMap = (props: IProps) => {
                 type: 'Polygon',
                 coordinates: [
                     [
-                        [props.model.boundingBox.xMin + selectedCol * dX, props.model.boundingBox.yMin],
-                        [props.model.boundingBox.xMin + selectedCol * dX, props.model.boundingBox.yMax],
-                        [props.model.boundingBox.xMin + (selectedCol + 1) * dX, props.model.boundingBox.yMax],
-                        [props.model.boundingBox.xMin + (selectedCol + 1) * dX, props.model.boundingBox.yMin],
-                        [props.model.boundingBox.xMin + selectedCol * dX, props.model.boundingBox.yMin]
+                        [(props.model.boundingBox.xMin + selectedCol) * dX, props.model.boundingBox.yMin],
+                        [(props.model.boundingBox.xMin + selectedCol) * dX, props.model.boundingBox.yMax],
+                        [(props.model.boundingBox.xMin + (selectedCol + 1)) * dX, props.model.boundingBox.yMax],
+                        [(props.model.boundingBox.xMin + (selectedCol + 1)) * dX, props.model.boundingBox.yMin],
+                        [(props.model.boundingBox.xMin + selectedCol) * dX, props.model.boundingBox.yMin]
                     ]
                 ]
             }
@@ -203,8 +201,11 @@ const ResultsMap = (props: IProps) => {
         return props.onViewPortChange(viewport);
     };
 
-    let minData = min(props.data);
-    let maxData = max(props.data);
+    const filteredData = _.sortBy(_.flatten(props.data).filter((n) => n !== null));
+    const q = Math.floor(QUANTILE / 100 * filteredData.length);
+
+    let minData = filteredData[q];
+    let maxData = filteredData[filteredData.length - q];
 
     if (props.globalMinMax) {
         [minData, maxData] = props.globalMinMax;
