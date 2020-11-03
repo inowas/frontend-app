@@ -1,14 +1,14 @@
+import * as colors from '../../../defaults/colorScales';
 import {AxiosError} from 'axios';
-import React, {useEffect, useRef, useState} from 'react';
-import {connect} from 'react-redux';
 import {Bar, BarChart, CartesianGrid, Cell, Tooltip, XAxis, YAxis} from 'recharts';
 import {Button, Checkbox, CheckboxProps, Grid, Header, Icon, List, Message, Segment} from 'semantic-ui-react';
 import {Calculation, ModflowModel} from '../../../../../core/model/modflow';
-import {fetchCalculationResultsBudget} from '../../../../../services/api';
 import {IBudgetData, IBudgetType} from '../../../../../services/api/types';
-import ResultsSelectorBudget from '../../../../shared/complexTools/ResultsSelectorBudget';
+import {connect} from 'react-redux';
 import {exportChartData, exportChartImage} from '../../../../shared/simpleTools/helpers';
-import * as colors from '../../../defaults/colorScales';
+import {fetchCalculationResultsBudget} from '../../../../../services/api';
+import React, {useEffect, useRef, useState} from 'react';
+import ResultsSelectorBudget from '../../../../shared/complexTools/ResultsSelectorBudget';
 
 type budgetData = Array<{ name: string, value: number, active: boolean, position: number }> | null;
 
@@ -22,11 +22,11 @@ const BudgetResults = (props: IProps) => {
     const [fetching, setFetching] = useState<boolean>(true);
     const [isError, setIsError] = useState<AxiosError | null>(null);
     const [selectedTotim, setSelectedTotim] = useState<number>(
-        props.calculation && props.calculation.times ? props.calculation.times.total_times.slice(-1)[0] : 0
+        props.calculation && props.calculation.times ? props.calculation.times.budget.idx.slice(-1)[0] : 0
     );
     const [selectedType, setSelectedType] = useState<IBudgetType>('cumulative');
     const [totalTimes] = useState<number[] | null>(
-        props.calculation && props.calculation.times ? props.calculation.times.total_times : []
+        props.calculation && props.calculation.times ? props.calculation.times.budget.total_times : []
     );
     const chartRef = useRef<BarChart>(null);
     const {model} = props;

@@ -1,4 +1,5 @@
 import {IPropertyValueObject} from '../../../types';
+import {ModflowModel} from '../../../modflow';
 import FlopyModflowPackage from './FlopyModflowPackage';
 
 export interface IFlopyModflowMfoc extends IPropertyValueObject {
@@ -31,8 +32,8 @@ export const defaults: IFlopyModflowMfoc = {
 
 export default class FlopyModflowMfoc extends FlopyModflowPackage<IFlopyModflowMfoc> {
 
-    public static create(nper: number) {
-        return this.fromDefault().update(nper);
+    public static create(model: ModflowModel) {
+        return this.fromDefault().update(model);
     }
 
     public static fromDefault() {
@@ -50,13 +51,19 @@ export default class FlopyModflowMfoc extends FlopyModflowPackage<IFlopyModflowM
         return new this(d);
     }
 
-    public update(nper: number, data?: Array<[[number, number], string[]]>) {
+    public update(model: ModflowModel, data?: Array<[[number, number], string[]]>) {
         const spData: IFlopyModflowMfoc['stress_period_data'] = [];
+        const nper = model.stressperiods.stressperiods.length;
+
         for (let per = 0; per < nper; per++) {
-            if (data && data[per]) {
-                spData.push(data[per]);
-            } else {
-                spData.push([[per, 0], ['save head', 'save drawdown', 'save budget']]);
+            const nstp = model.stressperiods.stressperiods[per].nstp;
+            for (let tp = 0; tp < nstp; tp++) {
+                const d = data ? data.filter((r) => r[0][0] === per && r[0][1] === tp) : null;
+                if (d && d.length > 0) {
+                    spData.push(d[0]);
+                } else {
+                    spData.push([[per, tp], ['save head', 'save drawdown', 'save budget']]);
+                }
             }
         }
 
