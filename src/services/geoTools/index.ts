@@ -1,8 +1,8 @@
-import {area, booleanContains, booleanCrosses, booleanOverlap, envelope, intersect, lineString} from '@turf/turf';
-import {Polygon} from 'geojson';
-import {floor} from 'lodash';
-import {ICell} from '../../core/model/geometry/Cells.type';
 import {BoundingBox, Cells, Geometry, GridSize} from '../../core/model/modflow';
+import {ICell} from '../../core/model/geometry/Cells.type';
+import {Polygon} from 'geojson';
+import {area, booleanContains, booleanCrosses, booleanOverlap, envelope, intersect, lineString} from '@turf/turf';
+import {floor} from 'lodash';
 
 /* Calculate GridCells
 Structure:
@@ -70,7 +70,7 @@ export const calculateActiveCells = (
     if (geometry.fromType('linestring')) {
         const gridCells = getGridCells(boundingBox, gridSize);
         gridCells.forEach((cell) => {
-            if (booleanCrosses(geometry, cell.geometry)) {
+            if (booleanContains(cell.geometry, geometry) || booleanCrosses(geometry, cell.geometry)) {
                 activeCells.addCell([cell.x, cell.y]);
             }
         });
@@ -80,7 +80,9 @@ export const calculateActiveCells = (
         const gridCells = getGridCells(boundingBox, gridSize);
         const cellArea = area(gridCells[0].geometry);
         gridCells.forEach((cell) => {
-            if (booleanContains(geometry, cell.geometry) || booleanOverlap(geometry, cell.geometry)) {
+            if (booleanContains(cell.geometry, geometry)) {
+                activeCells.addCell([cell.x, cell.y]);
+            } else if (booleanContains(geometry, cell.geometry) || booleanOverlap(geometry, cell.geometry)) {
                 if (intersection > 0 && geometry.type === 'Polygon') {
                     const coveredArea = intersect(geometry.toGeoJSON() as Polygon, cell.geometry);
                     if (coveredArea && (area(coveredArea) / cellArea) > intersection) {

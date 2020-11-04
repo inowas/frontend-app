@@ -1,4 +1,9 @@
 import * as turf from '@turf/helpers';
+import {Array2D} from './Array2D.type';
+import {BoundingBox, Geometry, GridSize} from '../modflow/index';
+import {Feature, LineString} from 'geojson';
+import {ICell, ICells, Point} from './Cells.type';
+import {LineBoundary} from '../modflow/boundaries';
 import {NearestPointOnLine} from '@turf/nearest-point-on-line';
 import {
     booleanContains,
@@ -9,12 +14,7 @@ import {
     lineSlice,
     nearestPointOnLine
 } from '@turf/turf';
-import {Feature, LineString} from 'geojson';
 import {cloneDeep, floor, isEqual, uniqWith} from 'lodash';
-import {LineBoundary} from '../modflow/boundaries';
-import {BoundingBox, Geometry, GridSize} from '../modflow/index';
-import {Array2D} from './Array2D.type';
-import {ICell, ICells, Point} from './Cells.type';
 
 const getActiveCellFromCoordinate = (coordinate: Point, boundingBox: BoundingBox, gridSize: GridSize): ICell => {
 
@@ -203,7 +203,7 @@ export default class Cells {
         this._cells = cellObjs.map((li) => ([li.x, li.y, li.value]) as ICell);
     };
 
-    public toggle = ([x, y]: number[], boundingBox: BoundingBox, gridSize: GridSize, transform: boolean = true) => {
+    public toggle = ([x, y]: number[], boundingBox: BoundingBox, gridSize: GridSize, transform = true) => {
         const dx = boundingBox.dX / gridSize.nX;
         const dy = boundingBox.dY / gridSize.nY;
 
@@ -239,9 +239,9 @@ export default class Cells {
 
     public calculateIBound = (nrow: number, ncol: number) => {
         const iBound2D: Array2D<number> = [];
-        for (let row: number = 0; row < nrow; row++) {
+        for (let row = 0; row < nrow; row++) {
             iBound2D[row] = [0];
-            for (let col: number = 0; col < ncol; col++) {
+            for (let col = 0; col < ncol; col++) {
                 iBound2D[row][col] = 0;
             }
         }
@@ -259,8 +259,8 @@ export default class Cells {
         const cells = new Cells([]);
         const iBound = this.calculateIBound(gridSize.nY, gridSize.nX);
 
-        for (let rIdx: number = 0; rIdx < gridSize.nY; rIdx++) {
-            for (let cIdx: number = 0; cIdx < gridSize.nX; cIdx++) {
+        for (let rIdx = 0; rIdx < gridSize.nY; rIdx++) {
+            for (let cIdx = 0; cIdx < gridSize.nX; cIdx++) {
                 if (iBound[rIdx][cIdx] === 0) {
                     cells.addCell([cIdx, rIdx, 0]);
                 }
