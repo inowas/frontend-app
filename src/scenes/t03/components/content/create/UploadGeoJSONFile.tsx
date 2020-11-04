@@ -1,12 +1,12 @@
 import {AllGeoJSON} from '@turf/helpers';
+import {BasicTileLayer} from '../../../../../services/geoTools/tileLayers';
+import {BoundingBox, Geometry} from '../../../../../core/model/modflow';
+import {Button, Checkbox, CheckboxProps, Grid, List, Message} from 'semantic-ui-react';
+import {CircleMarker, GeoJSON, Map} from 'react-leaflet';
 import {GeoJSON as GeoJSONType, GeoJsonGeometryTypes} from 'geojson';
 import {LatLngBoundsExpression} from 'leaflet';
 import React, {FormEvent, useEffect, useRef, useState} from 'react';
-import {CircleMarker, GeoJSON, Map} from 'react-leaflet';
-import {Button, Checkbox, CheckboxProps, Grid, List, Message} from 'semantic-ui-react';
 import uuid from 'uuid';
-import {BoundingBox, Geometry} from '../../../../../core/model/modflow';
-import {BasicTileLayer} from '../../../../../services/geoTools/tileLayers';
 
 interface IProps {
     geometry: Geometry | undefined;

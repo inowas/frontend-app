@@ -1,8 +1,8 @@
-import Moment from 'moment';
-import React, {useEffect, useState} from 'react';
-import {pure} from 'recompose';
 import {DropdownProps, Form, Grid, Header, Segment} from 'semantic-ui-react';
 import {Stressperiods} from '../../../core/model/modflow';
+import {pure} from 'recompose';
+import Moment from 'moment';
+import React, {useEffect, useState} from 'react';
 import SliderWithTooltip from './SliderWithTooltip';
 
 const styles = {
@@ -18,7 +18,10 @@ const styles = {
 };
 
 interface IProps {
-    data: any;
+    data: {
+        type: string;
+        totim: number;
+    };
     onChange: (response: any) => any;
     stressperiods: Stressperiods;
     totalTimes: number[] | null;
@@ -30,8 +33,10 @@ const ResultsSelectorBudget = (props: IProps) => {
     const {type} = props.data;
 
     useEffect(() => {
-        setTemporaryTotim(props.data.totim);
-    }, [props.data]);
+        if (props.totalTimes) {
+            setTemporaryTotim(props.totalTimes[props.data.totim]);
+        }
+    }, [props.data, props.totalTimes]);
 
     const typeOptions = () => {
         return [
@@ -41,8 +46,12 @@ const ResultsSelectorBudget = (props: IProps) => {
     };
 
     const handleChangeType = (e: React.SyntheticEvent<HTMLElement, Event>, {value}: DropdownProps) => {
+        if (!props.totalTimes || !temporaryTotim) {
+            return;
+        }
+        const totim = props.totalTimes.indexOf(temporaryTotim);
         return props.onChange({
-            totim: temporaryTotim,
+            totim: totim,
             type: value
         });
     };
@@ -60,7 +69,10 @@ const ResultsSelectorBudget = (props: IProps) => {
     };
 
     const handleAfterChangeSlider = () => {
-        const totim = temporaryTotim;
+        if (!props.totalTimes || !temporaryTotim) {
+            return;
+        }
+        const totim = props.totalTimes.indexOf(temporaryTotim);
         return props.onChange({totim, type});
     };
 

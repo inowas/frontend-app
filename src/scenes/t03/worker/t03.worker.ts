@@ -1,6 +1,3 @@
-import FlopyPackages from '../../../core/model/flopy/packages/FlopyPackages';
-import {IFlopyPackages} from '../../../core/model/flopy/packages/FlopyPackages.type';
-import {ICells} from '../../../core/model/geometry/Cells.type';
 import {
     BoundaryCollection,
     BoundingBox,
@@ -9,9 +6,6 @@ import {
     ModflowModel,
     Soilmodel, Transport, VariableDensity
 } from '../../../core/model/modflow';
-import {calculateActiveCells} from '../../../services/geoTools';
-import calculateStatistics from '../../../services/statistics/calculateStatistics';
-import {IStatistics} from '../components/content/observation/statistics';
 import {
     ICalculateCellsInputData, ICalculateMfPackagesInputData,
     ICalculatePackagesInputData,
@@ -19,6 +13,12 @@ import {
     IWorkerInput,
     IWorkerResult
 } from './t03.worker.type';
+import {ICells} from '../../../core/model/geometry/Cells.type';
+import {IFlopyPackages} from '../../../core/model/flopy/packages/FlopyPackages.type';
+import {IStatistics} from '../components/content/observation/statistics';
+import {calculateActiveCells} from '../../../services/geoTools';
+import FlopyPackages from '../../../core/model/flopy/packages/FlopyPackages';
+import calculateStatistics from '../../../services/statistics/calculateStatistics';
 
 export const CALCULATE_STATISTICS_INPUT = 'CALCULATE_STATISTICS_INPUT';
 export const CALCULATE_STATISTICS_RESULT = 'CALCULATE_STATISTICS_RESULT';
@@ -61,9 +61,13 @@ const calculatePackages = (input: IWorkerInput<ICalculatePackagesInputData>) => 
     const variableDensity = VariableDensity.fromObject(input.data.variableDensity);
 
     if (packages instanceof FlopyPackages) {
-        packages.update(
-            model, soilmodel, boundaries, transport, variableDensity
-        );
+        try {
+            packages.update(
+                model, soilmodel, boundaries, transport, variableDensity
+            );
+        } catch (e) {
+            packages = null;
+        }
     }
 
     if (packages === null) {
@@ -111,6 +115,7 @@ ctx.addEventListener('message', (e) => {
                 data: calculateStatistics(input.data.data, input.data.exclude)
             } as IWorkerResult<IStatistics>;
 
+            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
             // @ts-ignore
             postMessage(result);
             break;
@@ -119,6 +124,7 @@ ctx.addEventListener('message', (e) => {
             input = e.data as IWorkerInput<ICalculateCellsInputData>;
             result = calculateCells(input);
             if (result) {
+                // eslint-disable-next-line @typescript-eslint/ban-ts-comment
                 // @ts-ignore
                 postMessage(result);
             }
@@ -129,6 +135,7 @@ ctx.addEventListener('message', (e) => {
             input = e.data as IWorkerInput<ICalculatePackagesInputData>;
             result = calculatePackages(input);
             if (result) {
+                // eslint-disable-next-line @typescript-eslint/ban-ts-comment
                 // @ts-ignore
                 postMessage(result);
             }
@@ -138,6 +145,7 @@ ctx.addEventListener('message', (e) => {
             input = e.data as IWorkerInput<ICalculateMfPackagesInputData>;
             result = calculateMfPackages(input);
             if (result) {
+                // eslint-disable-next-line @typescript-eslint/ban-ts-comment
                 // @ts-ignore
                 postMessage(result);
             }

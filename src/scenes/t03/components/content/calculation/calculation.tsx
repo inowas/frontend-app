@@ -1,12 +1,12 @@
-import React from 'react';
-import {useSelector} from 'react-redux';
-import FlopyPackages from '../../../../../core/model/flopy/packages/FlopyPackages';
 import {Calculation, ModflowModel} from '../../../../../core/model/modflow';
 import {IRootReducer} from '../../../../../reducers';
-import SubMenuWithContent from '../../../../../scenes/shared/complexTools/subMenuWithContent';
+import {useSelector} from 'react-redux';
 import Calculate from './calculate';
 import Files from './files';
+import FlopyPackages from '../../../../../core/model/flopy/packages/FlopyPackages';
 import Log from './log';
+import React from 'react';
+import SubMenuWithContent from '../../../../../scenes/shared/complexTools/subMenuWithContent';
 
 // tslint:disable-next-line:variable-name
 const CalculationWrapper = () => {

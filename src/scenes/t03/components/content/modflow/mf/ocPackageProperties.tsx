@@ -1,4 +1,3 @@
-import React, {ChangeEvent, MouseEvent, SyntheticEvent, useState} from 'react';
 import {
     Checkbox,
     DropdownProps,
@@ -11,12 +10,16 @@ import {
     Table
 } from 'semantic-ui-react';
 import {FlopyModflowMfdis, FlopyModflowMfoc} from '../../../../../../core/model/flopy/packages/mf';
-import FlopyModflow from '../../../../../../core/model/flopy/packages/mf/FlopyModflow';
-import {IFlopyModflowMfoc} from '../../../../../../core/model/flopy/packages/mf/FlopyModflowMfoc';
-import renderInfoPopup from '../../../../../shared/complexTools/InfoPopup';
-import ToggleableInput from '../../../../../shared/complexTools/ToggleableInput';
+import {
+    IFlopyModflowMfoc,
+    MAX_OUTPUT_PER_PERIOD
+} from '../../../../../../core/model/flopy/packages/mf/FlopyModflowMfoc';
 import {PopupPosition} from '../../../../../types';
 import {documentation} from '../../../../defaults/flow';
+import FlopyModflow from '../../../../../../core/model/flopy/packages/mf/FlopyModflow';
+import React, {ChangeEvent, MouseEvent, SyntheticEvent, useState} from 'react';
+import ToggleableInput from '../../../../../shared/complexTools/ToggleableInput';
+import renderInfoPopup from '../../../../../shared/complexTools/InfoPopup';
 
 const formats = [
     [0, '10G11.4'],
@@ -122,18 +125,24 @@ const OcPackageProperties = (props: IProps) => {
     const handleToggleCheckBox = (per: number, stp: number, text: string) => {
         let {stress_period_data} = mfPackage;
 
-        stress_period_data = stress_period_data.map((spd) => {
-            if (spd[0][0] === per && spd[0][1] === stp) {
-                if (spd[1].includes(text)) {
-                    spd[1] = spd[1].filter((d) => d !== text);
+        const isExisting = stress_period_data.filter((spd) => spd[0][0] === per && spd[0][1] === stp).length > 0;
+
+        if (!isExisting) {
+            stress_period_data.push([[per, stp], [text]]);
+        } else {
+            stress_period_data = stress_period_data.map((spd) => {
+                if (spd[0][0] === per && spd[0][1] === stp) {
+                    if (spd[1].includes(text)) {
+                        spd[1] = spd[1].filter((d) => d !== text);
+                        return spd;
+                    }
+
+                    spd[1].push(text);
                     return spd;
                 }
-
-                spd[1].push(text);
                 return spd;
-            }
-            return spd;
-        });
+            });
+        }
 
         mfPackage.stress_period_data = stress_period_data;
         setMfPackage(mfPackage);
@@ -152,8 +161,13 @@ const OcPackageProperties = (props: IProps) => {
 
         let tableData: Array<[[number, number], string[]]> = [];
         for (let per = 0; per < nper; per++) {
-            for (let stp = 0; stp < (Array.isArray(nstp) ? nstp[per] : nstp); stp++) {
-                tableData.push([[per, stp], []]);
+            const uNstp = Array.isArray(nstp) ? nstp[per] : nstp;
+            if (uNstp > MAX_OUTPUT_PER_PERIOD) {
+                tableData.push([[per, 0], []]);
+            } else {
+                for (let stp = 0; stp < uNstp; stp++) {
+                    tableData.push([[per, stp], []]);
+                }
             }
         }
 
@@ -233,21 +247,21 @@ const OcPackageProperties = (props: IProps) => {
                                         <Checkbox
                                             onChange={() => handleToggleCheckBox(per, stp, 'save head')}
                                             checked={d[1].includes('save head')}
-                                            disabled={props.readonly || stp !== 0}
+                                            disabled={props.readonly}
                                         />
                                     </Table.Cell>
                                     <Table.Cell textAlign="center">
                                         <Checkbox
                                             onChange={() => handleToggleCheckBox(per, stp, 'save drawdown')}
                                             checked={d[1].includes('save drawdown')}
-                                            disabled={props.readonly || stp !== 0}
+                                            disabled={props.readonly}
                                         />
                                     </Table.Cell>
                                     <Table.Cell textAlign="center">
                                         <Checkbox
                                             onChange={() => handleToggleCheckBox(per, stp, 'save budget')}
                                             checked={d[1].includes('save budget')}
-                                            disabled={props.readonly || stp !== 0}
+                                            disabled={props.readonly}
                                         />
                                     </Table.Cell>
                                 </Table.Row>

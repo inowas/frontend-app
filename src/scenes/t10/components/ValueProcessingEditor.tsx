@@ -1,6 +1,7 @@
 import {Button, DropdownProps, Form, Grid, Header, InputOnChangeData, Label, Modal, Segment} from 'semantic-ui-react';
 import {DataPoint} from 'downsample';
 import {DatePicker} from '../../shared/uiComponents';
+import {IDatePickerProps} from '../../shared/uiComponents/DatePicker';
 import {IDateTimeValue} from '../../../core/model/rtm/Sensor.type';
 import {IValueProcessingOperator} from '../../../core/model/rtm/processing/Processing.type';
 import {LTOB} from 'downsample';
@@ -20,6 +21,8 @@ interface IProps {
 }
 
 const ValueProcessingEditor = (props: IProps) => {
+    const [activeInput, setActiveInput] = useState<string>();
+    const [activeValue, setActiveValue] = useState<string>('');
 
     const [processing, setProcessing] = useState<ValueProcessing | null>(null);
 
@@ -107,17 +110,34 @@ const ValueProcessingEditor = (props: IProps) => {
         });
     };
 
-    const handleValueChange = (e: ChangeEvent<HTMLInputElement>, d: InputOnChangeData) => {
-        const v = parseFloat(d.value);
-        if (isNaN(v)) {
-            return setValue(0);
-        }
+    const handleInputChange = (e: ChangeEvent<HTMLInputElement>, {name, value}: InputOnChangeData) => {
+        setActiveInput(name);
+        setActiveValue(value)
+    };
 
-        return setValue(v);
+    const handleInputBlur = () => {
+        if (activeInput === 'value') {
+            setValue(parseFloat(activeValue));
+        }
+        setActiveInput(undefined);
     };
 
     const handleChangeOperator = (e: SyntheticEvent<HTMLElement, Event>, d: DropdownProps) => {
         setOperator(d.value as IValueProcessingOperator);
+    };
+
+    const handleBlurDate = (e: SyntheticEvent<Element, Event>, p: IDatePickerProps) => {
+        if (!p.value) {
+            return;
+        }
+
+        const value = moment(p.value.toDateString()).unix();
+        if (p.name === 'start') {
+            setBegin(value < end ? value : begin);
+        }
+        if (p.name === 'end') {
+            setEnd(value > begin ? value : end);
+        }
     };
 
     const handleBlur = () => {
@@ -150,7 +170,9 @@ const ValueProcessingEditor = (props: IProps) => {
             );
         }
 
-        const downSampledDataLTOB: DataPoint[] = LTOB(processedData.map((d) => ({
+        const downSampledDataLTOB: DataPoint[] = LTOB(processedData.filter(
+            (d) => d.value !== null
+        ).map((d) => ({
             x: d.timeStamp,
             y: d.value
         })), 200);
@@ -188,53 +210,60 @@ const ValueProcessingEditor = (props: IProps) => {
             <Modal.Content>
                 <Grid padded={true}>
                     {processedData &&
-                    <Grid.Row>
-                        <Grid.Column width={8}>
-                            <Segment raised={true}>
-                                <Label as={'div'} color={'blue'} ribbon={true}>Time range</Label>
-                                <Form>
-                                    <Form.Group widths={'equal'}>
-                                        <DatePicker
-                                            onBlur={handleBlur}
-                                            label={'Start'}
-                                            value={isNaN(begin) ? moment.unix(0).toDate() : moment.unix(begin).toDate()}
-                                            size={'small'}
-                                        />
-                                        <DatePicker
-                                            onBlur={handleBlur}
-                                            label={'End'}
-                                            value={isNaN(end) ? moment.utc().toDate() : moment.unix(end).toDate()}
-                                            size={'small'}
-                                        />
-                                    </Form.Group>
-                                </Form>
-                            </Segment>
-                        </Grid.Column>
-                        <Grid.Column width={8}>
-                            <Segment raised={true}>
-                                <Label as={'div'} color={'blue'} ribbon={true}>Value processing</Label>
-                                <Form>
-                                    <Form.Group widths={'equal'}>
-                                        <Form.Select
-                                            fluid={true}
-                                            label={'Method'}
-                                            options={operators.map((o) => ({key: o, value: o, text: o}))}
-                                            value={operator}
-                                            onChange={handleChangeOperator}
-                                        />
-                                        <Form.Input
-                                            fluid={true}
-                                            label={'Value'}
-                                            type={'number'}
-                                            value={value}
-                                            onChange={handleValueChange}
-                                            onBlur={handleBlur}
-                                        />
-                                    </Form.Group>
-                                </Form>
-                            </Segment>
-                        </Grid.Column>
-                    </Grid.Row>
+                    <React.Fragment>
+                        <Grid.Row>
+                            <Grid.Column width={16}>
+                                <Segment raised={true}>
+                                    <Label as={'div'} color={'blue'} ribbon={true}>Time range</Label>
+                                    <Form>
+                                        <Form.Group widths={'equal'}>
+                                            <DatePicker
+                                                onChange={handleBlurDate}
+                                                label={'Start'}
+                                                name="start"
+                                                value={isNaN(begin) ? moment.unix(0).toDate() : moment.unix(begin).toDate()}
+                                                size={'small'}
+                                            />
+                                            <DatePicker
+                                                onChange={handleBlurDate}
+                                                label={'End'}
+                                                name="end"
+                                                value={isNaN(end) ? moment.utc().toDate() : moment.unix(end).toDate()}
+                                                size={'small'}
+                                            />
+                                        </Form.Group>
+                                    </Form>
+                                </Segment>
+                            </Grid.Column>
+                        </Grid.Row>
+                        <Grid.Row>
+                            <Grid.Column width={16}>
+                                <Segment raised={true}>
+                                    <Label as={'div'} color={'blue'} ribbon={true}>Value processing</Label>
+                                    <Form>
+                                        <Form.Group widths={'equal'}>
+                                            <Form.Select
+                                                fluid={true}
+                                                label={'Method'}
+                                                options={operators.map((o) => ({key: o, value: o, text: o}))}
+                                                value={operator}
+                                                onChange={handleChangeOperator}
+                                            />
+                                            <Form.Input
+                                                fluid={true}
+                                                label={'Value'}
+                                                type={'number'}
+                                                name="value"
+                                                value={activeInput === 'value' ? activeValue : value}
+                                                onChange={handleInputChange}
+                                                onBlur={handleInputBlur}
+                                            />
+                                        </Form.Group>
+                                    </Form>
+                                </Segment>
+                            </Grid.Column>
+                        </Grid.Row>
+                    </React.Fragment>
                     }
 
                     {processedData &&

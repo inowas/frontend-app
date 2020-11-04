@@ -44,8 +44,9 @@ class FlopyMt3dMtrct extends FlopyMt3dPackage<IFlopyMt3dMtrct> {
     }
 
     public static fromObject(obj: IPropertyValueObject): FlopyMt3dMtrct {
-        const d: any = FlopyMt3dPackage.cloneDeep(defaults);
+        const d: IFlopyMt3dMtrct = FlopyMt3dPackage.cloneDeep(defaults);
         for (const key in d) {
+            // eslint-disable-next-line no-prototype-builtins
             if (d.hasOwnProperty(key) && obj.hasOwnProperty(key)) {
                 d[key] = obj[key];
             }

@@ -1,19 +1,14 @@
-import React, {useEffect, useState} from 'react';
-import {Button, Dropdown, Grid, Header, Icon, Label, Segment, Table} from 'semantic-ui-react';
+import {Button, Dropdown, Grid, Header, Icon, Label, Message, Segment, Table} from 'semantic-ui-react';
 import {DataSourceCollection, Rtm} from '../../../core/model/rtm';
+import {DataSourcesChart, ProcessingTimeRange, TimeProcessingEditor, ValueProcessingEditor} from './index';
+import {ECutRule, IProcessing} from '../../../core/model/rtm/processing/Processing.type';
+import {ISensorParameter} from '../../../core/model/rtm/Sensor.type';
 import {ProcessingFactory} from '../../../core/model/rtm/processing';
-import {IProcessing} from '../../../core/model/rtm/processing/Processing.type';
+import {processingList} from '../defaults';
 import ProcessingCollection from '../../../core/model/rtm/processing/ProcessingCollection';
+import React, {useEffect, useState} from 'react';
 import TimeProcessing from '../../../core/model/rtm/processing/TimeProcessing';
 import ValueProcessing from '../../../core/model/rtm/processing/ValueProcessing';
-import {ISensorParameter} from '../../../core/model/rtm/Sensor.type';
-import {processingList} from '../defaults';
-import {
-    DataSourcesChart,
-    ProcessingTimeRange,
-    TimeProcessingEditor,
-    ValueProcessingEditor
-} from './index';
 
 interface IProps {
     rtm: Rtm;
@@ -186,6 +181,19 @@ const Processing = (props: IProps) => {
     const dataSourceCollection = DataSourceCollection.fromObject(props.parameter.dataSources);
     const processingCollection = ProcessingCollection.fromObject(props.parameter.processings);
 
+    const renderMethod = (pInst: ValueProcessing | TimeProcessing) => {
+        if (pInst instanceof ValueProcessing) {
+            return pInst.operator;
+        }
+        return pInst.cut || '';
+    }
+
+    const renderValue = (pInst: any) => {
+        if (pInst instanceof ValueProcessing) {
+            return pInst.value;
+        }
+        return pInst.rule || '';
+    }
     return (
         <Grid>
             <Grid.Row>
@@ -197,13 +205,23 @@ const Processing = (props: IProps) => {
                         <Label color={'blue'} ribbon={true} size={'large'}>
                             Processings
                         </Label>
+                        {processingCollection.all.filter((p) => {
+                            const pInst = ProcessingFactory.fromObject(p);
+                            return pInst instanceof TimeProcessing && pInst.cut !== ECutRule.NONE;
+                        }).length > 1 &&
+                        <Message warning={true}>
+                            <Message.Header>Warning</Message.Header>
+                            <p>There should only be one time processing with cut method. Only the first in order is
+                                applied.</p>
+                        </Message>
+                        }
                         <Table>
                             <Table.Header>
                                 <Table.Row>
                                     <Table.HeaderCell>Type</Table.HeaderCell>
                                     <Table.HeaderCell>Time range</Table.HeaderCell>
-                                    <Table.HeaderCell>Method</Table.HeaderCell>
-                                    <Table.HeaderCell>Value</Table.HeaderCell>
+                                    <Table.HeaderCell textAlign={'center'}>Method</Table.HeaderCell>
+                                    <Table.HeaderCell textAlign={'center'}>Value</Table.HeaderCell>
                                     <Table.HeaderCell/>
                                 </Table.Row>
                             </Table.Header>
@@ -221,10 +239,10 @@ const Processing = (props: IProps) => {
                                                 <ProcessingTimeRange processing={pInst}/>
                                             </Table.Cell>
                                             <Table.Cell textAlign={'center'}>
-                                                {pInst instanceof ValueProcessing ? pInst.operator : ''}
+                                                {renderMethod(pInst)}
                                             </Table.Cell>
                                             <Table.Cell textAlign={'center'}>
-                                                {pInst instanceof ValueProcessing ? pInst.value : ''}
+                                                {renderValue(pInst)}
                                             </Table.Cell>
                                             <Table.Cell textAlign={'right'}>
                                                 {!props.rtm.readOnly &&
