@@ -1,20 +1,22 @@
-import * as GeoJson from 'geojson';
-import {GeoJsonGeometryTypes} from 'geojson';
-import {LatLngBoundsExpression, LatLngExpression} from 'leaflet';
-import {uniqueId} from 'lodash';
-import _ from 'lodash';
-import React, {MouseEvent, useEffect, useRef, useState} from 'react';
-import {CircleMarker, Map, Polygon, Polyline} from 'react-leaflet';
-import {Button, Form, Grid, Modal, Tab, TabProps} from 'semantic-ui-react';
-import {SemanticSIZES} from 'semantic-ui-react/dist/commonjs/generic';
-import {BoundingBox} from '../../../../../core/model/geometry';
-import {IGeometry} from '../../../../../core/model/geometry/Geometry.type';
-import {Geometry} from '../../../../../core/model/modflow';
-import {JSON_SCHEMA_URL} from '../../../../../services/api';
-import {getStyle} from '../../../../../services/geoTools/mapHelpers';
+import * as GeoJSON from 'geojson';
 import {BasicTileLayer} from '../../../../../services/geoTools/tileLayers';
+import {BoundingBox} from '../../../../../core/model/geometry';
+import {Button, Form, Grid, Modal, Tab, TabProps} from 'semantic-ui-react';
+import {CircleMarker, Map, Polygon, Polyline} from 'react-leaflet';
+import {GeoJson} from '../../../../../core/model/geometry/Geometry.type'
+import {GeoJsonGeometryTypes} from 'geojson';
+import {Geometry} from '../../../../../core/model/modflow';
+import {IGeometry} from '../../../../../core/model/geometry/Geometry.type';
+import {JSON_SCHEMA_URL} from '../../../../../services/api';
+import {LatLngBoundsExpression, LatLngExpression} from 'leaflet';
+import {SemanticSIZES} from 'semantic-ui-react/dist/commonjs/generic';
+import {convertGeometry} from '../../../../../services/geoTools/convertGeometry';
+import {getStyle} from '../../../../../services/geoTools/mapHelpers';
+import {uniqueId} from 'lodash';
 import {validate} from '../../../../../services/jsonSchemaValidator';
+import React, {MouseEvent, useEffect, useRef, useState} from 'react';
 import UploadGeoJSONFile from './UploadGeoJSONFile';
+import _ from 'lodash';
 
 type TGeometryString = 'linestring' | 'point' | 'polygon';
 
@@ -113,7 +115,10 @@ const UploadGeoJSONModal = (props: IProps) => {
     const handleChangeGeoJSON = (e: any, {value}: any) => {
         setGeoJson(value);
         try {
-            const parsedJSON = JSON.parse(value);
+            const parsedJSON: GeoJson = convertGeometry(JSON.parse(value), props.geometry);
+
+            console.log(parsedJSON);
+
             validate(parsedJSON, `${JSON_SCHEMA_URL}/geojson/${props.geometry || 'polygon'}.json`).then((r) => {
                 if (!r[0]) {
                     return setIsValid(false);
@@ -150,7 +155,7 @@ const UploadGeoJSONModal = (props: IProps) => {
             case 'point':
                 return (
                     <CircleMarker
-                        key={uniqueId(Geometry.fromObject(geometry as GeoJson.Point).hash())}
+                        key={uniqueId(Geometry.fromObject(geometry as GeoJSON.Point).hash())}
                         center={[
                             geometry.coordinates[1],
                             geometry.coordinates[0]
@@ -161,18 +166,18 @@ const UploadGeoJSONModal = (props: IProps) => {
             case 'linestring':
                 return (
                     <Polyline
-                        key={uniqueId(Geometry.fromObject(geometry as GeoJson.LineString).hash())}
+                        key={uniqueId(Geometry.fromObject(geometry as GeoJSON.LineString).hash())}
                         positions={
-                            Geometry.fromObject(geometry as GeoJson.LineString).coordinatesLatLng as LatLngExpression[]
+                            Geometry.fromObject(geometry as GeoJSON.LineString).coordinatesLatLng as LatLngExpression[]
                         }
                     />
                 );
             case 'polygon':
                 return (
                     <Polygon
-                        key={uniqueId(Geometry.fromObject(geometry as GeoJson.Polygon).hash())}
+                        key={uniqueId(Geometry.fromObject(geometry as GeoJSON.Polygon).hash())}
                         positions={
-                            Geometry.fromObject(geometry as GeoJson.Polygon).coordinatesLatLng as LatLngExpression[]
+                            Geometry.fromObject(geometry as GeoJSON.Polygon).coordinatesLatLng as LatLngExpression[]
                         }
                     />
                 );
@@ -219,17 +224,17 @@ const UploadGeoJSONModal = (props: IProps) => {
                     {activeTab === 0 ?
                         <Grid.Row>
                             <Grid.Column>
-                                    <Form>
-                                        <Form.TextArea
-                                            onChange={handleChangeGeoJSON}
-                                            onBlur={handleBlurGeoJSON}
-                                            placeholder={`Paste GeoJson here:
+                                <Form>
+                                    <Form.TextArea
+                                        onChange={handleChangeGeoJSON}
+                                        onBlur={handleBlurGeoJSON}
+                                        placeholder={`Paste GeoJson here:
 ${props.geometry ? examples[props.geometry] : examples.polygon}`}
-                                            value={geoJson}
-                                            width={16}
-                                            style={style.textArea}
-                                        />
-                                    </Form>
+                                        value={geoJson}
+                                        width={16}
+                                        style={style.textArea}
+                                    />
+                                </Form>
                             </Grid.Column>
                             <Grid.Column>
                                 <Map
