@@ -10,7 +10,10 @@ import {
     Table
 } from 'semantic-ui-react';
 import {FlopyModflowMfdis, FlopyModflowMfoc} from '../../../../../../core/model/flopy/packages/mf';
-import {IFlopyModflowMfoc} from '../../../../../../core/model/flopy/packages/mf/FlopyModflowMfoc';
+import {
+    IFlopyModflowMfoc,
+    MAX_OUTPUT_PER_PERIOD
+} from '../../../../../../core/model/flopy/packages/mf/FlopyModflowMfoc';
 import {PopupPosition} from '../../../../../types';
 import {documentation} from '../../../../defaults/flow';
 import FlopyModflow from '../../../../../../core/model/flopy/packages/mf/FlopyModflow';
@@ -158,8 +161,13 @@ const OcPackageProperties = (props: IProps) => {
 
         let tableData: Array<[[number, number], string[]]> = [];
         for (let per = 0; per < nper; per++) {
-            for (let stp = 0; stp < (Array.isArray(nstp) ? nstp[per] : nstp); stp++) {
-                tableData.push([[per, stp], []]);
+            const uNstp = Array.isArray(nstp) ? nstp[per] : nstp;
+            if (uNstp > MAX_OUTPUT_PER_PERIOD) {
+                tableData.push([[per, 0], []]);
+            } else {
+                for (let stp = 0; stp < uNstp; stp++) {
+                    tableData.push([[per, stp], []]);
+                }
             }
         }
 

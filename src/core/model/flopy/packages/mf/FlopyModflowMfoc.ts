@@ -30,6 +30,8 @@ export const defaults: IFlopyModflowMfoc = {
     label: 'LABEL',
 };
 
+export const MAX_OUTPUT_PER_PERIOD = 50;
+
 export default class FlopyModflowMfoc extends FlopyModflowPackage<IFlopyModflowMfoc> {
 
     public static create(model: ModflowModel) {
@@ -57,12 +59,21 @@ export default class FlopyModflowMfoc extends FlopyModflowPackage<IFlopyModflowM
 
         for (let per = 0; per < nper; per++) {
             const nstp = model.stressperiods.stressperiods[per].nstp;
-            for (let tp = 0; tp < nstp; tp++) {
-                const d = data ? data.filter((r) => r[0][0] === per && r[0][1] === tp) : null;
+            if (nstp > MAX_OUTPUT_PER_PERIOD) {
+                const d = data ? data.filter((r) => r[0][0] === per && r[0][1] === 0) : null;
                 if (d && d.length > 0) {
                     spData.push(d[0]);
                 } else {
-                    spData.push([[per, tp], ['save head', 'save drawdown', 'save budget']]);
+                    spData.push([[per, 0], ['save head', 'save drawdown', 'save budget']]);
+                }
+            } else {
+                for (let tp = 0; tp < nstp; tp++) {
+                    const d = data ? data.filter((r) => r[0][0] === per && r[0][1] === tp) : null;
+                    if (d && d.length > 0) {
+                        spData.push(d[0]);
+                    } else {
+                        spData.push([[per, tp], ['save head', 'save drawdown', 'save budget']]);
+                    }
                 }
             }
         }
