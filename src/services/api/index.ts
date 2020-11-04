@@ -189,7 +189,7 @@ export const fetchCalculationResultsBudget = (
     onSuccess: CallbackFunction<IBudgetData, void>,
     onError: (e: AxiosError) => any
 ) => {
-    const url = `${MODFLOW_CALCULATION_URL}/${calculationId}/results/types/budget/totims/${totim}`;
+    const url = `${MODFLOW_CALCULATION_URL}/${calculationId}/results/types/budget/idx/${totim}`;
 
     return axios.request({
         method: 'GET',
@@ -214,7 +214,7 @@ export const fetchCalculationResultsFlow = (
     onSuccess: CallbackFunction<Array2D<number>, void>,
     onError: ErrorCallbackFunction
 ) => {
-    const url = `${MODFLOW_CALCULATION_URL}/${calculationId}/results/types/${type}/layers/${layer}/totims/${totim}`;
+    const url = `${MODFLOW_CALCULATION_URL}/${calculationId}/results/types/${type}/layers/${layer}/idx/${totim}`;
 
     return axios.request({
         method: 'GET',

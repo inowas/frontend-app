@@ -134,11 +134,11 @@ const ResultsMap = (props: IProps) => {
                 type: 'Polygon',
                 coordinates: [
                     [
-                        [props.model.boundingBox.xMin, (props.model.boundingBox.yMax - selectedRow) * dY],
-                        [props.model.boundingBox.xMax, (props.model.boundingBox.yMax - selectedRow) * dY],
-                        [props.model.boundingBox.xMax, (props.model.boundingBox.yMax - (selectedRow + 1)) * dY],
-                        [props.model.boundingBox.xMin, (props.model.boundingBox.yMax - (selectedRow + 1)) * dY],
-                        [props.model.boundingBox.xMin, (props.model.boundingBox.yMax - selectedRow) * dY]
+                        [props.model.boundingBox.xMin, props.model.boundingBox.yMax - (selectedRow * dY)],
+                        [props.model.boundingBox.xMax, props.model.boundingBox.yMax - (selectedRow * dY)],
+                        [props.model.boundingBox.xMax, props.model.boundingBox.yMax - ((selectedRow + 1) * dY)],
+                        [props.model.boundingBox.xMin, props.model.boundingBox.yMax - ((selectedRow + 1) * dY)],
+                        [props.model.boundingBox.xMin, props.model.boundingBox.yMax - (selectedRow * dY)]
                     ]
                 ]
             }
@@ -150,11 +150,11 @@ const ResultsMap = (props: IProps) => {
                 type: 'Polygon',
                 coordinates: [
                     [
-                        [(props.model.boundingBox.xMin + selectedCol) * dX, props.model.boundingBox.yMin],
-                        [(props.model.boundingBox.xMin + selectedCol) * dX, props.model.boundingBox.yMax],
-                        [(props.model.boundingBox.xMin + (selectedCol + 1)) * dX, props.model.boundingBox.yMax],
-                        [(props.model.boundingBox.xMin + (selectedCol + 1)) * dX, props.model.boundingBox.yMin],
-                        [(props.model.boundingBox.xMin + selectedCol) * dX, props.model.boundingBox.yMin]
+                        [props.model.boundingBox.xMin + (selectedCol * dX), props.model.boundingBox.yMin],
+                        [props.model.boundingBox.xMin + (selectedCol * dX), props.model.boundingBox.yMax],
+                        [props.model.boundingBox.xMin + ((selectedCol + 1) * dX), props.model.boundingBox.yMax],
+                        [props.model.boundingBox.xMin + ((selectedCol + 1) * dX), props.model.boundingBox.yMin],
+                        [props.model.boundingBox.xMin + (selectedCol * dX), props.model.boundingBox.yMin]
                     ]
                 ]
             }
