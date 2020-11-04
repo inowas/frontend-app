@@ -80,7 +80,9 @@ export const calculateActiveCells = (
         const gridCells = getGridCells(boundingBox, gridSize);
         const cellArea = area(gridCells[0].geometry);
         gridCells.forEach((cell) => {
-            if (booleanContains(geometry, cell.geometry) || booleanOverlap(geometry, cell.geometry)) {
+            if (booleanContains(cell.geometry, geometry)) {
+                activeCells.addCell([cell.x, cell.y]);
+            } else if (booleanContains(geometry, cell.geometry) || booleanOverlap(geometry, cell.geometry)) {
                 if (intersection > 0 && geometry.type === 'Polygon') {
                     const coveredArea = intersect(geometry.toGeoJSON() as Polygon, cell.geometry);
                     if (coveredArea && (area(coveredArea) / cellArea) > intersection) {

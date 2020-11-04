@@ -116,9 +116,6 @@ const UploadGeoJSONModal = (props: IProps) => {
         setGeoJson(value);
         try {
             const parsedJSON: GeoJson = convertGeometry(JSON.parse(value), props.geometry);
-
-            console.log(parsedJSON);
-
             validate(parsedJSON, `${JSON_SCHEMA_URL}/geojson/${props.geometry || 'polygon'}.json`).then((r) => {
                 if (!r[0]) {
                     return setIsValid(false);
