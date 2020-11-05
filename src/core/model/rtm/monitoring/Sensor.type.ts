@@ -1,7 +1,7 @@
+import {IDataDropperFile} from '../../../../services/dataDropper/DataDropper.type';
+import {IProcessing} from '../processing/Processing.type';
 import {Point} from 'geojson';
-import {IDataDropperFile} from '../../../services/dataDropper/DataDropper.type';
 import FileDataSource from './FileDataSource';
-import {IProcessing} from './processing/Processing.type';
 import PrometheusDataSource from './PrometheusDataSource';
 import SensorDataSource from './SensorDataSource';
 

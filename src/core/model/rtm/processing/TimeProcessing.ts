@@ -1,6 +1,6 @@
 import {ECutRule, ITimeProcessing} from './Processing.type';
 import {GenericObject} from '../../genericObject/GenericObject';
-import {IDateTimeValue} from '../Sensor.type';
+import {IDateTimeValue} from '../monitoring/Sensor.type';
 import {makeTimeProcessingRequest} from '../../../../services/api';
 import _ from 'lodash';
 

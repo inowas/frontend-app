@@ -1,6 +1,6 @@
 import Uuid from 'uuid';
-import FileDataSource from '../../../core/model/rtm/FileDataSource';
-import {IFileDataSource} from '../../../core/model/rtm/Sensor.type';
+import FileDataSource from '../../../core/model/rtm/monitoring/FileDataSource';
+import {IFileDataSource} from '../../../core/model/rtm/monitoring/Sensor.type';
 import {DATADROPPER_URL} from '../../../services/api';
 
 test('Test FileDataSource, loading pre-loaded data', async () => {

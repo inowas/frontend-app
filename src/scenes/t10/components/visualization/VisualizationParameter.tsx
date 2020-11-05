@@ -22,7 +22,7 @@ import {
     Segment
 } from 'semantic-ui-react';
 import Uuid from 'uuid';
-import {DataSourceCollection, Rtm} from '../../../../core/model/rtm';
+import {DataSourceCollection, Rtm} from '../../../../core/model/rtm/monitoring';
 import {ProcessingCollection} from '../../../../core/model/rtm/processing';
 import {IPropertyValueObject} from '../../../../core/model/types';
 import {downloadFile, exportChartImage} from '../../../shared/simpleTools/helpers';

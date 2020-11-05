@@ -1,6 +1,6 @@
 import * as turf from '@turf/turf';
 import {isEqual, uniqWith} from 'lodash';
-import {Collection} from '../collection/Collection';
+import {Collection} from '../../collection/Collection';
 import {Sensor} from './index';
 import {ISensor} from './Sensor.type';
 

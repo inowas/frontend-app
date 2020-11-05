@@ -1,7 +1,7 @@
 import Uuid from 'uuid';
 
-import {ISensorDataSource} from '../../../core/model/rtm/Sensor.type';
-import SensorDataSource from '../../../core/model/rtm/SensorDataSource';
+import {ISensorDataSource} from '../../../core/model/rtm/monitoring/Sensor.type';
+import SensorDataSource from '../../../core/model/rtm/monitoring/SensorDataSource';
 
 test('Test SensorDataSource URL-props and regex pattern-matching', () => {
     const obj: ISensorDataSource = {

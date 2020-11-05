@@ -1,7 +1,7 @@
 import uuid from 'uuid';
-import PrometheusDataSource from '../../../core/model/rtm/PrometheusDataSource';
+import PrometheusDataSource from '../../../core/model/rtm/monitoring/PrometheusDataSource';
 
-import {IPrometheusDataSource} from '../../../core/model/rtm/Sensor.type';
+import {IPrometheusDataSource} from '../../../core/model/rtm/monitoring/Sensor.type';
 
 test('Test PrometheusDataSource, create from params', () => {
     const obj: IPrometheusDataSource = {

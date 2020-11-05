@@ -1,7 +1,7 @@
 import Uuid from 'uuid';
-import DataSourceCollection from '../../../core/model/rtm/DataSourceCollection';
-import FileDataSource from '../../../core/model/rtm/FileDataSource';
-import {IDateTimeValue, IFileDataSource} from '../../../core/model/rtm/Sensor.type';
+import DataSourceCollection from '../../../core/model/rtm/monitoring/DataSourceCollection';
+import FileDataSource from '../../../core/model/rtm/monitoring/FileDataSource';
+import {IDateTimeValue, IFileDataSource} from '../../../core/model/rtm/monitoring/Sensor.type';
 import {DATADROPPER_URL} from '../../../services/api';
 
 test('Test DatasourceCollection merge with local data', async () => {

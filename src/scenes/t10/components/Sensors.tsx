@@ -1,7 +1,7 @@
 import {AddSensor, SensorList} from './index';
 import {Grid, Segment} from 'semantic-ui-react';
 import {RouteComponentProps, withRouter} from 'react-router';
-import {Rtm, Sensor} from '../../../core/model/rtm';
+import {Rtm, Sensor} from '../../../core/model/rtm/monitoring';
 import ContentToolBar from '../../shared/ContentToolbar';
 import React, {ReactFragment, useEffect, useState} from 'react';
 

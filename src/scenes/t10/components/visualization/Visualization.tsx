@@ -6,8 +6,8 @@ import {
     Grid,
     Icon, Segment
 } from 'semantic-ui-react';
-import {Rtm} from '../../../../core/model/rtm';
-import {ISensorParameter} from '../../../../core/model/rtm/Sensor.type';
+import {Rtm} from '../../../../core/model/rtm/monitoring';
+import {ISensorParameter} from '../../../../core/model/rtm/monitoring/Sensor.type';
 import {heatMapColors} from '../../../t05/defaults/gis';
 import {ToggleableSensorList, VisualizationParameter} from './index';
 import {IParameterWithMetaData} from './types';

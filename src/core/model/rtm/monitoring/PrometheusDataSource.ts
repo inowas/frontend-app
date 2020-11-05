@@ -1,4 +1,4 @@
-import {GenericObject} from '../genericObject/GenericObject';
+import {GenericObject} from '../../genericObject/GenericObject';
 import {IDateTimeValue, IPrometheusDataSource} from './Sensor.type';
 import {retrievePrometheusData} from './SensorDataHelper';
 import moment from 'moment';

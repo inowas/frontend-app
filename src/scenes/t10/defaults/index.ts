@@ -1,5 +1,5 @@
 import uuidv4 from 'uuid';
-import {ISensorParameter} from '../../../core/model/rtm/Sensor.type';
+import {ISensorParameter} from '../../../core/model/rtm/monitoring/Sensor.type';
 
 export const defaultsWithSession = (session: any) => {
     const dws = defaults;

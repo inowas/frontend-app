@@ -1,6 +1,6 @@
 import {cloneDeep} from 'lodash';
 import uuid from 'uuid';
-import {GenericObject} from '../genericObject/GenericObject';
+import {GenericObject} from '../../genericObject/GenericObject';
 import {IDateTimeValue, ISensorDataSource} from './Sensor.type';
 import {getUrlPathRegex, pathIsValid, retrieveData} from './SensorDataHelper';
 

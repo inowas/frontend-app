@@ -1,5 +1,5 @@
 import {ISimpleTool} from '../types';
-import { IDateTimeValue } from '../rtm/Sensor.type';
+import { IDateTimeValue } from '../rtm/monitoring/Sensor.type';
 
 export interface IHtm extends ISimpleTool<IHtmData> {
     data: IHtmData;

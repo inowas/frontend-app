@@ -1,4 +1,4 @@
-import {IDateTimeValue} from '../../../core/model/rtm/Sensor.type';
+import {IDateTimeValue} from '../../../core/model/rtm/monitoring/Sensor.type';
 import {IHeatTransportInput} from '../../../core/model/htm/Htm.type';
 import {LTOB} from 'downsample';
 import {ResponsiveContainer, Scatter, ScatterChart, XAxis, YAxis} from 'recharts';

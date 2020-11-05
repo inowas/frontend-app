@@ -140,6 +140,13 @@ const availableTools: ITool[] = [
         subPath: '',
         role: ROLE_USER,
         instances: []
+    }, {
+        slug: 'T20',
+        name: 'Real time modelling',
+        path: '/tools/',
+        subPath: '',
+        role: ROLE_USER,
+        instances: []
     }
 ];
 

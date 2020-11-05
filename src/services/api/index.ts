@@ -1,7 +1,7 @@
 import {Array2D, Array3D} from '../../core/model/geometry/Array2D.type';
 import {CallbackFunction, ErrorCallbackFunction} from '../../scenes/types';
 import {IBudgetData, IModflowFile, IRasterFileMetadata} from './types';
-import {IDateTimeValue} from '../../core/model/rtm/Sensor.type';
+import {IDateTimeValue} from '../../core/model/rtm/monitoring/Sensor.type';
 import {IHeatTransportRequest} from '../../core/model/htm/Htm.type';
 import {ISimpleTool} from '../../core/model/types';
 import {InterpolationType} from '../../scenes/shared/rasterData/types';
