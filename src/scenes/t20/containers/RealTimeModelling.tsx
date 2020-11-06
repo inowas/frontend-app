@@ -1,16 +1,17 @@
 import {AppContainer} from '../../shared';
 import {Grid, Icon, Loader} from 'semantic-ui-react';
+import {IModflowModel} from '../../../core/model/modflow/ModflowModel.type';
 import {IRtModelling} from '../../../core/model/rtm/modelling/RTModelling.type';
 import {IToolMetaDataEdit} from '../../shared/simpleTools/ToolMetaData/ToolMetaData.type';
+import {ModflowModel} from '../../../core/model/modflow';
 import {ToolMetaData} from '../../shared/simpleTools';
-import {createToolInstance} from '../../dashboard/commands';
+import {ToolNavigation} from '../../shared/complexTools';
 import {fetchUrl, sendCommand} from '../../../services/api';
 import {useHistory, useParams} from 'react-router-dom';
 import RTModelling from '../../../core/model/rtm/modelling/RTModelling';
+import RTModellingSetup from '../components/RTModellingSetup';
 import React, {useEffect, useState} from 'react';
 import SimpleToolsCommand from '../../shared/simpleTools/commands/SimpleToolsCommand';
-import {ToolNavigation} from '../../shared/complexTools';
-import RTModellingSetup from "../components/RTModellingSetup";
 
 const navigation = [{
     name: 'Documentation',
@@ -23,17 +24,33 @@ const tool = 'T20';
 const RealTimeModelling = () => {
     const [isDirty, setDirty] = useState<boolean>(false);
     const [isFetching, setIsFetching] = useState<boolean>(false);
+    const [model, setModel] = useState<IModflowModel>();
     const [rtm, setRtm] = useState<IRtModelling>();
 
     const history = useHistory();
-    const {id} = useParams();
+    const {id, property} = useParams();
 
     useEffect(() => {
         if (id) {
             setIsFetching(true);
             fetchUrl(`tools/${tool}/${id}`,
-                (m: IRtModelling) => {
-                    setRtm(m);
+                (r: IRtModelling) => {
+                    setRtm(r);
+                    setIsFetching(false);
+                    setDirty(false);
+                }, () => {
+                    setIsFetching(false);
+                }
+            );
+        }
+    }, [id]);
+
+    useEffect(() => {
+        if (rtm) {
+            setIsFetching(true);
+            fetchUrl(`modflowmodels/${rtm.data.model_id}`,
+                (m: IModflowModel) => {
+                    setModel(m);
                     setIsFetching(false);
                     setDirty(false);
                 },
@@ -41,17 +58,14 @@ const RealTimeModelling = () => {
                     setIsFetching(false);
                 }
             );
-            return;
         }
+    }, [rtm]);
 
-        if (!id) {
-            const newInstance = RTModelling.fromDefaults();
-            sendCommand(createToolInstance(newInstance.tool, newInstance.toObject()),
-                () => history.push(`/tools/${newInstance.tool}/${newInstance.id}`),
-                () => console.log('ERROR')
-            );
+    useEffect(() => {
+        if (!property && id) {
+            history.push(`${id}/settings`);
         }
-    }, [history, id]);
+    }, [property])
 
     const handleSaveMetaData = (tool: IToolMetaDataEdit) => {
         if (!rtm) {
@@ -75,13 +89,22 @@ const RealTimeModelling = () => {
         );
     };
 
-    if (!rtm) {
+    if (!rtm || !model) {
         return (
             <AppContainer navbarItems={navigation} loading={isFetching}>
-                <Loader inverted={true}>Loading</Loader>
+                <Loader active={true} inverted={true}>Loading</Loader>
             </AppContainer>
         );
     }
+
+    const renderContent = () => {
+        return (
+            <RTModellingSetup
+                model={ModflowModel.fromObject(model)}
+                rtm={RTModelling.fromObject(rtm)}
+            />
+        );
+    };
 
     return (
         <AppContainer navbarItems={navigation}>
@@ -105,8 +128,8 @@ const RealTimeModelling = () => {
                                     header: 'Setup',
                                     items: [
                                         {
-                                            name: 'Model',
-                                            property: 'model',
+                                            name: 'Settings',
+                                            property: 'settings',
                                             icon: <Icon name="map"/>
                                         },
                                         {
@@ -150,7 +173,7 @@ const RealTimeModelling = () => {
                         />
                     </Grid.Column>
                     <Grid.Column width={13}>
-                        <RTModellingSetup/>
+                        {renderContent()}
                     </Grid.Column>
                 </Grid.Row>
             </Grid>

@@ -1,6 +1,6 @@
+import {GeoJson} from '../geometry/Geometry.type';
 import {IBoundingBox} from '../geometry/BoundingBox.type';
 import {ICells} from '../geometry/Cells.type';
-import {GeoJson} from '../geometry/Geometry.type';
 import {IGridSize} from '../geometry/GridSize.type';
 import {ILengthUnit} from './LengthUnit.type';
 import {IStressPeriods} from './Stressperiods.type';

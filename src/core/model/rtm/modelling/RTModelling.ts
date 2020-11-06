@@ -53,6 +53,10 @@ class RTModelling extends GenericObject<IRtModelling> {
         this._props.public = value;
     }
 
+    get startDate() {
+        return new Date(this._props.data.start_date_time);
+    }
+
     get tool(): string {
         return this._props.tool;
     }
@@ -84,4 +88,4 @@ class RTModelling extends GenericObject<IRtModelling> {
     }
 }
 
-export default RTModelling
+export default RTModelling;
