@@ -1,4 +1,4 @@
-import {ETimeResolution, IRtModelling} from './RTModelling.type';
+import {ETimeResolution, IRtModelling, IRtModellingData} from './RTModelling.type';
 import {GenericObject} from '../../genericObject/GenericObject';
 import {cloneDeep} from 'lodash';
 import uuid from 'uuid';
@@ -19,6 +19,14 @@ class RTModelling extends GenericObject<IRtModelling> {
 
     set name(value: string) {
         this._props.name = value;
+    }
+
+    get data(): IRtModellingData {
+        return this._props.data;
+    }
+
+    set data(value: IRtModellingData) {
+        this._props.data = value;
     }
 
     get description(): string {
