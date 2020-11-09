@@ -74,18 +74,21 @@ const RealTimeModelling = () => {
         const {name, description} = tool;
         const isPublic = tool.public;
         setRtm({...rtm, name, description, public: isPublic});
-        handleSave(rtm);
+        handleSave(RTModelling.fromObject(rtm));
     };
 
     const handleChange = (r: RTModelling) => {
         setRtm(r.toObject());
     };
 
-    const handleSave = (r: IRtModelling) => {
+    const handleSave = (r: RTModelling) => {
         setIsFetching(true);
         sendCommand(
-            SimpleToolsCommand.updateToolInstance(r),
-            () => setIsFetching(false)
+            SimpleToolsCommand.updateToolInstance(r.toObject()),
+            () => {
+                setIsFetching(false);
+                setRtm(r.toObject());
+            }
         );
     };
 
@@ -101,6 +104,7 @@ const RealTimeModelling = () => {
         return (
             <RTModellingSetup
                 model={ModflowModel.fromObject(model)}
+                onChange={handleSave}
                 rtm={RTModelling.fromObject(rtm)}
             />
         );

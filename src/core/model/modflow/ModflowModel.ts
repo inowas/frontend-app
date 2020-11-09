@@ -41,7 +41,6 @@ export default class ModflowModel {
     }
 
     get boundingBox() {
-        console.log(this._props);
         return BoundingBox.fromObject(this._props.discretization.bounding_box);
     }
 
@@ -138,7 +137,6 @@ export default class ModflowModel {
     }
 
     public static fromObject(obj: IModflowModel) {
-        console.log({obj});
         return new ModflowModel(obj);
     }
 

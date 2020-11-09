@@ -1,16 +1,17 @@
 import {BasicTileLayer} from '../../../services/geoTools/tileLayers';
-import {Checkbox, Form, Grid, Segment} from 'semantic-ui-react';
+import {Checkbox, DropdownProps, Form, Grid, Segment} from 'semantic-ui-react';
 import {DatePicker} from '../../shared/uiComponents';
-import {ETimeResolution} from '../../../core/model/rtm/modelling/RTModelling.type';
+import {ETimeResolution, IRtModellingData} from '../../../core/model/rtm/modelling/RTModelling.type';
+import {IDatePickerProps} from '../../shared/uiComponents/DatePicker';
 import {Map} from 'react-leaflet';
 import {ModflowModel} from '../../../core/model/modflow';
 import {renderAreaLayer} from '../../t03/components/maps/mapLayers';
-import ContentToolBar from '../../shared/ContentToolbar2';
 import RTModelling from '../../../core/model/rtm/modelling/RTModelling';
-import React from 'react';
+import React, {SyntheticEvent, useEffect, useState} from 'react';
 
 interface IProps {
     model: ModflowModel;
+    onChange: (r: RTModelling) => void;
     rtm: RTModelling;
 }
 
@@ -21,27 +22,40 @@ const style = {
     }
 };
 
-
 const RTModellingSetup = (props: IProps) => {
+    const [data, setData] = useState<IRtModellingData>(props.rtm.toObject().data);
 
-    const handleChangeCheckbox = () => {
+    useEffect(() => {
+        setData(props.rtm.toObject().data);
+    }, [props.rtm]);
 
+    const handleChangeCheckbox = () => handleSave({
+        ...data,
+        automatic_calculation: !data.automatic_calculation
+    })
+
+    const handleChangeResolution = (e: SyntheticEvent<HTMLElement, Event>, {value}: DropdownProps) => {
+        if (value === ETimeResolution.DAILY) {
+            handleSave({
+                ...data,
+                time_resolution: value
+            })
+        }
     };
 
-    const handleChangeResolution = () => {
-
-    };
-
-    const handleChangeStartDate = () => {
-
+    const handleChangeStartDate = (event: React.SyntheticEvent, d: IDatePickerProps) => {
+        if (d.value) {
+            handleSave({
+                ...data,
+                start_date_time: d.value.toDateString()
+            });
+        }
     }
 
-    const handleSave = () => {
-
-    }
-
-    const handleUndo = () => {
-
+    const handleSave = (d: IRtModellingData) => {
+        const cRtm = props.rtm.toObject()
+        cRtm.data = d;
+        props.onChange(RTModelling.fromObject(cRtm));
     }
 
     const renderMap = () => {
@@ -70,11 +84,6 @@ const RTModellingSetup = (props: IProps) => {
                         </Grid.Column>
                         <Grid.Column width={8}>
                             <Segment>
-                                <ContentToolBar
-                                    buttonSave={true}
-                                    onSave={handleSave}
-                                    onUndo={handleUndo}
-                                />
                                 <Form.Select
                                     label="Time resolution"
                                     options={[
@@ -99,7 +108,7 @@ const RTModellingSetup = (props: IProps) => {
                                                 <label>Automatic calculation</label>
                                                 <Checkbox
                                                     toggle={true}
-                                                    checked={props.rtm.data.automatic_calculation}
+                                                    checked={data.automatic_calculation}
                                                     name="automaticCalculation"
                                                     onChange={handleChangeCheckbox}
                                                 />
