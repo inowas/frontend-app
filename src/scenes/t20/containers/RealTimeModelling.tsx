@@ -12,6 +12,7 @@ import RTModelling from '../../../core/model/rtm/modelling/RTModelling';
 import RTModellingSetup from '../components/RTModellingSetup';
 import React, {useEffect, useState} from 'react';
 import SimpleToolsCommand from '../../shared/simpleTools/commands/SimpleToolsCommand';
+import RTModellingBoundaries from "../components/RTModellingBoundaries";
 
 const navigation = [{
     name: 'Documentation',
@@ -65,7 +66,7 @@ const RealTimeModelling = () => {
         if (!property && id) {
             history.push(`${id}/settings`);
         }
-    }, [property])
+    }, [property]);
 
     const handleSaveMetaData = (tool: IToolMetaDataEdit) => {
         if (!rtm) {
@@ -73,12 +74,9 @@ const RealTimeModelling = () => {
         }
         const {name, description} = tool;
         const isPublic = tool.public;
-        setRtm({...rtm, name, description, public: isPublic});
-        handleSave(RTModelling.fromObject(rtm));
-    };
-
-    const handleChange = (r: RTModelling) => {
-        setRtm(r.toObject());
+        const cRtm = {...rtm, name, description, public: isPublic};
+        setRtm(cRtm);
+        handleSave(RTModelling.fromObject(cRtm));
     };
 
     const handleSave = (r: RTModelling) => {
@@ -101,6 +99,14 @@ const RealTimeModelling = () => {
     }
 
     const renderContent = () => {
+        if (property === 'boundaries') {
+            return (
+                <RTModellingBoundaries
+                    model={ModflowModel.fromObject(model)}
+                    rtm={RTModelling.fromObject(rtm)}
+                />
+            );
+        }
         return (
             <RTModellingSetup
                 model={ModflowModel.fromObject(model)}

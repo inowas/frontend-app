@@ -1,6 +1,15 @@
-import {ETimeResolution, IRtModelling, IRtModellingData} from './RTModelling.type';
+import {
+    EMethodType,
+    ETimeResolution,
+    IRTModellingHead,
+    IRtModelling,
+    IRtModellingData,
+    RTModellingObservationPoint
+} from './RTModelling.type';
 import {GenericObject} from '../../genericObject/GenericObject';
-import {cloneDeep} from 'lodash';
+import {LineBoundary} from '../../modflow/boundaries';
+import BoundaryCollection from '../../modflow/boundaries/BoundaryCollection';
+import _, {cloneDeep} from 'lodash';
 import uuid from 'uuid';
 
 class RTModelling extends GenericObject<IRtModelling> {
@@ -35,6 +44,10 @@ class RTModelling extends GenericObject<IRtModelling> {
 
     set description(value: string) {
         this._props.description = value;
+    }
+
+    get heads(): IRTModellingHead[] | undefined {
+        return this._props.data.head;
     }
 
     get permissions(): string {
@@ -85,6 +98,44 @@ class RTModelling extends GenericObject<IRtModelling> {
 
     public toObject(): IRtModelling {
         return cloneDeep(this._props);
+    }
+
+    public updateHeadsFromBoundaries = (boundaries: BoundaryCollection) => {
+        const heads: IRTModellingHead[] = this.heads ? _.cloneDeep(this.heads) : [];
+
+        boundaries.all.forEach((b) => {
+            const filtered = heads ? heads.filter((h) => h.boundary_id === b.id) : [];
+            if (filtered.length === 0) {
+                if (b instanceof LineBoundary) {
+                    const data: RTModellingObservationPoint = {};
+                    b.observationPoints.forEach((op) => {
+                        data[op.id] = b.valueProperties.map(() => {
+                            return {
+                                method: EMethodType.CONSTANT,
+                                values: null
+                            };
+                        });
+                    });
+                    heads.push({
+                        boundary_id: b.id,
+                        data
+                    });
+                } else {
+                    heads.push({
+                        boundary_id: b.id,
+                        data: b.valueProperties.map(() => {
+                            return {
+                                method: EMethodType.CONSTANT,
+                                values: null
+                            };
+                        })
+                    });
+                }
+            }
+        });
+
+        this._props.data.head = heads;
+        return this;
     }
 }
 
