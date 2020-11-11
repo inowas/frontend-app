@@ -1,4 +1,4 @@
-import {ISimpleTool} from '../../types';
+import {IPropertyValueObject, ISimpleTool} from '../../types';
 
 export enum EMethodType {
     CONSTANT = 'constant',
@@ -33,7 +33,7 @@ export interface IRTModellingHead {
     data: Array<IMethod | IMethodSensor | IMethodFunction> | RTModellingObservationPoint;
 }
 
-export interface IMethod {
+export interface IMethod extends IPropertyValueObject {
     method: EMethodType;
     values: number[][] | number[][][] | null;
 }

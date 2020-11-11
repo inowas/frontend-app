@@ -103,6 +103,7 @@ const RealTimeModelling = () => {
             return (
                 <RTModellingBoundaries
                     model={ModflowModel.fromObject(model)}
+                    onChange={handleSave}
                     rtm={RTModelling.fromObject(rtm)}
                 />
             );

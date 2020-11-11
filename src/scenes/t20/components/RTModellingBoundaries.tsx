@@ -12,11 +12,13 @@ import {ModflowModel} from '../../../core/model/modflow';
 import {fetchUrl} from '../../../services/api';
 import MethodModal from './MethodModal';
 import RTModelling from '../../../core/model/rtm/modelling/RTModelling';
+import RTModellingMethod from '../../../core/model/rtm/modelling/RTModellingMethod';
 import React, {SyntheticEvent, useEffect, useState} from 'react';
 import uuid from 'uuid';
 
 interface IProps {
     model: ModflowModel;
+    onChange: (rtm: RTModelling) => void;
     rtm: RTModelling;
 }
 
@@ -25,7 +27,9 @@ const RTModellingBoundaries = (props: IProps) => {
     const [boundaries, setBoundaries] = useState<IBoundary[]>();
     const [heads, setHeads] = useState<IRTModellingHead[]>();
     const [isFetching, setIsFetching] = useState<boolean>(true);
-    const [showModal, setShowModal] = useState<boolean>(false);
+    const [activeRow, setActiveRow] = useState<{
+        method: IMethod | IMethodSensor | IMethodFunction, bId: string, propertyKey: number, opId?: string
+    } | null>(null);
 
     useEffect(() => {
         if (!boundaries) {
@@ -57,63 +61,94 @@ const RTModellingBoundaries = (props: IProps) => {
         );
     };
 
-    console.log({heads});
-
     const handleChangeMethod = (value: EMethodType, bid: string, propertyKey: number, opId?: string) => {
-            if (!heads) {
-                return null;
-            }
+        if (!heads) {
+            return null;
+        }
 
-            let data: IMethod | IMethodFunction | IMethodSensor = {
-                method: value as EMethodType,
-                values: null
+        let data: IMethod | IMethodFunction | IMethodSensor = {
+            method: value as EMethodType,
+            values: null
+        };
+
+        if (value === EMethodType.FUNCTION) {
+            data = {
+                ...data,
+                function: ''
             };
-
-            if (value === EMethodType.FUNCTION) {
-                data = {
-                    ...data,
-                    function: ''
-                };
-            }
-
-            if (value === EMethodType.SENSOR) {
-                data = {
-                    ...data,
-                    monitoring_id: '',
-                    sensor_id: '',
-                    parameter_id: ''
-                }
-            }
-
-            setHeads(heads.map((r) => {
-                if (r.boundary_id === bid) {
-                    if (!Array.isArray(r.data) && opId) {
-                        r.data[opId][propertyKey] = data;
-                    }
-                    if (Array.isArray(r.data)) {
-                        r.data[propertyKey] = data;
-                    }
-                }
-                return r;
-            }))
         }
 
-    const handleChangeSelect = (bid: string, propertyKey: number, opId?: string) =>
+        if (value === EMethodType.SENSOR) {
+            data = {
+                ...data,
+                monitoring_id: '',
+                sensor_id: '',
+                parameter_id: ''
+            }
+        }
+
+        setHeads(heads.map((r) => {
+            if (r.boundary_id === bid) {
+                if (!Array.isArray(r.data) && opId) {
+                    r.data[opId][propertyKey] = data;
+                }
+                if (Array.isArray(r.data)) {
+                    r.data[propertyKey] = data;
+                }
+            }
+            return r;
+        }));
+    }
+
+    const handleChangeModal = (v: RTModellingMethod) => {
+        if (!heads || !activeRow) {
+            return null;
+        }
+
+        setHeads(heads.map((r) => {
+            if (r.boundary_id === activeRow.bId) {
+                if (!Array.isArray(r.data) && activeRow.opId) {
+                    r.data[activeRow.opId][activeRow.propertyKey] = v.toObject();
+                }
+                if (Array.isArray(r.data)) {
+                    r.data[activeRow.propertyKey] = v.toObject();
+                }
+            }
+            return r;
+        }));
+        setActiveRow(null);
+    }
+
+    const handleChangeSelect = (bId: string, propertyKey: number, opId?: string) =>
         (e: SyntheticEvent<HTMLElement>, {value}: DropdownProps) => {
-        if (value === EMethodType.SENSOR || value === EMethodType.FUNCTION) {
-            setShowModal(true);
-        }
-        if (value === EMethodType.CONSTANT) {
-            handleChangeMethod(value, bid, propertyKey, opId);
-        }
+            handleChangeMethod(value as EMethodType, bId, propertyKey, opId);
+        };
+
+    const handleClickEdit = (
+        method: IMethod | IMethodSensor | IMethodFunction, bId: string, propertyKey: number, opId?: string
+    ) => () => {
+        setActiveRow({method, bId, propertyKey, opId});
     };
 
-    const renderMethodButton = (method: IMethod | IMethodSensor | IMethodFunction) => {
+    const handleSave = () => {
+        const cRtm = props.rtm.toObject();
+        cRtm.data.head = heads;
+        props.onChange(RTModelling.fromObject(cRtm));
+    };
+
+    const renderMethodButton = (
+        method: IMethod | IMethodSensor | IMethodFunction, bid: string, propertyKey: number, opId?: string
+    ) => {
         return (
-            <Button floated="right" icon={true}>
-                <Icon name='pencil' />
+            <Button
+                disabled={method.method === EMethodType.CONSTANT}
+                floated="right"
+                onClick={handleClickEdit(method, bid, propertyKey, opId)}
+                icon={true}
+            >
+                <Icon name='pencil'/>
             </Button>
-        )
+        );
     };
 
     const renderMethodDetails = (method: IMethod | IMethodSensor | IMethodFunction) => {
@@ -126,7 +161,7 @@ const RTModellingBoundaries = (props: IProps) => {
         return '';
     };
 
-    const renderMethodSelect = (value: EMethodType, bid: string, propertyKey: number, opId?: string) => {
+    const renderMethodSelect = (value: EMethodType, bId: string, propertyKey: number, opId?: string) => {
         return (
             <Dropdown
                 fluid={true}
@@ -136,10 +171,10 @@ const RTModellingBoundaries = (props: IProps) => {
                     {key: EMethodType.FUNCTION, value: EMethodType.FUNCTION, text: 'Function'},
                     {key: EMethodType.SENSOR, value: EMethodType.SENSOR, text: 'Sensor'}
                 ]}
-                onChange={handleChangeSelect(bid, propertyKey, opId)}
+                onChange={handleChangeSelect(bId, propertyKey, opId)}
                 value={value}
             />
-        )
+        );
     };
 
     const renderBoundary = (b: IBoundary) => {
@@ -171,7 +206,7 @@ const RTModellingBoundaries = (props: IProps) => {
                     <Table.Cell>{boundary.valueProperties[0].name}</Table.Cell>
                     <Table.Cell>{renderMethodSelect(head.data[0].method, boundary.id, 0)}</Table.Cell>
                     <Table.Cell>{renderMethodDetails(head.data[0])}</Table.Cell>
-                    <Table.Cell>{renderMethodButton(head.data[0])}</Table.Cell>
+                    <Table.Cell>{renderMethodButton(head.data[0], boundary.id, 0)}</Table.Cell>
                 </Table.Row>
                 {head.data.length > 1 && head.data.filter((r, k) => k > 0).map((r, k) => (
                     <Table.Row key={k}>
@@ -179,7 +214,7 @@ const RTModellingBoundaries = (props: IProps) => {
                         <Table.Cell>{boundary.valueProperties[k + 1].name}</Table.Cell>
                         <Table.Cell>{renderMethodSelect(r.method, boundary.id, k + 1)}</Table.Cell>
                         <Table.Cell>{renderMethodDetails(r)}</Table.Cell>
-                        <Table.Cell>{renderMethodButton(r)}</Table.Cell>
+                        <Table.Cell>{renderMethodButton(r, boundary.id, k + 1)}</Table.Cell>
                     </Table.Row>
                 ))}
             </React.Fragment>
@@ -202,14 +237,14 @@ const RTModellingBoundaries = (props: IProps) => {
                     <Table.Cell>{b.valueProperties[0].name}</Table.Cell>
                     <Table.Cell>{renderMethodSelect(h.data[ops[0].id][0].method, b.id, 0, ops[0].id)}</Table.Cell>
                     <Table.Cell>{renderMethodDetails(h.data[ops[0].id][0])}</Table.Cell>
-                    <Table.Cell>{renderMethodButton(h.data[ops[0].id][0])}</Table.Cell>
+                    <Table.Cell>{renderMethodButton(h.data[ops[0].id][0], b.id, 0, ops[0].id)}</Table.Cell>
                 </Table.Row>
                 {b.valueProperties.length > 1 && h.data[ops[0].id].filter((r, k) => k > 0).map((r, k) => (
                     <Table.Row key={k}>
                         <Table.Cell>{b.valueProperties[k + 1].name}</Table.Cell>
                         <Table.Cell>{renderMethodSelect(r.method, b.id, k + 1, ops[0].id)}</Table.Cell>
                         <Table.Cell>{renderMethodDetails(r)}</Table.Cell>
-                        <Table.Cell>{renderMethodButton(r)}</Table.Cell>
+                        <Table.Cell>{renderMethodButton(r, b.id, k + 1, ops[0].id)}</Table.Cell>
                     </Table.Row>
                 ))}
                 {ops.length > 1 && ops.filter((op, k) => k > 0).map((op) => (
@@ -219,14 +254,14 @@ const RTModellingBoundaries = (props: IProps) => {
                             <Table.Cell>{b.valueProperties[0].name}</Table.Cell>
                             <Table.Cell>{!Array.isArray(h.data) ? renderMethodSelect(h.data[op.id][0].method, b.id, 0, op.id) : 'ERROR'}</Table.Cell>
                             <Table.Cell>{!Array.isArray(h.data) ? renderMethodDetails(h.data[op.id][0]) : 'ERROR'}</Table.Cell>
-                            <Table.Cell>{!Array.isArray(h.data) ? renderMethodButton(h.data[op.id][0]) : 'ERROR'}</Table.Cell>
+                            <Table.Cell>{!Array.isArray(h.data) ? renderMethodButton(h.data[op.id][0], b.id, 0, op.id) : 'ERROR'}</Table.Cell>
                         </Table.Row>
                         {b.valueProperties.length > 1 && !Array.isArray(h.data) && h.data[op.id].filter((r, k) => k > 0).map((r, k) => (
                             <Table.Row key={`${op}_${k}`}>
                                 <Table.Cell>{b.valueProperties[k + 1].name}</Table.Cell>
                                 <Table.Cell>{renderMethodSelect(r.method, b.id, k + 1, op.id)}</Table.Cell>
                                 <Table.Cell>{renderMethodDetails(r)}</Table.Cell>
-                                <Table.Cell>{renderMethodButton(r)}</Table.Cell>
+                                <Table.Cell>{renderMethodButton(r, b.id, k + 1, op.id)}</Table.Cell>
                             </Table.Row>
                         ))}
                     </React.Fragment>
@@ -237,14 +272,22 @@ const RTModellingBoundaries = (props: IProps) => {
 
     return (
         <Segment color={'grey'}>
-            {showModal &&
-                <MethodModal
-                    method={EMethodType.FUNCTION}
-                    onClose={() => setShowModal(false)}
-                    onSave={() => null}
-                />
+            {activeRow &&
+            <MethodModal
+                method={RTModellingMethod.fromObject(activeRow.method)}
+                onClose={() => setActiveRow(null)}
+                onSave={handleChangeModal}
+            />
             }
             <Grid padded={true}>
+                <Grid.Row>
+                    <Button
+                        floated="right"
+                        onClick={handleSave}
+                    >
+                        Save
+                    </Button>
+                </Grid.Row>
                 <Grid.Row stretched={true}>
                     <Grid.Column width={16}>
                         {isFetching &&
