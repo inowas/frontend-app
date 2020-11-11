@@ -5,7 +5,6 @@ import {ISensor} from '../../../core/model/rtm/monitoring/Sensor.type';
 import {IToolInstance} from '../../dashboard/defaults/tools';
 import {Rtm} from '../../../core/model/rtm/monitoring';
 import {fetchApiWithToken} from '../../../services/api';
-import {uniqBy} from 'lodash';
 import RTModellingMethod from '../../../core/model/rtm/modelling/RTModellingMethod';
 import React, {ChangeEvent, SyntheticEvent, useEffect, useState} from 'react';
 import uuid from 'uuid';
@@ -19,6 +18,7 @@ interface IProps {
     method: RTModellingMethod;
     onClose: () => void;
     onSave: (value: RTModellingMethod) => void;
+    t10Instances: IToolInstance[];
 }
 
 const MethodModal = (props: IProps) => {
@@ -33,28 +33,6 @@ const MethodModal = (props: IProps) => {
     const [rtm, setRtm] = useState<IRtm>();
     const [sensor, setSensor] = useState<ISensor>();
     const [parameterId, setParameterId] = useState<string | null>(props.method.parameterId);
-    const [t10Instances, setT10Instances] = useState<IToolInstance[]>([]);
-
-    useEffect(() => {
-        if (props.method.type === EMethodType.SENSOR) {
-            const fetchInstances = async () => {
-                try {
-                    setIsFetching(true);
-                    const privateT10Tools = (await fetchApiWithToken('tools/T10?public=false')).data;
-                    const publicT10Tools = (await fetchApiWithToken('tools/T10?public=true')).data;
-                    const tools = uniqBy(privateT10Tools.concat(publicT10Tools), (t: IToolInstance) => t.id);
-                    setT10Instances(tools);
-                } catch (err) {
-                    setErrors([{id: uuid.v4(), message: 'Fetching t10 instances failed.'}]);
-                } finally {
-                    setIsFetching(false);
-                }
-            };
-
-            fetchInstances();
-            // eslint-disable-next-line react-hooks/exhaustive-deps
-        }
-    }, []);
 
     useEffect(() => {
         if (!rtmId) {
@@ -153,7 +131,7 @@ const MethodModal = (props: IProps) => {
                             fluid={true}
                             selection={true}
                             value={rtmId}
-                            options={t10Instances.map((i) => ({
+                            options={props.t10Instances.map((i) => ({
                                 key: i.id,
                                 text: `${i.name} (${i.user_name})`,
                                 value: i.id

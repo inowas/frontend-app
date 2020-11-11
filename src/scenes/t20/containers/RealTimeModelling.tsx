@@ -1,18 +1,20 @@
 import {AppContainer} from '../../shared';
+import {IRtModelling} from '../../../core/model/rtm/modelling/RTModelling.type';
 import {Grid, Icon, Loader} from 'semantic-ui-react';
 import {IModflowModel} from '../../../core/model/modflow/ModflowModel.type';
-import {IRtModelling} from '../../../core/model/rtm/modelling/RTModelling.type';
+import {IToolInstance} from '../../dashboard/defaults/tools';
 import {IToolMetaDataEdit} from '../../shared/simpleTools/ToolMetaData/ToolMetaData.type';
 import {ModflowModel} from '../../../core/model/modflow';
 import {ToolMetaData} from '../../shared/simpleTools';
 import {ToolNavigation} from '../../shared/complexTools';
-import {fetchUrl, sendCommand} from '../../../services/api';
+import {fetchApiWithToken, fetchUrl, sendCommand} from '../../../services/api';
+import {uniqBy} from 'lodash';
 import {useHistory, useParams} from 'react-router-dom';
 import RTModelling from '../../../core/model/rtm/modelling/RTModelling';
+import RTModellingBoundaries from '../components/RTModellingBoundaries';
 import RTModellingSetup from '../components/RTModellingSetup';
 import React, {useEffect, useState} from 'react';
 import SimpleToolsCommand from '../../shared/simpleTools/commands/SimpleToolsCommand';
-import RTModellingBoundaries from "../components/RTModellingBoundaries";
 
 const navigation = [{
     name: 'Documentation',
@@ -27,9 +29,30 @@ const RealTimeModelling = () => {
     const [isFetching, setIsFetching] = useState<boolean>(false);
     const [model, setModel] = useState<IModflowModel>();
     const [rtm, setRtm] = useState<IRtModelling>();
+    const [t10Instances, setT10Instances] = useState<IToolInstance[]>([]);
 
     const history = useHistory();
     const {id, property} = useParams();
+
+
+    useEffect(() => {
+        const fetchInstances = async () => {
+            try {
+                setIsFetching(true);
+                const privateT10Tools = (await fetchApiWithToken('tools/T10?public=false')).data;
+                const publicT10Tools = (await fetchApiWithToken('tools/T10?public=true')).data;
+                const tools = uniqBy(privateT10Tools.concat(publicT10Tools), (t: IToolInstance) => t.id);
+                setT10Instances(tools);
+            } catch (err) {
+                setIsFetching(false);
+            } finally {
+                setIsFetching(false);
+            }
+        };
+
+        fetchInstances();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
 
     useEffect(() => {
         if (id) {
@@ -105,6 +128,7 @@ const RealTimeModelling = () => {
                     model={ModflowModel.fromObject(model)}
                     onChange={handleSave}
                     rtm={RTModelling.fromObject(rtm)}
+                    t10Instances={t10Instances}
                 />
             );
         }

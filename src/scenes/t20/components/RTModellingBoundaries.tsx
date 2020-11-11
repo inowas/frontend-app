@@ -8,6 +8,7 @@ import {
     IRTModellingHead
 } from '../../../core/model/rtm/modelling/RTModelling.type';
 import {IBoundary} from '../../../core/model/modflow/boundaries/Boundary.type';
+import {IToolInstance} from '../../dashboard/defaults/tools';
 import {ModflowModel} from '../../../core/model/modflow';
 import {fetchUrl} from '../../../services/api';
 import MethodModal from './MethodModal';
@@ -20,12 +21,14 @@ interface IProps {
     model: ModflowModel;
     onChange: (rtm: RTModelling) => void;
     rtm: RTModelling;
+    t10Instances: IToolInstance[];
 }
 
 const RTModellingBoundaries = (props: IProps) => {
     const [errors, setErrors] = useState<Array<{ id: string; message: string; }>>([]);
     const [boundaries, setBoundaries] = useState<IBoundary[]>();
     const [heads, setHeads] = useState<IRTModellingHead[]>();
+    const [isDirty, setIsDirty] = useState<boolean>(false);
     const [isFetching, setIsFetching] = useState<boolean>(true);
     const [activeRow, setActiveRow] = useState<{
         method: IMethod | IMethodSensor | IMethodFunction, bId: string, propertyKey: number, opId?: string
@@ -98,6 +101,7 @@ const RTModellingBoundaries = (props: IProps) => {
             }
             return r;
         }));
+        setIsDirty(true);
     }
 
     const handleChangeModal = (v: RTModellingMethod) => {
@@ -117,6 +121,7 @@ const RTModellingBoundaries = (props: IProps) => {
             return r;
         }));
         setActiveRow(null);
+        setIsDirty(true);
     }
 
     const handleChangeSelect = (bId: string, propertyKey: number, opId?: string) =>
@@ -134,6 +139,7 @@ const RTModellingBoundaries = (props: IProps) => {
         const cRtm = props.rtm.toObject();
         cRtm.data.head = heads;
         props.onChange(RTModelling.fromObject(cRtm));
+        setIsDirty(false);
     };
 
     const renderMethodButton = (
@@ -152,11 +158,15 @@ const RTModellingBoundaries = (props: IProps) => {
     };
 
     const renderMethodDetails = (method: IMethod | IMethodSensor | IMethodFunction) => {
-        if (Object.prototype.hasOwnProperty.call(method, 'function')) {
-            return (method as IMethodFunction).function;
+        if (method.method === EMethodType.FUNCTION) {
+            return method.function;
         }
-        if (Object.prototype.hasOwnProperty.call(method, 'sensor')) {
-            return (method as IMethodSensor).sensor_id;
+        if (method.method === EMethodType.SENSOR) {
+            const f1 = props.t10Instances.filter((i) => i.id === method.monitoring_id);
+            if (f1.length > 0) {
+                return `${f1[0].name} (${f1[0].user_name})`;
+            }
+            return 'ERROR';
         }
         return '';
     };
@@ -277,11 +287,13 @@ const RTModellingBoundaries = (props: IProps) => {
                 method={RTModellingMethod.fromObject(activeRow.method)}
                 onClose={() => setActiveRow(null)}
                 onSave={handleChangeModal}
+                t10Instances={props.t10Instances}
             />
             }
             <Grid padded={true}>
                 <Grid.Row>
                     <Button
+                        disabled={!isDirty}
                         floated="right"
                         onClick={handleSave}
                     >
