@@ -1,9 +1,10 @@
+import BoundaryCollection from './boundaries/BoundaryCollection';
 import BoundingBox from '../geometry/BoundingBox';
+import Calculation from './Calculation';
 import Cells from '../geometry/Cells';
+import FullModflowModel from './FullModflowModel';
 import Geometry from '../geometry/Geometry';
 import GridSize from '../geometry/GridSize';
-import BoundaryCollection from './boundaries/BoundaryCollection';
-import Calculation from './Calculation';
 import LengthUnit from './LengthUnit';
 import ModflowModel from './ModflowModel';
 import Optimization from './optimization/Optimization';
@@ -19,6 +20,7 @@ export {
     BoundingBox,
     Calculation,
     Cells,
+    FullModflowModel,
     Geometry,
     GridSize,
     LengthUnit,
