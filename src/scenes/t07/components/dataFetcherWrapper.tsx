@@ -1,24 +1,25 @@
-import React, {ReactNode, useEffect, useState} from 'react';
-import {useDispatch, useSelector} from 'react-redux';
-import {RouteComponentProps, withRouter} from 'react-router-dom';
-import {List, Loader, Modal} from 'semantic-ui-react';
 import {BoundaryCollection, Calculation, ModflowModel, Soilmodel} from '../../../core/model/modflow';
 import {ICalculation} from '../../../core/model/modflow/Calculation.type';
 import {IModflowModel} from '../../../core/model/modflow/ModflowModel.type';
-import {ISoilmodel} from '../../../core/model/modflow/soilmodel/Soilmodel.type';
-import {fetchSoilmodel} from '../../../core/model/modflow/soilmodel/updater/services';
-import updater from '../../../core/model/modflow/soilmodel/updater/updater';
-import {ScenarioAnalysis} from '../../../core/model/scenarioAnalysis';
 import {IRootReducer} from '../../../reducers';
-import {fetchCalculationDetails, fetchUrl} from '../../../services/api';
+import {ISoilmodel} from '../../../core/model/modflow/soilmodel/Soilmodel.type';
+import {List, Loader, Modal} from 'semantic-ui-react';
+import {RouteComponentProps, withRouter} from 'react-router-dom';
+import {ScenarioAnalysis} from '../../../core/model/scenarioAnalysis';
 import {
     clear, updateBoundaries, updateCalculation, updateModel,
     updateScenarioAnalysis,
     updateSoilmodel
 } from '../actions/actions';
+import {fetchCalculationDetails, fetchUrl} from '../../../services/api';
+import {fetchSoilmodel} from '../../../core/model/modflow/soilmodel/updater/services';
+import {useDispatch, useSelector} from 'react-redux';
+import React, {ReactNode, useEffect, useState} from 'react';
+import updater from '../../../core/model/modflow/soilmodel/updater/updater';
 
 interface IOwnProps {
     children: ReactNode;
+    key: string;
 }
 
 type IProps = IOwnProps & RouteComponentProps<{ id: string }>;

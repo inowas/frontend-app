@@ -88,9 +88,11 @@ const CrossSection = (props: IProps) => {
     }, [props.models, props.selected]);
 
     const fetchData = (layer = selectedLay, totim = selectedTotim, type = selectedType) => {
-        if (type === null || layer === null || totim === null) {
+        if (type === null || layer === null || totim === null || !totalTimes) {
             return null;
         }
+
+        const t = totalTimes.indexOf(totim);
 
         setIsLoading(true);
         selectedModels.forEach((m) => {
@@ -98,7 +100,7 @@ const CrossSection = (props: IProps) => {
                 fetchCalculationResultsFlow({
                     calculationId: m.calculation_id,
                     type,
-                    totim,
+                    totim: t >= 0 ? t : 0,
                     layer
                 }, (d) => {
                     setIsLoading(false);
@@ -141,6 +143,7 @@ const CrossSection = (props: IProps) => {
                     boundaries={BoundaryCollection.fromObject(props.boundaries[id])}
                     data={fData}
                     globalMinMax={minMax}
+                    mode="contour"
                     model={model}
                     onClick={(colRow) => {
                         setSelectedCol(colRow[0]);
@@ -177,7 +180,7 @@ const CrossSection = (props: IProps) => {
     };
 
     const calculateGlobalMinMax = (): [number, number] => {
-        const sortedValues = compact(flatten(flatten(Object.values(data)))).sort();
+        const sortedValues = compact(flatten(flatten(Object.values(data)))).sort((a, b) => a - b);
         const q = Math.floor(QUANTILE / 100 * sortedValues.length);
 
         const min = Math.floor(sortedValues[q]);
