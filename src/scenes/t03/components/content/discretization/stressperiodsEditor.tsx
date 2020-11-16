@@ -1,11 +1,12 @@
-import moment from 'moment';
-import React, {ChangeEvent, useEffect, useState} from 'react';
-import {Form, Grid, InputOnChangeData, Message} from 'semantic-ui-react';
-import {ModflowModel, Stressperiods} from '../../../../../core/model/modflow';
 import {BoundaryCollection} from '../../../../../core/model/modflow/boundaries';
-import ContentToolBar from '../../../../shared/ContentToolbar2';
+import {Form, Grid, InputOnChangeData, Message} from 'semantic-ui-react';
+import {MAX_OUTPUT_PER_PERIOD} from '../../../../../core/model/flopy/packages/mf/FlopyModflowMfoc';
+import {ModflowModel, Stressperiods} from '../../../../../core/model/modflow';
 import {StressperiodsImport} from './index';
+import ContentToolBar from '../../../../shared/ContentToolbar2';
+import React, {ChangeEvent, useEffect, useState} from 'react';
 import StressPeriodsDataTable from './stressperiodsDatatable';
+import moment from 'moment';
 
 interface IProps {
     boundaries: BoundaryCollection;
@@ -108,6 +109,17 @@ const StressperiodsEditor = (props: IProps) => {
                     </Form>
                 </Grid.Column>
             </Grid.Row>
+            {props.model.stressperiods.stressperiods.filter((sp) => sp.nstp > MAX_OUTPUT_PER_PERIOD).length > 0 &&
+            <Grid.Row>
+                <Grid.Column width={16}>
+                    <Message warning={true}>
+                        <Message.Header>Warning</Message.Header>
+                        <p>Results for stressperiods with nstp {'>'} {MAX_OUTPUT_PER_PERIOD} will
+                            only be calculated for their first timestep, due to performance issues.</p>
+                    </Message>
+                </Grid.Column>
+            </Grid.Row>
+            }
             {datesInvalid &&
             <Grid.Row>
                 <Grid.Column width={6}>

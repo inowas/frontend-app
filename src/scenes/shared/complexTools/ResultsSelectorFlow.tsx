@@ -1,9 +1,9 @@
+import {DropdownProps, Form, Grid, Header, Segment} from 'semantic-ui-react';
+import {IPropertyValueObject} from '../../../core/model/types';
+import {Soilmodel, Stressperiods} from '../../../core/model/modflow';
 import {flatten, uniq, upperFirst} from 'lodash';
 import Moment from 'moment';
 import React, {SyntheticEvent, useState} from 'react';
-import {DropdownProps, Form, Grid, Header, Segment} from 'semantic-ui-react';
-import {Soilmodel, Stressperiods} from '../../../core/model/modflow';
-import {IPropertyValueObject} from '../../../core/model/types';
 import SliderWithTooltip from './SliderWithTooltip';
 
 const styles = {
@@ -27,7 +27,7 @@ interface IProps {
     data: {
         type: EResultType,
         layer: number,
-        totim: number
+        totim: number       // ID
     };
     onChange: (result: {
         type: EResultType,
@@ -41,7 +41,7 @@ interface IProps {
 }
 
 const ResultsSelectorFlow = (props: IProps) => {
-    const [temporaryTotim, setTemporaryTotim] = useState<number>(props.data.totim);
+    const [temporaryTotim, setTemporaryTotim] = useState<number>(props.totalTimes[props.data.totim]);
 
     const sliderMarks = () => {
         const maxNumberOfMarks = 10;
@@ -104,7 +104,10 @@ const ResultsSelectorFlow = (props: IProps) => {
     };
 
     const handleAfterChangeSlider = () => {
-        return props.onChange({layer: props.data.layer, totim: temporaryTotim, type: props.data.type});
+        const totim = props.totalTimes.indexOf(temporaryTotim);
+        if (totim) {
+            return props.onChange({layer: props.data.layer, totim, type: props.data.type});
+        }
     };
 
     return (
@@ -142,7 +145,7 @@ const ResultsSelectorFlow = (props: IProps) => {
                             dots={props.totalTimes.length < 20}
                             dotStyle={styles.dot}
                             trackStyle={styles.track}
-                            defaultValue={props.data.totim}
+                            defaultValue={props.totalTimes[props.data.totim]}
                             min={Math.floor(props.totalTimes[0])}
                             max={Math.ceil(props.totalTimes[props.totalTimes.length - 1])}
                             marks={sliderMarks()}

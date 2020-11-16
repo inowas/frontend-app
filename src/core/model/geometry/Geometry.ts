@@ -1,10 +1,10 @@
-import {AllGeoJSON, Feature} from '@turf/helpers';
-import {bbox} from '@turf/turf';
 import * as turf from '@turf/turf';
+import {AllGeoJSON, Feature} from '@turf/helpers';
+import {GeoJson} from './Geometry.type';
 import {Point} from 'geojson';
+import {bbox} from '@turf/turf';
 import {cloneDeep} from 'lodash';
 import md5 from 'md5';
-import {GeoJson} from './Geometry.type';
 
 class Geometry {
 

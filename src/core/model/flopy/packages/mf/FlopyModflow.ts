@@ -1,9 +1,8 @@
 import {GenericObject} from '../../../genericObject/GenericObject';
+import {IFlopyModflow} from './FlopyModflow.type';
+import {IPropertyValueObject} from '../../../types';
 import {ModflowModel} from '../../../modflow';
 import BoundaryCollection from '../../../modflow/boundaries/BoundaryCollection';
-import Soilmodel from '../../../modflow/soilmodel/Soilmodel';
-import {IPropertyValueObject} from '../../../types';
-import {IFlopyModflow} from './FlopyModflow.type';
 import FlopyModflowFlowPackage from './FlopyModflowFlowPackage';
 import FlopyModflowMf from './FlopyModflowMf';
 import FlopyModflowMfbas from './FlopyModflowMfbas';
@@ -36,6 +35,7 @@ import FlopyModflowMfupw from './FlopyModflowMfupw';
 import FlopyModflowMfwel from './FlopyModflowMfwel';
 import FlopyModflowPackage from './FlopyModflowPackage';
 import FlopyModflowSolverPackage from './FlopyModflowSolverPackage';
+import Soilmodel from '../../../modflow/soilmodel/Soilmodel';
 
 export const packagesMap: IPropertyValueObject = {
     mf: FlopyModflowMf,
@@ -99,7 +99,7 @@ export default class FlopyModflow extends GenericObject<IFlopyModflow> {
             pcg: FlopyModflowMfpcg.create().toObject(),
 
             // Output control
-            oc: FlopyModflowMfoc.create(model.stressperiods.count).toObject()
+            oc: FlopyModflowMfoc.create(model).toObject()
         };
 
         // Boundaries
@@ -297,9 +297,8 @@ export default class FlopyModflow extends GenericObject<IFlopyModflow> {
             case 'oc':
                 let oc;
                 this._props.oc ?
-                    oc = FlopyModflowMfoc.fromObject(this._props.oc).update(model.stressperiods.stressperiods.length,
-                        this._props.oc.stress_period_data) :
-                    oc = FlopyModflowMfoc.create(model.stressperiods.stressperiods.length);
+                    oc = FlopyModflowMfoc.fromObject(this._props.oc).update(model, this._props.oc.stress_period_data) :
+                    oc = FlopyModflowMfoc.create(model);
                 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
                 // @ts-ignore
                 oc ? this._props.oc = oc.toObject() : delete this._props.oc;
