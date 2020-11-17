@@ -53,7 +53,7 @@ const ContourLayer = (props: IProps) => {
                     key={key}
                     data={mp}
                     color={`#${props.rainbow.colorAt(thresholds[key])}`}
-                    fill={false}
+                    fill={true}
                     weight={1.5}
                 />
             ))}
