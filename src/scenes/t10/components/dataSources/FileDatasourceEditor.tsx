@@ -1,9 +1,9 @@
 import * as Papa from 'papaparse';
 import {Button, Form, Grid, Header, Label, List, Modal, Segment} from 'semantic-ui-react';
 import {DataPoint} from 'downsample';
-import {DatePicker} from '../../shared/uiComponents';
-import {FileDataSource} from '../../../core/model/rtm';
-import {IDateTimeValue, IFileDataSource} from '../../../core/model/rtm/Sensor.type';
+import {DatePicker} from '../../../shared/uiComponents';
+import {FileDataSource} from '../../../../core/model/rtm';
+import {IDateTimeValue, IFileDataSource} from '../../../../core/model/rtm/Sensor.type';
 import {LTOB} from 'downsample';
 import {ParseResult} from 'papaparse';
 import {ResponsiveContainer, Scatter, ScatterChart, XAxis, YAxis} from 'recharts';

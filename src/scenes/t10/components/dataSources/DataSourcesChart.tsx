@@ -1,11 +1,11 @@
 import {Button, Icon} from 'semantic-ui-react';
 import {DataPoint} from 'downsample';
-import {DataSourceCollection} from '../../../core/model/rtm';
-import {IDateTimeValue} from '../../../core/model/rtm/Sensor.type';
+import {DataSourceCollection} from '../../../../core/model/rtm';
+import {IDateTimeValue} from '../../../../core/model/rtm/Sensor.type';
 import {LTOB} from 'downsample';
 import {ResponsiveContainer, Scatter, ScatterChart, XAxis, YAxis} from 'recharts';
-import {exportChartData, exportChartImage} from '../../shared/simpleTools/helpers';
-import ProcessingCollection from '../../../core/model/rtm/processing/ProcessingCollection';
+import {exportChartData, exportChartImage} from '../../../shared/simpleTools/helpers';
+import ProcessingCollection from '../../../../core/model/rtm/processing/ProcessingCollection';
 import React, {useEffect, useRef, useState} from 'react';
 import moment from 'moment';
 

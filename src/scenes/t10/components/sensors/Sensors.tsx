@@ -1,22 +1,17 @@
-import {AddSensor, SensorList} from './index';
+import {AddSensor, SensorList} from '../index';
 import {Grid, Segment} from 'semantic-ui-react';
-import {RouteComponentProps, withRouter} from 'react-router';
-import {Rtm, Sensor} from '../../../core/model/rtm';
-import ContentToolBar from '../../shared/ContentToolbar';
+import {Rtm, Sensor} from '../../../../core/model/rtm';
 import React, {ReactFragment, useEffect, useState} from 'react';
 
-export interface IProps extends RouteComponentProps<{ id: string, property: string, pid: string }> {
+export interface IProps {
     rtm: Rtm;
-    isDirty: boolean;
     isError: boolean;
-    onChange: (rtm: Rtm) => void;
     onChangeSelectedSensorId: (id: string) => void;
     onSave: (rtm: Rtm) => void;
     children: ReactFragment;
 }
 
 const Sensors = (props: IProps) => {
-
     const [selectedSensorId, setSelectedSensorId] = useState<string | null>(null);
     const [addSensor, setAddSensor] = useState<boolean>(false);
 
@@ -59,7 +54,6 @@ const Sensors = (props: IProps) => {
     const handleAddSensor = (sensor: Sensor) => {
         const rtm = Rtm.fromObject(props.rtm.toObject());
         rtm.addSensor(sensor);
-        props.onChange(rtm);
         props.onSave(rtm);
         setAddSensor(false);
         setSelectedSensorId(sensor.id);
@@ -68,13 +62,12 @@ const Sensors = (props: IProps) => {
     const handleCloneSensor = (id: string) => {
         const rtm = Rtm.fromObject(props.rtm.toObject());
         rtm.cloneSensor(id);
-        props.onChange(rtm);
+        props.onSave(rtm);
     };
 
     const handleRemoveSensor = (id: string) => {
         const rtm = Rtm.fromObject(props.rtm.toObject());
         rtm.removeSensor(id);
-        props.onChange(rtm);
         props.onSave(rtm);
 
         if (rtm.sensors.length === 0) {
@@ -104,13 +97,6 @@ const Sensors = (props: IProps) => {
                         <Grid>
                             <Grid.Row>
                                 <Grid.Column width={16}>
-                                    <ContentToolBar
-                                        onSave={props.onSave}
-                                        isDirty={props.isDirty}
-                                        isError={props.isError}
-                                        buttonSave={!props.rtm.readOnly}
-                                        buttonImport={false}
-                                    />
                                     {props.children}
                                 </Grid.Column>
                             </Grid.Row>
@@ -129,6 +115,4 @@ const Sensors = (props: IProps) => {
     );
 };
 
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-// @ts-ignore todo
-export default withRouter<IProps>(Sensors);
+export default Sensors;

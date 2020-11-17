@@ -4,7 +4,7 @@ import {DataPoint} from 'downsample/dist/types';
 import React, {useEffect, useState} from 'react';
 import {Line, LineChart, YAxis} from 'recharts';
 import {Loader} from 'semantic-ui-react';
-import {DataSource, IDateTimeValue} from '../../../core/model/rtm/Sensor.type';
+import {DataSource, IDateTimeValue} from '../../../../core/model/rtm/Sensor.type';
 
 interface IProps {
     datasource: DataSource | null;
@@ -14,7 +14,6 @@ interface IProps {
 }
 
 const TinyLineChart = (props: IProps) => {
-
     const [data, setData] = useState<any>(null);
 
     useEffect(() => {

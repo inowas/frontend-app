@@ -1,7 +1,7 @@
 import {Button, Form, Grid, Header, InputOnChangeData, Modal} from 'semantic-ui-react';
 import {Point} from 'geojson';
-import {Rtm, Sensor} from '../../../core/model/rtm';
-import {SensorMap} from './index';
+import {Rtm, Sensor} from '../../../../core/model/rtm';
+import {SensorMap} from '../index';
 import React, {ChangeEvent, useState} from 'react';
 import Uuid from 'uuid';
 

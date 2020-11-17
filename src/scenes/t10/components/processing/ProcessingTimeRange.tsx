@@ -1,7 +1,7 @@
-import {ECutRule} from '../../../core/model/rtm/processing/Processing.type';
+import {ECutRule} from '../../../../core/model/rtm/processing/Processing.type';
 import React from 'react';
-import TimeProcessing from '../../../core/model/rtm/processing/TimeProcessing';
-import ValueProcessing from '../../../core/model/rtm/processing/ValueProcessing';
+import TimeProcessing from '../../../../core/model/rtm/processing/TimeProcessing';
+import ValueProcessing from '../../../../core/model/rtm/processing/ValueProcessing';
 import moment from 'moment';
 
 interface IProps {

@@ -1,5 +1,5 @@
 import {Button, Grid, Icon, Menu, Popup} from 'semantic-ui-react';
-import {Sensor} from '../../../core/model/rtm';
+import {Sensor} from '../../../../core/model/rtm';
 import React from 'react';
 
 interface IProps {

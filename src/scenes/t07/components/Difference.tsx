@@ -1,19 +1,19 @@
-import {cloneDeep} from 'lodash';
-import React, {SyntheticEvent, useEffect, useState} from 'react';
-import {DropdownProps, Form, Grid, Header, Segment} from 'semantic-ui-react';
 import {Array2D} from '../../../core/model/geometry/Array2D.type';
-import {Calculation, ModflowModel, Soilmodel, Stressperiods} from '../../../core/model/modflow';
 import {BoundaryCollection} from '../../../core/model/modflow/boundaries';
+import {Calculation, ModflowModel, Soilmodel, Stressperiods} from '../../../core/model/modflow';
+import {DropdownProps, Form, Grid, Header, Segment} from 'semantic-ui-react';
+import {EResultType} from '../../t03/components/content/results/flowResults';
 import {IBoundary} from '../../../core/model/modflow/boundaries/Boundary.type';
 import {ICalculation} from '../../../core/model/modflow/Calculation.type';
 import {IModflowModel} from '../../../core/model/modflow/ModflowModel.type';
 import {ISoilmodel} from '../../../core/model/modflow/soilmodel/Soilmodel.type';
 import {ScenarioAnalysis} from '../../../core/model/scenarioAnalysis';
+import {cloneDeep} from 'lodash';
 import {fetchCalculationResultsFlow} from '../../../services/api';
+import React, {SyntheticEvent, useEffect, useState} from 'react';
 import ResultsChart from '../../shared/complexTools/ResultsChart';
 import ResultsMap from '../../shared/complexTools/ResultsMap';
 import ResultsSelectorFlow from '../../shared/complexTools/ResultsSelectorFlow';
-import {EResultType} from '../../t03/components/content/results/flowResults';
 
 interface IProps {
     models: { [id: string]: IModflowModel };

@@ -1,14 +1,14 @@
 import {Button, Dropdown, Grid, Header, Icon, Label, Message, Segment, Table} from 'semantic-ui-react';
-import {DataSourceCollection, Rtm} from '../../../core/model/rtm';
-import {DataSourcesChart, ProcessingTimeRange, TimeProcessingEditor, ValueProcessingEditor} from './index';
-import {ECutRule, IProcessing} from '../../../core/model/rtm/processing/Processing.type';
-import {ISensorParameter} from '../../../core/model/rtm/Sensor.type';
-import {ProcessingFactory} from '../../../core/model/rtm/processing';
-import {processingList} from '../defaults';
-import ProcessingCollection from '../../../core/model/rtm/processing/ProcessingCollection';
+import {DataSourceCollection, Rtm} from '../../../../core/model/rtm';
+import {DataSourcesChart, ProcessingTimeRange, TimeProcessingEditor, ValueProcessingEditor} from '../index';
+import {ECutRule, IProcessing} from '../../../../core/model/rtm/processing/Processing.type';
+import {ISensorParameter} from '../../../../core/model/rtm/Sensor.type';
+import {ProcessingFactory} from '../../../../core/model/rtm/processing';
+import {processingList} from '../../defaults';
+import ProcessingCollection from '../../../../core/model/rtm/processing/ProcessingCollection';
 import React, {useEffect, useState} from 'react';
-import TimeProcessing from '../../../core/model/rtm/processing/TimeProcessing';
-import ValueProcessing from '../../../core/model/rtm/processing/ValueProcessing';
+import TimeProcessing from '../../../../core/model/rtm/processing/TimeProcessing';
+import ValueProcessing from '../../../../core/model/rtm/processing/ValueProcessing';
 
 interface IProps {
     rtm: Rtm;

@@ -1,10 +1,15 @@
 import {LTOB} from 'downsample';
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-// @ts-ignore todo
-import {XYDataPoint} from 'downsample/dist/types';
-import {cloneDeep} from 'lodash';
-import moment from 'moment';
-import React, {useEffect, useRef, useState} from 'react';
+import {
+    Button,
+    Dimmer,
+    Grid, Icon, Input,
+    Loader, Popup,
+    Segment
+} from 'semantic-ui-react';
+import {DataSourceCollection, Rtm} from '../../../../core/model/rtm';
+import {IParameterWithMetaData, ITimeStamps} from './types';
+import {IPropertyValueObject} from '../../../../core/model/types';
+import {ProcessingCollection} from '../../../../core/model/rtm/processing';
 import {
     ReferenceArea,
     ReferenceLine,
@@ -14,21 +19,16 @@ import {
     XAxis,
     YAxis,
 } from 'recharts';
-import {
-    Button,
-    Dimmer,
-    Grid, Icon, Input,
-    Loader, Popup,
-    Segment
-} from 'semantic-ui-react';
-import Uuid from 'uuid';
-import {DataSourceCollection, Rtm} from '../../../../core/model/rtm';
-import {ProcessingCollection} from '../../../../core/model/rtm/processing';
-import {IPropertyValueObject} from '../../../../core/model/types';
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-ignore todo
+import {XYDataPoint} from 'downsample/dist/types';
+import {cloneDeep} from 'lodash';
 import {downloadFile, exportChartImage} from '../../../shared/simpleTools/helpers';
+import React, {useEffect, useRef, useState} from 'react';
 import TimeSlider from './TimeSlider';
-import {IParameterWithMetaData, ITimeStamps} from './types';
+import Uuid from 'uuid';
 import VisualizationMap from './VisualizationMap';
+import moment from 'moment';
 
 interface IProps {
     parameters: IParameterWithMetaData[];

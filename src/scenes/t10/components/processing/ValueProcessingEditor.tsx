@@ -1,15 +1,15 @@
 import {Button, DropdownProps, Form, Grid, Header, InputOnChangeData, Label, Modal, Segment} from 'semantic-ui-react';
 import {DataPoint} from 'downsample';
-import {DatePicker} from '../../shared/uiComponents';
-import {IDatePickerProps} from '../../shared/uiComponents/DatePicker';
-import {IDateTimeValue} from '../../../core/model/rtm/Sensor.type';
-import {IValueProcessingOperator} from '../../../core/model/rtm/processing/Processing.type';
+import {DatePicker} from '../../../shared/uiComponents';
+import {IDatePickerProps} from '../../../shared/uiComponents/DatePicker';
+import {IDateTimeValue} from '../../../../core/model/rtm/Sensor.type';
+import {IValueProcessingOperator} from '../../../../core/model/rtm/processing/Processing.type';
 import {LTOB} from 'downsample';
 import {ResponsiveContainer, Scatter, ScatterChart, XAxis, YAxis} from 'recharts';
 import {cloneDeep} from 'lodash';
-import DataSourceCollection from '../../../core/model/rtm/DataSourceCollection';
+import DataSourceCollection from '../../../../core/model/rtm/DataSourceCollection';
 import React, {ChangeEvent, SyntheticEvent, useEffect, useState} from 'react';
-import ValueProcessing, {operators} from '../../../core/model/rtm/processing/ValueProcessing';
+import ValueProcessing, {operators} from '../../../../core/model/rtm/processing/ValueProcessing';
 import moment from 'moment';
 import uuid from 'uuid';
 

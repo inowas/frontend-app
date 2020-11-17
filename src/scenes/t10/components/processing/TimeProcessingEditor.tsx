@@ -1,15 +1,15 @@
 import 'react-semantic-ui-datepickers/dist/react-semantic-ui-datepickers.css';
 import {Button, DropdownProps, Form, Grid, Header, InputOnChangeData, Label, Modal, Segment} from 'semantic-ui-react';
 import {DataPoint, LTOB} from 'downsample';
-import {DataSourceCollection} from '../../../core/model/rtm';
-import {DatePicker} from '../../shared/uiComponents';
-import {ECutRule} from '../../../core/model/rtm/processing/Processing.type';
-import {IDatePickerProps} from '../../shared/uiComponents/DatePicker';
-import {IDateTimeValue} from '../../../core/model/rtm/Sensor.type';
+import {DataSourceCollection} from '../../../../core/model/rtm';
+import {DatePicker} from '../../../shared/uiComponents';
+import {ECutRule} from '../../../../core/model/rtm/processing/Processing.type';
+import {IDatePickerProps} from '../../../shared/uiComponents/DatePicker';
+import {IDateTimeValue} from '../../../../core/model/rtm/Sensor.type';
 import {ResponsiveContainer, Scatter, ScatterChart, XAxis, YAxis} from 'recharts';
 import {cloneDeep} from 'lodash';
 import React, {ChangeEvent, SyntheticEvent, useEffect, useState} from 'react';
-import TimeProcessing, {methods} from '../../../core/model/rtm/processing/TimeProcessing';
+import TimeProcessing, {methods} from '../../../../core/model/rtm/processing/TimeProcessing';
 import moment from 'moment';
 import uuid from 'uuid';
 

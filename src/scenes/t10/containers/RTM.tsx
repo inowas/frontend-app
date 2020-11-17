@@ -4,7 +4,7 @@ import {IRtm} from '../../../core/model/rtm/Rtm.type';
 import {ISensorParameter} from '../../../core/model/rtm/Sensor.type';
 import {IToolMetaDataEdit} from '../../shared/simpleTools/ToolMetaData/ToolMetaData.type';
 import {Redirect, useLocation, useParams, useRouteMatch} from 'react-router-dom';
-import {Rtm, Sensor} from '../../../core/model/rtm';
+import {DataSourceCollection, Rtm, Sensor} from '../../../core/model/rtm';
 import {fetchUrl, sendCommand} from '../../../services/api';
 import AppContainer from '../../shared/AppContainer';
 import React, {useEffect, useState} from 'react';
@@ -57,31 +57,25 @@ const RTM = () => {
     const match = useRouteMatch();
     const location = useLocation();
 
-    const [isDirty, setDirty] = useState<boolean>(false);
     const [isError, setError] = useState<boolean>(false);
-    const [fetching, setFetching] = useState<boolean>(false);
+    const [isFetching, setIsFetching] = useState<boolean>(false);
     const [rtm, setRtm] = useState<IRtm | null>(null);
     const [selectedSensorId, setSelectedSensorId] = useState<string | null>(null);
     const [selectedParameterId, setSelectedParameterId] = useState<string | null>(null);
 
     useEffect(() => {
-        setFetching(true);
+        setIsFetching(true);
         fetchUrl(`tools/${tool}/${id}`,
             (m: IRtm) => {
                 setRtm(m);
-                setFetching(false);
-                setDirty(false);
+                setIsFetching(false);
             },
             () => {
-                setFetching(false);
+                setIsFetching(false);
                 setError(false);
             }
         );
     }, [id]);
-
-    useEffect(() => {
-        setDirty(true);
-    }, [rtm]);
 
     useEffect(() => {
         if (rtm === null || selectedSensorId === null) {
@@ -109,8 +103,7 @@ const RTM = () => {
 
         const lRtm = Rtm.fromObject(rtm);
         lRtm.updateSensor(sensor);
-        setRtm(lRtm.toObject());
-        onSave(lRtm);
+        handleSave(lRtm);
     };
 
     const handleUpdateParameter = (parameter: ISensorParameter) => {
@@ -133,7 +126,7 @@ const RTM = () => {
         const lRtm = Rtm.fromObject(rtm);
         lRtm.updateSensor(sensor);
         setRtm(lRtm.toObject());
-        onSave(lRtm);
+        handleSave(lRtm);
     };
 
     const handleSaveMetaData = (metaData: IToolMetaDataEdit) => {
@@ -143,23 +136,22 @@ const RTM = () => {
                 name: metaData.name, description: metaData.description, public: metaData.public
             });
             setRtm(cRtm.toObject());
-            onSave(cRtm);
+            handleSave(cRtm);
         }
     };
 
-    const onchange = (r: Rtm) => {
-        setSelectedParameterId(null);
-        return setRtm(r.toObject());
-    };
-
-    const onSave = (r: Rtm | any) => {
+    const handleSave = (r: Rtm | any) => {
         if (!(r instanceof Rtm) && rtm) {
             r = Rtm.fromObject(rtm);
         }
 
+        setIsFetching(true);
         sendCommand(
             SimpleToolsCommand.updateToolInstance(r.toObjectWithoutData()),
-            () => setDirty(false)
+            () => {
+                setRtm(r.toObject());
+                setIsFetching(false);
+            }
         );
     };
 
@@ -202,11 +194,9 @@ const RTM = () => {
         return (
             <Sensors
                 rtm={Rtm.fromObject(rtm)}
-                isDirty={isDirty}
                 isError={isError}
-                onChange={onchange}
                 onChangeSelectedSensorId={setSelectedSensorId}
-                onSave={onSave}
+                onSave={handleSave}
             >
                 <SensorMetaData
                     rtm={Rtm.fromObject(rtm)}
@@ -233,7 +223,7 @@ const RTM = () => {
         );
     };
 
-    if (fetching) {
+    if (isFetching) {
         return (
             <AppContainer navbarItems={navigation}>
                 <Message icon={true}>
@@ -256,7 +246,7 @@ const RTM = () => {
     return (
         <AppContainer navbarItems={navigation}>
             <ToolMetaData
-                isDirty={isDirty}
+                isDirty={false}
                 readOnly={false}
                 tool={{
                     tool: 'T10',
