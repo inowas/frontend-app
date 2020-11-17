@@ -7,7 +7,8 @@ import {List, Loader, Modal} from 'semantic-ui-react';
 import {RouteComponentProps, withRouter} from 'react-router-dom';
 import {ScenarioAnalysis} from '../../../core/model/scenarioAnalysis';
 import {
-    clear, updateBoundaries, updateCalculation, updateModel,
+    clear,
+    updateBoundaries, updateCalculation, updateModel,
     updateScenarioAnalysis,
     updateSoilmodel
 } from '../actions/actions';
@@ -19,7 +20,8 @@ import updater from '../../../core/model/modflow/soilmodel/updater/updater';
 
 interface IOwnProps {
     children: ReactNode;
-    key: string;
+    newScenarioId?: string;
+    oldScenarioId?: string;
 }
 
 type IProps = IOwnProps & RouteComponentProps<{ id: string }>;
@@ -32,7 +34,6 @@ const DataFetcherWrapper = (props: IProps) => {
     const dispatch = useDispatch();
 
     const [scenarioAnalysisId, setScenarioAnalysisId] = useState<string | null>(null);
-
     const [showModal, setShowModal] = useState<boolean>(true);
 
     const T07 = useSelector((state: IRootReducer) => state.T07);
@@ -43,9 +44,12 @@ const DataFetcherWrapper = (props: IProps) => {
     const soilmodels: IIdValueObject<ISoilmodel> = T07.soilmodels;
 
     useEffect(() => {
-        dispatch(clear());
+        if (props.newScenarioId || props.oldScenarioId) {
+            dispatch(clear());
+            fetchScenarioAnalysis(props.match.params.id);
+        }
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, []);
+    }, [props.newScenarioId, props.oldScenarioId]);
 
     useEffect(() => {
         if (scenarioAnalysisId !== props.match.params.id) {
@@ -58,21 +62,19 @@ const DataFetcherWrapper = (props: IProps) => {
     }, [props.match.params.id]);
 
     const fetchScenarioAnalysis = (id: string) => {
-        if (!scenarioAnalysis) {
-            fetchUrl(
-                `tools/T07/${id}`,
-                (data) => {
-                    const cScenarioAnalysis = ScenarioAnalysis.fromObject(data);
-                    dispatch(updateScenarioAnalysis(cScenarioAnalysis));
-                    [cScenarioAnalysis.basemodelId].concat(cScenarioAnalysis.scenarioIds).forEach(
-                        (sId, idx) => fetchModel(sId, 1 + idx)
-                    );
-                },
-                (cError) => {
-                    return handleError(cError);
-                }
-            );
-        }
+        fetchUrl(
+            `tools/T07/${id}`,
+            (data) => {
+                const cScenarioAnalysis = ScenarioAnalysis.fromObject(data);
+                dispatch(updateScenarioAnalysis(cScenarioAnalysis));
+                [cScenarioAnalysis.basemodelId].concat(cScenarioAnalysis.scenarioIds).forEach(
+                    (sId, idx) => fetchModel(sId, 1 + idx)
+                );
+            },
+            (cError) => {
+                return handleError(cError);
+            }
+        );
     };
 
     const fetchModel = (id: string, idx: number) => {
