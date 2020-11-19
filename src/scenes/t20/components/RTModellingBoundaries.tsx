@@ -16,6 +16,7 @@ import RTModelling from '../../../core/model/rtm/modelling/RTModelling';
 import RTModellingMethod from '../../../core/model/rtm/modelling/RTModellingMethod';
 import React, {SyntheticEvent, useEffect, useState} from 'react';
 import uuid from 'uuid';
+import {appendBoundaryData} from "./appendBoundaryData";
 
 interface IProps {
     model: ModflowModel;
@@ -102,13 +103,12 @@ const RTModellingBoundaries = (props: IProps) => {
             return r;
         }));
         setIsDirty(true);
-    }
+    };
 
     const handleChangeModal = (v: RTModellingMethod) => {
         if (!heads || !activeRow) {
             return null;
         }
-
         setHeads(heads.map((r) => {
             if (r.boundary_id === activeRow.bId) {
                 if (!Array.isArray(r.data) && activeRow.opId) {
@@ -122,7 +122,7 @@ const RTModellingBoundaries = (props: IProps) => {
         }));
         setActiveRow(null);
         setIsDirty(true);
-    }
+    };
 
     const handleChangeSelect = (bId: string, propertyKey: number, opId?: string) =>
         (e: SyntheticEvent<HTMLElement>, {value}: DropdownProps) => {
@@ -145,15 +145,41 @@ const RTModellingBoundaries = (props: IProps) => {
     const renderMethodButton = (
         method: IMethod | IMethodSensor | IMethodFunction, bid: string, propertyKey: number, opId?: string
     ) => {
+        const bc = boundaries ? boundaries.map((b) => BoundaryFactory.fromObject(b)) : [];
+
+        if (bc.length < 1) {
+            return null;
+        }
+
+        const f = bc.filter((b) => b.id === bid);
+
+        if (f.length < 1) {
+            return null;
+        }
+
         return (
-            <Button
-                disabled={method.method === EMethodType.CONSTANT}
-                floated="right"
-                onClick={handleClickEdit(method, bid, propertyKey, opId)}
-                icon={true}
-            >
-                <Icon name='pencil'/>
-            </Button>
+            <Button.Group>
+                <Button
+                    disabled={method.method === EMethodType.CONSTANT}
+                    floated="right"
+                    onClick={handleClickEdit(method, bid, propertyKey, opId)}
+                    icon={true}
+                >
+                    <Icon name='pencil'/>
+                </Button>
+                <Button
+                    onClick={() => appendBoundaryData(
+                        f[0],
+                        RTModellingMethod.fromObject(method),
+                        props.rtm,
+                        props.model.stressperiods,
+                        propertyKey,
+                        opId
+                    )}
+                >
+                    <Icon name='line graph'/>
+                </Button>
+            </Button.Group>
         );
     };
 
@@ -229,7 +255,7 @@ const RTModellingBoundaries = (props: IProps) => {
                 ))}
             </React.Fragment>
         );
-    }
+    };
 
     const renderLineBoundary = (b: LineBoundary, h: IRTModellingHead) => {
         const ops = b.observationPoints.map((op) => op.toObject());

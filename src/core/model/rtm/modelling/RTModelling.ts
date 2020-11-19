@@ -70,6 +70,10 @@ class RTModelling extends GenericObject<IRtModelling> {
         return new Date(this._props.data.start_date_time);
     }
 
+    get timeResolution() {
+        return this._props.data.time_resolution;
+    }
+
     get tool(): string {
         return this._props.tool;
     }

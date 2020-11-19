@@ -34,6 +34,8 @@ const MethodModal = (props: IProps) => {
     const [sensor, setSensor] = useState<ISensor>();
     const [parameterId, setParameterId] = useState<string | null>(props.method.parameterId);
 
+    console.log({parameterId})
+
     useEffect(() => {
         if (!rtmId) {
             return;
@@ -104,6 +106,7 @@ const MethodModal = (props: IProps) => {
         if (typeof value !== 'string' || !rtm) {
             return null;
         }
+        console.log('HANDLE CHANGE', value);
         setParameterId(value);
     }
 
@@ -169,6 +172,9 @@ const MethodModal = (props: IProps) => {
                             selection={true}
                             value={parameterId ? parameterId : undefined}
                             options={sensor.parameters.map((param) => {
+                                console.log(
+                                    sensor.parameters
+                                );
                                 return {
                                     key: param.id,
                                     value: param.id,

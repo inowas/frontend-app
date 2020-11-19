@@ -26,7 +26,7 @@ class RTModellingMethod {
 
     get parameterId() {
         if (this.type === EMethodType.SENSOR) {
-            return this._props.sensor_id;
+            return this._props.parameter_id;
         }
         return undefined;
     }
