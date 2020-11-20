@@ -1,8 +1,8 @@
-import {cloneDeep} from 'lodash';
-import uuid from 'uuid';
 import {GenericObject} from '../genericObject/GenericObject';
 import {IDateTimeValue, ISensorDataSource} from './Sensor.type';
+import {cloneDeep} from 'lodash';
 import {getUrlPathRegex, pathIsValid, retrieveData} from './SensorDataHelper';
+import uuid from 'uuid';
 
 class SensorDataSource extends GenericObject<ISensorDataSource> {
 
@@ -95,7 +95,7 @@ class SensorDataSource extends GenericObject<ISensorDataSource> {
     }
 
     get timeResolution(): string | null {
-        return this.urlSearchParams.get(`timeResolution`);
+        return this.urlSearchParams.get('timeResolution');
     }
 
     set timeResolution(value: string | null) {
@@ -176,6 +176,96 @@ class SensorDataSource extends GenericObject<ISensorDataSource> {
         url.searchParams.delete('end');
         if (value !== null) {
             url.searchParams.append('end', value.toString());
+        }
+        this.url = url;
+    }
+
+    get gt(): number | null {
+        const gt = this.urlSearchParams.get('gt');
+        if (gt === null) {
+            return null;
+        }
+
+        return parseFloat(gt);
+    }
+
+    set gt(value: number | null) {
+        const url = this.url;
+        url.searchParams.delete('gt');
+        if (value !== null) {
+            url.searchParams.append('gt', value.toString());
+        }
+        this.url = url;
+    }
+
+    get gte(): number | null {
+        const gte = this.urlSearchParams.get('gte');
+        if (gte === null) {
+            return null;
+        }
+
+        return parseFloat(gte);
+    }
+
+    set gte(value: number | null) {
+        const url = this.url;
+        url.searchParams.delete('gte');
+        if (value !== null) {
+            url.searchParams.append('gte', value.toString());
+        }
+        this.url = url;
+    }
+
+    get lt(): number | null {
+        const lt = this.urlSearchParams.get('lt');
+        if (lt === null) {
+            return null;
+        }
+
+        return parseFloat(lt);
+    }
+
+    set lt(value: number | null) {
+        const url = this.url;
+        url.searchParams.delete('lt');
+        if (value !== null) {
+            url.searchParams.append('lt', value.toString());
+        }
+        this.url = url;
+    }
+
+    get lte(): number | null {
+        const lte = this.urlSearchParams.get('lte');
+        if (lte === null) {
+            return null;
+        }
+
+        return parseFloat(lte);
+    }
+
+    set lte(value: number | null) {
+        const url = this.url;
+        url.searchParams.delete('lte');
+        if (value !== null) {
+            url.searchParams.append('lte', value.toString());
+        }
+        this.url = url;
+    }
+
+    get excl(): number | null {
+        const excl = this.urlSearchParams.get('excl');
+        if (excl === null) {
+            return null;
+        }
+
+        return parseFloat(excl);
+    }
+
+    set excl(value: number | null) {
+        const url = this.url;
+        url.searchParams.delete('excl');
+        if (value !== null) {
+            url.searchParams.append('excl', value.toString());
         }
         this.url = url;
     }
