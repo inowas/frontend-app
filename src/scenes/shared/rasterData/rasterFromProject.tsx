@@ -116,6 +116,7 @@ const RasterFromProject = (props: IProps) => {
                 (e) => handleError(e)
                 );
         }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [selectedModelId]);
 
     useEffect(() => {
