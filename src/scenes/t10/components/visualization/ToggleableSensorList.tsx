@@ -1,6 +1,6 @@
-import React, {FormEvent} from 'react';
 import {Checkbox, CheckboxProps, Icon, List} from 'semantic-ui-react';
 import {IParameterWithMetaData} from './types';
+import React, {FormEvent} from 'react';
 
 interface IProps {
     parameters: IParameterWithMetaData[];
