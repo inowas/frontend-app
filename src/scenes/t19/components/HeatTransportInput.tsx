@@ -65,6 +65,7 @@ const HeatTransportInput = (props: IProps) => {
             try {
                 setIsFetching(true);
                 const res = await fetchApiWithToken(`tools/T10/${id}`);
+                setSensor(undefined);
                 setRtm(res.data);
             } catch (err) {
                 setErrors([{id: uuid.v4(), message: `Fetching t10 instance ${id} failed.`}]);
@@ -180,6 +181,8 @@ const HeatTransportInput = (props: IProps) => {
         });
     };
 
+    console.log({sensor});
+
     const handleChangeRtm = (e: SyntheticEvent<HTMLElement, Event>, {value}: DropdownProps) => {
         if (typeof value !== 'string') {
             return null;
@@ -221,16 +224,19 @@ const HeatTransportInput = (props: IProps) => {
                     }))}
                     onChange={handleChangeRtm}
                 />
-                <Form.Select
-                    disabled={props.readOnly || !rtm || rtm.data.sensors.length === 0}
-                    label="Sensor"
-                    placeholder="Select sensor"
-                    fluid={true}
-                    selection={true}
-                    value={sensor ? sensor.id : undefined}
-                    options={getSensorOptions()}
-                    onChange={handleChangeSensor}
-                />
+                {rtm &&
+                    <Form.Select
+                        disabled={props.readOnly || !rtm || rtm.data.sensors.length === 0}
+                        label="Sensor"
+                        placeholder="Select sensor"
+                        fluid={true}
+                        selection={true}
+                        value={sensor ? sensor.id : undefined}
+                        options={getSensorOptions()}
+                        onChange={handleChangeSensor}
+                    />
+                }
+                {sensor &&
                 <HeatTransportInputChart
                     data={data}
                     dateTimeFormat={props.dateTimeFormat}
@@ -238,6 +244,7 @@ const HeatTransportInput = (props: IProps) => {
                     timesteps={timesteps}
                     isLoading={isFetching}
                 />
+                }
             </Segment>
             {errors.map((error, key) => (
                 <Message key={key} negative={true} onDismiss={handleDismissError(error.id)}>

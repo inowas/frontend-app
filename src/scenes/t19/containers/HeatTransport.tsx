@@ -6,10 +6,10 @@ import {IRootReducer} from '../../../reducers';
 import {IToolInstance} from '../../dashboard/defaults/tools';
 import {IToolMetaDataEdit} from '../../shared/simpleTools/ToolMetaData/ToolMetaData.type';
 import {ToolMetaData} from '../../shared/simpleTools';
+import {clear, updateHtm, updateT10Instances} from '../actions/actions';
 import {createToolInstance} from '../../dashboard/commands';
 import {fetchApiWithToken, fetchUrl, sendCommand} from '../../../services/api';
 import {uniqBy} from 'lodash';
-import {updateHtm, updateT10Instances} from '../actions/actions';
 import {useDispatch, useSelector} from 'react-redux';
 import {useHistory, useParams} from 'react-router-dom';
 import Htm from '../../../core/model/htm/Htm';
@@ -64,6 +64,7 @@ const HeatTransport = () => {
     }, []);
 
     useEffect(() => {
+        dispatch(clear());
         if (id) {
             setIsFetching(true);
             fetchUrl(`tools/${tool}/${id}`,
