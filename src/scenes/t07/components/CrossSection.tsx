@@ -8,13 +8,12 @@ import {ICalculation} from '../../../core/model/modflow/Calculation.type';
 import {IModflowModel} from '../../../core/model/modflow/ModflowModel.type';
 import {ScenarioAnalysis} from '../../../core/model/scenarioAnalysis';
 import {Viewport} from 'react-leaflet';
-import {chunk, compact, flatten} from 'lodash';
 import {fetchCalculationResultsFlow} from '../../../services/api';
 import React, {useEffect, useState} from 'react';
 import ResultsChart from '../../shared/complexTools/ResultsChart';
 import ResultsMap from '../../shared/complexTools/ResultsMap';
 import ResultsSelectorFlow from '../../shared/complexTools/ResultsSelectorFlow';
-import _ from 'lodash';
+import _, {chunk, compact, flatten} from 'lodash';
 
 interface IProps {
     basemodel: ModflowModel;
@@ -54,11 +53,12 @@ const CrossSection = (props: IProps) => {
         setSelectedCol(Math.floor(basemodel.gridSize.nX / 2));
         setSelectedRow(Math.floor(basemodel.gridSize.nY / 2));
         setSelectedModels(cSelectedModels as IModflowModel[]);
-        if (basemodelCalculation.times) {
-            setSelectedTotim(basemodelCalculation.times.total_times[0]);
-            setTotalTimes(basemodelCalculation.times.total_times);
-        }
         setLayerValues(basemodelCalculation.layer_values);
+        if (basemodelCalculation.times) {
+            const times = selectedType === EResultType.HEAD ? basemodelCalculation.times.head : basemodelCalculation.times.drawdown;
+            setSelectedTotim(times.idx.slice(-1)[0]);
+            setTotalTimes(times.total_times);
+        }
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
@@ -111,12 +111,10 @@ const CrossSection = (props: IProps) => {
             return setData(result);
         }
 
-        const t = totalTimes.indexOf(totim);
-
         fetchCalculationResultsFlow({
             calculationId: m.calculation_id,
             type,
-            totim: t >= 0 ? t : 0,
+            totim,
             layer
         }, (d) => {
             result[m.id] = d;

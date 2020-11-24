@@ -140,7 +140,7 @@ const ResultsSelectorFlow = (props: IProps) => {
                     <Segment color={'grey'}>
                         <Header textAlign={'center'} as={'h4'}>Select total time [days]</Header>
                         <SliderWithTooltip
-                            dots={props.totalTimes.length < 20}
+                            dots={false}
                             dotStyle={styles.dot}
                             trackStyle={styles.track}
                             defaultValue={props.totalTimes[props.data.totim]}
