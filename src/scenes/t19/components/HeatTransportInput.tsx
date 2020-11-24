@@ -8,11 +8,12 @@ import {
 import {HeatTransportInputChart} from '.';
 import {IDateTimeValue, ISensor, ISensorParameter} from '../../../core/model/rtm/Sensor.type';
 import {IHeatTransportInput} from '../../../core/model/htm/Htm.type';
+import {IRootReducer} from '../../../reducers';
 import {IRtm} from '../../../core/model/rtm/Rtm.type';
-import {IToolInstance} from '../../dashboard/defaults/tools';
 import {ProcessingCollection} from '../../../core/model/rtm/processing';
 import {fetchApiWithToken, makeTimeProcessingRequest} from '../../../services/api';
-import {uniqBy} from 'lodash';
+import {updateHtmInput} from '../actions/actions';
+import {useDispatch, useSelector} from 'react-redux';
 import HtmInput from '../../../core/model/htm/HtmInput';
 import React, {SyntheticEvent, useEffect, useState} from 'react';
 import uuid from 'uuid';
@@ -22,7 +23,6 @@ interface IProps {
     input: HtmInput;
     label: string;
     name: string;
-    onChange: (input: HtmInput) => void;
     readOnly: boolean;
 }
 
@@ -40,37 +40,17 @@ const HeatTransportInput = (props: IProps) => {
     const [input, setInput] = useState<IHeatTransportInput>(props.input.toObject());
     const [data, setData] = useState<IHeatTransportInput['data']>(undefined);
 
-    const [t10Instances, setT10Instances] = useState<IToolInstance[]>([]);
     const [rtm, setRtm] = useState<IRtm>();
 
     const [sensor, setSensor] = useState<ISensor>();
     const [parameter, setParameter] = useState<ISensorParameter>();
 
-    const [recalculate, setRecalculate] = useState<boolean>(false);
-
     const [tempTime, setTempTime] = useState<[number, number]>();       // KEY
     const [timesteps, setTimesteps] = useState<number[]>();             // UNIX[]
 
-    useEffect(() => {
-        const fetchInstances = async () => {
-            try {
-                setIsFetching(true);
-                const privateT10Tools = (await fetchApiWithToken('tools/T10?public=false')).data;
-                const publicT10Tools = (await fetchApiWithToken('tools/T10?public=true')).data;
-
-                // Lets show an ordered List with the private projects first
-                const tools = uniqBy(privateT10Tools.concat(publicT10Tools), (t: IToolInstance) => t.id);
-                setT10Instances(tools);
-            } catch (err) {
-                setErrors([{id: uuid.v4(), message: 'Fetching t10 instances failed.'}]);
-            } finally {
-                setIsFetching(false);
-            }
-        };
-
-        fetchInstances();
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, []);
+    const T19 = useSelector((state: IRootReducer) => state.T19);
+    const t10Instances = T19.t10instances;
+    const dispatch = useDispatch();
 
     useEffect(() => {
         setInput(props.input.toObject());
@@ -142,7 +122,7 @@ const HeatTransportInput = (props: IProps) => {
     }, [input.data]);
 
     useEffect(() => {
-        if (!parameter || !recalculate) {
+        if (!parameter) {
             return;
         }
 
@@ -169,19 +149,18 @@ const HeatTransportInput = (props: IProps) => {
 
                     setData(timeProcessedData);
                     setInput(htmInput);
-                    props.onChange(HtmInput.fromObject(htmInput));
+                    dispatch(updateHtmInput(HtmInput.fromObject(htmInput)));
                 }
             } catch (err) {
                 setErrors([{id: uuid.v4(), message: 'Data processing failed.'}]);
             } finally {
                 setIsFetching(false);
-                setRecalculate(false);
             }
         };
 
         fetchData();
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [parameter, recalculate]);
+    }, [parameter]);
 
     const sensorsWithTemperature = (rtm: IRtm) => Rtm.fromObject(rtm).sensors.all.filter((s) =>
         s.parameters.filterBy('type', 't').length > 0
@@ -219,7 +198,6 @@ const HeatTransportInput = (props: IProps) => {
         }
 
         setInput({...input, sensorId: value});
-        setRecalculate(true);
     };
 
     const handleDismissError = (id: string) => () => setErrors(errors.filter((e) => e.id !== id));
@@ -229,6 +207,7 @@ const HeatTransportInput = (props: IProps) => {
             <Segment color="grey">
                 <h4>{props.label}</h4>
                 <Form.Select
+                    loading={t10Instances.length === 0}
                     disabled={props.readOnly}
                     label="T10 Instance"
                     placeholder="Select instance"

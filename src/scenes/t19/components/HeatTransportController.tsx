@@ -5,20 +5,19 @@ import {
     Segment
 } from 'semantic-ui-react';
 import {HeatTransportInput, HeatTransportResults} from './index';
-import {IHeatTransportRequest, IHeatTransportRequestOptions, IHtm} from '../../../core/model/htm/Htm.type';
+import {IHeatTransportRequest, IHeatTransportRequestOptions} from '../../../core/model/htm/Htm.type';
 import {IRootReducer} from '../../../reducers';
 import {includes} from 'lodash';
-import {makeHeatTransportRequest} from '../../../services/api';
-import {useSelector} from 'react-redux';
+import {makeHeatTransportRequest, sendCommand} from '../../../services/api';
+import {updateHtm} from '../actions/actions';
+import {useDispatch, useSelector} from 'react-redux';
 import Htm from '../../../core/model/htm/Htm';
-import HtmInput from '../../../core/model/htm/HtmInput';
 import React, {FormEvent, useEffect, useState} from 'react';
+import SimpleToolsCommand from '../../shared/simpleTools/commands/SimpleToolsCommand';
 import moment from 'moment';
 
 interface IProps {
     htm: Htm;
-    onChange: (htm: Htm) => void;
-    onSave: (htm: IHtm) => void;
 }
 
 const HeatTransportController = (props: IProps) => {
@@ -28,6 +27,7 @@ const HeatTransportController = (props: IProps) => {
     const [requestOptions, setRequestOptions] = useState<IHeatTransportRequestOptions>(props.htm.options);
 
     const user = useSelector((state: IRootReducer) => state.user);
+    const dispatch = useDispatch();
 
     useEffect(() => {
         setRequestOptions(props.htm.options);
@@ -81,16 +81,18 @@ const HeatTransportController = (props: IProps) => {
             const cHtm = props.htm.toObject();
             cHtm.data.results = JSON.parse(r3);
             cHtm.data.options = requestOptions;
-            props.onChange(Htm.fromObject(cHtm));
-            props.onSave(cHtm);
+            const iHtm = Htm.fromObject(cHtm);
+            sendCommand(
+                SimpleToolsCommand.updateToolInstance(iHtm.toObject()),
+                () => {
+                    dispatch(updateHtm(iHtm));
+                    setIsFetching(false);
+                }
+            );
             setIsFetching(false);
         });
     };
-
-    const handleChangeData = (value: HtmInput) => {
-        const htm = props.htm.getClone();
-        props.onChange(htm.updateInput(value));
-    };
+    
     const readOnly = !includes(props.htm.permissions, 'w');
 
     return (
@@ -104,7 +106,6 @@ const HeatTransportController = (props: IProps) => {
                                 input={props.htm.inputSw}
                                 label="Surface water"
                                 name="sw"
-                                onChange={handleChangeData}
                                 readOnly={isFetching || readOnly}
                             />
                         </Grid.Column>
@@ -114,7 +115,6 @@ const HeatTransportController = (props: IProps) => {
                                 input={props.htm.inputGw}
                                 label="Groundwater"
                                 name="gw"
-                                onChange={handleChangeData}
                                 readOnly={isFetching || readOnly}
                             />
                         </Grid.Column>
