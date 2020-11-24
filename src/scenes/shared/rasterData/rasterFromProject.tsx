@@ -11,7 +11,7 @@ import {RasterDataMap} from './index';
 import {fetchApiWithToken, fetchCalculationDetails, fetchCalculationResultsFlow, fetchUrl} from '../../../services/api';
 import {fetchSoilmodel} from '../../../core/model/modflow/soilmodel/updater/services';
 import {uniqBy} from 'lodash';
-import { useSelector } from 'react-redux';
+import {useSelector} from 'react-redux';
 import Moment from 'moment';
 import React, {FormEvent, SyntheticEvent, useEffect, useState} from 'react';
 import SliderWithTooltip from '../complexTools/SliderWithTooltip';
@@ -62,7 +62,7 @@ const RasterFromProject = (props: IProps) => {
                 const tools = uniqBy(privateT03Tools.concat(publicT03Tools), (t: IToolInstance) => t.id);
                 setT03Instances(tools);
             } catch (err) {
-                handleError(err)
+                handleError(err);
             } finally {
                 setIsFetching(false);
             }
@@ -105,17 +105,18 @@ const RasterFromProject = (props: IProps) => {
                                         }
                                     }
                                     fetchCalculation(model);
-                                    setSoilmodel(Soilmodel.fromObject(result).toObject())
+                                    setSoilmodel(Soilmodel.fromObject(result).toObject());
                                     setError(undefined);
                                 }
                             );
                         },
                         (e) => handleError(e)
-                        );
+                    );
                 },
                 (e) => handleError(e)
-                );
+            );
         }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [selectedModelId]);
 
     useEffect(() => {

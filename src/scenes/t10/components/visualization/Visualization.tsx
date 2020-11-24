@@ -1,16 +1,16 @@
-import _ from 'lodash';
-import React, {SyntheticEvent, useEffect, useState} from 'react';
 import {
     Button,
     Form,
     Grid,
     Icon, Segment
 } from 'semantic-ui-react';
-import {Rtm} from '../../../../core/model/rtm';
-import {ISensorParameter} from '../../../../core/model/rtm/Sensor.type';
-import {heatMapColors} from '../../../t05/defaults/gis';
-import {ToggleableSensorList, VisualizationParameter} from './index';
 import {IParameterWithMetaData} from './types';
+import {ISensorParameter} from '../../../../core/model/rtm/Sensor.type';
+import {Rtm} from '../../../../core/model/rtm';
+import {ToggleableSensorList, VisualizationParameter} from './index';
+import {heatMapColors} from '../../../t05/defaults/gis';
+import React, {SyntheticEvent, useEffect, useState} from 'react';
+import _ from 'lodash';
 
 interface IProps {
     rtm: Rtm;
@@ -40,8 +40,8 @@ const Visualization = (props: IProps) => {
                             sensor: s.toObject(),
                             meta: {
                                 active: true,
-                                color: (heatMapColors.discrete.length >= 4 * sIdx + pIdx) ?
-                                    heatMapColors.discrete[4 * sIdx + pIdx] : '#000000',
+                                color: (heatMapColors.discrete.length >= (4 * sIdx) + pIdx) ?
+                                    heatMapColors.discrete[(4 * sIdx) + pIdx] : '#000000',
                                 axis: selectedParameter.axis
                             }
                         });
@@ -99,12 +99,14 @@ const Visualization = (props: IProps) => {
     };
 
     const handleChangeParameters = (result: IParameterWithMetaData[]) => {
-        const cParameters: IParameterWithMetaData[] = result;
-        parameters.forEach((p) => {
-            if (cParameters.filter((cp) => cp.parameter.type === p.parameter.type).length === 0) {
-                cParameters.push(p);
+        const cParameters: IParameterWithMetaData[] = parameters.map((p) => {
+            const f = result.filter((pf) => pf.parameter.id === p.parameter.id && pf.sensor.id === p.sensor.id);
+            if (f.length > 0) {
+                return f[0];
             }
+            return p;
         });
+
         return setParameters(cParameters);
     };
 
@@ -118,7 +120,7 @@ const Visualization = (props: IProps) => {
             const cParameters = _.cloneDeep(selectedParameters);
             cParameters.push({
                 type: nextParameter[0].value,
-                axis: 'left'
+                axis: 'right'
             });
             return setSelectedParameters(cParameters);
         }

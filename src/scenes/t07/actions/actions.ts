@@ -1,12 +1,12 @@
-import {Calculation, ModflowModel} from '../../../core/model/modflow';
 import {BoundaryCollection} from '../../../core/model/modflow/boundaries';
-import Soilmodel from '../../../core/model/modflow/soilmodel/Soilmodel';
+import {CLEAR, UPDATE_SCENARIOANALYSIS} from '../reducers/scenarioAnalysis';
+import {Calculation, ModflowModel} from '../../../core/model/modflow';
 import {ScenarioAnalysis} from '../../../core/model/scenarioAnalysis';
+import {UPDATE_MODEL} from '../reducers/models';
 import {UPDATE_MODEL_BOUNDARIES} from '../reducers/boundaries';
 import {UPDATE_MODEL_CALCULATION} from '../reducers/calculations';
-import {UPDATE_MODEL} from '../reducers/models';
-import {CLEAR, UPDATE_SCENARIOANALYSIS} from '../reducers/scenarioAnalysis';
 import {UPDATE_MODEL_SOILMODEL} from '../reducers/soilmodels';
+import Soilmodel from '../../../core/model/modflow/soilmodel/Soilmodel';
 
 export function clear() {
     return {

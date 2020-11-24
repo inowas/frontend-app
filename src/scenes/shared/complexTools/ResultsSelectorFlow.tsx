@@ -52,7 +52,7 @@ const ResultsSelectorFlow = (props: IProps) => {
             const maxTotim = Math.ceil(totalTimes[totalTimes.length - 1]);
             const dTotim = Math.round((maxTotim - minTotim) / maxNumberOfMarks);
 
-            totalTimes = new Array(maxNumberOfMarks).fill(0).map((value, key) => (minTotim + key * dTotim));
+            totalTimes = new Array(maxNumberOfMarks).fill(0).map((value, key) => (minTotim + (key * dTotim)));
             totalTimes.push(maxTotim);
         }
 
@@ -105,9 +105,7 @@ const ResultsSelectorFlow = (props: IProps) => {
 
     const handleAfterChangeSlider = () => {
         const totim = props.totalTimes.indexOf(temporaryTotim);
-        if (totim) {
-            return props.onChange({layer: props.data.layer, totim, type: props.data.type});
-        }
+        return props.onChange({layer: props.data.layer, totim: totim > -1 ? totim : 0, type: props.data.type});
     };
 
     return (

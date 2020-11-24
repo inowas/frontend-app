@@ -1,25 +1,23 @@
-import {cloneDeep} from 'lodash';
-import React, {useEffect, useState} from 'react';
-import {useDispatch, useSelector} from 'react-redux';
-import {Redirect, RouteComponentProps, withRouter} from 'react-router-dom';
-import {Button, Grid, Header, Icon, Message, Popup, Segment} from 'semantic-ui-react';
-import Uuid from 'uuid';
+import * as Content from '../components';
+import {Button, Grid, Header, Icon, Popup, Segment} from 'semantic-ui-react';
 import {Calculation, ModflowModel, Soilmodel} from '../../../core/model/modflow';
-import {ScenarioAnalysis} from '../../../core/model/scenarioAnalysis';
-import {IScenarioAnalysis} from '../../../core/model/scenarioAnalysis/ScenarioAnalysis';
 import {IPropertyValueObject} from '../../../core/model/types';
 import {IRootReducer} from '../../../reducers';
-import {sendCommand} from '../../../services/api';
-import AppContainer from '../../shared/AppContainer';
-import ToolNavigation from '../../shared/complexTools/toolNavigation';
-import ToolMetaData from '../../shared/simpleTools/ToolMetaData';
+import {IScenarioAnalysis} from '../../../core/model/scenarioAnalysis/ScenarioAnalysis';
 import {IToolMetaDataEdit} from '../../shared/simpleTools/ToolMetaData/ToolMetaData.type';
-import {
-    updateScenarioAnalysis
-} from '../actions/actions';
-import ScenarioAnalysisCommand from '../commands/scenarioAnalysisCommand';
-import * as Content from '../components';
+import {Redirect, RouteComponentProps, withRouter} from 'react-router-dom';
+import {ScenarioAnalysis} from '../../../core/model/scenarioAnalysis';
+import {cloneDeep} from 'lodash';
+import {sendCommand} from '../../../services/api';
+import {updateScenarioAnalysis} from '../actions/actions';
+import {useDispatch, useSelector} from 'react-redux';
+import AppContainer from '../../shared/AppContainer';
 import DataFetcherWrapper from '../components/dataFetcherWrapper';
+import React, {useEffect, useState} from 'react';
+import ScenarioAnalysisCommand from '../commands/scenarioAnalysisCommand';
+import ToolMetaData from '../../shared/simpleTools/ToolMetaData';
+import ToolNavigation from '../../shared/complexTools/toolNavigation';
+import Uuid from 'uuid';
 
 const styles = {
     modelitem: {
@@ -61,10 +59,9 @@ const T07 = (props: RouteComponentProps<{
     property: string;
 }>) => {
     const [localScenarioAnalysis, setLocalScenarioAnalysis] = useState<IScenarioAnalysis | null>(null);
+    const [newScenarioId, setNewScenarioId] = useState<string>();
+    const [oldScenarioId, setOldScenatioId] = useState<string>();
     const [selected, setSelected] = useState<string[]>([]);
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const [hasError, setHasError] = useState<any>(null);
-    const [wrapperKey, setWrapperKey] = useState<string>(Uuid.v4());
 
     const dispatch = useDispatch();
     const T07 = useSelector((state: IRootReducer) => state.T07);
@@ -81,23 +78,13 @@ const T07 = (props: RouteComponentProps<{
         }
     }, [T07.scenarioAnalysis]);
 
-    if (hasError) {
-        return (
-            <AppContainer navbarItems={navigation}>
-                <Message icon={true}>
-                    Error: {hasError.hasOwnProperty('message') ? hasError.message : hasError}
-                </Message>
-            </AppContainer>
-        );
-    }
-
     const renderContent = (id: string, property: string) => {
         if (!scenarioAnalysis) {
             return (<Segment color={'grey'} loading={true}/>);
         }
 
         let basemodel = null;
-        if (models && models.hasOwnProperty(scenarioAnalysis.basemodelId)) {
+        if (models && scenarioAnalysis.basemodelId in models) {
             basemodel = ModflowModel.fromObject(models[scenarioAnalysis.basemodelId]);
         }
 
@@ -106,7 +93,7 @@ const T07 = (props: RouteComponentProps<{
         }
 
         let basemodelCalculation = null;
-        if (calculations && calculations.hasOwnProperty(scenarioAnalysis.basemodelId)) {
+        if (calculations && scenarioAnalysis.basemodelId in calculations) {
             basemodelCalculation = Calculation.fromObject(calculations[scenarioAnalysis.basemodelId]);
         }
 
@@ -115,7 +102,7 @@ const T07 = (props: RouteComponentProps<{
         }
 
         let basemodelSoilmodel = null;
-        if (soilmodels && soilmodels.hasOwnProperty(scenarioAnalysis.basemodelId)) {
+        if (soilmodels && scenarioAnalysis.basemodelId in soilmodels) {
             basemodelSoilmodel = Soilmodel.fromObject(soilmodels[scenarioAnalysis.basemodelId]);
         }
 
@@ -159,9 +146,8 @@ const T07 = (props: RouteComponentProps<{
                     />
                 );
             default:
-                const basePath = props.match.path.split(':')[0];
                 return (
-                    <Redirect to={basePath + id + '/crosssection'}/>
+                    <Redirect to={props.match.path.split(':')[0] + id + '/crosssection'}/>
                 );
         }
     };
@@ -238,7 +224,7 @@ const T07 = (props: RouteComponentProps<{
                                         </Button.Group>
                                     }
                                     on={'click'}
-                                    position={'right center'}
+                                    position={'left center'}
                                 />
                             </Grid.Column>
                         </Grid.Row>
@@ -255,7 +241,9 @@ const T07 = (props: RouteComponentProps<{
         const newId = Uuid.v4();
         sendCommand(
             ScenarioAnalysisCommand.createScenario(scenarioAnalysis.id, id, newId),
-            () => setWrapperKey(Uuid.v4())
+            () => {
+                setNewScenarioId(newId);
+            }
         );
     };
 
@@ -265,7 +253,10 @@ const T07 = (props: RouteComponentProps<{
         }
         sendCommand(
             ScenarioAnalysisCommand.deleteScenario(scenarioAnalysis.id, id),
-            () => setWrapperKey(Uuid.v4())
+            () => {
+                setOldScenatioId(id);
+                setSelected(selected.filter((v) => v !== id));
+            }
         );
     };
 
@@ -281,10 +272,10 @@ const T07 = (props: RouteComponentProps<{
             return null;
         }
         return scenarioAnalysis.modelIds.map((id, idx) => {
-            if (models.hasOwnProperty(id)) {
+            if (id in models) {
                 const model = ModflowModel.fromObject(models[id]);
                 return renderModelListItem({
-                    id: model.id,
+                    id,
                     name: model.name,
                     canBeDeleted: idx !== 0
                 });
@@ -296,7 +287,7 @@ const T07 = (props: RouteComponentProps<{
 
     return (
         <AppContainer navbarItems={navigation}>
-            <DataFetcherWrapper key={wrapperKey}>
+            <DataFetcherWrapper newScenarioId={newScenarioId} oldScenarioId={oldScenarioId}>
                 {localScenarioAnalysis &&
                 <ToolMetaData
                     isDirty={false}
