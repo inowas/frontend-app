@@ -43,7 +43,7 @@ const HeatTransportResultChart = (props: IProps) => {
         const xMin = props.data[0].x < pointsOrderedByX[0].x ? props.data[0].x : pointsOrderedByX[0].x;
         const xMax = props.data[props.data.length - 1].x > pointsOrderedByX[pointsOrderedByX.length - 1].x ?
             props.data[props.data.length - 1].x : pointsOrderedByX[pointsOrderedByX.length - 1].x;
-        return [xMin - 10, xMax + 100000];
+        return [xMin, xMax];
     };
 
     const [domain, setDomain] = useState<[number, number]>();
@@ -107,7 +107,10 @@ const HeatTransportResultChart = (props: IProps) => {
                 <Line dot={false} type="monotone" dataKey="obs" stroke="#db3434" strokeWidth={2}/>
                 <Line dot={false} type="monotone" dataKey="sim" stroke="#3498DB" strokeWidth={2}/>
                 <Tooltip content={
-                    <CustomTooltip colors={['#db3434', '#3498DB']} dateTimeFormat={props.dateTimeFormat}/>
+                    <CustomTooltip
+                        colors={{obs: '#db3434', sim: '#3498DB'}}
+                        dateTimeFormat={props.dateTimeFormat}
+                    />
                 }
                 />
                 {points.map((point, key) => (

@@ -24,7 +24,10 @@ const styles = {
 };
 
 type IProps = TooltipProps & {
-    colors: [string, string];
+    colors: {
+        obs: string;
+        sim: string;
+    };
     dateTimeFormat: string;
 };
 
@@ -49,7 +52,7 @@ const CustomTooltip = (props: IProps) => {
             {props.payload.map((row, key) => (
                 <p key={key} style={{
                     ...styles.item,
-                    color: props.colors.length > key ? props.colors[key] : '#000000'
+                    color: row.dataKey && row.dataKey in props.colors ? props.colors[row.dataKey as 'obs' | 'sim'] : '#000000'
                 }}>{row.dataKey}: {typeof row.value === 'number' ? row.value.toFixed(2) : row.value}°C</p>
             ))}
         </div>
