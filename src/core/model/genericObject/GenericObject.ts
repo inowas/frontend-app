@@ -17,6 +17,7 @@ export class GenericObject<T> {
     }
 
     public getClone() {
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
         // @ts-ignore
         return new this.constructor(cloneDeep(this._props));
     }

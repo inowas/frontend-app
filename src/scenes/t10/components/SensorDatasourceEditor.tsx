@@ -9,6 +9,7 @@ import {usePrevious} from '../../shared/simpleTools/helpers/customHooks';
 import React, {useEffect, useState} from 'react';
 import SensorDataSource from '../../../core/model/rtm/SensorDataSource';
 import moment from 'moment';
+import uuid from 'uuid';
 
 interface IProps {
     dataSource?: SensorDataSource;
@@ -16,17 +17,12 @@ interface IProps {
     onCancel: () => void;
 }
 
-export const servers = [{
-    protocol: 'https',
-    url: 'uit-sensors.inowas.com',
-    path: 'sensors'
-}];
-
 interface ISensorMetaData {
     name: string;
     location: string;
     project: string;
-    properties: string[];
+    properties?: string[]; // uit-sensors.inowas.com - metadata, deprecated
+    parameters?: string[]; // sensors.inowas.com - the new server
     last: {
         date_time: string,
         data: { [name: string]: number };
@@ -34,6 +30,19 @@ interface ISensorMetaData {
 }
 
 const SensorDatasourceEditor = (props: IProps) => {
+
+    const servers = [
+        {
+            protocol: 'https',
+            url: 'uit-sensors.inowas.com',
+            path: 'sensors'
+        },
+        {
+            protocol: 'https',
+            url: 'sensors.inowas.com',
+            path: 'sensors'
+        }
+    ];
 
     const [dataSource, setDatasource] = useState<SensorDataSource | null>(null);
     const [fetchingServerMetaData, setFetchingServerMetaData] = useState<boolean>(false);
@@ -56,7 +65,6 @@ const SensorDatasourceEditor = (props: IProps) => {
     };
 
     useEffect(() => {
-
             if (props.dataSource === undefined) {
                 return setServer(servers[0].url);
             }
@@ -96,6 +104,7 @@ const SensorDatasourceEditor = (props: IProps) => {
         }
 
         fetchServerMetadata(server);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [server]);
 
     useEffect(() => {
@@ -109,12 +118,23 @@ const SensorDatasourceEditor = (props: IProps) => {
 
         if (!dataSource) {
             const sensorMetaData = sensorServerMetaData[0];
-            const {project, name, properties} = sensorMetaData;
+            const {project, name, properties, parameters} = sensorMetaData;
 
-            if (properties.length === 0) {
+            if (properties && properties.length === 0) {
                 return;
             }
-            const ds = SensorDataSource.fromParams(server, project, name, properties[0]);
+
+            if (parameters && parameters.length === 0) {
+                return;
+            }
+
+            const params = properties || parameters;
+
+            if (!params) {
+                return;
+            }
+
+            const ds = SensorDataSource.fromParams(server, project, name, params[0]);
             if (!(ds instanceof SensorDataSource)) {
                 return;
             }
@@ -304,8 +324,17 @@ const SensorDatasourceEditor = (props: IProps) => {
         const srv = filteredServers[0];
 
         setFetchingServerMetaData(true);
+
+        let url = new URL(`${srv.protocol}://${srv.url}/${srv.path}`).toString();
+
+        // URL 'uit-sensors.inowas.com' needs to finish with a dash
+        // it's a dirty fix but it works
+        if (srv.url === 'uit-sensors.inowas.com') {
+            url += '/';
+        }
+
         fetchUrl(
-            new URL(`${srv.protocol}://${srv.url}/${srv.path}/`).toString(),
+            url,
             (d: ISensorMetaData[]) => {
                 setSensorServerMetaData(d);
                 setFetchingServerMetaData(false);
@@ -365,6 +394,27 @@ const SensorDatasourceEditor = (props: IProps) => {
         );
     };
 
+    const getParametersFromMetadata = (dataSource: SensorDataSource, sensorServerMetaData: ISensorMetaData[]) => {
+        if (!dataSource) {
+            return [];
+        }
+
+        if (sensorServerMetaData.filter((s) => s.project === dataSource.project).filter((s) => s.name === dataSource.sensor).length === 0) {
+            return [];
+        }
+
+        const sensorMetaData = sensorServerMetaData.filter((s) => s.project === dataSource.project)
+            .filter((s) => s.name === dataSource.sensor)[0];
+
+        if (sensorMetaData.parameters) {
+            return sensorMetaData.parameters.map((p, idx) => ({key: idx, value: p, text: p}));
+        }
+
+        if (sensorMetaData.properties) {
+            return sensorMetaData.properties.map((p, idx) => ({key: idx, value: p, text: p}));
+        }
+    };
+
     return (
         <Modal centered={false} open={true} dimmer={'blurring'}>
             {adding() && <Modal.Header>Add Datasource</Modal.Header>}
@@ -383,7 +433,7 @@ const SensorDatasourceEditor = (props: IProps) => {
                                         selection={true}
                                         value={dataSource ? dataSource.server : (server || undefined)}
                                         onChange={handleChangeServer}
-                                        options={servers.map((s) => ({key: s.url, value: s.url, text: s.url}))}
+                                        options={servers.map((s) => ({key: uuid.v4(), value: s.url, text: s.url}))}
                                     />
                                 </Segment>
                             </Form>
@@ -434,13 +484,7 @@ const SensorDatasourceEditor = (props: IProps) => {
                                             selection={true}
                                             value={dataSource.parameter}
                                             onChange={handleChangeParameter}
-                                            options={sensorServerMetaData
-                                                .filter((s) => s.project === dataSource.project)
-                                                .filter((s) => s.name === dataSource.sensor).length === 0 ? [] :
-                                                sensorServerMetaData.filter((s) => s.project === dataSource.project)
-                                                    .filter((s) => s.name === dataSource.sensor)[0].properties
-                                                    .map((p, idx) => ({key: idx, value: p, text: p}))
-                                            }
+                                            options={getParametersFromMetadata(dataSource, sensorServerMetaData)}
                                             disabled={!dataSource.sensor}
                                         />}
                                     </Form.Group>
