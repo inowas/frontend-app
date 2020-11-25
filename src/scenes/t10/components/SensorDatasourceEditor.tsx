@@ -34,12 +34,12 @@ const SensorDatasourceEditor = (props: IProps) => {
     const servers = [
         {
             protocol: 'https',
-            url: 'uit-sensors.inowas.com',
+            url: 'sensors.inowas.com',
             path: 'sensors'
         },
         {
             protocol: 'https',
-            url: 'sensors.inowas.com',
+            url: 'uit-sensors.inowas.com',
             path: 'sensors'
         }
     ];
@@ -87,7 +87,7 @@ const SensorDatasourceEditor = (props: IProps) => {
             }
 
             if (ds.max !== null) {
-                setMin(ds.max);
+                setMax(ds.max);
             }
 
             setDatasource(ds);
@@ -104,6 +104,9 @@ const SensorDatasourceEditor = (props: IProps) => {
         }
 
         fetchServerMetadata(server);
+        if (dataSource && dataSource.url.toString() !== prevUrl) {
+            fetchData(dataSource);
+        }
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [server]);
 
@@ -428,6 +431,7 @@ const SensorDatasourceEditor = (props: IProps) => {
                                     <Label as={'div'} color={'blue'} ribbon={true}>Server</Label>
                                     <Form.Dropdown
                                         loading={fetchingServerMetaData}
+                                        disabled={fetchingServerMetaData}
                                         width={6}
                                         name={'server'}
                                         selection={true}
@@ -508,6 +512,7 @@ const SensorDatasourceEditor = (props: IProps) => {
                                             onChange={handleChangeCheckbox}
                                         />
                                         <DatePicker
+                                            clearable={false}
                                             label={'Start'}
                                             name={'start'}
                                             value={begin ? moment.unix(begin).toDate() : null}
@@ -525,15 +530,16 @@ const SensorDatasourceEditor = (props: IProps) => {
                                             onChange={handleChangeCheckbox}
                                         />
                                         <DatePicker
+                                            clearable={false}
                                             label={'End'}
                                             name={'end'}
                                             value={end ? moment.unix(end).toDate() : null}
                                             onChange={handleGenericChange((d) => setEnd(moment.utc(d).unix()))}
                                             onBlur={handleBlur('end')}
                                             size={'small'}
+
                                         />
                                     </Form.Group>
-
                                 </Form>
                             </Segment>
                         </Grid.Column>
