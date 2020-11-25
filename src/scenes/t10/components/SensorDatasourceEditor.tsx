@@ -1,4 +1,4 @@
-import {Button, Form, Grid, Header, Label, Modal, Segment} from 'semantic-ui-react';
+import {Button, DropdownProps, Form, Grid, Header, Label, Modal, Segment} from 'semantic-ui-react';
 import {DataPoint, LTOB} from 'downsample';
 import {DatePicker} from '../../shared/uiComponents';
 import {IDateTimeValue} from '../../../core/model/rtm/Sensor.type';
@@ -6,10 +6,9 @@ import {ResponsiveContainer, Scatter, ScatterChart, XAxis, YAxis} from 'recharts
 import {fetchUrl} from '../../../services/api';
 import {maxBy, minBy, uniqBy} from 'lodash';
 import {usePrevious} from '../../shared/simpleTools/helpers/customHooks';
-import React, {useEffect, useState} from 'react';
+import React, {SyntheticEvent, useEffect, useState} from 'react';
 import SensorDataSource from '../../../core/model/rtm/SensorDataSource';
 import moment from 'moment';
-import uuid from 'uuid';
 
 interface IProps {
     dataSource?: SensorDataSource;
@@ -23,10 +22,6 @@ interface ISensorMetaData {
     project: string;
     properties?: string[]; // uit-sensors.inowas.com - metadata, deprecated
     parameters?: string[]; // sensors.inowas.com - the new server
-    last: {
-        date_time: string,
-        data: { [name: string]: number };
-    };
 }
 
 const SensorDatasourceEditor = (props: IProps) => {
@@ -177,42 +172,64 @@ const SensorDatasourceEditor = (props: IProps) => {
         return f(e.target.value);
     };
 
-    const handleChangeServer = (e: any, d: any) => {
+    const handleChangeServer = (e: SyntheticEvent<HTMLElement, Event>, d: DropdownProps) => {
         if (!(dataSource instanceof SensorDataSource)) {
             return;
         }
 
-        dataSource.server = d.value;
-        setServer(d.value);
+        dataSource.server = d.value as string;
+        setServer(d.value as string);
     };
 
-    const handleChangeProject = (e: any, d: any) => {
+    const handleChangeProject = (e: SyntheticEvent<HTMLElement, Event>, d: DropdownProps) => {
         if (!(dataSource instanceof SensorDataSource)) {
             return;
         }
 
         const ds = SensorDataSource.fromObject(dataSource.toObject());
-        ds.project = d.value;
+        ds.project = d.value as string;
+
+        const projectSensors = sensorServerMetaData.filter((smd: ISensorMetaData) => smd.project === d.value as string);
+
+        if (projectSensors.length > 0) {
+            const projectSensor = projectSensors[0];
+            ds.sensor = projectSensor.name;
+            const parameters = projectSensor.properties || projectSensor.parameters;
+            if (parameters && parameters.length > 0) {
+                ds.parameter = parameters[0];
+            }
+        }
+
         setDatasource(ds);
     };
 
-    const handleChangeSensor = (e: any, d: any) => {
+    const handleChangeSensor = (e: SyntheticEvent<HTMLElement, Event>, d: DropdownProps) => {
         if (!(dataSource instanceof SensorDataSource)) {
             return;
         }
 
         const ds = SensorDataSource.fromObject(dataSource.toObject());
-        ds.sensor = d.value;
+        ds.sensor = d.value as string;
         setDatasource(ds);
     };
 
-    const handleChangeParameter = (e: any, d: any) => {
+    const handleChangeParameter = (e: SyntheticEvent<HTMLElement, Event>, d: DropdownProps) => {
         if (!(dataSource instanceof SensorDataSource)) {
             return;
         }
 
         const ds = SensorDataSource.fromObject(dataSource.toObject());
-        ds.parameter = d.value;
+        ds.parameter = d.value as string;
+        setDatasource(ds);
+    };
+
+    const handleChangeTimeResolution = (e: SyntheticEvent<HTMLElement, Event>, d: DropdownProps) => {
+        if (!(dataSource instanceof SensorDataSource)) {
+            return;
+        }
+
+        const ds = SensorDataSource.fromObject(dataSource.toObject());
+        ds.timeResolution = d.value as string;
         setDatasource(ds);
     };
 
@@ -418,6 +435,13 @@ const SensorDatasourceEditor = (props: IProps) => {
         }
     };
 
+    const getTimeResolutions = (dataSource: SensorDataSource) => {
+        if (dataSource.server === 'uit-sensors.inowas.com') {
+            return ['RAW', '1h', '1d'].map((v) => ({key: v, value: v, text: v}));
+        }
+        return ['RAW', '6h', '12h', '1d', '2d', '1w'].map((v) => ({key: v, value: v, text: v}));
+    };
+
     return (
         <Modal centered={false} open={true} dimmer={'blurring'}>
             {adding() && <Modal.Header>Add Datasource</Modal.Header>}
@@ -437,7 +461,7 @@ const SensorDatasourceEditor = (props: IProps) => {
                                         selection={true}
                                         value={dataSource ? dataSource.server : (server || undefined)}
                                         onChange={handleChangeServer}
-                                        options={servers.map((s) => ({key: uuid.v4(), value: s.url, text: s.url}))}
+                                        options={servers.map((s) => ({key: s.url, value: s.url, text: s.url}))}
                                     />
                                 </Segment>
                             </Form>
@@ -452,8 +476,9 @@ const SensorDatasourceEditor = (props: IProps) => {
                             >
                                 <Label as={'div'} color={'blue'} ribbon={true}>Metadata</Label>
                                 <Form>
-                                    <Form.Group>
+                                    <Form.Group widths={'equal'}>
                                         <Form.Dropdown
+                                            fluid={true}
                                             label={'Project'}
                                             name={'project'}
                                             selection={true}
@@ -467,6 +492,7 @@ const SensorDatasourceEditor = (props: IProps) => {
                                         />
 
                                         {dataSource && <Form.Dropdown
+                                            fluid={true}
                                             label={'Sensor'}
                                             name={'sensor'}
                                             selection={true}
@@ -483,12 +509,24 @@ const SensorDatasourceEditor = (props: IProps) => {
                                         />}
 
                                         {dataSource && <Form.Dropdown
+                                            fluid={true}
                                             label={'Parameter'}
                                             name={'parameter'}
                                             selection={true}
                                             value={dataSource.parameter}
                                             onChange={handleChangeParameter}
                                             options={getParametersFromMetadata(dataSource, sensorServerMetaData)}
+                                            disabled={!dataSource.sensor}
+                                        />}
+
+                                        {dataSource && <Form.Dropdown
+                                            fluid={true}
+                                            label={'Time resolution'}
+                                            name={'timeResolution'}
+                                            selection={true}
+                                            value={dataSource.timeResolution || '1d'}
+                                            onChange={handleChangeTimeResolution}
+                                            options={getTimeResolutions(dataSource)}
                                             disabled={!dataSource.sensor}
                                         />}
                                     </Form.Group>
@@ -606,7 +644,6 @@ const SensorDatasourceEditor = (props: IProps) => {
             </Modal.Actions>
         </Modal>
     );
-
 };
 
 export default SensorDatasourceEditor;
