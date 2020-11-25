@@ -77,7 +77,7 @@ const Difference = (props: IProps) => {
             return null;
         }
 
-        const modelToFetch = selectedModels.filter((m) => !results.hasOwnProperty(m.id));
+        const modelToFetch = selectedModels.filter((m) => !(m.id in results));
         if (modelToFetch.length === 0) {
             setIsLoading(false);
             return setData(results);
@@ -147,16 +147,16 @@ const Difference = (props: IProps) => {
         const stressperiods = basemodel.discretization.stressperiods;
         const soilmodel = props.soilmodels[basemodel.id];
 
-        if (!basemodelResults) {
+        if (!basemodelResults || !basemodelResults.times) {
             return (
                 <div>Results not found.</div>
             );
         }
 
         const layerValues = basemodelResults.layer_values;
-        const totalTimes = basemodelResults.times ? basemodelResults.times.total_times : null;
+        const times = selectedType === EResultType.HEAD ? basemodelResults.times.head : basemodelResults.times.drawdown;
 
-        if (!stressperiods || !soilmodel || selectedLay === null || selectedTotim === null || !totalTimes) {
+        if (!stressperiods || !soilmodel || selectedLay === null || selectedTotim === null || !times) {
             return (
                 <div>Data not found.</div>
             );
@@ -174,7 +174,7 @@ const Difference = (props: IProps) => {
                     layerValues={layerValues}
                     soilmodel={Soilmodel.fromObject(soilmodel)}
                     stressperiods={Stressperiods.fromObject(stressperiods)}
-                    totalTimes={totalTimes}
+                    totalTimes={times.total_times}
                 />
             </Segment>
         );
