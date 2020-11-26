@@ -53,6 +53,11 @@ export const sendCommand = (
         .catch(onError);
 };
 
+export const asyncSendCommand = async (command: AbstractCommand) => {
+    const api = createApi(getToken());
+    return api.post('messagebox', command.toObject()).then((response) => response.data)
+};
+
 export const sendCommandAsync = async (command: AbstractCommand) => {
     const api = createApi(getToken());
     return await api.post('messagebox', command.toObject()).then((response) => response.data);

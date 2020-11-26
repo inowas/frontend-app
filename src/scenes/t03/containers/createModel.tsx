@@ -1,16 +1,6 @@
-import {cloneDeep} from 'lodash';
-import moment from 'moment/moment';
-import React, {useEffect, useState} from 'react';
-import {useDispatch} from 'react-redux';
-import {useHistory, withRouter} from 'react-router-dom';
+import {BoundaryCollection} from '../../../core/model/modflow/boundaries';
 import {Button, Checkbox, Form, Grid, Header, Icon, Segment} from 'semantic-ui-react';
-import uuidv4 from 'uuid/v4';
-import FlopyPackages from '../../../core/model/flopy/packages/FlopyPackages';
-import BoundingBox from '../../../core/model/geometry/BoundingBox';
-import {IBoundingBox} from '../../../core/model/geometry/BoundingBox.type';
-import {ICells} from '../../../core/model/geometry/Cells.type';
-import {IGeometry} from '../../../core/model/geometry/Geometry.type';
-import {IGridSize} from '../../../core/model/geometry/GridSize.type';
+import {CALCULATE_CELLS_INPUT} from '../worker/t03.worker';
 import {
     Cells,
     Geometry,
@@ -20,27 +10,37 @@ import {
     Transport,
     VariableDensity
 } from '../../../core/model/modflow';
-import {BoundaryCollection} from '../../../core/model/modflow/boundaries';
-import LengthUnit from '../../../core/model/modflow/LengthUnit';
-import {ILengthUnit} from '../../../core/model/modflow/LengthUnit.type';
-import Soilmodel from '../../../core/model/modflow/soilmodel/Soilmodel';
-import SoilmodelLayer from '../../../core/model/modflow/soilmodel/SoilmodelLayer';
-import {ISoilmodelLayer} from '../../../core/model/modflow/soilmodel/SoilmodelLayer.type';
-import {IStressPeriods} from '../../../core/model/modflow/Stressperiods.type';
-import TimeUnit from '../../../core/model/modflow/TimeUnit';
-import {ITimeUnit} from '../../../core/model/modflow/TimeUnit.type';
-import {sendCommands} from '../../../services/api/commandHelper';
-import AppContainer from '../../shared/AppContainer';
-import {addMessage} from '../actions/actions';
-import ModflowModelCommand from '../commands/modflowModelCommand';
 import {DrawOnMapModal, UploadGeoJSONModal} from '../components/content/create';
 import {GridProperties} from '../components/content/discretization';
-import {ModelMap} from '../components/maps';
-import defaults from '../defaults/createModel';
-import {messageError} from '../defaults/messages';
-import {CALCULATE_CELLS_INPUT} from '../worker/t03.worker';
+import {IBoundingBox} from '../../../core/model/geometry/BoundingBox.type';
 import {ICalculateCellsInputData} from '../worker/t03.worker.type';
+import {ICells} from '../../../core/model/geometry/Cells.type';
+import {IGeometry} from '../../../core/model/geometry/Geometry.type';
+import {IGridSize} from '../../../core/model/geometry/GridSize.type';
+import {ILengthUnit} from '../../../core/model/modflow/LengthUnit.type';
+import {ISoilmodelLayer} from '../../../core/model/modflow/soilmodel/SoilmodelLayer.type';
+import {IStressPeriods} from '../../../core/model/modflow/Stressperiods.type';
+import {ITimeUnit} from '../../../core/model/modflow/TimeUnit.type';
+import {ModelMap} from '../components/maps';
+import {addMessage} from '../actions/actions';
 import {asyncWorker} from '../worker/worker';
+import {cloneDeep} from 'lodash';
+import {messageError} from '../defaults/messages';
+import {sendCommands} from '../../../services/api/commandHelper';
+import {useDispatch} from 'react-redux';
+import {useHistory, withRouter} from 'react-router-dom';
+import AppContainer from '../../shared/AppContainer';
+import BoundingBox from '../../../core/model/geometry/BoundingBox';
+import FlopyPackages from '../../../core/model/flopy/packages/FlopyPackages';
+import LengthUnit from '../../../core/model/modflow/LengthUnit';
+import ModflowModelCommand from '../commands/modflowModelCommand';
+import React, {useEffect, useState} from 'react';
+import Soilmodel from '../../../core/model/modflow/soilmodel/Soilmodel';
+import SoilmodelLayer from '../../../core/model/modflow/soilmodel/SoilmodelLayer';
+import TimeUnit from '../../../core/model/modflow/TimeUnit';
+import defaults from '../defaults/createModel';
+import moment from 'moment/moment';
+import uuidv4 from 'uuid/v4';
 
 const navigation = [{
     name: 'Documentation',

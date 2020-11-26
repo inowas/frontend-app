@@ -1,6 +1,6 @@
+import {CLEAR} from './model';
 import {IBoundary} from '../../../core/model/modflow/boundaries/Boundary.type';
 import {LOGOUT, UNAUTHORIZED} from '../../user/actions/actions';
-import {CLEAR} from './model';
 
 export const UPDATE_BOUNDARIES = 'T03_UPDATE_BOUNDARIES';
 

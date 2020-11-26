@@ -1,11 +1,11 @@
-import React from 'react';
-import {Button, Divider, Dropdown, DropdownProps, Grid, Header, Icon, Menu} from 'semantic-ui-react';
-import {ModflowModel, Soilmodel} from '../../../../../core/model/modflow';
 import {BoundaryCollection} from '../../../../../core/model/modflow/boundaries';
 import {BoundarySelection, BoundaryType} from '../../../../../core/model/modflow/boundaries/Boundary.type';
+import {Button, Divider, Dropdown, DropdownProps, Grid, Header, Icon, Menu} from 'semantic-ui-react';
 import {IBoundaryComparisonItem} from '../../../../../core/model/modflow/boundaries/BoundaryCollection';
+import {ModflowModel, Soilmodel} from '../../../../../core/model/modflow';
 import BoundaryDetailsImport from './boundaryDetailsImport';
 import BoundarySynchronizer from './boundarySychronizer';
+import React from 'react';
 
 interface IBoundaryTypeObject {
     key: BoundarySelection;
