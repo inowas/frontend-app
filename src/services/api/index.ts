@@ -284,6 +284,11 @@ export const fetchTool = (
         .catch(onError);
 };
 
+export const asyncFetchTool = async (tool: string, id: string) => {
+    const api = createApi(getToken());
+    return await api.get(`tools/${tool}/${id}`).then((response) => response.data);
+};
+
 export const fetchUrl = (
     url: string,
     onSuccess?: CallbackFunction<any, void>,

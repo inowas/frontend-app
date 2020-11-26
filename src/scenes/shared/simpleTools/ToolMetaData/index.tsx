@@ -1,5 +1,3 @@
-import React, {ChangeEvent, FormEvent, useEffect, useState} from 'react';
-import {useHistory} from 'react-router-dom';
 import {
     Breadcrumb,
     Button,
@@ -11,8 +9,10 @@ import {
     Modal,
     TextAreaProps
 } from 'semantic-ui-react';
-import tools from '../../../dashboard/defaults/toolNames';
 import {IToolMetaDataEdit} from './ToolMetaData.type';
+import {useHistory} from 'react-router-dom';
+import React, {ChangeEvent, FormEvent, useEffect, useState} from 'react';
+import tools from '../../../dashboard/defaults/toolNames';
 
 interface IProps {
     isDirty: boolean;
