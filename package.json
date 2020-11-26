@@ -34,7 +34,7 @@
     "react-leaflet-control": "^2.1.2",
     "react-leaflet-draw": "^0.19.0",
     "react-leaflet-fullscreen": "^1.0.1",
-    "react-pivottable": "^0.10.0",
+    "react-pivottable": "^0.11.0",
     "react-redux": "^7.2.1",
     "react-router-dom": "^5.2.0",
     "react-semantic-ui-datepickers": "^2.11.0",
