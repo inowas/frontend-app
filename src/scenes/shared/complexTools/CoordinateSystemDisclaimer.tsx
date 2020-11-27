@@ -1,5 +1,5 @@
-import React from 'react';
 import {Divider, Grid, Header} from 'semantic-ui-react';
+import React from 'react';
 
 const coordinateSystemDisclaimer = () => (
     <div>
@@ -7,9 +7,9 @@ const coordinateSystemDisclaimer = () => (
             <Grid.Row>
                 <Grid.Column>
                     <Header as={'h2'}>Geometry format</Header>
-                    The platform is using the GEOJSON Format described in
+                    The platform is using the GEOJSON Format described in&nbsp;
                     <a rel="noopener noreferrer" target='_blank'
-                       href={'https://tools.ietf.org/html/rfc7946'}>RFC7946.</a>.
+                       href={'https://tools.ietf.org/html/rfc7946'}>RFC7946</a>.
                     <br/>
                     GEOJSON uses the geographic coordinate reference system: <br/>
                     <br/>
