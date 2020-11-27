@@ -1,5 +1,5 @@
-import React from 'react';
 import PropTypes from 'prop-types';
+import React from 'react';
 
 import {includes} from 'lodash';
 import {withRouter} from 'react-router-dom';
@@ -11,11 +11,11 @@ import {navigation} from './T13';
 
 import SimpleToolsCommand from '../../shared/simpleTools/commands/SimpleToolsCommand';
 
-import image from '../images/T13A.png';
 import {defaultsWithSession} from '../defaults/T13A';
+import image from '../images/T13A.png';
 
-import {fetchTool, sendCommand} from '../../../services/api';
 import {buildPayloadToolInstance, deepMerge} from '../../shared/simpleTools/helpers';
+import {fetchTool, sendCommand} from '../../../services/api';
 import withSession from '../../../services/router/withSession';
 
 class T13A extends React.Component {
@@ -45,13 +45,16 @@ class T13A extends React.Component {
         }
     }
 
-    save = () => {
+    save = (tool) => {
         const {id} = this.props.match.params;
-        const {tool} = this.state;
+
+        const t = {
+            ...this.state.tool, name: tool.name, description: tool.description, public: tool.public
+        };
 
         if (id) {
             sendCommand(
-                SimpleToolsCommand.updateToolInstance(buildPayloadToolInstance(tool)),
+                SimpleToolsCommand.updateToolInstance(buildPayloadToolInstance(t)),
                 () => this.setState({isDirty: false}),
                 () => this.setState({error: true})
             );
@@ -60,7 +63,7 @@ class T13A extends React.Component {
 
         sendCommand(
             SimpleToolsCommand.createToolInstance(buildPayloadToolInstance(tool)),
-            () => this.props.history.push(`${this.props.location.pathname}/${tool.id}`),
+            () => this.props.history.push(`${this.props.location.pathname}/${t.id}`),
             () => this.setState({error: true})
         );
     };
@@ -108,10 +111,11 @@ class T13A extends React.Component {
         return (
             <AppContainer navbarItems={navigation}>
                 <ToolMetaData
-                    tool={tool}
+                    tool={data}
                     readOnly={readOnly}
-                    onChange={this.update}
                     onSave={this.save}
+                    saveButton={true}
+                    onReset={this.handleReset}
                     isDirty={isDirty}
                 />
                 <ToolGrid rows={2}>

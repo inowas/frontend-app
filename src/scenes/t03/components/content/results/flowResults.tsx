@@ -44,9 +44,10 @@ const FlowResults = () => {
     const history = useHistory();
 
     useEffect(() => {
-        if (model === null) {
+        if (model === null || calculation === null) {
             return;
         }
+
         setSelectedCol(Math.floor(model.gridSize.nX / 2));
         setSelectedRow(Math.floor(model.gridSize.nY / 2));
         if (calculation && calculation.times) {

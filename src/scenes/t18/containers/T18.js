@@ -1,21 +1,16 @@
-import React from 'react';
-import PropTypes from 'prop-types';
-import {Icon} from 'semantic-ui-react';
-
-import {includes} from 'lodash';
-import {withRouter} from 'react-router-dom';
-
 import {AppContainer} from '../../shared';
 import {Background, Chart, Info, Parameters, Settings} from '../components';
+import {Icon} from 'semantic-ui-react';
 import {SliderParameter, ToolGrid, ToolMetaData} from '../../shared/simpleTools';
-
-import SimpleToolsCommand from '../../shared/simpleTools/commands/SimpleToolsCommand';
-
-import image from '../images/T18.png';
-import {defaultsWithSession} from '../defaults/T18';
-
-import {fetchTool, sendCommand} from '../../../services/api';
 import {buildPayloadToolInstance, deepMerge} from '../../shared/simpleTools/helpers';
+import {defaultsWithSession} from '../defaults/T18';
+import {fetchTool, sendCommand} from '../../../services/api';
+import {includes} from 'lodash';
+import {withRouter} from 'react-router-dom';
+import PropTypes from 'prop-types';
+import React from 'react';
+import SimpleToolsCommand from '../../shared/simpleTools/commands/SimpleToolsCommand';
+import image from '../images/T18.png';
 import withSession from '../../../services/router/withSession';
 
 const navigation = [{
@@ -51,13 +46,16 @@ class T18 extends React.Component {
         }
     }
 
-    save = () => {
+    save = (tool) => {
         const {id} = this.props.match.params;
-        const {tool} = this.state;
+
+        const t = {
+            ...this.state.tool, name: tool.name, description: tool.description, public: tool.public
+        };
 
         if (id) {
             sendCommand(
-                SimpleToolsCommand.updateToolInstance(buildPayloadToolInstance(tool)),
+                SimpleToolsCommand.updateToolInstance(buildPayloadToolInstance(t)),
                 () => this.setState({isDirty: false}),
                 () => this.setState({error: true})
             );
@@ -66,7 +64,7 @@ class T18 extends React.Component {
 
         sendCommand(
             SimpleToolsCommand.createToolInstance(buildPayloadToolInstance(tool)),
-            () => this.props.history.push(`${this.props.location.pathname}/${tool.id}`),
+            () => this.props.history.push(`${this.props.location.pathname}/${t.id}`),
             () => this.setState({error: true})
         );
     };
@@ -127,10 +125,11 @@ class T18 extends React.Component {
         return (
             <AppContainer navbarItems={navigation}>
                 <ToolMetaData
-                    tool={tool}
+                    tool={data}
                     readOnly={readOnly}
-                    onChange={this.update}
                     onSave={this.save}
+                    saveButton={true}
+                    onReset={this.handleReset}
                     isDirty={isDirty}
                 />
                 <ToolGrid rows={2}>
