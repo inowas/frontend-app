@@ -69,16 +69,6 @@ export default class BoundaryImport extends React.Component<IProps, IState> {
         );
     }
 
-    private onImportClick = () => {
-        this.setState({
-            showImportModal: false
-        });
-
-        if (this.state.importedBoundaries) {
-            // console.log(BoundaryCollection.fromObject(this.state.importedBoundaries));
-        }
-    };
-
     private onBoundaryClick = (id: string) => {
         this.setState({
             selectedBoundary: id
@@ -197,7 +187,6 @@ export default class BoundaryImport extends React.Component<IProps, IState> {
                     model={this.props.model}
                     selectedBoundary={this.state.selectedBoundary}
                     onBoundaryClick={this.onBoundaryClick}
-                    onChange={() => console.log('onChange')}
                 />
             );
         }

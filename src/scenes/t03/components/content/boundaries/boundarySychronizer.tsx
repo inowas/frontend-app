@@ -14,7 +14,6 @@ interface IStateProps {
     currentBoundaries: BoundaryCollection;
     newBoundaries: BoundaryCollection;
     model: ModflowModel;
-    onChange: (boundaries: BoundaryCollection) => void;
 }
 
 interface IDispatchProps {

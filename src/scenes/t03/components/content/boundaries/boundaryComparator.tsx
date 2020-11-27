@@ -20,7 +20,6 @@ interface IProps {
     soilmodel: Soilmodel;
     selectedBoundary: string | null;
     types?: BoundaryType[];
-    onChange: (boundaries: BoundaryCollection) => void;
     onBoundaryClick: (bid: string) => void;
 }
 
@@ -127,7 +126,6 @@ class BoundaryComparator extends React.Component<IProps, IState> {
                     currentBoundaries={this.props.currentBoundaries}
                     newBoundaries={this.props.newBoundaries}
                     model={this.props.model}
-                    onChange={this.props.onChange}
                 />
             </div>
         );
