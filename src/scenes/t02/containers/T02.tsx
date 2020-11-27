@@ -99,6 +99,8 @@ const T02 = () => {
                 tool={data}
                 readOnly={readOnly}
                 onSave={save}
+                saveButton={true}
+                onReset={handleReset}
                 isDirty={isDirty}
             />
             <ToolGrid rows={2}>
