@@ -29,6 +29,9 @@ const HeatTransportController = (props: IProps) => {
     const user = useSelector((state: IRootReducer) => state.user);
     const dispatch = useDispatch();
 
+    const T19 = useSelector((state: IRootReducer) => state.T19);
+    const data = T19.data;
+
     useEffect(() => {
         setRequestOptions(props.htm.options);
     }, [props.htm]);
@@ -57,20 +60,17 @@ const HeatTransportController = (props: IProps) => {
     };
 
     const handleCalculateAndSave = async () => {
-        const sw = props.htm.inputSw.toObject();
-        const gw = props.htm.inputGw.toObject();
-
-        if (!sw.data || !gw.data) {
+        if (!data.sw || !data.gw) {
             return;
         }
 
         setIsFetching(true);
         const requestData: IHeatTransportRequest = {
-            data_sw_selected: sw.data.map((row) => ({
+            data_sw_selected: data.sw.map((row) => ({
                 date: moment.unix(row.timeStamp).format('YYYY-MM-DD'),
                 value: row.value
             })),
-            data_gw_selected: gw.data.map((row) => ({
+            data_gw_selected: data.gw.map((row) => ({
                 date: moment.unix(row.timeStamp).format('YYYY-MM-DD'),
                 value: row.value
             })),
@@ -146,7 +146,7 @@ const HeatTransportController = (props: IProps) => {
                                         positive={true}
                                         fluid={true}
                                         onClick={handleCalculateAndSave}
-                                        disabled={!props.htm.inputSw.data || !props.htm.inputGw.data || isFetching || readOnly}
+                                        disabled={!data.sw || !data.gw || isFetching || readOnly}
                                         label="&nbsp;"
                                         loading={isFetching}
                                     >

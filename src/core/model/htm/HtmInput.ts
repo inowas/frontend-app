@@ -2,10 +2,6 @@ import {GenericObject} from '../genericObject/GenericObject';
 import {IHeatTransportInput} from './Htm.type';
 
 export default class HtmInput extends GenericObject<IHeatTransportInput> {
-    get data() {
-        return this._props.data;
-    }
-
     get rtmId() {
         return this._props.rtmId;
     }

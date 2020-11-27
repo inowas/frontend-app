@@ -12,7 +12,7 @@ import {IRootReducer} from '../../../reducers';
 import {IRtm} from '../../../core/model/rtm/Rtm.type';
 import {ProcessingCollection} from '../../../core/model/rtm/processing';
 import {fetchApiWithToken, makeTimeProcessingRequest} from '../../../services/api';
-import {updateHtmInput} from '../actions/actions';
+import {updateData, updateHtmInput} from '../actions/actions';
 import {useDispatch, useSelector} from 'react-redux';
 import HtmInput from '../../../core/model/htm/HtmInput';
 import React, {SyntheticEvent, useEffect, useState} from 'react';
@@ -22,7 +22,7 @@ interface IProps {
     dateTimeFormat: string;
     input: HtmInput;
     label: string;
-    name: string;
+    name: 'gw' | 'sw';
     readOnly: boolean;
 }
 
@@ -32,136 +32,103 @@ interface IError {
 }
 
 const HeatTransportInput = (props: IProps) => {
-
     const [isFetching, setIsFetching] = useState<boolean>(true);
 
     const [errors, setErrors] = useState<IError[]>([]);
 
     const [input, setInput] = useState<IHeatTransportInput>(props.input.toObject());
-    const [data, setData] = useState<IHeatTransportInput['data']>(undefined);
 
     const [rtm, setRtm] = useState<IRtm>();
 
     const [sensor, setSensor] = useState<ISensor>();
-    const [parameter, setParameter] = useState<ISensorParameter>();
 
     const [tempTime, setTempTime] = useState<[number, number]>();       // KEY
     const [timesteps, setTimesteps] = useState<number[]>();             // UNIX[]
 
     const T19 = useSelector((state: IRootReducer) => state.T19);
+    const data = props.name in T19.data ? T19.data[props.name] : null;
     const t10Instances = T19.t10instances;
     const dispatch = useDispatch();
 
-    useEffect(() => {
-        setInput(props.input.toObject());
-    }, [props.input]);
+    const fetchData = async (p: ISensorParameter) => {
+        try {
+            setIsFetching(true);
+            const dataSourceCollection = DataSourceCollection.fromObject(p.dataSources);
+            const mergedData = await dataSourceCollection.mergedData();
+            const processings = ProcessingCollection.fromObject(p.processings);
+            const processedData = await processings.apply(mergedData);
+            const uniqueData = processedData.filter((value, index, self) => self.findIndex((v) => v.timeStamp === value.timeStamp) === index);
+            const timeProcessedData = await makeTimeProcessingRequest(uniqueData, '1d', 'cubic');
+            if (timeProcessedData.length > 0) {
+                const ts: number[] = timeProcessedData.map((t: IDateTimeValue) => t.timeStamp);
+                const tp: [number, number] = [ts[0], ts[ts.length - 1]];
+                setTimesteps(ts);
 
-    useEffect(() => {
-        if (!input.rtmId) {
-            return;
+                const htmInput = {
+                    ...input,
+                    timePeriod: tp
+                };
+
+                const startIndex = ts.indexOf(tp[0]);
+                const endIndex = ts.indexOf(tp[1]);
+                setTempTime([startIndex < 0 ? 0 : startIndex, endIndex < 0 ? ts.length - 1 : endIndex]);
+
+                setInput(htmInput);
+                //dispatch(updateHtmInput(HtmInput.fromObject(htmInput)));
+                dispatch(updateData({type: props.name, data: timeProcessedData}));
+            }
+        } catch (err) {
+            setErrors([{id: uuid.v4(), message: 'Data processing failed.'}]);
+        }
+    };
+
+    const fetchRtm = async (id: string, sensorId?: string | null) => {
+        try {
+            setIsFetching(true);
+            const res = await fetchApiWithToken(`tools/T10/${id}`);
+            const r = Rtm.fromObject(res.data);
+            fetchSensor(r, sensorId);
+            setRtm(r.toObject());
+        } catch (err) {
+            setErrors([{id: uuid.v4(), message: `Fetching t10 instance ${id} failed.`}]);
+        }
+    };
+
+    const fetchSensor = (r: Rtm, id?: string | null) => {
+        if (!id) {
+            return setSensor(undefined);
         }
 
-        const fetchRtm = async (id: string) => {
-            try {
-                setIsFetching(true);
-                const res = await fetchApiWithToken(`tools/T10/${id}`);
-                setSensor(undefined);
-                setRtm(res.data);
-            } catch (err) {
-                setErrors([{id: uuid.v4(), message: `Fetching t10 instance ${id} failed.`}]);
-            } finally {
-                setIsFetching(false);
+        const sensors = sensorsWithTemperature(r.toObject()).filter((swt) => swt.id === id);
+        if (sensors.length > 0) {
+            const param = sensors[0].parameters.all.filter((p) => p.type === 't');
+            if (param.length > 0) {
+                setSensor(sensors[0].toObject());
+                fetchData(param[0]).then(() => setIsFetching(false));
             }
-        };
-
-        fetchRtm(input.rtmId);
-
-    }, [input.rtmId]);
-
-    useEffect(() => {
-        if (!(rtm && input.sensorId)) {
-            return;
         }
-
-        const fetchSensor = (id: string) => {
-            if (!rtm) {
-                return;
-            }
-
-            const sensors = sensorsWithTemperature(rtm).filter((swt) => swt.id === id);
-            if (sensors.length > 0) {
-                const param = sensors[0].parameters.all.filter((p) => p.type === 't');
-                if (param.length > 0) {
-                    setSensor(sensors[0].toObject());
-                    setParameter(param[0]);
-                }
-            }
-        };
-
-        fetchSensor(input.sensorId);
-    }, [input.sensorId, rtm]);
+    };
 
     useEffect(() => {
-        if (timesteps && input.timePeriod) {
-            const startIndex = timesteps.indexOf(input.timePeriod[0]);
-            const endIndex = timesteps.indexOf(input.timePeriod[1]);
-            setTempTime([startIndex < 0 ? 0 : startIndex, endIndex < 0 ? timesteps.length - 1 : endIndex]);
+        console.log(props.name, 'INPUT', props.input);
+        const input = props.input.toObject();
+        // RTM HAS NOT BEEN LOADED
+        if (input.rtmId && !rtm) {
+            console.log(props.name, 'RTM HAS NOT BEEN LOADED');
+            fetchRtm(input.rtmId, input.sensorId).then(() => setIsFetching(false));
+        }
+        // RTM HAS BEEN CHANGED
+        if (input.rtmId && rtm && rtm.id !== input.rtmId) {
+            console.log(props.name, 'RTM HAS BEEN CHANGED');
+            fetchRtm(input.rtmId).then(() => setIsFetching(false));
+        }
+        // SENSOR HAS BEEN CHANGED
+        if (rtm && sensor && input.sensorId !== sensor.id) {
+            console.log(props.name, 'SENSOR HAS BEEN CHANGED');
+            fetchSensor(Rtm.fromObject(rtm), input.sensorId);
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [input.timePeriod]);
-
-    useEffect(() => {
-        if (input.data) {
-            const ts = input.data.map((t) => t.timeStamp);
-            setTimesteps(ts);
-        }
-
-        if (!data && input.data) {
-            setData(input.data);
-        }
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [input.data]);
-
-    useEffect(() => {
-        if (!parameter) {
-            return;
-        }
-
-        const fetchData = async () => {
-            try {
-                setIsFetching(true);
-                setData(undefined);
-                const dataSourceCollection = DataSourceCollection.fromObject(parameter.dataSources);
-                const mergedData = await dataSourceCollection.mergedData();
-                const processings = ProcessingCollection.fromObject(parameter.processings);
-                const processedData = await processings.apply(mergedData);
-                const uniqueData = processedData.filter((value, index, self) => self.findIndex((v) => v.timeStamp === value.timeStamp) === index);
-                const timeProcessedData = await makeTimeProcessingRequest(uniqueData, '1d', 'cubic');
-                if (timeProcessedData.length > 0) {
-                    const ts: number[] = timeProcessedData.map((t: IDateTimeValue) => t.timeStamp);
-                    setTimesteps(ts);
-                    setTempTime([0, ts.length - 1]);
-
-                    const htmInput = {
-                        ...input,
-                        data: timeProcessedData,
-                        timePeriod: [ts[0], ts[ts.length - 1]] as [number, number]
-                    };
-
-                    setData(timeProcessedData);
-                    setInput(htmInput);
-                    dispatch(updateHtmInput(HtmInput.fromObject(htmInput)));
-                }
-            } catch (err) {
-                setErrors([{id: uuid.v4(), message: 'Data processing failed.'}]);
-            } finally {
-                setIsFetching(false);
-            }
-        };
-
-        fetchData();
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [parameter]);
+    }, [props.input.toObject()]);
 
     const sensorsWithTemperature = (rtm: IRtm) => Rtm.fromObject(rtm).sensors.all.filter((s) =>
         s.parameters.filterBy('type', 't').length > 0
@@ -181,17 +148,15 @@ const HeatTransportInput = (props: IProps) => {
         });
     };
 
-    console.log({sensor});
-
     const handleChangeRtm = (e: SyntheticEvent<HTMLElement, Event>, {value}: DropdownProps) => {
         if (typeof value !== 'string') {
             return null;
         }
 
+        dispatch(updateData({type: props.name, data: null}));
         setInput({
             ...input,
             rtmId: value,
-            data: undefined
         });
     };
 
@@ -256,4 +221,4 @@ const HeatTransportInput = (props: IProps) => {
     );
 };
 
-export default React.memo(HeatTransportInput);
+export default HeatTransportInput;
