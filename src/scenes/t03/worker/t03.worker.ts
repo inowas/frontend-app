@@ -6,8 +6,12 @@ import {
     ModflowModel,
     Soilmodel, Transport, VariableDensity
 } from '../../../core/model/modflow';
+import {IBoundary} from '../../../core/model/modflow/boundaries/Boundary.type';
+
 import {
-    ICalculateCellsInputData, ICalculateMfPackagesInputData,
+    ICalculateBoundaryImportInputData,
+    ICalculateCellsInputData,
+    ICalculateMfPackagesInputData,
     ICalculatePackagesInputData,
     IObservationInputData,
     IWorkerInput,
@@ -31,6 +35,9 @@ export const CALCULATE_PACKAGES_RESULT = 'CALCULATE_PACKAGES_RESULT';
 
 export const CALCULATE_MF_PACKAGES_INPUT = 'CALCULATE_MF_PACKAGES_INPUT';
 export const CALCULATE_MF_PACKAGES_RESULT = 'CALCULATE_MF_PACKAGES_RESULT';
+
+export const CALCULATE_BOUNDARIES_IMPORT_INPUT = 'CALCULATE_IMPORT_BOUNDARIES_INPUT';
+export const CALCULATE_BOUNDARIES_IMPORT_RESULT = 'CALCULATE_BOUNDARIES_IMPORT_RESULT';
 
 /* eslint-disable-next-line no-restricted-globals */
 const ctx: Worker = self as any;
@@ -97,6 +104,18 @@ const calculateMfPackages = (input: IWorkerInput<ICalculateMfPackagesInputData>)
     } as IWorkerResult<IFlopyPackages>;
 };
 
+const calculateBoundaryImport = (input: IWorkerInput<ICalculateBoundaryImportInputData>) => {
+    const boundingBox = BoundingBox.fromObject(input.data.boundingBox);
+    const gridSize = GridSize.fromObject(input.data.gridSize);
+
+    const bc = BoundaryCollection.fromExport(input.data.boundaries, boundingBox, gridSize);
+
+    return {
+        type: CALCULATE_BOUNDARIES_IMPORT_RESULT,
+        data: bc.toObject()
+    } as IWorkerResult<IBoundary[]>;
+};
+
 // Respond to message from parent thread
 ctx.addEventListener('message', (e) => {
     if (!e) {
@@ -144,6 +163,16 @@ ctx.addEventListener('message', (e) => {
         case CALCULATE_MF_PACKAGES_INPUT:
             input = e.data as IWorkerInput<ICalculateMfPackagesInputData>;
             result = calculateMfPackages(input);
+            if (result) {
+                // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+                // @ts-ignore
+                postMessage(result);
+            }
+            break;
+
+        case CALCULATE_BOUNDARIES_IMPORT_INPUT:
+            input = e.data as IWorkerInput<ICalculateBoundaryImportInputData>;
+            result = calculateBoundaryImport(input);
             if (result) {
                 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
                 // @ts-ignore

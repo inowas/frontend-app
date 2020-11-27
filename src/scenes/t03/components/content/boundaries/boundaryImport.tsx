@@ -1,16 +1,19 @@
-import React from 'react';
 import {Button, Divider, Grid, Header, List, Modal, Segment} from 'semantic-ui-react';
 import {
     ModflowModel,
 } from '../../../../../core/model/modflow';
 import BoundaryCollection from '../../../../../core/model/modflow/boundaries/BoundaryCollection';
+import React from 'react';
 
-import {IBoundary, IBoundaryExport} from '../../../../../core/model/modflow/boundaries/Boundary.type';
-import Soilmodel from '../../../../../core/model/modflow/soilmodel/Soilmodel';
-import {JSON_SCHEMA_URL} from '../../../../../services/api';
-import {validate} from '../../../../../services/jsonSchemaValidator';
+import {CALCULATE_BOUNDARIES_IMPORT_INPUT} from '../../../worker/t03.worker';
 import {CoordinateSystemDisclaimer} from '../../../../shared/complexTools';
+import {IBoundary, IBoundaryExport} from '../../../../../core/model/modflow/boundaries/Boundary.type';
+import {ICalculateBoundaryImportInputData} from '../../../worker/t03.worker.type';
+import {JSON_SCHEMA_URL} from '../../../../../services/api';
+import {asyncWorker} from '../../../worker/worker';
+import {validate} from '../../../../../services/jsonSchemaValidator';
 import BoundaryComparator from './boundaryComparator';
+import Soilmodel from '../../../../../core/model/modflow/soilmodel/Soilmodel';
 
 interface IState {
     importedBoundaries: IBoundary[] | null;
@@ -37,7 +40,7 @@ export default class BoundaryImport extends React.Component<IProps, IState> {
             errors: null,
             isLoading: false,
             selectedBoundary: null,
-            showImportModal: false
+            showImportModal: false,
         };
 
         this.fileReader = new FileReader();
@@ -66,16 +69,6 @@ export default class BoundaryImport extends React.Component<IProps, IState> {
         );
     }
 
-    private onImportClick = () => {
-        this.setState({
-            showImportModal: false
-        });
-
-        if (this.state.importedBoundaries) {
-            // console.log(BoundaryCollection.fromObject(this.state.importedBoundaries));
-        }
-    };
-
     private onBoundaryClick = (id: string) => {
         this.setState({
             selectedBoundary: id
@@ -88,20 +81,24 @@ export default class BoundaryImport extends React.Component<IProps, IState> {
         });
     };
 
-    private handleFileData = (response: IBoundaryExport[]) => {
-        const boundaries = BoundaryCollection.fromExport(
-            response,
-            this.props.model.boundingBox,
-            this.props.model.gridSize,
-        );
+    private handleFileData = (iBoundaries: IBoundaryExport[]) => {
+        const {boundingBox, gridSize} = this.props.model;
 
-        if (boundaries) {
+        asyncWorker({
+            type: CALCULATE_BOUNDARIES_IMPORT_INPUT,
+            data: {
+                boundingBox: boundingBox.toObject(),
+                gridSize: gridSize.toObject(),
+                boundaries: iBoundaries
+            } as ICalculateBoundaryImportInputData
+        }).then((bc) => {
+            const boundaries = BoundaryCollection.fromObject(bc);
             this.setState({
                 importedBoundaries: boundaries.toObject(),
                 selectedBoundary: boundaries.first && boundaries.first.id,
                 isLoading: false
             });
-        }
+        });
     };
 
     private isValidJson = (text: string) => {
@@ -114,21 +111,17 @@ export default class BoundaryImport extends React.Component<IProps, IState> {
     };
 
     private parseFileContent = (text: string) => {
-
         this.setState({
             importedBoundaries: null,
             errors: null,
         });
-
         if (!this.isValidJson(text)) {
             return this.setState({
                 errors: [['Invalid JSON']]
             });
         }
-
         const data = JSON.parse(text);
         const schemaUrl = JSON_SCHEMA_URL + '/import/boundaries.json';
-
         validate(data, schemaUrl).then(([isValid, errors]) => {
             if (!isValid) {
                 return this.setState({
@@ -136,7 +129,6 @@ export default class BoundaryImport extends React.Component<IProps, IState> {
                     errors
                 });
             }
-
             return this.handleFileData(data);
         });
     };
@@ -195,7 +187,6 @@ export default class BoundaryImport extends React.Component<IProps, IState> {
                     model={this.props.model}
                     selectedBoundary={this.state.selectedBoundary}
                     onBoundaryClick={this.onBoundaryClick}
-                    onChange={this.onImportClick}
                 />
             );
         }
@@ -212,74 +203,75 @@ export default class BoundaryImport extends React.Component<IProps, IState> {
         >
             <Modal.Header>Import Boundaries</Modal.Header>
             <Modal.Content>
-                <CoordinateSystemDisclaimer/>
-                <Grid stackable={true}>
-                    <Grid.Row>
-                        <Grid.Column>
-                            <Segment basic={true} placeholder={true} style={{minHeight: '10rem'}}>
-                                <Grid columns={2} stackable={true} textAlign="center">
-                                    <Divider vertical={true}/>
-                                    <Grid.Row verticalAlign="top">
-                                        <Grid.Column>
-                                            {!this.state.errors &&
-                                            <div>
+                {this.state.importedBoundaries == null && <div>
+                    <CoordinateSystemDisclaimer/>
+                    <Grid stackable={true}>
+                        <Grid.Row>
+                            <Grid.Column>
+                                <Segment basic={true} placeholder={true} style={{minHeight: '10rem'}}>
+                                    <Grid columns={2} stackable={true} textAlign="center">
+                                        <Divider vertical={true}/>
+                                        <Grid.Row verticalAlign="top">
+                                            <Grid.Column>
+                                                {!this.state.errors &&
+                                                <div>
+                                                    <Header as={'h3'}>
+                                                        Download the list of boundaries.
+                                                    </Header>
+                                                    <Button
+                                                        basic={true}
+                                                        color="blue"
+                                                        htmlFor={'inputField'}
+                                                        content={'Get JSON File'}
+                                                        onClick={this.download}
+                                                    />
+                                                </div>
+                                                }
+                                                {this.state.errors && this.renderValidationErrors(this.state.errors)}
+                                            </Grid.Column>
+
+                                            <Grid.Column>
                                                 <Header as={'h3'}>
-                                                    Download the list of boundaries.
+                                                    Upload Boundaries
                                                 </Header>
                                                 <Button
-                                                    basic={true}
-                                                    color="blue"
+                                                    color={'grey'}
+                                                    as={'label'}
                                                     htmlFor={'inputField'}
-                                                    content={'Get JSON File'}
-                                                    onClick={this.download}
+                                                    icon={'file alternate'}
+                                                    content={'Select File'}
+                                                    labelPosition={'left'}
+                                                    loading={this.state.isLoading}
+                                                    size={'large'}
                                                 />
-                                            </div>
-                                            }
-                                            {this.state.errors && this.renderValidationErrors(this.state.errors)}
-                                        </Grid.Column>
-
-                                        <Grid.Column>
-                                            <Header as={'h3'}>
-                                                Upload Boundaries
-                                            </Header>
-                                            <Button
-                                                color={'grey'}
-                                                as={'label'}
-                                                htmlFor={'inputField'}
-                                                icon={'file alternate'}
-                                                content={'Select File'}
-                                                labelPosition={'left'}
-                                                loading={this.state.isLoading}
-                                                size={'large'}
-                                            />
-                                            <input
-                                                hidden={true}
-                                                type={'file'}
-                                                id={'inputField'}
-                                                onChange={this.handleUpload}
-                                                onClick={this.onFileUploadClick}
-                                                value={''}
-                                            />
-                                            <br/>
-                                            <p>The file has to be a valid json-file.</p>
-                                        </Grid.Column>
-
-                                    </Grid.Row>
-                                </Grid>
-                            </Segment>
-                        </Grid.Column>
-                    </Grid.Row>
+                                                <input
+                                                    hidden={true}
+                                                    type={'file'}
+                                                    id={'inputField'}
+                                                    onChange={this.handleUpload}
+                                                    onClick={this.onFileUploadClick}
+                                                    value={''}
+                                                />
+                                                <br/>
+                                                <p>The file has to be a valid json-file.</p>
+                                            </Grid.Column>
+                                        </Grid.Row>
+                                    </Grid>
+                                </Segment>
+                            </Grid.Column>
+                        </Grid.Row>
+                    </Grid>
+                </div>}
+                {this.state.importedBoundaries !== null && <Grid stackable={true}>
                     <Grid.Row>
                         <Grid.Column>
                             {this.renderBoundaries()}
                         </Grid.Column>
                     </Grid.Row>
-                </Grid>
+                </Grid>}
             </Modal.Content>
             <Modal.Actions>
-                <Button
-                    onClick={this.onCancel}
-                >
+                <Button onClick={this.onCancel}>
                     Close
                 </Button>
             </Modal.Actions>
