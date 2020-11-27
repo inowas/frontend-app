@@ -31,8 +31,6 @@ const ToolMetaData = (props: IProps) => {
         setTool(props.tool);
     }, [props.tool]);
 
-    console.log(props.isDirty);
-
     const history = useHistory();
 
     const handleButtonClick = () => setIsEditing(!isEditing);
