@@ -1,3 +1,5 @@
+import {IRootReducer} from '../../../reducers';
+import {ISimpleTool} from '../../../core/model/types';
 import uuidv4 from 'uuid';
 
 export const SETTINGS_CASE_FIXED_TIME = 1;
@@ -5,7 +7,38 @@ export const SETTINGS_CASE_VARIABLE_TIME = 2;
 export const SETTINGS_INFILTRATION_ONE_TIME = 1;
 export const SETTINGS_INFILTRATION_CONTINUOUS = 2;
 
-export const defaults = {
+export const defaultsWithSession = (session: IRootReducer['session']) => {
+    if (session && !session.token) {
+        return {...defaults, permissions: 'r--'};
+    }
+
+    return defaults;
+};
+
+export type IT08 = ISimpleTool<IT08Data>
+
+export interface IT08Data {
+    settings: {
+        case: number;
+        infiltration: number;
+        retardation: boolean;
+    },
+    parameters: Array<{
+        order: number,
+        id: string,
+        name: string,
+        min: number,
+        validMin?: (x: number) => boolean,
+        max: number,
+        validMax?: (x: number) => boolean,
+        value: number,
+        stepSize: number,
+        type: string,
+        decimals: number
+    }>
+}
+
+export const defaults: IT08 = {
     id: uuidv4(),
     name: 'New simple tool',
     description: 'Simple tool description',
@@ -21,6 +54,7 @@ export const defaults = {
             max: 1000.0,
             value: 100,
             stepSize: 0.01,
+            type: 'float',
             decimals: 3
         }, {
             order: 1,
@@ -30,6 +64,7 @@ export const defaults = {
             max: 100,
             value: 10,
             stepSize: 1,
+            type: 'int',
             decimals: 2
         }, {
             order: 2,
@@ -39,6 +74,7 @@ export const defaults = {
             max: 500,
             value: 365,
             stepSize: 1,
+            type: 'int',
             decimals: 0
         }, {
             order: 3,
@@ -48,6 +84,7 @@ export const defaults = {
             max: 1e+2,
             value: 2.592,
             stepSize: 0.001,
+            type: 'float',
             decimals: 3
         }, {
             order: 4,
@@ -57,6 +94,7 @@ export const defaults = {
             max: 0.01,
             value: 0.002,
             stepSize: 0.001,
+            type: 'float',
             decimals: 3
         }, {
             order: 5,
@@ -66,6 +104,7 @@ export const defaults = {
             max: 0.5,
             value: 0.23,
             stepSize: 0.01,
+            type: 'float',
             decimals: 2
         }, {
             order: 6,
@@ -75,6 +114,7 @@ export const defaults = {
             max: 3.00,
             value: 2.65,
             stepSize: 0.01,
+            type: 'float',
             decimals: 2
         }, {
             order: 7,
@@ -84,6 +124,7 @@ export const defaults = {
             max: 10,
             value: 0.923,
             stepSize: 0.001,
+            type: 'float',
             decimals: 3
         }, {
             order: 8,
@@ -93,6 +134,7 @@ export const defaults = {
             max: 0.1,
             value: 0.0,
             stepSize: 0.001,
+            type: 'float',
             decimals: 3
         }, {
             order: 9,
@@ -102,6 +144,7 @@ export const defaults = {
             max: 500,
             value: 100,
             stepSize: 1,
+            type: 'int',
             decimals: 0
         }, {
             order: 10,
@@ -111,6 +154,7 @@ export const defaults = {
             max: 0.1,
             value: 0.001,
             stepSize: 0.001,
+            type: 'float',
             decimals: 3
         }, {
             order: 11,
@@ -120,6 +164,7 @@ export const defaults = {
             max: 10,
             value: 2.25,
             stepSize: 0.001,
+            type: 'float',
             decimals: 3
         }],
         settings: {
