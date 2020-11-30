@@ -31,9 +31,9 @@ const htm = (state: IHtm | null = initialState(), action: IModelAction): IHtm | 
                     ...state.data,
                     input: state.data.input.map((i) => {
                         if (i.type === p.type) {
-                            return p;
+                            return {...p};
                         }
-                        return i;
+                        return {...i};
                     })
                 }
             }

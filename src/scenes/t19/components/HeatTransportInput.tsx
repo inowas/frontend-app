@@ -7,7 +7,6 @@ import {
 } from 'semantic-ui-react';
 import {HeatTransportInputChart} from '.';
 import {IDateTimeValue, ISensor, ISensorParameter} from '../../../core/model/rtm/Sensor.type';
-import {IHeatTransportInput} from '../../../core/model/htm/Htm.type';
 import {IRootReducer} from '../../../reducers';
 import {IRtm} from '../../../core/model/rtm/Rtm.type';
 import {ProcessingCollection} from '../../../core/model/rtm/processing';
@@ -20,7 +19,8 @@ import uuid from 'uuid';
 
 interface IProps {
     dateTimeFormat: string;
-    input: HtmInput;
+    rtmId?: string;
+    sensorId?: string | null;
     label: string;
     name: 'gw' | 'sw';
     readOnly: boolean;
@@ -36,8 +36,6 @@ const HeatTransportInput = (props: IProps) => {
 
     const [errors, setErrors] = useState<IError[]>([]);
 
-    const [input, setInput] = useState<IHeatTransportInput>(props.input.toObject());
-
     const [rtm, setRtm] = useState<IRtm>();
 
     const [sensor, setSensor] = useState<ISensor>();
@@ -50,7 +48,7 @@ const HeatTransportInput = (props: IProps) => {
     const t10Instances = T19.t10instances;
     const dispatch = useDispatch();
 
-    const fetchData = async (p: ISensorParameter) => {
+    const fetchData = async (p: ISensorParameter, rId: string, sId?: string | null) => {
         try {
             setIsFetching(true);
             const dataSourceCollection = DataSourceCollection.fromObject(p.dataSources);
@@ -64,17 +62,16 @@ const HeatTransportInput = (props: IProps) => {
                 const tp: [number, number] = [ts[0], ts[ts.length - 1]];
                 setTimesteps(ts);
 
-                const htmInput = {
-                    ...input,
-                    timePeriod: tp
-                };
-
                 const startIndex = ts.indexOf(tp[0]);
                 const endIndex = ts.indexOf(tp[1]);
                 setTempTime([startIndex < 0 ? 0 : startIndex, endIndex < 0 ? ts.length - 1 : endIndex]);
 
-                setInput(htmInput);
-                //dispatch(updateHtmInput(HtmInput.fromObject(htmInput)));
+                dispatch(updateHtmInput(HtmInput.fromObject({
+                    rtmId: rId,
+                    sensorId: sId,
+                    timePeriod: tp,
+                    type: props.name
+                })));
                 dispatch(updateData({type: props.name, data: timeProcessedData}));
             }
         } catch (err) {
@@ -104,31 +101,20 @@ const HeatTransportInput = (props: IProps) => {
             const param = sensors[0].parameters.all.filter((p) => p.type === 't');
             if (param.length > 0) {
                 setSensor(sensors[0].toObject());
-                fetchData(param[0]).then(() => setIsFetching(false));
+                fetchData(param[0], r.id, id).then(() => setIsFetching(false));
             }
         }
     };
 
     useEffect(() => {
-        console.log(props.name, 'INPUT', props.input);
-        const input = props.input.toObject();
-        // RTM HAS NOT BEEN LOADED
-        if (input.rtmId && !rtm) {
-            console.log(props.name, 'RTM HAS NOT BEEN LOADED');
-            fetchRtm(input.rtmId, input.sensorId).then(() => setIsFetching(false));
+        if (props.rtmId && !rtm) {
+            fetchRtm(props.rtmId, props.sensorId).then(() => setIsFetching(false));
         }
-        // RTM HAS BEEN CHANGED
-        if (input.rtmId && rtm && rtm.id !== input.rtmId) {
-            console.log(props.name, 'RTM HAS BEEN CHANGED');
-            fetchRtm(input.rtmId).then(() => setIsFetching(false));
-        }
-        // SENSOR HAS BEEN CHANGED
-        if (rtm && sensor && input.sensorId !== sensor.id) {
-            console.log(props.name, 'SENSOR HAS BEEN CHANGED');
-            fetchSensor(Rtm.fromObject(rtm), input.sensorId);
+        if (props.rtmId && rtm && rtm.id !== props.rtmId) {
+            fetchRtm(props.rtmId).then(() => setIsFetching(false));
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [props.input.toObject()]);
+    }, [props.rtmId, props.sensorId]);
 
     const sensorsWithTemperature = (rtm: IRtm) => Rtm.fromObject(rtm).sensors.all.filter((s) =>
         s.parameters.filterBy('type', 't').length > 0
@@ -154,18 +140,14 @@ const HeatTransportInput = (props: IProps) => {
         }
 
         dispatch(updateData({type: props.name, data: null}));
-        setInput({
-            ...input,
-            rtmId: value,
-        });
+        fetchRtm(value);
     };
 
     const handleChangeSensor = (e: SyntheticEvent<HTMLElement, Event>, {value}: DropdownProps) => {
         if (typeof value !== 'string' || !rtm) {
             return null;
         }
-
-        setInput({...input, sensorId: value});
+        fetchSensor(Rtm.fromObject(rtm), value);
     };
 
     const handleDismissError = (id: string) => () => setErrors(errors.filter((e) => e.id !== id));
@@ -175,7 +157,7 @@ const HeatTransportInput = (props: IProps) => {
             <Segment color="grey">
                 <h4>{props.label}</h4>
                 <Form.Select
-                    loading={t10Instances.length === 0}
+                    loading={t10Instances.length === 0 || (props.rtmId !== undefined && !rtm)}
                     disabled={props.readOnly}
                     label="T10 Instance"
                     placeholder="Select instance"
@@ -207,7 +189,7 @@ const HeatTransportInput = (props: IProps) => {
                     dateTimeFormat={props.dateTimeFormat}
                     tempTime={tempTime}
                     timesteps={timesteps}
-                    isLoading={isFetching}
+                    isLoading={isFetching || (props.sensorId !== undefined && !data)}
                 />
                 }
             </Segment>

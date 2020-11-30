@@ -60,11 +60,14 @@ const HeatTransport = () => {
         };
 
         fetchInstances();
+
+        return function() {
+            dispatch(clear());
+        }
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     useEffect(() => {
-        dispatch(clear());
         if (id) {
             setIsFetching(true);
             fetchUrl(`tools/${tool}/${id}`,
@@ -88,7 +91,7 @@ const HeatTransport = () => {
             );
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [history, id]);
+    }, [id]);
 
     const handleSaveMetaData = (tool: IToolMetaDataEdit) => {
         if (!htm) {
@@ -145,10 +148,7 @@ const HeatTransport = () => {
                                 <p>{error.message}</p>
                             </Message>
                         ))}
-                        <HeatTransportController
-                            key={htm.id}
-                            htm={htm}
-                        />
+                        <HeatTransportController/>
                     </Grid.Column>
                 </Grid.Row>
             </Grid>

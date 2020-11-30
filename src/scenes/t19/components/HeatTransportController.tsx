@@ -16,27 +16,34 @@ import React, {FormEvent, useEffect, useState} from 'react';
 import SimpleToolsCommand from '../../shared/simpleTools/commands/SimpleToolsCommand';
 import moment from 'moment';
 
-interface IProps {
-    htm: Htm;
-}
-
-const HeatTransportController = (props: IProps) => {
+const HeatTransportController = () => {
     const [isFetching, setIsFetching] = useState<boolean>(false);
     const [activeInput, setActiveInput] = useState<string>();
     const [activeValue, setActiveValue] = useState<string>('');
-    const [requestOptions, setRequestOptions] = useState<IHeatTransportRequestOptions>(props.htm.options);
+    const [requestOptions, setRequestOptions] = useState<IHeatTransportRequestOptions>();
 
     const user = useSelector((state: IRootReducer) => state.user);
     const dispatch = useDispatch();
 
     const T19 = useSelector((state: IRootReducer) => state.T19);
+    const htm = T19.htm ? Htm.fromObject(T19.htm) : undefined;
     const data = T19.data;
 
     useEffect(() => {
-        setRequestOptions(props.htm.options);
-    }, [props.htm]);
+        console.log('RTM HAS CHANGED');
+        if (htm) {
+            setRequestOptions(htm.options);
+        }
+    }, [htm]);
+
+    if (!htm) {
+        return null;
+    }
 
     const handleBlurInput = () => {
+        if (!requestOptions) {
+            return setActiveInput(undefined);
+        }
         if (activeInput === 'retardationFactor') {
             const parsedValue = parseFloat(activeValue);
             setRequestOptions({
@@ -60,7 +67,7 @@ const HeatTransportController = (props: IProps) => {
     };
 
     const handleCalculateAndSave = async () => {
-        if (!data.sw || !data.gw) {
+        if (!data.sw || !data.gw || !requestOptions) {
             return;
         }
 
@@ -78,7 +85,7 @@ const HeatTransportController = (props: IProps) => {
         };
 
         makeHeatTransportRequest(requestData).then((r3) => {
-            const cHtm = props.htm.toObject();
+            const cHtm = htm.toObject();
             cHtm.data.results = JSON.parse(r3);
             cHtm.data.options = requestOptions;
             const iHtm = Htm.fromObject(cHtm);
@@ -93,7 +100,7 @@ const HeatTransportController = (props: IProps) => {
         });
     };
     
-    const readOnly = !includes(props.htm.permissions, 'w');
+    const readOnly = !includes(htm.permissions, 'w');
 
     return (
         <React.Fragment>
@@ -103,7 +110,8 @@ const HeatTransportController = (props: IProps) => {
                         <Grid.Column width={8}>
                             <HeatTransportInput
                                 dateTimeFormat={user.settings.dateFormat}
-                                input={props.htm.inputSw}
+                                rtmId={htm.inputSw.rtmId}
+                                sensorId={htm.inputSw.sensorId}
                                 label="Surface water"
                                 name="sw"
                                 readOnly={isFetching || readOnly}
@@ -112,7 +120,8 @@ const HeatTransportController = (props: IProps) => {
                         <Grid.Column width={8}>
                             <HeatTransportInput
                                 dateTimeFormat={user.settings.dateFormat}
-                                input={props.htm.inputGw}
+                                rtmId={htm.inputGw.rtmId}
+                                sensorId={htm.inputGw.sensorId}
                                 label="Groundwater"
                                 name="gw"
                                 readOnly={isFetching || readOnly}
@@ -123,6 +132,7 @@ const HeatTransportController = (props: IProps) => {
                         <Grid.Column>
                             <Segment color={'grey'}>
                                 <Form.Group>
+                                    {requestOptions !== undefined &&
                                     <Form.Input
                                         disabled={isFetching || readOnly}
                                         name="retardationFactor"
@@ -133,6 +143,8 @@ const HeatTransportController = (props: IProps) => {
                                         value={activeInput === 'retardationFactor' ? activeValue :
                                             requestOptions.retardation_factor}
                                     />
+                                    }
+                                    {requestOptions !== undefined &&
                                     <Form.Input
                                         disabled={isFetching || readOnly}
                                         name="tolerance"
@@ -142,6 +154,7 @@ const HeatTransportController = (props: IProps) => {
                                         onChange={handleChangeInput}
                                         value={activeInput === 'tolerance' ? activeValue : requestOptions.tolerance}
                                     />
+                                    }
                                     <Form.Button
                                         positive={true}
                                         fluid={true}
@@ -158,7 +171,7 @@ const HeatTransportController = (props: IProps) => {
                     </Grid.Row>
                 </Grid>
             </Form>
-            {props.htm.results && <HeatTransportResults dateTimeFormat={user.settings.dateFormat} results={props.htm.results}/>}
+            {htm.results && <HeatTransportResults dateTimeFormat={user.settings.dateFormat} results={htm.results}/>}
         </React.Fragment>
     );
 };
