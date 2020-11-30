@@ -15,7 +15,6 @@ export type TDateValueArray = Array<{date: string; value: number}>;
 export interface IHeatTransportInput {
     rtmId?: string;
     sensorId?: string | null;
-    timePeriod?: [number, number];
     type: 'gw' | 'sw';
 }
 

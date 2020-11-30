@@ -1,9 +1,9 @@
 import {Button, Checkbox, Icon, Menu, MenuItemProps, Segment, Table} from 'semantic-ui-react';
 import {IHeatTransportResults} from '../../../core/model/htm/Htm.type';
+import {calculateDomain} from './helpers';
 import {downloadFile} from '../../shared/simpleTools/helpers';
 import HeatTransportResultLineChart from './HeatTransportResultLineChart';
 import React, {MouseEvent, useEffect, useState} from 'react';
-import _ from 'lodash';
 import moment from 'moment';
 
 interface IProps {
@@ -17,11 +17,21 @@ const HeatTransportResults = (props: IProps) => {
     const [useSameTimes, setUseSameTimes] = useState<boolean>(true);
 
     useEffect(() => {
-        const ts = props.results.data.map((row) => row.date);
-        const fTs = _.orderBy(_.uniq(ts));
-        const min = moment(fTs[0]).unix();
-        const max = moment(fTs[fTs.length - 1]).unix();
-        setTimesteps([min, max]);
+        const tsx = calculateDomain(
+            props.results.data.map((row) => ({
+                x: moment(row.date).unix(),
+                obs: row.observed,
+                sim: row.simulated
+            })),
+            props.results.points.map((point) => ({
+                fill: point.point_type === 'max' ? 'red' : (point.point_type === 'min' ? 'green' : 'blue'),
+                x: moment(point.date).unix(),
+                y: point.simulated,
+                type: point.point_type
+            }))
+        );
+        setTimesteps(tsx);
+
     }, [props.results]);
 
     const traveltimes = props.results.traveltimes;

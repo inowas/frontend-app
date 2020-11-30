@@ -69,7 +69,6 @@ const HeatTransportInput = (props: IProps) => {
                 dispatch(updateHtmInput(HtmInput.fromObject({
                     rtmId: rId,
                     sensorId: sId,
-                    timePeriod: tp,
                     type: props.name
                 })));
                 dispatch(updateData({type: props.name, data: timeProcessedData}));

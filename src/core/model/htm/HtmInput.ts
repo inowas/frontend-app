@@ -10,10 +10,6 @@ export default class HtmInput extends GenericObject<IHeatTransportInput> {
         return this._props.sensorId;
     }
 
-    get timePeriod() {
-        return this._props.timePeriod;
-    }
-
     get type() {
         return this._props.type;
     }

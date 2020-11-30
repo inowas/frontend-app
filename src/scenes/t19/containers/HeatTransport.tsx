@@ -87,7 +87,7 @@ const HeatTransport = () => {
             const newInstance = Htm.fromDefaults();
             sendCommand(createToolInstance(newInstance.tool, newInstance.toObject()),
                 () => history.push(`/tools/${newInstance.tool}/${newInstance.id}`),
-                () => console.log('ERROR')
+                (e) => setErrors([{id: uuid.v4(), message: `Creating new instance failed: ${e}`}])
             );
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps

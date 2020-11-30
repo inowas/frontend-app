@@ -30,7 +30,6 @@ const HeatTransportController = () => {
     const data = T19.data;
 
     useEffect(() => {
-        console.log('RTM HAS CHANGED');
         if (htm) {
             setRequestOptions(htm.options);
         }

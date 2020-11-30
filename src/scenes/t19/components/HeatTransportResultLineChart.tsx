@@ -9,9 +9,9 @@ import {
 } from 'recharts';
 import {IHeatTransportResults} from '../../../core/model/htm/Htm.type';
 import {SemanticCOLORS} from 'semantic-ui-react/dist/commonjs/generic';
+import {calculateDomain} from './helpers';
 import CustomTooltip from './CustomTooltip';
 import React, {useEffect, useState} from 'react';
-import _ from 'lodash';
 import moment from 'moment';
 
 interface IReferencePoint {
@@ -39,11 +39,7 @@ const HeatTransportResultChart = (props: IProps) => {
         if (props.timesteps && props.useSameTimes) {
             return props.timesteps;
         }
-        const pointsOrderedByX = _.sortBy(p, 'x');
-        const xMin = props.data[0].x < pointsOrderedByX[0].x ? props.data[0].x : pointsOrderedByX[0].x;
-        const xMax = props.data[props.data.length - 1].x > pointsOrderedByX[pointsOrderedByX.length - 1].x ?
-            props.data[props.data.length - 1].x : pointsOrderedByX[pointsOrderedByX.length - 1].x;
-        return [xMin, xMax];
+        return calculateDomain(props.data, p);
     };
 
     const [domain, setDomain] = useState<[number, number]>();
