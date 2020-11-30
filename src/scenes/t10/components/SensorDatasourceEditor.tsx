@@ -1,13 +1,13 @@
 import {Button, DropdownProps, Form, Grid, Header, Label, Modal, Segment} from 'semantic-ui-react';
 import {DataPoint, LTOB} from 'downsample';
 import {DatePicker} from '../../shared/uiComponents';
-import {IDateTimeValue} from '../../../core/model/rtm/Sensor.type';
+import {IDateTimeValue} from '../../../core/model/rtm/monitoring/Sensor.type';
 import {ResponsiveContainer, Scatter, ScatterChart, XAxis, YAxis} from 'recharts';
+import {SensorDataSource} from '../../../core/model/rtm/monitoring';
 import {fetchUrl} from '../../../services/api';
 import {maxBy, minBy, uniqBy} from 'lodash';
 import {usePrevious} from '../../shared/simpleTools/helpers/customHooks';
 import React, {SyntheticEvent, useEffect, useState} from 'react';
-import SensorDataSource from '../../../core/model/rtm/SensorDataSource';
 import moment from 'moment';
 
 interface IProps {

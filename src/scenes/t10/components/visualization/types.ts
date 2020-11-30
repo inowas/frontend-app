@@ -1,6 +1,7 @@
+import {ISensor, ISensorParameter} from '../../../../core/model/rtm/monitoring/Sensor.type';
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore todo
 import {XYDataPoint} from 'downsample/dist/types';
-import {ISensor, ISensorParameter} from '../../../../core/model/rtm/monitoring/Sensor.type';
 
 export interface IParameterWithMetaData {
     data: XYDataPoint[];

@@ -4,9 +4,9 @@ import {Button, Dropdown, DropdownProps, Grid, Popup} from 'semantic-ui-react';
 import {CircleMarker, Map, Tooltip} from 'react-leaflet';
 import {ColorLegend} from '../../../shared/rasterData';
 import {IParameterWithMetaData, ITimeStamps} from './types';
-import {ISensor} from '../../../../core/model/rtm/Sensor.type';
+import {ISensor} from '../../../../core/model/rtm/monitoring/Sensor.type';
 import {LatLngExpression} from 'leaflet';
-import {Rtm} from '../../../../core/model/rtm';
+import {Rtm} from '../../../../core/model/rtm/monitoring';
 import {heatMapColors} from '../../../t05/defaults/gis';
 import {rainbowFactory} from '../../../shared/rasterData/helpers';
 import React, {SyntheticEvent, useEffect, useState} from 'react';
@@ -28,7 +28,7 @@ const VisualizationMap = (props: IProps) => {
 
     useEffect(() => {
         if (props.parameters.length > 0 && (!selectedParameter || (selectedParameter &&
-                props.parameters.filter((p) => p.parameter.type === selectedParameter)))) {
+            props.parameters.filter((p) => p.parameter.type === selectedParameter)))) {
             setSelectedParameter(props.parameters[0].parameter.type)
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -152,24 +152,24 @@ const VisualizationMap = (props: IProps) => {
         <Grid>
             <Grid.Row>
                 <Grid.Column>
-                        <Popup
-                            content="Show color scale"
-                            trigger={
-                                <Button
-                                    onClick={handleToggleScale}
-                                    icon="chart pie"
-                                    primary={showScale}
-                                />
-                            }
-                        />
-                        <Dropdown
-                            search={true}
-                            selection={true}
-                            onChange={handleChangeParameter}
-                            options={selectOptions}
-                            placeholder="Select parameter"
-                            value={selectedParameter}
-                        />
+                    <Popup
+                        content="Show color scale"
+                        trigger={
+                            <Button
+                                onClick={handleToggleScale}
+                                icon="chart pie"
+                                primary={showScale}
+                            />
+                        }
+                    />
+                    <Dropdown
+                        search={true}
+                        selection={true}
+                        onChange={handleChangeParameter}
+                        options={selectOptions}
+                        placeholder="Select parameter"
+                        value={selectedParameter}
+                    />
                 </Grid.Column>
             </Grid.Row>
             <Grid.Row>

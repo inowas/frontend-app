@@ -5,7 +5,6 @@ import {
     Loader, Popup,
     Segment
 } from 'semantic-ui-react';
-import {DataSourceCollection, Rtm} from '../../../../core/model/rtm';
 import {IParameterWithMetaData, ITimeStamps} from './types';
 import {IPropertyValueObject} from '../../../../core/model/types';
 import {LTOB} from 'downsample';
@@ -19,6 +18,7 @@ import {
     XAxis,
     YAxis,
 } from 'recharts';
+import {DataSourceCollection, Rtm} from '../../../../core/model/rtm/monitoring';
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore todo
 import {XYDataPoint} from 'downsample/dist/types';
