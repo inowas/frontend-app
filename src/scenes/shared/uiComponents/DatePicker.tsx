@@ -4,6 +4,7 @@ import React from 'react';
 import SemanticDatepicker from 'react-semantic-ui-datepickers';
 
 export interface IDatePickerProps {
+    clearable?:boolean;
     disabled?: boolean;
     inline?: boolean;
     inverted?: boolean;

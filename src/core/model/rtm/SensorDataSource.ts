@@ -71,7 +71,6 @@ class SensorDataSource extends GenericObject<ISensorDataSource> {
     set sensor(value: string) {
         const url = this.url;
         url.pathname = `/sensors/project/${this.project}/sensor/${value}/property/${this.parameter}`;
-
         if (!(getUrlPathRegex(url.pathname)[2] === value)) {
             throw new Error('Invalid sensor name');
         }

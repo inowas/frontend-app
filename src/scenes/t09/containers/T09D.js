@@ -1,21 +1,16 @@
-import PropTypes from 'prop-types';
-import React from 'react';
-
-import {includes} from 'lodash';
-import {withRouter} from 'react-router-dom';
-
 import {AppContainer} from '../../shared';
 import {Background, ChartT09D as Chart, InfoT09D as Info, Parameters, SettingsT09D as Settings} from '../components';
 import {SliderParameter, ToolGrid, ToolMetaData} from '../../shared/simpleTools';
-import {navigation} from './T09';
-
-import SimpleToolsCommand from '../../shared/simpleTools/commands/SimpleToolsCommand';
-
-import image from '../images/T09D.png';
-import {defaultsWithSession} from '../defaults/T09D';
-
-import {fetchTool, sendCommand} from '../../../services/api';
 import {buildPayloadToolInstance, deepMerge} from '../../shared/simpleTools/helpers';
+import {defaultsWithSession} from '../defaults/T09D';
+import {fetchTool, sendCommand} from '../../../services/api';
+import {includes} from 'lodash';
+import {navigation} from './T09';
+import {withRouter} from 'react-router-dom';
+import PropTypes from 'prop-types';
+import React from 'react';
+import SimpleToolsCommand from '../../shared/simpleTools/commands/SimpleToolsCommand';
+import image from '../images/T09D.png';
 
 class T09D extends React.Component {
     constructor(props) {
@@ -44,13 +39,16 @@ class T09D extends React.Component {
         }
     }
 
-    save = () => {
+    save = (tool) => {
         const {id} = this.props.match.params;
-        const {tool} = this.state;
+
+        const t = {
+            ...this.state.tool, name: tool.name, description: tool.description, public: tool.public
+        };
 
         if (id) {
             sendCommand(
-                SimpleToolsCommand.updateToolInstance(buildPayloadToolInstance(tool)),
+                SimpleToolsCommand.updateToolInstance(buildPayloadToolInstance(t)),
                 () => this.setState({isDirty: false}),
                 () => this.setState({error: true})
             );
@@ -59,7 +57,7 @@ class T09D extends React.Component {
 
         sendCommand(
             SimpleToolsCommand.createToolInstance(buildPayloadToolInstance(tool)),
-            () => this.props.history.push(`${this.props.location.pathname}/${tool.id}`),
+            () => this.props.history.push(`${this.props.location.pathname}/${t.id}`),
             () => this.setState({error: true})
         );
     };
@@ -120,10 +118,11 @@ class T09D extends React.Component {
         return (
             <AppContainer navbarItems={navigation}>
                 <ToolMetaData
-                    tool={tool}
+                    tool={data}
                     readOnly={readOnly}
-                    onChange={this.update}
                     onSave={this.save}
+                    saveButton={true}
+                    onReset={this.handleReset}
                     isDirty={isDirty}
                 />
                 <ToolGrid rows={2}>

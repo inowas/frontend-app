@@ -113,7 +113,7 @@ test('Test SensorDataSource 2 , loading from http-resource', async () => {
 
     const ds = new SensorDataSource(obj);
     await ds.loadData();
-    expect(ds.data && ds.data.length).toEqual(130);
+    expect(ds.data && ds.data.length).toEqual(131);
 
     ds.data = [{timeStamp: 1, value: 1.2}];
     expect(ds.loadData().then(() => expect(ds.data).toEqual(ds.toObject().data)));

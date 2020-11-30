@@ -1,26 +1,26 @@
-import FlopyPackages from '../../../core/model/flopy/packages/FlopyPackages';
-import {IMessage} from '../../../core/model/messages/Message.type';
-import {Calculation, ModflowModel, Transport, VariableDensity} from '../../../core/model/modflow';
-import {BoundaryCollection} from '../../../core/model/modflow/boundaries';
-import {Optimization} from '../../../core/model/modflow/optimization';
-import {Soilmodel, SoilmodelLayer} from '../../../core/model/modflow/soilmodel';
-import {Zone} from '../../../core/model/modflow/soilmodel';
-import {UPDATE_BOUNDARIES} from '../reducers/boundaries';
-import {START_CALCULATION, UPDATE_CALCULATION} from '../reducers/calculation';
 import {ADD_MESSAGE, REMOVE_MESSAGE, UPDATE_MESSAGE} from '../reducers/messages';
+import {
+    ADD_SOILMODEL_LAYER, ADD_ZONE, REMOVE_SOILMODEL_LAYER, REMOVE_ZONE, UPDATE_SOILMODEL, UPDATE_SOILMODEL_LAYER,
+    UPDATE_ZONE
+} from '../reducers/soilmodel';
+import {BoundaryCollection} from '../../../core/model/modflow/boundaries';
 import {CLEAR, UPDATE_MODEL} from '../reducers/model';
-import {UPDATE_OPTIMIZATION} from '../reducers/optimization';
+import {Calculation, ModflowModel, Transport, VariableDensity} from '../../../core/model/modflow';
+import {IMessage} from '../../../core/model/messages/Message.type';
+import {Optimization} from '../../../core/model/modflow/optimization';
 import {
     PROCESSING_PACKAGES,
     UPDATE_PACKAGES,
     UPDATE_PROCESSED_PACKAGES
 } from '../reducers/packages';
-import {
-    ADD_SOILMODEL_LAYER, ADD_ZONE, REMOVE_SOILMODEL_LAYER, REMOVE_ZONE, UPDATE_SOILMODEL, UPDATE_SOILMODEL_LAYER,
-    UPDATE_ZONE
-} from '../reducers/soilmodel';
+import {START_CALCULATION, UPDATE_CALCULATION} from '../reducers/calculation';
+import {Soilmodel, SoilmodelLayer} from '../../../core/model/modflow/soilmodel';
+import {UPDATE_BOUNDARIES} from '../reducers/boundaries';
+import {UPDATE_OPTIMIZATION} from '../reducers/optimization';
 import {UPDATE_TRANSPORT} from '../reducers/transport';
 import {UPDATE_VARIABLE_DENSITY} from '../reducers/variableDensity';
+import {Zone} from '../../../core/model/modflow/soilmodel';
+import FlopyPackages from '../../../core/model/flopy/packages/FlopyPackages';
 
 export function clear() {
     return {
@@ -35,7 +35,7 @@ export function updateModel(modflowModel: ModflowModel) {
     };
 }
 
-export function updateBoundaries(boundaryCollection: BoundaryCollection, setIsDirty: boolean = false) {
+export function updateBoundaries(boundaryCollection: BoundaryCollection, setIsDirty = false) {
     return {
         type: UPDATE_BOUNDARIES,
         boundaries: boundaryCollection.toObject(),
