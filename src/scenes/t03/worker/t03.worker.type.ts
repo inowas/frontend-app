@@ -1,13 +1,13 @@
-import {IFlopyPackages} from '../../../core/model/flopy/packages/FlopyPackages.type';
+import {IBoundary, IBoundaryExport} from '../../../core/model/modflow/boundaries/Boundary.type';
 import {IBoundingBox} from '../../../core/model/geometry/BoundingBox.type';
+import {IFlopyPackages} from '../../../core/model/flopy/packages/FlopyPackages.type';
 import {IGeometry} from '../../../core/model/geometry/Geometry.type';
 import {IGridSize} from '../../../core/model/geometry/GridSize.type';
-import {IBoundary} from '../../../core/model/modflow/boundaries/Boundary.type';
+import {IHobData} from '../components/content/observation/statistics';
 import {IModflowModel} from '../../../core/model/modflow/ModflowModel.type';
 import {ISoilmodel} from '../../../core/model/modflow/soilmodel/Soilmodel.type';
 import {ITransport} from '../../../core/model/modflow/transport/Transport.type';
 import {IVariableDensity} from '../../../core/model/modflow/variableDensity/VariableDensity.type';
-import {IHobData} from '../components/content/observation/statistics';
 
 export interface IWorkerInput<T> {
     type: string;
@@ -29,6 +29,12 @@ export interface ICalculateCellsInputData {
     boundingBox: IBoundingBox;
     gridSize: IGridSize;
     intersection?: number;
+}
+
+export interface ICalculateBoundaryImportInputData {
+    boundingBox: IBoundingBox;
+    gridSize: IGridSize;
+    boundaries: IBoundaryExport[];
 }
 
 export interface ICalculatePackagesInputData {

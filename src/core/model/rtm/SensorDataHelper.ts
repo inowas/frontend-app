@@ -63,7 +63,7 @@ export async function retrievePrometheusData(url: string) {
 }
 
 export function getUrlPathRegex(path: string) {
-    const myRe = /^\/sensors\/project\/([A-Za-z0-9-]+)\/sensor\/([A-Za-z0-9-]+)\/property\/([A-Za-z0-9-_]+)$/;
+    const myRe = /^\/sensors\/project\/([A-Za-z0-9-_ ]+)\/sensor\/([A-Za-z0-9-_ ]+)\/property\/([A-Za-z0-9-_ ]+)$/;
     const matchObj = myRe.exec(path);
 
     if (!matchObj) {
