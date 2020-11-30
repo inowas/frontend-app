@@ -3,16 +3,16 @@ import {Checkbox, DropdownProps, Form, Grid, Segment} from 'semantic-ui-react';
 import {DatePicker} from '../../shared/uiComponents';
 import {ETimeResolution, IRtModellingData} from '../../../core/model/rtm/modelling/RTModelling.type';
 import {IDatePickerProps} from '../../shared/uiComponents/DatePicker';
+import {IRootReducer} from '../../../reducers';
 import {Map} from 'react-leaflet';
 import {ModflowModel} from '../../../core/model/modflow';
 import {renderAreaLayer} from '../../t03/components/maps/mapLayers';
+import {useSelector} from 'react-redux';
 import RTModelling from '../../../core/model/rtm/modelling/RTModelling';
 import React, {SyntheticEvent, useEffect, useState} from 'react';
 
 interface IProps {
-    model: ModflowModel;
     onChange: (r: RTModelling) => void;
-    rtm: RTModelling;
 }
 
 const style = {
@@ -23,11 +23,21 @@ const style = {
 };
 
 const RTModellingSetup = (props: IProps) => {
-    const [data, setData] = useState<IRtModellingData>(props.rtm.toObject().data);
+    const [data, setData] = useState<IRtModellingData>();
+
+    const T20 = useSelector((state: IRootReducer) => state.T20);
+    const model = T20.model ? ModflowModel.fromObject(T20.model) : null;
+    const rtm = T20.rtmodelling ? RTModelling.fromObject(T20.rtmodelling) : null;
 
     useEffect(() => {
-        setData(props.rtm.toObject().data);
-    }, [props.rtm]);
+        if (rtm && rtm.data) {
+            setData(rtm.toObject().data);
+        }
+    }, [rtm]);
+
+    if (!rtm || !model || !data) {
+        return null;
+    }
 
     const handleChangeCheckbox = () => handleSave({
         ...data,
@@ -53,7 +63,7 @@ const RTModellingSetup = (props: IProps) => {
     }
 
     const handleSave = (d: IRtModellingData) => {
-        const cRtm = props.rtm.toObject()
+        const cRtm = rtm.toObject()
         cRtm.data = d;
         props.onChange(RTModelling.fromObject(cRtm));
     }
@@ -61,14 +71,14 @@ const RTModellingSetup = (props: IProps) => {
     const renderMap = () => {
         return (
             <Segment>
-                <h3>{props.model.name}</h3>
-                <p>{props.model.description}</p>
+                <h3>{model.name}</h3>
+                <p>{model.description}</p>
                 <Map
                     style={style.map}
-                    bounds={props.model.boundingBox.getBoundsLatLng()}
+                    bounds={model.boundingBox.getBoundsLatLng()}
                 >
                     <BasicTileLayer/>
-                    {renderAreaLayer(props.model.geometry)}
+                    {renderAreaLayer(model.geometry)}
                 </Map>
             </Segment>
         )
@@ -90,7 +100,7 @@ const RTModellingSetup = (props: IProps) => {
                                         {key: 'daily', value: ETimeResolution.DAILY, text: 'Daily'}
                                     ]}
                                     onChange={handleChangeResolution}
-                                    value={props.rtm.data.time_resolution}
+                                    value={rtm.data.time_resolution}
                                 />
                                 <Grid>
                                     <Grid.Row>
@@ -98,7 +108,7 @@ const RTModellingSetup = (props: IProps) => {
                                             <Form.Field>
                                                 <label>Start date</label>
                                                 <DatePicker
-                                                    value={props.rtm.startDate}
+                                                    value={rtm.startDate}
                                                     onChange={handleChangeStartDate}
                                                 />
                                             </Form.Field>

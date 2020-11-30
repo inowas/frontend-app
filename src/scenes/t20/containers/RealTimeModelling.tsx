@@ -1,20 +1,24 @@
 import {AppContainer} from '../../shared';
-import {IRtModelling} from '../../../core/model/rtm/modelling/RTModelling.type';
 import {Grid, Icon, Loader} from 'semantic-ui-react';
 import {IModflowModel} from '../../../core/model/modflow/ModflowModel.type';
+import { IRootReducer } from '../../../reducers';
+import {IRtModelling} from '../../../core/model/rtm/modelling/RTModelling.type';
 import {IToolInstance} from '../../dashboard/defaults/tools';
 import {IToolMetaDataEdit} from '../../shared/simpleTools/ToolMetaData/ToolMetaData.type';
 import {ModflowModel} from '../../../core/model/modflow';
 import {ToolMetaData} from '../../shared/simpleTools';
 import {ToolNavigation} from '../../shared/complexTools';
+import {clear, updateRTModelling, updateT10Instances, updateModel} from '../actions/actions';
 import {fetchApiWithToken, fetchUrl, sendCommand} from '../../../services/api';
 import {uniqBy} from 'lodash';
+import {useDispatch, useSelector} from 'react-redux';
 import {useHistory, useParams} from 'react-router-dom';
 import RTModelling from '../../../core/model/rtm/modelling/RTModelling';
 import RTModellingBoundaries from '../components/RTModellingBoundaries';
 import RTModellingSetup from '../components/RTModellingSetup';
 import React, {useEffect, useState} from 'react';
 import SimpleToolsCommand from '../../shared/simpleTools/commands/SimpleToolsCommand';
+import uuid from 'uuid';
 
 const navigation = [{
     name: 'Documentation',
@@ -24,16 +28,23 @@ const navigation = [{
 
 const tool = 'T20';
 
+interface IError {
+    id: string;
+    message: string;
+}
+
 const RealTimeModelling = () => {
+    const [errors, setErrors] = useState<IError[]>([]);
     const [isDirty, setDirty] = useState<boolean>(false);
     const [isFetching, setIsFetching] = useState<boolean>(false);
-    const [model, setModel] = useState<IModflowModel>();
-    const [rtm, setRtm] = useState<IRtModelling>();
-    const [t10Instances, setT10Instances] = useState<IToolInstance[]>([]);
 
+    const dispatch = useDispatch();
     const history = useHistory();
     const {id, property} = useParams();
 
+    const T20 = useSelector((state: IRootReducer) => state.T20);
+    const model = T20.model ? ModflowModel.fromObject(T20.model) : null;
+    const rtm = T20.rtmodelling ? RTModelling.fromObject(T20.rtmodelling) : null;
 
     useEffect(() => {
         const fetchInstances = async () => {
@@ -42,15 +53,19 @@ const RealTimeModelling = () => {
                 const privateT10Tools = (await fetchApiWithToken('tools/T10?public=false')).data;
                 const publicT10Tools = (await fetchApiWithToken('tools/T10?public=true')).data;
                 const tools = uniqBy(privateT10Tools.concat(publicT10Tools), (t: IToolInstance) => t.id);
-                setT10Instances(tools);
+                dispatch(updateT10Instances(tools));
             } catch (err) {
-                setIsFetching(false);
+                setErrors(errors.concat([{id: uuid.v4(), message: 'Fetching t10 instances failed.'}]));
             } finally {
                 setIsFetching(false);
             }
         };
 
         fetchInstances();
+
+        return function() {
+            dispatch(clear());
+        }
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
@@ -59,7 +74,7 @@ const RealTimeModelling = () => {
             setIsFetching(true);
             fetchUrl(`tools/${tool}/${id}`,
                 (r: IRtModelling) => {
-                    setRtm(r);
+                    dispatch(updateRTModelling(RTModelling.fromObject(r)));
                     setIsFetching(false);
                     setDirty(false);
                 }, () => {
@@ -67,6 +82,7 @@ const RealTimeModelling = () => {
                 }
             );
         }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [id]);
 
     useEffect(() => {
@@ -74,7 +90,7 @@ const RealTimeModelling = () => {
             setIsFetching(true);
             fetchUrl(`modflowmodels/${rtm.data.model_id}`,
                 (m: IModflowModel) => {
-                    setModel(m);
+                    dispatch(updateModel(ModflowModel.fromObject(m)));
                     setIsFetching(false);
                     setDirty(false);
                 },
@@ -83,12 +99,14 @@ const RealTimeModelling = () => {
                 }
             );
         }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [rtm]);
 
     useEffect(() => {
         if (!property && id) {
             history.push(`${id}/settings`);
         }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [property]);
 
     const handleSaveMetaData = (tool: IToolMetaDataEdit) => {
@@ -97,9 +115,8 @@ const RealTimeModelling = () => {
         }
         const {name, description} = tool;
         const isPublic = tool.public;
-        const cRtm = {...rtm, name, description, public: isPublic};
-        setRtm(cRtm);
-        handleSave(RTModelling.fromObject(cRtm));
+        const cRtm: IRtModelling = {...rtm.toObject(), name, description, public: isPublic};
+        dispatch(updateRTModelling(RTModelling.fromObject(cRtm)));
     };
 
     const handleSave = (r: RTModelling) => {
@@ -108,7 +125,7 @@ const RealTimeModelling = () => {
             SimpleToolsCommand.updateToolInstance(r.toObject()),
             () => {
                 setIsFetching(false);
-                setRtm(r.toObject());
+                dispatch(updateRTModelling(r));
             }
         );
     };
@@ -125,18 +142,13 @@ const RealTimeModelling = () => {
         if (property === 'boundaries') {
             return (
                 <RTModellingBoundaries
-                    model={ModflowModel.fromObject(model)}
                     onChange={handleSave}
-                    rtm={RTModelling.fromObject(rtm)}
-                    t10Instances={t10Instances}
                 />
             );
         }
         return (
             <RTModellingSetup
-                model={ModflowModel.fromObject(model)}
                 onChange={handleSave}
-                rtm={RTModelling.fromObject(rtm)}
             />
         );
     };

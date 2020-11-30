@@ -8,21 +8,19 @@ import {
     IRTModellingHead
 } from '../../../core/model/rtm/modelling/RTModelling.type';
 import {IBoundary} from '../../../core/model/modflow/boundaries/Boundary.type';
-import {IToolInstance} from '../../dashboard/defaults/tools';
+import {IRootReducer} from '../../../reducers';
 import {ModflowModel} from '../../../core/model/modflow';
+import {appendBoundaryData} from './appendBoundaryData';
 import {fetchUrl} from '../../../services/api';
+import {useSelector} from 'react-redux';
 import MethodModal from './MethodModal';
 import RTModelling from '../../../core/model/rtm/modelling/RTModelling';
 import RTModellingMethod from '../../../core/model/rtm/modelling/RTModellingMethod';
 import React, {SyntheticEvent, useEffect, useState} from 'react';
 import uuid from 'uuid';
-import {appendBoundaryData} from "./appendBoundaryData";
 
 interface IProps {
-    model: ModflowModel;
     onChange: (rtm: RTModelling) => void;
-    rtm: RTModelling;
-    t10Instances: IToolInstance[];
 }
 
 const RTModellingBoundaries = (props: IProps) => {
@@ -35,18 +33,27 @@ const RTModellingBoundaries = (props: IProps) => {
         method: IMethod | IMethodSensor | IMethodFunction, bId: string, propertyKey: number, opId?: string
     } | null>(null);
 
+    const T20 = useSelector((state: IRootReducer) => state.T20);
+    const model = T20.model ? ModflowModel.fromObject(T20.model) : null;
+    const rtm = T20.rtmodelling ? RTModelling.fromObject(T20.rtmodelling) : null;
+    const t10Instances = T20.t10instances;
+
     useEffect(() => {
-        if (!boundaries) {
+        if (model && !boundaries) {
             fetchBoundaries();
         }
-    }, [props.model.id]);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [model]);
 
     const fetchBoundaries = () => {
+        if (!model || !rtm) {
+            return;
+        }
         setIsFetching(true);
-        fetchUrl(`modflowmodels/${props.model.id}/boundaries`,
+        fetchUrl(`modflowmodels/${model.id}/boundaries`,
             (data) => {
                 const bc = BoundaryCollection.fromQuery(data);
-                const r = props.rtm.updateHeadsFromBoundaries(bc);
+                const r = rtm.updateHeadsFromBoundaries(bc);
                 const h = r.toObject().data.head;
 
                 if (bc.length === 0 || !h || h.length === 0) {
@@ -64,6 +71,10 @@ const RTModellingBoundaries = (props: IProps) => {
             }
         );
     };
+
+    if (!rtm || !model) {
+        return null;
+    }
 
     const handleChangeMethod = (value: EMethodType, bid: string, propertyKey: number, opId?: string) => {
         if (!heads) {
@@ -136,7 +147,7 @@ const RTModellingBoundaries = (props: IProps) => {
     };
 
     const handleSave = () => {
-        const cRtm = props.rtm.toObject();
+        const cRtm = rtm.toObject();
         cRtm.data.head = heads;
         props.onChange(RTModelling.fromObject(cRtm));
         setIsDirty(false);
@@ -147,7 +158,7 @@ const RTModellingBoundaries = (props: IProps) => {
     ) => {
         const bc = boundaries ? boundaries.map((b) => BoundaryFactory.fromObject(b)) : [];
 
-        if (bc.length < 1) {
+        if (!model || bc.length < 1) {
             return null;
         }
 
@@ -171,8 +182,8 @@ const RTModellingBoundaries = (props: IProps) => {
                     onClick={() => appendBoundaryData(
                         f[0],
                         RTModellingMethod.fromObject(method),
-                        props.rtm,
-                        props.model.stressperiods,
+                        rtm,
+                        model.stressperiods,
                         propertyKey,
                         opId
                     )}
@@ -188,7 +199,7 @@ const RTModellingBoundaries = (props: IProps) => {
             return method.function;
         }
         if (method.method === EMethodType.SENSOR) {
-            const f1 = props.t10Instances.filter((i) => i.id === method.monitoring_id);
+            const f1 = t10Instances.filter((i) => i.id === method.monitoring_id);
             if (f1.length > 0) {
                 return `${f1[0].name} (${f1[0].user_name})`;
             }
@@ -313,7 +324,7 @@ const RTModellingBoundaries = (props: IProps) => {
                 method={RTModellingMethod.fromObject(activeRow.method)}
                 onClose={() => setActiveRow(null)}
                 onSave={handleChangeModal}
-                t10Instances={props.t10Instances}
+                t10Instances={t10Instances}
             />
             }
             <Grid padded={true}>
