@@ -1,4 +1,4 @@
-import {Button, Icon} from 'semantic-ui-react';
+import {Button, Dimmer, Icon, Loader} from 'semantic-ui-react';
 import {DataPoint} from 'downsample';
 import {DataSourceCollection} from '../../../core/model/rtm/monitoring';
 import {IDateTimeValue} from '../../../core/model/rtm/monitoring/Sensor.type';
@@ -18,18 +18,22 @@ interface IProps {
 const DataSourcesChart = (props: IProps) => {
     const [data, setData] = useState<IDateTimeValue[] | null>(null);
     const chartRef = useRef<ScatterChart>(null);
+    const [isFetching, setIsFetching] = useState<boolean>(false);
 
     useEffect(() => {
         async function f() {
             const mergedData = await props.dataSources.mergedData();
 
             if (props.processings instanceof ProcessingCollection) {
-                return setData(await props.processings.apply(mergedData));
+                const processedData = await props.processings.apply(mergedData);
+                setIsFetching(false);
+                return setData(processedData);
             }
-
+            setIsFetching(false);
             return setData(mergedData);
         }
 
+        setIsFetching(true);
         f();
 
     }, [props.dataSources, props.processings]);
@@ -56,6 +60,11 @@ const DataSourcesChart = (props: IProps) => {
 
     return (
         <div>
+            {isFetching &&
+            <Dimmer active={true} inverted={true}>
+                <Loader inverted={true}>Loading</Loader>
+            </Dimmer>
+            }
             <ResponsiveContainer height={300}>
                 <ScatterChart
                     data={data}

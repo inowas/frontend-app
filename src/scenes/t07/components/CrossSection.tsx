@@ -8,12 +8,12 @@ import {ICalculation} from '../../../core/model/modflow/Calculation.type';
 import {IModflowModel} from '../../../core/model/modflow/ModflowModel.type';
 import {ScenarioAnalysis} from '../../../core/model/scenarioAnalysis';
 import {Viewport} from 'react-leaflet';
-import {chunk, compact, flatten} from 'lodash';
 import {fetchCalculationResultsFlow} from '../../../services/api';
 import React, {useEffect, useState} from 'react';
 import ResultsChart from '../../shared/complexTools/ResultsChart';
 import ResultsMap from '../../shared/complexTools/ResultsMap';
 import ResultsSelectorFlow from '../../shared/complexTools/ResultsSelectorFlow';
+import _, {chunk, compact, flatten} from 'lodash';
 
 interface IProps {
     basemodel: ModflowModel;
@@ -53,17 +53,18 @@ const CrossSection = (props: IProps) => {
         setSelectedCol(Math.floor(basemodel.gridSize.nX / 2));
         setSelectedRow(Math.floor(basemodel.gridSize.nY / 2));
         setSelectedModels(cSelectedModels as IModflowModel[]);
-        if (basemodelCalculation.times) {
-            setSelectedTotim(basemodelCalculation.times.total_times[0]);
-            setTotalTimes(basemodelCalculation.times.total_times);
-        }
         setLayerValues(basemodelCalculation.layer_values);
+        if (basemodelCalculation.times) {
+            const times = selectedType === EResultType.HEAD ? basemodelCalculation.times.head : basemodelCalculation.times.drawdown;
+            setSelectedTotim(times.idx.slice(-1)[0]);
+            setTotalTimes(times.total_times);
+        }
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     useEffect(() => {
         if (selectedModels.length > 0 && selectedLay !== null && selectedTotim !== null && selectedType !== null) {
-            fetchData(selectedLay, selectedTotim, selectedType);
+            fetchData(selectedLay, selectedTotim, selectedType, selectedModels);
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [selectedModels, selectedLay, selectedTotim, selectedType]);
@@ -87,28 +88,39 @@ const CrossSection = (props: IProps) => {
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [props.models, props.selected]);
 
-    const fetchData = (layer = selectedLay, totim = selectedTotim, type = selectedType) => {
-        if (type === null || layer === null || totim === null) {
+    const fetchData = (
+        layer = selectedLay,
+        totim = selectedTotim,
+        type = selectedType,
+        models: IModflowModel[],
+        result: {[id: string]: Array2D<number>} = {}
+    ) => {
+        if (type === null || layer === null || totim === null || !totalTimes) {
             return null;
         }
 
-        setIsLoading(true);
-        selectedModels.forEach((m) => {
-            if (props.selected.indexOf(m.id) >= 0) {
-                fetchCalculationResultsFlow({
-                    calculationId: m.calculation_id,
-                    type,
-                    totim,
-                    layer
-                }, (d) => {
-                    setIsLoading(false);
-                    if (Array.isArray(d)) {
-                        setData({...data, [m.id]: d});
-                    }
-                }, () => {
-                    setIsLoading(false);
-                });
-            }
+        if (Object.keys(result).length === 0) {
+            models = _.cloneDeep(models);
+            setIsLoading(true);
+        }
+
+        const m = models.shift();
+
+        if (!m) {
+            setIsLoading(false);
+            return setData(result);
+        }
+
+        fetchCalculationResultsFlow({
+            calculationId: m.calculation_id,
+            type,
+            totim,
+            layer
+        }, (d) => {
+            result[m.id] = d;
+            fetchData(layer, totim, type, models, result);
+        }, () => {
+            setIsLoading(false);
         });
     };
 
@@ -122,7 +134,7 @@ const CrossSection = (props: IProps) => {
         setSelectedType(type);
         setSelectedLay(layer);
         setSelectedTotim(totim);
-        fetchData(layer, totim, type);
+        fetchData(layer, totim, type, selectedModels);
     };
 
     const renderMap = (id: string, minMax: [number, number]) => {
@@ -141,6 +153,7 @@ const CrossSection = (props: IProps) => {
                     boundaries={BoundaryCollection.fromObject(props.boundaries[id])}
                     data={fData}
                     globalMinMax={minMax}
+                    mode="contour"
                     model={model}
                     onClick={(colRow) => {
                         setSelectedCol(colRow[0]);
@@ -177,7 +190,7 @@ const CrossSection = (props: IProps) => {
     };
 
     const calculateGlobalMinMax = (): [number, number] => {
-        const sortedValues = compact(flatten(flatten(Object.values(data)))).sort();
+        const sortedValues = compact(flatten(flatten(Object.values(data)))).sort((a, b) => a - b);
         const q = Math.floor(QUANTILE / 100 * sortedValues.length);
 
         const min = Math.floor(sortedValues[q]);

@@ -1,19 +1,19 @@
-import React, {useEffect, useState} from 'react';
-import {useSelector} from 'react-redux';
-import {useHistory} from 'react-router-dom';
-import {Button, Grid, Header, Segment} from 'semantic-ui-react';
-import Uuid from 'uuid';
-import FlopyPackages from '../../../../../core/model/flopy/packages/FlopyPackages';
-import {FlopyModflowMfbas} from '../../../../../core/model/flopy/packages/mf';
 import {Array2D} from '../../../../../core/model/geometry/Array2D.type';
-import {Calculation, ModflowModel, Soilmodel} from '../../../../../core/model/modflow';
 import {BoundaryCollection} from '../../../../../core/model/modflow/boundaries';
+import {Button, Grid, Header, Segment} from 'semantic-ui-react';
+import {Calculation, ModflowModel, Soilmodel} from '../../../../../core/model/modflow';
+import {FlopyModflowMfbas} from '../../../../../core/model/flopy/packages/mf';
 import {IRootReducer} from '../../../../../reducers';
 import {fetchCalculationResultsFlow, sendCommand} from '../../../../../services/api';
+import {useHistory} from 'react-router-dom';
+import {useSelector} from 'react-redux';
+import FlopyPackages from '../../../../../core/model/flopy/packages/FlopyPackages';
+import React, {useEffect, useState} from 'react';
 import ResultsChart from '../../../../shared/complexTools/ResultsChart';
+import ResultsMap from '../../maps/resultsMap';
 import ResultsSelectorFlow from '../../../../shared/complexTools/ResultsSelectorFlow';
 import ScenarioAnalysisCommand from '../../../../t07/commands/scenarioAnalysisCommand';
-import ResultsMap from '../../maps/resultsMap';
+import Uuid from 'uuid';
 
 export enum EResultType {
     DRAWDOWN = 'drawdown',
@@ -44,15 +44,16 @@ const FlowResults = () => {
     const history = useHistory();
 
     useEffect(() => {
-        if (model === null) {
+        if (model === null || calculation === null) {
             return;
         }
+
         setSelectedCol(Math.floor(model.gridSize.nX / 2));
         setSelectedRow(Math.floor(model.gridSize.nY / 2));
         if (calculation && calculation.times) {
             fetchData({
                 layer: selectedLay,
-                totim: calculation.times.total_times[calculation.times.total_times.length - 1],
+                totim: calculation.times.head.idx[calculation.times.head.idx.length - 1],
                 type: selectedType
             });
         }
@@ -77,11 +78,12 @@ const FlowResults = () => {
 
     useEffect(() => {
         if (calculation && calculation.times) {
-            const cTotalTimes = calculation.times.total_times;
+            const times = selectedType === EResultType.HEAD ? calculation.times.head : calculation.times.drawdown;
             setLayerValues(calculation.layer_values);
-            setSelectedTotim(cTotalTimes.slice(-1)[0]);
-            setTotalTimes(cTotalTimes);
+            setSelectedTotim(times.idx.slice(-1)[0]);
+            setTotalTimes(times.total_times);
         }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [calculation]);
 
     if (!boundaries || !calculation || !model || !packages || !soilmodel) {

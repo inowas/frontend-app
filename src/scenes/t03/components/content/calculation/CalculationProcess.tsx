@@ -1,32 +1,33 @@
-import React, {useEffect, useRef, useState} from 'react';
-import {useDispatch, useSelector} from 'react-redux';
-import {Message} from 'semantic-ui-react';
-import FlopyPackages from '../../../../../core/model/flopy/packages/FlopyPackages';
-import FlopyModflow from '../../../../../core/model/flopy/packages/mf/FlopyModflow';
-import FlopyModpath from '../../../../../core/model/flopy/packages/mp/FlopyModpath';
-import FlopyMt3d from '../../../../../core/model/flopy/packages/mt/FlopyMt3d';
-import FlopySeawat from '../../../../../core/model/flopy/packages/swt/FlopySeawat';
 import {Calculation, ModflowModel} from '../../../../../core/model/modflow';
-import BoundaryCollection from '../../../../../core/model/modflow/boundaries/BoundaryCollection';
 import {ICalculation} from '../../../../../core/model/modflow/Calculation.type';
-import Soilmodel from '../../../../../core/model/modflow/soilmodel/Soilmodel';
-import Transport from '../../../../../core/model/modflow/transport/Transport';
-import VariableDensity from '../../../../../core/model/modflow/variableDensity';
 import {IRootReducer} from '../../../../../reducers';
+import {Message} from 'semantic-ui-react';
 import {
     fetchCalculationDetails,
     sendCommand,
     sendModflowCalculationRequest
 } from '../../../../../services/api';
 import {updateCalculation, updateProcessedPackages, updateProcessingPackages} from '../../../actions/actions';
-import ModflowModelCommand from '../../../commands/modflowModelCommand';
+import {useDispatch, useSelector} from 'react-redux';
+import BoundaryCollection from '../../../../../core/model/modflow/boundaries/BoundaryCollection';
 import CalculationStatus, {
     CALCULATION_STARTED,
+    CALCULATION_STATE_CALCULATION_ERROR_SERVER,
     CALCULATION_STATE_CALCULATION_FINISHED,
     CALCULATION_STATE_SENDING_DATA,
     CALCULATION_STATE_UPDATING_PACKAGES,
     CALCULATION_STATE_WAITING_FOR_CALCULATION
 } from './CalculationProgress';
+import FlopyModflow from '../../../../../core/model/flopy/packages/mf/FlopyModflow';
+import FlopyModpath from '../../../../../core/model/flopy/packages/mp/FlopyModpath';
+import FlopyMt3d from '../../../../../core/model/flopy/packages/mt/FlopyMt3d';
+import FlopyPackages from '../../../../../core/model/flopy/packages/FlopyPackages';
+import FlopySeawat from '../../../../../core/model/flopy/packages/swt/FlopySeawat';
+import ModflowModelCommand from '../../../commands/modflowModelCommand';
+import React, {useEffect, useRef, useState} from 'react';
+import Soilmodel from '../../../../../core/model/modflow/soilmodel/Soilmodel';
+import Transport from '../../../../../core/model/modflow/transport/Transport';
+import VariableDensity from '../../../../../core/model/modflow/variableDensity';
 
 const CalculationProcess = () => {
 
@@ -79,37 +80,47 @@ const CalculationProcess = () => {
         }, [T03.model, T03.calculation]);
 
         useEffect(() => {
-            if (isProcessing && calculation && model) {
+            setError(null);
+
+            const f = async (model: ModflowModel) => {
                 const p = recalculatePackages();
                 setIsProcessing(false);
-                if (p) {
-                    const hash = p.hash(p.getData());
-                    dispatch(updateCalculation(
-                        Calculation.fromCalculationIdAndState(hash, CALCULATION_STATE_UPDATING_PACKAGES)
-                    ));
-
-                    sendCommand(
-                        ModflowModelCommand.updateFlopyPackages(model.id, p),
-                        () => {
-                            dispatch(updateProcessedPackages(p));
-                            sendCommand(
-                                ModflowModelCommand.updateModflowModelCalculationId(model.id, hash),
-                                () => {
-                                    dispatch(updateCalculation(
-                                        Calculation.fromCalculationIdAndState(hash, CALCULATION_STATE_SENDING_DATA)
-                                    ));
-                                    sendModflowCalculationRequest(p).then(() =>
-                                        dispatch(updateCalculation(Calculation.fromCalculationIdAndState(
-                                            hash, CALCULATION_STATE_WAITING_FOR_CALCULATION
-                                        ))));
-                                },
-                                () => ({})
-                            );
-
-                        },
-                        () => ({})
-                    );
+                if (!p) {
+                    return setError('The package recalculation went wrong!');
                 }
+
+                const [schemaIsValid, e]: [boolean, null | string] = await p.validate(true);
+
+                if (!schemaIsValid) {
+                    return setError(`The schema is invalid! The following errors are shown: ${e}`);
+                }
+
+                const hash = p.hash(p.getData());
+                dispatch(updateCalculation(
+                    Calculation.fromCalculationIdAndState(hash, CALCULATION_STATE_UPDATING_PACKAGES)
+                ));
+
+                try {
+                    await sendCommand(ModflowModelCommand.updateFlopyPackages(model.id, p));
+                    dispatch(updateProcessedPackages(p));
+                    await sendCommand(ModflowModelCommand.updateModflowModelCalculationId(model.id, hash));
+                    dispatch(updateCalculation(
+                        Calculation.fromCalculationIdAndState(hash, CALCULATION_STATE_SENDING_DATA)
+                    ));
+                    await sendModflowCalculationRequest(p);
+                    dispatch(updateCalculation(Calculation.fromCalculationIdAndState(
+                        hash, CALCULATION_STATE_WAITING_FOR_CALCULATION
+                    )));
+                } catch (e) {
+                    dispatch(updateCalculation(
+                        Calculation.fromCalculationIdAndState(hash, CALCULATION_STATE_CALCULATION_ERROR_SERVER)
+                    ));
+                    setError(`Error sending the calculation data. More information: ${e}`);
+                }
+            };
+
+            if (isProcessing && calculation && model) {
+                f(model);
             }
             // eslint-disable-next-line react-hooks/exhaustive-deps
         }, [isProcessing]);

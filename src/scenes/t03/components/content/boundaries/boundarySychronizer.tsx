@@ -1,17 +1,23 @@
-import {cloneDeep} from 'lodash';
-import React from 'react';
-import {Button, Progress} from 'semantic-ui-react';
-import {ModflowModel} from '../../../../../core/model/modflow';
 import {Boundary, BoundaryCollection} from '../../../../../core/model/modflow/boundaries';
+import {Button, Progress} from 'semantic-ui-react';
+import {IBoundary} from '../../../../../core/model/modflow/boundaries/Boundary.type';
 import {IBoundaryComparisonItem} from '../../../../../core/model/modflow/boundaries/BoundaryCollection';
-import {sendCommands} from '../../../../../services/api/commandHelper';
+import {ModflowModel} from '../../../../../core/model/modflow';
+import {asyncSendCommand, fetchUrl} from '../../../../../services/api';
+import {connect} from 'react-redux';
+import {updateBoundaries} from '../../../actions/actions';
+import AbstractCommand from '../../../../../core/model/command/AbstractCommand';
 import ModflowModelCommand from '../../../commands/modflowModelCommand';
+import React from 'react';
 
-interface IProps {
+interface IStateProps {
     currentBoundaries: BoundaryCollection;
     newBoundaries: BoundaryCollection;
     model: ModflowModel;
-    onChange: (boundaries: BoundaryCollection) => void;
+}
+
+interface IDispatchProps {
+    updateBoundaries: (boundaries: BoundaryCollection) => any;
 }
 
 interface IState {
@@ -22,6 +28,8 @@ interface IState {
     commandsSuccessfullySent: number;
     commandsErrorSent: number;
 }
+
+type IProps = IStateProps & IDispatchProps;
 
 class BoundarySynchronizer extends React.Component<IProps, IState> {
     public constructor(props: IProps) {
@@ -107,38 +115,44 @@ class BoundarySynchronizer extends React.Component<IProps, IState> {
         return commands;
     };
 
-    private onSendCommandSuccess = () => {
-        this.setState((state) => {
-            const {commands, commandsSuccessfullySent, commandsErrorSent} = state;
-
-            return {
-                commandsSuccessfullySent: commandsSuccessfullySent + 1,
-                synchronizing: (commandsSuccessfullySent + 1 + commandsErrorSent) < commands.length,
-            };
-        });
-    };
-
-    private onSendCommandError = () => {
-        this.setState((state) => {
-            const {commands, commandsSuccessfullySent, commandsErrorSent} = state;
-            return {
-                commandsErrorSent: commandsErrorSent + 1,
-                synchronizing: (commandsSuccessfullySent + 1 + commandsErrorSent) < commands.length
-            };
-        });
-    };
-
     private synchronize = () => {
-        const {commands} = this.state;
         this.setState({
-                synchronizing: true,
-                showProgress: true,
-                commandsSuccessfullySent: 0,
-                commandsErrorSent: 0,
-            },
-            () => sendCommands(cloneDeep(commands), this.onSendCommandSuccess, this.onSendCommandError)
+            showProgress: true,
+            synchronizing: true
+        });
+
+        const {commands} = this.state;
+        const sendCommands = async (commands: AbstractCommand[]) => {
+            for (const command of commands) {
+                try {
+                    await asyncSendCommand(command);
+                    this.setState((prevState) => ({
+                        commandsSuccessfullySent: prevState.commandsSuccessfullySent + 1,
+                        synchronizing: (prevState.commandsSuccessfullySent + 1 + prevState.commandsErrorSent) < commands.length,
+                    }));
+                } catch (e) {
+                    this.setState((prevState) => ({
+                        commandsErrorSent: prevState.commandsErrorSent + 1,
+                        synchronizing: (prevState.commandsSuccessfullySent + 1 + prevState.commandsErrorSent) < commands.length,
+                    }));
+                }
+            }
+        };
+
+        sendCommands(commands).finally(
+            () => {
+                fetchUrl(`modflowmodels/${this.props.model.id}/boundaries`,
+                    (data: IBoundary[]) => this.props.updateBoundaries(BoundaryCollection.fromQuery(data)));
+            }
         );
     };
 }
 
-export default BoundarySynchronizer;
+const mapDispatchToProps = (dispatch: any): IDispatchProps => ({
+    updateBoundaries: (b) => {
+        dispatch(updateBoundaries(b));
+    },
+});
+
+export default connect<unknown, IDispatchProps>(null, mapDispatchToProps)(BoundarySynchronizer);
+

@@ -1,11 +1,11 @@
-import {ContourMultiPolygon} from 'd3';
-import React, {useEffect, useState} from 'react';
-import {FeatureGroup, GeoJSON} from 'react-leaflet';
-import uuid from 'uuid';
 import {Array2D} from '../../../core/model/geometry/Array2D.type';
 import {BoundingBox, Geometry, GridSize} from '../../../core/model/modflow';
+import {ContourMultiPolygon} from 'd3';
+import {FeatureGroup, GeoJSON} from 'react-leaflet';
 import {rasterToContour} from '../../../services/geoTools/contours';
 import Rainbow from '../../../services/rainbowvis/Rainbowvis';
+import React, {useEffect, useState} from 'react';
+import uuid from 'uuid';
 
 interface IProps {
     boundingBox: BoundingBox;
@@ -53,7 +53,8 @@ const ContourLayer = (props: IProps) => {
                     key={key}
                     data={mp}
                     color={`#${props.rainbow.colorAt(thresholds[key])}`}
-                    fillOpacity={0.8}
+                    fill={true}
+                    weight={1.5}
                 />
             ))}
         </FeatureGroup>

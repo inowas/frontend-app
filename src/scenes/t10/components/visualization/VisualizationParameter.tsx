@@ -1,10 +1,15 @@
+import {
+    Button,
+    Dimmer,
+    Grid, Icon, Input,
+    Loader, Popup,
+    Segment
+} from 'semantic-ui-react';
+import {DataSourceCollection, Rtm} from '../../../../core/model/rtm';
+import {IParameterWithMetaData, ITimeStamps} from './types';
+import {IPropertyValueObject} from '../../../../core/model/types';
 import {LTOB} from 'downsample';
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-// @ts-ignore todo
-import {XYDataPoint} from 'downsample/dist/types';
-import {cloneDeep} from 'lodash';
-import moment from 'moment';
-import React, {useEffect, useRef, useState} from 'react';
+import {ProcessingCollection} from '../../../../core/model/rtm/processing';
 import {
     ReferenceArea,
     ReferenceLine,
@@ -14,21 +19,16 @@ import {
     XAxis,
     YAxis,
 } from 'recharts';
-import {
-    Button,
-    Dimmer,
-    Grid, Icon, Input,
-    Loader, Popup,
-    Segment
-} from 'semantic-ui-react';
-import Uuid from 'uuid';
-import {DataSourceCollection, Rtm} from '../../../../core/model/rtm/monitoring';
-import {ProcessingCollection} from '../../../../core/model/rtm/processing';
-import {IPropertyValueObject} from '../../../../core/model/types';
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-ignore todo
+import {XYDataPoint} from 'downsample/dist/types';
+import {cloneDeep} from 'lodash';
 import {downloadFile, exportChartImage} from '../../../shared/simpleTools/helpers';
+import React, {useEffect, useRef, useState} from 'react';
 import TimeSlider from './TimeSlider';
-import {IParameterWithMetaData, ITimeStamps} from './types';
+import Uuid from 'uuid';
 import VisualizationMap from './VisualizationMap';
+import moment from 'moment';
 
 interface IProps {
     parameters: IParameterWithMetaData[];
@@ -60,37 +60,39 @@ const getData = (
         dataSourceCollection.mergedData().then((res) => {
             const processed = ProcessingCollection.fromObject(parameter.parameter.processings);
             processed.apply(res).then((r) => {
-                data[key].data = r.map((row) => {
-                    if (isNaN(tsData.minT) || row.timeStamp < tsData.minT) {
-                        tsData.minT = row.timeStamp;
-                    }
-                    if (isNaN(tsData.maxT) || row.timeStamp > tsData.maxT) {
-                        tsData.maxT = row.timeStamp;
-                    }
-                    if (parameter.meta.axis === 'left') {
-                        if ((isNaN(tsData.left.min) || row.value < tsData.left.min) && row.value !== null) {
-                            tsData.left.min = row.value;
+                if (parameter.meta.active) {
+                    data[key].data = r.map((row) => {
+                        if (isNaN(tsData.minT) || row.timeStamp < tsData.minT) {
+                            tsData.minT = row.timeStamp;
                         }
-                        if ((isNaN(tsData.left.max) || row.value > tsData.left.max) && row.value !== null) {
-                            tsData.left.max = row.value;
+                        if (isNaN(tsData.maxT) || row.timeStamp > tsData.maxT) {
+                            tsData.maxT = row.timeStamp;
                         }
-                    }
-                    if (parameter.meta.axis === 'right') {
-                        if ((isNaN(tsData.right.min) || row.value < tsData.right.min) && row.value !== null) {
-                            tsData.right.min = row.value;
+                        if (parameter.meta.axis === 'left') {
+                            if ((isNaN(tsData.left.min) || row.value < tsData.left.min) && row.value !== null) {
+                                tsData.left.min = row.value;
+                            }
+                            if ((isNaN(tsData.left.max) || row.value > tsData.left.max) && row.value !== null) {
+                                tsData.left.max = row.value;
+                            }
                         }
-                        if ((isNaN(tsData.right.max) || row.value > tsData.right.max) && row.value !== null) {
-                            tsData.right.max = row.value;
+                        if (parameter.meta.axis === 'right') {
+                            if ((isNaN(tsData.right.min) || row.value < tsData.right.min) && row.value !== null) {
+                                tsData.right.min = row.value;
+                            }
+                            if ((isNaN(tsData.right.max) || row.value > tsData.right.max) && row.value !== null) {
+                                tsData.right.max = row.value;
+                            }
                         }
-                    }
-                    if (!tsData.timestamps.includes(row.timeStamp)) {
-                        tsData.timestamps.push(row.timeStamp);
-                    }
-                    return {
-                        x: row.timeStamp,
-                        y: row.value || NaN
-                    };
-                });
+                        if (!tsData.timestamps.includes(row.timeStamp)) {
+                            tsData.timestamps.push(row.timeStamp);
+                        }
+                        return {
+                            x: row.timeStamp,
+                            y: row.value || NaN
+                        };
+                    });
+                }
                 key++;
                 getData(parameters, onFinished, data, tsData, key);
                 return;
@@ -130,9 +132,9 @@ const VisualizationParameter = (props: IProps) => {
     const [tsData, setTsData] = useState<ITimeStamps>({
         minT: 0, maxT: 0, left: {min: 0, max: 0}, right: {min: 0, max: 0}, timestamps: []
     });
-    const [filteredTsData, setFilteredTsData] = useState<ITimeStamps>(
-        {minT: 0, maxT: 0, left: {min: 0, max: 0}, right: {min: 0, max: 0}, timestamps: []}
-    );
+    const [filteredTsData, setFilteredTsData] = useState<ITimeStamps>({
+        minT: 0, maxT: 0, left: {min: 0, max: 0}, right: {min: 0, max: 0}, timestamps: []
+    });
 
     const [leftAxis, setLeftAxis] = useState<string>('');
     const [rightAxis, setRightAxis] = useState<string>('');
@@ -170,6 +172,7 @@ const VisualizationParameter = (props: IProps) => {
 
     useEffect(() => {
         if (props.parameters.length > 0) {
+            setIsFetching(true);
             getData(cloneDeep(props.parameters), (rData, rTsData) => {
                 setTsData(rTsData);
                 setFilteredTsData(cloneDeep(rTsData));
@@ -221,14 +224,6 @@ const VisualizationParameter = (props: IProps) => {
     // tslint:disable-next-line:variable-name
     const RenderNoShape = () => null;
 
-    if (isFetching || props.parameters.length === 0) {
-        return (
-            <Dimmer active={true} inverted={true}>
-                <Loader inverted={true}>Loading</Loader>
-            </Dimmer>
-        );
-    }
-
     const handleClickReset = () => {
         setTimestamp(tsData.timestamps[0]);
         setFilteredTsData(cloneDeep(tsData));
@@ -264,24 +259,18 @@ const VisualizationParameter = (props: IProps) => {
 
     const handleTogglePlay = () => setIsAnimated(!isAnimated);
 
-    if (filteredData.length === 0) {
-        return (
-            <Segment color={'grey'} raised={true}>
-                Select at least one parameter!
-            </Segment>
-        );
-    }
-
     const generateDataArray = () => filteredTsData.timestamps.map((ts) => {
         const rowObject: IPropertyValueObject = {
-            x: ts
+            x: moment.unix(ts).format()
         };
         filteredData.forEach((p) => {
-            const row = p.data.filter((r) => r.x === ts);
-            if (row.length > 0) {
-                rowObject[p.parameter.type] = row[0].y;
-            } else {
-                rowObject[p.parameter.type] = NaN;
+            if (p.meta.active) {
+                const row = p.data.filter((r) => r.x === ts);
+                if (row.length > 0) {
+                    rowObject[`${p.parameter.type}_${p.sensor.name}`] = row[0].y;
+                } else {
+                    rowObject[`${p.parameter.type}_${p.sensor.name}`] = NaN;
+                }
             }
         });
         return rowObject;
@@ -306,6 +295,11 @@ const VisualizationParameter = (props: IProps) => {
     return (
         <div>
             <Segment color={'grey'} raised={true}>
+                {(filteredData.length === 0 || isFetching || props.parameters.length === 0) &&
+                <Dimmer active={true} inverted={true}>
+                    <Loader inverted={true}>Loading</Loader>
+                </Dimmer>
+                }
                 <Grid>
                     <Grid.Row>
                         <Grid.Column>
@@ -363,6 +357,7 @@ const VisualizationParameter = (props: IProps) => {
                             </div>
                         </Grid.Column>
                     </Grid.Row>
+                    {filteredData.length > 0 &&
                     <Grid.Row>
                         <Grid.Column>
                             <ResponsiveContainer height={300}>
@@ -403,7 +398,7 @@ const VisualizationParameter = (props: IProps) => {
                                             <Scatter
                                                 key={idx}
                                                 yAxisId={row.meta.axis}
-                                                data={LTOB(row.data, 100)}
+                                                data={LTOB(row.data, 100).filter((r) => r !== undefined)}
                                                 fill={row.meta.color}
                                                 line={withLines ? {strokeWidth: 2, stroke: row.meta.color} : false}
                                                 lineType={'joint'}
@@ -459,8 +454,10 @@ const VisualizationParameter = (props: IProps) => {
                             </Grid>
                         </Grid.Column>
                     </Grid.Row>
+                    }
                 </Grid>
             </Segment>
+            {props.parameters.length > 0 &&
             <Segment color={'grey'} raised={true}>
                 <VisualizationMap
                     timestamp={timestamp}
@@ -472,6 +469,7 @@ const VisualizationParameter = (props: IProps) => {
                     isAnimated={isAnimated}
                 />
             </Segment>
+            }
         </div>
     );
 };

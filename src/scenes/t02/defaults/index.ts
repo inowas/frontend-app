@@ -1,6 +1,6 @@
-import uuidv4 from 'uuid';
-import {ISimpleTool} from '../../../core/model/types';
 import {IRootReducer} from '../../../reducers';
+import {ISimpleTool} from '../../../core/model/types';
+import uuidv4 from 'uuid';
 
 export const defaultsWithSession = (session: IRootReducer['session']): IT02 => {
     if (session && !session.token) {
@@ -66,7 +66,7 @@ const defaults: IT02 = {
         }, {
             order: 2,
             id: 'W',
-            name: `Basin width<br/>W (m)`,
+            name: 'Basin width<br/>W (m)',
             min: 0,
             validMin: (x: number) => x > 0,
             max: 100,

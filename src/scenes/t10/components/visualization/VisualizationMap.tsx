@@ -1,16 +1,16 @@
-import {LatLngExpression} from 'leaflet';
-import _ from 'lodash';
-import React, {SyntheticEvent, useState} from 'react';
-import {CircleMarker, Map, Tooltip} from 'react-leaflet';
-import {Button, Dropdown, DropdownProps, Grid, Popup} from 'semantic-ui-react';
-import {BoundingBox} from '../../../../core/model/geometry';
-import {Rtm} from '../../../../core/model/rtm/monitoring';
-import {ISensor} from '../../../../core/model/rtm/monitoring/Sensor.type';
 import {BasicTileLayer} from '../../../../services/geoTools/tileLayers';
+import {BoundingBox} from '../../../../core/model/geometry';
+import {Button, Dropdown, DropdownProps, Grid, Popup} from 'semantic-ui-react';
+import {CircleMarker, Map, Tooltip} from 'react-leaflet';
 import {ColorLegend} from '../../../shared/rasterData';
-import {rainbowFactory} from '../../../shared/rasterData/helpers';
-import {heatMapColors} from '../../../t05/defaults/gis';
 import {IParameterWithMetaData, ITimeStamps} from './types';
+import {ISensor} from '../../../../core/model/rtm/Sensor.type';
+import {LatLngExpression} from 'leaflet';
+import {Rtm} from '../../../../core/model/rtm';
+import {heatMapColors} from '../../../t05/defaults/gis';
+import {rainbowFactory} from '../../../shared/rasterData/helpers';
+import React, {SyntheticEvent, useEffect, useState} from 'react';
+import _ from 'lodash';
 
 interface IProps {
     data: IParameterWithMetaData[];
@@ -25,6 +25,14 @@ interface IProps {
 const VisualizationMap = (props: IProps) => {
     const [selectedParameter, setSelectedParameter] = useState<string | undefined>(props.parameters[0].parameter.type);
     const [showScale, setShowScale] = useState<boolean>(false);
+
+    useEffect(() => {
+        if (props.parameters.length > 0 && (!selectedParameter || (selectedParameter &&
+                props.parameters.filter((p) => p.parameter.type === selectedParameter)))) {
+            setSelectedParameter(props.parameters[0].parameter.type)
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [props.parameters]);
 
     const getMinMax = () => {
         const params = props.parameters.filter((p) => p.parameter.type === selectedParameter);
@@ -93,14 +101,16 @@ const VisualizationMap = (props: IProps) => {
             let fillOpacity = 0.8;
             let value = null;
 
-            if (showScale && props.tsData) {
+            if (props.tsData) {
                 const row = parameter[0].data.filter((r) => r.x === (props.isAnimated ? props.tsData.timestamps[
                     props.timeRef] : props.timestamp));
                 if (row.length > 0) {
                     value = row[0].y;
-                    fillColor = `#${rainbow.colorAt(row[0].y)}`;
-                } else {
-                    fillColor = `#000`;
+                    if (showScale) {
+                        fillColor = `#${rainbow.colorAt(row[0].y)}`;
+                    }
+                } else if (showScale) {
+                    fillColor = '#000';
                     fillOpacity = 0.3;
                 }
             }

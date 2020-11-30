@@ -1,11 +1,10 @@
 import {AddSensor, SensorList} from './index';
 import {Grid, Segment} from 'semantic-ui-react';
-import {RouteComponentProps, withRouter} from 'react-router';
-import {Rtm, Sensor} from '../../../core/model/rtm/monitoring';
+import {Rtm, Sensor} from '../../../core/model/rtm';
 import ContentToolBar from '../../shared/ContentToolbar';
 import React, {ReactFragment, useEffect, useState} from 'react';
 
-export interface IProps extends RouteComponentProps<{ id: string, property: string, pid: string }> {
+export interface IProps {
     rtm: Rtm;
     isDirty: boolean;
     isError: boolean;
@@ -129,6 +128,4 @@ const Sensors = (props: IProps) => {
     );
 };
 
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-// @ts-ignore todo
-export default withRouter<IProps>(Sensors);
+export default Sensors;

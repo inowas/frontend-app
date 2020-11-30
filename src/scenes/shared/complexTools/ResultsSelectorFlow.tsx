@@ -1,9 +1,9 @@
+import {DropdownProps, Form, Grid, Header, Segment} from 'semantic-ui-react';
+import {IPropertyValueObject} from '../../../core/model/types';
+import {Soilmodel, Stressperiods} from '../../../core/model/modflow';
 import {flatten, uniq, upperFirst} from 'lodash';
 import Moment from 'moment';
 import React, {SyntheticEvent, useState} from 'react';
-import {DropdownProps, Form, Grid, Header, Segment} from 'semantic-ui-react';
-import {Soilmodel, Stressperiods} from '../../../core/model/modflow';
-import {IPropertyValueObject} from '../../../core/model/types';
 import SliderWithTooltip from './SliderWithTooltip';
 
 const styles = {
@@ -27,7 +27,7 @@ interface IProps {
     data: {
         type: EResultType,
         layer: number,
-        totim: number
+        totim: number       // ID
     };
     onChange: (result: {
         type: EResultType,
@@ -41,7 +41,7 @@ interface IProps {
 }
 
 const ResultsSelectorFlow = (props: IProps) => {
-    const [temporaryTotim, setTemporaryTotim] = useState<number>(props.data.totim);
+    const [temporaryTotim, setTemporaryTotim] = useState<number>(props.totalTimes[props.data.totim]);
 
     const sliderMarks = () => {
         const maxNumberOfMarks = 10;
@@ -52,7 +52,7 @@ const ResultsSelectorFlow = (props: IProps) => {
             const maxTotim = Math.ceil(totalTimes[totalTimes.length - 1]);
             const dTotim = Math.round((maxTotim - minTotim) / maxNumberOfMarks);
 
-            totalTimes = new Array(maxNumberOfMarks).fill(0).map((value, key) => (minTotim + key * dTotim));
+            totalTimes = new Array(maxNumberOfMarks).fill(0).map((value, key) => (minTotim + (key * dTotim)));
             totalTimes.push(maxTotim);
         }
 
@@ -104,7 +104,8 @@ const ResultsSelectorFlow = (props: IProps) => {
     };
 
     const handleAfterChangeSlider = () => {
-        return props.onChange({layer: props.data.layer, totim: temporaryTotim, type: props.data.type});
+        const totim = props.totalTimes.indexOf(temporaryTotim);
+        return props.onChange({layer: props.data.layer, totim: totim > -1 ? totim : 0, type: props.data.type});
     };
 
     return (
@@ -139,10 +140,10 @@ const ResultsSelectorFlow = (props: IProps) => {
                     <Segment color={'grey'}>
                         <Header textAlign={'center'} as={'h4'}>Select total time [days]</Header>
                         <SliderWithTooltip
-                            dots={props.totalTimes.length < 20}
+                            dots={false}
                             dotStyle={styles.dot}
                             trackStyle={styles.track}
-                            defaultValue={props.data.totim}
+                            defaultValue={props.totalTimes[props.data.totim]}
                             min={Math.floor(props.totalTimes[0])}
                             max={Math.ceil(props.totalTimes[props.totalTimes.length - 1])}
                             marks={sliderMarks()}

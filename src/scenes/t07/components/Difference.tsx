@@ -1,19 +1,19 @@
-import {cloneDeep} from 'lodash';
-import React, {SyntheticEvent, useEffect, useState} from 'react';
-import {DropdownProps, Form, Grid, Header, Segment} from 'semantic-ui-react';
 import {Array2D} from '../../../core/model/geometry/Array2D.type';
-import {Calculation, ModflowModel, Soilmodel, Stressperiods} from '../../../core/model/modflow';
 import {BoundaryCollection} from '../../../core/model/modflow/boundaries';
+import {Calculation, ModflowModel, Soilmodel, Stressperiods} from '../../../core/model/modflow';
+import {DropdownProps, Form, Grid, Header, Segment} from 'semantic-ui-react';
+import {EResultType} from '../../t03/components/content/results/flowResults';
 import {IBoundary} from '../../../core/model/modflow/boundaries/Boundary.type';
 import {ICalculation} from '../../../core/model/modflow/Calculation.type';
 import {IModflowModel} from '../../../core/model/modflow/ModflowModel.type';
 import {ISoilmodel} from '../../../core/model/modflow/soilmodel/Soilmodel.type';
 import {ScenarioAnalysis} from '../../../core/model/scenarioAnalysis';
+import {cloneDeep} from 'lodash';
 import {fetchCalculationResultsFlow} from '../../../services/api';
+import React, {SyntheticEvent, useEffect, useState} from 'react';
 import ResultsChart from '../../shared/complexTools/ResultsChart';
 import ResultsMap from '../../shared/complexTools/ResultsMap';
 import ResultsSelectorFlow from '../../shared/complexTools/ResultsSelectorFlow';
-import {EResultType} from '../../t03/components/content/results/flowResults';
 
 interface IProps {
     models: { [id: string]: IModflowModel };
@@ -53,7 +53,7 @@ const Difference = (props: IProps) => {
             setSelectedCol(Math.floor(basemodel.gridSize.nX / 2));
             setSelectedRow(Math.floor(basemodel.gridSize.nY / 2));
             if (basemodelCalculation && basemodelCalculation.times) {
-                setSelectedTotim(basemodelCalculation.times.total_times[0]);
+                setSelectedTotim(0);
             }
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -77,7 +77,7 @@ const Difference = (props: IProps) => {
             return null;
         }
 
-        const modelToFetch = selectedModels.filter((m) => !results.hasOwnProperty(m.id));
+        const modelToFetch = selectedModels.filter((m) => !(m.id in results));
         if (modelToFetch.length === 0) {
             setIsLoading(false);
             return setData(results);
@@ -147,16 +147,16 @@ const Difference = (props: IProps) => {
         const stressperiods = basemodel.discretization.stressperiods;
         const soilmodel = props.soilmodels[basemodel.id];
 
-        if (!basemodelResults) {
+        if (!basemodelResults || !basemodelResults.times) {
             return (
                 <div>Results not found.</div>
             );
         }
 
         const layerValues = basemodelResults.layer_values;
-        const totalTimes = basemodelResults.times ? basemodelResults.times.total_times : null;
+        const times = selectedType === EResultType.HEAD ? basemodelResults.times.head : basemodelResults.times.drawdown;
 
-        if (!stressperiods || !soilmodel || selectedLay === null || selectedTotim === null || !totalTimes) {
+        if (!stressperiods || !soilmodel || selectedLay === null || selectedTotim === null || !times) {
             return (
                 <div>Data not found.</div>
             );
@@ -174,7 +174,7 @@ const Difference = (props: IProps) => {
                     layerValues={layerValues}
                     soilmodel={Soilmodel.fromObject(soilmodel)}
                     stressperiods={Stressperiods.fromObject(stressperiods)}
-                    totalTimes={totalTimes}
+                    totalTimes={times.total_times}
                 />
             </Segment>
         );
@@ -218,6 +218,7 @@ const Difference = (props: IProps) => {
                                         activeCell={[selectedCol || 0, selectedRow || 0]}
                                         boundaries={BoundaryCollection.fromObject([])}
                                         data={diff}
+                                        mode="contour"
                                         model={m1}
                                         onClick={(colRow) => {
                                             setSelectedCol(colRow[0]);
@@ -271,7 +272,7 @@ const Difference = (props: IProps) => {
                                 style={{zIndex: 1000}}
                                 selection={true}
                                 fluid={true}
-                                id={0}
+                                id="0"
                                 options={modelOptions()}
                                 value={selected[0] || undefined}
                                 onChange={handleSelectModel}
@@ -286,7 +287,7 @@ const Difference = (props: IProps) => {
                                 style={{zIndex: 1000}}
                                 selection={true}
                                 fluid={true}
-                                id={1}
+                                id="1"
                                 options={modelOptions()}
                                 value={selected[1] || undefined}
                                 onChange={handleSelectModel}

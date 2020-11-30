@@ -27,7 +27,7 @@ const AddSensor = (props: IProps) => {
             setLat(data.value);
         }
 
-        if (data.name === 'long') {
+        if (data.name === 'lon') {
             setLong(data.value);
         }
     };

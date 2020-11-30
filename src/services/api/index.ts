@@ -53,6 +53,11 @@ export const sendCommand = (
         .catch(onError);
 };
 
+export const asyncSendCommand = async (command: AbstractCommand) => {
+    const api = createApi(getToken());
+    return api.post('messagebox', command.toObject()).then((response) => response.data)
+};
+
 export const sendCommandAsync = async (command: AbstractCommand) => {
     const api = createApi(getToken());
     return await api.post('messagebox', command.toObject()).then((response) => response.data);
@@ -189,7 +194,7 @@ export const fetchCalculationResultsBudget = (
     onSuccess: CallbackFunction<IBudgetData, void>,
     onError: (e: AxiosError) => any
 ) => {
-    const url = `${MODFLOW_CALCULATION_URL}/${calculationId}/results/types/budget/totims/${totim}`;
+    const url = `${MODFLOW_CALCULATION_URL}/${calculationId}/results/types/budget/idx/${totim}`;
 
     return axios.request({
         method: 'GET',
@@ -214,7 +219,7 @@ export const fetchCalculationResultsFlow = (
     onSuccess: CallbackFunction<Array2D<number>, void>,
     onError: ErrorCallbackFunction
 ) => {
-    const url = `${MODFLOW_CALCULATION_URL}/${calculationId}/results/types/${type}/layers/${layer}/totims/${totim}`;
+    const url = `${MODFLOW_CALCULATION_URL}/${calculationId}/results/types/${type}/layers/${layer}/idx/${totim}`;
 
     return axios.request({
         method: 'GET',
@@ -282,6 +287,11 @@ export const fetchTool = (
         .then((response) => response.data)
         .then(onSuccess)
         .catch(onError);
+};
+
+export const asyncFetchTool = async (tool: string, id: string) => {
+    const api = createApi(getToken());
+    return await api.get(`tools/${tool}/${id}`).then((response) => response.data);
 };
 
 export const fetchUrl = (

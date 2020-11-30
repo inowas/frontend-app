@@ -11477,10 +11477,10 @@ react-lifecycles-compat@^3.0.2, react-lifecycles-compat@^3.0.4:
   resolved "https://registry.yarnpkg.com/react-lifecycles-compat/-/react-lifecycles-compat-3.0.4.tgz#4f1a273afdfc8f3488a8c516bfda78f872352362"
   integrity sha512-fBASbA6LnOU9dOU2eW7aQ8xmYBSXUIWr+UmF9b1efZBazGNO+rcXT/icdKnYm2pTwcRylVUYwW7H1PHfLekVzA==
 
-react-pivottable@^0.10.0:
-  version "0.10.0"
-  resolved "https://registry.yarnpkg.com/react-pivottable/-/react-pivottable-0.10.0.tgz#1a92b0b20fccfb81e01502881c13151843a80ae9"
-  integrity sha512-d2w0YVcR4rrwcrx1Oyei9x3LNR3/9/uLA3gMGHvD/CrozvOp3FtXdOB3mK+d63bd2vEoj4aUu/iNaKVf2eOPoA==
+react-pivottable@^0.11.0:
+  version "0.11.0"
+  resolved "https://registry.yarnpkg.com/react-pivottable/-/react-pivottable-0.11.0.tgz#2ac9a28db6bdcefdb7bdeeb1ed067df229bb9dd8"
+  integrity sha512-hFU10XYL28NWVRnm+RRyHrzsAn/xIJzPgwPebUE2Hx5JZQl/Zxty3WUL/5cAcdK4AmTb9FQBRopLKLwuiI6VlA==
   dependencies:
     immutability-helper "^2.3.1"
     prop-types "^15.5.10"
