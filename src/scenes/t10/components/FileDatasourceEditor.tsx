@@ -159,9 +159,9 @@ const FileDatasourceEditor = (props: IProps) => {
         }
 
         const ld = async () => {
-            await ds.loadData();
-            if (ds.data) {
-                setData(ds.data);
+            const data = await ds.loadData();
+            if (data) {
+                setData(data);
             }
         };
 
@@ -206,9 +206,9 @@ const FileDatasourceEditor = (props: IProps) => {
         }
 
         const ld = async () => {
-            await ds.loadData();
-            if (ds.data) {
-                setData(ds.data);
+            const data = await ds.loadData();
+            if (data) {
+                setData(data);
             }
         };
 

@@ -1,6 +1,7 @@
 import {GenericObject} from '../genericObject/GenericObject';
 import {IDataDropperFile} from '../../../services/dataDropper/DataDropper.type';
 import {IDateTimeValue, IFileDataSource} from './Sensor.type';
+import {cloneDeep} from 'lodash';
 import {dropData, retrieveData} from '../../../services/dataDropper';
 import uuid from 'uuid';
 
@@ -114,65 +115,71 @@ class FileDataSource extends GenericObject<IFileDataSource> {
     }
 
     public async loadData() {
-        this._props.data = null;
-        this._props.fetching = true;
-        try {
-            this._props.data = await retrieveData(this.file);
-            this.sortAndFilterData();
-            this._props.fetching = false;
-            this._props.fetched = true;
-        } catch (e) {
-            this._props.data = null;
-            this._props.fetching = false;
-            this._props.error = e;
+        if (!this.data) {
+            try {
+                this._props.fetching = true;
+                this._props.data = await retrieveData(this.file);
+                this._props.fetching = false;
+                this._props.fetched = true;
+            } catch (e) {
+                this._props.data = null;
+                this._props.fetching = false;
+                this._props.error = e;
+            }
         }
 
-        return await this.data;
+        return this.sortAndFilterData();
     }
 
     protected sortAndFilterData = () => {
-        if (this._props.data) {
-            this._props.data.sort((a, b) => a.timeStamp - b.timeStamp);
-            if (this.begin) {
-                this._props.data = this._props.data.filter((dtv: IDateTimeValue) => {
-                    if (this.begin) {
-                        return (dtv.timeStamp >= this.begin);
-                    }
-
-                    return true;
-                });
-            }
-
-            if (this.end) {
-                this._props.data = this._props.data.filter((dtv: IDateTimeValue) => {
-                    if (this.end) {
-                        return (dtv.timeStamp <= this.end);
-                    }
-
-                    return true;
-                });
-            }
-
-            if (this.gte) {
-                this._props.data = this._props.data.filter((dtv: IDateTimeValue) => {
-                    if (this.gte) {
-                        return (dtv.value >= this.gte);
-                    }
-
-                    return true;
-                });
-            }
-
-            if (this.lte) {
-                this._props.data = this._props.data.filter((dtv: IDateTimeValue) => {
-                    if (this.lte) {
-                        return (dtv.value <= this.lte);
-                    }
-
-                    return true;
-                });
-            }
+        if (!this.data) {
+            return null;
         }
+
+        let data = cloneDeep(this.data);
+        data.sort((a, b) => a.timeStamp - b.timeStamp);
+
+        if (this.begin) {
+            data = data.filter((dtv: IDateTimeValue) => {
+                if (this.begin) {
+                    return (dtv.timeStamp >= this.begin);
+                }
+
+                return true;
+            });
+        }
+
+        if (this.end) {
+            data = data.filter((dtv: IDateTimeValue) => {
+                if (this.end) {
+                    return (dtv.timeStamp <= this.end);
+                }
+
+                return true;
+            });
+        }
+
+        if (this.gte) {
+            data = data.filter((dtv: IDateTimeValue) => {
+                if (this.gte) {
+                    return (dtv.value >= this.gte);
+                }
+
+                return true;
+            });
+        }
+
+        if (this.lte) {
+            data = data.filter((dtv: IDateTimeValue) => {
+                if (this.lte) {
+                    return (dtv.value <= this.lte);
+                }
+
+                return true;
+            });
+        }
+
+        return data;
     };
 }
 
