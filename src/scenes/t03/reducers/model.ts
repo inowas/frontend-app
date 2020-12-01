@@ -14,7 +14,6 @@ interface IModelAction {
     type: string;
     model: IModflowModel;
     payload: ICalculation;
-
 }
 
 const model = (state: IModflowModel | null = initialState, action: IModelAction) => {

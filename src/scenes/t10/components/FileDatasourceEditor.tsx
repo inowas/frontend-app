@@ -20,8 +20,7 @@ interface IProps {
 const FileDatasourceEditor = (props: IProps) => {
     const [dataSource, setDataSource] = useState<IFileDataSource | null>(null);
 
-    const [rawData, setRawData] = useState<IDateTimeValue[] | undefined>(undefined);
-    const [data, setData] = useState<IDateTimeValue[] | undefined>(undefined);
+    const [data, setData] = useState<IDateTimeValue[] | undefined | null>(undefined);
     const [metadata, setMetadata] = useState<ParseResult<any> | null>(null);
 
     const [dateTimeFormat, setDateTimeFormat] = useState<string>('DD.MM.YYYY H:i:s');
@@ -37,32 +36,70 @@ const FileDatasourceEditor = (props: IProps) => {
 
     const [beginEnabled, setBeginEnabled] = useState<boolean>(false);
     const [begin, setBegin] = useState<number>(0);
-    const [lBegin, setLBegin] = useState<number>(0);
 
     const [endEnabled, setEndEnabled] = useState<boolean>(false);
     const [end, setEnd] = useState<number>(moment.utc().unix());
-    const [lEnd, setLEnd] = useState<number>(moment.utc().unix());
 
     const [minValueEnabled, setMinValueEnabled] = useState<boolean>(false);
     const [minValue, setMinValue] = useState<number>(0);
-    const [lMinValue, setLMinValue] = useState<string>('0');
 
     const [maxValueEnabled, setMaxValueEnabled] = useState<boolean>(false);
     const [maxValue, setMaxValue] = useState<number>(0);
-    const [lMaxValue, setLMaxValue] = useState<string>('0');
 
     useEffect(() => {
-
         if (!(props.dataSource instanceof FileDataSource)) {
             return;
         }
 
-        if (props.dataSource.data) {
-            setRawData(props.dataSource.data);
-            setData(props.dataSource.data);
+        setDataSource(props.dataSource.toObject());
+
+        if (props.dataSource.begin) {
+            setBeginEnabled(true);
+            setBegin(props.dataSource.begin);
         }
 
-        setDataSource(props.dataSource.toObject());
+        if (props.dataSource.end) {
+            setEndEnabled(true);
+            setEnd(props.dataSource.end);
+        }
+
+        if (props.dataSource.min) {
+            setMinValueEnabled(true);
+            setMinValue(props.dataSource.min);
+        }
+
+        if (props.dataSource.max) {
+            setMaxValueEnabled(true);
+            setMaxValue(props.dataSource.max);
+        }
+
+        const ld = async () => {
+            if (props.dataSource) {
+                const data = await props.dataSource.loadData();
+                setData(data);
+                if (Array.isArray(data)) {
+                    if (!props.dataSource.begin) {
+                        setBegin(data[0].timeStamp);
+                    }
+
+                    if (!props.dataSource.end) {
+                        setEnd(data[data.length - 1].timeStamp);
+                    }
+
+                    const values = data.map((d) => d.value);
+                    if (!props.dataSource.max) {
+                        setMaxValue(Math.max(...values));
+                    }
+
+                    if (!props.dataSource.min) {
+                        setMinValue(Math.min(...values));
+                    }
+                }
+            }
+        };
+
+        ld().then().catch();
+
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
@@ -77,39 +114,61 @@ const FileDatasourceEditor = (props: IProps) => {
                 value: parseFloat(r[parameterField])
             })).filter((r) => !isNaN(r.value) && !isNaN(r.timeStamp));
 
-            return setRawData(cData);
+            return setData(cData);
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [datetimeField, dateTimeFormat, parameterField]);
 
     useEffect(() => {
-        let fData = cloneDeep(rawData);
-        if (fData && (minValueEnabled || maxValueEnabled || beginEnabled || endEnabled)) {
-            fData = fData.filter((v) =>
-                !(minValueEnabled && v.value <= minValue) && !(maxValueEnabled && v.value >= maxValue) &&
-                !(beginEnabled && v.timeStamp <= begin) && !(endEnabled && v.timeStamp >= end)
-            );
-            setData(fData);
-        }
-    }, [begin, beginEnabled, end, endEnabled, minValue, minValueEnabled, maxValue, maxValueEnabled, rawData]);
-
-    useEffect(() => {
-        if (!rawData || rawData.length === 0) {
+        if (!dataSource) {
             return;
         }
 
+        const ds = FileDataSource.fromObject(dataSource);
+
+        if (beginEnabled && begin) {
+            ds.begin = begin;
+        }
+
         if (!beginEnabled) {
-            setBeginEnabled(true);
-            setBegin(rawData[0].timeStamp);
-            setLBegin(rawData[0].timeStamp);
+            ds.begin = null;
+        }
+
+        if (endEnabled && end) {
+            ds.end = end;
         }
 
         if (!endEnabled) {
-            setEndEnabled(true);
-            setEnd(rawData[rawData.length - 1].timeStamp);
-            setLEnd(rawData[rawData.length - 1].timeStamp);
+            ds.end = null;
         }
-    }, [beginEnabled, endEnabled, rawData]);
+
+        if (minValueEnabled && minValue) {
+            ds.min = minValue;
+        }
+
+        if (!minValueEnabled) {
+            ds.min = null;
+        }
+
+        if (maxValueEnabled && maxValue) {
+            ds.max = maxValue;
+        }
+
+        if (!maxValueEnabled) {
+            ds.max = null;
+        }
+
+        const ld = async () => {
+            const data = await ds.loadData();
+            if (data) {
+                setData(data);
+            }
+        };
+
+        ld();
+
+        // eslint-disable-next-line
+    }, [beginEnabled, endEnabled, minValueEnabled, maxValueEnabled]);
 
     const handleSave = () => {
         if (!dataSource && data) {
@@ -117,14 +176,45 @@ const FileDatasourceEditor = (props: IProps) => {
         }
 
         if (dataSource && data) {
-            return FileDataSource.fromObject(dataSource).saveData(data).then((ds) => props.onSave(ds));
+            props.onSave(FileDataSource.fromObject(dataSource));
         }
     };
 
     const adding = () => !(props.dataSource instanceof FileDataSource);
 
-    const handleBlur = (f: (v: any) => void) => (v: any) => {
-        f(v);
+    const handleBlur = (param: string) => () => {
+        if (!dataSource) {
+            return;
+        }
+
+        const ds = FileDataSource.fromObject(dataSource);
+
+        if (param === 'begin') {
+            ds.begin = begin;
+        }
+
+        if (param === 'end') {
+            ds.end = end;
+        }
+
+        if (param === 'max') {
+            ds.max = maxValue;
+        }
+
+        if (param === 'min') {
+            ds.min = minValue;
+        }
+
+        const ld = async () => {
+            const data = await ds.loadData();
+            if (data) {
+                setData(data);
+            }
+        };
+
+        ld();
+
+        setDataSource(ds.toObject());
     };
 
     const handleChange = (f: (v: any) => void) => (e: any, d: any) => {
@@ -198,7 +288,7 @@ const FileDatasourceEditor = (props: IProps) => {
 
     return (
         <Modal centered={false} open={true} dimmer={'blurring'}>
-            {adding() && <Modal.Header>Add Datasource</Modal.Header>}
+            {adding() && <Modal.Header>Add File Datasource</Modal.Header>}
             {!adding() && <Modal.Header>Edit Datasource</Modal.Header>}
             <Modal.Content>
                 <Grid padded={true} loading={fetchingData.toString()}>
@@ -302,36 +392,38 @@ const FileDatasourceEditor = (props: IProps) => {
                                     <Form>
                                         <Form.Group>
                                             <Form.Checkbox
-                                                disabled={true}
                                                 style={{marginTop: '30px'}}
                                                 toggle={true}
                                                 checked={beginEnabled}
                                                 onChange={handleChange(setBeginEnabled)}
                                             />
                                             <DatePicker
+                                                disabled={!beginEnabled}
                                                 label={'Start'}
-                                                name={'start'}
-                                                value={moment.unix(lBegin).toDate()}
-                                                onChange={handleChange((d) => setLBegin(moment.utc(d).unix()))}
-                                                onBlur={handleBlur(() => setBegin(lBegin))}
+                                                name={'begin'}
+                                                value={moment.unix(begin).toDate()}
+                                                onChange={handleChange((d) => setBegin(moment.utc(d).unix()))}
+                                                onBlur={handleBlur('begin')}
                                                 size={'small'}
+                                                clearable={false}
                                             />
                                         </Form.Group>
                                         <Form.Group>
                                             <Form.Checkbox
-                                                disabled={true}
                                                 style={{marginTop: '30px'}}
                                                 toggle={true}
                                                 checked={endEnabled}
                                                 onChange={handleChange(setEndEnabled)}
                                             />
                                             <DatePicker
+                                                disabled={!endEnabled}
                                                 label={'End'}
                                                 name={'end'}
-                                                value={moment.unix(lEnd).toDate()}
-                                                onChange={handleChange((d) => setLEnd(moment.utc(d).unix()))}
-                                                onBlur={handleBlur(() => setEnd(lBegin))}
+                                                value={moment.unix(end).toDate()}
+                                                onChange={handleChange((d) => setEnd(moment.utc(d).unix()))}
+                                                onBlur={handleBlur('end')}
                                                 size={'small'}
+                                                clearable={false}
                                             />
                                         </Form.Group>
                                     </Form>
@@ -351,10 +443,11 @@ const FileDatasourceEditor = (props: IProps) => {
                                             <Form.Input
                                                 label={'Upper limit'}
                                                 type={'number'}
-                                                value={lMaxValue}
+                                                name={'max'}
+                                                value={maxValue}
                                                 disabled={!maxValueEnabled}
-                                                onBlur={handleBlur(() => setMaxValue(parseFloat(lMaxValue)))}
-                                                onChange={handleChange((v) => setLMaxValue(v))}
+                                                onChange={handleChange((d) => setMaxValue(d))}
+                                                onBlur={handleBlur('max')}
                                             />
                                         </Form.Group>
                                         <Form.Group>
@@ -367,10 +460,11 @@ const FileDatasourceEditor = (props: IProps) => {
                                             <Form.Input
                                                 label={'Lower limit'}
                                                 type={'number'}
-                                                value={lMinValue}
+                                                name={'min'}
+                                                value={minValue}
                                                 disabled={!minValueEnabled}
-                                                onBlur={handleBlur(() => setMinValue(parseFloat(lMinValue)))}
-                                                onChange={handleChange((v) => setLMinValue(v))}
+                                                onChange={handleChange((d) => setMinValue(d))}
+                                                onBlur={handleBlur('min')}
                                             />
                                         </Form.Group>
                                     </Form>

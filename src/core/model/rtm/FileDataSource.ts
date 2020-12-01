@@ -1,8 +1,9 @@
-import uuid from 'uuid';
-import {dropData, retrieveData} from '../../../services/dataDropper';
-import {IDataDropperFile} from '../../../services/dataDropper/DataDropper.type';
 import {GenericObject} from '../genericObject/GenericObject';
+import {IDataDropperFile} from '../../../services/dataDropper/DataDropper.type';
 import {IDateTimeValue, IFileDataSource} from './Sensor.type';
+import {cloneDeep} from 'lodash';
+import {dropData, retrieveData} from '../../../services/dataDropper';
+import uuid from 'uuid';
 
 class FileDataSource extends GenericObject<IFileDataSource> {
 
@@ -23,19 +24,51 @@ class FileDataSource extends GenericObject<IFileDataSource> {
     }
 
     get begin() {
-        if (this.data && this.data.length > 0) {
-            return this.data[0].timeStamp;
-        }
+        return this._props.begin || null;
+    }
 
-        return null;
+    set begin(value: number | null) {
+        this._props.begin = value;
     }
 
     get end() {
-        if (this.data && this.data.length > 0) {
-            return this.data[this.data.length - 1].timeStamp;
-        }
+        return this._props.end || null;
+    }
 
-        return null;
+    set end(value: number | null) {
+        this._props.end = value;
+    }
+
+    get lte(): number | null {
+        return this._props.lte || null;
+    }
+
+    set lte(value: number | null) {
+        this._props.lte = value;
+    }
+
+    get max(): number | null {
+        return this.lte;
+    }
+
+    set max(value: number | null) {
+        this.lte = value;
+    }
+
+    get gte(): number | null {
+        return this._props.gte || null;
+    }
+
+    set gte(value: number | null) {
+        this._props.gte = value;
+    }
+
+    get min(): number | null {
+        return this.gte;
+    }
+
+    set min(value: number | null) {
+        this.gte = value;
     }
 
     public static fromFile(file: IDataDropperFile) {
@@ -82,28 +115,71 @@ class FileDataSource extends GenericObject<IFileDataSource> {
     }
 
     public async loadData() {
-        if (this._props.data) {
+        if (!this.data) {
+            try {
+                this._props.fetching = true;
+                this._props.data = await retrieveData(this.file);
+                this._props.fetching = false;
+                this._props.fetched = true;
+            } catch (e) {
+                this._props.data = null;
+                this._props.fetching = false;
+                this._props.error = e;
+            }
+        }
+
+        return this.sortAndFilterData();
+    }
+
+    protected sortAndFilterData = () => {
+        if (!this.data) {
             return null;
         }
 
-        this._props.data = null;
-        this._props.fetching = true;
-        try {
-            this._props.data = await retrieveData(this.file);
-            this.sortData();
-            this._props.fetching = false;
-            this._props.fetched = true;
-        } catch (e) {
-            this._props.data = null;
-            this._props.fetching = false;
-            this._props.error = e;
-        }
-    }
+        let data = cloneDeep(this.data);
+        data.sort((a, b) => a.timeStamp - b.timeStamp);
 
-    protected sortData = () => {
-        if (this._props.data) {
-            this._props.data.sort((a, b) => a.timeStamp - b.timeStamp);
+        if (this.begin) {
+            data = data.filter((dtv: IDateTimeValue) => {
+                if (this.begin) {
+                    return (dtv.timeStamp >= this.begin);
+                }
+
+                return true;
+            });
         }
+
+        if (this.end) {
+            data = data.filter((dtv: IDateTimeValue) => {
+                if (this.end) {
+                    return (dtv.timeStamp <= this.end);
+                }
+
+                return true;
+            });
+        }
+
+        if (this.gte) {
+            data = data.filter((dtv: IDateTimeValue) => {
+                if (this.gte) {
+                    return (dtv.value >= this.gte);
+                }
+
+                return true;
+            });
+        }
+
+        if (this.lte) {
+            data = data.filter((dtv: IDateTimeValue) => {
+                if (this.lte) {
+                    return (dtv.value <= this.lte);
+                }
+
+                return true;
+            });
+        }
+
+        return data;
     };
 }
 

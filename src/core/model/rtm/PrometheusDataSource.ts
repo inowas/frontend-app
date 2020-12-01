@@ -94,7 +94,7 @@ class PrometheusDataSource extends GenericObject<IPrometheusDataSource> {
 
     public async loadData() {
         if (this._props.data) {
-            return;
+            return await this._props.data;
         }
 
         this._props.fetching = true;
@@ -127,6 +127,8 @@ class PrometheusDataSource extends GenericObject<IPrometheusDataSource> {
             this._props.fetching = false;
             this._props.error = e;
         }
+
+        return await this._props.data;
     }
 }
 
