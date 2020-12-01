@@ -1,13 +1,15 @@
+import {ISensor, ISensorParameter} from '../../../../core/model/rtm/Sensor.type';
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore todo
 import {XYDataPoint} from 'downsample/dist/types';
-import {ISensor, ISensorParameter} from '../../../../core/model/rtm/Sensor.type';
 
 export interface IParameterWithMetaData {
     data: XYDataPoint[];
     meta: {
         active: boolean;
-        color: string;
         axis: 'left' | 'right';
+        color: string;
+        shape: string;
     };
     parameter: ISensorParameter;
     sensor: ISensor;

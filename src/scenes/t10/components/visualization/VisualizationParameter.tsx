@@ -15,7 +15,7 @@ import {
     ReferenceLine,
     ResponsiveContainer,
     Scatter,
-    ScatterChart,
+    ScatterChart, ScatterProps,
     XAxis,
     YAxis,
 } from 'recharts';
@@ -403,7 +403,7 @@ const VisualizationParameter = (props: IProps) => {
                                                 line={withLines ? {strokeWidth: 2, stroke: row.meta.color} : false}
                                                 lineType={'joint'}
                                                 name={'p'}
-                                                shape={withLines ? <RenderNoShape/> : 'cross'}
+                                                shape={withLines ? <RenderNoShape/> : row.meta.shape as ScatterProps['shape']}
                                             />
                                         );
                                     })}
