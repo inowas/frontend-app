@@ -1,10 +1,11 @@
 import {Button, Dimmer, DropdownProps, Form, InputOnChangeData, Loader, Message, Modal} from 'semantic-ui-react';
 import {EMethodType} from '../../../core/model/rtm/modelling/RTModelling.type';
+import {IRootReducer} from '../../../reducers';
 import {IRtm} from '../../../core/model/rtm/monitoring/Rtm.type';
 import {ISensor} from '../../../core/model/rtm/monitoring/Sensor.type';
-import {IToolInstance} from '../../dashboard/defaults/tools';
 import {Rtm} from '../../../core/model/rtm/monitoring';
 import {fetchApiWithToken} from '../../../services/api';
+import {useSelector} from 'react-redux';
 import RTModellingMethod from '../../../core/model/rtm/modelling/RTModellingMethod';
 import React, {ChangeEvent, SyntheticEvent, useEffect, useState} from 'react';
 import uuid from 'uuid';
@@ -18,7 +19,6 @@ interface IProps {
     method: RTModellingMethod;
     onClose: () => void;
     onSave: (value: RTModellingMethod) => void;
-    t10Instances: IToolInstance[];
 }
 
 const MethodModal = (props: IProps) => {
@@ -34,7 +34,8 @@ const MethodModal = (props: IProps) => {
     const [sensor, setSensor] = useState<ISensor>();
     const [parameterId, setParameterId] = useState<string | null>(props.method.parameterId);
 
-    console.log({parameterId})
+    const T20 = useSelector((state: IRootReducer) => state.T20);
+    const t10Instances = T20.t10instances;
 
     useEffect(() => {
         if (!rtmId) {
@@ -64,7 +65,7 @@ const MethodModal = (props: IProps) => {
         };
 
         fetchRtm(rtmId);
-
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [rtmId]);
 
     const handleBlurInput = () => {
@@ -134,7 +135,7 @@ const MethodModal = (props: IProps) => {
                             fluid={true}
                             selection={true}
                             value={rtmId}
-                            options={props.t10Instances.map((i) => ({
+                            options={t10Instances.map((i) => ({
                                 key: i.id,
                                 text: `${i.name} (${i.user_name})`,
                                 value: i.id
@@ -172,9 +173,6 @@ const MethodModal = (props: IProps) => {
                             selection={true}
                             value={parameterId ? parameterId : undefined}
                             options={sensor.parameters.map((param) => {
-                                console.log(
-                                    sensor.parameters
-                                );
                                 return {
                                     key: param.id,
                                     value: param.id,

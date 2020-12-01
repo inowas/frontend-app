@@ -11,8 +11,9 @@ import {IBoundary} from '../../../core/model/modflow/boundaries/Boundary.type';
 import {IRootReducer} from '../../../reducers';
 import {ModflowModel} from '../../../core/model/modflow';
 import {appendBoundaryData} from './appendBoundaryData';
-import {fetchUrl} from '../../../services/api';
-import {useSelector} from 'react-redux';
+import {fetchApiWithToken} from '../../../services/api';
+import {updateBoundaries} from '../actions/actions';
+import {useDispatch, useSelector} from 'react-redux';
 import MethodModal from './MethodModal';
 import RTModelling from '../../../core/model/rtm/modelling/RTModelling';
 import RTModellingMethod from '../../../core/model/rtm/modelling/RTModellingMethod';
@@ -25,52 +26,52 @@ interface IProps {
 
 const RTModellingBoundaries = (props: IProps) => {
     const [errors, setErrors] = useState<Array<{ id: string; message: string; }>>([]);
-    const [boundaries, setBoundaries] = useState<IBoundary[]>();
     const [heads, setHeads] = useState<IRTModellingHead[]>();
     const [isDirty, setIsDirty] = useState<boolean>(false);
-    const [isFetching, setIsFetching] = useState<boolean>(true);
+    const [isFetching, setIsFetching] = useState<boolean>(false);
     const [activeRow, setActiveRow] = useState<{
         method: IMethod | IMethodSensor | IMethodFunction, bId: string, propertyKey: number, opId?: string
     } | null>(null);
 
     const T20 = useSelector((state: IRootReducer) => state.T20);
+    const boundaries = BoundaryCollection.fromObject(T20.boundaries);
     const model = T20.model ? ModflowModel.fromObject(T20.model) : null;
     const rtm = T20.rtmodelling ? RTModelling.fromObject(T20.rtmodelling) : null;
     const t10Instances = T20.t10instances;
 
-    useEffect(() => {
-        if (model && !boundaries) {
-            fetchBoundaries();
-        }
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [model]);
+    const dispatch = useDispatch();
 
-    const fetchBoundaries = () => {
+    const fetchBoundaries = async () => {
         if (!model || !rtm) {
             return;
         }
-        setIsFetching(true);
-        fetchUrl(`modflowmodels/${model.id}/boundaries`,
-            (data) => {
-                const bc = BoundaryCollection.fromQuery(data);
-                const r = rtm.updateHeadsFromBoundaries(bc);
-                const h = r.toObject().data.head;
-
-                if (bc.length === 0 || !h || h.length === 0) {
-                    setErrors(errors.concat([{id: uuid.v4(), message: 'No boundaries found.'}]));
-                } else {
-                    setBoundaries(bc.toObject());
-                    setHeads(r.toObject().data.head);
-                }
-
-                setIsFetching(false);
-            },
-            (e) => {
-                setIsFetching(false);
-                setErrors(errors.concat([{id: uuid.v4(), message: e}]));
+        try {
+            const b = (await fetchApiWithToken(`modflowmodels/${model.id}/boundaries`)).data;
+            const bc = BoundaryCollection.fromQuery(b);
+            const r = rtm.updateHeadsFromBoundaries(bc);
+            const h = r.toObject().data.head;
+            if (bc.length === 0 || !h || h.length === 0) {
+                setErrors(errors.concat([{id: uuid.v4(), message: 'No boundaries found.'}]));
+            } else {
+                dispatch(updateBoundaries(bc));
+                setHeads(r.toObject().data.head);
             }
-        );
+        } catch (err) {
+            setErrors(errors.concat([{id: uuid.v4(), message: 'Fetching Modflow model failed.'}]));
+        }
     };
+
+    useEffect(() => {
+        if (T20.model && boundaries.length === 0) {
+            setIsFetching(true);
+            fetchBoundaries().then(() => setIsFetching(false));
+        }
+        if (rtm && boundaries.length > 0) {
+            const r = rtm.updateHeadsFromBoundaries(boundaries);
+            setHeads(r.toObject().data.head);
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [T20.model]);
 
     if (!rtm || !model) {
         return null;
@@ -156,7 +157,7 @@ const RTModellingBoundaries = (props: IProps) => {
     const renderMethodButton = (
         method: IMethod | IMethodSensor | IMethodFunction, bid: string, propertyKey: number, opId?: string
     ) => {
-        const bc = boundaries ? boundaries.map((b) => BoundaryFactory.fromObject(b)) : [];
+        const bc = boundaries ? boundaries.all : [];
 
         if (!model || bc.length < 1) {
             return null;
@@ -324,7 +325,6 @@ const RTModellingBoundaries = (props: IProps) => {
                 method={RTModellingMethod.fromObject(activeRow.method)}
                 onClose={() => setActiveRow(null)}
                 onSave={handleChangeModal}
-                t10Instances={t10Instances}
             />
             }
             <Grid padded={true}>
@@ -355,7 +355,7 @@ const RTModellingBoundaries = (props: IProps) => {
                                 </Table.Row>
                             </Table.Header>
                             <Table.Body>
-                                {boundaries && boundaries.map((b) => renderBoundary(b))}
+                                {boundaries.all.map((b) => renderBoundary(b.toObject()))}
                             </Table.Body>
                         </Table>
                         }
