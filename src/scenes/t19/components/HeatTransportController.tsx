@@ -5,35 +5,44 @@ import {
     Segment
 } from 'semantic-ui-react';
 import {HeatTransportInput, HeatTransportResults} from './index';
-import {IHeatTransportRequest, IHeatTransportRequestOptions, IHtm} from '../../../core/model/htm/Htm.type';
+import {IHeatTransportRequest, IHeatTransportRequestOptions} from '../../../core/model/htm/Htm.type';
 import {IRootReducer} from '../../../reducers';
 import {includes} from 'lodash';
-import {makeHeatTransportRequest} from '../../../services/api';
-import {useSelector} from 'react-redux';
+import {makeHeatTransportRequest, sendCommand} from '../../../services/api';
+import {updateHtm} from '../actions/actions';
+import {useDispatch, useSelector} from 'react-redux';
 import Htm from '../../../core/model/htm/Htm';
-import HtmInput from '../../../core/model/htm/HtmInput';
 import React, {FormEvent, useEffect, useState} from 'react';
+import SimpleToolsCommand from '../../shared/simpleTools/commands/SimpleToolsCommand';
 import moment from 'moment';
 
-interface IProps {
-    htm: Htm;
-    onChange: (htm: Htm) => void;
-    onSave: (htm: IHtm) => void;
-}
-
-const HeatTransportController = (props: IProps) => {
+const HeatTransportController = () => {
     const [isFetching, setIsFetching] = useState<boolean>(false);
     const [activeInput, setActiveInput] = useState<string>();
     const [activeValue, setActiveValue] = useState<string>('');
-    const [requestOptions, setRequestOptions] = useState<IHeatTransportRequestOptions>(props.htm.options);
+    const [requestOptions, setRequestOptions] = useState<IHeatTransportRequestOptions>();
 
     const user = useSelector((state: IRootReducer) => state.user);
+    const dispatch = useDispatch();
+
+    const T19 = useSelector((state: IRootReducer) => state.T19);
+    const htm = T19.htm ? Htm.fromObject(T19.htm) : undefined;
+    const data = T19.data;
 
     useEffect(() => {
-        setRequestOptions(props.htm.options);
-    }, [props.htm]);
+        if (htm) {
+            setRequestOptions(htm.options);
+        }
+    }, [htm]);
+
+    if (!htm) {
+        return null;
+    }
 
     const handleBlurInput = () => {
+        if (!requestOptions) {
+            return setActiveInput(undefined);
+        }
         if (activeInput === 'retardationFactor') {
             const parsedValue = parseFloat(activeValue);
             setRequestOptions({
@@ -57,20 +66,17 @@ const HeatTransportController = (props: IProps) => {
     };
 
     const handleCalculateAndSave = async () => {
-        const sw = props.htm.inputSw.toObject();
-        const gw = props.htm.inputGw.toObject();
-
-        if (!sw.data || !gw.data) {
+        if (!data.sw || !data.gw || !requestOptions) {
             return;
         }
 
         setIsFetching(true);
         const requestData: IHeatTransportRequest = {
-            data_sw_selected: sw.data.map((row) => ({
+            data_sw_selected: data.sw.map((row) => ({
                 date: moment.unix(row.timeStamp).format('YYYY-MM-DD'),
                 value: row.value
             })),
-            data_gw_selected: gw.data.map((row) => ({
+            data_gw_selected: data.gw.map((row) => ({
                 date: moment.unix(row.timeStamp).format('YYYY-MM-DD'),
                 value: row.value
             })),
@@ -78,20 +84,22 @@ const HeatTransportController = (props: IProps) => {
         };
 
         makeHeatTransportRequest(requestData).then((r3) => {
-            const cHtm = props.htm.toObject();
+            const cHtm = htm.toObject();
             cHtm.data.results = JSON.parse(r3);
             cHtm.data.options = requestOptions;
-            props.onChange(Htm.fromObject(cHtm));
-            props.onSave(cHtm);
+            const iHtm = Htm.fromObject(cHtm);
+            sendCommand(
+                SimpleToolsCommand.updateToolInstance(iHtm.toObject()),
+                () => {
+                    dispatch(updateHtm(iHtm));
+                    setIsFetching(false);
+                }
+            );
             setIsFetching(false);
         });
     };
-
-    const handleChangeData = (value: HtmInput) => {
-        const htm = props.htm.getClone();
-        props.onChange(htm.updateInput(value));
-    };
-    const readOnly = !includes(props.htm.permissions, 'w');
+    
+    const readOnly = !includes(htm.permissions, 'w');
 
     return (
         <React.Fragment>
@@ -101,20 +109,20 @@ const HeatTransportController = (props: IProps) => {
                         <Grid.Column width={8}>
                             <HeatTransportInput
                                 dateTimeFormat={user.settings.dateFormat}
-                                input={props.htm.inputSw}
+                                rtmId={htm.inputSw.rtmId}
+                                sensorId={htm.inputSw.sensorId}
                                 label="Surface water"
                                 name="sw"
-                                onChange={handleChangeData}
                                 readOnly={isFetching || readOnly}
                             />
                         </Grid.Column>
                         <Grid.Column width={8}>
                             <HeatTransportInput
                                 dateTimeFormat={user.settings.dateFormat}
-                                input={props.htm.inputGw}
+                                rtmId={htm.inputGw.rtmId}
+                                sensorId={htm.inputGw.sensorId}
                                 label="Groundwater"
                                 name="gw"
-                                onChange={handleChangeData}
                                 readOnly={isFetching || readOnly}
                             />
                         </Grid.Column>
@@ -123,6 +131,7 @@ const HeatTransportController = (props: IProps) => {
                         <Grid.Column>
                             <Segment color={'grey'}>
                                 <Form.Group>
+                                    {requestOptions !== undefined &&
                                     <Form.Input
                                         disabled={isFetching || readOnly}
                                         name="retardationFactor"
@@ -133,6 +142,8 @@ const HeatTransportController = (props: IProps) => {
                                         value={activeInput === 'retardationFactor' ? activeValue :
                                             requestOptions.retardation_factor}
                                     />
+                                    }
+                                    {requestOptions !== undefined &&
                                     <Form.Input
                                         disabled={isFetching || readOnly}
                                         name="tolerance"
@@ -142,11 +153,12 @@ const HeatTransportController = (props: IProps) => {
                                         onChange={handleChangeInput}
                                         value={activeInput === 'tolerance' ? activeValue : requestOptions.tolerance}
                                     />
+                                    }
                                     <Form.Button
                                         positive={true}
                                         fluid={true}
                                         onClick={handleCalculateAndSave}
-                                        disabled={!props.htm.inputSw.data || !props.htm.inputGw.data || isFetching || readOnly}
+                                        disabled={!data.sw || !data.gw || isFetching || readOnly}
                                         label="&nbsp;"
                                         loading={isFetching}
                                     >
@@ -158,7 +170,7 @@ const HeatTransportController = (props: IProps) => {
                     </Grid.Row>
                 </Grid>
             </Form>
-            {props.htm.results && <HeatTransportResults dateTimeFormat={user.settings.dateFormat} results={props.htm.results}/>}
+            {htm.results && <HeatTransportResults dateTimeFormat={user.settings.dateFormat} results={htm.results}/>}
         </React.Fragment>
     );
 };
