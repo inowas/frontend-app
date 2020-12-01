@@ -20,7 +20,7 @@ import {createToolInstance} from '../../dashboard/commands';
 import {fetchApiWithToken, fetchUrl, sendCommand} from '../../../services/api';
 import {renderAreaLayer} from '../../t03/components/maps/mapLayers';
 import {uniqBy} from 'lodash';
-import { useHistory } from 'react-router-dom';
+import {useHistory} from 'react-router-dom';
 import AppContainer from '../../shared/AppContainer';
 import RTModelling from '../../../core/model/rtm/modelling/RTModelling';
 import React, {FormEvent, SyntheticEvent, useEffect, useState} from 'react';
@@ -97,7 +97,7 @@ const CreateRealTimeModelling = () => {
         if (!selectedModel || !startDateTime) {
             return null;
         }
-        
+
         const rtm = RTModelling.fromDefaults();
         rtm.name = instanceName;
         rtm.description = description;
@@ -209,37 +209,35 @@ const CreateRealTimeModelling = () => {
                             </Grid.Column>
                             <Grid.Column width={6}>
                                 <Segment>
-                                    <Form>
-                                        <Form.Group>
-                                            <Form.Input
-                                                label="Name"
-                                                name={'name'}
-                                                value={activeInput === 'name' ? activeValue : instanceName}
-                                                width={14}
-                                                onBlur={handleBlurInput}
-                                                onChange={handleChangeInput}
-                                            />
-                                            <Form.Field>
-                                                <label>Public</label>
-                                                <Checkbox
-                                                    toggle={true}
-                                                    checked={isPublic}
-                                                    onChange={handleChangeCheckbox}
-                                                    name={'isPublic'}
-                                                    width={2}
-                                                />
-                                            </Form.Field>
-                                        </Form.Group>
-                                        <Form.TextArea
-                                            label="Description"
-                                            name="description"
+                                    <Form.Group>
+                                        <Form.Input
+                                            label="Name"
+                                            name={'name'}
+                                            value={activeInput === 'name' ? activeValue : instanceName}
+                                            width={14}
                                             onBlur={handleBlurInput}
                                             onChange={handleChangeInput}
-                                            placeholder="Description"
-                                            value={activeInput === 'description' ? activeValue : description}
-                                            width={16}
                                         />
-                                    </Form>
+                                        <Form.Field>
+                                            <label>Public</label>
+                                            <Checkbox
+                                                toggle={true}
+                                                checked={isPublic}
+                                                onChange={handleChangeCheckbox}
+                                                name={'isPublic'}
+                                                width={2}
+                                            />
+                                        </Form.Field>
+                                    </Form.Group>
+                                    <Form.TextArea
+                                        label="Description"
+                                        name="description"
+                                        onBlur={handleBlurInput}
+                                        onChange={handleChangeInput}
+                                        placeholder="Description"
+                                        value={activeInput === 'description' ? activeValue : description}
+                                        width={16}
+                                    />
                                 </Segment>
                                 <Segment>
                                     <Form.Select

@@ -1,6 +1,5 @@
 import {AppContainer} from '../../shared';
 import {Grid, Icon, Loader} from 'semantic-ui-react';
-import {IModflowModel} from '../../../core/model/modflow/ModflowModel.type';
 import { IRootReducer } from '../../../reducers';
 import {IRtModelling} from '../../../core/model/rtm/modelling/RTModelling.type';
 import {IToolInstance} from '../../dashboard/defaults/tools';
@@ -8,8 +7,8 @@ import {IToolMetaDataEdit} from '../../shared/simpleTools/ToolMetaData/ToolMetaD
 import {ModflowModel} from '../../../core/model/modflow';
 import {ToolMetaData} from '../../shared/simpleTools';
 import {ToolNavigation} from '../../shared/complexTools';
-import {clear, updateRTModelling, updateT10Instances, updateModel} from '../actions/actions';
-import {fetchApiWithToken, fetchUrl, sendCommand} from '../../../services/api';
+import {clear, updateModel, updateRTModelling, updateT10Instances} from '../actions/actions';
+import {fetchApiWithToken, sendCommand} from '../../../services/api';
 import {uniqBy} from 'lodash';
 import {useDispatch, useSelector} from 'react-redux';
 import {useHistory, useParams} from 'react-router-dom';
@@ -35,7 +34,6 @@ interface IError {
 
 const RealTimeModelling = () => {
     const [errors, setErrors] = useState<IError[]>([]);
-    const [isDirty, setDirty] = useState<boolean>(false);
     const [isFetching, setIsFetching] = useState<boolean>(false);
 
     const dispatch = useDispatch();
@@ -46,21 +44,40 @@ const RealTimeModelling = () => {
     const model = T20.model ? ModflowModel.fromObject(T20.model) : null;
     const rtm = T20.rtmodelling ? RTModelling.fromObject(T20.rtmodelling) : null;
 
-    useEffect(() => {
-        const fetchInstances = async () => {
-            try {
-                setIsFetching(true);
-                const privateT10Tools = (await fetchApiWithToken('tools/T10?public=false')).data;
-                const publicT10Tools = (await fetchApiWithToken('tools/T10?public=true')).data;
-                const tools = uniqBy(privateT10Tools.concat(publicT10Tools), (t: IToolInstance) => t.id);
-                dispatch(updateT10Instances(tools));
-            } catch (err) {
-                setErrors(errors.concat([{id: uuid.v4(), message: 'Fetching t10 instances failed.'}]));
-            } finally {
-                setIsFetching(false);
-            }
-        };
+    const fetchInstances = async () => {
+        try {
+            setIsFetching(true);
+            const privateT10Tools = (await fetchApiWithToken('tools/T10?public=false')).data;
+            const publicT10Tools = (await fetchApiWithToken('tools/T10?public=true')).data;
+            const tools = uniqBy(privateT10Tools.concat(publicT10Tools), (t: IToolInstance) => t.id);
+            dispatch(updateT10Instances(tools));
+        } catch (err) {
+            setErrors(errors.concat([{id: uuid.v4(), message: 'Fetching t10 instances failed.'}]));
+        } finally {
+            setIsFetching(false);
+        }
+    };
 
+    const fetchModflowModel = async (r: IRtModelling) => {
+        try {
+            const m = (await fetchApiWithToken(`modflowmodels/${r.data.model_id}`)).data
+            dispatch(updateModel(ModflowModel.fromObject(m)));
+        } catch (err) {
+            setErrors(errors.concat([{id: uuid.v4(), message: 'Fetching Modflow model failed.'}]));
+        }
+    };
+
+    const fetchRTModelling = async (i: string) => {
+        try {
+            const r = (await fetchApiWithToken(`tools/${tool}/${i}`)).data
+            dispatch(updateRTModelling(RTModelling.fromObject(r)));
+            fetchModflowModel(r);
+        } catch (err) {
+            setErrors(errors.concat([{id: uuid.v4(), message: 'Fetching Modflow model failed.'}]));
+        }
+    };
+
+    useEffect(() => {
         fetchInstances();
 
         return function() {
@@ -72,35 +89,10 @@ const RealTimeModelling = () => {
     useEffect(() => {
         if (id) {
             setIsFetching(true);
-            fetchUrl(`tools/${tool}/${id}`,
-                (r: IRtModelling) => {
-                    dispatch(updateRTModelling(RTModelling.fromObject(r)));
-                    setIsFetching(false);
-                    setDirty(false);
-                }, () => {
-                    setIsFetching(false);
-                }
-            );
+            fetchRTModelling(id).then(() => setIsFetching(false));
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [id]);
-
-    useEffect(() => {
-        if (rtm) {
-            setIsFetching(true);
-            fetchUrl(`modflowmodels/${rtm.data.model_id}`,
-                (m: IModflowModel) => {
-                    dispatch(updateModel(ModflowModel.fromObject(m)));
-                    setIsFetching(false);
-                    setDirty(false);
-                },
-                () => {
-                    setIsFetching(false);
-                }
-            );
-        }
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [rtm]);
 
     useEffect(() => {
         if (!property && id) {
@@ -156,7 +148,7 @@ const RealTimeModelling = () => {
     return (
         <AppContainer navbarItems={navigation}>
             <ToolMetaData
-                isDirty={isDirty}
+                isDirty={false}
                 readOnly={false}
                 tool={{
                     tool: 'T20',

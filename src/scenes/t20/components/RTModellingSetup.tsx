@@ -30,10 +30,11 @@ const RTModellingSetup = (props: IProps) => {
     const rtm = T20.rtmodelling ? RTModelling.fromObject(T20.rtmodelling) : null;
 
     useEffect(() => {
-        if (rtm && rtm.data) {
-            setData(rtm.toObject().data);
+        if (T20.rtmodelling) {
+            const d = RTModelling.fromObject(T20.rtmodelling);
+            setData(d.toObject().data);
         }
-    }, [rtm]);
+    }, [T20.rtmodelling]);
 
     if (!rtm || !model || !data) {
         return null;
