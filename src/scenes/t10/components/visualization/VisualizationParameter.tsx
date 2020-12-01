@@ -6,28 +6,25 @@ import {
     Segment
 } from 'semantic-ui-react';
 import {DataSourceCollection, Rtm} from '../../../../core/model/rtm';
-import {IParameterWithMetaData, ITimeStamps} from './types';
-import {IPropertyValueObject} from '../../../../core/model/types';
-import {LTOB} from 'downsample';
-import {ProcessingCollection} from '../../../../core/model/rtm/processing';
+import {ILegendRowProps, IParameterWithMetaData, ITimeStamps} from './types';
 import {
+    Line,
+    LineChart,
     ReferenceArea,
     ReferenceLine,
     ResponsiveContainer,
-    Scatter,
-    ScatterChart, ScatterProps,
+    ScatterChart, Tooltip,
     XAxis,
     YAxis,
 } from 'recharts';
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-// @ts-ignore todo
-import {XYDataPoint} from 'downsample/dist/types';
-import {cloneDeep} from 'lodash';
+import {ProcessingCollection} from '../../../../core/model/rtm/processing';
 import {downloadFile, exportChartImage} from '../../../shared/simpleTools/helpers';
+import CustomTooltip from './CustomTooltip';
 import React, {useEffect, useRef, useState} from 'react';
 import TimeSlider from './TimeSlider';
 import Uuid from 'uuid';
 import VisualizationMap from './VisualizationMap';
+import _, {cloneDeep} from 'lodash';
 import moment from 'moment';
 
 interface IProps {
@@ -46,22 +43,21 @@ const getClosestValue = (array: number[], value: number) => {
 
 const getData = (
     parameters: IParameterWithMetaData[],
-    onFinished: (data: IParameterWithMetaData[], tsData: ITimeStamps) => any,
-    data: IParameterWithMetaData[] = [],
+    onFinished: (data: { [key: string]: number }[], tsData: ITimeStamps) => any,
+    data: { [key: string]: number }[] = [],
     tsData: ITimeStamps = {
         minT: NaN, maxT: NaN, left: {min: NaN, max: NaN}, right: {min: NaN, max: NaN}, timestamps: []
-    },
-    key = 0
+    }
 ) => {
     const parameter = parameters.shift();
     if (parameter) {
-        data.push(parameter);
         const dataSourceCollection = DataSourceCollection.fromObject(parameter.parameter.dataSources);
         dataSourceCollection.mergedData().then((res) => {
             const processed = ProcessingCollection.fromObject(parameter.parameter.processings);
             processed.apply(res).then((r) => {
                 if (parameter.meta.active) {
-                    data[key].data = r.map((row) => {
+                    r.forEach((row) => {
+
                         if (isNaN(tsData.minT) || row.timeStamp < tsData.minT) {
                             tsData.minT = row.timeStamp;
                         }
@@ -87,47 +83,50 @@ const getData = (
                         if (!tsData.timestamps.includes(row.timeStamp)) {
                             tsData.timestamps.push(row.timeStamp);
                         }
-                        return {
-                            x: row.timeStamp,
-                            y: row.value || NaN
-                        };
+
+
+                        let dateDoesExist = false;
+                        data = data.map((r) => {
+                            if (r['date'] && r['date'] === row.timeStamp) {
+                                r[`${parameter.parameter.type}-${parameter.sensor.id}`] = row.value;
+                                dateDoesExist = true;
+                            }
+                            return r;
+                        });
+                        if (!dateDoesExist) {
+                            data.push({
+                                date: row.timeStamp,
+                                [`${parameter.parameter.type}-${parameter.sensor.id}`]: row.value
+                            });
+                        }
                     });
                 }
-                key++;
-                getData(parameters, onFinished, data, tsData, key);
+                getData(parameters, onFinished, data, tsData);
                 return;
             });
         });
         return;
     }
     tsData.timestamps = tsData.timestamps.sort((a, b) => a - b);
+    data = _.orderBy(_.uniq(data), 'date');
     return onFinished(data, tsData);
 };
 
-const processData = (data: IParameterWithMetaData[], tsData: ITimeStamps) => {
-    return data.map((sensorData) => {
-        const d: XYDataPoint[] = [];
-        sensorData.data.forEach((row) => {
-            if (row.x >= tsData.minT && row.x <= tsData.maxT) {
-                d.push(row);
-            }
-        });
-        sensorData.data = d;
-        return sensorData;
-    });
-};
+const processData = (data: { [key: string]: number }[], tsData: ITimeStamps) => data.filter(
+    (row) => row['date'] && row['date'] >= tsData.minT && row['date'] <= tsData.maxT
+);
 
 const VisualizationParameter = (props: IProps) => {
-    const [isAnimated, setIsAnimated] = useState<boolean>(false);
     const [isFetching, setIsFetching] = useState<boolean>(true);
 
     const [withLines, setWithLines] = useState<boolean>(true);
 
     const [timestamp, setTimestamp] = useState<number>(0);
-    const [intervalId, setIntervalId] = useState();
 
-    const [data, setData] = useState<IParameterWithMetaData[]>([]);
-    const [filteredData, setFilteredData] = useState<IParameterWithMetaData[]>([]);
+    const [data, setData] = useState<{ [key: string]: number }[]>([]);
+    const [filteredData, setFilteredData] = useState<{ [key: string]: number }[]>([]);
+
+    const [legend, setLegend] = useState<{ [key: string]: ILegendRowProps }>();
 
     const [tsData, setTsData] = useState<ITimeStamps>({
         minT: 0, maxT: 0, left: {min: 0, max: 0}, right: {min: 0, max: 0}, timestamps: []
@@ -173,56 +172,42 @@ const VisualizationParameter = (props: IProps) => {
     useEffect(() => {
         if (props.parameters.length > 0) {
             setIsFetching(true);
-            getData(cloneDeep(props.parameters), (rData, rTsData) => {
-                setTsData(rTsData);
-                setFilteredTsData(cloneDeep(rTsData));
-                setData(rData);
-                setFilteredData(cloneDeep(rData));
-                setAxisLabel(cloneDeep(rData));
-                setIsFetching(false);
-                setTimestamp(rTsData.timestamps[0]);
-            });
-        }
-    }, [props.parameters]);
+            getData(
+                _.cloneDeep(props.parameters),
+                (rData, rTsData) => {
+                    setTsData(rTsData);
+                    setFilteredTsData(cloneDeep(rTsData));
+                    setData(rData);
+                    setFilteredData(cloneDeep(rData));
+                    setAxisLabel(cloneDeep(props.parameters));
+                    setIsFetching(false);
+                    setTimestamp(rTsData.timestamps[0]);
 
-    useEffect(() => {
-        if (isAnimated) {
-            timeRef.current = filteredTsData.timestamps.indexOf(timestamp);
-
-            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-            // @ts-ignore
-            setIntervalId(setInterval(() => {
-                if (timeRef.current === filteredTsData.timestamps.length - 1) {
-                    timeRef.current = 0;
-                } else {
-                    timeRef.current = timeRef.current + 1;
+                    const l: { [key: string]: ILegendRowProps } = {};
+                    props.parameters.forEach((p) => {
+                        l[`${p.parameter.type}-${p.sensor.id}`] = {
+                            color: p.meta.color,
+                            label: `${p.parameter.type}-${p.sensor.name}`,
+                            unit: p.parameter.unit || ''
+                        };
+                    })
+                    setLegend(l);
                 }
-                setTimestamp(filteredTsData.timestamps[timeRef.current]);
-            }, 1000));
-        } else {
-            clearTimeout(intervalId);
-            setTimestamp(filteredTsData.timestamps[timeRef.current]);
+            );
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [isAnimated]);
+    }, [props.parameters]);
 
     useEffect(() => {
         const indexOfStart = tsData.timestamps.indexOf(getClosestValue(filteredTsData.timestamps, filteredTsData.minT));
         const indexOfEnd = tsData.timestamps.indexOf(getClosestValue(filteredTsData.timestamps, filteredTsData.maxT));
         const filtered = cloneDeep(tsData.timestamps).slice(indexOfStart, indexOfEnd);
-        setFilteredTsData({
-            ...filteredTsData,
-            timestamps: filtered
-        });
         setFilteredData(processData(cloneDeep(data), {
             ...filteredTsData,
             timestamps: filtered
         }));
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [filteredTsData.minT, filteredTsData.maxT]);
-
-    // tslint:disable-next-line:variable-name
-    const RenderNoShape = () => null;
 
     const handleClickReset = () => {
         setTimestamp(tsData.timestamps[0]);
@@ -257,35 +242,28 @@ const VisualizationParameter = (props: IProps) => {
         });
     };
 
-    const handleTogglePlay = () => setIsAnimated(!isAnimated);
-
-    const generateDataArray = () => filteredTsData.timestamps.map((ts) => {
-        const rowObject: IPropertyValueObject = {
-            x: moment.unix(ts).format()
-        };
-        filteredData.forEach((p) => {
-            if (p.meta.active) {
-                const row = p.data.filter((r) => r.x === ts);
-                if (row.length > 0) {
-                    rowObject[`${p.parameter.type}_${p.sensor.name}`] = row[0].y;
-                } else {
-                    rowObject[`${p.parameter.type}_${p.sensor.name}`] = NaN;
-                }
-            }
-        });
-        return rowObject;
-    });
-
     const handleExportChartImage = () => chartRef.current ? exportChartImage(chartRef.current) : null;
 
     const handleExportChartData = () => {
-        const rows = generateDataArray();
-        const keys = Object.keys(rows[0]);
+        const keys: string[] = ['date'];
+        const ids: string[] = ['date'];
+        props.parameters.forEach((p) => {
+            keys.push(`${p.parameter.type}-${p.sensor.name}`);
+            ids.push(`${p.parameter.type}-${p.sensor.id}`);
+        });
         let csvContent = 'data:text/csv;charset=utf-8,';
         csvContent += keys.join(',');
         csvContent += '\r\n';
-        rows.forEach((row) => {
-            csvContent += Object.values(row).join(',');
+        filteredData.forEach((row) => {
+            csvContent += ids.map((k) => {
+                if (k === 'date') {
+                    return moment.unix(row[k]).format('YYYY-MM-DD');
+                }
+                if (k in row) {
+                    return row[k];
+                }
+                return NaN;
+            }).join(',');
             csvContent += '\r\n';
         });
         const encodedUri = encodeURI(csvContent);
@@ -311,16 +289,6 @@ const VisualizationParameter = (props: IProps) => {
                                             onClick={handleClickLines}
                                             icon="chart line"
                                             primary={withLines}
-                                        />
-                                    }
-                                />
-                                <Popup
-                                    content="Play Animation"
-                                    trigger={
-                                        <Button
-                                            onClick={handleTogglePlay}
-                                            primary={isAnimated}
-                                            icon={isAnimated ? 'pause' : 'play'}
                                         />
                                     }
                                 />
@@ -361,73 +329,80 @@ const VisualizationParameter = (props: IProps) => {
                     <Grid.Row>
                         <Grid.Column>
                             <ResponsiveContainer height={300}>
-                                <ScatterChart
+                                <LineChart
+                                    data={filteredData}
                                     onClick={handleClickChart}
                                     ref={chartRef}
                                 >
                                     <XAxis
-                                        dataKey="x"
+                                        dataKey="date"
                                         domain={[filteredTsData.minT, filteredTsData.maxT]}
                                         name={'Date Time'}
                                         tickFormatter={(dt) => moment.unix(dt).utc().format('YYYY/MM/DD')}
                                         type={'number'}
                                     />
-                                    {filteredData.filter((p) => p.meta.axis === 'left').length > 0 &&
+                                    {props.parameters.filter((p) => p.meta.axis === 'left').length > 0 &&
                                     <YAxis
                                         yAxisId="left"
-                                        dataKey="y"
-                                        name=""
                                         domain={[filteredTsData.left.min, filteredTsData.left.max]}
                                         label={{value: leftAxis, angle: -90, position: 'left'}}
                                         tickFormatter={(v) => v.toExponential(2)}
                                     />
                                     }
-                                    {filteredData.filter((p) => p.meta.axis === 'right').length > 0 &&
+                                    {props.parameters.filter((p) => p.meta.axis === 'right').length > 0 &&
                                     <YAxis
                                         yAxisId="right"
-                                        dataKey="y"
-                                        name=""
                                         orientation="right"
-                                        domain={[filteredTsData.right.min, filteredTsData.right.max]}
                                         label={{value: rightAxis, angle: -90, position: 'right'}}
                                         tickFormatter={(v) => v.toExponential(2)}
                                     />
                                     }
-                                    {filteredData.filter((r) => r.meta.active).map((row, idx) => {
+                                    {props.parameters.map((row, idx) => {
                                         return (
-                                            <Scatter
+                                            <Line
                                                 key={idx}
+                                                dot={!withLines}
                                                 yAxisId={row.meta.axis}
-                                                data={LTOB(row.data, 100).filter((r) => r !== undefined)}
-                                                fill={row.meta.color}
-                                                line={withLines ? {strokeWidth: 2, stroke: row.meta.color} : false}
-                                                lineType={'joint'}
-                                                name={'p'}
-                                                shape={withLines ? <RenderNoShape/> : row.meta.shape as ScatterProps['shape']}
+                                                stroke={row.meta.color}
+                                                type="monotone"
+                                                dataKey={`${row.parameter.type}-${row.sensor.id}`}
+                                                strokeDasharray={row.meta.strokeDasharray}
                                             />
                                         );
                                     })}
+                                    {legend &&
+                                    <Tooltip
+                                        content={
+                                            <CustomTooltip
+                                                legend={legend}
+                                                dateTimeFormat={'YYYY-MM-DD'}
+                                            />
+                                        }
+                                    />
+                                    }
+                                    {false &&
                                     <ReferenceLine
-                                        x={isAnimated ? filteredTsData.timestamps[timeRef.current] : timestamp}
+                                        x={timestamp}
                                         stroke="#000"
                                         strokeDasharray="3 3"
                                         yAxisId={
-                                            filteredData.filter((p) => p.meta.axis === 'left').length > 0 ?
+                                            props.parameters.filter((p) => p.meta.axis === 'left').length > 0 ?
                                                 'left' : 'right'
                                         }
                                     />
+                                    }
                                     {!!timeRange &&
                                     <ReferenceArea
                                         x1={timeRange[0]}
                                         x2={timeRange[1]}
                                         stroke="#1eb1ed"
                                         yAxisId={
-                                            filteredData.filter((p) => p.meta.axis === 'left').length > 0 ?
+                                            props.parameters.filter((p) => p.meta.axis === 'left').length > 0 ?
                                                 'left' : 'right'
                                         }
                                     />
                                     }
-                                </ScatterChart>
+                                </LineChart>
                             </ResponsiveContainer>
                             <Grid>
                                 <Grid.Row>
@@ -466,7 +441,6 @@ const VisualizationParameter = (props: IProps) => {
                     parameters={props.parameters}
                     data={data}
                     rtm={props.rtm}
-                    isAnimated={isAnimated}
                 />
             </Segment>
             }

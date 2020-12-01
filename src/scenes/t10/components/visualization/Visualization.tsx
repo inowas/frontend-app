@@ -21,7 +21,7 @@ interface ISelectedParameter {
     axis: 'left' | 'right';
 }
 
-const shapes = ['circle', 'cross', 'diamond', 'square', 'star', 'triangle', 'wye'];
+const strokes = [undefined, '2 2', '3 3'];
 
 const Visualization = (props: IProps) => {
     const [dropdownData, setDropdownData] = useState<Array<{
@@ -37,7 +37,6 @@ const Visualization = (props: IProps) => {
                 props.rtm.sensors.all.forEach((s, sIdx) => {
                     s.parameters.findBy('type', selectedParameter.type).forEach((p, pIdx) => {
                         cParameters.push({
-                            data: [],
                             parameter: p,
                             sensor: s.toObject(),
                             meta: {
@@ -45,7 +44,7 @@ const Visualization = (props: IProps) => {
                                 axis: selectedParameter.axis,
                                 color: (heatMapColors.discrete.length >= (4 * sIdx) + pIdx) ?
                                     heatMapColors.discrete[(4 * sIdx) + pIdx] : '#000000',
-                                shape: key < shapes.length ? shapes[key] : 'circle'
+                                strokeDasharray: key < strokes.length ? strokes[key] : undefined
                             }
                         });
                     });
@@ -133,7 +132,7 @@ const Visualization = (props: IProps) => {
         if (selectedParameters.length > 0) {
             return (
                 <VisualizationParameter
-                    parameters={parameters}
+                    parameters={parameters.filter((p) => p.meta.active)}
                     rtm={props.rtm}
                 />
             );

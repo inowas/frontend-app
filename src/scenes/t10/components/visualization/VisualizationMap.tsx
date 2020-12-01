@@ -13,8 +13,7 @@ import React, {SyntheticEvent, useEffect, useState} from 'react';
 import _ from 'lodash';
 
 interface IProps {
-    data: IParameterWithMetaData[];
-    isAnimated: boolean;
+    data: {[key: string]: number}[];
     parameters: IParameterWithMetaData[];
     rtm: Rtm;
     timeRef: number;
@@ -28,7 +27,7 @@ const VisualizationMap = (props: IProps) => {
 
     useEffect(() => {
         if (props.parameters.length > 0 && (!selectedParameter || (selectedParameter &&
-                props.parameters.filter((p) => p.parameter.type === selectedParameter)))) {
+            props.parameters.filter((p) => p.parameter.type === selectedParameter)))) {
             setSelectedParameter(props.parameters[0].parameter.type)
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -95,19 +94,18 @@ const VisualizationMap = (props: IProps) => {
     };
 
     const renderMarker = (key: number, sensor: ISensor) => {
-        const parameter = props.data.filter((p) => p.sensor.id === sensor.id);
+        const parameter = props.parameters.filter((p) => p.sensor.id === sensor.id);
         if (parameter.length > 0) {
             let fillColor = parameter[0].meta.color;
             let fillOpacity = 0.8;
             let value = null;
 
             if (props.tsData) {
-                const row = parameter[0].data.filter((r) => r.x === (props.isAnimated ? props.tsData.timestamps[
-                    props.timeRef] : props.timestamp));
+                const row = props.data.filter((r) => r['date'] && r['date'] === (props.timestamp));
                 if (row.length > 0) {
                     value = row[0].y;
                     if (showScale) {
-                        fillColor = `#${rainbow.colorAt(row[0].y)}`;
+                        fillColor = `#${rainbow.colorAt(row[0][`${parameter[0].parameter.type}-${parameter[0].sensor.id}`])}`;
                     }
                 } else if (showScale) {
                     fillColor = '#000';
@@ -152,24 +150,24 @@ const VisualizationMap = (props: IProps) => {
         <Grid>
             <Grid.Row>
                 <Grid.Column>
-                        <Popup
-                            content="Show color scale"
-                            trigger={
-                                <Button
-                                    onClick={handleToggleScale}
-                                    icon="chart pie"
-                                    primary={showScale}
-                                />
-                            }
-                        />
-                        <Dropdown
-                            search={true}
-                            selection={true}
-                            onChange={handleChangeParameter}
-                            options={selectOptions}
-                            placeholder="Select parameter"
-                            value={selectedParameter}
-                        />
+                    <Popup
+                        content="Show color scale"
+                        trigger={
+                            <Button
+                                onClick={handleToggleScale}
+                                icon="chart pie"
+                                primary={showScale}
+                            />
+                        }
+                    />
+                    <Dropdown
+                        search={true}
+                        selection={true}
+                        onChange={handleChangeParameter}
+                        options={selectOptions}
+                        placeholder="Select parameter"
+                        value={selectedParameter}
+                    />
                 </Grid.Column>
             </Grid.Row>
             <Grid.Row>

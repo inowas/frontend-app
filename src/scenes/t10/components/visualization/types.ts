@@ -1,15 +1,11 @@
 import {ISensor, ISensorParameter} from '../../../../core/model/rtm/Sensor.type';
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-// @ts-ignore todo
-import {XYDataPoint} from 'downsample/dist/types';
 
 export interface IParameterWithMetaData {
-    data: XYDataPoint[];
     meta: {
         active: boolean;
         axis: 'left' | 'right';
         color: string;
-        shape: string;
+        strokeDasharray?: string;
     };
     parameter: ISensorParameter;
     sensor: ISensor;
@@ -27,4 +23,10 @@ export interface ITimeStamps {
         max: number;
     };
     timestamps: number[];
+}
+
+export interface ILegendRowProps {
+    color: string;
+    label: string;
+    unit: string;
 }
