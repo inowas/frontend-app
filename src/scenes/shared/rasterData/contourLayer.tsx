@@ -55,6 +55,7 @@ const ContourLayer = (props: IProps) => {
                     color={`#${props.rainbow.colorAt(thresholds[key])}`}
                     fill={true}
                     weight={1.5}
+                    priority={0}
                 />
             ))}
         </FeatureGroup>
