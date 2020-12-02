@@ -4,19 +4,15 @@ import {Button, Dropdown, DropdownProps, Grid, Popup} from 'semantic-ui-react';
 import {CircleMarker, Map, Tooltip} from 'react-leaflet';
 import {ColorLegend} from '../../../shared/rasterData';
 import {IParameterWithMetaData, ITimeStamps} from './types';
-import {ISensor} from '../../../../core/model/rtm/Sensor.type';
 import {LatLngExpression} from 'leaflet';
-import {Rtm} from '../../../../core/model/rtm';
 import {heatMapColors} from '../../../t05/defaults/gis';
 import {rainbowFactory} from '../../../shared/rasterData/helpers';
 import React, {SyntheticEvent, useEffect, useState} from 'react';
 import _ from 'lodash';
 
 interface IProps {
-    data: IParameterWithMetaData[];
-    isAnimated: boolean;
+    data: { [key: string]: number }[];
     parameters: IParameterWithMetaData[];
-    rtm: Rtm;
     timeRef: number;
     timestamp: number;
     tsData: ITimeStamps;
@@ -28,7 +24,7 @@ const VisualizationMap = (props: IProps) => {
 
     useEffect(() => {
         if (props.parameters.length > 0 && (!selectedParameter || (selectedParameter &&
-                props.parameters.filter((p) => p.parameter.type === selectedParameter)))) {
+            props.parameters.filter((p) => p.parameter.type === selectedParameter)))) {
             setSelectedParameter(props.parameters[0].parameter.type)
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -66,12 +62,11 @@ const VisualizationMap = (props: IProps) => {
 
     const calculateBoundingBox = () => {
         return BoundingBox.fromPoints(
-            props.rtm.sensors.all.filter(
-                (s) => props.parameters.filter((p) => p.sensor.id === s.id).length > 0
-            ).map((s) => {
+            props.parameters.filter((p) => p.parameter.type === selectedParameter)
+                .map((p) => {
                 return {
                     type: 'Point',
-                    coordinates: [s.geolocation.coordinates[0], s.geolocation.coordinates[1]]
+                    coordinates: [p.sensor.geolocation.coordinates[0], p.sensor.geolocation.coordinates[1]]
                 };
             })
         );
@@ -94,48 +89,44 @@ const VisualizationMap = (props: IProps) => {
         return <ColorLegend legend={legend} unit={''}/>;
     };
 
-    const renderMarker = (key: number, sensor: ISensor) => {
-        const parameter = props.data.filter((p) => p.sensor.id === sensor.id);
-        if (parameter.length > 0) {
-            let fillColor = parameter[0].meta.color;
-            let fillOpacity = 0.8;
-            let value = null;
+    const renderMarker = (key: number, p: IParameterWithMetaData) => {
+        let fillColor = p.meta.color;
+        let fillOpacity = 0.8;
+        let value = null;
 
-            if (props.tsData) {
-                const row = parameter[0].data.filter((r) => r.x === (props.isAnimated ? props.tsData.timestamps[
-                    props.timeRef] : props.timestamp));
-                if (row.length > 0) {
-                    value = row[0].y;
-                    if (showScale) {
-                        fillColor = `#${rainbow.colorAt(row[0].y)}`;
-                    }
-                } else if (showScale) {
-                    fillColor = '#000';
-                    fillOpacity = 0.3;
+        if (props.tsData) {
+            const row = props.data.filter((r) => r['date'] && r['date'] === (props.timestamp));
+            if (row.length > 0) {
+                value = row[0].y;
+                const pos = row[0][`${p.parameter.type}-${p.sensor.id}`];
+                if (showScale && pos !== undefined) {
+                    fillColor = `#${rainbow.colorAt(row[0][`${p.parameter.type}-${p.sensor.id}`])}`;
                 }
+            } else if (showScale) {
+                fillColor = '#000';
+                fillOpacity = 0.3;
             }
-
-            return (
-                <CircleMarker
-                    center={
-                        [
-                            sensor.geolocation.coordinates[1],
-                            sensor.geolocation.coordinates[0]
-                        ] as LatLngExpression
-                    }
-                    fillColor={fillColor}
-                    fillOpacity={fillOpacity}
-                    key={key}
-                    radius={10}
-                    stroke={false}
-                >
-                    <Tooltip direction="top">
-                        {sensor.name} {value ? `(${value})` : null}
-                    </Tooltip>
-                </CircleMarker>
-            );
         }
-        return null;
+
+        return (
+            <CircleMarker
+                center={
+                    [
+                        p.sensor.geolocation.coordinates[1],
+                        p.sensor.geolocation.coordinates[0]
+                    ] as LatLngExpression
+                }
+                fillColor={fillColor}
+                fillOpacity={fillOpacity}
+                key={key}
+                radius={10}
+                stroke={false}
+            >
+                <Tooltip direction="top">
+                    {p.sensor.name} {value ? `(${value})` : null}
+                </Tooltip>
+            </CircleMarker>
+        );
     };
 
     const handleChangeParameter = (e: SyntheticEvent, {value}: DropdownProps) => {
@@ -152,24 +143,24 @@ const VisualizationMap = (props: IProps) => {
         <Grid>
             <Grid.Row>
                 <Grid.Column>
-                        <Popup
-                            content="Show color scale"
-                            trigger={
-                                <Button
-                                    onClick={handleToggleScale}
-                                    icon="chart pie"
-                                    primary={showScale}
-                                />
-                            }
-                        />
-                        <Dropdown
-                            search={true}
-                            selection={true}
-                            onChange={handleChangeParameter}
-                            options={selectOptions}
-                            placeholder="Select parameter"
-                            value={selectedParameter}
-                        />
+                    <Popup
+                        content="Show color scale"
+                        trigger={
+                            <Button
+                                onClick={handleToggleScale}
+                                icon="chart pie"
+                                primary={showScale}
+                            />
+                        }
+                    />
+                    <Dropdown
+                        search={true}
+                        selection={true}
+                        onChange={handleChangeParameter}
+                        options={selectOptions}
+                        placeholder="Select parameter"
+                        value={selectedParameter}
+                    />
                 </Grid.Column>
             </Grid.Row>
             <Grid.Row>
@@ -185,13 +176,8 @@ const VisualizationMap = (props: IProps) => {
                         }}
                     >
                         <BasicTileLayer/>
-                        {props.rtm.sensors.all.filter(
-                            (s) => props.parameters.filter(
-                                (p) => p.meta.active && p.sensor.id === s.id && p.parameter.type === selectedParameter
-                            ).length > 0
-                        ).map((s, sKey) => {
-                            return renderMarker(sKey, s.toObject());
-                        })}
+                        {props.parameters.filter((p) => p.parameter.type === selectedParameter)
+                            .map((p, sKey) => renderMarker(sKey, p))}
                         {showScale && renderLegend()}
                     </Map>
                     }

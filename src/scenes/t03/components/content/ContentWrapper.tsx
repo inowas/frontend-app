@@ -1,8 +1,8 @@
-import React from 'react';
-import {Redirect, useLocation, useParams, useRouteMatch} from 'react-router-dom';
+import * as Content from './index';
 import {BoundaryFactory} from '../../../../core/model/modflow/boundaries';
 import {BoundaryType} from '../../../../core/model/modflow/boundaries/Boundary.type';
-import * as Content from './index';
+import {Redirect, useLocation, useParams, useRouteMatch} from 'react-router-dom';
+import React from 'react';
 
 interface IRouterProps {
     id: string;

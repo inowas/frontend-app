@@ -71,7 +71,6 @@ class SensorDataSource extends GenericObject<ISensorDataSource> {
     set sensor(value: string) {
         const url = this.url;
         url.pathname = `/sensors/project/${this.project}/sensor/${value}/property/${this.parameter}`;
-
         if (!(getUrlPathRegex(url.pathname)[2] === value)) {
             throw new Error('Invalid sensor name');
         }
@@ -321,7 +320,7 @@ class SensorDataSource extends GenericObject<ISensorDataSource> {
 
     public async loadData() {
         if (this._props.data) {
-            return;
+            return await this._props.data;
         }
 
         this._props.fetching = true;
@@ -337,6 +336,8 @@ class SensorDataSource extends GenericObject<ISensorDataSource> {
             this._props.fetching = false;
             this._props.error = e;
         }
+
+        return await this._props.data;
     }
 
     protected sortData = () => {

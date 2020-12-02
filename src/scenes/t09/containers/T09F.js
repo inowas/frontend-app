@@ -45,13 +45,16 @@ class T09F extends React.Component {
         }
     }
 
-    save = () => {
+    save = (tool) => {
         const {id} = this.props.match.params;
-        const {tool} = this.state;
+
+        const t = {
+            ...this.state.tool, name: tool.name, description: tool.description, public: tool.public
+        };
 
         if (id) {
             sendCommand(
-                SimpleToolsCommand.updateToolInstance(buildPayloadToolInstance(tool)),
+                SimpleToolsCommand.updateToolInstance(buildPayloadToolInstance(t)),
                 () => this.setState({isDirty: false}),
                 () => this.setState({error: true})
             );
@@ -60,7 +63,7 @@ class T09F extends React.Component {
 
         sendCommand(
             SimpleToolsCommand.createToolInstance(buildPayloadToolInstance(tool)),
-            () => this.props.history.push(`${this.props.location.pathname}/${tool.id}`),
+            () => this.props.history.push(`${this.props.location.pathname}/${t.id}`),
             () => this.setState({error: true})
         );
     };
@@ -108,10 +111,11 @@ class T09F extends React.Component {
         return (
             <AppContainer navbarItems={navigation}>
                 <ToolMetaData
-                    tool={tool}
+                    tool={data}
                     readOnly={readOnly}
-                    onChange={this.update}
                     onSave={this.save}
+                    saveButton={true}
+                    onReset={this.handleReset}
                     isDirty={isDirty}
                 />
                 <ToolGrid rows={2}>

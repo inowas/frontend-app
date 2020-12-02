@@ -1,15 +1,21 @@
 import {AppContainer} from '../../shared';
-import {Grid, Icon, Loader} from 'semantic-ui-react';
+import {Grid, Icon, Loader, Message} from 'semantic-ui-react';
 import {HeatTransportController} from '../components';
 import {IHtm} from '../../../core/model/htm/Htm.type';
+import {IRootReducer} from '../../../reducers';
+import {IToolInstance} from '../../dashboard/defaults/tools';
 import {IToolMetaDataEdit} from '../../shared/simpleTools/ToolMetaData/ToolMetaData.type';
 import {ToolMetaData} from '../../shared/simpleTools';
+import {clear, updateHtm, updateT10Instances} from '../actions/actions';
 import {createToolInstance} from '../../dashboard/commands';
-import {fetchUrl, sendCommand} from '../../../services/api';
+import {fetchApiWithToken, fetchUrl, sendCommand} from '../../../services/api';
+import {uniqBy} from 'lodash';
+import {useDispatch, useSelector} from 'react-redux';
 import {useHistory, useParams} from 'react-router-dom';
 import Htm from '../../../core/model/htm/Htm';
 import React, {useEffect, useState} from 'react';
 import SimpleToolsCommand from '../../shared/simpleTools/commands/SimpleToolsCommand';
+import uuid from 'uuid';
 
 const navigation = [{
     name: 'Documentation',
@@ -19,21 +25,54 @@ const navigation = [{
 
 const tool = 'T19';
 
-const HeatTransport = () => {
-    const [isDirty, setDirty] = useState<boolean>(false);
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const [isFetching, setIsFetching] = useState<boolean>(false);
-    const [htm, setHtm] = useState<IHtm>();
+interface IError {
+    id: string;
+    message: string;
+}
 
+const HeatTransport = () => {
+    const [errors, setErrors] = useState<IError[]>([]);
+    const [isDirty, setDirty] = useState<boolean>(false);
+    const [isFetching, setIsFetching] = useState<boolean>(false);
+
+    const dispatch = useDispatch();
     const history = useHistory();
     const {id} = useParams();
+
+    const T19 = useSelector((state: IRootReducer) => state.T19);
+    const htm = T19.htm ? Htm.fromObject(T19.htm) : null;
+
+    useEffect(() => {
+        const fetchInstances = async () => {
+            try {
+                setIsFetching(true);
+                const privateT10Tools = (await fetchApiWithToken('tools/T10?public=false')).data;
+                const publicT10Tools = (await fetchApiWithToken('tools/T10?public=true')).data;
+
+                // Lets show an ordered List with the private projects first
+                const tools = uniqBy(privateT10Tools.concat(publicT10Tools), (t: IToolInstance) => t.id);
+                dispatch(updateT10Instances(tools));
+            } catch (err) {
+                setErrors([{id: uuid.v4(), message: 'Fetching t10 instances failed.'}]);
+            } finally {
+                setIsFetching(false);
+            }
+        };
+
+        fetchInstances();
+
+        return function() {
+            dispatch(clear());
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
 
     useEffect(() => {
         if (id) {
             setIsFetching(true);
             fetchUrl(`tools/${tool}/${id}`,
                 (m: IHtm) => {
-                    setHtm(m);
+                    dispatch(updateHtm(Htm.fromObject(m)));
                     setIsFetching(false);
                     setDirty(false);
                 },
@@ -48,30 +87,32 @@ const HeatTransport = () => {
             const newInstance = Htm.fromDefaults();
             sendCommand(createToolInstance(newInstance.tool, newInstance.toObject()),
                 () => history.push(`/tools/${newInstance.tool}/${newInstance.id}`),
-                () => console.log('ERROR')
+                (e) => setErrors([{id: uuid.v4(), message: `Creating new instance failed: ${e}`}])
             );
         }
-    }, [history, id]);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [id]);
 
     const handleSaveMetaData = (tool: IToolMetaDataEdit) => {
         if (!htm) {
             return;
         }
         const {name, description} = tool;
-        const isPublic = tool.public;
-        setHtm({...htm, name, description, public: isPublic});
-        handleSave(htm);
+        const cHtm = htm.toObject();
+        cHtm.public = tool.public;
+        cHtm.name = name;
+        cHtm.description = description;
+        handleSave(Htm.fromObject(cHtm));
     };
 
-    const handleChange = (h: Htm) => {
-        setHtm(h.toObject());
-    };
-
-    const handleSave = (htm: IHtm) => {
+    const handleSave = (h: Htm) => {
         setIsFetching(true);
         sendCommand(
-            SimpleToolsCommand.updateToolInstance(htm),
-            () => setIsFetching(false)
+            SimpleToolsCommand.updateToolInstance(h.toObject()),
+            () => {
+                dispatch(updateHtm(h));
+                setIsFetching(false);
+            }
         );
     };
 
@@ -82,6 +123,8 @@ const HeatTransport = () => {
             </AppContainer>
         );
     }
+
+    const handleDismissError = (id: string) => () => setErrors(errors.filter((e) => e.id !== id));
 
     return (
         <AppContainer navbarItems={navigation}>
@@ -99,12 +142,13 @@ const HeatTransport = () => {
             <Grid padded={true}>
                 <Grid.Row>
                     <Grid.Column width={16}>
-                        <HeatTransportController
-                            key={htm.id}
-                            htm={Htm.fromObject(htm)}
-                            onChange={handleChange}
-                            onSave={handleSave}
-                        />
+                        {errors.map((error, key) => (
+                            <Message key={key} negative={true} onDismiss={handleDismissError(error.id)}>
+                                <Message.Header>Error</Message.Header>
+                                <p>{error.message}</p>
+                            </Message>
+                        ))}
+                        <HeatTransportController/>
                     </Grid.Column>
                 </Grid.Row>
             </Grid>

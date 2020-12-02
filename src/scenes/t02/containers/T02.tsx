@@ -1,22 +1,18 @@
-import React, {useEffect, useState} from 'react';
-import {useSelector} from 'react-redux';
-import {useParams, useHistory, useLocation} from 'react-router-dom';
-import {Icon} from 'semantic-ui-react';
-
-import {includes} from 'lodash';
-import {IRootReducer} from '../../../reducers';
-
 import {AppContainer} from '../../shared';
 import {Background, Chart, Info, Parameters, Settings} from '../components';
+import {IRootReducer} from '../../../reducers';
+import {IT02, defaultsWithSession} from '../defaults';
+import {IToolMetaDataEdit} from '../../shared/simpleTools/ToolMetaData/ToolMetaData.type';
+import {Icon} from 'semantic-ui-react';
 import {SliderParameter, ToolGrid, ToolMetaData} from '../../shared/simpleTools';
-
-import SimpleToolsCommand from '../../shared/simpleTools/commands/SimpleToolsCommand';
-
-import image from '../images/T02.png';
-import {defaultsWithSession, IT02} from '../defaults';
-
-import {fetchTool, sendCommand} from '../../../services/api';
+import {asyncFetchTool, sendCommand} from '../../../services/api';
 import {buildPayloadToolInstance, deepMerge} from '../../shared/simpleTools/helpers';
+import {includes} from 'lodash';
+import {useHistory, useLocation, useParams} from 'react-router-dom';
+import {useSelector} from 'react-redux';
+import React, {useEffect, useState} from 'react';
+import SimpleToolsCommand from '../../shared/simpleTools/commands/SimpleToolsCommand';
+import image from '../images/T02.png';
 
 const navigation = [{
     name: 'Documentation',
@@ -39,24 +35,33 @@ const T02 = () => {
     const location = useLocation();
 
     useEffect(() => {
-        console.log('useEffect');
+        const fetchData = async () => {
+            setIsLoading(true);
+            setError(null);
+            try {
+                const d: IT02 = await asyncFetchTool(data.tool, urlParams.id);
+                setData(deepMerge(defaultsWithSession(session), d));
+            } catch (e) {
+                setError(e);
+            } finally {
+                setIsLoading(false);
+            }
+        };
+
         if (urlParams.id) {
-            console.log('Fetchtool');
-            fetchTool(
-                data.tool,
-                urlParams.id,
-                (data: IT02) => setData(
-                    deepMerge(data, defaultsWithSession(session))
-                ),
-                (error) => setError(error)
-            );
+            fetchData();
         }
     }, [urlParams.id, data.tool, session]);
 
-    const save = () => {
+    const save = (tool: IToolMetaDataEdit) => {
+
+        const d = {
+            ...data, name: tool.name, description: tool.description, public: tool.public
+        };
+
         if (urlParams.id) {
             sendCommand(
-                SimpleToolsCommand.updateToolInstance(buildPayloadToolInstance(data)),
+                SimpleToolsCommand.updateToolInstance(buildPayloadToolInstance(d)),
                 () => setIsDirty(false),
                 () => setError(true)
             );
@@ -65,7 +70,7 @@ const T02 = () => {
         }
 
         sendCommand(
-            SimpleToolsCommand.createToolInstance(buildPayloadToolInstance(data)),
+            SimpleToolsCommand.createToolInstance(buildPayloadToolInstance(d)),
             () => history.push(`${location.pathname}/${data.id}`),
             () => setError(true)
         );
@@ -94,6 +99,8 @@ const T02 = () => {
                 tool={data}
                 readOnly={readOnly}
                 onSave={save}
+                saveButton={true}
+                onReset={handleReset}
                 isDirty={isDirty}
             />
             <ToolGrid rows={2}>

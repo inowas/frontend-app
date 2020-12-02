@@ -1,5 +1,3 @@
-import React, {ChangeEvent, FormEvent, useEffect, useState} from 'react';
-import {useHistory} from 'react-router-dom';
 import {
     Breadcrumb,
     Button,
@@ -11,12 +9,16 @@ import {
     Modal,
     TextAreaProps
 } from 'semantic-ui-react';
-import tools from '../../../dashboard/defaults/toolNames';
 import {IToolMetaDataEdit} from './ToolMetaData.type';
+import {useHistory} from 'react-router-dom';
+import React, {ChangeEvent, FormEvent, useEffect, useState} from 'react';
+import tools from '../../../dashboard/defaults/toolNames';
 
 interface IProps {
     isDirty: boolean;
     onSave: (tool: IToolMetaDataEdit) => any;
+    saveButton?: boolean;
+    onReset?: () => any;
     readOnly: boolean;
     tool: IToolMetaDataEdit;
 }
@@ -83,6 +85,15 @@ const ToolMetaData = (props: IProps) => {
             <Grid padded={true}>
                 <Grid.Column style={{paddingTop: 0, paddingBottom: 0}}>
                     {renderBreadcrumbs()}
+                    {props.saveButton &&
+                    <Button positive={props.isDirty} disabled={!props.isDirty} floated={'right'} icon={'save'}
+                            onClick={() => props.onSave(tool)}/>
+                    }
+
+                    {props.onReset &&
+                    <Button negative={true} floated={'right'} icon={'redo'} onClick={props.onReset}/>
+                    }
+
                 </Grid.Column>
             </Grid>
 

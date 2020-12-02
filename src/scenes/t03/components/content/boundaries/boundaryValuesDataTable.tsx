@@ -1,12 +1,12 @@
-import {cloneDeep} from 'lodash';
-import moment from 'moment';
-import React, {ChangeEvent, MouseEvent, useState} from 'react';
-import {Button, Icon, Input, Pagination, PaginationProps, Table} from 'semantic-ui-react';
-import {Stressperiods} from '../../../../../core/model/modflow';
-import {Boundary, LineBoundary} from '../../../../../core/model/modflow/boundaries';
-import {ISpValues} from '../../../../../core/model/modflow/boundaries/Boundary.type';
 import {AdvancedCsvUpload} from '../../../../shared/simpleTools/upload';
+import {Boundary, LineBoundary} from '../../../../../core/model/modflow/boundaries';
+import {Button, Icon, Input, Pagination, PaginationProps, Table} from 'semantic-ui-react';
+import {ISpValues} from '../../../../../core/model/modflow/boundaries/Boundary.type';
+import {Stressperiods} from '../../../../../core/model/modflow';
+import {cloneDeep} from 'lodash';
 import CalculationModal from './calculationModal';
+import React, {ChangeEvent, MouseEvent, useState} from 'react';
+import moment from 'moment';
 
 interface IActiveInput {
     col: number;

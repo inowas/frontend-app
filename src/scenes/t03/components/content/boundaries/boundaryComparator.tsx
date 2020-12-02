@@ -1,11 +1,11 @@
-import React from 'react';
-import {Button, Divider, Dropdown, DropdownProps, Grid, Header, Icon, Menu} from 'semantic-ui-react';
-import {ModflowModel, Soilmodel} from '../../../../../core/model/modflow';
 import {BoundaryCollection} from '../../../../../core/model/modflow/boundaries';
 import {BoundarySelection, BoundaryType} from '../../../../../core/model/modflow/boundaries/Boundary.type';
+import {Button, Divider, Dropdown, DropdownProps, Grid, Header, Icon, Menu} from 'semantic-ui-react';
 import {IBoundaryComparisonItem} from '../../../../../core/model/modflow/boundaries/BoundaryCollection';
+import {ModflowModel, Soilmodel} from '../../../../../core/model/modflow';
 import BoundaryDetailsImport from './boundaryDetailsImport';
 import BoundarySynchronizer from './boundarySychronizer';
+import React from 'react';
 
 interface IBoundaryTypeObject {
     key: BoundarySelection;
@@ -20,7 +20,6 @@ interface IProps {
     soilmodel: Soilmodel;
     selectedBoundary: string | null;
     types?: BoundaryType[];
-    onChange: (boundaries: BoundaryCollection) => void;
     onBoundaryClick: (bid: string) => void;
 }
 
@@ -127,7 +126,6 @@ class BoundaryComparator extends React.Component<IProps, IState> {
                     currentBoundaries={this.props.currentBoundaries}
                     newBoundaries={this.props.newBoundaries}
                     model={this.props.model}
-                    onChange={this.props.onChange}
                 />
             </div>
         );
