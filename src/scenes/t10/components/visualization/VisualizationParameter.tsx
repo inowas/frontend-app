@@ -26,7 +26,7 @@ import Uuid from 'uuid';
 import VisualizationMap from './VisualizationMap';
 import _, {cloneDeep} from 'lodash';
 import moment from 'moment';
-import uuid from "uuid";
+import uuid from 'uuid';
 
 interface IProps {
     parameters: IParameterWithMetaData[];
@@ -211,6 +211,20 @@ const VisualizationParameter = (props: IProps) => {
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [filteredTsData.minT, filteredTsData.maxT]);
 
+    const getTicks = () => {
+        const domain = [filteredTsData.minT, filteredTsData.maxT];
+        const dateStart = moment.unix(domain[0]);
+        const dateEnd = moment.unix(domain[1]);
+        const interim = dateStart.clone();
+        const timeValues: number[] = [];
+
+        while (dateEnd > interim || interim.format('M') === dateEnd.format('M')) {
+            timeValues.push(moment(interim.format('YYYY-MM')).unix());
+            interim.add(1, 'month');
+        }
+        return timeValues;
+    };
+
     const handleClickReset = () => {
         setTimestamp(tsData.timestamps[0]);
         setFilteredTsData(cloneDeep(tsData));
@@ -340,6 +354,7 @@ const VisualizationParameter = (props: IProps) => {
                                         dataKey="date"
                                         domain={[filteredTsData.minT, filteredTsData.maxT]}
                                         name={'Date Time'}
+                                        ticks={getTicks()}
                                         tickFormatter={(dt) => moment.unix(dt).utc().format('YYYY/MM/DD')}
                                         type={'number'}
                                     />
