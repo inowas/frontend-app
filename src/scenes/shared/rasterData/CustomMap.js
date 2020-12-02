@@ -1,10 +1,6 @@
 import {Map} from 'react-leaflet';
 
 export default class CustomBaseMap extends Map {
-    constructor(props) {
-        super(props);
-    }
-
     componentDidUpdate(prevProps) {
         this.updateLeafletElement(prevProps, this.props);
         const layers = this.leafletElement._layers;
