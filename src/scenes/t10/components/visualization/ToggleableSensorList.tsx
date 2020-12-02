@@ -33,6 +33,19 @@ const ToggleableSensorList = (props: IProps) => {
         }
     };
 
+    const getSymbol = (p: IParameterWithMetaData) => {
+        if (p.meta.strokeDasharray === '2 2') {
+            return <Icon style={{color: p.meta.color}} name="ellipsis horizontal"/>;
+        }
+        if (p.meta.strokeDasharray === '4 4') {
+            return <span>
+            <Icon style={{color: p.meta.color}} name="minus" size="tiny"/>
+            <Icon style={{color: p.meta.color}} name="minus" size="tiny"/>
+        </span>;
+        }
+        return <Icon style={{color: p.meta.color}} name="minus"/>;
+    };
+
     return (
         <List>
             {props.parameters.map((p, pIdx) => {
@@ -45,12 +58,7 @@ const ToggleableSensorList = (props: IProps) => {
                             label={{
                                 children:
                                     <div>
-                                        <Icon
-                                            style={{
-                                                color: p.meta.color
-                                            }}
-                                            name="circle"
-                                        />
+                                        {getSymbol(p)}
                                         {p.sensor.name}
                                     </div>
                             }}
