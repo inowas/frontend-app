@@ -26,6 +26,7 @@ import Uuid from 'uuid';
 import VisualizationMap from './VisualizationMap';
 import _, {cloneDeep} from 'lodash';
 import moment from 'moment';
+import uuid from "uuid";
 
 interface IProps {
     parameters: IParameterWithMetaData[];
@@ -182,6 +183,7 @@ const VisualizationParameter = (props: IProps) => {
                     setAxisLabel(cloneDeep(props.parameters));
                     setIsFetching(false);
                     setTimestamp(rTsData.timestamps[0]);
+                    setTimeSliderId(uuid.v4());
 
                     const l: { [key: string]: ILegendRowProps } = {};
                     props.parameters.forEach((p) => {
@@ -220,8 +222,8 @@ const VisualizationParameter = (props: IProps) => {
     };
 
     const handleClickChart = (e: any) => {
-        if (e) {
-            return setTimestamp(getClosestValue(filteredTsData.timestamps, e.xValue));
+        if (e && e.activeLabel) {
+            return setTimestamp(e.activeLabel);
         }
     };
 
@@ -380,7 +382,6 @@ const VisualizationParameter = (props: IProps) => {
                                         }
                                     />
                                     }
-                                    {false &&
                                     <ReferenceLine
                                         x={timestamp}
                                         stroke="#000"
@@ -390,7 +391,6 @@ const VisualizationParameter = (props: IProps) => {
                                                 'left' : 'right'
                                         }
                                     />
-                                    }
                                     {!!timeRange &&
                                     <ReferenceArea
                                         x1={timeRange[0]}
@@ -440,7 +440,6 @@ const VisualizationParameter = (props: IProps) => {
                     tsData={tsData}
                     parameters={props.parameters}
                     data={data}
-                    rtm={props.rtm}
                 />
             </Segment>
             }

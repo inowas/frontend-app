@@ -1,7 +1,7 @@
+import {ILegendRowProps} from './types';
 import {TooltipProps} from 'recharts';
 import React from 'react';
 import moment from 'moment';
-import {IParameterWithMetaData, ILegendRowProps} from "./types";
 
 const styles = {
     customTooltip: {

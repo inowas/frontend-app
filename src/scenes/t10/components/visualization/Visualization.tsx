@@ -21,7 +21,7 @@ interface ISelectedParameter {
     axis: 'left' | 'right';
 }
 
-const strokes = [undefined, '2 2', '3 3'];
+const strokes = [undefined, '2 2', '4 4'];
 
 const Visualization = (props: IProps) => {
     const [dropdownData, setDropdownData] = useState<Array<{
