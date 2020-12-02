@@ -1,12 +1,12 @@
 import {Array2D} from '../../../geometry/Array2D.type';
-import GridSize from '../../../geometry/GridSize';
 import {BoundaryCollection, EvapotranspirationBoundary} from '../../../modflow/boundaries';
-import Stressperiods from '../../../modflow/Stressperiods';
 import {IPropertyValueObject} from '../../../types';
-import {calculateEvapotranspirationSpData} from '../../helpers';
 import {IStressPeriodData} from './FlopyModflow.type';
+import {calculateEvapotranspirationSpData} from '../../helpers';
 import FlopyModflowBoundary from './FlopyModflowBoundary';
 import FlopyModflowFlowPackage from './FlopyModflowFlowPackage';
+import GridSize from '../../../geometry/GridSize';
+import Stressperiods from '../../../modflow/Stressperiods';
 
 export interface IFlopyModflowMfevt {
     nevtop: number;
@@ -45,6 +45,7 @@ export default class FlopyModflowMfevt extends FlopyModflowBoundary<IFlopyModflo
     public static fromObject(obj: IPropertyValueObject): FlopyModflowMfevt {
         const d: any = FlopyModflowFlowPackage.cloneDeep(defaults);
         for (const key in d) {
+            // eslint-disable-next-line
             if (d.hasOwnProperty(key) && obj.hasOwnProperty(key)) {
                 d[key] = obj[key];
             }
@@ -65,7 +66,11 @@ export default class FlopyModflowMfevt extends FlopyModflowBoundary<IFlopyModflo
             return null;
         }
 
-        this.stress_period_data = spData;
+        this.ievt = spData.ievt;
+        this.evtr = spData.evtr;
+        this.surf = spData.surf;
+        this.exdp = spData.exdp;
+
         return this;
     };
 
