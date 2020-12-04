@@ -3,6 +3,7 @@ import React, {useState} from 'react';
 
 const Tools = () => {
 
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const [isLoading, setIsLoading] = useState<boolean>(true);
 
     return (
