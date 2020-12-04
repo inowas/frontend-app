@@ -1,8 +1,8 @@
-import React from 'react';
-import PropTypes from 'prop-types';
-import {Dropdown, Icon, Menu, Container} from 'semantic-ui-react';
+import {Container, Dropdown, Icon, Menu} from 'semantic-ui-react';
 import {Link, withRouter} from 'react-router-dom';
 import {connect} from 'react-redux';
+import PropTypes from 'prop-types';
+import React from 'react';
 
 class NavBar extends React.Component {
 
@@ -42,7 +42,8 @@ class NavBar extends React.Component {
 
             if (l.path) {
                 navElement = (
-                    <Link className="item" to={l.path} data-active={active} key={index} onClick={() => this.historyPushTo(l.path)}>
+                    <Link className="item" to={l.path} data-active={active} key={index}
+                          onClick={() => this.historyPushTo(l.path)}>
                         {l.icon}{l.name.toUpperCase()}
                     </Link>
                 );
@@ -124,8 +125,8 @@ class NavBar extends React.Component {
 
         return (
 
-            <Menu fixed='top' inverted color='grey' style={{zIndex:9999}}>
-                <Container style={{minWidth: '1280px',padding: '0 1em'}}>
+            <Menu fixed='top' inverted color='grey' style={{zIndex: 9999}}>
+                <Container style={{minWidth: '1280px', padding: '0 1em'}}>
                     {this.renderLinks(standardLinks)}
                     {userIsLoggedIn && this.renderLinks(standardLinksAuthenticationRequired.concat(this.props.links))}
                     {!userIsLoggedIn && this.props.info && this.renderInfo(this.props.info)}
