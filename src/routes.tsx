@@ -17,7 +17,7 @@ const getRoutes = () => {
         return (
             <Switch>
                 <PrivateRoute exact={true} path="/" component={Scenes.LandingPage} forRoles={['ROLE_USER']}/>
-                <PrivateRoute exact={true} path="/admin/:property?" component={Scenes.Admin} forRoles={['ROLE_ADMIN']}/>
+                <PrivateRoute exact={true} path="/admin/:property?/:id?" component={Scenes.Admin} forRoles={['ROLE_ADMIN']}/>
                 <PrivateRoute exact={true} path="/tools" component={Scenes.Dashboard} forRoles={['ROLE_USER']}/>
                 <PrivateRoute
                     exact={true}
@@ -87,7 +87,7 @@ const getRoutes = () => {
     return (
         <Switch>
             <PrivateRoute exact={true} path="/" component={Scenes.LandingPage} forRoles={['ROLE_USER']}/>
-            <PrivateRoute exact={true} path="/admin/:property?" component={Scenes.Admin} forRoles={['ROLE_ADMIN']}/>
+            <PrivateRoute exact={true} path="/admin/:property?/:id?" component={Scenes.Admin} forRoles={['ROLE_ADMIN']}/>
             <PrivateRoute exact={true} path="/tools" component={Scenes.Dashboard} forRoles={['ROLE_USER']}/>
             <PrivateRoute exact={true} path="/tools/T01" component={Scenes.T01} forRoles={['ROLE_USER']}/>
             <PrivateRoute exact={true} path="/tools/T02/:id?" component={Scenes.T02} forRoles={['ROLE_USER']}/>

@@ -1,18 +1,19 @@
 import {Icon, Message, Segment, Table} from 'semantic-ui-react';
+import {Link} from 'react-router-dom';
 import {fetchApiWithToken} from '../../../services/api';
 import React, {useEffect, useState} from 'react';
 
-interface IUser {
+export interface IUser {
+    id: string;
+    username: string;
     email: string;
     enabled: boolean;
-    id: string;
     name: string;
     profile: {
         name: string,
         email: string
     };
     roles: string[];
-    username: string;
 }
 
 const Users = () => {
@@ -72,7 +73,7 @@ const Users = () => {
                 <Table.Body>
                     {users.map((u) => (
                         <Table.Row key={u.id}>
-                            <Table.Cell>{u.username}</Table.Cell>
+                            <Table.Cell><Link to={`/admin/users/${u.id}`}>{u.username}</Link></Table.Cell>
                             <Table.Cell>{u.name}</Table.Cell>
                             <Table.Cell>{u.email}</Table.Cell>
                             <Table.Cell textAlign={'center'}>{u.enabled && <Icon name={'checkmark'}/>}</Table.Cell>
