@@ -35,7 +35,6 @@ export interface IRTModellingHead {
 
 export interface IMethod extends IPropertyValueObject {
     method: EMethodType;
-    values: number[][] | number[][][] | null;
 }
 
 export interface IMethodSensor extends IMethod {

@@ -180,14 +180,7 @@ const RTModellingBoundaries = (props: IProps) => {
                     <Icon name='pencil'/>
                 </Button>
                 <Button
-                    onClick={() => appendBoundaryData(
-                        f[0],
-                        RTModellingMethod.fromObject(method),
-                        rtm,
-                        model.stressperiods,
-                        propertyKey,
-                        opId
-                    )}
+                    onClick={() => appendBoundaryData(rtm)}
                 >
                     <Icon name='line graph'/>
                 </Button>

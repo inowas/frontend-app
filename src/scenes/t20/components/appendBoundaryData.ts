@@ -1,51 +1,78 @@
-import {Boundary} from '../../../core/model/modflow/boundaries';
-import {EMethodType, ETimeResolution} from '../../../core/model/rtm/modelling/RTModelling.type';
 import RTModelling from '../../../core/model/rtm/modelling/RTModelling';
-import RTModellingMethod from '../../../core/model/rtm/modelling/RTModellingMethod';
-import Stressperiod from '../../../core/model/modflow/Stressperiod';
-import Stressperiods from '../../../core/model/modflow/Stressperiods';
 import _ from 'lodash';
-import moment from 'moment';
 
-export const appendBoundaryData = (
-    boundary: Boundary,
-    method: RTModellingMethod,
+type IPointBoundary = {
+    [id: string]: Array<number[] | null>;
+};
+
+interface ILineBoundary {
+    [id: string]: IPointBoundary;
+}
+
+interface IResults {
+    stressperiods: {
+        times: number[];
+    };
+    boundaries: {
+        spValues: IPointBoundary | ILineBoundary;
+    }
+}
+
+function dateDiffInDays(a: Date, b: Date) {
+    const _MS_PER_DAY = 1000 * 60 * 60 * 24;
+    const utc1 = Date.UTC(a.getFullYear(), a.getMonth(), a.getDate());
+    const utc2 = Date.UTC(b.getFullYear(), b.getMonth(), b.getDate());
+    return Math.floor((utc2 - utc1) / _MS_PER_DAY);
+}
+
+const valuesByFunction = (f: string, numberOfDays: number) => {
+    const a = new Array(numberOfDays - 1).fill(1);
+    const r: number[] = a.map((v, k) => k + 1);
+    return r;
+};
+
+export const appendBoundaryData = async (
     rtm: RTModelling,
-    stressPeriods: Stressperiods,
-    propertyKey: number,
-    opId?: string
 ) => {
-    console.log(stressPeriods.toObject());
-    const spValues = opId ? boundary.getSpValues(stressPeriods, opId) : boundary.getSpValues(stressPeriods);
+    const r = rtm.toObject();
+    const dayDiff = dateDiffInDays(rtm.startDate, new Date(Date.now()));
 
-    const endDate = stressPeriods.endDateTime;
-    const today = moment(Date.now());
-
-    const quotient = rtm.timeResolution === ETimeResolution.DAILY ? 86400 : 1;
-    const timeSteps = (today.unix() - endDate.unix()) / quotient;
-
-    const cSp = _.cloneDeep(stressPeriods);
-    const cSpValues: number[] = [];
-    console.log(endDate, timeSteps);
-    return null;
-    for (let d = 0; d < timeSteps; d++) {
-        console.log(d);
-        const newSp = new Stressperiod({
-            start_date_time: endDate.add(d, 'days').toISOString(),
-            nstp: 1,
-            tsmult: 1,
-            steady: false
-        });
-        let newSpValue = spValues[spValues.length - 1][propertyKey];
-        if (method.type === EMethodType.FUNCTION) {
-            newSpValue = 0;
-        }
-        if (method.type === EMethodType.SENSOR) {
-            newSpValue = -1;
-        }
-        cSp.addStressPeriod(newSp);
-        cSpValues.push(newSpValue);
+    if (!r.data.head) {
+        return null;
     }
 
-    console.log(cSp.toObject(), cSpValues);
+    const results: IResults = {
+        stressperiods: {
+            times: _.range(1, dayDiff)
+        },
+        boundaries: {
+            spValues: {}
+        }
+    };
+
+    /*r.data.head.forEach((b) => {
+        // Line Boundary
+        if (!Array.isArray(b.data)) {
+            results.boundaries.spValues[b.boundary_id] = {};
+            const keys = Object.keys(b.data);
+            keys.forEach((key) => {
+                (results.boundaries.spValues[b.boundary_id] as IPointBoundary)[key] =
+                    (b.data as RTModellingObservationPoint)[key].map((r) => {
+                        if (r.method === EMethodType.FUNCTION && r.function) {
+                            return valuesByFunction(r.function, dayDiff);
+                        }
+                        if (r.method === EMethodType.SENSOR) {
+                            return r.values;
+                        }
+                        return null;
+                    })
+            })
+        }
+        // Non-Line Boundary
+        if (Array.isArray(b.data)) {
+            results.boundaries.spValues[b.boundary_id] = b.data.map((r) => r.values);
+        }
+    });*/
+
+    return results;
 };

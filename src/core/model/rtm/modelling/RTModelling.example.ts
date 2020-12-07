@@ -20,9 +20,7 @@ const rtm: IRtModelling = {
                 data: [
                     {
                         method: EMethodType.CONSTANT,
-                        values: [
-                            [10.59483], [10.59483], [10.59483], [10.59483], [10.59483]
-                        ]
+                        values: [10.59483, 10.59483, 10.59483, 10.59483, 10.59483]
                     }
                 ]
             },
@@ -37,7 +35,7 @@ const rtm: IRtModelling = {
                             monitoring_id: '8c95fd88-389f-40d6-bf4f-e387f553b378',
                             sensor_id: '5c4af919-6a94-43a2-a106-66f9d9d80814',
                             parameter_id: 'head',
-                            values: [[100.3, 100], [100.2, 100], [100.3, 100], [100.2, 100], [100.4, 100]]
+                            values: [100.3, 100.2, 100.3, 100.2, 100.4]
                         },
                         // EHead
                         {
