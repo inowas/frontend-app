@@ -1,12 +1,13 @@
-import React, {ChangeEvent, useState} from 'react';
-import {useDispatch, useSelector} from 'react-redux';
-import {Link, Redirect} from 'react-router-dom';
+import {Action} from '../actions/index';
+import {AxiosResponse} from 'axios';
 import {Button, Container, Form, Grid, Header, Image, Message} from 'semantic-ui-react';
 import {IRootReducer} from '../../../reducers';
-import {submitLoginCredentials} from '../../../services/api';
-import {Action} from '../actions/index';
-import logo from '../images/favicon.png';
+import {Link, useHistory, useParams} from 'react-router-dom';
 import {hasSessionKey} from '../reducers';
+import {submitLoginCredentials, submitTokenLogin} from '../../../services/api';
+import {useDispatch, useSelector} from 'react-redux';
+import React, {ChangeEvent, useEffect, useState} from 'react';
+import logo from '../images/favicon.png';
 
 const styles = {
     login: {
@@ -19,13 +20,50 @@ const styles = {
 const Login = () => {
 
     const dispatch = useDispatch();
+    const history = useHistory();
+    const {id, token} = useParams();
+
     const session = useSelector((state: IRootReducer) => state.session);
-    const userIsLoggedIn = hasSessionKey(session);
 
     const [username, setUsername] = useState<string>('');
     const [password, setPassword] = useState<string>('');
     const [loading, setLoading] = useState<boolean>(false);
     const [error, setError] = useState<any>(null);
+
+    useEffect(() => {
+        if (!(id && token)) {
+            return;
+        }
+
+        const f = async () => {
+            setLoading(true);
+            try {
+                const response: AxiosResponse<{ token: string }> = await submitTokenLogin(id, token);
+                const data = response.data;
+                dispatch(Action.login('', data.token));
+                history.push('/tools');
+            } catch (e) {
+                setError(e);
+                history.push('/login');
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        f();
+
+        return () => {
+            setLoading(true);
+        };
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
+
+    useEffect( () => {
+        const userIsLoggedIn = hasSessionKey(session);
+        if (userIsLoggedIn) {
+            history.push('/tools');
+        }
+    }, [history, session])
 
     const onUsernameChange = (e: ChangeEvent<HTMLInputElement>) => {
         setUsername(e.target.value);
@@ -45,10 +83,6 @@ const Login = () => {
                 setError(e);
             });
     };
-
-    if (userIsLoggedIn) {
-        return <Redirect to={'/tools'}/>;
-    }
 
     return (
         <Container textAlign={'center'} style={styles.login}>

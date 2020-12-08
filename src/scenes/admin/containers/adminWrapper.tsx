@@ -6,7 +6,13 @@ import {useHistory, useParams} from 'react-router-dom';
 import General from '../components/General';
 import React from 'react';
 import Tools from '../components/Tools';
+import User from '../components/User';
 import Users from '../components/Users';
+
+export interface IUrlParams {
+    property?: string;
+    id?: string;
+}
 
 const navigation = [{
     name: 'Documentation',
@@ -39,17 +45,21 @@ const menuItems: IMenu = [
 
 const AdminWrapper = () => {
 
-    const urlParams: { property: string } = useParams();
+    const urlParams: IUrlParams = useParams();
     const history = useHistory();
 
-    const renderContent = (activeItem: string) => {
+    const renderContent = (activeItem?: string) => {
         switch (activeItem) {
             case 'general': {
                 return <General/>;
             }
 
             case 'users': {
-                return <Users/>;
+                if (!urlParams.id) {
+                    return <Users/>;
+                }
+
+                return <User id={urlParams.id}/>;
             }
 
             case 'tools': {
