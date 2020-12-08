@@ -9,6 +9,7 @@ import {usePrevious} from '../../shared/simpleTools/helpers/customHooks';
 import React, {SyntheticEvent, useEffect, useState} from 'react';
 import SensorDataSource from '../../../core/model/rtm/SensorDataSource';
 import moment from 'moment';
+import uuid from 'uuid';
 
 interface IProps {
     dataSource?: SensorDataSource;
@@ -461,7 +462,7 @@ const SensorDatasourceEditor = (props: IProps) => {
                                         selection={true}
                                         value={dataSource ? dataSource.server : (server || undefined)}
                                         onChange={handleChangeServer}
-                                        options={servers.map((s) => ({key: s.url, value: s.url, text: s.url}))}
+                                        options={servers.map((s) => ({key: uuid.v4(), value: s.url, text: s.url}))}
                                     />
                                 </Segment>
                             </Form>
