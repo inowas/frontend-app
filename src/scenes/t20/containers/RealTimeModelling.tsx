@@ -49,7 +49,7 @@ const RealTimeModelling = () => {
 
     const handleSave = (r: RTModelling) => {
         sendCommand(
-            SimpleToolsCommand.updateToolInstance(r.toObject()),
+            SimpleToolsCommand.updateToolInstance(r.toQuery()),
             () => {
                 dispatch(updateRTModelling(r));
             }

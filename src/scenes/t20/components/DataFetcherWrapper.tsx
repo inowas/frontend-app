@@ -21,16 +21,16 @@ interface IProps {
 const DataFetcherWrapper = (props: IProps) => {
     const [rtmId, setRtmId] = useState<string | null>(null);
 
-    const [fetchingBoundaries, setFetchingBoundaries] = useState<boolean>(false);
+    const [fetchingBoundaries, setFetchingBoundaries] = useState<boolean>(true);
     const [fetchingBoundariesSuccess, setFetchingBoundariesSuccess] = useState<boolean | null>(null);
 
-    const [fetchingInstances, setFetchingInstances] = useState<boolean>(false);
+    const [fetchingInstances, setFetchingInstances] = useState<boolean>(true);
     const [fetchingInstancesSuccess, setFetchingInstancesSuccess] = useState<boolean | null>(null);
 
-    const [fetchingModel, setFetchingModel] = useState<boolean>(false);
+    const [fetchingModel, setFetchingModel] = useState<boolean>(true);
     const [fetchingModelSuccess, setFetchingModelSuccess] = useState<boolean | null>(null);
 
-    const [fetchingRtm, setFetchingRtm] = useState<boolean>(false);
+    const [fetchingRtm, setFetchingRtm] = useState<boolean>(true);
     const [fetchingRtmSuccess, setFetchingRtmSuccess] = useState<boolean | null>(null);
 
     const [showModal, setShowModal] = useState<boolean>(true);
@@ -40,7 +40,7 @@ const DataFetcherWrapper = (props: IProps) => {
         fetching: boolean;
     }>({
         message: 'Start Fetching RTM ...',
-        fetching: false
+        fetching: true
     });
 
     const dispatch = useDispatch();
@@ -120,10 +120,14 @@ const DataFetcherWrapper = (props: IProps) => {
 
             rtModellingFetcher(
                 ri,
+                (message) => {
+                    setRtmFetcher({message, fetching: true});
+                },
                 (result) => {
                     dispatch(updateRTModelling(result));
                     fetchModflowModel(r);
                     setFetchingRtmSuccess(true);
+                    setRtmFetcher({message: 'Done', fetching: false});
                 }
             );
         } catch (err) {

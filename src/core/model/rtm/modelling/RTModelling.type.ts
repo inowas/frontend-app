@@ -41,6 +41,7 @@ export interface IMethodSensor extends IMethod {
     monitoring_id: string;
     sensor_id: string;
     parameter_id: string;
+    values?: number[];
 }
 
 export interface IMethodFunction extends IMethod {

@@ -42,6 +42,10 @@ class RTModellingMethod {
         return this._props.method;
     }
 
+    set values (v: number[]) {
+        this._props.values = v;
+    }
+
     constructor(value: IMethod | IMethodSensor | IMethodFunction) {
         this._props = _.cloneDeep(value);
     }

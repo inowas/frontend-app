@@ -104,6 +104,45 @@ class RTModelling extends GenericObject<IRtModelling> {
         return cloneDeep(this._props);
     }
 
+    public toQuery(): IRtModelling {
+        const p = cloneDeep(this._props);
+
+        const t = {
+            ...p,
+            data: {
+                ...p.data,
+                head: p.data.head ? p.data.head.map((h) => {
+                    if (Array.isArray(h.data)) {
+                        return {
+                            ...h,
+                            data: h.data.map((r) => {
+                                return {
+                                    ...r,
+                                    values: null
+                                };
+                            })
+                        };
+                    }
+                    const keys = Object.keys(h.data);
+                    const data: {[k: string]: any} = {};
+                    keys.forEach((key) => {
+                        data[key] = (h.data as RTModellingObservationPoint)[key].map((m) => {
+                            return {
+                                ...m,
+                                values: null
+                            }
+                        })
+                    })
+                    return {
+                        ...h,
+                        data
+                    };
+                }) : undefined
+            }
+        };
+        return t;
+    }
+
     public updateHeadsFromBoundaries = (boundaries: BoundaryCollection) => {
         const heads: IRTModellingHead[] = this.heads ? _.cloneDeep(this.heads) : [];
 

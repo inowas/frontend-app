@@ -14,7 +14,7 @@ interface IMetaData {
     parameterId: string;
 }
 
-const fetchData = (
+export const fetchData = (
     mId: string,
     sId: string,
     pId: string,
@@ -53,6 +53,7 @@ const fetchData = (
 const workOnTasks = (
     rtm: RTModelling,
     fetchNeeded: Array<IMetaData>,
+    onEachStep: (m: string) => any,
     onSuccess: (result: RTModelling) => any
 ) => {
     if (fetchNeeded.length === 0) {
@@ -63,6 +64,7 @@ const workOnTasks = (
     const f = fetchNeeded.shift();
 
     if (f) {
+        onEachStep(`Parameter ${f.parameterId} of Sensor ${f.sensorId}`);
         fetchData(
             f.monitoringId,
             f.sensorId,
@@ -100,7 +102,7 @@ const workOnTasks = (
                         }) : undefined
                     }
                 };
-                workOnTasks(RTModelling.fromObject(cRtm), fetchNeeded, onSuccess);
+                workOnTasks(RTModelling.fromObject(cRtm), fetchNeeded, onEachStep, onSuccess);
             }
         );
     }
@@ -108,6 +110,7 @@ const workOnTasks = (
 
 export const rtModellingFetcher = (
     rtm: RTModelling,
+    onEachStep: (m: string) => any,
     onSuccess: (result: RTModelling) => any
 ) => {
     const fetchNeeded: Array<IMetaData> = [];
@@ -147,5 +150,7 @@ export const rtModellingFetcher = (
         });
     }
 
-    workOnTasks(rtm, fetchNeeded, onSuccess);
+    console.log({fetchNeeded});
+
+    workOnTasks(rtm, fetchNeeded, onEachStep, onSuccess);
 };

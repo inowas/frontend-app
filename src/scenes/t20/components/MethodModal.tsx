@@ -9,6 +9,8 @@ import {useSelector} from 'react-redux';
 import RTModellingMethod from '../../../core/model/rtm/modelling/RTModellingMethod';
 import React, {ChangeEvent, SyntheticEvent, useEffect, useState} from 'react';
 import uuid from 'uuid';
+import {fetchData} from "../services/rtmFetcher";
+import RTModelling from "../../../core/model/rtm/modelling/RTModelling";
 
 interface IError {
     id: string;
@@ -33,8 +35,10 @@ const MethodModal = (props: IProps) => {
     const [rtm, setRtm] = useState<IRtm>();
     const [sensor, setSensor] = useState<ISensor>();
     const [parameterId, setParameterId] = useState<string | null>(props.method.parameterId);
+    const [data, setData] = useState<number[]>([]);
 
     const T20 = useSelector((state: IRootReducer) => state.T20);
+    const rtmodelling = T20.rtmodelling ? RTModelling.fromObject(T20.rtmodelling) : null;
     const t10Instances = T20.t10instances;
 
     useEffect(() => {
@@ -67,6 +71,19 @@ const MethodModal = (props: IProps) => {
         fetchRtm(rtmId);
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [rtmId]);
+
+    useEffect(() => {
+        if (rtmodelling && rtm && sensor && parameterId) {
+            setIsFetching(true);
+            fetchData(rtm.id, sensor.id, parameterId, rtmodelling.startDate,
+                (d) => {
+                    setData(d);
+                    setIsFetching(false);
+                }
+            );
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [parameterId]);
 
     const handleBlurInput = () => {
         if (activeInput === 'func') {
@@ -107,7 +124,6 @@ const MethodModal = (props: IProps) => {
         if (typeof value !== 'string' || !rtm) {
             return null;
         }
-        console.log('HANDLE CHANGE', value);
         setParameterId(value);
     }
 
@@ -120,6 +136,7 @@ const MethodModal = (props: IProps) => {
             nMethod.monitoring_id = rtmId;
             nMethod.sensor_id = sensor.id;
             nMethod.parameter_id = parameterId;
+            nMethod.values = data;
         }
         props.onSave(RTModellingMethod.fromObject(nMethod));
     };
@@ -225,7 +242,7 @@ const MethodModal = (props: IProps) => {
                     Cancel
                 </Button>
                 <Button
-                    content="Yep, that's me"
+                    content="Apply"
                     labelPosition='right'
                     icon='checkmark'
                     onClick={handleSave}

@@ -1,10 +1,11 @@
 import {LTOB} from 'downsample';
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore todo
 import {DataPoint} from 'downsample/dist/types';
-import React, {useEffect, useState} from 'react';
+import {DataSource, IDateTimeValue} from '../../../core/model/rtm/monitoring/Sensor.type';
 import {Line, LineChart, YAxis} from 'recharts';
 import {Loader} from 'semantic-ui-react';
-import {DataSource, IDateTimeValue} from '../../../core/model/rtm/monitoring/Sensor.type';
+import React, {useEffect, useState} from 'react';
 
 interface IProps {
     datasource: DataSource | null;

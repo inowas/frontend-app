@@ -9,6 +9,7 @@ import {
 } from '../../../core/model/rtm/modelling/RTModelling.type';
 import {IBoundary} from '../../../core/model/modflow/boundaries/Boundary.type';
 import {IRootReducer} from '../../../reducers';
+import {Line, LineChart, YAxis} from 'recharts';
 import {ModflowModel} from '../../../core/model/modflow';
 import {appendBoundaryData} from './appendBoundaryData';
 import {fetchApiWithToken} from '../../../services/api';
@@ -121,6 +122,7 @@ const RTModellingBoundaries = (props: IProps) => {
         if (!heads || !activeRow) {
             return null;
         }
+
         setHeads(heads.map((r) => {
             if (r.boundary_id === activeRow.bId) {
                 if (!Array.isArray(r.data) && activeRow.opId) {
@@ -134,6 +136,7 @@ const RTModellingBoundaries = (props: IProps) => {
         }));
         setActiveRow(null);
         setIsDirty(true);
+        setIsFetching(false);
     };
 
     const handleChangeSelect = (bId: string, propertyKey: number, opId?: string) =>
@@ -193,11 +196,22 @@ const RTModellingBoundaries = (props: IProps) => {
             return method.function;
         }
         if (method.method === EMethodType.SENSOR) {
+            if (method.values) {
+                return (
+                    <LineChart width={100} height={30} data={method.values.map((y: number, x: number) => ({x, y}))} key={Math.random()}>
+                        <YAxis
+                            dataKey={'y'}
+                            domain={['auto', 'auto']}
+                            hide={true}
+                        />
+                        <Line type="monotone" dataKey="y" dot={false} stroke="blue"/>
+                    </LineChart>
+                );
+            }
             const f1 = t10Instances.filter((i) => i.id === method.monitoring_id);
             if (f1.length > 0) {
                 return `${f1[0].name} (${f1[0].user_name})`;
             }
-            return 'ERROR';
         }
         return '';
     };
@@ -246,7 +260,7 @@ const RTModellingBoundaries = (props: IProps) => {
                     <Table.Cell/>
                     <Table.Cell>{boundary.valueProperties[0].name}</Table.Cell>
                     <Table.Cell>{renderMethodSelect(head.data[0].method, boundary.id, 0)}</Table.Cell>
-                    <Table.Cell>{renderMethodDetails(head.data[0])}</Table.Cell>
+                    <Table.Cell textAlign="center">{renderMethodDetails(head.data[0])}</Table.Cell>
                     <Table.Cell>{renderMethodButton(head.data[0], boundary.id, 0)}</Table.Cell>
                 </Table.Row>
                 {head.data.length > 1 && head.data.filter((r, k) => k > 0).map((r, k) => (
@@ -254,7 +268,7 @@ const RTModellingBoundaries = (props: IProps) => {
                         <Table.Cell/>
                         <Table.Cell>{boundary.valueProperties[k + 1].name}</Table.Cell>
                         <Table.Cell>{renderMethodSelect(r.method, boundary.id, k + 1)}</Table.Cell>
-                        <Table.Cell>{renderMethodDetails(r)}</Table.Cell>
+                        <Table.Cell textAlign="center">{renderMethodDetails(r)}</Table.Cell>
                         <Table.Cell>{renderMethodButton(r, boundary.id, k + 1)}</Table.Cell>
                     </Table.Row>
                 ))}
@@ -284,7 +298,7 @@ const RTModellingBoundaries = (props: IProps) => {
                     <Table.Row key={k}>
                         <Table.Cell>{b.valueProperties[k + 1].name}</Table.Cell>
                         <Table.Cell>{renderMethodSelect(r.method, b.id, k + 1, ops[0].id)}</Table.Cell>
-                        <Table.Cell>{renderMethodDetails(r)}</Table.Cell>
+                        <Table.Cell textAlign="center">{renderMethodDetails(r)}</Table.Cell>
                         <Table.Cell>{renderMethodButton(r, b.id, k + 1, ops[0].id)}</Table.Cell>
                     </Table.Row>
                 ))}
@@ -301,7 +315,7 @@ const RTModellingBoundaries = (props: IProps) => {
                             <Table.Row key={`${op}_${k}`}>
                                 <Table.Cell>{b.valueProperties[k + 1].name}</Table.Cell>
                                 <Table.Cell>{renderMethodSelect(r.method, b.id, k + 1, op.id)}</Table.Cell>
-                                <Table.Cell>{renderMethodDetails(r)}</Table.Cell>
+                                <Table.Cell textAlign="center">{renderMethodDetails(r)}</Table.Cell>
                                 <Table.Cell>{renderMethodButton(r, b.id, k + 1, op.id)}</Table.Cell>
                             </Table.Row>
                         ))}
