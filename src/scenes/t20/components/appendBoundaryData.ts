@@ -1,3 +1,5 @@
+import {EMethodType, RTModellingObservationPoint} from '../../../core/model/rtm/modelling/RTModelling.type';
+import {IPropertyValueObject} from '../../../core/model/types';
 import RTModelling from '../../../core/model/rtm/modelling/RTModelling';
 import _ from 'lodash';
 
@@ -25,12 +27,6 @@ function dateDiffInDays(a: Date, b: Date) {
     return Math.floor((utc2 - utc1) / _MS_PER_DAY);
 }
 
-const valuesByFunction = (f: string, numberOfDays: number) => {
-    const a = new Array(numberOfDays - 1).fill(1);
-    const r: number[] = a.map((v, k) => k + 1);
-    return r;
-};
-
 export const appendBoundaryData = async (
     rtm: RTModelling,
 ) => {
@@ -41,38 +37,58 @@ export const appendBoundaryData = async (
         return null;
     }
 
-    const results: IResults = {
-        stressperiods: {
-            times: _.range(1, dayDiff)
-        },
-        boundaries: {
-            spValues: {}
-        }
-    };
+    const times = _.range(1, dayDiff);
 
-    /*r.data.head.forEach((b) => {
-        // Line Boundary
-        if (!Array.isArray(b.data)) {
-            results.boundaries.spValues[b.boundary_id] = {};
-            const keys = Object.keys(b.data);
-            keys.forEach((key) => {
-                (results.boundaries.spValues[b.boundary_id] as IPointBoundary)[key] =
-                    (b.data as RTModellingObservationPoint)[key].map((r) => {
-                        if (r.method === EMethodType.FUNCTION && r.function) {
-                            return valuesByFunction(r.function, dayDiff);
+    const boundariesObject: IPropertyValueObject = {};
+
+    r.data.head.forEach((h) => {
+        if (Array.isArray(h.data)) {
+            boundariesObject[h.boundary_id] = times.map((t) => {
+                if (Array.isArray(h.data)) {
+                    if (h.data.filter((r) => r.method !== EMethodType.CONSTANT).length === 0) {
+                        return null;
+                    }
+                    return h.data.map(
+                        (p) => {
+                            if (p.values && t <= p.values.length) {
+                                return p.values[t - 1]
+                            }
+                            return null;
                         }
-                        if (r.method === EMethodType.SENSOR) {
-                            return r.values;
+                    );
+                }
+                return null;
+            });
+        } else {
+            const keys = Object.keys(h.data);
+            const opObject: IPropertyValueObject = {};
+
+            keys.forEach((opId) => {
+                if ((h.data as RTModellingObservationPoint)[opId].filter(
+                    (r) => r.method !== EMethodType.CONSTANT).length === 0) {
+                    return null;
+                }
+                opObject[opId] = times.map((t) => (h.data as RTModellingObservationPoint)[opId].map(
+                    (p) => {
+                        if (p.values && t <= p.values.length) {
+                            return p.values[t - 1]
                         }
                         return null;
-                    })
-            })
+                    }
+                ));
+            });
+            boundariesObject[h.boundary_id] = opObject;
         }
-        // Non-Line Boundary
-        if (Array.isArray(b.data)) {
-            results.boundaries.spValues[b.boundary_id] = b.data.map((r) => r.values);
+    });
+
+    const results: IResults = {
+        stressperiods: {
+            times
+        },
+        boundaries: {
+            spValues: boundariesObject
         }
-    });*/
+    };
 
     return results;
 };
