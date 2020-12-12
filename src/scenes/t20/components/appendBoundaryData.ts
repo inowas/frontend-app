@@ -1,33 +1,48 @@
-import {EMethodType, RTModellingObservationPoint} from '../../../core/model/rtm/modelling/RTModelling.type';
-import {IPropertyValueObject} from '../../../core/model/types';
+import {
+    ArrayOfMethods,
+    EMethodType,
+    RTModellingObservationPoint
+} from '../../../core/model/rtm/modelling/RTModelling.type';
+import {BoundaryFactory, LineBoundary} from '../../../core/model/modflow/boundaries';
+import {ISpValues} from '../../../core/model/modflow/boundaries/Boundary.type';
+import {ModflowModel} from '../../../core/model/modflow';
+import BoundaryCollection from '../../../core/model/modflow/boundaries/BoundaryCollection';
 import RTModelling from '../../../core/model/rtm/modelling/RTModelling';
 import _ from 'lodash';
 
-type IPointBoundary = {
-    [id: string]: Array<number[] | null>;
-};
+const _MS_PER_DAY = 1000 * 60 * 60 * 24;
 
-interface ILineBoundary {
-    [id: string]: IPointBoundary;
-}
-
-interface IResults {
-    stressperiods: {
-        times: number[];
-    };
-    boundaries: {
-        spValues: IPointBoundary | ILineBoundary;
-    }
-}
-
-function dateDiffInDays(a: Date, b: Date) {
-    const _MS_PER_DAY = 1000 * 60 * 60 * 24;
+const dateDiffInDays = (a: Date, b: Date) => {
     const utc1 = Date.UTC(a.getFullYear(), a.getMonth(), a.getDate());
     const utc2 = Date.UTC(b.getFullYear(), b.getMonth(), b.getDate());
     return Math.floor((utc2 - utc1) / _MS_PER_DAY);
+};
+
+const addDays = (a: Date, days: number) => {
+    const utc = Date.UTC(a.getFullYear(), a.getMonth(), a.getDate());
+    return new Date(Math.floor(utc + (_MS_PER_DAY * days))).toISOString();
 }
 
-export const appendBoundaryData = async (
+const appendSpValues = (spValues: ISpValues, data: ArrayOfMethods | null, days: number[]): ISpValues => {
+    const newSpValues: ISpValues = days.map((t) => {
+        if (!data || data.filter((r) => r.method !== EMethodType.CONSTANT).length === 0) {
+            return spValues[spValues.length - 1];
+        }
+        return data.map((p) => {
+                if (p.values && t <= p.values.length) {
+                    return p.values[t - 1]
+                }
+                return spValues[spValues.length - 1][t - 1];
+            }
+        );
+    });
+
+    return spValues.concat(newSpValues);
+}
+
+export const appendBoundaryData = (
+    boundaries: BoundaryCollection,
+    model: ModflowModel,
     rtm: RTModelling,
 ) => {
     const r = rtm.toObject();
@@ -39,56 +54,57 @@ export const appendBoundaryData = async (
 
     const times = _.range(1, dayDiff);
 
-    const boundariesObject: IPropertyValueObject = {};
+    console.log(times);
+    
+    // Append Stressperiods
 
-    r.data.head.forEach((h) => {
-        if (Array.isArray(h.data)) {
-            boundariesObject[h.boundary_id] = times.map((t) => {
-                if (Array.isArray(h.data)) {
-                    if (h.data.filter((r) => r.method !== EMethodType.CONSTANT).length === 0) {
-                        return null;
-                    }
-                    return h.data.map(
-                        (p) => {
-                            if (p.values && t <= p.values.length) {
-                                return p.values[t - 1]
-                            }
-                            return null;
-                        }
-                    );
-                }
-                return null;
-            });
-        } else {
-            const keys = Object.keys(h.data);
-            const opObject: IPropertyValueObject = {};
-
-            keys.forEach((opId) => {
-                if ((h.data as RTModellingObservationPoint)[opId].filter(
-                    (r) => r.method !== EMethodType.CONSTANT).length === 0) {
-                    return null;
-                }
-                opObject[opId] = times.map((t) => (h.data as RTModellingObservationPoint)[opId].map(
-                    (p) => {
-                        if (p.values && t <= p.values.length) {
-                            return p.values[t - 1]
-                        }
-                        return null;
-                    }
-                ));
-            });
-            boundariesObject[h.boundary_id] = opObject;
-        }
+    const cStressperiods = model.stressperiods.toObject();
+    const lastSp = cStressperiods.stressperiods[cStressperiods.stressperiods.length - 1];
+    times.forEach((d) => {
+        const newSp = {
+            start_date_time: addDays(rtm.startDate, d),
+            nstp: lastSp.nstp,
+            tsmult: lastSp.tsmult,
+            steady: lastSp.steady
+        };
+        cStressperiods.stressperiods.push(newSp);
     });
 
-    const results: IResults = {
-        stressperiods: {
-            times
-        },
-        boundaries: {
-            spValues: boundariesObject
-        }
-    };
+    // Append Boundaries
+    
+    const cBoundaries = boundaries.toObject().map((b) => {
+        const cBoundary = BoundaryFactory.fromObject(b);
+        if (rtm.heads) {
+            const f1 = rtm.heads.filter((h) => h.boundary_id === cBoundary.id);
 
-    return results;
+            if (cBoundary instanceof LineBoundary) {
+                cBoundary.observationPoints.forEach((op) => {
+                    const spValues = cBoundary.getSpValues(model.stressperiods, op.id);
+                    if (f1.length > 0 && !Array.isArray(f1[0].data)) {
+                        const d = f1[0].data as RTModellingObservationPoint;
+                        if (d[op.id]) {
+                            cBoundary.setSpValues(appendSpValues(spValues, d[op.id], times), op.id);
+                        } else {
+                            cBoundary.setSpValues(appendSpValues(spValues, null, times), op.id);
+                        }
+                    } else {
+                        cBoundary.setSpValues(appendSpValues(spValues, null, times), op.id);
+                    }
+                });
+            } else {
+                const spValues = cBoundary.getSpValues(model.stressperiods);
+                if (f1.length > 0 && Array.isArray(f1[0].data)) {
+                    cBoundary.setSpValues(appendSpValues(spValues, f1[0].data, times));
+                } else {
+                    cBoundary.setSpValues(appendSpValues(spValues, null, times));
+                }
+            }
+        }
+        return cBoundary.toObject();
+    });
+
+    return {
+        boundaries: cBoundaries,
+        stressperiods: cStressperiods
+    };
 };

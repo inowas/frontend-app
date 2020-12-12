@@ -132,8 +132,6 @@ const DataFetcherWrapper = (props: IProps) => {
             );
         } catch (err) {
             setFetchingRtmSuccess(false);
-        } finally {
-            setFetchingRtm(false);
         }
     };
 

@@ -9,6 +9,7 @@ import {sendCommand} from '../../../services/api';
 import {updateRTModelling} from '../actions/actions';
 import {useDispatch, useSelector} from 'react-redux';
 import {useHistory, useParams} from 'react-router-dom';
+import Calculation from '../components/calculation/Calculation';
 import DataFetcherWrapper from '../components/DataFetcherWrapper';
 import RTModelling from '../../../core/model/rtm/modelling/RTModelling';
 import RTModellingBoundaries from '../components/RTModellingBoundaries';
@@ -57,6 +58,13 @@ const RealTimeModelling = () => {
     };
 
     const renderContent = () => {
+        if (property === 'calculation') {
+            return (
+                <Calculation
+
+                />
+            );
+        }
         if (property === 'boundaries') {
             return (
                 <RTModellingBoundaries
@@ -114,6 +122,31 @@ const RealTimeModelling = () => {
                                                 name: 'Transport',
                                                 property: 'transport',
                                                 icon: <Icon name="cube"/>
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        header: 'Calculation',
+                                        items: [
+                                            {
+                                                name: 'Mf packages',
+                                                property: 'modflow',
+                                                icon: <Icon name="retweet"/>
+                                            },
+                                            {
+                                                name: 'Mt packages',
+                                                property: 'mt3d',
+                                                icon: <Icon name="exchange"/>
+                                            },
+                                            {
+                                                name: 'Swt package',
+                                                property: 'seawat',
+                                                icon: <Icon name="eyedropper"/>
+                                            },
+                                            {
+                                                name: 'Run calculation',
+                                                property: 'calculation',
+                                                icon: <Icon name="save outline"/>
                                             }
                                         ]
                                     },

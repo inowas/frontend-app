@@ -26,11 +26,13 @@ export interface IRtModellingData {
     observation_wells?: any;
 }
 
-export type RTModellingObservationPoint = {[key: string]: Array<IMethod | IMethodSensor | IMethodFunction>};
+export type ArrayOfMethods = Array<IMethod | IMethodSensor | IMethodFunction>;
+
+export type RTModellingObservationPoint = {[key: string]: ArrayOfMethods};
 
 export interface IRTModellingHead {
     boundary_id: string;
-    data: Array<IMethod | IMethodSensor | IMethodFunction> | RTModellingObservationPoint;
+    data: ArrayOfMethods | RTModellingObservationPoint;
 }
 
 export interface IMethod extends IPropertyValueObject {

@@ -11,7 +11,6 @@ import {IBoundary} from '../../../core/model/modflow/boundaries/Boundary.type';
 import {IRootReducer} from '../../../reducers';
 import {Line, LineChart, YAxis} from 'recharts';
 import {ModflowModel} from '../../../core/model/modflow';
-import {appendBoundaryData} from './appendBoundaryData';
 import {fetchApiWithToken} from '../../../services/api';
 import {updateBoundaries} from '../actions/actions';
 import {useDispatch, useSelector} from 'react-redux';
@@ -181,11 +180,6 @@ const RTModellingBoundaries = (props: IProps) => {
                     icon={true}
                 >
                     <Icon name='pencil'/>
-                </Button>
-                <Button
-                    onClick={() => appendBoundaryData(rtm)}
-                >
-                    <Icon name='line graph'/>
                 </Button>
             </Button.Group>
         );
