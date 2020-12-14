@@ -1,3 +1,5 @@
+import {IBoundary} from '../../modflow/boundaries/Boundary.type';
+import {IModflowModel} from '../../modflow/ModflowModel.type';
 import {IPropertyValueObject, ISimpleTool} from '../../types';
 
 export enum EMethodType {
@@ -24,6 +26,7 @@ export interface IRtModellingData {
     // TODO: transport and observation_wells
     transport?: any;
     observation_wells?: any;
+    results?: IRtModellingResults | null;
 }
 
 export type ArrayOfMethods = Array<IMethod | IMethodSensor | IMethodFunction>;
@@ -48,4 +51,9 @@ export interface IMethodSensor extends IMethod {
 
 export interface IMethodFunction extends IMethod {
     function: string;
+}
+
+export interface IRtModellingResults {
+    boundaries: IBoundary[];
+    model: IModflowModel;
 }

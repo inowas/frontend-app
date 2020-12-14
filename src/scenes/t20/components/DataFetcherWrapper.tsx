@@ -3,14 +3,22 @@ import {IRootReducer} from '../../../reducers';
 import {IRtModelling} from '../../../core/model/rtm/modelling/RTModelling.type';
 import {IToolInstance} from '../../dashboard/defaults/tools';
 import {List, Modal} from 'semantic-ui-react';
-import {ModflowModel} from '../../../core/model/modflow';
-import {clear} from '../../t03/actions/actions';
+import {ModflowModel, Soilmodel, Transport, VariableDensity} from '../../../core/model/modflow';
+import {
+    clear,
+    updateBoundaries,
+    updateModel,
+    updatePackages,
+    updateRTModelling, updateSoilmodel,
+    updateT10Instances,
+    updateTransport, updateVariableDensity
+} from '../actions/actions';
 import {fetchApiWithToken} from '../../../services/api';
 import {rtModellingFetcher} from '../services/rtmFetcher';
 import {uniqBy} from 'lodash';
-import {updateBoundaries, updateModel, updateRTModelling, updateT10Instances} from '../actions/actions';
 import {useDispatch, useSelector} from 'react-redux';
 import {useParams} from 'react-router-dom';
+import FlopyPackages from '../../../core/model/flopy/packages/FlopyPackages';
 import RTModelling from '../../../core/model/rtm/modelling/RTModelling';
 import React, {ReactNode, useEffect, useState} from 'react';
 
@@ -30,8 +38,20 @@ const DataFetcherWrapper = (props: IProps) => {
     const [fetchingModel, setFetchingModel] = useState<boolean>(true);
     const [fetchingModelSuccess, setFetchingModelSuccess] = useState<boolean | null>(null);
 
+    const [fetchingPackages, setFetchingPackages] = useState<boolean>(true);
+    const [fetchingPackagesSuccess, setFetchingPackagesSuccess] = useState<boolean | null>(null);
+
     const [fetchingRtm, setFetchingRtm] = useState<boolean>(true);
     const [fetchingRtmSuccess, setFetchingRtmSuccess] = useState<boolean | null>(null);
+
+    const [fetchingSoilmodel, setFetchingSoilmodel] = useState<boolean>(true);
+    const [fetchingSoilmodelSuccess, setFetchingSoilmodelSuccess] = useState<boolean | null>(null);
+
+    const [fetchingTransport, setFetchingTransport] = useState<boolean>(true);
+    const [fetchingTransportSuccess, setFetchingTransportSuccess] = useState<boolean | null>(null);
+
+    const [fetchingVariableDensity, setFetchingVariableDensity] = useState<boolean>(true);
+    const [fetchingVariableDensitySuccess, setFetchingVariableDensitySuccess] = useState<boolean | null>(null);
 
     const [showModal, setShowModal] = useState<boolean>(true);
 
@@ -103,12 +123,31 @@ const DataFetcherWrapper = (props: IProps) => {
         try {
             const m = (await fetchApiWithToken(`modflowmodels/${r.data.model_id}`)).data
             dispatch(updateModel(ModflowModel.fromObject(m)));
+
             fetchBoundaries(m.id);
+            fetchPackages(m.id);
+            fetchSoilmodel(m.id);
+            fetchTransport(m.id);
+            fetchVariableDensity(m.id);
+
             setFetchingModelSuccess(true);
         } catch (err) {
             setFetchingModelSuccess(false);
         } finally {
             setFetchingModel(false);
+        }
+    };
+
+    const fetchPackages = async (mId: string) => {
+        setFetchingPackages(true);
+        try {
+            const p = (await fetchApiWithToken(`modflowmodels/${mId}/packages`)).data
+            dispatch(updatePackages(FlopyPackages.fromObject(p)));
+            setFetchingPackagesSuccess(true);
+        } catch (err) {
+            setFetchingPackagesSuccess(false);
+        } finally {
+            setFetchingPackages(false);
         }
     };
 
@@ -132,6 +171,45 @@ const DataFetcherWrapper = (props: IProps) => {
             );
         } catch (err) {
             setFetchingRtmSuccess(false);
+        }
+    };
+
+    const fetchSoilmodel = async (mId: string) => {
+        setFetchingSoilmodel(true);
+        try {
+            const s = (await fetchApiWithToken(`modflowmodels/${mId}/soilmodel`)).data
+            dispatch(updateSoilmodel(Soilmodel.fromObject(s)));
+            setFetchingSoilmodelSuccess(true);
+        } catch (err) {
+            setFetchingSoilmodelSuccess(false);
+        } finally {
+            setFetchingSoilmodel(false);
+        }
+    };
+
+    const fetchTransport = async (mId: string) => {
+        setFetchingTransport(true);
+        try {
+            const t = (await fetchApiWithToken(`modflowmodels/${mId}/transport`)).data
+            dispatch(updateTransport(Transport.fromObject(t)));
+            setFetchingTransportSuccess(true);
+        } catch (err) {
+            setFetchingTransportSuccess(false);
+        } finally {
+            setFetchingTransport(false);
+        }
+    };
+
+    const fetchVariableDensity = async (mId: string) => {
+        setFetchingVariableDensity(true);
+        try {
+            const v = (await fetchApiWithToken(`modflowmodels/${mId}/variableDensity`)).data
+            dispatch(updateVariableDensity(VariableDensity.fromObject(v)));
+            setFetchingVariableDensitySuccess(true);
+        } catch (err) {
+            setFetchingVariableDensitySuccess(false);
+        } finally {
+            setFetchingVariableDensity(false);
         }
     };
 
@@ -169,10 +247,17 @@ const DataFetcherWrapper = (props: IProps) => {
                 <Modal.Content>
                     <List>
                         {renderList([
-                            {name: 'Main model', loading: fetchingModel, success: fetchingModelSuccess},
-                            {name: 'Boundaries', loading: fetchingBoundaries, success: fetchingBoundariesSuccess},
                             {name: 'T10 instances', loading: fetchingInstances, success: fetchingInstancesSuccess},
+                            {name: 'Main model', loading: fetchingModel, success: fetchingModelSuccess},
                             {name: renderRtm(), loading: fetchingRtm, success: fetchingRtmSuccess},
+                            {name: 'Boundaries', loading: fetchingBoundaries, success: fetchingBoundariesSuccess},
+                            {name: 'Packages', loading: fetchingPackages, success: fetchingPackagesSuccess},
+                            {name: 'Soilmodel', loading: fetchingSoilmodel, success: fetchingSoilmodelSuccess},
+                            {name: 'Transport', loading: fetchingTransport, success: fetchingTransportSuccess},
+                            {
+                                name: 'Variable Density', loading: fetchingVariableDensity,
+                                success: fetchingVariableDensitySuccess
+                            }
                         ])}
                     </List>
                 </Modal.Content>

@@ -1,9 +1,9 @@
 import {
     EMethodType,
     ETimeResolution,
-    IRTModellingHead,
     IRtModelling,
     IRtModellingData,
+    IRTModellingHead, IRtModellingResults,
     RTModellingObservationPoint
 } from './RTModelling.type';
 import {GenericObject} from '../../genericObject/GenericObject';
@@ -11,6 +11,7 @@ import {LineBoundary} from '../../modflow/boundaries';
 import BoundaryCollection from '../../modflow/boundaries/BoundaryCollection';
 import _, {cloneDeep} from 'lodash';
 import uuid from 'uuid';
+import {ModflowModel} from "../../modflow";
 
 class RTModelling extends GenericObject<IRtModelling> {
 
@@ -66,6 +67,20 @@ class RTModelling extends GenericObject<IRtModelling> {
         this._props.public = value;
     }
 
+    get results(): IRtModellingResults | null {
+        if (!this._props.data.results) {
+            return null;
+        }
+        return {
+            boundaries: this._props.data.results.boundaries,
+            model: this._props.data.results.model
+        }
+    }
+
+    set results(value: IRtModellingResults | null) {
+        this._props.data.results = value;
+    }
+
     get startDate() {
         return new Date(this._props.data.start_date_time);
     }
@@ -107,10 +122,11 @@ class RTModelling extends GenericObject<IRtModelling> {
     public toQuery(): IRtModelling {
         const p = cloneDeep(this._props);
 
-        const t = {
+        return {
             ...p,
             data: {
                 ...p.data,
+                results: undefined,
                 head: p.data.head ? p.data.head.map((h) => {
                     if (Array.isArray(h.data)) {
                         return {
@@ -124,7 +140,7 @@ class RTModelling extends GenericObject<IRtModelling> {
                         };
                     }
                     const keys = Object.keys(h.data);
-                    const data: {[k: string]: any} = {};
+                    const data: { [k: string]: any } = {};
                     keys.forEach((key) => {
                         data[key] = (h.data as RTModellingObservationPoint)[key].map((m) => {
                             return {
@@ -140,7 +156,6 @@ class RTModelling extends GenericObject<IRtModelling> {
                 }) : undefined
             }
         };
-        return t;
     }
 
     public updateHeadsFromBoundaries = (boundaries: BoundaryCollection) => {

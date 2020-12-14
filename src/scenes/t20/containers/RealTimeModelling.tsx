@@ -1,4 +1,6 @@
 import {AppContainer} from '../../shared';
+import {BoundaryCollection, ModflowModel} from '../../../core/model/modflow';
+import {CalculationProcess} from '../../modflow/components/content/calculation';
 import {Grid, Icon} from 'semantic-ui-react';
 import {IRootReducer} from '../../../reducers';
 import {IRtModelling} from '../../../core/model/rtm/modelling/RTModelling.type';
@@ -6,7 +8,11 @@ import {IToolMetaDataEdit} from '../../shared/simpleTools/ToolMetaData/ToolMetaD
 import {ToolMetaData} from '../../shared/simpleTools';
 import {ToolNavigation} from '../../shared/complexTools';
 import {sendCommand} from '../../../services/api';
-import {updateRTModelling} from '../actions/actions';
+import {
+    updateCalculation,
+    updateProcessedPackages, updateProcessingPackages,
+    updateRTModelling
+} from '../actions/actions';
 import {useDispatch, useSelector} from 'react-redux';
 import {useHistory, useParams} from 'react-router-dom';
 import Calculation from '../components/calculation/Calculation';
@@ -60,9 +66,7 @@ const RealTimeModelling = () => {
     const renderContent = () => {
         if (property === 'calculation') {
             return (
-                <Calculation
-
-                />
+                <Calculation/>
             );
         }
         if (property === 'boundaries') {
@@ -83,17 +87,17 @@ const RealTimeModelling = () => {
         <AppContainer navbarItems={navigation}>
             <DataFetcherWrapper>
                 {rtm &&
-                    <ToolMetaData
-                        isDirty={false}
-                        readOnly={false}
-                        tool={{
-                            tool: 'T20',
-                            name: rtm.name,
-                            description: rtm.description,
-                            public: rtm.public
-                        }}
-                        onSave={handleSaveMetaData}
-                    />
+                <ToolMetaData
+                    isDirty={false}
+                    readOnly={false}
+                    tool={{
+                        tool: 'T20',
+                        name: rtm.name,
+                        description: rtm.description,
+                        public: rtm.public
+                    }}
+                    onSave={handleSaveMetaData}
+                />
                 }
                 <Grid padded={true}>
                     <Grid.Row>
@@ -112,37 +116,12 @@ const RealTimeModelling = () => {
                                                 name: 'Boundaries',
                                                 property: 'boundaries',
                                                 icon: <Icon name="map marker alternate"/>
-                                            },
-                                            {
-                                                name: 'Head Observations',
-                                                property: 'head_observations',
-                                                icon: <Icon name="eye"/>
-                                            },
-                                            {
-                                                name: 'Transport',
-                                                property: 'transport',
-                                                icon: <Icon name="cube"/>
                                             }
                                         ]
                                     },
                                     {
                                         header: 'Calculation',
                                         items: [
-                                            {
-                                                name: 'Mf packages',
-                                                property: 'modflow',
-                                                icon: <Icon name="retweet"/>
-                                            },
-                                            {
-                                                name: 'Mt packages',
-                                                property: 'mt3d',
-                                                icon: <Icon name="exchange"/>
-                                            },
-                                            {
-                                                name: 'Swt package',
-                                                property: 'seawat',
-                                                icon: <Icon name="eyedropper"/>
-                                            },
                                             {
                                                 name: 'Run calculation',
                                                 property: 'calculation',
@@ -172,6 +151,16 @@ const RealTimeModelling = () => {
                                     }
                                 ]}
                             />
+                            {rtm && rtm.results &&
+                            <CalculationProcess
+                                boundaries={BoundaryCollection.fromObject(rtm.results.boundaries)}
+                                model={ModflowModel.fromObject(rtm.results.model)}
+                                reducer={T20}
+                                updateCalculation={updateCalculation}
+                                updateProcessedPackages={updateProcessedPackages}
+                                updateProcessingPackages={updateProcessingPackages}
+                            />
+                            }
                         </Grid.Column>
                         <Grid.Column width={13}>
                             {renderContent()}
