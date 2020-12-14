@@ -91,7 +91,7 @@ const rtm: IRtModelling = {
         'model_id': '8227c23a-de89-4d3b-a347-ef4d01a0e38d',
         'automatic_calculation': true,
         'simulated_times': [],
-        'start_date_time': dateMinusDays(6),
+        'start_date_time': dateMinusDays(7),
         'time_resolution': ETimeResolution.DAILY,
         'head': [{
             'boundary_id': '08e899c6-93c9-4e09-9bb9-8173b8cc93bb', 'data': {

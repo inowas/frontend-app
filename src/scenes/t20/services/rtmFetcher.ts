@@ -150,7 +150,5 @@ export const rtModellingFetcher = (
         });
     }
 
-    console.log({fetchNeeded});
-
     workOnTasks(rtm, fetchNeeded, onEachStep, onSuccess);
 };

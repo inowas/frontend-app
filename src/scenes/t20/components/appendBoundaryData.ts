@@ -25,14 +25,14 @@ const addDays = (a: Date, days: number) => {
 
 const appendSpValues = (spValues: ISpValues, data: ArrayOfMethods | null, days: number[]): ISpValues => {
     const newSpValues: ISpValues = days.map((t) => {
-        if (!data || data.filter((r) => r.method !== EMethodType.CONSTANT).length === 0) {
+        if (data === null || data.filter((r) => r.method !== EMethodType.CONSTANT).length === 0) {
             return spValues[spValues.length - 1];
         }
-        return data.map((p) => {
+        return data.map((p, k) => {
                 if (p.values && t <= p.values.length) {
                     return p.values[t - 1]
                 }
-                return spValues[spValues.length - 1][t - 1];
+                return spValues[spValues.length - 1][k];
             }
         );
     });
@@ -53,22 +53,6 @@ export const appendBoundaryData = (
     }
 
     const times = _.range(1, dayDiff);
-
-    console.log(times);
-    
-    // Append Stressperiods
-
-    const cStressperiods = model.stressperiods.toObject();
-    const lastSp = cStressperiods.stressperiods[cStressperiods.stressperiods.length - 1];
-    times.forEach((d) => {
-        const newSp = {
-            start_date_time: addDays(rtm.startDate, d),
-            nstp: lastSp.nstp,
-            tsmult: lastSp.tsmult,
-            steady: lastSp.steady
-        };
-        cStressperiods.stressperiods.push(newSp);
-    });
 
     // Append Boundaries
     
@@ -101,6 +85,20 @@ export const appendBoundaryData = (
             }
         }
         return cBoundary.toObject();
+    });
+
+    // Append Stressperiods
+
+    const cStressperiods = model.stressperiods.toObject();
+    const lastSp = cStressperiods.stressperiods[cStressperiods.stressperiods.length - 1];
+    times.forEach((d) => {
+        const newSp = {
+            start_date_time: addDays(rtm.startDate, d),
+            nstp: lastSp.nstp,
+            tsmult: lastSp.tsmult,
+            steady: lastSp.steady
+        };
+        cStressperiods.stressperiods.push(newSp);
     });
 
     return {
