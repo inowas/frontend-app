@@ -1,5 +1,5 @@
-import AbstractCommand from '../../../../core/model/command/AbstractCommand';
 import {JSON_SCHEMA_URL} from '../../../../services/api';
+import AbstractCommand from '../../../../core/model/command/AbstractCommand';
 
 class SimpleToolsCommand extends AbstractCommand {
 
