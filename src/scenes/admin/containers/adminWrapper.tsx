@@ -3,7 +3,7 @@ import {AppContainer} from '../../shared';
 import {Grid, Icon} from 'semantic-ui-react';
 import {IMenu} from '../../t03/defaults/menuItems';
 import {useHistory, useParams} from 'react-router-dom';
-import General from '../components/General';
+import DefaultTools from '../components/DefaultTools';
 import React from 'react';
 import Tools from '../components/Tools';
 import User from '../components/User';
@@ -25,11 +25,6 @@ const menuItems: IMenu = [
         header: '',
         items: [
             {
-                name: 'General',
-                property: 'general',
-                icon: <Icon name="expand"/>
-            },
-            {
                 name: 'Users',
                 property: 'users',
                 icon: <Icon name="calendar alternate outline"/>
@@ -37,6 +32,11 @@ const menuItems: IMenu = [
             {
                 name: 'Tools',
                 property: 'tools',
+                icon: <Icon name="expand"/>
+            },
+            {
+                name: 'Default Tools',
+                property: 'defaults',
                 icon: <Icon name="expand"/>
             }
         ]
@@ -50,10 +50,6 @@ const AdminWrapper = () => {
 
     const renderContent = (activeItem?: string) => {
         switch (activeItem) {
-            case 'general': {
-                return <General/>;
-            }
-
             case 'users': {
                 if (!urlParams.id) {
                     return <Users/>;
@@ -66,8 +62,12 @@ const AdminWrapper = () => {
                 return <Tools/>;
             }
 
+            case 'defaults': {
+                return <DefaultTools/>;
+            }
+
             default: {
-                history.push('/admin/general');
+                history.push('/admin/users');
             }
 
         }

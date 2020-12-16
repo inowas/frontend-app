@@ -1,9 +1,9 @@
-import React from 'react';
-import {RouteComponentProps, withRouter} from 'react-router-dom';
-import {Button, Icon, Popup, Table} from 'semantic-ui-react';
 import * as Formatter from '../../../services/formatter';
-import NoContent from '../../shared/complexTools/noContent';
+import {Button, Icon, Popup, Table} from 'semantic-ui-react';
 import {ITool, IToolInstance} from '../defaults/tools';
+import {RouteComponentProps, withRouter} from 'react-router-dom';
+import NoContent from '../../shared/complexTools/noContent';
+import React from 'react';
 
 interface IOwnProps {
     activeTool: ITool;
