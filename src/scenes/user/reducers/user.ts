@@ -2,6 +2,7 @@ import {LOGOUT, SET_USER, UNAUTHORIZED} from '../actions/actions';
 import {SET_USER_PROFILE} from '../actions/events';
 
 const initialState = () => ({
+    id: '',
     userName: '',
     name: '',
     email: '',
@@ -19,6 +20,7 @@ const initialState = () => ({
 });
 
 export interface IUserReducer {
+    id: string;
     userName: string;
     name: string;
     email: string;
@@ -40,6 +42,7 @@ export const user = (state: IUserReducer = initialState(), action: any) => {
         case SET_USER: {
             return {
                 ...state,
+                id: action.payload.id || state.id,
                 userName: action.payload.username || state.userName,
                 name: action.payload.name || state.name,
                 email: action.payload.email || state.email,

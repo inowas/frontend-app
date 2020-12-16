@@ -7,7 +7,7 @@ export const SETTINGS_CASE_VARIABLE_TIME = 2;
 export const SETTINGS_INFILTRATION_ONE_TIME = 1;
 export const SETTINGS_INFILTRATION_CONTINUOUS = 2;
 
-export const defaultsWithSession = (session: IRootReducer['session']) => {
+export const defaultsWithSession = (session?: IRootReducer['session']) => {
     if (session && !session.token) {
         return {...defaults, permissions: 'r--'};
     }
