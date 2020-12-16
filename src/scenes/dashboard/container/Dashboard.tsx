@@ -1,6 +1,3 @@
-import React, {MouseEvent, useEffect, useRef, useState} from 'react';
-import {useDispatch, useSelector} from 'react-redux';
-import {RouteComponentProps, withRouter} from 'react-router-dom';
 import {
     Button,
     Container,
@@ -12,17 +9,20 @@ import {
     Search,
     SearchProps, SearchResultData
 } from 'semantic-ui-react';
-import uuid from 'uuid';
 import {IRootReducer} from '../../../reducers';
-import {fetchUrl, sendCommand} from '../../../services/api';
-import AppContainer from '../../shared/AppContainer';
-import {setActiveTool, setPublic} from '../actions';
+import {RouteComponentProps, withRouter} from 'react-router-dom';
 import {cloneToolInstance, deleteToolInstance} from '../commands';
+import {fetchUrl, sendCommand} from '../../../services/api';
+import {setActiveTool, setPublic} from '../actions';
+import {useDispatch, useSelector} from 'react-redux';
+import AppContainer from '../../shared/AppContainer';
 import ModflowModelImport from '../components/ModflowModelImport';
+import React, {MouseEvent, useEffect, useRef, useState} from 'react';
 import ToolsDataTable from '../components/ToolsDataTable';
 import ToolsMenu from '../components/ToolsMenu';
-import tools, {ITool, IToolInstance} from '../defaults/tools';
 import availableTools from '../defaults/tools';
+import tools, {ITool, IToolInstance} from '../defaults/tools';
+import uuid from 'uuid';
 
 const navigation = [
     {

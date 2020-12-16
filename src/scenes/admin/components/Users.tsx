@@ -1,4 +1,4 @@
-import {Checkbox, Icon, Message, Search, Segment, Table} from 'semantic-ui-react';
+import {Checkbox, Form, Header, Icon, Message, Segment, Table} from 'semantic-ui-react';
 import {IRootReducer} from '../../../reducers';
 import {Link} from 'react-router-dom';
 import {fetchApiWithToken, sendCommandAsync} from '../../../services/api';
@@ -29,6 +29,8 @@ const Users = () => {
     const [errorLoading, setErrorLoading] = useState<boolean>(false);
     const [copyToClipBoardSuccessfulId, setCopyToClipBoardSuccessfulId] = useState<string>('');
     const [users, setUsers] = useState<IUser[]>([]);
+    const [selectedUsers, setSelectedUsers] = useState<IUser[]>([]);
+    const [search, setSearch] = useState<string>('');
     const me = useSelector((state: IRootReducer) => state.user);
 
     useEffect(() => {
@@ -37,7 +39,8 @@ const Users = () => {
             setErrorLoading(false);
             try {
                 const users: IUser[] = (await fetchApiWithToken('users')).data;
-                sortAndSetUsers(users);
+                setUsers(users);
+                sortAndSetSelectedUsers(users);
             } catch (e) {
                 setErrorLoading(true);
             } finally {
@@ -46,10 +49,16 @@ const Users = () => {
         };
 
         f();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
-    const sortAndSetUsers = (users: IUser[]) => {
-        setUsers(
+    useEffect(() => {
+        sortAndSetSelectedUsers(users);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [search]);
+
+    const sortAndSetSelectedUsers = (users: IUser[]) => {
+        setSelectedUsers(
             users
                 .sort((a, b) => {
                     return a.username.toLowerCase().localeCompare(b.username.toLowerCase());
@@ -78,6 +87,7 @@ const Users = () => {
                         return 0;
                     }
                 )
+                .filter((u) => JSON.stringify(u).includes(search))
         );
     };
 
@@ -88,7 +98,7 @@ const Users = () => {
             try {
                 if (promoteAdmin) {
                     await sendCommandAsync(UserCommand.promoteUser(userId, 'ROLE_ADMIN'));
-                    sortAndSetUsers(users.map(user => {
+                    sortAndSetSelectedUsers(users.map(user => {
                         if (user.id === userId) {
                             user.roles.push('ROLE_ADMIN');
                         }
@@ -99,7 +109,7 @@ const Users = () => {
 
                 if (!promoteAdmin) {
                     await sendCommandAsync(UserCommand.demoteUser(userId, 'ROLE_ADMIN'));
-                    sortAndSetUsers(users.map(user => {
+                    sortAndSetSelectedUsers(users.map(user => {
                         if (user.id === userId) {
                             user.roles = user.roles.filter(r => r !== 'ROLE_ADMIN');
                         }
@@ -124,7 +134,7 @@ const Users = () => {
             try {
                 if (enable) {
                     await sendCommandAsync(UserCommand.enableUser(userId));
-                    sortAndSetUsers(users.map(user => {
+                    sortAndSetSelectedUsers(users.map(user => {
                         if (user.id === userId) {
                             user.enabled = true;
                         }
@@ -135,7 +145,7 @@ const Users = () => {
 
                 if (!enable) {
                     await sendCommandAsync(UserCommand.disableUser(userId));
-                    sortAndSetUsers(users.map(user => {
+                    sortAndSetSelectedUsers(users.map(user => {
                         if (user.id === userId) {
                             user.enabled = false;
                         }
@@ -160,7 +170,7 @@ const Users = () => {
             try {
                 if (archive) {
                     await sendCommandAsync(UserCommand.archiveUser(userId));
-                    sortAndSetUsers(users.map(user => {
+                    sortAndSetSelectedUsers(users.map(user => {
                         if (user.id === userId) {
                             user.archived = true;
                         }
@@ -171,7 +181,7 @@ const Users = () => {
 
                 if (!archive) {
                     await sendCommandAsync(UserCommand.reactivateUser(userId));
-                    sortAndSetUsers(users.map(user => {
+                    sortAndSetSelectedUsers(users.map(user => {
                         if (user.id === userId) {
                             user.archived = false;
                         }
@@ -204,6 +214,10 @@ const Users = () => {
         document.execCommand('copy');
         document.body.removeChild(dummy);
         setCopyToClipBoardSuccessfulId(id);
+    };
+
+    const handleSearchChange = (e: any, {value}: { value: string }) => {
+        setSearch(value);
     };
 
     const renderUsers = (users: IUser[]) => {
@@ -275,8 +289,11 @@ const Users = () => {
                 <Message.Header>Error</Message.Header>
                 <p>There was an error fetching the userdata.</p>
             </Message>}
-            <Search loading={isLoading}/>
-            {users && renderUsers(users)}
+            <Header as={'h2'}>Users</Header>
+            <Form>
+                <Form.Input focus placeholder='Search...' size={'big'} onChange={handleSearchChange}/>
+                {selectedUsers && renderUsers(selectedUsers)}
+            </Form>
         </Segment>
     );
 };
