@@ -1,5 +1,5 @@
-import {IRule} from './criteria/Rule.type';
 import {IRasterLayer, IRasterLayer1v0} from './gis/RasterLayer.type';
+import {IRule} from './criteria/Rule.type';
 
 export interface ISuitability {
     raster: IRasterLayer;

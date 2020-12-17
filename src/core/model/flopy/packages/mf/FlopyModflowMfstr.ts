@@ -1,9 +1,9 @@
 import {BoundaryCollection} from '../../../modflow/boundaries';
-import Stressperiods from '../../../modflow/Stressperiods';
 import {IPropertyValueObject} from '../../../types';
 import {IStressPeriodData} from './FlopyModflow.type';
 import FlopyModflowLineBoundary from './FlopyModflowLineBoundary';
 import FlopyModflowPackage from './FlopyModflowPackage';
+import Stressperiods from '../../../modflow/Stressperiods';
 
 export interface IFlopyModflowMfstr {
     mxacts: number;

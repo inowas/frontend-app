@@ -1,5 +1,5 @@
-import moment, {Moment} from 'moment';
 import {IStressPeriod} from './Stressperiod.type';
+import moment, {Moment} from 'moment';
 
 class Stressperiod {
 

@@ -7,7 +7,7 @@ export default class FlopyModpathMp7bas extends FlopyModpathPackage {
     private _model: FlopyModpathMp7 | null = null;
     private _porosity: number | Array2D<number> | string = 0.30;
     private _defaultiface: IPropertyValueObject | null = null;
-    private _extension: string = 'mpbas';
+    private _extension = 'mpbas';
 
     get model(): FlopyModpathMp7 | null {
         return this._model;

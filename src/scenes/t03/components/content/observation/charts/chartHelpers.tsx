@@ -1,5 +1,5 @@
-import math from 'mathjs';
 import React, {ReactNode} from 'react';
+import math from 'mathjs';
 
 export type ICustomTooltipPayload = Array<{
     name: string;

@@ -1,17 +1,17 @@
-import React, {ChangeEvent, MouseEvent, useState} from 'react';
 import {Accordion, AccordionTitleProps, Form, Header, Icon, InputOnChangeData, Loader} from 'semantic-ui-react';
 import {Array2D} from '../../../../../../core/model/geometry/Array2D.type';
-import {ModflowModel} from '../../../../../../core/model/modflow';
-import BoundaryCollection from '../../../../../../core/model/modflow/boundaries/BoundaryCollection';
+import {ILayerParameterZone} from '../../../../../../core/model/modflow/soilmodel/LayerParameterZone.type';
+import {IRasterFileMetadata} from '../../../../../../services/api/types';
 import {
     LayerParameterZonesCollection,
     RasterParameter,
     ZonesCollection
 } from '../../../../../../core/model/modflow/soilmodel';
-import {ILayerParameterZone} from '../../../../../../core/model/modflow/soilmodel/LayerParameterZone.type';
-import SoilmodelLayer from '../../../../../../core/model/modflow/soilmodel/SoilmodelLayer';
-import {IRasterFileMetadata} from '../../../../../../services/api/types';
+import {ModflowModel} from '../../../../../../core/model/modflow';
 import {RasterDataMap, RasterfileUploadModal} from '../../../../../shared/rasterData';
+import BoundaryCollection from '../../../../../../core/model/modflow/boundaries/BoundaryCollection';
+import React, {ChangeEvent, MouseEvent, useState} from 'react';
+import SoilmodelLayer from '../../../../../../core/model/modflow/soilmodel/SoilmodelLayer';
 import ZonesTable from './zonesTable';
 
 interface IUploadData {

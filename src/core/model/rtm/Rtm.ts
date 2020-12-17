@@ -1,9 +1,9 @@
+import {Geometry} from '../geometry';
+import {IRtm} from './Rtm.type';
+import {Sensor} from './index';
+import {SensorCollection} from './SensorCollection';
 import {cloneDeep, includes} from 'lodash';
 import Uuid from 'uuid';
-import {Geometry} from '../geometry';
-import {Sensor} from './index';
-import {IRtm} from './Rtm.type';
-import {SensorCollection} from './SensorCollection';
 
 export default class Rtm {
 

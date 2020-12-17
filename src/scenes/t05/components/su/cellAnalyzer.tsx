@@ -1,7 +1,7 @@
-import React, {Fragment} from 'react';
 import {Button, Icon, Segment, Table} from 'semantic-ui-react';
 import {ICriterion} from '../../../../core/model/mcda/criteria/Criterion.type';
 import MCDA from '../../../../core/model/mcda/MCDA';
+import React, {Fragment} from 'react';
 
 interface IPointObject {
     x: number;

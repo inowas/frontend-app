@@ -1,9 +1,3 @@
-import Uuid from 'uuid';
-import {dxCell, dyCell} from '../../../../services/geoTools/distance';
-import BoundingBox from '../../geometry/BoundingBox';
-import GridSize from '../../geometry/GridSize';
-import {Cells, Geometry} from '../index';
-import Stressperiods from '../Stressperiods';
 import {
     BoundaryType,
     IBoundary,
@@ -11,6 +5,12 @@ import {
     ISpValues,
     IValueProperty
 } from './Boundary.type';
+import {Cells, Geometry} from '../index';
+import {dxCell, dyCell} from '../../../../services/geoTools/distance';
+import BoundingBox from '../../geometry/BoundingBox';
+import GridSize from '../../geometry/GridSize';
+import Stressperiods from '../Stressperiods';
+import Uuid from 'uuid';
 
 export default abstract class Boundary {
 

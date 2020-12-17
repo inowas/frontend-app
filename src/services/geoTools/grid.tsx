@@ -1,9 +1,9 @@
 import * as turf from '@turf/turf';
-import {LatLngExpression} from 'leaflet';
-import React from 'react';
 import {FeatureGroup, Polyline} from 'react-leaflet';
+import {LatLngExpression} from 'leaflet';
 import BoundingBox from '../../core/model/geometry/BoundingBox';
 import GridSize from '../../core/model/geometry/GridSize';
+import React from 'react';
 
 interface IProps {
     boundingBox: BoundingBox;

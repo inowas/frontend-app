@@ -1,6 +1,6 @@
-import React from 'react';
-import {Progress} from 'semantic-ui-react';
 import {Calculation} from '../../../../../core/model/modflow';
+import {Progress} from 'semantic-ui-react';
+import React from 'react';
 
 export const CALCULATION_STARTED = 0;
 export const CALCULATION_STATE_PREPROCESSING = 1;

@@ -1,8 +1,8 @@
-import React, {useState} from 'react';
 import {Checkbox, Form, Grid, Header, Input, Label} from 'semantic-ui-react';
-import FlopyModflow from '../../../../../../core/model/flopy/packages/mf/FlopyModflow';
 import {IFlopyModflowMfwel} from '../../../../../../core/model/flopy/packages/mf/FlopyModflowMfwel';
 import {RainbowOrLegend} from '../../../../../../services/rainbowvis/types';
+import FlopyModflow from '../../../../../../core/model/flopy/packages/mf/FlopyModflow';
+import React, {useState} from 'react';
 
 import {
     FlopyModflowMfdis,

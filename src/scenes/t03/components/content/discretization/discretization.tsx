@@ -1,17 +1,17 @@
-import React, {useEffect, useRef, useState} from 'react';
-import {useDispatch, useSelector} from 'react-redux';
-import {Grid, Menu, Segment} from 'semantic-ui-react';
-import {EMessageState, IMessage} from '../../../../../core/model/messages/Message.type';
-import MessagesCollection from '../../../../../core/model/messages/MessagesCollection';
-import {ModflowModel} from '../../../../../core/model/modflow';
 import {BoundaryCollection} from '../../../../../core/model/modflow/boundaries';
+import {EMessageState, IMessage} from '../../../../../core/model/messages/Message.type';
+import {Grid, Menu, Segment} from 'semantic-ui-react';
 import {IModflowModel} from '../../../../../core/model/modflow/ModflowModel.type';
 import {IRootReducer} from '../../../../../reducers';
-import {sendCommand} from '../../../../../services/api';
+import {ModflowModel} from '../../../../../core/model/modflow';
 import {addMessage, removeMessage, updateMessage, updateModel} from '../../../actions/actions';
-import ModflowModelCommand from '../../../commands/modflowModelCommand';
 import {messageDirty, messageSaving} from '../../../defaults/messages';
+import {sendCommand} from '../../../../../services/api';
+import {useDispatch, useSelector} from 'react-redux';
 import GridEditor from './gridEditor';
+import MessagesCollection from '../../../../../core/model/messages/MessagesCollection';
+import ModflowModelCommand from '../../../commands/modflowModelCommand';
+import React, {useEffect, useRef, useState} from 'react';
 import StressperiodsEditor from './stressperiodsEditor';
 
 const Discretization = () => {

@@ -1,8 +1,8 @@
 import * as Papa from 'papaparse';
-import {ParseResult} from 'papaparse';
-import React, {ChangeEvent, useEffect, useState} from 'react';
 import {Button, Header, Icon, List, Modal} from 'semantic-ui-react';
+import {ParseResult} from 'papaparse';
 import {usePrevious} from '../helpers/customHooks';
+import React, {ChangeEvent, useEffect, useState} from 'react';
 
 interface IProps {
     baseClasses?: string;

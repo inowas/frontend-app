@@ -1,6 +1,6 @@
-import React from 'react';
-import PropTypes from 'prop-types';
 import {Button, Form, Grid, Message, Segment, Table} from 'semantic-ui-react';
+import PropTypes from 'prop-types';
+import React from 'react';
 // import Graph from 'vis-react';
 import {CriteriaCollection, WeightAssignment} from '../../../../core/model/mcda/criteria';
 
@@ -37,7 +37,8 @@ class MultiInfluence extends React.Component {
         };
     }
 
-    componentWillReceiveProps(nextProps) {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    UNSAFE_componentWillReceiveProps(nextProps, nextContext) {
         const data = this.prepareData(nextProps);
 
         this.setState({
@@ -69,7 +70,7 @@ class MultiInfluence extends React.Component {
         });
 
         return {edges, nodes};
-    };
+    }
 
     handleDismiss = () => this.setState({showInfo: false});
 

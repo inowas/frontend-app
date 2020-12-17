@@ -1,6 +1,6 @@
 import {GeoJson} from '../../../../../core/model/geometry/Geometry.type';
-import {ModflowModel} from '../../../../../core/model/modflow';
 import {ISoilmodelExport} from '../../../../../core/model/modflow/soilmodel/Soilmodel.type';
+import {ModflowModel} from '../../../../../core/model/modflow';
 import updater from '../../../../../core/model/modflow/soilmodel/updater/updater';
 
 const model = {

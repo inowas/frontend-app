@@ -1,7 +1,7 @@
+import {IReactLeafletHeatMapClass, IReactLeafletHeatMapProps} from './ReactLeafletHeatMapCanvasOverlay.type';
 import {Layer} from 'leaflet';
 import {MapLayer, withLeaflet} from 'react-leaflet';
 import {canvasHeatMapOverlay} from './leafletCanvasHeatMapOverlay';
-import {IReactLeafletHeatMapClass, IReactLeafletHeatMapProps} from './ReactLeafletHeatMapCanvasOverlay.type';
 
 class ReactLeafletHeatMapCanvasOverlay extends MapLayer<IReactLeafletHeatMapProps, Layer & IReactLeafletHeatMapClass> {
     public createLeafletElement(props: IReactLeafletHeatMapProps) {

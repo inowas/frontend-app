@@ -1,7 +1,7 @@
-import {isEqual} from 'lodash';
-import {GenericObject} from '../genericObject/GenericObject';
 import {Array2D} from './Array2D.type';
+import {GenericObject} from '../genericObject/GenericObject';
 import {IGridSize} from './GridSize.type';
+import {isEqual} from 'lodash';
 
 type IGridSizeArray = [number, number];
 

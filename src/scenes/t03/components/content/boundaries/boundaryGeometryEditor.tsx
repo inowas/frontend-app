@@ -1,10 +1,10 @@
-import React, {ChangeEvent, MouseEvent, useEffect, useState} from 'react';
-import {Button, Form, Icon, Menu, MenuItemProps, Modal, Segment} from 'semantic-ui-react';
-import {ModflowModel} from '../../../../../core/model/modflow';
 import {Boundary, BoundaryCollection, BoundaryFactory} from '../../../../../core/model/modflow/boundaries';
+import {Button, Form, Icon, Menu, MenuItemProps, Modal, Segment} from 'semantic-ui-react';
 import {IBoundary} from '../../../../../core/model/modflow/boundaries/Boundary.type';
-import Soilmodel from '../../../../../core/model/modflow/soilmodel/Soilmodel';
+import {ModflowModel} from '../../../../../core/model/modflow';
 import BoundaryDiscretizationMap from '../../maps/boundaryDiscretizationMap';
+import React, {ChangeEvent, MouseEvent, useEffect, useState} from 'react';
+import Soilmodel from '../../../../../core/model/modflow/soilmodel/Soilmodel';
 
 interface IIndexedBoundary {
     [name: string]: any;

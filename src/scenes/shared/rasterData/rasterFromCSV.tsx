@@ -1,12 +1,12 @@
-import React, {useEffect, useState} from 'react';
-import {useSelector} from 'react-redux';
-import {Grid, List, Segment} from 'semantic-ui-react';
-import {Array2D} from '../../../core/model/geometry/Array2D.type';
-import {ModflowModel} from '../../../core/model/modflow';
-import {IRootReducer} from '../../../reducers';
 import {AdvancedCsvUpload} from '../simpleTools/upload';
+import {Array2D} from '../../../core/model/geometry/Array2D.type';
 import {ECsvColumnType} from '../simpleTools/upload/types';
+import {Grid, List, Segment} from 'semantic-ui-react';
+import {IRootReducer} from '../../../reducers';
+import {ModflowModel} from '../../../core/model/modflow';
+import {useSelector} from 'react-redux';
 import RasterDataMap from './rasterDataMap';
+import React, {useEffect, useState} from 'react';
 
 interface IProps {
     onChange: (r: Array2D<number>) => any;

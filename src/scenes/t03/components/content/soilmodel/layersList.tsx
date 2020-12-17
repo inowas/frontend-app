@@ -1,9 +1,9 @@
-import React from 'react';
-import {pure} from 'recompose';
 import {Button, Icon, Menu, Popup} from 'semantic-ui-react';
-import {LayersCollection} from '../../../../../core/model/modflow/soilmodel';
-import SoilmodelLayer from '../../../../../core/model/modflow/soilmodel/SoilmodelLayer';
 import {ISoilmodelLayer} from '../../../../../core/model/modflow/soilmodel/SoilmodelLayer.type';
+import {LayersCollection} from '../../../../../core/model/modflow/soilmodel';
+import {pure} from 'recompose';
+import React from 'react';
+import SoilmodelLayer from '../../../../../core/model/modflow/soilmodel/SoilmodelLayer';
 
 interface IProps {
     layers: LayersCollection;

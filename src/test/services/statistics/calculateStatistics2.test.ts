@@ -1,6 +1,6 @@
-import math from 'mathjs';
-import calculateStatistics from '../../../services/statistics/calculateStatistics';
 import {expectedStatistics, input} from './inputData2';
+import calculateStatistics from '../../../services/statistics/calculateStatistics';
+import math from 'mathjs';
 
 test('Calculate Statistics 2', () => {
     const stats = calculateStatistics(input);

@@ -1,5 +1,5 @@
-import {TimeUnit} from '../../../../core/model/modflow';
 import {ITimeUnit} from '../../../../core/model/modflow/TimeUnit.type';
+import {TimeUnit} from '../../../../core/model/modflow';
 
 test('TimeUnit static seconds', () => {
     const timeUnit = TimeUnit.seconds();

@@ -1,27 +1,3 @@
-import React, {useEffect, useRef, useState} from 'react';
-import {useDispatch, useSelector} from 'react-redux';
-import {useHistory, useRouteMatch} from 'react-router-dom';
-import {Grid, Menu, Segment} from 'semantic-ui-react';
-import FlopyPackages from '../../../../../core/model/flopy/packages/FlopyPackages';
-import {FlopyMt3d} from '../../../../../core/model/flopy/packages/mt';
-import {IFlopyMt3d} from '../../../../../core/model/flopy/packages/mt/FlopyMt3d';
-import FlopyMt3dMt from '../../../../../core/model/flopy/packages/mt/FlopyMt3dMt';
-import FlopyMt3dMtadv from '../../../../../core/model/flopy/packages/mt/FlopyMt3dMtadv';
-import FlopyMt3dMtbtn from '../../../../../core/model/flopy/packages/mt/FlopyMt3dMtbtn';
-import FlopyMt3dMtdsp from '../../../../../core/model/flopy/packages/mt/FlopyMt3dMtdsp';
-import FlopyMt3dMtgcg from '../../../../../core/model/flopy/packages/mt/FlopyMt3dMtgcg';
-import FlopyMt3dMtrct from '../../../../../core/model/flopy/packages/mt/FlopyMt3dMtrct';
-import FlopyMt3dMtssm from '../../../../../core/model/flopy/packages/mt/FlopyMt3dMtssm';
-import FlopyMt3dPackage from '../../../../../core/model/flopy/packages/mt/FlopyMt3dPackage';
-import {EMessageState} from '../../../../../core/model/messages/Message.type';
-import MessagesCollection from '../../../../../core/model/messages/MessagesCollection';
-import {ModflowModel, Soilmodel, Transport as TransportAlias} from '../../../../../core/model/modflow';
-import {IRootReducer} from '../../../../../reducers';
-import {sendCommand} from '../../../../../services/api';
-import ContentToolBar from '../../../../shared/ContentToolbar2';
-import {addMessage, removeMessage, updateMessage, updatePackages} from '../../../actions/actions';
-import ModflowModelCommand from '../../../commands/modflowModelCommand';
-import {IEditingState, initialEditingState, messageDirty, messageSaving} from '../../../defaults/messages';
 import {
     AdvPackageProperties,
     BtnPackageProperties,
@@ -31,6 +7,30 @@ import {
     RctPackageProperties,
     SsmPackageProperties
 } from './mt';
+import {EMessageState} from '../../../../../core/model/messages/Message.type';
+import {FlopyMt3d} from '../../../../../core/model/flopy/packages/mt';
+import {Grid, Menu, Segment} from 'semantic-ui-react';
+import {IEditingState, initialEditingState, messageDirty, messageSaving} from '../../../defaults/messages';
+import {IFlopyMt3d} from '../../../../../core/model/flopy/packages/mt/FlopyMt3d';
+import {IRootReducer} from '../../../../../reducers';
+import {ModflowModel, Soilmodel, Transport as TransportAlias} from '../../../../../core/model/modflow';
+import {addMessage, removeMessage, updateMessage, updatePackages} from '../../../actions/actions';
+import {sendCommand} from '../../../../../services/api';
+import {useDispatch, useSelector} from 'react-redux';
+import {useHistory, useRouteMatch} from 'react-router-dom';
+import ContentToolBar from '../../../../shared/ContentToolbar2';
+import FlopyMt3dMt from '../../../../../core/model/flopy/packages/mt/FlopyMt3dMt';
+import FlopyMt3dMtadv from '../../../../../core/model/flopy/packages/mt/FlopyMt3dMtadv';
+import FlopyMt3dMtbtn from '../../../../../core/model/flopy/packages/mt/FlopyMt3dMtbtn';
+import FlopyMt3dMtdsp from '../../../../../core/model/flopy/packages/mt/FlopyMt3dMtdsp';
+import FlopyMt3dMtgcg from '../../../../../core/model/flopy/packages/mt/FlopyMt3dMtgcg';
+import FlopyMt3dMtrct from '../../../../../core/model/flopy/packages/mt/FlopyMt3dMtrct';
+import FlopyMt3dMtssm from '../../../../../core/model/flopy/packages/mt/FlopyMt3dMtssm';
+import FlopyMt3dPackage from '../../../../../core/model/flopy/packages/mt/FlopyMt3dPackage';
+import FlopyPackages from '../../../../../core/model/flopy/packages/FlopyPackages';
+import MessagesCollection from '../../../../../core/model/messages/MessagesCollection';
+import ModflowModelCommand from '../../../commands/modflowModelCommand';
+import React, {useEffect, useRef, useState} from 'react';
 
 const sideBar = [
     {id: undefined, name: 'Overview Transport'},

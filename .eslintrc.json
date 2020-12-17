@@ -32,10 +32,11 @@
     "curly": "warn",
     "@typescript-eslint/explicit-module-boundary-types": "off",
     "@typescript-eslint/no-explicit-any": "off",
-    "no-prototype-builtins": "warn",
+    "no-prototype-builtins": "off",
     "no-case-declarations": "warn",
-    "no-mixed-operators": "warn",
-    "sort-imports-es6-autofix/sort-imports-es6": "warn"
+    "no-mixed-operators": "off",
+    "sort-imports-es6-autofix/sort-imports-es6": "warn",
+    "react/prop-types": "off"
   },
   "settings": {
     "react": {

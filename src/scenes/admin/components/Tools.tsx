@@ -1,21 +1,22 @@
 import {Header, Message, Segment} from 'semantic-ui-react';
+import {IToolInstance} from '../../types';
 import {deleteToolInstance, updateToolInstanceMetadata} from '../../dashboard/commands';
 import {fetchApiWithToken, sendCommandAsync} from '../../../services/api';
 import React, {useEffect, useState} from 'react';
-import ToolsDataTable, {ITool} from './ToolsDataTable';
+import ToolsDataTable from './ToolsDataTable';
 
 const Tools = () => {
 
     const [isLoading, setIsLoading] = useState<boolean>(false);
     const [errorLoading, setErrorLoading] = useState<boolean>(false);
-    const [tools, setTools] = useState<ITool[]>([]);
+    const [tools, setTools] = useState<IToolInstance[]>([]);
 
     useEffect(() => {
         const f = async () => {
             setIsLoading(true);
             setErrorLoading(false);
             try {
-                const tools: ITool[] = (await fetchApiWithToken('tools')).data;
+                const tools: IToolInstance[] = (await fetchApiWithToken('tools')).data;
                 setTools(tools);
             } catch (e) {
                 setErrorLoading(true);

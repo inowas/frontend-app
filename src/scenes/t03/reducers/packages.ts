@@ -1,6 +1,6 @@
+import {CLEAR} from './model';
 import {IFlopyPackages} from '../../../core/model/flopy/packages/FlopyPackages.type';
 import {LOGOUT, UNAUTHORIZED} from '../../user/actions/actions';
-import {CLEAR} from './model';
 
 export const PROCESSING_PACKAGES = 'T03_PROCESSING_PACKAGES';
 export const RECALCULATE_PACKAGES = 'T03_RECALCULATE_PACKAGES';

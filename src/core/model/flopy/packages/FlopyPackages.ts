@@ -1,14 +1,14 @@
-import md5 from 'md5';
-import {validate as jsonSchemaValidate} from '../../../../services/jsonSchemaValidator';
-import {ModflowModel, Transport, VariableDensity} from '../../modflow';
-import BoundaryCollection from '../../modflow/boundaries/BoundaryCollection';
-import Soilmodel from '../../modflow/soilmodel/Soilmodel';
-import {IPropertyValueObject} from '../../types';
 import {IFlopyCalculation, IFlopyPackages} from './FlopyPackages.type';
+import {IPropertyValueObject} from '../../types';
+import {ModflowModel, Transport, VariableDensity} from '../../modflow';
+import {validate as jsonSchemaValidate} from '../../../../services/jsonSchemaValidator';
+import BoundaryCollection from '../../modflow/boundaries/BoundaryCollection';
 import FlopyModflow from './mf/FlopyModflow';
 import FlopyModpath from './mp/FlopyModpath';
 import FlopyMt3d from './mt/FlopyMt3d';
 import FlopySeawat from './swt/FlopySeawat';
+import Soilmodel from '../../modflow/soilmodel/Soilmodel';
+import md5 from 'md5';
 
 import {JSON_SCHEMA_URL} from '../../../../services/api';
 

@@ -1,13 +1,13 @@
+import {Cells, Geometry, Stressperiods} from '../index';
+import {ICells} from '../../geometry/Cells.type';
+import {ISpValues, IValueProperty} from './Boundary.type';
+import {IWellBoundary, IWellBoundaryExport, IWellType} from './WellBoundary.type';
 import {Point} from 'geojson';
 import {cloneDeep} from 'lodash';
-import Uuid from 'uuid';
 import BoundingBox from '../../geometry/BoundingBox';
-import {ICells} from '../../geometry/Cells.type';
 import GridSize from '../../geometry/GridSize';
-import {Cells, Geometry, Stressperiods} from '../index';
-import {ISpValues, IValueProperty} from './Boundary.type';
 import PointBoundary from './PointBoundary';
-import {IWellBoundary, IWellBoundaryExport, IWellType} from './WellBoundary.type';
+import Uuid from 'uuid';
 
 export default class WellBoundary extends PointBoundary {
 

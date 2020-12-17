@@ -1,14 +1,14 @@
+import {Boundary} from './index';
+import {Cells, Geometry} from '../index';
+import {ICells} from '../../geometry/Cells.type';
+import {INrchop, IRechargeBoundary, IRechargeBoundaryExport} from './RechargeBoundary.type';
+import {ISpValues, IValueProperty} from './Boundary.type';
 import {Polygon} from 'geojson';
 import {cloneDeep} from 'lodash';
-import Uuid from 'uuid';
 import BoundingBox from '../../geometry/BoundingBox';
-import {ICells} from '../../geometry/Cells.type';
 import GridSize from '../../geometry/GridSize';
-import {Cells, Geometry} from '../index';
 import Stressperiods from '../Stressperiods';
-import {ISpValues, IValueProperty} from './Boundary.type';
-import {Boundary} from './index';
-import {INrchop, IRechargeBoundary, IRechargeBoundaryExport} from './RechargeBoundary.type';
+import Uuid from 'uuid';
 
 export default class RechargeBoundary extends Boundary {
 

@@ -1,17 +1,17 @@
-import {cloneDeep} from 'lodash';
-import React, {useState} from 'react';
+import {Array2D} from '../../../../../../core/model/geometry/Array2D.type';
 import {Button, Checkbox, Grid, Header, Icon} from 'semantic-ui-react';
 import {Cells} from '../../../../../../core/model/geometry';
-import {Array2D} from '../../../../../../core/model/geometry/Array2D.type';
-import {ICell} from '../../../../../../core/model/geometry/Cells.type';
-import {ModflowModel} from '../../../../../../core/model/modflow';
-import BoundaryCollection from '../../../../../../core/model/modflow/boundaries/BoundaryCollection';
-import {RasterParameter} from '../../../../../../core/model/modflow/soilmodel';
-import SoilmodelLayer from '../../../../../../core/model/modflow/soilmodel/SoilmodelLayer';
-import {IRasterFileMetadata} from '../../../../../../services/api/types';
-import {RasterfileUploadModal} from '../../../../../shared/rasterData';
-import RasterDataImage from '../../../../../shared/rasterData/rasterDataImage';
 import {DiscretizationMap} from '../../discretization';
+import {ICell} from '../../../../../../core/model/geometry/Cells.type';
+import {IRasterFileMetadata} from '../../../../../../services/api/types';
+import {ModflowModel} from '../../../../../../core/model/modflow';
+import {RasterParameter} from '../../../../../../core/model/modflow/soilmodel';
+import {RasterfileUploadModal} from '../../../../../shared/rasterData';
+import {cloneDeep} from 'lodash';
+import BoundaryCollection from '../../../../../../core/model/modflow/boundaries/BoundaryCollection';
+import RasterDataImage from '../../../../../shared/rasterData/rasterDataImage';
+import React, {useState} from 'react';
+import SoilmodelLayer from '../../../../../../core/model/modflow/soilmodel/SoilmodelLayer';
 
 interface IProps {
     boundaries: BoundaryCollection;

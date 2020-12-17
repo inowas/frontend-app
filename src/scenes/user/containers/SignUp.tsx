@@ -1,14 +1,14 @@
-import React, {ChangeEvent, useState} from 'react';
 import {submitSignUpCredentials} from '../../../services/api';
+import React, {ChangeEvent, useState} from 'react';
 
-import {useSelector} from 'react-redux';
-import {Link, Redirect} from 'react-router-dom';
 import {Button, Container, Form, Grid, Header, Image, Message} from 'semantic-ui-react';
-import logo from '../images/favicon.png';
+import {Link, Redirect} from 'react-router-dom';
 import {hasSessionKey} from '../reducers';
+import {useSelector} from 'react-redux';
+import logo from '../images/favicon.png';
 
-import getConfig from '../../../config.default';
 import {IRootReducer} from '../../../reducers';
+import getConfig from '../../../config.default';
 
 const {USERS_CAN_REGISTER} = getConfig();
 

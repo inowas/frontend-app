@@ -1,10 +1,10 @@
-import {LineString, Point} from 'geojson';
-import Uuid from 'uuid';
+import {GeneralHeadBoundary} from '../../../../../core/model/modflow/boundaries';
 import {Geometry} from '../../../../../core/model/geometry';
 import {ICells} from '../../../../../core/model/geometry/Cells.type';
-import {GeneralHeadBoundary} from '../../../../../core/model/modflow/boundaries';
 import {JSON_SCHEMA_URL} from '../../../../../services/api';
+import {LineString, Point} from 'geojson';
 import {validate} from '../../../../../services/jsonSchemaValidator';
+import Uuid from 'uuid';
 
 const createGeneralHeadBoundary = () => {
     const id = Uuid.v4();

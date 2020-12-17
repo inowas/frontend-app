@@ -1,6 +1,6 @@
-import {Polygon} from 'geojson';
 import {ICells} from '../../geometry/Cells.type';
 import {ISpValues} from './Boundary.type';
+import {Polygon} from 'geojson';
 
 export type INrchop = 1 | 2 | 3;
 

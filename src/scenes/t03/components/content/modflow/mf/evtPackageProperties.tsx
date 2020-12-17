@@ -1,14 +1,14 @@
-import React, {SyntheticEvent, useState} from 'react';
 import {Checkbox, DropdownProps, Form, Grid, Header, Input, Label} from 'semantic-ui-react';
+import React, {SyntheticEvent, useState} from 'react';
 
 import {FlopyModflowMfevt} from '../../../../../../core/model/flopy/packages/mf';
-import FlopyModflow from '../../../../../../core/model/flopy/packages/mf/FlopyModflow';
-import FlopyModflowMfbas from '../../../../../../core/model/flopy/packages/mf/FlopyModflowMfbas';
-import {IFlopyModflowMfevt} from '../../../../../../core/model/flopy/packages/mf/FlopyModflowMfevt';
 import {GridSize} from '../../../../../../core/model/modflow';
-import InfoPopup from '../../../../../shared/InfoPopup';
+import {IFlopyModflowMfevt} from '../../../../../../core/model/flopy/packages/mf/FlopyModflowMfevt';
 import {RasterDataImage} from '../../../../../shared/rasterData';
 import {documentation} from '../../../../defaults/flow';
+import FlopyModflow from '../../../../../../core/model/flopy/packages/mf/FlopyModflow';
+import FlopyModflowMfbas from '../../../../../../core/model/flopy/packages/mf/FlopyModflowMfbas';
+import InfoPopup from '../../../../../shared/InfoPopup';
 
 interface IProps {
     mfPackage: FlopyModflowMfevt;

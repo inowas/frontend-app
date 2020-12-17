@@ -1,21 +1,21 @@
-import _ from 'lodash';
-import React, {useEffect, useRef, useState} from 'react';
-import {useDispatch, useSelector} from 'react-redux';
-import {Dimmer, Form, Grid, Header, Progress} from 'semantic-ui-react';
-import {ICells} from '../../../../../core/model/geometry/Cells.type';
-import {BoundingBox, Cells, Geometry, GridSize, ModflowModel, Soilmodel} from '../../../../../core/model/modflow';
 import {BoundaryCollection} from '../../../../../core/model/modflow/boundaries';
-import {IRootReducer} from '../../../../../reducers';
-import {dxCell, dyCell} from '../../../../../services/geoTools/distance';
-import ContentToolBar from '../../../../shared/ContentToolbar2';
-import {addMessage, updateBoundaries, updateLayer, updateSoilmodel} from '../../../actions/actions';
-import {messageError} from '../../../defaults/messages';
+import {BoundingBox, Cells, Geometry, GridSize, ModflowModel, Soilmodel} from '../../../../../core/model/modflow';
 import {CALCULATE_CELLS_INPUT} from '../../../worker/t03.worker';
-import {ICalculateCellsInputData} from '../../../worker/t03.worker.type';
-import {asyncWorker} from '../../../worker/worker';
-import UploadGeoJSONModal from '../create/UploadGeoJSONModal';
+import {Dimmer, Form, Grid, Header, Progress} from 'semantic-ui-react';
 import {DiscretizationMap, GridProperties} from './index';
+import {ICalculateCellsInputData} from '../../../worker/t03.worker.type';
+import {ICells} from '../../../../../core/model/geometry/Cells.type';
+import {IRootReducer} from '../../../../../reducers';
+import {addMessage, updateBoundaries, updateLayer, updateSoilmodel} from '../../../actions/actions';
+import {asyncWorker} from '../../../worker/worker';
 import {boundaryUpdater, layersUpdater, zonesUpdater} from './updater';
+import {dxCell, dyCell} from '../../../../../services/geoTools/distance';
+import {messageError} from '../../../defaults/messages';
+import {useDispatch, useSelector} from 'react-redux';
+import ContentToolBar from '../../../../shared/ContentToolbar2';
+import React, {useEffect, useRef, useState} from 'react';
+import UploadGeoJSONModal from '../create/UploadGeoJSONModal';
+import _ from 'lodash';
 
 interface IProps {
     model: ModflowModel;

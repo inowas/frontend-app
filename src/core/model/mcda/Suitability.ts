@@ -1,10 +1,10 @@
-import {cloneDeep} from 'lodash';
-import {suitabilityRules} from '../../../scenes/t05/defaults/gis';
 import {CriteriaType} from './criteria/Criterion.type';
 import {IRule} from './criteria/Rule.type';
-import RulesCollection from './criteria/RulesCollection';
-import {RasterLayer} from './gis';
 import {ISuitability, ISuitability1v0} from './Suitability.type';
+import {RasterLayer} from './gis';
+import {cloneDeep} from 'lodash';
+import {suitabilityRules} from '../../../scenes/t05/defaults/gis';
+import RulesCollection from './criteria/RulesCollection';
 
 class Suitability {
 

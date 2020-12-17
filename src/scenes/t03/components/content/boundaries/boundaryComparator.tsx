@@ -37,7 +37,7 @@ class BoundaryComparator extends React.Component<IProps, IState> {
         };
     }
 
-    public componentWillReceiveProps(nextProps: IProps) {
+    public UNSAFE_componentWillReceiveProps(nextProps: IProps) {
         this.setState({
             selectedType: nextProps.types && nextProps.types.length === 1 ? nextProps.types[0] : 'all',
             boundaryList: nextProps.currentBoundaries.compareWith(

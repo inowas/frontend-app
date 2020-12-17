@@ -1,5 +1,5 @@
-import React from 'react';
 import {Container, Image} from 'semantic-ui-react';
+import React from 'react';
 
 interface IProps {
     title?: string;

@@ -1,13 +1,13 @@
-import React, {ChangeEvent, SyntheticEvent, useState} from 'react';
 import {Checkbox, DropdownProps, Form, Grid, Header, Input, Label, Segment, Table} from 'semantic-ui-react';
 import {FlopyModflowMfbcf, FlopyModflowMfdis} from '../../../../../../core/model/flopy/packages/mf';
-import FlopyModflow from '../../../../../../core/model/flopy/packages/mf/FlopyModflow';
-import {IFlopyModflowMfbcf} from '../../../../../../core/model/flopy/packages/mf/FlopyModflowMfbcf';
 import {GridSize} from '../../../../../../core/model/modflow';
+import {IFlopyModflowMfbcf} from '../../../../../../core/model/flopy/packages/mf/FlopyModflowMfbcf';
 import {ILegendItemDiscrete} from '../../../../../../services/rainbowvis/types';
-import InfoPopup from '../../../../../shared/InfoPopup';
 import {RasterDataImage} from '../../../../../shared/rasterData';
 import {documentation} from '../../../../defaults/flow';
+import FlopyModflow from '../../../../../../core/model/flopy/packages/mf/FlopyModflow';
+import InfoPopup from '../../../../../shared/InfoPopup';
+import React, {ChangeEvent, SyntheticEvent, useState} from 'react';
 
 interface IProps {
     mfPackage: FlopyModflowMfbcf;

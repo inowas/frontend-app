@@ -1,6 +1,6 @@
+import {ICriteriaRelation} from './CriteriaRelation.type';
 import {cloneDeep} from 'lodash';
 import uuidv4 from 'uuid/v4';
-import {ICriteriaRelation} from './CriteriaRelation.type';
 
 class CriteriaRelation {
 

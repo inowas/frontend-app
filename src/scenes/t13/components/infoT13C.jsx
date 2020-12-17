@@ -1,9 +1,9 @@
-import React from 'react';
-import PropTypes from 'prop-types';
-import {getParameterValues} from '../../shared/simpleTools/helpers';
 import {Icon, Message} from 'semantic-ui-react';
-import {pure} from 'recompose';
 import {calculateTravelTimeT13C, calculateXwd} from '../calculations';
+import {getParameterValues} from '../../shared/simpleTools/helpers';
+import {pure} from 'recompose';
+import PropTypes from 'prop-types';
+import React from 'react';
 
 const Info = ({parameters}) => {
     const {W, K, L, hL, h0, ne, xi, xe} = getParameterValues(parameters);

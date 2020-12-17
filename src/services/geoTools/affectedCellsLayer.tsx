@@ -1,13 +1,13 @@
 import * as turf from '@turf/turf';
-import React, {useEffect, useState} from 'react';
-import {FeatureGroup, GeoJSON, LayersControl} from 'react-leaflet';
-import {useSelector} from 'react-redux';
-import uuid from 'uuid';
-import {BoundingBox, Cells, Geometry, GridSize} from '../../core/model/geometry';
-import {IBoundingBox} from '../../core/model/geometry/BoundingBox.type';
-import {IRotationProperties} from '../../core/model/geometry/Geometry.type';
 import {Boundary, BoundaryCollection} from '../../core/model/modflow/boundaries';
+import {BoundingBox, Cells, Geometry, GridSize} from '../../core/model/geometry';
+import {FeatureGroup, GeoJSON, LayersControl} from 'react-leaflet';
+import {IBoundingBox} from '../../core/model/geometry/BoundingBox.type';
 import {IRootReducer} from '../../reducers';
+import {IRotationProperties} from '../../core/model/geometry/Geometry.type';
+import {useSelector} from 'react-redux';
+import React, {useEffect, useState} from 'react';
+import uuid from 'uuid';
 
 interface IProps {
     boundary?: Boundary;

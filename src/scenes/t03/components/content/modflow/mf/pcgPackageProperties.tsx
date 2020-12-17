@@ -1,5 +1,5 @@
-import React, {ChangeEvent, SyntheticEvent, useState} from 'react';
 import {DropdownProps, Form, Header, Input, PopupProps, Segment} from 'semantic-ui-react';
+import React, {ChangeEvent, SyntheticEvent, useState} from 'react';
 
 import {FlopyModflowMfpcg} from '../../../../../../core/model/flopy/packages/mf';
 import {IFlopyModflowMfpcg} from '../../../../../../core/model/flopy/packages/mf/FlopyModflowMfpcg';

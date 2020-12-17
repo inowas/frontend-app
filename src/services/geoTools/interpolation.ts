@@ -1,7 +1,7 @@
 import * as turf from '@turf/turf';
-import _ from 'lodash';
 import {Array2D} from '../../core/model/geometry/Array2D.type';
 import {BoundingBox, Geometry, GridSize} from '../../core/model/modflow';
+import _ from 'lodash';
 
 interface IPoint3D {
     x: number;

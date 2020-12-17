@@ -40,7 +40,7 @@ export abstract class Collection<T extends IItem> {
         return this._items.filter((item) => (item[property].toLowerCase()).indexOf(value.toLowerCase()) > -1);
     }
 
-    public findBy(property: string, value: any, equal: boolean = true): T[] {
+    public findBy(property: string, value: any, equal = true): T[] {
         const items = this.all.filter((item) => {
             if (equal) {
                 return item[property] === value;
@@ -50,7 +50,7 @@ export abstract class Collection<T extends IItem> {
         return items || [];
     }
 
-    public findFirstBy(property: string, value: any, equal: boolean = true) {
+    public findFirstBy(property: string, value: any, equal = true) {
         const items = this.findBy(property, value, equal);
         return items.length > 0 ? items[0] : null;
     }
@@ -84,7 +84,7 @@ export abstract class Collection<T extends IItem> {
         }, 0);
     }
 
-    public update(updatedItem: T, createIfNotExisting: boolean = true) {
+    public update(updatedItem: T, createIfNotExisting = true) {
         let isNew = true;
 
         this._items = this._items.map((item) => {

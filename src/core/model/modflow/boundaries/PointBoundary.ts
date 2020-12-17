@@ -1,7 +1,7 @@
 import {BoundingBox, Cells, Geometry, GridSize} from '../index';
-import Stressperiods from '../Stressperiods';
-import Boundary from './Boundary';
 import {ISpValues} from './Boundary.type';
+import Boundary from './Boundary';
+import Stressperiods from '../Stressperiods';
 
 export default abstract class PointBoundary extends Boundary {
 

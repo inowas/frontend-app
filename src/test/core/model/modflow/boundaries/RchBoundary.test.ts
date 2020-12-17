@@ -1,10 +1,10 @@
-import {Polygon} from 'geojson';
-import Uuid from 'uuid';
 import {ICells} from '../../../../../core/model/geometry/Cells.type';
-import {Stressperiods} from '../../../../../core/model/modflow';
-import {RechargeBoundary} from '../../../../../core/model/modflow/boundaries';
 import {JSON_SCHEMA_URL} from '../../../../../services/api';
+import {Polygon} from 'geojson';
+import {RechargeBoundary} from '../../../../../core/model/modflow/boundaries';
+import {Stressperiods} from '../../../../../core/model/modflow';
 import {validate} from '../../../../../services/jsonSchemaValidator';
+import Uuid from 'uuid';
 
 const createRechargeBoundary = () => {
     const id = Uuid.v4();

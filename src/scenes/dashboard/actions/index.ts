@@ -1,9 +1,9 @@
-import {ITool} from '../defaults/tools';
+import {IToolMenuItem} from '../defaults/tools';
 
 export const SET_ACTIVE_TOOL = 'DASHBOARD_SET_ACTIVE_TOOL';
 export const SET_PUBLIC = 'DASHBOARD_SET_PUBLIC';
 
-export function setActiveTool(tool: ITool) {
+export function setActiveTool(tool: IToolMenuItem) {
     return {
         type: SET_ACTIVE_TOOL,
         payload: tool

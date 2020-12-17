@@ -2,3 +2,4 @@ build
 imports/
 node_modules/
 src/semantic
+src/test

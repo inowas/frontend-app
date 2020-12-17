@@ -1,4 +1,3 @@
-import React, {useState} from 'react';
 import {
     Accordion, Checkbox,
     Form,
@@ -11,11 +10,12 @@ import {
     Table
 } from 'semantic-ui-react';
 import {FlopyModflowMfdis} from '../../../../../../core/model/flopy/packages/mf';
-import {IFlopyModflowMfdis} from '../../../../../../core/model/flopy/packages/mf/FlopyModflowMfdis';
 import {GridSize} from '../../../../../../core/model/modflow';
+import {IFlopyModflowMfdis} from '../../../../../../core/model/flopy/packages/mf/FlopyModflowMfdis';
 import {InfoPopup} from '../../../../../shared';
 import {RasterDataImage} from '../../../../../shared/rasterData';
 import {documentation} from '../../../../defaults/flow';
+import React, {useState} from 'react';
 
 interface IProps {
     mfPackage: FlopyModflowMfdis;

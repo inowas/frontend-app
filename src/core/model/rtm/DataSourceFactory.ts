@@ -1,6 +1,6 @@
 import {FileDataSource} from './index';
-import PrometheusDataSource from './PrometheusDataSource';
 import {IDataSource, IFileDataSource, IPrometheusDataSource, ISensorDataSource} from './Sensor.type';
+import PrometheusDataSource from './PrometheusDataSource';
 import SensorDataSource from './SensorDataSource';
 
 function isFileDataSource(arg: any): arg is IFileDataSource {
