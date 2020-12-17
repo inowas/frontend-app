@@ -1,6 +1,6 @@
+import {IToolMenuItem, ROLE_USER} from '../defaults/tools';
 import {LOGOUT, UNAUTHORIZED} from '../../user/actions/actions';
 import {SET_ACTIVE_TOOL, SET_PUBLIC} from '../actions';
-import {ITool, ROLE_USER} from '../defaults/tools';
 
 const initialState: IDashboardReducer = {
     activeTool: {
@@ -15,7 +15,7 @@ const initialState: IDashboardReducer = {
 };
 
 export interface IDashboardReducer {
-    activeTool: ITool;
+    activeTool: IToolMenuItem;
     showPublicInstances: boolean;
 }
 

@@ -5,23 +5,23 @@ import {
     Grid,
     Header,
     Icon,
-    Loader,
-    Search,
-    SearchProps, SearchResultData
+    Loader
 } from 'semantic-ui-react';
 import {IRootReducer} from '../../../reducers';
+import {IToolInstance} from '../../types';
 import {RouteComponentProps, withRouter} from 'react-router-dom';
-import {cloneToolInstance, deleteToolInstance} from '../commands';
-import {fetchUrl, sendCommand} from '../../../services/api';
+import {cloneToolInstance, deleteToolInstance, updateToolInstanceMetadata} from '../commands';
+import {fetchUrl, sendCommand, sendCommandAsync} from '../../../services/api';
 import {setActiveTool, setPublic} from '../actions';
 import {useDispatch, useSelector} from 'react-redux';
+import AdminToolsDataTable from '../../admin/components/ToolsDataTable';
 import AppContainer from '../../shared/AppContainer';
 import ModflowModelImport from '../components/ModflowModelImport';
-import React, {MouseEvent, useEffect, useRef, useState} from 'react';
+import React, {useEffect, useRef, useState} from 'react';
 import ToolsDataTable from '../components/ToolsDataTable';
 import ToolsMenu from '../components/ToolsMenu';
-import availableTools from '../defaults/tools';
-import tools, {ITool, IToolInstance} from '../defaults/tools';
+import availableTools, {myTools} from '../defaults/tools';
+import tools, {IToolMenuItem} from '../defaults/tools';
 import uuid from 'uuid';
 
 const navigation = [
@@ -36,8 +36,8 @@ type IProps = RouteComponentProps;
 
 const Dashboard = (props: IProps) => {
     const [isLoading, setIsLoading] = useState<boolean>(true);
+    const [errorLoading, setErrorLoading] = useState<boolean>(false);
     const [toolInstances, setToolInstances] = useState<IToolInstance[]>([]);
-    const [search, setSearch] = useState<string>();
 
     const dispatch = useDispatch();
     const activeTool = useSelector((state: IRootReducer) => state.dashboard.activeTool);
@@ -64,8 +64,12 @@ const Dashboard = (props: IProps) => {
             () => {
                 // TODO: not pretty but works for now
                 fetchingAttempts.current = fetchingAttempts.current + 1;
-                if (fetchingAttempts.current < 5) {
+                if (fetchingAttempts.current <= 5) {
                     fetchInstances(tool, cShowPublicInstances);
+                }
+
+                if (fetchingAttempts.current > 5) {
+                    setErrorLoading(true);
                 }
             }
         );
@@ -80,7 +84,7 @@ const Dashboard = (props: IProps) => {
             return window.open('http://marportal.un-igrac.org', '_blank');
         }
 
-        const tool = availableTools.filter((t) => t.slug === slug);
+        const tool = myTools.concat(availableTools).filter((t) => t.slug === slug);
         if (tool.length > 0) {
             setIsLoading(true);
             setToolInstances([]);
@@ -94,15 +98,6 @@ const Dashboard = (props: IProps) => {
         setIsLoading(true);
         setToolInstances([]);
         return fetchInstances(activeTool.slug, cShowPublicInstances);
-    };
-
-    const handleChangeSearch = (e: MouseEvent, {value}: SearchProps) => {
-        return setSearch(value);
-    };
-
-    const handleClickSearch = (e: MouseEvent, {result}: SearchResultData) => {
-        const {path, subPath, slug} = activeTool;
-        return props.history.push(path + slug + '/' + result.value + subPath);
     };
 
     const handleCloneInstance = (tool: string, id: string) => {
@@ -130,42 +125,54 @@ const Dashboard = (props: IProps) => {
         );
     };
 
-    const renderImportOrSearch = (tool: ITool) => {
+    const renderImportOrSearch = (tool: IToolMenuItem) => {
         if (tool.slug === 'T03') {
             return (
                 <ModflowModelImport/>
             );
         }
 
-        const filteredInstances = search ? toolInstances.filter(
-            (t) => JSON.stringify(t).toLowerCase().includes(search.toLowerCase())
-        ) : toolInstances;
+        return null;
+    };
 
-        return (
-            <Search
-                onResultSelect={handleClickSearch}
-                onSearchChange={handleChangeSearch}
-                input={{fluid: true}}
-                results={filteredInstances.map((t) => {
-                    return {
-                        key: t.id,
-                        title: t.name,
-                        value: t.id
-                    };
-                })}
-                value={search}
-            />
-        );
+    const handleChangeMetadata = (tool: string, id: string, name: string, description: string, isPublic: boolean) => {
+        const sc = async () => {
+            setIsLoading(true);
+            setErrorLoading(false);
+            try {
+                await sendCommandAsync(updateToolInstanceMetadata(tool, {id, name, description, isPublic}));
+                setToolInstances(toolInstances.map((t) => {
+                    if (t.id === id) {
+                        t.name = name;
+                        t.description = description;
+                        t.public = !isPublic;
+                    }
+                    return t;
+                }));
+            } catch (e) {
+                setErrorLoading(true);
+            } finally {
+                setIsLoading(false);
+            }
+        };
+
+        sc();
     };
 
     const {history} = props;
     const {push} = history;
+    const showMyTools = activeTool.slug === 'myTools';
 
     return (
         <AppContainer navbarItems={navigation}>
             {isLoading &&
             <Dimmer active={true} inverted={true}>
                 <Loader>Loading</Loader>
+            </Dimmer>
+            }
+            {errorLoading &&
+            <Dimmer active={true} inverted={true}>
+                <Loader>Error loading</Loader>
             </Dimmer>
             }
             <Grid padded={true}>
@@ -182,10 +189,13 @@ const Dashboard = (props: IProps) => {
                         <Grid padded={true}>
                             <Grid.Row columns={1}>
                                 <Grid.Column>
-                                    <Header as="h1" align="center" size="medium">Instances
-                                        of {activeTool.slug}: {activeTool.name}</Header>
+                                    <Header as="h1" align="center" size="medium">
+                                        {showMyTools ? 'Instances of My Tools' : `Instances of ${activeTool.slug}: ${activeTool.name}`}
+                                    </Header>
                                 </Grid.Column>
                             </Grid.Row>
+
+                            {!showMyTools &&
                             <Grid.Row columns={3}>
                                 <Grid.Column width={4} align="left">
                                     <Button
@@ -218,15 +228,24 @@ const Dashboard = (props: IProps) => {
                                     </Button.Group>
                                 </Grid.Column>
                             </Grid.Row>
+                            }
                             <Grid.Row columns={1}>
                                 <Grid.Column>
-                                    <ToolsDataTable
-                                        activeTool={activeTool}
-                                        cloneToolInstance={handleCloneInstance}
-                                        deleteToolInstance={handleDeleteInstance}
-                                        showPublicInstances={showPublicInstances}
-                                        toolInstances={toolInstances}
-                                    />
+                                    {showMyTools ?
+                                        <AdminToolsDataTable
+                                            tools={toolInstances as any}
+                                            onChangeMetadata={handleChangeMetadata}
+                                            onDelete={handleDeleteInstance}
+                                        /> :
+                                        <ToolsDataTable
+                                            activeTool={activeTool}
+                                            cloneToolInstance={handleCloneInstance}
+                                            deleteToolInstance={handleDeleteInstance}
+                                            showPublicInstances={showPublicInstances}
+                                            toolInstances={toolInstances}
+                                        />
+                                    }
+
                                 </Grid.Column>
                             </Grid.Row>
                         </Grid>

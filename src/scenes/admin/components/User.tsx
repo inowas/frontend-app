@@ -6,6 +6,7 @@ import {
     Segment,
 } from 'semantic-ui-react';
 import {IRootReducer} from '../../../reducers';
+import {IToolInstance} from '../../types';
 import {IUser} from './Users';
 import {deleteToolInstance, updateToolInstanceMetadata} from '../../dashboard/commands';
 import {fetchApiWithToken, sendCommand, sendCommandAsync} from '../../../services/api';
@@ -17,17 +18,7 @@ import UserCommand from '../../user/commands/userCommand';
 import getConfig from '../../../config.default';
 
 export interface IUserDetails extends IUser {
-    tools: {
-        created_at: string;
-        description: string;
-        id: string;
-        name: string;
-        public: boolean;
-        tool: string;
-        updated_at: string;
-        user_id: string;
-        user_name: string;
-    }[]
+    tools: IToolInstance[]
 }
 
 interface IProps {

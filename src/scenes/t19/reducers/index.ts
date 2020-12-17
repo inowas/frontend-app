@@ -1,5 +1,5 @@
 import {IHtm} from '../../../core/model/htm/Htm.type';
-import {IToolInstance} from '../../dashboard/defaults/tools';
+import {IToolInstance} from '../../types';
 import {combineReducers} from 'redux';
 import data, {IDataState} from './data';
 import htm from './htm';

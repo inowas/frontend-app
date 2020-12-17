@@ -3,7 +3,7 @@ import {Grid, Icon, Loader, Message} from 'semantic-ui-react';
 import {HeatTransportController} from '../components';
 import {IHtm} from '../../../core/model/htm/Htm.type';
 import {IRootReducer} from '../../../reducers';
-import {IToolInstance} from '../../dashboard/defaults/tools';
+import {IToolInstance} from '../../types';
 import {IToolMetaDataEdit} from '../../shared/simpleTools/ToolMetaData/ToolMetaData.type';
 import {ToolMetaData} from '../../shared/simpleTools';
 import {clear, updateHtm, updateT10Instances} from '../actions/actions';
@@ -63,7 +63,7 @@ const HeatTransport = () => {
 
         return function() {
             dispatch(clear());
-        }
+        };
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 

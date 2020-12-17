@@ -20,19 +20,11 @@ const getRoutes = () => {
                 <PrivateRoute exact={true} path="/admin/:property?/:id?" component={Scenes.Admin}
                               forRoles={['ROLE_ADMIN']}/>
                 <PrivateRoute exact={true} path="/tools" component={Scenes.Dashboard} forRoles={['ROLE_USER']}/>
-                <PrivateRoute
-                    exact={true}
-                    path="/tools/T03/"
-                    component={Scenes.T03.CreateModel}
-                    forRoles={['ROLE_USER']}
-                />
+                <PrivateRoute exact={true} path="/tools/T03/" component={Scenes.T03.CreateModel}
+                              forRoles={['ROLE_USER']}/>
                 <PrivateRoute exact={true} path="/tools/T05/" component={Scenes.T05Create} forRoles={['ROLE_USER']}/>
-                <PrivateRoute
-                    exact={true}
-                    path="/tools/T07/"
-                    component={Scenes.T07.CreateScenarioAnalysis}
-                    forRoles={['ROLE_USER']}
-                />
+                <PrivateRoute exact={true} path="/tools/T07/" component={Scenes.T07.CreateScenarioAnalysis}
+                              forRoles={['ROLE_USER']}/>
                 <PrivateRoute exact={true} path="/tools/T10/" component={Scenes.T10Create} forRoles={['ROLE_USER']}/>
                 <PrivateRoute path="/credentials" component={Scenes.UserCredentials} forRoles={['ROLE_USER']}/>
                 <PrivateRoute path="/profile" component={Scenes.UserProfile} forRoles={['ROLE_USER']}/>
@@ -43,10 +35,8 @@ const getRoutes = () => {
                 <Route exact={true} path="/tools/T04" component={Scenes.T04}/>
                 <Route exact={true} path="/tools/T05/:id/:property?/:cid?/:tool?" component={Scenes.T05}/>
                 <Route exact={true} path="/tools/T06" component={Scenes.T06}/>
-                <Route
-                    exact={true}
-                    path="/tools/T07/:id/:property?/:type?/:pid?"
-                    component={Scenes.T07.EditScenarioAnalysis}
+                <Route exact={true} path="/tools/T07/:id/:property?/:type?/:pid?"
+                       component={Scenes.T07.EditScenarioAnalysis}
                 />
                 <Route exact={true} path="/tools/T08/:id?" component={Scenes.T08}/>
                 <Route exact={true} path="/tools/T09" component={Scenes.T09}/>
