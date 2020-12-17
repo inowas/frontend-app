@@ -11,3 +11,16 @@ export enum PopupPosition {
 
 export type CallbackFunction<Response, Return> = (response: Response) => Return;
 export type ErrorCallbackFunction = CallbackFunction<string, void>;
+
+export interface IToolInstance {
+    id: string;
+    tool: string;
+    name: string;
+    description: string;
+    public: boolean;
+    permissions: string;
+    created_at: string;
+    updated_at: string;
+    user_id: string;
+    user_name: string;
+}

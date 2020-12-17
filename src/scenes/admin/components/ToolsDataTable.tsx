@@ -1,29 +1,18 @@
 import * as Formatter from '../../../services/formatter';
 import {Button, Checkbox, Form, Icon, Label, Segment, Table, TableBody, TableHeader} from 'semantic-ui-react';
+import {IToolInstance} from '../../types';
 import {Link} from 'react-router-dom';
 import React, {useEffect, useState} from 'react';
 
 interface IProps {
-    tools: ITool[];
+    tools: IToolInstance[];
     onChangeMetadata: (tool: string, id: string, name: string, description: string, isPublic: boolean) => void
     onDelete: (tool: string, id: string) => void
 }
 
-export interface ITool {
-    created_at: string;
-    description: string;
-    id: string;
-    name: string;
-    public: boolean;
-    tool: string;
-    updated_at: string;
-    user_id: string;
-    user_name: string;
-}
-
 const ToolsDataTable = (props: IProps) => {
 
-    const [selectedTools, setSelectedTools] = useState<ITool[]>([]);
+    const [selectedTools, setSelectedTools] = useState<IToolInstance[]>([]);
 
     useEffect(() => {
         setSelectedTools(
